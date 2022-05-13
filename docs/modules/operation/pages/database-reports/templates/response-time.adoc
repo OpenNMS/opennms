@@ -33,7 +33,8 @@ If no categories match the entered string, the report will not have data.
 
 | End Date
 | Date
-| The end date for the data contained in this report. If the End Date is later than the Start Date, the report will fail.
+| The end date for the data contained in this report.
+If the End Date is later than the Start Date, the report will fail.
 | Today
 
 | Report Format
