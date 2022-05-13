@@ -65,7 +65,7 @@ If no categories match the entered string, the report will not have data.
 | Check the box to deliver the report via email upon report creation
 | Unchecked
 
-| Schedule the Rport
+| Schedule the Report
 | Checkbox
 | Check this box to create a schedule for the report
 | Unchecked
