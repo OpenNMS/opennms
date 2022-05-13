@@ -99,7 +99,8 @@ image::database-reports/PDF-Report.png[pdf report]
 
 | Time Zone
 | Dropdown
-| The time zone for the data in this report.  A dropdown provides all the available options.
+| The time zone for the data in this report.
+A dropdown provides all the available options.
 | Default System Time Zone
 
 | Start Date
