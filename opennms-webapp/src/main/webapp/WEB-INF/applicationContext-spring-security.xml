@@ -65,6 +65,9 @@
     <intercept-url pattern="/rest/filesystem/**" method="POST" access="ROLE_CONFIG_EDITOR"/>
     <intercept-url pattern="/rest/filesystem/**" method="PUT" access="ROLE_CONFIG_EDITOR"/>
 
+    <!-- Allow certain actions for the ROLE_USER role -->
+    <intercept-url pattern="/rest/resources/generateId" method="POST" access="ROLE_REST,ROLE_ADMIN,ROLE_USER" />
+
     <!-- read-only calls should be allowed for any user -->
     <intercept-url pattern="/rest/**" method="GET" access="ROLE_REST,ROLE_ADMIN,ROLE_MOBILE,ROLE_USER"/>
     <intercept-url pattern="/rest/**" method="HEAD" access="ROLE_REST,ROLE_ADMIN,ROLE_MOBILE,ROLE_USER"/>
