@@ -35,9 +35,10 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.opennms.integration.api</groupId>
-            <artifactId>api</artifactId>
-            <version>${opennmsApiVersion}</version>
+            <groupId>org.opennms.dependencies</groupId>
+            <artifactId>oia-dependencies</artifactId>
+            <type>pom</type>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>

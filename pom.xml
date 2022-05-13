@@ -2209,9 +2209,25 @@
       <!--  opennms dependencies that are outside of the opennms/trunk project -->
       <!--  PLEASE KEEP THESE IN ALPHABETICAL ORDER -->
       <dependency>
-        <groupId>org.opennms.api.integration</groupId>
-        <artifactId>opennms-provisioning</artifactId>
-        <version>1.0.0</version>
+        <groupId>org.opennms.integration.api</groupId>
+        <artifactId>api</artifactId>
+        <version>${opennmsApiVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.integration.api</groupId>
+        <artifactId>common</artifactId>
+        <version>${opennmsApiVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.integration.api</groupId>
+        <artifactId>config</artifactId>
+        <version>${opennmsApiVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.integration.api</groupId>
+        <artifactId>karaf-features</artifactId>
+        <version>${opennmsApiVersion}</version>
+        <type>pom</type>
       </dependency>
       <dependency>
         <groupId>com.sun</groupId>
@@ -2928,6 +2944,12 @@
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
         <artifactId>jstl-dependencies</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>oia-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
       </dependency>
