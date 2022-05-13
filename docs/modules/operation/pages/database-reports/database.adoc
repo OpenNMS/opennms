@@ -112,7 +112,7 @@ OpenNMS provides the following sample report templates, located in `$OPENNMS_HOM
 
 // Comment: The current Jasper Reports version is 6.19.1 and these reports were written for 6.3.0, so modifying the jrxml files with the current version is very challenging.  The vast majority of the reports that I have tried with the current version do not render without at least several modifications.  Is there any plan to upgrade the Jasper Reports code?
 
-// Comment: The apps list of database reports needs some editing.  There are inconsistencies across the descriptions and pages prompting for Report Parameters. Finally, the order of the reports seem random.
+// Comment: The app's list of database reports needs some editing.  There are inconsistencies across the descriptions and pages prompting for Report Parameters. Finally, the order of the reports seem random.
 
 [[ga-database-report-add-custom-report]]
 
