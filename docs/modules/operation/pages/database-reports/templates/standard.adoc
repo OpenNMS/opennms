@@ -1,7 +1,9 @@
 
 //This file includes standard text for the format and delivery sections of each report template dialog.
 
-The last two parameters in this report are checkboxes for delivery and scheduling of the report.  Checking the "Deliver this report" checkbox will provide the delivery options described below.  Checking the "Schedule this report" checkbox will open up the scheduling editor, which is described in the Schedule Editor section below.
+The last two parameters in this report are checkboxes for delivery and scheduling of the report.
+Checking the "Deliver this report" checkbox will provide the delivery options described below.
+Checking the "Schedule this report" checkbox will open up the scheduling editor, which is described in the Schedule Editor section below.
 
 === Report Delivery Options
 

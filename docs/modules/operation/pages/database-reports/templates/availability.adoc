@@ -2,7 +2,7 @@
 = Availability by Node Report
 Availability by node across one or more surveillance categories.
 
-=== Report Contents
+== Report Contents
 
 This report provides the following availability data for nodes that have the user-specified surveillance category over the specified date range:
 
@@ -30,7 +30,8 @@ This report can be customized with a company logo in the header and footer that 
 
 | Surveillance Category
 | String
-| Identify the category of data for this availability report. Standard values include: "Routers", "Switches", "Servers", "Production", "Test" and "Development".  Users can add custom categories.
+| Identify a category to filter nodes to be included in the report.
+If no categories match the entered string, the report will not have data.
 | "Routers"
 
 
@@ -64,7 +65,7 @@ This report can be customized with a company logo in the header and footer that 
 | Check the box to deliver the report via email upon report creation
 | Unchecked
 
-| Schedule the Rport
+| Schedule the Report
 | Checkbox
 | Check this box to create a schedule for the report
 | Unchecked

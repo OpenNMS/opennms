@@ -1,14 +1,26 @@
 [[maintenance-expired-report]]
 = Maintenance Contracts Expired Report
 
-Asset management report shows all assets with maintenance contracts that are expiring within a threshold period, which starts today and extends for the number of days specified in the Warning Threshold parameter below.  This report can also show assets with maintenance contracts that have already expired.
+Asset management report shows all assets with maintenance contracts that are expiring within a threshold period, which starts today and extends for the number of days specified in the Warning Threshold parameter below.
+This report can also show assets with maintenance contracts that have already expired.
 
-The report includes a table that list assets that match the criteria defined by the parameters.  This table is sorted by node and then ordered by expiration date.  The report includes the node label, manufacturer, maintenance contract, expiration date and status.
+The report includes a table that list assets that match the criteria defined by the parameters.
+This table is sorted by node and then ordered by expiration date.
+The report includes the node label, manufacturer, maintenance contract, expiration date and status.
 // QUESTION: It is not clear what is in the field "maintenance contract" in the report.  Need answer so this is more clear.
 
-This table also lists the matching assets by manufacturer and includes the following additional information: model number, serial number, date contract expires, operating system, number of days left in contract, date installed and vendor phone number.
+This table also lists the matching assets by manufacturer and includes the following additional information:
 
-This report can be customized with a 3 company logos that are approximately 195px by 50px.  One logo is in the report header, another in the page header and a third in the page footer.
+* model number
+* serial number
+* date contract expires
+* operating system
+* number of days left in contract
+* date installed
+* vendor phone number.
+
+This report can be customized with a 3 company logos that are approximately 195px by 50px.
+One logo is in the report header, another in the page header and a third in the page footer.
 
 == Parameters
 
@@ -23,7 +35,8 @@ This report can be customized with a 3 company logos that are approximately 195p
 
 | Show Expired Maintenance Contracts
 | String
-| Specify true or false.  True will include contracts that have already expired along with assets with maintenance contracts that will expire within the number of days specified for the warning threshold below.
+| Specify true or false.
+True will include contracts that have already expired along with assets with maintenance contracts that will expire within the number of days specified for the warning threshold below.
 | true
 
 | Format for Expire Date

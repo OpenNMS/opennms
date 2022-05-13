@@ -2,9 +2,10 @@
 = Availability Summary Report (Default Configuration for Past 7 Days)
 
 
-=== Report Contents
+== Report Contents
 
-This report provides a summary of availability across one or more surveillance categories.  One page report with average, minimum and maximum values for the following availability data for the specified surveillance category over the specified date range:
+This report provides a summary of availability across one or more surveillance categories.
+One page report with average, minimum and maximum values for the following availability data for the specified surveillance category over the specified date range:
 
 * Number of Outages
 * Mean Time To Restore ("MTTR") (in hours)
@@ -13,7 +14,8 @@ This report provides a summary of availability across one or more surveillance c
 * Percent Availability (per unit in category)
 //QUESTION: Need to validate explanation of the last two
 
-This report has a pie chart showing percent available time to outage time.  It can be customized with a company logo in the header that is approximately 195px by 50px.
+This report has a pie chart showing percent available time to outage time.
+It can be customized with a company logo in the header that is approximately 195px by 50px.
 
 == Parameters
 
@@ -28,7 +30,8 @@ This report has a pie chart showing percent available time to outage time.  It c
 
 | Surveillance Category
 | String
-| Identify the category of data for this availability report. Standard values include: "Routers", "Switches", "Servers", "Production", "Test" and "Development".  Users can add custom categories. If no categories match the entered string, the report will have not data.
+| Identify a category to filter nodes to be included in the report. 
+If no categories match the entered string, the report will not have data.
 | %
 //COMMENT: This default should be changed to "Routers" like the default in the Availability report.
 //COMMENT: Would it be possible to get the list of existing categories and put it into a dropdown?  That might also allow multiple categories to be selected

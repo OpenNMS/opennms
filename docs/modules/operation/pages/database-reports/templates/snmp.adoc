@@ -1,7 +1,7 @@
 [[snmp-report]]
 = SNMP Interface Availability Report
 
-=== Report Contents
+== Report Contents
 
 This report provides the following availability data for SNMP interfaces (by IP address) over the specified date range:
 
@@ -55,7 +55,7 @@ This report can be customized with a company logo in the header and footer that 
 | Check the box to deliver the report via email upon report creation
 | Unchecked
 
-| Schedule the Rport
+| Schedule the Report
 | Checkbox
 | Check this box to create a schedule for the report
 | Unchecked
