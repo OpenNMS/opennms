@@ -34,7 +34,7 @@ echo "#### Making sure git is up-to-date"
 git fetch --all
 
 echo "#### Generate project structure .json"
-./compile.pl -s .circleci/scripts/structure-settings.xml --batch-mode --fail-at-end --legacy-local-repository -Prun-expensive-tasks -Pbuild-bamboo org.opennms.maven.plugins:structure-maven-plugin:1.0:structure
+./compile.pl -s .circleci/scripts/structure-settings.xml --batch-mode --fail-at-end -Prun-expensive-tasks -Pbuild-bamboo org.opennms.maven.plugins:structure-maven-plugin:1.0:structure
 
 echo "#### Determining tests to run"
 cd ~/project
@@ -104,8 +104,18 @@ export MAVEN_OPTS="$MAVEN_OPTS -Xmx8g -XX:ReservedCodeCacheSize=1g"
 # shellcheck disable=SC3045
 ulimit -n 65536
 
+MAVEN_ARGS="install"
+
+case "${CIRCLE_BRANCH}" in
+  "master"*|"release-"*|develop)
+    MAVEN_ARGS="-Dbuild.type=production $MAVEN_ARGS"
+  ;;
+esac
+
 echo "#### Building Assembly Dependencies"
-./compile.pl install -P'!checkstyle' \
+./compile.pl $MAVEN_ARGS \
+           -P'!checkstyle' \
+           -P'!production' \
            -Pbuild-bamboo \
            -DupdatePolicy=never \
            -Dbuild.skip.tarball=true \
@@ -120,7 +130,9 @@ echo "#### Building Assembly Dependencies"
            --projects "$(< /tmp/this_node_projects paste -s -d, -)"
 
 echo "#### Executing tests"
-./compile.pl install -P'!checkstyle' \
+./compile.pl $MAVEN_ARGS \
+           -P'!checkstyle' \
+           -P'!production' \
            -Pbuild-bamboo \
            -DupdatePolicy=never \
            -Dbuild.skip.tarball=true \
