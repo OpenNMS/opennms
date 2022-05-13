@@ -32,12 +32,13 @@
     <div>
       <p class="pb-xl">
         Thread pool sizes impact the performance of the provisioning subsystem. Larger systems may require larger
-        values. To adjust them, select a value from the drop-down list.
+        values. To adjust them, type a new number in the field or use the up/down arrows to select a value.
       </p>
       <FeatherInput
         :error="getError('importThreads')"
         type="number"
         label="Import"
+        hint="Maximum number of concurrent Java threads to use to import data."
         v-model="threadPoolData.importThreads"
         @keypress="enterCheck"
       />
@@ -45,6 +46,7 @@
         :error="getError('scanThreads')"
         type="number"
         label="Scan"
+        hint="Maximum number of concurrent Java threads to use for a scan."
         v-model="threadPoolData.scanThreads"
         @keypress="enterCheck"
       />
@@ -52,13 +54,16 @@
         :error="getError('rescanThreads')"
         type="number"
         label="Rescan"
+        hint="Maximum number of concurrent Java threads to use for a rescan."
         v-model="threadPoolData.rescanThreads"
         @keypress="enterCheck"
       />
       <FeatherInput
+        class="last-input"
         :error="getError('writeThreads')"
         type="number"
         label="Write"
+        hint="Maximum number of Java threads to use for writing to the database."
         v-model="threadPoolData.writeThreads"
         @keypress="enterCheck"
       />
@@ -242,6 +247,9 @@ const getError = (key: string) => {
 .title-flex {
   display: flex;
   align-items: center;
+}
+.last-input {
+  margin-bottom: 10px;
 }
 </style>
 
