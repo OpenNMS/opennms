@@ -610,9 +610,9 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.integration.api.sample</groupId>
-      <artifactId>sample-project</artifactId>
-      <version>${opennmsApiVersion}</version>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>oia-dependencies</artifactId>
+      <type>pom</type>
       <scope>provided</scope>
     </dependency>
     <dependency>
