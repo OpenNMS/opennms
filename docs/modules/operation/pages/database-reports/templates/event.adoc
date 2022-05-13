@@ -38,7 +38,7 @@ This report can be customized with a company logo in the header that is approxim
 | URL for embedded links
 | URL
 | This URL base for OpenNMS embedded links will be used for all links to OpenNMS data in this report.
-| http://localhost:8980/opennms
+| \http://hostname:8980/opennms
 // COMMENT: Might be nice to get some other sample values.  Not sure what typical configurations look like (e.g., is "localhost" the only thing that changes or can this be configured on another port).
 
 | Report Format
