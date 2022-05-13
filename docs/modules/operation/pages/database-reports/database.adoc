@@ -32,7 +32,7 @@ For more details on how JasperReports works, please refer to the Jaspersoft Stud
 
 == Using existing reports
 
-OpenNMS provides the following sample report templates, located in `$OPENNMS_HOME/etc/report-templates`, which you can customize to suit your needs:
+OpenNMS provides the following sample report templates, located in `$\{OPENNMS_HOME}/etc/report-templates`, which you can customize to suit your needs:
 
 
 [options="header, autowidth"]
