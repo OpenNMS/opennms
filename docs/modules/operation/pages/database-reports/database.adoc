@@ -67,7 +67,7 @@ OpenNMS provides the following sample report templates, located in `$OPENNMS_HOM
 | Create Report from Grafana Dashboard, 3 options are provided.
 // ToDo: Get more detail on reports, find out why helper file with zoneid is not work; check to see if zoneid is depracated.
 
-| xref:operation:database-reports/templates/interface-avail.adoc#interface-avail-report[Interface Availability]
+| xref:operation:database-reports/templates/interface-avail.adoc[Interface Availability]
 | Status
 | Shows the availability of interfaces with outages within a time range.
 
