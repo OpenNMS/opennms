@@ -183,7 +183,7 @@ commands:
                 -Pbuild-bamboo \
                 -Prun-expensive-tasks \
                 -Psmoke \
-                --legacy-local-repository \
+                -Denable.license=true \
                 --batch-mode \
                 dependency:resolve-plugins \
                 de.qaware.maven:go-offline-maven-plugin:resolve-dependencies
@@ -334,11 +334,12 @@ commands:
             ./clean.pl
             << parameters.node-memory >>
             export MAVEN_OPTS="$MAVEN_OPTS -Xmx8g -XX:ReservedCodeCacheSize=1g"
-            MAVEN_TARGETS="install"
+            MAVEN_ARGS="install"
             case "${CIRCLE_BRANCH}" in
-              "master-"*|"release-"*|develop|jira/NMS-13820)
+              "master"*|"release-"*|develop)
+                # release branches get full javadoc
                 mkdir -p target/artifacts
-                MAVEN_TARGETS="$MAVEN_TARGETS javadoc:aggregate"
+                MAVEN_ARGS="-Dbuild.type=production $MAVEN_ARGS javadoc:aggregate"
                 ;;
             esac
             ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
@@ -351,7 +352,7 @@ commands:
               -Prun-expensive-tasks \
               -Psmoke \
               --batch-mode \
-              $MAVEN_TARGETS
+              $MAVEN_ARGS
             if [ -d target/site/apidocs ]; then
               pushd target/site/apidocs
                 tar -czf "../../artifacts/opennms-${OPENNMS_VERSION}-javadoc.tar.gz" *
@@ -1099,8 +1100,13 @@ jobs:
           name: Assemble tarballs and related artifacts
           command: |
             export MAVEN_OPTS="-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
-            # general assembly
-            date
+            export MAVEN_ARGS="install"
+            case "${CIRCLE_BRANCH}" in
+              "master"*|"release-"*|develop)
+                # release branches should enable extra "production" stuff like license indexing
+                MAVEN_ARGS="-Dbuild.type=production $MAVEN_ARGS"
+                ;;
+            esac
             ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
               -DupdatePolicy=never \
               -Daether.connector.resumeDownloads=false \
@@ -1111,7 +1117,8 @@ jobs:
               -Pbuild-bamboo \
               -Prun-expensive-tasks \
               -Dopennms.home=/opt/opennms \
-              install --batch-mode
+              --batch-mode \
+              $MAVEN_ARGS
       - run:
           name: Build Minion OCI
           command: |
