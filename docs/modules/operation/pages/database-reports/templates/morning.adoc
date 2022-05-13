@@ -19,7 +19,9 @@ It includes a pie chart and table showing the number of notifications by the med
 
 // QUESTION: I am not sure what "media type"
 
-The fifth section provides and overview of events over the last 24 hours.  The first stacked bar chart shows the types of events in each hour.  The second stacked bar chart shoes the top 20 nodes with events and includes all events acknowledged and unacknowledged.
+The fifth section provides and overview of events over the last 24 hours.
+The first stacked bar chart shows the types of events in each hour.
+The second stacked bar chart shoes the top 20 nodes with events and includes all events acknowledged and unacknowledged.
 // QUESTION:  It is not clear what the stacks are, nor is it clear how the second stacked bar chart is different from the first.
 
 This report can be customized with a company logo in the page header that is approximately 195px by 50 px.
