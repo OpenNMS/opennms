@@ -2,7 +2,8 @@
 = Maintenance Contracts Strategy Report
 
 == Report Contents
-This assessment management report is designed to assist in creating and reviewing a network management maintenance strategy.  This report has a pie chart showing the number of assets in the various contract state (e.g., active contract, expired contract, no contract, etc.)
+This assessment management report is designed to assist in creating and reviewing a network management maintenance strategy.
+This report has a pie chart showing the number of assets in the various contract state (for example, active contract, expired contract, no contract, etc.)
 //QUESTION: confirm these are the correct slices.  It is not clear from the SQL query.  I think there are only three states but the sample pie chart shows five slices.
 
 The next chart is a stacked bar chart and groups the assets by their age and shows the number of assets in each age group that have an active contract, an expired contract or no contract.
