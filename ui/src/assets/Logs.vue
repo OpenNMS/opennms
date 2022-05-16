@@ -11,6 +11,6 @@ import Logs from './Logs.svg'
 <style scoped lang="scss">
 @import "@featherds/styles/themes/variables";
 .logs {
-  color: var($secondary-text-on-surface) !important;
+  color: var($secondary-text-on-surface);
 }
 </style>
