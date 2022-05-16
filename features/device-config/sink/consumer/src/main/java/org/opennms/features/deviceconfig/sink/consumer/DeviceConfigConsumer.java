@@ -93,9 +93,8 @@ public class DeviceConfigConsumer implements MessageConsumer<DeviceConfigSinkDTO
                 deviceConfigDao.updateDeviceConfigContent(
                         ipInterface,
                         null,
-                        // use default ConfigType for now
-                        // -> later on the config type may be derived from the filename somehow...
-                        ConfigType.Default,
+                        // use config type sink for configs that are pushed from Device.
+                        ConfigType.Sink,
                         null,
                         content,
                         message.fileName

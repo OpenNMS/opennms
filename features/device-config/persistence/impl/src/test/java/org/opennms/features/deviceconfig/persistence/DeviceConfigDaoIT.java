@@ -30,7 +30,6 @@ package org.opennms.features.deviceconfig.persistence;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -55,7 +54,6 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -122,7 +120,7 @@ public class DeviceConfigDaoIT {
     public void testFetchDeviceConfigSortedByDate() {
         populateIpInterface();
         final int count = 10;
-        populateDeviceConfigs(count, ipInterface);
+        populateDeviceConfigs(count, ipInterface, "DeviceConfig-default");
 
         List<DeviceConfig> deviceConfigList = deviceConfigDao.findAll();
         Assert.assertEquals(count, deviceConfigList.size());
@@ -159,7 +157,7 @@ public class DeviceConfigDaoIT {
     public void testGetLatestConfigOnEachInterface() {
         Set<OnmsIpInterface> ipInterfaces = populateIpInterfaces();
         int count = 10;
-        ipInterfaces.forEach(ipInterface -> populateDeviceConfigs(count, ipInterface));
+        ipInterfaces.forEach(ipInterface -> populateDeviceConfigs(count, ipInterface, "DeviceConfig-default"));
         List<DeviceConfigQueryResult> results = deviceConfigDao.getLatestConfigForEachInterface(null,
                 null, null, null, null, null);
         Assert.assertThat(results, Matchers.hasSize(5));
@@ -192,15 +190,32 @@ public class DeviceConfigDaoIT {
         Assert.assertThat(results.get(0).getFailureReason(), Matchers.notNullValue());
     }
 
-    private void populateDeviceConfigs(int count, OnmsIpInterface ipInterface) {
+    @Test
+    public void testDeviceConfigsWithoutServiceName() {
+        populateIpInterface();
+        int count = 1;
+        String serviceName = "DeviceConfig-running";
+        populateDeviceConfigs(count, ipInterface, null);
+        populateDeviceConfigs(count, ipInterface, serviceName);
+        Optional<DeviceConfig> deviceConfigOptional = deviceConfigDao.getLatestConfigForInterface(ipInterface, null);
+        Assert.assertFalse(deviceConfigOptional.isEmpty());
+        Assert.assertThat(deviceConfigOptional.get().getServiceName(), Matchers.nullValue());
+        deviceConfigOptional = deviceConfigDao.getLatestConfigForInterface(ipInterface, serviceName);
+        Assert.assertFalse(deviceConfigOptional.isEmpty());
+        Assert.assertThat(deviceConfigOptional.get().getServiceName(), Matchers.is(serviceName));
+    }
+    
+
+    private void populateDeviceConfigs(int count, OnmsIpInterface ipInterface, String serviceName) {
         for (int i = 0; i < count; i++) {
             DeviceConfig deviceConfig = new DeviceConfig();
             deviceConfig.setIpInterface(ipInterface);
-            deviceConfig.setServiceName("DeviceConfig-default");
+            deviceConfig.setServiceName(serviceName);
             deviceConfig.setConfig((ipInterface.getInterfaceId() + ":" + i).getBytes(Charset.defaultCharset()));
             deviceConfig.setEncoding(Charset.defaultCharset().name());
             deviceConfig.setCreatedTime(Date.from(Instant.now().plusSeconds(i * 60)));
-            deviceConfig.setConfigType(ConfigType.Default);
+            String configType = serviceName.substring(serviceName.lastIndexOf("-") +1);
+            deviceConfig.setConfigType(configType);
             deviceConfig.setLastUpdated(Date.from(Instant.now().plusSeconds(i * 60)));
             deviceConfig.setLastSucceeded(deviceConfig.getLastUpdated());
             deviceConfig.setStatus(DeviceConfig.determineBackupStatus(deviceConfig));
