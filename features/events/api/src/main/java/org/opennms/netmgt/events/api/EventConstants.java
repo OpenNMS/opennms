@@ -545,9 +545,9 @@ public abstract class EventConstants {
     public static final String PARAM_MONITORING_SYSTEM_PREV_LOCATION = "monitoringSystemPreviousLocation";
 
     public static final String PARAM_TOPOLOGY_NAMESPACE = "namespace";
-
-    public static final String DEVICE_CONFIG_RETRIEVAL_FAILED_UEI = "uei.opennms.org/deviceconfig/configRetrievalFailed";
-    public static final String DEVICE_CONFIG_RETRIEVAL_SUCCEEDED_UEI = "uei.opennms.org/deviceconfig/configRetrievalSucceeded";
+    public static final String DEVICE_CONFIG_BACKUP_STARTED_UEI = "uei.opennms.org/deviceconfig/configBackupStarted";
+    public static final String DEVICE_CONFIG_BACKUP_FAILED_UEI = "uei.opennms.org/deviceconfig/configBackupFailed";
+    public static final String DEVICE_CONFIG_BACKUP_SUCCEEDED_UEI = "uei.opennms.org/deviceconfig/configBackupSucceeded";
     //
     // end eventUEIs
     //
@@ -1071,6 +1071,14 @@ public abstract class EventConstants {
 
     /** Constant <code>OID_SNMP_IFINDEX</code> */
     public static final SnmpObjId OID_SNMP_IFINDEX = SnmpObjId.get(".1.3.6.1.2.1.2.2.1.1");
+
+    //
+    // For DCB
+    //
+    public static final String PARM_DEVICE_CONFIG_BACKUP_START_TIME = "backupStartTime";
+    public static final String PARM_DEVICE_CONFIG_BACKUP_CONTROL_PROTOCOL = "backupControlProtocol";
+    public static final String PARM_DEVICE_CONFIG_BACKUP_DATA_PROTOCOL = "backupDataProtocol";
+    public static final String PARM_DEVICE_CONFIG_BACKUP_REASON = "reason";
 
     /**
      * An utility method to parse a string into a 'Date' instance. Note that the

@@ -46,9 +46,11 @@ import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.features.deviceconfig.persistence.api.ConfigType;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
 import org.opennms.features.deviceconfig.retrieval.api.Retriever;
+import org.opennms.features.deviceconfig.retrieval.api.Retriever.Protocol;
 import org.opennms.features.deviceconfig.service.DeviceConfigConstants;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.poller.DeviceConfig;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -150,6 +152,9 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
             status.setDeviceConfig(new DeviceConfig());
             return status;
         }
+        parameters.put(EventConstants.PARM_DEVICE_CONFIG_BACKUP_START_TIME, System.currentTimeMillis());
+        parameters.put(EventConstants.PARM_DEVICE_CONFIG_BACKUP_DATA_PROTOCOL, Protocol.TFTP);
+        
         String script = getObjectAsStringFromParams(parameters, SCRIPT);
         String user = getObjectAsStringFromParams(parameters, USERNAME);
         String password = getObjectAsStringFromParams(parameters, PASSWORD);

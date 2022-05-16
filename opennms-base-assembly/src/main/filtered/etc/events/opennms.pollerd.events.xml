@@ -555,27 +555,38 @@
       <severity>Normal</severity>
    </event>
     <event>
-        <uei>uei.opennms.org/deviceconfig/configRetrievalFailed</uei>
-        <event-label>OpenNMS-defined node event: configRetrievalFailed</event-label>
-        <descr>&lt;p>Failed to retrieve config associated with %service%
+        <uei>uei.opennms.org/deviceconfig/configBackupStarted</uei>
+        <event-label>OpenNMS-defined node event: configBackupStarted</event-label>
+        <descr>&lt;p>Config backup started no %service%
+            during the last poll on interface %interface%.&lt;/p></descr>
+        <logmsg dest="logndisplay">
+            %service% config backup started on interface %interface%.
+        </logmsg>
+        <severity>Minor</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" alarm-type="3" auto-clean="true"/>
+    </event>
+    <event>
+        <uei>uei.opennms.org/deviceconfig/configBackupFailed</uei>
+        <event-label>OpenNMS-defined node event: configBackupFailed</event-label>
+        <descr>&lt;p>Failed to backup config associated with %service%
             during the last poll on interface %interface% because of
             the following condition: %parm[eventReason]%.&lt;/p></descr>
         <logmsg dest="logndisplay">
-            %service% config retrieval failed on interface %interface%.
+            %service% config backup failed on interface %interface%.
         </logmsg>
         <severity>Minor</severity>
         <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" alarm-type="1" auto-clean="false"/>
     </event>
     <event>
-        <uei>uei.opennms.org/deviceconfig/configRetrievalSucceeded</uei>
-        <event-label>OpenNMS-defined node event: configRetrievalSucceeded</event-label>
-        <descr>&lt;p>Config retrieval succeeded on %service%
+        <uei>uei.opennms.org/deviceconfig/configBackupSucceeded</uei>
+        <event-label>OpenNMS-defined node event: configBackupSucceeded</event-label>
+        <descr>&lt;p>Config backup succeeded on %service%
             during the last poll on interface %interface%.&lt;/p></descr>
         <logmsg dest="logndisplay">
-            %service% config retrieval succeeded on interface %interface%.
+            %service% config backup succeeded on interface %interface%.
         </logmsg>
         <severity>Normal</severity>
         <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" alarm-type="2"
-                    clear-key="uei.opennms.org/deviceconfig/configRetrievalFailed:%dpname%:%nodeid%:%interface%:%service%" auto-clean="false"/>
+                    clear-key="uei.opennms.org/deviceconfig/configBackupFailed:%dpname%:%nodeid%:%interface%:%service%" auto-clean="false"/>
     </event>
 </events>

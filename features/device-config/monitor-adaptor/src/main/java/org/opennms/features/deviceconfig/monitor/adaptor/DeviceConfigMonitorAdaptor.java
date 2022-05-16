@@ -69,6 +69,7 @@ import java.net.InetAddress;
 
 import static org.opennms.netmgt.events.api.EventConstants.PARM_IPINTERFACE_ID;
 import static org.opennms.netmgt.events.api.EventConstants.PARM_LOSTSERVICE_REASON;
+import static org.opennms.netmgt.poller.support.AbstractServiceMonitor.getKeyedString;
 
 @EventListener(name = "OpenNMS.DeviceConfig", logPrefix = "poller")
 public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
@@ -98,13 +99,28 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
         if (deviceConfig == null && !svc.getSvcName().startsWith(DEVICE_CONFIG_SVC_NAME)) {
             return status;
         }
+
         // Retrieve interface
         final OnmsIpInterface ipInterface = ipInterfaceDao.findByNodeIdAndIpAddress(svc.getNodeId(), svc.getIpAddr());
 
+        // why did backup happen?
+        boolean triggered = Boolean.parseBoolean(getKeyedString(parameters, DeviceConfigConstants.TRIGGERED_POLL, "false"));
+        String reason = triggered ? DeviceConfigConstants.API_REQUEST : DeviceConfigConstants.SCHEDULED_BACKUP;
+        String controlProtocol = triggered ? DeviceConfigConstants.REST : DeviceConfigConstants.CRON;
+        String dataProtocol = getKeyedString(parameters, EventConstants.PARM_DEVICE_CONFIG_BACKUP_DATA_PROTOCOL, "TFTP");
+        long timestamp = Long.parseLong(getKeyedString(parameters, EventConstants.PARM_DEVICE_CONFIG_BACKUP_START_TIME, "0"));
+
+        // send 'started' event with adjusted time stamp
+        sendEvent(ipInterface, svc.getSvcName(), EventConstants.DEVICE_CONFIG_BACKUP_STARTED_UEI, svc.getNodeId(), timestamp, Map.of(
+                EventConstants.PARM_DEVICE_CONFIG_BACKUP_REASON, reason,
+                EventConstants.PARM_DEVICE_CONFIG_BACKUP_CONTROL_PROTOCOL, controlProtocol,
+                EventConstants.PARM_DEVICE_CONFIG_BACKUP_DATA_PROTOCOL, dataProtocol
+        ));
+
         var latestConfig = deviceConfigDao.getLatestConfigForInterface(ipInterface, svc.getSvcName());
 
-        String encodingAttribute = getObjectAsString(parameters.get("encoding"));
-        String configTypeAttribute = getObjectAsString(parameters.get(DeviceConfigConstants.CONFIG_TYPE));
+        String encodingAttribute = getKeyedString(parameters, "encoding", null);
+        String configTypeAttribute = getKeyedString(parameters, DeviceConfigConstants.CONFIG_TYPE, null);
         String encoding = !Strings.isNullOrEmpty(encodingAttribute) ? encodingAttribute : Charset.defaultCharset().name();
         String configType = !Strings.isNullOrEmpty(configTypeAttribute) ? configTypeAttribute : ConfigType.Default;
 
@@ -133,7 +149,9 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
                     configType,
                     encoding,
                     status.getReason());
-            sendEvent(ipInterface, svc.getSvcName(), EventConstants.DEVICE_CONFIG_RETRIEVAL_FAILED_UEI, status.getReason());
+            sendEvent(ipInterface, svc.getSvcName(), EventConstants.DEVICE_CONFIG_BACKUP_FAILED_UEI, svc.getNodeId(), Map.of(
+                    PARM_LOSTSERVICE_REASON, status.getReason()
+            ));
         } else {
             // Config retrieval succeeded
             // De-compress if content is compressed.
@@ -153,7 +171,7 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
                 encoding,
                 content,
                 deviceConfig.getFilename());
-            sendEvent(ipInterface, svc.getSvcName(), EventConstants.DEVICE_CONFIG_RETRIEVAL_SUCCEEDED_UEI);
+            sendEvent(ipInterface, svc.getSvcName(), EventConstants.DEVICE_CONFIG_BACKUP_SUCCEEDED_UEI, svc.getNodeId(), Map.of());
 
             // if no record previously existed, don't need to call cleanup since
             // we just added the first record
@@ -211,7 +229,7 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
     private void cleanupStaleConfigs(Map<String, Object> parameters, OnmsIpInterface ipInterface, String serviceName,
                                      Optional<Long> excludedId) {
         final Date currentDate = new Date();
-        final String retentionPeriodPattern = getObjectAsString(parameters.get(DeviceConfigConstants.RETENTION_PERIOD));
+        final String retentionPeriodPattern = getKeyedString(parameters, DeviceConfigConstants.RETENTION_PERIOD, null);
         final Period retentionPeriod = getRetentionPeriodOrDefault(retentionPeriodPattern);
         final Date retentionDate = Date.from(currentDate.toInstant().atZone(ZoneId.systemDefault()).minus(retentionPeriod).toInstant());
 
@@ -234,27 +252,6 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
         return DEFAULT_RETENTION_PERIOD;
     }
 
-    private void sendEvent(OnmsIpInterface ipInterface, String serviceName, String uei, String reason) {
-        EventBuilder bldr = new EventBuilder(uei, "poller");
-        bldr.setIpInterface(ipInterface);
-        bldr.setService(serviceName);
-        if (!Strings.isNullOrEmpty(reason)) {
-            bldr.addParam(PARM_LOSTSERVICE_REASON, reason);
-        }
-        eventForwarder.sendNowSync(bldr.getEvent());
-    }
-
-    private String getObjectAsString(Object object) {
-        if (object instanceof String) {
-            return (String) object;
-        }
-        return null;
-    }
-
-    private void sendEvent(OnmsIpInterface ipInterface, String serviceName, String uei) {
-        sendEvent(ipInterface, serviceName, uei, null);
-    }
-
     public void setDeviceConfigDao(DeviceConfigDao deviceConfigDao) {
         this.deviceConfigDao = deviceConfigDao;
     }
@@ -265,5 +262,21 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
 
     public void setEventForwarder(EventForwarder eventForwarder) {
         this.eventForwarder = eventForwarder;
+    }
+
+    private void sendEvent(OnmsIpInterface ipInterface, String serviceName, String uei, int nodeId, Map<String, String> params) {
+        this.sendEvent(ipInterface, serviceName, uei, nodeId, 0L, params);
+    }
+
+    private void sendEvent(OnmsIpInterface ipInterface, String serviceName, String uei, int nodeId, long timestamp, Map<String, String> params) {
+        EventBuilder bldr = new EventBuilder(uei, "poller");
+        bldr.setIpInterface(ipInterface);
+        bldr.setService(serviceName);
+        bldr.setNodeid(nodeId);
+        if (timestamp > 0) {
+            bldr.setTime(new Date(timestamp));
+        }
+        params.forEach(bldr::addParam);
+        eventForwarder.sendNowSync(bldr.getEvent());
     }
 }

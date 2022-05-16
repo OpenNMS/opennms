@@ -35,4 +35,8 @@ public interface DeviceConfigConstants {
     static final String DEFAULT_CRON_SCHEDULE = "0 0 0 * * ?";
     static final String NEVER = "never";
     static final String RETENTION_PERIOD = "retention-period";
+    static final String SCHEDULED_BACKUP = "scheduled backup";
+    static final String API_REQUEST = "API request";
+    static final String REST = "REST";
+    static final String CRON = "cron";
 }
