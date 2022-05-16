@@ -1,20 +1,16 @@
 <template>
-  <div class="speed">
-    <Speed />
+  <div class="endpoints">
+    <Endpoints />
   </div>
 </template>
 
 <script setup lang=ts>
-import Speed from './speed.svg'
+import Endpoints from './Endpoints.svg'
 </script>
 
 <style scoped lang="scss">
 @import "@featherds/styles/themes/variables";
-.speed {
-  color: var($primary);
-
-  svg {
-    margin-bottom: -2px;
-  }
+.endpoints {
+  color: var($secondary-text-on-surface);
 }
 </style>
