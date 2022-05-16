@@ -214,8 +214,12 @@ public class DeviceConfigDaoIT {
             deviceConfig.setConfig((ipInterface.getInterfaceId() + ":" + i).getBytes(Charset.defaultCharset()));
             deviceConfig.setEncoding(Charset.defaultCharset().name());
             deviceConfig.setCreatedTime(Date.from(Instant.now().plusSeconds(i * 60)));
-            String configType = serviceName.substring(serviceName.lastIndexOf("-") +1);
-            deviceConfig.setConfigType(configType);
+            if (serviceName != null) {
+                String configType = serviceName.substring(serviceName.lastIndexOf("-") + 1);
+                deviceConfig.setConfigType(configType);
+            } else {
+                deviceConfig.setConfigType(ConfigType.Default);
+            }
             deviceConfig.setLastUpdated(Date.from(Instant.now().plusSeconds(i * 60)));
             deviceConfig.setLastSucceeded(deviceConfig.getLastUpdated());
             deviceConfig.setStatus(DeviceConfig.determineBackupStatus(deviceConfig));
