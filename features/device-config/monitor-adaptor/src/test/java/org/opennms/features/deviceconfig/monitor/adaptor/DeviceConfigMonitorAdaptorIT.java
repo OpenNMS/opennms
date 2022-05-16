@@ -153,26 +153,37 @@ public class DeviceConfigMonitorAdaptorIT {
         String failureReason = "Failed to connect to SSHServer";
         Mockito.when(pollStatus.getDeviceConfig()).thenReturn(new org.opennms.netmgt.poller.DeviceConfig());
         Mockito.when(pollStatus.getReason()).thenReturn(failureReason);
+        EventBuilder builder = new EventBuilder(EventConstants.DEVICE_CONFIG_RETRIEVAL_FAILED_UEI, "poller");
+        builder.addParam(EventConstants.PARM_LOSTSERVICE_REASON, failureReason);
+        builder.setInterface(ipInterface.getIpAddress());
+        builder.setNodeid(ipInterface.getNodeId());
+        builder.setService(DEFAULT_SERVICE_NAME);
+        eventIpcManager.getEventAnticipator().anticipateEvent(builder.getEvent());
         deviceConfigAdaptor.handlePollResult(service, attributes, pollStatus);
+        // Verify that event for config failure was sent.
+        eventIpcManager.getEventAnticipator().verifyAnticipated();
         Optional<DeviceConfig> configOnMonday = deviceConfigDao.getLatestConfigForInterface(ipInterface, DEFAULT_SERVICE_NAME);
         Assert.assertTrue(configOnMonday.isPresent());
         Assert.assertNull(configOnMonday.get().getConfig());
         Assert.assertEquals(configOnMonday.get().getLastFailed(), configOnMonday.get().getLastUpdated());
         Assert.assertNull(configOnMonday.get().getCreatedTime());
         Assert.assertNull(configOnMonday.get().getLastSucceeded());
-        EventBuilder builder = new EventBuilder(EventConstants.DEVICE_CONFIG_RETRIEVAL_FAILED_UEI, "poller");
-        builder.addParam(EventConstants.PARM_LOSTSERVICE_REASON, failureReason);
-        eventIpcManager.getEventAnticipator().anticipateEvent(builder.getEvent());
 
         // Send valid config (Scenario 2)
         byte[] configInBytes = config.getBytes(StandardCharsets.UTF_16);
         var fileName = "fileName";
         var deviceConfig = new org.opennms.netmgt.poller.DeviceConfig(configInBytes, fileName);
         Mockito.when(pollStatus.getDeviceConfig()).thenReturn(deviceConfig);
+
+        builder = new EventBuilder(EventConstants.DEVICE_CONFIG_RETRIEVAL_SUCCEEDED_UEI, "poller");
+        builder.setInterface(ipInterface.getIpAddress());
+        builder.setNodeid(ipInterface.getNodeId());
+        builder.setService(DEFAULT_SERVICE_NAME);
+        eventIpcManager.getEventAnticipator().anticipateEvent(builder.getEvent());
         // Send pollStatus with config to adaptor.
         deviceConfigAdaptor.handlePollResult(service, attributes, pollStatus);
-        builder = new EventBuilder(EventConstants.DEVICE_CONFIG_RETRIEVAL_SUCCEEDED_UEI, "poller");
-        eventIpcManager.getEventAnticipator().anticipateEvent(builder.getEvent());
+        // Verify that event for config success was sent.
+        eventIpcManager.getEventAnticipator().verifyAnticipated();
 
         Optional<DeviceConfig> configOnTuesday = deviceConfigDao.getLatestConfigForInterface(ipInterface, DEFAULT_SERVICE_NAME);
         Assert.assertTrue(configOnTuesday.isPresent());
