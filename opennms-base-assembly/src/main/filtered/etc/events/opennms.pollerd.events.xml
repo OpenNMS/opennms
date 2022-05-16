@@ -558,7 +558,8 @@
         <uei>uei.opennms.org/deviceconfig/configRetrievalFailed</uei>
         <event-label>OpenNMS-defined node event: configRetrievalFailed</event-label>
         <descr>&lt;p>Failed to retrieve config associated with %service%
-            during the last poll on interface %interface%.&lt;/p></descr>
+            during the last poll on interface %interface% because of
+            the following condition: %parm[eventReason]%.&lt;/p></descr>
         <logmsg dest="logndisplay">
             %service% config retrieval failed on interface %interface%.
         </logmsg>
