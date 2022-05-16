@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public interface DeviceConfigService {
+    public static final String DEVICE_CONFIG_PREFIX = "DeviceConfig";
 
     /**
      *   Trigger device config backup for the given ipAddress at given location.
