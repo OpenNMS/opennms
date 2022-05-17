@@ -37,7 +37,7 @@ import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.features.scv.api.Credentials;
 import org.opennms.features.scv.api.SecureCredentialsVault;
 
-@Command(scope = "opennms", name = "scv-validate", description = "validate the username and attributes for the given alias.")
+@Command(scope = "opennms", name = "scv-validate", description = "validate credentials for the given alias.")
 @Service
 public class ScvValidateCommand implements Action {
 
