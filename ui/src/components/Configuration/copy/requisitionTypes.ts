@@ -52,20 +52,14 @@ export const SplitTypes = {
 }
 
 export const ErrorStrings = {
-  DuplicateName: 'Name must be unique',
-  TypeError: 'Must select a type',
-  OccuranceTime: 'Must schedule a time',
-  OccuranceWeekTime: 'Must select a day of the week',
-  OccuranceDayTime: 'Must select a day of the month',
+  DuplicateName: 'Name must be unique.',
   QuartzFormatSupportError: 'Error: Expression has only 5 parts. At least 6 parts are required.',
   InvalidHostname: 'Invalid hostname',
-  FilePath: 'Must include a file path',
-  FilePathStart: 'Path must start with a /',
-  MustHave: (nameType: string) => `Must have a ${nameType.toLocaleLowerCase()}`,
-  NameShort: (nameType: string) => `${nameType} must have at least two chars`,
-  NameLong: (nameType: string, length = 255) => `${nameType} must be shorter than ${length}`,
-  Password: 'Must include a password',
-  Username: 'Must include a username'
+  FilePathStart: 'Path must start with a /.',
+  FilePathWithQueryChar: 'Path contains invalid character: ?.',
+  Required: (nameType: string) => `${nameType} required.`,
+  NameShort: (nameType: string) => `${nameType} must have at least two chars.`,
+  NameLong: (nameType: string, length = 255) => `${nameType} must be shorter than ${length}.`
 }
 
 export const requisitionTypeList = [

@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils'
 import store from '@/store'
 import { ConfigurationHelper } from '../src/components/Configuration/ConfigurationHelper'
-import { RequisitionTypes, RequisitionData, ErrorStrings } from '../src/components/Configuration/copy/requisitionTypes'
+import { RequisitionTypes, RequisitionData, ErrorStrings, VMWareFields } from '../src/components/Configuration/copy/requisitionTypes'
 import { test, expect } from 'vitest'
 import { LocalConfiguration, ProvisionDServerConfiguration } from '@/components/Configuration/configuration.types'
 import ConfigurationTable from '@/components/Configuration/ConfigurationTable.vue'
@@ -177,7 +177,7 @@ test('Display appropriate form errors', async () => {
 
   let errors = ConfigurationHelper.validateLocalItem(mockLocalConfig, [], 1, false)
   // expect password input error
-  expect(errors.password).toBe(ErrorStrings.Password)
+  expect(errors.password).toBe(ErrorStrings.Required(VMWareFields.UpperPassword))
   expect(errors.username).toBe('')
 
   // update form props
@@ -186,7 +186,7 @@ test('Display appropriate form errors', async () => {
 
   // expect username input error
   errors = ConfigurationHelper.validateLocalItem(mockLocalConfig, [], 1, false)
-  expect(errors.username).toBe(ErrorStrings.Username)
+  expect(errors.username).toBe(ErrorStrings.Required(VMWareFields.UpperUsername))
   expect(errors.password).toBe('')
 
   // update form props
