@@ -50,7 +50,7 @@
     "leaflet": "^1.8.0",
     "leaflet.markercluster": "^1.5.3",
     "lodash": "^4.17.21",
-    "marked": "^4.0.15",
+    "marked": "^4.0.16",
     "rapidoc": "^9.2.0",
     "sass": "^1.51.0",
     "sass-loader": "^12.6.0",
