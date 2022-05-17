@@ -32,7 +32,6 @@ import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.simple.SimpleConnector;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
-import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 
 public class LinkdEdge extends AbstractEdge implements Edge {
 
@@ -40,8 +39,8 @@ public class LinkdEdge extends AbstractEdge implements Edge {
             LinkdPort sourceport, LinkdPort targetport,
             ProtocolSupported discoveredBy) {
         
-        SimpleConnector source = new SimpleConnector(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD, sourceport.getVertex().getId()+"-"+id+"-connector", sourceport.getVertex());
-        SimpleConnector target = new SimpleConnector(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD, targetport.getVertex().getId()+"-"+id+"-connector", targetport.getVertex());
+        SimpleConnector source = new SimpleConnector(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, sourceport.getVertex().getId()+"-"+id+"-connector", sourceport.getVertex());
+        SimpleConnector target = new SimpleConnector(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, targetport.getVertex().getId()+"-"+id+"-connector", targetport.getVertex());
 
         LinkdEdge edge = new LinkdEdge(id, sourceport, targetport,source, target,discoveredBy);
         
@@ -53,7 +52,7 @@ public class LinkdEdge extends AbstractEdge implements Edge {
     private final ProtocolSupported m_discoveredBy;
     
     public LinkdEdge(String id, LinkdPort source, LinkdPort target, ProtocolSupported discoveredBy) {
-        super(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD, id, source.getVertex(), target.getVertex());
+        super(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, id, source.getVertex(), target.getVertex());
         m_discoveredBy = discoveredBy;
         m_sourcePort = source;
         m_targetPort = target;
@@ -61,7 +60,7 @@ public class LinkdEdge extends AbstractEdge implements Edge {
 
     public LinkdEdge(String id, LinkdPort sourcePort, LinkdPort targetPort, SimpleConnector source,
             SimpleConnector target, ProtocolSupported discoveredBy) {
-        super(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD, id, source, target);
+        super(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, id, source, target);
         m_sourcePort = sourcePort;
         m_targetPort = targetPort;
         m_discoveredBy = discoveredBy;

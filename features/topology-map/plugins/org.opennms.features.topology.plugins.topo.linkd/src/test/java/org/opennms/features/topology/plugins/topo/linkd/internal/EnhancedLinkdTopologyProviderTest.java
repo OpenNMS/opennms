@@ -28,30 +28,14 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import java.util.Collections;
-import java.util.List;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
-import org.opennms.features.topology.api.topo.AbstractVertex;
-import org.opennms.features.topology.api.topo.CollapsibleGraph;
-import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.api.topo.*;
 import org.opennms.features.topology.api.topo.Criteria.ElementType;
-import org.opennms.features.topology.api.topo.DefaultVertexRef;
-import org.opennms.features.topology.api.topo.Defaults;
-import org.opennms.features.topology.api.topo.Edge;
-import org.opennms.features.topology.api.topo.EdgeRef;
-import org.opennms.features.topology.api.topo.Vertex;
-import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.api.topo.simple.SimpleLeafVertex;
 import org.opennms.netmgt.enlinkd.LldpOnmsTopologyUpdater;
 import org.opennms.netmgt.enlinkd.NodesOnmsTopologyUpdater;
@@ -59,11 +43,15 @@ import org.opennms.netmgt.enlinkd.OspfOnmsTopologyUpdater;
 import org.opennms.netmgt.enlinkd.model.LldpLink;
 import org.opennms.netmgt.enlinkd.model.OspfLink;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
-import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.util.Collections;
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -141,7 +129,7 @@ public class EnhancedLinkdTopologyProviderTest {
         assertEquals(1, criteria.size());
         LinkdHopCriteria vertex1criteria = (LinkdHopCriteria)criteria.get(0);
         assertEquals("1",vertex1criteria.getId());
-        assertEquals(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD, vertex1criteria.getNamespace());
+        assertEquals(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, vertex1criteria.getNamespace());
         assertEquals(ElementType.VERTEX, vertex1criteria.getType());
         assertEquals(m_databasePopulator.getNode(1).getLabel(), vertex1criteria.getLabel());
         assertEquals(1, vertex1criteria.getVertices().size());
@@ -150,14 +138,14 @@ public class EnhancedLinkdTopologyProviderTest {
     @Test
     public void testGetIcon() {
         m_topologyProvider.refresh();
-        Vertex vertex1 = m_topologyProvider.getCurrentGraph().getVertex(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD, "1");
-        Vertex vertex2 = m_topologyProvider.getCurrentGraph().getVertex(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD, "2");
-        Vertex vertex3 = m_topologyProvider.getCurrentGraph().getVertex(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD, "3");
-        Vertex vertex4 = m_topologyProvider.getCurrentGraph().getVertex(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD, "4");
-        Vertex vertex5 = m_topologyProvider.getCurrentGraph().getVertex(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD, "5");
-        Vertex vertex6 = m_topologyProvider.getCurrentGraph().getVertex(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD, "6");
-        Vertex vertex7 = m_topologyProvider.getCurrentGraph().getVertex(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD, "7");
-        Vertex vertex8 = m_topologyProvider.getCurrentGraph().getVertex(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD, "8");
+        Vertex vertex1 = m_topologyProvider.getCurrentGraph().getVertex(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, "1");
+        Vertex vertex2 = m_topologyProvider.getCurrentGraph().getVertex(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, "2");
+        Vertex vertex3 = m_topologyProvider.getCurrentGraph().getVertex(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, "3");
+        Vertex vertex4 = m_topologyProvider.getCurrentGraph().getVertex(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, "4");
+        Vertex vertex5 = m_topologyProvider.getCurrentGraph().getVertex(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, "5");
+        Vertex vertex6 = m_topologyProvider.getCurrentGraph().getVertex(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, "6");
+        Vertex vertex7 = m_topologyProvider.getCurrentGraph().getVertex(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, "7");
+        Vertex vertex8 = m_topologyProvider.getCurrentGraph().getVertex(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, "8");
         Assert.assertTrue("linkd.system.snmp.1.3.6.1.4.1.5813.1.25".equals(vertex1.getIconKey()));
         Assert.assertTrue("linkd.system".equals(vertex2.getIconKey()));
         Assert.assertTrue("linkd.system".equals(vertex3.getIconKey()));

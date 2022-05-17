@@ -40,6 +40,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class AbstractTopologyProvider implements GraphProvider {
+
+    public final static String NAMESPACE = "namespace";
+    public final static String ICON_KEY = "iconKey";
+    public final static String LABEL = "label";
+    public final static String NODE_ID = "nodeID";
+    public final static String TOOLTIP_TEXT = "tooltipText";
+    public final static String SOURCE_IFINDEX= "sourceifindex";
+    public final static String TARGET_IFINDEX= "targetifindex";
+    public static final String TOPOLOGY_NAMESPACE_LINKD = "nodes";
+
     private static final Logger LOG = LoggerFactory.getLogger(AbstractTopologyProvider.class);
 
     protected final BackendGraph graph;

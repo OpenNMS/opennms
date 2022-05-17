@@ -28,30 +28,13 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.opennms.features.topology.api.topo.BackendGraph;
-import org.opennms.features.topology.api.topo.CollapsibleGraph;
-import org.opennms.features.topology.api.topo.CollapsibleRef;
-import org.opennms.features.topology.api.topo.CollapsibleVertex;
-import org.opennms.features.topology.api.topo.Criteria;
-import org.opennms.features.topology.api.topo.DefaultStatus;
-import org.opennms.features.topology.api.topo.Status;
-import org.opennms.features.topology.api.topo.StatusProvider;
-import org.opennms.features.topology.api.topo.Vertex;
-import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.api.topo.*;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
-import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.slf4j.LoggerFactory;
+
+import java.util.*;
 
 public class LinkdStatusProvider implements StatusProvider {
 
@@ -63,7 +46,7 @@ public class LinkdStatusProvider implements StatusProvider {
 
     @Override
     public String getNamespace() {
-        return OnmsTopology.TOPOLOGY_NAMESPACE_LINKD;
+        return LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD;
     }
 
     @Override

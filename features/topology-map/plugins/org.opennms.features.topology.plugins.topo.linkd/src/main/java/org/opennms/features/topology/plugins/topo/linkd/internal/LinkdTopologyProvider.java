@@ -28,19 +28,13 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
+import com.google.common.collect.Lists;
 import org.opennms.features.topology.api.browsers.ContentType;
 import org.opennms.features.topology.api.browsers.SelectionAware;
 import org.opennms.features.topology.api.browsers.SelectionChangedListener;
-import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
-import org.opennms.features.topology.api.topo.Defaults;
-import org.opennms.features.topology.api.topo.GraphProvider;
-import org.opennms.features.topology.api.topo.Vertex;
-import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.api.topo.*;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
@@ -48,9 +42,10 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.Timer;
-import com.google.common.collect.Lists;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 public class LinkdTopologyProvider extends AbstractTopologyProvider implements GraphProvider {
 
@@ -71,7 +66,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     private SelectionAware selectionAwareDelegate = new LinkdSelectionAware();
 
     public LinkdTopologyProvider(MetricRegistry registry) {
-        super(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD);
+        super(TOPOLOGY_NAMESPACE_LINKD);
         Objects.requireNonNull(registry);
         m_loadFullTimer = registry.timer(MetricRegistry.name("enlinkd", "load", "full"));
         m_loadLldpLinksTimer = registry.timer(MetricRegistry.name("enlinkd", "load", "links", "lldp"));
@@ -162,7 +157,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         
         final Map<String, LinkdVertex> vmap = new HashMap<>();
         topology.getVertices().stream().forEach(tvertex -> {
-            LinkdVertex vertex = (LinkdVertex) graph.getVertex(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD, tvertex.getId());
+            LinkdVertex vertex = (LinkdVertex) graph.getVertex(TOPOLOGY_NAMESPACE_LINKD, tvertex.getId());
             if (vertex == null) {
                 vertex = LinkdVertex.create(tvertex);
                 graph.addVertices(vertex);
@@ -195,7 +190,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
             return null;
         }
         LOG.info("getDefaultVertex: default node found: [{}]:{}", node.getId(), node.getLabel());
-        final Vertex defaultVertex = graph.getVertex(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD, node.getId());
+        final Vertex defaultVertex = graph.getVertex(TOPOLOGY_NAMESPACE_LINKD, node.getId());
         return defaultVertex;
     }
 

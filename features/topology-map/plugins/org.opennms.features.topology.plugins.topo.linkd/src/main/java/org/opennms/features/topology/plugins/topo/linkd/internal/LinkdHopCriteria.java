@@ -28,14 +28,13 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
-import java.util.Set;
-import java.util.TreeSet;
-
 import org.opennms.features.topology.api.support.hops.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.RefComparator;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.netmgt.topologies.service.api.OnmsTopology;
+
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * 
@@ -59,7 +58,7 @@ public class LinkdHopCriteria extends VertexHopCriteria {
     
     @Override
     public String getNamespace() {
-        return OnmsTopology.TOPOLOGY_NAMESPACE_LINKD;
+        return LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD;
     }
 
     @Override

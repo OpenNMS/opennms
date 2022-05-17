@@ -28,25 +28,16 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
-import java.util.List;
-import java.util.Set;
-
+import com.google.common.collect.Lists;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.support.hops.VertexHopCriteria;
-import org.opennms.features.topology.api.topo.AbstractSearchProvider;
-import org.opennms.features.topology.api.topo.Criteria;
-import org.opennms.features.topology.api.topo.GraphProvider;
-import org.opennms.features.topology.api.topo.SearchProvider;
-import org.opennms.features.topology.api.topo.SearchQuery;
-import org.opennms.features.topology.api.topo.SearchResult;
-import org.opennms.features.topology.api.topo.Vertex;
-import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.netmgt.topologies.service.api.OnmsTopology;
+import org.opennms.features.topology.api.topo.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Lists;
+import java.util.List;
+import java.util.Set;
 
 public class LinkdSearchProvider implements SearchProvider {
 
@@ -97,7 +88,7 @@ public class LinkdSearchProvider implements SearchProvider {
 
     @Override
     public boolean supportsPrefix(String searchPrefix) {
-        return AbstractSearchProvider.supportsPrefix(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD+"=", searchPrefix);
+        return AbstractSearchProvider.supportsPrefix(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD+"=", searchPrefix);
     }
 
     @Override

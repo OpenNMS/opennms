@@ -28,26 +28,20 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.google.common.collect.Maps;
 import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.core.criteria.restrictions.NeRestriction;
-import org.opennms.features.topology.api.topo.Criteria;
-import org.opennms.features.topology.api.topo.EdgeRef;
-import org.opennms.features.topology.api.topo.EdgeStatusProvider;
-import org.opennms.features.topology.api.topo.Status;
-import org.opennms.features.topology.api.topo.BackendGraph;
+import org.opennms.features.topology.api.topo.*;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsSeverity;
-import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 
-import com.google.common.collect.Maps;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 public class LinkdEdgeStatusProvider implements EdgeStatusProvider {
 
@@ -92,7 +86,7 @@ public class LinkdEdgeStatusProvider implements EdgeStatusProvider {
 
     @Override
     public String getNamespace() {
-        return OnmsTopology.TOPOLOGY_NAMESPACE_LINKD;
+        return LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD;
     }
 
     @Override
@@ -128,7 +122,7 @@ EDGES:        for (EdgeRef edgeRef : edges) {
 
     @Override
     public boolean contributesTo(String namespace) {
-        return namespace.equals(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD);
+        return namespace.equals(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD);
     }
 
     public AlarmDao getAlarmDao() {
