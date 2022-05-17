@@ -172,7 +172,7 @@ test('Display appropriate form errors', async () => {
     username: 'test',
     password: '',
     type: { name: 'VMware', id: 1 },
-    occurance: { name: ''}
+    occurance: { name: '' }
   } as LocalConfiguration
 
   let errors = ConfigurationHelper.validateLocalItem(mockLocalConfig, [], 1, false)

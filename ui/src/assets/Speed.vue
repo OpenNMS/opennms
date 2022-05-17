@@ -4,8 +4,8 @@
   </div>
 </template>
 
-<script setup lang=ts>
-import Speed from './speed.svg'
+<script setup lang="ts">
+import Speed from './Speed.svg'
 </script>
 
 <style scoped lang="scss">

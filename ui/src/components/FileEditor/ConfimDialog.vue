@@ -8,7 +8,7 @@
     </template>
   </FeatherDialog>
 </template>
-<script setup lang=ts>
+<script setup lang="ts">
 import { useStore } from 'vuex'
 import { FeatherDialog } from '@featherds/dialog'
 import { FeatherButton } from '@featherds/button'

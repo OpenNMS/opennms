@@ -47,7 +47,7 @@
             <template v-slot:icon>
               <FeatherIcon :icon="Backup" />
             </template>
-            Backup Now
+            Backup
           </FeatherButton>
 
           <FeatherButton
@@ -64,7 +64,6 @@
         </div>
       </div>
     </div>
-    <DCBSearch class="dcb-search" />
   </div>
 
   <div
@@ -180,15 +179,6 @@
               v-date
               >{{ config.lastBackupDate }}</span
             >
-            <span
-              title="View config"
-              v-if="config.lastBackupDate"
-            >
-              <FeatherIcon
-                :icon="ViewDetails"
-                class="view-config"
-              />
-            </span>
           </td>
           <td v-date>{{ config.lastUpdatedDate }}</td>
           <td>
@@ -236,11 +226,9 @@ import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
 import History from '@featherds/icon/action/Restore'
 import Download from '@featherds/icon/action/DownloadFile'
-import Backup from '@featherds/icon/action/Cycle'
-import ViewDetails from '@featherds/icon/action/ViewDetails'
-import Compare from '@featherds/icon/action/ContentCopy'
-import Speed from './icons/Speed.vue'
-import DCBSearch from '@/components/Device/DCBSearch.vue'
+import Backup from '@/assets/Backup.vue'
+import Compare from '@/assets/Compare.vue'
+import Speed from '@/assets/Speed.vue'
 import DCBModal from './DCBModal.vue'
 import DCBModalLastBackupContent from './DCBModalLastBackupContent.vue'
 import DCBModalViewHistoryContentVue from './DCBModalViewHistoryContent.vue'
@@ -397,19 +385,18 @@ onMounted(() => {
 
     .last-backup-date {
       color: var($primary);
+      
+      span:hover {
+        font-weight: 600;
+      }
     }
 
     .option {
+      margin-left: 8px;
       height: 43px;
       line-height: 3.5;
       padding-left: 15px;
       text-transform: capitalize;
-    }
-
-    .view-config {
-      margin-left: 4px;
-      height: 16px;
-      width: 16px;
     }
   }
 
@@ -453,20 +440,10 @@ onMounted(() => {
       border-left: 1px solid var($shade-4);
     }
   }
-
-  .dcb-search {
-    width: 250px;
-    padding: 0px;
-  }
 }
 </style>
 
 <style lang="scss">
-.dcb-search {
-  .feather-input-content {
-    margin-top: 0px;
-  }
-}
 .device-config-checkbox {
   label {
     display: none;
