@@ -1,19 +1,18 @@
 [[interface-avail-report]]
 = Interface Availability Report
 
-== Report Contents
 
 This report shows interface availability for interfaces with outages within the time range.
-It is a multipage report that provides the following availability data for all router interfaces by IP address over the user-specified date range:
+It is a multi-page report that provides the following availability data for all router interfaces by IP address over the user-specified date range:
 
-* Number of Outages
+* Number of outages
 * Mean Time To Restore ("MTTR") (in hours)
-* Length of Time for Each Outage (in hours)
-* Percent Outage (per unit in category)
-* Percent Availability (per unit in category)
+* Length of time for each outage (in hours)
+* Percent outage (per unit in category)
+* Percent availability (per unit in category)
 //QUESTION: Need to validate explanation of the last two, in the summary chart at the end, are these averages over the entire period or per day?
 
-This report can be customized with a company logo in both the header and footer that is approximately 195px by 50px.
+You can customize this report with a company logo (approximately 195px by 50px)in both the header and footer.
 
 //ToDo: change company logo file in ../report-templates/assets/images to OpenNMS current logo
 
@@ -69,12 +68,12 @@ This report can be customized with a company logo in both the header and footer 
 
 | Deliver the Report
 | Checkbox
-| Check the box to deliver the report via email upon report creation
+| Check the box to deliver the report via email upon report creation.
 | Unchecked
 
 | Schedule the Report
 | Checkbox
-| Check this box to create a schedule for the report
+| Check this box to create a schedule for the report.
 | Unchecked
 
 |===

@@ -1,16 +1,15 @@
 [[morning-report]]
 = Early Morning Report
 
-== Report Contents
 
 This report provides a global overview of outages, notifications, and events in the last 24 hours.
 
 In the Outage Overview section, there are two pie charts, one that shows the current outages and one that shows the outages resolved in the last 24 hours.
 // QUESTION: Not sure what the pie slices represent
 
-The next section provides outage details in two tables, the first shows the current outages by nodes and the second table shows the resolved outages by node.
+The next section provides outage details in two tables; the first shows the current outages by nodes and the second shows the resolved outages by node.
 
-The third section is a stacked bar chart that shows teh resolved outages over the last 24 hours.
+The third section is a stacked bar chart that shows the resolved outages over the last 24 hours.
 //QUESTION: Not sure what each stack represents.
 
 The fourth section provides an overview of notifications over the past 24 hours.
@@ -24,7 +23,7 @@ The first stacked bar chart shows the types of events in each hour.
 The second stacked bar chart shoes the top 20 nodes with events and includes all events acknowledged and unacknowledged.
 // QUESTION:  It is not clear what the stacks are, nor is it clear how the second stacked bar chart is different from the first.
 
-This report can be customized with a company logo in the page header that is approximately 195px by 50 px.
+You can customize this report with a company logo (approximately 195px by 50px) in the page header.
 
 == Parameters
 
@@ -44,12 +43,12 @@ This report can be customized with a company logo in the page header that is app
 
 | Deliver the Report
 | Checkbox
-| Check the box to deliver the report via email upon report creation
+| Check the box to deliver the report via email upon report creation.
 | Unchecked
 
 | Schedule the Report
 | Checkbox
-| Check this box to create a schedule for the report
+| Check this box to create a schedule for the report.
 | Unchecked
 
 |===

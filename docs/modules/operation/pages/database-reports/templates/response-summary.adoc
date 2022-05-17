@@ -1,7 +1,6 @@
 [[response-time-summary-report]]
 = Response Time Summary Report
 
-== Report Content
 This report provides a summary of the response time for nodes whose category matches the specified Surveillance Category over the specified time period.
 
 This report can be customized with a company logo in the header and footer that is approximately 195px by 50px.

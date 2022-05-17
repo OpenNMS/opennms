@@ -7,15 +7,15 @@
 This report provides a summary of availability across one or more surveillance categories.
 One page report with average, minimum and maximum values for the following availability data for the specified surveillance category over the specified date range:
 
-* Number of Outages
+* Number of outages
 * Mean Time To Restore ("MTTR") (in hours)
-* Length of Time for Each Outage (in hours)
-* Percent Outage (per unit in category)
-* Percent Availability (per unit in category)
+* Length of time for each outage (in hours)
+* Percent outage (per unit in category)
+* Percent availability (per unit in category)
 //QUESTION: Need to validate explanation of the last two
 
 This report has a pie chart showing percent available time to outage time.
-It can be customized with a company logo in the header that is approximately 195px by 50px.
+You can customize it with a company logo (approximately 195px by 50px) in the header.
 
 == Parameters
 
@@ -30,7 +30,7 @@ It can be customized with a company logo in the header that is approximately 195
 
 | Surveillance Category
 | String
-| Identify a category to filter nodes to be included in the report. 
+| Identify a category to filter nodes to include in the report. 
 If no categories match the entered string, the report will not have data.
 | %
 //COMMENT: This default should be changed to "Routers" like the default in the Availability report.
@@ -38,7 +38,7 @@ If no categories match the entered string, the report will not have data.
 
 | Time Range in Days
 | Integer
-| The range in days from the Report Start Date.
+| The range in days from the report start date.
 | 7
 
 | Start Date
@@ -53,12 +53,12 @@ If no categories match the entered string, the report will not have data.
 
 | Deliver the Report
 | Checkbox
-| Check the box to deliver the report via email upon report creation
+| Check the box to deliver the report via email upon report creation.
 | Unchecked
 
 | Schedule the Report
 | Checkbox
-| Check this box to create a schedule for the report
+| Check this box to create a schedule for the report.
 | Unchecked
 |===
 

@@ -1,7 +1,6 @@
 [[grafana-report]]
 = Grafana Dashboard Reports
 
-== Create PDF reports from Grafana dashboards using {page-component-title}
 
 {page-component-title} provides three templates to create a PDF report from an existing Grafana dashboard.
 You can also schedule and email these PDF reports to anyone:

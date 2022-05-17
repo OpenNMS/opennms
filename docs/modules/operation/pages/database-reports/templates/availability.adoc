@@ -2,20 +2,19 @@
 = Availability by Node Report
 Availability by node across one or more surveillance categories.
 
-== Report Contents
 
 This report provides the following availability data for nodes that have the user-specified surveillance category over the specified date range:
 
-* Number of Outages
+* Number of outages
 * Mean Time To Restore ("MTTR") (in hours)
-* Length of Time for Each Outage (in hours)
-* Percent Outage (per unit in category)
-* Percent Availability (per unit in category)
+* Length of time for each outage (in hours)
+* Percent outage (per unit in category)
+* Percent availability (per unit in category)
 //QUESTION: Need to validate explanation of the last two, in the summary chart at the end, are these averages over the entire period or per day?
 
-After the data is listed for each node, summary statistics (average, minimum and maximum) are provided for each availability data points listed above.
+After the data is listed for each node, the report provides summary statistics (average, minimum, and maximum) for each availability data point listed above.
 
-This report can be customized with a company logo in the header and footer that is approximately 195px by 50px logo.
+You can customize the report with a company logo (approximately 195px by 50px) in the header and footer.
 
 == Parameters
 
@@ -37,7 +36,7 @@ If no categories match the entered string, the report will not have data.
 
 | Number of Days
 | Integer
-| The range in days from the report Start Date.
+| The range in days from the report start date.
 | 7
 
 | Availability Warning
@@ -60,14 +59,14 @@ If no categories match the entered string, the report will not have data.
 | Dropdown menu with a choice of PDF or CSV
 | PDF
 
-| Deliver the Report
+| Deliver this report
 | Checkbox
-| Check the box to deliver the report via email upon report creation
+| Check the box to deliver the report via email upon report creation.
 | Unchecked
 
-| Schedule the Report
+| Schedule this report
 | Checkbox
-| Check this box to create a schedule for the report
+| Check this box to create a schedule for the report.
 | Unchecked
 
 |===
