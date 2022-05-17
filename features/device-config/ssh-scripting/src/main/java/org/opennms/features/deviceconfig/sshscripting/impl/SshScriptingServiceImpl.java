@@ -97,6 +97,7 @@ public class SshScriptingServiceImpl implements SshScriptingService {
             final String authKey,
             final SocketAddress target,
             final String hostKeyFingerprint,
+            final String shell,
             Map<String, String> vars,
             Duration timeout
     ) {
@@ -104,7 +105,7 @@ public class SshScriptingServiceImpl implements SshScriptingService {
                 errorLines -> Result.failure(errorLines.stream().collect(Collectors.joining("\n", "unrecognized statements:\n", ""))),
                 statements -> {
                     try {
-                        try (var sshInteraction = new SshInteractionImpl(user, password, authKey, target, hostKeyFingerprint, vars, timeout, tftpServerIPv4Address, tftpServerIPv6Address)) {
+                        try (var sshInteraction = new SshInteractionImpl(user, password, authKey, target, hostKeyFingerprint, shell, vars, timeout, tftpServerIPv4Address, tftpServerIPv6Address)) {
                             LOG.debug("ssh connection successful, executing script: {}", script);
                             Statement prevStatement = null;
                             for (var statement : statements) {
@@ -181,6 +182,7 @@ public class SshScriptingServiceImpl implements SshScriptingService {
                 final String authKey,
                 final SocketAddress target,
                 final String hostKeyFingerprint,
+                final String shell,
                 Map<String, String> vars,
                 Duration timeout,
                 InetAddress tftpServerIPv4Address,
@@ -190,7 +192,7 @@ public class SshScriptingServiceImpl implements SshScriptingService {
             sshClient = SshClient.setUpDefaultClient();
 
             sshClient.setServerKeyVerifier((clientSession, socketAddress, publicKey) -> {
-                if (hostKeyFingerprint == null) {
+                if (Strings.isNullOrEmpty(hostKeyFingerprint)) {
                     // If there is no host key specified, we accept all host keys as a graceful default.
                     // Opt-in on security is not optimal but convenient.
                     return true;
@@ -259,7 +261,9 @@ public class SshScriptingServiceImpl implements SshScriptingService {
 
                     session.auth().verify(Duration.between(Instant.now(), timeoutInstant));
 
-                    channel = session.createShellChannel();
+                    channel = Strings.isNullOrEmpty(shell)
+                              ? session.createShellChannel()
+                              : session.createExecChannel(shell);
 
                     try {
                         stdout = new ByteArrayOutputStream();

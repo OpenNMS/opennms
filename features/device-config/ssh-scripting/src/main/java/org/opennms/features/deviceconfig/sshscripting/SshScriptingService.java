@@ -44,6 +44,7 @@ public interface SshScriptingService {
      * @param authKey the private ssh key
      * @param target the ssh target to connect to
      * @param hostKeyFingerprint host key fingerprint to accept from the target system
+     * @param shell optional shell to spawn on connection
      * @param vars variables that can be referenced in the script; variables are referenced by "{@code ${varname}}" expressions
      * @param timeout used when establishing the ssh interaction and for await statements
      * @return
@@ -55,6 +56,7 @@ public interface SshScriptingService {
             final String authKey,
             final SocketAddress target,
             final String hostKeyFingerprint,
+            final String shell,
             Map<String, String> vars,
             Duration timeout
     );

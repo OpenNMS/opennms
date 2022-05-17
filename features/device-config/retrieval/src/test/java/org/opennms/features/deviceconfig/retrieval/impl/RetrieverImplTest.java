@@ -69,7 +69,7 @@ public class RetrieverImplTest {
         //    (because it must be called with file content)
         var varsCaptor = ArgumentCaptor.forClass(Map.class);
         var receiverCaptor = ArgumentCaptor.forClass(TftpFileReceiver.class);
-        when(sshScriptingService.execute(any(), any(), any(), any(), any(), any(), varsCaptor.capture(), any())).thenReturn(SshScriptingService.Result.success("Success"));
+        when(sshScriptingService.execute(any(), any(), any(), any(), any(), any(), any(), varsCaptor.capture(), any())).thenReturn(SshScriptingService.Result.success("Success"));
         doNothing().when(tftpServer).register(receiverCaptor.capture());
 
         var retriever = new RetrieverImpl(sshScriptingService, tftpServer);
@@ -77,7 +77,7 @@ public class RetrieverImplTest {
         var configType = "runtime.cfg";
 
         var future = retriever.retrieveConfig(
-                Retriever.Protocol.TFTP, "", "", "", null, new InetSocketAddress("host", 80), null, configType,
+                Retriever.Protocol.TFTP, "", "", "", null, new InetSocketAddress("host", 80), null, null, configType,
                 Collections.emptyMap(),
                 Duration.ofMillis(1000)
         ).toCompletableFuture();
@@ -116,13 +116,13 @@ public class RetrieverImplTest {
         var receiverCaptor = ArgumentCaptor.forClass(TftpFileReceiver.class);
         var scriptingException = new RuntimeException("scripting exception");
 
-        when(sshScriptingService.execute(any(), any(), any(), any(), any(), any(), any(), any())).thenThrow(scriptingException);
+        when(sshScriptingService.execute(any(), any(), any(), any(), any(), any(), any(), any(), any())).thenThrow(scriptingException);
         doNothing().when(tftpServer).register(receiverCaptor.capture());
 
         var retriever = new RetrieverImpl(sshScriptingService, tftpServer);
 
         var future = retriever.retrieveConfig(
-                Retriever.Protocol.TFTP, "", "", "", null, new InetSocketAddress("host", 80), null, "runtime.cfg",
+                Retriever.Protocol.TFTP, "", "", "", null, new InetSocketAddress("host", 80), null, null, "runtime.cfg",
                 Collections.emptyMap(),
                 Duration.ofMillis(1000)
         ).toCompletableFuture();
@@ -147,13 +147,13 @@ public class RetrieverImplTest {
         var tftpServer = mock(TftpServer.class);
         var receiverCaptor = ArgumentCaptor.forClass(TftpFileReceiver.class);
         var scriptingFailureMessage = "scripting exception";
-        when(sshScriptingService.execute(any(), any(), any(), any(), any(), any(), any(), any())).thenReturn(SshScriptingService.Result.failure(scriptingFailureMessage));
+        when(sshScriptingService.execute(any(), any(), any(), any(), any(), any(), any(), any(), any())).thenReturn(SshScriptingService.Result.failure(scriptingFailureMessage));
         doNothing().when(tftpServer).register(receiverCaptor.capture());
 
         var retriever = new RetrieverImpl(sshScriptingService, tftpServer);
 
         var future = retriever.retrieveConfig(
-                Retriever.Protocol.TFTP, "", "", "", null, new InetSocketAddress("host", 80), null, "runtime.cfg",
+                Retriever.Protocol.TFTP, "", "", "", null, new InetSocketAddress("host", 80), null, null, "runtime.cfg",
                 Collections.emptyMap(),
                 Duration.ofMillis(1000)
         ).toCompletableFuture();
@@ -177,13 +177,13 @@ public class RetrieverImplTest {
         var sshScriptingService = mock(SshScriptingService.class);
         var tftpServer = mock(TftpServer.class);
         var receiverCaptor = ArgumentCaptor.forClass(TftpFileReceiver.class);
-        when(sshScriptingService.execute(any(), any(), any(), any(), any(), any(), any(), any())).thenReturn(SshScriptingService.Result.success("Success"));
+        when(sshScriptingService.execute(any(), any(), any(), any(), any(), any(), any(), any(), any())).thenReturn(SshScriptingService.Result.success("Success"));
         doNothing().when(tftpServer).register(receiverCaptor.capture());
 
         var retriever = new RetrieverImpl(sshScriptingService, tftpServer);
 
         var future = retriever.retrieveConfig(
-                Retriever.Protocol.TFTP, "", "", "", null, new InetSocketAddress("host", 80), null, "runtime.cfg",
+                Retriever.Protocol.TFTP, "", "", "", null, new InetSocketAddress("host", 80), null, null, "runtime.cfg",
                 Collections.emptyMap(),
                 Duration.ofMillis(1000)
         ).toCompletableFuture();
@@ -208,13 +208,13 @@ public class RetrieverImplTest {
         var tftpServer = mock(TftpServer.class);
         var varsCaptor = ArgumentCaptor.forClass(Map.class);
         var receiverCaptor = ArgumentCaptor.forClass(TftpFileReceiver.class);
-        when(sshScriptingService.execute(any(), any(), any(), any(), any(), any(), varsCaptor.capture(), any())).thenReturn(SshScriptingService.Result.success("Success"));
+        when(sshScriptingService.execute(any(), any(), any(), any(), any(), any(), any(), varsCaptor.capture(), any())).thenReturn(SshScriptingService.Result.success("Success"));
         doNothing().when(tftpServer).register(receiverCaptor.capture());
 
         var retriever = new RetrieverImpl(sshScriptingService, tftpServer);
 
         var future = retriever.retrieveConfig(
-                Retriever.Protocol.TFTP, "", "", "", null, new InetSocketAddress("host", 80), null, "runtime.cfg",
+                Retriever.Protocol.TFTP, "", "", "", null, new InetSocketAddress("host", 80), null, null, "runtime.cfg",
                 Collections.emptyMap(),
                 Duration.ofMillis(1000)
         ).toCompletableFuture();
