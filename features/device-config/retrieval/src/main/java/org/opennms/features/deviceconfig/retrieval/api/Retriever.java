@@ -53,6 +53,7 @@ public interface Retriever {
             String authKey,
             final SocketAddress target,
             final String hostKeyFingerprint,
+            String shell,
             String configType,
             Map<String, String> vars,
             Duration timeout

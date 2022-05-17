@@ -103,7 +103,7 @@ public class SshScriptingServiceImplIT {
     private SshScriptingService.Result execute(String host, String password, Map<String, String> vars, String... statements) {
         String script = List.of(statements).stream().collect(Collectors.joining("\n"));
         var ss = new SshScriptingServiceImpl();
-        return ss.execute(script, USER, password, null, new InetSocketAddress(host, sshd.getPort()), null, vars, Duration.ofMillis(10000));
+        return ss.execute(script, USER, password, null, new InetSocketAddress(host, sshd.getPort()), null, null, vars, Duration.ofMillis(10000));
     }
 
     private SshScriptingService.Result execute(String... statements) {
@@ -166,7 +166,7 @@ public class SshScriptingServiceImplIT {
                         "await: 123"
                 ).stream().collect(Collectors.joining("\n"));
 
-        var result = ss.execute(script, USER, PASSWORD, null, new InetSocketAddress("localhost", sshd.getPort()), null, Collections.emptyMap(), Duration.ofMillis(4000));
+        var result = ss.execute(script, USER, PASSWORD, null, new InetSocketAddress("localhost", sshd.getPort()), null, null, Collections.emptyMap(), Duration.ofMillis(4000));
         assertThat(result.isFailed(), is(true));
         assertThat(result.stdout.isPresent(), is(true));
         assertThat(result.stdout.get(), is("abc\nuvw\n"));
@@ -183,7 +183,7 @@ public class SshScriptingServiceImplIT {
                         "await: uvw"
                 ).stream().collect(Collectors.joining("\n"));
 
-        var result = ss.execute(script, USER, PASSWORD, null, new InetSocketAddress("localhost", sshd.getPort()), null, Collections.emptyMap(), Duration.ofMillis(4000));
+        var result = ss.execute(script, USER, PASSWORD, null, new InetSocketAddress("localhost", sshd.getPort()), null, null, Collections.emptyMap(), Duration.ofMillis(4000));
         assertThat(result.isSuccess(), is(true));
     }
 
@@ -229,7 +229,7 @@ public class SshScriptingServiceImplIT {
                             "await: "+expectedIp
                         ).stream().collect(Collectors.joining("\n"));
 
-        final SshScriptingService.Result result = ss.execute(script, USER, PASSWORD, null, new InetSocketAddress(hostname, sshd.getPort()), null, Collections.emptyMap(), Duration.ofMillis(10000));
+        final SshScriptingService.Result result = ss.execute(script, USER, PASSWORD, null, new InetSocketAddress(hostname, sshd.getPort()), null, null, Collections.emptyMap(), Duration.ofMillis(10000));
 
         assertThat(result.isSuccess(), is(true));
     }
@@ -240,7 +240,7 @@ public class SshScriptingServiceImplIT {
 
         byte[] encoded = Files.readAllBytes(Paths.get("../../../opennms-base-assembly/src/main/filtered/etc/examples/device-config/" + filename));
         final String script = new String(encoded, StandardCharsets.UTF_8).replace("${filenameSuffix}", filenameSuffix);
-        final SshScriptingService.Result result = ss.execute(script, username, password, null, new InetSocketAddress(hostname, 22), null, Collections.emptyMap(), Duration.ofMillis(20000));
+        final SshScriptingService.Result result = ss.execute(script, username, password, null, new InetSocketAddress(hostname, 22), null, null, Collections.emptyMap(), Duration.ofMillis(20000));
 
         if (result.stdout.isPresent()) {
             System.out.println("StdOut: "+result.stdout.get());
@@ -285,13 +285,13 @@ public class SshScriptingServiceImplIT {
     public void testHostKey() throws Exception {
         final SshScriptingServiceImpl ss = new SshScriptingServiceImpl();
 
-        var result1 = ss.execute("send:foo\nawait:foo", USER, PASSWORD, null, new InetSocketAddress("localhost", sshd.getPort()), null, Collections.emptyMap(), Duration.ofMillis(10000));
+        var result1 = ss.execute("send:foo\nawait:foo", USER, PASSWORD, null, new InetSocketAddress("localhost", sshd.getPort()), null, null, Collections.emptyMap(), Duration.ofMillis(10000));
         assertThat(result1.isSuccess(), is(true));
 
-        var result2 = ss.execute("send:foo\nawait:foo", USER, PASSWORD, null, new InetSocketAddress("localhost", sshd.getPort()), KeyUtils.getFingerPrint(this.hostKey.getPublic()), Collections.emptyMap(), Duration.ofMillis(10000));
+        var result2 = ss.execute("send:foo\nawait:foo", USER, PASSWORD, null, new InetSocketAddress("localhost", sshd.getPort()), KeyUtils.getFingerPrint(this.hostKey.getPublic()), null, Collections.emptyMap(), Duration.ofMillis(10000));
         assertThat(result2.isSuccess(), is(true));
 
-        var result3 = ss.execute("send:foo\nawait:foo", USER, PASSWORD, null, new InetSocketAddress("localhost", sshd.getPort()), "invalid", Collections.emptyMap(), Duration.ofMillis(10000));
+        var result3 = ss.execute("send:foo\nawait:foo", USER, PASSWORD, null, new InetSocketAddress("localhost", sshd.getPort()), "invalid", null, Collections.emptyMap(), Duration.ofMillis(10000));
         assertThat(result3.isSuccess(), is(false));
     }
 
@@ -299,19 +299,19 @@ public class SshScriptingServiceImplIT {
     public void testAuthKey() throws Exception {
         final SshScriptingServiceImpl ss = new SshScriptingServiceImpl();
 
-        var result1 = ss.execute("send:foo\nawait:foo", USER, PASSWORD, AUTH_KEY_PRIV, new InetSocketAddress("localhost", sshd.getPort()), null, Collections.emptyMap(), Duration.ofMillis(10000));
+        var result1 = ss.execute("send:foo\nawait:foo", USER, PASSWORD, AUTH_KEY_PRIV, new InetSocketAddress("localhost", sshd.getPort()), null, null, Collections.emptyMap(), Duration.ofMillis(10000));
         assertThat(result1.isSuccess(), is(true));
 
-        var result2 = ss.execute("send:foo\nawait:foo", USER, null, AUTH_KEY_PRIV, new InetSocketAddress("localhost", sshd.getPort()), null, Collections.emptyMap(), Duration.ofMillis(10000));
+        var result2 = ss.execute("send:foo\nawait:foo", USER, null, AUTH_KEY_PRIV, new InetSocketAddress("localhost", sshd.getPort()), null, null, Collections.emptyMap(), Duration.ofMillis(10000));
         assertThat(result2.isSuccess(), is(true));
 
-        var result3 = ss.execute("send:foo\nawait:foo", USER, "wrong", AUTH_KEY_PRIV, new InetSocketAddress("localhost", sshd.getPort()), null, Collections.emptyMap(), Duration.ofMillis(10000));
+        var result3 = ss.execute("send:foo\nawait:foo", USER, "wrong", AUTH_KEY_PRIV, new InetSocketAddress("localhost", sshd.getPort()), null, null, Collections.emptyMap(), Duration.ofMillis(10000));
         assertThat(result3.isSuccess(), is(true));
 
-        var result4 = ss.execute("send:foo\nawait:foo", USER, PASSWORD, "invalid", new InetSocketAddress("localhost", sshd.getPort()), null, Collections.emptyMap(), Duration.ofMillis(10000));
+        var result4 = ss.execute("send:foo\nawait:foo", USER, PASSWORD, "invalid", new InetSocketAddress("localhost", sshd.getPort()), null, null, Collections.emptyMap(), Duration.ofMillis(10000));
         assertThat(result4.isSuccess(), is(true));
 
-        var result5 = ss.execute("send:foo\nawait:foo", USER, "wrong", "invalid", new InetSocketAddress("localhost", sshd.getPort()), null, Collections.emptyMap(), Duration.ofMillis(10000));
+        var result5 = ss.execute("send:foo\nawait:foo", USER, "wrong", "invalid", new InetSocketAddress("localhost", sshd.getPort()), null, null, Collections.emptyMap(), Duration.ofMillis(10000));
         assertThat(result5.isSuccess(), is(false));
     }
 }

@@ -86,6 +86,10 @@ Example: `P20Y2M25D` means 20 years, 2 months, and 25 days.
   If unspecified, key authentication is not used.
 | _unused_
 
+| shell
+| If specified, this command is executed on the remote host instead of a login shell.
+| _Default login shell_
+
 |===
 
 

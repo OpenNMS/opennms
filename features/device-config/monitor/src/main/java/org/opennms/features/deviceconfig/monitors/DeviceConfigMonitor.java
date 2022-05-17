@@ -81,6 +81,7 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
     public static final String LAST_RETRIEVAL = "lastRetrieval";
     public static final String SCRIPT_FILE = "script-file";
     private static final String SCRIPT_ERROR = "script-error";
+    public static final String SHELL = "shell";
 
     private static final Duration DEFAULT_DURATION = Duration.ofMinutes(1); // 60sec
     private static final int DEFAULT_SSH_PORT = 22;
@@ -174,6 +175,7 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
         Long timeout = getKeyedLong(parameters, SSH_TIMEOUT, DEFAULT_DURATION.toMillis());
         String hostKeyFingerprint = getKeyedString(parameters, HOST_KEY, null);
         var stringParameters = parameters.entrySet().stream().collect(toMap(Map.Entry::getKey, e -> String.valueOf(e.getValue())));
+        String shell = getKeyedString(parameters, SHELL, null);
 
         final var target = new InetSocketAddress(svc.getAddress(), port);
 
@@ -185,6 +187,7 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
                 authKey,
                 target,
                 hostKeyFingerprint,
+                shell,
                 configType,
                 stringParameters,
                 Duration.ofMillis(timeout).minusSeconds(1)
