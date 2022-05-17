@@ -42,14 +42,12 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class LinkdTopologyProvider extends AbstractTopologyProvider implements GraphProvider {
 
-    private static Logger LOG = LoggerFactory.getLogger(LinkdTopologyProvider.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LinkdTopologyProvider.class);
+    public static final String TOPOLOGY_NAMESPACE_LINKD = "nodes";
 
     private OnmsTopologyDao m_onmsTopologyDao;
 
@@ -63,7 +61,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     private final Timer m_loadVerticesTimer;
     private final Timer m_loadEdgesTimer;
 
-    private SelectionAware selectionAwareDelegate = new LinkdSelectionAware();
+    private final SelectionAware selectionAwareDelegate = new LinkdSelectionAware();
 
     public LinkdTopologyProvider(MetricRegistry registry) {
         super(TOPOLOGY_NAMESPACE_LINKD);
@@ -89,74 +87,52 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         return selectionAwareDelegate.contributesTo(type);
     }
     
-    private void loadEdges() {
-
-        Timer.Context context = m_loadLldpLinksTimer.time();
-        try{
-            loadTopology(ProtocolSupported.LLDP);
-            LOG.info("loadEdges: LldpLink loaded");
+    protected void loadEdges(Set<ProtocolSupported> supportedProtocols, BackendGraph graph) {
+        Timer.Context context = m_loadEdgesTimer.time();
+        try {
+            if (supportedProtocols.contains(ProtocolSupported.LLDP)) {
+                loadTopology(ProtocolSupported.LLDP, m_loadLldpLinksTimer, graph);
+            }
+            if (supportedProtocols.contains(ProtocolSupported.OSPF)) {
+                loadTopology(ProtocolSupported.OSPF,m_loadOspfLinksTimer, graph);
+            }
+            if (supportedProtocols.contains(ProtocolSupported.CDP)) {
+                loadTopology(ProtocolSupported.CDP, m_loadCdpLinksTimer, graph);
+            }
+            if (supportedProtocols.contains(ProtocolSupported.ISIS)) {
+                loadTopology(ProtocolSupported.ISIS, m_loadIsisLinksTimer, graph);
+            }
+            if (supportedProtocols.contains(ProtocolSupported.BRIDGE)) {
+                loadTopology(ProtocolSupported.BRIDGE, m_loadBridgeLinksTimer, graph);
+            }
+            if (supportedProtocols.contains(ProtocolSupported.USERDEFINED)) {
+                loadTopology(ProtocolSupported.USERDEFINED, m_loadUserDefinedLinksTimer, graph);
+            }
+            LOG.info("refresh: Loaded Edges");
         } catch (Exception e){
-            LOG.error("Loading LldpLink failed", e);
-        } finally {
-            context.stop();
-        }
-
-        context = m_loadOspfLinksTimer.time();
-        try{
-            loadTopology(ProtocolSupported.OSPF);
-            LOG.info("loadEdges: OspfLink loaded");
-        } catch (Exception e){
-            LOG.error("Loading OspfLink failed", e);
-        } finally {
-            context.stop();
-        }
-
-        context = m_loadCdpLinksTimer.time();
-        try{
-            loadTopology(ProtocolSupported.CDP);
-            LOG.info("loadEdges: CdpLink loaded");
-        }  catch (Exception e){
-            LOG.error("Loading CdpLink failed", e);
-        } finally {
-            context.stop();
-        }
-
-        context = m_loadIsisLinksTimer.time();
-        try{
-            loadTopology(ProtocolSupported.ISIS);
-            LOG.info("loadEdges: IsIsLink loaded");
-        } catch (Exception e){
-            LOG.error("Exception getting IsIs link", e);
-        } finally {
-            context.stop();
-        }
-
-        context = m_loadBridgeLinksTimer.time();
-        try{
-            loadTopology(ProtocolSupported.BRIDGE);
-            LOG.info("loadEdges: BridgeLink loaded");
-        } catch (Exception e){
-            LOG.error("Loading BridgeLink failed", e);
-        } finally {
-            context.stop();
-        }
-
-        context = m_loadUserDefinedLinksTimer.time();
-        try{
-            loadTopology(ProtocolSupported.USERDEFINED);
-            LOG.info("loadEdges: User defined loaded");
-        } catch (Exception e){
-            LOG.error("Loading user defined link failed", e);
+            LOG.error("Exception Loading Edges", e);
         } finally {
             context.stop();
         }
     }
 
-    private void loadTopology(ProtocolSupported protocol) {
+    private void loadTopology(ProtocolSupported protocol, Timer timer, BackendGraph graph) {
+        Timer.Context context = timer.time();
+        try{
+            loadTopology(protocol,graph);
+            LOG.info("loadEdges: {}, loaded", protocol.name());
+        } catch (Exception e){
+            LOG.error("loadEdges: {}, failed", protocol.name(), e);
+        } finally {
+            context.stop();
+        }
+    }
+
+    private void loadTopology(ProtocolSupported protocol, BackendGraph graph) {
         OnmsTopology topology =   m_onmsTopologyDao.getTopology(protocol.name());
         
         final Map<String, LinkdVertex> vmap = new HashMap<>();
-        topology.getVertices().stream().forEach(tvertex -> {
+        topology.getVertices().forEach(tvertex -> {
             LinkdVertex vertex = (LinkdVertex) graph.getVertex(TOPOLOGY_NAMESPACE_LINKD, tvertex.getId());
             if (vertex == null) {
                 vertex = LinkdVertex.create(tvertex);
@@ -166,7 +142,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
             vmap.put(vertex.getId(), vertex);
         });
         
-        topology.getEdges().stream().forEach(tedge -> graph.addEdges(
+        topology.getEdges().forEach(tedge -> graph.addEdges(
                                        LinkdEdge.create(
                                                 tedge.getId(), 
                                                 LinkdPort.create(tedge.getSource(), vmap.get(tedge.getSource().getVertex().getId())),
@@ -175,9 +151,9 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
                                        )
                                              );
     }
-        
-    public Vertex getDefaultVertex() {
-        OnmsTopologyVertex node = null;
+
+    protected Vertex getDefaultVertex(BackendGraph graph) {
+        OnmsTopologyVertex node;
         try {
             node = m_onmsTopologyDao.getTopology(ProtocolSupported.NODES.name()).getDefaultVertex();
         } catch (Exception e) {
@@ -190,27 +166,30 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
             return null;
         }
         LOG.info("getDefaultVertex: default node found: [{}]:{}", node.getId(), node.getLabel());
-        final Vertex defaultVertex = graph.getVertex(TOPOLOGY_NAMESPACE_LINKD, node.getId());
-        return defaultVertex;
+        return graph.getVertex(TOPOLOGY_NAMESPACE_LINKD, node.getId());
     }
 
-    @Override
-    public Defaults getDefaults() {
+    protected Defaults getDefaults(BackendGraph graph) {
         return new Defaults()
                 .withSemanticZoomLevel(Defaults.DEFAULT_SEMANTIC_ZOOM_LEVEL)
                 .withPreferredLayout("D3 Layout") // D3 Layout
-                .withCriteria(() -> { 
-                    final Vertex defaultVertex = getDefaultVertex();
+                .withCriteria(() -> {
+                    final Vertex defaultVertex = getDefaultVertex(graph);
                     if (defaultVertex != null) {
                         LOG.info("getDefaults: default vertex found: [{}]:{}", defaultVertex.getId(), defaultVertex.getLabel());
                         return Lists.newArrayList(LinkdHopCriteria.createCriteria(defaultVertex.getId(), defaultVertex.getLabel()));
                     }
                     LOG.info("getDefaults: default vertex not found");
                     return Lists.newArrayList();
-        });
+                });
     }
-    
-    private void doRefresh() {        
+
+    @Override
+    public Defaults getDefaults() {
+        return getDefaults(graph);
+    }
+
+    private void loadVertices(BackendGraph graph) {
         Timer.Context vcontext = m_loadVerticesTimer.time();
         try {
             for (OnmsTopologyVertex tvertex : m_onmsTopologyDao.getTopology(ProtocolSupported.NODES.name()).getVertices()) {
@@ -222,28 +201,22 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         } finally {
             vcontext.stop();
         }
-        
-        vcontext = m_loadEdgesTimer.time();
+    }
+    protected void doRefresh(Set<ProtocolSupported> supportedProtocols, BackendGraph graph) {
+        final Timer.Context context = m_loadFullTimer.time();
         try {
-            loadEdges();
-            LOG.info("refresh: Loaded Edges");
-        } catch (Exception e){
-            LOG.error("Exception Loading Edges", e);
+            loadVertices(graph);
+            loadEdges(supportedProtocols,graph);
         } finally {
-            vcontext.stop();
+            context.stop();
         }
+
     }
 
     @Override
     public void refresh() {
-        final Timer.Context context = m_loadFullTimer.time();
-        try {
-            graph.resetContainer();
-            doRefresh();
-        } finally {
-            context.stop();
-        }
-        
+        graph.resetContainer();
+        doRefresh(EnumSet.allOf(ProtocolSupported.class), graph);
         LOG.info("refresh: Found {} vertices", graph.getVertices().size());
         LOG.info("refresh: Found {} edges", graph.getEdges().size());
     }
