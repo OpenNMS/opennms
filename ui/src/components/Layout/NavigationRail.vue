@@ -26,20 +26,20 @@
         :class="{ selected: isSelected('/file-editor') }"
         v-if="configEditorRole"
         href="#/file-editor"
-        :icon="AddNote"
+        :icon="FileEditor"
         title="File Editor"
       />
       <FeatherRailItem
         :class="{ selected: isSelected('/logs') }"
         v-if="adminRole"
         href="#/logs"
-        :icon="MarkComplete"
+        :icon="Logs"
         title="Logs"
       />
       <FeatherRailItem
         :class="{ selected: isSelected('/open-api') }"
         href="#/open-api"
-        :icon="Cloud"
+        :icon="Endpoints"
         title="Endpoints"
       />
       <FeatherRailItem
@@ -80,14 +80,14 @@ import { useStore } from 'vuex'
 import useRole from '@/composables/useRole'
 import Instances from '@featherds/icon/hardware/Instances'
 import MinionProfiles from '@featherds/icon/hardware/MinionProfiles'
-import AddNote from '@featherds/icon/action/AddNote'
 import LoggerConfigs from '@featherds/icon/action/LoggerConfigs'
 import Location from '@featherds/icon/action/Location'
-import MarkComplete from '@featherds/icon/action/MarkComplete'
-import Cloud from '@featherds/icon/action/Cloud'
 import Reporting from '@featherds/icon/action/Reporting'
 import UpdateUtilities from '@featherds/icon/action/UpdateUtilities'
 import Security from '@featherds/icon/hardware/Security'
+import FileEditor from '@/assets/FileEditor.vue'
+import Endpoints from '@/assets/Endpoints.vue'
+import Logs from '@/assets/Logs.vue'
 import {
   FeatherNavigationRail,
   FeatherRailItem

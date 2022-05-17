@@ -9,7 +9,7 @@
   />
 </template>
 
-<script setup lang=ts>
+<script setup lang="ts">
 import { useStore } from 'vuex'
 import { FeatherInput } from '@featherds/input'
 import { IFile } from '@/store/fileEditor/state'
