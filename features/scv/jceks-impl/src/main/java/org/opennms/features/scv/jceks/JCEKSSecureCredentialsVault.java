@@ -45,6 +45,7 @@ import java.security.UnrecoverableEntryException;
 import java.security.cert.CertificateException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Objects;
 import java.util.Set;
 
@@ -76,6 +77,7 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault {
     private final byte[] m_salt;
     private final int m_iterationCount;
     private final int m_keyLength;
+    private final HashMap<String, Credentials> m_credentialsCache;
 
     public JCEKSSecureCredentialsVault(String keystoreFile, String password) {
         this(keystoreFile, password, new byte[] {0x0, 0xd, 0xd, 0xb, 0xa, 0x1, 0x1});
@@ -91,6 +93,7 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault {
         m_iterationCount = iterationCount;
         m_keyLength = keyLength;
         m_keystoreFile = new File(keystoreFile);
+        m_credentialsCache = new HashMap<>();
         try {
             m_keystore = KeyStore.getInstance("JCEKS");
             if (!m_keystoreFile.isFile()) {
@@ -102,27 +105,34 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault {
                     m_keystore.load(is, m_password);
                 }
             }
+            loadCredentials();
         } catch (KeyStoreException | NoSuchAlgorithmException | CertificateException | IOException e) {
             throw Throwables.propagate(e);
         }
     }
-    
-    @Override
-    public Credentials getCredentials(String alias) {
+
+    private void loadCredentials() {
         try {
             KeyStore.PasswordProtection keyStorePP = new KeyStore.PasswordProtection(m_password);
             SecretKeyFactory factory = SecretKeyFactory.getInstance("PBE");
-    
-            KeyStore.SecretKeyEntry ske = (KeyStore.SecretKeyEntry)m_keystore.getEntry(alias, keyStorePP);
-            if (ske == null)  {
-                return null;
+
+            for(String alias: getAliases()){
+                KeyStore.SecretKeyEntry ske = (KeyStore.SecretKeyEntry)m_keystore.getEntry(alias, keyStorePP);
+                if (ske == null) {
+                    continue;
+                }
+                PBEKeySpec keySpec = (PBEKeySpec) factory.getKeySpec(ske.getSecretKey(), PBEKeySpec.class);
+                m_credentialsCache.put(alias, fromBase64EncodedByteArray(new String(keySpec.getPassword()).getBytes()));
             }
-    
-            PBEKeySpec keySpec = (PBEKeySpec)factory.getKeySpec(ske.getSecretKey(), PBEKeySpec.class);
-            return fromBase64EncodedByteArray(new String(keySpec.getPassword()).getBytes());
         } catch (KeyStoreException | InvalidKeySpecException | NoSuchAlgorithmException | IOException | ClassNotFoundException | UnrecoverableEntryException e) {
             throw Throwables.propagate(e);
         }
+    }
+
+
+    @Override
+    public Credentials getCredentials(String alias) {
+        return m_credentialsCache.get(alias);
     }
 
     @Override
@@ -136,6 +146,7 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault {
             KeyStore.PasswordProtection keyStorePP = new KeyStore.PasswordProtection(m_password);
             m_keystore.setEntry(alias, new KeyStore.SecretKeyEntry(generatedSecret), keyStorePP);
             writeKeystoreToDisk();
+            m_credentialsCache.put(alias, credentials);
         } catch (KeyStoreException | InvalidKeySpecException | NoSuchAlgorithmException | IOException e) {
             throw Throwables.propagate(e);
         }
