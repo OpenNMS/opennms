@@ -4,7 +4,7 @@
   </div>
 </template>
 
-<script setup lang=ts>
+<script setup lang="ts">
 import Logs from './Logs.svg'
 </script>
 

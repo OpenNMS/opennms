@@ -7,7 +7,7 @@
   </FeatherTabContainer>
   <router-view />
 </template>
-<script setup lang=ts>
+<script setup lang="ts">
 import { useStore } from 'vuex'
 import { FeatherTab, FeatherTabContainer } from '@featherds/tabs'
 import { Alarm, Node } from '@/types'

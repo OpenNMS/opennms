@@ -4,7 +4,7 @@
   </div>
 </template>
 
-<script setup lang=ts>
+<script setup lang="ts">
 import FileEditor from './FileEditor.svg'
 </script>
 

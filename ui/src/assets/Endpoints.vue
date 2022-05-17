@@ -4,7 +4,7 @@
   </div>
 </template>
 
-<script setup lang=ts>
+<script setup lang="ts">
 import Endpoints from './Endpoints.svg'
 </script>
 
