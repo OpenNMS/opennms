@@ -23,6 +23,7 @@
             props.advancedKeyUpdate(key, index)
           }"
           :results="results.list[index]"
+          :labels="labels"
         ></FeatherAutocomplete>
         <!-- Blank space ' ' below is part of forceSetHint() workaround for FeatherInput.
             If item.hint is blank on initial load, it will not render the internal element we need for forced update. So when item.hint is empty, we supply an empty space which is enough to force FeatherInput to render the help label.
@@ -71,7 +72,7 @@ import Delete from '@featherds/icon/action/Delete'
 import { orderBy } from 'lodash'
 
 import { advancedKeys, dnsKeys, openDaylightKeys, aciKeys, zabbixKeys, prisKeys } from './copy/advancedKeys'
-import { RequisitionPluginSubTypes, RequisitionTypes } from './copy/requisitionTypes'
+import { RequisitionPluginSubTypes, RequisitionTypes, VMWareFields, LabelStrings } from './copy/requisitionTypes'
 import { AdvancedKey, AdvancedOption } from './configuration.types'
 import { ConfigurationHelper } from './ConfigurationHelper'
 
@@ -96,6 +97,8 @@ const props = defineProps({
 const results = reactive({
   list: [[{}]]
 })
+const defaultLabels = { noResults: LabelStrings.duplicateKey }
+const labels = ref(defaultLabels)
 
 /**
  * Disabled when last item (key.name and value) is null,
@@ -144,6 +147,13 @@ const getKeysBasedOnType = (type: string, subType: string) => {
  * @param index Since there are multiple search boxes, we need to know which one to generate results for.
  */
 const search = (searchVal: string, type: string, subType: string, index: number) => {
+  // prevent username/Username/password/Password key, using Advanced Options section, from adding to the URL, since they can be set in their respective input field of the form
+  const vmWareFields = Object.entries(VMWareFields).map(e => e[1])
+  if(vmWareFields.includes(searchVal)) {
+    labels.value = { noResults: LabelStrings.optionNotAvailable }
+    return
+  }
+
   const advancedKeys = getKeysBasedOnType(type, subType)
 
   //Find keys based on search text.
@@ -164,6 +174,9 @@ const search = (searchVal: string, type: string, subType: string, index: number)
     })
     return includeInResults
   })
+
+  labels.value = defaultLabels
+
   results.list[index] = [...newResu]
 }
 

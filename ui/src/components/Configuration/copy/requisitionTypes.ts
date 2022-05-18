@@ -62,6 +62,11 @@ export const ErrorStrings = {
   NameLong: (nameType: string, length = 255) => `${nameType} must be shorter than ${length}.`
 }
 
+export const LabelStrings = {
+  duplicateKey: 'Duplicate key',
+  optionNotAvailable: 'Option not available'
+}
+
 export const requisitionTypeList = [
   {
     id: 3,
