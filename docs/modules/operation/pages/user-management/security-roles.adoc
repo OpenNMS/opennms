@@ -15,7 +15,7 @@ endif::opennms-prime[]
 | Description
 
 | ROLE_ADMIN*
-| Permissions to create, read, update, and delete in the web UI and the ReST API (except see ROLE_FILESYSTEM_EDITOR below).
+| Permissions to create, read, update, and delete in the web UI and the REST API (except see ROLE_FILESYSTEM_EDITOR below).
 
 | ROLE_ASSET_EDITOR
 | Permissions only to update the asset records from nodes.
