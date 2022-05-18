@@ -102,8 +102,10 @@ public class SshScriptingServiceImpl implements SshScriptingService {
                 statements -> {
                     try {
                         try (var sshInteraction = new SshInteractionImpl(user, password, target, hostKeyFingerprint, vars, timeout, tftpServerIPv4Address, tftpServerIPv6Address)) {
+                            LOG.debug("ssh connection successful, executing script: " + script);
                             for (var statement : statements) {
                                 try {
+                                    LOG.debug("ssh scripting service executing - " + statement);
                                     statement.execute(sshInteraction);
                                 } catch (Exception e) {
                                     var stdout = sshInteraction.stdout.toString(StandardCharsets.UTF_8);
@@ -118,6 +120,7 @@ public class SshScriptingServiceImpl implements SshScriptingService {
                             return Result.success("Script execution succeeded",  sshInteraction.stdout.toString(StandardCharsets.UTF_8),  sshInteraction.stderr.toString(StandardCharsets.UTF_8));
                         }
                     } catch (Exception e) {
+                        LOG.error("error with ssh interactions", e);
                         return Result.failure(e.getMessage());
                     }
                 }
