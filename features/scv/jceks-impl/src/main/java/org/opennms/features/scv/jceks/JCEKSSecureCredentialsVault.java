@@ -80,7 +80,7 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault {
     private final HashMap<String, Credentials> m_credentialsCache = new HashMap<>();
 
     public JCEKSSecureCredentialsVault(String keystoreFile, String password) {
-        this(keystoreFile, password, new byte[] {0x0, 0xd, 0xd, 0xb, 0xa, 0x1, 0x1});
+        this(keystoreFile, password, new byte[]{0x0, 0xd, 0xd, 0xb, 0xa, 0x1, 0x1});
     }
 
     public JCEKSSecureCredentialsVault(String keystoreFile, String password, byte[] salt) {
@@ -111,8 +111,8 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault {
     }
 
     private void loadCredentials() {
-        synchronized (m_credentialsCache) {
-            if (m_credentialsCache.isEmpty()) {
+        synchronized (m_credentialsCache){
+            if(!m_credentialsCache.isEmpty()){
                 return;
             }
         }
@@ -155,7 +155,9 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault {
             KeyStore.PasswordProtection keyStorePP = new KeyStore.PasswordProtection(m_password);
             m_keystore.setEntry(alias, new KeyStore.SecretKeyEntry(generatedSecret), keyStorePP);
             writeKeystoreToDisk();
-            m_credentialsCache.put(alias, credentials);
+            synchronized (m_credentialsCache) {
+                m_credentialsCache.put(alias, credentials);
+            }
         } catch (KeyStoreException | InvalidKeySpecException | NoSuchAlgorithmException | IOException e) {
             throw Throwables.propagate(e);
         }
@@ -182,7 +184,7 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault {
         ByteArrayInputStream bais = new ByteArrayInputStream(decodedBytes);
         ObjectInputStream in = new ObjectInputStream(bais);
         @SuppressWarnings("unchecked")
-        T o = (T)in.readObject();
+        T o = (T) in.readObject();
         in.close();
         return o;
     }
