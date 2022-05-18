@@ -68,6 +68,11 @@ export const ErrorStrings = {
   Username: 'Must include a username'
 }
 
+export const LabelStrings = {
+  duplicateKey: 'Duplicate key',
+  optionNotAvailable: 'Option not available'
+}
+
 export const requisitionTypeList = [
   {
     id: 3,
