@@ -59,7 +59,8 @@ public class ScvValidateCommand implements Action {
         final Credentials credentials = secureCredentialsVault.getCredentials(alias);
         if (credentials == null) {
             System.out.println("No credentials found for Alias '" + alias + "'.");
-        } else if (credentials.getUsername().equals(username) && credentials.getPassword().equals(password)) {
+        } else if (credentials.getUsername() != null && credentials.getPassword() != null &&
+                credentials.getUsername().equals(username) && credentials.getPassword().equals(password)) {
             System.out.printf("Found valid credentials for Alias %s, Username: %s, Password: ******\n", alias, username);
         } else if (credentials.getAttribute(username) != null && credentials.getAttribute(username).equals(password)) {
             System.out.printf("Found valid credentials for Alias %s, Attribute Key: %s, Attribute Value: ******\n", alias, username);
