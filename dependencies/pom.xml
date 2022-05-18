@@ -43,6 +43,7 @@
     <module>mina</module>
     <module>netty</module>
     <module>newts</module>
+    <module>oia</module>
     <module>owasp</module>
     <module>pax-exam</module>
     <module>quartz</module>

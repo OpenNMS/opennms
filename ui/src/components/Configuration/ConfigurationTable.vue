@@ -19,13 +19,10 @@
             v-on:sort-changed="sortChanged"
             >URL</FeatherSortHeader
           >
-          <FeatherSortHeader
+          <th
             scope="col"
             class="onms-sort-header"
-            :property="RequisitionData.CronSchedule"
-            :sort="sorts[RequisitionData.CronSchedule]"
-            v-on:sort-changed="sortChanged"
-            >Schedule Frequency</FeatherSortHeader
+            >Schedule Frequency</th
           >
           <FeatherSortHeader
             scope="col"
@@ -129,7 +126,6 @@ const props = defineProps({
  */
 const sorts = reactive<ProvisionDServerConfiguration>({
   [RequisitionData.ImportName]: SORT.NONE,
-  [RequisitionData.CronSchedule]: SORT.NONE,
   [RequisitionData.ImportURL]: SORT.NONE,
   [RequisitionData.RescanExisting]: SORT.NONE,
   currentSort: { property: RequisitionData.ImportName, value: SORT.NONE },

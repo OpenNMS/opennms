@@ -29,6 +29,8 @@
 package org.opennms.features.deviceconfig.persistence.impl;
 
 import com.google.common.base.Strings;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -105,12 +107,19 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
 
     @Override
     public Optional<DeviceConfig> getLatestConfigForInterface(OnmsIpInterface ipInterface, String serviceName) {
-        List<DeviceConfig> deviceConfigs =
-                findObjects(DeviceConfig.class,
-                        "from DeviceConfig dc WHERE dc.ipInterface.id = ? AND serviceName = ? " +
-                                "ORDER BY lastUpdated DESC LIMIT 1", ipInterface.getId(), serviceName);
+        List<DeviceConfig> deviceConfigs = new ArrayList<>();
+        if (!Strings.isNullOrEmpty(serviceName)) {
+            deviceConfigs =
+                    findObjects(DeviceConfig.class,
+                            "from DeviceConfig dc WHERE dc.ipInterface.id = ? AND serviceName = ? " +
+                                    "ORDER BY lastUpdated DESC LIMIT 1", ipInterface.getId(), serviceName);
+        } else {
+            deviceConfigs = findObjects(DeviceConfig.class,
+                    "from DeviceConfig dc WHERE dc.ipInterface.id = ? AND serviceName is NULL " +
+                            "ORDER BY lastUpdated DESC LIMIT 1", ipInterface.getId());
+        }
 
-        if (deviceConfigs != null && !deviceConfigs.isEmpty()) {
+        if (!deviceConfigs.isEmpty()) {
             return Optional.of(deviceConfigs.get(0));
         }
         return Optional.empty();

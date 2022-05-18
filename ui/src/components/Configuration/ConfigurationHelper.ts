@@ -772,10 +772,10 @@ const validateLocalItem = (
     }
     if (localItem.type.name === RequisitionTypes.VMWare) {
       if (localItem.username && !localItem.password) {
-        errors.password = ErrorStrings.Password
+        errors.password = ErrorStrings.Required(VMWareFields.UpperPassword)
       }
       if (localItem.password && !localItem.username) {
-        errors.username = ErrorStrings.Username
+        errors.username = ErrorStrings.Required(VMWareFields.UpperUsername)
       }
     }
     if (!localItem.advancedCrontab) {
@@ -806,7 +806,7 @@ const validateName = (name: string, nameType: string = RequisitionFields.Name) =
   let nameError = ''
   const maxNameLength = 255
   if (!name) {
-    nameError = ErrorStrings.MustHave(nameType)
+    nameError = ErrorStrings.Required(nameType)
   }
   if (!nameError && name.length < 2) {
     nameError = ErrorStrings.NameShort(nameType)
@@ -823,7 +823,7 @@ const validateName = (name: string, nameType: string = RequisitionFields.Name) =
  * @returns Message if empty, empty string on value.
  */
 const validateOccurance = (occuranceName: string) => {
-  return !occuranceName ? ErrorStrings.OccuranceTime : ''
+  return !occuranceName ? ErrorStrings.Required('Schedule') : ''
 }
 
 /**
@@ -832,7 +832,7 @@ const validateOccurance = (occuranceName: string) => {
  * @returns Message if empty, empty string on value.
  */
 const validateOccuranceDay = (occuranceName: string) => {
-  return !occuranceName ? ErrorStrings.OccuranceDayTime : ''
+  return !occuranceName ? ErrorStrings.Required('Day of the month') : ''
 }
 
 /**
@@ -841,7 +841,7 @@ const validateOccuranceDay = (occuranceName: string) => {
  * @returns Message if empty, empty string on value.
  */
 const validateOccuranceWeek = (occuranceName: string) => {
-  return !occuranceName ? ErrorStrings.OccuranceWeekTime : ''
+  return !occuranceName ? ErrorStrings.Required('Day of the week') : ''
 }
 
 /**
@@ -852,9 +852,11 @@ const validateOccuranceWeek = (occuranceName: string) => {
 const validatePath = (path: string) => {
   let pathError = ''
   if (!path) {
-    pathError = ErrorStrings.FilePath
+    pathError = ErrorStrings.Required('File path')
   } else if (!path.startsWith('/')) {
     pathError = ErrorStrings.FilePathStart
+  } else if(/[?]/gm.test(path)) {
+    pathError = ErrorStrings.FilePathWithQueryChar
   }
   return pathError
 }
@@ -865,7 +867,7 @@ const validatePath = (path: string) => {
  * @returns Message if empty, empty string on value.
  */
 const validateType = (typeName: string) => {
-  return !typeName ? ErrorStrings.TypeError : ''
+  return !typeName ? ErrorStrings.Required('Type') : ''
 }
 
 /**

@@ -100,3 +100,6 @@ systemctl start opennms.service
 NOTE: `tail -F $\{OPENNMS_HOME}/logs/manager.log` can illustrate the current point in the startup process {page-component-title} is.
 
 . Upgrade is complete and operation is resumed.
+
+IMPORTANT: Make sure you clear the browser cache before using the {page-component-title} web UI against the upgraded version.
+This is especially important for pages that use JavaScript heavily (for example, the Requisitions UI).

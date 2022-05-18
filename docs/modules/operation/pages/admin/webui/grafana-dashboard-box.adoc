@@ -28,7 +28,7 @@ image::webui/startpage/01_grafana-box.png[]
 | false
 
 | org.opennms.grafanaBox.hostname
-| If the box is enabled you also need to specify hostname of the Grafana server
+| If the box is enabled you also need to specify hostname of the Grafana server.
 | String
 | localhost
 
@@ -43,13 +43,14 @@ image::webui/startpage/01_grafana-box.png[]
 |
 
 | org.opennms.grafanaBox.apiKey
-| The API key is needed for the ReST calls to work
+| The API key is needed for the ReST calls to work. +
+The process to generate a Grafana API Key can be found in the https://grafana.com/docs/grafana/latest/http_api/[HTTP API documentation].
 | String
 |
 
 | org.opennms.grafanaBox.tag
 | When a tag is specified only dashboards with this given tag will be displayed.
-When no tag is given all dashboards will be displayed
+When no tag is given all dashboards will be displayed.
 | String
 |
 
@@ -59,23 +60,40 @@ When no tag is given all dashboards will be displayed
 | http
 
 | org.opennms.grafanaBox.connectionTimeout
-| Timeout in milliseconds for getting information from the Grafana server
+| Timeout in milliseconds for getting information from the Grafana server.
 | Integer
 | 500
 
 | org.opennms.grafanaBox.soTimeout
-| Socket timeout
+| Socket timeout.
 | Integer
 | 500
 
 | org.opennms.grafanaBox.dashboardLimit
-| Maximum number of entries to be displayed (0 for unlimited)
+| Maximum number of entries to be displayed (0 for unlimited).
 | Integer
 | 0
+
+| org.opennms.grafanaBox.link.protocol
+| The protocol used to build each dashboard link URL.
+| String
+| org.opennms.grafanaBox.protocol
+
+| org.opennms.grafanaBox.link.hostname
+| Hostname used to build each dashboard link URL.
+| String
+| org.opennms.grafanaBox.hostname
+
+| org.opennms.grafanaBox.link.port
+| The port used to build each dashboard link URL.
+| Integer
+| org.opennms.grafanaBox.port
+
+| org.opennms.grafanaBox.link.basePath
+| The Grafana base path used to build each dashboard link URL.
+| String
+| org.opennms.grafanaBox.basePath
 |===
 
-TIP: If you have Grafana behind a proxy it is important the `org.opennms.grafanaBox.hostname` is reachable.
-     This host name is used to generate links to the Grafana dashboards.
-
-The process to generate a Grafana API Key can be found in the https://grafana.com/docs/grafana/latest/http_api/[HTTP API documentation].
-Copy the API Key to `opennms.properties` as `org.opennms.grafanaBox.apiKey`.
+NOTE: If you have Grafana behind a reverse proxy, you may need to specify the `org.opennms.grafanaBox.link.*` properties.
+The "link" properties, if set, are used to build the links that are shown to users, independent of the other properties which are used for internal interaction with the Grafana REST API.

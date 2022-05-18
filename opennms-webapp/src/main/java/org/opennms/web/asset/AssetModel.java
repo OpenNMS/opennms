@@ -35,8 +35,12 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.DBUtils;
@@ -328,15 +332,17 @@ public class AssetModel {
 
         columnName = WebSecurityUtils.sanitizeDbColumnName(columnName);
 
+        if (!VALID_SQL_STATEMENTS.containsKey(columnName.toLowerCase())) {
+            return new MatchingAsset[0];
+        }
+
         final DBUtils d = new DBUtils(AssetModel.class);
         try {
             Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
-            PreparedStatement stmt = conn.prepareStatement("SELECT ASSETS.NODEID, NODE.NODELABEL, ASSETS.? FROM ASSETS, NODE WHERE LOWER(ASSETS.?) LIKE ? AND ASSETS.NODEID=NODE.NODEID ORDER BY NODE.NODELABEL");
+            PreparedStatement stmt = conn.prepareStatement(VALID_SQL_STATEMENTS.get(columnName.toLowerCase()));
             d.watch(stmt);
-            stmt.setString(1, columnName);
-            stmt.setString(2, columnName);
-            stmt.setString(3, "%" + searchText.toLowerCase() + "%");
+            stmt.setString(1, "%" + searchText.toLowerCase() + "%");
 
             ResultSet rs = stmt.executeQuery();
             d.watch(rs);
@@ -489,11 +495,21 @@ public class AssetModel {
         return s_columns;
     }
 
+    private static String[][] sort(final String[][] arr) {
+        Arrays.sort(arr, new Comparator<String[]>() {
+            @Override
+            public int compare(final String[] o1, final String[] o2) {
+                return o1[0].compareTo(o2[0]);
+            }
+        });
+        return arr;
+    }
+
     /**
      * Hard-coded (for now) list of human-readable asset columns and the
      * corresponding database column.
      */
-    private static final String[][] s_columns = new String[][] {
+    private static final String[][] s_columns = sort(new String[][] {
         new String[] { "Address 1", "address1" },
         new String[] { "Address 2", "address2" }, 
         new String[] { "Asset Number", "assetNumber" }, 
@@ -550,11 +566,16 @@ public class AssetModel {
         new String[] { "Additional hardware", "additionalhardware" },
         new String[] { "Admin", "admin" },
         new String[] { "SNMP community", "snmpcommunity" },
-	new String[] { "Rack unit height", "rackunitheight" },
+	    new String[] { "Rack unit height", "rackunitheight" },
         new String[] { "GeoLocation Longitude", "longitude" },
         new String[] { "GeoLocation Latitude", "latitude" },
-        new String[] { "Country", "country" }
-    };
+        new String[] { "Country", "country" },
+        new String[] { "Category", "category" }
+    });
+
+    private static final Map<String, String> VALID_SQL_STATEMENTS = Arrays.stream(s_columns)
+            .map(entry -> entry[1].toLowerCase())
+            .collect(Collectors.toMap(e -> e, e -> String.format("SELECT ASSETS.NODEID, NODE.NODELABEL, ASSETS.%s FROM ASSETS, NODE WHERE LOWER(ASSETS.%s) LIKE ? AND ASSETS.NODEID=NODE.NODEID ORDER BY NODE.NODELABEL", e, e)));
 
     private Float safeFloat(final String value) {
         if (StringUtils.hasLength(value)) {
