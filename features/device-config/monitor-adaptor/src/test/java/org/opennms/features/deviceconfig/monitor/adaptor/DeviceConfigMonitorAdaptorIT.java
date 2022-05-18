@@ -187,9 +187,8 @@ public class DeviceConfigMonitorAdaptorIT {
         builder.setInterface(ipInterface.getIpAddress());
         builder.setNodeid(ipInterface.getNodeId());
         builder.setService(DEFAULT_SERVICE_NAME);
-        builder.addParam(EventConstants.PARM_DEVICE_CONFIG_BACKUP_REASON, DeviceConfigConstants.SCHEDULED_BACKUP);
-        builder.addParam(EventConstants.PARM_DEVICE_CONFIG_BACKUP_DATA_PROTOCOL, "TFTP");
-        builder.addParam(EventConstants.PARM_DEVICE_CONFIG_BACKUP_CONTROL_PROTOCOL, DeviceConfigConstants.CRON);
+        builder.addParam(DeviceConfigConstants.PARM_DEVICE_CONFIG_BACKUP_DATA_PROTOCOL, "TFTP");
+        builder.addParam(DeviceConfigConstants.PARM_DEVICE_CONFIG_BACKUP_CONTROL_PROTOCOL, DeviceConfigConstants.CRON);
         eventIpcManager.getEventAnticipator().anticipateEvent(builder.getEvent());
 
         builder = new EventBuilder(EventConstants.DEVICE_CONFIG_BACKUP_SUCCEEDED_UEI, "poller");

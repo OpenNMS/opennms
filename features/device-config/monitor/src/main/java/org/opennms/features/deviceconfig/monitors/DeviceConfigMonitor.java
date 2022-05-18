@@ -152,8 +152,8 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
             status.setDeviceConfig(new DeviceConfig());
             return status;
         }
-        parameters.put(EventConstants.PARM_DEVICE_CONFIG_BACKUP_START_TIME, System.currentTimeMillis());
-        parameters.put(EventConstants.PARM_DEVICE_CONFIG_BACKUP_DATA_PROTOCOL, Protocol.TFTP);
+        parameters.put(DeviceConfigConstants.PARM_DEVICE_CONFIG_BACKUP_START_TIME, System.currentTimeMillis());
+        parameters.put(DeviceConfigConstants.PARM_DEVICE_CONFIG_BACKUP_DATA_PROTOCOL, Protocol.TFTP);
         
         String script = getObjectAsStringFromParams(parameters, SCRIPT);
         String user = getObjectAsStringFromParams(parameters, USERNAME);

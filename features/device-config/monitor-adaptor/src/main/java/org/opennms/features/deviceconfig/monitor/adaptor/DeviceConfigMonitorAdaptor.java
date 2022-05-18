@@ -105,13 +105,13 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
         // why did backup happen?
         boolean triggered = Boolean.parseBoolean(getKeyedString(parameters, DeviceConfigConstants.TRIGGERED_POLL, "false"));
         String controlProtocol = triggered ? DeviceConfigConstants.REST : DeviceConfigConstants.CRON;
-        String dataProtocol = getKeyedString(parameters, EventConstants.PARM_DEVICE_CONFIG_BACKUP_DATA_PROTOCOL, "TFTP");
-        long timestamp = Long.parseLong(getKeyedString(parameters, EventConstants.PARM_DEVICE_CONFIG_BACKUP_START_TIME, "0"));
+        String dataProtocol = getKeyedString(parameters, DeviceConfigConstants.PARM_DEVICE_CONFIG_BACKUP_DATA_PROTOCOL, "TFTP");
+        long timestamp = Long.parseLong(getKeyedString(parameters, DeviceConfigConstants.PARM_DEVICE_CONFIG_BACKUP_START_TIME, "0"));
 
         // send 'started' event with adjusted time stamp
         sendEvent(ipInterface, svc.getSvcName(), EventConstants.DEVICE_CONFIG_BACKUP_STARTED_UEI, svc.getNodeId(), timestamp, Map.of(
-                EventConstants.PARM_DEVICE_CONFIG_BACKUP_CONTROL_PROTOCOL, controlProtocol,
-                EventConstants.PARM_DEVICE_CONFIG_BACKUP_DATA_PROTOCOL, dataProtocol
+                DeviceConfigConstants.PARM_DEVICE_CONFIG_BACKUP_CONTROL_PROTOCOL, controlProtocol,
+                DeviceConfigConstants.PARM_DEVICE_CONFIG_BACKUP_DATA_PROTOCOL, dataProtocol
         ));
 
         var latestConfig = deviceConfigDao.getLatestConfigForInterface(ipInterface, svc.getSvcName());
@@ -277,13 +277,13 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
     }
 
     private static String getKeyedString(final Map<String, Object> parameterMap, final String key, final String defaultValue) {
-        final Object value = getKeyedObject(parameterMap, key, defaultValue);
-        if (value == null) return defaultValue;
-
-        if (value instanceof String) {
-            return (String)value;
+        String ret = defaultValue;
+        if (key != null) {
+            Object value = parameterMap.get(key);
+            if (value != null) {
+                ret = value instanceof String ? (String)value : value.toString();
+            }
         }
-
-        return value.toString();
+        return ret;
     }
 }

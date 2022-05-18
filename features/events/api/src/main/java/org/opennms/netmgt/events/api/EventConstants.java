@@ -1072,13 +1072,6 @@ public abstract class EventConstants {
     /** Constant <code>OID_SNMP_IFINDEX</code> */
     public static final SnmpObjId OID_SNMP_IFINDEX = SnmpObjId.get(".1.3.6.1.2.1.2.2.1.1");
 
-    //
-    // For DCB
-    //
-    public static final String PARM_DEVICE_CONFIG_BACKUP_START_TIME = "backupStartTime";
-    public static final String PARM_DEVICE_CONFIG_BACKUP_CONTROL_PROTOCOL = "backupControlProtocol";
-    public static final String PARM_DEVICE_CONFIG_BACKUP_DATA_PROTOCOL = "backupDataProtocol";
-
     /**
      * An utility method to parse a string into a 'Date' instance. Note that the
      * string should be in the locale-specific DateFormat.LONG style for both

@@ -37,4 +37,7 @@ public interface DeviceConfigConstants {
     static final String RETENTION_PERIOD = "retention-period";
     static final String REST = "REST";
     static final String CRON = "cron";
+    static final String PARM_DEVICE_CONFIG_BACKUP_START_TIME = "backupStartTime";
+    static final String PARM_DEVICE_CONFIG_BACKUP_DATA_PROTOCOL = "backupDataProtocol";
+    static final String PARM_DEVICE_CONFIG_BACKUP_CONTROL_PROTOCOL = "backupControlProtocol";
 }
