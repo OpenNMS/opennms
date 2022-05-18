@@ -115,11 +115,11 @@ To provide details for this device, we created SQL tables `etlookup` and `ta4303
 ----
 <1> The PassiveStatusKeeper looks for this specific UEI.
 <2> The `passiveNodeLabel` must match the label of the node.
-This example is hard coding the label, but this can also be a lookup from the original event's parameters.
+This example hard codes the label, but this can also be a lookup from the original event's parameters.
 <3> In practice, you would not want to hard code the node ID on the event.
 <4> Since this is a passive node without a real IP address, this lookup uses the slot and port fields from the original event to query the database for a "dummy" IP assigned to the node.
-<5> Lookup the port description from our SQL table.
-This new parameter can be used in the event and notifications  as `%parm[portdesc]%`.
+<5> Look up the port description from our SQL table.
+This new parameter can be used in the event and notifications as `%parm[portdesc]%`.
 <6> The name of the xref:reference:service-assurance/monitors/PassiveStatusMonitor.adoc[PassiveStatusMonitor] service assigned to the node.
 If more than one passive service is assigned to the same interface, this field is used to trigger outages on a specific service.
 <7> Must be either "Up" or "Down" and is case sensitive.
