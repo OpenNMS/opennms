@@ -114,23 +114,23 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault {
             if (!m_credentialsCache.isEmpty()) {
                 return;
             }
-        }
-        try {
-            KeyStore.PasswordProtection keyStorePP = new KeyStore.PasswordProtection(m_password);
-            SecretKeyFactory factory = SecretKeyFactory.getInstance("PBE");
+            try {
+                KeyStore.PasswordProtection keyStorePP = new KeyStore.PasswordProtection(m_password);
+                SecretKeyFactory factory = SecretKeyFactory.getInstance("PBE");
 
-            for (String alias : getAliases()) {
-                KeyStore.SecretKeyEntry ske = (KeyStore.SecretKeyEntry) m_keystore.getEntry(alias, keyStorePP);
-                if (ske == null) {
-                    continue;
+                for (String alias : getAliases()) {
+                    KeyStore.SecretKeyEntry ske = (KeyStore.SecretKeyEntry) m_keystore.getEntry(alias, keyStorePP);
+                    if (ske == null) {
+                        continue;
+                    }
+                    PBEKeySpec keySpec = (PBEKeySpec) factory.getKeySpec(ske.getSecretKey(), PBEKeySpec.class);
+                    synchronized (m_credentialsCache) {
+                        m_credentialsCache.put(alias, fromBase64EncodedByteArray(new String(keySpec.getPassword()).getBytes()));
+                    }
                 }
-                PBEKeySpec keySpec = (PBEKeySpec) factory.getKeySpec(ske.getSecretKey(), PBEKeySpec.class);
-                synchronized (m_credentialsCache) {
-                    m_credentialsCache.put(alias, fromBase64EncodedByteArray(new String(keySpec.getPassword()).getBytes()));
-                }
+            } catch (KeyStoreException | InvalidKeySpecException | NoSuchAlgorithmException | IOException | ClassNotFoundException | UnrecoverableEntryException e) {
+                throw Throwables.propagate(e);
             }
-        } catch (KeyStoreException | InvalidKeySpecException | NoSuchAlgorithmException | IOException | ClassNotFoundException | UnrecoverableEntryException e) {
-            throw Throwables.propagate(e);
         }
     }
 
