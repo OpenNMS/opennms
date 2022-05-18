@@ -15,15 +15,15 @@ endif::opennms-prime[]
 | Description
 
 | ROLE_ADMIN*
-| Permissions to create, read, update, and delete in the web UI and the ReST API (except see ROLE_CONFIG_EDITOR below).
+| Permissions to create, read, update, and delete in the web UI and the ReST API (except see ROLE_FILESYSTEM_EDITOR below).
 
 | ROLE_ASSET_EDITOR
 | Permissions only to update the asset records from nodes.
 
-| ROLE_CONFIG_EDITOR
-| Permissions only to view and update configuration data via the REST API (and consequently, from the UI Preview).
-Note that even ROLE_ADMIN cannot view or edit configurations unless they also have the ROLE_CONFIG_EDITOR role.
-Also, for a user with ROLE_CONFIG_EDITOR to use the UI, they will also need the ROLE_USER or similar role.
+| ROLE_FILESYSTEM_EDITOR
+| Permissions only to view and update file configuration data via the REST API (and consequently, from the UI Preview).
+Note that even ROLE_ADMIN cannot view or edit configurations unless they also have the ROLE_FILESYSTEM_EDITOR role.
+Also, for a user with ROLE_FILESYSTEM_EDITOR to use the UI, they will also need the ROLE_USER or similar role.
 
 | ROLE_DASHBOARD
 | Allow user access only to the dashboard.
