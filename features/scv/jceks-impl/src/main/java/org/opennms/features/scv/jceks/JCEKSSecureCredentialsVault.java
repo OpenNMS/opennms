@@ -77,7 +77,7 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault {
     private final byte[] m_salt;
     private final int m_iterationCount;
     private final int m_keyLength;
-    private final HashMap<String, Credentials> m_credentialsCache;
+    private final HashMap<String, Credentials> m_credentialsCache = new HashMap<>();
 
     public JCEKSSecureCredentialsVault(String keystoreFile, String password) {
         this(keystoreFile, password, new byte[] {0x0, 0xd, 0xd, 0xb, 0xa, 0x1, 0x1});
@@ -93,7 +93,6 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault {
         m_iterationCount = iterationCount;
         m_keyLength = keyLength;
         m_keystoreFile = new File(keystoreFile);
-        m_credentialsCache = new HashMap<>();
         try {
             m_keystore = KeyStore.getInstance("JCEKS");
             if (!m_keystoreFile.isFile()) {
@@ -112,17 +111,24 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault {
     }
 
     private void loadCredentials() {
+        synchronized (m_credentialsCache) {
+            if (m_credentialsCache.isEmpty()) {
+                return;
+            }
+        }
         try {
             KeyStore.PasswordProtection keyStorePP = new KeyStore.PasswordProtection(m_password);
             SecretKeyFactory factory = SecretKeyFactory.getInstance("PBE");
 
-            for(String alias: getAliases()){
-                KeyStore.SecretKeyEntry ske = (KeyStore.SecretKeyEntry)m_keystore.getEntry(alias, keyStorePP);
+            for (String alias : getAliases()) {
+                KeyStore.SecretKeyEntry ske = (KeyStore.SecretKeyEntry) m_keystore.getEntry(alias, keyStorePP);
                 if (ske == null) {
                     continue;
                 }
                 PBEKeySpec keySpec = (PBEKeySpec) factory.getKeySpec(ske.getSecretKey(), PBEKeySpec.class);
-                m_credentialsCache.put(alias, fromBase64EncodedByteArray(new String(keySpec.getPassword()).getBytes()));
+                synchronized (m_credentialsCache) {
+                    m_credentialsCache.put(alias, fromBase64EncodedByteArray(new String(keySpec.getPassword()).getBytes()));
+                }
             }
         } catch (KeyStoreException | InvalidKeySpecException | NoSuchAlgorithmException | IOException | ClassNotFoundException | UnrecoverableEntryException e) {
             throw Throwables.propagate(e);
@@ -132,7 +138,10 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault {
 
     @Override
     public Credentials getCredentials(String alias) {
-        return m_credentialsCache.get(alias);
+        loadCredentials();
+        synchronized (m_credentialsCache) {
+            return m_credentialsCache.get(alias);
+        }
     }
 
     @Override
