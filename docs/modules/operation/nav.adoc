@@ -142,6 +142,9 @@
 ** xref:flows/aggregation.adoc[]
 ** xref:flows/troubleshooting.adoc[]
 
+* xref:geographical-map/introduction.adoc[]
+** xref:geographical-map/searching.adoc[]
+
 * xref:kafka-producer/kafka-producer.adoc[]
 ** xref:kafka-producer/enable-kafka.adoc[]
 ** xref:kafka-producer/configure-kafka.adoc[]
@@ -152,7 +155,7 @@
 * xref:snmp-poller/concepts.adoc[]
 
 
-* xref:admin/introduction.adoc[]
+* {page-component-title} Administration
 ** xref:admin/webui/introduction.adoc[]
 *** xref:admin/webui/dashboard.adoc[]
 *** xref:admin/webui/grafana-dashboard-box.adoc[]
@@ -186,6 +189,11 @@
 ** xref:admin/external-auth.adoc[]
 ** xref:admin/geocoder.adoc[]
 ** xref:admin/http-ssl.adoc[]
+*** xref:admin/https/https-server.adoc[]
+*** xref:admin/https/https-client.adoc[]
 ** xref:admin/request-logging.adoc[]
 ** xref:admin/restart.adoc[]
 ** xref:admin/daemon-config-files.adoc[]
+** xref:admin/backup/introduction.adoc[]
+** xref:admin/restore/introduction.adoc[]
+** xref:admin/housekeeping/introduction.adoc[]

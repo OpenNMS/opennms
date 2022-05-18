@@ -1,0 +1,86 @@
+[[ref-ssl]]
+= Securing Jetty With HTTPS
+
+If users will be accessing the OpenNMS web UI across untrusted networks, it is a best practice to protect web sessions using HTTPS.
+This article explains how to configure OpenNMS' built-in Jetty web server to support HTTPS.
+
+TIP: It is typically easier to leave the Jetty config as default and use nginx or Apache as a reverse proxy.
+We have a https://opennms.discourse.group/t/how-to-use-nginx-as-ssl-proxy-with-opennms-horizon/208[Discourse forum post] with an example of using a reverse proxy.
+
+== Customize jetty.xml
+
+By default, no Jetty config file is included in {page-component-title}.
+There is a sample `jetty.xml` config in `$\{OPENNMS_HOME}/etc/examples` that can be used as a template.
+Copy this to `$\{OPENNMS_HOME}/etc` and remove comment tags for the section "Add HTTPS Support".
+
+== Create a new Java keystore
+
+Using the keytool utility that ships as `$\{JAVA_HOME}/bin/keytool` with most Java distributions, create a new keystore and populate it with a new key.
+For the first question ("What is your first and last name"), enter the fully-qualified domain name by which people will access your OpenNMS server's web UI.
+Choose this name correctly, as you will have to start over if you ever need to change it.
+Answer the remaining questions according to the specifics of your organization and location.
+
+Be sure to specify an appropriate number of days for the validity parameter.
+After this number of days elapses, the key you are generating will expire and you may no longer be able to use it to create new certificates.
+The example below specifies 731 days, which makes the key valid for two years (accounting for a possible leap year).
+
+It is important that you choose good passwords for the keystore and for the key itself.
+These passwords may be the same or different to each other.
+Using different and strong passwords here protects your server's private key in the event the keystore file falls into the wrong hands.
+You should take precautions to keep this from happening, including setting filesystem user and group permissions so that unauthorized individuals with accounts on the OpenNMS server will not have read (or write) access to the keystore.
+
+By default, keytool will create DSA keys, but Jetty requires an RSA key.
+Make sure you pass the `-keyalg RSA` option to keytool.
+
+[source, console]
+----
+keytool -alias opennms-jetty -genkeypair -keyalg RSA -keysize 2048 -validity 731 -keystore /tmp/propercert/proper.keystore
+Enter keystore password:  aGoodStrongKeystorePassword
+What is your first and last name?
+  [Unknown]:  opennms.example.org
+What is the name of your organizational unit?
+  [Unknown]:  Network Management Division
+What is the name of your organization?
+  [Unknown]:  The Example Organization
+What is the name of your City or Locality?
+  [Unknown]:  Marina del Rey
+What is the name of your State or Province?
+  [Unknown]:  California
+What is the two-letter country code for this unit?
+  [Unknown]:  US
+Is CN=opennms.example.org, OU=Network Management Division, O=The Example Organization, L=Marina del Rey, ST=California, C=US correct?
+  [no]:  yes
+----
+
+== Restrict access to the plain-HTTP listener
+
+The steps to configure OpenNMS to start a Jetty HTTPS listener on port 8443 do not disable the plain-HTTP listener that is present by default on port 8980.
+This listener must be present so that the OpenNMS real-time console can update the availability statistics shown in the web UI.
+Once you have enabled HTTPS, you probably do not want users using HTTP, so you will need to restrict access to the plain-HTTP listener.
+
+There are two ways to accomplish this task.
+
+* Tell the plain-HTTP listener to bind only to an interface that is not accessible from any untrusted networks.
+In a setup where the OpenNMS web UI runs on the same server as the other OpenNMS daemons, it makes sense to use the loopback interface for this purpose.
+You can restrict the plain-HTTP listener to bind only to the localhost interface by setting the Jetty host property.
+Create or edit the `$\{OPENNMS_HOME}/etc/opennms.properties.d/https.properties` file.
++
+[source, properties]
+----
+org.opennms.netmgt.jetty.host = 127.0.0.1
+----
+
+* Use firewall rules to limit access.
+These rules may be local to the OpenNMS web UI server (iptables, firewalld, or ufw) or they may be configured in a discrete firewall external that stands between the OpenNMS web UI server and the rest of the network.
+Configuring these rules is beyond the scope of this article.
+
+== Restrict access to the HTTPS listener
+
+Although HTTPS is considered secure, there are valid reasons to restrict the interfaces on which the OpenNMS Jetty HTTPS listener is reachable.
+The listener is bound to all interfaces (`0.0.0.0`) by default.
+To bind the HTTPS listener to a single interface, create or edit the `$\{OPENNMS_HOME}/etc/opennms.properties.d/https.properties` file.
+
+[source, properties]
+----
+org.opennms.netmgt.jetty.https-host = 10.11.12.13
+----

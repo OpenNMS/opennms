@@ -12,7 +12,6 @@
   <name>OpenNMS Full Assembly</name>
   <properties>
     <build.profile>default</build.profile>
-    <maven.metadata.legacy>true</maven.metadata.legacy>
   </properties>
   <profiles>
     <profile>
@@ -716,10 +715,6 @@
           <skip>true</skip>
         </configuration>
       </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>license-maven-plugin</artifactId>
-      </plugin>
     </plugins>
 
   </build>
@@ -740,6 +735,11 @@
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>jaxb-dependencies</artifactId>
+      <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>oia-dependencies</artifactId>
       <type>pom</type>
     </dependency>
     <dependency>
