@@ -124,9 +124,7 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault {
                         continue;
                     }
                     PBEKeySpec keySpec = (PBEKeySpec) factory.getKeySpec(ske.getSecretKey(), PBEKeySpec.class);
-                    synchronized (m_credentialsCache) {
-                        m_credentialsCache.put(alias, fromBase64EncodedByteArray(new String(keySpec.getPassword()).getBytes()));
-                    }
+                    m_credentialsCache.put(alias, fromBase64EncodedByteArray(new String(keySpec.getPassword()).getBytes()));
                 }
             } catch (KeyStoreException | InvalidKeySpecException | NoSuchAlgorithmException | IOException | ClassNotFoundException | UnrecoverableEntryException e) {
                 throw Throwables.propagate(e);
