@@ -8,22 +8,11 @@ If you have an existing directory for authenticating users, you can configure {p
 The {page-component-title} webapp uses link:https://spring.io/projects/spring-security[Spring Security] for its user authentication, authorization, and accounting (AAA) concerns.
 Configuring external authentication requires configuring Spring Security correctly for your own environment.
 
-You can modify the Spring Security configuration without making large, invasive changes to the main context file.
-Here is a summary of the files involved:
 
-[source, directory]
-----
-${OPENNMS_HOME}/jetty-webapps/
-|-- opennms
-|   |-- WEB-INF
-|   |   |-- applicationContext-spring-security.xml
-|   |   |-- spring-security.d
-|   |   |   |-- activeDirectory.xml.disabled
-|   |   |   |-- ldap.xml.disabled
-|   |   |   |-- radius.xml.disabled
-----
+The Spring Security configuration files are located in at `$\{OPENNMS_HOME}/jetty-webapps/opennms/WEB-INF`.
+Only one authentication service can be enabled in the `spring-security.d` subdirectory.
 
-There may be additional example files in your installation.
+The following files are used for external authentication:
 
 applicationContext-spring-security.xml::
 The main Spring Security context configuration file for the OpenNMS webapp.
