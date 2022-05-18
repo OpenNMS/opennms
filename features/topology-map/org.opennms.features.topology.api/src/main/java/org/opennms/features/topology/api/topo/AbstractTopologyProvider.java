@@ -40,7 +40,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class AbstractTopologyProvider implements GraphProvider {
-
     private static final Logger LOG = LoggerFactory.getLogger(AbstractTopologyProvider.class);
 
     protected final BackendGraph graph;
