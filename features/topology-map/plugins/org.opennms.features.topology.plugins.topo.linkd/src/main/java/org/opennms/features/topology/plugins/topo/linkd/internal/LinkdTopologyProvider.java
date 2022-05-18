@@ -28,21 +28,22 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.Timer;
-import com.google.common.collect.Lists;
+import java.util.*;
+
+import org.opennms.features.topology.api.topo.*;
 import org.opennms.features.topology.api.browsers.ContentType;
 import org.opennms.features.topology.api.browsers.SelectionAware;
 import org.opennms.features.topology.api.browsers.SelectionChangedListener;
-import org.opennms.features.topology.api.topo.*;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
+import com.google.common.collect.Lists;
 
-import java.util.*;
 
 public class LinkdTopologyProvider extends AbstractTopologyProvider implements GraphProvider {
 

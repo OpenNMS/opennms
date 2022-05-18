@@ -28,20 +28,25 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
-import com.google.common.collect.Maps;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.core.criteria.restrictions.NeRestriction;
-import org.opennms.features.topology.api.topo.*;
+import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.api.topo.EdgeRef;
+import org.opennms.features.topology.api.topo.EdgeStatusProvider;
+import org.opennms.features.topology.api.topo.Status;
+import org.opennms.features.topology.api.topo.BackendGraph;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsSeverity;
 
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import com.google.common.collect.Maps;
 
 public class LinkdEdgeStatusProvider implements EdgeStatusProvider {
 
@@ -64,7 +69,7 @@ public class LinkdEdgeStatusProvider implements EdgeStatusProvider {
 
         @Override
         public Map<String, String> getStatusProperties() {
-            Map<String, String> statusMap = new LinkedHashMap<String, String>();
+            Map<String, String> statusMap = new LinkedHashMap<>();
             statusMap.put("status", m_status);
 
             return statusMap;
@@ -91,7 +96,7 @@ public class LinkdEdgeStatusProvider implements EdgeStatusProvider {
 
     @Override
     public Map<EdgeRef, Status> getStatusForEdges(BackendGraph graph, Collection<EdgeRef> edges, Criteria[] criteria) {
-        Map<EdgeRef, Status> retVal = new LinkedHashMap<EdgeRef, Status>();
+        Map<EdgeRef, Status> retVal = new LinkedHashMap<>();
 EDGES:        for (EdgeRef edgeRef : edges) {
                 LinkdEdge edge = (LinkdEdge) graph.getEdge(edgeRef);
                 for (OnmsAlarm alarm: getLinkdEdgeDownAlarms()) {

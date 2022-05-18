@@ -28,16 +28,25 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
-import com.google.common.collect.Lists;
+import java.util.List;
+import java.util.Set;
+
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.support.hops.VertexHopCriteria;
-import org.opennms.features.topology.api.topo.*;
+import org.opennms.features.topology.api.topo.AbstractSearchProvider;
+import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.SearchProvider;
+import org.opennms.features.topology.api.topo.SearchQuery;
+import org.opennms.features.topology.api.topo.SearchResult;
+import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.VertexRef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-import java.util.Set;
+import com.google.common.collect.Lists;
+
 
 public class LinkdSearchProvider implements SearchProvider {
 

@@ -29,10 +29,10 @@
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
 import org.opennms.features.topology.api.topo.*;
-import org.opennms.netmgt.dao.api.AlarmDao;
-import org.opennms.netmgt.model.OnmsSeverity;
-import org.opennms.netmgt.model.alarm.AlarmSummary;
-import org.slf4j.LoggerFactory;
+import org.opennms.netmgt.dao.api.*;
+import org.opennms.netmgt.model.*;
+import org.opennms.netmgt.model.alarm.*;
+import org.slf4j.*;
 
 import java.util.*;
 
@@ -124,9 +124,7 @@ public class LinkdStatusProvider implements StatusProvider {
             if ("nodes".equals(eachRef.getNamespace())) {
                 try {
                     Integer nodeId = Integer.parseInt(eachRef.getId());
-                    if (nodeId != null) {
-                        vertexRefToNodeIdMap.put(nodeId, eachRef);
-                    }
+                    vertexRefToNodeIdMap.put(nodeId, eachRef);
                 } catch (NumberFormatException nfe) {
                     LoggerFactory.getLogger(LinkdStatusProvider.class).warn("Could not parse id '{}' of vertex '{}' as integer.", eachRef.getId(), eachRef);
                 }
@@ -185,12 +183,7 @@ public class LinkdStatusProvider implements StatusProvider {
 
     private static AlarmStatus calculateAlarmStatusForGroup(List<AlarmSummary> alarmSummaries) {
         if (!alarmSummaries.isEmpty()) {
-            Collections.sort(alarmSummaries, new Comparator<AlarmSummary>() {
-                @Override
-                public int compare(AlarmSummary o1, AlarmSummary o2) {
-                    return o1.getMaxSeverity().compareTo(o2.getMaxSeverity());
-                }
-            });
+            alarmSummaries.sort(Comparator.comparing(AlarmSummary::getMaxSeverity));
             OnmsSeverity severity = alarmSummaries.get(0).getMaxSeverity();
             int count = 0;
             for (AlarmSummary eachSummary : alarmSummaries) {

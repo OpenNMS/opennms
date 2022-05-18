@@ -28,13 +28,13 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
+import java.util.Set;
+import java.util.TreeSet;
+
 import org.opennms.features.topology.api.support.hops.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.RefComparator;
 import org.opennms.features.topology.api.topo.VertexRef;
-
-import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * 
@@ -45,8 +45,7 @@ import java.util.TreeSet;
 public class LinkdHopCriteria extends VertexHopCriteria {
     
     public synchronized static VertexHopCriteria createCriteria(String nodeId, String nodeLabel) {
-        VertexHopCriteria criterion = new LinkdHopCriteria(nodeId, nodeLabel);
-        return criterion;
+        return new LinkdHopCriteria(nodeId, nodeLabel);
     }
 
     private final String m_nodeId;
@@ -86,7 +85,7 @@ public class LinkdHopCriteria extends VertexHopCriteria {
 
     @Override
     public Set<VertexRef> getVertices() {
-	Set<VertexRef> vertices = new TreeSet<VertexRef>(new RefComparator());
+	Set<VertexRef> vertices = new TreeSet<>(new RefComparator());
         vertices.add(new DefaultVertexRef(getNamespace(), m_nodeId, getLabel()));
         return vertices;
     }
