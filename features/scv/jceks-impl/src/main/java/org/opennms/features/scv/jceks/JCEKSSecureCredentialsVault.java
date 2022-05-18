@@ -104,15 +104,14 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault {
                     m_keystore.load(is, m_password);
                 }
             }
-            loadCredentials();
         } catch (KeyStoreException | NoSuchAlgorithmException | CertificateException | IOException e) {
             throw Throwables.propagate(e);
         }
     }
 
     private void loadCredentials() {
-        synchronized (m_credentialsCache){
-            if(!m_credentialsCache.isEmpty()){
+        synchronized (m_credentialsCache) {
+            if (!m_credentialsCache.isEmpty()) {
                 return;
             }
         }
