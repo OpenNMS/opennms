@@ -160,7 +160,7 @@
               target="_blank"
             >
               {{ config.deviceName }}
-              <span title="Running Configuration">
+              <span :title="config.configName">
                 <FeatherIcon
                   v-if="config.configType !== 'default'"
                   :icon="Speed"
