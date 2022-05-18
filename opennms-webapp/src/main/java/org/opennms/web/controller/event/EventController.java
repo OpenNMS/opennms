@@ -57,7 +57,9 @@ import org.springframework.web.servlet.view.RedirectView;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -123,13 +125,14 @@ public class EventController extends MultiActionController implements Initializi
         OnmsFilterFavorite favorite = getFavorite(
                 request.getParameter("favoriteId"),
                 request.getRemoteUser(),
-                request.getParameterValues("filter"));
+                FilterUtil.parse(request.getQueryString()));
         return list(request, favorite);
     }
 
     private ModelAndView list(HttpServletRequest request, OnmsFilterFavorite favorite) {
         AcknowledgeType ackType = getAcknowledgeType(request);
-        ModelAndView modelAndView = createListModelAndView(request, getFilterCallback().parse(request.getParameterValues("filter")), ackType);
+        ModelAndView modelAndView = createListModelAndView(request,
+                getFilterCallback().parse(FilterUtil.parse(request.getQueryString())), ackType);
         modelAndView.addObject("favorite", favorite);
         modelAndView.setViewName("event/list");
         return modelAndView;

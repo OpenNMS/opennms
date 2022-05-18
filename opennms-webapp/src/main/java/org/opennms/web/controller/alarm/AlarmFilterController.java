@@ -95,13 +95,13 @@ public class AlarmFilterController extends MultiActionController implements Init
         OnmsFilterFavorite favorite = getFavorite(
                 request.getParameter("favoriteId"),
                 request.getRemoteUser(),
-                request.getParameterValues("filter"));
+                FilterUtil.parse(request.getQueryString()));
         return list(request, favorite);
     }
 
     private ModelAndView list(HttpServletRequest request, OnmsFilterFavorite favorite) {
         AcknowledgeType ackType = getAcknowledgeType(request);
-        ModelAndView modelAndView = createListModelAndView(request, getFilterCallback().parse(request.getParameterValues("filter")), ackType);
+        ModelAndView modelAndView = createListModelAndView(request, getFilterCallback().parse(FilterUtil.parse(request.getQueryString())), ackType);
         modelAndView.addObject("favorite", favorite);
         modelAndView.setViewName("alarm/list");
         return modelAndView;

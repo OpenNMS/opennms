@@ -28,6 +28,7 @@
 
 package org.opennms.web.filter;
 
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -50,4 +51,14 @@ public abstract class FilterUtil {
         }
         return( buffer.toString() );
     }
+
+    public static String[] parse(String filterString) {
+        String[] filterParameter = (filterString == null) ? null :Arrays.stream(filterString.split("&amp;"))
+                .filter(fp -> fp.startsWith("filter="))
+                .map(fp -> fp.replace("filter=", ""))
+                .map(fp -> fp = URLDecoder.decode(fp))
+                .toArray(String[]::new);
+        return filterParameter;
+    }
+
 }
