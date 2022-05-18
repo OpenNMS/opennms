@@ -190,14 +190,19 @@ public class XmlObject implements Serializable, Comparable<XmlObject>, Cloneable
 
 
     public String map(final String from) {
+        String defaultMapping = from;
         if (xmlMappings != null) {
             for(final XmlMapping xmlMapping : xmlMappings) {
-                if (xmlMapping.getFrom().equals(from)) {
-                    return xmlMapping.getTo();
+                if (xmlMapping.getFrom() == null) {
+                    defaultMapping = xmlMapping.getTo();
+                } else {
+                    if (xmlMapping.getFrom().equals(from)) {
+                        return xmlMapping.getTo();
+                    }
                 }
             }
         }
-        return from;
+        return defaultMapping;
     }
 
     @Override

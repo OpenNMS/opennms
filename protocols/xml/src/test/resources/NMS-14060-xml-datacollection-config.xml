@@ -1,0 +1,23 @@
+<xml-datacollection-config rrdRepository="/opt/opennms/share/rrd/snmp/" xmlns="http://xmlns.opennms.org/xsd/config/xml-datacollection">
+    <xml-collection name="xml-mapping-test">
+        <rrd step="300">
+            <rra>RRA:AVERAGE:0.5:1:2016</rra>
+            <rra>RRA:AVERAGE:0.5:12:1488</rra>
+            <rra>RRA:AVERAGE:0.5:288:366</rra>
+            <rra>RRA:MAX:0.5:288:366</rra>
+            <rra>RRA:MIN:0.5:288:366</rra>
+        </rrd>
+        <xml-source url="file://NMS-14060.xml">
+            <xml-group name="xml-mapping-test" resource-type="input" resource-xpath="/records/record" key-xpath="input">
+                <xml-object name="input" type="GAUGE" xpath="input">
+                    <xml-mapping from="foo" to="100" />
+                    <xml-mapping from="bar" to="200" />
+                    <xml-mapping from="blupp" to="300" />
+                    <xml-mapping to="400" />
+                </xml-object>
+                <xml-object name="read" type="GAUGE" xpath="read" />
+                <xml-object name="write" type="GAUGE" xpath="write" />
+            </xml-group>
+        </xml-source>
+    </xml-collection>
+</xml-datacollection-config>
