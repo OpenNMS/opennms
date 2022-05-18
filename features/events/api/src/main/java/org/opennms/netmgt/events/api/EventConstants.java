@@ -1078,7 +1078,6 @@ public abstract class EventConstants {
     public static final String PARM_DEVICE_CONFIG_BACKUP_START_TIME = "backupStartTime";
     public static final String PARM_DEVICE_CONFIG_BACKUP_CONTROL_PROTOCOL = "backupControlProtocol";
     public static final String PARM_DEVICE_CONFIG_BACKUP_DATA_PROTOCOL = "backupDataProtocol";
-    public static final String PARM_DEVICE_CONFIG_BACKUP_REASON = "reason";
 
     /**
      * An utility method to parse a string into a 'Date' instance. Note that the

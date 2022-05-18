@@ -69,7 +69,6 @@ import java.net.InetAddress;
 
 import static org.opennms.netmgt.events.api.EventConstants.PARM_IPINTERFACE_ID;
 import static org.opennms.netmgt.events.api.EventConstants.PARM_LOSTSERVICE_REASON;
-import static org.opennms.netmgt.poller.support.AbstractServiceMonitor.getKeyedString;
 
 @EventListener(name = "OpenNMS.DeviceConfig", logPrefix = "poller")
 public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
@@ -105,14 +104,12 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
 
         // why did backup happen?
         boolean triggered = Boolean.parseBoolean(getKeyedString(parameters, DeviceConfigConstants.TRIGGERED_POLL, "false"));
-        String reason = triggered ? DeviceConfigConstants.API_REQUEST : DeviceConfigConstants.SCHEDULED_BACKUP;
         String controlProtocol = triggered ? DeviceConfigConstants.REST : DeviceConfigConstants.CRON;
         String dataProtocol = getKeyedString(parameters, EventConstants.PARM_DEVICE_CONFIG_BACKUP_DATA_PROTOCOL, "TFTP");
         long timestamp = Long.parseLong(getKeyedString(parameters, EventConstants.PARM_DEVICE_CONFIG_BACKUP_START_TIME, "0"));
 
         // send 'started' event with adjusted time stamp
         sendEvent(ipInterface, svc.getSvcName(), EventConstants.DEVICE_CONFIG_BACKUP_STARTED_UEI, svc.getNodeId(), timestamp, Map.of(
-                EventConstants.PARM_DEVICE_CONFIG_BACKUP_REASON, reason,
                 EventConstants.PARM_DEVICE_CONFIG_BACKUP_CONTROL_PROTOCOL, controlProtocol,
                 EventConstants.PARM_DEVICE_CONFIG_BACKUP_DATA_PROTOCOL, dataProtocol
         ));
@@ -218,7 +215,6 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
             return null;
         });
     }
-
     /**
      * Clean up any "stale" DeviceConfig records from the database. These are DeviceConfig records
      * containing configuration data that are beyond the configured retention date.
@@ -278,5 +274,16 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
         }
         params.forEach(bldr::addParam);
         eventForwarder.sendNowSync(bldr.getEvent());
+    }
+
+    private static String getKeyedString(final Map<String, Object> parameterMap, final String key, final String defaultValue) {
+        final Object value = getKeyedObject(parameterMap, key, defaultValue);
+        if (value == null) return defaultValue;
+
+        if (value instanceof String) {
+            return (String)value;
+        }
+
+        return value.toString();
     }
 }
