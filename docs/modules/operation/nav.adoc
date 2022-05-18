@@ -59,6 +59,7 @@
 *** xref:performance-data-collection/snmp-property-extenders/pointer-like-index.adoc[]
 *** xref:performance-data-collection/snmp-property-extenders/regex.adoc[]
 *** xref:performance-data-collection/snmp-property-extenders/snmp-interface.adoc[]
+*** xref:performance-data-collection/snmp-property-extenders/value-mapping.adoc[]
 ** xref:performance-data-collection/collectd/collect-admin.adoc[]
 *** xref:performance-data-collection/shell/introduction.adoc[]
 **** xref:performance-data-collection/shell/adhoc-collection.adoc[]
