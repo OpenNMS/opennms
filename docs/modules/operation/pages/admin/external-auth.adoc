@@ -1,14 +1,14 @@
 [[ga-admin-external-auth]]
 = External Authentication
 
-If you have an existing directory for authenticating users, {page-component-title} can be configured to use that system to grant users access to log in, in addition to allowing log in from users defined directly within your {page-component-title} server.
+If you have an existing directory for authenticating users, you can configure {page-component-title} to use that system to grant users access to log in, in addition to allowing log in from users defined directly within your {page-component-title} server.
 
 == Configuring external authentication
 
 The {page-component-title} webapp uses link:https://spring.io/projects/spring-security[Spring Security] for its user authentication, authorization, and accounting (AAA) concerns.
 Configuring external authentication requires configuring Spring Security correctly for your own environment.
 
-The Spring Security configuration can be modified without making large, invasive changes to the main context file.
+You can modify the Spring Security configuration without making large, invasive changes to the main context file.
 Here is a summary of the files involved:
 
 [source, directory]
@@ -67,7 +67,7 @@ Tells Spring Security where to find the users in your directory.
 
 userGroupLdapAuthoritiesPopulator::
 Tells Spring Security where to find groups in your directory.
-By defining `groupToRoleMap` entries, groups in your directory can be mapped to one or more security roles to determine what level of access the user should be granted.
+By defining `groupToRoleMap` entries, groups in your directory can be mapped to one or more security roles to determine what level of access to grant to the user.
 
 NOTE: If your directory requires an SSL connection, and is signed with a private certificate authority, make sure to add the certificates to your xref:admin/https/https-client.adoc[truststore].
 
