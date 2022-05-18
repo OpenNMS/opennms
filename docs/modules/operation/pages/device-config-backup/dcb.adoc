@@ -18,3 +18,24 @@ NOTE: Backups appear according to their schedule.
 . To perform actions such as compare, download, and view history, place a check beside the device(s) and click the menu option.
 
 You can search by node label or IP address and sort the list of backups by typing in the search bar and clicking on the headers in the table respectively.
+
+== Monitoring
+
+Events are sent to indicate when backups are started and completed for each monitored device-config service. All events are marked with the appropriate node and interface information.
+
+When a backup is started, an event is sent with the following UEI.
+
+    uei.opennms.org/deviceconfig/configBackupStarted
+
+When a backup completes, an event is sent with one of the following UEIs:
+
+    uei.opennms.org/deviceconfig/configBackupSucceeded
+    uei.opennms.org/deviceconfig/configBackupFailed
+
+Additional Parameters
+
+* *controlProtocol* - The name of the control-plane protocol used by OpenNMS to initiate the backup ("cron", "REST").
+
+* *dataProtocol* - The name of the data-plane protocol by which OpenNMS received the backup contents ("TFTP").
+
+* *eventReason* - If the backup failed, contains a short description of the issue.
