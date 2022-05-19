@@ -37,30 +37,21 @@ public class LinkdEdge extends AbstractEdge implements Edge {
 
     public static LinkdEdge create(String id,
             LinkdPort sourceport, LinkdPort targetport,
-            ProtocolSupported discoveredBy) {
+            ProtocolSupported discoveredBy, String namespace) {
         
-        SimpleConnector source = new SimpleConnector(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, sourceport.getVertex().getId()+"-"+id+"-connector", sourceport.getVertex());
-        SimpleConnector target = new SimpleConnector(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, targetport.getVertex().getId()+"-"+id+"-connector", targetport.getVertex());
+        SimpleConnector source = new SimpleConnector(namespace, sourceport.getVertex().getId()+"-"+id+"-connector", sourceport.getVertex());
+        SimpleConnector target = new SimpleConnector(namespace, targetport.getVertex().getId()+"-"+id+"-connector", targetport.getVertex());
 
-        LinkdEdge edge = new LinkdEdge(id, sourceport, targetport,source, target,discoveredBy);
-        
-        return edge;
+        return new LinkdEdge(id, sourceport, targetport,source, target,discoveredBy,namespace);
     }
     
     private final LinkdPort m_sourcePort;
     private final LinkdPort m_targetPort;
     private final ProtocolSupported m_discoveredBy;
-    
-    public LinkdEdge(String id, LinkdPort source, LinkdPort target, ProtocolSupported discoveredBy) {
-        super(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, id, source.getVertex(), target.getVertex());
-        m_discoveredBy = discoveredBy;
-        m_sourcePort = source;
-        m_targetPort = target;
-    }
 
     public LinkdEdge(String id, LinkdPort sourcePort, LinkdPort targetPort, SimpleConnector source,
-            SimpleConnector target, ProtocolSupported discoveredBy) {
-        super(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, id, source, target);
+            SimpleConnector target, ProtocolSupported discoveredBy, String namespace) {
+        super(namespace, id, source, target);
         m_sourcePort = sourcePort;
         m_targetPort = targetPort;
         m_discoveredBy = discoveredBy;
@@ -73,7 +64,7 @@ public class LinkdEdge extends AbstractEdge implements Edge {
                  edgeToClone.getTargetPort().clone(),
                  edgeToClone.getSource().clone(),
                  edgeToClone.getTarget().clone(),
-                 edgeToClone.getDiscoveredBy());
+                 edgeToClone.getDiscoveredBy(),edgeToClone.getNamespace());
 
             setLabel(edgeToClone.getLabel());
             setStyleName(edgeToClone.getStyleName());

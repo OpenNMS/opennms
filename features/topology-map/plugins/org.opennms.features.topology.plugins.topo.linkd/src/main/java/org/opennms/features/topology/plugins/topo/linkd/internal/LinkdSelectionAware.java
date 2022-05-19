@@ -43,6 +43,12 @@ import com.google.common.collect.Collections2;
 import com.google.common.collect.Sets;
 
 public class LinkdSelectionAware implements SelectionAware {
+
+    private final LinkdTopologyFactory factory;
+    public LinkdSelectionAware(LinkdTopologyFactory factory) {
+        this.factory=factory;
+    }
+
     @Override
     public SelectionChangedListener.Selection getSelection(List<VertexRef> selectedVertices, ContentType type) {
         List<Integer> nodeIds = extractNodeIds(selectedVertices);
@@ -64,13 +70,11 @@ public class LinkdSelectionAware implements SelectionAware {
      * Gets the node ids from the given vertices. A node id can only be extracted from a vertex with a "nodes"' namespace.
      * For a vertex with namespace "node" the "getId()" method always returns the node id.
      *
-     * @param vertices
-     * @return
      */
     protected List<Integer> extractNodeIds(Collection<VertexRef> vertices) {
         List<Integer> nodeIdList = new ArrayList<>();
         for (VertexRef eachRef : vertices) {
-            if ("nodes".equals(eachRef.getNamespace())) {
+            if (factory.getActiveNamespace().equals(eachRef.getNamespace())) {
                 try {
                     nodeIdList.add(Integer.valueOf(eachRef.getId()));
                 } catch (NumberFormatException e) {

@@ -57,7 +57,7 @@
 
     <bean id="onmsTopologyDao" class="org.opennms.netmgt.topologies.service.impl.OnmsTopologyDaoInMemoryImpl"/>
 
-    <bean id="enLinkdTopologyProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyProvider">
+    <bean id="enLinkdTopologyProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyFactory">
         <constructor-arg ref="metricRegistry"/>
         <property name="onmsTopologyDao" ref="onmsTopologyDao" />
     </bean>

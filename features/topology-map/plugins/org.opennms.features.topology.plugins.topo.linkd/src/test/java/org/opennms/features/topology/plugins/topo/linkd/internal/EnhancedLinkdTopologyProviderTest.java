@@ -72,7 +72,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class EnhancedLinkdTopologyProviderTest {
 
     @Autowired
-    private LinkdTopologyProvider m_topologyProvider;
+    private LinkdTopologyFactory m_topologyFactory;
 
     @Autowired
     private EnhancedLinkdMockDataPopulator m_databasePopulator;
@@ -84,6 +84,8 @@ public class EnhancedLinkdTopologyProviderTest {
     private LldpOnmsTopologyUpdater m_lldpOnmsTopologyUpdater;    
     @Autowired 
     private OspfOnmsTopologyUpdater m_ospfOnmsTopologyUpdater;
+
+    private LinkdTopologyProvider m_topologyProvider;
 
     @Before
     public void setUp() throws Exception{

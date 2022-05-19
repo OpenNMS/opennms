@@ -30,7 +30,6 @@ package org.opennms.features.topology.plugins.topo.linkd.internal;
 
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.simple.SimpleMetaTopologyProvider;
-import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,35 +41,19 @@ public class LinkdMetaTopologyProvider extends SimpleMetaTopologyProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(LinkdMetaTopologyProvider.class);
 
-    List<GraphProvider> graphProviders = new ArrayList<>();
+    private final List<GraphProvider> graphProviders = new ArrayList<>();
 
-    public LinkdMetaTopologyProvider(LinkdTopologyProvider linkdTopologyProvider) {
-        super(Objects.requireNonNull(linkdTopologyProvider));
-        LOG.info("Adding Protocol Provider for {}",linkdTopologyProvider.getNamespace() );
-        graphProviders.add(linkdTopologyProvider);
-        LOG.info("Adding Protocol Provider for {}",ProtocolSupported.CDP.name() );
-        graphProviders.add(new LinkdProtocolTopologyProvider(linkdTopologyProvider, ProtocolSupported.CDP.name()));
-        LOG.info("Adding Protocol Provider for {}",ProtocolSupported.LLDP.name() );
-        graphProviders.add(new LinkdProtocolTopologyProvider(linkdTopologyProvider, ProtocolSupported.LLDP.name()));
-        LOG.info("Adding Protocol Provider for {}",ProtocolSupported.BRIDGE.name() );
-        graphProviders.add(new LinkdProtocolTopologyProvider(linkdTopologyProvider, ProtocolSupported.BRIDGE.name()));
-        LOG.info("Adding Protocol Provider for {}",ProtocolSupported.OSPF.name() );
-        graphProviders.add(new LinkdProtocolTopologyProvider(linkdTopologyProvider, ProtocolSupported.OSPF.name()));
-        LOG.info("Adding Protocol Provider for {}",ProtocolSupported.ISIS.name() );
-        graphProviders.add(new LinkdProtocolTopologyProvider(linkdTopologyProvider, ProtocolSupported.ISIS.name()));
-        LOG.info("Adding Protocol Provider for {}",ProtocolSupported.USERDEFINED.name() );
-        graphProviders.add(new LinkdProtocolTopologyProvider(linkdTopologyProvider, ProtocolSupported.USERDEFINED.name()));
-
-        LOG.info("Adding Protocol Provider for {}","layer2 - CDP and LLDP" );
-        graphProviders.add(new LinkdProtocolTopologyProvider(linkdTopologyProvider,"layer2"));
-        LOG.info("Adding Protocol Provider for {}","layer3 - OSPF and ISIS" );
-        graphProviders.add(new LinkdProtocolTopologyProvider(linkdTopologyProvider,"layer3"));
+    public LinkdMetaTopologyProvider(LinkdTopologyProvider... linkdTopologyProviders) {
+        super(Objects.requireNonNull(linkdTopologyProviders[0]));
+        for (LinkdTopologyProvider linkdTopologyProvider: linkdTopologyProviders) {
+            graphProviders.add(Objects.requireNonNull(linkdTopologyProvider));
+            LOG.info("Adding Protocol Provider for {}",linkdTopologyProvider.getNamespace() );
+        }
     }
 
     @Override
     public List<GraphProvider> getGraphProviders() {
         return graphProviders;
     }
-
 
 }

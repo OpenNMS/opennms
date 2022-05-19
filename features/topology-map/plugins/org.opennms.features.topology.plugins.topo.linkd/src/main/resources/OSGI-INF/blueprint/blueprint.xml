@@ -12,12 +12,6 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
 
     <reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" availability="mandatory" />
 
-    <bean id="enlinkdTopologyProviderInfo" class="org.opennms.features.topology.api.topo.DefaultTopologyProviderInfo">
-        <property name="name" value="Enhanced Linkd Topology Provider"/>
-        <property name="description" value="This Topology Provider displays the topology information discovered by the Enhanced Linkd daemon. It uses the SNMP information of several protocols like OSPF, ISIS, LLDP and CDP to generate an overall topology."/>
-        <property name="supportsCategorySearch" value="true"/>
-    </bean>
-
     <!-- Metrics -->
     <bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry" />
 
@@ -35,9 +29,31 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
         init-method="start"
         destroy-method="stop" />
 
-    <bean id="topologyProvider" scope="singleton" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyProvider">
+    <bean id="linkdTopologyFactory" scope="singleton" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyFactory">
         <argument ref="metricRegistry" />
         <property name="onmsTopologyDao" ref="onmsTopologyDao"/>
+    </bean>
+
+    <bean id="enlinkdTopologyProviderInfo" class="org.opennms.features.topology.api.topo.DefaultTopologyProviderInfo">
+        <property name="name" value="All"/>
+        <property name="description" value="This Topology Provider displays the topology information discovered by the Enhanced Linkd daemon. It uses the SNMP information of several protocols like OSPF, ISIS, LLDP and CDP to generate an overall topology."/>
+        <property name="supportsCategorySearch" value="true"/>
+    </bean>
+
+    <bean id="enlinkdTopologyProvider" scope="singleton" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyFactory">
+        <argument ref="linkdTopologyFactory"/>
+        <property name="topologyProviderInfo" ref="enlinkdTopologyProviderInfo"/>
+    </bean>
+
+    <bean id="cdpTopologyProviderInfo" class="org.opennms.features.topology.api.topo.DefaultTopologyProviderInfo">
+        <property name="name" value="Cdp"/>
+        <property name="description" value="This Topology Provider displays the Cisco Discovery Protocol topology information discovered by the Enhanced Linkd daemon."/>
+        <property name="supportsCategorySearch" value="true"/>
+    </bean>
+
+    <bean id="cdpTopologyProvider" scope="singleton" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyFactory">
+        <argument value="Cdp" index="0"/>
+        <argument ref="linkdTopologyFactory" index="1"/>
         <property name="topologyProviderInfo" ref="enlinkdTopologyProviderInfo"/>
     </bean>
 
@@ -49,8 +65,9 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
     <service interface="org.opennms.features.topology.api.topo.SearchProvider" ref="linkdSearchProvider" />
 
     <!-- Meta topology provider -->
-    <bean id="linkdMetaTopologyProvider" class="org.opennms.features.topology.api.topo.simple.SimpleMetaTopologyProvider">
-        <argument ref="topologyProvider" />
+    <bean id="linkdMetaTopologyProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdMetaTopologyProvider">
+        <argument ref="enlinkdTopologyProvider" index="0" />
+        <argument ref="cdpTopologyProvider" index="1" />
     </bean>
 
     <service interface="org.opennms.features.topology.api.topo.MetaTopologyProvider" ref="linkdMetaTopologyProvider">
