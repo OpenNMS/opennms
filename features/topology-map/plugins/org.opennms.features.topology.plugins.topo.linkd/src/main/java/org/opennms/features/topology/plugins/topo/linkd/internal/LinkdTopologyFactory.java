@@ -34,10 +34,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Objects;
 
-import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.api.topo.BackendGraph;
-import org.opennms.features.topology.api.topo.Vertex;
-import org.opennms.features.topology.api.topo.Defaults;
+import org.opennms.features.topology.api.topo.*;
 
 import org.opennms.features.topology.api.browsers.ContentType;
 import org.opennms.features.topology.api.browsers.SelectionAware;
@@ -56,7 +53,16 @@ import com.google.common.collect.Lists;
 public class LinkdTopologyFactory {
 
     private static final Logger LOG = LoggerFactory.getLogger(LinkdTopologyFactory.class);
-    private String activeNamespace;
+
+    public GraphProvider getDelegate() {
+        return m_delegate;
+    }
+
+    public void setDelegate(GraphProvider m_delegate) {
+        this.m_delegate = m_delegate;
+    }
+
+    private GraphProvider m_delegate;
 
     private OnmsTopologyDao m_onmsTopologyDao;
 
@@ -74,7 +80,6 @@ public class LinkdTopologyFactory {
 
     public LinkdTopologyFactory(MetricRegistry registry) {
         Objects.requireNonNull(registry);
-        activeNamespace= LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD;
         selectionAwareDelegate = new LinkdSelectionAware(this);
         m_loadFullTimer = registry.timer(MetricRegistry.name("enlinkd", "load", "full"));
         m_loadLldpLinksTimer = registry.timer(MetricRegistry.name("enlinkd", "load", "links", "lldp"));
@@ -141,9 +146,9 @@ public class LinkdTopologyFactory {
         
         final Map<String, LinkdVertex> vmap = new HashMap<>();
         topology.getVertices().forEach(tvertex -> {
-            LinkdVertex vertex = (LinkdVertex) graph.getVertex(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, tvertex.getId());
+            LinkdVertex vertex = (LinkdVertex) graph.getVertex(getActiveNamespace(), tvertex.getId());
             if (vertex == null) {
-                vertex = LinkdVertex.create(tvertex);
+                vertex = LinkdVertex.create(tvertex,getActiveNamespace());
                 graph.addVertices(vertex);
             } 
             vertex.getProtocolSupported().add(protocol);
@@ -155,7 +160,7 @@ public class LinkdTopologyFactory {
                                                 tedge.getId(), 
                                                 LinkdPort.create(tedge.getSource(), vmap.get(tedge.getSource().getVertex().getId())),
                                                 LinkdPort.create(tedge.getTarget(), vmap.get(tedge.getTarget().getVertex().getId())),
-                                                protocol, graph.getNamespace())
+                                                protocol, getActiveNamespace())
                                        )
                                              );
     }
@@ -185,7 +190,7 @@ public class LinkdTopologyFactory {
                     final Vertex defaultVertex = getDefaultVertex(graph);
                     if (defaultVertex != null) {
                         LOG.info("getDefaults: default vertex found: [{}]:{}", defaultVertex.getId(), defaultVertex.getLabel());
-                        return Lists.newArrayList(LinkdHopCriteria.createCriteria(defaultVertex.getId(), defaultVertex.getLabel()));
+                        return Lists.newArrayList(LinkdHopCriteria.createCriteria(defaultVertex.getId(), defaultVertex.getLabel(),this));
                     }
                     LOG.info("getDefaults: default vertex not found");
                     return Lists.newArrayList();
@@ -196,7 +201,7 @@ public class LinkdTopologyFactory {
         Timer.Context vcontext = m_loadVerticesTimer.time();
         try {
             for (OnmsTopologyVertex tvertex : m_onmsTopologyDao.getTopology(ProtocolSupported.NODES.name()).getVertices()) {
-                graph.addVertices(LinkdVertex.create(tvertex));
+                graph.addVertices(LinkdVertex.create(tvertex,getActiveNamespace()));
             }
             LOG.info("refresh: Loaded Vertices");
         } catch (Exception e){
@@ -226,11 +231,8 @@ public class LinkdTopologyFactory {
     }
 
     public String getActiveNamespace() {
-        return activeNamespace;
+        return m_delegate.getNamespace();
     }
 
-    public void setActiveNamespace(String namespace) {
-        this.activeNamespace=namespace;
-    }
 
 }

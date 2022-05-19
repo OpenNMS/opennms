@@ -73,7 +73,8 @@ public class EnhancedLinkdTopologyProviderTest {
 
     @Autowired
     private LinkdTopologyFactory m_topologyFactory;
-
+    @Autowired
+    private LinkdTopologyProvider m_topologyProvider;
     @Autowired
     private EnhancedLinkdMockDataPopulator m_databasePopulator;
     @Autowired
@@ -85,8 +86,6 @@ public class EnhancedLinkdTopologyProviderTest {
     @Autowired 
     private OspfOnmsTopologyUpdater m_ospfOnmsTopologyUpdater;
 
-    private LinkdTopologyProvider m_topologyProvider;
-
     @Before
     public void setUp() throws Exception{
         MockLogAppender.setupLogging();
@@ -97,7 +96,9 @@ public class EnhancedLinkdTopologyProviderTest {
         assertNotNull(m_nodesOnmsTopologyUpdater);
         assertNotNull(m_lldpOnmsTopologyUpdater);
         assertNotNull(m_ospfOnmsTopologyUpdater);
-        
+        assertNotNull(m_topologyFactory);
+        assertNotNull(m_topologyProvider);
+
         m_nodesOnmsTopologyUpdater.register();
         m_lldpOnmsTopologyUpdater.register();
         m_ospfOnmsTopologyUpdater.register();

@@ -207,9 +207,20 @@
         <constructor-arg ref="nodeTopologyService" />
     </bean>
 
-    <bean id="enLinkdTopologyProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyFactory">
+    <bean id="linkdTopologyFactory" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyFactory">
         <constructor-arg ref="metricRegistry"/>
         <property name="onmsTopologyDao" ref="onmsTopologyDao" />
+    </bean>
+
+    <bean id="enlinkdTopologyProviderInfo" class="org.opennms.features.topology.api.topo.DefaultTopologyProviderInfo">
+        <property name="name" value="All"/>
+        <property name="description" value="This Topology Provider displays the topology information discovered by the Enhanced Linkd daemon. It uses the SNMP information of several protocols like OSPF, ISIS, LLDP and CDP to generate an overall topology."/>
+        <property name="supportsCategorySearch" value="true"/>
+    </bean>
+
+    <bean id="enlinkdTopologyProvider" scope="singleton" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyProvider">
+        <constructor-arg ref="linkdTopologyFactory"/>
+        <property name="topologyProviderInfo" ref="enlinkdTopologyProviderInfo"/>
     </bean>
 
 </beans>

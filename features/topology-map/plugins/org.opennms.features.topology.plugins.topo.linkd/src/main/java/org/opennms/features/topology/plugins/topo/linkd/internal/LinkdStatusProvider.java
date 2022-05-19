@@ -81,7 +81,7 @@ public class LinkdStatusProvider implements StatusProvider {
 
         // split nodes from groups and others
         List<VertexRef> nodeRefs = getNodeVertexRefs(graph, vertices, criteria); // nodes
-        List<VertexRef> otherRefs = getOtherVertexRefs(vertices);  // groups
+        List<VertexRef> otherRefs = getOtherVertexRefs(graph, vertices);  // groups
 
         Map<Integer, VertexRef> nodeIdMap = extractNodeIds(nodeRefs);
         Map<Integer, AlarmSummary> nodeIdToAlarmSummaryMap = getAlarmSummaries(nodeIdMap.keySet()); // calculate status for ALL nodes
@@ -136,13 +136,11 @@ public class LinkdStatusProvider implements StatusProvider {
         Map<Integer, VertexRef> vertexRefToNodeIdMap = new HashMap<>();
 
         for (VertexRef eachRef : inputList) {
-            if ("nodes".equals(eachRef.getNamespace())) {
-                try {
-                    Integer nodeId = Integer.parseInt(eachRef.getId());
-                    vertexRefToNodeIdMap.put(nodeId, eachRef);
-                } catch (NumberFormatException nfe) {
-                    LoggerFactory.getLogger(LinkdStatusProvider.class).warn("Could not parse id '{}' of vertex '{}' as integer.", eachRef.getId(), eachRef);
-                }
+            try {
+                Integer nodeId = Integer.parseInt(eachRef.getId());
+                vertexRefToNodeIdMap.put(nodeId, eachRef);
+            } catch (NumberFormatException nfe) {
+                LoggerFactory.getLogger(LinkdStatusProvider.class).warn("Could not parse id '{}' of vertex '{}' as integer.", eachRef.getId(), eachRef);
             }
         }
 
@@ -152,7 +150,7 @@ public class LinkdStatusProvider implements StatusProvider {
     private static List<VertexRef> getNodeVertexRefs(BackendGraph graph, Collection<VertexRef> vertices, Criteria[] criteria) {
         List<VertexRef> returnList = new ArrayList<>();
         for (VertexRef eachRef : vertices) {
-            if ("nodes".equals(eachRef.getNamespace())) {
+            if (graph.getNamespace().equals(eachRef.getNamespace())) {
                 if(isCollapsible(eachRef)) {
                     addChildrenRecursively(graph, (CollapsibleRef) eachRef, returnList, criteria);
                 } else {
@@ -165,10 +163,10 @@ public class LinkdStatusProvider implements StatusProvider {
         return returnList;
     }
 
-    private static List<VertexRef> getOtherVertexRefs(Collection<VertexRef> vertices) {
+    private static List<VertexRef> getOtherVertexRefs(BackendGraph graph, Collection<VertexRef> vertices) {
         List<VertexRef> returnList = new ArrayList<>();
         for (VertexRef eachRef : vertices) {
-            if (!"nodes".equals(eachRef.getNamespace())) {
+            if (!graph.getNamespace().equals(eachRef.getNamespace())) {
                 returnList.add(eachRef); // we do not need to check for groups, because a group would have a namespace "nodes"
             }
         }

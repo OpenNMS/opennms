@@ -84,6 +84,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         LOG.debug("Called constructor 1 args");
         this.linkdTopologyFactory= Objects.requireNonNull(linkdTopologyFactory);
         supportedSet= EnumSet.allOf(ProtocolSupported.class);
+        linkdTopologyFactory.setDelegate(this);
         LOG.info("Created instance namespace {}, protocols {}", TOPOLOGY_NAMESPACE_LINKD,supportedSet);
     }
 
@@ -121,7 +122,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
     @Override
     public void refresh() {
-        linkdTopologyFactory.setActiveNamespace(getNamespace());
+        linkdTopologyFactory.setDelegate(this);
         graph.resetContainer();
         linkdTopologyFactory.doRefresh(supportedSet,graph);
         LOG.info("refresh: {}: Found {} vertices",getNamespace(), graph.getVertices().size());

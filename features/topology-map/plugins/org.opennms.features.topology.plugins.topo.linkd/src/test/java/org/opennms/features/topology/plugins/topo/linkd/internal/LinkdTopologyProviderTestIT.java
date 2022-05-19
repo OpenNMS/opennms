@@ -118,6 +118,7 @@ public class LinkdTopologyProviderTestIT {
 
     private TopologyGenerator generator;
 
+    @Autowired
     private LinkdTopologyProvider linkdTopologyProvider;
 
     @BeforeTransaction
@@ -136,8 +137,6 @@ public class LinkdTopologyProviderTestIT {
                 .persister(persister)
                 .progressCallback(progressCallback).build();
 
-        linkdTopologyProvider = new LinkdTopologyProvider(linkdTopologyFactory);
-        linkdTopologyProvider.setTopologyProviderInfo(new DefaultTopologyProviderInfo());
     }
 
     @Test
