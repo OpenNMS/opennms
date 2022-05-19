@@ -43,12 +43,10 @@ public class LinkdMetaTopologyProvider extends SimpleMetaTopologyProvider {
 
     private final List<GraphProvider> m_graphProviders = new ArrayList<>();
 
-    public LinkdMetaTopologyProvider(LinkdTopologyProvider... linkdTopologyProviders) {
-        super(Objects.requireNonNull(linkdTopologyProviders[0]));
-        for (LinkdTopologyProvider linkdTopologyProvider: linkdTopologyProviders) {
-            m_graphProviders.add(Objects.requireNonNull(linkdTopologyProvider));
-            LOG.info("Adding Protocol Provider for {}",linkdTopologyProvider.getNamespace() );
-        }
+    public LinkdMetaTopologyProvider(LinkdTopologyProvider defaultlinkdTopologyProvider, List<LinkdTopologyProvider> linkdTopologyProviders) {
+        super(Objects.requireNonNull(defaultlinkdTopologyProvider));
+        m_graphProviders.add(defaultlinkdTopologyProvider);
+        m_graphProviders.addAll(Objects.requireNonNull(linkdTopologyProviders));
     }
 
     @Override
