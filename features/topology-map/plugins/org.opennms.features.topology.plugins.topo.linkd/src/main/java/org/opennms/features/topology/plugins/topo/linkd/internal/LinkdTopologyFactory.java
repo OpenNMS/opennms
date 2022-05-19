@@ -54,16 +54,7 @@ public class LinkdTopologyFactory {
 
     private static final Logger LOG = LoggerFactory.getLogger(LinkdTopologyFactory.class);
 
-    public GraphProvider getDelegate() {
-        return m_delegate;
-    }
-
-    public void setDelegate(GraphProvider m_delegate) {
-        this.m_delegate = m_delegate;
-    }
-
     private GraphProvider m_delegate;
-
     private OnmsTopologyDao m_onmsTopologyDao;
 
     private final Timer m_loadFullTimer;
@@ -230,6 +221,14 @@ public class LinkdTopologyFactory {
         m_onmsTopologyDao = onmsTopologyDao;
     }
 
+    public GraphProvider getDelegate() {
+        return m_delegate;
+    }
+
+    public void setDelegate(GraphProvider m_delegate) {
+        this.m_delegate = m_delegate;
+    }
+    
     public String getActiveNamespace() {
         return m_delegate.getNamespace();
     }

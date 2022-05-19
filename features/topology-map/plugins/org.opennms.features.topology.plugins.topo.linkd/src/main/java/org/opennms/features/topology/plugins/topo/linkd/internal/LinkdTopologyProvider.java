@@ -49,8 +49,8 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
     public static final String TOPOLOGY_NAMESPACE_LINKD = "nodes";
     private static final Logger LOG = LoggerFactory.getLogger(LinkdTopologyProvider.class);
-    private final LinkdTopologyFactory linkdTopologyFactory;
-    private final Set<ProtocolSupported> supportedSet;
+    private final LinkdTopologyFactory m_linkdTopologyFactory;
+    private final Set<ProtocolSupported> m_supportedSet;
 
     private static Set<ProtocolSupported> getProtocolSupportedSet(String... names) {
         Set<ProtocolSupported> protocolSupportedSet = new HashSet<>();
@@ -82,49 +82,49 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     public LinkdTopologyProvider(LinkdTopologyFactory linkdTopologyFactory) {
         super(TOPOLOGY_NAMESPACE_LINKD);
         LOG.debug("Called constructor 1 args");
-        this.linkdTopologyFactory= Objects.requireNonNull(linkdTopologyFactory);
-        supportedSet= EnumSet.allOf(ProtocolSupported.class);
+        m_linkdTopologyFactory = Objects.requireNonNull(linkdTopologyFactory);
+        m_supportedSet = EnumSet.allOf(ProtocolSupported.class);
         linkdTopologyFactory.setDelegate(this);
-        LOG.info("Created instance namespace {}, protocols {}", TOPOLOGY_NAMESPACE_LINKD,supportedSet);
+        LOG.info("Created instance namespace {}, protocols {}", TOPOLOGY_NAMESPACE_LINKD, m_supportedSet);
     }
 
     public LinkdTopologyProvider(String name, LinkdTopologyFactory linkdTopologyFactory) {
         super(TOPOLOGY_NAMESPACE_LINKD+":"+name);
         LOG.debug("Called constructor 2 args");
-        this.linkdTopologyFactory= Objects.requireNonNull(linkdTopologyFactory);
-        supportedSet= getProtocolSupportedSet(name);
-        LOG.info("Created instance namespace {}, protocols {}", name,supportedSet);
+        m_linkdTopologyFactory = Objects.requireNonNull(linkdTopologyFactory);
+        m_supportedSet = getProtocolSupportedSet(name);
+        LOG.info("Created instance namespace {}, protocols {}", name, m_supportedSet);
     }
 
 
     public LinkdTopologyProvider(String name, LinkdTopologyFactory linkdTopologyFactory, String... protocols) {
         super(TOPOLOGY_NAMESPACE_LINKD+":"+name);
         LOG.debug("Called constructor {} args protocols {}", 2+ protocols.length,protocols);
-        this.linkdTopologyFactory= Objects.requireNonNull(linkdTopologyFactory);
-        supportedSet=getProtocolSupportedSet(protocols);
-        LOG.info("Created instance namespace {}, protocols {}", name,supportedSet);
+        m_linkdTopologyFactory = Objects.requireNonNull(linkdTopologyFactory);
+        m_supportedSet =getProtocolSupportedSet(protocols);
+        LOG.info("Created instance namespace {}, protocols {}", name, m_supportedSet);
     }
     
     @Override
     public SelectionChangedListener.Selection getSelection(List<VertexRef> selectedVertices, ContentType type) {
-       return linkdTopologyFactory.getSelection(selectedVertices,type);
+       return m_linkdTopologyFactory.getSelection(selectedVertices,type);
     }
 
     @Override
     public boolean contributesTo(ContentType type) {
-        return linkdTopologyFactory.contributesTo(type);
+        return m_linkdTopologyFactory.contributesTo(type);
     }
 
     @Override
     public Defaults getDefaults() {
-        return linkdTopologyFactory.getDefaults(graph);
+        return m_linkdTopologyFactory.getDefaults(graph);
     }
 
     @Override
     public void refresh() {
-        linkdTopologyFactory.setDelegate(this);
+        m_linkdTopologyFactory.setDelegate(this);
         graph.resetContainer();
-        linkdTopologyFactory.doRefresh(supportedSet,graph);
+        m_linkdTopologyFactory.doRefresh(m_supportedSet,graph);
         LOG.info("refresh: {}: Found {} vertices",getNamespace(), graph.getVertices().size());
         LOG.info("refresh: {}: Found {} edges", getNamespace(),graph.getEdges().size());
     }

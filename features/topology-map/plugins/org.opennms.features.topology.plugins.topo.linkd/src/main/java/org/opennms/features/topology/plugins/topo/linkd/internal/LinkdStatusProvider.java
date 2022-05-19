@@ -61,7 +61,7 @@ public class LinkdStatusProvider implements StatusProvider {
 
     @Override
     public String getNamespace() {
-        return LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD;
+        return m_linkdTopologyFactory.getActiveNamespace();
     }
 
     @Override
@@ -70,9 +70,10 @@ public class LinkdStatusProvider implements StatusProvider {
     }
 
     private final AlarmDao m_alarmDao;
-
-    public LinkdStatusProvider(AlarmDao alarmDao) {
+    private final LinkdTopologyFactory m_linkdTopologyFactory;
+    public LinkdStatusProvider(AlarmDao alarmDao, LinkdTopologyFactory linkdTopologyFactory) {
         m_alarmDao = alarmDao;
+        m_linkdTopologyFactory=linkdTopologyFactory;
     }
 
     @Override

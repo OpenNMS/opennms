@@ -41,19 +41,19 @@ public class LinkdMetaTopologyProvider extends SimpleMetaTopologyProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(LinkdMetaTopologyProvider.class);
 
-    private final List<GraphProvider> graphProviders = new ArrayList<>();
+    private final List<GraphProvider> m_graphProviders = new ArrayList<>();
 
     public LinkdMetaTopologyProvider(LinkdTopologyProvider... linkdTopologyProviders) {
         super(Objects.requireNonNull(linkdTopologyProviders[0]));
         for (LinkdTopologyProvider linkdTopologyProvider: linkdTopologyProviders) {
-            graphProviders.add(Objects.requireNonNull(linkdTopologyProvider));
+            m_graphProviders.add(Objects.requireNonNull(linkdTopologyProvider));
             LOG.info("Adding Protocol Provider for {}",linkdTopologyProvider.getNamespace() );
         }
     }
 
     @Override
     public List<GraphProvider> getGraphProviders() {
-        return graphProviders;
+        return m_graphProviders;
     }
 
 }

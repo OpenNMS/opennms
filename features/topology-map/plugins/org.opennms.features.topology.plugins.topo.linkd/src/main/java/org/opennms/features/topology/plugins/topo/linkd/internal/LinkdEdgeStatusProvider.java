@@ -88,19 +88,11 @@ public class LinkdEdgeStatusProvider implements EdgeStatusProvider {
 
     private AlarmDao m_alarmDao;
     private SessionUtils m_sessionUtils;
-    private LinkdTopologyFactory linkdTopologyFactory;
-
-    public LinkdTopologyFactory getLinkdTopologyFactory() {
-        return linkdTopologyFactory;
-    }
-
-    public void setLinkdTopologyFactory(LinkdTopologyFactory linkdTopologyFactory) {
-        this.linkdTopologyFactory = linkdTopologyFactory;
-    }
+    private LinkdTopologyFactory m_linkdTopologyFactory;
 
     @Override
     public String getNamespace() {
-        return linkdTopologyFactory.getActiveNamespace();
+        return m_linkdTopologyFactory.getActiveNamespace();
     }
 
     @Override
@@ -136,7 +128,7 @@ EDGES:        for (EdgeRef edgeRef : edges) {
 
     @Override
     public boolean contributesTo(String namespace) {
-        return namespace.equals(linkdTopologyFactory.getActiveNamespace());
+        return namespace.equals(m_linkdTopologyFactory.getActiveNamespace());
     }
 
     public AlarmDao getAlarmDao() {
@@ -154,6 +146,14 @@ EDGES:        for (EdgeRef edgeRef : edges) {
 
     public void setAlarmDao(AlarmDao alarmDao) {
         m_alarmDao = alarmDao;
+    }
+
+    public LinkdTopologyFactory getLinkdTopologyFactory() {
+        return m_linkdTopologyFactory;
+    }
+
+    public void setLinkdTopologyFactory(LinkdTopologyFactory m_linkdTopologyFactory) {
+        this.m_linkdTopologyFactory = m_linkdTopologyFactory;
     }
 
     public SessionUtils getSessionUtils() {

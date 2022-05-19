@@ -44,9 +44,9 @@ import com.google.common.collect.Sets;
 
 public class LinkdSelectionAware implements SelectionAware {
 
-    private final LinkdTopologyFactory factory;
+    private final LinkdTopologyFactory m_linkdTopologyFactory;
     public LinkdSelectionAware(LinkdTopologyFactory factory) {
-        this.factory=factory;
+        m_linkdTopologyFactory =factory;
     }
 
     @Override
@@ -74,7 +74,7 @@ public class LinkdSelectionAware implements SelectionAware {
     protected List<Integer> extractNodeIds(Collection<VertexRef> vertices) {
         List<Integer> nodeIdList = new ArrayList<>();
         for (VertexRef eachRef : vertices) {
-            if (factory.getActiveNamespace().equals(eachRef.getNamespace())) {
+            if (m_linkdTopologyFactory.getActiveNamespace().equals(eachRef.getNamespace())) {
                 try {
                     nodeIdList.add(Integer.valueOf(eachRef.getId()));
                 } catch (NumberFormatException e) {
