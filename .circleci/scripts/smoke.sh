@@ -48,7 +48,7 @@ done
 
 # Configure the heap for the Maven JVM - the tests themselves are forked out in separate JVMs
 # The heap size should be sufficient to buffer the output (stdout/stderr) from the test
-export MAVEN_OPTS="-Xmx1g -Xms1g"
+export MAVEN_OPTS="-Xmx8g -Xms4g"
 
 # Set higher open files limit
 ulimit -n 65536

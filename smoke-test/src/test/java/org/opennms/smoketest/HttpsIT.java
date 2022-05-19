@@ -181,12 +181,14 @@ public class HttpsIT {
 
     @Test
     public void simpleCode() {
+        LOG.info("Start simple test.");
         OkHttpClient client = new OkHttpClient().newBuilder()
                 .build();
         Request request = new Request.Builder()
                 .url(urlOverHttps).get().build();
         Response resp = null;
         try {
+            LOG.info("Start response creation...");
             resp = client.newCall(request).execute();
         } catch (javax.net.ssl.SSLHandshakeException e) {
             LOG.info("Handshake failed as we use SelfSigned certificate. Also it means that the server is running. ");
