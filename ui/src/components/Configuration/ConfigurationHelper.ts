@@ -18,6 +18,7 @@ import {
   requisitionSubTypes,
   requisitionTypeList,
   RequisitionTypes,
+  requisitionDNSField,
   RequisitionPluginSubTypes,
   RequisitionHTTPTypes
 } from './copy/requisitionTypes'
@@ -712,20 +713,39 @@ const validateCronTab = (item: LocalConfiguration, oldErrors: LocalErrors) => {
 
 /**
  * Validates a Hostname. Can be an IP address or valid domain name.
+ * It also validates Foreign source (Requisition name) of DNS type, with a slightly different regex which includes underscore and space
  * @param host Hostname
+ * @param fieldName Requisition name, Zone
  * @returns Blank if Valid, Error Message if Not.
  */
-const validateHost = (host: string) => {
+const validateHost = (host: string, fieldName = '') => {
   let hostError = ''
 
   // no spaces, may contain (but not start with), hyphen or dot, cannot be over 49 chars
   const customHostnameRegex = /^[a-zA-Z0-9]{1}[a-zA-Z0-9-.]{0,48}$/
+  
+  // same as customHostnameRegex but including underscore and space
+  const customForeignSourceRegex = /^[a-zA-Z0-9]{1}[a-zA-Z0-9-._\s]{0,48}$/
 
   // Either IPv4, IPv6, a valid domain name, or passes custom regex
-  const isHostValid = ipRegex({exact: true}).test(host) || isValidDomain(host) || customHostnameRegex.test(host)
+  const isHostValid = 
+    ipRegex({exact: true}).test(host) 
+    || isValidDomain(host) 
+    || (fieldName === requisitionDNSField.requisitionName 
+      ? customForeignSourceRegex
+      : customHostnameRegex).test(host)
 
   if (!isHostValid) {
-    hostError = ErrorStrings.InvalidHostname
+    switch(fieldName) {
+      case requisitionDNSField.requisitionName:
+        hostError = ErrorStrings.InvalidRequisitionName
+        break
+      case requisitionDNSField.zone:
+        hostError = ErrorStrings.InvalidZoneName
+        break
+      default:
+        hostError = ErrorStrings.InvalidHostname
+    }
   }
 
   return hostError
@@ -760,11 +780,11 @@ const validateLocalItem = (
       errors.urlPath = validatePath(localItem.urlPath)
     }
     if (localItem.type.name === RequisitionTypes.DNS) {
-      errors.zone = validateHost(localItem.zone)
+      errors.zone = validateHost(localItem.zone, requisitionDNSField.zone)
 
       // Only validate foreign source if it's set.
       if (localItem.foreignSource) {
-        errors.foreignSource = validateHost(localItem.foreignSource)
+        errors.foreignSource = validateHost(localItem.foreignSource, requisitionDNSField.requisitionName)
       }
     }
     if (localItem.type.name === RequisitionTypes.File) {
