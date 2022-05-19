@@ -82,7 +82,7 @@ onMounted(() => input.value.focus())
 
   .feather-input-wrapper-container {
     .feather-input-wrapper {
-      margin-top: -10px !important;
+      margin-bottom: -25px !important;
       min-height: 31px !important;
     }
   }
