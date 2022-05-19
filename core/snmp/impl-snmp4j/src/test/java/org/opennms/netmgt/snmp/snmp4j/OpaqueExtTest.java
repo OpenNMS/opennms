@@ -62,6 +62,7 @@ public class OpaqueExtTest {
     }       
     
     private static final byte[] DOUBLE_DATA = hexStringToByteArray("9f780442f60000"); //Double 123.0
+    private static final byte[] DOUBLE_DATA_TOO_LONG = hexStringToByteArray("9f780442f6000000"); //Double 123.0
     private static final byte[] DOUBLE_DATA_WITH_OPAQUE_HEADER = hexStringToByteArray("44079f780442f60000"); //Double 123.0
     
     public OpaqueExtTest() {
@@ -101,13 +102,21 @@ public class OpaqueExtTest {
 
     @Test
     public void testUnsupportedFormat() {
-        OpaqueExt instance = new OpaqueExt(hexStringToByteArray("FF000000"));
+        OpaqueExt instance = new OpaqueExt(hexStringToByteArray("FF000100"));
         assertEquals(OpaqueValueType.UNSUPPORTED, instance.getValueType());
         assertNull(instance.getLong());
         assertNull(instance.getDouble());
-        assertArrayEquals(instance.getValue(), new byte[]{-1,0,0,0});
+        assertArrayEquals(instance.getValue(), new byte[]{-1,0,1,0});
     }
 
+    @Test
+    public void testWrongLength() {
+        OpaqueExt instance = new OpaqueExt(DOUBLE_DATA_TOO_LONG);
+        assertEquals(OpaqueValueType.ERROR, instance.getValueType());
+        assertNull(instance.getLong());
+        assertNull(instance.getDouble());
+        assertArrayEquals(instance.getValue(), DOUBLE_DATA_TOO_LONG);
+    }
 
     @Test
     public void testSetValue() {
