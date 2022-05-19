@@ -1,8 +1,11 @@
 
 = WmiMonitor
 
-The WMI monitor
+The WMI monitor tests the availability of WMI services on remote interfaces.
 
+Note that WSMAN does everything that WMI does and is a more modern protocol for Windows monitoring.
+
+//verify
 This monitor implements <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
 
 == Monitor facts
@@ -25,17 +28,35 @@ This monitor implements <<reference:service-assurance/introduction.adoc#ref-serv
 
 3+| *Required*
 
+| username
+| The username to use when authenticating against the WMI host.
+| none
+
+| password
+| The password to use when authenticating against the WMI host.
+| none
+
+| domain
+| Windows domain where the user is located.
+You do not have to use the domain parameter if you use local user accounts.
+| none
+
+3+|*Optional*
+
 | matchType
-| Tells the OpenNMS WMI system to deal with multiple instance results. Available match types are:
-- all - all instances must comply to the compare operation.
-- none - no instances should comply with the compare operation.
-- some - only some (1 or more) must comply with the compare operation.
-- one - only one instance can comply with the compare operation.
-|
+| Tells the OpenNMS WMI system to deal with multiple instance results.
+Available match types are:
+
+* *all*: all instances must comply to the compare operation.
+* *none*: no instances should comply with the compare operation.
+* *some*: only some (one or more) must comply with the compare operation.
+* *one*: only one instance can comply with the compare operation.
+| all
 
 | wmiClass
-| Class of instances within WMI; for example, `Win32_ComputerSystem`.
-|
+| Class of instances within WMI.
+This class contains objects representing properties and methods available.
+| Win32_ComputerSystem
 
 | wmiObject
 | Member of a WMI property set.
@@ -44,33 +65,43 @@ The default "WMI" service uses the "Status" property to determine if the system 
 | Status
 
 | compareOp
-| The "compare operation" is how you tell the OpenNMS WMI poller plugins how to verify the nature (up, critical) of a specific property within WMI. In the event of unequal comparisons the system will always have the WMI value (as retrieved from the target) on the left. Available compare operations are:
+| The compare operation tells the OpenNMS WMI poller plugins how to verify the nature (up, critical) of a specific property within WMI.
+In the event of unequal comparisons, the system will always have the WMI value (as retrieved from the target) on the left.
+Available compare operations are:
 
-    EQ (Equals)
-    NEQ (Not Equals)
-    GT (Greater Than)
-    LT (Less Than)
-    NOOP (No Operation)
+* *EQ* (equals)
+* *NEQ* (not equals)
+* *GT* (greater than)
+* *LT* (less than)
+* *NOOP* (no operation)
 
-The NOOP operation is a special case in which the Manager will always return a result code of "OK." This is typical used in scenarios where the existence of a class or property is more interesting than the contents of the property. We use this in the collector to check and ensure that WMI is available before attempting to collect data. 
-|
+The NOOP operation is a special case in which the Manager will always return a result code of "OK."
+This is typically used in scenarios where the existence of a class or property is more interesting than the contents of the property.
+OpenNMS uses this in the collector to check and ensure that WMI is available before attempting to collect data.
+| EQ
 
 | compareValue
-|
-|
+| The value to use when performing a comparison against the wmiObject.
+| OK
 
 | service-name
-|
+| Name of the service to monitor.
+ ##If there is a ~ at the beginning of the parameter, the rest of the string will be used as a regular expression pattern match, otherwise it will be considered an exact match.##
 | WMI
 
-
-
-3+|*Optional*
-
 | retry
-| Number of attempts to get a valid FTP response/response-text.
+| Number of retries before the service is marked as down.
 | 0
 
+| timeout
+| Time in milliseconds to wait for a response.
+|
+
+| namespace
+| Every WMI class exists in a namespace.
+The default namespace for most common classes is root/cimv2.
+It is possible to refer to WMI objects from other namespaces such as root/MicrosoftActiveDirectory.
+| root/cimv2
 
 |===
 
