@@ -992,7 +992,7 @@ jobs:
               -Daether.connector.basic.threads=1 \
               -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
               -DvaadinJavaMaxMemory=<< parameters.vaadin-javamaxmem >> \
-              -DmaxCpus=<< parameters.number-vcpu >> \
+               -DmaxCpus=<< parameters.number-vcpu >> \
               -Pbuild-bamboo \
               -Prun-expensive-tasks \
               -Dopennms.home=/opt/opennms \
@@ -1490,7 +1490,7 @@ jobs:
           suite: core
   smoke-test-flaky:
     executor: smoke-test-executor
-    parallelism: 5
+    parallelism: 4
     # No resource class support for machine executors, we're constrained to use the default
     # medium class which has 2 vCPUs and 8 GB RAM
     #resource_class: large
