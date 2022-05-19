@@ -30,7 +30,6 @@ package org.opennms.netmgt.snmp.snmp4j;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 import org.opennms.netmgt.snmp.snmp4j.opaqueadapter.DoubleAdapter;
 
 import org.opennms.netmgt.snmp.snmp4j.opaqueadapter.ErrorAdapter;
@@ -132,12 +131,10 @@ public class OpaqueExt extends Opaque {
             return createErrorAdapter("To short", bytes);
         }
         
-        OpaqueTypeAdapter newAdapter = null;
-        
         //existing implementations here do not support extended type so the custom type retrieving is implemented
-        //when bit 6 == 0 then Ok otherwise compound value -> it will be not decoded
         int offset;
         byte type = (byte) (bytes[0] & ID_BITTS);
+        //when bit 6 == 0 then Ok otherwise compound value -> it will be not decoded
         if ((type & BITTS_6) != 0) {
             return createUnsupportedAdapter(bytes);
         }

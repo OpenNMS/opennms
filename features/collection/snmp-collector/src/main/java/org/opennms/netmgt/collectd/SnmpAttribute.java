@@ -35,7 +35,6 @@ import org.opennms.netmgt.collection.support.AbstractCollectionAttribute;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
-import org.opennms.netmgt.snmp.snmp4j.OpaqueExt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -121,7 +120,7 @@ public class SnmpAttribute extends AbstractCollectionAttribute {
     /**
      * <p>getNumericValue</p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return a {@link java.lang.Number} object.
      */
     @Override
     public Number getNumericValue() {
@@ -131,19 +130,10 @@ public class SnmpAttribute extends AbstractCollectionAttribute {
             return null;
         }
 
-        //Before snmpValue.isNumeric() check if we have OpaqueExt. It can also have a double value
-        if (snmpValue instanceof OpaqueExt) {
-            OpaqueExt opaqueExt = (OpaqueExt)snmpValue;
-            switch (opaqueExt.getValueType()) {
-                case LONG:
-                    return opaqueExt.getLong();
-                case DOUBLE:
-                case STRING: // getDouble on type STRING can also contain a number (or NULL, but it is also correct result to return)
-                    return opaqueExt.getDouble();
-                case ERROR:
-                case UNSUPPORTED:
-                    return null;
-            }
+        //Check snmpValue.isDouble() before snmpValue.isNumeric()
+        //because isNumeric() returns also true on double values in OpaqueExt
+        if (snmpValue.isDouble()) {
+            return snmpValue.toDouble();
         }
         
         if (snmpValue.isNumeric()) {
