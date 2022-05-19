@@ -24,7 +24,7 @@
       />
       <FeatherRailItem
         :class="{ selected: isSelected('/file-editor') }"
-        v-if="configEditorRole"
+        v-if="filesystemEditorRole"
         href="#/file-editor"
         :icon="FileEditor"
         title="File Editor"
@@ -96,7 +96,7 @@ import { Plugin } from '@/types'
 
 const store = useStore()
 const route = useRoute()
-const { adminRole, configEditorRole, dcbRole } = useRole()
+const { adminRole, filesystemEditorRole, dcbRole } = useRole()
 const plugins = computed<Plugin[]>(() => store.state.pluginModule.plugins)
 const navRailOpen = computed(() => store.state.appModule.navRailOpen)
 const onNavRailClick = () => store.dispatch('appModule/setNavRailOpen', !navRailOpen.value)
