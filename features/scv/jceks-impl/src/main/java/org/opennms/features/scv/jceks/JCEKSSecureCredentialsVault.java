@@ -144,6 +144,7 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault {
     @Override
     public void setCredentials(String alias, Credentials credentials) {
         try {
+            loadCredentials();
             byte[] credentialBytes = toBase64EncodedByteArray(credentials);
             SecretKeyFactory factory = SecretKeyFactory.getInstance("PBE");
             SecretKey generatedSecret = factory.generateSecret(
