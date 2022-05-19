@@ -28,6 +28,8 @@
 
 package org.opennms.features.deviceconfig.rest.impl;
 
+import static org.opennms.features.deviceconfig.service.DeviceConfigService.DEVICE_CONFIG_PREFIX;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -486,6 +488,7 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
         dto.setLastFailedDate(queryResult.getLastFailed());
         dto.setEncoding(encoding);
         dto.setConfigType(queryResult.getConfigType());
+        dto.setConfigName(createConfigName(queryResult.getServiceName()));
         dto.setFileName(queryResult.getFilename());
         dto.setConfig(config);
         dto.setFailureReason(queryResult.getFailureReason());
@@ -521,6 +524,7 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
         dto.setLastFailedDate(deviceConfig.getLastFailed());
         dto.setEncoding(encoding);
         dto.setConfigType(deviceConfig.getConfigType());
+        dto.setConfigName(createConfigName(deviceConfig.getServiceName()));
         dto.setFileName(deviceConfig.getFileName());
         dto.setConfig(config);
         dto.setFailureReason(deviceConfig.getFailureReason());
@@ -607,5 +611,25 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
         String deviceName = ipInterface.getNode().getLabel();
 
         return createDownloadFileName(deviceName, ipAddress, dc.getConfigType(), dc.getCreatedTime());
+    }
+
+    /** Convert a service name to a "friendly" configuration name. */
+    private static String createConfigName(String serviceName) {
+        if (Strings.isNullOrEmpty(serviceName) || !serviceName.startsWith(DEVICE_CONFIG_PREFIX)) {
+            return serviceName;
+        }
+
+        int index = serviceName.indexOf('-');
+        String suffix = index >= 0 ? serviceName.substring(index + 1) : "";
+
+        if (index < 0 || suffix.toLowerCase(Locale.ROOT).equals("default")) {
+            // "DeviceConfig" or "DeviceConfig-default"
+            return "Startup Configuration";
+        } else {
+            String name = Arrays.stream(suffix.split("-"))
+                .map(StringUtils::capitalize).collect(Collectors.joining(" "));
+
+            return name + " Configuration";
+        }
     }
 }
