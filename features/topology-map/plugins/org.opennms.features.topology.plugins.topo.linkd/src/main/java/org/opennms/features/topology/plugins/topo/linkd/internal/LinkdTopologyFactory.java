@@ -28,9 +28,17 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Objects;
 
-import org.opennms.features.topology.api.topo.*;
+import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.api.topo.BackendGraph;
+import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.Defaults;
+
 import org.opennms.features.topology.api.browsers.ContentType;
 import org.opennms.features.topology.api.browsers.SelectionAware;
 import org.opennms.features.topology.api.browsers.SelectionChangedListener;
