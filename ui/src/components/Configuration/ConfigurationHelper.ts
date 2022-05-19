@@ -731,9 +731,7 @@ const validateHost = (host: string, fieldName = '') => {
   const isHostValid = 
     ipRegex({exact: true}).test(host) 
     || isValidDomain(host) 
-    || (fieldName === requisitionDNSField.requisitionName 
-      ? customForeignSourceRegex
-      : customHostnameRegex).test(host)
+    || (fieldName === requisitionDNSField.requisitionName ? customForeignSourceRegex : customHostnameRegex).test(host)
 
   if (!isHostValid) {
     switch(fieldName) {
