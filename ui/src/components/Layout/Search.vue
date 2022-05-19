@@ -60,8 +60,22 @@ const results = computed(() => {
   :deep(.feather-input-border) {
     background: var($surface);
   }
-  :deep(.feather-input-sub-text){
-    display:none
+  :deep(.feather-input-sub-text) {
+    display: none;
+  }
+}
+</style>
+<style lang="scss">
+@import "@featherds/styles/themes/variables";
+
+body {
+  > .feather-menu-dropdown {
+    z-index: calc(var(--feather-zindex-fixed) + 1) !important; // for the result list to be rendered just above the header, which has a z-index of 1030 (--feather-zindex-fixed)
+    width: 346px !important;
+    left: 2px !important;
+    > .result-list {
+      padding: 0 !important;
+    }
   }
 }
 </style>
