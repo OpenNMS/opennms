@@ -186,6 +186,25 @@ public class Snmp4JValue extends AbstractSnmpValue {
             return false;
         }
     }
+
+    @Override
+    public Double toDouble() {
+        if (m_value.getSyntax() == SMIConstants.SYNTAX_OPAQUE) {
+            return ((OpaqueExt)m_value).getDouble();
+        }
+        return null;
+    }
+
+    @Override
+    public boolean isDouble() {
+        if (m_value.getSyntax() == SMIConstants.SYNTAX_OPAQUE) {
+            OpaqueExt opaqueExt = (OpaqueExt)m_value;
+            return opaqueExt.getValueType() == OpaqueValueType.DOUBLE ||
+                    opaqueExt.getValueType() == OpaqueValueType.STRING
+                    && opaqueExt.getDouble() != null;
+        }
+        return false;
+    }
     
     @Override
     public int toInt() {
