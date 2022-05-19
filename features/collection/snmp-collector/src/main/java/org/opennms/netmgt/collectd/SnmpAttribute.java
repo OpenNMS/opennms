@@ -35,6 +35,7 @@ import org.opennms.netmgt.collection.support.AbstractCollectionAttribute;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
+import org.opennms.netmgt.snmp.snmp4j.OpaqueExt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +49,7 @@ public class SnmpAttribute extends AbstractCollectionAttribute {
     
     public static final Logger LOG = LoggerFactory.getLogger(SnmpAttribute.class);
 
-    private SnmpValue m_val;
+    private final SnmpValue m_val;
 
     /**
      * <p>Constructor for SnmpAttribute.</p>
@@ -128,32 +129,49 @@ public class SnmpAttribute extends AbstractCollectionAttribute {
         if (snmpValue == null) {
             LOG.debug("No data collected for attribute {}. Skipping", this);
             return null;
-        } else if (snmpValue.isNumeric()) {
-            return snmpValue.toLong();
-        } else {
-            // Check to see if this is a 63-bit counter packed into an octetstring
-            Long value = SnmpUtils.getProtoCounter63Value(snmpValue);
-            if (value != null) {
-                return value;
-            }
-
-            try {
-                if (AttributeType.COUNTER.equals(getType())) { // See NMS-7839: for RRDtool the raw counter value must be an integer.
-                    return Long.valueOf(snmpValue.toString());
-                }
-                return Double.valueOf(snmpValue.toString());
-            } catch(NumberFormatException e) {
-                LOG.trace("Unable to process data received for attribute {} maybe this is not a number? See bug 1473 for more information. Skipping.", this);
-                if (snmpValue.getType() == SnmpValue.SNMP_OCTET_STRING) {
-                    try {
-                        return Long.valueOf(snmpValue.toHexString(), 16);
-                    } catch(NumberFormatException ex) {
-                        LOG.trace("Unable to process data received for attribute {} maybe this is not a number? See bug 1473 for more information. Skipping.", this);
-                    }
-                }
-            }
-            return null;
         }
+
+        //Before snmpValue.isNumeric() check if we have OpaqueExt. It can also have a double value
+        if (snmpValue instanceof OpaqueExt) {
+            OpaqueExt opaqueExt = (OpaqueExt)snmpValue;
+            switch (opaqueExt.getValueType()) {
+                case LONG:
+                    return opaqueExt.getLong();
+                case DOUBLE:
+                case STRING: // getDouble on type STRING can also contain a number (or NULL, but it is also correct result to return)
+                    return opaqueExt.getDouble();
+                case ERROR:
+                case UNSUPPORTED:
+                    return null;
+            }
+        }
+        
+        if (snmpValue.isNumeric()) {
+            return snmpValue.toLong();
+        }
+        
+        // Check to see if this is a 63-bit counter packed into an octetstring
+        Long value = SnmpUtils.getProtoCounter63Value(snmpValue);
+        if (value != null) {
+            return value;
+        }
+
+        try {
+            if (AttributeType.COUNTER.equals(getType())) { // See NMS-7839: for RRDtool the raw counter value must be an integer.
+                return Long.valueOf(snmpValue.toString());
+            }
+            return Double.valueOf(snmpValue.toString());
+        } catch(NumberFormatException e) {
+            LOG.trace("Unable to process data received for attribute {} maybe this is not a number? See bug 1473 for more information. Skipping.", this);
+            if (snmpValue.getType() == SnmpValue.SNMP_OCTET_STRING) {
+                try {
+                    return Long.valueOf(snmpValue.toHexString(), 16);
+                } catch(NumberFormatException ex) {
+                    LOG.trace("Unable to process data received for attribute {} maybe this is not a number? See bug 1473 for more information. Skipping.", this);
+                }
+            }
+        }
+        return null;
     }
 
     /**
