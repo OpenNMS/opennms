@@ -179,9 +179,9 @@ public class Snmp4JValue extends AbstractSnmpValue {
         case SMIConstants.SYNTAX_TIMETICKS:
         case SMIConstants.SYNTAX_UNSIGNED_INTEGER32:
             return true;
-        case SMIConstants.SYNTAX_OPAQUE:
-            OpaqueExt opaque = (OpaqueExt)m_value;
-            return opaque.getDouble() != null;
+        case SMIConstants.SYNTAX_OPAQUE: 
+            // can be "native" Long, "native" Double or converted string
+            return ((OpaqueExt)m_value).getDouble() != null;
         default:
             return false;
         }
