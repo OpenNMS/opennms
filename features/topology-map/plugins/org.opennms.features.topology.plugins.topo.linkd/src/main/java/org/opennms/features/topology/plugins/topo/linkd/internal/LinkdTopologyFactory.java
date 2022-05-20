@@ -225,8 +225,8 @@ public class LinkdTopologyFactory {
         return m_delegate;
     }
 
-    public void setDelegate(GraphProvider m_delegate) {
-        this.m_delegate = m_delegate;
+    public void setDelegate(GraphProvider delegate) {
+        this.m_delegate = delegate;
     }
     
     public String getActiveNamespace() {
