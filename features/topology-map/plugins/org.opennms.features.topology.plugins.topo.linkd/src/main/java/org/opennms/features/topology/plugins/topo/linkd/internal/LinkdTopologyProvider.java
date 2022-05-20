@@ -107,7 +107,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     
     @Override
     public SelectionChangedListener.Selection getSelection(List<VertexRef> selectedVertices, ContentType type) {
-       return m_linkdTopologyFactory.getSelection(selectedVertices,type);
+       return m_linkdTopologyFactory.getSelection(selectedVertices, type);
     }
 
     @Override
