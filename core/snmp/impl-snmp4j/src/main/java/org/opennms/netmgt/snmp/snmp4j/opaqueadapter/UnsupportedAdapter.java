@@ -38,8 +38,7 @@ public class UnsupportedAdapter implements OpaqueTypeAdapter {
     final OctetString value;
 
     public UnsupportedAdapter(OctetString value) {
-        Objects.requireNonNull(value);
-        this.value = value;
+        this.value = Objects.requireNonNull(value);
     }
     
     @Override

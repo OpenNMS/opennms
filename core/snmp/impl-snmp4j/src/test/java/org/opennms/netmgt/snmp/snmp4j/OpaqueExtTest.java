@@ -52,7 +52,7 @@ public class OpaqueExtTest {
                 throw new IllegalArgumentException("HEX-String expected");
             }
             if((i & 1) == 0) {
-                hi = digit<<4;
+                hi = digit << 4;
             } else {
                 data[i >> 1] = (byte)(hi + digit);
             }
