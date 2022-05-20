@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,21 +28,30 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
-import java.util.Collection;
+import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.simple.SimpleMetaTopologyProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.vaadin.v7.data.util.BeanItem;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.opennms.features.topology.api.topo.AbstractVertex;
+public class LinkdMetaTopologyProvider extends SimpleMetaTopologyProvider {
 
+    private static final Logger LOG = LoggerFactory.getLogger(LinkdMetaTopologyProvider.class);
 
-public class ComponentTest {
-	@Test
-	public void testComponentBeanProperties() throws Exception {
-		Collection<?> ids = new BeanItem<>(new AbstractVertex(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, "fakeId")).getItemPropertyIds();
-		for (Object id : ids) {
-			Assert.assertNotNull(id);
-		}
-	}
+    private final List<GraphProvider> m_graphProviders = new ArrayList<>();
+
+    public LinkdMetaTopologyProvider(LinkdTopologyProvider defaultlinkdTopologyProvider, List<LinkdTopologyProvider> linkdTopologyProviders) {
+        super(Objects.requireNonNull(defaultlinkdTopologyProvider));
+        m_graphProviders.add(defaultlinkdTopologyProvider);
+        m_graphProviders.addAll(Objects.requireNonNull(linkdTopologyProviders));
+    }
+
+    @Override
+    public List<GraphProvider> getGraphProviders() {
+        return m_graphProviders;
+    }
+
 }
