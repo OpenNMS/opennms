@@ -75,7 +75,9 @@ Available compare operations are:
 * *LT* (less than)
 * *NOOP* (no operation)
 
-The NOOP operation is a special case in which the Manager will always return a result code of "OK."
+//not sure what "manager" is referring to here.
+
+The NOOP operation is a special case in which the Manager always returns a result code of "OK."
 This is typically used in scenarios where the existence of a class or property is more interesting than the contents of the property.
 OpenNMS uses this in the collector to check and ensure that WMI is available before attempting to collect data.
 | EQ
@@ -111,9 +113,10 @@ This monitor implements the <<reference:service-assurance/introduction.adoc#ref-
 
 == Example
 
+The following example shows how to enable monitoring that already discovered WMI services are still running.
+
 [source, xml]
 ----
- <!-- Customization: enable monitoring that already discovered WMI services are still running -->
     <service name="WMI" interval="300000" user-defined="false" status="on">
       <parameter key="retry" value="2" />
       <parameter key="timeout" value="30000" />
