@@ -1583,7 +1583,6 @@
     <display.version>${install.version}</display.version>
     <opennms.home>${dist.dir}/${dist.name}</opennms.home>
     <opennms.osgi.version>31.0.0.SNAPSHOT</opennms.osgi.version>
-    <maven.metadata.legacy>true</maven.metadata.legacy>
     <root.dir>${project.basedir}</root.dir>
     <dist.dir>${root.dir}/target</dist.dir>
     <dist.name>opennms-${project.version}</dist.name>
@@ -1873,6 +1872,28 @@
 
   <profiles>
     <profile>
+      <id>production</id>
+      <activation>
+        <property>
+          <name>build.type</name>
+          <value>production</value>
+        </property>
+      </activation>
+      <properties>
+        <runPingTests>true</runPingTests>
+        <skipPdfGeneration>false</skipPdfGeneration>
+        <skipSignJar>false</skipSignJar>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>license-maven-plugin</artifactId>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
       <id>enable.license</id>
       <activation>
         <property><name>enable.license</name><value>true</value></property>
@@ -2037,14 +2058,6 @@
         <skipPdfGeneration>false</skipPdfGeneration>
         <skipSignJar>false</skipSignJar>
       </properties>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>license-maven-plugin</artifactId>
-          </plugin>
-        </plugins>
-      </build>
     </profile>
     <profile>
       <id>smoke</id>
@@ -2271,9 +2284,25 @@
       <!--  opennms dependencies that are outside of the opennms/trunk project -->
       <!--  PLEASE KEEP THESE IN ALPHABETICAL ORDER -->
       <dependency>
-        <groupId>org.opennms.api.integration</groupId>
-        <artifactId>opennms-provisioning</artifactId>
-        <version>1.0.0</version>
+        <groupId>org.opennms.integration.api</groupId>
+        <artifactId>api</artifactId>
+        <version>${opennmsApiVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.integration.api</groupId>
+        <artifactId>common</artifactId>
+        <version>${opennmsApiVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.integration.api</groupId>
+        <artifactId>config</artifactId>
+        <version>${opennmsApiVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.integration.api</groupId>
+        <artifactId>karaf-features</artifactId>
+        <version>${opennmsApiVersion}</version>
+        <type>pom</type>
       </dependency>
 
       <!--  opennms dependencies -->
@@ -2977,6 +3006,12 @@
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
         <artifactId>jstl-dependencies</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>oia-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
       </dependency>

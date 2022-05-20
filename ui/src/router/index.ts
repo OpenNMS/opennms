@@ -8,7 +8,7 @@ import useRole from '@/composables/useRole'
 import useSnackbar from '@/composables/useSnackbar'
 import useSpinner from '@/composables/useSpinner'
 
-const { adminRole, configEditorRole, dcbRole, rolesAreLoaded } = useRole()
+const { adminRole, filesystemEditorRole, dcbRole, rolesAreLoaded } = useRole()
 const { showSnackBar } = useSnackbar()
 const { startSpinner, stopSpinner } = useSpinner()
 
@@ -37,7 +37,7 @@ const router = createRouter({
       component: FileEditor,
       beforeEnter: (to, from) => {
         const checkRoles = () => {
-          if (!configEditorRole.value) {
+          if (!filesystemEditorRole.value) {
             showSnackBar({ msg: 'No role access to file editor.' })
             router.push(from.path)
           }

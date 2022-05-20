@@ -77,7 +77,7 @@ public final class Authentication extends Object {
     public static final String ROLE_PROVISION = "ROLE_PROVISION";
     public static final String ROLE_REST = "ROLE_REST";
     public static final String ROLE_ASSET_EDITOR = "ROLE_ASSET_EDITOR";
-    public static final String ROLE_CONFIG_EDITOR = "ROLE_CONFIG_EDITOR";
+    public static final String ROLE_FILESYSTEM_EDITOR = "ROLE_FILESYSTEM_EDITOR";
     public static final String ROLE_MOBILE = "ROLE_MOBILE";
     public static final String ROLE_JMX = "ROLE_JMX";
     public static final String ROLE_MINION = "ROLE_MINION";
@@ -98,7 +98,7 @@ public final class Authentication extends Object {
         s_availableRoles.add(ROLE_PROVISION);
         s_availableRoles.add(ROLE_REST);
         s_availableRoles.add(ROLE_ASSET_EDITOR);
-        s_availableRoles.add(ROLE_CONFIG_EDITOR);
+        s_availableRoles.add(ROLE_FILESYSTEM_EDITOR);
         s_availableRoles.add(ROLE_MOBILE);
         s_availableRoles.add(ROLE_JMX);
         s_availableRoles.add(ROLE_MINION);

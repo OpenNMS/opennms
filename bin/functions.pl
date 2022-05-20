@@ -247,10 +247,6 @@ if (defined $TESTS) {
 }
 unshift(@ARGS, '-Djava.awt.headless=true');
 
-if (not grep { $_ =~ /^-Dmaven.metadata.legacy/ } @ARGS) {
-	unshift(@ARGS, '-Dmaven.metadata.legacy=true');
-}
-
 if (not grep { $_ =~ /^-Daether.connector.resumeDownloads/ } @ARGS) {
 	unshift(@ARGS, '-Daether.connector.resumeDownloads=false');
 }
