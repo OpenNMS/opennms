@@ -150,10 +150,10 @@ public class LinkdEdgeStatusProviderTest {
         LinkdPort node5port10100 = new LinkdPort(node5Vertex, 10100);
         LinkdPort node4port101 = new LinkdPort(node4Vertex, 101);
         LinkdPort node5port100 = new LinkdPort(node5Vertex, 100);
-        m_edges.add(LinkdEdge.create("104|105", node4port599, node5port578,ProtocolSupported.ISIS,LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD));
-        m_edges.add(LinkdEdge.create("204|205", node4port1, node5port21,ProtocolSupported.LLDP,LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD));
-        m_edges.add(LinkdEdge.create("404|405", node4port10101, node5port10100, ProtocolSupported.OSPF,LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD));
-        m_edges.add(LinkdEdge.create("504|505", node4port101, node5port100, ProtocolSupported.CDP,LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD));
+        m_edges.add(LinkdEdge.create("104|105", node4port599, node5port578,ProtocolSupported.ISIS, LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD));
+        m_edges.add(LinkdEdge.create("204|205", node4port1, node5port21,ProtocolSupported.LLDP, LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD));
+        m_edges.add(LinkdEdge.create("404|405", node4port10101, node5port10100, ProtocolSupported.OSPF, LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD));
+        m_edges.add(LinkdEdge.create("504|505", node4port101, node5port100, ProtocolSupported.CDP, LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD));
 
         // dehli and chennai connected via ospf
         LinkdVertex dehliVertex = getVertexFromNode(m_nodeDehli);
