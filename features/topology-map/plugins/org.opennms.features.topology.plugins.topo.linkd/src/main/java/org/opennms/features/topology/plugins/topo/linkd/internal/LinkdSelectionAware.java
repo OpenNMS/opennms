@@ -46,7 +46,7 @@ public class LinkdSelectionAware implements SelectionAware {
 
     private final LinkdTopologyFactory m_linkdTopologyFactory;
     public LinkdSelectionAware(LinkdTopologyFactory factory) {
-        m_linkdTopologyFactory =factory;
+        m_linkdTopologyFactory = factory;
     }
 
     @Override
