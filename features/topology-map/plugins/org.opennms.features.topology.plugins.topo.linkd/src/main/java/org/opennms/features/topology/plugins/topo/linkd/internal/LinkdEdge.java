@@ -42,7 +42,7 @@ public class LinkdEdge extends AbstractEdge implements Edge {
         SimpleConnector source = new SimpleConnector(namespace, sourceport.getVertex().getId()+"-"+id+"-connector", sourceport.getVertex());
         SimpleConnector target = new SimpleConnector(namespace, targetport.getVertex().getId()+"-"+id+"-connector", targetport.getVertex());
 
-        return new LinkdEdge(id, sourceport, targetport,source, target,discoveredBy,namespace);
+        return new LinkdEdge(id, sourceport, targetport, source, target, discoveredBy, namespace);
     }
     
     private final LinkdPort m_sourcePort;
