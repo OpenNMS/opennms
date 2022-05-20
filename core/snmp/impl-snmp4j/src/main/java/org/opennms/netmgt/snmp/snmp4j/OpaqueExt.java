@@ -126,7 +126,6 @@ public class OpaqueExt extends Opaque {
     }
 
     private static OpaqueTypeAdapter createAdapter(final byte[] bytes) {
-
         if (bytes.length < 3) {
             return createErrorAdapter("To short", bytes);
         }
@@ -183,8 +182,7 @@ public class OpaqueExt extends Opaque {
         if (valueType == OpaqueValueType.ERROR) {
             return false;
         }
-        return 
-                getAdapter().getValueType() == OpaqueValueType.DOUBLE ||
+        return getAdapter().getValueType() == OpaqueValueType.DOUBLE ||
                 getAdapter().getValueType() == OpaqueValueType.LONG ||
                 super.isPrintable();
     }
