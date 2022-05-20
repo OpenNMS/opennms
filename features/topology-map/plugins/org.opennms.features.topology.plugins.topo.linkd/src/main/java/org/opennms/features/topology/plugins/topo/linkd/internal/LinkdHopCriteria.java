@@ -51,7 +51,7 @@ public class LinkdHopCriteria extends VertexHopCriteria {
     private final String m_nodeId;
     private final LinkdTopologyFactory m_linkdTopologyFactory;
 
-    private LinkdHopCriteria(String nodeId, String nodeLabel,LinkdTopologyFactory linkdTopologyFactory) {
+    private LinkdHopCriteria(String nodeId, String nodeLabel, LinkdTopologyFactory linkdTopologyFactory) {
         super(nodeId,nodeLabel);
         m_nodeId = nodeId;
         m_linkdTopologyFactory=linkdTopologyFactory;
