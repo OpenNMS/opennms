@@ -123,7 +123,7 @@ public class LinkdTopologyFactory {
     private void loadTopology(ProtocolSupported protocol, Timer timer, BackendGraph graph) {
         Timer.Context context = timer.time();
         try{
-            loadTopology(protocol,graph);
+            loadTopology(protocol, graph);
             LOG.info("loadEdges: {}, loaded", protocol.name());
         } catch (Exception e){
             LOG.error("loadEdges: {}, failed", protocol.name(), e);
