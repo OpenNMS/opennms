@@ -160,7 +160,7 @@ public class LinkdEdgeStatusProviderTest {
         LinkdVertex chennaiVertex = getVertexFromNode(m_nodeChennai);
         LinkdPort dehliport12 = new LinkdPort(dehliVertex, 12); 
         LinkdPort chennaiport13 = new LinkdPort(chennaiVertex, 13);
-        m_edges.add(LinkdEdge.create("310|314", dehliport12, chennaiport13, ProtocolSupported.OSPF,LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD));
+        m_edges.add(LinkdEdge.create("310|314", dehliport12, chennaiport13, ProtocolSupported.OSPF, LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD));
 
         assertEquals(8, m_edges.size());
 
