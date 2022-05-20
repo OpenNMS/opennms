@@ -153,8 +153,8 @@ opennms:collect -n 1 org.opennms.protocols.xml.collector.XmlCollector 127.0.0.1 
 == Mapping values
 
 Sometimes data is represented as string values.
-These values are normally not persisted as time-series data, this means changes are not visible over time.
-To circumvent this, we allow to define mappings between input values and values to be persisted.
+These values are normally not persisted as time-series data; this means changes are not visible over time.
+To circumvent this, we allow mappings defined between input values and values to be persisted.
 
 Let's assume we have the following data input:
 
@@ -176,7 +176,7 @@ Let's assume we have the following data input:
 </records>
 ----
 
-The following group configuration allows to persist the `input` values as integer values over time:
+The following group configuration allows you to persist the `input` values as integer values over time:
 
 [source, xml]
 ----
@@ -191,5 +191,5 @@ The following group configuration allows to persist the `input` values as intege
 ----
 <1> The data-type is altered in the `xml-object` element from `STRING` to `GAUGE`.
 <2> In this example we associate `aaa` to `10` and `bbb` to `20`.
-<3> A default value can be defined by omitting the `from` attribute in a `xml-mapping` definition.
+<3> Define a default value by omitting the `from` attribute in a `xml-mapping` definition.
 In this example `ccc` will be associated with the default value of `1000`.
