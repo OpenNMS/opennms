@@ -239,7 +239,7 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
             });
 
             // Now do a 'history' search which should return 2 items for index 1 "dcb-2", having 2 different backup dates
-            final var historyResponse = deviceConfigRestService.getDeviceConfigsByInterface(ipInterfaceIds.get(1));
+            final var historyResponse = deviceConfigRestService.getDeviceConfigsByInterface(ipInterfaceIds.get(1), null);
             assertThat(historyResponse, notNullValue());
             assertThat(historyResponse.hasEntity(), is(true));
 
@@ -529,7 +529,7 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
 
             final int nonExistingIpInterfaceId = ipInterfaces.stream().mapToInt(OnmsIpInterface::getId).max().orElse(9999) + 1;
 
-            final var response = deviceConfigRestService.getDeviceConfigsByInterface(nonExistingIpInterfaceId);
+            final var response = deviceConfigRestService.getDeviceConfigsByInterface(nonExistingIpInterfaceId, null);
             assertThat(response, notNullValue());
             assertThat(response.hasEntity(), is(false));
             assertThat(response.getStatus(), is(Response.Status.NO_CONTENT.getStatusCode()));
@@ -665,7 +665,7 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
             final var expectedDeviceConfigs = List.of(List.of(dc0), List.of(dc1a, dc1b), List.of(dc2), List.of(dc3), List.of(dc4));
 
             IntStream.range(0, RECORD_COUNT).forEach(i -> {
-                final var response = deviceConfigRestService.getDeviceConfigsByInterface(ipInterfaces.get(i).getId());
+                final var response = deviceConfigRestService.getDeviceConfigsByInterface(ipInterfaces.get(i).getId(), null);
                 assertThat(response, notNullValue());
                 assertThat(response.hasEntity(), is(true));
 
@@ -690,6 +690,21 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
                     assertThat(dto.getIpInterfaceId(), equalTo(expectedDc.getIpInterface().getId()));
                     assertThat(dto.getDeviceName(), equalTo(expectedDc.getIpInterface().getNode().getLabel()));
                 });
+            });
+
+            // Test filtering by config type
+            IntStream.range(0, 2).forEach(i -> {
+                final var response = deviceConfigRestService.getDeviceConfigsByInterface(ipInterfaces.get(1).getId(), CONFIG_TYPES.get(i));
+
+                assertThat(response, notNullValue());
+                assertThat(response.hasEntity(), is(true));
+
+                final List<DeviceConfigDTO> responseList = (List<DeviceConfigDTO>) response.getEntity();
+                assertThat(responseList.size(), equalTo(1));
+
+                DeviceConfigDTO dto = responseList.get(0);
+                assertThat(dto.getIpInterfaceId(), equalTo(ipInterfaces.get(1).getId()));
+                assertThat(dto.getConfigType(), equalTo(CONFIG_TYPES.get(i)));
             });
         });
     }

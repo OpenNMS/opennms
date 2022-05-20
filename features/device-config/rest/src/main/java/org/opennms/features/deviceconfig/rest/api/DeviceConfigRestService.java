@@ -116,12 +116,14 @@ public interface DeviceConfigRestService {
     /**
      * Get a list of device configs for a given IP interface id.
      * This is a history of configs for a particular device.
-     * Returns all config types.
+     * Returns all config types by default, use 'configType' to filter.
      */
     @GET
     @Path("/interface/{id : \\d+}")
     @Produces(MediaType.APPLICATION_JSON)
-    Response getDeviceConfigsByInterface(@PathParam("id") Integer ipInterfaceId);
+    Response getDeviceConfigsByInterface(
+        @PathParam("id") Integer ipInterfaceId,
+        @QueryParam("configType") @DefaultValue("") String configType);
 
     /**
      * Delete a single device config.
