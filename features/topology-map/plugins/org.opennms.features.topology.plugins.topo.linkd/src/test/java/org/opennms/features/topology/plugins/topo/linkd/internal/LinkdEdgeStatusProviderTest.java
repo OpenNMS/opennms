@@ -80,7 +80,7 @@ public class LinkdEdgeStatusProviderTest {
     private List<LinkdEdge> m_edges; 
 
     private LinkdVertex getVertexFromNode(OnmsNode node) {
-        return LinkdVertex.create(TopologyUpdater.create(NodeTopologyEntity.toNodeTopologyInfo(node), null),LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD);
+        return LinkdVertex.create(TopologyUpdater.create(NodeTopologyEntity.toNodeTopologyInfo(node), null), LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD);
     }
 
     @Before
