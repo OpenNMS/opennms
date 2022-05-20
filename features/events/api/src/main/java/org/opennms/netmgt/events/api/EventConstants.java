@@ -545,6 +545,9 @@ public abstract class EventConstants {
     public static final String PARAM_MONITORING_SYSTEM_PREV_LOCATION = "monitoringSystemPreviousLocation";
 
     public static final String PARAM_TOPOLOGY_NAMESPACE = "namespace";
+
+    public static final String DEVICE_CONFIG_RETRIEVAL_FAILED_UEI = "uei.opennms.org/deviceconfig/configRetrievalFailed";
+    public static final String DEVICE_CONFIG_RETRIEVAL_SUCCEEDED_UEI = "uei.opennms.org/deviceconfig/configRetrievalSucceeded";
     //
     // end eventUEIs
     //
@@ -645,6 +648,8 @@ public abstract class EventConstants {
      * The new ifIndex value sent as a parm of the 'interfaceIndexChanged' event.
      */
     public static final String PARM_NEW_IFINDEX = "newIfIndex";
+
+    public static final String PARM_IPINTERFACE_ID = "ipInterfaceID";
 
     /**
      * The nodeLabel from the node table when sent as an event parm.
@@ -901,7 +906,9 @@ public abstract class EventConstants {
     public static final String PARM_FOREIGN_ID = "foreignId";
     /** Constant <code>PARM_RESCAN_EXISTING="rescanExisting"</code> */
     public static final String PARM_RESCAN_EXISTING = "rescanExisting";
-    
+    /** Constant <code>PARM_RESCAN_EXISTING="monitorKey"</code> */
+    public static final String PARM_MONITOR_KEY = "monitorKey";
+
     /**
      * Parms used for configureSnmp events
      */

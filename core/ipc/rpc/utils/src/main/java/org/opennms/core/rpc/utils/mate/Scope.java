@@ -68,6 +68,6 @@ public interface Scope {
     }
 
     public enum ScopeName {
-        DEFAULT, NODE, INTERFACE, SERVICE;
+        DEFAULT, GLOBAL, NODE, INTERFACE, SERVICE;
     }
 }

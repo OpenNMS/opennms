@@ -91,7 +91,7 @@ class CollectableService implements ReadyRunnable {
 
     protected static final String USE_COLLECTION_START_TIME_SYS_PROP = "org.opennms.netmgt.collectd.useCollectionStartTime";
 
-    private final boolean m_usingStrictInterval = Boolean.getBoolean(STRICT_INTERVAL_SYS_PROP);
+    private final boolean m_usingStrictInterval = !System.getProperties().containsKey(STRICT_INTERVAL_SYS_PROP) || Boolean.getBoolean(STRICT_INTERVAL_SYS_PROP);
 
     /**
      * Interface's parent node identifier
@@ -174,7 +174,7 @@ class CollectableService implements ReadyRunnable {
         m_repository=m_spec.getRrdRepository(m_params.getCollectionName());
 
         try {
-            m_thresholdingSession = thresholdingService.createSession(m_nodeId, getHostAddress(), m_spec.getServiceName(), m_repository, m_params);
+            m_thresholdingSession = thresholdingService.createSession(m_nodeId, getHostAddress(), m_spec.getServiceName(), m_params);
         } catch (ThresholdInitializationException e) {
             LOG.error("Error when initializing Thresholding. No Thresholding will be performed on this service.", e);
         }

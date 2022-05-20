@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>30.0.0-SNAPSHOT</version>
+    <version>31.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>dependencies</artifactId>
@@ -20,7 +20,9 @@
     <module>dnsjava</module>
     <module>drools</module>
     <module>felix</module>
+    <module>groovy</module>
     <module>hibernate</module>
+    <module>jackson1</module>
     <module>jasper</module>
     <module>jasypt</module>
     <module>javamail</module>
@@ -47,17 +49,19 @@
     <module>rancid</module>
     <module>servlet</module>
     <module>smack</module>
-    <module>smslib</module>
     <module>snmp4j</module>
     <module>snmp4j-agent</module>
     <module>snmp</module>
     <module>snmp-test</module>
     <module>spring</module>
+    <module>spring-beans-31-shaded</module>
+    <module>spring-beans-42-shaded</module>
+    <module>spring-beans-43-shaded</module>
+    <module>spring-beans-shaded</module>
     <module>spring-security-core</module>
     <module>spring-security</module>
     <module>spring-test</module>
     <module>spring-web</module>
-    <module>tracker</module>
     <module>twitter4j</module>
     <module>jcifs-shaded</module>
   </modules>

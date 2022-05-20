@@ -2,7 +2,7 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.jest</artifactId>
-    <version>30.0.0-SNAPSHOT</version>
+    <version>31.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.jest</groupId>
@@ -47,7 +47,7 @@
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient-osgi</artifactId>
-      <version>4.5.3</version>
+      <version>${httpclientVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.core.health</groupId>

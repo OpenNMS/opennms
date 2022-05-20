@@ -54,6 +54,9 @@ override_dh_auto_install:
 		$$(pwd)/debian/$(PACKAGE_NAME)$(CONTAINER_PREFIX)/bin/fix-permissions \
 		$$(pwd)/debian/$(PACKAGE_NAME)$(CONTAINER_PREFIX)/bin/update-package-permissions
 	
+	# clean the data directory before packaging 
+	rm -rf $$(pwd)/debian/$(PACKAGE_NAME)$(CONTAINER_PREFIX)/data/*
+	
 	# move etc / data / deploy directories to where they will live
 	mv $$(pwd)/debian/$(PACKAGE_NAME)$(CONTAINER_PREFIX)/etc $$(pwd)/debian/$(PACKAGE_NAME)$(ETCDIR) \
 		&& ln -s ../../..$(ETCDIR) $$(pwd)/debian/$(PACKAGE_NAME)$(CONTAINER_PREFIX)/etc \

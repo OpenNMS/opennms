@@ -6,7 +6,7 @@
 		<relativePath>../topology-map/poms/compiled/</relativePath>
 		<groupId>org.opennms.features.topology.build</groupId>
 		<artifactId>compiled-bundle-settings</artifactId>
-		<version>30.0.0-SNAPSHOT</version>
+		<version>31.0.0-SNAPSHOT</version>
 	</parent>
 	<groupId>org.opennms.features</groupId>
 	<artifactId>vaadin-node-maps</artifactId>
@@ -98,35 +98,6 @@
 		</plugins>
 
 	</build>
-
-	<repositories>
-		<repository>
-			<id>vaadin-snapshots</id>
-			<releases><enabled>false</enabled></releases>
-			<snapshots><enabled>true</enabled></snapshots>
-			<url>https://maven.opennms.org/content/repositories/vaadin-snapshots/</url>
-		</repository>
-		<repository>
-			<id>vaadin-addons</id>
-			<url>https://maven.opennms.org/content/repositories/vaadin-addons/</url>
-		</repository>
-		<repository>
-			<snapshots><enabled>false</enabled></snapshots>
-			<releases><enabled>true</enabled></releases>
-			<id>opennms-repo</id>
-			<name>OpenNMS Repository</name>
-			<url>https://maven.opennms.org/content/groups/opennms.org-release/</url>
-		</repository>
-	</repositories>
-
-	<pluginRepositories>
-		<pluginRepository>
-			<id>vaadin-snapshots</id>
-			<snapshots><enabled>true</enabled></snapshots>
-			<releases><enabled>false</enabled></releases>
-			<url>https://maven.opennms.org/content/repositories/vaadin-snapshots/</url>
-		</pluginRepository>
-	</pluginRepositories>
 
 	<dependencies>
 		<!-- OSGi Dependencies -->
@@ -224,11 +195,6 @@
 		<!-- Tests Dependencies -->
 
 		<dependency>
-			<groupId>org.easymock</groupId>
-			<artifactId>easymock</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
@@ -243,11 +209,6 @@
 			<artifactId>powermock-module-junit4</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.powermock</groupId>
-			<artifactId>powermock-api-easymock</artifactId>
-			<scope>test</scope>
-		</dependency>  
 		<dependency>
 			<groupId>org.powermock</groupId>
 			<artifactId>powermock-api-mockito2</artifactId>

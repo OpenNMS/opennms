@@ -161,12 +161,9 @@ public class TimeseriesWriter implements WorkHandler<SampleBatchEvent>, Disposab
     }
 
     public void insert(List<Sample> samples) {
-        pushToRingBuffer(samples, TRANSLATOR);
-    }
 
-    private void pushToRingBuffer(List<Sample> samples, EventTranslatorOneArg<SampleBatchEvent, List<Sample>> translator) {
         // Add the samples to the ring buffer
-        if (!ringBuffer.tryPublishEvent(translator, samples)) {
+        if (!ringBuffer.tryPublishEvent(TRANSLATOR, samples)) {
             RATE_LIMITED_LOGGER.error("The ring buffer is full. {} samples associated with resource ids {} will be dropped.",
                     samples.size(), new Object() {
                         @Override
@@ -199,6 +196,8 @@ public class TimeseriesWriter implements WorkHandler<SampleBatchEvent>, Disposab
             this.stats.record(event.getSamples());
         } catch (Throwable t) {
             RATE_LIMITED_LOGGER.error("An error occurred while inserting samples. Some sample may be lost.", t);
+        } finally {
+            event.setSamples(null); // free sample reference for garbage collection
         }
     }
 

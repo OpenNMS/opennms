@@ -8,9 +8,10 @@
 import Logo from './OpenNMS_Horizontal-Logo_Light-BG.svg'
 </script>
 
-<style>
+<style scoped lang="scss">
+@import "@featherds/styles/themes/variables";
 .logo {
   width: 8em !important;
-  color: var(--feather-primary-text-on-color) !important;
+  color: var($primary-text-on-color) !important;
 }
 </style>

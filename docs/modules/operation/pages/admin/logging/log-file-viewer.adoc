@@ -1,0 +1,21 @@
+
+[[ga-operation-log-file-viewer]]
+= View Log Files
+
+You can view log files using the {page-component-title} UI.
+
+Navigate to the new UI (click *UI Preview*), and select "Logs" from the navigation pane.
+The Log File Viewer is displayed.
+
+.Log File Viewer
+image::logging/log-file-viewer.png[]
+
+The left pane displays the log files.
+Click on a file name to display the contents in the right pane.
+You can scroll through contents vertically and horizontally.
+
+You can search for any part of a log file name in the "Search logs" box.
+
+Click the arrow in the upper right corner of the right pane to order the log data by newest or oldest entries first.
+
+The log file data does not automatically refresh; click on the log file name in the left pane to refresh that log's data.

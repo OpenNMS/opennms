@@ -13,9 +13,11 @@
     :labels="labels"
   ></FeatherAutocomplete>
 </template>
-  
-<script setup lang="ts">
-import { ref, computed } from 'vue'
+
+<script
+  setup
+  lang="ts"
+>
 import { debounce } from 'lodash'
 import { useStore } from 'vuex'
 import { FeatherAutocomplete } from '@featherds/autocomplete'
@@ -28,7 +30,7 @@ const loading = ref(false)
 const defaultLabels = { noResults: 'Searching...' }
 const labels = ref(defaultLabels)
 
-const selectItem = (items: { label: string }[]) => {
+const selectItem: any = (items: { label: string }[]) => {
   const nodeLabels = items.map((item) => item.label)
   store.dispatch('mapModule/setSearchedNodeLabels', nodeLabels)
   if (nodeLabels.length) {
@@ -62,19 +64,18 @@ const results = computed(() => {
   return []
 })
 </script>
-  
-<style lang="scss">
+
+<style
+  lang="scss"
+  scoped
+>
+@import "@featherds/styles/themes/variables";
+
 .map-search {
   z-index: 1000;
   width: 290px !important;
-  .feather-input-border {
-    background: var(--feather-surface);
-  }
-  &.feather-autocomplete-container {
-    padding-top: 0px;
-  }
-  .feather-autocomplete-input {
-    height: 25px !important;
+  :deep(.feather-input-border) {
+    background: var($surface);
   }
 }
 </style>

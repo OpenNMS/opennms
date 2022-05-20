@@ -2,7 +2,16 @@
 <model-import xmlns="http://xmlns.opennms.org/xsd/config/model-import"
     date-stamp="2009-11-01T19:17:57.939Z"
     last-import="2009-11-01T19:17:57.930Z" foreign-source="dummybot">
-    <node node-label="dummyrouter" foreign-id="1257103063862" building="dummybot"/>
+    <node node-label="dummyrouter" foreign-id="1257103063862" building="dummybot">
+        <interface status="1" snmp-primary="P" ip-addr="not.a.valid.host.eu" descr="invalid, this interface should be thrown out">
+            <monitored-service service-name="heartbeat_resource"/>
+            <monitored-service service-name="heartbeat"/>
+            <monitored-service service-name="megaRaid"/>
+            <monitored-service service-name="somethingsvn_utilweb"/>
+            <monitored-service service-name="SNMP"/>
+            <monitored-service service-name="ICMP"/>
+        </interface>
+    </node>
     <node node-label="dummydata" foreign-id="1255586363041" building="dummybot"/>
     <node node-label="dummybot" foreign-id="1254956472421" building="dummybot"/>
 </model-import>

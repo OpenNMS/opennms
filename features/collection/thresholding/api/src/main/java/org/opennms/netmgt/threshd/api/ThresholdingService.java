@@ -31,7 +31,6 @@ package org.opennms.netmgt.threshd.api;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.ServiceParameters;
-import org.opennms.netmgt.rrd.RrdRepository;
 
 /**
  * Thresholding API Service.
@@ -49,16 +48,14 @@ public interface ThresholdingService {
      *            The Host IP Address.
      * @param serviceName
      *            The Service name.
-     * @param rrdRepository
-     *            Must not be null. Will be used to resolve Resource Filters and for genertaing Event labels.
      * @param serviceParameters
-     *            Must not be null. Required by some existing {@link CollectionResource} objects to evaluate whether to apply thresholds when accepting a {@link CollectionSet}. 
+     *            Must not be null. Required by some existing {@link CollectionResource} objects to evaluate whether to apply thresholds when accepting a {@link CollectionSet}.
      *            If your {@link CollectionResource} does not require this, pass an empty {@link ServiceParameters} object.
      * @return A {@link ThresholdingSession}
      * @throws ThresholdInitializationException
      *             if there is an error creating the {@link ThresholdingSession} because of invalid Thresholding Configuration.
      */
-    ThresholdingSession createSession(int nodeId, String hostAddress, String serviceName, RrdRepository rrdRepository, ServiceParameters serviceParameters)
+    ThresholdingSession createSession(int nodeId, String hostAddress, String serviceName, ServiceParameters serviceParameters)
             throws ThresholdInitializationException;
 
     ThresholdingSetPersister getThresholdingSetPersister();

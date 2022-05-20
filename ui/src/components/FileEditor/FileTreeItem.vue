@@ -33,8 +33,7 @@
   </li>
 </template>
 
-<script setup lang=ts>
-import { ref, computed, PropType, watch } from 'vue'
+<script setup lang="ts">
 import { useStore } from 'vuex'
 import { FeatherIcon } from '@featherds/icon'
 import Open from '@featherds/icon/navigation/ExpandMore'
@@ -42,6 +41,7 @@ import Close from '@featherds/icon/navigation/ChevronRight'
 import Remove from '@featherds/icon/action/Remove'
 import NewFileInput from './NewFileInput.vue'
 import { IFile } from '@/store/fileEditor/state'
+import { PropType } from 'vue'
 
 const store = useStore()
 const props = defineProps({
@@ -89,6 +89,7 @@ const openConfirmDeleteModal = (file: IFile) => store.dispatch('fileEditorModule
 </script>
 
 <style lang="scss" scoped>
+@import "@featherds/styles/themes/variables";
 ul,
 li {
   list-style-type: none;
@@ -107,9 +108,9 @@ li {
   margin-left: 0px;
 }
 .selected {
-  background: var(--feather-shade-3);
+  background: var($shade-3);
   span {
-    color: var(--feather-primary);
+    color: var($primary);
   }
 }
 .hidden {
@@ -118,6 +119,6 @@ li {
 .remove {
   float: right;
   margin-right: 10px;
-  color: var(--feather-primary-text-on-surface) !important;
+  color: var($primary-text-on-surface) !important;
 }
 </style>

@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.core.ipc</groupId>
     <artifactId>org.opennms.core.ipc.rpc</artifactId>
-    <version>30.0.0-SNAPSHOT</version>
+    <version>31.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core.ipc.rpc</groupId>
@@ -36,6 +36,11 @@
       <artifactId>opennms-dao-api</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.scv</groupId>
+      <artifactId>org.opennms.features.scv.api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>ch.hsr</groupId>
       <artifactId>geohash</artifactId>
       <version>${geohashVersion}</version>
@@ -63,6 +68,12 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao-mock</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.scv</groupId>
+      <artifactId>org.opennms.features.scv.jceks-impl</artifactId>
+      <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

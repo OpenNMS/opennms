@@ -105,7 +105,9 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
         "classpath:/META-INF/opennms/applicationContext-timeseries-test.xml",
+        "classpath:/META-INF/opennms/applicationContext-jceks-scv.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties={
         "org.opennms.timeseries.strategy=integration"
@@ -188,6 +190,7 @@ public class TimeseriesRoundtripIT {
                 .withNumericAttribute(nodeLevelResource, "metrics", "m1", 900, AttributeType.GAUGE)
                 .withIdentifiedNumericAttribute(nodeLevelResource, "metrics", "m2", 1000, AttributeType.COUNTER, "idx-m2")
                 .withStringAttribute(nodeLevelResource, "metrics", "sysname", "host1")
+                .withStringAttribute(nodeLevelResource, "metrics2", "stringAttributeFromAnotherGroup", "123")
                 // Interface level
                 .withNumericAttribute(ifLevelResource, "if-metrics", "m3", 44, AttributeType.GAUGE)
                 .withIdentifiedNumericAttribute(ifLevelResource, "if-metrics", "m4", 55, AttributeType.COUNTER, "idx-m4")
@@ -208,21 +211,22 @@ public class TimeseriesRoundtripIT {
         // Tags contained in the Metric:
         testForNumericAttribute("snmp/1/metrics", "m1", 900d);
         testForNumericAttribute("snmp/1/metrics", "m2", 1000d);
-        // String attributes are stored in the OpenNMS Database:
+        // String attributes:
         testForStringAttributeAtMetricLevel("snmp/1/metrics", "m2", "idx-m2", "m2"); // Identified
         testForStringAttributeAtResourceLevel("snmp/1", "sysname", "host1");
+        testForStringAttributeAtResourceLevel("snmp/1","stringAttributeFromAnotherGroup", "123");
 
         // Tags contained in the Metric:
         testForNumericAttribute("snmp/1/1/if-metrics", "m3", 44d);
         testForNumericAttribute("snmp/1/1/if-metrics", "m4", 55d);
-        // String attributes are stored in the OpenNMS Database:
+        // String attributes:
         testForStringAttributeAtMetricLevel("snmp/1/1/if-metrics", "m4", "idx-m4", "m4"); // Identified
         testForStringAttributeAtResourceLevel("snmp/1/1", "ifname", "eth0");
 
         // Tags contained in the Metric:
         testForNumericAttribute("snmp/1/gen-metrics/gen-metrics", "m5", 66d);
         testForNumericAttribute("snmp/1/gen-metrics/gen-metrics", "m6", 77d);
-        // String attributes are stored in the OpenNMS Database:
+        // String attributes:
         testForStringAttributeAtMetricLevel("snmp/1/gen-metrics/gen-metrics", "m6", "idx-m6", "m6"); // Identified
         testForStringAttributeAtResourceLevel("snmp/1/gen-metrics", "genname", "bgp");
 

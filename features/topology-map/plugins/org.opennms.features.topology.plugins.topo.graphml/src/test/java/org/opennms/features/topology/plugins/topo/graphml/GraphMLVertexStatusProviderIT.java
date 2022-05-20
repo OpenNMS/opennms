@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,6 +28,9 @@
 
 package org.opennms.features.topology.plugins.topo.graphml;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.Date;
@@ -37,7 +40,6 @@ import java.util.stream.Collectors;
 
 import javax.script.ScriptEngineManager;
 
-import org.easymock.EasyMock;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -50,12 +52,12 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.features.graphml.model.GraphML;
 import org.opennms.features.graphml.model.GraphMLReader;
 import org.opennms.features.graphml.model.InvalidGraphException;
+import org.opennms.features.topology.api.topo.BackendGraph;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.Status;
 import org.opennms.features.topology.api.topo.StatusProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.api.topo.BackendGraph;
 import org.opennms.features.topology.plugins.topo.graphml.internal.AlarmSummaryWrapper;
 import org.opennms.features.topology.plugins.topo.graphml.internal.GraphMLServiceAccessor;
 import org.opennms.features.topology.plugins.topo.graphml.status.GraphMLDefaultVertexStatusProvider;
@@ -85,6 +87,7 @@ import com.google.common.io.Resources;
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
@@ -168,12 +171,11 @@ public class GraphMLVertexStatusProviderIT {
         final GraphMLTopologyProvider childTopologyProvider = metaTopoProvider.getGraphProvider("acme:markets");
         final GraphMLDefaultVertexStatusProvider childStatusProvider = new GraphMLDefaultVertexStatusProvider(childTopologyProvider.getNamespace(), this.alarmSummaryWrapper);
 
-        final ServiceReference<StatusProvider> statusProviderReference = EasyMock.niceMock(ServiceReference.class);
+        final ServiceReference<StatusProvider> statusProviderReference = mock(ServiceReference.class);
 
-        final BundleContext bundleContext = EasyMock.niceMock(BundleContext.class);
-        EasyMock.expect(bundleContext.getServiceReferences(StatusProvider.class, null)).andReturn(ImmutableList.of(statusProviderReference)).anyTimes();
-        EasyMock.expect(bundleContext.getService(statusProviderReference)).andReturn(childStatusProvider);
-        EasyMock.replay(statusProviderReference, bundleContext);
+        final BundleContext bundleContext = mock(BundleContext.class);
+        when(bundleContext.getServiceReferences(StatusProvider.class, null)).thenReturn(ImmutableList.of(statusProviderReference));
+        when(bundleContext.getService(statusProviderReference)).thenReturn(childStatusProvider);
 
         final GraphMLTopologyProvider topologyProvider = metaTopoProvider.getGraphProvider("acme:regions");
         final GraphMLPropagateVertexStatusProvider statusProvider = new GraphMLPropagateVertexStatusProvider(topologyProvider.getNamespace(),

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -48,18 +48,6 @@ public class OnmsOutageTest {
                 "   <ipAddress>127.0.0.1</ipAddress>\n" +
                 "   <locationName>Default</locationName>\n" +
                 "   <monitoredService down=\"false\" id=\"1\">\n" +
-                "      <applications>\n" +
-                "         <application id=\"100\">\n" +
-                "           <monitoredServices>\n" +
-                "               <monitoredServiceId>1</monitoredServiceId>\n" +
-                "               <monitoredServiceId>2</monitoredServiceId>\n" +
-                "           </monitoredServices>\n" +
-                "           <name>Dummy</name>\n" +
-                "         </application>\n" +
-                "         <application id=\"102\">\n" +
-                "           <name>Another Dummy</name>\n" +
-                "         </application>\n" +
-                "      </applications>\n" +
                 "      <ipInterfaceId>1</ipInterfaceId>\n" +
                 "      <serviceType id=\"1\">\n" +
                 "         <name>Webservices</name>\n" +
@@ -79,15 +67,6 @@ public class OnmsOutageTest {
         JsonTest.assertJsonEquals(
                 "{\"id\" : 1,\n" +
                 "  \"monitoredService\" : {\n" +
-                "    \"applications\" : [ {\n" +
-                "      \"name\" : \"Dummy\",\n" +
-                "      \"perspectiveLocations\" : [ ],\n" +
-                "      \"id\" : 100\n," +
-                "    }, {\n" +
-                "      \"name\" : \"Another Dummy\",\n" +
-                "      \"perspectiveLocations\" : [ ],\n" +
-                "      \"id\" : 102,\n" +
-                "    } ],\n" +
                 "    \"serviceType\" : {\n" +
                 "      \"name\" : \"Webservices\",\n" +
                 "      \"id\" : 1\n" +

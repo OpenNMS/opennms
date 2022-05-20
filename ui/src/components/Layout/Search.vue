@@ -12,12 +12,13 @@
     @update:modelValue="selectItem"
   ></FeatherAutocomplete>
 </template>
-  
-<script setup lang="ts">
-import { ref, computed } from 'vue'
+
+<script
+  setup
+  lang="ts"
+>
 import { debounce } from 'lodash'
 import { useStore } from 'vuex'
-import { useRouter } from 'vue-router'
 import { FeatherAutocomplete } from '@featherds/autocomplete'
 
 const router = useRouter()
@@ -25,7 +26,7 @@ const store = useStore()
 const searchStr = ref()
 const loading = ref(false)
 
-const selectItem = (value: { url: string }) => {
+const selectItem: any = (value: { url: string }) => {
   if (!value) return
   // parse selected item url and redirect
   const path = value.url.split('?')[1].split('=')
@@ -46,19 +47,21 @@ const results = computed(() => {
   return []
 })
 </script>
-  
-<style lang="scss">
+
+<style
+  lang="scss"
+  scoped
+>
+@import "@featherds/styles/themes/variables";
+
 .menubar-search {
   width: 350px !important;
   margin-right: 20px;
-  .feather-input-border {
-    background: var(--feather-surface);
+  :deep(.feather-input-border) {
+    background: var($surface);
   }
-  &.feather-autocomplete-container {
-    padding-top: 0px;
-  }
-  .feather-autocomplete-input {
-    height: 25px !important;
+  :deep(.feather-input-sub-text){
+    display:none
   }
 }
 </style>

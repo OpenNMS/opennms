@@ -16,7 +16,6 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
 import { useStore } from 'vuex'
 import Editor from '@/components/Logs/Editor.vue'
 import Logs from '@/components/Logs/Logs.vue'
@@ -29,7 +28,7 @@ onMounted(() => store.dispatch('logsModule/getLogs'))
 @import "@featherds/styles/mixins/elevation";
 .card {
   @include elevation(2);
-  background: var(--feather-surface);
+  background: var($surface);
   padding: 15px;
   position: relative;
 }

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,11 +28,12 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
+import static org.mockito.Mockito.when;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.easymock.EasyMock;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
 import org.opennms.core.utils.LldpUtils.LldpPortIdSubType;
@@ -342,18 +343,15 @@ public class EnhancedLinkdMockDataPopulator {
     }
 
     public void setUpMock() {
-        EasyMock.expect(m_nodeDao.getDefaultFocusPoint()).andReturn(getOnmsNode(1)).anyTimes();
-        EasyMock.expect(m_ospfElementDao.findAll()).andReturn(getOspfElements()).anyTimes();
-        EasyMock.expect(m_topologyEntityCache.getNodeTopologyEntities()).andReturn(getNodes()).anyTimes();
-        EasyMock.expect(m_topologyEntityCache.getOspfLinkTopologyEntities()).andReturn(convertToOspf(getOspfLinks())).anyTimes();
-        EasyMock.expect(m_topologyEntityCache.getLldpLinkTopologyEntities()).andReturn(convertToLldp(getLinks())).anyTimes();
-        EasyMock.expect(m_topologyEntityCache.getLldpElementTopologyEntities()).andReturn(convertToLldpElements(getLldpElements())).anyTimes();
-        EasyMock.expect(m_topologyEntityCache.getSnmpInterfaceTopologyEntities()).andReturn(getSnmpInterfaceTopologyEntities()).anyTimes();
-        EasyMock.expect(m_topologyEntityCache.getIpInterfaceTopologyEntities()).andReturn(getIpInterfaceTopologyEntities()).anyTimes();
+        when(m_nodeDao.getDefaultFocusPoint()).thenReturn(getOnmsNode(1));
+        when(m_ospfElementDao.findAll()).thenReturn(getOspfElements());
+        when(m_topologyEntityCache.getNodeTopologyEntities()).thenReturn(getNodes());
+        when(m_topologyEntityCache.getOspfLinkTopologyEntities()).thenReturn(convertToOspf(getOspfLinks()));
+        when(m_topologyEntityCache.getLldpLinkTopologyEntities()).thenReturn(convertToLldp(getLinks()));
+        when(m_topologyEntityCache.getLldpElementTopologyEntities()).thenReturn(convertToLldpElements(getLldpElements()));
+        when(m_topologyEntityCache.getSnmpInterfaceTopologyEntities()).thenReturn(getSnmpInterfaceTopologyEntities());
+        when(m_topologyEntityCache.getIpInterfaceTopologyEntities()).thenReturn(getIpInterfaceTopologyEntities());
 
-        EasyMock.replay(m_nodeDao);
-        EasyMock.replay(m_ospfElementDao);
-        EasyMock.replay(m_topologyEntityCache);
     }
 
     private List<LldpElementTopologyEntity> convertToLldpElements(List<LldpElement> lldpElements) {
@@ -369,10 +367,6 @@ public class EnhancedLinkdMockDataPopulator {
     }
 
     public void tearDown() {
-        EasyMock.reset(m_topologyEntityCache);
-        EasyMock.reset(m_ospfElementDao);
-        EasyMock.reset(m_nodeDao);
-
     }
 
     public List<OnmsNode> getOnmsNodes() {

@@ -120,3 +120,35 @@ Putting it all together, here are a few well-formed resource IDs:
 * `node[1].nodeSnmp[]`
 * `node[42].interfaceSnmp[eth0-04013f75f101]`
 * `node[Servers:115da833-0957-4471-b496-a731928c27dd].dskIndex[_root_fs]`
+
+
+== REST API Explorer
+
+You can view endpoints and API reference documentation directly in the new UI without needing any additional software installed.
+
+The Open API documentation provides information on the available operations and their parameters, and also lets you try some of the operations in your current environment.
+
+To access it, navigate to the new UI and select "Endpoints".
+
+.Endpoints menu
+image::horizon:development:rest/api-explorer-navigation.png[240,240]
+
+You will then see the REST API Explorer.
+
+.OpenNMS REST API Explorer
+image::horizon:development:rest/rest-api-explorer.png[]
+
+The left pane displays all the possible endpoints that you can view and try out.
+
+The right pane allows you to add input parameters (if needed) and click "Try" to send the REST request and display the results.
+
+This screenshot displays an example of sending a REST API request to get all current alarms in the system.
+
+The response status and response time are displayed and you can use the tabs to view the JSON response, response headers, as well as a listing of the corresponding `curl` command.
+
+Most `POST` and `PUT` commands require additional JSON request data; the API Explorer will generally display the schema and some sample JSON for the particular request.
+
+.Sending REST Request in API Explorer
+image::horizon:development:rest/rest-api-explorer-request.png[]
+
+

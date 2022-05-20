@@ -7,7 +7,7 @@
 
     <template v-slot:right>
       <Search v-if="!route.fullPath.includes('/map')" />
-      <FeatherButton @click="returnHandler" class="return-btn">Return to previous UI</FeatherButton>
+      <FeatherButton @click="returnHandler" class="return-btn">Back to main page</FeatherButton>
       <FeatherIcon
         :icon="LightDarkMode"
         class="pointer light-dark"
@@ -18,7 +18,6 @@
 </template>
     
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
 import { FeatherAppBar, FeatherAppBarLink } from '@featherds/app-bar'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
@@ -26,7 +25,6 @@ import LightDarkMode from '@featherds/icon/action/LightDarkMode'
 import Logo from '@/assets/Logo.vue'
 import Search from './Search.vue'
 import { useStore } from 'vuex'
-import { useRoute } from 'vue-router'
 
 const store = useStore()
 const route = useRoute()
@@ -66,9 +64,10 @@ onMounted(async () => {
 </script>
 
 <style lang="scss" scoped>
+@import "@featherds/styles/themes/variables";
 .return-btn {
-  background: var(--feather-secondary-variant);
-  color: var(--feather-primary-text-on-color);
+  background: var($secondary-variant);
+  color: var($primary-text-on-color) !important;
   margin-right: 20px;
 }
 </style>
@@ -76,13 +75,13 @@ onMounted(async () => {
 <style lang="scss">
 @import "@featherds/styles/themes/open-mixins";
 body {
-  background: var(--feather-background);
+  background: var($background);
 }
 .open-light {
-  @include open-light();
+  @include open-light;
 }
 .open-dark {
-  @include open-dark();
+  @include open-dark;
 }
 .light-dark {
   font-size: 24px;

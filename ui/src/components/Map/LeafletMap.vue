@@ -56,7 +56,6 @@
   </div>
 </template>
 <script setup lang ="ts">
-import { computed, ref, nextTick } from 'vue'
 import 'leaflet/dist/leaflet.css'
 import {
   LMap,
@@ -69,7 +68,6 @@ import {
 } from '@vue-leaflet/vue-leaflet'
 import MarkerCluster from './MarkerCluster.vue'
 import { useStore } from 'vuex'
-import { useRoute } from 'vue-router'
 import { Node } from '@/types'
 import NormalIcon from '@/assets/Normal-icon.png'
 import WarninglIcon from '@/assets/Warning-icon.png'
@@ -242,8 +240,7 @@ defineExpose({ invalidateSizeFn })
 .search-bar {
   position: absolute;
   margin-left: 10px;
-  margin-bottom: 23px;
-  margin-top: -5px;
+  margin-top: 10px;
 }
 .geo-map {
   height: 100%;
@@ -251,6 +248,7 @@ defineExpose({ invalidateSizeFn })
 </style>
 
 <style lang="scss">
+@import "@featherds/styles/themes/variables";
 .leaflet-marker-pane {
   div {
     width: 30px !important;
@@ -267,15 +265,15 @@ defineExpose({ invalidateSizeFn })
       width: 100%;
       display: block;
       &.NORMAL {
-        background: var(--feather-success);
+        background: var($success);
       }
       &.WARNING,
       &.MINOR,
       &.MAJOR {
-        background: var(--feather-warning);
+        background: var($warning);
       }
       &.CRITICAL {
-        background: var(--feather-error);
+        background: var($error);
       }
       opacity: 0.7;
     }

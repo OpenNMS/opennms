@@ -1,0 +1,199 @@
+[[backup-script]]
+= Configure Backup Script
+
+OpenNMS uses an SSH scripting engine to run the commands required for devices to upload their configurations.
+You must create a script for each device type whose configuration you want to back up and save this script in the `$\{OPENNMS_HOME}/etc/device-config` folder.
+This script simulates an interactive session with the network device.
+The script tells the device to create a backup of its configuration and send that backup to a TFTP server operated by the Minion or {page-component-title}.
+
+NOTE: Some devices may distinguish different types of configuration; for example, startup configuration versus running configuration.
+OpenNMS treats configuration types as arbitrary strings, and uses `default` when no configuration type is specified.
+
+You will reference this script when you xref:operation:device-config-backup/dcb-requisition.adoc#dcb-requisition[create a requisition] for a device of this type.
+
+== SSH scripting engine
+
+The scripting engine supports two commands:
+
+* `send: ...`: Sends the given string to the device
+* `await: ...`: Waits for a response from the device that matches the given string
+
+Scripts can reference the following variables by using `$\{varname}` notation:
+
+.Scripting variables
+[options="header" cols="1,2"]
+|===
+| Name
+| Description
+
+| tftpServerIp
+| IP address of the TFTP server
+
+| tftpServerPort
+| Port number of the TFTP server
+
+| filenameSuffix
+| Suffix that must be appended to the filename for uploading.
+{page-component-title} uses this additional suffix to identify incoming uploads.
+
+| configType
+| Config type as described in the introduction above.
+Optional; if not specified, OpenNMS uses `default`.
+|===
+
+NOTE: Uploaded configuration files should include filename extensions like `.zip` or `.gz` that specify their file type.
+In addition, you must append the script variable `filenameSuffix` to the filename that is used for upload.
+
+.Example script
+
+This sample script is for a Juniper SRX firewall.
+You will need to modify it for other device types.
+
+[source, script]
+----
+await: >
+send: start shell
+await: %
+send: cd /config
+await: %
+send: tftp ${tftpServerIp}
+await: tftp>
+send: put juniper.conf.gz juniper.conf.gz${filenameSuffix}
+await: tftp>
+send: exit
+----
+
+== Vendor TFTP support
+See your device manufacturer's documentation for details on their TFTP support.
+Some links to popular device manufacturers are provided below.
+
+* https://www.arubanetworks.com/techdocs/ArubaOS_63_Web_Help/Content/ArubaFrameStyles/Management_Utilities/Managing_Files_on_the_.htm[Aruba]
+* https://www.cisco.com/c/de_de/support/docs/ios-nx-os-software/ios-software-releases-122-mainline/46741-backup-config.html[Cisco]
+* https://supportportal.juniper.net/s/article/Manually-transfer-a-configuration-file-or-text-file-from-EX-Switch-to-TFTP-server?language=en_US[Juniper]
+* https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClJ9CAK[Palo Alto]
+
+There are several example scripts available in the directory `$\{OPENNMS_HOME}/etc/examples/device-config`.
+
+.Example scripts for Aruba devices
+[options="header" cols="1,2,3"]
+|===
+| Script
+| Target device
+| Description
+
+| aruba-cx-cli.dcb
+| Aruba OS-CX
+| Retrieves config from ArubaOS-CX device in CLI format.
+
+| aruba-cx-json.dcb
+| Aruba OS-CX
+| Retrieves config from ArubaOS-CX device in JSON format.
+
+| aruba-os.dcb
+| Aruba OS
+| Retrieves config from ArubaOS device.
+
+| cisco-ios-running.dcb
+| Cisco IOS
+| Retrieves running-config from Cisco IOS device.
+
+| cisco-ios-startup.dcb
+| Cisco IOS
+| Retrieves startup-config from Cisco IOS device.
+
+| juniper-junos-config-gz.dcb
+| Juniper JunOS
+| retrieves compressed configuration from Juniper JunOS device
+
+| juniper-junos-config-set.dcb
+| Juniper JunOS
+| Retrieves configuration from Juniper Junos device in set-format.
+
+| juniper-junos-config-txt.dcb
+| Juniper JunOS
+| Retrieves uncompressed configuration from Juniper Junos device.
+
+| paloalto-panos-config.dcb
+| Palo Alto PanOS
+| Retrieves configuration from Palo Alto PAN-OS device.
+|===
+
+=== Configuring DCB user accounts
+
+We strongly recommend limiting the privileges of the user accounts used for configuration retrieval.
+The following examples demonstrate how to configure a `dcb` user account, specifying its password `Pa55w0rd` and limiting its privileges to configuration retrieval commands.
+
+==== ArubaOS
+
+.Example for creating a dcb account based on a custom user group dcb-group with limited privileges
+[source, script]
+----
+aruba-os# configure
+aruba-os(config)# aaa authorization commands local
+aruba-os(config)# aaa authorization group "dcb-group" 1 match-command "copy running-config tftp .*" permit
+aruba-os(config)# aaa authorization group "dcb-group" 2 match-command "show running-config" permit
+aruba-os(config)# aaa authorization group "dcb-group" 3 match-command "copy startup-config tftp .*" permit
+aruba-os(config)# aaa authorization group "dcb-group" 4 match-command "show startup-config" permit
+aruba-os(config)# aaa authentication local-user "dcb" group "dcb-group" password plaintext
+New password for dcb: Pa55w0rd
+Please retype new password for dcb: Pa55w0rd
+aruba-os(config)# exit
+----
+
+==== ArubaOS-CX
+
+.Example for creating a dcb account based on a custom user group dcb-group with limited privileges
+[source, script]
+----
+aruba-os-cx# config
+aruba-os-cx(config)# user-group dcb-group
+aruba-os-cx(config-usr-grp-dcb-group)# permit cli command "copy startup-config tftp.*"
+aruba-os-cx(config-usr-grp-dcb-group)# permit cli command "copy running-config tftp.*"
+aruba-os-cx(config-usr-grp-dcb-group)# permit cli command "show running-config"
+aruba-os-cx(config-usr-grp-dcb-group)# deny cli command ".*"
+aruba-os-cx(config-usr-grp-dcb-group)# exit
+aruba-os-cx(config)# user dcb group dcb-group password
+Enter password: Pa55w0rd
+Confirm password: Pa55w0rd
+aruba-os-cx(config)#
+----
+
+==== Cisco IOS
+
+.Example for creating a dcb account based on a custom privilege level 2
+[source, script]
+----
+cisco-ios#configure terminal
+cisco-ios(config)#username dcb privilege 2 secret Pa55w0rd
+cisco-ios(config)#privilege exec level 2 copy running-config
+cisco-ios(config)#privilege exec level 2 copy startup-config
+cisco-ios(config)#exit
+----
+
+==== Juniper Junos
+
+.Example for creating a dcb account based on a custom login class dcb-class
+[source, script]
+----
+admin@juniper-junos# set system login class dcb-class permissions all
+
+[edit]
+admin@juniper-junos# set system login class dcb-class allow-commands "(exit)|(start shell)|(show configuration.*)"
+
+[edit]
+admin@juniper-junos# set system login class dcb-class deny-commands .*
+
+[edit]
+admin@juniper-junos# set system login user dcb uid 1006
+
+[edit]
+admin@juniper-junos# set system login user dcb class dcb-class
+
+[edit]
+admin@juniper-junos# set system login user dcb authentication plain-text-password
+New password: Pa55w0rd
+Retype new password: Pa55w0rd
+
+[edit]
+admin@juniper-junos# exit
+----

@@ -81,6 +81,7 @@ import org.springframework.test.context.ContextConfiguration;
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
@@ -90,7 +91,8 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
 
         // Override the default QueryManager with the DAO version
-        "classpath:/META-INF/opennms/applicationContext-pollerdTest.xml"
+        "classpath:/META-INF/opennms/applicationContext-pollerdTest.xml",
+        "classpath:/META-INF/opennms/applicationContext-test-deviceConfig.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class,reuseDatabase=false)

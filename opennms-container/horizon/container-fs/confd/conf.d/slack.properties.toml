@@ -1,6 +1,6 @@
 [template]
 src = "slack.properties.tpl"
-dest = "/opt/opennms/etc/opennms.properties.d/_confd.slack.properties"
+dest = "/usr/share/opennms/etc/opennms.properties.d/_confd.slack.properties"
 keys = [
    "opennms/notifd/slack",
 ]

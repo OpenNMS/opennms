@@ -24,7 +24,6 @@ SYSCONFDIR="@SYSCONFDIR@"
 RUNAS="@RUNAS@"
 STOP_RETRIES=10
 STOP_WAIT=5
-PING_REQUIRED=FALSE
 PIDFILE="@PIDFILE@"
 
 export NAME DESC PATH
@@ -75,22 +74,6 @@ export RUNAS JAVA_MIN_MEM JAVA_MAX_MEM MAX_FD JAVA_HOME JAVA JAVA_DEBUG_OPTS JAV
 # export any local configurable variables
 export NAME DESC PATH CONTAINER_HOME SYSCONFDIR STOP_RETRIES STOP_WAIT
 
-run_as() {
-	if [ "$(id -n -u)" "!=" "$RUNAS" ]; then
-		DAEMON="$(daemon --user="$RUNAS" true >/dev/null 2>&1 && command -v daemon)"
-		RUNUSER="$(runuser -u "$RUNAS" true 2>/dev/null && command -v runuser)"
-		if [ -n "$DAEMON" ]; then
-			"$DAEMON" --user="$RUNAS" "$@" >/dev/null 2>&1
-		elif [ -n "$RUNUSER" ] && [ -x "$RUNUSER" ]; then
-			"$RUNUSER" -u "$RUNAS" "$@"
-		else
-			/usr/bin/sudo -u "$RUNAS" "$@"
-		fi
-	else
-		"$@"
-	fi
-}
-
 check_upgrade_files() {
 	for EXTENSION in rpmnew rpmsave dpkg-dist; do
 		if [ "$(find "$CONTAINER_HOME" -name \*."$EXTENSION" 2>/dev/null | wc -l)" -gt 0 ]; then
@@ -139,7 +122,7 @@ is_running() {
 }
 
 stop_process() {
-	run_as "$CONTAINER_HOME"/bin/stop >/dev/null
+	"$CONTAINER_HOME"/bin/stop >/dev/null
 }
 
 kill_process() {
@@ -168,21 +151,11 @@ case "$COMMAND" in
 			exit $?
 		fi
 
-		case "$PING_REQUIRED" in
-			[Tt][Rr][Uu][Ee])
-				# LSB 4 = insufficient privilege
-				"$CONTAINER_HOME/bin/ensure-user-ping.sh" "$RUNAS" || exit 4
-				;;
-			*)
-				QUIET=true "$CONTAINER_HOME/bin/ensure-user-ping.sh" "$RUNAS" || :
-				;;
-		esac
-
 		if [ ! -d "$CONTAINER_HOME/data/tmp" ]; then
 			install -d -m 755 -o "$RUNAS" -g "$RUNAS" "$CONTAINER_HOME/data/tmp"
 		fi
 		chown -R "$RUNAS:$RUNAS" "$CONTAINER_HOME/data/"
-		run_as "$CONTAINER_HOME"/bin/start
+		"$CONTAINER_HOME"/bin/start
 		sleep 5
 		RET="$?"
 
@@ -269,7 +242,7 @@ case "$COMMAND" in
 		;;
 
 	status)
-		run_as "$CONTAINER_HOME"/bin/status >/dev/null
+		"$CONTAINER_HOME"/bin/status >/dev/null
 		RETVAL="$?"
 		if [ $RETVAL -eq 0 ]; then
 			echo "$DESC is running."

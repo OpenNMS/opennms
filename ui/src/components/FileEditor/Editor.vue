@@ -17,7 +17,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watchEffect, watch } from 'vue'
 import { getExtensionFromFilenameSafely } from './utils'
 import { useStore } from 'vuex'
 import { VAceEditor } from 'vue3-ace-editor'
@@ -104,11 +103,12 @@ const init = (editor: any) => {
 </script>
 
 <style lang="scss" scoped>
+@import "@featherds/styles/themes/variables";
 .editor-with-console {
   height: 100%;
   display: flex;
   flex-direction: column;
-  border: 1px solid var(--feather-border-on-surface);
+  border: 1px solid var($border-on-surface);
 }
 .help-open {
   height: calc(100vh - 180px);

@@ -2,6 +2,8 @@
 
 * xref:build-from-source.adoc[]
 
+* xref:osgi/osgi-and-opennms.adoc[]
+
 * xref:minion/introduction.adoc[]
 ** xref:minion/container.adoc[]
 ** xref:minion/guidelines.adoc[]
@@ -25,6 +27,8 @@
 *** xref:rest/alarm_history.adoc[]
 *** xref:rest/events.adoc[]
 *** xref:rest/categories.adoc[]
+*** xref:rest/config_management.adoc[]
+*** xref:rest/device_config.adoc[]
 *** xref:rest/flows.adoc[]
 *** xref:rest/classifications.adoc[]
 *** xref:rest/foreign_sources.adoc[]

@@ -90,9 +90,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
 import { useStore } from 'vuex'
-import { computed } from 'vue'
 import { Alarm, AlarmQueryParameters, FeatherSortObject } from '@/types'
 import { FeatherSelect } from '@featherds/select'
 import { FeatherCheckbox } from '@featherds/checkbox'
@@ -208,41 +206,41 @@ onMounted(() => {
 #wrap {
   height: calc(100% - 29px);
   overflow: auto;
-  background: var(--feather-surface);
+  background: var($surface);
 }
 table {
-  @include table();
-  @include table-condensed();
-  background: var(--feather-surface);
-  color: var(--feather-primary-text-on-surface);
+  @include table;
+  @include table-condensed;
+  background: var($surface);
+  color: var($primary-text-on-surface);
   padding-top: 4px;
   margin-top: 15px;
 }
 thead {
   z-index: 2;
   position: relative;
-  background: var(--feather-surface);
+  background: var($surface);
 }
 .select-ack {
   z-index: 3;
   width: 300px;
   position: absolute;
   right: 30px;
-  top: -15px;
+  top: 7px;
 }
 .first-th {
   padding-left: 20px;
 }
 .first-td {
-  border-left: 4px solid var(--feather-success);
+  border-left: 4px solid var($success);
 }
 .WARNING,
 .MINOR,
 .MAJOR {
-  border-left: 4px solid var(--feather-warning);
+  border-left: 4px solid var($warning);
 }
 
 .CRITICAL {
-  border-left: 4px solid var(--feather-error);
+  border-left: 4px solid var($error);
 }
 </style>

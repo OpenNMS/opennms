@@ -124,4 +124,6 @@ public interface IpInterfaceDao extends LegacyOnmsDao<OnmsIpInterface, Integer> 
 
 	List<OnmsIpInterface> findInterfacesWithMetadata(final String context, final String key, final String value);
 
+    List<OnmsIpInterface> findByIpAddressAndLocation(String address, String location);
+
 }

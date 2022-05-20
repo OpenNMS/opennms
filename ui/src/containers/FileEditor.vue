@@ -37,7 +37,6 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, computed } from 'vue'
 import { useStore } from 'vuex'
 import { FeatherButton } from '@featherds/button'
 import Editor from '@/components/FileEditor/Editor.vue'
@@ -60,7 +59,7 @@ onMounted(() => {
 @import "@featherds/styles/mixins/elevation";
 .card {
   @include elevation(2);
-  background: var(--feather-surface);
+  background: var($surface);
   padding: 15px;
   position: relative;
 }

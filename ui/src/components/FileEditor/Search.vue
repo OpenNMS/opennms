@@ -14,10 +14,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { useStore } from 'vuex'
 import { FeatherInput } from '@featherds/input'
 import { FeatherButton } from '@featherds/button'
+import { UpdateModelFunction } from '@/types'
 
 const store = useStore()
 
@@ -25,7 +25,7 @@ const contentModified = computed(() => store.state.fileEditorModule.contentModif
 const hasSelectedFile = computed(() => store.state.fileEditorModule.selectedFileName !== '')
 const searchValue = computed(() => store.state.fileEditorModule.searchValue)
 const disableBtn = computed(() => !contentModified.value || !hasSelectedFile.value)
-const search = (val: string) => store.dispatch('fileEditorModule/setSearchValue', val || '')
+const search: UpdateModelFunction = (val: string) => store.dispatch('fileEditorModule/setSearchValue', val || '')
 const reset = () => store.dispatch('fileEditorModule/triggerFileReset')
 const save = () => store.dispatch('fileEditorModule/saveModifiedFile')
 </script>
@@ -37,7 +37,7 @@ const save = () => store.dispatch('fileEditorModule/saveModifiedFile')
     width: 100%;
     .feather-input-container {
       padding: 0px;
-      margin-top: -8px;
+      margin-bottom: -26px;
     }
   }
   .save,

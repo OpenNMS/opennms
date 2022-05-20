@@ -103,6 +103,12 @@
           </annotation>
         </element>
 
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:collectionGroup">
+          <annotation>
+            <documentation>Sent event to collectd.</documentation>
+          </annotation>
+        </element>
+
         <element maxOccurs="1" minOccurs="1" name="severity" type="string">
           <annotation>
             <documentation>The event severity</documentation>
@@ -370,8 +376,120 @@
         </extension>
       </simpleContent>
     </complexType>
+  </element>
 
+  <element name="collectionGroup">
+    <annotation>
+      <documentation>The event collection group.</documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element maxOccurs="1" minOccurs="1" ref="this:rrd">
+          <annotation>
+            <documentation>RRD parameters for events data.</documentation>
+          </annotation>
+        </element>
+        <element maxOccurs="unbounded" minOccurs="1" ref="this:collection"/>
+      </sequence>
+      <attribute name="name" type="string" use="required">
+        <annotation>
+          <documentation>Name of the collection group.</documentation>
+        </annotation>
+      </attribute>
+      <attribute name="resourceType" default="nodeSnmp">
+        <annotation>
+          <documentation>
+            Location of the time series stored. Values values (nodeSnmp / interfaceSnmp / any string match with etc/resource-types.d)
+          </documentation>
+        </annotation>
+        <simpleType>
+          <restriction base="string">
+            <pattern value="[\w-]+"/>
+          </restriction>
+        </simpleType>
+      </attribute>
+      <attribute name="instance" type="string">
+        <annotation>
+          <documentation>It is name of event param. When target is generic resource type.  It will use the param value as instance of metrics.
+            When target is interfaceSnmp, it use param value as ifIndex.</documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
 
+  <element name="rrd">
+    <annotation>
+      <documentation>RRD parameters</documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="1" name="rra">
+          <annotation>
+            <documentation>Round Robin Archive definitions</documentation>
+          </annotation>
+          <simpleType>
+            <restriction base="string">
+              <pattern value="RRA:(AVERAGE|MIN|MAX|LAST):.*"/>
+            </restriction>
+          </simpleType>
+        </element>
+      </sequence>
+      <attribute name="step" type="int" use="required">
+        <annotation>
+          <documentation>Step size for the RRD, in seconds.</documentation>
+        </annotation>
+      </attribute>
+      <attribute name="heartBeat" type="int">
+        <annotation>
+          <documentation>heartBeat for the RRD (default step * 2)</documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+
+  <element name="collection">
+    <annotation>
+      <documentation>The event collect configured will trigger message forward to collectd.</documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="0" name="paramValue">
+          <annotation>
+            <documentation>It use to convert KEY (string) into VALUE (double) for rrd. It only support gauge and counter type.</documentation>
+          </annotation>
+          <complexType>
+            <attribute name="key" use="required">
+              <simpleType>
+                <restriction base="string">
+                  <minLength value="1"/>
+                </restriction>
+              </simpleType>
+            </attribute>
+            <attribute name="value" type="double" use="required"/>
+          </complexType>
+        </element>
+      </sequence>
+      <attribute name="name" type="string" use="required">
+        <annotation>
+          <documentation>Name of the collection. It should match with named expression param name. Use uei as name if you want to use the whole varbind message.</documentation>
+        </annotation>
+      </attribute>
+      <attribute name="rename" type="string">
+        <annotation>
+          <documentation>It is use for replace the param name use for the collection. e.g. very long oid to some meaningful words.</documentation>
+        </annotation>
+      </attribute>
+      <attribute name="type" default="gauge">
+        <annotation>
+          <documentation>Type of data.</documentation>
+        </annotation>
+        <simpleType>
+          <restriction base="string">
+            <pattern value="(gauge|counter|string)"/>
+          </restriction>
+        </simpleType>
+      </attribute>
+    </complexType>
   </element>
 
   <element name="correlation">

@@ -132,6 +132,7 @@
       <feature version="${netty4Version}">netty4</feature>
       <feature>opennms-dnsresolver-api</feature>
       <feature>dropwizard-metrics</feature>
+      <feature>opennms-util</feature>
       <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
       <bundle>mvn:com.google.code.gson/gson/${gsonVersion}</bundle>
       <bundle>mvn:org.mongodb/bson/${bsonVersion}</bundle>
@@ -199,6 +200,7 @@
         <bundle dependency="true">mvn:org.mapstruct/mapstruct/${mapstructVersion}</bundle>
         <bundle>mvn:org.opennms.features.api-layer/org.opennms.features.api-layer.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.api-layer/org.opennms.features.api-layer.minion/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.api/${project.version}</bundle>
     </feature>
 
 </features>

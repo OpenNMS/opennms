@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.core.ipc.sink</groupId>
     <artifactId>org.opennms.core.ipc.sink.camel</artifactId>
-    <version>30.0.0-SNAPSHOT</version>
+    <version>31.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
@@ -85,6 +85,10 @@
         <exclusion>
           <groupId>org.springframework</groupId>
           <artifactId>spring-tx</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.sun.xml.bind</groupId>
+          <artifactId>jaxb-core</artifactId>
         </exclusion>
         <exclusion>
           <groupId>com.sun.xml.bind</groupId>

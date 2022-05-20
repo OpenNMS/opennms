@@ -28,7 +28,6 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { useStore } from 'vuex'
 import Search from './Search.vue'
 import { FeatherIcon } from '@featherds/icon'
@@ -49,6 +48,7 @@ const scrollToSelectedLog = () => {
 </script>
 
 <style lang="scss" scoped>
+@import "@featherds/styles/themes/variables";
 .sidebar-relative-container {
   position: relative;
 
@@ -56,7 +56,7 @@ const scrollToSelectedLog = () => {
     position: sticky;
     width: 100%;
     height: 30px;
-    background: var(--feather-shade-4);
+    background: var($shade-4);
 
     .btn {
       margin: 0px;
@@ -75,7 +75,7 @@ const scrollToSelectedLog = () => {
     overflow-x: hidden;
     height: calc(100vh - 212px);
     word-break: break-all;
-    border: 1px solid var(--feather-border-on-surface);
+    border: 1px solid var($border-on-surface);
 
     p {
       margin: 0px;
@@ -84,9 +84,9 @@ const scrollToSelectedLog = () => {
     }
 
     .selected {
-      background: var(--feather-shade-3);
+      background: var($shade-3);
       span {
-        color: var(--feather-primary);
+        color: var($primary);
       }
     }
   }

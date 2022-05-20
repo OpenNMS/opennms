@@ -1,0 +1,66 @@
+[[config-rest-api]]
+= Config Management
+
+Use the Config Management REST API to manage configurations for OpenNMS.
+Configurations modified will take effect instantly.
+
+== GETs (Reading Data)
+
+[options="header", cols="5,10"]
+|===
+| Resource | Description
+| `/cm/\{configName}` | Returns a list of configIds in JSON/YAML format, for example, ["config1", "config2"].
+
+200: Return: String Array
+
+400: Return: {"MESSAGE": "<ERROR_MESSAGE>"}
+| `/cm/schema/\{configName}` | Returns OpenAPI schema (for Swagger UI) in JSON/YAML format.
+
+200: Return: OpenAPI schema
+
+400: Return: {"MESSAGE": "<ERROR_MESSAGE>"}
+| `/cm/\{configName}/\{configId}` | Returns configuration in JSON/YAML format.
+
+200: Return: Config Bean 
+
+400: Return: {"MESSAGE": "<ERROR_MESSAGE>"}
+|===
+
+
+== POSTs (Adding Data)
+
+[options="header", cols="5,10"]
+|===
+| Resource                    | Description
+| `/cm/\{configName}/\{configId}`             | Add new configuration.
+                                                     If the same configuration exists, it will return an error.
+
+200: Return nothing
+
+400: Return: {"MESSAGE": "<ERROR_MESSAGE>"}
+|===
+
+== PUTs (Modifying Data)
+
+[options="header", cols="5,10"]
+|===
+| Resource                    | Description
+| `/cm/\{configName}/\{configId}`             |  Update configuration.
+                                                     If configuration does not exist, it will return error.
+
+200: Return nothing
+
+400: Return: {"MESSAGE": "<ERROR_MESSAGE>"}
+|===
+
+== DELETEs (Removing Data)
+
+[options="header", cols="5,10"]
+|===
+| Resource                    | Description
+| `/cm/\{configName}/\{configId}`             | Delete configuration.
+
+200: Return nothing
+
+400: Return: {"MESSAGE": "<ERROR_MESSAGE>"}
+|===

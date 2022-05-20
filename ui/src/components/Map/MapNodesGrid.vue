@@ -108,7 +108,6 @@
   </div>
 </template>
 <script setup lang="ts">
-import { reactive, computed, onMounted } from 'vue'
 import { useStore } from 'vuex'
 import { Coordinates, Node, FeatherSortObject } from '@/types'
 import { FeatherSortHeader, SORT } from '@featherds/table'
@@ -163,32 +162,32 @@ onMounted(() => {
 #wrap {
   height: calc(100% - 29px);
   overflow: auto;
-  background: var(--feather-surface);
+  background: var($surface);
 }
 table {
-  @include table();
-  @include table-condensed();
-  background: var(--feather-surface);
-  color: var(--feather-primary-text-on-surface);
+  @include table;
+  @include table-condensed;
+  background: var($surface);
+  color: var($primary-text-on-surface);
   padding-top: 4px;
   margin-top: 15px;
 }
 thead {
   z-index: 2;
   position: relative;
-  background: var(--feather-surface);
+  background: var($surface);
 }
 .first-td {
   padding-left: 12px;
-  border-left: 4px solid var(--feather-success);
+  border-left: 4px solid var($success);
 }
 .WARNING,
 .MINOR,
 .MAJOR {
-  border-left: 4px solid var(--feather-warning);
+  border-left: 4px solid var($warning);
 }
 
 .CRITICAL {
-  border-left: 4px solid var(--feather-error);
+  border-left: 4px solid var($error);
 }
 </style>

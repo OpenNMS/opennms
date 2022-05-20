@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -47,6 +47,7 @@ import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.provision.service.operations.NoOpProvisionMonitor;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
@@ -55,6 +56,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
+import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -71,6 +73,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/importerServiceTest.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
+@JUnitTemporaryDatabase
 @DirtiesContext
 // @Ignore("These tests are fixed in 1.13, and backporting the fixes are not worth it.  Narf.")
 public class InvalidRequisitionDataIT extends ProvisioningITCase implements InitializingBean {
@@ -142,7 +145,7 @@ public class InvalidRequisitionDataIT extends ProvisioningITCase implements Init
 
         // This requisition has an asset on some nodes called "pollercategory".
         // Change it to "pollerCategory" (capital 'C') and the test passes...
-        m_provisioner.doImport(invalidAssetFieldResource.getURL().toString(), Boolean.TRUE.toString());
+        m_provisioner.doImport(invalidAssetFieldResource.getURL().toString(), Boolean.TRUE.toString(), new NoOpProvisionMonitor());
         waitForEverything();
         m_eventManager.getEventAnticipator().verifyAnticipated();
 
@@ -175,7 +178,7 @@ public class InvalidRequisitionDataIT extends ProvisioningITCase implements Init
         // This requisition has an asset called "maintContractNumber" which was changed in
         // OpenNMS 1.10. We want to preserve backwards compatibility so make sure that the
         // field still works.
-        m_provisioner.doImport(resource.getURL().toString(), Boolean.TRUE.toString());
+        m_provisioner.doImport(resource.getURL().toString(), Boolean.TRUE.toString(), new NoOpProvisionMonitor());
         waitForEverything();
         m_eventManager.getEventAnticipator().verifyAnticipated();
 
@@ -197,7 +200,7 @@ public class InvalidRequisitionDataIT extends ProvisioningITCase implements Init
 
         // This requisition has a "foreign-source" on the node tag, which is invalid,
         // foreign-source only belongs on the top-level model-import tag.
-        m_provisioner.doImport(invalidRequisitionResource.getURL().toString(), Boolean.TRUE.toString());
+        m_provisioner.doImport(invalidRequisitionResource.getURL().toString(), Boolean.TRUE.toString(), new NoOpProvisionMonitor());
         waitForEverything();
         m_eventManager.getEventAnticipator().verifyAnticipated();
 
@@ -216,7 +219,7 @@ public class InvalidRequisitionDataIT extends ProvisioningITCase implements Init
         m_eventManager.getEventAnticipator().anticipateEvent(getFailed(invalidRequisitionResource));
 
         // This requisition has two "snmp-primary" interfaces which is not allowed.
-        m_provisioner.doImport(invalidRequisitionResource.getURL().toString(), Boolean.TRUE.toString());
+        m_provisioner.doImport(invalidRequisitionResource.getURL().toString(), Boolean.TRUE.toString(), new NoOpProvisionMonitor());
         waitForEverything();
         m_eventManager.getEventAnticipator().verifyAnticipated();
 

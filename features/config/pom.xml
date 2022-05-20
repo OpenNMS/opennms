@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <groupId>org.opennms</groupId>
+    <artifactId>org.opennms.features</artifactId>
+    <version>31.0.0-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.opennms.features</groupId>
+  <artifactId>org.opennms.features.config</artifactId>
+  <packaging>pom</packaging>
+  <name>OpenNMS :: Features :: Config</name>
+  <modules>
+    <module>dao</module>
+    <module>mock</module>
+    <module>osgi</module>
+    <module>rest</module>
+    <module>service</module>
+    <!-- to store service & dao's unit test to prevent circular dependency problem -->
+    <module>test</module>
+    <module>upgrade</module>
+    <!-- util that will not include any opennms packages -->
+    <module>util</module>
+  </modules>
+  <properties>
+    <!-- Misc. -->
+    <skipITs>true</skipITs>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <java.version>1.8</java.version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.spring</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- test -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+</project>

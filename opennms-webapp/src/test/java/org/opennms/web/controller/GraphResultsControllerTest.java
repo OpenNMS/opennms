@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,11 +28,17 @@
 
 package org.opennms.web.controller;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+
 import java.io.File;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -63,7 +69,7 @@ public class GraphResultsControllerTest {
 	 */
 	@Before
 	public void setUp() throws Exception {
-		m_service = EasyMock.createMock(GraphResultsService.class);
+		m_service = mock(GraphResultsService.class);
 
 		PropertiesGraphDao graphDao = new PropertiesGraphDao();
 		graphDao.loadProperties("performance", new FileSystemResource(new File("src/test/resources/etc/snmp-graph.properties")));
@@ -72,12 +78,10 @@ public class GraphResultsControllerTest {
 		List<PrefabGraph> prefabs = graphDao.getAllPrefabGraphs();
 		Assert.assertNotNull(prefabs);
 		Assert.assertFalse(prefabs.isEmpty());
-		EasyMock.expect(m_service.getAllPrefabGraphs(ResourceId.get("node", "1").resolve("nodeSnmp", ""))).andReturn(prefabs.toArray(new PrefabGraph[prefabs.size()])).anyTimes();
+		when(m_service.getAllPrefabGraphs(ResourceId.get("node", "1").resolve("nodeSnmp", ""))).thenReturn(prefabs.toArray(new PrefabGraph[prefabs.size()]));
 
 		m_controller = new GraphResultsController();
 		m_controller.setGraphResultsService(m_service);
-
-		EasyMock.replay(m_service);
 	}
 
 	/**
@@ -87,7 +91,7 @@ public class GraphResultsControllerTest {
 	 */
 	@After
 	public void tearDown() throws Exception {
-		EasyMock.verify(m_service);
+		verifyNoMoreInteractions(m_service);
 	}
 
 	/**
@@ -114,6 +118,8 @@ public class GraphResultsControllerTest {
 		System.out.println(StringUtils.join(reports, ", "));
 		Assert.assertEquals(1, reports.length);
 		Assert.assertEquals("all", reports[0]);
+
+		verify(m_service, atLeastOnce()).getAllPrefabGraphs(any(ResourceId.class));
 	}
 
 }

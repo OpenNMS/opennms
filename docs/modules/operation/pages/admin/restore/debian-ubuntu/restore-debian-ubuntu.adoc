@@ -1,0 +1,64 @@
+[[restore-debian-ubuntu]]
+.Restore user/group definition
+
+[source, console]
+----
+sudo cat /tmp/opennms-passwd.txt >> /etc/passwd && /
+sudo cat /tmp/opennms-group.txt >> /etc/group
+----
+
+.Create log folder
+[source, console]
+----
+sudo mkdir /var/log/opennms && /
+chown opennms. /var/log/opennms
+----
+
+.Restore OpenNMS {page-component-title} binaries, RRD archives, configurations
+
+[source, console]
+----
+sudo tar -xzf /tmp/opennms-usr-share.tar.gz -C / && \
+sudo tar -xzf /tmp/opennms-etc.tar.gz -C / && \
+sudo tar -xzf /tmp/opennms-var-lib.tar.gz -C / && \
+sudo tar -xzf /tmp/opennms-usr-share-java.tar.gz -C /
+----
+
+.Create OpenNMS systemd unit
+[source, console]
+----
+sudo cp /etc/opennms/opennms.service /lib/systemd/system/ && \
+sudo systemctl daemon-reload
+----
+
+.Install PostgreSQL database
+[source, console]
+----
+sudo apt -y install postgresql
+----
+
+.Restore OpenNMS database
+[source, console]
+----
+sudo runuser -l postgres -c 'psql -f /tmp/opennms-postgres.dmp postgres'
+----
+
+.Install OpenJDK
+[source, console]
+----
+apt-get install openjdk-11-jdk
+sudo /usr/share/opennms/bin/runjava -s
+----
+
+.Run `install -dis` command
+[source, console]
+----
+sudo /usr/share/opennms/bin/install -dis
+----
+
+.Start OpenNMS service
+
+[source, console]
+----
+sudo systemctl start opennms
+----

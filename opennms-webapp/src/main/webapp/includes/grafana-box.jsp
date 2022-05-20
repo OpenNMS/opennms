@@ -67,10 +67,15 @@
     int grafanaPort = Integer.parseInt(System.getProperty("org.opennms.grafanaBox.port", "3000"));
     int grafanaConnectionTimeout = Integer.parseInt(System.getProperty("org.opennms.grafanaBox.connectionTimeout", "500"));
     int grafanaSoTimeout = Integer.parseInt(System.getProperty("org.opennms.grafanaBox.soTimeout", "500"));
+    String grafanaLinkProtocol = System.getProperty("org.opennms.grafanaBox.link.protocol", grafanaProtocol);
+    String grafanaLinkHostname = System.getProperty("org.opennms.grafanaBox.link.hostname", grafanaHostname);
+    String grafanaLinkBasePath = System.getProperty("org.opennms.grafanaBox.link.basePath", "");
+    int grafanaLinkPort = Integer.parseInt(System.getProperty("org.opennms.grafanaBox.link.port", Integer.toString(grafanaPort)));
+
     String errorMessage = null;
     String responseString = null;
 
-    if (!grafanaBasePath.startsWith("/")) {
+    if (!grafanaBasePath.startsWith("/")  && !grafanaBasePath.trim().isEmpty()) {
         grafanaBasePath = "/" + grafanaBasePath;
     }
 
@@ -141,7 +146,7 @@
                 }
                 if (showDashboard) {
                     if (limit < 1 || count++ < limit) {
-                        $('#dashboardlist').append('<a href="<%=grafanaProtocol%>://<%=grafanaHostname%>:<%=grafanaPort%><%=grafanaBasePath%>/dashboard/' + val['uri'] + '"><span class="fa fa-signal" aria-hidden="true"></span>&nbsp;' + val['title'] + "</a><br/>");
+                        $('#dashboardlist').append('<a href="<%=grafanaLinkProtocol%>://<%=grafanaLinkHostname%>:<%=grafanaLinkPort%><%=grafanaLinkBasePath%>' + val['url'] + '"><span class="fa fa-signal" aria-hidden="true"></span>&nbsp;' + val['title'] + "</a><br/>");
                     }
                 }
             };

@@ -2,9 +2,166 @@
 
 = Changelog
 
-[releasenotes-changelog-29.0.5]
+[[releasenotes-changelog-29.0.10]]
 
-==== Release 29.0.5
+== Release 29.0.10
+
+Release 29.0.10 contains a number of security dependency updates, plus a bunch of other bug fixes
+and documentation improvements.
+
+IMPORTANT: While the dependency changes _should_ not affect how the OpenNMS runtime works, this release
+contains a larger than usual number of changes to "plumbing" to facilitate these dependency updates.
+We strongly recommend that you do more than the usual amount of testing before deploying this update
+to a production environment.
+
+The codename for Horizon 29.0.10 is https://wikipedia.org/wiki/$$Duck$$[_Duck_].
+
+=== Bug
+
+* install script fails if an OpenNMS directory contains root-owned lost+found directory (Issue http://issues.opennms.org/browse/NMS-14032[NMS-14032])
+* Provisiond Fails to Start when wrong data is successfully POSTed via REST to hardwareInventory endpoint (Issue http://issues.opennms.org/browse/NMS-14085[NMS-14085])
+* Grafana box renders raw JS when Grafana behind reverse proxy with SSO (Issue http://issues.opennms.org/browse/NMS-14109[NMS-14109])
+* CVE-2022-22965: Spring RCE in Data Bindings (Issue http://issues.opennms.org/browse/NMS-14134[NMS-14134])
+* Minions Trapd Listener Fails to Bind to udp/162 when broker is down (Issue http://issues.opennms.org/browse/NMS-14148[NMS-14148])
+* Fix formatting in alarmd documentation (Issue http://issues.opennms.org/browse/NMS-14182[NMS-14182])
+* Dependabot: update Vaadin to the latest 8.x (Issue http://issues.opennms.org/browse/NMS-14192[NMS-14192])
+* Upgrade groovy-all dependency (Issue http://issues.opennms.org/browse/NMS-14208[NMS-14208])
+* make sure license-maven-plugin is re-enabled in foundation and release branches (Issue http://issues.opennms.org/browse/NMS-14217[NMS-14217])
+* Upgrade jackson-mapper-asl dependency (Issue http://issues.opennms.org/browse/NMS-14252[NMS-14252])
+
+=== Enhancement
+
+* Basic upgrade procedure (Issue http://issues.opennms.org/browse/NMS-13971[NMS-13971])
+* Document housekeeping tasks before upgrade (Issue http://issues.opennms.org/browse/NMS-13972[NMS-13972])
+* IPFIX: Also support ingressPhysicalInterface and egressPhysicalInterface for input and output ifIndex (Issue http://issues.opennms.org/browse/NMS-14169[NMS-14169])
+* Cleanup Ticketer docs formatting (Issue http://issues.opennms.org/browse/NMS-14172[NMS-14172])
+* Expand XmlCollector documented parameters (Issue http://issues.opennms.org/browse/NMS-14256[NMS-14256])
+* Restructure Collector docs file path (Issue http://issues.opennms.org/browse/NMS-14258[NMS-14258])
+
+[[releasenotes-changelog-29.0.9]]
+
+== Release 29.0.9
+
+Release 29.0.9 contains a bunch of bug fixes and enhancements, including improvements
+for running in containers, code cleanups, and improved documentation.
+
+The codename for Horizon 29.0.9 is https://wikipedia.org/wiki/$$Kiwi_(bird)$$[_Kiwi_].
+
+=== Bug
+
+* Documentation for all pollers misses RRD config parameter (Issue http://issues.opennms.org/browse/NMS-11747[NMS-11747])
+* Resolve SonarCloud High priority Security Hotspots  (Issue http://issues.opennms.org/browse/NMS-14002[NMS-14002])
+* Can't set capabilities in Minion systemd unit (Issue http://issues.opennms.org/browse/NMS-14016[NMS-14016])
+* Scriptd helpers ignore community setting (Issue http://issues.opennms.org/browse/NMS-14045[NMS-14045])
+* Wrong wiki URL in debian installer (Issue http://issues.opennms.org/browse/NMS-14053[NMS-14053])
+* Build from source documentation needs a minor correction (Issue http://issues.opennms.org/browse/NMS-14088[NMS-14088])
+* Hostname command is missing when running in a container (Issue http://issues.opennms.org/browse/NMS-14100[NMS-14100])
+* Fix for NMS-13887 did not make it to Core (Issue http://issues.opennms.org/browse/NMS-14117[NMS-14117])
+* Update docs for binding ports <1024 (Issue http://issues.opennms.org/browse/NMS-14162[NMS-14162])
+
+=== Enhancement
+
+* Switch to using a java e-mail library instead of system mail (Issue http://issues.opennms.org/browse/NMS-14015[NMS-14015])
+* Misspelling in SystemExecuteMonitor error text (Issue http://issues.opennms.org/browse/NMS-14091[NMS-14091])
+* relicense rancid-api to LGPL, change dependency to match (Issue http://issues.opennms.org/browse/NMS-14093[NMS-14093])
+* clean up JAXB dependencies (Issue http://issues.opennms.org/browse/NMS-14105[NMS-14105])
+
+[[releasenotes-changelog-29.0.8]]
+
+== Release 29.0.8
+
+Release 29.0.8 contains a few small bug fixes mostly relating to upgrades, as well
+as a bug in graphing, and an improvement to support pre-auth HTTP headers.
+
+The codename for Horizon 29.0.8 is https://wikipedia.org/wiki/$$Chickadee$$[_Chickadee_].
+
+=== Bug
+
+* Upgrading opennms ignores RUNAS when setting ownership on logs directory (Issue http://issues.opennms.org/browse/NMS-14000[NMS-14000])
+* Minion installation from Debian packages failed with missing dir /var/lib/minion/data/tmp (Issue http://issues.opennms.org/browse/NMS-14019[NMS-14019])
+* OpenNMS points to the wrong URL when trying to generate graphs (Issue http://issues.opennms.org/browse/NMS-14057[NMS-14057])
+
+=== Enhancement
+
+* Add support for pre-authorization via HTTP header (to be used with pre-authentication) (Issue http://issues.opennms.org/browse/NMS-14059[NMS-14059])
+
+[[releasenotes-changelog-29.0.7]]
+
+== Release 29.0.7
+
+Release 29.0.7 contains a bunch of bug and security fixes, plus a few small
+enhancements and documentation improvements.
+
+The codename for Horizon 29.0.7 is https://wikipedia.org/wiki/$$Pileated_woodpecker$$[_Pileated Woodpecker_].
+
+=== Bug
+
+* opennms user credentials wrongly exposed (Issue http://issues.opennms.org/browse/NMS-12146[NMS-12146])
+* show-event-config displays unexpected content after adding new event definitions (Issue http://issues.opennms.org/browse/NMS-12863[NMS-12863])
+* Install script fails when using Azure PostgreSQL Services (Issue http://issues.opennms.org/browse/NMS-13715[NMS-13715])
+* In default installation the ActiveMQ Total Enqueued Messages throw divde error exceptions (Issue http://issues.opennms.org/browse/NMS-13737[NMS-13737])
+* Remove requirements/logic from Dockerfile/Entrypoint/Confd about the OpenNMS HTTP URL from the Minion and Sentinel due to Twin API (Issue http://issues.opennms.org/browse/NMS-13768[NMS-13768])
+* Systemd startup uses legacy SysV init script (Issue http://issues.opennms.org/browse/NMS-13783[NMS-13783])
+* Telemetryd error occurring when testing with hsflowd  (Issue http://issues.opennms.org/browse/NMS-13795[NMS-13795])
+* OpenNMS Availability 'Chart' Shouldn't Include Time Before Connected (Issue http://issues.opennms.org/browse/NMS-13822[NMS-13822])
+* Support -> System Report exposes credentials in plain text (Issue http://issues.opennms.org/browse/NMS-13831[NMS-13831])
+* Cross site scripting - Reflected (Issue http://issues.opennms.org/browse/NMS-13835[NMS-13835])
+* TLS: Diffie-Hellman Key Exchange Insufficient DH Group Strength Vulnerability (Issue http://issues.opennms.org/browse/NMS-13845[NMS-13845])
+* Password field with autocomplete enabled (Issue http://issues.opennms.org/browse/NMS-13847[NMS-13847])
+* Remote RMI is broken in 29.0.x (Issue http://issues.opennms.org/browse/NMS-13887[NMS-13887])
+* Unable to modify node/interface/service metadata through requisition after initial synchronization (Issue http://issues.opennms.org/browse/NMS-13890[NMS-13890])
+* When examining the service status of the opennms -v, the service is stopped. (Issue http://issues.opennms.org/browse/NMS-13900[NMS-13900])
+* Web UI redirects to http even with base-url set to https (Issue http://issues.opennms.org/browse/NMS-13901[NMS-13901])
+* Prevent REST API from allowing multiple primary SNMP interfaces on a single node (Issue http://issues.opennms.org/browse/NMS-13939[NMS-13939])
+* Instrument Provisiond Thread Pools (Issue http://issues.opennms.org/browse/NMS-13969[NMS-13969])
+* SNMP Detector configuration page excludes useSnmpProfiles and ttl options (Issue http://issues.opennms.org/browse/NMS-13997[NMS-13997])
+* install script fails if an OpenNMS directory contains root-owned lost+found directory (Issue http://issues.opennms.org/browse/NMS-14032[NMS-14032])
+* Web UI copyright year needs updating (Issue http://issues.opennms.org/browse/NMS-14037[NMS-14037])
+
+=== Enhancement
+
+* Releases should document third party libraries and their licenses (Issue http://issues.opennms.org/browse/NMS-14004[NMS-14004])
+* Delete BSM window should name the BSM (Issue http://issues.opennms.org/browse/NMS-14026[NMS-14026])
+* Expand newts converter documentation (Issue http://issues.opennms.org/browse/NMS-14073[NMS-14073])
+* Add TcpDetector documentation (Issue http://issues.opennms.org/browse/NMS-14074[NMS-14074])
+
+[[releasenotes-changelog-29.0.6]]
+
+== Release 29.0.6
+
+Release 29.0.6 contains a number of bug fixes, including security fixes related
+to Grafana PDF reports and Protobuf, as well as a few enhancements.
+
+Thanks to Sahil Tikoo from Etisalat for reporting the Grafana endpoint issue.
+
+A note about security issues: we have traditionally created CVEs in a pretty ad-hoc manner.
+We are in the process of formalizing how we'll be doing so going into the future.
+
+The codename for Horizon 29.0.6 is https://wikipedia.org/wiki/$$Dodo$$[_Dodo_].
+
+=== Bug
+
+* config-tester doesn't find malformed resourceTypes (Issue http://issues.opennms.org/browse/NMS-13723[NMS-13723])
+* Event configuration UI fails to persist logmsg dest changes (Issue http://issues.opennms.org/browse/NMS-13729[NMS-13729])
+* Outdated javascript library (Issue http://issues.opennms.org/browse/NMS-13848[NMS-13848])
+* fix-karaf-setup.sh should honor RUNAS (Issue http://issues.opennms.org/browse/NMS-13881[NMS-13881])
+* Remote RMI is broken in 29.0.x (Issue http://issues.opennms.org/browse/NMS-13887[NMS-13887])
+* org.opennms.core.commands never got added to Karaf build (Issue http://issues.opennms.org/browse/NMS-13910[NMS-13910])
+* grafana endpoint can be used to port-scan internal resources (Issue http://issues.opennms.org/browse/NMS-13917[NMS-13917])
+* Minion fails to marshall requisition with JAXB error: Class [org.opennms.netmgt.model.PrimaryTypeAdapter] not found (Issue http://issues.opennms.org/browse/NMS-13927[NMS-13927])
+* Kafka Minions with JMS disabled log errors loading JMS bundles (Issue http://issues.opennms.org/browse/NMS-13929[NMS-13929])
+* "full" report type in Support -> System Report inserts "%n%n" between entries instead of newlines (Issue http://issues.opennms.org/browse/NMS-13948[NMS-13948])
+* Unsynchronized access to service factories in TelemetryServiceRegistryImpl (Issue http://issues.opennms.org/browse/NMS-13961[NMS-13961])
+
+=== Enhancement
+
+* Split SNMP Property Extenders into multiple pages (Issue http://issues.opennms.org/browse/NMS-13760[NMS-13760])
+* Upgrade protobuf-java version (Issue http://issues.opennms.org/browse/NMS-13889[NMS-13889])
+* Agg Flow via Nephron showing gaps/drops since upgrading to 29.0.4 (Issue http://issues.opennms.org/browse/NMS-13926[NMS-13926])
+
+[[releasenotes-changelog-29.0.5]]
+
+== Release 29.0.5
 
 Release 29.0.5 contains a number of bug and security fixes, as well as a few enhancements.
 
@@ -14,7 +171,7 @@ but are updating anyway link:https://www.merriam-webster.com/dictionary/belt-and
 
 The codename for Horizon 29.0.5 is https://wikipedia.org/wiki/$$Kingfisher$$[_Kingfisher_].
 
-===== Bug
+=== Bug
 
 * TimescaleDB extension can't added to existing opennms DB. (Issue http://issues.opennms.org/browse/NMS-13441[NMS-13441])
 * Enlinkd API response extremely slow for some nodes (Issue http://issues.opennms.org/browse/NMS-13507[NMS-13507])
@@ -25,7 +182,7 @@ The codename for Horizon 29.0.5 is https://wikipedia.org/wiki/$$Kingfisher$$[_Ki
 * CVE-2021-45105: Update to Log4j 2.17.0 (Issue http://issues.opennms.org/browse/NMS-13868[NMS-13868])
 * upgrade to log4j2 2.17.1 and pax-logging 1.11.13/2.0.14 (Issue http://issues.opennms.org/browse/NMS-13878[NMS-13878])
 
-===== Enhancement
+=== Enhancement
 
 * Consolidate all IPC features into one / need conf.d changes (Issue http://issues.opennms.org/browse/NMS-13610[NMS-13610])
 * Add metrics about twin communication (Issue http://issues.opennms.org/browse/NMS-13649[NMS-13649])

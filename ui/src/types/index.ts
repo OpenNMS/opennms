@@ -6,6 +6,15 @@ export interface VuexContext {
   dispatch: Dispatch
 }
 
+export type UpdateModelFunction = (_value: any) => any
+
+export interface SnackbarProps {
+  msg: string
+  center?: boolean
+  error?: boolean
+  timeout?: number
+}
+
 export interface SearchResultResponse {
   label?: string
   context: {
@@ -207,6 +216,9 @@ export interface QueryParameters {
   _s?: string
   orderBy?: string
   order?: SORT
+  search?: string
+  groupBy?: string
+  groupByValue?: string
   [x: string]: any
 }
 
@@ -242,6 +254,11 @@ export interface NodeAvailability {
   }[]
   'service-count': number
   'service-down-count': number
+}
+
+export interface FileEditorResponseLog {
+  success: boolean
+  msg: string
 }
 
 export interface BreadCrumb {
@@ -289,11 +306,6 @@ export interface WhoAmIResponse {
   roles: string[]
 }
 
-export interface FileEditorResponseLog {
-  success: boolean
-  msg: string
-}
-
 export interface AppInfo {
   datetimeformatConfig: {
     zoneId: string
@@ -310,13 +322,136 @@ export interface AppInfo {
   version: string
 }
 
-export interface Notification {
-  msg: string
-  severity: NotificationSeverity
+export interface StartEndTime {
+  startTime: string | number
+  endTime: string | number
+  format: string
 }
 
-export enum NotificationSeverity {
-  ERROR = 'error',
-  WARNING = 'warning',
-  SUCCESS = 'success'
+export interface ResourceDefinitionsApiResponse extends ApiResponse {
+  name: string[]
+}
+
+export interface ResourcesApiResponse extends ApiResponse {
+  resource: Resource[]
+}
+
+export interface Resource {
+  children?: ResourcesApiResponse
+  externalValueAttributes: Record<string, unknown>
+  id: string
+  label: string
+  link: string
+  name: string
+  parentId: string | null
+  rrdGraphAttributes: Record<string, unknown>
+  stringPropertyAttributes: Record<string, unknown>
+  typeLabel: string
+}
+
+export interface PreFabGraph {
+  columns: string[]
+  command: string
+  description: string | null
+  externalValues: string[]
+  height: number | null
+  name: string
+  order: number
+  propertiesValues: string[]
+  suppress: string[]
+  title: string
+  types: string[]
+  width: number | null
+}
+
+export interface Metric {
+  expression?: string
+  aggregation: string
+  attribute: string
+  label?: string
+  name?: string
+  datasource?: string
+  resourceId: string
+  transient?: true | false
+}
+
+export interface GraphMetricsPayload {
+  end: number
+  start: number
+  step: number
+  source: Metric[]
+  expression?: { label: string; transient: boolean; value: string }[]
+}
+
+export interface GraphMetricsResponse {
+  columns: [{ values: number[] }]
+  constants: Record<string, any>[]
+  end: number
+  labels: string[]
+  metadata: {
+    nodes: {
+      id: number
+      label: string
+      'foreign-source': string
+      'foreign-id': string
+    }[]
+    resources: {
+      id: string
+      label: string
+      name: string
+      'node-id': number
+      'parent-id': string
+    }[]
+  }
+  start: number
+  step: number
+  timestamps: number[]
+  formattedTimestamps: string[]
+  formattedLabels: { name: string; statement: string }[]
+}
+
+export interface ConvertedGraphData {
+  title: string
+  metrics: Metric[]
+  printStatements: PrintStatement[]
+  series: Series[]
+  properties: Record<string, unknown>
+  values: ConvertedGraphValue[]
+  verticalLabel: string
+}
+
+export interface PrintStatement {
+  format: string
+  header?: string
+  text?: string
+  metric: string
+  value: number | typeof NaN
+}
+
+export interface Series {
+  color: string
+  metric: string
+  name: string
+  type: string
+  title: string
+  legend?: string
+}
+
+export interface ConvertedGraphValue {
+  name: string
+  expression: Expression
+}
+
+export interface Expression {
+  argument: string | typeof NaN
+  consolidate: (metrics: GraphMetricsResponse) => any
+  functionName: string
+  metricName: string
+}
+
+export interface Plugin {
+  extensionId: string
+  menuEntry: string
+  moduleFileName: string
+  resourceRootPath: string
 }

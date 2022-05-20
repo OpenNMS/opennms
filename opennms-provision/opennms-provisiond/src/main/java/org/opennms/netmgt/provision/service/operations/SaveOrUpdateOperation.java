@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -54,13 +54,14 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
     private static final Logger LOG = LoggerFactory.getLogger(SaveOrUpdateOperation.class);
 
     private final OnmsNode m_node;
+    private final String monitorKey;
     private OnmsIpInterface m_currentInterface;
     private OnmsMonitoredService m_currentService;
     
     private ScanManager m_scanManager;
     private String m_rescanExisting = Boolean.TRUE.toString();
 
-    protected SaveOrUpdateOperation(Integer nodeId, String foreignSource, String foreignId, String nodeLabel, String location, String building, String city, ProvisionService provisionService, String rescanExisting) {
+    protected SaveOrUpdateOperation(Integer nodeId, String foreignSource, String foreignId, String nodeLabel, String location, String building, String city, ProvisionService provisionService, String rescanExisting, String monitorKey) {
         super(provisionService);
 
         m_node = new OnmsNode();
@@ -78,36 +79,32 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
         m_node.getAssetRecord().setBuilding(building);
         m_node.getAssetRecord().setCity(city);
         m_rescanExisting = rescanExisting;
+        this.monitorKey = monitorKey;
+    }
+    
+    /**
+     * <p>getScanManager</p>
+     *
+     * @return a {@link org.opennms.netmgt.provision.service.operations.ScanManager} object.
+     */
+    public ScanManager getScanManager() {
+        return m_scanManager;
     }
 
-	/**
-	 * <p>getScanManager</p>
-	 *
-	 * @return a {@link org.opennms.netmgt.provision.service.operations.ScanManager} object.
-	 */
-	public ScanManager getScanManager() {
-	    return m_scanManager;
-	}
-
-	/**
-	 * <p>foundInterface</p>
-	 *
-	 * @param ipAddr a {@link java.lang.String} object.
-	 * @param descr a {@link java.lang.Object} object.
-	 * @param primaryType a {@link InterfaceSnmpPrimaryType} object.
-	 * @param managed a boolean.
-	 * @param status a int.
-	 */
-	public void foundInterface(String ipAddr, Object descr, final PrimaryType primaryType, boolean managed, int status) {
-		
-		if (ipAddr == null || "".equals(ipAddr.trim())) {
-		    LOG.error("Found interface on node {} with an empty ipaddr! Ignoring!", m_node.getLabel());
-			return;
-		}
-
-        final InetAddress addr = InetAddressUtils.addr(ipAddr);
+    /**
+     * <p>foundInterface</p>
+     *
+     * @param ipAddr a {@link java.lang.String} object.
+     * @param descr a {@link java.lang.Object} object.
+     * @param primaryType a {@link InterfaceSnmpPrimaryType} object.
+     * @param managed a boolean.
+     * @param status a int.
+     */
+    public void foundInterface(InetAddress addr, Object descr, final PrimaryType primaryType, boolean managed, int status) {
+        
         if (addr == null) {
-            LOG.error("Unable to resolve address of snmpPrimary interface for node {} with address '{}'", m_node.getLabel(), ipAddr);
+            LOG.error("Found interface on node {} with an empty/invalid ipaddr! Ignoring!", m_node.getLabel());
+            return;
         }
 
         m_currentInterface = new OnmsIpInterface(addr, m_node);
@@ -183,6 +180,10 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
 
     protected String getRescanExisting() {
         return m_rescanExisting;
+    }
+
+    public String getMonitorKey() {
+        return monitorKey;
     }
 
     /**

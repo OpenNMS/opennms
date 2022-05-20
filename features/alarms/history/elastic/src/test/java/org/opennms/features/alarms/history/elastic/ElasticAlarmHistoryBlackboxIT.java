@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -55,11 +55,11 @@ import org.opennms.core.test.elastic.ElasticSearchServerConfig;
 import org.opennms.core.time.PseudoClock;
 import org.opennms.features.alarms.history.api.AlarmHistoryRepository;
 import org.opennms.features.alarms.history.api.AlarmState;
-import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.features.jest.client.RestClientFactory;
 import org.opennms.features.jest.client.index.IndexStrategy;
 import org.opennms.features.jest.client.template.IndexSettings;
+import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsSeverity;
 
 import io.searchbox.client.JestClient;
 
@@ -78,6 +78,7 @@ public class ElasticAlarmHistoryBlackboxIT {
     private AlarmHistoryRepository alarmHistoryRepo;
 
     @Rule
+    @SuppressWarnings("unchecked")
     public ElasticSearchRule elasticSearchRule = new ElasticSearchRule(new ElasticSearchServerConfig()
             .withPlugins(PainlessPlugin.class, ReindexPlugin.class)
     );
@@ -329,11 +330,11 @@ public class ElasticAlarmHistoryBlackboxIT {
     private Runnable waitForNAlarmsInES(int numAlarms) {
         return () -> {
             // Don't tear down until we have the expected number of alarms in ES and they are all marked as deleted.
-            await().atMost(1, TimeUnit.MINUTES).pollInterval(5, TimeUnit.SECONDS)
+            await().atMost(2, TimeUnit.MINUTES).pollInterval(5, TimeUnit.SECONDS)
                     .until(() -> alarmHistoryRepo.getLastStateOfAllAlarms(0, System.currentTimeMillis()),
                             hasSize(equalTo(numAlarms)));
             // All of the alarms are in ES now, wait until they are deleted
-            await().atMost(1, TimeUnit.MINUTES).pollInterval(5, TimeUnit.SECONDS)
+            await().atMost(2, TimeUnit.MINUTES).pollInterval(5, TimeUnit.SECONDS)
                     .until(() -> alarmHistoryRepo.getLastStateOfAllAlarms(0, System.currentTimeMillis()),
                             everyItem(ExtAlarmsMatchers.wasDeleted()));
         };

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,13 +28,11 @@
 
 package org.opennms.systemreport.system;
 
-import java.io.File;
+import org.opennms.systemreport.AbstractSystemReportPlugin;
+import org.springframework.core.io.Resource;
+
 import java.util.Map;
 import java.util.TreeMap;
-
-import org.opennms.systemreport.AbstractSystemReportPlugin;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
 
 public class LsofReportPlugin extends AbstractSystemReportPlugin {
     @Override
@@ -53,6 +51,16 @@ public class LsofReportPlugin extends AbstractSystemReportPlugin {
     }
 
     @Override
+    public boolean getFullOutputOnly() {
+        return true;
+    }
+
+    @Override
+    public boolean getOutputsFiles() {
+        return true;
+    }
+
+    @Override
     public Map<String, Resource> getEntries() {
         final Map<String,Resource> map = new TreeMap<String,Resource>();
         String lsofOutput = null;
@@ -64,10 +72,7 @@ public class LsofReportPlugin extends AbstractSystemReportPlugin {
         }
 
         if (lsofOutput != null) {
-            File tempFile = createTemporaryFileFromString(lsofOutput);
-            if(tempFile != null) {
-                map.put("Output", new FileSystemResource(tempFile));
-            }
+            map.put("Output", getResource(lsofOutput));
         }
 
         return map;

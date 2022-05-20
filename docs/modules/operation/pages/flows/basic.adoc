@@ -88,7 +88,7 @@ ${OPENNMS_HOME}/bin/send-event.pl -p 'daemonName Telemetryd' uei.opennms.org/int
 ----
 
 This opens a UDP socket bound to `0.0.0.0:8877` to which NetFlow v5 messages are forwarded.
-(See also xref:operation:admin/daemon-config-files.adoc#daemon-reload[Reload daemons by CLI].)
+(Also see xref:operation:admin/daemon-config-files.adoc#daemon-reload[Reload daemons by CLI].)
 
 === Multi-port listener
 
@@ -97,7 +97,7 @@ If you are monitoring multiple flow protocols, you normally need to set up a flo
 By default, {page-component-title} enables a multi-port listener option, which monitors multiple protocols on a single UDP port (9999).
 If desired, edit `$\{OPENNMS_HOME}/etc/telemetryd-configuration.xml` to change the port number or add/remove protocols.
 
-IMPORTANT: Make sure any ports you configure for receiving flow data are added to your firewall allow list.
+IMPORTANT: Make sure your firewall allow list includes the ports you configured to receive flow data.
 
 == Enable flows on your device(s)
 
@@ -129,7 +129,7 @@ It supports placeholders for `$nodeId`, `$ifIndex`, `$start`, and `$end`.
 Once configured, an icon appears on the top-right corner of a resource graph for an SNMP interface if there is flow data for that interface.
 
 You have completed a basic flows set up.
-If you have issues, refer to the troubleshooting flows section.
+If you have issues, refer to the <<flows/troubleshooting.adoc#flows-troubleshoot, flows troubleshooting>> section.
 
 == Beyond basic flows setup
 
@@ -142,3 +142,4 @@ See xref:flows/classification-engine.adoc#ga-flow-support-classification-engine[
 
 * xref:operation:flows/distributed.adoc#flows-remote[Enable remote flows data collection]
 * xref:operation:flows/sentinel/sentinel.adoc#flows-scaling[Scale to manage large volumes of flows data]
+* Add the OpenNMS streaming analytics tool for aggregation and streaming analytics (see the streaming analytics tool documentation)

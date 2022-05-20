@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2020-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,10 +28,14 @@
 
 package org.opennms.features.reporting.rest.internal;
 
-import static org.easymock.EasyMock.anyString;
-import static org.easymock.EasyMock.expect;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 import java.time.ZoneId;
 import java.util.Arrays;
@@ -40,6 +44,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.api.reporting.ReportMode;
@@ -51,14 +56,11 @@ import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.ReportCatalogDao;
 import org.opennms.reporting.core.svclayer.ReportStoreService;
 import org.opennms.reporting.core.svclayer.ReportWrapperService;
-import org.opennms.test.mock.EasyMockUtils;
 import org.opennms.web.svclayer.DatabaseReportListService;
 import org.opennms.web.svclayer.SchedulerService;
 import org.opennms.web.svclayer.dao.CategoryConfigDao;
 
 public class ReportRestServiceImplTest {
-    private EasyMockUtils m_easyMock;
-
     private ReportRestServiceImpl m_service;
 
     private DatabaseReportListService m_databaseReportListService;
@@ -76,15 +78,25 @@ public class ReportRestServiceImplTest {
 
         TimeZone.setDefault(TimeZone.getTimeZone("America/New_York"));
 
-        m_easyMock = new EasyMockUtils();
-        m_databaseReportListService = m_easyMock.createMock(DatabaseReportListService.class);
-        m_reportWrapperService = m_easyMock.createMock(ReportWrapperService.class);
-        m_categoryDao = m_easyMock.createMock(CategoryDao.class);
-        m_categoryConfigDao = m_easyMock.createMock(CategoryConfigDao.class);
-        m_reportStoreService = m_easyMock.createMock(ReportStoreService.class);
-        m_schedulerService = m_easyMock.createMock(SchedulerService.class);
-        m_reportCatalogDao = m_easyMock.createMock(ReportCatalogDao.class);
+        m_databaseReportListService = mock(DatabaseReportListService.class);
+        m_reportWrapperService = mock(ReportWrapperService.class);
+        m_categoryDao = mock(CategoryDao.class);
+        m_categoryConfigDao = mock(CategoryConfigDao.class);
+        m_reportStoreService = mock(ReportStoreService.class);
+        m_schedulerService = mock(SchedulerService.class);
+        m_reportCatalogDao = mock(ReportCatalogDao.class);
         m_service = new ReportRestServiceImpl(m_databaseReportListService, m_reportWrapperService, m_categoryDao, m_categoryConfigDao, m_reportStoreService, m_schedulerService, m_reportCatalogDao);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        verifyNoMoreInteractions(m_databaseReportListService);
+        verifyNoMoreInteractions(m_reportWrapperService);
+        verifyNoMoreInteractions(m_categoryDao);
+        verifyNoMoreInteractions(m_categoryConfigDao);
+        verifyNoMoreInteractions(m_reportStoreService);
+        verifyNoMoreInteractions(m_schedulerService);
+        verifyNoMoreInteractions(m_reportCatalogDao);
     }
 
     @Test
@@ -92,8 +104,7 @@ public class ReportRestServiceImplTest {
         final ReportParameters actualParameters = new ReportParameterBuilder()
             .withDate("startDate", new Date(0))
             .build();
-        expect(m_reportWrapperService.getParameters(anyString())).andReturn(actualParameters);
-        m_easyMock.replayAll();
+        when(m_reportWrapperService.getParameters(anyString())).thenReturn(actualParameters);
 
         Map<String,Object> reportParameters = new HashMap<>();
         reportParameters.put("id", "12345");
@@ -112,6 +123,8 @@ public class ReportRestServiceImplTest {
 
         final ReportDateParm reportDateParm = parameters.getDateParms().get(0);
 		assertEquals(new Date(1604905200000l), reportDateParm.getValue(ReportMode.IMMEDIATE));
+
+	verify(m_reportWrapperService, atLeastOnce()).getParameters(anyString());
     }
 
     @Test
@@ -120,8 +133,7 @@ public class ReportRestServiceImplTest {
             .withDate("startDate", new Date(0))
             .withTimezone("timezone",  ZoneId.systemDefault())
             .build();
-        expect(m_reportWrapperService.getParameters(anyString())).andReturn(actualParameters);
-        m_easyMock.replayAll();
+        when(m_reportWrapperService.getParameters(anyString())).thenReturn(actualParameters);
 
         Map<String,Object> reportParameters = new HashMap<>();
         reportParameters.put("id", "12345");
@@ -145,6 +157,8 @@ public class ReportRestServiceImplTest {
         assertEquals(Integer.valueOf(0), reportDateParm.getMinutes());
         assertEquals(new Date(1604916000000l), reportDateParm.getDate());
         assertEquals(new Date(1604916000000l), reportDateParm.getValue(ReportMode.IMMEDIATE));
+
+        verify(m_reportWrapperService, atLeastOnce()).getParameters(anyString());
     }
 
     private Map<String,Object> buildParameter(final String type, final String name) {

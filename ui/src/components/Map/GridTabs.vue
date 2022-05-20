@@ -8,10 +8,7 @@
   <router-view />
 </template>
 <script setup lang=ts>
-import { ref, onActivated } from 'vue'
-import { computed } from 'vue'
 import { useStore } from 'vuex'
-import { useRouter, useRoute } from 'vue-router'
 import { FeatherTab, FeatherTabContainer } from '@featherds/tabs'
 import { Alarm, Node } from '@/types'
 
@@ -36,10 +33,11 @@ onActivated(() => {
 </script>
 
 <style scoped lang="scss">
+@import "@featherds/styles/themes/variables";
 .tabs {
   z-index: 2;
   padding-bottom: 10px;
   margin-bottom: -29px;
-  background: var(--feather-surface);
+  background: var($surface);
 }
 </style>

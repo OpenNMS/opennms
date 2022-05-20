@@ -8,12 +8,14 @@
     <reference id="monitoredServiceDao" interface="org.opennms.netmgt.dao.api.MonitoredServiceDao"/>
     <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils"/>
     <reference id="blobStore" interface="org.opennms.features.distributed.kvstore.api.BlobStore"/>
+    <reference id="secureCredentialsVault" interface="org.opennms.features.scv.api.SecureCredentialsVault" availability="mandatory"/>
 
     <bean id="entityScopeProvider" class="org.opennms.core.rpc.utils.mate.EntityScopeProviderImpl">
         <property name="nodeDao" ref="nodeDao"/>
         <property name="ipInterfaceDao" ref="ipInterfaceDao"/>
         <property name="monitoredServiceDao" ref="monitoredServiceDao"/>
         <property name="sessionUtils" ref="sessionUtils"/>
+        <property name="scv" ref="secureCredentialsVault"/>
     </bean>
     
     <bean id="thresholdingSetPersister" class="org.opennms.netmgt.threshd.DefaultThresholdingSetPersister">

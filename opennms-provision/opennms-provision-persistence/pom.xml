@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms-provision</artifactId>
-    <version>30.0.0-SNAPSHOT</version>
+    <version>31.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-provision-persistence</artifactId>
@@ -140,8 +140,9 @@
       <type>pom</type>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.groovy</groupId>
-      <artifactId>groovy-all</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>groovy-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
     <!-- test dependencies -->
     <dependency>
@@ -185,6 +186,10 @@
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.jayway.awaitility</groupId>
+      <artifactId>awaitility</artifactId>
     </dependency>
   </dependencies>
 </project>

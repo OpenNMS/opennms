@@ -70,12 +70,16 @@
 
       <div class="form-group">
         <label for="pass1" class="">Password</label>
-        <input type="password" class="form-control" id="pass1" name="pass1">
+        <%-- Management of another user's password, so prevent autocomplete with `autocomplete="new-password"`.
+             See MDN: https://developer.mozilla.org/en-US/docs/Web/Security/Securing_your_site/Turning_off_form_autocompletion#preventing_autofilling_with_autocompletenew-password --%>
+        <input type="password" class="form-control" id="pass1" name="pass1" autocomplete="new-password">
       </div>
-  
+
       <div class="form-group">
         <label for="pass2" class="">Confirm Password</label>
-        <input type="password" class="form-control" id="pass2" name="pass2">
+        <%-- Management of another user's password, so prevent autocomplete with `autocomplete="new-password"`.
+             See MDN: https://developer.mozilla.org/en-US/docs/Web/Security/Securing_your_site/Turning_off_form_autocompletion#preventing_autofilling_with_autocompletenew-password --%>
+        <input type="password" class="form-control" id="pass2" name="pass2" autocomplete="new-password">
       </div>
 
       <button type="button" class="btn btn-secondary" onclick="verifyGoForm()">OK</button>

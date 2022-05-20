@@ -1,0 +1,58 @@
+[[flows-troubleshoot]]
+= Flows Troubleshooting
+
+This section describes ways to troubleshoot flows when the feature does not work or performs suboptimally.
+
+== Troubleshoot telemetryd
+
+<<telemetryd/introduction.adoc#ga-telemetryd, Telemetryd>> receives and decodes flows on {page-component-title}, so you can run the following checks to determine that it works as expected:
+
+* Telemetryd availability
+* Are routers sending data?
+* Docker networking
+* Minion health check
+* OpenNMS health check
+* Are sink consumer graphs populated?
+* Is SNMP available on the routers that provide Netflow?
+* Review OpenNMS and Minion logs
+
+The https://opennms.discourse.group/t/troubleshoot-telemetryd/1739[Troubleshoot Telemetryd] article on Discourse provides details on how to run these checks.
+
+== No data or incorrect data
+
+In a scenario where you see no data or incorrect data, you should view the state and parameters of telemetry listeners, and whether they are processing data and information with the following command: `opennms:telemetry-listeners`
+
+== Check Elasticsearch persistence
+
+If you store flows in Elasticsearch, you can use Kibana to check if flow documents (raw and/or aggregated) are written to Elasticsearch.
+You must know your endpoint address and API key.
+
+Run the following curl command:
+
+[source, console]
+----
+curl "https://your-es-server.hostname:9200/_cat/indices?v&apikey=Your-API-Key"
+----
+
+The query returns a list of indices.
+Those that start with a `.` are system indices.
+All others are regular indices.
+Regular indices appear only when Elasticsearch is receiving flows.
+
+=== No Elasticsearch persistence
+
+If you do not see regular indices, in OpenNMS check `etc/telemetryd-configuration.xml`.
+You must enable Netflow listeners.
+
+== Persisted flows do not appear in Helm
+
+If you have persisted flows but they do not appear in Helm, check the configuration in `etc/org.opennms.features.flows.persistence.elastic.cfg`, in particular, the `elasticUrl` property.
+If you are using aggregated flows, make sure your `aggregate.elasticIndexStrategy` matches the index strategy you configured in the streaming analytics tool.
+To persist only raw flows or only aggregated flows in Elasticsearch, you must set `alwaysUseRawForQueries` or `alwaysUseAggForQueries` appropriately.
+
+(For more information on troubleshooting Elasticsearch, refer to the https://www.elastic.co/guide/en/elasticsearch/reference/current/index.html[Elasticsearch documentation].)
+
+== Verify flows by device
+In the UI, use the Nodes page to determine flows performance for specific devices.
+(Choose *Info>Nodes* to view nodes.)
+The flows indicator icon shows flows data for each device, with SNMP details and flows direction.

@@ -62,6 +62,10 @@
   <bean id="dataSource" class="org.opennms.core.db.DataSourceFactoryBean" />
   <onmsgi:service interface="javax.sql.DataSource" ref="dataSource"/>
 
+  <!-- Configuration Service & upgrades -->
+  <bean id="upgradeConfigService" class = "org.opennms.config.upgrade.UpgradeConfigService"/>
+  <import resource="classpath*:/META-INF/opennms/applicationContext-config-service.xml"/>
+
   <!-- Configuration File DAOs -->
   <bean id="surveillanceViewConfigResourceLocation" class="java.lang.String">
     <constructor-arg value="file:${opennms.home}/etc/surveillance-views.xml" />

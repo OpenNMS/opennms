@@ -1,0 +1,28 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
+        https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+    <reference id="eventConfDao" interface="org.opennms.netmgt.config.api.EventConfDao" availability="mandatory"/>
+    <reference id="eventSubscriptionService" interface="org.opennms.netmgt.events.api.EventSubscriptionService"
+               availability="mandatory"/>
+    <reference id="persisterFactory" interface="org.opennms.netmgt.collection.api.PersisterFactory"
+               availability="mandatory"/>
+    <reference id="ipInterfaceDao" interface="org.opennms.netmgt.dao.api.IpInterfaceDao" availability="mandatory"/>
+    <reference id="snmpInterfaceDao" interface="org.opennms.netmgt.dao.api.SnmpInterfaceDao" availability="mandatory"/>
+    <reference id="collectionAgentFactory" interface="org.opennms.netmgt.collection.api.CollectionAgentFactory"
+               availability="mandatory"/>
+    <reference id="thresholdingService" interface="org.opennms.netmgt.threshd.api.ThresholdingService" availability="optional"/>
+
+    <bean id="eventListenerCollector" class="org.opennms.netmgt.collection.EventMetricsCollector"
+          init-method="start" destroy-method="stop">
+        <argument ref="eventConfDao"/>
+        <argument ref="eventSubscriptionService"/>
+        <argument ref="persisterFactory"/>
+        <argument ref="ipInterfaceDao"/>
+        <argument ref="snmpInterfaceDao"/>
+        <argument ref="collectionAgentFactory"/>
+        <argument ref="thresholdingService"/>
+    </bean>
+
+    <service interface="org.opennms.netmgt.events.api.EventListener" ref="eventListenerCollector"/>
+</blueprint>

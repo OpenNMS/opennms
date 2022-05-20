@@ -39,6 +39,11 @@
 ** xref:service-assurance/polling-packages.adoc[]
 ** xref:service-assurance/service-monitors.adoc[]
 ** xref:application-perspective-monitoring/application-perspective-monitoring.adoc[]
+** xref:device-config-backup/introduction.adoc[]
+*** xref:device-config-backup/ssh.adoc[]
+*** xref:device-config-backup/configuration.adoc[]
+*** xref:device-config-backup/dcb-requisition.adoc[]
+*** xref:device-config-backup/dcb.adoc[]
 
 * xref:performance-data-collection/introduction.adoc[]
 ** xref:performance-data-collection/collectd/collection-packages.adoc[]
@@ -47,7 +52,13 @@
 ** xref:performance-data-collection/resource-types.adoc[]
 *** xref:performance-data-collection/snmp-index.adoc[]
 ** xref:performance-data-collection/collectors.adoc[]
-** xref:performance-data-collection/property-extenders.adoc[]
+** xref:performance-data-collection/snmp-property-extenders/property-extenders.adoc[]
+*** xref:performance-data-collection/snmp-property-extenders/cisco-cbqos.adoc[]
+*** xref:performance-data-collection/snmp-property-extenders/enum-lookup.adoc[]
+*** xref:performance-data-collection/snmp-property-extenders/index-split.adoc[]
+*** xref:performance-data-collection/snmp-property-extenders/pointer-like-index.adoc[]
+*** xref:performance-data-collection/snmp-property-extenders/regex.adoc[]
+*** xref:performance-data-collection/snmp-property-extenders/snmp-interface.adoc[]
 ** xref:performance-data-collection/collectd/collect-admin.adoc[]
 *** xref:performance-data-collection/shell/introduction.adoc[]
 **** xref:performance-data-collection/shell/adhoc-collection.adoc[]
@@ -68,6 +79,7 @@
 ** xref:events/eventbus.adoc[]
 ** xref:events/event-configuration.adoc[]
 ** xref:events/event-translator.adoc[]
+** xref:events/perf-data.adoc[]
 
 * xref:alarms/introduction.adoc[]
 ** xref:alarms/alarmd.adoc[]
@@ -134,7 +146,12 @@
 ** xref:flows/sentinel/sentinel.adoc[]
 ** xref:flows/classification-engine.adoc[]
 ** xref:flows/aggregation.adoc[]
-** xref:flows/nephron.adoc[]
+** xref:flows/data-collection.adoc[]
+** xref:flows/thresholding.adoc[]
+** xref:flows/troubleshooting.adoc[]
+
+* xref:geographical-map/introduction.adoc[]
+** xref:geographical-map/searching.adoc[]
 
 * xref:kafka-producer/kafka-producer.adoc[]
 ** xref:kafka-producer/enable-kafka.adoc[]
@@ -146,7 +163,7 @@
 * xref:snmp-poller/concepts.adoc[]
 
 
-* xref:admin/introduction.adoc[]
+* {page-component-title} Administration
 ** xref:admin/webui/introduction.adoc[]
 *** xref:admin/webui/dashboard.adoc[]
 *** xref:admin/webui/grafana-dashboard-box.adoc[]
@@ -173,6 +190,7 @@
 ***** xref:admin/webui/opsboard/criteria-builder.adoc[]
 *** xref:admin/webui/surveillance-view.adoc[]
 *** xref:admin/webui/trends.adoc[]
+*** xref:admin/webui/ui-preview.adoc[]
 ** xref:admin/system-properties/introduction.adoc[]
 *** xref:admin/system-properties/system-proxies.adoc[]
 ** xref:admin/config-tester.adoc[]
@@ -182,3 +200,8 @@
 ** xref:admin/request-logging.adoc[]
 ** xref:admin/restart.adoc[]
 ** xref:admin/daemon-config-files.adoc[]
+** xref:admin/backup/introduction.adoc[]
+** xref:admin/restore/introduction.adoc[]
+** xref:admin/logging/log-file-viewer.adoc[]
+** xref:admin/housekeeping/introduction.adoc[]
+

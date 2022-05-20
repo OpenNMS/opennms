@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <description>
+        Provides Osgi Integration.
+    </description>
+    <parent>
+        <groupId>org.opennms.features.config</groupId>
+        <artifactId>org.opennms.features.config.osgi</artifactId>
+        <version>31.0.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.opennms.features.config.osgi</groupId>
+    <artifactId>org.opennms.features.config.osgi.del</artifactId>
+    <name>OpenNMS :: Features :: Config :: Configuration for Osgi :: Delegation</name>
+    <packaging>bundle</packaging>
+    <dependencies>
+        <!-- Caution! Bundles here need to be available very early in the startup order.
+             Otherwise we will block the start of ConfigurationAdmin.
+             => Keep this bundle very slim
+             See also: startup.properties -->
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>osgi.core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.configadmin</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.logging</groupId>
+            <artifactId>pax-logging-api</artifactId>
+            <version>2.0.9</version><!-- version must match the one from startup.properties -->
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Bundle-Version>${project.version}</Bundle-Version>
+                        <Export-Package>org.opennms.features.config.osgi.del*;version=${project.version};-noimport:=true</Export-Package>
+                        <Bundle-Activator>org.opennms.features.config.osgi.del.Activator</Bundle-Activator>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

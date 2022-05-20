@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,6 +31,7 @@ package org.opennms.netmgt.events.commands;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.karaf.shell.api.action.Action;
@@ -49,34 +50,36 @@ import org.opennms.netmgt.xml.eventconf.Event;
  * @author jwhite
  */
 @Command(scope = "opennms", name = "show-event-config", description = "Renders the matched event definitions to XML. " +
-        "This command makes it possible to view event definitions which are not seriliazed on disk.")
+        "This command makes it possible to view event definitions which are not serialized on disk.")
 @Service
 public class EventConfigShowCommand implements Action {
 
     @Reference
     public EventConfDao eventConfDao;
 
-    @Option(name="-l", aliases="--limit", description="Limit the number of event definitions that are shown.")
+    @Option(name = "-l", aliases = "--limit", description = "Limit the number of event definitions that are shown.")
     int limit = 10;
 
-    @Option(name="-u", aliases="--uei", description="Event UEI substring to match.", required = true)
+    @Option(name = "-u", aliases = "--uei", description = "Event UEI substring to match.", required = true)
     @Completion(EventUeiCompleter.class)
     String eventUeiMatch;
 
     @Override
     public Object execute() {
-        // Find all of the event UEIs that contain the given substring
-        final List<String> matchedEventUeis = eventConfDao.getEventUEIs().stream()
+        // Find all the event UEIs that contain the given substring
+        final Set<String> matchedEventUeis = eventConfDao.getEventUEIs().stream()
                 .filter(uei -> uei.toLowerCase().contains(eventUeiMatch.toLowerCase()))
                 .sorted(Comparator.comparing(uei -> uei))
                 .limit(limit)
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
+
         // Retrieve the event definitions for the given UEIs
         final List<Event> matchedEvents = matchedEventUeis.stream()
-                .map(uei -> eventConfDao.findByUei(uei))
-                // The event *may* have dissapeared since we matched it above, ignore these.
+                .flatMap(uei -> eventConfDao.getEvents(uei).stream())
+                // The event *may* have disappeared since we matched it above, ignore these.
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
+
         // Marshal to XML and print to stdout
         int count = 1;
         for (Event matched : matchedEvents) {

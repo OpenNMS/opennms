@@ -10,10 +10,10 @@
 </template>
   
 <script setup lang="ts">
-import { PropType } from 'vue'
 import { BreadCrumb } from '@/types'
 import { FeatherIcon } from '@featherds/icon'
 import ChevronRight from '@featherds/icon/navigation/ChevronRight'
+import { PropType } from 'vue'
 defineProps({
   items: {
     required: true,
@@ -32,7 +32,7 @@ defineProps({
   margin-top: 15px;
   margin-bottom: 15px;
   .link {
-    color: var(--feather-secondary-variant) !important;
+    color: var($secondary-variant) !important;
     line-height: 3.5;
   }
   .link:first-child {

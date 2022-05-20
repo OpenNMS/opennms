@@ -91,6 +91,9 @@
     <feature name="commons-collections" version="${commonsCollectionsVersion}" description="Apache :: commons-collections">
         <bundle>mvn:commons-collections/commons-collections/${commonsCollectionsVersion}</bundle>
     </feature>
+    <feature name="commons-compress" version="1.21" description="Apache :: commons-compress">
+        <bundle>mvn:org.apache.commons/commons-compress/1.21</bundle>
+    </feature>
     <feature name="commons-configuration" version="${commonsConfigurationVersion}" description="Apache :: commons-configuration">
         <feature>commons-beanutils</feature>
         <feature>commons-codec</feature>
@@ -131,6 +134,9 @@
     <feature name="commons-net" version="${commonsNetVersion}" description="Apache :: commons-net">
         <bundle>mvn:commons-net/commons-net/${commonsNetVersion}</bundle>
     </feature>
+    <feature name="cron-parser-core" version="${cronParserCoreVersion}" description="Redhogs :: cron-parser-core">
+        <bundle>wrap:mvn:net.redhogs.cronparser/cron-parser-core/${cronParserCoreVersion}</bundle>
+    </feature>
     <feature name="dnsjava" version="${dnsjavaVersion}" description="dnsjava">
         <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.dnsjava/${dnsjavaVersion}</bundle>
     </feature>
@@ -146,8 +152,40 @@
         <bundle>mvn:org.eclipse.gemini.blueprint/gemini-blueprint-extender/${eclipseGeminiVersion}</bundle>
         <bundle>mvn:org.eclipse.gemini.blueprint/gemini-blueprint-io/${eclipseGeminiVersion}</bundle>
     </feature>
+    <feature name="groovy" version="${groovyVersion}" description="Groovy">
+        <bundle>mvn:org.codehaus.groovy/groovy/${groovyVersion}</bundle>
+        <bundle>mvn:org.codehaus.groovy/groovy-ant/${groovyVersion}</bundle>
+        <bundle>mvn:org.codehaus.groovy/groovy-bsf/${groovyVersion}</bundle>
+        <!-- <bundle>mvn:org.codehaus.groovy/groovy-cli-commons/${groovyVersion}</bundle> -->
+        <!-- <bundle>mvn:org.codehaus.groovy/groovy-cli-picocli/${groovyVersion}</bundle> -->
+        <!-- <bundle>mvn:org.codehaus.groovy/groovy-console/${groovyVersion}</bundle> -->
+        <bundle>mvn:org.codehaus.groovy/groovy-datetime/${groovyVersion}</bundle>
+        <bundle>mvn:org.codehaus.groovy/groovy-dateutil/${groovyVersion}</bundle>
+        <!-- <bundle>mvn:org.codehaus.groovy/groovy-docgenerator/${groovyVersion}</bundle> -->
+        <!-- <bundle>mvn:org.codehaus.groovy/groovy-groovydoc/${groovyVersion}</bundle> -->
+        <!-- <bundle>mvn:org.codehaus.groovy/groovy-groovysh/${groovyVersion}</bundle> -->
+        <bundle>mvn:org.codehaus.groovy/groovy-jaxb/${groovyVersion}</bundle>
+        <bundle>mvn:org.codehaus.groovy/groovy-jmx/${groovyVersion}</bundle>
+        <bundle>mvn:org.codehaus.groovy/groovy-json/${groovyVersion}</bundle>
+        <bundle>mvn:org.codehaus.groovy/groovy-jsr223/${groovyVersion}</bundle>
+        <!-- needed by jsr223 support -->
+        <bundle>mvn:org.apache.aries.spifly/org.apache.aries.spifly.dynamic.bundle/1.2</bundle>
+        <bundle>mvn:org.codehaus.groovy/groovy-macro/${groovyVersion}</bundle>
+        <bundle>mvn:org.codehaus.groovy/groovy-nio/${groovyVersion}</bundle>
+        <bundle>mvn:org.codehaus.groovy/groovy-servlet/${groovyVersion}</bundle>
+        <bundle>mvn:org.codehaus.groovy/groovy-sql/${groovyVersion}</bundle>
+        <!-- <bundle>mvn:org.codehaus.groovy/groovy-swing/${groovyVersion}</bundle> -->
+        <bundle>mvn:org.codehaus.groovy/groovy-templates/${groovyVersion}</bundle>
+        <!-- <bundle>mvn:org.codehaus.groovy/groovy-test/${groovyVersion}</bundle> -->
+        <!-- <bundle>mvn:org.codehaus.groovy/groovy-test-junit5/${groovyVersion}</bundle> -->
+        <!-- <bundle>mvn:org.codehaus.groovy/groovy-testng/${groovyVersion}</bundle> -->
+        <bundle>mvn:org.codehaus.groovy/groovy-xml/${groovyVersion}</bundle>
+    </feature>
     <feature name="guava" version="${guavaVersion}" description="Google :: Guava">
         <bundle dependency="true">mvn:com.google.guava/guava/${guavaVersion}</bundle>
+    </feature>
+    <feature name="guava25" version="25.0-jre" description="Google :: Guava">
+        <bundle dependency="true">mvn:com.google.guava/guava/25.0-jre</bundle>
     </feature>
     <feature name="guava17" version="${guavaOldVersion}" description="Google :: Guava">
         <bundle dependency="true">mvn:com.google.guava/guava/${guavaOldVersion}</bundle>
@@ -186,6 +224,16 @@
         <bundle>mvn:org.eclipse.persistence/org.eclipse.persistence.core/${eclipselinkVersion}</bundle>
         <bundle>mvn:org.eclipse.persistence/org.eclipse.persistence.asm/${eclipselinkVersion}</bundle>
         <bundle>mvn:org.eclipse.persistence/org.eclipse.persistence.antlr/${eclipselinkVersion}</bundle>
+    </feature>
+    <feature name="jackson-core" version="${jacksonVersion}" description="Jackson :: Core">
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson2Version}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/${jackson2Version}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/${jackson2Version}</bundle>
+    </feature>
+    <feature name="jackson-dataformat-yaml" version="${jacksonVersion}" description="Jackson :: Data Format :: YAML">
+        <feature>jackson-core</feature>
+        <bundle dependency="true">mvn:org.yaml/snakeyaml/1.26</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.dataformat/jackson-dataformat-yaml/${jackson2Version}</bundle>
     </feature>
     <feature name="jcifs" version="${jcifsVersion}" description="jcifs">
         <feature>bcprov</feature>
@@ -423,6 +471,7 @@
         <bundle>mvn:org.opennms/opennms-config-api/${project.version}</bundle>
         <bundle>mvn:org.opennms/opennms-config-model/${project.version}</bundle>
         <bundle>mvn:org.opennms/opennms-config-jaxb/${project.version}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson2Version}</bundle>
     </feature>
     <feature name="opennms-config-jaxb" version="${project.version}" description="OpenNMS :: Configuration :: JAXB">
         <feature>hibernate36</feature>
@@ -446,11 +495,9 @@
         <bundle>mvn:org.opennms/opennms-config/${project.version}</bundle>
     </feature>
     <feature name="opennms-kafka" version="${project.version}" description="OpenNMS :: Features :: Kafka">
+        <feature>jackson-core</feature>
         <bundle dependency="true">mvn:org.scala-lang/scala-library/${scalaLibraryVersion}</bundle>
         <bundle dependency="true">mvn:com.typesafe.scala-logging/scala-logging_${scalaVersion}/${scalaLoggingVersion}</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/${jackson2Version}</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson2Version}</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/${jackson2Version}</bundle>
         <bundle dependency="true">wrap:mvn:com.yammer.metrics/metrics-core/2.2.0$Bundle-Version=2.2.0&amp;Export-Package=*;-noimport:=true;version="2.2.0"</bundle>
         <bundle dependency="true">wrap:mvn:com.yammer.metrics/metrics-annotation/2.2.0$Bundle-Version=2.2.0&amp;Export-Package=*;-noimport:=true;version="2.2.0"</bundle>
         <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.kafka_${scalaVersion}/${kafkaBundleVersion}</bundle>
@@ -519,12 +566,16 @@
         <feature>opennms-distributed-core-api</feature>
         <feature>opennms-dao-api</feature>
         <feature>opennms-core-tracing</feature>
+        <feature>opennms-rpc-utils</feature>
         <bundle>wrap:mvn:ch.hsr/geohash/${geohashVersion}</bundle>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.api/${project.version}</bundle>
-        <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.utils/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.xml/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.camel/${project.version}</bundle>
+    </feature>
+    <feature name="opennms-rpc-utils" version="${project.version}" description="OpenNMS :: Core :: IPC : RPC :: Utils">
+        <bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.utils/${project.version}</bundle>
     </feature>
     <feature name="opennms-core-ipc-rpc-jms" version="${project.version}" description="OpenNMS :: Core :: IPC :: RPC :: JMS Impl.">
         <feature>opennms-core-ipc-rpc-api</feature>
@@ -604,10 +655,17 @@
         <bundle>mvn:org.opennms.features.events.sink/org.opennms.features.events.sink.dispatcher/${project.version}</bundle>
     </feature>
 
+    <feature name="opennms-events-collector" description="OpenNMS :: Events :: Collector" version="${project.version}">
+        <feature>opennms-config-api</feature>
+        <feature>opennms-events-api</feature>
+        <feature>opennms-rrd-api</feature>
+        <feature>opennms-thresholding-api</feature>
+        <bundle>mvn:org.opennms.features.events/org.opennms.features.events.collector/${project.version}</bundle>
+    </feature>
+
     <feature name="opennms-icmp-api" version="${project.version}" description="OpenNMS :: ICMP :: API">
         <feature>guava</feature>
         <feature>opennms-core</feature>
-        <bundle dependency="true">mvn:org.opennms.lib/org.opennms.lib.tracker/${trackerVersion}</bundle>
         <bundle>mvn:org.opennms/opennms-icmp-api/${project.version}</bundle>
     </feature>
     <feature name="opennms-icmp-best" version="${project.version}" description="OpenNMS :: ICMP :: Best Match">
@@ -670,8 +728,9 @@
         <bundle>mvn:org.opennms/opennms-detector-registry/${project.version}</bundle>
     </feature>
     <feature name="opennms-provisioning-api" version="${project.version}" description="OpenNMS :: Provisioning :: API">
+        <feature>opennms-model</feature>
         <bundle dependency="true">mvn:org.apache.mina/mina-core/${minaVersion}</bundle>
-        <bundle dependency="true">mvn:io.netty/netty/3.9.4.Final</bundle>
+        <bundle dependency="true">mvn:io.netty/netty/${netty3Version}</bundle>
         <bundle dependency="true">mvn:org.opennms.core/org.opennms.core.lib/${project.version}</bundle>
         <feature>opentracing-api</feature>
         <feature>commons-lang</feature>
@@ -817,14 +876,13 @@
         <feature>guava</feature>
         <feature>joda-time</feature>
         <feature>opennms-core-web</feature>
-        <bundle>wrap:mvn:com.jcraft/jsch/0.1.51</bundle>
+        <bundle>wrap:mvn:com.github.mwiede/jsch/${jschVersion}</bundle>
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.oro/2.0.8_6</bundle>
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.ezmorph/1.0.6_1</bundle>
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.json-lib/2.4_1</bundle>
         <bundle dependency="true">mvn:org.codehaus.jackson/jackson-core-asl/${jacksonVersion}</bundle>
         <bundle dependency="true">mvn:org.codehaus.jackson/jackson-mapper-asl/${jacksonVersion}</bundle>
         <bundle dependency="true">mvn:org.codehaus.jackson/jackson-xc/${jacksonVersion}</bundle>
-        <bundle dependency="true">wrap:mvn:com.jcraft/jsch/0.1.51</bundle>
         <bundle dependency="true">wrap:mvn:org.jsoup/jsoup/${jsoupVersion}</bundle>
         <bundle>mvn:org.opennms.protocols/org.opennms.protocols.xml/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.api/${project.version}</bundle>
@@ -910,9 +968,7 @@
         <bundle>mvn:org.opennms.features.poller/org.opennms.features.poller.shell/${project.version}</bundle>
     </feature>
     <feature name="opennms-situation-feedback-api" version="${project.version}" description="OpenNMS :: Features :: Situation-Feedback :: API">
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/${jackson2Version}</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson2Version}</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/${jackson2Version}</bundle>
+        <feature>jackson-core</feature>
         <bundle>mvn:org.opennms.features.situation-feedback/org.opennms.features.situation-feedback.api/${project.version}</bundle>
     </feature>
     <feature name="opennms-situation-feedback" version="${project.version}" description="OpenNMS :: Features :: Situation-Feedback">
@@ -942,6 +998,10 @@
     </feature>
 
     <feature name="kafka-streams" description="Kafka Streams" version="${kafkaVersion}">
+        <!-- This is only needed for  servicemix implementation of kafka streams -->
+        <!--
+        <feature>jackson-core</feature>
+        -->
         <!-- Wrap the kafka-streams bundle instead of using the servicemix implementation since the later doesn't include the required imports for rocksdb -->
         <bundle dependency="true">wrap:mvn:org.apache.kafka/kafka-streams/${kafkaVersion}$Bundle-Version=${kafkaVersion}&amp;Export-Package=*;-noimport:=true:version="${kafkaVersion}"</bundle>
         <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.kafka-clients/${kafkaBundleVersion}</bundle>
@@ -951,12 +1011,6 @@
         <bundle dependency="true">mvn:org.lz4/lz4-java/${lz4JavaVersion}</bundle>
         <bundle dependency="true">mvn:org.xerial.snappy/snappy-java/${snappyJavaVersion}</bundle>
         <bundle dependency="true">mvn:com.typesafe.scala-logging/scala-logging_${scalaVersion}/${scalaLoggingVersion}</bundle>
-        <!-- These are only needed for  servicemix implementation of kafka streams -->
-        <!--
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/${jackson2Version}</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson2Version}</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/${jackson2Version}</bundle>
-        -->
         <bundle dependency="true">wrap:mvn:org.rocksdb/rocksdbjni/${rocksdbjniVersion}</bundle>
     </feature>
     <feature name="opennms-kafka-producer" version="${project.version}" description="OpenNMS :: Kafka :: Producer">
@@ -1004,6 +1058,7 @@
         <feature>opennms-dao-api</feature>
         <feature>opennms-dao</feature>
         <feature>opennms-telemetry-collection</feature>
+        <feature>opennms-util</feature>
         <bundle dependency="true">mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.common/${project.version}</bundle>
@@ -1024,7 +1079,7 @@
         <feature>opennms-telemetry-collection</feature>
         <feature>opennms-kafka</feature>
         <feature>rate-limited-logger</feature>
-        <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.utils/${project.version}</bundle>
+        <feature>opennms-rpc-utils</feature>
         <bundle>mvn:org.opennms.features.telemetry.protocols.bmp/org.opennms.features.telemetry.protocols.bmp.adapter/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.bmp/org.opennms.features.telemetry.protocols.bmp.transport/${project.version}</bundle>
     </feature>
@@ -1041,7 +1096,7 @@
     </feature>
     <feature name="opennms-telemetry-nxos" version="${project.version}" description="OpenNMS :: Telemetry :: NX-OS">
         <feature>opennms-telemetry-collection</feature>
-	<bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
+        <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.nxos/org.opennms.features.telemetry.protocols.nxos.adapter/${project.version}</bundle>
     </feature>
     <feature name="opennms-telemetry-graphite" version="${project.version}" description="OpenNMS :: Telemetry :: Graphite">
@@ -1051,9 +1106,9 @@
     <feature name="opennms-telemetry-openconfig"  description="OpenNMS :: Telemetry :: OpenConfig" version="${project.version}">
         <feature>opennms-telemetry-collection</feature>
         <feature>opennms-telemetry-openconfig-client</feature>
+        <feature>opennms-rpc-utils</feature>
         <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
         <bundle>mvn:org.opennms.core.grpc/org.opennms.core.grpc.osgi/${project.version}</bundle>
-        <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.utils/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.openconfig/org.opennms.features.openconfig.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.openconfig/org.opennms.features.openconfig.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.openconfig/org.opennms.features.telemetry.protocols.openconfig.adapter/${project.version}</bundle>
@@ -1148,6 +1203,7 @@
         <bundle>mvn:org.opennms.features.api-layer/org.opennms.features.api-layer.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.api-layer/org.opennms.features.api-layer.dao-common/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.api-layer/org.opennms.features.api-layer.core/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features/ui-extension/${project.version}</bundle>
     </feature>
     <feature name="opennms-enlinkd-shell" version="${project.version}" description="OpenNMS :: Features :: Enlinkd :: Shell">
         <feature>opennms-dao</feature>
@@ -1193,7 +1249,6 @@
         <bundle>wrap:mvn:org.jvnet.opendmk/jmxremote_optional/${jmxremote.optional.version}</bundle>
         <bundle>mvn:org.apache.velocity/velocity/1.7</bundle>
         <bundle>mvn:org.opennms.features/org.opennms.features.name-cutter/${project.version}</bundle>
-        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jaxb-impl/2.2.6_1</bundle>
     </feature>
     <feature name="vaadin-jmxconfiggenerator" version="${project.version}" description="OpenNMS :: Features :: JMX Config Generator :: Web UI">
         <details>OpenNMS is the world's first enterprise grade network management platform developed under the open source model. It consists of a community supported open-source project as well as a commercial services, training and support organization.</details>
@@ -1321,10 +1376,10 @@
     <feature name="vaadin" version="${project.version}" description="OpenNMS :: Features :: Vaadin + Dependencies">
         <details>The Vaadin web application framework including some addons and osgi related packages.</details>
         <!-- Dependencies -->
-        <bundle>wrap:mvn:com.google.gwt/gwt-elemental/${gwtVersion}</bundle>
+        <bundle>mvn:com.vaadin.external.gwt/gwt-elemental/2.8.2.vaadin2</bundle>
         <bundle>wrap:mvn:com.google.gwt/gwt-user/${gwtVersion}/$Export-Package=com.google.*</bundle>
         <bundle>mvn:com.vaadin.external/gentyref/1.2.0.vaadin1</bundle>
-        <bundle>mvn:org.jsoup/jsoup/1.11.2</bundle>
+        <bundle>mvn:org.jsoup/jsoup/1.14.3</bundle>
         <bundle>mvn:com.google.guava/guava/${guavaVersion}</bundle>
         <bundle>mvn:org.json/json/${jsonVersion}</bundle>
         <!-- Vaadin -->
@@ -1357,6 +1412,12 @@
         <feature>opennms-core</feature>
         <feature>opennms-topology-api</feature>
         <feature>geolocation</feature>
+        <feature>commons-lang3</feature>
+        <feature>commons-net</feature>
+        <!-- needed by jinjava, embedded in org.opennms.features.topology.app -->
+        <feature>guava25</feature>
+        <feature>jackson-core</feature>
+        <feature>jackson-dataformat-yaml</feature>
         <bundle>mvn:org.opennms.features.topology/org.opennms.features.topology.app/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.topology.plugins.topo/org.opennms.features.topology.plugins.topo.history/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.topology/org.opennms.features.topology.link/${project.version}</bundle>
@@ -1400,10 +1461,10 @@
     </feature>
     <feature name="opennms-topology-runtime-graphml" version="${project.version}" description="OpenNMS :: Features :: Topology :: Features :: GraphML">
         <details>GraphML runtime and plugins for the OpenNMS topology web app.</details>
+        <feature>groovy</feature>
         <feature>opennms-graphml</feature>
         <feature>opennms-topology-runtime-base</feature>
         <bundle>mvn:org.opennms.features.topology.plugins.topo/graphml/${project.version}</bundle>
-        <bundle>mvn:org.codehaus.groovy/groovy-all/${groovyVersion}</bundle>
         <bundle>mvn:org.opennms.features/org.opennms.features.osgi-jsr223/${project.version}</bundle>
     </feature>
     <feature name="opennms-topology-runtime-asset" version="${project.version}" description="OpenNMS :: Features :: Topology :: Features :: Runtime :: Asset">
@@ -1530,14 +1591,14 @@
     <feature name="opennms-jest" version="${project.version}" description="OpenNMS :: Features :: Jest :: Feature definition">
         <details>Feature definition for Jest (ElasticSearch Java ReST Client)</details>
         <bundle>mvn:com.google.code.gson/gson/${jestGsonVersion}</bundle>
-        <bundle>wrap:mvn:org.apache.httpcomponents/httpcore-nio/4.4.6</bundle>
+        <bundle>wrap:mvn:org.apache.httpcomponents/httpcore-nio/${httpcoreVersion}</bundle>
         <bundle>mvn:org.opennms.features.jest/org.opennms.features.jest.client/${project.version}</bundle>
         <bundle>mvn:io.searchbox/jest-complete-osgi/${jestVersion}</bundle>
         <bundle>mvn:com.google.guava/guava/21.0</bundle>
         <bundle>mvn:commons-codec/commons-codec/1.9</bundle>
-        <bundle>mvn:org.apache.httpcomponents/httpcore-osgi/4.4.6</bundle>
-        <bundle>mvn:org.apache.httpcomponents/httpclient-osgi/4.5.3</bundle>
-        <bundle>mvn:org.apache.httpcomponents/httpasyncclient-osgi/4.1.3</bundle>
+        <bundle>mvn:org.apache.httpcomponents/httpcore-osgi/${httpcoreVersion}</bundle>
+        <bundle>mvn:org.apache.httpcomponents/httpclient-osgi/${httpclientVersion}</bundle>
+        <bundle>mvn:org.apache.httpcomponents/httpasyncclient-osgi/${httpasyncclientVersion}</bundle>
     </feature>
     <feature name="opennms-search" version="${project.version}" description="OpenNMS :: Features :: Search">
         <details>OpenNMS :: Features :: Search</details>
@@ -1607,7 +1668,7 @@
         <bundle>mvn:io.github.resilience4j/resilience4j-core/${resilience4jVersion}</bundle>
         <bundle>mvn:io.github.resilience4j/resilience4j-circuitbreaker/${resilience4jVersion}</bundle>
         <bundle>mvn:io.github.resilience4j/resilience4j-bulkhead/${resilience4jVersion}</bundle>
-        <bundle>mvn:io.github.resilience4j/resilience4j-retry/${resilience4jVersion}</bundle>        
+        <bundle>mvn:io.github.resilience4j/resilience4j-retry/${resilience4jVersion}</bundle>
     </feature>
 
     <feature name="netty4" version="${netty4Version}" description="Netty">
@@ -1772,6 +1833,24 @@
     <feature name="opennms-perspective-poller" description="OpenNMS :: Features :: Perspective Poller" version="${project.version}">
         <bundle>mvn:org.opennms.features/org.opennms.features.perspectivepoller/${project.version}</bundle>
     </feature>
+    <feature name="opennms-config-management" description="OpenNMS :: Features :: Config" version="${project.version}">
+        <feature>jackson-yaml</feature>
+        <bundle>mvn:org.opennms/opennms-web-api/${project.version}</bundle>
+        <bundle>mvn:com.fasterxml.jackson.datatype/jackson-datatype-jsr310/${jackson2Version}</bundle>
+        <bundle>mvn:org.apache.ws.xmlschema/xmlschema-core/${xmlschemaVersion}</bundle>
+        <bundle>mvn:org.apache.ws.xmlschema/xmlschema-walker/${xmlschemaVersion}</bundle>
+        <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jaxp-api-1.4/${servicemixSpecsVersion}</bundle>
+        <bundle>mvn:org.opennms.features.config.rest/org.opennms.features.config.rest.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.config.rest/org.opennms.features.config.rest.impl/${project.version}</bundle>
+    </feature>
+    <feature name="opennms-config-management-osgi-del" description="OpenNMS :: Features :: Config :: Osgi :: Delegate" version="${project.version}">
+        <bundle>mvn:org.opennms.features.config.osgi/org.opennms.features.config.osgi.del/${project.version}</bundle>
+    </feature>
+    <feature name="opennms-config-management-osgi-cm" description="OpenNMS :: Features :: Config :: Osgi :: CM" version="${project.version}">
+        <bundle>mvn:org.json/json/${jsonVersion}</bundle>
+        <bundle>mvn:org.opennms.features.config.osgi/org.opennms.features.config.osgi.cm/${project.version}</bundle>
+    </feature>
+
     <feature name="opennms-timeseries-shell" version="${project.version}" description="OpenNMS :: Features :: Timeseries :: Shell Commands">
         <bundle>mvn:org.opennms.features/org.opennms.features.timeseries.shell/${project.version}</bundle>
     </feature>
@@ -1806,10 +1885,20 @@
         <bundle>mvn:org.opennms.core.ipc.twin/org.opennms.core.ipc.twin.common/${project.version}</bundle>
     </feature>
 
-    <feature name="json-patch" description="OpenNMS :: Json Patch " version="${project.version}">
+    <feature name="jackson" description="OpenNMS :: Jackson" version="${project.version}">
         <bundle>mvn:com.fasterxml.jackson.core/jackson-core/${jackson2Version}</bundle>
         <bundle>mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson2Version}</bundle>
         <bundle>mvn:com.fasterxml.jackson.core/jackson-databind/${jackson2Version}</bundle>
+    </feature>
+
+    <feature name="jackson-yaml" description="OpenNMS :: Jackson With Yaml" version="${project.version}">
+        <feature>jackson</feature>
+        <bundle>mvn:org.yaml/snakeyaml/${snakeyamlVersion}</bundle>
+        <bundle>mvn:com.fasterxml.jackson.dataformat/jackson-dataformat-yaml/${jackson2Version}</bundle>
+    </feature>
+
+    <feature name="json-patch" description="OpenNMS :: Json Patch " version="${project.version}">
+        <feature>jackson</feature>
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jsr305/3.0.2_1</bundle>
         <bundle>wrap:mvn:com.github.java-json-tools/btf/1.3</bundle>
         <bundle>wrap:mvn:com.github.java-json-tools/msg-simple/1.2</bundle>
@@ -1845,11 +1934,74 @@
         <bundle>mvn:org.opennms.core.ipc.twin/org.opennms.core.ipc.twin.shell/${project.version}</bundle>
     </feature>
 
+    <feature name="opennms-deviceconfig-deps" description="OpenNMS :: Features :: Device Config :: Deps" version="${project.version}">
+        <feature>commons-net</feature>
+        <feature>opennms-util</feature>
+        <feature>commons-compress</feature>
+        <bundle dependency="true">mvn:org.opennms.core/org.opennms.core.lib/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.device-config/org.opennms.features.device-config.api/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-deviceconfig-tftp" description="OpenNMS :: Features :: Device Config :: TFTP" version="${project.version}">
+        <feature>opennms-deviceconfig-deps</feature>
+        <bundle>mvn:org.opennms.features.device-config/org.opennms.features.device-config.shell/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.device-config/org.opennms.features.device-config.tftp/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-deviceconfig-monitor" description="OpenNMS :: Features :: Device Config :: Monitor" version="${project.version}">
+        <feature>opennms-deviceconfig-tftp</feature>
+        <feature>quartz</feature>
+        <feature>opennms-util</feature>
+        <bundle>mvn:org.opennms.features.device-config/org.opennms.features.device-config.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.device-config/org.opennms.features.device-config.ssh-scripting/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.device-config/org.opennms.features.device-config.retrieval/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.device-config/org.opennms.features.device-config.monitor/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-deviceconfig-rest" description="OpenNMS :: Features :: Device Config :: Rest" version="${project.version}">
+        <feature>commons-compress</feature>
+        <feature>cron-parser-core</feature>
+        <feature>opennms-osgi-core-rest</feature>
+        <bundle>mvn:org.opennms.features.device-config/org.opennms.features.device-config.rest/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.device-config/org.opennms.features.device-config.api/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-deviceconfig-service" description="OpenNMS :: Features :: Device Config :: Service" version="${project.version}">
+        <feature>opennms-deviceconfig-tftp</feature>
+        <bundle>mvn:org.opennms.features.device-config/org.opennms.features.device-config.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.device-config/org.opennms.features.device-config.service/${project.version}</bundle>
+    </feature>
+
+    <!-- common module for sink client and server -->
+    <feature name="opennms-deviceconfig-sink-module" description="OpenNMS :: Features :: Device Config :: Sink :: Common" version="${project.version}">
+        <feature>opennms-deviceconfig-deps</feature>
+        <bundle>mvn:org.opennms.features.device-config.sink/org.opennms.features.device-config.sink.module/${project.version}</bundle>
+    </feature>
+
+    <!-- server side feature for the device config sink -->
+    <feature name="opennms-deviceconfig-sink-consumer" description="OpenNMS :: Features :: Device Config :: Sink :: Consumer" version="${project.version}">
+        <feature>opennms-deviceconfig-sink-module</feature>
+        <bundle>mvn:org.opennms.features.device-config.sink/org.opennms.features.device-config.sink.consumer/${project.version}</bundle>
+    </feature>
+
+    <!-- client side feature for the device config sink -->
+    <feature name="opennms-deviceconfig-sink" description="OpenNMS :: Features :: Device Config :: Sink :: Dispatcher" version="${project.version}">
+        <feature>opennms-deviceconfig-sink-module</feature>
+        <feature>opennms-deviceconfig-tftp</feature>
+        <bundle>mvn:org.opennms.features.device-config.sink/org.opennms.features.device-config.sink.dispatcher/${project.version}</bundle>
+    </feature>
+
     <feature name="opennms-health-rest-service" description="OpenNMS :: Feature :: Health :: ReST Service" version="${project.version}">
         <feature>org.json</feature>
         <feature>opennms-health-rest</feature>
         <feature version="${cxfVersion}">cxf-core</feature>
         <feature version="${cxfVersion}">cxf-jaxrs</feature>
         <bundle>mvn:org.opennms.core.health/org.opennms.core.health.rest-cxf/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-scv-rest" description="OpenNMS :: Features :: Scv :: Rest" version="${project.version}">
+        <feature>opennms-osgi-core-rest</feature>
+        <bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.rest/${project.version}</bundle>
     </feature>
 </features>

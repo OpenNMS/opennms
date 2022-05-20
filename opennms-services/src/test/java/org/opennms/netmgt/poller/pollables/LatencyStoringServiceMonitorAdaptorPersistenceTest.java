@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,6 +28,17 @@
 
 package org.opennms.netmgt.poller.pollables;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+
 import java.io.File;
 import java.net.InetAddress;
 import java.nio.file.Path;
@@ -35,7 +46,6 @@ import java.nio.file.Paths;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -84,12 +94,14 @@ public class LatencyStoringServiceMonitorAdaptorPersistenceTest {
         m_resourceStorageDao.setRrdDirectory(m_tempFolder.newFolder("response"));
         m_persisterFactory = new RrdPersisterFactory();
         m_persisterFactory.setResourceStorageDao(m_resourceStorageDao);
-        m_rrdStrategy = EasyMock.createMock(RrdStrategy.class);
+        m_rrdStrategy = mock(RrdStrategy.class);
         m_persisterFactory.setRrdStrategy(m_rrdStrategy);
     }
 
     @After
     public void tearDown() {
+        verifyNoMoreInteractions(m_rrdStrategy);
+
         // The persister may catch exception and log them as errors
         // Make sure we fail if this happens
         MockLogAppender.assertNoWarningsOrGreater();
@@ -110,6 +122,12 @@ public class LatencyStoringServiceMonitorAdaptorPersistenceTest {
         // Location with special characters
         final String someLocation = "TOG @ Pittsboro, NC";
         persistAndVerifyLatencySamples(someLocation, Paths.get("TOG___Pittsboro__NC", "192.168.1.5"));
+
+        verify(m_rrdStrategy, atLeastOnce()).createDefinition(eq("192.168.1.5"), anyString(), anyString(), anyInt(), anyList(), anyList());
+        verify(m_rrdStrategy, atLeastOnce()).createFile(any());
+        verify(m_rrdStrategy, atLeastOnce()).getDefaultFileExtension();
+        verify(m_rrdStrategy, atLeastOnce()).openFile(anyString());
+        verify(m_rrdStrategy, atLeastOnce()).updateFile(any(), anyString(), anyString());
     }
 
     private void persistAndVerifyLatencySamples(String locationName, Path pathToResourceInResponseTime) throws Exception {
@@ -139,37 +157,26 @@ public class LatencyStoringServiceMonitorAdaptorPersistenceTest {
         params.put("rrd-repository", getResponseTimeRoot().getAbsolutePath());
         params.put("rrd-base-name", "smtp-base");
 
-        EasyMock.expect(m_rrdStrategy.getDefaultFileExtension()).andReturn(".jrb").atLeastOnce();
+        when(m_rrdStrategy.getDefaultFileExtension()).thenReturn(".jrb");
 
-        m_rrdStrategy.createDefinition(EasyMock.eq("192.168.1.5"),
-                EasyMock.eq(getResponseTimeRoot().toPath().resolve(pathToResourceInResponseTime).toString()),
-                EasyMock.eq("smtp-base"),
-                EasyMock.anyInt(),
-                EasyMock.anyObject(),
-                EasyMock.anyObject());
-        EasyMock.expectLastCall().andReturn(null).once();
+        when(m_rrdStrategy.createDefinition(eq("192.168.1.5"),
+                eq(getResponseTimeRoot().toPath().resolve(pathToResourceInResponseTime).toString()),
+                eq("smtp-base"),
+                anyInt(),
+                anyList(),
+                anyList())).thenReturn(null);
 
-        m_rrdStrategy.createFile(EasyMock.anyObject());
-        EasyMock.expectLastCall().once();
+        // verify(m_rrdStrategy, atLeastOnce()).createFile(anyObject());
 
-        m_rrdStrategy.openFile(EasyMock.eq(getResponseTimeRoot().toPath()
-                .resolve(pathToResourceInResponseTime.resolve("smtp-base.jrb")).toString()));
-        EasyMock.expectLastCall().andReturn(null).once();
+        when(m_rrdStrategy.openFile(eq(getResponseTimeRoot().toPath()
+                .resolve(pathToResourceInResponseTime.resolve("smtp-base.jrb")).toString()))).thenReturn(null);
+        // verify(m_rrdStrategy, atLeastOnce()).openFile(anyString());
 
         // This is the important bit, the order of the values should match the order there were inserted above
-        m_rrdStrategy.updateFile(EasyMock.isNull(), EasyMock.eq("192.168.1.5"), EasyMock.endsWith(":42.1:1:2:3"));
-        EasyMock.expectLastCall().once();
-
-        EasyMock.replay(m_rrdStrategy);
+        // verify(m_rrdStrategy, atLeastOnce()).updateFile(isNull(), eq("192.168.1.5"), endsWith(":42.1:1:2:3"));
 
         // Trigger the poll
         lssma.handlePollResult(monitoredService, params, serviceMonitor.poll(monitoredService, params));
-
-        // Verify
-        EasyMock.verify(m_rrdStrategy);
-
-        // Reset
-        EasyMock.reset(m_rrdStrategy);
     }
 
     public File getResponseTimeRoot() {

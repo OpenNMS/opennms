@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,11 +28,18 @@
 
 package org.opennms.netmgt.collectd;
 
-import static org.easymock.EasyMock.anyObject;
-import static org.easymock.EasyMock.eq;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 import static org.opennms.core.utils.InetAddressUtils.str;
 
@@ -42,7 +49,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -52,6 +58,7 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.utils.InsufficientInformationException;
 import org.opennms.netmgt.collection.api.CollectionSet;
+import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.support.DefaultServiceCollectorRegistry;
 import org.opennms.netmgt.collection.test.api.CollectorTestUtils;
 import org.opennms.netmgt.config.CollectdConfigFactory;
@@ -80,10 +87,10 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.threshd.api.ThresholdingService;
 import org.opennms.netmgt.threshd.api.ThresholdingSession;
 import org.opennms.test.JUnitConfigurationEnvironment;
-import org.opennms.test.mock.EasyMockUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -107,7 +114,6 @@ public class CollectdIntegrationTest {
 
     private EventIpcManager m_eventIpcManager;
     private Collectd m_collectd;
-    private EasyMockUtils m_mockUtils;
     private CollectdConfigFactory m_collectdConfigFactory;
     private CollectdConfiguration m_collectdConfiguration;
     private String m_key;
@@ -131,9 +137,7 @@ public class CollectdIntegrationTest {
         m_eventIpcManager = new MockEventIpcManager();
         EventIpcManagerFactory.setIpcManager(m_eventIpcManager);
         
-        m_mockUtils = new EasyMockUtils();
-        
-        m_filterDao = m_mockUtils.createMock(FilterDao.class);
+        m_filterDao = mock(FilterDao.class);
         FilterDaoFactory.setInstance(m_filterDao);
         
 
@@ -160,14 +164,14 @@ public class CollectdIntegrationTest {
         param.setValue(m_key);
         collector.addParameter(param);
         
-        m_collectdConfigFactory = m_mockUtils.createMock(CollectdConfigFactory.class);
-        m_collectdConfiguration = m_mockUtils.createMock(CollectdConfiguration.class);
-        EasyMock.expect(m_collectdConfigFactory.getCollectdConfig()).andReturn(m_collectdConfiguration).anyTimes();
-        EasyMock.expect(m_collectdConfiguration.getCollectors()).andReturn(Collections.singletonList(collector)).anyTimes();
-        EasyMock.expect(m_collectdConfiguration.getThreads()).andReturn(1).anyTimes();
+        m_collectdConfigFactory = mock(CollectdConfigFactory.class);
+        m_collectdConfiguration = mock(CollectdConfiguration.class);
+        when(m_collectdConfigFactory.getCollectdConfig()).thenReturn(m_collectdConfiguration);
+        when(m_collectdConfiguration.getCollectors()).thenReturn(Collections.singletonList(collector));
+        when(m_collectdConfiguration.getThreads()).thenReturn(1);
         
-        m_ifaceDao = m_mockUtils.createMock(IpInterfaceDao.class);
-        m_nodeDao = m_mockUtils.createMock(NodeDao.class);
+        m_ifaceDao = mock(IpInterfaceDao.class);
+        m_nodeDao = mock(NodeDao.class);
         
         m_collectd = new Collectd() {
 
@@ -180,14 +184,12 @@ public class CollectdIntegrationTest {
         
         m_collectd.setPollOutagesDao(m_pollOutagesDao);
 
-        ThresholdingService mockThresholdingService = m_mockUtils.createMock(ThresholdingService.class);
-        ThresholdingSession mockThresholdingSession = m_mockUtils.createMock(ThresholdingSession.class);
-        EasyMock.expect(mockThresholdingService.createSession(EasyMock.anyInt(), EasyMock.anyString(), EasyMock.anyString(), EasyMock.anyObject(),
-                                                              EasyMock.anyObject())).andReturn(mockThresholdingSession);
+        ThresholdingService mockThresholdingService = mock(ThresholdingService.class);
+        ThresholdingSession mockThresholdingSession = mock(ThresholdingSession.class);
+        when(mockThresholdingService.createSession(anyInt(), anyString(), anyString(), any(ServiceParameters.class))).thenReturn(mockThresholdingSession);
         m_collectd.setThresholdingService(mockThresholdingService);
 
-        mockThresholdingSession.accept(anyObject(CollectionSet.class));
-        EasyMock.expectLastCall().anyTimes();
+        mockThresholdingSession.accept(any(CollectionSet.class));
 
         OnmsServiceType snmp = new OnmsServiceType("SNMP");
         NetworkBuilder netBuilder = new NetworkBuilder();
@@ -200,18 +202,16 @@ public class CollectdIntegrationTest {
         OnmsMonitoredService svc = netBuilder.addService(snmp);
         
         List<OnmsIpInterface> initialIfs = Collections.emptyList();
-        EasyMock.expect(m_ifaceDao.findByServiceType(snmp.getName())).andReturn(initialIfs).anyTimes();
+        when(m_ifaceDao.findByServiceType(snmp.getName())).thenReturn(initialIfs);
         
         m_filterDao.flushActiveIpAddressListCache();
-        EasyMock.expectLastCall().atLeastOnce();
+        verify(m_filterDao, atLeastOnce()).flushActiveIpAddressListCache();
 
-        EasyMock.expect(m_nodeDao.load(1)).andReturn(nodeBuilder.getNode()).anyTimes();
+        when(m_nodeDao.load(1)).thenReturn(nodeBuilder.getNode());
         
         createGetPackagesExpectation(svc);
         
-        EasyMock.expect(m_ifaceDao.load(2)).andReturn(ifaceBlder.getInterface()).anyTimes();
-        
-        m_mockUtils.replayAll();
+        when(m_ifaceDao.load(2)).thenReturn(ifaceBlder.getInterface());
 
         final MockTransactionTemplate transTemplate = new MockTransactionTemplate();
         transTemplate.afterPropertiesSet();
@@ -243,6 +243,12 @@ public class CollectdIntegrationTest {
 
     @After
     public void tearDown() {
+        verifyNoMoreInteractions(m_filterDao);
+        verifyNoMoreInteractions(m_collectdConfigFactory);
+        verifyNoMoreInteractions(m_collectdConfiguration);
+        verifyNoMoreInteractions(m_ifaceDao);
+        verifyNoMoreInteractions(m_nodeDao);
+
         m_tests.remove(m_key);
     }
 
@@ -262,8 +268,16 @@ public class CollectdIntegrationTest {
         
         assertNotNull(m_serviceCollector);
         assertEquals(1, m_serviceCollector.getCollectCount());
-        
-        m_mockUtils.verifyAll();
+
+        verify(m_filterDao, atLeastOnce()).flushActiveIpAddressListCache();
+        verify(m_collectdConfigFactory, atLeastOnce()).getCollectdConfig();
+        verify(m_collectdConfigFactory, atLeastOnce()).interfaceInPackage(any(OnmsIpInterface.class), any(Package.class));
+        verify(m_collectdConfiguration, atLeastOnce()).getCollectors();
+        verify(m_collectdConfiguration, atLeastOnce()).getPackages();
+        verify(m_collectdConfiguration, atLeastOnce()).getThreads();
+        verify(m_ifaceDao, atLeastOnce()).findByServiceType("SNMP");
+        verify(m_ifaceDao, atLeastOnce()).load(anyInt());
+        verify(m_nodeDao, atLeastOnce()).load(anyInt());
     }
 
     private void createGetPackagesExpectation(OnmsMonitoredService svc) {
@@ -288,8 +302,8 @@ public class CollectdIntegrationTest {
         
         pkg.addService(collector);
         
-        EasyMock.expect(m_collectdConfiguration.getPackages()).andReturn(Collections.singletonList(pkg));
-        EasyMock.expect(m_collectdConfigFactory.interfaceInPackage(anyObject(OnmsIpInterface.class), eq(pkg))).andReturn(true);
+        when(m_collectdConfiguration.getPackages()).thenReturn(Collections.singletonList(pkg));
+        when(m_collectdConfigFactory.interfaceInPackage(any(OnmsIpInterface.class), eq(pkg))).thenReturn(true);
     }
 
 }

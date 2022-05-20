@@ -23,7 +23,7 @@ This section presents a set of procedures to set up flows that progress from a b
 * xref:operation:flows/basic.adoc#flows-basic[Basic setup] (out-of-the-box)
 * Flows data in a xref:operation:flows/distributed.adoc#flows-remote[distributed/remote network] (add a Minion)
 * Processing xref:operation:flows/sentinel/sentinel.adoc#flows-scaling[large volume of flows data] (add Sentinel to scale)
-* Issues with flows at scale and queries taking too long (add xref:operation:flows/nephron.adoc#ga-nephron[Nephron] for aggregation and streaming analytics)
+* Issues with flows at scale and queries taking too long (add the OpenNMS https://github.com/OpenNMS/nephron[streaming analytics tool])
 
 .Flow integration overview
 image::flows/flow_integration_overview.png[width=70%]
@@ -35,11 +35,11 @@ At a high level, with a xref:operation:flows/basic.adoc#flows-basic[basic setup]
 * <<telemetryd/introduction.adoc#ga-telemetryd, Telemetryd>> receives and decodes flows on {page-component-title}.
 * Telemetryd adapters convert the flows to a canonical flow model.
 * Flows are enriched:
-** The <<flows/classification-engine.adoc#ga-flow-support-classification-engine, classification engine>> tags flows with an application name.
+** The <<flows/classification-engine.adoc#ga-flow-support-classification-engine, classification engine>> tags flows and groups them under a name based on a set of rules.
 ** Metadata related to associated nodes (such as IDs and categories) are also added to the flows.
 * Enriched flows are persisted in Elasticsearch and/or forwarded to Kafka.
-* You can use <<flows/nephron.adoc#ga-nephron, Nephron>> to aggregate flows and output aggregates to Elasticsearch, Cortex, or Kafka.
+* You can use the OpenNMS streaming analytics tool to aggregate flows and output aggregates to Elasticsearch, Cortex, or Kafka
 * The REST API supports generating both summaries and time series data from the flows or flow aggregates stored in Elasticsearch.
 * Use OpenNMS Helm to visualize flows and/or flow aggregates:
-** Use the "Flow Deep Dive" dashboard with an OpenNMS Flow datasource to visualize flows and flow aggregates that are stored in Elasticsearch.
+** Use the "Flow Deep Dive" dashboard with an OpenNMS Flow datasource to visualize flows and flow aggregates stored in Elasticsearch.
 ** Use the "Cortex Flow Deep Dive" dashboard with a Prometheus datasource to access flow aggregates stored in Cortex.

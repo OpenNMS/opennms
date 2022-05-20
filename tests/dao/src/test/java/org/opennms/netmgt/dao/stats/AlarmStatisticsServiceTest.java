@@ -30,6 +30,7 @@ package org.opennms.netmgt.dao.stats;
 
 import static org.junit.Assert.assertEquals;
 
+import org.apache.commons.jexl2.UnifiedJEXL;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,6 +40,7 @@ import org.opennms.core.criteria.Fetch.FetchType;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.AlarmStatisticsService;
 import org.opennms.netmgt.model.OnmsAlarm;
@@ -57,6 +59,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/applicationContext-alarmStatisticsServiceTest.xml"
 })
 @JUnitConfigurationEnvironment
+@JUnitTemporaryDatabase
 public class AlarmStatisticsServiceTest implements InitializingBean {
     @Autowired
     DatabasePopulator m_dbPopulator;
@@ -65,7 +68,7 @@ public class AlarmStatisticsServiceTest implements InitializingBean {
     private AlarmStatisticsService m_statisticsService;
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() throws UnifiedJEXL.Exception {
         BeanUtils.assertAutowiring(this);
     }
 

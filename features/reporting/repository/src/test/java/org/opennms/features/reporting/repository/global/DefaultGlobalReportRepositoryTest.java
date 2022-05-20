@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,7 +28,17 @@
 
 package org.opennms.features.reporting.repository.global;
 
-import org.easymock.EasyMock;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -41,11 +51,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * <p>DefaultGlobalReportRepositoryTest class.</p>
@@ -90,62 +95,58 @@ public class DefaultGlobalReportRepositoryTest {
     public void setUp() {
 
         // Mockup for remote repository config dao
-        m_mockRemoteRepositoryConfigDao = EasyMock.createNiceMock(RemoteRepositoryConfigDao.class);
+        m_mockRemoteRepositoryConfigDao = mock(RemoteRepositoryConfigDao.class);
 
         // Mockup for a list of reports
         m_mockReportList = new ArrayList<>();
 
         // Mockup for a online active report
-        m_mockReportDefinition1 = EasyMock.createNiceMock(BasicReportDefinition.class);
-        EasyMock.expect(m_mockReportDefinition1.getAllowAccess()).andReturn(Boolean.TRUE);
-        EasyMock.expect(m_mockReportDefinition1.getDescription()).andReturn("MockReportDescription1");
-        EasyMock.expect(m_mockReportDefinition1.getDisplayName()).andReturn("MockupReportDisplayName1");
-        EasyMock.expect(m_mockReportDefinition1.getOnline()).andReturn(Boolean.TRUE);
-        EasyMock.expect(m_mockReportDefinition1.getReportService()).andReturn("MockupReportService1");
-        EasyMock.expect(m_mockReportDefinition1.getRepositoryId()).andReturn("local_MockupReportReportId1");
-        EasyMock.expect(m_mockReportDefinition1.getId()).andReturn("local_MockupReportId1");
-        EasyMock.replay(m_mockReportDefinition1);
+        m_mockReportDefinition1 = mock(BasicReportDefinition.class);
+        when(m_mockReportDefinition1.getAllowAccess()).thenReturn(Boolean.TRUE);
+        when(m_mockReportDefinition1.getDescription()).thenReturn("MockReportDescription1");
+        when(m_mockReportDefinition1.getDisplayName()).thenReturn("MockupReportDisplayName1");
+        when(m_mockReportDefinition1.getOnline()).thenReturn(Boolean.TRUE);
+        when(m_mockReportDefinition1.getReportService()).thenReturn("MockupReportService1");
+        when(m_mockReportDefinition1.getRepositoryId()).thenReturn("local_MockupReportReportId1");
+        when(m_mockReportDefinition1.getId()).thenReturn("local_MockupReportId1");
 
         // Mockup for an inactive not online report
-        m_mockReportDefinition2 = EasyMock.createNiceMock(BasicReportDefinition.class);
-        EasyMock.expect(m_mockReportDefinition2.getAllowAccess()).andReturn(Boolean.FALSE);
-        EasyMock.expect(m_mockReportDefinition2.getDescription()).andReturn("MockReportDescription2");
-        EasyMock.expect(m_mockReportDefinition2.getDisplayName()).andReturn("MockupReportDisplayName2");
-        EasyMock.expect(m_mockReportDefinition2.getOnline()).andReturn(Boolean.FALSE);
-        EasyMock.expect(m_mockReportDefinition2.getReportService()).andReturn("MockupReportService2");
-        EasyMock.expect(m_mockReportDefinition2.getRepositoryId()).andReturn("local_MockupReportReportId2");
-        EasyMock.expect(m_mockReportDefinition2.getId()).andReturn("MockupReportId2");
-        EasyMock.replay(m_mockReportDefinition2);
+        m_mockReportDefinition2 = mock(BasicReportDefinition.class);
+        when(m_mockReportDefinition2.getAllowAccess()).thenReturn(Boolean.FALSE);
+        when(m_mockReportDefinition2.getDescription()).thenReturn("MockReportDescription2");
+        when(m_mockReportDefinition2.getDisplayName()).thenReturn("MockupReportDisplayName2");
+        when(m_mockReportDefinition2.getOnline()).thenReturn(Boolean.FALSE);
+        when(m_mockReportDefinition2.getReportService()).thenReturn("MockupReportService2");
+        when(m_mockReportDefinition2.getRepositoryId()).thenReturn("local_MockupReportReportId2");
+        when(m_mockReportDefinition2.getId()).thenReturn("MockupReportId2");
 
         // Add mockup report to the report list 
         m_mockReportList.add(m_mockReportDefinition1);
         m_mockReportList.add(m_mockReportDefinition2);
 
         // Mockup a local report repository 
-        m_mockLocalReportRepository = EasyMock.createNiceMock(ReportRepository.class);
-        EasyMock.expect(m_mockLocalReportRepository.getOnlineReports()).andReturn(m_mockReportList);
-        EasyMock.expect(m_mockLocalReportRepository.getReports()).andReturn(m_mockReportList);
-        EasyMock.expect(m_mockLocalReportRepository.getDisplayName("MockedReportId")).andReturn("MockedDisplayName");
-        EasyMock.expect(m_mockLocalReportRepository.getEngine("MockupReportId")).andReturn("MockedEngine");
-        EasyMock.expect(m_mockLocalReportRepository.getManagementUrl()).andReturn("MockupManagementUrl");
-        EasyMock.expect(m_mockLocalReportRepository.getRepositoryDescription()).andReturn("MockedRepositoryDescription");
-        EasyMock.expect(m_mockLocalReportRepository.getReportService("MockedReportId")).andReturn("MockedReportService");
-        EasyMock.expect(m_mockLocalReportRepository.getRepositoryId()).andReturn("local");
-        EasyMock.expect(m_mockLocalReportRepository.getRepositoryName()).andReturn("MockedRepositoryName");
-        EasyMock.replay(m_mockLocalReportRepository);
+        m_mockLocalReportRepository = mock(ReportRepository.class);
+        when(m_mockLocalReportRepository.getOnlineReports()).thenReturn(m_mockReportList);
+        when(m_mockLocalReportRepository.getReports()).thenReturn(m_mockReportList);
+        when(m_mockLocalReportRepository.getDisplayName("MockedReportId")).thenReturn("MockedDisplayName");
+        when(m_mockLocalReportRepository.getEngine("MockupReportId")).thenReturn("MockedEngine");
+        when(m_mockLocalReportRepository.getManagementUrl()).thenReturn("MockupManagementUrl");
+        when(m_mockLocalReportRepository.getRepositoryDescription()).thenReturn("MockedRepositoryDescription");
+        when(m_mockLocalReportRepository.getReportService("MockedReportId")).thenReturn("MockedReportService");
+        when(m_mockLocalReportRepository.getRepositoryId()).thenReturn("local");
+        when(m_mockLocalReportRepository.getRepositoryName()).thenReturn("MockedRepositoryName");
 
         // Mockup for one remote repository
-        m_remoteReportRepository = EasyMock.createNiceMock(ReportRepository.class);
-        EasyMock.expect(m_remoteReportRepository.getOnlineReports()).andReturn(m_mockReportList);
-        EasyMock.expect(m_remoteReportRepository.getReports()).andReturn(m_mockReportList);
-        EasyMock.expect(m_remoteReportRepository.getDisplayName("MockedReportId")).andReturn("MockedRemoteDisplayName");
-        EasyMock.expect(m_remoteReportRepository.getEngine("MockupReportId")).andReturn("MockedRemoteEngine");
-        EasyMock.expect(m_remoteReportRepository.getManagementUrl()).andReturn("MockupRemoteManagementUrl");
-        EasyMock.expect(m_remoteReportRepository.getRepositoryDescription()).andReturn("MockedRemoteRepositoryDescription");
-        EasyMock.expect(m_remoteReportRepository.getReportService("MockedReportId")).andReturn("MockedTemoteReportService");
-        EasyMock.expect(m_remoteReportRepository.getRepositoryId()).andReturn("MockedRemoteRepositoryId");
-        EasyMock.expect(m_remoteReportRepository.getRepositoryName()).andReturn("MockedRemoteRepositoryName");
-        EasyMock.replay(m_remoteReportRepository);
+        m_remoteReportRepository = mock(ReportRepository.class);
+        when(m_remoteReportRepository.getOnlineReports()).thenReturn(m_mockReportList);
+        when(m_remoteReportRepository.getReports()).thenReturn(m_mockReportList);
+        when(m_remoteReportRepository.getDisplayName("MockedReportId")).thenReturn("MockedRemoteDisplayName");
+        when(m_remoteReportRepository.getEngine("MockupReportId")).thenReturn("MockedRemoteEngine");
+        when(m_remoteReportRepository.getManagementUrl()).thenReturn("MockupRemoteManagementUrl");
+        when(m_remoteReportRepository.getRepositoryDescription()).thenReturn("MockedRemoteRepositoryDescription");
+        when(m_remoteReportRepository.getReportService("MockedReportId")).thenReturn("MockedTemoteReportService");
+        when(m_remoteReportRepository.getRepositoryId()).thenReturn("MockedRemoteRepositoryId");
+        when(m_remoteReportRepository.getRepositoryName()).thenReturn("MockedRemoteRepositoryName");
 
         // Mockup two remote repositories
         m_mockActiveRemoteRepository = new RemoteRepositoryDefinition();
@@ -173,17 +174,25 @@ public class DefaultGlobalReportRepositoryTest {
         m_mockAllRepositoriesList.add(m_mockActiveRemoteRepository);
         m_mockAllRepositoriesList.add(m_mockNotActiveRemoteRepository);
 
-        EasyMock.expect(m_mockRemoteRepositoryConfigDao.getActiveRepositories()).andReturn(m_mockActiveRepositoriesList);
-        EasyMock.expect(m_mockRemoteRepositoryConfigDao.getAllRepositories()).andReturn(m_mockAllRepositoriesList);
-        EasyMock.expect(m_mockRemoteRepositoryConfigDao.getLoginRepoPassword("repositoryId")).andReturn("MockedDaoLoginPassword");
-        EasyMock.expect(m_mockRemoteRepositoryConfigDao.getLoginUser("repositoryId")).andReturn("MockedDaoLoginUser");
-        EasyMock.expect(m_mockRemoteRepositoryConfigDao.getRepositoryById("repositoryId")).andReturn(m_mockActiveRemoteRepository);
-        EasyMock.expect(m_mockRemoteRepositoryConfigDao.getRepositoryDescription("repositoryId")).andReturn("MockedDaoRepositoryDescription");
-        EasyMock.expect(m_mockRemoteRepositoryConfigDao.getRepositoryManagementURL("repositoryId")).andReturn("MockedDaoManagementUrl");
-        EasyMock.expect(m_mockRemoteRepositoryConfigDao.getRepositoryName("repositoryId")).andReturn("MockedDaoRepositoryName");
-        EasyMock.replay(m_mockRemoteRepositoryConfigDao);
+        when(m_mockRemoteRepositoryConfigDao.getActiveRepositories()).thenReturn(m_mockActiveRepositoriesList);
+        when(m_mockRemoteRepositoryConfigDao.getAllRepositories()).thenReturn(m_mockAllRepositoriesList);
+        when(m_mockRemoteRepositoryConfigDao.getLoginRepoPassword("repositoryId")).thenReturn("MockedDaoLoginPassword");
+        when(m_mockRemoteRepositoryConfigDao.getLoginUser("repositoryId")).thenReturn("MockedDaoLoginUser");
+        when(m_mockRemoteRepositoryConfigDao.getRepositoryById("repositoryId")).thenReturn(m_mockActiveRemoteRepository);
+        when(m_mockRemoteRepositoryConfigDao.getRepositoryDescription("repositoryId")).thenReturn("MockedDaoRepositoryDescription");
+        when(m_mockRemoteRepositoryConfigDao.getRepositoryManagementURL("repositoryId")).thenReturn("MockedDaoManagementUrl");
+        when(m_mockRemoteRepositoryConfigDao.getRepositoryName("repositoryId")).thenReturn("MockedDaoRepositoryName");
 
         m_globalReportRepository = new DefaultGlobalReportRepository(m_mockRemoteRepositoryConfigDao, m_mockLocalReportRepository);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        verifyNoMoreInteractions(m_mockRemoteRepositoryConfigDao);
+        verifyNoMoreInteractions(m_mockReportDefinition1);
+        verifyNoMoreInteractions(m_mockReportDefinition2);
+        verifyNoMoreInteractions(m_mockLocalReportRepository);
+        verifyNoMoreInteractions(m_remoteReportRepository);
     }
 
     @Test
@@ -197,19 +206,25 @@ public class DefaultGlobalReportRepositoryTest {
     @Test
     public void getAllOnlineReportsTest() {
         assertEquals("Test size of online reports", 2, m_globalReportRepository.getAllOnlineReports().size());
+        verify(m_mockRemoteRepositoryConfigDao, times(1)).getActiveRepositories();
+        verify(m_mockLocalReportRepository, times(1)).getOnlineReports();
     }
 
     @Test
     public void getAllReportsTest() {
         assertEquals("Test size of online reports", 2, m_globalReportRepository.getAllReports().size());
+        verify(m_mockRemoteRepositoryConfigDao, times(1)).getActiveRepositories();
+        verify(m_mockLocalReportRepository, times(1)).getReports();
     }
 
+    @Ignore
     @Test
     public void getEngineTest() {
         // TODO tak: improve this tests
         //assertNotNull("Test to get online reports by repository id", m_globalReportRepository.getEngine("local_MockupReportReportId2"));
     }
 
+    @Ignore
     @Test
     public void getOnlineReportsTest() {
         // TODO tak: improve this tests

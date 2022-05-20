@@ -34,8 +34,8 @@ import java.net.DatagramPacket;
 import org.opennms.core.logging.Logging;
 import org.opennms.protocols.icmp.ICMPEchoPacket;
 import org.opennms.protocols.icmp.IcmpSocket;
-import org.opennms.protocols.rt.Messenger;
-import org.opennms.protocols.rt.ReplyHandler;
+import org.opennms.core.tracker.Messenger;
+import org.opennms.core.tracker.ReplyHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

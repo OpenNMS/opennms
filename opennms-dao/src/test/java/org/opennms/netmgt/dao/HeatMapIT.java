@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2015-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2015-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -55,6 +55,7 @@ import org.junit.Assert;
 @ContextConfiguration(locations = {
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
@@ -115,7 +116,7 @@ public class HeatMapIT implements InitializingBean {
             Assert.assertEquals(numberOfNodesInCategory.get(heatMapElement.getName()).intValue(), heatMapElement.getNodesTotal());
         }
     }
-
+    
     @Test
     @Transactional
     public void testAlarmsForTestDB() {
@@ -125,4 +126,17 @@ public class HeatMapIT implements InitializingBean {
             Assert.assertEquals(numberOfNodesInCategory.get(heatMapElement.getName()).intValue(), heatMapElement.getNodesTotal());
         }
     }
+
+    @Test (expected = IllegalArgumentException.class)
+    @Transactional
+    public void testAlarmDaoInvalidColumns() {
+        List<HeatMapElement> heatMapElements = m_alarmDao.getHeatMapItemsForEntity("not a column name", "arbitrary", true, null, null);
+    }
+    
+    @Test (expected = IllegalArgumentException.class)
+    @Transactional
+    public void testOutageDaoInvalidColumns() {
+        List<HeatMapElement> heatMapElements = m_outageDao.getHeatMapItemsForEntity("not a column name", "arbitrary", null, null);
+    }
+
 }

@@ -38,7 +38,6 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
 import { useStore } from 'vuex'
 import FileTreeItem from './FileTreeItem.vue'
 import Search from './Search.vue'
@@ -65,6 +64,7 @@ const scrollToSelectedFile = () => {
 </script>
 
 <style lang="scss" scoped>
+@import "@featherds/styles/themes/variables";
 .sidebar-relative-container {
   position: relative;
 
@@ -73,7 +73,7 @@ const scrollToSelectedFile = () => {
     overflow-x: hidden;
     height: calc(100vh - 212px);
     word-break: break-all;
-    border: 1px solid var(--feather-border-on-surface);
+    border: 1px solid var($border-on-surface);
 
     ul {
       padding-left: 0px;
@@ -84,7 +84,7 @@ const scrollToSelectedFile = () => {
     position: sticky;
     width: 100%;
     height: 30px;
-    background: var(--feather-shade-4);
+    background: var($shade-4);
 
     .btn {
       margin: 0px;
@@ -98,7 +98,7 @@ const scrollToSelectedFile = () => {
       }
 
       &.unfiltered {
-        color: var(--feather-shade-1);
+        color: var($shade-1);
       }
     }
   }

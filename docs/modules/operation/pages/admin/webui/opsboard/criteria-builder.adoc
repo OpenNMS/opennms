@@ -2,11 +2,11 @@
 [[webui-opsboard-criteria-builder]]
 = Criteria Builder
 
-The Criteria Builder is a generic component to filter information of a dashlet.
-Some dashlets use this component to filter the shown information on a dashlet for certain use case.
-It is possible to combine multiple Criteria to display just a subset of information in a given dashlet.
+The Criteria Builder is a generic component to filter dashlet information.
+Some dashlets use this component to filter the shown information on a dashlet for certain use cases.
+It is possible to combine multiple criteria to display just a subset of information in a given dashlet.
 
-.Generic Criteria Builder configuration possibilities
+.Generic Criteria Builder configuration options
 [options="header, %autowidth" cols="1,2,1,1,1"]
 |===
 | Restriction
@@ -35,7 +35,7 @@ It is possible to combine multiple Criteria to display just a subset of informat
 | String
 
 | Contains
-| Select all data which contains a given text string in a given database attribute.
+| Select all data that contains a given text string in a given database attribute.
 | database attribute
 | String
 | -
@@ -53,7 +53,7 @@ It is possible to combine multiple Criteria to display just a subset of informat
 | -
 
 | Ge
-| Select data where attribute is greater equals than (`>=`) a given text value.
+| Select data where attribute is greater or equal to (`>=`) a given text value.
 | database attribute
 | String
 | -
@@ -77,19 +77,13 @@ It is possible to combine multiple Criteria to display just a subset of informat
 | -
 
 | Iplike
-| Select data where attribute matches an given IPLIKE expression.
+| Select data where attribute matches a given IPLIKE expression.
 | database attribute
 | String
 | -
 
 | IsNull
-| Select data where attribute is null
-| database attribute
-| -
-| -
-
-| IsNotNull
-| Select data where attribute is not null.
+| Select data where attribute is null.
 | database attribute
 | -
 | -
@@ -101,7 +95,7 @@ It is possible to combine multiple Criteria to display just a subset of informat
 | -
 
 | Le
-| Select data where attribute is less equals than (`<=`) a given text value.
+| Select data where attribute is less than or equal to (`\<=`) a given text value.
 | database attribute
 | String
 | -
@@ -112,32 +106,26 @@ It is possible to combine multiple Criteria to display just a subset of informat
 | String
 | -
 
-| Le
-| Select data where attribute is less equals than (`<=`) a given text value.
-| database attribute
-| String
-| -
-
 | Like
-| Select data where attribute is like a given text value similar to SQL `like`.
+| Select data where attribute is like a given text value (similar to SQL `like`).
 | database attribute
 | String
 | -
 
 | Limit
-| Limit the result set by a given number
+| Limit the result set by a given number.
 | -
 | Integer
 | -
 
 | Ne
-| Select data where attribute is not equals (`!=`) a given text value
+| Select data where attribute does not equal (`!=`) a given text value.
 | database attribute
 | String
 | -
 
 | Not
-| Unknown difference between `Ne`
+| Unknown difference between `Ne`.
 | database attribute
 | String
 | -
@@ -147,6 +135,12 @@ It is possible to combine multiple Criteria to display just a subset of informat
 | database attribute
 | -
 | -
+
+| MultiAnd
+| Constraint that supports multiple parameters in criteria builder.
+| database attribute
+| String
+| String
 |===
 
-TIP: For date values, absolute value can be specified in ISO format, e.g., 2019-06-20T20:45:15.123-05:00. Relative times can be specified by +seconds and -seconds.
+TIP: For date values, you can specify absolute value in ISO format (2019-06-20T20:45:15.123-05:00). Specify relative times by +seconds and -seconds.

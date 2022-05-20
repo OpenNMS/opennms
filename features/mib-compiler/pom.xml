@@ -3,7 +3,7 @@
   <parent>
     <artifactId>org.opennms.features</artifactId>
     <groupId>org.opennms</groupId>
-    <version>30.0.0-SNAPSHOT</version>
+    <version>31.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features</groupId>
@@ -56,11 +56,27 @@
             <groupId>org.opennms</groupId>
             <artifactId>opennms-config</artifactId>
             <scope>provided</scope>
+            <exclusions>
+              <exclusion>
+                <groupId>org.opennms.features.config.service</groupId>
+                <artifactId>org.opennms.features.config.service.impl</artifactId>
+              </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.opennms</groupId>
             <artifactId>opennms-dao</artifactId>
             <scope>provided</scope>
+            <exclusions>
+              <exclusion>
+                <groupId>org.opennms.features.config.service</groupId>
+                <artifactId>org.opennms.features.config.service.api</artifactId>
+              </exclusion>
+              <exclusion>
+                <groupId>org.opennms.features.config.service</groupId>
+                <artifactId>org.opennms.features.config.service.impl</artifactId>
+              </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.jsmiparser</groupId>

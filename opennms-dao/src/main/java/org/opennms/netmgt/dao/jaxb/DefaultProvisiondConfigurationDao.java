@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,13 +28,19 @@
 
 package org.opennms.netmgt.dao.jaxb;
 
-import java.util.List;
-
-import org.opennms.core.xml.AbstractJaxbConfigDao;
+import org.opennms.features.config.service.api.ConfigUpdateInfo;
+import org.opennms.features.config.service.impl.AbstractCmJaxbConfigDao;
 import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
 import org.opennms.netmgt.config.provisiond.RequisitionDef;
 import org.opennms.netmgt.dao.api.ProvisiondConfigurationDao;
-import org.springframework.dao.DataAccessResourceFailureException;
+import org.opennms.netmgt.dao.jaxb.callback.ConfigurationReloadEventCallback;
+import org.opennms.netmgt.dao.jaxb.callback.ProvisiondConfigurationValidationCallback;
+import org.opennms.netmgt.events.api.EventForwarder;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Default implementation of <code>AckdConfiguration</code> containing utility methods for manipulating
@@ -43,7 +49,12 @@ import org.springframework.dao.DataAccessResourceFailureException;
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @version $Id: $
  */
-public class DefaultProvisiondConfigurationDao extends AbstractJaxbConfigDao<ProvisiondConfiguration, ProvisiondConfiguration> implements ProvisiondConfigurationDao {
+public class DefaultProvisiondConfigurationDao extends AbstractCmJaxbConfigDao<ProvisiondConfiguration> implements ProvisiondConfigurationDao {
+
+    private static final String CONFIG_NAME = "provisiond";
+
+    @Autowired
+    private EventForwarder eventForwarder;
 
     /**
      * <p>Constructor for DefaultProvisiondConfigurationDao.</p>
@@ -51,21 +62,16 @@ public class DefaultProvisiondConfigurationDao extends AbstractJaxbConfigDao<Pro
     public DefaultProvisiondConfigurationDao() {
         super(ProvisiondConfiguration.class, "Provisiond Configuration");
     }
-    
+
     /**
      * <p>getConfig</p>
      *
-     * @return a {@link org.opennms.netmgt.config.provisiond.ProvisiondConfiguration} object.
+     * @return a {@link ProvisiondConfiguration} object.
+     * @throws IOException
      */
     @Override
-    public ProvisiondConfiguration getConfig() {
-        return getContainer().getObject();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ProvisiondConfiguration translateConfig(ProvisiondConfiguration config) {
-        return config;
+    public ProvisiondConfiguration getConfig() throws IOException {
+        return this.getConfig(this.getDefaultConfigId());
     }
 
     /**
@@ -75,13 +81,13 @@ public class DefaultProvisiondConfigurationDao extends AbstractJaxbConfigDao<Pro
      * @throws org.springframework.dao.DataAccessResourceFailureException if any.
      */
     @Override
-    public void reloadConfiguration() throws DataAccessResourceFailureException {
-        getContainer().reload();
+    public void reloadConfiguration() throws IOException {
+        this.loadConfig(this.getDefaultConfigId());
     }
 
     /** {@inheritDoc} */
     @Override
-    public RequisitionDef getDef(String defName) {
+    public RequisitionDef getDef(String defName) throws IOException {
         final List<RequisitionDef> defs = getDefs();
         if (defs != null) {
             for (RequisitionDef def : defs) {
@@ -99,7 +105,7 @@ public class DefaultProvisiondConfigurationDao extends AbstractJaxbConfigDao<Pro
      * @return a {@link java.util.List} object.
      */
     @Override
-    public List<RequisitionDef> getDefs() {
+    public List<RequisitionDef> getDefs() throws IOException {
         return getConfig().getRequisitionDefs();
     }
 
@@ -109,7 +115,7 @@ public class DefaultProvisiondConfigurationDao extends AbstractJaxbConfigDao<Pro
      * @return a {@link java.lang.String} object.
      */
     @Override
-    public String getForeignSourceDir() {
+    public String getForeignSourceDir() throws IOException {
         return getConfig().getForeignSourceDir();
     }
 
@@ -119,7 +125,7 @@ public class DefaultProvisiondConfigurationDao extends AbstractJaxbConfigDao<Pro
      * @return a {@link java.lang.String} object.
      */
     @Override
-    public String getRequisitionDir() {
+    public String getRequisitionDir() throws IOException {
         return getConfig().getRequistionDir();
     }
 
@@ -129,7 +135,7 @@ public class DefaultProvisiondConfigurationDao extends AbstractJaxbConfigDao<Pro
      * @return a {@link java.lang.Integer} object.
      */
     @Override
-    public Integer getImportThreads() {
+    public Integer getImportThreads() throws IOException {
         return getConfig().getImportThreads().intValue();
     }
 
@@ -139,7 +145,7 @@ public class DefaultProvisiondConfigurationDao extends AbstractJaxbConfigDao<Pro
      * @return a {@link java.lang.Integer} object.
      */
     @Override
-    public Integer getScanThreads() {
+    public Integer getScanThreads() throws IOException {
         return getConfig().getScanThreads().intValue();
     }
 
@@ -149,7 +155,7 @@ public class DefaultProvisiondConfigurationDao extends AbstractJaxbConfigDao<Pro
      * @return a {@link java.lang.Integer} object.
      */
     @Override
-    public Integer getRescanThreads() {
+    public Integer getRescanThreads() throws IOException {
         return getConfig().getRescanThreads().intValue();
     }
 
@@ -159,8 +165,22 @@ public class DefaultProvisiondConfigurationDao extends AbstractJaxbConfigDao<Pro
      * @return a {@link java.lang.Integer} object.
      */
     @Override
-    public Integer getWriteThreads() {
+    public Integer getWriteThreads() throws IOException {
         return getConfig().getWriteThreads().intValue();
     }
 
+    @Override
+    public Consumer<ConfigUpdateInfo> getUpdateCallback(){
+        return new ConfigurationReloadEventCallback(eventForwarder);
+    }
+
+    @Override
+    public Consumer<ConfigUpdateInfo> getValidationCallback(){
+        return new ProvisiondConfigurationValidationCallback();
+    }
+
+    @Override
+    public String getConfigName() {
+        return CONFIG_NAME;
+    }
 }
