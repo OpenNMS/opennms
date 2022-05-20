@@ -96,7 +96,7 @@ public class LinkdSearchProvider implements SearchProvider {
 
     @Override
     public boolean supportsPrefix(String searchPrefix) {
-        return AbstractSearchProvider.supportsPrefix(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD+"=", searchPrefix);
+        return AbstractSearchProvider.supportsPrefix(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD + "=", searchPrefix);
     }
 
     @Override
