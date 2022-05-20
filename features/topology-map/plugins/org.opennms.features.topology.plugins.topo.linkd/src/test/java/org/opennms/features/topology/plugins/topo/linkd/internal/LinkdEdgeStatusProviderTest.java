@@ -134,9 +134,9 @@ public class LinkdEdgeStatusProviderTest {
         LinkdPort bpnode2port24 = new LinkdPort(node2Vertex,24);
         LinkdPort iptm3 = new LinkdPort(node3Vertex,-1);
         iptm3.setToolTipText("a8d0e5a0a467/[10.10.1.1]");
-        m_edges.add(LinkdEdge.create("s:1:48|1:48", segmentPort, bpnode1port48, ProtocolSupported.BRIDGE,LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD));
-        m_edges.add(LinkdEdge.create("s:1:48|2:24", segmentPort, bpnode2port24, ProtocolSupported.BRIDGE,LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD));
-        m_edges.add(LinkdEdge.create("s:1:48|3",segmentPort,iptm3,ProtocolSupported.BRIDGE,LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD));
+        m_edges.add(LinkdEdge.create("s:1:48|1:48", segmentPort, bpnode1port48, ProtocolSupported.BRIDGE, LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD));
+        m_edges.add(LinkdEdge.create("s:1:48|2:24", segmentPort, bpnode2port24, ProtocolSupported.BRIDGE, LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD));
+        m_edges.add(LinkdEdge.create("s:1:48|3",segmentPort,iptm3,ProtocolSupported.BRIDGE, LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD));
 
         
         // node4 and node5 connected via cdp isis ospf and lldp
