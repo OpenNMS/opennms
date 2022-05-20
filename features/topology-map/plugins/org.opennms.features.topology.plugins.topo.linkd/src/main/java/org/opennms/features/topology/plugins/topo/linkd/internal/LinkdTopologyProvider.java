@@ -124,7 +124,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     public void refresh() {
         m_linkdTopologyFactory.setDelegate(this);
         graph.resetContainer();
-        m_linkdTopologyFactory.doRefresh(m_supportedSet,graph);
+        m_linkdTopologyFactory.doRefresh(m_supportedSet, graph);
         LOG.info("refresh: {}: Found {} vertices",getNamespace(), graph.getVertices().size());
         LOG.info("refresh: {}: Found {} edges", getNamespace(),graph.getEdges().size());
     }
