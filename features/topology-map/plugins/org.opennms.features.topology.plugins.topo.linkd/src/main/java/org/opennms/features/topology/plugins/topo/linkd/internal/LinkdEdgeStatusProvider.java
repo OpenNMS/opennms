@@ -152,8 +152,8 @@ EDGES:        for (EdgeRef edgeRef : edges) {
         return m_linkdTopologyFactory;
     }
 
-    public void setLinkdTopologyFactory(LinkdTopologyFactory m_linkdTopologyFactory) {
-        this.m_linkdTopologyFactory = m_linkdTopologyFactory;
+    public void setLinkdTopologyFactory(LinkdTopologyFactory linkdTopologyFactory) {
+        this.m_linkdTopologyFactory = linkdTopologyFactory;
     }
 
     public SessionUtils getSessionUtils() {
