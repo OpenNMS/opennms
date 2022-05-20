@@ -98,7 +98,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
 
     public LinkdTopologyProvider(String name, LinkdTopologyFactory linkdTopologyFactory, List<String> protocols) {
-        super(TOPOLOGY_NAMESPACE_LINKD+":"+name);
+        super(TOPOLOGY_NAMESPACE_LINKD+":" + name);
         LOG.debug("Called constructor {} args protocols {}", name, protocols);
         m_linkdTopologyFactory = Objects.requireNonNull(linkdTopologyFactory);
         m_supportedSet =getProtocolSupportedSet(protocols.toArray(new String[0]));
