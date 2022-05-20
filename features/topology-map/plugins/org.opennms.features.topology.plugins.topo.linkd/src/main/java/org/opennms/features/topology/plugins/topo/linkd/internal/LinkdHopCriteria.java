@@ -45,7 +45,7 @@ import org.opennms.features.topology.api.topo.VertexRef;
 public class LinkdHopCriteria extends VertexHopCriteria {
     
     public synchronized static VertexHopCriteria createCriteria(String nodeId, String nodeLabel, LinkdTopologyFactory linkdTopologyFactory) {
-        return new LinkdHopCriteria(nodeId, nodeLabel,linkdTopologyFactory);
+        return new LinkdHopCriteria(nodeId, nodeLabel, linkdTopologyFactory);
     }
 
     private final String m_nodeId;
