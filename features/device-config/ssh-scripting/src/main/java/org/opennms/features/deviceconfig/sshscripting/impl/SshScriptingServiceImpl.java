@@ -103,19 +103,24 @@ public class SshScriptingServiceImpl implements SshScriptingService {
                     try {
                         try (var sshInteraction = new SshInteractionImpl(user, password, target, hostKeyFingerprint, vars, timeout, tftpServerIPv4Address, tftpServerIPv6Address)) {
                             LOG.debug("ssh connection successful, executing script: " + script);
+                            Statement prevStatement = null;
                             for (var statement : statements) {
                                 try {
-                                    LOG.debug("ssh scripting service executing - " + statement);
+                                    LOG.debug("ssh scripting service executing - " + sshInteraction.replaceVars(statement.toString()));
                                     statement.execute(sshInteraction);
                                 } catch (Exception e) {
+                                    // Get useful debugging info
+                                    String errorDescription = getErrorDescription(e, sshInteraction, prevStatement, statement);
+
                                     var stdout = sshInteraction.stdout.toString(StandardCharsets.UTF_8);
                                     var stderr = sshInteraction.stderr.toString(StandardCharsets.UTF_8);
-                                    LOG.error("ssh scripting exception - statement: " + statement +
-                                              "\n### script ###\n" + script +
-                                              "\n### stdout ###\n" + stdout +
-                                              "\n### stderr ###\n" + stderr, e);
-                                    return Result.failure("ssh scripting exception - msg: " + e.getMessage() + "; statement: \"" + statement + "\"; script:\n" + script, stdout, stderr);
+                                    LOG.error("ssh scripting exception - " + errorDescription +
+                                              " \n### script ###\n" + script +
+                                              " \n### stdout ###\n" + stdout +
+                                              " \n### stderr ###\n" + stderr, e);
+                                    return Result.failure("ssh scripting exception - " + errorDescription, stdout, stderr);
                                 }
+                                prevStatement = statement;
                             }
                             return Result.success("Script execution succeeded",  sshInteraction.stdout.toString(StandardCharsets.UTF_8),  sshInteraction.stderr.toString(StandardCharsets.UTF_8));
                         }
@@ -125,6 +130,30 @@ public class SshScriptingServiceImpl implements SshScriptingService {
                     }
                 }
         );
+    }
+
+    /**
+     *  Get a verbose description of the error and current state of script execution
+     */
+    private String getErrorDescription(Throwable t, SshInteraction sshInteraction, Statement prevStatement, Statement currentStatement) {
+
+        String errorDesc = t.getClass().getName() + ": " + t.getMessage();
+
+        if (currentStatement == null) {
+            return errorDesc;
+        }
+
+        String statementWithVars = sshInteraction.replaceVars(currentStatement.toString());
+        if (prevStatement == null) {
+            return errorDesc + " - encountered during initial " + statementWithVars + "\"";
+        }
+
+        String prevStatementWithVars = sshInteraction.replaceVars(prevStatement.toString());
+        if (currentStatement.statementType == Statement.StatementType.await) {
+            return errorDesc + " - encountered while waiting for \"" + statementWithVars + "\" following execution of \"" + prevStatementWithVars + "\"";
+        } else {
+            return errorDesc + " - encountered when sending input \"" + statementWithVars + "\" following successful \"" + prevStatementWithVars + "\"";
+        }
     }
 
     private static class SshInteractionImpl implements SshInteraction, AutoCloseable {
@@ -144,6 +173,7 @@ public class SshScriptingServiceImpl implements SshScriptingService {
         private final Map<String, String> vars = new HashMap<>();
 
         private final Duration timeout;
+        private final Instant timeoutInstant;
 
         private SshInteractionImpl(
                 String user,
@@ -155,6 +185,7 @@ public class SshScriptingServiceImpl implements SshScriptingService {
                 InetAddress tftpServerIPv4Address,
                 InetAddress tftpServerIPv6Address
         ) throws Exception {
+            timeoutInstant = Instant.now().plus(timeout);
             sshClient = SshClient.setUpDefaultClient();
 
             sshClient.setServerKeyVerifier((clientSession, socketAddress, publicKey) -> {
@@ -185,7 +216,7 @@ public class SshScriptingServiceImpl implements SshScriptingService {
             try {
                 session = sshClient
                         .connect(user, target)
-                        .verify(timeout)
+                        .verify(Duration.between(Instant.now(), timeoutInstant))
                         .getSession();
 
                 // we use the remote address to check whether we have to use the IPv4 or IPv6 property
@@ -209,7 +240,7 @@ public class SshScriptingServiceImpl implements SshScriptingService {
 
                 try {
                     session.addPasswordIdentity(password);
-                    session.auth().verify(timeout);
+                    session.auth().verify(Duration.between(Instant.now(), timeoutInstant));
 
                     channel = session.createShellChannel();
 
@@ -224,7 +255,7 @@ public class SshScriptingServiceImpl implements SshScriptingService {
                         channel.setIn(stdin);
                         channel.setOut(teeStdout);
                         channel.setErr(stderr);
-                        channel.open().verify(timeout);
+                        channel.open().verify(Duration.between(Instant.now(), timeoutInstant));
                         this.vars.putAll(vars);
                         this.vars.put(SCRIPT_VAR_TFTP_SERVER_IP, InetAddressUtils.str(localAddress));
                         this.vars.put("user", user);
@@ -266,8 +297,7 @@ public class SshScriptingServiceImpl implements SshScriptingService {
         @Override
         public void await(String string) throws Exception {
             var search = string.getBytes(StandardCharsets.UTF_8);
-            var awaitUntil = Instant.now().plus(timeout);
-            while (Instant.now().isBefore(awaitUntil)) {
+            while (Instant.now().isBefore(timeoutInstant)) {
                 synchronized (awaitStdout) {
                     if (matchAndConsume(awaitStdout, search)) {
                         return;
