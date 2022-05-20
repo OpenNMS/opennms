@@ -166,7 +166,7 @@ public class LinkdEdgeStatusProviderTest {
 
         m_alarmDao = mock(AlarmDao.class);
         m_graph = mock(BackendGraph.class);
-        m_topologyFactory=mock(LinkdTopologyFactory.class);
+        m_topologyFactory = mock(LinkdTopologyFactory.class);
         m_statusProvider = new LinkdEdgeStatusProvider();
         m_statusProvider.setAlarmDao(m_alarmDao);
         m_statusProvider.setSessionUtils(new MockSessionUtils());
