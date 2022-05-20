@@ -39,7 +39,7 @@ import org.opennms.netmgt.snmp.SnmpUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import joptsimple.internal.Strings;
+import com.google.common.base.Strings;
 
 public class ValueMappingPropertyExtender implements SnmpPropertyExtender {
     private static final Logger LOG = LoggerFactory.getLogger(ValueMappingPropertyExtender.class);
