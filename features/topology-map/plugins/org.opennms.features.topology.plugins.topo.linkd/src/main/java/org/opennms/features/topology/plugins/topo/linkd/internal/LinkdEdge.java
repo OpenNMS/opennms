@@ -64,7 +64,7 @@ public class LinkdEdge extends AbstractEdge implements Edge {
                  edgeToClone.getTargetPort().clone(),
                  edgeToClone.getSource().clone(),
                  edgeToClone.getTarget().clone(),
-                 edgeToClone.getDiscoveredBy(),edgeToClone.getNamespace());
+                 edgeToClone.getDiscoveredBy(), edgeToClone.getNamespace());
 
             setLabel(edgeToClone.getLabel());
             setStyleName(edgeToClone.getStyleName());
