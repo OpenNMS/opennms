@@ -69,7 +69,7 @@ public class AlarmStatusProviderTest {
 
         m_graph = mock(BackendGraph.class);
         m_topologyFactory = mock(LinkdTopologyFactory.class);
-        m_statusProvider = new LinkdStatusProvider(m_alarmDao,m_topologyFactory);
+        m_statusProvider = new LinkdStatusProvider(m_alarmDao, m_topologyFactory);
     }
     
     @After
