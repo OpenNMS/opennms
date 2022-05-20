@@ -38,7 +38,7 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 public class LinkdVertex extends SimpleLeafVertex {
 
     public static LinkdVertex create(OnmsTopologyVertex tvertex, String namespace) {
-        LinkdVertex vertex = new LinkdVertex(tvertex.getId(),namespace);
+        LinkdVertex vertex = new LinkdVertex(tvertex.getId(), namespace);
         vertex.setNodeID(tvertex.getNodeid());
         vertex.setLabel(tvertex.getLabel());
         vertex.setIpAddress(tvertex.getAddress());
