@@ -89,7 +89,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     }
 
     public LinkdTopologyProvider(String name, LinkdTopologyFactory linkdTopologyFactory) {
-        super(TOPOLOGY_NAMESPACE_LINKD+":"+name);
+        super(TOPOLOGY_NAMESPACE_LINKD + ":" + name);
         LOG.debug("Called constructor 2 args");
         m_linkdTopologyFactory = Objects.requireNonNull(linkdTopologyFactory);
         m_supportedSet = getProtocolSupportedSet(name);
