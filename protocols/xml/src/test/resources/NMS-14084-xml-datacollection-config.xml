@@ -7,7 +7,7 @@
             <rra>RRA:MAX:0.5:288:366</rra>
             <rra>RRA:MIN:0.5:288:366</rra>
         </rrd>
-        <xml-source url="file://NMS-14060.xml">
+        <xml-source url="file://NMS-14084.xml">
             <xml-group name="xml-mapping-test" resource-type="input" resource-xpath="/records/record" key-xpath="input">
                 <xml-object name="input" type="GAUGE" xpath="input">
                     <xml-mapping from="foo" to="100" />

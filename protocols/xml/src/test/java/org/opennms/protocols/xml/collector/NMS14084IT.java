@@ -35,16 +35,16 @@ import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class NMS14060IT extends XmlCollectorITCase {
+public class NMS14084IT extends XmlCollectorITCase {
 
     @Override
     public String getConfigFileName() {
-        return "src/test/resources/NMS-14060-xml-datacollection-config.xml";
+        return "src/test/resources/NMS-14084-xml-datacollection-config.xml";
     }
 
     @Override
     public String getSampleFileName() {
-        return "src/test/resources/NMS-14060.xml";
+        return "src/test/resources/NMS-14084.xml";
     }
 
     @Test

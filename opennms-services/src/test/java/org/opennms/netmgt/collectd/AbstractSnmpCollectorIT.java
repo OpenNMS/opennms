@@ -596,7 +596,7 @@ public abstract class AbstractSnmpCollectorIT implements InitializingBean, TestC
             }
     )
     @JUnitSnmpAgent(resource = "/org/opennms/netmgt/snmp/brocadeTestData1.properties")
-    public void testNMS14060() throws Exception {
+    public void testNMS14084() throws Exception {
         final int numUpdates = 2;
         final int stepSizeInSecs = 1;
         final int stepSizeInMillis = stepSizeInSecs * 1000;
