@@ -125,7 +125,7 @@ public class LinkdEdgeStatusProviderTest {
 
         m_edges = new ArrayList<>();
         //segment s:1:48
-        LinkdVertex segmentVertex = new LinkdVertex("s:1:48",LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD);
+        LinkdVertex segmentVertex = new LinkdVertex("s:1:48", LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD);
         LinkdVertex node1Vertex = getVertexFromNode(m_node1);
         LinkdVertex node2Vertex = getVertexFromNode(m_node2);
         LinkdVertex node3Vertex = getVertexFromNode(m_node3);
