@@ -40,8 +40,7 @@ public class StringWithNumberCheckAdapter implements OpaqueTypeAdapter {
     OpaqueValueType valueType = OpaqueValueType.STRING;
 
     public StringWithNumberCheckAdapter(String value) {
-        Objects.requireNonNull(value);
-        this.stringValue = value;
+        this.stringValue = Objects.requireNonNull(value);
         
         //Try to extract a long value
         try {
