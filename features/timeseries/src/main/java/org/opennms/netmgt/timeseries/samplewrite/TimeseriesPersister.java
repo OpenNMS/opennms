@@ -28,17 +28,29 @@
 
 package org.opennms.netmgt.timeseries.samplewrite;
 
-import com.codahale.metrics.MetricRegistry;
-import com.google.common.collect.Maps;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
+
 import org.opennms.core.cache.Cache;
 import org.opennms.integration.api.v1.timeseries.Tag;
-import org.opennms.netmgt.collection.api.*;
+import org.opennms.netmgt.collection.api.AbstractPersister;
+import org.opennms.netmgt.collection.api.AttributeGroup;
+import org.opennms.netmgt.collection.api.AttributeType;
+import org.opennms.netmgt.collection.api.CollectionAttribute;
+import org.opennms.netmgt.collection.api.CollectionResource;
+import org.opennms.netmgt.collection.api.PersistException;
+import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.rrd.RrdRepository;
 
-import java.util.*;
-import java.util.concurrent.ExecutionException;
+import com.codahale.metrics.MetricRegistry;
+import com.google.common.collect.Maps;
 
 /**
  * TimeseriesPersister persistence strategy.
@@ -149,7 +161,7 @@ public class TimeseriesPersister extends AbstractPersister {
     public void persistNumericAttribute(CollectionAttribute attribute) {
         boolean shouldIgnorePersist = isIgnorePersist() && AttributeType.COUNTER.equals(attribute.getType());
         LOG.debug("Persisting {} {}", attribute, (shouldIgnorePersist ? ". Ignoring value because of sysUpTime changed." : ""));
-/*X*/   Number value = shouldIgnorePersist ? Double.NaN : attribute.getNumericValue();
+        Number value = shouldIgnorePersist ? Double.NaN : attribute.getNumericValue();
         currentBuilder.setAttributeValue(attribute.getAttributeType(), value);
         if(attribute.getMetricIdentifier() != null) {
             ResourcePath path = ResourceTypeUtils.getResourcePathWithRepository(repository, ResourcePath.get(attribute.getResource().getPath(), attribute.getAttributeType().getGroupType().getName()));
