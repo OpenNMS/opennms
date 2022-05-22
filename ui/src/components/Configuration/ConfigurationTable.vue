@@ -22,8 +22,9 @@
           <th
             scope="col"
             class="onms-sort-header"
-            >Schedule Frequency</th
           >
+            Schedule Frequency
+          </th>
           <FeatherSortHeader
             scope="col"
             class="onms-sort-header"
@@ -32,7 +33,7 @@
             v-on:sort-changed="sortChanged"
             >Rescan Behavior</FeatherSortHeader
           >
-          <th></th>
+          <th />
         </tr>
       </thead>
       <tbody>
@@ -64,9 +65,7 @@
                 :disabled="Boolean(item[RequisitionData.ImportURL].startsWith('requisition://'))"
                 data-test="edit-btn"
               >
-                <FeatherIcon
-                  :icon="Edit"
-                ></FeatherIcon>
+                <FeatherIcon :icon="Edit" />
               </FeatherButton>
               <FeatherButton
                 icon="Delete"
@@ -75,7 +74,7 @@
                 <FeatherIcon
                   class="delete-icon"
                   :icon="Delete"
-                ></FeatherIcon>
+                />
               </FeatherButton>
             </div>
           </td>
@@ -151,6 +150,12 @@ const filteredItems = computed(() => {
 
   let myItems: Array<ProvisionDServerConfiguration> = [...itemList.value]
 
+  // obfuscate password
+  myItems = myItems.map((item) => ({
+    ...item,
+    [RequisitionData.ImportURL]: ConfigurationHelper.obfuscatePassword(item[RequisitionData.ImportURL])
+  }))
+
   // Determine Sort Order
   let sortOrderValues = [0, 0]
   if (sorts.currentSort?.value === SORT.ASCENDING) {
@@ -169,6 +174,7 @@ const filteredItems = computed(() => {
       return 0
     }
   })
+
   // Keep only the current page.
   return sortedItemsTotal?.slice(currentTablePage, currentTablePage + pageVals.value.pageSize)
 })
@@ -221,19 +227,6 @@ table {
 @import "@featherds/styles/themes/variables";
 
 .main-wrapper {
-  /* table {
-    @include table();
-    @include table-condensed();
-  } */
-  /* :deep(table) {
-    &.condensed {
-      .onms-sort-header {
-        > .header-flex-container {
-          justify-content: flex-start;
-        }
-      }
-    }
-  } */
   table.condensed {
     :deep(.onms-sort-header) {
       > .header-flex-container {
@@ -254,10 +247,6 @@ table {
 .delete-icon {
   color: var($error);
 }
-/* .condensed {
-  @include table();
-  @include table-condensed();
-} */
 .main-wrapper {
   padding: 16px 24px;
 }
