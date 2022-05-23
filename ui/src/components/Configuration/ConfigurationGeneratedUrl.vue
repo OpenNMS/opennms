@@ -30,12 +30,13 @@ const props = defineProps({
  * Local State
  */
 const convertedItem = computed(() => {
-  const converted = props.item?.type ?
-    ConfigurationHelper.convertLocalToServer(props.item) :
-    { [RequisitionData.ImportURL]: '' }
+  const converted = props.item?.type
+    ? ConfigurationHelper.convertLocalToServer(props.item)
+    : { [RequisitionData.ImportURL]: '' }
+
   return {
     item: converted,
-    url: converted[RequisitionData.ImportURL]
+    url: ConfigurationHelper.obfuscatePassword(converted[RequisitionData.ImportURL])
   }
 })
 </script>
