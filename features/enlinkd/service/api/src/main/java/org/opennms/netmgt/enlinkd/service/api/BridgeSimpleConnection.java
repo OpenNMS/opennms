@@ -286,9 +286,9 @@ public class BridgeSimpleConnection implements Topology {
         String mac1=null;
         String mac2=null;
         BridgePort yp1=null;
-        BridgePort yp2=null;
-        BridgePort xp1=null;
-        BridgePort xp2=null;
+        BridgePort yp2 = null;
+        BridgePort xp1 = null;
+        BridgePort xp2 = null;
         List<BridgePort> bbports = new ArrayList<>(2);
         for (String mac: commonlearnedmacs) {
             if (mac1 == null) {
