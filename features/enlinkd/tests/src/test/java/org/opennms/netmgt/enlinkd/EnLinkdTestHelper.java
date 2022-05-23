@@ -227,12 +227,7 @@ public abstract class EnLinkdTestHelper {
             bftB.add(addBridgeForwardingTableEntry(nodeB, 10, 11010, macd, 1));
             bftB.add(addBridgeForwardingTableEntry(nodeB, 90, 11090, maca, 1));
             bftB.add(addBridgeForwardingTableEntry(nodeB, 90, 11090, macb, 1));
-
-        
         }
-         
-        
-
     }
     /*
      *       spiazzomepe01:24<->24:spiazzofasw01:1<->1:comunespiazzowl1:6 
