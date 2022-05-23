@@ -249,8 +249,8 @@ public class BridgeSimpleConnection implements Topology {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("condition4: simple connection found [{}] -> [{}]", bridgexPort.printTopology(), bpwm.getPort().printTopology());
                 }
-                bbports.add(0,bridgexPort);
-                bbports.add(1,bpwm.getPort());
+                bbports.add(0, bridgexPort);
+                bbports.add(1, bpwm.getPort());
                 return bbports;
             }
         }
