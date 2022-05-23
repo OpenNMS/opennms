@@ -225,8 +225,7 @@ public class BridgeSimpleConnection implements Topology {
         throw new BridgeTopologyException("findSimpleConnection: no simple connection found", m_xBridge);
     }
 
-    private static List<BridgePort> condition4(BridgeForwardingTable bridgexFt, BridgeForwardingTable bridgeyFt
-    ) {
+    private static List<BridgePort> condition4(BridgeForwardingTable bridgexFt, BridgeForwardingTable bridgeyFt) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("condition4: bridge [{}] {} ports -> bridge [{}] {} ports",
                     bridgexFt.getNodeId(),
