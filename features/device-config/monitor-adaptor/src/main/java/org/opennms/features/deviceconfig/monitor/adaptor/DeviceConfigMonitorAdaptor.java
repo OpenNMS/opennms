@@ -116,10 +116,8 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
 
         var latestConfig = deviceConfigDao.getLatestConfigForInterface(ipInterface, svc.getSvcName());
 
-        String encodingAttribute = getKeyedString(parameters, "encoding", null);
-        String configTypeAttribute = getKeyedString(parameters, DeviceConfigConstants.CONFIG_TYPE, null);
-        String encoding = !Strings.isNullOrEmpty(encodingAttribute) ? encodingAttribute : Charset.defaultCharset().name();
-        String configType = !Strings.isNullOrEmpty(configTypeAttribute) ? configTypeAttribute : ConfigType.Default;
+        String encoding = getKeyedString(parameters, "encoding", Charset.defaultCharset().name());
+        String configType = getKeyedString(parameters, DeviceConfigConstants.CONFIG_TYPE, ConfigType.Default);
 
         if (deviceConfig == null && latestConfig.isEmpty()) {
             // Create empty DeviceConfig for devices that are not scheduled to be backed up yet.
