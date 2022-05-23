@@ -409,7 +409,7 @@ public class BridgeSimpleConnection implements Topology {
         	bbports.add(1, yp1);
         	return bbports;
         }
-        LOG.warn("condition3: no simple connection found [{}] -> [{}]", bridgexFt.getNodeId(),bridgeyFt.getNodeId());
+        LOG.warn("condition3: no simple connection found [{}] -> [{}]", bridgexFt.getNodeId(), bridgeyFt.getNodeId());
         return bbports;
    }
     
