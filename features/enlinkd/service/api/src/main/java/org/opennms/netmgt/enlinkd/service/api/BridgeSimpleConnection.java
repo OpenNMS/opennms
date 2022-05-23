@@ -212,10 +212,8 @@ public class BridgeSimpleConnection implements Topology {
                 m_yxPort = ports.get(1);
                 return;
             }
-        }
 
-        if (m_xyPort == null && m_yxPort == null) {
-            List<BridgePort> ports=BridgeSimpleConnection.condition4(m_xBridge, m_yBridge);
+            ports=BridgeSimpleConnection.condition4(m_xBridge, m_yBridge);
             if (ports.size() == 2) {
                 m_xyPort = ports.get(0);
                 m_yxPort = ports.get(1);
