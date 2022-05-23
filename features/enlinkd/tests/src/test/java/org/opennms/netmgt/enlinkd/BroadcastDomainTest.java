@@ -2157,6 +2157,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         ndbt.addUpdatedBFT((topology.nodeIdB),topology.bftB);
 
         ndbt.calculate();
+        assertEquals(0, ndbt.getFailed().size());
     }
 
 }

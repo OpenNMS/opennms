@@ -223,10 +223,10 @@ public abstract class EnLinkdTestHelper {
             bftA.add(addBridgeForwardingTableEntry(nodeA, 90, 11090, macc, 1));
             bftA.add(addBridgeForwardingTableEntry(nodeA, 90, 11090, macd, 1));
             
-            bftB.add(addBridgeForwardingTableEntry(nodeB, 20, 11020, maca, 1));
-            bftB.add(addBridgeForwardingTableEntry(nodeB, 20, 11020, macb, 1));
-            bftB.add(addBridgeForwardingTableEntry(nodeB, 80, 11080, macc, 1));
-            bftB.add(addBridgeForwardingTableEntry(nodeB, 80, 11080, macd, 1));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 10, 11010, macc, 1));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 10, 11010, macd, 1));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 90, 11090, maca, 1));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 90, 11090, macb, 1));
 
         
         }
