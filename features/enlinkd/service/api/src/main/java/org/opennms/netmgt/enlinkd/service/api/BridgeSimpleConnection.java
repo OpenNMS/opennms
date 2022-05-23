@@ -292,7 +292,7 @@ public class BridgeSimpleConnection implements Topology {
         List<BridgePort> bbports = new ArrayList<>(2);
         for (String mac: commonlearnedmacs) {
             if (mac1 == null) {
-                mac1=mac;
+                mac1 = mac;
                 yp1=ybft.get(mac);
                 xp1=xbft.get(mac);
                 if (LOG.isDebugEnabled()) {
