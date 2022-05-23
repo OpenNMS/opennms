@@ -212,7 +212,6 @@ public class BridgeSimpleConnection implements Topology {
                 m_yxPort = ports.get(1);
                 return;
             }
-
             ports=BridgeSimpleConnection.condition4(m_xBridge, m_yBridge);
             if (ports.size() == 2) {
                 m_xyPort = ports.get(0);
@@ -223,8 +222,7 @@ public class BridgeSimpleConnection implements Topology {
         throw new BridgeTopologyException("findSimpleConnection: no simple connection found", m_xBridge);
     }
 
-    private static List<BridgePort> condition4(BridgeForwardingTable bridgexFt, BridgeForwardingTable bridgeyFt
-    ) {
+    private static List<BridgePort> condition4(BridgeForwardingTable bridgexFt, BridgeForwardingTable bridgeyFt) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("condition4: bridge [{}] {} ports -> bridge [{}] {} ports",
                     bridgexFt.getNodeId(),
@@ -248,12 +246,12 @@ public class BridgeSimpleConnection implements Topology {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("condition4: simple connection found [{}] -> [{}]", bridgexPort.printTopology(), bpwm.getPort().printTopology());
                 }
-                bbports.add(0,bridgexPort);
-                bbports.add(1,bpwm.getPort());
+                bbports.add(0, bridgexPort);
+                bbports.add(1, bpwm.getPort());
                 return bbports;
             }
         }
-        LOG.warn("condition4: no simple connection found [{}] -> [{}]", bridgexFt.getNodeId(),bridgeyFt.getNodeId());
+        LOG.warn("condition4: no simple connection found [{}] -> [{}]", bridgexFt.getNodeId(), bridgeyFt.getNodeId());
         return bbports;
     }
 
@@ -285,13 +283,13 @@ public class BridgeSimpleConnection implements Topology {
         String mac1=null;
         String mac2=null;
         BridgePort yp1=null;
-        BridgePort yp2=null;
-        BridgePort xp1=null;
-        BridgePort xp2=null;
+        BridgePort yp2 = null;
+        BridgePort xp1 = null;
+        BridgePort xp2 = null;
         List<BridgePort> bbports = new ArrayList<>(2);
         for (String mac: commonlearnedmacs) {
             if (mac1 == null) {
-                mac1=mac;
+                mac1 = mac;
                 yp1=ybft.get(mac);
                 xp1=xbft.get(mac);
                 if (LOG.isDebugEnabled()) {
@@ -408,7 +406,7 @@ public class BridgeSimpleConnection implements Topology {
         	bbports.add(1, yp1);
         	return bbports;
         }
-        LOG.warn("condition3: no simple connection found [{}] -> [{}]", bridgexFt.getNodeId(),bridgeyFt.getNodeId());
+        LOG.warn("condition3: no simple connection found [{}] -> [{}]", bridgexFt.getNodeId(), bridgeyFt.getNodeId());
         return bbports;
    }
     
