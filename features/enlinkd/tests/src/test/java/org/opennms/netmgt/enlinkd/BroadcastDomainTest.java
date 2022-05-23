@@ -2147,14 +2147,14 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     public void testUnresolvableTopology() throws BridgeTopologyException {
         TwoUnresolvableTopology topology = new TwoUnresolvableTopology();
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.nodeIdA);
-        Bridge.create(domain,topology.nodeIdB);
-        setBridgeElements(domain,topology.elemlist);
+        Bridge.create(domain, topology.nodeIdA);
+        Bridge.create(domain, topology.nodeIdB);
+        setBridgeElements(domain, topology.elemlist);
         
-        DiscoveryBridgeTopology ndbt= new DiscoveryBridgeTopology(domain);
+        DiscoveryBridgeTopology ndbt = new DiscoveryBridgeTopology(domain);
         
-        ndbt.addUpdatedBFT((topology.nodeIdA),topology.bftA);
-        ndbt.addUpdatedBFT((topology.nodeIdB),topology.bftB);
+        ndbt.addUpdatedBFT((topology.nodeIdA), topology.bftA);
+        ndbt.addUpdatedBFT((topology.nodeIdB), topology.bftB);
 
         ndbt.calculate();
         assertEquals(0, ndbt.getFailed().size());
