@@ -66,6 +66,7 @@ const convertedItem = computed(() => {
   margin-left: 3px;
   @include subtitle2();
   color: #a0a1a4;
+  overflow-wrap: anywhere;
 }
 </style>
 
