@@ -26,18 +26,30 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.deviceconfig.service;
+package org.opennms.features.apilayer.common.scv;
 
-public interface DeviceConfigConstants {
-    static final String TRIGGERED_POLL = "dcbTriggeredPoll";
-    static final String CONFIG_TYPE = "config-type";
-    static final String SCHEDULE = "schedule";
-    static final String DEFAULT_CRON_SCHEDULE = "0 0 0 * * ?";
-    static final String NEVER = "never";
-    static final String RETENTION_PERIOD = "retention-period";
-    static final String REST = "REST";
-    static final String CRON = "cron";
-    static final String PARM_DEVICE_CONFIG_BACKUP_START_TIME = "backupStartTime";
-    static final String PARM_DEVICE_CONFIG_BACKUP_DATA_PROTOCOL = "backupDataProtocol";
-    static final String PARM_DEVICE_CONFIG_BACKUP_CONTROL_PROTOCOL = "backupControlProtocol";
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.opennms.features.apilayer.common.scv.SecureCredentialsVaultImpl.OIA_PREFIX;
+
+import java.util.Set;
+
+import org.junit.Test;
+import org.opennms.features.scv.api.Credentials;
+
+public class SecureCredentialsVaultImplTest {
+
+    @Test
+    public void shouldOnlyReturnOiaRelevantCredentials() {
+        String oiaKey = OIA_PREFIX + "ccc";
+        org.opennms.features.scv.api.SecureCredentialsVault delegate = mock(org.opennms.features.scv.api.SecureCredentialsVault.class);
+        org.opennms.integration.api.v1.scv.SecureCredentialsVault scv = new SecureCredentialsVaultImpl(delegate);
+        when(delegate.getAliases()).thenReturn(Set.of("aaa", "bbb", oiaKey));
+        when(delegate.getCredentials(oiaKey)).thenReturn(new Credentials("user", "password"));
+
+        assertEquals(Set.of("ccc"), scv.getAliases());
+        assertNull(scv.getCredentials("aaa"));
+        assertNotNull(scv.getCredentials( "ccc"));
+    }
 }
