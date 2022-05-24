@@ -102,11 +102,11 @@ public class SshScriptingServiceImpl implements SshScriptingService {
                 statements -> {
                     try {
                         try (var sshInteraction = new SshInteractionImpl(user, password, target, hostKeyFingerprint, vars, timeout, tftpServerIPv4Address, tftpServerIPv6Address)) {
-                            LOG.debug("ssh connection successful, executing script: " + script);
+                            LOG.debug("ssh connection successful, executing script: {}", script);
                             Statement prevStatement = null;
                             for (var statement : statements) {
                                 try {
-                                    LOG.debug("ssh scripting service executing - " + sshInteraction.replaceVars(statement.toString()));
+                                    LOG.debug("ssh scripting service executing - {}", sshInteraction.replaceVars(statement.toString()));
                                     statement.execute(sshInteraction);
                                 } catch (Exception e) {
                                     // Get useful debugging info
@@ -114,10 +114,7 @@ public class SshScriptingServiceImpl implements SshScriptingService {
 
                                     var stdout = sshInteraction.stdout.toString(StandardCharsets.UTF_8);
                                     var stderr = sshInteraction.stderr.toString(StandardCharsets.UTF_8);
-                                    LOG.error("ssh scripting exception - " + errorDescription +
-                                              " \n### script ###\n" + script +
-                                              " \n### stdout ###\n" + stdout +
-                                              " \n### stderr ###\n" + stderr, e);
+                                    LOG.error("ssh scripting exception - {} \n### script ###\n {} \n### stdout ###\n {} \n### stderr ###\n {}", errorDescription, script, stdout, stderr, e);
                                     return Result.failure("ssh scripting exception - " + errorDescription, stdout, stderr);
                                 }
                                 prevStatement = statement;

@@ -179,7 +179,7 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
                 future.complete(Either.left(new Failure(msg, stdout, stderr)));
             }
             else {
-                LOG.debug("TftpFileReceiverImpl attempting to fail an already completed future, msg \"" + msg + "\"- ignoring...");
+                LOG.debug("TftpFileReceiverImpl attempting to fail an already completed future, msg \"{}\"- ignoring...", msg);
             }
         }
 
