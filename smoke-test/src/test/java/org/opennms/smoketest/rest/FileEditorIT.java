@@ -69,18 +69,19 @@ public class FileEditorIT {
     public static final OpenNMSStack STACK = OpenNMSStack.MINIMAL;
 
     @Before
-    public void setUp() {
+    public void setUp() throws InterruptedException {
 
         RestAssured.baseURI = STACK.opennms().getBaseUrlExternal().toString();
         RestAssured.port = STACK.opennms().getWebPort();
         RestAssured.authentication = preemptive().basic(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD);
 
         addUserAPI();
+
+        Thread.sleep(5000);
     }
 
     @Test
     public void normalFlow() {
-
         LOG.info("Normal flow test");
         RequestBody body;
 
