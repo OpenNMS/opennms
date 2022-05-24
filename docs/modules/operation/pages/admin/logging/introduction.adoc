@@ -5,7 +5,7 @@
 
 For example, logs for xref:operation:service-assurance/introduction.adoc#ga-service-assurance[service assurance checks] that are done by `pollerd` are stored in the `pollerd.log` file.
 
-The log files can be found in `/var/log/opennms/`.
+The log files can be found in `$/{OPENNMS_HOME}/logs`, which is a symlink to `/var/log/opennms`.
 
 
 For information on the different log files, how they are named, and what they include, see xref:reference:logging/introduction.adoc[List of log files].
