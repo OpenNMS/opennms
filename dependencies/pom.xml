@@ -22,6 +22,7 @@
     <module>felix</module>
     <module>groovy</module>
     <module>hibernate</module>
+    <module>jackson1</module>
     <module>jasper</module>
     <module>jasypt</module>
     <module>javamail</module>
@@ -42,6 +43,7 @@
     <module>mina</module>
     <module>netty</module>
     <module>newts</module>
+    <module>oia</module>
     <module>owasp</module>
     <module>pax-exam</module>
     <module>quartz</module>
