@@ -3,10 +3,7 @@
 
 The WMI monitor tests the availability of WMI services on remote interfaces.
 
-NOTE: xref:reference:service-assuranve/monitors/WsManMonitor.adoc[WSMAN] does everything that WMI does and is a more modern protocol for Windows monitoring.
-
-//verify
-This monitor implements <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
+NOTE: xref:reference:service-assurance/monitors/WsManMonitor.adoc[WSMAN] does everything that WMI does and is a more modern protocol for Windows monitoring.
 
 == Monitor facts
 
@@ -18,15 +15,16 @@ This monitor implements <<reference:service-assurance/introduction.adoc#ref-serv
 
 == Configuration and use
 
-.Monitor-specific parameters for the WmiMonitor
+Note that username, password, and domain credentials defined here override any defined in the wmi-config file.
+Best practice is to put credentials there instead of in the pollerd/collectd configuration.
+
+.Optional monitor-specific parameters for the WmiMonitor
 [options="header"]
-[cols="1,3,2"]
+[cols="1,3a,1"]
 |===
 | Parameter
 | Description
 | Default
-
-3+| *Required*
 
 | username
 | The username to use when authenticating against the WMI host.
@@ -40,8 +38,6 @@ This monitor implements <<reference:service-assurance/introduction.adoc#ref-serv
 | Windows domain where the user is located.
 You do not have to use the domain parameter if you use local user accounts.
 | none
-
-3+|*Optional*
 
 | matchType
 | Tells the OpenNMS WMI system to deal with multiple instance results.
@@ -75,9 +71,7 @@ Available compare operations are:
 * *LT* (less than)
 * *NOOP* (no operation)
 
-The NOOP operation is a special case in which always evaluates to a result code of "OK."
-This is typically used in scenarios where the existence of a class or property is more interesting than the contents of the property.
-OpenNMS uses this in the collector to check and ensure that WMI is available before attempting to collect data.
+The NOOP operation is a special case which always evaluates to a result code of "OK."
 | EQ
 
 | compareValue
@@ -86,7 +80,7 @@ OpenNMS uses this in the collector to check and ensure that WMI is available bef
 
 | service-name
 | Name of the service to monitor.
- ##If there is a ~ at the beginning of the parameter, the rest of the string will be used as a regular expression pattern match, otherwise it will be considered an exact match.##
+ If there is a ~ at the beginning of the parameter, the rest of the string will be used as a regular expression pattern match, otherwise it will be considered an exact match.
 | WMI
 
 | retry
@@ -104,10 +98,6 @@ It is possible to refer to WMI objects from other namespaces such as root/Micros
 | root/cimv2
 
 |===
-
-kbd:[{}] _indicates the parameter supports <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution>>._
-
-This monitor implements the <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 == Example
 
