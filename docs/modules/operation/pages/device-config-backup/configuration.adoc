@@ -86,13 +86,24 @@ Pollerd can generate the following events in {page-component-title} for device c
 | Event name
 | Description
 
-| uei.opennms.org/deviceconfig/configRetrievalFailed
-| Failed to retrieve config associated with a given service during the last poll on a given interface
+| uei.opennms.org/deviceconfig/configBackupStarted
+| Config backup started on a given service during the last poll on a given interface.
 
-| uei.opennms.org/deviceconfig/configRetrievalSucceeded
-| Config retrieval succeeded on a given service during the last poll on a given interface.
+| uei.opennms.org/deviceconfig/configBackupFailed
+| Failed to back up config associated with a given service during the last poll on a given interface.
 
+| uei.opennms.org/deviceconfig/configBackupSucceeded
+| Config backup succeeded on a given service during the last poll on a given interface.
 |===
+
+Additional Parameters
+
+* `controlProtocol` - The name of the control-plane protocol OpenNMS uses to initiate the backup ("cron", "REST").
+
+* `dataProtocol` - The name of the data-plane protocol by which OpenNMS received the backup contents ("TFTP").
+
+* `eventReason` - If the backup failed, contains a short description of the issue.
+
 
 == Retrieve device configuration on demand
 
