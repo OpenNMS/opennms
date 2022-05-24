@@ -3,7 +3,7 @@
 
 The WMI monitor tests the availability of WMI services on remote interfaces.
 
-Note that WSMAN does everything that WMI does and is a more modern protocol for Windows monitoring.
+NOTE: xref:reference:service-assuranve/monitors/WsManMonitor.adoc[WSMAN] does everything that WMI does and is a more modern protocol for Windows monitoring.
 
 //verify
 This monitor implements <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
