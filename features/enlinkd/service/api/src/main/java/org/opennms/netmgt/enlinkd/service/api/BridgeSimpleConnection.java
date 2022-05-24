@@ -205,19 +205,17 @@ public class BridgeSimpleConnection implements Topology {
             return;
         }
 
-        if (m_xyPort == null && m_yxPort == null) {
-            List<BridgePort> ports = BridgeSimpleConnection.condition3(commonlearnedmacs, m_xBridge, m_yBridge);
-            if (ports.size() == 2) {
-                m_xyPort = ports.get(0);
-                m_yxPort = ports.get(1);
-                return;
-            }
-            ports=BridgeSimpleConnection.condition4(m_xBridge, m_yBridge);
-            if (ports.size() == 2) {
-                m_xyPort = ports.get(0);
-                m_yxPort = ports.get(1);
-                return;
-            }
+        List<BridgePort> ports = BridgeSimpleConnection.condition3(commonlearnedmacs, m_xBridge, m_yBridge);
+        if (ports.size() == 2) {
+            m_xyPort = ports.get(0);
+            m_yxPort = ports.get(1);
+            return;
+        }
+        ports=BridgeSimpleConnection.condition4(m_xBridge, m_yBridge);
+        if (ports.size() == 2) {
+            m_xyPort = ports.get(0);
+            m_yxPort = ports.get(1);
+            return;
         }
         throw new BridgeTopologyException("findSimpleConnection: no simple connection found", m_xBridge);
     }
