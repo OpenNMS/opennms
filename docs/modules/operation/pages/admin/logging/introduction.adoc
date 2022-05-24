@@ -25,7 +25,6 @@ You can set the levels to TRACE, INFO, DEBUG, WARN, or ERROR depending on the ne
 
 For troubleshooting, use DEBUG. 
 After saving the changes in this file, {page-component-title} needs a few seconds to apply the changes.
-The additional DEBUG log output is now also being written to the corresponding log file.
 
 NOTE: Don't forget to set the logging level back to WARN after changing it to a higher severity.
 Depending on the scale, {page-component-title} can generate a lot more logs, which requires more disk space.
