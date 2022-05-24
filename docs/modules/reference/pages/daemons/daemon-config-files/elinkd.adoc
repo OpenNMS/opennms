@@ -1,0 +1,15 @@
+[[ref-daemon-config-files-elinkd]]
+= Elinkd
+
+.Elinkd log file overview
+[options="header"]
+[cols="2,3"]
+
+|===
+| File
+| Description
+
+| elinkd.log
+| Logs relating to Elinkd server events.
+
+|===

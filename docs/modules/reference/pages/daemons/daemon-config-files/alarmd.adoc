@@ -15,3 +15,16 @@
 | yes
 | no
 |===
+
+.Alarmd log file overview
+[options="header"]
+[cols="2,3"]
+
+|===
+| File
+| Description
+
+| alarmd.log
+| Logs relating to alarmd server events.
+
+|===

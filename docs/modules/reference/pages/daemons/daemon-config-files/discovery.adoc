@@ -15,3 +15,17 @@
 | yes
 | no
 |===
+
+.Discovery log file overview
+[options="header"]
+[cols="2,3"]
+
+|===
+| File
+| Description
+
+| discovery.log
+| Network discovery scan jobs and their results are stored in this file.
+
+|===
+

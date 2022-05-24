@@ -103,3 +103,18 @@ Attributes are extracted from the HTTP responses using a regular expression.
 | yes
 
 |===
+
+.Collectd log file overview
+[options="header"]
+[cols="2,3"]
+
+|===
+| File
+| Description
+
+| collectd.log
+| Logs relating to collector server events.
+
+| instrumentation.log
+| Collection statistics used to populate the Instrumentation Log Reader in the web UI admin section.
+|===
