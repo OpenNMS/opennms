@@ -52,6 +52,18 @@ Is CN=opennms.example.org, OU=Network Management Division, O=The Example Organiz
   [no]:  yes
 ----
 
+Create or edit the `$\{OPENNMS_HOME}/etc/opennms.properties.d/https.properties` file to set the Jetty certificate information.
+Adjust the values based on the values set when using the `keytool` command to create the keystore and certificate.
+
+[source, properties]
+----
+org.opennms.netmgt.jetty.https-port = 8443
+org.opennms.netmgt.jetty.https-keystore = /opt/opennms/etc/opennms.keystore
+org.opennms.netmgt.jetty.https-keystorepassword = keystore-password
+org.opennms.netmgt.jetty.https-keypassword = key-password
+org.opennms.netmgt.jetty.https-cert-alias = opennms-jetty
+----
+
 == Restrict access to the plain-HTTP listener
 
 The steps to configure OpenNMS to start a Jetty HTTPS listener on port 8443 do not disable the plain-HTTP listener that is present by default on port 8980.
@@ -84,3 +96,44 @@ To bind the HTTPS listener to a single interface, create or edit the `$\{OPENNMS
 ----
 org.opennms.netmgt.jetty.https-host = 10.11.12.13
 ----
+
+[[ga-ssl-server-debugging]]
+== Debugging/Properties
+
+If you encounter issues while using SSL, it might be useful to enable debug logging or use one of the built-in Java System Properties to configure the proper use of SSL.
+
+.Java built-in System Properties
+[options="header"]
+[cols="2,3"]
+|===
+| System Property Name
+| Description
+
+| javax.net.ssl.keyStore
+| Location of the Java keystore file that contains an application process's own certificate and private key.
+
+| javax.net.ssl.keyStorePassword
+| Password to access the private key from the keystore file `javax.net.ssl.keyStore` specifies.
+This password is used twice: to unlock the keystore file (store password) and to decrypt the private key stored in the keystore (key password).
+The JSSE framework requires these passwords to be identical.
+
+| javax.net.ssl.keyStoreType
+| (Optional) Keystore type. 
+Defaults to `jks`.
+
+| javax.net.ssl.trustStore
+| Location of the Java Truststore file that contains the collection of CA certificates this application process (truststore) trusts.
+If this property does not specify a truststore location, the Java implementation searches for and uses a keystore file in the following locations (in order):
+`$\{JAVA_HOME}/lib/security/jssecacerts` and `$\{JAVA_HOME}/lib/security/cacerts`.
+
+| javax.net.ssl.trustStorePassword
+| Password to unlock the truststore file.
+
+| javax.net.ssl.trustStoreType
+| (Optional) Truststore type. 
+Defaults to `jks`.
+
+| javax.net.debug
+| (Optional) To switch on logging for the SSL/TLS layer, set this property to ssl.
+For more details about possible values, see https://docs.oracle.com/en/java/javase/11/security/java-secure-socket-extension-jsse-reference-guide.html#GUID-31B7E142-B874-46E9-8DD0-4E18EC0EB2CF[debugging utilities].
+|===
