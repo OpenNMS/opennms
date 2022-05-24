@@ -60,7 +60,6 @@ import static org.opennms.smoketest.selenium.AbstractOpenNMSSeleniumHelper.BASIC
 public class FileEditorIT {
     private static final Logger LOG = LoggerFactory.getLogger(FileEditorIT.class);
 
-    private static final String BASE_URL = "http://localhost:8980";
     private static final String REST_FILESYSTEM = "opennms/rest/filesystem";
     private static final String FILE_NAME = "pom.xml";
     private static final String USERNAME = "editor";
