@@ -9,9 +9,9 @@ When enabled, geolocation is performed based on the presence of address-related 
 The geocoder service will only run against nodes that are missing latitute and longitude fields but do have street address fields.
 See the xref:provisioning/directed-discovery.adoc[provisioning] documentation for steps to define asset fields on a requisition.
 
-Resolved coordinates are stored in the database as node asset fields, but does not update requisitions.
+Resolved coordinates are stored in the database as node asset fields, but the geocoder service does not update requisitions.
 An alternative to the geocoder service is the xref:reference:provisioning/adapters/geoip.adoc[GeoIP provisioning adapter].
-This adapter can lookup coordinates based on IP address, and will update the node's requisition definition, bypassing the need for the geocoder service to determine location based on address.
+This adapter can look up coordinates based on IP address, and will update the node's requisition definition, bypassing the need for the geocoder service to determine location based on address.
 
 == Configuration
 
