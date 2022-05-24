@@ -22,7 +22,7 @@ The corresponding configuration in this file can be found in the XML tree path: 
 
 The default logging level is `WARN`, and for troubleshooting, use `DEBUG`. 
 See the table below for a description of the available log levels.
-After saving the changes in this file, {page-component-title} needs a few seconds to apply the changes.
+Changes to logging levels are applied immediately and do not require any service or daemon restarts.
 
 NOTE: Don't forget to set the logging level back to WARN after changing it to a higher severity.
 Depending on the scale, {page-component-title} can generate a lot of logs, which requires more disk space.
