@@ -1,6 +1,6 @@
 = Value Mapping Property Extender
 The Value Mapping property extender provides a mechanism that works as a lookup table for converting collected values to a different data type.
-This allows you to do things such as map an enumerated set of string values to a corresponding set of integer values.
+This allows you to do things such as map an enumerated set of string values to a corresponding set of integer values or the other way around.
 The resulting values are then persisted as time-series data to track state changes over time.
 
 == Configure the Value Mapping property extender
