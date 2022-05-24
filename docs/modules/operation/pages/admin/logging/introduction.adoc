@@ -12,7 +12,7 @@ For information on the different log files, how they are named, and what they in
 [[ga-change-logging]]
 == Change logging
 
-{page-component-title} uses the https://logging.apache.org/log4j/[Apache Log4j] framework to manage how the logs are written, structured, or rotated.
+{page-component-title} uses the https://logging.apache.org/log4j/[Apache Log4j] framework to manage how the logs are written, structured, and rotated.
 
 The log configuration file can be found in `$\{OPENNMS_HOME}/etc/opennms/log4j2.xml`.
 
