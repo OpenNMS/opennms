@@ -20,10 +20,8 @@ Each daemon can have an individual logging level.
 
 The corresponding configuration in this file can be found in the XML tree path: `configuration/loggers/root/DynamicThresholdFilter/KeyValuePair`.
 
-The default logging level is WARN.
-You can set the levels to TRACE, INFO, DEBUG, WARN, or ERROR depending on the need.
-
-For troubleshooting, use DEBUG. 
+The default logging level is `WARN`, and for troubleshooting, use `DEBUG`. 
+See the table below for a description of the available log levels.
 After saving the changes in this file, {page-component-title} needs a few seconds to apply the changes.
 
 NOTE: Don't forget to set the logging level back to WARN after changing it to a higher severity.
