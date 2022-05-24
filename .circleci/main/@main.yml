@@ -695,6 +695,7 @@ workflows:
             branches:
               ignore:
                 - /^merge-foundation.*/
+                - /^mem.*dev.*/
       - smoke-test-core:
           requires:
             - tarball-assembly
@@ -835,6 +836,7 @@ workflows:
             branches:
               ignore:
                 - /^merge-foundation.*/
+                - /^mem.*dev.*/
       - sentinel-image-single-arch:
           requires:
             - sentinel-deb-build
@@ -934,7 +936,7 @@ jobs:
       - attach_workspace:
           at: ~/
       - run-build:
-          number-vcpu: 8
+          number-vcpu: 4
   build-ui:
     executor: ui-executor
     steps:
