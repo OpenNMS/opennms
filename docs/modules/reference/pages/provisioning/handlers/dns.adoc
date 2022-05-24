@@ -1,3 +1,4 @@
+//ui-provd: the contextual help from the external requisition screen links to this help, using the URL https://docs.opennms.com/horizon/latest/reference/provisioning/handlers/introduction.html. Ensure link in UI does not break if changing this section of docs.
 
 [[dns-handler]]
 = DNS Handler
@@ -5,13 +6,25 @@
 The DNS handler requests a zone transfer (AXFR) from a DNS server.
 The A and AAAA records are retrieved and used to build an import requisition.
 This is useful for organizations that use DNS, possibly coupled with an IP management tool, as the database of record for nodes in the network.
-So, rather than ping sweeping the network or entering the nodes manually into the {page-component-title} Requisition UI, you can manage nodes via one or more DNS servers.
+Rather than ping sweeping the network or entering the nodes manually into the {page-component-title} Requisition UI, you can manage nodes via one or more DNS servers.
 
 The format of the URL for this protocol handler is: `dns://<host>[:port]/<zone>[/<foreign-source>/][?expression=<regex>]`
 
-DNS Import Examples:
+== Configure DNS requisition
 
-== Simple
+ifeval::["{page-component-title}" == "Horizon"]
+Prior to {page-component-title} 30, you set external requisitions in the `provisiond-configuration.xml` file.
+This file is no longer available.
+You must use the UI or the xref:development:rest/config_management.adoc#config-rest-api[config management REST API] to configure an external requisition.
+endif::[]
+
+To configure a DNS requisition, follow the steps in xref:reference:provisioning/handlers/introduction.adoc#create-req-def[Create an external requisition], but specify DNS as the type, and set the host, DNS zone, requisition name, schedule, and rescan behavior.
+
+You can also define <<location-dns,location>> or <<regex,expression parameters>> in the *Advanced Options* area.
+
+== DNS import samples
+
+=== Simple
 
 [source]
 ----
@@ -21,7 +34,8 @@ dns://my-dns-server/myzone.com
 This URL imports all A and AAAA records from the zone `myzone.com` on the host `my-dns-server` via port 53 (default DNS port).
 Since the foreign source is not specified, it will be added to the default requisition.
 
-== Use a regular expression filter
+[[regex]]
+=== Regular expression filter
 
 [source]
 ----
@@ -30,17 +44,18 @@ dns://my-dns-server/myzone.com/portland/?expression=^por-.*
 
 This URL imports all nodes from the same server and zone, but only imports the nodes in the zone that match the regular expression `^port-.*`.
 The matching nodes will be assigned to a requisition named 'portland'.
-If your expression requires URL encoding, for example you need to use a `?` in the expression, it must be properly encoded.
+If your expression requires URL encoding, for example you need to use a `?` in the expression, you must encode it properly.
 
 [source]
 ----
 dns://my-dns-server/myzone.com/portland/?expression=^por[0-9]%3F
 ----
 
-== Location
+[[location-dns]]
+=== Location
 
 You can use the `location` parameter to assign a single location to all nodes in this requisition.
-This would apply only if you are using Minions in your network.
+This would apply only if you use Minions in your network.
 
 [source]
 ----
@@ -67,7 +82,7 @@ Zone transfers are designed for zone replication between DNS servers.
 You may want to provide additional security mechanisms to protect your DNS infrastructure.
 At a minimum, you should always restrict AXFR requests to only trusted IP addresses and/or use a hidden, read-only secondary DNS server for {page-component-title}.
 
-One suggestion is to set up a secondary DNS server on your {page-component-title} and configure the rest of the DNS servers to allow transfers to your {page-component-title} server.
+You may want to set up a secondary DNS server on your {page-component-title} and configure the rest of the DNS servers to allow transfers to your {page-component-title} server.
 This allows you to point the DNS import handler to `localhost`.
 
 NOTE: There is no encryption or authentication available for AXFR transfer requests.

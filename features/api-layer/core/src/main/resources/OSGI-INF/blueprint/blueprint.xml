@@ -41,6 +41,7 @@
   <reference id="interfaceToNodeCache" interface="org.opennms.netmgt.dao.api.InterfaceToNodeCache" availability="mandatory"/>
   <reference id="graphContainerCache" interface="org.opennms.netmgt.graph.api.service.GraphContainerCache" availability="mandatory"/>
   <reference id="jsonStore" interface="org.opennms.features.distributed.kvstore.api.JsonStore"/>
+  <reference id="secureCredentialsVaultInternal" interface="org.opennms.features.scv.api.SecureCredentialsVault" /><!-- Reference to internal (opennms) SCV-->
 
   <bean id="nodeDaoImpl" class="org.opennms.features.apilayer.dao.NodeDaoImpl">
     <argument ref="nodeDao"/>
@@ -400,4 +401,9 @@
       <argument ref="jsonStore"/>
     </bean>
   </service>
+  <!--Secure Credentials Vault -->
+  <bean id="secureCredentialsVault" class="org.opennms.features.apilayer.common.scv.SecureCredentialsVaultImpl">
+    <argument ref="secureCredentialsVaultInternal" />
+  </bean>
+  <service ref="secureCredentialsVault" interface="org.opennms.integration.api.v1.scv.SecureCredentialsVault"/>
 </blueprint>

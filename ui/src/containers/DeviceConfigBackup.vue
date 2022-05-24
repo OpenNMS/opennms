@@ -4,7 +4,10 @@
       <div class="feather-col-12">
         <div class="dcb-container">
           <div class="table-container">
-            <p class="title">Device Configuration</p>
+            <div class="title-search">
+              <span class="title">Device Configuration</span>
+              <DCBSearch class="dcb-search" />
+            </div>
             <DCBTable />
           </div>
           <div v-if="false" class="filters-container">
@@ -20,6 +23,7 @@
 import { useStore } from 'vuex'
 import DCBTable from '@/components/Device/DCBTable.vue'
 import DCBGroupFilters from '@/components/Device/DCBGroupFilters.vue'
+import DCBSearch from '@/components/Device/DCBSearch.vue'
 
 const store = useStore()
 
@@ -27,7 +31,6 @@ onMounted(() => store.dispatch('deviceModule/getDeviceConfigBackups'))
 </script>
 
 <style scoped lang="scss">
-@import "@featherds/styles/mixins/elevation";
 @import "@featherds/styles/mixins/typography";
 
 @mixin status-bar($color) {
@@ -45,9 +48,8 @@ onMounted(() => store.dispatch('deviceModule/getDeviceConfigBackups'))
 }
 
 .card {
-  @include elevation(2);
   background: var($surface);
-  padding: 10px 20px 20px 20px;
+  padding: 0px 20px 20px 20px;
 
   .dcb-container {
     display: flex;
@@ -55,15 +57,35 @@ onMounted(() => store.dispatch('deviceModule/getDeviceConfigBackups'))
     .table-container {
       width: 35rem;
       flex: auto;
-      .title {
-        @include headline4;
-        margin-left: 19px;
+
+      .title-search {
+        display: flex;
+        justify-content: space-between;
+
+        .title {
+          @include headline4;
+          margin: 24px 0px 24px 19px;
+          display: block;
+        }
+
+        .dcb-search {
+          width: 250px;
+          margin-top: 16px;
+        }
       }
     }
 
     .filters-container {
       width: 15rem;
     }
+  }
+}
+</style>
+
+<style lang="scss">
+.dcb-search {
+  .feather-input-content {
+    margin-top: 0px;
   }
 }
 </style>

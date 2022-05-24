@@ -42,11 +42,13 @@ export const useProvisionD = () => {
   }
 
   /**
-   * User has changed types, so we need to clear out our advanced options and reset the host.
+   * User has changed types, so we need to clear out advanced options, reset the host and urlPath.
+   *  - urlPath: used to extract the url query part to update the item's url (see convertItemToURL and getQueryStringFromAdvancedOptions)
    */
   const createNewRequisition = () => {
     selectedProvisionDItem.config.host = ''
     selectedProvisionDItem.config.advancedOptions = []
+    selectedProvisionDItem.config.urlPath = ''
   }
 
   /**

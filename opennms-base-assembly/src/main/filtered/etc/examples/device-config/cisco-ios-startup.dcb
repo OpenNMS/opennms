@@ -1,0 +1,9 @@
+await: #
+send: copy startup-config tftp://${tftpServerIp}/startup-config${filenameSuffix}
+await: ]?
+send: ${tftpServerIp}
+await: ]?
+send: startup-config${filenameSuffix}
+await: bytes/sec)
+await: #
+send: exit

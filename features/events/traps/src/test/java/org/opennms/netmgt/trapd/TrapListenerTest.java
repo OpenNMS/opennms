@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,6 +31,8 @@ package org.opennms.netmgt.trapd;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import com.jayway.awaitility.Awaitility;
+import java.util.concurrent.TimeUnit;
 import org.opennms.netmgt.config.trapd.Snmpv3User;
 import org.opennms.netmgt.config.trapd.TrapdConfiguration;
 
@@ -126,5 +128,17 @@ public class TrapListenerTest {
         user.setPrivacyProtocol(privatcyProtocol);
         user.setSecurityName(securityName);
         return user;
+    }
+
+    @Test
+    public void noSubscriberTest() throws Exception {
+        TrapListener listener = new TrapListener(initialConfig);
+        listener.setSubscriberTimeoutMs(2 * 1000);
+        listener.start();
+        Assert.assertEquals(Boolean.FALSE, listener.isRegisteredForTraps());
+        
+        Awaitility.await().atMost(10 * 1000, TimeUnit.MILLISECONDS).with()
+            .pollInterval(1, TimeUnit.SECONDS)
+            .until(() -> listener.isRegisteredForTraps());
     }
 }

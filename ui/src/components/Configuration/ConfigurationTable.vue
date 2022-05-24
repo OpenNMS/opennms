@@ -19,13 +19,10 @@
             v-on:sort-changed="sortChanged"
             >URL</FeatherSortHeader
           >
-          <FeatherSortHeader
+          <th
             scope="col"
             class="onms-sort-header"
-            :property="RequisitionData.CronSchedule"
-            :sort="sorts[RequisitionData.CronSchedule]"
-            v-on:sort-changed="sortChanged"
-            >Schedule Frequency</FeatherSortHeader
+            >Schedule Frequency</th
           >
           <FeatherSortHeader
             scope="col"
@@ -61,12 +58,14 @@
           <td>
             <div class="flex">
               <FeatherButton
+                primary
                 icon="Edit"
                 @click="() => props.editClicked(item.originalIndex)"
+                :disabled="Boolean(item[RequisitionData.ImportURL].startsWith('requisition://'))"
+                data-test="edit-btn"
               >
                 <FeatherIcon
                   :icon="Edit"
-                  class="edit-icon"
                 ></FeatherIcon>
               </FeatherButton>
               <FeatherButton
@@ -127,7 +126,6 @@ const props = defineProps({
  */
 const sorts = reactive<ProvisionDServerConfiguration>({
   [RequisitionData.ImportName]: SORT.NONE,
-  [RequisitionData.CronSchedule]: SORT.NONE,
   [RequisitionData.ImportURL]: SORT.NONE,
   [RequisitionData.RescanExisting]: SORT.NONE,
   currentSort: { property: RequisitionData.ImportName, value: SORT.NONE },
@@ -207,6 +205,14 @@ const rescanToEnglish = (rescanVal: string) => {
   return rescanCopy[rescanVal]
 }
 </script>
+<style lang="scss">
+@import "@featherds/table/scss/table";
+
+table {
+  @include table();
+  @include table-condensed();
+}
+</style>
 <style
   lang="scss"
   scoped
@@ -215,6 +221,19 @@ const rescanToEnglish = (rescanVal: string) => {
 @import "@featherds/styles/themes/variables";
 
 .main-wrapper {
+  /* table {
+    @include table();
+    @include table-condensed();
+  } */
+  /* :deep(table) {
+    &.condensed {
+      .onms-sort-header {
+        > .header-flex-container {
+          justify-content: flex-start;
+        }
+      }
+    }
+  } */
   table.condensed {
     :deep(.onms-sort-header) {
       > .header-flex-container {
@@ -232,16 +251,13 @@ const rescanToEnglish = (rescanVal: string) => {
     color: var($primary);
   }
 }
-.edit-icon {
-  color: var($primary);
-}
 .delete-icon {
   color: var($error);
 }
-.condensed {
+/* .condensed {
   @include table();
   @include table-condensed();
-}
+} */
 .main-wrapper {
   padding: 16px 24px;
 }

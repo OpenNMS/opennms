@@ -35,12 +35,12 @@ import com.vaadin.v7.data.util.BeanItem;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.features.topology.api.topo.AbstractVertex;
-import org.opennms.netmgt.topologies.service.api.OnmsTopology;
+
 
 public class ComponentTest {
 	@Test
 	public void testComponentBeanProperties() throws Exception {
-		Collection<?> ids = new BeanItem<>(new AbstractVertex(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD, "fakeId")).getItemPropertyIds();
+		Collection<?> ids = new BeanItem<>(new AbstractVertex(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, "fakeId")).getItemPropertyIds();
 		for (Object id : ids) {
 			Assert.assertNotNull(id);
 		}

@@ -1,4 +1,3 @@
-  
 <template>
   <FeatherAppLayout content-layout="full">
     <template v-slot:header>
@@ -20,8 +19,11 @@
     </div>
   </FeatherAppLayout>
 </template>
-  
-<script setup lang="ts">
+
+<script
+  setup
+  lang="ts"
+>
 import { useStore } from 'vuex'
 import { FeatherAppLayout } from '@featherds/app-layout'
 import Menubar from './components/Layout/Menubar.vue'
@@ -40,7 +42,7 @@ onMounted(() => {
   store.dispatch('pluginModule/getPlugins')
 })
 </script>
-  
+
 <style lang="scss">
 @import "@featherds/styles/lib/grid";
 @import "@featherds/styles/mixins/typography";
@@ -53,6 +55,10 @@ html {
   margin-left: v-bind(contentMargin);
   transition: margin-left 0.28s ease-in-out v-bind(ease);
   max-width: calc(100% - v-bind(maxWidth));
+
+  table {
+    width: 100%;
+  }
 }
 a {
   text-decoration: none;
@@ -76,3 +82,4 @@ a {
   @include subtitle2;
 }
 </style>
+

@@ -930,6 +930,8 @@ NOEXECUTE=0
 VERBOSE=0
 BACKGROUND=1
 SYSTEMD=0
+SMALLTFLAG=0
+BIGTFLAG=0
 
 NAME="opennms"
 
@@ -952,10 +954,12 @@ while getopts c:fsntTvpoQ c; do
 			;;
 		t)
 			TEST=1
+			SMALLTFLAG=1
 			;;
 		T)
 			TEST=1
 			JPDA_SUSPEND=y
+			BIGTFLAG=1
 			;;
 		p)
 			TPROFILE=1
@@ -1096,6 +1100,12 @@ case "$COMMAND" in
 		## Stop the service and regardless of whether it was
 		## running or not, start it again.
 		__opennms_cmd=("$OPENNMS_HOME/bin/opennms");
+		if [ "$BIGTFLAG" -eq 1 ]; then
+			__opennms_cmd+=("-T")
+		fi
+		if [ "$SMALLTFLAG" -eq 1 ]; then
+			__opennms_cmd+=("-t")
+		fi
 		if [ "$NOEXECUTE" -eq 1 ]; then
 			__opennms_cmd+=("-n")
 		fi

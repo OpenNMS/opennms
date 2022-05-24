@@ -2,13 +2,18 @@ export const RequisitionFields = {
   Name: 'Name'
 }
 export const RequisitionTypes = {
-  VMWare: 'VMWare',
+  VMWare: 'VMware',
   RequisitionPlugin: 'Requisition Plugin',
   DNS: 'DNS',
   File: 'File',
   HTTP: 'HTTP',
   HTTPS: 'HTTPS',
   RequisitionPluginForServer: 'requisition'
+}
+
+export const requisitionDNSField = {
+  zone: 'zone',
+  requisitionName: 'foreign source'
 }
 
 export const RequisitionPluginSubTypes = {
@@ -52,18 +57,21 @@ export const SplitTypes = {
 }
 
 export const ErrorStrings = {
-  DuplicateName: 'Name must be unique',
-  TypeError: 'Must select a type',
-  OccuranceTime: 'Must schedule a time',
-  OccuranceWeekTime: 'Must select a day of the week',
-  OccuranceDayTime: 'Must select a day of the month',
+  DuplicateName: 'Name must be unique.',
   QuartzFormatSupportError: 'Error: Expression has only 5 parts. At least 6 parts are required.',
   InvalidHostname: 'Invalid hostname',
-  FilePath: 'Must include a file path',
-  FilePathStart: 'Path must start with a /',
-  MustHave: (nameType: string) => `Must have a ${nameType.toLocaleLowerCase()}`,
-  NameShort: (nameType: string) => `${nameType} must have at least two chars`,
-  NameLong: (nameType: string, length = 255) => `${nameType} must be shorter than ${length}`
+  InvalidZoneName: 'Invalid zone name',
+  InvalidRequisitionName: 'Invalid requisition name',
+  FilePathStart: 'Path must start with a /.',
+  FilePathWithQueryChar: 'Path contains invalid character: ?.',
+  Required: (nameType: string) => `${nameType} required.`,
+  NameShort: (nameType: string) => `${nameType} must have at least two chars.`,
+  NameLong: (nameType: string, length = 255) => `${nameType} must be shorter than ${length}.`
+}
+
+export const LabelStrings = {
+  duplicateKey: 'Duplicate key',
+  optionNotAvailable: 'Option not available'
 }
 
 export const requisitionTypeList = [

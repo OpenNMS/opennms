@@ -18,24 +18,16 @@ import {
   requisitionSubTypes,
   requisitionTypeList,
   RequisitionTypes,
+  requisitionDNSField,
   RequisitionPluginSubTypes,
   RequisitionHTTPTypes
 } from './copy/requisitionTypes'
-import { scheduleTypes, weekTypes, dayTypes } from './copy/scheduleTypes'
+import { scheduleTypes, weekTypes, weekNameTypes, dayTypes } from './copy/scheduleTypes'
 import cronstrue from 'cronstrue'
+import ipRegex from 'ip-regex'
+import isValidDomain from 'is-valid-domain'
 
 const cronTabLength = (cronTab: string) => cronTab.replace(/\s$/, '').split(' ').length
-
-/**
- *
- * @param split String array from a crontab, split on a space
- * @returns Human Readable time in 12 hour format.
- */
-const buildFullTime = (split: Array<string>) => {
-  const { hour, AM } = parseHour(split)
-
-  return withTwoZeros(hour) + ':' + withTwoZeros(split[0]) + (AM ? 'AM' : 'PM')
-}
 
 /**
  *
@@ -60,63 +52,139 @@ const checkForDuplicateName = (
   return errorMessage
 }
 
+const isCronAdvancedFormat = (cronFormatted: string) => {
+  const cronFormattedList = cronFormatted.split(' ')
+  const [sec,,, DoM, mth, DoW, yr] = cronFormattedList // yr (7th part: 1970-2099): can't be set in UI
+  
+  const regexDoMWeekdays = /\d+W/g
+  const regexDoWLastNthDay = /[L#]/g
+  const regexAnyOtherSpecChars = /[,-/]/g
+
+  const hasSec = parseInt(sec) > 0 // sec: can't be set in UI
+  const hasMth = mth !== '*' // specific month can't be set in UI
+  const hasDoMWeekdays = regexDoMWeekdays.test(DoM) // 15W (the nearest weekday to the 15th of the month): can't be set in UI
+  const hasDoWLastNthDay = regexDoWLastNthDay.test(DoW) // L and #: can't be set in UI
+  const hasAnyOtherSpecChars = cronFormattedList.some((p) => regexAnyOtherSpecChars.test(p)) // [,-/]: can't be set in UI
+
+  return hasSec || hasMth || hasDoMWeekdays || hasDoWLastNthDay || hasAnyOtherSpecChars || yr
+}
+
 /**
- *
+ * ['0', '45', '15', '?', '*', '7', 2022]
+ * [sec   min   hr   DoM   mth  DoW, yr]
  * @param cronFormatted A Crontab string
  * @returns A formatted object for display to humans
  */
 const convertCronTabToLocal = (cronFormatted: string) => {
-  const split = cronFormatted.split(' ')
-  const time = buildFullTime(split)
-  let lastDay = false
-  if (split[2] === 'L') {
-    lastDay = true
+  const cronFormattedList = cronFormatted.split(' ') 
+  const [, min, hr, DoM] = [...cronFormattedList]
+  let [,,,,, DoW] = [...cronFormattedList]
+  
+  const occuranceEmptyProps = {
+    name: '',
+    id: 0
   }
-  const monthly = lastDay ? 32 : parseInt(split[2])
-  const weekly = parseInt(split[4])
-  const occuranceDetails = parseOccuranceDetails(monthly, weekly)
-  const occuranceAdvanced = cronFormatted
-  let advancedCrontab = false
-  if (
-    time === 'NaN' ||
-    split.length > 5 ||
-    (occuranceDetails.occurance.name === 'Daily' && !isNaN(monthly) && isNaN(weekly)) ||
-    (cronFormatted.includes('?') && !cronFormatted.includes('L')) ||
-    cronFormatted.includes('/') ||
-    cronFormatted.includes('#') ||
-    cronFormatted.includes('-') ||
-    cronFormatted.includes(',') ||
-    /[A-KM-Za-kM-Z]/.test(cronFormatted)
-  ) {
-    advancedCrontab = true
+  const occuranceSection = {
+    occurance: occuranceEmptyProps,
+    occuranceDay: occuranceEmptyProps,
+    occuranceWeek: occuranceEmptyProps
   }
+
+  const prefixZero = (num: number) => {
+    if(num >= 10) return num
+
+    return `0${num}`
+  }
+  
+  let advancedProps = {
+    advancedCrontab: false,
+    occuranceAdvanced: ''
+  }
+
+  let time = `${prefixZero(parseInt(hr))}:${prefixZero(parseInt(min))}`
+
+  if(isCronAdvancedFormat(cronFormatted)) {
+    advancedProps = {
+      advancedCrontab: true,
+      occuranceAdvanced: cronFormatted
+    }
+    
+    time = '00:00'
+  } else {
+    const hasDoM = (dayOfMonth: string) => {
+      const regexDoM = /[1-31L]/g
+  
+      return regexDoM.test(dayOfMonth)
+    }
+  
+    /**
+     * SUN...SAT pattern: additional expression support for the UI basic mode, if Day of Week (DoW) was set with name (SUN...SAT) in advanced mode.
+     * Note
+     *  - edit a requisition: when expression contains SUN...SAT, drawer will be opened in UI basic mode and expression containing SUN...SAT will be translated to 1...7 and set in Day of Week input field.
+     * @param dayOfWeek (string) Can be 1...7 or SUN...SAT
+     * @returns (boolean) Determine if day of week is set in the expression
+     */
+    const hasDoW = (dayOfWeek: string) => {
+      const regexDoW = /([1-7])|(SUN)|(MON)|(TUE)|(WED)|(THU)|(FRI)|(SAT)/g
+      const dowMatched = dayOfWeek.match(regexDoW) 
+      
+      if(!dowMatched) return false
+  
+      if(!Number.isInteger(Number(dayOfWeek))) {
+        DoW = (weekNameTypes.find((d) => d.name === dowMatched[0]) || {}).id?.toString() || '?'
+      }
+  
+      return true
+    }
+    
+    if(hasDoW(DoW)) {
+      occuranceSection.occurance = scheduleTypes.find((d) => d.name === 'Weekly') || occuranceEmptyProps
+      occuranceSection.occuranceWeek = weekTypes.find((d) => d.id === parseInt(DoW)) || occuranceEmptyProps
+    } else if(hasDoM(DoM)) {
+      occuranceSection.occurance = scheduleTypes.find((d) => d.name === 'Monthly') || occuranceEmptyProps
+      occuranceSection.occuranceDay = dayTypes.find((d) => d.id === (DoM === 'L' ? 32 : parseInt(DoM))) || occuranceEmptyProps
+    } else {
+      occuranceSection.occurance = scheduleTypes.find((d) => d.name === 'Daily') || occuranceEmptyProps
+    }
+  }
+
   return {
-    twentyFourHour: withTwoZeros(split[1]) + ':' + withTwoZeros(split[0]),
+    ...occuranceSection,
+    ...advancedProps,
     time,
-    monthly,
-    weekly,
-    advancedCrontab,
-    occuranceAdvanced,
-    ...occuranceDetails
+    twentyFourHour: time,
+    monthly: DoM === 'L' ? 32 : DoM, // 32: id of last day of the month
+    weekly: DoW
   }
 }
 
 /**
- * @param fullURL server URL
+ * In cases where query can also be set in Advanced Options section, the latter takes precedence over the one that is set in Path|Username|Password input field, if both contain same key=value (e.g. HTTP/HTTPS/VMWare external source type)
+ * @param queryPart URL part after ? (? is not included)
  * @param advancedOptions array of kv pairs
  * @returns Query string to append to server URL
  */
-const getQueryStringFromAdvancedOptions = (fullURL: string, advancedOptions: AdvancedOption[]): string => {
-  const hasQueryParams = () => fullURL.includes('?')
+const getQueryStringFromAdvancedOptions = (queryPart = '', advancedOptions: AdvancedOption[], type = ''): string => {
+  let optionString = ''
+  let queryPartList = queryPart.split('&')
+  
+  advancedOptions.forEach(({key, value}) => {
+    if(key.name && value) {
+      optionString += (optionString?.length > 0 ? '&' : '').concat(`${key.name}=${value}`)
+    }
 
-  let queryString = ''
-  advancedOptions.forEach((option, index) => {
-    if (option.key.name && option.value) {
-      queryString += `${index > 0 || hasQueryParams() ? '&' : '?'}${option.key.name}=${option.value}`
+    if(type === RequisitionTypes.VMWare) {
+      // if username and/or password is set in both input field and in Advanced Options section, then remove it from query Part, hence the one in Advanced Options takes precedence
+      queryPartList = queryPart.split('&').filter((q) => !q.includes(key.name))
     }
   })
 
-  return queryString
+  if(queryPart?.length === 0 && optionString?.length === 0) return ''
+
+  const optionsStringSplit = optionString?.split('&')
+  const uniqueQuery = [...new Set([...queryPartList, ...optionsStringSplit])].filter((q) => q.length > 0)
+
+  return `?${uniqueQuery.join('&')}`
 }
 
 /**
@@ -129,24 +197,39 @@ const convertItemToURL = (localItem: LocalConfiguration) => {
   let protocol = localItem.type.name.toLowerCase()
   const type = localItem.type.name
   let host = localItem.host
-  if (type === RequisitionTypes.RequisitionPlugin) {
-    host = localItem.subType.value
-    protocol = RequisitionTypes.RequisitionPluginForServer
-  } else if (type === RequisitionTypes.DNS) {
+  const path = localItem.urlPath.split('?')[0]
+  let query = localItem.urlPath.split('?')[1]
+
+  if(type === RequisitionTypes.DNS) {
     host = `${localItem.host}/${localItem.zone || ''}`
     if (localItem.foreignSource) {
       host += `/${localItem.foreignSource}`
     }
-  } else if (type === RequisitionTypes.VMWare) {
-    host = `${localItem.host}?${VMWareFields.Username}=${localItem.username}&${VMWareFields.Password}=${localItem.password}&`
-  } else if (type === RequisitionTypes.File) {
+  } else if(type === RequisitionTypes.File) {
     host = `${localItem.path}`
-  } else if (type === RequisitionTypes.HTTP || type === RequisitionTypes.HTTPS) {
-    host = `${localItem.host}${localItem.urlPath}`
-  }
+  } else if(type === RequisitionTypes.HTTP || type === RequisitionTypes.HTTPS) {
+    host = `${localItem.host}${path}`
+  } else if(type === RequisitionTypes.RequisitionPlugin) {
+    // Note: the following needs to be revalidated to ensure it's working as expected once the option is reactivated in the External Source input field
+    host = localItem.subType.value
+    protocol = RequisitionTypes.RequisitionPluginForServer
+  } else if(type === RequisitionTypes.VMWare) {
+    host = localItem.host
 
+    // username/password if set in UI input field: translated to have/save them as query part of the URL
+    const usernameQuery = localItem.username ? `${VMWareFields.Username}=${localItem.username}` : ''
+    const passwordQuery = localItem.password ? `${VMWareFields.Password}=${localItem.password}` : ''
+
+    query = usernameQuery && passwordQuery ? `${usernameQuery}&${passwordQuery}` : usernameQuery || passwordQuery
+  }
+  
   const fullURL = `${protocol}://${host}`
-  const queryString = getQueryStringFromAdvancedOptions(fullURL, localItem.advancedOptions)
+
+  // File type accepts all characters as path value, including separator character (?), which also means it does not have url query part. Hence we just return the path content as is.
+  if(type === RequisitionTypes.File) return fullURL
+
+  const queryString = getQueryStringFromAdvancedOptions(query, localItem.advancedOptions, type)
+
   return fullURL + queryString
 }
 
@@ -162,30 +245,32 @@ const convertItemToURL = (localItem: LocalConfiguration) => {
  * @returns crontab-ready string
  */
 const convertLocalToCronTab = (item: LocalConfiguration) => {
-  let schedule = '0 0 0 * * *'
+  let schedule = ''
 
-  if (!item.advancedCrontab) {
+  // only translate if expression is in basic format
+  if(!item.advancedCrontab) {
     const occurance = item.occurance
     const time = item.time
     const [hoursd, minutesd] = time.split(':')
     const hours = parseInt(hoursd)
     const minutes = parseInt(minutesd)
-
-    if (occurance.name === 'Daily' || !occurance.name) {
-      schedule = `0 ${minutes} ${hours} * * *`
-    } else if (occurance.name === 'Weekly') {
-      const week: number | string = item.occuranceWeek.id
-      schedule = `0 ${minutes} ${hours} * * ${week}`
-    } else if (occurance.name === 'Monthly') {
-      let day: number | string = item.occuranceDay.id
-      let final = '*'
-      if (day === 32) {
-        day = 'L'
-        final = '?'
-      }
-      schedule = `0 ${minutes} ${hours} ${day} * ${final}`
+  
+    switch(occurance.name) {
+      case 'Daily':
+        schedule = `0 ${minutes} ${hours} * * ?`
+        break
+      case 'Weekly':
+        schedule = `0 ${minutes} ${hours} ? * ${item.occuranceWeek.id}`
+        break
+      case 'Monthly':
+        schedule = `0 ${minutes} ${hours} ${item.occuranceDay.id === 32 ? 'L' : item.occuranceDay.id} * ?`
+        break
+      default:
+        // basic mode, at drawer open
+        schedule = '0 0 0 * * ?' // 'sec min hr DoM mth DOW' (occurance input fields empty)
     }
   } else {
+    // advanced mode
     schedule = item.occuranceAdvanced
   }
 
@@ -200,14 +285,15 @@ const convertLocalToCronTab = (item: LocalConfiguration) => {
  */
 const convertLocalToServer = (localItem: LocalConfiguration, stripIndex = false) => {
   const schedule = convertLocalToCronTab(localItem)
+
   let rescanVal = RescanVals.True
   if (localItem.rescanBehavior === 0) {
     rescanVal = RescanVals.False
   } else if (localItem.rescanBehavior === 2) {
     rescanVal = RescanVals.DBOnly
   }
-  const finalURL = convertItemToURL(localItem)
 
+  const finalURL = convertItemToURL(localItem)
   const fullRet = {
     [RequisitionData.ImportName]: localItem.name,
     [RequisitionData.ImportURL]: finalURL,
@@ -247,6 +333,7 @@ const convertServerConfigurationToLocal = (clickedItem: ProvisionDServerConfigur
   } = convertCronTabToLocal(clickedItem[RequisitionData.CronSchedule])
 
   const urlVars = convertURLToLocal(clickedItem[RequisitionData.ImportURL])
+  
   return {
     name: clickedItem[RequisitionData.ImportName],
     rescanBehavior,
@@ -271,15 +358,19 @@ const convertURLToLocal = (urlIn: string) => {
   let localConfig: LocalSubConfiguration = createBlankSubConfiguration()
 
   const url = urlIn.split('/')
-  const typeRaw = url[0].split(':')[0]
+
   let urlPath = ''
   for (let i = 3; i < url.length; i++) {
     urlPath += '/' + url[i]
   }
+
+  const path = urlPath.split('?')[0]
+  const typeRaw = url[0].split(':')[0]
   localConfig.type = findFullType(typeRaw)
+
   switch (localConfig.type.name) {
     case RequisitionTypes.File:
-      localConfig.path = findPath(urlIn)
+      localConfig.path = urlPath
       break
     case RequisitionTypes.VMWare:
       localConfig.host = findHost(url)
@@ -292,11 +383,11 @@ const convertURLToLocal = (urlIn: string) => {
       break
     case RequisitionTypes.HTTP:
       localConfig.host = findHost(url)
-      localConfig.urlPath = urlPath
+      localConfig.urlPath = path
       break
     case RequisitionTypes.HTTPS:
       localConfig.host = findHost(url)
-      localConfig.urlPath = urlPath
+      localConfig.urlPath = path
       break
   }
 
@@ -395,7 +486,7 @@ const cronToEnglish = (cronFormatted: string) => {
       error = typeof e === 'string' ? e : 'Error Parsing Crontab'
     }
   }
-
+  
   return error
 }
 
@@ -487,22 +578,6 @@ const findHost = (url: Array<string>) => {
 
 /**
  *
- * @param urlIn
- * @returns A File Path from the URL
- */
-const findPath = (urlIn: string) => {
-  let path = ''
-  const pathPart = urlIn.split(SplitTypes.file)[1]
-  if (pathPart.includes('?')) {
-    path = pathPart.split('?')[0]
-  } else {
-    path = pathPart
-  }
-  return path
-}
-
-/**
- *
  * @param url A full URL split by '/'
  * @returns The requisition subtype if it exists
  */
@@ -552,6 +627,9 @@ const getHostHint = (type: string) => {
  * @returns An Object we can use in our Advanced Options section of the ProvisionD Form
  */
 const parseAdvancedOptions = (fullURL: string, type: string, subType: string) => {
+  // File type does not support url query part (?key=value&...), hence no advanced options parsing is required
+  if(type === RequisitionTypes.File) return []
+
   return fullURL.includes('?')
     ? fullURL
       .split('?')[1]
@@ -579,49 +657,6 @@ const parseHint = (key: string, type: string, subType: string) => {
     keys = dnsKeys
   }
   return keys.find((d) => d.name === key)?.hint
-}
-
-/**
- * Used to parse a Crontab into human readable values.
- * @param split A crontab, split on spaces.
- * @returns The hour (with AM/PM) the crontab will be occuring on.
- */
-const parseHour = (split: Array<string>) => {
-  let hour = parseInt(split?.[1] || '')
-  let AM = true
-  if (hour > 12) {
-    AM = false
-    hour = hour - 12
-  }
-  if (hour === 0) {
-    hour = 12
-  }
-  return { AM, hour }
-}
-
-/**
- * Used to parse a Crontab into human readable values.
- * @param monthly Monthly Crontab Value
- * @param weekly Weekly Crontab Value
- * @returns On what schedule this Crontab is happening.
- */
-const parseOccuranceDetails = (monthly: number, weekly: number) => {
-  let occurance = scheduleTypes.find((d) => d.name === 'Daily')
-  let occuranceWeek
-  let occuranceDay
-  if (!isNaN(monthly) && isNaN(weekly)) {
-    occurance = scheduleTypes.find((d) => d.name === 'Monthly')
-    occuranceDay = dayTypes.find((d) => d.id == monthly)
-  } else if (isNaN(monthly) && !isNaN(weekly)) {
-    occurance = scheduleTypes.find((d) => d.name === 'Weekly')
-    occuranceWeek = weekTypes.find((d) => d.id == weekly)
-  }
-
-  return {
-    occurance: occurance || { name: '', id: 0 },
-    occuranceDay: occuranceDay || { name: '', id: 0 },
-    occuranceWeek: occuranceWeek || { name: '', id: 0 }
-  }
 }
 
 /**
@@ -677,24 +712,38 @@ const validateCronTab = (item: LocalConfiguration, oldErrors: LocalErrors) => {
 }
 
 /**
- * Validates a Hostname. Can be an IP address or valid hostname.
+ * Validates a Hostname. Can be an IP address or valid domain name.
+ * It also validates Foreign source (Requisition name) of DNS type, with a slightly different regex which includes underscore and space
  * @param host Hostname
+ * @param fieldName Requisition name, Zone
  * @returns Blank if Valid, Error Message if Not.
  */
-const validateHost = (host: string) => {
+const validateHost = (host: string, fieldName = '') => {
   let hostError = ''
-  /**
-   * Character separators: hyphen, point, space or % (%20: encoded space).
-   * Expression only valid if:
-   *  - only one separator betwwen word
-   *  - no separator at begin, end or between uri and port
-   *  - expression names (uri, port) can be used, with expression.match(), to target specific part of the host string
-   * */
-  const ipv4 = new RegExp(/^[^\s.\-%](?<uri>[\w]*[\s.\-%]?[\w]*[^\s.\-%20:])*(?<port>:\d{4})?$/, 'gmi')
-  const isHostValid = ipv4.test(host)
+
+  // no spaces, may contain (but not start with), hyphen or dot, cannot be over 49 chars
+  const customHostnameRegex = /^[a-zA-Z0-9]{1}[a-zA-Z0-9-.]{0,48}$/
+  
+  // same as customHostnameRegex but including underscore and space
+  const customForeignSourceRegex = /^[a-zA-Z0-9]{1}[a-zA-Z0-9-._\s]{0,48}$/
+
+  // Either IPv4, IPv6, a valid domain name, or passes custom regex
+  const isHostValid = 
+    ipRegex({exact: true}).test(host) 
+    || isValidDomain(host) 
+    || (fieldName === requisitionDNSField.requisitionName ? customForeignSourceRegex : customHostnameRegex).test(host)
 
   if (!isHostValid) {
-    hostError = ErrorStrings.InvalidHostname
+    switch(fieldName) {
+      case requisitionDNSField.requisitionName:
+        hostError = ErrorStrings.InvalidRequisitionName
+        break
+      case requisitionDNSField.zone:
+        hostError = ErrorStrings.InvalidZoneName
+        break
+      default:
+        hostError = ErrorStrings.InvalidHostname
+    }
   }
 
   return hostError
@@ -729,15 +778,23 @@ const validateLocalItem = (
       errors.urlPath = validatePath(localItem.urlPath)
     }
     if (localItem.type.name === RequisitionTypes.DNS) {
-      errors.zone = validateHost(localItem.zone)
+      errors.zone = validateHost(localItem.zone, requisitionDNSField.zone)
 
       // Only validate foreign source if it's set.
       if (localItem.foreignSource) {
-        errors.foreignSource = validateHost(localItem.foreignSource)
+        errors.foreignSource = validateHost(localItem.foreignSource, requisitionDNSField.requisitionName)
       }
     }
     if (localItem.type.name === RequisitionTypes.File) {
       errors.path = validatePath(localItem.path)
+    }
+    if (localItem.type.name === RequisitionTypes.VMWare) {
+      if (localItem.username && !localItem.password) {
+        errors.password = ErrorStrings.Required(VMWareFields.UpperPassword)
+      }
+      if (localItem.password && !localItem.username) {
+        errors.username = ErrorStrings.Required(VMWareFields.UpperUsername)
+      }
     }
     if (!localItem.advancedCrontab) {
       errors = validateCronTab(localItem, errors)
@@ -767,7 +824,7 @@ const validateName = (name: string, nameType: string = RequisitionFields.Name) =
   let nameError = ''
   const maxNameLength = 255
   if (!name) {
-    nameError = ErrorStrings.MustHave(nameType)
+    nameError = ErrorStrings.Required(nameType)
   }
   if (!nameError && name.length < 2) {
     nameError = ErrorStrings.NameShort(nameType)
@@ -784,7 +841,7 @@ const validateName = (name: string, nameType: string = RequisitionFields.Name) =
  * @returns Message if empty, empty string on value.
  */
 const validateOccurance = (occuranceName: string) => {
-  return !occuranceName ? ErrorStrings.OccuranceTime : ''
+  return !occuranceName ? ErrorStrings.Required('Schedule') : ''
 }
 
 /**
@@ -793,7 +850,7 @@ const validateOccurance = (occuranceName: string) => {
  * @returns Message if empty, empty string on value.
  */
 const validateOccuranceDay = (occuranceName: string) => {
-  return !occuranceName ? ErrorStrings.OccuranceDayTime : ''
+  return !occuranceName ? ErrorStrings.Required('Day of the month') : ''
 }
 
 /**
@@ -802,7 +859,7 @@ const validateOccuranceDay = (occuranceName: string) => {
  * @returns Message if empty, empty string on value.
  */
 const validateOccuranceWeek = (occuranceName: string) => {
-  return !occuranceName ? ErrorStrings.OccuranceWeekTime : ''
+  return !occuranceName ? ErrorStrings.Required('Day of the week') : ''
 }
 
 /**
@@ -813,9 +870,11 @@ const validateOccuranceWeek = (occuranceName: string) => {
 const validatePath = (path: string) => {
   let pathError = ''
   if (!path) {
-    pathError = ErrorStrings.FilePath
+    pathError = ErrorStrings.Required('File path')
   } else if (!path.startsWith('/')) {
     pathError = ErrorStrings.FilePathStart
+  } else if(/[?]/gm.test(path)) {
+    pathError = ErrorStrings.FilePathWithQueryChar
   }
   return pathError
 }
@@ -825,20 +884,8 @@ const validatePath = (path: string) => {
  * @param typeName Type selected (File,DNS,HTTP...)
  * @returns Message if empty, empty string on value.
  */
-
 const validateType = (typeName: string) => {
-  return !typeName ? ErrorStrings.TypeError : ''
-}
-
-/**
- *
- * @param numZero Number that might not have a leading zero if its less than 10
- * @returns A number that has a leading zero if its less than 10
- */
-const withTwoZeros = (numZero: string | number) => {
-  const minute = typeof numZero === 'string' ? parseInt(numZero) : numZero
-
-  return minute < 10 ? '0' + numZero : numZero
+  return !typeName ? ErrorStrings.Required('Type') : ''
 }
 
 /**
