@@ -75,9 +75,7 @@ Available compare operations are:
 * *LT* (less than)
 * *NOOP* (no operation)
 
-//not sure what "manager" is referring to here.
-
-The NOOP operation is a special case in which the Manager always returns a result code of "OK."
+The NOOP operation is a special case in which always evaluates to a result code of "OK."
 This is typically used in scenarios where the existence of a class or property is more interesting than the contents of the property.
 OpenNMS uses this in the collector to check and ensure that WMI is available before attempting to collect data.
 | EQ
