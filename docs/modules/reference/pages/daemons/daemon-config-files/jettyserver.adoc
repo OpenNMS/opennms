@@ -1,0 +1,15 @@
+[[ref-daemon-config-files-jettyserver]]
+= JettyServer
+
+.Eventd log file overview
+[options="header"]
+[cols="2,3"]
+
+|===
+| File
+| Description
+
+| jettyserver.log
+| The Jetty server provides the {page-component-title} web user interface logs.
+
+|===

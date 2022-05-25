@@ -1,0 +1,15 @@
+[[ref-daemon-config-files-rtcd]]
+= Rtcd
+
+.Rtcd log file overview
+[options="header"]
+[cols="2,3"]
+
+|===
+| File
+| Description
+
+| rtcd.log
+| Logs relating to Rtcd server events.
+
+|===

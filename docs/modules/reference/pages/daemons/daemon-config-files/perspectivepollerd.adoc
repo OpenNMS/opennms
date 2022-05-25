@@ -1,0 +1,15 @@
+[[ref-daemon-config-files-perspectivepoller]]
+= PerspectivePoller
+
+.PerspectivePoller log file overview
+[options="header"]
+[cols="2,3"]
+
+|===
+| File
+| Description
+
+| perspectivepoller.log
+| Logs relating to PerspectivePoller server events.
+
+|===

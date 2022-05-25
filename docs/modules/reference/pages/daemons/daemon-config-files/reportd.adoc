@@ -1,0 +1,15 @@
+[[ref-daemon-config-files-reportd]]
+= Reportd
+
+.Reportd log file overview
+[options="header"]
+[cols="2,3"]
+
+|===
+| File
+| Description
+
+| reportd.log
+| Logs relating to Reportd server events.
+
+|===

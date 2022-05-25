@@ -45,3 +45,16 @@
 | no
 | no
 |===
+
+.Notifd log file overview
+[options="header"]
+[cols="2,3"]
+
+|===
+| File
+| Description
+
+| notifd.log
+| Information about the notifications that were or were not sent.
+
+|===

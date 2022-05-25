@@ -25,3 +25,16 @@
 | yes
 | no
 |===
+
+.Eventd log file overview
+[options="header"]
+[cols="2,3"]
+
+|===
+| File
+| Description
+
+| eventd.log
+| Logs relating to Eventd server events.
+
+|===

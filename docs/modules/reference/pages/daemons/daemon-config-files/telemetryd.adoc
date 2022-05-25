@@ -41,3 +41,16 @@
 | no
 | no
 |===
+
+.Telemetryd log file overview
+[options="header"]
+[cols="2,3"]
+
+|===
+| File
+| Description
+
+| telemetryd.log
+| Logs relating to Telemetryd server events.
+
+|===

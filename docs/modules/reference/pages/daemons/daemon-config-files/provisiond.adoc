@@ -1,0 +1,16 @@
+[[ref-daemon-config-files-provisiond]]
+= Provisiond
+
+.Provisiond log file overview
+[options="header"]
+[cols="2,3"]
+
+|===
+| File
+| Description
+
+| provisiond.log
+| The node provisioning processes are being logged here.
+This also includes service detection and policy results.
+
+|===

@@ -1,0 +1,16 @@
+
+[[ref-daemon-config-files-ticketer]]
+= Ticketer
+
+.Ticketer log file overview
+[options="header"]
+[cols="2,3"]
+
+|===
+| File
+| Description
+
+| trouble-ticketer.log
+| Logs relating to Ticketer server events.
+
+|===

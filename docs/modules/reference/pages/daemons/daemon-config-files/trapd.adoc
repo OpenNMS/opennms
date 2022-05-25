@@ -22,3 +22,16 @@ Files in this folder must be specified as an include directive in `eventconf.xml
 | yes
 | no
 |===
+
+.Trapd log file overview
+[options="header"]
+[cols="2,3"]
+
+|===
+| File
+| Description
+
+| trapd.log
+| Logs relating to Trapd server events.
+
+|===

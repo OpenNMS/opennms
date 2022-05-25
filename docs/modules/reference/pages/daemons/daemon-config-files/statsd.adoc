@@ -1,0 +1,15 @@
+[[ref-daemon-config-files-statsd]]
+= Statsd
+
+.Statsd log file overview
+[options="header"]
+[cols="2,3"]
+
+|===
+| File
+| Description
+
+| statsd.log
+| Logs relating to Statsd server events.
+
+|===
