@@ -936,7 +936,7 @@ jobs:
       - attach_workspace:
           at: ~/
       - run-build:
-          number-vcpu: 4
+          number-vcpu: 2
   build-ui:
     executor: ui-executor
     steps:
