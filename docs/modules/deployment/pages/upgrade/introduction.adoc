@@ -21,17 +21,18 @@ endif::[]
 ifeval::["{page-component-title}" == "Horizon"]
 * Check the https://vault.opennms.com/docs/opennms/releases/index.html[release notes] for breaking changes in each release between your current version and the version you want to upgrade to.
 Address any issues that might affect you.
-
-NOTE: Release notes for versions 28 and 29 are not available at the vault docs link (above) at this time.
++
+NOTE: Release notes for versions 28 and later are not available at the vault docs link (above) at this time.
 Please check the branches on https://github.com/OpenNMS/opennms/releases[GitHub] for those release notes.
 endif::[]
 
-* Stop OpenNMS and PostgreSQL
-* xref:operation:admin/housekeeping/introduction.adoc#prune-events[Prune unneeded events]
-* Back up your database (same day/state)
-* Back up RRD files (same day/state)
-* Back up the opennms /etc directory (opennms folder) (same day/state)
-* <<events-table,Assess the events table size>> (especially important if you have a particularly large network)
+* Stop OpenNMS and PostgreSQL services.
+* xref:operation:admin/housekeeping/introduction.adoc#prune-events[Prune unneeded events].
+* Back up your database. (same day/state)
+* Back up RRD files. (same day/state)
+* Back up the `$\{OPENNMS_HOME}/etc` directory. (same day/state)
+* <<events-table,Assess the events table size>>.
+Especially important if you have a particularly large network with lots of events.
 * xref:deployment:upgrade/diff.adoc#run_diff[Identify the configuration files] you have changed to determine what you need to migrate as part of an upgrade.
 
 [[events-table]]
@@ -42,5 +43,5 @@ When you upgrade and have the available memory, choose a large value to pass to 
 
 [source, console]
 ----
-install -Xms1024m -Xmx2048m -dis
+${OPENNMS_HOME}/bin/install -Xms1024m -Xmx2048m -dis
 ----

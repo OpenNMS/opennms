@@ -91,7 +91,7 @@ class CollectableService implements ReadyRunnable {
 
     protected static final String USE_COLLECTION_START_TIME_SYS_PROP = "org.opennms.netmgt.collectd.useCollectionStartTime";
 
-    private final boolean m_usingStrictInterval = Boolean.getBoolean(STRICT_INTERVAL_SYS_PROP);
+    private final boolean m_usingStrictInterval = !System.getProperties().containsKey(STRICT_INTERVAL_SYS_PROP) || Boolean.getBoolean(STRICT_INTERVAL_SYS_PROP);
 
     /**
      * Interface's parent node identifier
@@ -415,49 +415,53 @@ class CollectableService implements ReadyRunnable {
     /**
      * Perform data collection.
      */
-	private void doCollection() throws CollectionException {
-		LOG.info("run: starting new collection for {}/{}/{}/{}", m_nodeId, getHostAddress(), m_spec.getServiceName(), m_spec.getPackageName());
-		CollectionSet result = null;
-		try {
-		    result = m_spec.collect(m_agent);
-		    if (result != null) {
-                        Collectd.instrumentation().beginPersistingServiceData(m_spec.getPackageName(), m_nodeId, getHostAddress(), m_spec.getServiceName());
-                        try {
-                            CollectionSetVisitor persister = m_persisterFactory.createPersister(m_params, m_repository, result.ignorePersist(), false, false);
-                            if (Boolean.getBoolean(USE_COLLECTION_START_TIME_SYS_PROP)) {
-                                final ConstantTimeKeeper timeKeeper = new ConstantTimeKeeper(new Date(m_lastScheduledCollectionTime));
-                                // Wrap the persister visitor such that calls to CollectionResource.getTimeKeeper() return the given timeKeeper
-                                persister = wrapResourcesWithTimekeeper(persister, timeKeeper);
-                            }
-                            result.visit(persister);
-                        } finally {
-                            Collectd.instrumentation().endPersistingServiceData(m_spec.getPackageName(), m_nodeId, getHostAddress(), m_spec.getServiceName());
-                        }
-
-                        // Do thresholding
-                        if (m_thresholdingSession != null) {
-                            try {
-                                m_thresholdingSession.accept(result);
-                            } catch (ThresholdInitializationException e) {
-                                LOG.warn("ThresholdInitializationException for {}. Thresholding skipped.", this, e);
-                            }
-                        } else {
-                            LOG.warn("No thresholding session for {}. Thresholding skipped.", this);
-                        }
-
-                        if (!CollectionStatus.SUCCEEDED.equals(result.getStatus())) {
-                            throw new CollectionFailed(result.getStatus());
-                        }
+    private void doCollection() throws CollectionException {
+        LOG.info("run: starting new collection for {}/{}/{}/{}", m_nodeId, getHostAddress(), m_spec.getServiceName(), m_spec.getPackageName());
+        CollectionSet result = null;
+        try {
+            result = m_spec.collect(m_agent);
+            if (result != null) {
+                Collectd.instrumentation().beginPersistingServiceData(m_spec.getPackageName(), m_nodeId, getHostAddress(), m_spec.getServiceName());
+                try {
+                    CollectionSetVisitor persister = m_persisterFactory.createPersister(m_params, m_repository, result.ignorePersist(), false, false);
+                    if (Boolean.getBoolean(USE_COLLECTION_START_TIME_SYS_PROP)) {
+                        final ConstantTimeKeeper timeKeeper = new ConstantTimeKeeper(new Date(m_lastScheduledCollectionTime));
+                        // Wrap the persister visitor such that calls to CollectionResource.getTimeKeeper() return the given timeKeeper
+                        persister = wrapResourcesWithTimekeeper(persister, timeKeeper);
                     }
-                } catch (CollectionException e) {
-                    LOG.warn("run: failed collection for {}/{}/{}/{}", m_nodeId, getHostAddress(), m_spec.getServiceName(), m_spec.getPackageName());
-                    throw e;
-		} catch (Throwable t) {
-                    LOG.warn("run: failed collection for {}/{}/{}/{}", m_nodeId, getHostAddress(), m_spec.getServiceName(), m_spec.getPackageName());
-                    throw new CollectionException("An undeclared throwable was caught during data collection for interface " + m_nodeId + "/" + getHostAddress() + "/" + m_spec.getServiceName(), t);
-		}
-		LOG.info("run: finished collection for {}/{}/{}/{}", m_nodeId, getHostAddress(), m_spec.getServiceName(), m_spec.getPackageName());
-	}
+                    result.visit(persister);
+                } finally {
+                    Collectd.instrumentation().endPersistingServiceData(m_spec.getPackageName(), m_nodeId, getHostAddress(), m_spec.getServiceName());
+                }
+
+                // Do thresholding
+                if (m_thresholdingSession != null) {
+                    try {
+                        m_thresholdingSession.accept(result);
+                    } catch (ThresholdInitializationException e) {
+                        LOG.warn("ThresholdInitializationException for {}. Thresholding skipped.", this, e);
+                    }
+                } else {
+                    LOG.warn("No thresholding session for {}. Thresholding skipped.", this);
+                }
+
+                if (!CollectionStatus.SUCCEEDED.equals(result.getStatus())) {
+                    throw new CollectionFailed(result.getStatus());
+                }
+            }
+        } catch (IllegalArgumentException e) {
+            LOG.warn("run: failed collection for {}/{}/{}/{}", m_nodeId, getHostAddress(), m_spec.getServiceName(), m_spec.getPackageName());
+            throw new CollectionException("Illegal Argument Exception was caught during data collection for interface " + m_nodeId + "/" + getHostAddress() + "/" + m_spec.getServiceName()
+                    + " with message: " + e.getMessage(), e);
+        } catch (CollectionException e) {
+            LOG.warn("run: failed collection for {}/{}/{}/{}", m_nodeId, getHostAddress(), m_spec.getServiceName(), m_spec.getPackageName());
+            throw e;
+        } catch (Throwable t) {
+            LOG.warn("run: failed collection for {}/{}/{}/{}", m_nodeId, getHostAddress(), m_spec.getServiceName(), m_spec.getPackageName());
+            throw new CollectionException("An undeclared throwable was caught during data collection for interface " + m_nodeId + "/" + getHostAddress() + "/" + m_spec.getServiceName(), t);
+        }
+        LOG.info("run: finished collection for {}/{}/{}/{}", m_nodeId, getHostAddress(), m_spec.getServiceName(), m_spec.getPackageName());
+    }
 
 	/**
      * Process any outstanding updates.

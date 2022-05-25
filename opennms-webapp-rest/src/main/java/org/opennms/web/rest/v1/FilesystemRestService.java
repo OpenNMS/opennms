@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
@@ -93,12 +94,12 @@ public class FilesystemRestService {
     @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
     public List<String> getFiles(@QueryParam("changedFilesOnly") boolean changedFilesOnly, @Context SecurityContext securityContext) {
-        if (!securityContext.isUserInRole(Authentication.ROLE_ADMIN)) {
-            throw new ForbiddenException("ADMIN role is required for enumerating files.");
+        if (!securityContext.isUserInRole(Authentication.ROLE_FILESYSTEM_EDITOR)) {
+            throw new ForbiddenException("FILESYSTEM EDITOR role is required for enumerating files.");
         }
 
         try {
-            return Files.find(etcFolder, 4, (path, basicFileAttributes) -> isSupportedExtension(path))
+            return Files.find(etcFolder, 4, (path, basicFileAttributes) -> isSupportedExtension(path), FileVisitOption.FOLLOW_LINKS)
                     .map(p -> etcFolder.relativize(p).toString())
                     .filter(p -> !changedFilesOnly || !doesFileExistAndMatchContentsWithEtcPristine(p))
                     .sorted()
@@ -127,8 +128,8 @@ public class FilesystemRestService {
     @Path("/help")
     @Produces("text/markdown")
     public InputStream getFileHelp(@QueryParam("f") String fileName, @Context SecurityContext securityContext) {
-        if (!securityContext.isUserInRole(Authentication.ROLE_ADMIN)) {
-            throw new ForbiddenException("ADMIN role is required for retrieving help.");
+        if (!securityContext.isUserInRole(Authentication.ROLE_FILESYSTEM_EDITOR)) {
+            throw new ForbiddenException("FILESYSTEM EDITOR role is required for retrieving help.");
         }
         ensureFileIsAllowed(fileName);
         return this.getClass().getResourceAsStream("/help/" + fileName + ".md");
@@ -138,8 +139,8 @@ public class FilesystemRestService {
     @Path("/extensions")
     @Produces(MediaType.APPLICATION_JSON)
     public List<String> getSupportedExtensions(@Context SecurityContext securityContext) {
-        if (!securityContext.isUserInRole(Authentication.ROLE_ADMIN)) {
-            throw new ForbiddenException("ADMIN role is required for retrieving supported extensions.");
+        if (!securityContext.isUserInRole(Authentication.ROLE_FILESYSTEM_EDITOR)) {
+            throw new ForbiddenException("FILESYSTEM EDITOR role is required for retrieving supported extensions.");
         }
         return SUPPORTED_FILE_EXTENSIONS.stream()
                 .sorted()
@@ -149,8 +150,8 @@ public class FilesystemRestService {
     @GET
     @Path("/contents")
     public Response getFileContents(@QueryParam("f") String fileName, @Context SecurityContext securityContext) {
-        if (!securityContext.isUserInRole(Authentication.ROLE_ADMIN)) {
-            throw new ForbiddenException("ADMIN role is required for reading files.");
+        if (!securityContext.isUserInRole(Authentication.ROLE_FILESYSTEM_EDITOR)) {
+            throw new ForbiddenException("FILESYSTEM EDITOR role is required for reading files.");
         }
         return fileContents(ensureFileIsAllowed(fileName));
     }
@@ -162,8 +163,8 @@ public class FilesystemRestService {
     public String uploadFile(@QueryParam("f") String fileName,
                              @Multipart("upload") Attachment attachment,
                              @Context SecurityContext securityContext) throws IOException {
-        if (!securityContext.isUserInRole(Authentication.ROLE_ADMIN)) {
-            throw new ForbiddenException("ADMIN role is required for uploading file contents.");
+        if (!securityContext.isUserInRole(Authentication.ROLE_FILESYSTEM_EDITOR)) {
+            throw new ForbiddenException("FILESYSTEM EDITOR role is required for uploading file contents.");
         }
         final java.nio.file.Path targetPath = ensureFileIsAllowed(fileName);
 
@@ -194,8 +195,8 @@ public class FilesystemRestService {
     @Produces(MediaType.TEXT_HTML)
     public String deleteFile(@QueryParam("f") String fileName,
                              @Context SecurityContext securityContext) throws IOException {
-        if (!securityContext.isUserInRole(Authentication.ROLE_ADMIN)) {
-            throw new ForbiddenException("ADMIN role is required for deleting file contents.");
+        if (!securityContext.isUserInRole(Authentication.ROLE_FILESYSTEM_EDITOR)) {
+            throw new ForbiddenException("FILESYSTEM EDITOR role is required for deleting file contents.");
         }
         final java.nio.file.Path targetPath = ensureFileIsAllowed(fileName);
         Files.delete(targetPath);
@@ -279,5 +280,4 @@ public class FilesystemRestService {
             return sb.toString();
         }
     }
-
 }

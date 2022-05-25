@@ -44,6 +44,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.features.scv.api.SecureCredentialsVault;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -78,6 +79,9 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
 
     @Autowired
     private SessionUtils sessionUtils;
+
+    @Autowired
+    private SecureCredentialsVault scv;
 
     @Override
     public Scope getScopeForNode(final Integer nodeId) {
@@ -172,6 +176,8 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
                         .map(ASSET, "managed-object-instance", (a) -> Optional.ofNullable(a.getManagedObjectInstance()))
                         .map(ASSET, "geolocation", (a) -> Optional.ofNullable(a.getGeolocation()).map(Object::toString));
                 scopes.add(assetScope);
+
+                scopes.add(new SecureCredentialsVaultScope(this.scv));
             }
 
             return new FallbackScope(scopes);
@@ -241,7 +247,8 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
                     mapIpInterfaceKeys(ipInterface)
                             .map(INTERFACE, "if-alias", (i) -> Optional.ofNullable(i.getSnmpInterface()).map(OnmsSnmpInterface::getIfAlias))
                             .map(INTERFACE, "if-description", (i) -> Optional.ofNullable(i.getSnmpInterface()).map(OnmsSnmpInterface::getIfDescr))
-                            .map(INTERFACE, "phy-addr", (i) -> Optional.ofNullable(i.getSnmpInterface()).map(OnmsSnmpInterface::getPhysAddr))
+                            .map(INTERFACE, "phy-addr", (i) -> Optional.ofNullable(i.getSnmpInterface()).map(OnmsSnmpInterface::getPhysAddr)),
+                                     new SecureCredentialsVaultScope(this.scv)
             );
         });
     }
@@ -281,6 +288,8 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
                         scopes.add(mapIpInterfaceKeys(ipInterface));
                     });
 
+            scopes.add(new SecureCredentialsVaultScope(this.scv));
+
             return new FallbackScope(scopes);
         });
     }
@@ -299,7 +308,8 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
 
             return new FallbackScope(transform(Scope.ScopeName.SERVICE, monitoredService.getMetaData()),
                     new ObjectScope<>(Scope.ScopeName.SERVICE, monitoredService)
-                            .map(SERVICE, "name", (s) -> Optional.of(s.getServiceName()))
+                            .map(SERVICE, "name", (s) -> Optional.of(s.getServiceName())),
+                                     new SecureCredentialsVaultScope(this.scv)
             );
         });
     }
@@ -328,5 +338,9 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
 
     public void setSessionUtils(SessionUtils sessionUtils) {
         this.sessionUtils = Objects.requireNonNull(sessionUtils);
+    }
+
+    public void setScv(SecureCredentialsVault scv) {
+        this.scv = scv;
     }
 }

@@ -135,6 +135,12 @@ It is possible to combine multiple criteria to display just a subset of informat
 | database attribute
 | -
 | -
+
+| MultiAnd
+| Constraint that supports multiple parameters in criteria builder.
+| database attribute
+| String
+| String
 |===
 
 TIP: For date values, you can specify absolute value in ISO format (2019-06-20T20:45:15.123-05:00). Specify relative times by +seconds and -seconds.

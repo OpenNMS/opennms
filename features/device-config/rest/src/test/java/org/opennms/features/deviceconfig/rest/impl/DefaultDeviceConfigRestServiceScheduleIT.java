@@ -28,6 +28,17 @@
 
 package org.opennms.features.deviceconfig.rest.impl;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.endsWith;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.startsWith;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -35,23 +46,15 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.endsWith;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.startsWith;
-import static org.junit.Assert.assertArrayEquals;
 
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -59,14 +62,15 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfig;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
+import org.opennms.features.deviceconfig.persistence.api.DeviceConfigStatus;
 import org.opennms.features.deviceconfig.rest.api.DeviceConfigDTO;
 import org.opennms.features.deviceconfig.rest.api.DeviceConfigRestService;
+import org.opennms.features.deviceconfig.service.DeviceConfigConstants;
 import org.opennms.features.deviceconfig.service.DeviceConfigService;
 import org.opennms.netmgt.config.PollerConfigFactory;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
@@ -99,36 +103,43 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(reuseDatabase = false)
 public class DefaultDeviceConfigRestServiceScheduleIT {
-    private static final int RECORD_COUNT = 3;
+    private static final int RECORD_COUNT = 5;
 
     private static final List<String> CRON_SCHEDULES = List.of(
         "0 15 10 ? * *",
         "0 * 14 * * ?",
-        "0 15 10 ? * 6#3"
+        "0 15 10 ? * 6#3",
+        DeviceConfigConstants.NEVER,
+        ""
     );
 
     private static final List<String> EXPECTED_CRON_SCHEDULE_DESCRIPTIONS = List.of(
         "At 10:15 am",
         "Every minute, at 2:00 pm",
-        "At 10:15 am, on the third Saturday of the month"
+        "At 10:15 am, on the third Saturday of the month",
+        "Never",
+        "Never"
     );
 
     private static final List<byte[]> CONFIG_BYTES = List.of(
         "one".getBytes(StandardCharsets.UTF_8),
         "two".getBytes(StandardCharsets.UTF_8),
-        "three".getBytes(StandardCharsets.UTF_8)
+        "three".getBytes(StandardCharsets.UTF_8),
+        "four".getBytes(StandardCharsets.UTF_8),
+        "five".getBytes(StandardCharsets.UTF_8)
     );
 
     // configuration for 3 devices used in test database
-    private static final List<String> NODE_NAMES = List.of("dcb-1", "dcb-2", "dcb-3");
-    private static final List<String> OPERATING_SYSTEMS = List.of("alpine", "centos", "redhat");
-    private static final List<String> FOREIGN_IDS = List.of("21", "22", "23");
-    private static final List<String> IP_ADDRESSES = List.of("192.168.3.1", "192.168.3.2", "192.168.3.3");
-    private static final List<String> CONFIG_STRINGS = List.of("one", "two", "three");
-    private static final List<String> CONFIG_TYPES = List.of("default", "running", "wurstblinker");
-    private static final List<String> SERVICE_NAMES = List.of("DeviceConfig-default", "DeviceConfig-running", "DeviceConfig-wurstblinker");
+    private static final List<String> NODE_NAMES = List.of("dcb-1", "dcb-2", "dcb-3", "dcb-4", "dcb-5");
+    private static final List<String> OPERATING_SYSTEMS = List.of("alpine", "centos", "redhat", "juniper", "cisco");
+    private static final List<String> FOREIGN_IDS = List.of("21", "22", "23", "24", "25");
+    private static final List<String> IP_ADDRESSES = List.of("192.168.3.1", "192.168.3.2", "192.168.3.3", "192.168.3.4", "192.168.3.5");
+    private static final List<String> CONFIG_STRINGS = List.of("one", "two", "three", "four", "five");
+    private static final List<String> CONFIG_TYPES = List.of("default", "running", "wurstblinker", "pommes-frites", "rotweiss");
+    private static final List<String> CONFIG_NAMES = List.of("Startup Configuration", "Running Configuration", "Wurstblinker Configuration", "Pommes Frites Configuration", "Rotweiss Configuration");
+    private static final List<String> SERVICE_NAMES = List.of("DeviceConfig-default", "DeviceConfig-running", "DeviceConfig-wurstblinker", "DeviceConfig-pommes-frites", "DeviceConfig-rotweiss");
     // alternate service names that may not match config type, to test we are using serviceName field
-    private static final List<String> SUBSTITUTE_SERVICE_NAMES = List.of("DeviceConfig", "DeviceConfig-running", "DeviceConfig-wurstblinker");
+    private static final List<String> SUBSTITUTE_SERVICE_NAMES = List.of("DeviceConfig", "DeviceConfig-running", "DeviceConfig-wurstblinker", "DeviceConfig-pommes-frites", "DeviceConfig-rotweiss");
 
     @Autowired
     private NodeDao nodeDao;
@@ -190,7 +201,7 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
             deviceConfigDao.saveOrUpdate(createDeviceConfig(ipInterfaces.get(1), CONFIG_TYPES.get(1),
                 SERVICE_NAMES.get(1), olderDate, olderConfig));
 
-            final var response = deviceConfigRestService.getLatestDeviceConfigsForDeviceAndConfigType(10, 0, "lastUpdated", "asc", null);
+            final var response = deviceConfigRestService.getLatestDeviceConfigsForDeviceAndConfigType(10, 0, "lastUpdated", "asc", null, null);
             assertThat(response, notNullValue());
             assertThat(response.hasEntity(), is(true));
 
@@ -204,31 +215,31 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
 
             final List<DeviceConfigDTO> responseList = (List<DeviceConfigDTO>) response.getEntity();
             assertThat(responseList.size(), equalTo(RECORD_COUNT));
-            final List<String> expectedOperatingSystems = List.of("alpine", "centos", "redhat");
+            final List<String> expectedOperatingSystems = List.of("alpine", "centos", "redhat", "juniper", "cisco");
 
             IntStream.range(0, RECORD_COUNT).forEach(i -> {
                 final DeviceConfigDTO dto = responseList.get(i);
 
-                final var actualMonitoredService = ipInterfaces.get(i).getMonitoredServiceByServiceType(SERVICE_NAMES.get(i));
-                assertThat(dto.getMonitoredServiceId(), equalTo(actualMonitoredService.getId()));
-                assertThat(CONFIG_TYPES.get(i).equalsIgnoreCase(dto.getConfigType()), is(true));
+                assertDtoWith(dto, ipInterfaces.get(i).getId(), CONFIG_TYPES.get(i),
+                    dates.get(i), dates.get(i), dates.get(i), null, DeviceConfigStatus.SUCCESS);
+                assertThat(dto.getConfigName(), equalTo(CONFIG_NAMES.get(i)));
                 assertThat(dto.getServiceName(), equalTo(SERVICE_NAMES.get(i)));
                 assertThat(dto.getEncoding(), equalTo(DefaultDeviceConfigRestService.DEFAULT_ENCODING));
-                assertThat(dto.getLastBackupDate().getTime(), equalTo(dates.get(i).getTime()));
-                assertThat(dto.getLastUpdatedDate().getTime(), equalTo(dates.get(i).getTime()));
-                assertThat(dto.getLastSucceededDate().getTime(), equalTo(dates.get(i).getTime()));
-                assertThat(dto.getLastFailedDate(), nullValue());
                 assertThat(dto.getFailureReason(), nullValue());
                 assertThat(dto.getConfig(), equalTo(CONFIG_STRINGS.get(i)));
                 assertThat(dto.getOperatingSystem(), equalTo(expectedOperatingSystems.get(i)));
-                assertThat(dto.getBackupStatus(), equalTo(DefaultDeviceConfigRestService.BACKUP_STATUS_SUCCESS));
                 assertThat(dto.getScheduledInterval().get(SERVICE_NAMES.get(i)),
                     equalTo(EXPECTED_CRON_SCHEDULE_DESCRIPTIONS.get(i)));
-                assertThat(dto.getNextScheduledBackupDate().after(currentDate), is(true));
+
+                if (i >= 3) {
+                    assertThat(dto.getNextScheduledBackupDate(), is(nullValue()));
+                } else {
+                    assertThat(dto.getNextScheduledBackupDate().after(currentDate), is(true));
+                }
             });
 
             // Now do a 'history' search which should return 2 items for index 1 "dcb-2", having 2 different backup dates
-            final var historyResponse = deviceConfigRestService.getDeviceConfigsByInterface(ipInterfaceIds.get(1));
+            final var historyResponse = deviceConfigRestService.getDeviceConfigsByInterface(ipInterfaceIds.get(1), null);
             assertThat(historyResponse, notNullValue());
             assertThat(historyResponse.hasEntity(), is(true));
 
@@ -247,14 +258,14 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
             IntStream.range(0, 2).forEach(i -> {
                 DeviceConfigDTO dto = historyResponseList.get(i);
 
-                assertThat(dto.getMonitoredServiceId(), equalTo(ipInterfaceIds.get(1)));
+                assertThat(dto.getServiceName(), equalTo("DeviceConfig-" + CONFIG_TYPES.get(1)));
+                assertThat(dto.getConfigName(), equalTo(CONFIG_NAMES.get(1)));
+                assertThat(dto.getIpInterfaceId(), equalTo(ipInterfaceIds.get(1)));
                 assertThat(CONFIG_TYPES.get(1).equalsIgnoreCase(dto.getConfigType()), is(true));
                 assertThat(dto.getServiceName(), equalTo(SERVICE_NAMES.get(1)));
                 assertThat(dto.getEncoding(), equalTo(DefaultDeviceConfigRestService.DEFAULT_ENCODING));
-                assertThat(dto.getLastFailedDate(), nullValue());
                 assertThat(dto.getFailureReason(), nullValue());
                 assertThat(dto.getOperatingSystem(), equalTo(expectedOperatingSystems.get(1)));
-                assertThat(dto.getBackupStatus(), equalTo(DefaultDeviceConfigRestService.BACKUP_STATUS_SUCCESS));
                 assertThat(dto.getScheduledInterval().get(SERVICE_NAMES.get(1)),
                     equalTo(EXPECTED_CRON_SCHEDULE_DESCRIPTIONS.get(1)));
                 assertThat(dto.getNextScheduledBackupDate().after(currentDate), is(true));
@@ -264,15 +275,126 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
             final DeviceConfigDTO newerDto = historyResponseList.get(0);
             final DeviceConfigDTO olderDto = historyResponseList.get(1);
 
-            assertThat(newerDto.getLastBackupDate().getTime(), equalTo(dates.get(1).getTime()));
-            assertThat(newerDto.getLastUpdatedDate().getTime(), equalTo(dates.get(1).getTime()));
-            assertThat(newerDto.getLastSucceededDate().getTime(), equalTo(dates.get(1).getTime()));
+            assertDtoWith(newerDto, ipInterfaceIds.get(1), CONFIG_TYPES.get(1),
+                dates.get(1), dates.get(1), dates.get(1), null, DeviceConfigStatus.SUCCESS);
+            assertThat(newerDto.getConfigName(), equalTo(CONFIG_NAMES.get(1)));
             assertThat(newerDto.getConfig(), equalTo(CONFIG_STRINGS.get(1)));
 
-            assertThat(olderDto.getLastBackupDate().getTime(), equalTo(olderDate.getTime()));
-            assertThat(olderDto.getLastUpdatedDate().getTime(), equalTo(olderDate.getTime()));
-            assertThat(olderDto.getLastSucceededDate().getTime(), equalTo(olderDate.getTime()));
+            assertDtoWith(olderDto, ipInterfaceIds.get(1), CONFIG_TYPES.get(1),
+                olderDate, olderDate, olderDate, null, DeviceConfigStatus.SUCCESS);
+            assertThat(olderDto.getConfigName(), equalTo(CONFIG_NAMES.get(1)));
             assertThat(olderDto.getConfig(), equalTo("older"));
+        });
+    }
+
+    @Test
+    public void testGetLatestDeviceConfigsForDeviceAndConfigTypeWithStatus() {
+        populateDeviceConfigServiceInfo();
+
+        this.sessionUtils.withTransaction(() -> {
+            // Add nodes, interfaces, services
+            List<OnmsIpInterface> ipInterfaces = ipInterfaceDao.findAll();
+            assertThat(ipInterfaces.size(), equalTo(RECORD_COUNT));
+
+            // Add DeviceConfig entries mapped to ipInterfaces and services
+            Date currentDate = new Date();
+            List<Date> dates = getTestDates(currentDate, RECORD_COUNT);
+
+            // Add 3 items having status: NONE, SUCCESS, FAILED
+            DeviceConfig dcNone = createDeviceConfig(ipInterfaces.get(0), CONFIG_TYPES.get(0),
+                    SERVICE_NAMES.get(0), null, null);
+            dcNone.setStatus(DeviceConfigStatus.NONE);
+            deviceConfigDao.saveOrUpdate(dcNone);
+
+            DeviceConfig dcSuccess = createDeviceConfig(ipInterfaces.get(1), CONFIG_TYPES.get(1),
+                SERVICE_NAMES.get(1), dates.get(1), CONFIG_BYTES.get(1));
+            dcSuccess.setStatus(DeviceConfigStatus.SUCCESS);
+            deviceConfigDao.saveOrUpdate(dcSuccess);
+
+            DeviceConfig dcFailed = createDeviceConfig(ipInterfaces.get(2), CONFIG_TYPES.get(2),
+                SERVICE_NAMES.get(2), dates.get(2), CONFIG_BYTES.get(2));
+            dcFailed.setLastFailed(dates.get(2));
+            dcFailed.setLastSucceeded(Date.from(dates.get(2).toInstant().minusSeconds(10)));
+            dcFailed.setStatus(DeviceConfigStatus.FAILED);
+            deviceConfigDao.saveOrUpdate(dcFailed);
+
+            {
+                // SUCCESS or FAILED
+                final var response = deviceConfigRestService.getLatestDeviceConfigsForDeviceAndConfigType(
+                    10, 0, "lastUpdated", "asc", null,
+                    Set.of(DeviceConfigStatus.SUCCESS, DeviceConfigStatus.FAILED));
+                assertThat(response, notNullValue());
+                assertThat(response.hasEntity(), is(true));
+
+                final var responseList = (List<DeviceConfigDTO>) response.getEntity();
+                assertThat(responseList.size(), equalTo(2));
+
+                final var dtoSuccess =
+                    responseList.stream().filter(dto -> dto.getIpInterfaceId().equals(ipInterfaces.get(1).getId())).findFirst();
+                assertDtoWith(dtoSuccess.orElse(null), ipInterfaces.get(1).getId(), CONFIG_TYPES.get(1),
+                    dates.get(1), dates.get(1), dates.get(1), null, DeviceConfigStatus.SUCCESS);
+                dtoSuccess.ifPresent(dto -> assertThat(dto.getConfigName(), equalTo(CONFIG_NAMES.get(1))));
+
+                final var dtoFailed =
+                    responseList.stream().filter(dto -> dto.getIpInterfaceId().equals(ipInterfaces.get(2).getId())).findFirst();
+                assertDtoWith(dtoFailed.orElse(null), ipInterfaces.get(2).getId(), CONFIG_TYPES.get(2),
+                    dates.get(2), dates.get(2), dcFailed.getLastSucceeded(), dates.get(2), DeviceConfigStatus.FAILED);
+                dtoFailed.ifPresent(dto -> assertThat(dto.getConfigName(), equalTo(CONFIG_NAMES.get(2))));
+            }
+
+            {
+                // SUCCESS only
+                final var response = deviceConfigRestService.getLatestDeviceConfigsForDeviceAndConfigType(
+                    10, 0, "lastUpdated", "asc", null,
+                    Set.of(DeviceConfigStatus.SUCCESS));
+                assertThat(response, notNullValue());
+                assertThat(response.hasEntity(), is(true));
+
+                final var responseList = (List<DeviceConfigDTO>) response.getEntity();
+                assertThat(responseList.size(), equalTo(1));
+
+                final var dtoSuccess =
+                    responseList.stream().filter(dto -> dto.getIpInterfaceId().equals(ipInterfaces.get(1).getId())).findFirst();
+                assertDtoWith(dtoSuccess.orElse(null), ipInterfaces.get(1).getId(), CONFIG_TYPES.get(1),
+                    dates.get(1), dates.get(1), dates.get(1), null, DeviceConfigStatus.SUCCESS);
+                dtoSuccess.ifPresent(dto -> assertThat(dto.getConfigName(), equalTo(CONFIG_NAMES.get(1))));
+            }
+
+            {
+                // FAILED only
+                final var response = deviceConfigRestService.getLatestDeviceConfigsForDeviceAndConfigType(
+                    10, 0, "lastUpdated", "asc", null,
+                    Set.of(DeviceConfigStatus.FAILED));
+                assertThat(response, notNullValue());
+                assertThat(response.hasEntity(), is(true));
+
+                final var responseList = (List<DeviceConfigDTO>) response.getEntity();
+                assertThat(responseList.size(), equalTo(1));
+
+                final var dtoFailed =
+                    responseList.stream().filter(dto -> dto.getIpInterfaceId().equals(ipInterfaces.get(2).getId())).findFirst();
+                assertDtoWith(dtoFailed.orElse(null), ipInterfaces.get(2).getId(), CONFIG_TYPES.get(2),
+                    dates.get(2), dates.get(2), dcFailed.getLastSucceeded(), dates.get(2), DeviceConfigStatus.FAILED);
+                dtoFailed.ifPresent(dto -> assertThat(dto.getConfigName(), equalTo(CONFIG_NAMES.get(2))));
+            }
+
+            {
+                // NONE only
+                final var response = deviceConfigRestService.getLatestDeviceConfigsForDeviceAndConfigType(
+                    10, 0, "lastUpdated", "asc", null,
+                    Set.of(DeviceConfigStatus.NONE));
+                assertThat(response, notNullValue());
+                assertThat(response.hasEntity(), is(true));
+
+                final var responseList = (List<DeviceConfigDTO>) response.getEntity();
+                assertThat(responseList.size(), equalTo(1));
+
+                final var dtoNone =
+                    responseList.stream().filter(dto -> dto.getIpInterfaceId().equals(ipInterfaces.get(0).getId())).findFirst();
+                assertDtoWith(dtoNone.orElse(null), ipInterfaces.get(0).getId(), CONFIG_TYPES.get(0),
+                    null, null, null, null, DeviceConfigStatus.NONE);
+                dtoNone.ifPresent(dto -> assertThat(dto.getConfigName(), equalTo(CONFIG_NAMES.get(0))));
+            }
         });
     }
 
@@ -298,7 +420,7 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
             deviceConfigDao.saveOrUpdate(createDeviceConfig(ipInterfaces.get(0), CONFIG_TYPES.get(0),
                 SUBSTITUTE_SERVICE_NAMES.get(0), dates.get(0), CONFIG_BYTES.get(0)));
 
-            final var response = deviceConfigRestService.getLatestDeviceConfigsForDeviceAndConfigType(10, 0, "lastUpdated", "asc", null);
+            final var response = deviceConfigRestService.getLatestDeviceConfigsForDeviceAndConfigType(10, 0, "lastUpdated", "asc", null, null);
             assertThat(response, notNullValue());
             assertThat(response.hasEntity(), is(true));
 
@@ -308,8 +430,9 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
             final DeviceConfigDTO dto = responseList.get(0);
 
             final var actualMonitoredService = ipInterfaces.get(0).getMonitoredServiceByServiceType(SUBSTITUTE_SERVICE_NAMES.get(0));
-            assertThat(dto.getMonitoredServiceId(), equalTo(actualMonitoredService.getId()));
+            assertThat(dto.getServiceName(), equalTo(actualMonitoredService.getServiceName()));
             assertThat(CONFIG_TYPES.get(0).equalsIgnoreCase(dto.getConfigType()), is(true));
+            assertThat(dto.getConfigName(), equalTo(CONFIG_NAMES.get(0)));
             assertThat(dto.getServiceName(), equalTo(SUBSTITUTE_SERVICE_NAMES.get(0)));
             assertThat(dto.getLastUpdatedDate().getTime(), equalTo(dates.get(0).getTime()));
             assertThat(dto.getConfig(), equalTo(CONFIG_STRINGS.get(0)));
@@ -347,7 +470,7 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
             final var searchTerms = List.of("dcb-2", "192.168.3.2");
 
             searchTerms.forEach(searchTerm -> {
-                var response = deviceConfigRestService.getLatestDeviceConfigsForDeviceAndConfigType(10, 0, null, null, searchTerm);
+                var response = deviceConfigRestService.getLatestDeviceConfigsForDeviceAndConfigType(10, 0, null, null, searchTerm, null);
                 assertThat(response, notNullValue());
                 assertThat(response.hasEntity(), is(true));
 
@@ -366,8 +489,10 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
                 DeviceConfigDTO dto = responseList.get(0);
 
                 final var actualMonitoredService = ipInterfaces.get(1).getMonitoredServiceByServiceType(SERVICE_NAMES.get(1));
-                assertThat(dto.getMonitoredServiceId(), equalTo(actualMonitoredService.getId()));
+                assertThat(dto.getIpInterfaceId(), equalTo(ipInterfaceIds.get(1)));
+                assertThat(dto.getServiceName(), equalTo("DeviceConfig-" + CONFIG_TYPES.get(1)));
                 assertThat(CONFIG_TYPES.get(1).equalsIgnoreCase(dto.getConfigType()), is(true));
+                assertThat(dto.getConfigName(), equalTo(CONFIG_NAMES.get(1)));
                 assertThat(dto.getServiceName(), equalTo(SERVICE_NAMES.get(1)));
                 assertThat(dto.getEncoding(), equalTo(DefaultDeviceConfigRestService.DEFAULT_ENCODING));
                 assertThat(dto.getLastBackupDate().getTime(), equalTo(dates.get(1).getTime()));
@@ -377,7 +502,7 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
                 assertThat(dto.getFailureReason(), nullValue());
                 assertThat(dto.getConfig(), equalTo(CONFIG_STRINGS.get(1)));
                 assertThat(dto.getOperatingSystem(), equalTo(expectedOperatingSystems.get(1)));
-                assertThat(dto.getBackupStatus(), equalTo(DefaultDeviceConfigRestService.BACKUP_STATUS_SUCCESS));
+                assertThat(dto.getBackupStatus(), equalTo(DeviceConfigStatus.SUCCESS.name().toLowerCase(Locale.ROOT)));
                 assertThat(dto.getScheduledInterval().get(SERVICE_NAMES.get(1)),
                     equalTo(EXPECTED_CRON_SCHEDULE_DESCRIPTIONS.get(1)));
                 assertThat(dto.getNextScheduledBackupDate().after(currentDate), is(true));
@@ -404,7 +529,7 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
 
             final int nonExistingIpInterfaceId = ipInterfaces.stream().mapToInt(OnmsIpInterface::getId).max().orElse(9999) + 1;
 
-            final var response = deviceConfigRestService.getDeviceConfigsByInterface(nonExistingIpInterfaceId);
+            final var response = deviceConfigRestService.getDeviceConfigsByInterface(nonExistingIpInterfaceId, null);
             assertThat(response, notNullValue());
             assertThat(response.hasEntity(), is(false));
             assertThat(response.getStatus(), is(Response.Status.NO_CONTENT.getStatusCode()));
@@ -423,7 +548,7 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
 
             // Add DeviceConfig entries mapped to ipInterfaces and services
             List<Date> dates = getTestDates(new Date(), RECORD_COUNT);
-            List<String> failureReasons = Arrays.asList(null, "failure 1", "failure 2");
+            List<String> failureReasons = Arrays.asList(null, "failure 1", "failure 2", "failure 3", "failure 4");
 
             // never succeeded or failed, an odd case
             DeviceConfig dc1 = createDeviceConfig(ipInterfaces.get(0), CONFIG_TYPES.get(0),
@@ -447,9 +572,23 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
             dc3.setLastSucceeded(Date.from(dc3.getLastUpdated().toInstant().minusSeconds(60 * 60)));
             dc3.setFailureReason(failureReasons.get(2));
 
-            List.of(dc1, dc2, dc3).forEach(deviceConfigDao::saveOrUpdate);
+            // succeeded, but more recently failed
+            DeviceConfig dc4 = createDeviceConfig(ipInterfaces.get(3), CONFIG_TYPES.get(3),
+                    SERVICE_NAMES.get(3), dates.get(3), CONFIG_BYTES.get(3));
+            dc4.setLastFailed(dc4.getLastUpdated());
+            dc4.setLastSucceeded(Date.from(dc4.getLastUpdated().toInstant().minusSeconds(60 * 60)));
+            dc4.setFailureReason(failureReasons.get(3));
 
-            var response = deviceConfigRestService.getLatestDeviceConfigsForDeviceAndConfigType(10, 0, "lastUpdated", "asc", null);
+            // succeeded, but more recently failed
+            DeviceConfig dc5 = createDeviceConfig(ipInterfaces.get(4), CONFIG_TYPES.get(4),
+                    SERVICE_NAMES.get(4), dates.get(4), CONFIG_BYTES.get(4));
+            dc5.setLastFailed(dc5.getLastUpdated());
+            dc5.setLastSucceeded(Date.from(dc5.getLastUpdated().toInstant().minusSeconds(60 * 60)));
+            dc5.setFailureReason(failureReasons.get(4));
+
+            List.of(dc1, dc2, dc3, dc4, dc5).forEach(deviceConfigDao::saveOrUpdate);
+
+            var response = deviceConfigRestService.getLatestDeviceConfigsForDeviceAndConfigType(10, 0, "lastUpdated", "asc", null, null);
             assertThat(response.hasEntity(), is(true));
 
             List<DeviceConfigDTO> responseList = (List<DeviceConfigDTO>) response.getEntity();
@@ -458,7 +597,7 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
             IntStream.range(0, RECORD_COUNT).forEach(i -> {
                 DeviceConfigDTO dto = responseList.get(i);
                 assertThat(dto.getLastUpdatedDate().getTime(), equalTo(dates.get(i).getTime()));
-                assertThat(dto.getBackupStatus(), equalTo(DefaultDeviceConfigRestService.BACKUP_STATUS_FAILED));
+                assertThat(dto.getBackupStatus(), equalTo(DeviceConfigStatus.FAILED.name().toLowerCase(Locale.ROOT)));
                 assertThat(dto.getFailureReason(), equalTo(failureReasons.get(i)));
             });
         });
@@ -489,6 +628,7 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
             DeviceConfigDTO dto = (DeviceConfigDTO) response.getEntity();
             assertThat(dc.getId(), equalTo(dto.getId()));
             assertThat(CONFIG_TYPES.get(0).equalsIgnoreCase(dto.getConfigType()), is(true));
+            assertThat(dto.getConfigName(), equalTo(CONFIG_NAMES.get(0)));
             assertThat(dto.getServiceName(), equalTo(SERVICE_NAMES.get(0)));
             assertThat(dto.getEncoding(), equalTo(DefaultDeviceConfigRestService.BINARY_ENCODING));
             assertThat(dto.getConfig(), equalTo(expectedConfig));
@@ -515,13 +655,17 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
                 Date.from(dates.get(1).toInstant().minusSeconds(1)), "older".getBytes(StandardCharsets.UTF_8));
             final var dc2 = createDeviceConfig(ipInterfaces.get(2), CONFIG_TYPES.get(2),
                 SERVICE_NAMES.get(2), dates.get(2), CONFIG_BYTES.get(2));
+            final var dc3 = createDeviceConfig(ipInterfaces.get(3), CONFIG_TYPES.get(3),
+                    SERVICE_NAMES.get(3), dates.get(3), CONFIG_BYTES.get(3));
+            final var dc4 = createDeviceConfig(ipInterfaces.get(4), CONFIG_TYPES.get(4),
+                    SERVICE_NAMES.get(4), dates.get(4), CONFIG_BYTES.get(4));
 
-            List.of(dc0, dc1a, dc1b, dc2).forEach(deviceConfigDao::saveOrUpdate);
+            List.of(dc0, dc1a, dc1b, dc2, dc3, dc4).forEach(deviceConfigDao::saveOrUpdate);
 
-            final var expectedDeviceConfigs = List.of(List.of(dc0), List.of(dc1a, dc1b), List.of(dc2));
+            final var expectedDeviceConfigs = List.of(List.of(dc0), List.of(dc1a, dc1b), List.of(dc2), List.of(dc3), List.of(dc4));
 
             IntStream.range(0, RECORD_COUNT).forEach(i -> {
-                final var response = deviceConfigRestService.getDeviceConfigsByInterface(ipInterfaces.get(i).getId());
+                final var response = deviceConfigRestService.getDeviceConfigsByInterface(ipInterfaces.get(i).getId(), null);
                 assertThat(response, notNullValue());
                 assertThat(response.hasEntity(), is(true));
 
@@ -546,6 +690,21 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
                     assertThat(dto.getIpInterfaceId(), equalTo(expectedDc.getIpInterface().getId()));
                     assertThat(dto.getDeviceName(), equalTo(expectedDc.getIpInterface().getNode().getLabel()));
                 });
+            });
+
+            // Test filtering by config type
+            IntStream.range(0, 2).forEach(i -> {
+                final var response = deviceConfigRestService.getDeviceConfigsByInterface(ipInterfaces.get(1).getId(), CONFIG_TYPES.get(i));
+
+                assertThat(response, notNullValue());
+                assertThat(response.hasEntity(), is(true));
+
+                final List<DeviceConfigDTO> responseList = (List<DeviceConfigDTO>) response.getEntity();
+                assertThat(responseList.size(), equalTo(1));
+
+                DeviceConfigDTO dto = responseList.get(0);
+                assertThat(dto.getIpInterfaceId(), equalTo(ipInterfaces.get(1).getId()));
+                assertThat(dto.getConfigType(), equalTo(CONFIG_TYPES.get(i)));
             });
         });
     }
@@ -724,6 +883,18 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
         return serviceType;
     }
 
+    private void assertDtoWith(DeviceConfigDTO dto, Integer ipInterfaceId, String configType,
+                               Date lastBackup, Date lastUpdated, Date lastSucceeded, Date lastFailed, DeviceConfigStatus status) {
+        assertNotNull(dto);
+        assertThat(dto.getIpInterfaceId(), equalTo(ipInterfaceId));
+        assertThat(dto.getConfigType(), equalTo(configType));
+        assertThat(dto.getLastBackupDate(), equalTo(lastBackup));
+        assertThat(dto.getLastUpdatedDate(), equalTo(lastUpdated));
+        assertThat(dto.getLastSucceededDate(), equalTo(lastSucceeded));
+        assertThat(dto.getLastFailedDate(), equalTo(lastFailed));
+        assertThat(dto.getBackupStatus(), equalTo(status.name().toLowerCase(Locale.ROOT)));
+    }
+
     private static DeviceConfig createDeviceConfig(OnmsIpInterface ipInterface1, String configType,
         String serviceName, Date date, byte[] config) {
         var dc = new DeviceConfig();
@@ -735,6 +906,7 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
         dc.setIpInterface(ipInterface1);
         dc.setServiceName(serviceName);
         dc.setConfigType(configType);
+        dc.setStatus(DeviceConfig.determineBackupStatus(dc));
 
         return dc;
     }

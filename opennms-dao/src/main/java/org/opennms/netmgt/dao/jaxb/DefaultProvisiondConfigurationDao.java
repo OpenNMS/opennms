@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,13 +28,19 @@
 
 package org.opennms.netmgt.dao.jaxb;
 
+import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.impl.AbstractCmJaxbConfigDao;
 import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
 import org.opennms.netmgt.config.provisiond.RequisitionDef;
 import org.opennms.netmgt.dao.api.ProvisiondConfigurationDao;
+import org.opennms.netmgt.dao.jaxb.callback.ConfigurationReloadEventCallback;
+import org.opennms.netmgt.dao.jaxb.callback.ProvisiondConfigurationValidationCallback;
+import org.opennms.netmgt.events.api.EventForwarder;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Default implementation of <code>AckdConfiguration</code> containing utility methods for manipulating
@@ -46,7 +52,9 @@ import java.util.List;
 public class DefaultProvisiondConfigurationDao extends AbstractCmJaxbConfigDao<ProvisiondConfiguration> implements ProvisiondConfigurationDao {
 
     private static final String CONFIG_NAME = "provisiond";
-    private static final String DEFAULT_CONFIG_ID = "default";
+
+    @Autowired
+    private EventForwarder eventForwarder;
 
     /**
      * <p>Constructor for DefaultProvisiondConfigurationDao.</p>
@@ -58,7 +66,7 @@ public class DefaultProvisiondConfigurationDao extends AbstractCmJaxbConfigDao<P
     /**
      * <p>getConfig</p>
      *
-     * @return a {@link org.opennms.netmgt.config.provisiond.ProvisiondConfiguration} object.
+     * @return a {@link ProvisiondConfiguration} object.
      * @throws IOException
      */
     @Override
@@ -162,12 +170,17 @@ public class DefaultProvisiondConfigurationDao extends AbstractCmJaxbConfigDao<P
     }
 
     @Override
-    public String getConfigName() {
-        return CONFIG_NAME;
+    public Consumer<ConfigUpdateInfo> getUpdateCallback(){
+        return new ConfigurationReloadEventCallback(eventForwarder);
     }
 
     @Override
-    protected String getDefaultConfigId() {
-        return DEFAULT_CONFIG_ID;
+    public Consumer<ConfigUpdateInfo> getValidationCallback(){
+        return new ProvisiondConfigurationValidationCallback();
+    }
+
+    @Override
+    public String getConfigName() {
+        return CONFIG_NAME;
     }
 }

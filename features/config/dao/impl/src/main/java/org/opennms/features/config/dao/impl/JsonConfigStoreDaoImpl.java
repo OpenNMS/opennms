@@ -155,30 +155,6 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
     }
 
     @Override
-    public void updateConfig(String configName, String configId, JSONObject config, boolean isReplace) throws ValidationException {
-        Optional<ConfigData<JSONObject>> configData = this.getConfigs(configName);
-        if (configData.isEmpty()) {
-            throw new ConfigNotFoundException("ConfigData not found configName: " + configName);
-        }
-        Map<String, JSONObject> configs = configData.get().getConfigs();
-        if (!configs.containsKey(configId)) {
-            throw new ConfigNotFoundException("Config not found configName: " + configName + ", configId: " + configId);
-        }
-        JSONObject configToUpdate;
-        if (isReplace) {
-            configToUpdate = config;
-            configs.put(configId, configToUpdate);
-        } else {
-            configToUpdate = configs.get(configId);
-
-            // copy all first level keys' value into existing config
-            config.keySet().forEach(key -> configToUpdate.put(key, config.get(key)));
-        }
-        this.validateConfig(configName, configToUpdate);
-        this.putConfig(configName, configData.get());
-    }
-
-    @Override
     public void updateConfigs(String configName, ConfigData<JSONObject> configData) throws ValidationException {
         this.validateConfigData(configName, configData);
         this.putConfig(configName, configData);
@@ -278,6 +254,11 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
                 });
     }
 
+    /**
+     * Validate config against schema
+     * @param configDefinition
+     * @param configObject
+     */
     private void validateConfig(final ConfigDefinition configDefinition, final JSONObject configObject) {
         configDefinition.validate(configObject.toString());
     }

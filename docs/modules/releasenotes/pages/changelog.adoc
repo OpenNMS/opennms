@@ -2,16 +2,52 @@
 
 = Changelog
 
+[[releasenotes-changelog-29.0.10]]
+
+== Release 29.0.10
+
+Release 29.0.10 contains a number of security dependency updates, plus a bunch of other bug fixes
+and documentation improvements.
+
+IMPORTANT: While the dependency changes _should_ not affect how the OpenNMS runtime works, this release
+contains a larger than usual number of changes to "plumbing" to facilitate these dependency updates.
+We strongly recommend that you do more than the usual amount of testing before deploying this update
+to a production environment.
+
+The codename for Horizon 29.0.10 is https://wikipedia.org/wiki/$$Duck$$[_Duck_].
+
+=== Bug
+
+* install script fails if an OpenNMS directory contains root-owned lost+found directory (Issue http://issues.opennms.org/browse/NMS-14032[NMS-14032])
+* Provisiond Fails to Start when wrong data is successfully POSTed via REST to hardwareInventory endpoint (Issue http://issues.opennms.org/browse/NMS-14085[NMS-14085])
+* Grafana box renders raw JS when Grafana behind reverse proxy with SSO (Issue http://issues.opennms.org/browse/NMS-14109[NMS-14109])
+* CVE-2022-22965: Spring RCE in Data Bindings (Issue http://issues.opennms.org/browse/NMS-14134[NMS-14134])
+* Minions Trapd Listener Fails to Bind to udp/162 when broker is down (Issue http://issues.opennms.org/browse/NMS-14148[NMS-14148])
+* Fix formatting in alarmd documentation (Issue http://issues.opennms.org/browse/NMS-14182[NMS-14182])
+* Dependabot: update Vaadin to the latest 8.x (Issue http://issues.opennms.org/browse/NMS-14192[NMS-14192])
+* Upgrade groovy-all dependency (Issue http://issues.opennms.org/browse/NMS-14208[NMS-14208])
+* make sure license-maven-plugin is re-enabled in foundation and release branches (Issue http://issues.opennms.org/browse/NMS-14217[NMS-14217])
+* Upgrade jackson-mapper-asl dependency (Issue http://issues.opennms.org/browse/NMS-14252[NMS-14252])
+
+=== Enhancement
+
+* Basic upgrade procedure (Issue http://issues.opennms.org/browse/NMS-13971[NMS-13971])
+* Document housekeeping tasks before upgrade (Issue http://issues.opennms.org/browse/NMS-13972[NMS-13972])
+* IPFIX: Also support ingressPhysicalInterface and egressPhysicalInterface for input and output ifIndex (Issue http://issues.opennms.org/browse/NMS-14169[NMS-14169])
+* Cleanup Ticketer docs formatting (Issue http://issues.opennms.org/browse/NMS-14172[NMS-14172])
+* Expand XmlCollector documented parameters (Issue http://issues.opennms.org/browse/NMS-14256[NMS-14256])
+* Restructure Collector docs file path (Issue http://issues.opennms.org/browse/NMS-14258[NMS-14258])
+
 [[releasenotes-changelog-29.0.9]]
 
-==== Release 29.0.9
+== Release 29.0.9
 
 Release 29.0.9 contains a bunch of bug fixes and enhancements, including improvements
 for running in containers, code cleanups, and improved documentation.
 
 The codename for Horizon 29.0.9 is https://wikipedia.org/wiki/$$Kiwi_(bird)$$[_Kiwi_].
 
-===== Bug
+=== Bug
 
 * Documentation for all pollers misses RRD config parameter (Issue http://issues.opennms.org/browse/NMS-11747[NMS-11747])
 * Resolve SonarCloud High priority Security Hotspots  (Issue http://issues.opennms.org/browse/NMS-14002[NMS-14002])
@@ -23,7 +59,7 @@ The codename for Horizon 29.0.9 is https://wikipedia.org/wiki/$$Kiwi_(bird)$$[_K
 * Fix for NMS-13887 did not make it to Core (Issue http://issues.opennms.org/browse/NMS-14117[NMS-14117])
 * Update docs for binding ports <1024 (Issue http://issues.opennms.org/browse/NMS-14162[NMS-14162])
 
-===== Enhancement
+=== Enhancement
 
 * Switch to using a java e-mail library instead of system mail (Issue http://issues.opennms.org/browse/NMS-14015[NMS-14015])
 * Misspelling in SystemExecuteMonitor error text (Issue http://issues.opennms.org/browse/NMS-14091[NMS-14091])

@@ -28,9 +28,12 @@
 
 package org.opennms.features.config.service.impl;
 
+import org.opennms.features.config.service.api.ConfigUpdateInfo;
+import org.opennms.features.config.service.api.callback.DefaultCmJaxbConfigDaoUpdateCallback;
 import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
 
 import javax.annotation.PostConstruct;
+import java.util.function.Consumer;
 
 public class ProvisiondCmJaxbConfigTestDao extends AbstractCmJaxbConfigDao<ProvisiondConfiguration> {
     public static final String CONFIG_NAME = "provisiond";
@@ -40,8 +43,13 @@ public class ProvisiondCmJaxbConfigTestDao extends AbstractCmJaxbConfigDao<Provi
     }
 
     @Override
-    protected String getConfigName() {
+    public String getConfigName() {
         return CONFIG_NAME;
+    }
+
+    @Override
+    public Consumer<ConfigUpdateInfo> getUpdateCallback() {
+        return new DefaultCmJaxbConfigDaoUpdateCallback<>(this);
     }
 
     @Override

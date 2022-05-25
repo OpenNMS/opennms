@@ -65,4 +65,5 @@ public interface RestrictionVisitor {
     void visitSqlComplete(final SqlRestriction restriction);
     void visitIplike(final IplikeRestriction restriction);
     void visitIplikeComplete(final IplikeRestriction restriction);
+    void visitRegExp(RegExpRestriction regExpRestriction);
 }

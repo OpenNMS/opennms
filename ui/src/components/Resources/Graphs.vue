@@ -24,19 +24,22 @@
   </div>
 </template>
   
-<script setup lang=ts>
+<script setup lang="ts">
 import { useStore } from 'vuex'
 import GraphContainer from './GraphContainer.vue'
 import TimeControls from './TimeControls.vue'
 import { sub, getUnixTime } from 'date-fns'
 import { StartEndTime } from '@/types'
 import { FeatherInput } from '@featherds/input'
+import useSpinner from '@/composables/useSpinner'
+import { UpdateModelFunction } from '@/types'
 
 const el = document.getElementById('card')
 const { arrivedState } = useScroll(el, { offset: { bottom: 100 } })
 const definitionsToDisplay = ref<string[]>([])
 const store = useStore()
 const router = useRouter()
+const { startSpinner, stopSpinner } = useSpinner()
 const now = new Date()
 const initNumOfGraphs = 4
 const searchVal = ref<string>('')
@@ -79,8 +82,8 @@ const addGraphDefinition = () => {
   }
 }
 
-const searchHandler = (searchInputVal: string) => {
-  store.dispatch('spinnerModule/setSpinnerState', true)
+const searchHandler: UpdateModelFunction = (searchInputVal: string) => {
+  startSpinner()
   searchVal.value = searchInputVal
 
   const search = useDebounceFn((val: string) => {
@@ -96,7 +99,7 @@ const searchHandler = (searchInputVal: string) => {
       definitionsToDisplay.value = definitionsListCopy.splice(0, 4)
     }
 
-    store.dispatch('spinnerModule/setSpinnerState', false)
+    stopSpinner()
   }, 1000)
 
   search(searchInputVal)

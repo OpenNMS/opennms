@@ -47,7 +47,7 @@
             <template v-slot:icon>
               <FeatherIcon :icon="Backup" />
             </template>
-            Backup Now
+            Backup
           </FeatherButton>
 
           <FeatherButton
@@ -64,55 +64,62 @@
         </div>
       </div>
     </div>
-    <DCBSearch class="dcb-search" />
   </div>
 
-  <div ref="tableWrap" id="wrap" class="dcb-table">
+  <div
+    ref="tableWrap"
+    id="wrap"
+    class="dcb-table"
+  >
     <table summary="Device Config Backup">
       <thead>
         <tr>
           <th>
-            <FeatherCheckbox v-model="all" @update:modelValue="selectAll" data-test="all-checkbox" />
+            <FeatherCheckbox
+              v-model="all"
+              @update:modelValue="selectAll"
+              data-test="all-checkbox"
+            />
           </th>
           <FeatherSortHeader
             scope="col"
             property="deviceName"
             :sort="sortStates.deviceName"
             v-on:sort-changed="sortByColumnHandler"
-          >Node Name</FeatherSortHeader>
-
-          <FeatherSortHeader
-            scope="col"
-            property="configType"
-          >Config Type</FeatherSortHeader>
+            >Node Name</FeatherSortHeader
+          >
 
           <FeatherSortHeader
             scope="col"
             property="ipAddress"
             :sort="sortStates.ipAddress"
             v-on:sort-changed="sortByColumnHandler"
-          >IP Address</FeatherSortHeader>
+            >IP Address</FeatherSortHeader
+          >
 
           <FeatherSortHeader
             scope="col"
             property="location"
             :sort="sortStates.location"
             v-on:sort-changed="sortByColumnHandler"
-          >Location</FeatherSortHeader>
+            >Location</FeatherSortHeader
+          >
 
           <FeatherSortHeader
             scope="col"
             property="lastBackup"
             :sort="sortStates.lastBackup"
             v-on:sort-changed="sortByColumnHandler"
-          >Last Backup Date</FeatherSortHeader>
+            >Last Backup Date</FeatherSortHeader
+          >
 
           <FeatherSortHeader
             scope="col"
             property="lastUpdated"
             :sort="sortStates.lastUpdated"
             v-on:sort-changed="sortByColumnHandler"
-          >Last Attempted</FeatherSortHeader>
+            >Last Attempted</FeatherSortHeader
+          >
 
           <th>
             <DCBTableStatusDropdown />
@@ -123,18 +130,23 @@
             property="scheduleDate"
             :sort="sortStates.scheduleDate"
             v-on:sort-changed="sortByColumnHandler"
-          >Schedule Date</FeatherSortHeader>
+            >Schedule Date</FeatherSortHeader
+          >
 
           <FeatherSortHeader
             scope="col"
             property="scheduleInterval"
             :sort="sortStates.scheduleInterval"
             v-on:sort-changed="sortByColumnHandler"
-          >Schedule Interval</FeatherSortHeader>
+            >Schedule Interval</FeatherSortHeader
+          >
         </tr>
       </thead>
       <tbody>
-        <tr v-for="config in deviceConfigBackups" :key="config.id">
+        <tr
+          v-for="config in deviceConfigBackups"
+          :key="config.id"
+        >
           <td>
             <FeatherCheckbox
               class="device-config-checkbox"
@@ -143,23 +155,39 @@
             />
           </td>
           <td>
-            <router-link :to="`/node/${config.nodeId}`" target="_blank">{{ config.deviceName }}</router-link>
+            <router-link
+              :to="`/node/${config.nodeId}`"
+              target="_blank"
+            >
+              {{ config.deviceName }}
+              <span :title="config.configName">
+                <FeatherIcon
+                  v-if="config.configType !== 'default'"
+                  :icon="Speed"
+                />
+              </span>
+            </router-link>
           </td>
-          <td>{{ config.configType }}</td>
           <td>{{ config.ipAddress }}</td>
           <td>{{ config.location }}</td>
-          <td class="last-backup-date pointer" @click="onLastBackupDateClick(config)">
-            <span v-date>{{ config.lastBackupDate }}</span>
-            <FeatherButton icon="View" v-if="config.lastBackupDate">
-              <FeatherIcon :icon="ViewDetails" />
-            </FeatherButton>
+          <td
+            class="last-backup-date pointer"
+            @click="onLastBackupDateClick(config)"
+          >
+            <span
+              title="View config"
+              v-date
+              >{{ config.lastBackupDate }}</span
+            >
           </td>
           <td v-date>{{ config.lastUpdatedDate }}</td>
           <td>
             <div
-              :class="config.backupStatus.replace(' ', '').toLowerCase()"
+              :class="config.backupStatus"
               class="option"
-            >{{ config.backupStatus }}</div>
+            >
+              {{ config.backupStatus === 'none' ? 'No Backup' : config.backupStatus }}
+            </div>
           </td>
           <td v-date>{{ config.nextScheduledBackupDate }}</td>
           <td>{{ Object.values(config.scheduledInterval)[0] }}</td>
@@ -167,9 +195,13 @@
       </tbody>
     </table>
   </div>
-  <DCBModal @close="dcbModalVisible = false" :visible="dcbModalVisible">
+  <DCBModal
+    @close="dcbModalVisible = false"
+    :visible="dcbModalVisible"
+  >
     <template v-slot:content>
-      <DCBModalViewHistoryContentVue @onCompare="onCompare"
+      <DCBModalViewHistoryContentVue
+        @onCompare="onCompare"
         v-if="dcbModalVisible && dcbModalContentComponentName === DCBModalContentComponentNames.DCBModalViewHistoryContent"
       />
       <DCBModalLastBackupContent
@@ -182,7 +214,10 @@
   </DCBModal>
 </template>
 
-<script setup lang="ts">
+<script
+  setup
+  lang="ts"
+>
 import { useStore } from 'vuex'
 import { FeatherSortHeader, SORT } from '@featherds/table'
 import { FeatherSortObject } from '@/types'
@@ -191,10 +226,9 @@ import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
 import History from '@featherds/icon/action/Restore'
 import Download from '@featherds/icon/action/DownloadFile'
-import Backup from '@featherds/icon/action/Cycle'
-import ViewDetails from '@featherds/icon/action/ViewDetails'
-import Compare from '@featherds/icon/action/ContentCopy'
-import DCBSearch from '@/components/Device/DCBSearch.vue'
+import Backup from '@/assets/Backup.vue'
+import Compare from '@/assets/Compare.vue'
+import Speed from '@/assets/Speed.vue'
 import DCBModal from './DCBModal.vue'
 import DCBModalLastBackupContent from './DCBModalLastBackupContent.vue'
 import DCBModalViewHistoryContentVue from './DCBModalViewHistoryContent.vue'
@@ -215,7 +249,7 @@ const all = ref(false)
 const tableWrap = ref<HTMLElement | null>(null)
 const defaultQuerySize = 20
 const selectedDeviceConfigBackups = ref<Record<string, boolean>>({})
-const sortStates: DeviceConfigQueryParams = reactive({
+const sortStates: Record<string, SORT> = reactive({
   deviceName: SORT.ASCENDING,
   ipAddress: SORT.NONE,
   location: SORT.NONE,
@@ -329,7 +363,10 @@ onMounted(() => {
 })
 </script>
 
-<style lang="scss" scoped>
+<style
+  lang="scss"
+  scoped
+>
 @import "@featherds/table/scss/table";
 @import "@featherds/styles/mixins/elevation";
 @import "@featherds/styles/mixins/typography";
@@ -340,7 +377,6 @@ onMounted(() => {
   white-space: nowrap;
 
   table {
-    width: 100%;
     margin-top: 0px !important;
     font-size: 12px !important;
     @include table;
@@ -349,9 +385,14 @@ onMounted(() => {
 
     .last-backup-date {
       color: var($primary);
+      
+      span:hover {
+        font-weight: 600;
+      }
     }
 
     .option {
+      margin-left: 8px;
       height: 43px;
       line-height: 3.5;
       padding-left: 15px;
@@ -399,20 +440,10 @@ onMounted(() => {
       border-left: 1px solid var($shade-4);
     }
   }
-
-  .dcb-search {
-    width: 250px;
-    padding: 0px;
-  }
 }
 </style>
 
 <style lang="scss">
-.dcb-search {
-  .feather-input-content {
-    margin-top: 0px;
-  }
-}
 .device-config-checkbox {
   label {
     display: none;
@@ -424,3 +455,4 @@ onMounted(() => {
   }
 }
 </style>
+

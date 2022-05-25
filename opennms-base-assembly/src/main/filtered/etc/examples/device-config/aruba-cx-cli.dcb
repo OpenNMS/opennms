@@ -1,0 +1,5 @@
+await: #
+send: copy running-config tftp://${tftpServerIp}/running-config${filenameSuffix} cli
+await: Copying configuration: [Success]
+await: #
+send: exit

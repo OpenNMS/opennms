@@ -12,6 +12,7 @@
       <div
         v-date
         class="history-date pointer"
+        :class="{ 'selected' : selectedConfig?.id === config.id }"
         v-for="config of defaultConfigTypeBackups"
         :key="config.id"
         @click="setSelectedConfig(config)"
@@ -38,6 +39,7 @@
             <div
               v-date
               class="history-date pointer"
+              :class="{ 'selected' : selectedConfig?.id === config.id }"
               v-for="config of defaultConfigTypeBackups"
               :key="config.id"
               @click="setSelectedConfig(config)"
@@ -57,6 +59,7 @@
             <div
               v-date
               class="history-date pointer"
+              :class="{ 'selected' : selectedConfig?.id === config.id }"
               v-for="config of otherConfigTypeBackups"
               :key="config.id"
               @click="setSelectedConfig(config)"
@@ -77,7 +80,7 @@ import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
 import { FeatherTab, FeatherTabContainer, FeatherTabPanel } from '@featherds/tabs'
 import Download from '@featherds/icon/action/DownloadFile'
-import Compare from '@featherds/icon/action/ContentCopy'
+import Compare from '@/assets/Compare.vue'
 import { useStore } from 'vuex'
 import { DeviceConfigBackup, defaultConfig, runningConfig } from '@/types/deviceConfig'
 import DCBDiff from './DCBDiff.vue'
@@ -139,6 +142,11 @@ onMounted(() => getHistoryBackups())
     .history-date {
       @include body-small;
       color: var($primary);
+      margin-top: 5px;
+
+      &.selected {
+        font-weight: bold;
+      }
     }
   }
 }

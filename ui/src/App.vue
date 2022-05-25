@@ -1,4 +1,3 @@
-  
 <template>
   <FeatherAppLayout content-layout="full">
     <template v-slot:header>
@@ -11,6 +10,7 @@
 
     <div class="main-content">
       <Spinner />
+      <Snackbar />
       <router-view v-slot="{ Component }">
         <keep-alive include="MapKeepAlive">
           <component :is="Component" />
@@ -19,12 +19,16 @@
     </div>
   </FeatherAppLayout>
 </template>
-  
-<script setup lang="ts">
+
+<script
+  setup
+  lang="ts"
+>
 import { useStore } from 'vuex'
 import { FeatherAppLayout } from '@featherds/app-layout'
 import Menubar from './components/Layout/Menubar.vue'
 import Spinner from './components/Common/Spinner.vue'
+import Snackbar from '@/components/Common/Snackbar.vue'
 import NavigationRail from './components/Layout/NavigationRail.vue'
 
 const store = useStore()
@@ -38,18 +42,23 @@ onMounted(() => {
   store.dispatch('pluginModule/getPlugins')
 })
 </script>
-  
+
 <style lang="scss">
 @import "@featherds/styles/lib/grid";
 @import "@featherds/styles/mixins/typography";
 @import "@featherds/styles/themes/open-mixins";
+
 html {
-  overflow: hidden;
+  overflow-x: hidden;
 }
 .main-content {
-  transform: translate(v-bind(contentMargin));
-  transition: transform 0.28s ease-in-out v-bind(ease);
+  margin-left: v-bind(contentMargin);
+  transition: margin-left 0.28s ease-in-out v-bind(ease);
   max-width: calc(100% - v-bind(maxWidth));
+
+  table {
+    width: 100%;
+  }
 }
 a {
   text-decoration: none;
@@ -73,3 +82,4 @@ a {
   @include subtitle2;
 }
 </style>
+

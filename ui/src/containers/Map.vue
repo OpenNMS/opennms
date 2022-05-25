@@ -10,7 +10,11 @@
         ref="split"
         @resize="resize"
       >
-        <pane min-size="1" max-size="100" :size="72">
+        <pane
+          min-size="1"
+          max-size="100"
+          :size="72"
+        >
           <DrawerBtn />
           <TopologyLeftDrawer>
             <template v-slot:search>
@@ -27,9 +31,18 @@
             </template>
           </TopologyLeftDrawer>
           <Topology v-if="isTopologyView" />
-          <LeafletMap v-if="nodesReady" v-show="!isTopologyView" ref="leafletComponent" />
+          <LeafletMap
+            v-if="nodesReady"
+            v-show="!isTopologyView"
+            ref="leafletComponent"
+          />
         </pane>
-        <pane min-size="1" max-size="100" :size="28" class="bottom-pane">
+        <pane
+          min-size="1"
+          max-size="100"
+          :size="28"
+          class="bottom-pane"
+        >
           <GridTabs />
         </pane>
       </splitpanes>
@@ -42,7 +55,10 @@
 export default { name: 'MapKeepAlive' }
 </script>
 
-<script setup lang="ts">
+<script
+  setup
+  lang="ts"
+>
 import { useStore } from 'vuex'
 import { Splitpanes, Pane } from 'splitpanes'
 import 'splitpanes/dist/splitpanes.css'
@@ -50,43 +66,35 @@ import LeafletMap from '../components/Map/LeafletMap.vue'
 import Topology from './Topology.vue'
 import GridTabs from '@/components/Map/GridTabs.vue'
 import { debounce } from 'lodash'
-import TopologyLeftDrawer from '@/components/Topology/TopologyLeftDrawer.vue'
-import ViewSelect from '@/components/Topology/ViewSelect.vue'
-import TopologySearch from '@/components/Topology/TopologySearch.vue'
-import MapSearch from '@/components/Map/MapSearch.vue'
-import DrawerBtn from '@/components/Topology/DrawerBtn.vue'
+import useSpinner from '@/composables/useSpinner'
 
 const store = useStore()
+const { startSpinner, stopSpinner } = useSpinner()
 const split = ref()
 const nodesReady = ref(false)
 const leafletComponent = ref()
 
 const isTopologyView = computed<boolean>(() => store.state.topologyModule.isTopologyView)
+// resizes the map / loads missing tiles
+const resize = debounce(() => leafletComponent.value.invalidateSizeFn(), 200)
 
 const minimizeBottomPane = () => {
   // override splitpane event
   split.value.panes[0].size = 96
   split.value.panes[1].size = 4
-  if (!isTopologyView.value) {
-    setTimeout(() => leafletComponent.value.invalidateSizeFn(), 200)
-  }
-}
 
-// resize the map when splitter dragged
-const resize = debounce(() => {
-  if (!isTopologyView.value) {
-    leafletComponent.value.invalidateSizeFn(), 200
-  }
-})
+  resize()
+}
 
 const flyToNode = (node: string) => leafletComponent.value.flyToNode(node)
 const setBoundingBox = (nodeLabels: string[]) => leafletComponent.value.setBoundingBox(nodeLabels)
 
 onMounted(async () => {
-  store.dispatch('spinnerModule/setSpinnerState', true)
+  startSpinner()
   await store.dispatch('mapModule/getNodes')
   await store.dispatch('mapModule/getAlarms')
-  store.dispatch('spinnerModule/setSpinnerState', false)
+  stopSpinner()
+  resize()
   nodesReady.value = true
   store.dispatch('topologyModule/getVerticesAndEdges')
 })
@@ -95,7 +103,10 @@ onActivated(() => store.dispatch('appModule/setNavRailOpen', false))
 onDeactivated(() => store.dispatch('appModule/setNavRailOpen', true))
 </script>
 
-<style scoped lang="scss">
+<style
+  scoped
+  lang="scss"
+>
 .bottom-pane {
   position: relative;
 }
@@ -114,3 +125,4 @@ onDeactivated(() => store.dispatch('appModule/setNavRailOpen', true))
   }
 }
 </style>
+

@@ -1,5 +1,8 @@
 <template>
-  <FeatherNavigationRail @update:modelValue="onNavRailClick">
+  <FeatherNavigationRail
+    id="main-nav-rail"
+    @update:modelValue="onNavRailClick"
+  >
     <template v-slot:main>
       <FeatherRailItem
         :class="{ selected: isSelected('/') }"
@@ -14,23 +17,29 @@
         title="Map"
       />
       <FeatherRailItem
+        :class="{ selected: isSelected('/configuration'), 'title-multiline-custom': navRailOpen }"
+        href="#/configuration"
+        :icon="LoggerConfigs"
+        title="External Requisitions and Thread Pools"
+      />
+      <FeatherRailItem
         :class="{ selected: isSelected('/file-editor') }"
-        v-if="isAdmin"
+        v-if="filesystemEditorRole"
         href="#/file-editor"
-        :icon="AddNote"
+        :icon="FileEditor"
         title="File Editor"
       />
       <FeatherRailItem
         :class="{ selected: isSelected('/logs') }"
-        v-if="isAdmin"
+        v-if="adminRole"
         href="#/logs"
-        :icon="MarkComplete"
+        :icon="Logs"
         title="Logs"
       />
       <FeatherRailItem
         :class="{ selected: isSelected('/open-api') }"
         href="#/open-api"
-        :icon="Cloud"
+        :icon="Endpoints"
         title="Endpoints"
       />
       <FeatherRailItem
@@ -40,10 +49,18 @@
         title="Resource Graphs"
       />
       <FeatherRailItem
+        v-if="dcbRole"
         :class="{ selected: isSelected('/device-config-backup') }"
         href="#/device-config-backup"
         :icon="MinionProfiles"
-        title="Configuration Management"
+        title="Device Configs"
+      />
+      <FeatherRailItem
+        v-if="adminRole"
+        :class="{ selected: isSelected('/scv') }"
+        href="#/scv"
+        :icon="Security"
+        title="Secure Credentials Vault"
       />
 
       <!-- loop plugin menu items -->
@@ -58,36 +75,51 @@
     </template>
   </FeatherNavigationRail>
 </template>
-<script setup lang=ts>
+<script
+  setup
+  lang="ts"
+>
 import { useStore } from 'vuex'
+import useRole from '@/composables/useRole'
 import Instances from '@featherds/icon/hardware/Instances'
 import MinionProfiles from '@featherds/icon/hardware/MinionProfiles'
-import AddNote from '@featherds/icon/action/AddNote'
+import LoggerConfigs from '@featherds/icon/action/LoggerConfigs'
 import Location from '@featherds/icon/action/Location'
-import MarkComplete from '@featherds/icon/action/MarkComplete'
-import Cloud from '@featherds/icon/action/Cloud'
 import Reporting from '@featherds/icon/action/Reporting'
 import UpdateUtilities from '@featherds/icon/action/UpdateUtilities'
+import Security from '@featherds/icon/hardware/Security'
+import FileEditor from '@/assets/FileEditor.vue'
+import Endpoints from '@/assets/Endpoints.vue'
+import Logs from '@/assets/Logs.vue'
 import {
   FeatherNavigationRail,
-  FeatherRailItem,
+  FeatherRailItem
 } from '@featherds/navigation-rail'
 import { Plugin } from '@/types'
 
 const store = useStore()
 const route = useRoute()
+const { adminRole, filesystemEditorRole, dcbRole } = useRole()
 const plugins = computed<Plugin[]>(() => store.state.pluginModule.plugins)
-const isAdmin = computed(() => store.getters['authModule/isAdmin'])
 const navRailOpen = computed(() => store.state.appModule.navRailOpen)
 const onNavRailClick = () => store.dispatch('appModule/setNavRailOpen', !navRailOpen.value)
 const isSelected = (path: string) => path === route.fullPath
 </script>
 
 <style lang="scss">
-.nav-rail {
-  z-index: 999;
-}
-.nav-header {
-  display: none !important;
+@import "@featherds/styles/themes/variables";
+
+#main-nav-rail {
+  .nav-header {
+    display: none !important;
+  }
+
+  .title-multiline-custom {
+    white-space: pre-wrap;
+    height: auto !important;
+    padding-top: var($spacing-xs) !important;
+    padding-bottom: var($spacing-xs) !important;
+  }
 }
 </style>
+

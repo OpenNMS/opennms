@@ -16,7 +16,8 @@ DOCKER_ORG              := opennms
 DOCKER_PROJECT          := minion
 DOCKER_TAG              := $(DOCKER_REGISTRY)/$(DOCKER_ORG)/$(DOCKER_PROJECT):$(VERSION)
 DOCKER_ARCH             := linux/amd64
-DOCKER_FLAGS            := --output=type=docker,dest=images/minion.oci
+DOCKER_IMAGE_NAME       := $(DOCKER_PROJECT).oci
+DOCKER_FLAGS            := --output=type=docker,dest=images/$(DOCKER_IMAGE_NAME)
 SOURCE                  := $(shell git remote get-url origin)
 REVISION                := $(shell git describe --always)
 BUILD_NUMBER            := 0
@@ -41,7 +42,7 @@ help:
 	@echo ""
 	@echo "Targets:"
 	@echo "  help:      Show this help"
-	@echo "  build:     Create an OCI image file in images/minion.oci"
+	@echo "  build:     Create an OCI image file in images/$(DOCKER_IMAGE_NAME)"
 	@echo "  test:      Test requirements to build the Minion OCI"
 	@echo "  install:   Load the OCI file in your Docker instance"
 	@echo "  uninstall: Remove the container image from your Docker instance"
@@ -57,6 +58,7 @@ help:
 	@echo "  DOCKER_PROJECT:     Name of the project in the registry, the default is set to $(DOCKER_PROJECT)"
 	@echo "  DOCKER_TAG:         Docker tag is generated from registry, org, project, version and build number, set to $(DOCKER_TAG)"
 	@echo "  DOCKER_ARCH:        Architecture for OCI image, default: $(DOCKER_ARCH)"
+	@echo "  DOCKER_IMAGE_NAME:  Name of the OCI image, default: $(DOCKER_IMAGE_NAME)"
 	@echo "  DOCKER_FLAGS:       Additional docker buildx flags, by default write a single architecture to a file, default: $(DOCKER_FLAGS)"
 	@echo "  BUILD_NUMBER:       In case we run in CI/CD this is the build number which produced the artifact, default: $(BUILD_NUMBER)"
 	@echo "  BUILD_URL:          In case we run in CI/CD this is the URL which for the build, default: $(BUILD_URL)"
@@ -92,9 +94,9 @@ build: test minion-config-schema.yml
 	  $(DOCKER_FLAGS) \
 	  .
 
-install: images/minion.oci
+install: images/$(DOCKER_IMAGE_NAME)
 	@echo "Load image ..."
-	@docker image load -i images/minion.oci
+	@docker image load -i images/$(DOCKER_IMAGE_NAME)
 
 uninstall:
 	@echo "Remove image ..."

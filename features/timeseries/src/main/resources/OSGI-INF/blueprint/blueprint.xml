@@ -30,6 +30,7 @@
     <reference id="monitoredServiceDao" interface="org.opennms.netmgt.dao.api.MonitoredServiceDao" availability="mandatory"/>
     <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils" availability="mandatory"/>
     <reference id="snmpInterfaceDao" interface="org.opennms.netmgt.dao.api.SnmpInterfaceDao" availability="mandatory"/>
+    <reference id="secureCredentialsVault" interface="org.opennms.features.scv.api.SecureCredentialsVault" availability="mandatory"/>
 
     <!-- Metrics -->
     <bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry" />
@@ -81,6 +82,7 @@
         <property name="snmpInterfaceDao" ref="snmpInterfaceDao"/>
         <property name="monitoredServiceDao" ref="monitoredServiceDao"/>
         <property name="sessionUtils" ref="sessionUtils"/>
+        <property name="scv" ref="secureCredentialsVault"/>
     </bean>
     <service interface="org.opennms.core.rpc.utils.mate.EntityScopeProvider" ref="entityScopeProvider"/>
 

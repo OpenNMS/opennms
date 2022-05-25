@@ -35,6 +35,8 @@ import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -48,7 +50,6 @@ import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.Type;
 import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsMonitoredService;
 
 @Entity
 @Table(name = "device_config")
@@ -89,7 +90,7 @@ public class DeviceConfig implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdTime;
 
-    @Column(name = "last_updated", nullable = false)
+    @Column(name = "last_updated")
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastUpdated;
 
@@ -100,6 +101,10 @@ public class DeviceConfig implements Serializable {
     @Column(name = "last_succeeded")
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastSucceeded;
+
+    @Column(name = "status", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private DeviceConfigStatus status;
 
     public Long getId() {
         return id;
@@ -193,6 +198,10 @@ public class DeviceConfig implements Serializable {
         this.lastSucceeded = lastSucceeded;
     }
 
+    public DeviceConfigStatus getStatus() { return this.status; }
+
+    public void setStatus(DeviceConfigStatus status) { this.status = status; }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -208,13 +217,35 @@ public class DeviceConfig implements Serializable {
                Objects.equals(failureReason, that.failureReason) &&
                Objects.equals(ipInterface, that.ipInterface) &&
                Objects.equals(serviceName, that.serviceName) &&
+               Objects.equals(status, that.status) &&
                Arrays.equals(config, that.config);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(ipInterface, serviceName, encoding, configType, fileName, failureReason, createdTime, lastUpdated, lastFailed, lastSucceeded);
+        int result = Objects.hash(ipInterface, serviceName, encoding, configType, fileName, failureReason, createdTime, lastUpdated, lastFailed, lastSucceeded, status);
         result = 31 * result + Arrays.hashCode(config);
         return result;
+    }
+
+    public static DeviceConfigStatus determineBackupStatus(DeviceConfig dc) {
+        return determineBackupStatus(dc.getLastUpdated(), dc.getLastSucceeded());
+    }
+
+    public static DeviceConfigStatus determineBackupStatus(Date lastUpdated, Date lastSucceeded) {
+        // backup never attempted
+        if (lastUpdated == null) {
+            return DeviceConfigStatus.NONE;
+        }
+
+        // most recent backup attempt was successful
+        if (lastSucceeded != null &&
+            lastSucceeded.getTime() >= lastUpdated.getTime()) {
+            return DeviceConfigStatus.SUCCESS;
+        }
+
+        // backup attempted but either never succeeded or else latest attempt failed
+        // NOTE: DeviceConfig.lastFailed should be non-null and >= lastUpdated if we get here
+        return DeviceConfigStatus.FAILED;
     }
 }

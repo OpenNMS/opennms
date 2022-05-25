@@ -1,0 +1,10 @@
+await: >
+send: start shell
+await: %
+send: cd /config
+await: %
+send: tftp ${tftpServerIp}
+await: tftp>
+send: put juniper.conf.gz juniper.conf.gz${filenameSuffix}
+await: tftp>
+send: exit

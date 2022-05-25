@@ -36,26 +36,25 @@ import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.support.hops.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.AbstractSearchProvider;
 import org.opennms.features.topology.api.topo.Criteria;
-import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.SearchProvider;
 import org.opennms.features.topology.api.topo.SearchQuery;
 import org.opennms.features.topology.api.topo.SearchResult;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 
+
 public class LinkdSearchProvider implements SearchProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(LinkdSearchProvider.class);
 
-    private final GraphProvider m_delegate;
+    private final LinkdTopologyFactory m_linkdTopologyFactory;
 
-    public LinkdSearchProvider(GraphProvider delegate) {
-        m_delegate = delegate;
+    public LinkdSearchProvider(LinkdTopologyFactory linkdTopologyFactory) {
+        m_linkdTopologyFactory = linkdTopologyFactory;
     }
 
     //Search Provider methods
@@ -63,7 +62,7 @@ public class LinkdSearchProvider implements SearchProvider {
     public List<SearchResult> query(SearchQuery searchQuery, GraphContainer graphContainer) {
         LOG.debug("SearchProvider->query: called with search query: '{}'", searchQuery);
 
-        List<Vertex> vertices =  m_delegate.getCurrentGraph().getVertices();
+        List<Vertex> vertices =  m_linkdTopologyFactory.getDelegate().getCurrentGraph().getVertices();
         List<SearchResult> searchResults = Lists.newArrayList();
 
         for(Vertex vertex : vertices){
@@ -82,7 +81,7 @@ public class LinkdSearchProvider implements SearchProvider {
 
     @Override
     public String getSearchProviderNamespace() {
-        return m_delegate.getNamespace();
+        return m_linkdTopologyFactory.getActiveNamespace();
     }
     
     @Override
@@ -97,7 +96,7 @@ public class LinkdSearchProvider implements SearchProvider {
 
     @Override
     public boolean supportsPrefix(String searchPrefix) {
-        return AbstractSearchProvider.supportsPrefix(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD+"=", searchPrefix);
+        return AbstractSearchProvider.supportsPrefix(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD + "=", searchPrefix);
     }
 
     @Override
@@ -114,7 +113,7 @@ public class LinkdSearchProvider implements SearchProvider {
     @Override
     public void addVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
         LOG.debug("SearchProvider->addVertexHopCriteria: called with search result: '{}'", searchResult);
-        VertexHopCriteria criterion = LinkdHopCriteria.createCriteria(searchResult.getId(), searchResult.getLabel());
+        VertexHopCriteria criterion = LinkdHopCriteria.createCriteria(searchResult.getId(), searchResult.getLabel(), m_linkdTopologyFactory);
         container.addCriteria(criterion);
         LOG.debug("SearchProvider->addVertexHop: adding hop criteria {}.", criterion);
         logCriteriaInContainer(container);
@@ -170,7 +169,7 @@ public class LinkdSearchProvider implements SearchProvider {
 
     @Override
     public boolean contributesTo(String namespace) {
-        return m_delegate.getNamespace().equalsIgnoreCase(namespace);
+        return m_linkdTopologyFactory.getActiveNamespace().equalsIgnoreCase(namespace);
     }
 
 }

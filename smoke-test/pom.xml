@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>smoke-test</artifactId>
-  <version>30.0.0-SNAPSHOT</version>
+  <version>31.0.0-SNAPSHOT</version>
   <name>OpenNMS Smoke Test</name>
   <properties>
     <skip.surefire.tests>false</skip.surefire.tests>
@@ -17,10 +17,18 @@
     <jersey.version>2.28</jersey.version>
     <karafVersion>4.3.6</karafVersion>
     <selenium.version>3.141.59</selenium.version>
-    <testcontainers.version>1.15.2</testcontainers.version>
+    <testcontainers.version>1.15.3</testcontainers.version>
+    <jna.version>5.8.0</jna.version>
     <test.fork.count>0</test.fork.count>
     <!-- Limit ITs to 30 minutes by default -->
     <test.fork.timeout>1800</test.fork.timeout>
+
+    <!-- fix xerces/xalan pollution, use built-in factories -->
+    <argLineDocumentBuilder>-Djavax.xml.parsers.DocumentBuilderFactory=com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl</argLineDocumentBuilder>
+    <argLineSAXParser>-Djavax.xml.parsers.SAXParserFactory=com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl</argLineSAXParser>
+
+    <!-- set memory and use XML overrides -->
+    <argLine>-Xms1g -Xmx1g -XX:+UseG1GC ${argLineDocumentBuilder} ${argLineSAXParser} -Djava.security.egd=/dev/./urandom</argLine>
   </properties>
   <build>
     <testResources>
@@ -80,8 +88,8 @@
             <forkedProcessTimeoutInSeconds>${test.fork.timeout}</forkedProcessTimeoutInSeconds>
             <!-- Spawn a new JVM for every test so things don't leak over from one to the next -->
             <reuseForks>false</reuseForks>
-            <!-- Configure heap and GC -->
-            <argLine>-Xms1g -Xmx1g -XX:+UseG1GC</argLine>
+
+            <argLine>${argLine}</argLine>
           </configuration>
           <executions>
             <execution>
@@ -333,6 +341,11 @@
       <version>4.13.1</version>
     </dependency>
     <dependency>
+      <groupId>com.spotify</groupId>
+      <artifactId>hamcrest-jackson</artifactId>
+      <version>1.2.0</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-bootstrap</artifactId>
       <version>${project.version}</version>
@@ -341,11 +354,31 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-model</artifactId>
       <version>${project.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>xalan</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>xerces</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao</artifactId>
       <version>${project.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>xalan</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>xerces</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
         <groupId>org.opennms</groupId>
@@ -474,10 +507,24 @@
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
+    <!-- 4.2.0 is the last version that used groovy 2.x,
+         force it to match ours since it's a transient dependency -->
     <dependency>
       <groupId>io.rest-assured</groupId>
       <artifactId>rest-assured</artifactId>
-      <version>4.3.3</version>
+      <version>4.2.0</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.codehaus.groovy</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>groovy-dependencies</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.testcontainers</groupId>
@@ -508,11 +555,6 @@
       <groupId>org.testcontainers</groupId>
       <artifactId>cassandra</artifactId>
       <version>${testcontainers.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.jetbrains</groupId>
-      <artifactId>annotations</artifactId>
-      <version>17.0.0</version>
     </dependency>
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
@@ -634,6 +676,47 @@
       <version>${project.version}</version>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features.device-config.persistence</groupId>
+      <artifactId>org.opennms.features.device-config.persistence.impl</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>xalan</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>xerces</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.device-config</groupId>
+      <artifactId>org.opennms.features.device-config.rest</artifactId>
+      <version>${project.version}</version>
+      <scope>compile</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>xalan</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>xerces</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <!-- for m1 -->
+    <dependency>
+      <groupId>net.java.dev.jna</groupId>
+      <artifactId>jna</artifactId>
+      <version>${jna.version}</version>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
   <repositories>
     <repository>
