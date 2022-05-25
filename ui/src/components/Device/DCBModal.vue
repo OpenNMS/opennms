@@ -34,7 +34,7 @@ watchEffect(() => labels.title = `Device Name: ${modalDeviceConfigBackup.value.d
 <style scoped lang="scss">
 .content {
   min-height: 300px;
-  min-width: 500px;
+  min-width: 550px;
   position: relative;
 }
 </style>
