@@ -67,11 +67,13 @@ const getOsImageOptions = async (): Promise<string[]> => {
   }
 }
 
-const getHistoryByIpInterface = async (ipInterfaceId: number): Promise<DeviceConfigBackup[]> => {
+const getHistoryByIpInterface = async (ipInterfaceId: number, configType: string): Promise<DeviceConfigBackup[]> => {
   startSpinner()
 
   try {
-    const resp: { data: DeviceConfigBackup[] } = await rest.get(`${endpoint}/interface/${ipInterfaceId}`)
+    const resp: { data: DeviceConfigBackup[], status: number } = await rest.get(`${endpoint}/interface/${ipInterfaceId}?configType=${configType}`)
+    if (resp.status === 204) return []
+
     const devicesWithBackupDate = resp.data.filter((device) => device.lastBackupDate)
     return orderBy(devicesWithBackupDate, 'lastBackupDate', 'desc')
   } catch (err) {

@@ -15,7 +15,7 @@ export interface DeviceConfigBackup {
   fileName: string
   failureReason: string
   encoding: string
-  configType: defaultConfig | runningConfig
+  configType: string
   configName: string
   nodeId: number
   nodeLabel: string
@@ -31,12 +31,10 @@ export interface DeviceConfigQueryParams extends QueryParameters {
   deviceName?: string
   ipAddress?: string
   ipInterfaceId?: number
-  configType?: defaultConfig | runningConfig
+  configType?: string
   createdAfter?: number
   createdBefore?: number
   status?: status
 }
 
 export type status = 'none' | 'success' | 'failed'
-type defaultConfig = 'default'
-type runningConfig = 'running'
