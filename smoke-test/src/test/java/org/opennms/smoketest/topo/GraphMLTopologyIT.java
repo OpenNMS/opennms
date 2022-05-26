@@ -94,6 +94,8 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
         topologyUIPage.open();
         // Select EnLinkd, otherwise the "GraphML Topology Provider (test-graph)" is always pre-selected due to history restoration
         topologyUIPage.selectTopologyProvider(TopologyProvider.ENLINKD);
+        // Select CDP Layer
+        topologyUIPage.selectLayer("CDP");
     }
 
     @After
