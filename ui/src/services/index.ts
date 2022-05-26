@@ -9,7 +9,6 @@ import {
 
 import { getProvisionDService, putProvisionDService, populateProvisionD } from './configurationService'
 import {
-  getGraphNodesNodes,
   getGraphDefinitionsByResourceId,
   getDefinitionData,
   getGraphMetrics,
