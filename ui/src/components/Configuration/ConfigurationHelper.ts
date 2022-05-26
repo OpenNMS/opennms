@@ -29,6 +29,19 @@ import isValidDomain from 'is-valid-domain'
 
 const cronTabLength = (cronTab: string) => cronTab.replace(/\s$/, '').split(' ').length
 
+const obfuscatePassword = (url: string) => {
+  const regexPasswordValue = /(password=)([^&]+)/
+  const matched = url.match(regexPasswordValue) || []
+  
+  if(matched.length > 0) {
+    const passwordObfuscated = '*'.repeat(matched[2].length)
+
+    return url.replace(regexPasswordValue, `$1${passwordObfuscated}`)
+  }
+
+  return url
+}
+
 /**
  *
  * @param name The name we're looking for
@@ -917,6 +930,7 @@ const copyToClipboard = (text: string) => {
 }
 
 export const ConfigurationHelper = {
+  obfuscatePassword,
   checkForDuplicateName,
   convertCronTabToLocal,
   convertItemToURL,
