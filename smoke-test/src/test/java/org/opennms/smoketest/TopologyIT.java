@@ -596,10 +596,10 @@ public class TopologyIT extends OpenNMSSeleniumIT {
             }
         }
 
-        public void selectLayer(String layerName) {
+            public void selectLayer(String layerName) {
             Objects.requireNonNull(layerName, "The layer name cannot be null");
             try {
-                testCase.setImplicitWait(IMPLICIT_WAIT_SECONDS, TimeUnit.SECONDS);
+                testCase.setImplicitWait(2*IMPLICIT_WAIT_SECONDS, TimeUnit.SECONDS);
                 openLayerSelectionComponent();
                 WebElement layerElement = testCase.findElementById("layerComponent").findElement(By.xpath("//div[text() = '" + layerName + "']"));
                 layerElement.click();
