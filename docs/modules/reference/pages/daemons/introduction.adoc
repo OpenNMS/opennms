@@ -9,7 +9,7 @@ See the xref:operation:admin/daemon-config-files.adoc[system administration] sec
 == List of daemons
 
 [options="header"]
-[cols="1,3,1"]
+[cols="1,3"]
 |===
 | Name
 | Description
@@ -53,17 +53,18 @@ See the xref:operation:admin/daemon-config-files.adoc[system administration] sec
 | JettyServer
 | The Jetty server provides the {page-component-title} web user interface.
 
-| KarafStartupMonitor
-|
+| Karaf
+| The Karaf runtime is the framework that maintains all the other daemons running within the {page-component-title} system.
 
-| Manager
+| KarafStartupMonitor
 |
 
 | Notifd
 | Notification daemon can send notifications to other systems based on event UEIs.
 
 | PassiveStatusd
-|
+| The Passive Status Keeper provides a mechanism to generate service outages based on events.
+This can be helpful for devices that cannot be directly polled to check service state.
 
 | PerspectivePoller
 |
@@ -93,7 +94,7 @@ See the xref:operation:admin/daemon-config-files.adoc[system administration] sec
 |
 
 | Syslogd
-| A syslo daemon that allows retrieval and parsing of syslog messages to generate events.
+| A syslog daemon that allows retrieval and parsing of syslog messages to generate events.
 
 | Telemetryd
 | The Telemetry daemon collects sensor data sent from nodes to {page-component-title}.
@@ -112,5 +113,4 @@ See the xref:operation:admin/daemon-config-files.adoc[system administration] sec
 
 | Vacuumd
 | Vacuum daemon takes care of cleaning processes in the PostgreSQL database.
-
 |===

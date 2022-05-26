@@ -1,7 +1,9 @@
 [[ref-daemon-config-files-jettyserver]]
 = JettyServer
 
-.Eventd log file overview
+Manages the web user interface service.
+
+.JettyServer log file overview
 [options="header"]
 [cols="2,3"]
 
@@ -12,4 +14,7 @@
 | jettyserver.log
 | The Jetty server provides the {page-component-title} web user interface logs.
 
+| web.log
+| Logs relating to user actions with the web interface.
+This includes logs relating to  external authentication.
 |===

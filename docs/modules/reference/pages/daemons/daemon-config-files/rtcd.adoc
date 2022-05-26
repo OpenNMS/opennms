@@ -1,6 +1,39 @@
 [[ref-daemon-config-files-rtcd]]
 = Rtcd
 
+Calculates the availability percentages displayed on the {page-component-title} home page.
+This daemon checks the database and updates availability data by sending REST calls to the server
+
+IMPORTANT: {page-component-title} comes with a local `rtc` user account.
+This account is used by rtcd for sending updates, and is only granted access rights for updating RTC data.
+Any modifications to this account can impact the server's ability to update availability data.
+
+.Rtcd configuration file overview
+[options="header"]
+[cols="2,3,1,1"]
+|===
+| File
+| Description
+| Reload Event
+| Restart Required
+
+| categories.xml
+| Defines categories for grouping availability data and which nodes apply to the categories.
+These are independent of surveillance categories, and can use surveillance categories in defining the filter rules.
+| no
+| yes
+
+| rtc-configuration.xml
+| Defines properties of the RTC polling intervals.
+| no
+| yes
+
+| viewdisplay.xml
+| Defines which categories from `categories.xml` are displayed on the home page.
+| no
+| yes
+|===
+
 .Rtcd log file overview
 [options="header"]
 [cols="2,3"]
@@ -11,5 +44,4 @@
 
 | rtcd.log
 | Logs relating to Rtcd server events.
-
 |===

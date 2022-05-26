@@ -1,6 +1,8 @@
 [[ref-daemon-config-files-perspectivepoller]]
 = PerspectivePoller
 
+Handles xref:operation:application-perspective-monitoring/introduction.adoc[application perspective monitoring].
+
 .PerspectivePoller log file overview
 [options="header"]
 [cols="2,3"]

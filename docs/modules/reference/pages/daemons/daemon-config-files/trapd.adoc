@@ -2,6 +2,8 @@
 [[ref-daemon-config-files-trapd]]
 = Trapd
 
+Handles processing of xref:operation:events/sources/snmp-traps.adoc[SNMP traps] into events.
+
 .Trapd configuration file overview
 [options="header"]
 [cols="2,3,1,1"]

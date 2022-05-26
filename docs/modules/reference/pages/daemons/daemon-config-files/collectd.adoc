@@ -1,6 +1,8 @@
 [[ref-daemon-config-files-collectd]]
 = Collectd
 
+Collects xref:operation:performance-data-collection/introduction.adoc[performance management] data to persist node metric data.
+
 .Collectd configuration file overview
 [options="header"]
 [cols="2,3,1,1"]

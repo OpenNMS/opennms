@@ -1,6 +1,8 @@
 [[ref-daemon-config-files-provisiond]]
 = Provisiond
 
+Handles scanning requisition data to be xref:operation:provisioning/introduction.adoc[provisioned] into monitored nodes.
+
 .Provisiond log file overview
 [options="header"]
 [cols="2,3"]
@@ -13,4 +15,6 @@
 | The node provisioning processes are being logged here.
 This also includes service detection and policy results.
 
+| GeoIpProvisioningAdapter.log
+| Logs related to the GeoIp provisioning plugin.
 |===

@@ -1,6 +1,8 @@
 [[ref-daemon-config-files-discovery]]
 = Discovery
 
+Scans unknown nodes to xref:operation:provisioning/auto-discovery.adoc[auto discover] potential nodes to monitor.
+
 .Discovery configuration file overview
 [options="header"]
 [cols="2,3,1,1"]
@@ -28,4 +30,3 @@
 | Network discovery scan jobs and their results are stored in this file.
 
 |===
-

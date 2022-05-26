@@ -13,6 +13,7 @@
 ** xref:configuration/tuning-activemq.adoc[]
 ** xref:configuration/tuning-kafka.adoc[]
 ** xref:configuration/ttl-rpc.adoc[]
+
 * xref:performance-data-collection/introduction.adoc[]
 ** xref:performance-data-collection/collectors/http.adoc[]
 ** xref:performance-data-collection/collectors/jdbc.adoc[]
@@ -27,6 +28,7 @@
 ** xref:performance-data-collection/collectors/wsman.adoc[]
 ** xref:performance-data-collection/collectors/xml.adoc[]
 ** xref:performance-data-collection/collectors/xmp.adoc[]
+
 * xref:service-assurance/introduction.adoc[]
 ** xref:service-assurance/monitors/ActiveMQMonitor.adoc[]
 ** xref:service-assurance/monitors/AvailabilityMonitor.adoc[]
@@ -81,6 +83,7 @@
 ** xref:service-assurance/monitors/Win32ServiceMonitor.adoc[]
 ** xref:service-assurance/monitors/WsManMonitor.adoc[]
 ** xref:service-assurance/monitors/XmpMonitor.adoc[]
+
 * xref:telemetryd/introduction.adoc[]
 ** xref:telemetryd/listeners/introduction.adoc[]
 *** xref:telemetryd/listeners/tcp.adoc[]
@@ -95,10 +98,12 @@
 *** xref:telemetryd/protocols/netflow9.adoc[]
 *** xref:telemetryd/protocols/openconfig.adoc[]
 *** xref:telemetryd/protocols/sflow.adoc[]
+
 * xref:ticketing/introduction.adoc[]
 ** xref:ticketing/ticketer/jira.adoc[]
 ** xref:ticketing/ticketer/remedy.adoc[]
 ** xref:ticketing/ticketer/tsrm.adoc[]
+
 * Provisioning
 ** xref:provisioning/adapters/introduction.adoc[]
 *** xref:provisioning/adapters/ddns.adoc[]
@@ -136,16 +141,30 @@
 *** xref:provisioning/detectors/WmiDetector.adoc[WMI]
 *** xref:provisioning/detectors/WsmanDetector.adoc[WS-MAN]
 *** xref:provisioning/detectors/WsmanWqlDetector.adoc[WS-MAN WQL]
+
 * xref:daemons/introduction.adoc[]
+** xref:daemons/daemon-config-files/ackd.adoc[]
 ** xref:daemons/daemon-config-files/alarmd.adoc[]
+** xref:daemons/daemon-config-files/bsmd.adoc[]
 ** xref:daemons/daemon-config-files/collectd.adoc[]
 ** xref:daemons/daemon-config-files/discovery.adoc[]
+** xref:daemons/daemon-config-files/enlinkd.adoc[]
 ** xref:daemons/daemon-config-files/eventd.adoc[]
+** xref:daemons/daemon-config-files/jettyserver.adoc[]
+** xref:daemons/daemon-config-files/karaf.adoc[]
+** xref:daemons/daemon-config-files/karafstartupmonitor.adoc[]
 ** xref:daemons/daemon-config-files/notifd.adoc[]
+** xref:daemons/daemon-config-files/perspectivepollerd.adoc[]
 ** xref:daemons/daemon-config-files/pollerd.adoc[]
+** xref:daemons/daemon-config-files/provisiond.adoc[]
+** xref:daemons/daemon-config-files/queued.adoc[]
+** xref:daemons/daemon-config-files/reportd.adoc[]
+** xref:daemons/daemon-config-files/rtcd.adoc[]
 ** xref:daemons/daemon-config-files/snmp-interface-poller.adoc[]
+** xref:daemons/daemon-config-files/statsd.adoc[]
 ** xref:daemons/daemon-config-files/syslogd.adoc[]
 ** xref:daemons/daemon-config-files/telemetryd.adoc[]
+** xref:daemons/daemon-config-files/ticketer.adoc[]
 ** xref:daemons/daemon-config-files/trapd.adoc[]
-** xref:logging/introduction.adoc[]
+
 * xref:glossary.adoc[]
