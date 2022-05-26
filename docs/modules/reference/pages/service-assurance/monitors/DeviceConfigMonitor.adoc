@@ -24,19 +24,43 @@ This monitor tries to retrieve configuration from the network device and shows t
 3+| *Required*
 
 | script-file
-| Script file to use to retrieve configuration.
-| -
+| Script file to use to retrieve configuration. Script files should be placed in `etc/device-config` folder.
+Example script files can be found in `etc/examples/device-config` folder with `.dcb` extension. Script file name can be
+overwritten in metadata as `dcb:script-file`. Don't include `.dcb` extension when specifying the file name in metadata.
+| default.dcb
+
+| username
+| username for ssh login. This can be overwritten in metadata as `dcb:username`.
+| admin
+
+| password
+| password for ssh login. This can be overwritten in metadata as `dcb:password`.
+| admin
 
 3+| *Optional*
 
 | config-type
 | If device has multiple configurations, specify the config-type with each service.
+This can be overwritten in metadata as `dcb:config-type`
 | default
 
+| ssh-port
+| ssh port for the target device. This can be overwritten in meatadata as `dcb:ssh-port`
+| 22
+
+| ssh-timeout
+| ssh max timeout after which ssh session will be closed, can be overwritten in metadata as dcb:ssh-timeout
+| 60000
+
 | schedule
-| Schedule to fetch configuration, in the form of cron expression.
-| `0 0 0 * * ?`
-The default cron expression runs every 24 hrs at 12:00 a.m.
+| Schedule to fetch configuration, in the form of cron expression,
+  Defaults to never run, overwrite this in metadata with proper cron expression.
+| never
+
+| retention-period
+| Max retention period after which configs without any updates will be deleted from database. Specified in ISO-8601 period format `PnYnMnD` and `PnW`.
+Defaults to `P1Y` (1 Year). Examples : `P20Y2M25D` means 20 years, 2 months, and 25 days.
+| P1Y
 
 | host-key
 | SSH fingerprint of the remote host key.
@@ -48,20 +72,10 @@ The default cron expression runs every 24 hrs at 12:00 a.m.
 |===
 
 
-== Examples
-
-Example for how to configure the DeviceConfigMonitor in the `poller-configuration.xml`.
-
-[source, xml]
-----
-<parameter key="schedule" value="${requisition:dcb:schedule|0 0 0 * * ?}"/>
-<parameter key="script-file" value="${requisition:dcb:script-file|juniper-vsrx-default}.dcb"/>
-----
 
 == Schedule and interval
 
 The service uses an interval of 300 seconds and a cron expression for the schedule.
-The default cron expression runs every 24 hrs at 12:00 a.m. (`0 0 0 * * ?`).
 The monitor checks every 300 seconds (interval) for the next trigger time in the cron schedule.
 It retrieves the configuration only when the next trigger time matches the current time (current time must be greater than the trigger time).
 For example, if the monitor checks at 11:59 p.m., but the trigger time is 12:00 a.m., the monitor will retrieve the configuration at the next check interval at 12:04 a.m.

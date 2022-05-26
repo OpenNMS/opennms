@@ -7,6 +7,8 @@ send: cd /var/tmp
 await: %
 send: tftp ${tftpServerIp}
 await: tftp>
+send: binary
+await: tftp>
 send: put juniper.conf juniper.conf${filenameSuffix}
 await: tftp>
 send: exit
