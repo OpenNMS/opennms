@@ -763,9 +763,6 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>${maven.surefire.plugin.version}</version>
-        <configuration>
-          <forkCount>1</forkCount> <!-- will it solve the vm crashing issue? -->>
-        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -1661,7 +1658,7 @@
     <asmVersion>5.0.4</asmVersion>
     <activemqVersion>5.14.5</activemqVersion>
     <atomikosVersion>3.9.2</atomikosVersion>
-    <batikVersion>1.13</batikVersion>
+    <batikVersion>1.7</batikVersion>
     <bouncyCastleVersion>1.68</bouncyCastleVersion>
     <bsfVersion>2.4.0</bsfVersion>
     <bsonVersion>3.5.0</bsonVersion>
