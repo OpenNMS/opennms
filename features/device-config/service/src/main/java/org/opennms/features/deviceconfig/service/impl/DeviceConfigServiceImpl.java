@@ -29,6 +29,7 @@
 package org.opennms.features.deviceconfig.service.impl;
 
 import static org.opennms.netmgt.poller.support.AbstractServiceMonitor.getKeyedString;
+import static org.opennms.features.deviceconfig.service.DeviceConfigService.DEVICE_CONFIG_PREFIX;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -67,8 +68,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 public class DeviceConfigServiceImpl implements DeviceConfigService {
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceConfigServiceImpl.class);
-
-    private static final String DEVICE_CONFIG_PREFIX = "DeviceConfig";
 
     private static final String DEVICE_CONFIG_SERVICE_CLASS_NAME = "org.opennms.features.deviceconfig.monitors.DeviceConfigMonitor";
 

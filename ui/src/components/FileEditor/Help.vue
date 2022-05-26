@@ -5,7 +5,7 @@
   </div>
 </template>
 
-<script setup lang=ts>
+<script setup lang="ts">
 import { useStore } from 'vuex'
 import { FeatherIcon } from '@featherds/icon'
 import Close from '@featherds/icon/navigation/Cancel'

@@ -33,4 +33,5 @@ public abstract class ConfigType {
     }
 
     public static final String Default = "default";
+    public static final String Sink = "sink";
 }

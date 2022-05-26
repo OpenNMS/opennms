@@ -42,14 +42,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.features.deviceconfig.persistence.api.ConfigType;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
 import org.opennms.features.deviceconfig.retrieval.api.Retriever;
+import org.opennms.features.deviceconfig.retrieval.api.Retriever.Protocol;
 import org.opennms.features.deviceconfig.service.DeviceConfigConstants;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.poller.DeviceConfig;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -74,6 +75,7 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
     public static final String HOST_KEY = "host-key";
     public static final String LAST_RETRIEVAL = "lastRetrieval";
     public static final String SCRIPT_FILE = "script-file";
+    private static final String SCRIPT_ERROR = "script-error";
 
     private static final Duration DEFAULT_DURATION = Duration.ofMinutes(1); // 60sec
     private static final int DEFAULT_SSH_PORT = 22;
@@ -86,17 +88,6 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
 
     @Override
     public Map<String, Object> getRuntimeAttributes(final MonitoredService svc, final Map<String, Object> parameters) {
-        if (ipInterfaceDao == null) {
-            ipInterfaceDao = BeanUtils.getBean("daoContext", "ipInterfaceDao", IpInterfaceDao.class);
-        }
-
-        if (deviceConfigDao == null) {
-            deviceConfigDao = BeanUtils.getBean("daoContext", "deviceConfigDao", DeviceConfigDao.class);
-        }
-
-        if (sessionUtils == null) {
-            sessionUtils = BeanUtils.getBean("daoContext", "sessionUtils", SessionUtils.class);
-        }
 
         return sessionUtils.withReadOnlyTransaction(() -> {
             final Map<String, Object> params = new HashMap<>();
@@ -117,7 +108,8 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
                 }
             } catch (Exception e) {
                 LOG.error("Error while parsing script file {}", scriptFile, e);
-                throw new RuntimeException(e);
+                // Don't fail fast here, we want to create empty backup entry in DB, just cache the error.
+                params.put(SCRIPT_ERROR, e.getMessage());
             }
 
             return params;
@@ -136,9 +128,6 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
 
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
-        if (retriever == null) {
-            retriever = BeanUtils.getBean("daoContext", "deviceConfigRetriever", Retriever.class);
-        }
 
         boolean triggeredPoll = Boolean.parseBoolean(getKeyedString(parameters, DeviceConfigConstants.TRIGGERED_POLL, "false"));
 
@@ -157,6 +146,15 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
             }
         }
 
+        if (parameters.containsKey(SCRIPT_ERROR)) {
+            String reason = getObjectAsStringFromParams(parameters, SCRIPT_ERROR);
+            var status = PollStatus.unavailable(reason);
+            status.setDeviceConfig(new DeviceConfig());
+            return status;
+        }
+        parameters.put(DeviceConfigConstants.PARM_DEVICE_CONFIG_BACKUP_START_TIME, System.currentTimeMillis());
+        parameters.put(DeviceConfigConstants.PARM_DEVICE_CONFIG_BACKUP_DATA_PROTOCOL, Protocol.TFTP);
+        
         String script = getObjectAsStringFromParams(parameters, SCRIPT);
         String user = getObjectAsStringFromParams(parameters, USERNAME);
         String password = getObjectAsStringFromParams(parameters, PASSWORD);
@@ -233,6 +231,9 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
 
     private String getObjectAsStringFromParams(Map<String, Object> params, String key) {
         Object obj = params.get(key);
+        if (obj == null) {
+            throw new IllegalArgumentException(key + " doesn't exist");
+        }
         if (obj instanceof String) {
             return (String) obj;
         }

@@ -199,7 +199,7 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         final ContextSearchResult contextSearchResult = searchResult.forContext(SearchContext.Action);
         assertThat(contextSearchResult.hasMore(), is(true));
         contextSearchResult.loadMore();
-        assertThat(contextSearchResult.size(), is(13L));
+        assertThat(contextSearchResult.size(), is(14L));
 
         // Select last element from the now loaded elements
         contextSearchResult.getItem("Configure Users").click();

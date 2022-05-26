@@ -9,7 +9,7 @@
   />
 </template>
 
-<script setup lang=ts>
+<script setup lang="ts">
 import { useStore } from 'vuex'
 import { FeatherInput } from '@featherds/input'
 import { IFile } from '@/store/fileEditor/state'
@@ -82,7 +82,7 @@ onMounted(() => input.value.focus())
 
   .feather-input-wrapper-container {
     .feather-input-wrapper {
-      margin-top: -10px !important;
+      margin-bottom: -25px !important;
       min-height: 31px !important;
     }
   }

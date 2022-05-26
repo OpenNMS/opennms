@@ -33,13 +33,12 @@ import java.util.Set;
 
 import org.opennms.features.topology.api.topo.simple.SimpleLeafVertex;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
-import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 
 public class LinkdVertex extends SimpleLeafVertex {
 
-    public static LinkdVertex create(OnmsTopologyVertex tvertex) {
-        LinkdVertex vertex = new LinkdVertex(tvertex.getId());
+    public static LinkdVertex create(OnmsTopologyVertex tvertex, String namespace) {
+        LinkdVertex vertex = new LinkdVertex(tvertex.getId(), namespace);
         vertex.setNodeID(tvertex.getNodeid());
         vertex.setLabel(tvertex.getLabel());
         vertex.setIpAddress(tvertex.getAddress());
@@ -48,22 +47,22 @@ public class LinkdVertex extends SimpleLeafVertex {
         return vertex;
     }
 
-    private Set<ProtocolSupported> m_protocolSupported = EnumSet.noneOf(ProtocolSupported.class);
+    private final Set<ProtocolSupported> m_protocolSupported = EnumSet.noneOf(ProtocolSupported.class);
 
-    public LinkdVertex(String id) {
-        super(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD, id, 0, 0);
+    public LinkdVertex(String id, String namespace) {
+        super(namespace, id, 0, 0);
     }
     
     
     @Override
     public String getTooltipText() {
-        StringBuffer tooltipText = new StringBuffer();
+        StringBuilder tooltipText = new StringBuilder();
         tooltipText.append("<p>");
         tooltipText.append(super.getTooltipText());
         tooltipText.append("</p>");
         if (m_protocolSupported.size() > 0) {
             tooltipText.append("<p>");
-            tooltipText.append(m_protocolSupported.toString());
+            tooltipText.append(m_protocolSupported);
             tooltipText.append("</p>");
         }
         return tooltipText.toString();

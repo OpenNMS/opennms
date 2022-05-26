@@ -18,6 +18,7 @@ import {
   requisitionSubTypes,
   requisitionTypeList,
   RequisitionTypes,
+  requisitionDNSField,
   RequisitionPluginSubTypes,
   RequisitionHTTPTypes
 } from './copy/requisitionTypes'
@@ -27,6 +28,19 @@ import ipRegex from 'ip-regex'
 import isValidDomain from 'is-valid-domain'
 
 const cronTabLength = (cronTab: string) => cronTab.replace(/\s$/, '').split(' ').length
+
+const obfuscatePassword = (url: string) => {
+  const regexPasswordValue = /(password=)([^&]+)/
+  const matched = url.match(regexPasswordValue) || []
+  
+  if(matched.length > 0) {
+    const passwordObfuscated = '*'.repeat(matched[2].length)
+
+    return url.replace(regexPasswordValue, `$1${passwordObfuscated}`)
+  }
+
+  return url
+}
 
 /**
  *
@@ -712,20 +726,37 @@ const validateCronTab = (item: LocalConfiguration, oldErrors: LocalErrors) => {
 
 /**
  * Validates a Hostname. Can be an IP address or valid domain name.
+ * It also validates Foreign source (Requisition name) of DNS type, with a slightly different regex which includes underscore and space
  * @param host Hostname
+ * @param fieldName Requisition name, Zone
  * @returns Blank if Valid, Error Message if Not.
  */
-const validateHost = (host: string) => {
+const validateHost = (host: string, fieldName = '') => {
   let hostError = ''
 
   // no spaces, may contain (but not start with), hyphen or dot, cannot be over 49 chars
   const customHostnameRegex = /^[a-zA-Z0-9]{1}[a-zA-Z0-9-.]{0,48}$/
+  
+  // same as customHostnameRegex but including underscore and space
+  const customForeignSourceRegex = /^[a-zA-Z0-9]{1}[a-zA-Z0-9-._\s]{0,48}$/
 
   // Either IPv4, IPv6, a valid domain name, or passes custom regex
-  const isHostValid = ipRegex({exact: true}).test(host) || isValidDomain(host) || customHostnameRegex.test(host)
+  const isHostValid = 
+    ipRegex({exact: true}).test(host) 
+    || isValidDomain(host) 
+    || (fieldName === requisitionDNSField.requisitionName ? customForeignSourceRegex : customHostnameRegex).test(host)
 
   if (!isHostValid) {
-    hostError = ErrorStrings.InvalidHostname
+    switch(fieldName) {
+      case requisitionDNSField.requisitionName:
+        hostError = ErrorStrings.InvalidRequisitionName
+        break
+      case requisitionDNSField.zone:
+        hostError = ErrorStrings.InvalidZoneName
+        break
+      default:
+        hostError = ErrorStrings.InvalidHostname
+    }
   }
 
   return hostError
@@ -760,11 +791,11 @@ const validateLocalItem = (
       errors.urlPath = validatePath(localItem.urlPath)
     }
     if (localItem.type.name === RequisitionTypes.DNS) {
-      errors.zone = validateHost(localItem.zone)
+      errors.zone = validateHost(localItem.zone, requisitionDNSField.zone)
 
       // Only validate foreign source if it's set.
       if (localItem.foreignSource) {
-        errors.foreignSource = validateHost(localItem.foreignSource)
+        errors.foreignSource = validateHost(localItem.foreignSource, requisitionDNSField.requisitionName)
       }
     }
     if (localItem.type.name === RequisitionTypes.File) {
@@ -772,10 +803,10 @@ const validateLocalItem = (
     }
     if (localItem.type.name === RequisitionTypes.VMWare) {
       if (localItem.username && !localItem.password) {
-        errors.password = ErrorStrings.Password
+        errors.password = ErrorStrings.Required(VMWareFields.UpperPassword)
       }
       if (localItem.password && !localItem.username) {
-        errors.username = ErrorStrings.Username
+        errors.username = ErrorStrings.Required(VMWareFields.UpperUsername)
       }
     }
     if (!localItem.advancedCrontab) {
@@ -806,7 +837,7 @@ const validateName = (name: string, nameType: string = RequisitionFields.Name) =
   let nameError = ''
   const maxNameLength = 255
   if (!name) {
-    nameError = ErrorStrings.MustHave(nameType)
+    nameError = ErrorStrings.Required(nameType)
   }
   if (!nameError && name.length < 2) {
     nameError = ErrorStrings.NameShort(nameType)
@@ -823,7 +854,7 @@ const validateName = (name: string, nameType: string = RequisitionFields.Name) =
  * @returns Message if empty, empty string on value.
  */
 const validateOccurance = (occuranceName: string) => {
-  return !occuranceName ? ErrorStrings.OccuranceTime : ''
+  return !occuranceName ? ErrorStrings.Required('Schedule') : ''
 }
 
 /**
@@ -832,7 +863,7 @@ const validateOccurance = (occuranceName: string) => {
  * @returns Message if empty, empty string on value.
  */
 const validateOccuranceDay = (occuranceName: string) => {
-  return !occuranceName ? ErrorStrings.OccuranceDayTime : ''
+  return !occuranceName ? ErrorStrings.Required('Day of the month') : ''
 }
 
 /**
@@ -841,7 +872,7 @@ const validateOccuranceDay = (occuranceName: string) => {
  * @returns Message if empty, empty string on value.
  */
 const validateOccuranceWeek = (occuranceName: string) => {
-  return !occuranceName ? ErrorStrings.OccuranceWeekTime : ''
+  return !occuranceName ? ErrorStrings.Required('Day of the week') : ''
 }
 
 /**
@@ -852,9 +883,11 @@ const validateOccuranceWeek = (occuranceName: string) => {
 const validatePath = (path: string) => {
   let pathError = ''
   if (!path) {
-    pathError = ErrorStrings.FilePath
+    pathError = ErrorStrings.Required('File path')
   } else if (!path.startsWith('/')) {
     pathError = ErrorStrings.FilePathStart
+  } else if(/[?]/gm.test(path)) {
+    pathError = ErrorStrings.FilePathWithQueryChar
   }
   return pathError
 }
@@ -865,7 +898,7 @@ const validatePath = (path: string) => {
  * @returns Message if empty, empty string on value.
  */
 const validateType = (typeName: string) => {
-  return !typeName ? ErrorStrings.TypeError : ''
+  return !typeName ? ErrorStrings.Required('Type') : ''
 }
 
 /**
@@ -897,6 +930,7 @@ const copyToClipboard = (text: string) => {
 }
 
 export const ConfigurationHelper = {
+  obfuscatePassword,
   checkForDuplicateName,
   convertCronTabToLocal,
   convertItemToURL,
