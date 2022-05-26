@@ -672,7 +672,6 @@ workflows:
             branches:
               ignore:
                 - /^merge-foundation.*/
-                - /^mem.*dev.*/
       - minion-rpm-build:
           requires:
             - build
