@@ -679,7 +679,6 @@ workflows:
             branches:
               ignore:
                 - /^merge-foundation.*/
-                - /^mem.*dev.*/
       - sentinel-rpm-build:
           requires:
             - integration-test
@@ -694,7 +693,6 @@ workflows:
             branches:
               ignore:
                 - /^merge-foundation.*/
-                - /^mem.*dev.*/
       - smoke-test-core:
           requires:
             - tarball-assembly
@@ -835,7 +833,6 @@ workflows:
             branches:
               ignore:
                 - /^merge-foundation.*/
-                - /^mem.*dev.*/
       - sentinel-image-single-arch:
           requires:
             - sentinel-deb-build
