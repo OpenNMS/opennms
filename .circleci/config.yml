@@ -17,6 +17,10 @@ parameters:
     description: whether to trigger garbage collection for older feature images
     type: boolean
     default: false
+  trigger-integration-tests:
+    description: whether to trigger integration tests
+    type: boolean
+    default: false
 
 setup: true
 
@@ -242,7 +246,7 @@ jobs:
             if [ "$(grep -c trigger-coverage /tmp/pipeline-parameters.json)" -eq 0 ]; then
               if [ "$(grep -c trigger-prebuild /tmp/pipeline-parameters.json)" -eq 0 ]; then
                 # this can happen in the case of merges or other similar "empty" commits
-                echo '{ "trigger-prebuild": false, "trigger-build": true }' > /tmp/pipeline-parameters.json
+                echo '{ "trigger-prebuild": false, "trigger-build": true, "trigger-integration-tests": false }' > /tmp/pipeline-parameters.json
               fi
             fi
       - store_artifacts:
