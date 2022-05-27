@@ -345,7 +345,7 @@ commands:
       changes-only:
         default: true
         type: boolean
-      run-integration-tests:
+      enable-integration-tests:
         default: false
         type: boolean
     steps:
@@ -1452,6 +1452,7 @@ jobs:
       - attach_workspace:
           at: ~/
       - run-integration-tests:
+          enable-integration-tests: << parameters.enable-integration-tests >>
           rerun-failtest-count: 1
   integration-test-with-coverage:
     executor: integration-test-executor
@@ -1461,6 +1462,7 @@ jobs:
       - attach_workspace:
           at: ~/
       - run-integration-tests:
+          enable-integration-tests: << parameters.enable-integration-tests >>
           run-code-coverage: true
           rerun-failtest-count: 0
           failure-option: -fn
