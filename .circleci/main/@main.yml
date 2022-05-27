@@ -345,6 +345,9 @@ commands:
       changes-only:
         default: true
         type: boolean
+      run-integration-tests:
+        default: false
+        type: boolean
     steps:
       - run:
           name: Monitor JVM processes
