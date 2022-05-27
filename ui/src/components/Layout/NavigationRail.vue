@@ -17,7 +17,7 @@
         title="Map"
       />
       <FeatherRailItem
-        :class="{ selected: isSelected('/configuration'), 'title-multiline-custom': navRailOpen }"
+        :class="{ selected: isSelected('/configuration') }"
         href="#/configuration"
         :icon="LoggerConfigs"
         title="External Requisitions"
@@ -113,13 +113,5 @@ const isSelected = (path: string) => path === route.fullPath
   .nav-header {
     display: none !important;
   }
-
-  .title-multiline-custom {
-    white-space: pre-wrap;
-    height: auto !important;
-    padding-top: var($spacing-xs) !important;
-    padding-bottom: var($spacing-xs) !important;
-  }
 }
 </style>
-
