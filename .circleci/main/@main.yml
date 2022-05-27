@@ -694,7 +694,7 @@ workflows:
                 - /^merge-foundation.*/
       - integration-test:
           parameters: 
-            enable-integration-tests: << pipeline.parameters.enable-integration-tests >>
+            enable-integration-tests: << pipeline.parameters.trigger-integration-tests >>
           requires:
             - build
           filters:
