@@ -6,8 +6,11 @@ After you have xref:operation:device-config-backup/ssh.adoc#backup-script[create
 To activate the device configuration backup, you must add metadata that defines the device configuration backup script you created for the node's device type, and the device's username and password.
 
 We recommend you also add metadata to overwrite the default device configuration backup schedule.
-By default, {page-component-title} fetches device configuration backups every 24 hours at 12:00 a.m. (see xref:reference:service-assurance/monitors/DeviceConfigMonitor.adoc[Device Config Monitor] for details).
-Changing the default schedule spaces out the backup for each group of nodes, rather than them all running at the same time.
+By default, {page-component-title} never schedules the device config backup (see xref:reference:service-assurance/monitors/DeviceConfigMonitor.adoc[Device Config Monitor] for details). 
+It is still possible to retrieve backups on demand by using the Web UI or the REST services. 
+Specify a backup schedule in the form of a cron expression to overwrite default behavior. 
+To prevent all devices fetching the configuration at the same time, it is better to space out the schedule.  
+For example, `0 0 0 * * ?` runs every 24 hrs at 12:00 a.m. `0 0 1 * * ?` runs every 24 hrs at 1:00 a.m.
 
 . Log in to OpenNMS and click the gears icon.
 . Choose *Provisioning>Manage Provisioning Requisitions*.
@@ -16,13 +19,12 @@ If you want to enable device config backup on existing nodes in a requisition, s
 . Click on the edit icon and click *Add Node*.
 . Set up your requisition as described in xref:operation:provisioning/getting-started.adoc#requisition-create[Create a requisition].
 . Click *Add Meta-Data*, and define the following key-value pairs:
-.. `username`: username for the device
-.. `password`: password for the device
-.. `script-file`: name of the device configuration script for this type of device
-.. `schedule`: a cron expression to specify the time to fetch the device backup configuration (default is `0 0 0 * * ?`, every 24 hrs at 12:00 a.m.)
+.. `dcb:username`: username for the device
+.. `dcb:password`: password for the device
+.. `dcb:script-file`: name of the device configuration script for this type of device without .dcb extension
+.. `dcb:schedule`: a cron expression to specify the time to fetch the device backup configuration (default is `never`)
 .. `retention-period`: an optional Java `Period` expression to specify the length of time before "stale" configuration data is deleted from the database (default is `P1Y`, one year)
 . Click *Save* to save the metadata and then *Save* to save the requisition.
 . Click *Return* and click *Synchronize*.
 . Choose a scan option and click *Synchronize*.
 
-NOTE: By specifying the value `never` for the key `schedule`, device configuration backups will not be triggered automatically. It is still possible to retrieve backups on demand by using the Web UI or the REST services.

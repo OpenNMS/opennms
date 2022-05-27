@@ -5,6 +5,8 @@ send: cd /config
 await: %
 send: tftp ${tftpServerIp}
 await: tftp>
+send: binary
+await: tftp>
 send: put juniper.conf.gz juniper.conf.gz${filenameSuffix}
 await: tftp>
 send: exit
