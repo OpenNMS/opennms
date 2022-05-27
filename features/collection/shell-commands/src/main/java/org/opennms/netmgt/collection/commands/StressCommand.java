@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -121,16 +121,16 @@ public class StressCommand implements Action {
     @Option(name="-x", aliases="--rra", description="Round Robin Archives, defaults to the same RRA values as a pristine datacollection-config.xml.\nExample: -x 'RRA:AVERAGE:0.5:1:2016' -x 'RRA:AVERAGE:0.5:12:1488'", required=false, multiValued=true)
     List<String> rras = null;
 
-    @Option(name="-ml", aliases="--metric-extra-length", description="", required=false, multiValued=false)
+    @Option(name="-ml", aliases="--metric-extra-length", description="It will append specific length of string at the end of metrics.", required=false, multiValued=false)
     int metricExtraLength = 0;
 
-    @Option(name="-mlv", aliases="--metric-extra-length-variance", description="", required=false, multiValued=false)
+    @Option(name="-mlv", aliases="--metric-extra-length-variance", description="It will affect the length of metric-extra-length. Must be smaller than metric-extra-length.", required=false, multiValued=false)
     int metricExtraLengthVariance = 0;
 
-    @Option(name="-rl", aliases="--resource-extra-length", description="", required=false, multiValued=false)
+    @Option(name="-rl", aliases="--resource-extra-length", description="It will append specific length of string at the end of resources.", required=false, multiValued=false)
     int resourceExtraLength = 0;
 
-    @Option(name="-rlv", aliases="--resource-extra-length-variance", description="", required=false, multiValued=false)
+    @Option(name="-rlv", aliases="--resource-extra-length-variance", description="It will affect the length of resource-extra-length. Must be smaller than resource-extra-length.", required=false, multiValued=false)
     int resourceExtraLengthVariance = 0;
 
     private RateLimiter rateLimiter;
