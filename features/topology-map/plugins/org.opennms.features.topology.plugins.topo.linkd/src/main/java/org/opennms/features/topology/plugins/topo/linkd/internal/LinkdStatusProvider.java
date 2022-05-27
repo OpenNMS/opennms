@@ -30,7 +30,6 @@ package org.opennms.features.topology.plugins.topo.linkd.internal;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -50,7 +49,6 @@ import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
-import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.slf4j.LoggerFactory;
 
 public class LinkdStatusProvider implements StatusProvider {
@@ -63,7 +61,7 @@ public class LinkdStatusProvider implements StatusProvider {
 
     @Override
     public String getNamespace() {
-        return OnmsTopology.TOPOLOGY_NAMESPACE_LINKD;
+        return m_linkdTopologyFactory.getActiveNamespace();
     }
 
     @Override
@@ -72,9 +70,10 @@ public class LinkdStatusProvider implements StatusProvider {
     }
 
     private final AlarmDao m_alarmDao;
-
-    public LinkdStatusProvider(AlarmDao alarmDao) {
+    private final LinkdTopologyFactory m_linkdTopologyFactory;
+    public LinkdStatusProvider(AlarmDao alarmDao, LinkdTopologyFactory linkdTopologyFactory) {
         m_alarmDao = alarmDao;
+        m_linkdTopologyFactory=linkdTopologyFactory;
     }
 
     @Override
@@ -83,7 +82,7 @@ public class LinkdStatusProvider implements StatusProvider {
 
         // split nodes from groups and others
         List<VertexRef> nodeRefs = getNodeVertexRefs(graph, vertices, criteria); // nodes
-        List<VertexRef> otherRefs = getOtherVertexRefs(vertices);  // groups
+        List<VertexRef> otherRefs = getOtherVertexRefs(graph, vertices);  // groups
 
         Map<Integer, VertexRef> nodeIdMap = extractNodeIds(nodeRefs);
         Map<Integer, AlarmSummary> nodeIdToAlarmSummaryMap = getAlarmSummaries(nodeIdMap.keySet()); // calculate status for ALL nodes
@@ -138,15 +137,11 @@ public class LinkdStatusProvider implements StatusProvider {
         Map<Integer, VertexRef> vertexRefToNodeIdMap = new HashMap<>();
 
         for (VertexRef eachRef : inputList) {
-            if ("nodes".equals(eachRef.getNamespace())) {
-                try {
-                    Integer nodeId = Integer.parseInt(eachRef.getId());
-                    if (nodeId != null) {
-                        vertexRefToNodeIdMap.put(nodeId, eachRef);
-                    }
-                } catch (NumberFormatException nfe) {
-                    LoggerFactory.getLogger(LinkdStatusProvider.class).warn("Could not parse id '{}' of vertex '{}' as integer.", eachRef.getId(), eachRef);
-                }
+            try {
+                Integer nodeId = Integer.parseInt(eachRef.getId());
+                vertexRefToNodeIdMap.put(nodeId, eachRef);
+            } catch (NumberFormatException nfe) {
+                LoggerFactory.getLogger(LinkdStatusProvider.class).warn("Could not parse id '{}' of vertex '{}' as integer.", eachRef.getId(), eachRef);
             }
         }
 
@@ -156,7 +151,7 @@ public class LinkdStatusProvider implements StatusProvider {
     private static List<VertexRef> getNodeVertexRefs(BackendGraph graph, Collection<VertexRef> vertices, Criteria[] criteria) {
         List<VertexRef> returnList = new ArrayList<>();
         for (VertexRef eachRef : vertices) {
-            if ("nodes".equals(eachRef.getNamespace())) {
+            if (graph.getNamespace().equals(eachRef.getNamespace())) {
                 if(isCollapsible(eachRef)) {
                     addChildrenRecursively(graph, (CollapsibleRef) eachRef, returnList, criteria);
                 } else {
@@ -169,10 +164,10 @@ public class LinkdStatusProvider implements StatusProvider {
         return returnList;
     }
 
-    private static List<VertexRef> getOtherVertexRefs(Collection<VertexRef> vertices) {
+    private static List<VertexRef> getOtherVertexRefs(BackendGraph graph, Collection<VertexRef> vertices) {
         List<VertexRef> returnList = new ArrayList<>();
         for (VertexRef eachRef : vertices) {
-            if (!"nodes".equals(eachRef.getNamespace())) {
+            if (!graph.getNamespace().equals(eachRef.getNamespace())) {
                 returnList.add(eachRef); // we do not need to check for groups, because a group would have a namespace "nodes"
             }
         }
@@ -202,12 +197,7 @@ public class LinkdStatusProvider implements StatusProvider {
 
     private static AlarmStatus calculateAlarmStatusForGroup(List<AlarmSummary> alarmSummaries) {
         if (!alarmSummaries.isEmpty()) {
-            Collections.sort(alarmSummaries, new Comparator<AlarmSummary>() {
-                @Override
-                public int compare(AlarmSummary o1, AlarmSummary o2) {
-                    return o1.getMaxSeverity().compareTo(o2.getMaxSeverity());
-                }
-            });
+            alarmSummaries.sort(Comparator.comparing(AlarmSummary::getMaxSeverity));
             OnmsSeverity severity = alarmSummaries.get(0).getMaxSeverity();
             int count = 0;
             for (AlarmSummary eachSummary : alarmSummaries) {

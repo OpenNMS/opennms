@@ -205,7 +205,7 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
 
     /** {@inheritDoc} */
     @Override
-    public Response getDeviceConfigsByInterface(Integer ipInterfaceId) {
+    public Response getDeviceConfigsByInterface(Integer ipInterfaceId, String configType) {
         var criteria = getCriteria(
             null,
             null,
@@ -214,7 +214,7 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
             null,
             null,
             ipInterfaceId,
-            null,
+            configType,
             null,
             null,
             null);

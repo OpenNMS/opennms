@@ -149,3 +149,47 @@ With the configuration in place, you can test it using the `collect` command ava
 ----
 opennms:collect -n 1 org.opennms.protocols.xml.collector.XmlCollector 127.0.0.1 collection=xml-opennms-nodes
 ----
+
+== Mapping values
+
+Sometimes data is represented as string values.
+These values are normally not persisted as time-series data; this means changes are not visible over time.
+To circumvent this, we allow mappings defined between input values and values to be persisted.
+
+Let's assume we have the following data input:
+
+[source, xml]
+----
+<records>
+    <record>
+        <input>aaa</input>
+        <read>123</read>
+    </record>
+    <record>
+        <input>bbb</input>
+        <read>456</read>
+    </record>
+    <record>
+        <input>ccc</input>
+        <read>789</read>
+    </record>
+</records>
+----
+
+The following group configuration allows you to persist the `input` values as integer values over time:
+
+[source, xml]
+----
+<xml-group name="xml-mapping" resource-type="input" resource-xpath="/records/record" key-xpath="input">
+    <xml-object name="input" type="GAUGE" xpath="input"> <1>
+        <xml-mapping from="aaa" to="10" /> <2>
+        <xml-mapping from="bbb" to="20" />
+        <xml-mapping to="1000" /> <3>
+    </xml-object>
+    <xml-object name="read" type="GAUGE" xpath="read" />
+</xml-group>
+----
+<1> The data-type is altered in the `xml-object` element from `STRING` to `GAUGE`.
+<2> In this example we associate `aaa` to `10` and `bbb` to `20`.
+<3> Define a default value by omitting the `from` attribute in a `xml-mapping` definition.
+In this example `ccc` will be associated with the default value of `1000`.

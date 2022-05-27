@@ -11,6 +11,11 @@ export const RequisitionTypes = {
   RequisitionPluginForServer: 'requisition'
 }
 
+export const requisitionDNSField = {
+  zone: 'zone',
+  requisitionName: 'foreign source'
+}
+
 export const RequisitionPluginSubTypes = {
   ACI: 'ACI',
   AzureIot: 'Azure IoT',
@@ -55,6 +60,8 @@ export const ErrorStrings = {
   DuplicateName: 'Name must be unique.',
   QuartzFormatSupportError: 'Error: Expression has only 5 parts. At least 6 parts are required.',
   InvalidHostname: 'Invalid hostname',
+  InvalidZoneName: 'Invalid zone name',
+  InvalidRequisitionName: 'Invalid requisition name',
   FilePathStart: 'Path must start with a /.',
   FilePathWithQueryChar: 'Path contains invalid character: ?.',
   Required: (nameType: string) => `${nameType} required.`,

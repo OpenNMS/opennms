@@ -26,7 +26,8 @@ const getDeviceConfigBackups = async (context: ContextWithState) => {
 
 const getHistoryByIpInterface = async (context: ContextWithState) => {
   const modalDeviceConfigIpInterface = context.state.modalDeviceConfigBackup.ipInterfaceId
-  const historyModalBackups = await API.getHistoryByIpInterface(modalDeviceConfigIpInterface)
+  const modalDeviceConfigConfigType = context.state.modalDeviceConfigBackup.configType
+  const historyModalBackups = await API.getHistoryByIpInterface(modalDeviceConfigIpInterface, modalDeviceConfigConfigType)
   context.commit('SET_HISTORY_MODAL_BACKUPS', historyModalBackups)
 }
 

@@ -35,6 +35,7 @@ import java.util.List;
 
 import org.opennms.integration.api.v1.config.events.AlarmData;
 import org.opennms.integration.api.v1.config.events.AlarmType;
+import org.opennms.integration.api.v1.config.events.CollectionGroup;
 import org.opennms.integration.api.v1.config.events.EventConfExtension;
 import org.opennms.integration.api.v1.config.events.EventDefinition;
 import org.opennms.integration.api.v1.config.events.LogMessage;
@@ -172,6 +173,10 @@ public class VoluminousEventConfExtension implements EventConfExtension {
                 @Override
                 public List<Parameter> getParameters() {
                     return params;
+                }
+                @Override
+                public List<CollectionGroup> getCollectionGroup() {
+                    return new ArrayList<>();
                 }
             };
             eventDefs.add(eventDef);

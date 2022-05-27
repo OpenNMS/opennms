@@ -545,9 +545,9 @@ public abstract class EventConstants {
     public static final String PARAM_MONITORING_SYSTEM_PREV_LOCATION = "monitoringSystemPreviousLocation";
 
     public static final String PARAM_TOPOLOGY_NAMESPACE = "namespace";
-
-    public static final String DEVICE_CONFIG_RETRIEVAL_FAILED_UEI = "uei.opennms.org/deviceconfig/configRetrievalFailed";
-    public static final String DEVICE_CONFIG_RETRIEVAL_SUCCEEDED_UEI = "uei.opennms.org/deviceconfig/configRetrievalSucceeded";
+    public static final String DEVICE_CONFIG_BACKUP_STARTED_UEI = "uei.opennms.org/deviceconfig/configBackupStarted";
+    public static final String DEVICE_CONFIG_BACKUP_FAILED_UEI = "uei.opennms.org/deviceconfig/configBackupFailed";
+    public static final String DEVICE_CONFIG_BACKUP_SUCCEEDED_UEI = "uei.opennms.org/deviceconfig/configBackupSucceeded";
     //
     // end eventUEIs
     //
