@@ -186,6 +186,9 @@ commands:
               echo "WARNING: Azure credentials not found. Assuming this is a PR or other external branch build."
             fi
   run-smoke-tests:
+    when:
+      and: 
+       - equal: [ true, << pipeline.parameters.trigger-smoke-tests >> ]
     description: "Run the smoke tests"
     parameters:
       suite:
@@ -331,6 +334,9 @@ commands:
             - project
             - .m2
   run-integration-tests:
+    when:
+      and: 
+       - equal: [ true, << pipeline.parameters.trigger-integration-tests >> ]
     parameters:
       run-code-coverage:
         default: false

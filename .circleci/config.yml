@@ -17,6 +17,14 @@ parameters:
     description: whether to trigger garbage collection for older feature images
     type: boolean
     default: false
+  trigger-smoke-tests:
+    description: whether to trigger smoke tests
+    type: boolean
+    default: false
+  trigger-integration-tests:
+    description: whether to trigger integration tests
+    type: boolean
+    default: false
 
 setup: true
 
