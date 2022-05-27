@@ -60,6 +60,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.jvnet.hk2.annotations.Optional;
 import org.opennms.netmgt.model.OnmsUser;
 import org.opennms.smoketest.selenium.AbstractOpenNMSSeleniumHelper;
 import org.opennms.smoketest.selenium.ResponseData;
@@ -87,30 +88,13 @@ import static org.opennms.smoketest.selenium.AbstractOpenNMSSeleniumHelper.BASIC
  *
  * @author Alexander Chadfield
  */
-public class FileEditorIT {
+public class FileEditorIT extends AbstractOpenNMSSeleniumHelper{
     private static final Logger LOG = LoggerFactory.getLogger(FileEditorIT.class);
 
     private static final String REST_FILESYSTEM = "opennms/rest/filesystem";
     private static final String FILE_NAME = "pom.xml";
     private static final String USERNAME = "editor";
     private static final String PASSWORD = "admin";
-
-    AbstractOpenNMSSeleniumHelper abstractOpenNMSSeleniumHelper = new AbstractOpenNMSSeleniumHelper() {
-        @Override
-        public WebDriver getDriver() {
-            return null;
-        }
-
-        @Override
-        public String getBaseUrlInternal() {
-            return null;
-        }
-
-        @Override
-        public String getBaseUrlExternal() {
-            return null;
-        }
-    };
 
     @ClassRule
     public static final OpenNMSStack STACK = OpenNMSStack.MINIMAL;
@@ -132,7 +116,7 @@ public class FileEditorIT {
      */
     @Test
     public void normalFlow() {
-        LOG.debug("Normal flow test");
+        LOG.info("Normal flow test");
         RequestBody body;
 
         // upload a new file
@@ -144,10 +128,10 @@ public class FileEditorIT {
                                     file))
                     .build();
 
-            Response resp = postRequest(STACK.opennms().getBaseUrlExternal() + REST_FILESYSTEM + "/contents?f=" + FILE_NAME, "POST", body);
+            Response resp = postRequest(STACK.opennms().getBaseUrlExternal() + REST_FILESYSTEM + "/contents?f=" + FILE_NAME, "POST", body, USERNAME, PASSWORD);
             Assert.assertEquals(200, resp.code());
         } catch (IOException e) {
-            LOG.debug(String.format("Upload of a new file failed. Response code: %s", e.toString()));
+            LOG.error("Upload of a new file failed. Response code: {}", e.toString());
         }
 
         // update the file
@@ -156,28 +140,28 @@ public class FileEditorIT {
                 .build();
 
         try {
-            Response resp = postRequest(STACK.opennms().getBaseUrlExternal() + REST_FILESYSTEM + "/contents?f=" + FILE_NAME, "POST", body);
+            Response resp = postRequest(STACK.opennms().getBaseUrlExternal() + REST_FILESYSTEM + "/contents?f=" + FILE_NAME, "POST", body, USERNAME, PASSWORD);
             Assert.assertEquals(200, resp.code());
         } catch (IOException e) {
-            LOG.debug(String.format("Update the context of a new file failed. Response code: %s", e.toString()));
+            LOG.error("Update the context of a new file failed. Response code: {}", e.toString());
         }
 
         // get file
         try {
-            Response resp = postRequest(STACK.opennms().getBaseUrlExternal() + REST_FILESYSTEM + "/contents?f=" + FILE_NAME, "GET", null);
+            Response resp = postRequest(STACK.opennms().getBaseUrlExternal() + REST_FILESYSTEM + "/contents?f=" + FILE_NAME, "GET", null, USERNAME, PASSWORD);
             Assert.assertEquals(200, resp.code());
         } catch (IOException e) {
-            LOG.debug(String.format("Getting a list of files failed. Response code: %s", e.toString()));
+            LOG.error("Getting a list of files failed. Response code: {}}", e.toString());
         }
 
         // remove the file
         MediaType mediaType = MediaType.parse("text/plain");
         body = RequestBody.create(mediaType, "");
         try {
-            Response resp = postRequest(STACK.opennms().getBaseUrlExternal() + REST_FILESYSTEM + "/contents?f=" + FILE_NAME, "DELETE", body);
+            Response resp = postRequest(STACK.opennms().getBaseUrlExternal() + REST_FILESYSTEM + "/contents?f=" + FILE_NAME, "DELETE", body, USERNAME, PASSWORD);
             Assert.assertEquals(200, resp.code());
         } catch (IOException e) {
-            LOG.debug(String.format("Removing of a file failed. Response code: %s", e.toString()));
+            LOG.error("Removing of a file failed. Response code: {}", e.toString());
         }
     }
 
@@ -186,7 +170,7 @@ public class FileEditorIT {
      */
     @Test
     public void unsupportedFileExtension() {
-        LOG.debug("Wrong file name test");
+        LOG.info("Wrong file name test");
 
         // upload a new file
         try {
@@ -197,10 +181,10 @@ public class FileEditorIT {
                                     file))
                     .build();
 
-            Response resp = postRequest(STACK.opennms().getBaseUrlExternal() + REST_FILESYSTEM + "/contents?f=" + FILE_NAME, "POST", body);
+            Response resp = postRequest(STACK.opennms().getBaseUrlExternal() + REST_FILESYSTEM + "/contents?f=" + FILE_NAME, "POST", body, USERNAME, PASSWORD);
             Assert.assertEquals(400, resp.code());
         } catch (IOException e) {
-            LOG.debug(String.format("Upload of unsupported file failed. Response code: %s", e.toString()));
+            LOG.error("Upload of unsupported file failed. Response code: {}", e.toString());
         }
     }
 
@@ -209,7 +193,7 @@ public class FileEditorIT {
      */
     @Test
     public void updateFailsOnXmlValidation() {
-        LOG.debug("Wrong file name test");
+        LOG.info("Wrong file name test");
 
         try {
             File file = new File(FILE_NAME);
@@ -219,18 +203,39 @@ public class FileEditorIT {
                                     file))
                     .build();
 
-            Response resp = postRequest(STACK.opennms().getBaseUrlExternal() + REST_FILESYSTEM + "/contents?f=" + file.getName(), "POST", body);
+            Response resp = postRequest(STACK.opennms().getBaseUrlExternal() + REST_FILESYSTEM + "/contents?f=" + file.getName(), "POST", body, USERNAME, PASSWORD);
             resp.close();
 
             body = new MultipartBody.Builder().setType(MultipartBody.FORM)
                     .addFormDataPart("upload", "OpenNMS Smoke Test")
                     .build();
 
-            resp = postRequest(STACK.opennms().getBaseUrlExternal() + REST_FILESYSTEM + "/contents?f=" + file.getName(), "POST", body);
+            resp = postRequest(STACK.opennms().getBaseUrlExternal() + REST_FILESYSTEM + "/contents?f=" + file.getName(), "POST", body, USERNAME, PASSWORD);
 
             Assert.assertEquals(400, resp.code());
         } catch (IOException e) {
-            LOG.debug(String.format("Update of the context with incorrect data failed. Response code: %s", e.toString()));
+            LOG.error("Update of the context with incorrect data failed. Response code: {}}", e.toString());
+        }
+    }
+
+    @Test
+    public void uploadFailUserWithoutFileEditorRole() {
+        LOG.info("Uploading a file with incorrect role");
+        RequestBody body;
+
+        // upload a new file
+        try {
+            File file = new File(FILE_NAME);
+            body = new MultipartBody.Builder().setType(MultipartBody.FORM)
+                    .addFormDataPart("upload", FILE_NAME,
+                            RequestBody.create(MediaType.parse("application/octet-stream"),
+                                    file))
+                    .build();
+
+            Response resp = postRequest(STACK.opennms().getBaseUrlExternal() + REST_FILESYSTEM + "/contents?f=" + FILE_NAME, "POST", body, "admin", PASSWORD);
+            Assert.assertEquals(403, resp.code());
+        } catch (IOException e) {
+            LOG.error("Test of uploading of a new file with incorrect role failed. Response code: {}", e.toString());
         }
     }
 
@@ -254,8 +259,8 @@ public class FileEditorIT {
      * @return
      * @throws IOException
      */
-    private Response postRequest(String url, String method, RequestBody body) throws IOException {
-        LOG.debug("creating request");
+    private Response postRequest(String url, String method, RequestBody body, String username, String password) throws IOException {
+        LOG.info("creating request");
 
         OkHttpClient client = new OkHttpClient().newBuilder()
                 .build();
@@ -263,11 +268,11 @@ public class FileEditorIT {
         Request request = new Request.Builder()
                 .url(url)
                 .method(method, body)
-                .addHeader("Authorization", authHeader(USERNAME, PASSWORD))
+                .addHeader("Authorization", authHeader(username, password))
                 .build();
         Response response = client.newCall(request).execute();
 
-        LOG.debug(response.toString());
+        LOG.info(response.toString());
         return response;
     }
 
@@ -275,7 +280,7 @@ public class FileEditorIT {
      * Add an user over API
      */
     private void addUserAPI() {
-        LOG.debug("User creation request");
+        LOG.info("User creation request");
         final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         JAXB.marshal(createUser("editor", "File Editor", "editor@opennms.org", "21232F297A57A5A743894A0E4A801FC3" /* admin */, "ROLE_FILESYSTEM_EDITOR", "ROLE_USER"), outputStream);
 
@@ -283,12 +288,12 @@ public class FileEditorIT {
         post.setEntity(new StringEntity(new String(outputStream.toByteArray()), ContentType.APPLICATION_XML));
         Integer response = 0;
         try {
-            response = abstractOpenNMSSeleniumHelper.doRequest(post);
+            response = doRequest(post);
         } catch (IOException | InterruptedException e) {
             LOG.debug(String.format("Adding a user failed. Response code: %s", e.toString()));
         }
 
-        LOG.debug(response.toString());
+        LOG.info(response.toString());
     }
 
     /**
@@ -311,5 +316,19 @@ public class FileEditorIT {
         return user;
     }
 
+    @Override
+    public WebDriver getDriver() {
+        return null;
+    }
+
+    @Override
+    public String getBaseUrlInternal() {
+        return null;
+    }
+
+    @Override
+    public String getBaseUrlExternal() {
+        return null;
+    }
 }
 
