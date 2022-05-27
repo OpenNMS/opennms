@@ -693,8 +693,6 @@ workflows:
               ignore:
                 - /^merge-foundation.*/
       - integration-test:
-          parameters: 
-            trigger-integration-tests: << parameters.trigger-integration-tests >>
           requires:
             - build
           filters:
