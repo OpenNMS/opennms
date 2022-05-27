@@ -675,8 +675,12 @@ workflows:
             - build
           filters:
             branches:
+              only:
+                - develop
+                - /.*smoke.*/
               ignore:
                 - /^merge-foundation.*/
+                
       - sentinel-rpm-build:
           requires:
             - integration-test
