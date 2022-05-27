@@ -85,6 +85,7 @@ workflows:
           base-revision: << pipeline.git.branch >>
           mapping: |
             .*                trigger-coverage false
+            .*                trigger-integration-tests: << pipeline.parameters.trigger-integration-tests >>
             ((?!docs/).)*     trigger-build    true
             docs/.*           trigger-docs     true
             ui/.*             trigger-ui       true
