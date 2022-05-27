@@ -1454,7 +1454,7 @@ jobs:
       - attach_workspace:
           at: ~/
       - run-integration-tests:
-          trigger-integration-tests: << parameters.trigger-integration-tests >>
+          trigger-integration-tests: << pipeline.parameters.trigger-integration-tests >>
           rerun-failtest-count: 1
   integration-test-with-coverage:
     executor: integration-test-executor
@@ -1464,7 +1464,7 @@ jobs:
       - attach_workspace:
           at: ~/
       - run-integration-tests:
-          trigger-integration-tests: << parameters.trigger-integration-tests >>
+          trigger-integration-tests: << pipeline.parameters.trigger-integration-tests >>
           run-code-coverage: true
           rerun-failtest-count: 0
           failure-option: -fn
