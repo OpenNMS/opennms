@@ -1437,8 +1437,6 @@ jobs:
             ./tag.sh
             ./publish.sh
   integration-test:
-    when:
-      condition: << pipeline.parameters.trigger-integration-tests >>
     executor: integration-test-executor
     parallelism: 8
     resource_class: xlarge
