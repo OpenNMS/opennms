@@ -14,7 +14,6 @@ This hash table will either contain the latest status reported by a passive stat
 
 During {page-component-title} initialization, the outages database table is queried to set the initial state of any passive service based on the last-known outage condition when services previously stopped.
 
-
 == Passive Status Events
 The PassiveStatusKeeper updates its hash table when a `uei.opennms.org/services/passiveServiceStatus` is processed.
 The event must include the following parameters:
@@ -28,7 +27,7 @@ The name of the PassiveStatusMonitor service
 passiveStatus::
 Must be either `Up` or `Down` and is case sensitive.
 passiveReasonCode::
-Optional field typically only present in down events that can be used to enrich the event with specific information regarding the reason for the service down event.
+Optional field, typically only present in down events, that can be used to enrich the event with specific information regarding the reason for the service down event.
 
 Any event with this specific UEI and parameter set triggers a PassiveStatusKeeper update.
 If sending events directly from an external system such as via xref:operation:events/sources/rest.adoc[REST] or xref:operation:events/sources/kafka.adoc[Kafka Consumer], the event can be sent directly with these parameters for Eventd to process.
@@ -60,7 +59,7 @@ If you will have only one service to monitor passively, set a basic service in `
 <1> As the monitor checks the PassiveStatusKeeper table in memory, small interval times allow for quick responses to updates with minimal overhead.
 Interval times of 30 seconds to 60 seconds (as used in this example) are typical for this type of monitor.
 
-If you will have multiple passive monitors, using xref:operation:service-assurance/polling-packages.adoc#ga-pollerd-packages-patterns[service patterns] can make configuration easy.
+If you will have multiple passive monitors on a node, using xref:operation:service-assurance/polling-packages.adoc#ga-pollerd-packages-patterns[service patterns] can make configuration easy.
 With the following example, any service added to a node that matches the wildcard "Passive-*" will match a PassiveStatusKeeper update event for the matching `passiveServiceName` parameter.
 
 [source, xml]

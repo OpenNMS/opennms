@@ -1,29 +1,26 @@
 = Loop Detector
 
 The Loop Detector gives {page-component-title} users the ability to force a service onto an interface during service detection.
-Using this method, a passive node, interface, and service can be added with one event, the New Suspect event (uei.opennms.org/internal/newSuspect).
-Add a passive service using this method:
+This can be used to ensure a specific service is added to all nodes, without performing a check against the node.
+The primary use case for this type of detector is when using xref:reference:service-assurance/monitors/PassiveStatusMonitor.adoc[passive service monitoring].
 
-First, add a detector for the new service to the default foreign-source definition. 
-Use the loop class:
+First, add a detector for the new service to the desired foreign-source definition.
+Use the LOOP class:
 
 Add parameters:
 
-; ipMatch : 169.254.*.*
-; supported : true
+* ipMatch : 169.254.*.*
 
-
-Here's how the above looks in `default-foreign-source.xml`:
+Here's how the above looks in the requisition XML:
 
 [source, xml]
 ----
-        <detector name="PCR" class="org.opennms.netmgt.provision.detector.loop.LoopDetector">
-            <parameter key="ipMatch" value="169.254.*.*"/>
-            <parameter key="supported" value="true"/>
-        </detector>
+<detector name="PCR" class="org.opennms.netmgt.provision.detector.loop.LoopDetector">
+    <parameter key="ipMatch" value="169.254.*.*"/>
+</detector>
 ----
 
-This configuration will cause the PCR service to be detected (without any actual network-based scanning happening) on any interface with an IP address starting with "169.254".
+This configuration will cause the "PCR" service to be detected (without any actual network-based scanning happening) on any interface with an IP address starting with "169.254".
 
 == Detector facts
 
@@ -52,7 +49,7 @@ If the node has an IP address that matches, the service will be flagged for the 
 3+| *Optional*
 
 | isSupported
-| ?
+| Must be set to `true` for detection to succeed.
 | true
 
 |===
