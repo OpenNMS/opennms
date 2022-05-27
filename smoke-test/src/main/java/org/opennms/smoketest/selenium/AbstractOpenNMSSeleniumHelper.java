@@ -1070,7 +1070,7 @@ public abstract class AbstractOpenNMSSeleniumHelper {
         }
     }
 
-    protected Integer doRequest(final HttpRequestBase request) throws ClientProtocolException, IOException, InterruptedException {
+    public Integer doRequest(final HttpRequestBase request) throws ClientProtocolException, IOException, InterruptedException {
         return getRequest(request).getStatus();
     }
 

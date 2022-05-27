@@ -61,8 +61,10 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.opennms.netmgt.model.OnmsUser;
+import org.opennms.smoketest.selenium.AbstractOpenNMSSeleniumHelper;
 import org.opennms.smoketest.selenium.ResponseData;
 import org.opennms.smoketest.stacks.OpenNMSStack;
+import org.openqa.selenium.WebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,6 +94,23 @@ public class FileEditorIT {
     private static final String FILE_NAME = "pom.xml";
     private static final String USERNAME = "editor";
     private static final String PASSWORD = "admin";
+
+    AbstractOpenNMSSeleniumHelper abstractOpenNMSSeleniumHelper = new AbstractOpenNMSSeleniumHelper() {
+        @Override
+        public WebDriver getDriver() {
+            return null;
+        }
+
+        @Override
+        public String getBaseUrlInternal() {
+            return null;
+        }
+
+        @Override
+        public String getBaseUrlExternal() {
+            return null;
+        }
+    };
 
     @ClassRule
     public static final OpenNMSStack STACK = OpenNMSStack.MINIMAL;
@@ -264,7 +283,7 @@ public class FileEditorIT {
         post.setEntity(new StringEntity(new String(outputStream.toByteArray()), ContentType.APPLICATION_XML));
         Integer response = 0;
         try {
-            response = doRequest(post);
+            response = abstractOpenNMSSeleniumHelper.doRequest(post);
         } catch (IOException e) {
             LOG.error(e.toString());
         } catch (InterruptedException e) {
@@ -272,72 +291,6 @@ public class FileEditorIT {
         }
 
         LOG.info(response.toString());
-    }
-
-    /**
-     * API request to create a user
-     * @param request
-     * @return
-     * @throws IOException
-     * @throws InterruptedException
-     */
-    protected Integer doRequest(final HttpRequestBase request) throws IOException, InterruptedException {
-        return getRequest(request).getStatus();
-    }
-
-    protected ResponseData getRequest(final HttpRequestBase request) throws ClientProtocolException, IOException, InterruptedException {
-        final CountDownLatch waitForCompletion = new CountDownLatch(1);
-
-        final URI uri = request.getURI();
-        final HttpHost targetHost = new HttpHost(uri.getHost(), uri.getPort(), uri.getScheme());
-        CredentialsProvider credsProvider = new BasicCredentialsProvider();
-        credsProvider.setCredentials(new AuthScope(targetHost.getHostName(), targetHost.getPort()), new UsernamePasswordCredentials(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD));
-        AuthCache authCache = new BasicAuthCache();
-        // Generate BASIC scheme object and add it to the local auth cache
-        BasicScheme basicAuth = new BasicScheme();
-        authCache.put(targetHost, basicAuth);
-
-        // Add AuthCache to the execution context
-        HttpClientContext context = HttpClientContext.create();
-        context.setCredentialsProvider(credsProvider);
-        context.setAuthCache(authCache);
-
-        final CloseableHttpClient client = HttpClients.createDefault();
-
-        final ResponseHandler<ResponseData> responseHandler = new ResponseHandler<ResponseData>() {
-            @Override
-            public ResponseData handleResponse(final HttpResponse response) throws ClientProtocolException, IOException {
-                try {
-                    final int status = response.getStatusLine().getStatusCode();
-                    String responseText = null;
-                    // 400 because we return that if you try to delete
-                    // something that is already deleted
-                    // 404 because it's OK if it's already not there
-                    if (status >= 200 && status < 300 || status == 400 || status == 404) {
-                        final HttpEntity entity = response.getEntity();
-                        if (entity != null) {
-                            responseText = EntityUtils.toString(entity);
-                            EntityUtils.consume(entity);
-                        }
-                        final ResponseData r = new ResponseData(status, responseText);
-                        return r;
-                    } else {
-                        throw new ClientProtocolException("Unexpected response status: " + status);
-                    }
-                } catch (final Exception e) {
-                    LOG.warn("Unhandled exception", e);
-                    return new ResponseData(-1, null);
-                } finally {
-                    waitForCompletion.countDown();
-                }
-            }
-        };
-
-        final ResponseData result = client.execute(targetHost, request, responseHandler, context);
-
-        waitForCompletion.await();
-        client.close();
-        return result;
     }
 
     /**
