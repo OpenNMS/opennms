@@ -32,12 +32,12 @@ Don't include `.dcb` extension when specifying the file name in metadata.
 | default.dcb
 
 | username
-| Username for ssh login. 
+| Username for SSH login. 
 Overwrite in metadata as `dcb:username`.
 | admin
 
 | password
-| Password for ssh login. 
+| Password for SSH login. 
 Overwrite in metadata as `dcb:password`.
 | admin
 
@@ -45,7 +45,7 @@ Overwrite in metadata as `dcb:password`.
 
 | config-type
 | If device has multiple configurations, specify the config-type with each service.
-Overwrite in metadata as `dcb:config-type`
+Overwrite in metadata as `dcb:config-type`.
 | default
 
 | ssh-port

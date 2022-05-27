@@ -6,7 +6,11 @@ After you have xref:operation:device-config-backup/ssh.adoc#backup-script[create
 To activate the device configuration backup, you must add metadata that defines the device configuration backup script you created for the node's device type, and the device's username and password.
 
 We recommend you also add metadata to overwrite the default device configuration backup schedule.
-By default, {page-component-title} never schedules the device confib backup (see xref:reference:service-assurance/monitors/DeviceConfigMonitor.adoc[Device Config Monitor] for details). It is still possible to retrieve backups on demand by using the Web UI or the REST services. Default behavior can be overwritten by specifying backup schedule in the form of cron expression. In order to prevent all devices fetching the config at the same time, it is better to space out schedule.  For ex: `0 0 0 * * ?` runs every 24 hrs at 12.00am. `0 0 1 * * ?` runs every 24 hrs at 1.00am.
+By default, {page-component-title} never schedules the device config backup (see xref:reference:service-assurance/monitors/DeviceConfigMonitor.adoc[Device Config Monitor] for details). 
+It is still possible to retrieve backups on demand by using the Web UI or the REST services. 
+Specify a backup schedule in the form of a cron expression to overwrite default behavior. 
+To prevent all devices fetching the configuration at the same time, it is better to space out the schedule.  
+For example, `0 0 0 * * ?` runs every 24 hrs at 12:00 a.m. `0 0 1 * * ?` runs every 24 hrs at 1:00 a.m.
 
 . Log in to OpenNMS and click the gears icon.
 . Choose *Provisioning>Manage Provisioning Requisitions*.
