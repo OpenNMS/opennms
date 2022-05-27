@@ -218,7 +218,6 @@ commands:
           command: |
             free -m -c 500 -s 30
       - run:
-          when: << pipeline.parameters.trigger-smoke-tests >>
           name: Smoke Tests
           no_output_timeout: 30m
           command: |
@@ -345,7 +344,7 @@ commands:
       changes-only:
         default: true
         type: boolean
-      trigger-integration-tests:
+        :
         default: false
         type: boolean
     steps:
