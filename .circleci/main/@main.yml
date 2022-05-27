@@ -364,7 +364,7 @@ commands:
             export CCI_RERUN_FAILTEST=<< parameters.rerun-failtest-count >>
             export CCI_FAILURE_OPTION=<< parameters.failure-option >>
             export CCI_CHANGES_ONLY=<< parameters.changes-only >>
-            if [[ << pipeline.parameters.trigger-integration-tests >> ]]; then 
+            if [[ << parameters.trigger-integration-tests >> ]]; then 
                .circleci/scripts/itest.sh
             fi
       - run:
