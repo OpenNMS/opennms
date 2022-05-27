@@ -1,5 +1,5 @@
 
-= Business Service Hierarchy
+= Business Service Topology
 
 Business services can depend on each other, and together build a business service hierarchy.
 Visualize the hierarchy using the Topology User Interface with the *Business Services* view.
@@ -27,6 +27,39 @@ image::bsm/02_bsm-service-hierarchy.png[]
 
 (4) Reduction key edge used as an input to the top-level business service, which references just a node-lost service of a page sequence monitor for the user login.
 
-To add or remove an additional selected BS or edge to focus use, in the context menu Add To Focus or Remove From Focus.
-If you want to have a specific BS or edge as a single focus use Set as Focal Point.
+To add or remove an additional selected business service  or edge to focus use, in the context menu Add To Focus or Remove From Focus.
+If you want to have a specific business service  or edge as a single focus use Set as Focal Point.
 The eye icon highlights all elements in the Topology UI which are set to focus.
+
+
+[[gu-bsm-sim-mode]]
+== Simulation mode
+
+To visualize if the configured behavior works as expected, use the simulation mode to manually set an alarm status of an edge element.
+The operational status is calculated with the given map and reduce functions.
+This allows you to validate and tune business service hierarchies until they achieve the desired status propagation.
+
+To enter simulation mode, open the Business Service View in the Topology User Interface and toggle the Simulation Mode option in the Simulate menu at the top of the screen.
+The Info Panel on the left lets you set the severity of the selected edge element.
+
+The Simulate menu includes Inherit State and Reset State options.
+Inherit State, uses the current severities and operational status from monitoring for the simulation mode.
+Select Reset State to set all states to Normal for simulation.
+
+
+
+
+[[gu-bsm-change-iconset]]
+== Change icons
+
+You can customize the icons for each element in the Business Service view.
+Select the element to change and choose Change Icon from the Context Menu to access the icon chooser.
+
+You can add custom SVG icons using the instructions in the xref:operation:topology/topology.adoc#ga-topology-add-icons[topology map] documentation.
+
+
+[[gu-bsm-share-view]]
+== Share view
+
+You can use the Share menu function to generate a link for the current view and copy and send it to another user to have access to the same configured Business Service View.
+The user receiving the link needs an OpenNMS account to be able to see the Business Service topology map.
