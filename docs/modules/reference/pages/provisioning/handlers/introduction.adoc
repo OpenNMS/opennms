@@ -61,7 +61,7 @@ To adjust them, follow these steps:
 
 . Log in to {page-component-title} as an admin user.
 . Click the gear icon and click *Configure External Requisitions and Thread Pools*.
-. In the left menu, click *External Requisitions and Thread Pools*.
+. In the left menu, click *External Requisitions*.
 . In the *Thread Pools* area, select a value from the drop-down list for each item you want to update.
 . Click *Update Thread Pools*.
 
@@ -80,7 +80,7 @@ NOTE: You can also create an external requisition via the xref:development:rest/
 
 . Log in to {page-component-title} as an admin user.
 . Click the gear icon and click *Configure External Requisitions and Thread Pools*.
-. In the left menu, click *External Requisitions and Thread Pools*.
+. In the left menu, click *External Requisitions*.
 . Click *Add External Requisition*.
 . Specify a name for the external requisition.
 . From the *Type* drop-down, choose *DNS*.

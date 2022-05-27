@@ -20,7 +20,7 @@
         :class="{ selected: isSelected('/configuration'), 'title-multiline-custom': navRailOpen }"
         href="#/configuration"
         :icon="LoggerConfigs"
-        title="External Requisitions and Thread Pools"
+        title="External Requisitions"
       />
       <FeatherRailItem
         :class="{ selected: isSelected('/file-editor') }"
@@ -75,7 +75,10 @@
     </template>
   </FeatherNavigationRail>
 </template>
-<script setup lang="ts">
+<script
+  setup
+  lang="ts"
+>
 import { useStore } from 'vuex'
 import useRole from '@/composables/useRole'
 import Instances from '@featherds/icon/hardware/Instances'
