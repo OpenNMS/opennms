@@ -17,10 +17,7 @@
         :options="requisitionTypeList"
         :error="errors.type"
         :modelValue="config.type"
-        @update:modelValue="(((val: {name:string}) => {
-          props.updateFormValue('type', val)
-          updateHint(val.name)
-        }) as any)"
+        @update:modelValue="updateExternalSource"
       />
       <div class="icon">
         <FeatherButton
@@ -152,6 +149,7 @@ import Help from '@featherds/icon/action/Help'
 import { LocalConfigurationWrapper } from './configuration.types'
 import { ConfigurationHelper } from './ConfigurationHelper'
 import ConfigurationCronSelector from './ConfigurationCronSelector.vue'
+import { UpdateModelFunction } from '@/types'
 const firstInput = ref<HTMLInputElement | null>(null)
 
 const props = defineProps({
@@ -175,6 +173,11 @@ watch(formActive, () => {
     firstInput.value.focus()
   }
 })
+
+const updateExternalSource: UpdateModelFunction = (val: {name:string}) => {
+  props.updateFormValue('type', val)
+  updateHint(val.name)
+}
 
 const updateCronValue = (type:string, val:string) => {
   props.updateFormValue(type, val)

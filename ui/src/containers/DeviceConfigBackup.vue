@@ -63,7 +63,7 @@ onMounted(() => store.dispatch('deviceModule/getDeviceConfigBackups'))
         justify-content: space-between;
 
         .title {
-          @include headline4;
+          @include headline1;
           margin: 24px 0px 24px 19px;
           display: block;
         }

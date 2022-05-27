@@ -198,6 +198,8 @@
 ** xref:admin/rmi.adoc[]
 ** xref:admin/geocoder.adoc[]
 ** xref:admin/http-ssl.adoc[]
+*** xref:admin/https/https-server.adoc[]
+*** xref:admin/https/https-client.adoc[]
 ** xref:admin/request-logging.adoc[]
 ** xref:admin/restart.adoc[]
 ** xref:admin/daemon-config-files.adoc[]
