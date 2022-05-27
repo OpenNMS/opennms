@@ -29,6 +29,8 @@
 package org.opennms.netmgt.collection.commands;
 
 import java.net.InetAddress;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,6 +46,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.google.common.hash.HashFunction;
+import com.google.common.hash.Hashing;
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.Option;
@@ -117,6 +121,18 @@ public class StressCommand implements Action {
     @Option(name="-x", aliases="--rra", description="Round Robin Archives, defaults to the same RRA values as a pristine datacollection-config.xml.\nExample: -x 'RRA:AVERAGE:0.5:1:2016' -x 'RRA:AVERAGE:0.5:12:1488'", required=false, multiValued=true)
     List<String> rras = null;
 
+    @Option(name="-ml", aliases="--metric-extra-length", description="", required=false, multiValued=false)
+    int metricExtraLength = 0;
+
+    @Option(name="-mlv", aliases="--metric-extra-length-variance", description="", required=false, multiValued=false)
+    int metricExtraLengthVariance = 0;
+
+    @Option(name="-rl", aliases="--resource-extra-length", description="", required=false, multiValued=false)
+    int resourceExtraLength = 0;
+
+    @Option(name="-rlv", aliases="--resource-extra-length-variance", description="", required=false, multiValued=false)
+    int resourceExtraLengthVariance = 0;
+
     private RateLimiter rateLimiter;
 
     private int numNumericAttributesPerNodePerCycle;
@@ -144,6 +160,15 @@ public class StressCommand implements Action {
 
     @Override
     public Void execute() throws Exception {
+        // check parameter
+        if (metricExtraLength > 0 && metricExtraLengthVariance >= metricExtraLength) {
+            System.out.println("metricExtraLength must larger than metricExtraLengthVariance!");
+            return null;
+        }
+        if (resourceExtraLength > 0 && resourceExtraLengthVariance >= resourceExtraLength) {
+            System.out.println("resourceExtraLength must larger than resourceExtraLengthVariance!");
+            return null;
+        }
         // Apply sane lower bounds to all of the configurable options
         intervalInSeconds = Math.max(1, intervalInSeconds);
         numberOfNodes = Math.max(1, numberOfNodes);
@@ -291,7 +316,7 @@ public class StressCommand implements Action {
         };
     }
 
-    private CollectionSet generateCollectionSet(CollectionAgent agent, int nodeId, int interfaceId, Resource resource) {
+    protected CollectionSet generateCollectionSet(CollectionAgent agent, int nodeId, int interfaceId, Resource resource) {
         CollectionSetBuilder builder = new CollectionSetBuilder(agent);
         for (int groupId = 0; groupId < numberOfGroupsPerInterface; groupId++) {
             String groupName = "group" + groupId;
@@ -299,10 +324,19 @@ public class StressCommand implements Action {
             for (int attributeId = 0; attributeId < numberOfNumericAttributesPerGroup; attributeId++) {
                 // Generate a predictable, non-constant number
                 int value = groupId * attributeId + seed.incrementAndGet() % 100;
-                builder.withNumericAttribute(resource, groupName, "metric_" + groupId + "_" + attributeId, value, AttributeType.GAUGE);
+                StringBuilder collectionName = new StringBuilder("metric_");
+                collectionName.append(groupId);
+                collectionName.append("_");
+                collectionName.append(attributeId);
+                if (metricExtraLength > 0) {
+                    collectionName.append(generateExtraString(collectionName.toString(), nodeId, metricExtraLength, metricExtraLengthVariance));
+                }
+                if (resourceExtraLength > 0) {
+                    groupName += "_" + generateExtraString(groupName, nodeId, resourceExtraLength, resourceExtraLengthVariance);
+                }
+                builder.withNumericAttribute(resource, groupName, collectionName.toString(), value, AttributeType.GAUGE);
                 numericAttributesGenerated.mark();
             }
-
             String stringAttributeValueSuffix = "";
             int groupInstance = (nodeId + 1) * (interfaceId + 1) * (groupId + 1); // Add 1 to each of these to make sure they are > 0
             if (stringVariationFactor > 0 && groupInstance % stringVariationFactor == 0) {
@@ -323,7 +357,31 @@ public class StressCommand implements Action {
         return builder.build();
     }
 
-    private static class MockCollectionAgent implements CollectionAgent {
+    /**
+     * Generate a string is not the same per difference params but keep consistence by the same params.
+     *
+     * @param prefix
+     * @param id
+     * @param length
+     * @param variance
+     * @return
+     */
+    private String generateExtraString(String prefix, int id, int length, int variance) {
+        HashFunction sha1 = Hashing.sha1();
+        String hash = sha1.hashString(prefix, StandardCharsets.UTF_8).toString();
+        int outLength = length;
+        // calculate length with variance by nodeId
+        if (length > 0) {
+            outLength = length - variance + (id % (2 * variance + 1));
+        }
+        if (outLength > hash.length()) {
+            int repeat = (int) Math.ceil((double) outLength / hash.length());
+            hash = hash.repeat(repeat);
+        }
+        return hash.substring(0, outLength);
+    }
+
+    protected static class MockCollectionAgent implements CollectionAgent {
 
         private final int nodeId;
 
