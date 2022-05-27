@@ -132,7 +132,7 @@ public class FileEditorIT {
      */
     @Test
     public void normalFlow() {
-        LOG.info("Normal flow test");
+        LOG.debug("Normal flow test");
         RequestBody body;
 
         // upload a new file
@@ -147,7 +147,7 @@ public class FileEditorIT {
             Response resp = postRequest(STACK.opennms().getBaseUrlExternal() + REST_FILESYSTEM + "/contents?f=" + FILE_NAME, "POST", body);
             Assert.assertEquals(200, resp.code());
         } catch (IOException e) {
-            LOG.error(e.toString());
+            LOG.debug(String.format("Upload of a new file failed. Response code: %s", e.toString()));
         }
 
         // update the file
@@ -159,7 +159,7 @@ public class FileEditorIT {
             Response resp = postRequest(STACK.opennms().getBaseUrlExternal() + REST_FILESYSTEM + "/contents?f=" + FILE_NAME, "POST", body);
             Assert.assertEquals(200, resp.code());
         } catch (IOException e) {
-            LOG.error(e.toString());
+            LOG.debug(String.format("Update the context of a new file failed. Response code: %s", e.toString()));
         }
 
         // get file
@@ -167,7 +167,7 @@ public class FileEditorIT {
             Response resp = postRequest(STACK.opennms().getBaseUrlExternal() + REST_FILESYSTEM + "/contents?f=" + FILE_NAME, "GET", null);
             Assert.assertEquals(200, resp.code());
         } catch (IOException e) {
-            LOG.error(e.toString());
+            LOG.debug(String.format("Getting a list of files failed. Response code: %s", e.toString()));
         }
 
         // remove the file
@@ -177,7 +177,7 @@ public class FileEditorIT {
             Response resp = postRequest(STACK.opennms().getBaseUrlExternal() + REST_FILESYSTEM + "/contents?f=" + FILE_NAME, "DELETE", body);
             Assert.assertEquals(200, resp.code());
         } catch (IOException e) {
-            LOG.error(e.toString());
+            LOG.debug(String.format("Removing of a file failed. Response code: %s", e.toString()));
         }
     }
 
@@ -186,7 +186,7 @@ public class FileEditorIT {
      */
     @Test
     public void unsupportedFileExtension() {
-        LOG.info("Wrong file name test");
+        LOG.debug("Wrong file name test");
 
         // upload a new file
         try {
@@ -200,7 +200,7 @@ public class FileEditorIT {
             Response resp = postRequest(STACK.opennms().getBaseUrlExternal() + REST_FILESYSTEM + "/contents?f=" + FILE_NAME, "POST", body);
             Assert.assertEquals(400, resp.code());
         } catch (IOException e) {
-            LOG.error(e.toString());
+            LOG.debug(String.format("Upload of unsupported file failed. Response code: %s", e.toString()));
         }
     }
 
@@ -209,7 +209,7 @@ public class FileEditorIT {
      */
     @Test
     public void updateFailsOnXmlValidation() {
-        LOG.info("Wrong file name test");
+        LOG.debug("Wrong file name test");
 
         try {
             File file = new File(FILE_NAME);
@@ -230,7 +230,7 @@ public class FileEditorIT {
 
             Assert.assertEquals(400, resp.code());
         } catch (IOException e) {
-            LOG.error(e.toString());
+            LOG.debug(String.format("Update of the context with incorrect data failed. Response code: %s", e.toString()));
         }
     }
 
@@ -255,7 +255,7 @@ public class FileEditorIT {
      * @throws IOException
      */
     private Response postRequest(String url, String method, RequestBody body) throws IOException {
-        LOG.info("creating request");
+        LOG.debug("creating request");
 
         OkHttpClient client = new OkHttpClient().newBuilder()
                 .build();
@@ -267,7 +267,7 @@ public class FileEditorIT {
                 .build();
         Response response = client.newCall(request).execute();
 
-        LOG.info(response.toString());
+        LOG.debug(response.toString());
         return response;
     }
 
@@ -275,7 +275,7 @@ public class FileEditorIT {
      * Add an user over API
      */
     private void addUserAPI() {
-        LOG.info("User creation request");
+        LOG.debug("User creation request");
         final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         JAXB.marshal(createUser("editor", "File Editor", "editor@opennms.org", "21232F297A57A5A743894A0E4A801FC3" /* admin */, "ROLE_FILESYSTEM_EDITOR", "ROLE_USER"), outputStream);
 
@@ -284,13 +284,11 @@ public class FileEditorIT {
         Integer response = 0;
         try {
             response = abstractOpenNMSSeleniumHelper.doRequest(post);
-        } catch (IOException e) {
-            LOG.error(e.toString());
-        } catch (InterruptedException e) {
-            LOG.error(e.toString());
+        } catch (IOException | InterruptedException e) {
+            LOG.debug(String.format("Adding a user failed. Response code: %s", e.toString()));
         }
 
-        LOG.info(response.toString());
+        LOG.debug(response.toString());
     }
 
     /**
