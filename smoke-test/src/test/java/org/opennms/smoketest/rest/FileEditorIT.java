@@ -69,6 +69,7 @@ import org.openqa.selenium.WebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import javax.xml.bind.JAXB;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -88,13 +89,30 @@ import static org.opennms.smoketest.selenium.AbstractOpenNMSSeleniumHelper.BASIC
  *
  * @author Alexander Chadfield
  */
-public class FileEditorIT extends AbstractOpenNMSSeleniumHelper{
+public class FileEditorIT {
     private static final Logger LOG = LoggerFactory.getLogger(FileEditorIT.class);
 
     private static final String REST_FILESYSTEM = "opennms/rest/filesystem";
     private static final String FILE_NAME = "pom.xml";
     private static final String USERNAME = "editor";
     private static final String PASSWORD = "admin";
+
+    AbstractOpenNMSSeleniumHelper abstractOpenNMSSeleniumHelper = new AbstractOpenNMSSeleniumHelper() {
+        @Override
+        public WebDriver getDriver() {
+            return null;
+        }
+
+        @Override
+        public String getBaseUrlInternal() {
+            return null;
+        }
+
+        @Override
+        public String getBaseUrlExternal() {
+            return null;
+        }
+    };
 
     @ClassRule
     public static final OpenNMSStack STACK = OpenNMSStack.MINIMAL;
@@ -259,7 +277,7 @@ public class FileEditorIT extends AbstractOpenNMSSeleniumHelper{
      * @return
      * @throws IOException
      */
-    private Response postRequest(String url, String method, RequestBody body, String username, String password) throws IOException {
+    private Response postRequest(String url, String method, @Nullable RequestBody body, String username, String password) throws IOException {
         LOG.info("creating request");
 
         OkHttpClient client = new OkHttpClient().newBuilder()
@@ -284,11 +302,12 @@ public class FileEditorIT extends AbstractOpenNMSSeleniumHelper{
         final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         JAXB.marshal(createUser("editor", "File Editor", "editor@opennms.org", "21232F297A57A5A743894A0E4A801FC3" /* admin */, "ROLE_FILESYSTEM_EDITOR", "ROLE_USER"), outputStream);
 
+
         final HttpPost post = new HttpPost(STACK.opennms().getBaseUrlExternal().toString() + "/opennms" + "/rest/users");
         post.setEntity(new StringEntity(new String(outputStream.toByteArray()), ContentType.APPLICATION_XML));
         Integer response = 0;
         try {
-            response = doRequest(post);
+            response = abstractOpenNMSSeleniumHelper.doRequest(post);
         } catch (IOException | InterruptedException e) {
             LOG.debug(String.format("Adding a user failed. Response code: %s", e.toString()));
         }
@@ -316,19 +335,5 @@ public class FileEditorIT extends AbstractOpenNMSSeleniumHelper{
         return user;
     }
 
-    @Override
-    public WebDriver getDriver() {
-        return null;
-    }
-
-    @Override
-    public String getBaseUrlInternal() {
-        return null;
-    }
-
-    @Override
-    public String getBaseUrlExternal() {
-        return null;
-    }
 }
 
