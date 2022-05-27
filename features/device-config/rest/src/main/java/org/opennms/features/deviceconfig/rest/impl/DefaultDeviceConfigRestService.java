@@ -355,12 +355,18 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
         try {
             cronDescription = CronExpressionDescriptor.getDescription(schedulePattern);
         } catch (ParseException pe) {
-            return new ScheduleInfo(null, "unknown");
+            LOG.error("Invalid cron expression {}", schedulePattern, pe);
+            return new ScheduleInfo(null, "Invalid Schedule");
         }
 
-        final Date nextScheduledBackup = getNextRunDate(schedulePattern, current);
+        try {
+            final Date nextScheduledBackup = getNextRunDate(schedulePattern, current);
+            return new ScheduleInfo(nextScheduledBackup, cronDescription);
+        } catch (Exception e) {
+            LOG.error("Invalid cron expression {}", schedulePattern, e);
+            return new ScheduleInfo(null, "Invalid Schedule");
+        }
 
-        return new ScheduleInfo(nextScheduledBackup, cronDescription);
     }
 
     @Override
