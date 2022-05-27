@@ -357,7 +357,6 @@ commands:
           command: |
             free -m -c 500 -s 30
       - run:
-          when: << pipeline.parameters.trigger-integration-tests >>
           name: Integration Tests
           no_output_timeout: 15m
           command: |
@@ -365,7 +364,9 @@ commands:
             export CCI_RERUN_FAILTEST=<< parameters.rerun-failtest-count >>
             export CCI_FAILURE_OPTION=<< parameters.failure-option >>
             export CCI_CHANGES_ONLY=<< parameters.changes-only >>
-            .circleci/scripts/itest.sh
+            if [[ << pipeline.parameters.trigger-integration-tests >> ]]; then 
+               .circleci/scripts/itest.sh
+            fi
       - run:
           name: Gather test results
           when: always
