@@ -83,12 +83,11 @@ while [ "$COUNT" -lt 120 ]; do
   sleep 1
 done
 
+echo "docker logs:"
 docker logs "${APT_CONTAINER_NAME}"
 
-if [ "$COUNT" -eq 30 ]; then
-  echo "gave up waiting for server"
-  echo "docker logs:"
+if [ "$COUNT" -eq 120 ]; then
   echo ""
-  docker logs "${APT_CONTAINER_NAME}"
+  echo "Giving up after waiting $COUNT seconds for the server to come up"
   exit 1
 fi
