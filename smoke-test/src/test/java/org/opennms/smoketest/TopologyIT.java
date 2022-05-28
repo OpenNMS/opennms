@@ -599,7 +599,7 @@ public class TopologyIT extends OpenNMSSeleniumIT {
             public void selectLayer(String layerName) {
             Objects.requireNonNull(layerName, "The layer name cannot be null");
             try {
-                testCase.setImplicitWait(2*IMPLICIT_WAIT_SECONDS, TimeUnit.SECONDS);
+                testCase.setImplicitWait(IMPLICIT_WAIT_SECONDS, TimeUnit.SECONDS);
                 openLayerSelectionComponent();
                 WebElement layerElement = testCase.findElementById("layerComponent").findElement(By.xpath("//div[text() = '" + layerName + "']"));
                 layerElement.click();
@@ -629,6 +629,10 @@ public class TopologyIT extends OpenNMSSeleniumIT {
 
         public Breadcrumbs getBreadcrumbs() {
             return new Breadcrumbs(testCase);
+        }
+
+        public boolean isLayerComponentButtonCliccable() {
+            return testCase.findElementById("layerToggleButton").isEnabled();
         }
 
         private void openLayerSelectionComponent() {

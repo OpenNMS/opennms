@@ -29,6 +29,7 @@
 package org.opennms.smoketest.topo;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -90,12 +91,13 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
         this.createDummyNodes();
 
         importGraph();
+
         topologyUIPage = new TopologyIT.TopologyUIPage(this, getBaseUrlInternal());
         topologyUIPage.open();
         // Select EnLinkd, otherwise the "GraphML Topology Provider (test-graph)" is always pre-selected due to history restoration
-        topologyUIPage.selectTopologyProvider(TopologyProvider.ENLINKD);
-        // Select CDP Layer
-        topologyUIPage.selectLayer("Cdp");
+        //topologyUIPage.selectTopologyProvider(TopologyProvider.ENLINKD);
+        // Layer Component Button Clicclable
+        assertTrue(topologyUIPage.isLayerComponentButtonCliccable());
     }
 
     @After
