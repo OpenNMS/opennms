@@ -142,6 +142,7 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
     }
 
     @Test
+    @Ignore
     public void verifySwitchesLayerOnSearchProperly() {
         topologyUIPage.selectTopologyProvider(() -> LABEL);
         TopologyIT.TopologyUISearchResults searchResult = topologyUIPage.search("South");
@@ -154,6 +155,7 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
     }
 
     @Test
+    @Ignore
     public void verifyNavigateToAndBreadcrumbs() {
         topologyUIPage.selectTopologyProvider(() -> LABEL);
         topologyUIPage.findVertex("East Region").contextMenu().click("Navigate To", "Markets (East Region)");
@@ -190,6 +192,7 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
     }
 
     @Test
+    @Ignore
     public void verifySaveLayoutButton() {
         topologyUIPage.selectTopologyProvider(() -> LABEL);
         assertEquals(false, topologyUIPage.getSaveLayoutButton().isEnabled()); // it should be disabled
@@ -201,6 +204,7 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
     }
 
     @Test
+    @Ignore
     /**
      * This method tests whether the GraphMLTopologyProvider can work with categories - searching, collapsing and expanding
      */
@@ -274,6 +278,7 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
 
     // See NMS-10451
     @Test
+    @Ignore
     public void verifyCanSelectNonVisibleVertex() {
         // Ensure nothing is visible for now
         Assert.assertEquals(0, topologyUIPage.getVisibleVertices().size());
@@ -291,6 +296,7 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
     }
 
     @Test
+    @Ignore
     public void verifyCanSetLayerViaUrlParameter() {
         adminPage(); // leave topology page to ensure the link actually works
         final String namespace = "acme:markets";
