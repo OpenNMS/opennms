@@ -410,4 +410,12 @@ public class EventController extends MultiActionController implements Initializi
         Assert.notNull(m_webEventRepository, "webEventRepository must be set");
         Assert.notNull(favoriteService, "favoriteService must be set");
     }
+
+    public void setWebEventRepository(WebEventRepository webEventRepository) {
+        this.m_webEventRepository = webEventRepository;
+    }
+
+    public void setFavoriteService(FilterFavoriteService favoriteService) {
+        this.favoriteService = favoriteService;
+    }
 }

@@ -282,4 +282,11 @@ public class AlarmFilterController extends MultiActionController implements Init
         Assert.isTrue(DEFAULT_LONG_LIMIT > 0, "property defaultLongLimit must be set to a value greater than 0");
         Assert.notNull(m_webAlarmRepository, "webAlarmRepository must be set");
     }
+    public void setWebAlarmRepository(AlarmRepository m_webAlarmRepository) {
+        this.m_webAlarmRepository = m_webAlarmRepository;
+    }
+
+    public void setFavoriteService(FilterFavoriteService favoriteService) {
+        this.favoriteService = favoriteService;
+    }
 }
