@@ -60,6 +60,8 @@ import org.opennms.smoketest.graphml.GraphmlDocument;
 import org.opennms.smoketest.utils.RestClient;
 
 import com.google.common.collect.Lists;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Tests the 'GraphML' Topology Provider
@@ -70,6 +72,8 @@ import com.google.common.collect.Lists;
 public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
 
     public static final String LABEL = "GraphML Topology Provider (test-graph)";
+
+    private static final Logger LOG = LoggerFactory.getLogger(GraphMLTopologyIT.class);
 
     private final GraphmlDocument graphmlDocument = new GraphmlDocument("test-topology.xml", "/topology/graphml/test-topology.xml");
 
@@ -212,6 +216,10 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
      * This method tests whether the GraphMLTopologyProvider can work with categories - searching, collapsing and expanding
      */
     public void verifyCanFilterByCategory() throws IOException, InterruptedException {
+        LOG.debug("Entering Can Filter Category Test: {}", topologyUIPage.getTopologyInfo().getTitle() );
+        assertTrue(topologyUIPage.isLayerComponentButtonEnabled());
+        assertTrue(topologyUIPage.isLayerComponentButtonDisplayed());
+        assertTrue(!topologyUIPage.isLayerComponentButtonSelected());
         topologyUIPage.selectTopologyProvider(() -> LABEL);
         topologyUIPage.selectLayer("Markets");
         topologyUIPage.setSzl(0);
