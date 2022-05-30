@@ -324,6 +324,12 @@ commands:
       - run:
           name: Calculate project and m2 folders disk usage
           command: |
+            echo "=== START Project ==="
+            tree ~/project
+            echo "=== END Project ==="
+            echo "=== START M2 ==="
+            tree ~/.m2
+            echo "=== END M2 ==="
             du -sh ~/project 
             du -sh ~/.m2
       - save-nodejs-cache
