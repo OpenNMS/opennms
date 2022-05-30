@@ -27,7 +27,11 @@ import cronstrue from 'cronstrue'
 import ipRegex from 'ip-regex'
 import isValidDomain from 'is-valid-domain'
 
-const cronTabLength = (cronTab: string) => cronTab.replace(/\s$/, '').split(' ').length
+const cronTabLength = (cronTab: string) => {
+  if(!cronTab) return 0
+
+  return cronTab.replace(/\s$/, '').split(' ').length
+}
 
 const obfuscatePassword = (url: string) => {
   const regexPasswordValue = /(password=)([^&]+)/
@@ -490,8 +494,9 @@ const createBlankSubConfiguration = () => {
 const cronToEnglish = (cronFormatted: string) => {
   let error = ''
 
-  if (cronTabLength(cronFormatted) === 5) {
-    error = ErrorStrings.QuartzFormatSupportError // custom error of 6th part quartz format support
+  const tabLength = cronTabLength(cronFormatted)
+  if (tabLength > 0 && tabLength < 6 ) {
+    error = ErrorStrings.QuartzFormatSupportError(tabLength) // custom error of 6th part quartz format support
   } else {
     try {
       error = cronstrue.toString(cronFormatted, { dayOfWeekStartIndexZero: false })
