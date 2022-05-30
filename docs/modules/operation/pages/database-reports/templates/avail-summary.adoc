@@ -1,5 +1,5 @@
 [[avail-summary-report]]
-= Availability Summary Report (Default Configuration for Past 7 Days)
+= Availability Summary Report
 
 
 == Report Contents
