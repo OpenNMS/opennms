@@ -237,6 +237,9 @@ jobs:
             def convert_mapping(m):
               return [m[1], json.loads(m[2])]
 
+            print("---ENV---")
+            print(os.environ.get('MAPPING'))
+            print("---END ENV---")
             mappings = filter(check_mapping, mappings)
             mappings = map(convert_mapping, mappings)
             mappings = dict(mappings)
