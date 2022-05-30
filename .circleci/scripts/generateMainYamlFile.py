@@ -55,7 +55,11 @@ for k in _data.keys():
     _mainFileContent[_position_of_occurance]=_string_to_append+"\n"
 
 print("Length of main file after replacing placeholders "+str(len(_mainFileContent)))
+for folder in [workflow_folder,job_folder]:
+    _files=glob.glob(os.path.join(pathToFolders,folder,"*.yml"))
+    for _file in files:
+        os.remove(_file)
 
-with open(pathToMainFile+"_changed","w") as f:
+with open(pathToMainFile,"w") as f:
     for _l in _mainFileContent:
         f.write(_l)
