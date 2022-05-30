@@ -43,6 +43,8 @@ onMounted(() => {
 </script>
 
 <style lang="scss">
+@import "@featherds/styles/themes/variables";
+
 #map-left-drawer {
   .container {
     padding: 20px 50px 20px 20px;
@@ -59,5 +61,9 @@ onMounted(() => {
     display: none;
   }
 }
+
+body > .feather-menu-dropdown {
+    z-index: calc(var(--feather-zindex-modal) + 1) !important; // to have the list diplayed above search content element
+  }
 </style>
 
