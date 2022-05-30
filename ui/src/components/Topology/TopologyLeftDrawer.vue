@@ -5,7 +5,6 @@
     :modelValue="isOpen"
     @update:modelValue="closeDrawer"
     :labels="{ close: 'close', title: 'View and Search' }"
-    width="20em"
   >
     <div class="container">
       <slot name="search"></slot>
@@ -14,7 +13,10 @@
   </FeatherDrawer>
 </template>
 
-<script setup lang="ts">
+<script
+  setup
+  lang="ts"
+>
 import { useStore } from 'vuex'
 import { FeatherDrawer } from '@featherds/drawer'
 
@@ -43,16 +45,19 @@ onMounted(() => {
 <style lang="scss">
 #map-left-drawer {
   .container {
-    padding: 20px;
+    padding: 20px 50px 20px 20px;
     .search-bar {
       width: 15rem;
     }
   }
   .content {
     height: auto;
+    top: unset;
+    left: unset;
   }
   .greyedOut {
     display: none;
   }
 }
 </style>
+

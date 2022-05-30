@@ -1,12 +1,21 @@
 <template>
-  <div class="drawer-btn" v-if="!isOpen">
-    <FeatherButton icon="open" @click="openLeftDrawer">
+  <div
+    class="drawer-btn"
+    v-if="!isOpen"
+  >
+    <FeatherButton
+      icon="open"
+      @click="openLeftDrawer"
+    >
       <FeatherIcon :icon="ChevronRight" />
     </FeatherButton>
   </div>
 </template>
 
-<script setup lang="ts">
+<script
+  setup
+  lang="ts"
+>
 import { FeatherIcon } from '@featherds/icon'
 import { FeatherButton } from '@featherds/button'
 import ChevronRight from '@featherds/icon/navigation/ChevronRight'
@@ -16,10 +25,12 @@ const store = useStore()
 
 const isOpen = computed<boolean>(() => store.state.topologyModule.isLeftDrawerOpen)
 const openLeftDrawer = () => store.dispatch('topologyModule/openLeftDrawer')
-
 </script>
 
-<style scoped lang="scss">
+<style
+  scoped
+  lang="scss"
+>
 @import "@featherds/styles/mixins/elevation";
 
 .drawer-btn {
@@ -28,9 +39,9 @@ const openLeftDrawer = () => store.dispatch('topologyModule/openLeftDrawer')
   z-index: 1000;
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
-  top: 20px;
   button {
     margin: 5px;
   }
 }
 </style>
+
