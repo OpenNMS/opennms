@@ -2996,10 +2996,10 @@ typescript@^4.7.2:
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.7.2.tgz#1f9aa2ceb9af87cca227813b4310fff0b51593c4"
   integrity sha512-Mamb1iX2FDUpcTRzltPxgWMKy3fhg0TN378ylbktPGPK/99KbDtMQ4W1hwgsbPAsG3a0xKa1vmw4VKZQbkvz5A==
 
-unimport@^0.2.4:
-  version "0.2.4"
-  resolved "https://registry.yarnpkg.com/unimport/-/unimport-0.2.4.tgz#f28426be2a7887176ef65581a76762e3a42c767e"
-  integrity sha512-7OEUIlZMS1s1h1uFAGkCPylMtE8hnlJ/cFurJQHdzKAqIyuGiOREFKaCLbkNtFloZicCpRAlqC0Ny2yMoz6mFg==
+unimport@^0.2.5:
+  version "0.2.5"
+  resolved "https://registry.yarnpkg.com/unimport/-/unimport-0.2.5.tgz#d9cada02542e50a0a117dcf36ea4c613192f3c29"
+  integrity sha512-1YreHVa6vUtRANhtKROtniBY01PXM0ol857tlI3HaQHNLcuQKqWUCAfvZC/GipotKrMVm4LV9ZQ4u1s9lrrDpg==
   dependencies:
     "@rollup/pluginutils" "^4.2.1"
     escape-string-regexp "^5.0.0"
@@ -3011,16 +3011,16 @@ unimport@^0.2.4:
     scule "^0.2.1"
     unplugin "^0.6.3"
 
-unplugin-auto-import@^0.8.5:
-  version "0.8.5"
-  resolved "https://registry.yarnpkg.com/unplugin-auto-import/-/unplugin-auto-import-0.8.5.tgz#b09e0375520c115bbda8b053b09cecdfa5cf5b19"
-  integrity sha512-JT43zA89fMjxtdqz+sTSkTsL9J0PNdnGmMOvcwbkpDi45yL5SU0aDCZgj0E8+qWLyQSIvvBaDBW3VuBrcc2MXg==
+unplugin-auto-import@^0.8.6:
+  version "0.8.6"
+  resolved "https://registry.yarnpkg.com/unplugin-auto-import/-/unplugin-auto-import-0.8.6.tgz#31b026b7a0159f85d476119a91bee03c57072686"
+  integrity sha512-QRYwCmSzxZKHu8LQhUpTzF6t1YxYuo4b47e3cmE1kWsF4SQDO22Ysrj5/2BRY3jbYbiTZqOLopymRpov8SAYZQ==
   dependencies:
     "@antfu/utils" "^0.5.2"
     "@rollup/pluginutils" "^4.2.1"
     local-pkg "^0.4.1"
     magic-string "^0.26.2"
-    unimport "^0.2.4"
+    unimport "^0.2.5"
     unplugin "^0.6.3"
 
 unplugin@^0.6.3:
@@ -3235,4 +3235,3 @@ yallist@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/yallist/-/yallist-4.0.0.tgz#9bb92790d9c0effec63be73519e11a35019a3a72"
   integrity sha512-3wdGidZyq5PB084XLES5TpOSRA3wjXAlIWMhum2kRcv/41Sn2emQ0dycQW4uZXLejwKvg6EsvbdlVL+FYEct7A==
-  
