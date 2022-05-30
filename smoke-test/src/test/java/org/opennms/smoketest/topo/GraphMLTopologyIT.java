@@ -75,7 +75,7 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
 
     private static final Logger LOG = LoggerFactory.getLogger(GraphMLTopologyIT.class);
 
-    private final GraphmlDocument graphmlDocument = new GraphmlDocument("test-topology.xml", "/topology/graphml/test-topology.xml");
+    private final GraphmlDocument graphmlDocument = new GraphmlDocument("test-topology", "/topology/graphml/test-topology.xml");
 
     private TopologyIT.TopologyUIPage topologyUIPage;
 

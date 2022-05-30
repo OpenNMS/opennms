@@ -17,7 +17,7 @@
     <key id="iconKey" for="node" attr.name="iconKey" attr.type="string"/>
     <data key="label">GraphML Topology Provider (test-graph)</data>
     <data key="breadcrumb-strategy">SHORTEST_PATH_TO_ROOT</data>
-    <data key="containerId">test</data>
+    <data key="containerId">test-topology</data>
     <graph id="regions" edgedefault="undirected">
         <data key="namespace">acme:regions</data>
         <data key="focus-strategy">ALL</data>
