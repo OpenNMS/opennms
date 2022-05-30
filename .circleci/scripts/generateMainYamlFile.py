@@ -4,7 +4,7 @@ import os
 import sys
 
 _mainFile="@main.yml"
-pathToMainFile=os.path.join(".circleci/main/",_mainFile)
+pathToMainFile=os.path.join(".circleci","main",_mainFile)
 
 workflow_folder="workflows"
 job_folder="jobs"
@@ -18,6 +18,7 @@ for folder in [workflow_folder,job_folder]:
     #Process the files:
     for file in _files:
         _key=os.path.basename(file).replace(".yml","")
+        print(_key)
         _data[_key]=""
         with open(file,"r") as f:
             _data[_key]=f.readlines()
@@ -49,7 +50,7 @@ for k in _data.keys():
 
     _mainFileContent[_position_of_occurance]=_string_to_append+"\n"
 
-    
+sys.exit(1)
 
 with open(pathToMainFile,"w") as f:
     for _l in _mainFileContent:
