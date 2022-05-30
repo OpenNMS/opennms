@@ -29,6 +29,8 @@ _mainFileContent=""
 with open(pathToMainFile,"r") as f:
     _mainFileContent=f.readlines()
 
+print("Length of main file is "+str(len(_mainFileContent)))
+
 for k in _data.keys():
     print("Processing "+k.strip())
     
@@ -51,6 +53,6 @@ for k in _data.keys():
     print("Replacing the occurance on line "+str(_position_of_occurance))
     _mainFileContent[_position_of_occurance]=_string_to_append+"\n"
 
-with open(pathToMainFile,"w") as f:
+with open(pathToMainFile+"_changed","w") as f:
     for _l in _mainFileContent:
         f.write(_l)
