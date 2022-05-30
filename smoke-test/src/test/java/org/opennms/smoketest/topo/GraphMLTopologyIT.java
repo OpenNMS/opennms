@@ -35,13 +35,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.*;
 
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.opennms.smoketest.TopologyIT.waitForTransition;
 
-import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Ignore;
@@ -81,21 +83,32 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
 
     private RestClient restClient;
 
+    private static final ConcurrentHashMap<Class, Boolean> INITIALIZED = new ConcurrentHashMap<>();
+
+    protected final boolean initialized() {
+        final boolean[] absent = {false};
+        INITIALIZED.computeIfAbsent(this.getClass(), (klass)-> {
+            return absent[0] = true;
+        });
+        return !absent[0];
+    }
+
     @Before
     public void setUp() throws IOException, InterruptedException {
-        restClient = stack.opennms().getRestClient();
+        if (!initialized()) {
+            restClient = stack.opennms().getRestClient();
 
-        // Sometimes a previous run did not clean up properly, so we do that before we
-        // import a graph
-        if (existsGraph()) {
-            deleteGraph();
+            // Sometimes a previous run did not clean up properly, so we do that before we
+            // import a graph
+            //if (existsGraph()) {
+            //    deleteGraph();
+            //}
+
+            // Generating dummy nodes for the verifyCanFilterByCategory test method
+            this.createDummyNodes();
+
+            importGraph();
         }
-
-        // Generating dummy nodes for the verifyCanFilterByCategory test method
-        this.createDummyNodes();
-
-        importGraph();
-
         topologyUIPage = new TopologyIT.TopologyUIPage(this, getBaseUrlInternal());
         topologyUIPage.open();
         // Select EnLinkd, otherwise the "GraphML Topology Provider (test-graph)" is always pre-selected due to history restoration
@@ -109,10 +122,10 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
         assertTrue(!topologyUIPage.isLayerComponentButtonSelected());
     }
 
-    @After
-    public void tearDown() throws IOException, InterruptedException {
-        deleteGraph();
-    }
+//    @AfterClass
+//    public void tearDown() throws IOException, InterruptedException {
+//        deleteGraph();
+//    }
 
     @Test
     public void canUseTopology() throws IOException {
