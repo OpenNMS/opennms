@@ -597,18 +597,7 @@ workflows:
             branches:
               ignore:
                 - /^from-foundation.*/
-  ui:
-    when:
-      and:
-        - equal: [ false, << pipeline.parameters.trigger-coverage >> ]
-        - equal: [ true,  << pipeline.parameters.trigger-ui >> ]
-        - equal: [ false, << pipeline.parameters.minimal >> ]
-    jobs:
-      - build-ui:
-          filters:
-            branches:
-              ignore:
-                - /^from-foundation.*/
+  #workflow_ui#
   build-deploy:
     when:
       and:
@@ -946,14 +935,7 @@ jobs:
           at: ~/
       - run-build:
           number-vcpu: 8
-  build-ui:
-    executor: ui-executor
-    steps:
-      - checkout
-      - run:
-          name: Build
-          command: |
-            cd ui && yarn install && yarn test && yarn build
+  #jobs_ui#    
   build-docs:
     executor: docs-executor
     steps:

@@ -4,17 +4,16 @@ import os
 import sys
 
 _mainFile="@main.yml"
-pathToMainFile=os.path.join(".",_mainFile)
+pathToMainFile=os.path.join(".circleci/main/",_mainFile)
 
 workflow_folder="workflows"
 job_folder="jobs"
 
-print("HI from generateMainYamlFile")
-sys.exit()
+pathToFolders=os.path.join(".circleci","main")
 
 _data={}
 for folder in [workflow_folder,job_folder]:
-    _files=glob.glob(os.path.join(folder,"*.yml"))
+    _files=glob.glob(os.path.join(pathToFolders,folder,"*.yml"))
 
     #Process the files:
     for file in _files:
@@ -52,6 +51,6 @@ for k in _data.keys():
 
     
 
-with open(_mainFile+"_changed","w") as f:
+with open(pathToMainFile,"w") as f:
     for _l in _mainFileContent:
         f.write(_l)
