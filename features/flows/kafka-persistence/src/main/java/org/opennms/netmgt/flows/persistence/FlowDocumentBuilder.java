@@ -145,8 +145,11 @@ public class FlowDocumentBuilder {
                 return Direction.EGRESS;
             case INGRESS:
                 return Direction.INGRESS;
+            case UNKNOWN:
+                return Direction.UNKNOWN;
+            default:
+                throw new IllegalArgumentException();
         }
-        return Direction.EGRESS;
     }
 
     private static Locality fromLocality(EnrichedFlow.Locality locality) {

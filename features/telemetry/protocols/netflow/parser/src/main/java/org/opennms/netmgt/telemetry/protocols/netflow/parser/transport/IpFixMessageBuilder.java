@@ -146,7 +146,7 @@ public class IpFixMessageBuilder implements MessageBuilder {
                     break;
                 case "flowDirection":
                     Long directionValue = getLongValue(value);
-                    Direction direction = Direction.UNRECOGNIZED;
+                    Direction direction = Direction.UNKNOWN;
                     if (directionValue != null) {
                         switch (directionValue.intValue()) {
                             case 0:
@@ -157,9 +157,7 @@ public class IpFixMessageBuilder implements MessageBuilder {
                                 break;
                         }
                     }
-                    if (!direction.equals(Direction.UNRECOGNIZED)) {
-                        builder.setDirection(direction);
-                    }
+                    builder.setDirection(direction);
                     break;
                 case "destinationIPv6Address":
                     destinationIPv6Address = getInetAddress(value);
