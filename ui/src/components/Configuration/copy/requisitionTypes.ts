@@ -58,7 +58,7 @@ export const SplitTypes = {
 
 export const ErrorStrings = {
   DuplicateName: 'Name must be unique.',
-  QuartzFormatSupportError: 'Error: Expression has only 5 parts. At least 6 parts are required.',
+  QuartzFormatSupportError: (numPart: number) => `Error: Expression has only ${numPart} part${numPart > 1 ? 's' : ''}. At least 6 parts are required.`,
   InvalidHostname: 'Invalid hostname',
   InvalidZoneName: 'Invalid zone name',
   InvalidRequisitionName: 'Invalid requisition name',
