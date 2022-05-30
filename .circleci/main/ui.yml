@@ -9,6 +9,10 @@ workflows:
         - equal: [ false, << pipeline.parameters.minimal >> ]
     jobs:
       - build-ui:
+          filters:
+            branches:
+              ignore:
+                - /^from-foundation.*/
 jobs:
   build-ui:
     executor: ui-executor
