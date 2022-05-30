@@ -1,0 +1,20 @@
+version: 2.1
+
+workflows:
+  ui:
+    when:
+      and:
+        - equal: [ false, << pipeline.parameters.trigger-coverage >> ]
+        - equal: [ true,  << pipeline.parameters.trigger-ui >> ]
+        - equal: [ false, << pipeline.parameters.minimal >> ]
+    jobs:
+      - build-ui:
+jobs:
+  build-ui:
+    executor: ui-executor
+    steps:
+      - checkout
+      - run:
+          name: Build
+          command: |
+            cd ui && yarn install && yarn test && yarn build

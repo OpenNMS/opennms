@@ -605,6 +605,7 @@ workflows:
         - equal: [ false, << pipeline.parameters.minimal >> ]
     jobs:
       - build-ui:
+          config-path: .circleci/ui.yml
           filters:
             branches:
               ignore:
@@ -946,14 +947,14 @@ jobs:
           at: ~/
       - run-build:
           number-vcpu: 8
-  build-ui:
-    executor: ui-executor
-    steps:
-      - checkout
-      - run:
-          name: Build
-          command: |
-            cd ui && yarn install && yarn test && yarn build
+  #build-ui:
+  #  executor: ui-executor
+  #  steps:
+  #    - checkout
+  #    - run:
+  #        name: Build
+  #        command: |
+  #          cd ui && yarn install && yarn test && yarn build
   build-docs:
     executor: docs-executor
     steps:
