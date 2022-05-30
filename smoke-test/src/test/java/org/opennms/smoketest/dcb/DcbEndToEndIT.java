@@ -59,7 +59,6 @@ import org.testcontainers.images.builder.ImageFromDockerfile;
 
 import com.google.common.collect.Iterables;
 
-// TODO: Running two backups on the same target is broken. Use filenameSuffix after NMS-14144 to avoid race in backup script
 public class DcbEndToEndIT {
     private static final String DCB_CONFIG_TYPE = "testcfg";
     private static final String DCB_USERNAME = "dcbuser";
@@ -244,7 +243,7 @@ public class DcbEndToEndIT {
                         .where("failureReason", is(jsonNull()))
                         .where("isSuccessfulBackup", is(jsonBoolean(true)))
                         .where("backupStatus", is(jsonText("success")))
-                        .where("scheduledInterval", is(jsonObject().where("DeviceConfig", is(jsonText("At 12:00 am")))))
+                        .where("scheduledInterval", is(jsonObject().where("DeviceConfig", is(jsonText("Never")))))
                         .where("config", is(jsonText(containsString(String.format("%s %s\n", getContainerInternalIpAddress(STACK.opennms()), 6969))))),
                 jsonObject()
                         .where("nodeId", is(jsonInt(remoteNode.getId())))
@@ -256,7 +255,7 @@ public class DcbEndToEndIT {
                         .where("failureReason", is(jsonNull()))
                         .where("isSuccessfulBackup", is(jsonBoolean(true)))
                         .where("backupStatus", is(jsonText("success")))
-                        .where("scheduledInterval", is(jsonObject().where("DeviceConfig", is(jsonText("At 12:00 am")))))
+                        .where("scheduledInterval", is(jsonObject().where("DeviceConfig", is(jsonText("Never")))))
                         .where("config", is(jsonText(containsString(String.format("%s %s\n", getContainerInternalIpAddress(STACK.minion()), 6969))))))));
         //                                                                                                                                               ^-- Yes, 8 closing braces
     }
@@ -299,7 +298,7 @@ public class DcbEndToEndIT {
                         .where("failureReason", is(jsonNull()))
                         .where("isSuccessfulBackup", is(jsonBoolean(true)))
                         .where("backupStatus", is(jsonText("success")))
-                        .where("scheduledInterval", is(jsonObject().where("DeviceConfig", is(jsonText("At 12:00 am")))))
+                        .where("scheduledInterval", is(jsonObject().where("DeviceConfig", is(jsonText("Never")))))
                         .where("config", is(jsonText(containsString(String.format("%s %s\n", getContainerInternalIpAddress(STACK.opennms()), 6969))))),
                 jsonObject()
                         .where("nodeId", is(jsonInt(remoteNode.getId())))
@@ -311,7 +310,7 @@ public class DcbEndToEndIT {
                         .where("failureReason", is(jsonNull()))
                         .where("isSuccessfulBackup", is(jsonBoolean(true)))
                         .where("backupStatus", is(jsonText("success")))
-                        .where("scheduledInterval", is(jsonObject().where("DeviceConfig", is(jsonText("At 12:00 am")))))
+                        .where("scheduledInterval", is(jsonObject().where("DeviceConfig", is(jsonText("Never")))))
                         .where("config", is(jsonText(containsString(String.format("%s %s\n", getContainerInternalIpAddress(STACK.minion()), 6969))))))));
         //                                                                                                                                               ^-- Yes, 8 closing braces
     }
