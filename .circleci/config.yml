@@ -85,8 +85,8 @@ workflows:
             docs/.*           trigger-docs     true
             ui/.*             trigger-ui       true
             .circleci/.*      trigger-build    true
-            .circleci/.*      trigger-docs     true
-            .circleci/.*      trigger-ui       true
+            .circleci/.*      trigger-docs     false
+            .circleci/.*      trigger-ui       false
 
   automation:
     when:
