@@ -185,9 +185,9 @@ jobs:
             checkout(head)  # return to head commit
 
             changedFiles = subprocess.run( 
-              ['git','diff','--name-only',base_revision,head],
+              ['git','diff','--name-only','head~1',head],
               check=True,
-              capture_output=True).stdout.decode('utf-8').strip()
+              capture_output=True).stdout
             print("Changed files when comparing "+str(head)+" to head~1")
             print(changedFiles)
 
