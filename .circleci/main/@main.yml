@@ -605,7 +605,7 @@ workflows:
         - equal: [ false, << pipeline.parameters.minimal >> ]
     jobs:
       - build-ui:
-          config-path: .circleci/ui.yml
+          config-path: .circleci/main/ui.yml
           filters:
             branches:
               ignore:
