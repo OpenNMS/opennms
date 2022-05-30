@@ -21,7 +21,7 @@ for folder in [workflow_folder,job_folder]:
         _data[_key]=""
         with open(file,"r") as f:
             _data[_key]=f.readlines()
-        if _data[_key][0] in ["workflows:  \n","jobs:\n"]:
+        if _data[_key][0] in ["workflows:\n","jobs:\n"]:
             print("Deleting extra "+_data[_key][0] +" entries")
             del _data[_key][0] 
 
@@ -48,12 +48,12 @@ for k in _data.keys():
     
     _string_to_append=""
     for l in _data[k]:
+        print(l)
         _string_to_append+=l
 
     print("Replacing the occurance on line "+str(_position_of_occurance))
     _mainFileContent[_position_of_occurance]=_string_to_append+"\n"
 
-print(_mainFileContent)
 print("Length of main file after replacing placeholders "+str(len(_mainFileContent)))
 
 with open(pathToMainFile+"_changed","w") as f:

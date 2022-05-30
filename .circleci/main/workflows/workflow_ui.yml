@@ -1,4 +1,4 @@
-workflows:  
+workflows:
   ui:
     when:
       and:
