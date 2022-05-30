@@ -180,13 +180,18 @@ jobs:
             output_path = os.environ.get('OUTPUT_PATH')
             head = os.environ.get('CIRCLE_SHA1')
             base_revision = os.environ.get('BASE_REVISION')
+            
+            changedFiles = subprocess.run( 
+              ['git','diff','--name-only','head~1',head],
+              check=True,
+              capture_output=True).stdout.decode('utf-8').strip()
+            print("Changed files when comparing "+str(head)+" to head~1")
+            print(changedFiles)
+
             checkout(base_revision)  # Checkout base revision to make sure it is available for comparison
             checkout(head)  # return to head commit
 
-            changedFiles = subprocess.run( 
-              ['git','diff','--name-only','head~1',head],check=True,capture_output=True).stdout.decode('utf-8').strip()
-            print("Changed files when comparing "+str(head)+" to head~1")
-            print(changedFiles)
+
 
             base = subprocess.run(
               ['git', 'merge-base', base_revision, head],
