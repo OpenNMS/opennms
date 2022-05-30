@@ -1,8 +1,16 @@
 <template>
   <div class="tooltip-wrapper">
-    <VNetworkGraph ref="graph" v-model:selectedNodes="selectedNodes" :layouts="layout" :nodes="vertices" :edges="edges"
-      :configs="configs" :zoomLevel="zoomLevel" :eventHandlers="eventHandlers"
-      v-if="trigger && focusObjects.length !== 0">
+    <VNetworkGraph
+      ref="graph"
+      v-model:selectedNodes="selectedNodes"
+      :layouts="layout"
+      :nodes="vertices"
+      :edges="edges"
+      :configs="configs"
+      :zoomLevel="zoomLevel"
+      :eventHandlers="eventHandlers"
+      v-if="trigger && focusObjects.length !== 0"
+    >
       <defs>
         <!--
         Define the path for clipping the image.
@@ -10,8 +18,15 @@
         add the `clipPathUnits="objectBoundingBox"` attribute
         and specify the relative size (0.0~1.0).
         -->
-        <clipPath id="iconCircle" clipPathUnits="objectBoundingBox">
-          <circle cx="0.5" cy="0.5" r="0.5" />
+        <clipPath
+          id="iconCircle"
+          clipPathUnits="objectBoundingBox"
+        >
+          <circle
+            cx="0.5"
+            cy="0.5"
+            r="0.5"
+          />
         </clipPath>
       </defs>
 
@@ -21,31 +36,67 @@
         The base position of the <image /> is top left. The node's
         center should be (0,0), so slide it by specifying x and y.
         -->
-        <image v-if="ICON_PATHS[vertices[nodeId].icon]"
-          :class="{ 'unfocused': highlightFocusedObjects && !vertices[nodeId].focused }" class="node-icon pointer"
-          :x="-config.radius * scale" :y="-config.radius * scale" :width="config.radius * scale * 2"
-          :height="config.radius * scale * 2" :xlink:href="ICON_PATHS[vertices[nodeId].icon]"
-          clip-path="url(#iconCircle)" />
+        <image
+          v-if="ICON_PATHS[vertices[nodeId].icon]"
+          :class="{ 'unfocused': highlightFocusedObjects && !vertices[nodeId].focused }"
+          class="node-icon pointer"
+          :x="-config.radius * scale"
+          :y="-config.radius * scale"
+          :width="config.radius * scale * 2"
+          :height="config.radius * scale * 2"
+          :xlink:href="ICON_PATHS[vertices[nodeId].icon]"
+          clip-path="url(#iconCircle)"
+        />
 
         <!-- circle for drawing stroke -->
-        <circle v-if="vertices[nodeId].subLayer" class="node-circle" :cx="-12 * scale" :cy="12 * scale" :r="5 * scale"
-          :fill="setColor(vertices[nodeId])" v-bind="slotProps" />
+        <circle
+          v-if="vertices[nodeId].subLayer"
+          class="node-circle"
+          :cx="-12 * scale"
+          :cy="12 * scale"
+          :r="5 * scale"
+          :fill="setColor(vertices[nodeId])"
+          v-bind="slotProps"
+        />
       </template>
     </VNetworkGraph>
     <!-- Tooltip -->
-    <div ref="tooltip" class="tooltip" :style="{ ...tooltipPos }"
-      v-if="vertices[targetNodeId] && vertices[targetNodeId].namespace === 'nodes'">
+    <div
+      ref="tooltip"
+      class="tooltip"
+      :style="{ ...tooltipPos }"
+      v-if="vertices[targetNodeId] && vertices[targetNodeId].namespace === 'nodes'"
+    >
       <div v-html="vertices[targetNodeId]?.tooltip ?? ''"></div>
     </div>
   </div>
-  <NoFocusMsg :useDefaultFocus="useDefaultFocus" v-if="focusObjects.length === 0" />
-  <TopologyModal :nodeId="contextNode.id" v-if="contextNode && contextNode.id" />
-  <ContextMenu ref="contextMenu" v-if="showContextMenu" :refresh="refresh" :contextMenuType="contextMenuType"
-    :x="menuXPos" :y="menuYPos" :node="contextNode" :selectedNodeObjects="selectedNodeObjects"
-    :selectedNodes="selectedNodes" :groupClick="groupClick" :closeContextMenu="closeContextMenu" />
+  <NoFocusMsg
+    :useDefaultFocus="useDefaultFocus"
+    v-if="focusObjects.length === 0"
+  />
+  <TopologyModal
+    :nodeId="contextNode.id"
+    v-if="contextNode && contextNode.id"
+  />
+  <ContextMenu
+    ref="contextMenu"
+    v-if="showContextMenu"
+    :refresh="refresh"
+    :contextMenuType="contextMenuType"
+    :x="menuXPos"
+    :y="menuYPos"
+    :node="contextNode"
+    :selectedNodeObjects="selectedNodeObjects"
+    :selectedNodes="selectedNodes"
+    :groupClick="groupClick"
+    :closeContextMenu="closeContextMenu"
+  />
 </template>
 
-<script setup lang="ts">
+<script
+  setup
+  lang="ts"
+>
 import 'v-network-graph/lib/style.css'
 import { useStore } from 'vuex'
 import { VNetworkGraph, defineConfigs, Layouts, Edges, Nodes, SimpleLayout, EventHandlers, NodeEvent, Instance, ViewEvent, Node, Edge } from 'v-network-graph'
@@ -96,7 +147,7 @@ onClickOutside(contextMenu, () => closeContextMenu())
 const vertices = computed<Nodes>(() => store.state.topologyModule.vertices)
 const edges = computed<Edges>(() => store.state.topologyModule.edges)
 const layout = computed<Layouts>(() => store.getters['topologyModule/getLayout'])
-const focusObjects = computed<string[]>(() => store.state.topologyModule.focusObjects)
+const focusObjects = computed<string[]>(() => store.state.topologyModule.focusObjects || [])
 const highlightFocusedObjects = computed<boolean>(() => store.state.topologyModule.highlightFocusedObjects)
 
 const tooltipPos = computed(() => {
@@ -198,7 +249,7 @@ const d3ForceEnabled = computed({
     } else {
       configs.view.layoutHandler = new SimpleLayout()
     }
-  },
+  }
 })
 
 const trigger = ref(true)
@@ -232,8 +283,8 @@ const configs = reactive(
       selectable: true,
       normal: {
         type: 'circle',
-        color: node => setColor(node),
-      },
+        color: node => setColor(node)
+      }
     },
     edge: {
       normal: {
@@ -246,7 +297,10 @@ const configs = reactive(
 onMounted(() => useDefaultFocus())
 </script>
 
-<style lang="scss" scoped>
+<style
+  lang="scss"
+  scoped
+>
 @import "@featherds/styles/mixins/elevation";
 @import "@featherds/styles/mixins/typography";
 
@@ -284,3 +338,4 @@ onMounted(() => useDefaultFocus())
   }
 }
 </style>
+

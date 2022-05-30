@@ -257,7 +257,11 @@ const setBoundingBox = (nodeLabels: string[]) => {
   }
 }
 
-const invalidateSizeFn = () => leafletObject.value.invalidateSize()
+const invalidateSizeFn = () => {
+  if(!leafletReady.value) return
+
+  return leafletObject.value.invalidateSize()
+}
 
 /*****Tile Layer*****/
 const tileProviders = [
