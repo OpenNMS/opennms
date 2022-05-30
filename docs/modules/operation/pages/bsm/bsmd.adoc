@@ -1,10 +1,10 @@
 
 = Business Service Daemon
 
-The Business Service Monitoring Daemon (bsmd) handles calculation of the operational status of the defined business services.
+The Business Service Monitoring Daemon (BSMD) handles calculation of the operational status of the defined business services.
 The daemon tracks the operational status of all business services and sends events when there are operational status changes.
 
-To calculate the operational status, the reduction key of alarms from associated with a business service edges are evaluated.
+To calculate the operational status, the BSMD evaluates the reduction key of alarms from associated business service edges.
 This means that the alarm's reduction key of a defined business service must not change afterwards, otherwise bsmd will not be able to calculate the operational status correctly.
 This also applies for removing the alarm data from events associated to business services.
 In addition, the child type "IP Service" from the Business Service Configuration Page requires events with the default reduction keys being defined:
@@ -12,13 +12,13 @@ In addition, the child type "IP Service" from the Business Service Configuration
  * uei.opennms.org/nodes/nodeDown
  * uei.opennms.org/nodes/interfaceDown
 
-Every time changes to the configuration of a business service are made, you must reload the daemon's configuration.
+Every time you make changes to the configuration of a business service, you must reload the daemon's configuration.
 This includes changes like the name of the business service or its attributes, as well as changes regarding the reduction keys, contained business services, or IP services.
-The bsmd configuration can be reloaded with any of the following mechanisms:
+Reload the BSMD configuration with any of the following mechanisms:
 
 * Click the Reload Daemon button in the Business Service Editor.
-* Send the `reloadDaemonConfig` event using `send-event.pl` or use the WebUI in "Manually Send an Event" with parameter `daemonName bsmd`.
-* Use the ReST API to perform a `POST` request to `/opennms/api/v2/business-services/daemon/reload`.
+* Send the `reloadDaemonConfig` event using `send-event.pl` or use the "Manually Send an Event"  UI with parameter `daemonName bsmd`.
+* Use the REST API to perform a `POST` request to `/opennms/api/v2/business-services/daemon/reload`.
 
 When the reload of the configuration is complete, an event of type `uei.opennms.org/internal/reloadDaemonConfigSuccessful` is generated.
 
