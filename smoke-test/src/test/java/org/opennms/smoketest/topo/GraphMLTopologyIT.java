@@ -216,11 +216,14 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
      * This method tests whether the GraphMLTopologyProvider can work with categories - searching, collapsing and expanding
      */
     public void verifyCanFilterByCategory() throws IOException, InterruptedException {
-        LOG.debug("Entering Can Filter Category Test: {}", topologyUIPage.getTopologyInfo().getTitle() );
+        LOG.debug("verifyCanFilterByCategory: {}", topologyUIPage.getTopologyInfo().getTitle() );
+        LOG.debug("verifyCanFilterByCategory: {}", topologyUIPage.getTopologyInfo().getDescription() );
+        topologyUIPage.selectTopologyProvider(() -> LABEL);
+        LOG.debug("verifyCanFilterByCategory: {}", topologyUIPage.getTopologyInfo().getTitle() );
+        LOG.debug("Entering Can Filter Category Test: {}", topologyUIPage.getTopologyInfo().getDescription() );
         assertTrue(topologyUIPage.isLayerComponentButtonEnabled());
         assertTrue(topologyUIPage.isLayerComponentButtonDisplayed());
         assertTrue(!topologyUIPage.isLayerComponentButtonSelected());
-        topologyUIPage.selectTopologyProvider(() -> LABEL);
         topologyUIPage.selectLayer("Markets");
         topologyUIPage.setSzl(0);
         topologyUIPage.clearFocus();
