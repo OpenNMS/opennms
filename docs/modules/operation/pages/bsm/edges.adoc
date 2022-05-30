@@ -33,8 +33,7 @@ Select the Business Service as Child Service dependency to build the hierarchy.
 The IP Service is a predefined set of reduction keys that lets you easily assign a specific monitored service to the given business service.
 As an example, you have multiple servers with a monitored service SMTP and you want to model a business service named Mail Communication.
 If just the reduction key for a nodeLostService is assigned, the business service would not be affected if the IP interface or the whole node goes down.
-OpenNMS generates alarms with different UEI which needs to be assigned to the business service as well.
-To make it easier to model this use case the IP Service generates the following reduction keys automatically:
+To provide coverage for these events, the IP Service monitors the following reduction keys for the assigned service:
 
 * `uei.opennms.org/nodes/nodeLostService:%nodeId%:%ipAddress%:%serviceName%`: Matches alarms when the given monitored service goes down
 * `uei.opennms.org/nodes/interfaceDown:%nodeId%:%ipAddress%`: Matches alarms when the given IP Interface of the monitored service goes down

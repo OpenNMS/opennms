@@ -21,7 +21,7 @@ image::bsm/01_bsm-example-scenario.png[]
 To be able to model this scenarios the BSM functions can be used.
 The Business Service Monitoring (BSM) feature includes the following components:
 
-* Business Service Monitoring Daemon (BSMD): Maintains and drives the state of all business service
-* Business Service Editor: Web application that lets you create, update, or delete business service
+* Business Service Monitoring Daemon (BSMD): Maintains and drives the state of all business services
+* Business Service Editor: Web application that lets you create, update, or delete business services
 * Topology View for Business Services: Visual representation of the Business Service Hierarchy as a component of the Topology User Interface.
 * BSM REST API: REST-based API to create, read, update, or delete business services
