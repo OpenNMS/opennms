@@ -152,7 +152,7 @@ jobs:
       # we do it ourselves because otherwise we have to do a full un-cached checkout every time
       - run:
           name: generate main.yml file
-          command: python3 .circleci/scripts/generageMainYamlFile.py
+          command: python3 .circleci/scripts/generateMainYamlFile.py
       - run:
           name: process mapping
           environment:
