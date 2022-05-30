@@ -605,7 +605,6 @@ workflows:
         - equal: [ false, << pipeline.parameters.minimal >> ]
     jobs:
       - build-ui:
-          config-path: .circleci/main/ui.yml
           filters:
             branches:
               ignore:
@@ -947,7 +946,8 @@ jobs:
           at: ~/
       - run-build:
           number-vcpu: 8
-  #build-ui:
+  build-ui:
+     config-path: .circleci/main/ui.yml
   #  executor: ui-executor
   #  steps:
   #    - checkout
