@@ -27,6 +27,11 @@
     core-js-pure "^3.20.2"
     regenerator-runtime "^0.13.4"
 
+"@dash14/svg-pan-zoom@^3.6.6":
+  version "3.6.8"
+  resolved "https://registry.yarnpkg.com/@dash14/svg-pan-zoom/-/svg-pan-zoom-3.6.8.tgz#99ab5c8f2d6d712c82121921e390d2b7a96a6f0d"
+  integrity sha512-i9wLICPWqPQM+TXlxaKFzSuVSBe/keaV9Gt1Qxr20oNF8ZNiHcpv4TrMErJC0s0zkzYU1GqBBWKz2GVyWO1I8Q==
+
 "@eslint/eslintrc@^1.3.0":
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/@eslint/eslintrc/-/eslintrc-1.3.0.tgz#29f92c30bb3e771e4a2048c95fa6855392dfac4f"
@@ -2424,6 +2429,11 @@ minimatch@^3.0.4, minimatch@^3.1.1, minimatch@^3.1.2:
   dependencies:
     brace-expansion "^1.1.7"
 
+mitt@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/mitt/-/mitt-3.0.0.tgz#69ef9bd5c80ff6f57473e8d89326d01c414be0bd"
+  integrity sha512-7dX2/10ITVyqh4aOSVI9gdape+t9l2/8QxHrFmUXu4EEUpdlxl6RudZUPZoc+zuY2hk1j7XxVroIVIan/pD/SQ==
+
 mlly@^0.3.6:
   version "0.3.19"
   resolved "https://registry.yarnpkg.com/mlly/-/mlly-0.3.19.tgz#a4aac171d2142eafc9c9d4c1937dac5a11f70565"
@@ -3052,6 +3062,14 @@ util-deprecate@^1.0.2, util-deprecate@~1.0.1:
   resolved "https://registry.yarnpkg.com/util-deprecate/-/util-deprecate-1.0.2.tgz#450d4dc9fa70de732762fbd2d4a28981419a0ccf"
   integrity sha1-RQ1Nyfpw3nMnYvvS1KKJgUGaDM8=
 
+v-network-graph@^0.5.7:
+  version "0.5.8"
+  resolved "https://registry.yarnpkg.com/v-network-graph/-/v-network-graph-0.5.8.tgz#b6750a813b27d5433c9ddf34cfc7bb5caa671210"
+  integrity sha512-1Qigo4ObpcdpAkEmVdK7YTcuEr7asHTCvhEqKIENN2GNy17XwLQG6h7hYJeBVTCIthHuxQDk7nJj+ckh7cKGaQ==
+  dependencies:
+    "@dash14/svg-pan-zoom" "^3.6.6"
+    mitt "^3.0.0"
+
 v8-compile-cache@^2.0.3:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/v8-compile-cache/-/v8-compile-cache-2.3.0.tgz#2de19618c66dc247dcfb6f99338035d8245a2cee"
@@ -3235,4 +3253,3 @@ yallist@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/yallist/-/yallist-4.0.0.tgz#9bb92790d9c0effec63be73519e11a35019a3a72"
   integrity sha512-3wdGidZyq5PB084XLES5TpOSRA3wjXAlIWMhum2kRcv/41Sn2emQ0dycQW4uZXLejwKvg6EsvbdlVL+FYEct7A==
-  

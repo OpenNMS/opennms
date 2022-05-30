@@ -15,6 +15,11 @@ export interface SnackbarProps {
   timeout?: number
 }
 
+export interface IdLabelProps {
+  id: string
+  label: string
+}
+
 export interface SearchResultResponse {
   label?: string
   context: {
@@ -23,14 +28,16 @@ export interface SearchResultResponse {
   }
   empty: boolean
   more: boolean
-  results: {
-    identifier: string
-    label: string
-    matches: any
-    properties: any
-    url: string
-    weight: number
-  }[]
+  results: SearchResult[]
+}
+
+export interface SearchResult {
+  identifier: string
+  label: string
+  matches: any
+  properties: any
+  url: string
+  weight: number
 }
 
 export interface ApiResponse {
@@ -48,10 +55,6 @@ export interface EventApiResponse extends ApiResponse {
 
 export interface AlarmApiResponse extends ApiResponse {
   alarm: Alarm[]
-}
-export interface GraphNodesApiResponse {
-  vertices: Vertice[]
-  edges: Edge[]
 }
 
 export interface SnmpInterfaceApiResponse extends ApiResponse {

@@ -15,6 +15,7 @@ import infoModule from './info'
 import helpModule from './help'
 import resourceModule from './resource'
 import graphModule from './graph'
+import topologyModule from './topology'
 import pluginModule from './plugin'
 import deviceModule from './device'
 import scvModule from './scv'
@@ -35,6 +36,7 @@ export default createStore({
     helpModule,
     resourceModule,
     graphModule,
+    topologyModule,
     pluginModule,
     deviceModule,
     scvModule

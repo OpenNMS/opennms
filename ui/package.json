@@ -56,6 +56,7 @@
     "sass": "^1.52.1",
     "sass-loader": "^13.0.0",
     "splitpanes": "^3.1.1",
+    "v-network-graph": "^0.5.7",
     "vite-svg-loader": "^3.3.0",
     "vue": "^3.2.36",
     "vue-diff": "^1.2.3",

@@ -176,15 +176,20 @@ thead {
   z-index: 2;
   position: relative;
   background: var($surface);
+  white-space: nowrap;
 }
 .first-td {
   padding-left: 12px;
   border-left: 4px solid var($success);
 }
-.WARNING,
-.MINOR,
-.MAJOR {
+.WARNING {
+  border-left: 4px solid #fffb00ea
+}
+.MINOR {
   border-left: 4px solid var($warning);
+}
+.MAJOR {
+  border-left: 4px solid #ff3c00;
 }
 
 .CRITICAL {

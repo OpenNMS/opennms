@@ -86,7 +86,7 @@ const router = createRouter({
       ]
     },
     {
-      path: '/resource-graphs',
+      path: '/resource-graphs/:name?',
       name: 'ResourceGraphs',
       component: () => import('@/containers/ResourceGraphs.vue'),
       children: [

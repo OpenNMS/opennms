@@ -75,7 +75,10 @@
     </template>
   </FeatherNavigationRail>
 </template>
-<script setup lang="ts">
+<script
+  setup
+  lang="ts"
+>
 import { useStore } from 'vuex'
 import useRole from '@/composables/useRole'
 import Instances from '@featherds/icon/hardware/Instances'

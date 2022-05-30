@@ -5,7 +5,8 @@ import {
   QueryParameters,
   IpInterfaceApiResponse,
   NodeAvailability,
-  OutagesApiResponse
+  OutagesApiResponse,
+  Node
 } from '@/types'
 import { queryParametersHandler } from './serviceHelpers'
 import { orderBy } from 'lodash'
@@ -33,12 +34,12 @@ const getNodes = async (queryParameters?: QueryParameters): Promise<NodeApiRespo
   }
 }
 
-const getNodeById = async (id: string): Promise<any> => {
+const getNodeById = async (id: string): Promise<Node> => {
   try {
     const resp = await v2.get(`${endpoint}/${id}`)
     return resp.data
   } catch (err) {
-    return false
+    return {} as Node
   }
 }
 
