@@ -585,7 +585,7 @@ workflows:
             branches:
               only:
                 - /^foundation.*/
-  #docs#
+  #workflow_docs#
   #workflow_ui#
   build-deploy:
     when:
