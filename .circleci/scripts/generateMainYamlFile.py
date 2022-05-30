@@ -18,11 +18,11 @@ for folder in [workflow_folder,job_folder]:
     #Process the files:
     for file in _files:
         _key=os.path.basename(file).replace(".yml","")
-        print(_key)
         _data[_key]=""
         with open(file,"r") as f:
             _data[_key]=f.readlines()
         if _data[_key][0] in ["workflows:  \n","jobs:\n"]:
+            print("Deleting extra "+_data[_key][0] +" entries")
             del _data[_key][0] 
 
 _mainFileContent=""
@@ -48,9 +48,8 @@ for k in _data.keys():
     for l in _data[k]:
         _string_to_append+=l
 
+    print("Replacing the occurance on line "+str(_position_of_occurance))
     _mainFileContent[_position_of_occurance]=_string_to_append+"\n"
-
-sys.exit(1)
 
 with open(pathToMainFile,"w") as f:
     for _l in _mainFileContent:
