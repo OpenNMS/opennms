@@ -184,15 +184,6 @@ jobs:
             checkout(base_revision)  # Checkout base revision to make sure it is available for comparison
             checkout(head)  # return to head commit
 
-
-            changedFiles = subprocess.run( 
-              ['git','diff','--name-only',base_revision, head],
-              check=True,
-              capture_output=True).stdout.decode('utf-8').strip()
-            print("Changed files when comparing "+str(head)+" to head~1")
-            print(changedFiles)
-            print("End of changed files")
-
             base = subprocess.run(
               ['git', 'merge-base', head, 'HEAD~1'],
               check=True,
@@ -223,6 +214,10 @@ jobs:
               check=True,
               capture_output=True
             ).stdout.decode('utf-8').splitlines()
+
+            print("Changed files when comparing "+str(base)+" to "+str(head))
+            print(changes)
+            print("End of changed files")
 
             mappings = [
               m.split() for m in
