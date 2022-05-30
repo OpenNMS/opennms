@@ -95,9 +95,14 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
         topologyUIPage = new TopologyIT.TopologyUIPage(this, getBaseUrlInternal());
         topologyUIPage.open();
         // Select EnLinkd, otherwise the "GraphML Topology Provider (test-graph)" is always pre-selected due to history restoration
-        //topologyUIPage.selectTopologyProvider(TopologyProvider.ENLINKD);
         // Layer Component Button Clicclable
-        assertTrue(topologyUIPage.isLayerComponentButtonCliccable());
+        assertTrue(topologyUIPage.isLayerComponentButtonEnabled());
+        assertTrue(topologyUIPage.isLayerComponentButtonDisplayed());
+        assertTrue(!topologyUIPage.isLayerComponentButtonSelected());
+        topologyUIPage.selectTopologyProvider(TopologyProvider.ENLINKD);
+        assertTrue(topologyUIPage.isLayerComponentButtonEnabled());
+        assertTrue(topologyUIPage.isLayerComponentButtonDisplayed());
+        assertTrue(!topologyUIPage.isLayerComponentButtonSelected());
     }
 
     @After

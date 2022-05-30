@@ -631,9 +631,18 @@ public class TopologyIT extends OpenNMSSeleniumIT {
             return new Breadcrumbs(testCase);
         }
 
-        public boolean isLayerComponentButtonCliccable() {
+        public boolean isLayerComponentButtonEnabled() {
             return testCase.findElementById("layerToggleButton").isEnabled();
         }
+
+        public boolean isLayerComponentButtonDisplayed() {
+            return testCase.findElementById("layerToggleButton").isDisplayed();
+        }
+
+        public boolean isLayerComponentButtonSelected() {
+            return testCase.findElementById("layerToggleButton").isSelected();
+        }
+
 
         private void openLayerSelectionComponent() {
             if (!isLayoutComponentVisible()) {
