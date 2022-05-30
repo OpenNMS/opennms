@@ -321,6 +321,11 @@ commands:
           command: |
             # now move them back so they end up in the workspace for builds further down the workflow
             mv /tmp/maven-keep/* ~/.m2/repository/org/opennms/
+      - run:
+          name: Calculate project and m2 folders disk usage
+          command: |
+            du -sh ~/project 
+            du -sh ~/.m2
       - save-nodejs-cache
       - store_artifacts:
           path: ~/project/target/artifacts
