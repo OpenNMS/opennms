@@ -496,7 +496,7 @@ const cronToEnglish = (cronFormatted: string) => {
 
   const tabLength = cronTabLength(cronFormatted)
   if (tabLength > 0 && tabLength < 6 ) {
-    error = ErrorStrings.QuartzFormatSupportError(tabLength) // custom error of 6th part quartz format support
+    error = ErrorStrings.QuartzFormatSupportError(tabLength) // custom error of 6th part quartz format support (i.e. cronstrue package supports 6th part as optional, thus no error message if expression contains only 5 parts)
   } else {
     try {
       error = cronstrue.toString(cronFormatted, { dayOfWeekStartIndexZero: false })
