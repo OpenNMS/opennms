@@ -1,7 +1,7 @@
 = Loop Detector
 
 The Loop Detector gives {page-component-title} users the ability to force a service onto an interface during service detection.
-This can be used to ensure a specific service is added to all nodes, without performing a check against the node.
+Use the Loop Detector to ensure a specific service is added to all nodes without performing a check against the node.
 The primary use case for this type of detector is when using xref:reference:service-assurance/monitors/PassiveStatusMonitor.adoc[passive service monitoring].
 
 First, add a detector for the new service to the desired foreign-source definition.
@@ -9,7 +9,7 @@ Use the LOOP class:
 
 Add parameters:
 
-* ipMatch : 169.254.*.*
+* ipMatch : `169.254.*.*`
 
 Here's how the above looks in the requisition XML:
 

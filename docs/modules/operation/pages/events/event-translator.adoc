@@ -43,7 +43,7 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" >
 </event-translator-configuration>
 ----
 
-In this example, the `nodeid` will be replaced with the resulting `nodeid` from the SQL query when an event with the uei `uei.opennms.org/mib2opennms/tspEventPCRRepetitionError` is received.
+In this example, the `nodeid` will be replaced with the resulting `nodeid` from the SQL query when an event with the UEI `uei.opennms.org/mib2opennms/tspEventPCRRepetitionError` is received.
 The `?` in the SQL query are populated with the values obtained from the nested value elements.
 The first of the nested value elements creates a result string from a regular expression match of the event parameter named `.1.3.6.1.4.1.6768.6.2.2.5.0`.
 This example uses the string `DEMO 10 example server` to represent the value of the parameter.
@@ -68,7 +68,7 @@ The value returned is then substituted for the existing nodeid into a new event 
 === Example 2: create a PassiveStatusKeeper update event
 
 The xref:reference:service-assurance/monitors/PassiveStatusMonitor.adoc#ref-passivestatuskeeper[PassiveStatusKeeper] feature provides a way to track service outages for synthetic nodes that are not directly pollable.
-This example uses a trap from an Adtran TA4303 to create a new passive status event.
+This example uses a trap from an Adtran TA 4303 to create a new passive status event.
 
 To provide details for this device, we created SQL tables `etlookup` and `ta4303` within the {page-component-title} database to use as lookups.
 
@@ -119,7 +119,7 @@ This example hard codes the label, but this can also be a lookup from the origin
 <3> In practice, you would not want to hard code the node ID on the event.
 <4> Since this is a passive node without a real IP address, this lookup uses the slot and port fields from the original event to query the database for a "dummy" IP assigned to the node.
 <5> Look up the port description from our SQL table.
-This new parameter can be used in the event and notifications as `%parm[portdesc]%`.
+You can use this new parameter in the event and notifications as `%parm[portdesc]%`.
 <6> The name of the xref:reference:service-assurance/monitors/PassiveStatusMonitor.adoc[PassiveStatusMonitor] service assigned to the node.
 If more than one passive service is assigned to the same interface, this field is used to trigger outages on a specific service.
 <7> Must be either "Up" or "Down" and is case sensitive.
