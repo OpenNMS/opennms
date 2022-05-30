@@ -59,7 +59,7 @@ commands:
 
 workflows:
   coverage:
-    when:
+    when: 
       and:
         - equal: [ true, << pipeline.parameters.trigger-coverage-api >> ]
         - equal: [ false, << pipeline.parameters.trigger-prebuild >> ]
@@ -235,6 +235,8 @@ jobs:
             mappings = filter(check_mapping, mappings)
             mappings = map(convert_mapping, mappings)
             mappings = dict(mappings)
+
+            print(mappings)
 
             with open(output_path, 'w') as fp:
               fp.write(json.dumps(mappings))
