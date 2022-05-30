@@ -215,7 +215,7 @@ jobs:
               capture_output=True
             ).stdout.decode('utf-8').splitlines()
 
-            print("Changed files when comparing "+str(base)+" to "+str(head))
+            print("Changed files between "+str(base)+" and "+str(head))
             print(changes)
             print("End of changed files")
 
