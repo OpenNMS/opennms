@@ -108,11 +108,6 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
         String dataProtocol = getKeyedString(parameters, DeviceConfigConstants.PARM_DEVICE_CONFIG_BACKUP_DATA_PROTOCOL, "TFTP");
         long timestamp = Long.parseLong(getKeyedString(parameters, DeviceConfigConstants.PARM_DEVICE_CONFIG_BACKUP_START_TIME, "0"));
 
-        // send 'started' event with adjusted time stamp
-        sendEvent(ipInterface, svc.getSvcName(), EventConstants.DEVICE_CONFIG_BACKUP_STARTED_UEI, svc.getNodeId(), timestamp, Map.of(
-                DeviceConfigConstants.PARM_DEVICE_CONFIG_BACKUP_CONTROL_PROTOCOL, controlProtocol,
-                DeviceConfigConstants.PARM_DEVICE_CONFIG_BACKUP_DATA_PROTOCOL, dataProtocol
-        ));
 
         var latestConfig = deviceConfigDao.getLatestConfigForInterface(ipInterface, svc.getSvcName());
 
@@ -135,6 +130,13 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
                 return status;
             }
         }
+
+        // send 'started' event with adjusted time stamp
+        sendEvent(ipInterface, svc.getSvcName(), EventConstants.DEVICE_CONFIG_BACKUP_STARTED_UEI, svc.getNodeId(), timestamp, Map.of(
+                DeviceConfigConstants.PARM_DEVICE_CONFIG_BACKUP_CONTROL_PROTOCOL, controlProtocol,
+                DeviceConfigConstants.PARM_DEVICE_CONFIG_BACKUP_DATA_PROTOCOL, dataProtocol
+        ));
+
 
         if (deviceConfig.getContent() == null) {
             // Config retrieval failed
