@@ -1,9 +1,12 @@
 <template>
   <div class="topo-layers-drawer">
     <div class="close-btn">
-    <FeatherButton icon="close" @click="closeDrawer">
-      <FeatherIcon :icon="Close" />
-    </FeatherButton>
+      <FeatherButton
+        icon="close"
+        @click="closeDrawer"
+      >
+        <FeatherIcon :icon="Close" />
+      </FeatherButton>
     </div>
     <FeatherList>
       <FeatherListItem
@@ -11,12 +14,16 @@
         :key="graph.label"
         @click="selectTopologyGraph(graph.namespace)"
         :class="{ 'selected' : graph.namespace === selectedNamespace }"
-      >{{ graph.label }}</FeatherListItem>
+        >{{ graph.label }}</FeatherListItem
+      >
     </FeatherList>
   </div>
 </template>
 
-<script setup lang="ts">
+<script
+  setup
+  lang="ts"
+>
 import { useStore } from 'vuex'
 import { FeatherListItem, FeatherList } from '@featherds/list'
 import { FeatherButton } from '@featherds/button'
@@ -30,12 +37,20 @@ const selectedNamespace = ref()
 
 const selectTopologyGraph = (namespace: string) => {
   store.dispatch('topologyModule/getTopologyGraphByContainerAndNamespace', { containerId: powerGridGraphs.value.id, namespace })
-  selectedNamespace.value = namespace
 }
+
+const namespace = computed(() => store.state.topologyModule.namespace)
+watch(namespace, (ns) => {
+  selectedNamespace.value = ns
+})
+
 const closeDrawer = () => store.dispatch('topologyModule/setRightDrawerState', false)
 </script>
 
-<style scoped lang="scss">
+<style
+  scoped
+  lang="scss"
+>
 .topo-layers-drawer {
   width: 100%;
   height: 100%;
@@ -48,3 +63,4 @@ const closeDrawer = () => store.dispatch('topologyModule/setRightDrawerState', f
   }
 }
 </style>
+
