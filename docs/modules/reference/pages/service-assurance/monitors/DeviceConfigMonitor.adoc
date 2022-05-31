@@ -61,10 +61,12 @@ Overwrite in metadata as `dcb:ssh-timeout`.
 | schedule
 | Schedule to fetch configuration, in the form of cron expression.
   Defaults to never run; overwrite this in metadata with proper cron expression.
+  Overwrite in metadata as `dcb:schedule`.
 | never
 
 | retention-period
-| Maximum retention period after which configs without any updates will be deleted from database. 
+| Maximum retention period after which configs without any updates will be deleted from database.
+Overwrite in metadata as `dcb:retention-period`.
 Specified in ISO-8601 period format `PnYnMnD` and `PnW`.
 Defaults to `P1Y` (1 Year). 
 Example: `P20Y2M25D` means 20 years, 2 months, and 25 days.

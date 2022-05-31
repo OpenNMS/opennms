@@ -3,7 +3,7 @@
 
 OpenNMS backs up device configuration through the xref:reference:service-assurance/monitors/DeviceConfigMonitor.adoc[Device Config Monitor].
 
-You must configure the <<tftp-port-configure, TFTP port>> before OpenNMS can back up device configurations.
+You may have to configure the <<tftp-port-configure, TFTP port>> before OpenNMS can back up device configurations.
 
 [[tftp-port-configure]]
 == Configure TFTP Port
@@ -30,9 +30,13 @@ config:property-set port 10069
 config:update
 ----
 
+NOTE: Some devices (for example, Juniper) may allow TFTP upload on non-default port. 
+For such devices there is no need to change default port.
+
 The OpenNMS {page-component-title} core services run as an unprivileged user and can't bind on port numbers < 1024 without escalated privileges.
 For this reason, the default port for the TFTP listener is set to port number 6969/udp instead of the IANA registered port number 69/udp.
 The following example shows how to configure the local firewall daemon to forward port 69/udp to 6969/udp.
+
 
 [{tabs}]
 ====
@@ -48,6 +52,37 @@ Debian/Ubuntu::
 include::debian-ubuntu/firewall-core.adoc[]
 --
 ====
+
+== Configure TFTP IP Address
+
+The device configuration backup feature allows the retrieval of network device configurations using TFTP.
+
+To achieve this, a TFTP server needs to be started on the OpenNMS instance or on a Minion. 
+Normally the IP address to use is determined by picking the interface address that the operating system will use to reach the destination device.
+In the case of a Dockerized Minion running not in host networking mode, the IP address cannot be automatically determined.
+In this case, you need to configure the IP Address as below:
+
+.Connect to Karaf shell on {page-component-title}
+[source, console]
+----
+ssh -p 8101 admin@localhost
+----
+
+.Connect to Karaf shell on Minion
+[source, console]
+----
+ssh -p 8201 admin@localhost
+----
+
+.Configure TFTP port (Minion/{page-component-title})
+[source, karaf]
+----
+config:edit org.opennms.features.deviceconfig.sshscripting
+config:property-set tftpServerIPv4Address 192.168.1.123
+config:property-set tftpServerIPv6Address ::1
+config:update
+----
+
 
 == (optional) Enable push-based configuration upload
 
@@ -105,14 +140,15 @@ Additional Parameters
 * `eventReason` - If the backup failed, contains a short description of the issue.
 
 
-== Retrieve device configuration on demand
+== Back up device configuration on demand
 
-You can use the Rest API to trigger device configuration retrieval outside of a monitor schedule.
+You can manually back up devices from the OpenNMS UI under *Info>Device Configs*.
+You can also use the REST API to trigger device configuration retrieval outside of a monitor schedule.
 (See xref:development:rest/device_config.adoc[Device Config Rest API].)
 
-== Trigger/Retrieve Device Config from Karaf shell
+== Trigger/retrieve device config from Karaf shell
 
-You can also use the Karaf shell to manually trigger and retrieve a device configuration backup.
+You can also use the Karaf shell to manually trigger and retrieve a device configuration backup for test purposes.
 
 [source, karaf]
 ----
