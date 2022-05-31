@@ -641,7 +641,7 @@ workflows:
                 - /.*arm64.*/
       - horizon-image-single-arch:
           requires:
-            - horizon-deb-build
+            - debs-build
           matrix:
             parameters:
               architecture: [linux/arm64]
@@ -812,7 +812,7 @@ workflows:
                 - /^merge-foundation.*/          
       - sentinel-image-single-arch:
           requires:
-            - sentinel-deb-build
+            - debs-build
           matrix:
             parameters:
               architecture: [linux/arm64]
