@@ -1,6 +1,8 @@
 [[ref-daemon-config-files-reportd]]
 = Reportd
 
+The report daemon handles database report generation and scheduling.
+
 .Reportd log file overview
 [options="header"]
 [cols="2,3"]

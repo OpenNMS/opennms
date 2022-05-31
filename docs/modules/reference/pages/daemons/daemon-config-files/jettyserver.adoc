@@ -16,5 +16,5 @@ Manages the web user interface service.
 
 | web.log
 | Logs relating to user actions with the web interface.
-This includes logs relating to  external authentication.
+This includes logs relating to external authentication.
 |===

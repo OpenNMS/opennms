@@ -4,7 +4,7 @@
 {page-component-title} stores logs based on the name of the daemon that was acting on a process.
 For example, logs for xref:operation:service-assurance/introduction.adoc#ga-service-assurance[service assurance checks] that are done by `pollerd` are stored in the `pollerd.log` file.
 
-The log files can be found in `$\{OPENNMS_HOME}/logs`, which is a symlink to `/var/log/opennms`.
+The log files are available in `$\{OPENNMS_HOME}/logs`, which is a symlink to `/var/log/opennms`.
 
 Check the xref:reference:daemons/introduction.adoc[list of daemons] to see which log files are associated with each daemon.
 
@@ -13,13 +13,13 @@ Check the xref:reference:daemons/introduction.adoc[list of daemons] to see which
 
 {page-component-title} uses the https://logging.apache.org/log4j/[Apache Log4j] framework to manage how the logs are written, structured, and rotated.
 
-The log configuration file can be found in `$\{OPENNMS_HOME}/etc/opennms/log4j2.xml`.
+The log configuration file is available in `$\{OPENNMS_HOME}/etc/opennms/log4j2.xml`.
 
 Each daemon can have an individual logging level.
 
 The corresponding configuration in this file can be found in the XML tree path: `configuration/loggers/root/DynamicThresholdFilter/KeyValuePair`.
 
-The default logging level is `WARN`, and for troubleshooting, use `DEBUG`.
+The default logging level is `WARN`; for troubleshooting, use `DEBUG`.
 See the table below for a description of the available log levels.
 Changes to logging levels are applied immediately and do not require any service or daemon restarts.
 

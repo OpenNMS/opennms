@@ -2,10 +2,10 @@
 = Rtcd
 
 Calculates the availability percentages displayed on the {page-component-title} home page.
-This daemon checks the database and updates availability data by sending REST calls to the server
+This daemon checks the database and updates availability data by sending REST calls to the server.
 
 IMPORTANT: {page-component-title} comes with a local `rtc` user account.
-This account is used by rtcd for sending updates, and is only granted access rights for updating RTC data.
+This account is used by Rtcd for sending updates, and is only granted access rights for updating RTC data.
 Any modifications to this account can impact the server's ability to update availability data.
 
 .Rtcd configuration file overview
@@ -19,7 +19,7 @@ Any modifications to this account can impact the server's ability to update avai
 
 | categories.xml
 | Defines categories for grouping availability data and which nodes apply to the categories.
-These are independent of surveillance categories, and can use surveillance categories in defining the filter rules.
+These are independent of surveillance categories, and can use surveillance categories to define the filter rules.
 | no
 | yes
 
@@ -29,7 +29,7 @@ These are independent of surveillance categories, and can use surveillance categ
 | yes
 
 | viewdisplay.xml
-| Defines which categories from `categories.xml` are displayed on the home page.
+| Defines which categories from `categories.xml` the home page displays.
 | no
 | yes
 |===

@@ -12,7 +12,7 @@ Handles scanning requisition data to be xref:operation:provisioning/introduction
 | Description
 
 | provisiond.log
-| The node provisioning processes are being logged here.
+| The node provisioning processes are logged here.
 This also includes service detection and policy results.
 
 | GeoIpProvisioningAdapter.log
