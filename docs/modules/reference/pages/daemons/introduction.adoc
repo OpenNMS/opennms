@@ -32,7 +32,7 @@ See the xref:operation:admin/daemon-config-files.adoc[system administration] sec
 | Business Service Monitoring
 
 | Collectd
-| Collect daemon is responsible for collecting data from nodes.
+| Collects data from nodes to persist performance metrics over time.
 
 | Correlator
 | Associate multiple, related events.
