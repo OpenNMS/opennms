@@ -24,7 +24,7 @@ If you want to enable device config backup on existing nodes in a requisition, s
 .. `dcb:password`: password for the device
 .. `dcb:script-file`: name of the device configuration script for this type of device without .dcb extension
 .. `dcb:schedule`: a cron expression to specify the time to fetch the device backup configuration (default is `never`)
-.. `dcb:retention-period`: an optional Java `Period` expression to specify the length of time before "stale" configuration data is deleted from the database (default is `P1Y`, one year)
+.. `dcb:retention-period`: an optional Java period expression to specify the length of time before "stale" configuration data is deleted from the database (default is `P1Y`, one year).
 . Click *Save* to save the metadata and then *Save* to save the requisition.
 . Click *Return* and click *Synchronize*.
 . Choose a scan option and click *Synchronize*.
