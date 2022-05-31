@@ -1281,7 +1281,7 @@ jobs:
             cd opennms-container/sentinel
             ./tag.sh
             ./publish.sh
-  #integration-test#
+  #integration_test#
   code-coverage:
     executor: centos-build-executor
     resource_class: medium
