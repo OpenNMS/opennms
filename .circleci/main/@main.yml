@@ -612,7 +612,7 @@ workflows:
           requires:
             - horizon-rpm-build
             - minion-deb-build
-            - sentinel-deb-build
+            - debs-build
             - integration-test
             - smoke-test-core
             - smoke-test-flaky
@@ -687,9 +687,8 @@ workflows:
       - smoke-test-core:
           requires:
             - tarball-assembly
-            - horizon-deb-build
             - minion-rpm-build
-            - sentinel-deb-build
+            - debs-build
           filters:
             branches:
               only:
@@ -703,9 +702,8 @@ workflows:
       - smoke-test-flaky:
           requires:
             - tarball-assembly
-            - horizon-deb-build
             - minion-rpm-build
-            - sentinel-deb-build
+            - debs-build
           filters:
             branches:
               only:
@@ -719,9 +717,8 @@ workflows:
       - smoke-test-minion:
           requires:
             - tarball-assembly
-            - horizon-deb-build
             - minion-rpm-build
-            - sentinel-deb-build
+            - debs-build
           filters:
             branches:
               only:
@@ -735,9 +732,8 @@ workflows:
       - smoke-test-sentinel:
           requires:
             - tarball-assembly
-            - horizon-deb-build
             - tarball-assembly
-            - sentinel-deb-build
+            - debs-build
           filters:
             branches:
               only:
@@ -751,9 +747,8 @@ workflows:
       - smoke-test-minimal:
           requires:
             - tarball-assembly
-            - horizon-deb-build
             - tarball-assembly
-            - sentinel-deb-build
+            - debs-build
           filters:
             branches:
               ignore:
@@ -767,9 +762,8 @@ workflows:
                 - /^dependabot.*/
       - horizon-publish-oci:
           requires:
-            - horizon-deb-build
             - minion-deb-build
-            - sentinel-deb-build
+            - debs-build
             - integration-test
             - smoke-test-core
             - smoke-test-flaky
@@ -785,9 +779,8 @@ workflows:
                 - /^features\/.+/
       - sentinel-publish-oci:
           requires:
-            - horizon-deb-build
             - minion-deb-build
-            - sentinel-deb-build
+            - debs-build
             - integration-test
             - smoke-test-core
             - smoke-test-flaky
@@ -817,6 +810,13 @@ workflows:
             branches:
               ignore:
                 - /^merge-foundation.*/
+      - debs-build:
+          requires:
+            - build 
+          filters:
+            branches:
+              ignore:
+                - /^merge-foundation.*/          
       - sentinel-deb-build:
           requires:
             - build
