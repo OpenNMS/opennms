@@ -66,6 +66,7 @@ import com.google.common.collect.Lists;
  * @author mvrueden
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
+@Ignore
 public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
 
     public static final String LABEL = "GraphML Topology Provider (test-graph)";
@@ -198,10 +199,11 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
         assertEquals(false, topologyUIPage.getSaveLayoutButton().isEnabled()); // it should be disabled after save
     }
 
-    @Test
     /**
      * This method tests whether the GraphMLTopologyProvider can work with categories - searching, collapsing and expanding
      */
+
+    @Test
     public void verifyCanFilterByCategory() throws IOException, InterruptedException {
         topologyUIPage.selectTopologyProvider(() -> LABEL);
         topologyUIPage.selectLayer("Markets");
