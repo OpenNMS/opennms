@@ -64,6 +64,7 @@ Available compare operations are:
 * *GT*: greater than
 * *LT*: less than
 * *NOOP*: no operation
+
 The NOOP operation is a special case in which the Manager will always return a result code of "OK".
 This is typically used in scenarios where the existence of a class or property is more interesting than the contents of the property.
 This can be used to ensure that WMI data is available before adding a collectd service based on the `WmiCollector` class.
