@@ -58,7 +58,8 @@ print("Length of main file after replacing placeholders "+str(len(_mainFileConte
 for folder in [workflow_folder,job_folder]:
     _files=glob.glob(os.path.join(pathToFolders,folder,"*.yml"))
     for _file in _files:
-        os.remove(_file)
+        os.rename(_file,_file+"_analyzed")
+        #os.remove(_file)
 
 with open(pathToMainFile,"w") as f:
     for _l in _mainFileContent:
