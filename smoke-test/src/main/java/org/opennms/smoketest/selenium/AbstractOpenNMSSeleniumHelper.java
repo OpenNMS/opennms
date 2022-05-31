@@ -1070,11 +1070,11 @@ public abstract class AbstractOpenNMSSeleniumHelper {
         }
     }
 
-    public Integer doRequest(final HttpRequestBase request) throws ClientProtocolException, IOException, InterruptedException {
+    public static Integer doRequest(final HttpRequestBase request) throws ClientProtocolException, IOException, InterruptedException {
         return getRequest(request).getStatus();
     }
 
-    protected ResponseData getRequest(final HttpRequestBase request) throws ClientProtocolException, IOException, InterruptedException {
+    protected static ResponseData getRequest(final HttpRequestBase request) throws ClientProtocolException, IOException, InterruptedException {
         final CountDownLatch waitForCompletion = new CountDownLatch(1);
 
         final URI uri = request.getURI();

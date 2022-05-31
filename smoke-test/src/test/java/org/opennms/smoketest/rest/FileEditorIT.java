@@ -97,23 +97,6 @@ public class FileEditorIT {
     private static final String USERNAME = "editor";
     private static final String PASSWORD = "admin";
 
-    AbstractOpenNMSSeleniumHelper abstractOpenNMSSeleniumHelper = new AbstractOpenNMSSeleniumHelper() {
-        @Override
-        public WebDriver getDriver() {
-            return null;
-        }
-
-        @Override
-        public String getBaseUrlInternal() {
-            return null;
-        }
-
-        @Override
-        public String getBaseUrlExternal() {
-            return null;
-        }
-    };
-
     @ClassRule
     public static final OpenNMSStack STACK = OpenNMSStack.MINIMAL;
 
@@ -307,7 +290,7 @@ public class FileEditorIT {
         post.setEntity(new StringEntity(new String(outputStream.toByteArray()), ContentType.APPLICATION_XML));
         Integer response = 0;
         try {
-            response = abstractOpenNMSSeleniumHelper.doRequest(post);
+            response = AbstractOpenNMSSeleniumHelper.doRequest(post);
         } catch (IOException | InterruptedException e) {
             LOG.debug(String.format("Adding a user failed. Response code: %s", e.toString()));
         }
