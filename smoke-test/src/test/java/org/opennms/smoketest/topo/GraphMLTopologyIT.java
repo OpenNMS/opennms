@@ -43,6 +43,7 @@ import static org.opennms.smoketest.TopologyIT.waitForTransition;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.After;
 import org.junit.FixMethodOrder;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -87,16 +88,14 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
 
         // Sometimes a previous run did not clean up properly, so we do that before we
         // import a graph
-        if (!existsGraph()) {
-            //    deleteGraph();
-            //}
-
-            // Generating dummy nodes for the verifyCanFilterByCategory test method
-
-            this.createDummyNodes();
-
-            importGraph();
+        if (existsGraph()) {
+                deleteGraph();
         }
+
+        // Generating dummy nodes for the verifyCanFilterByCategory test method
+        this.createDummyNodes();
+        importGraph();
+
         topologyUIPage = new TopologyIT.TopologyUIPage(this, getBaseUrlInternal());
         topologyUIPage.open();
         // Select EnLinkd, otherwise the "GraphML Topology Provider (test-graph)" is always pre-selected due to history restoration
@@ -105,25 +104,24 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
         assertTrue(topologyUIPage.isLayerComponentButtonDisplayed());
         assertFalse(topologyUIPage.isLayerComponentButtonSelected());
         LOG.debug("setUp: {}", topologyUIPage.getTopologyInfo().getTitle());
-        LOG.debug("setUp: {}", topologyUIPage.getSelectedLayer());
         topologyUIPage.selectTopologyProvider(TopologyProvider.ENLINKD);
         assertTrue(topologyUIPage.isLayerComponentButtonEnabled());
         assertTrue(topologyUIPage.isLayerComponentButtonDisplayed());
         assertFalse(topologyUIPage.isLayerComponentButtonSelected());
         LOG.debug("setUp: {}", topologyUIPage.getTopologyInfo().getTitle());
-        LOG.debug("setUp: {}", topologyUIPage.getSelectedLayer());
         assertEquals("All", topologyUIPage.getTopologyInfo().getTitle());
     }
 
-//    @AfterClass
-//    public void tearDown() throws IOException, InterruptedException {
-//        deleteGraph();
-//    }
+    @After
+    public void tearDown() throws IOException, InterruptedException {
+        deleteGraph();
+    }
 
     @Test
     public void canUseTopology() {
         topologyUIPage.selectTopologyProvider(() -> LABEL);
         topologyUIPage.defaultFocus();
+        LOG.debug("canUseTopology: {}", topologyUIPage.getSelectedLayer());
         LOG.debug("canUseTopology: {}", topologyUIPage.getTopologyInfo().getTitle());
 
         List<TopologyIT.FocusedVertex> focusedVertices = topologyUIPage.getFocusedVertices();
@@ -162,6 +160,7 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
     @Test
     public void verifySwitchesLayerOnSearchProperly() {
         topologyUIPage.selectTopologyProvider(() -> LABEL);
+        LOG.debug("verifySwitchesLayerOnSearchProperly: {}", topologyUIPage.getSelectedLayer());
         LOG.debug("verifySwitchesLayerOnSearchProperly: {}", topologyUIPage.getTopologyInfo().getTitle());
         TopologyIT.TopologyUISearchResults searchResult = topologyUIPage.search("South");
         assertEquals(5, searchResult.countItemsThatContain("South"));
@@ -175,6 +174,7 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
     @Test
     public void verifyNavigateToAndBreadcrumbs() {
         topologyUIPage.selectTopologyProvider(() -> LABEL);
+        LOG.debug("verifyNavigateToAndBreadcrumbs: {}", topologyUIPage.getSelectedLayer());
         LOG.debug("verifyNavigateToAndBreadcrumbs: {}", topologyUIPage.getTopologyInfo().getTitle());
         topologyUIPage.findVertex("East Region").contextMenu().click("Navigate To", "Markets (East Region)");
 
@@ -212,6 +212,7 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
     @Test
     public void verifySaveLayoutButton() {
         topologyUIPage.selectTopologyProvider(() -> LABEL);
+        LOG.debug("verifySaveLayoutButton: {}", topologyUIPage.getSelectedLayer());
         LOG.debug("verifySaveLayoutButton: {}", topologyUIPage.getTopologyInfo().getTitle());
         assertFalse(topologyUIPage.getSaveLayoutButton().isEnabled()); // it should be disabled
 
@@ -227,6 +228,7 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
      */
     public void verifyCanFilterByCategory() {
         topologyUIPage.selectTopologyProvider(() -> LABEL);
+        LOG.debug("verifyCanFilterByCategory: {}", topologyUIPage.getSelectedLayer());
         LOG.debug("verifyCanFilterByCategory: {}", topologyUIPage.getTopologyInfo().getTitle() );
         assertTrue(topologyUIPage.isLayerComponentButtonEnabled());
         assertTrue(topologyUIPage.isLayerComponentButtonDisplayed());
@@ -274,6 +276,7 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
     public void verifyCanChangeIcon() {
         // Select Meta Topology and select target Topology
         topologyUIPage.selectTopologyProvider(() -> LABEL);
+        LOG.debug("verifyCanChangeIcon: {}", topologyUIPage.getSelectedLayer());
         topologyUIPage.findVertex("North Region")
                 .contextMenu()
                 .click("Navigate To", "Markets (North Region)");
