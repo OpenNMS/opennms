@@ -652,13 +652,6 @@ workflows:
                 - /^master-.*/
                 - /^release-.*/
                 - /.*arm64.*/
-      - horizon-deb-build:
-          requires:
-            - build
-          filters:
-            branches:
-              ignore:
-                - /^merge-foundation.*/
       - minion-rpm-build:
           requires:
             - build
@@ -817,13 +810,6 @@ workflows:
             branches:
               ignore:
                 - /^merge-foundation.*/          
-      - sentinel-deb-build:
-          requires:
-            - build
-          filters:
-            branches:
-              ignore:
-                - /^merge-foundation.*/
       - sentinel-image-single-arch:
           requires:
             - sentinel-deb-build
