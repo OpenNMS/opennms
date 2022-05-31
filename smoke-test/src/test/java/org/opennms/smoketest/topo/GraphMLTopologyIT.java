@@ -29,21 +29,19 @@
 package org.opennms.smoketest.topo;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.*;
 
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.opennms.smoketest.TopologyIT.waitForTransition;
 
-import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Ignore;
@@ -83,28 +81,18 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
 
     private RestClient restClient;
 
-    private static final ConcurrentHashMap<Class, Boolean> INITIALIZED = new ConcurrentHashMap<>();
-
-    protected final boolean initialized() {
-        final boolean[] absent = {false};
-        INITIALIZED.computeIfAbsent(this.getClass(), (klass)-> {
-            return absent[0] = true;
-        });
-        return !absent[0];
-    }
-
     @Before
     public void setUp() throws IOException, InterruptedException {
-        if (!initialized()) {
-            restClient = stack.opennms().getRestClient();
+        restClient = stack.opennms().getRestClient();
 
-            // Sometimes a previous run did not clean up properly, so we do that before we
-            // import a graph
-            //if (existsGraph()) {
+        // Sometimes a previous run did not clean up properly, so we do that before we
+        // import a graph
+        if (!existsGraph()) {
             //    deleteGraph();
             //}
 
             // Generating dummy nodes for the verifyCanFilterByCategory test method
+
             this.createDummyNodes();
 
             importGraph();
@@ -115,11 +103,16 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
         // Layer Component Button Clicclable
         assertTrue(topologyUIPage.isLayerComponentButtonEnabled());
         assertTrue(topologyUIPage.isLayerComponentButtonDisplayed());
-        assertTrue(!topologyUIPage.isLayerComponentButtonSelected());
+        assertFalse(topologyUIPage.isLayerComponentButtonSelected());
+        LOG.debug("setUp: {}", topologyUIPage.getTopologyInfo().getTitle());
+        LOG.debug("setUp: {}", topologyUIPage.getSelectedLayer());
         topologyUIPage.selectTopologyProvider(TopologyProvider.ENLINKD);
         assertTrue(topologyUIPage.isLayerComponentButtonEnabled());
         assertTrue(topologyUIPage.isLayerComponentButtonDisplayed());
-        assertTrue(!topologyUIPage.isLayerComponentButtonSelected());
+        assertFalse(topologyUIPage.isLayerComponentButtonSelected());
+        LOG.debug("setUp: {}", topologyUIPage.getTopologyInfo().getTitle());
+        LOG.debug("setUp: {}", topologyUIPage.getSelectedLayer());
+        assertEquals("All", topologyUIPage.getTopologyInfo().getTitle());
     }
 
 //    @AfterClass
@@ -128,9 +121,10 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
 //    }
 
     @Test
-    public void canUseTopology() throws IOException {
+    public void canUseTopology() {
         topologyUIPage.selectTopologyProvider(() -> LABEL);
         topologyUIPage.defaultFocus();
+        LOG.debug("canUseTopology: {}", topologyUIPage.getTopologyInfo().getTitle());
 
         List<TopologyIT.FocusedVertex> focusedVertices = topologyUIPage.getFocusedVertices();
         assertEquals(4, focusedVertices.size());
@@ -168,6 +162,7 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
     @Test
     public void verifySwitchesLayerOnSearchProperly() {
         topologyUIPage.selectTopologyProvider(() -> LABEL);
+        LOG.debug("verifySwitchesLayerOnSearchProperly: {}", topologyUIPage.getTopologyInfo().getTitle());
         TopologyIT.TopologyUISearchResults searchResult = topologyUIPage.search("South");
         assertEquals(5, searchResult.countItemsThatContain("South"));
         searchResult.selectItemThatContains("South 3");
@@ -180,6 +175,7 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
     @Test
     public void verifyNavigateToAndBreadcrumbs() {
         topologyUIPage.selectTopologyProvider(() -> LABEL);
+        LOG.debug("verifyNavigateToAndBreadcrumbs: {}", topologyUIPage.getTopologyInfo().getTitle());
         topologyUIPage.findVertex("East Region").contextMenu().click("Navigate To", "Markets (East Region)");
 
         final ArrayList<TopologyIT.FocusedVertex> marketsVertcies = Lists.newArrayList(
@@ -216,27 +212,25 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
     @Test
     public void verifySaveLayoutButton() {
         topologyUIPage.selectTopologyProvider(() -> LABEL);
-        assertEquals(false, topologyUIPage.getSaveLayoutButton().isEnabled()); // it should be disabled
+        LOG.debug("verifySaveLayoutButton: {}", topologyUIPage.getTopologyInfo().getTitle());
+        assertFalse(topologyUIPage.getSaveLayoutButton().isEnabled()); // it should be disabled
 
         topologyUIPage.selectLayout(Layout.MANUAL);
-        assertEquals(true, topologyUIPage.getSaveLayoutButton().isEnabled()); // now it should be enabled
+        assertTrue(topologyUIPage.getSaveLayoutButton().isEnabled()); // now it should be enabled
         topologyUIPage.getSaveLayoutButton().click();
-        assertEquals(false, topologyUIPage.getSaveLayoutButton().isEnabled()); // it should be disabled after save
+        assertFalse(topologyUIPage.getSaveLayoutButton().isEnabled()); // it should be disabled after save
     }
 
     @Test
-    /**
-     * This method tests whether the GraphMLTopologyProvider can work with categories - searching, collapsing and expanding
+    /*
+      This method tests whether the GraphMLTopologyProvider can work with categories - searching, collapsing and expanding
      */
-    public void verifyCanFilterByCategory() throws IOException, InterruptedException {
-        LOG.debug("verifyCanFilterByCategory: {}", topologyUIPage.getTopologyInfo().getTitle() );
-        LOG.debug("verifyCanFilterByCategory: {}", topologyUIPage.getTopologyInfo().getDescription() );
+    public void verifyCanFilterByCategory() {
         topologyUIPage.selectTopologyProvider(() -> LABEL);
         LOG.debug("verifyCanFilterByCategory: {}", topologyUIPage.getTopologyInfo().getTitle() );
-        LOG.debug("Entering Can Filter Category Test: {}", topologyUIPage.getTopologyInfo().getDescription() );
         assertTrue(topologyUIPage.isLayerComponentButtonEnabled());
         assertTrue(topologyUIPage.isLayerComponentButtonDisplayed());
-        assertTrue(!topologyUIPage.isLayerComponentButtonSelected());
+        assertFalse(topologyUIPage.isLayerComponentButtonSelected());
         topologyUIPage.selectLayer("Markets");
         topologyUIPage.setSzl(0);
         topologyUIPage.clearFocus();
@@ -277,7 +271,7 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
 
     @Test
     @Ignore("Flapping. Icon does now show, and context menu does not have 'Change Icon' option, only 'Clear Focus' and 'Refresh Now'")
-    public void verifyCanChangeIcon() throws IOException, InterruptedException {
+    public void verifyCanChangeIcon() {
         // Select Meta Topology and select target Topology
         topologyUIPage.selectTopologyProvider(() -> LABEL);
         topologyUIPage.findVertex("North Region")
@@ -307,6 +301,7 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
     @Test
     public void verifyCanSelectNonVisibleVertex() {
         // Ensure nothing is visible for now
+        LOG.debug("verifyCanSelectNonVisibleVertex: {}", topologyUIPage.getTopologyInfo().getTitle() );
         Assert.assertEquals(0, topologyUIPage.getVisibleVertices().size());
 
         // Select Nodes tab and select node
@@ -323,6 +318,7 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
 
     @Test
     public void verifyCanSetLayerViaUrlParameter() {
+        LOG.debug("verifyCanSetLayerViaUrlParameter: {}", topologyUIPage.getTopologyInfo().getTitle() );
         adminPage(); // leave topology page to ensure the link actually works
         final String namespace = "acme:markets";
         final String searchTokenNamespace = "Acme:markets:";
