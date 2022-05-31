@@ -40,12 +40,10 @@ sudo /opt/opennms/bin/runjava -s
 sudo /opt/opennms/bin/install -dis
 ----
 
-._Binding to privileged ports_
-
-The core service user must be able to send ICMP echo requests.
-During setup, the permissions for `net.ipv4.ping_group_range` are set permanently on boot via `/etc/sysctl.d/99-opennms-non-root-icmp.conf`.
-Some system kernels do not honor this setting, and in those cases, additional configuration is required to allow binding to privileged ports.
-We recommend creating a systemd overlay to add the necessary settings to the service configuration.
+[[initialize-core-cap]]
+._Assign CAP_NET_RAW capabilities_
+{page-component-title} runs as a non-root user, which requires having a Linux kernel greater than 3.10.
+If you run on an older kernel, and are unable to upgrade your OS, you need to assign CAP_NET_RAW capabilities:
 
 Run `systemctl edit --full opennms.service` and add the following line to the `[Service]` section:
 
@@ -64,6 +62,7 @@ Reload the systemd unit with `systemctl daemon-reload` and restart the service w
 sudo systemctl enable --now opennms
 ----
 
+[[initialize-core-firewall]]
 .Allow connection to the web UI from your network
 [source, console]
 ----

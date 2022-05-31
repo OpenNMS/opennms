@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2021-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -38,6 +38,10 @@ import java.util.stream.Collectors;
 public class ValidationException extends ConfigRuntimeException {
     private ValidationReport report;
 
+    public ValidationException(String message) {
+        super(message);
+    }
+
     public ValidationException(ValidationReport report) {
         this.report = report;
     }
@@ -48,7 +52,11 @@ public class ValidationException extends ConfigRuntimeException {
 
     @Override
     public String getMessage() {
-        return report.getMessages().stream().map(ValidationReport.Message::getMessage)
-                .collect(Collectors.joining("\n"));
+        if (report != null) {
+            return report.getMessages().stream().map(ValidationReport.Message::getMessage)
+                    .collect(Collectors.joining("\n"));
+        } else {
+            return super.getMessage();
+        }
     }
 }

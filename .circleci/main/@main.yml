@@ -121,7 +121,7 @@ commands:
                 -Pbuild-bamboo \
                 -Prun-expensive-tasks \
                 -Psmoke \
-                --legacy-local-repository \
+                -Denable.license=true \
                 --batch-mode \
                 dependency:resolve-plugins \
                 de.qaware.maven:go-offline-maven-plugin:resolve-dependencies
@@ -285,11 +285,11 @@ commands:
             ./clean.pl
             << parameters.node-memory >>
             export MAVEN_OPTS="-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
-            MAVEN_TARGETS="install"
+            MAVEN_ARGS="install"
             case "${CIRCLE_BRANCH}" in
-              "master-"*|"release-"*|develop|jira/NMS-13820)
+              "master-"*|"release-"*|develop)
                 mkdir -p target/artifacts
-                MAVEN_TARGETS="$MAVEN_TARGETS javadoc:aggregate"
+                MAVEN_ARGS="-Dbuild.type=production $MAVEN_ARGS javadoc:aggregate"
                 ;;
             esac
             ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
@@ -298,9 +298,10 @@ commands:
               -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
               -DvaadinJavaMaxMemory=<< parameters.vaadin-javamaxmem >> \
               -DmaxCpus=<< parameters.number-vcpu >> \
+              -Prun-expensive-tasks \
               -Psmoke \
               --batch-mode \
-              $MAVEN_TARGETS
+              $MAVEN_ARGS
             if [ -d target/site/apidocs ]; then
               pushd target/site/apidocs
                 tar -czf "../../artifacts/opennms-${OPENNMS_VERSION}-javadoc.tar.gz" *
@@ -488,6 +489,43 @@ commands:
               echo "Loading ${FILE} into Docker..."
               docker image load -i "$FILE"
             done
+  qemu-user-static:
+    steps:
+      - run:
+          name: multiarch/qemu-user-static
+          command: docker run --privileged multiarch/qemu-user-static --reset -p yes
+  install-buildx:
+    steps:
+      - run:
+          name: Install Docker buildx
+          command: |
+            sudo wget https://github.com/docker/buildx/releases/download/v0.5.1/buildx-v0.5.1.linux-amd64 -O /usr/local/bin/docker-buildx
+            sudo chmod a+x /usr/local/bin/docker-buildx
+            sudo systemctl restart docker
+  build-image-single-arch:
+    parameters:
+      architecture:
+        type: string
+      cache_prefix:
+        type: string
+      container_name:
+        type: string
+    steps:
+      - attach_workspace:
+          at: ~/
+      - qemu-user-static
+      - install-buildx
+      - restore-workflow-assets:
+          cache_prefix: << parameters.cache_prefix >>
+          target_path: "target/debs"
+      - run:
+          name: Fetch DEB artifacts and build << parameters.container_name >> container image
+          command: |
+            cd opennms-container/<< parameters.container_name >>
+            env DOCKER_ARCH="<< parameters.architecture >>" ./build_container_image.sh
+      - store_artifacts:
+          path: ~/project/opennms-container/<< parameters.container_name >>/images/container.oci
+          destination: << parameters.container_name >>.oci
 
 workflows:
   weekly-coverage:
@@ -583,7 +621,7 @@ workflows:
             - docker-content-trust
             - azure-sp-dct
           requires:
-            - horizon-deb-build
+            - horizon-rpm-build
             - minion-deb-build
             - sentinel-deb-build
             - integration-test
@@ -598,6 +636,7 @@ workflows:
                 - develop
                 - /^master-.*/
                 - /^release-.*/
+                - /.*arm64.*/
       - minion-image-multi-arch:
           context:
             - docker-content-trust
@@ -610,7 +649,21 @@ workflows:
                 - develop
                 - /^master-.*/
                 - /^release-.*/
-      - horizon-rpm-build:
+                - /.*arm64.*/
+      - horizon-image-single-arch:
+          requires:
+            - horizon-deb-build
+          matrix:
+            parameters:
+              architecture: [linux/arm64]
+          filters:
+            branches:
+              only:
+                - develop
+                - /^master-.*/
+                - /^release-.*/
+                - /.*arm64.*/
+      - horizon-deb-build:
           requires:
             - build
           filters:
@@ -626,7 +679,7 @@ workflows:
                 - /^merge-foundation.*/
       - sentinel-rpm-build:
           requires:
-            - build
+            - integration-test
           filters:
             branches:
               ignore:
@@ -641,9 +694,9 @@ workflows:
       - smoke-test-core:
           requires:
             - tarball-assembly
-            - horizon-rpm-build
+            - horizon-deb-build
             - minion-rpm-build
-            - sentinel-rpm-build
+            - sentinel-deb-build
           filters:
             branches:
               only:
@@ -657,9 +710,9 @@ workflows:
       - smoke-test-flaky:
           requires:
             - tarball-assembly
-            - horizon-rpm-build
+            - horizon-deb-build
             - minion-rpm-build
-            - sentinel-rpm-build
+            - sentinel-deb-build
           filters:
             branches:
               only:
@@ -673,9 +726,9 @@ workflows:
       - smoke-test-minion:
           requires:
             - tarball-assembly
-            - horizon-rpm-build
+            - horizon-deb-build
             - minion-rpm-build
-            - sentinel-rpm-build
+            - sentinel-deb-build
           filters:
             branches:
               only:
@@ -689,9 +742,9 @@ workflows:
       - smoke-test-sentinel:
           requires:
             - tarball-assembly
-            - horizon-rpm-build
+            - horizon-deb-build
             - tarball-assembly
-            - sentinel-rpm-build
+            - sentinel-deb-build
           filters:
             branches:
               only:
@@ -705,9 +758,9 @@ workflows:
       - smoke-test-minimal:
           requires:
             - tarball-assembly
-            - horizon-rpm-build
+            - horizon-deb-build
             - tarball-assembly
-            - sentinel-rpm-build
+            - sentinel-deb-build
           filters:
             branches:
               ignore:
@@ -736,6 +789,7 @@ workflows:
                 - develop
                 - /^master-.*/
                 - /^release-.*/
+                - /^features\/.+/
       - sentinel-publish-oci:
           requires:
             - horizon-deb-build
@@ -753,9 +807,10 @@ workflows:
                 - develop
                 - /^master-.*/
                 - /^release-.*/
+                - /^features\/.+/
       # These don't actually require `integration-test` but we shouldn't bother
       # spending cycles unless everything else passed
-      - horizon-deb-build:
+      - horizon-rpm-build:
           requires:
             - integration-test
           filters:
@@ -771,18 +826,31 @@ workflows:
                 - /^merge-foundation.*/
       - sentinel-deb-build:
           requires:
-            - integration-test
+            - build
           filters:
             branches:
               ignore:
                 - /^merge-foundation.*/
+      - sentinel-image-single-arch:
+          requires:
+            - sentinel-deb-build
+          matrix:
+            parameters:
+              architecture: [linux/arm64]
+          filters:
+            branches:
+              only:
+                - develop
+                - /^master-.*/
+                - /^release-.*/
+                - /.*arm64.*/
       - create-merge-foundation-branch:
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
           requires:
-            - horizon-deb-build
+            - horizon-rpm-build
             - minion-deb-build
-            - sentinel-deb-build
+            - sentinel-rpm-build
             - integration-test
             - smoke-test-core
             - smoke-test-flaky
@@ -804,9 +872,9 @@ workflows:
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
           requires:
-            - horizon-deb-build
+            - horizon-rpm-build
             - minion-deb-build
-            - sentinel-deb-build
+            - sentinel-rpm-build
             - integration-test
             - smoke-test-core
             - smoke-test-flaky
@@ -820,7 +888,7 @@ workflows:
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
           requires:
-            - horizon-deb-build
+            - horizon-rpm-build
             - smoke-test-core
             - smoke-test-flaky
             - smoke-test-minion
@@ -835,9 +903,9 @@ workflows:
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
           requires:
-            - horizon-deb-build
+            - horizon-rpm-build
             - minion-deb-build
-            - sentinel-deb-build
+            - sentinel-rpm-build
             - integration-test
             - smoke-test-core
             - smoke-test-flaky
@@ -903,23 +971,22 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
-      - run:
-          name: multiarch/qemu-user-static
-          command: docker run --privileged multiarch/qemu-user-static --reset -p yes
-      - run:
-          name: Install Docker buildx
-          command: |
-            sudo wget https://github.com/docker/buildx/releases/download/v0.5.1/buildx-v0.5.1.linux-amd64 -O /usr/local/bin/docker-buildx
-            sudo chmod a+x /usr/local/bin/docker-buildx
-            sudo systemctl restart docker
+      - qemu-user-static
+      - install-buildx
       - dockerhub-login
       - acr-login
       - run:
           name: Assemble tarballs and related artifacts
           command: |
             export MAVEN_OPTS="-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
-            # general assembly
-            date
+            export MAVEN_ARGS="install"
+            export MAVEN_ARGS="install"
+            case "${CIRCLE_BRANCH}" in
+              "master"*|"release-"*|develop)
+                # release branches should enable extra "production" stuff like license indexing
+                MAVEN_ARGS="-Dbuild.type=production $MAVEN_ARGS"
+                ;;
+            esac
             ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
               -Daether.connector.resumeDownloads=false \
               -Daether.connector.basic.threads=1 \
@@ -929,7 +996,8 @@ jobs:
               -Pbuild-bamboo \
               -Prun-expensive-tasks \
               -Dopennms.home=/opt/opennms \
-              install --batch-mode
+              --batch-mode \
+              $MAVEN_ARGS
       - run:
           name: Build Minion OCI
           command: |
@@ -990,15 +1058,8 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
-      - run:
-          name: multiarch/qemu-user-static
-          command: docker run --privileged multiarch/qemu-user-static --reset -p yes
-      - run:
-          name: Install Docker buildx
-          command: |
-            sudo wget https://github.com/docker/buildx/releases/download/v0.5.1/buildx-v0.5.1.linux-amd64 -O /usr/local/bin/docker-buildx
-            sudo chmod a+x /usr/local/bin/docker-buildx
-            sudo systemctl restart docker
+      - qemu-user-static
+      - install-buildx
       - dockerhub-login
       - acr-login
       - run: *setup_dct_env
@@ -1011,6 +1072,7 @@ jobs:
             TAG="${MINION_IMAGE_VERSION}-${ARCH}"
             make DOCKER_ARCH="<< parameters.architecture >>" \
                  DOCKER_FLAGS=--load \
+                 DOCKER_IMAGE_NAME="minion-${ARCH}.oci" \
                  VERSION="${TAG}" \
                  BUILD_NUMBER="${CIRCLE_BUILD_NUM}" \
                  BUILD_URL="${CIRCLE_BUILD_URL}" \
@@ -1022,6 +1084,9 @@ jobs:
             docker trust key load $KEY_FOLDER/$AZURE_DCT_CI_KEY_ID.key
             docker push ${MINION_AZ_REPO}:${TAG}
             echo "pushed to AZ"
+      - store_artifacts:
+          path: ~/project/opennms-container/minion/images/minion-linux-arm64.oci
+          destination: minion-linux-arm64.oci
 
   minion-image-multi-arch:
     machine:
@@ -1116,25 +1181,13 @@ jobs:
           gnupg_home: ~/tmp/gpg
           gnupg_key: opennms@opennms.org
           packages: target/rpm/RPMS/noarch/*.rpm
-      - setup_remote_docker:
-          docker_layer_caching: true
-      - run:
-          name: Fetch RPM artifacts and build Horizon container image
-          command: |
-            cd opennms-container/horizon
-            ./build_container_image.sh
-      - store_artifacts:
-          path: ~/project/opennms-container/horizon/images/container.oci
-          destination: horizon.oci
       - store_artifacts:
           path: ~/project/target/rpm/RPMS/noarch
           destination: rpms
       - cache-workflow-assets:
           cache_prefix: rpm-horizon
           source_path: target/rpm/RPMS/noarch
-      - cache-oci:
-          key: horizon
-          path: opennms-container/horizon/images/
+
   minion-rpm-build:
     executor: centos-build-executor
     # Larger memory footprint required to speed up builds using Takari smartbuilder
@@ -1189,25 +1242,12 @@ jobs:
           gnupg_home: ~/tmp/gpg
           gnupg_key: opennms@opennms.org
           packages: target/rpm/RPMS/noarch/*.rpm
-      - setup_remote_docker:
-          docker_layer_caching: true
-      - run:
-          name: Fetch RPM artifacts and build Sentinel container image
-          command: |
-            cd opennms-container/sentinel
-            ./build_container_image.sh
-      - store_artifacts:
-          path: ~/project/opennms-container/sentinel/images/container.oci
-          destination: sentinel.oci
       - store_artifacts:
           path: ~/project/target/rpm/RPMS/noarch
           destination: rpms
       - cache-workflow-assets:
           cache_prefix: rpm-sentinel
           source_path: target/rpm/RPMS/noarch
-      - cache-oci:
-          key: sentinel
-          path: opennms-container/sentinel/images/
   horizon-deb-build:
     executor: debian-build-executor
     resource_class: xlarge
@@ -1244,6 +1284,13 @@ jobs:
             (free -m || :) > ~/build-results/system-logs/free 2>&1
             (docker stats --no-stream || :) > ~/build-results/system-logs/docker_stats 2>&1
             cp -R /tmp/jvmprocmon ~/build-results/system-logs/ || :
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: Fetch DEB artifacts and build horizon container image
+          command: |
+            cd opennms-container/horizon
+            env DOCKER_ARCH="linux/amd64" ./build_container_image.sh
       - store_artifacts:
           when: always
           path: ~/build-results
@@ -1251,9 +1298,15 @@ jobs:
       - store_artifacts:
           path: ~/project/target/debs
           destination: debs
+      - store_artifacts:
+          path: ~/project/opennms-container/horizon/images/container.oci
+          destination: horizon.oci
       - cache-workflow-assets:
           cache_prefix: deb-horizon
           source_path: target/debs
+      - cache-oci:
+          key: horizon
+          path: opennms-container/horizon/images/
   minion-deb-build:
     executor: debian-build-executor
     resource_class: xlarge
@@ -1304,12 +1357,53 @@ jobs:
           gnupg_home: ~/tmp/gpg
           gnupg_key: opennms@opennms.org
           packages: target/debs/*.deb
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: Fetch DEB artifacts and build sentinel container image
+          command: |
+            cd opennms-container/sentinel
+            env DOCKER_ARCH="linux/amd64" ./build_container_image.sh
       - store_artifacts:
           path: ~/project/target/debs
           destination: debs
+      - store_artifacts:
+          path: ~/project/opennms-container/sentinel/images/container.oci
+          destination: sentinel.oci
       - cache-workflow-assets:
           cache_prefix: deb-sentinel
           source_path: target/debs
+      - cache-oci:
+          key: sentinel
+          path: opennms-container/sentinel/images/
+
+  horizon-image-single-arch:
+    parameters:
+      architecture:
+        type: string
+    machine:
+      image: ubuntu-2004:202010-01
+    environment:
+      DOCKER_CLI_EXPERIMENTAL: enabled
+    steps:
+      - build-image-single-arch:
+          architecture: << parameters.architecture >>
+          cache_prefix: deb-horizon
+          container_name: horizon
+  sentinel-image-single-arch:
+    parameters:
+      architecture:
+        type: string
+    machine:
+      image: ubuntu-2004:202010-01
+    environment:
+      DOCKER_CLI_EXPERIMENTAL: enabled
+    steps:
+      - build-image-single-arch:
+          architecture: << parameters.architecture >>
+          cache_prefix: deb-sentinel
+          container_name: sentinel
+
   horizon-publish-oci:
     executor: centos-build-executor
     steps:

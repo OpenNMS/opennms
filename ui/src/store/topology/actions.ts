@@ -108,23 +108,27 @@ const setSemanticZoomLevel = (context: ContextWithState, SML: number) => {
 const getObjectDataByLevelAndFocus = async (context: ContextWithState) => {
   let resp: false | VerticesAndEdges
 
-  const SZLRequest: SZLRequest = {
-    semanticZoomLevel: context.state.semanticZoomLevel,
-    verticesInFocus: context.state.focusObjects.map((obj) => obj.id)
-  }
-
-  if (context.state.selectedDisplay !== PowerGrid) {
-    resp = await API.getNodesTopologyDataByLevelAndFocus(SZLRequest)
-  } else {
-    resp = await API.getPowerGridTopologyDataByLevelAndFocus(
-      context.state.container,
-      context.state.namespace,
-      SZLRequest
-    )
-  }
-
-  if (resp) {
-    parseVerticesAndEdges(resp, context)
+  try {
+    const SZLRequest: SZLRequest = {
+      semanticZoomLevel: context.state.semanticZoomLevel,
+      verticesInFocus: context.state.focusObjects.map((obj) => obj.id)
+    }
+  
+    if (context.state.selectedDisplay !== PowerGrid) {
+      resp = await API.getNodesTopologyDataByLevelAndFocus(SZLRequest)
+    } else {
+      resp = await API.getPowerGridTopologyDataByLevelAndFocus(
+        context.state.container,
+        context.state.namespace,
+        SZLRequest
+      )
+    }
+  
+    if (resp) {
+      parseVerticesAndEdges(resp, context)
+    }
+  } catch(err) {
+    // error handling
   }
 }
 
@@ -208,26 +212,31 @@ const setModalState = (context: VuexContext, bool: boolean) => context.commit('S
 const updateObjectFocusedProperty = (context: ContextWithState) => {
   const vertices = context.state.vertices
   const edges = context.state.edges
-  const focusedIds = context.state.focusObjects.map((obj) => obj.id)
+  
+  try {
+    const focusedIds = context.state.focusObjects.map((obj) => obj.id)
 
-  for (const vertex of Object.values(vertices)) {
-    if (focusedIds.includes(vertex.id)) {
-      vertex.focused = true
-    } else {
-      vertex.focused = false
+    for (const vertex of Object.values(vertices)) {
+      if (focusedIds.includes(vertex.id)) {
+        vertex.focused = true
+      } else {
+        vertex.focused = false
+      }
     }
-  }
 
-  for (const edge of Object.values(edges)) {
-    if (focusedIds.includes(edge.target) && focusedIds.includes(edge.source)) {
-      edge.focused = true
-    } else {
-      edge.focused = false
+    for (const edge of Object.values(edges)) {
+      if (focusedIds.includes(edge.target) && focusedIds.includes(edge.source)) {
+        edge.focused = true
+      } else {
+        edge.focused = false
+      }
     }
-  }
 
-  context.commit('SAVE_VERTICES', vertices)
-  context.commit('SAVE_EDGES', edges)
+    context.commit('SAVE_VERTICES', vertices)
+    context.commit('SAVE_EDGES', edges)
+  } catch(err) {
+    // error handling
+  }
 }
 
 // icon path prop

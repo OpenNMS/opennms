@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms.features.minion</groupId>
         <artifactId>core-parent</artifactId>
-        <version>30.0.0-SNAPSHOT</version>
+        <version>31.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>core-repository</artifactId>
@@ -28,7 +28,6 @@
                             <descriptors>
                                 <!-- Default repositories -->
                                 <descriptor>mvn:org.apache.karaf.features/standard/${karafVersion}/xml/features</descriptor>
-                                <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/spring</descriptor>
                                 <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/spring-legacy</descriptor>
                                 <!-- Add Minion features -->
                                 <descriptor>mvn:org.opennms.features.minion/core-features/${project.version}/xml</descriptor>
@@ -149,13 +148,6 @@
             <artifactId>opennms</artifactId>
             <version>${project.version}</version>
             <classifier>features</classifier>
-            <type>xml</type>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.karaf</groupId>
-            <artifactId>opennms</artifactId>
-            <version>${project.version}</version>
-            <classifier>spring</classifier>
             <type>xml</type>
         </dependency>
         <dependency>

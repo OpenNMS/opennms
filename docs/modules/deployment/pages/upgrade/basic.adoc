@@ -1,0 +1,38 @@
+
+[[upgrade-basic]]
+= Basic Upgrade Steps
+
+This procedure describes how to do a basic {page-component-title} upgrade.
+You may need to complete additional steps to upgrade in a more complex setup (running more than one OpenNMS instance, database migration requirements, and/or age of current version).
+
+IMPORTANT: Make sure you complete the tasks in the xref:deployment:upgrade/introduction.adoc#byb_upgrade[before you begin] section before starting.
+In addition, if xref:releasenotes:whatsnew.adoc[system requirements] in the new version require you to <<posgresql-upgrade, upgrade your PostgreSQL database>>, you must do this before the {page-component-title} upgrade.
+
+== Update and verify the {page-component-title} repository
+
+[{tabs}]
+====
+CentOS/RHEL::
++
+--
+include::rhel/up-rhel.adoc[]
+--
+
+ifeval::["{page-component-title}" == "Horizon"]
+Debian/Ubuntu::
++
+--
+include::debian/up-debian.adoc[]
+--
+
+endif::[]
+====
+
+
+[[posgresql-upgrade]]
+== PostgreSQL upgrade and configuration
+
+Refer to the https://www.postgresql.org/docs/[PostgreSQL documentation] for information on how to upgrade a PostgreSQL database.
+You may also find this https://opennms.discourse.group/t/upgrading-postgresql/772#upgrading-on-rhel-or-centos-using-pg_upgrade-6[Upgrading PostgreSQL] article on Discourse useful.
+
+You must stop the OpenNMS service while doing maintenance on database services.

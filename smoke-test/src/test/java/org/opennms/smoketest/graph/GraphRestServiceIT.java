@@ -158,10 +158,10 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                 .body("[1].graphs[0].description", Matchers.is("Displays the hierarchy of the defined Business Services and their computed operational states."))
 
                 .body("[2].id", Matchers.is("nodes"))
-                .body("[2].label", Matchers.is("Enhanced Linkd Topology Provider"))
+                .body("[2].label", Matchers.is("All"))
                 .body("[2].graphs.size()", Matchers.is(1))
                 .body("[2].graphs[0].namespace", Matchers.is("nodes"))
-                .body("[2].graphs[0].label", Matchers.is("Enhanced Linkd Topology Provider"))
+                .body("[2].graphs[0].label", Matchers.is("All"))
                 .body("[2].graphs[0].description", Matchers.is("This Topology Provider displays the topology information discovered by the Enhanced Linkd daemon. It uses the SNMP information of several protocols like OSPF, ISIS, LLDP and CDP to generate an overall topology."))
 
                 .body("[3].id", Matchers.is(CONTAINER_ID))

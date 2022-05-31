@@ -30,7 +30,6 @@ package org.opennms.features.deviceconfig.persistence;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -40,6 +39,7 @@ import org.opennms.features.deviceconfig.persistence.api.ConfigType;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfig;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigQueryResult;
+import org.opennms.features.deviceconfig.persistence.api.DeviceConfigStatus;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -54,7 +54,6 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -99,6 +98,7 @@ public class DeviceConfigDaoIT {
         deviceConfig.setLastUpdated(currentDate);
         deviceConfig.setCreatedTime(currentDate);
         deviceConfig.setLastSucceeded(currentDate);
+        deviceConfig.setStatus(DeviceConfigStatus.SUCCESS);
         deviceConfig.setConfigType(ConfigType.Default);
         deviceConfigDao.saveOrUpdate(deviceConfig);
 
@@ -112,6 +112,7 @@ public class DeviceConfigDaoIT {
         Assert.assertEquals(currentDate, deviceConfig.getCreatedTime());
         Assert.assertEquals(currentDate, deviceConfig.getLastUpdated());
         Assert.assertEquals(currentDate, deviceConfig.getLastSucceeded());
+        Assert.assertEquals(DeviceConfigStatus.SUCCESS, deviceConfig.getStatus());
         Assert.assertNull(deviceConfig.getLastFailed());
     }
 
@@ -119,7 +120,7 @@ public class DeviceConfigDaoIT {
     public void testFetchDeviceConfigSortedByDate() {
         populateIpInterface();
         final int count = 10;
-        populateDeviceConfigs(count, ipInterface);
+        populateDeviceConfigs(count, ipInterface, "DeviceConfig-default");
 
         List<DeviceConfig> deviceConfigList = deviceConfigDao.findAll();
         Assert.assertEquals(count, deviceConfigList.size());
@@ -156,9 +157,9 @@ public class DeviceConfigDaoIT {
     public void testGetLatestConfigOnEachInterface() {
         Set<OnmsIpInterface> ipInterfaces = populateIpInterfaces();
         int count = 10;
-        ipInterfaces.forEach(ipInterface -> populateDeviceConfigs(count, ipInterface));
+        ipInterfaces.forEach(ipInterface -> populateDeviceConfigs(count, ipInterface, "DeviceConfig-default"));
         List<DeviceConfigQueryResult> results = deviceConfigDao.getLatestConfigForEachInterface(null,
-                null, null, null, null);
+                null, null, null, null, null);
         Assert.assertThat(results, Matchers.hasSize(5));
         Iterator<OnmsIpInterface> iterator = ipInterfaces.iterator();
         Assert.assertArrayEquals(results.get(0).getConfig(),
@@ -168,37 +169,60 @@ public class DeviceConfigDaoIT {
 
         // Should give one result.
         results = deviceConfigDao.getLatestConfigForEachInterface(null,
-                null, null, null, InetAddressUtils.str(iterator.next().getIpAddress()));
+                null, null, null, InetAddressUtils.str(iterator.next().getIpAddress()), null);
         Assert.assertThat(results, Matchers.hasSize(1));
 
         // Should give no results.
         results = deviceConfigDao.getLatestConfigForEachInterface(null,
-                null, null, null, "192.168.32.254");
+                null, null, null, "192.168.32.254", null);
         Assert.assertThat(results, Matchers.hasSize(0));
 
         // Should give all 5 interfaces
         results = deviceConfigDao.getLatestConfigForEachInterface(null,
-                null, null, null, iterator.next().getNode().getLabel());
+                null, null, null, iterator.next().getNode().getLabel(), null);
         Assert.assertThat(results, Matchers.hasSize(5));
 
         ipInterfaces.forEach(this::populateFailedRetrievalDeviceConfig);
 
         results = deviceConfigDao.getLatestConfigForEachInterface(null,
-                null, null, null, iterator.next().getNode().getLabel());
+                null, null, null, iterator.next().getNode().getLabel(), null);
 
         Assert.assertThat(results.get(0).getFailureReason(), Matchers.notNullValue());
     }
 
-    private void populateDeviceConfigs(int count, OnmsIpInterface ipInterface) {
+    @Test
+    public void testDeviceConfigsWithoutServiceName() {
+        populateIpInterface();
+        int count = 1;
+        String serviceName = "DeviceConfig-running";
+        populateDeviceConfigs(count, ipInterface, null);
+        populateDeviceConfigs(count, ipInterface, serviceName);
+        Optional<DeviceConfig> deviceConfigOptional = deviceConfigDao.getLatestConfigForInterface(ipInterface, null);
+        Assert.assertFalse(deviceConfigOptional.isEmpty());
+        Assert.assertThat(deviceConfigOptional.get().getServiceName(), Matchers.nullValue());
+        deviceConfigOptional = deviceConfigDao.getLatestConfigForInterface(ipInterface, serviceName);
+        Assert.assertFalse(deviceConfigOptional.isEmpty());
+        Assert.assertThat(deviceConfigOptional.get().getServiceName(), Matchers.is(serviceName));
+    }
+    
+
+    private void populateDeviceConfigs(int count, OnmsIpInterface ipInterface, String serviceName) {
         for (int i = 0; i < count; i++) {
             DeviceConfig deviceConfig = new DeviceConfig();
             deviceConfig.setIpInterface(ipInterface);
-            deviceConfig.setServiceName("DeviceConfig-default");
+            deviceConfig.setServiceName(serviceName);
             deviceConfig.setConfig((ipInterface.getInterfaceId() + ":" + i).getBytes(Charset.defaultCharset()));
             deviceConfig.setEncoding(Charset.defaultCharset().name());
             deviceConfig.setCreatedTime(Date.from(Instant.now().plusSeconds(i * 60)));
-            deviceConfig.setConfigType(ConfigType.Default);
+            if (serviceName != null) {
+                String configType = serviceName.substring(serviceName.lastIndexOf("-") + 1);
+                deviceConfig.setConfigType(configType);
+            } else {
+                deviceConfig.setConfigType(ConfigType.Default);
+            }
             deviceConfig.setLastUpdated(Date.from(Instant.now().plusSeconds(i * 60)));
+            deviceConfig.setLastSucceeded(deviceConfig.getLastUpdated());
+            deviceConfig.setStatus(DeviceConfig.determineBackupStatus(deviceConfig));
             deviceConfigDao.saveOrUpdate(deviceConfig);
         }
     }
@@ -212,6 +236,7 @@ public class DeviceConfigDaoIT {
         deviceConfig.setLastUpdated(Date.from(Instant.now().plus(2, HOURS)));
         deviceConfig.setLastFailed(Date.from(Instant.now().plus(2, HOURS)));
         deviceConfig.setFailureReason("Not able to connect to SSHServer");
+        deviceConfig.setStatus(DeviceConfig.determineBackupStatus(deviceConfig));
         deviceConfigDao.saveOrUpdate(deviceConfig);
     }
 

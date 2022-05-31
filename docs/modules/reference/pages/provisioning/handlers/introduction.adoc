@@ -1,21 +1,32 @@
 
+//ui-provd: the contextual help from the external requisition screen links to this help, using the URL https://docs.opennms.com/horizon/latest/reference/provisioning/handlers/introduction.html. Ensure link in UI does not break if changing this section of docs.
+
 [[import-handlers]]
 = Import Handlers
 
-{page-component-title} supports a number of import handlers to facilitate xref:operation:provisioning/import-handler.adoc[provisioning] nodes from an external system (foreign source) into a requisition.
-This is done in the `$\{OPENNMS_HOME}/etc/provisiond-configuration.xml` file by referencing a requisition's location via a URL.
-Most commonly, these URLs are files on the file system (`file:$\{OPENNMS_HOME}/etc/imports/<my-requisition.xml>`) created through the Requisition UI.
-However, these same requisitions for adding, updating, and deleting nodes can also come from external URLs.
-For example, a requisition can be retrieved using the HTTP protocol.
+{page-component-title} supports import handlers to help provision nodes from an external system (foreign source) into a requisition.
+OpenNMS does this through external requisitions you specify in the External Requisitions and Thread Pools UI or configure via the xref:development:rest/config_management.adoc#config-rest-api[config management REST API].
 
-In addition to the standard protocols supported by Java, we provide a series of custom URL handlers to help retrieve requisitions from external sources.
+ifeval::["{page-component-title}" == "Horizon"]
+NOTE: Prior to {page-component-title} 30, you set external requisitions in the `provisiond-configuration.xml` file.
+This file is no longer available, and moved to the `/etc_archive` folder upon upgrade to {page-component-title} 30.
+Your existing configurations were also migrated and appear in the UI as existing external requisitions.
+endif::[]
+
+An external requisition enables periodic inventory synchronization from external sources.
+Each definition contains a URL, schedule, and setting to specify the nodes to rescan.
+
+Most commonly, these URLs are files on the file system (`file:$\{OPENNMS_HOME}/etc/imports/<my-requisition.xml>`), but they can also come from external URLs.
+For example, OpenNMS can use the HTTP protocol to retrieve inventory.
+
+In addition to the standard protocols Java supports, we provide a series of custom URL handlers to help retrieve requisitions from external sources.
 
 == Generic handler
 
-The generic handler is made available using URLs of the form: `requisition://type?param=1;param=2`
+The generic handler uses URLs in the form `requisition://type?param=1;param=2`
 
 Use these URLs to invoke handlers, both locally and via a Minion.
-In addition to the type-specific parameters, all handlers support the following parameters:
+In addition to type-specific parameters, all handlers support the following parameters:
 
 .Optional parameters
 [options="header, autowidth"]
@@ -41,47 +52,50 @@ Use the `opennms:show-import` command, available via the Karaf shell, to show th
 opennms:show-import -l MINION http url=http://127.0.0.1:8000/req.xml
 ----
 
-=== Configuration
+[[threadpools]]
+== Thread Pools
 
-The configuration of the Provisioning system allows the definition of zero or more import requisitions, each with its own cron-based schedule.
-This allows for automatic importing from various sources intended for integration with external URLs such as HTTP and/or DNS protocol handler.
-A default configuration is provided in the {page-component-title} `etc/` directory and is called: `provisiond-configuration.xml`.
-This default configuration has an example for scheduling an import from a DNS server running on the localhost requesting nodes from the zone, localhost and will be imported once per day at midnight.
-Not very practical, but is a good example to get you started.
+Thread pool sizes impact the performance of the provisioning subsystem.
+Larger systems may require larger values.
+To adjust them, follow these steps:
 
-[source, xml]
-----
-<?xml version="1.0" encoding="UTF-8"?>
-<provisiond-configuration xmlns="http://xmlns.opennms.org/xsd/config/provisiond-configuration"
+. Log in to {page-component-title} as an admin user.
+. Click the gear icon and click *Configure External Requisitions and Thread Pools*.
+. In the left menu, click *External Requisitions and Thread Pools*.
+. In the *Thread Pools* area, select a value from the drop-down list for each item you want to update.
+. Click *Update Thread Pools*.
 
-  foreign-source-dir="/opt/opennms/etc/foreign-sources"
-  requistion-dir="/opt/opennms/etc/imports"
+NOTE: You can also configure thread pool sizes via the xref:development:rest/config_management.adoc#config-rest-api[config management REST API].
 
-  importThreads="8" scanThreads="10" rescanThreads="10" writeThreads="8" >
+[[create-req-def]]
+== Create an external requisition
 
-  <!--
-    http://www.quartz-scheduler.org/documentation/quartz-1.x/tutorials/crontrigger
-        Field Name     Allowed Values      Allowed Special Characters
-        Seconds        0-59                , - * /
-        Minutes        0-59                , - * /
-        Hours          0-23                , - * /
-        Day-of-month   1-31                , - * ? / L W C
-        Month          1-12 or JAN-DEC     , - * /
-        Day-of-Week    1-7 or SUN-SAT      , - * ? / L C #
-        Year (Opt)     empty, 1970-2099    , - * /
-  -->
+An external requisition defines the URL, schedule, and rescan behaviour to retrieve provisioning information from external sources such as HTTP(S), VMWare, and DNS protocol, for up-to-date inventory data.
 
-  <requisition-def import-name="localhost" import-url-resource="dns://localhost/localhost">
-    <cron-schedule>0 0 0 * * ? *</cron-schedule>
-  </requisition-def>
-</provisiond-configuration>
-----
+OpenNMS constructs the URL from the parameters (host, zone, foreign source) associated with the type of external source the user defines.
 
-== Configuration reload
+The following example shows how to create an external requisition to schedule an import from a DNS server running on the localhost, requesting nodes from the "localhost" zone, "DNS-example" requisition name, and imported daily at midnight.
 
-It is possible to reload the provisiond configuration without having to restart {page-component-title} by triggering the reloadDaemonConfig UEI:
+NOTE: You can also create an external requisition via the xref:development:rest/config_management.adoc#config-rest-api[config management REST API].
 
-[source, console]
-----
-${OPENNMS_HOME}/bin/send-event.pl uei.opennms.org/internal/reloadDaemonConfig --parm 'daemonName Provisiond'
-----
+. Log in to {page-component-title} as an admin user.
+. Click the gear icon and click *Configure External Requisitions and Thread Pools*.
+. In the left menu, click *External Requisitions and Thread Pools*.
+. Click *Add External Requisition*.
+. Specify a name for the external requisition.
+. From the *Type* drop-down, choose *DNS*.
+. Type "localhost" in the *Host* field.
+. Type "localhost" as the *Zone* field.
+. Type "DNS-example" in the *Requsition Name* field.
+.. The URL "dns://localhost/localhost/DNS-example" appears at the bottom of the dialog.
+. Choose *Daily* for the schedule type and specify 12:00 a.m. for the time.
++
+NOTE: To create an advanced cron schedule, click the checkbox and add the appropriate information.
+
+. Specify how OpenNMS should perform subsequent scans:
+.. Scan all nodes
+.. Scan added nodes only
+.. No scanning
+
+. The optional *Advanced Options* section lets you specify key/value pairs.
+. Click *Save & Close*.

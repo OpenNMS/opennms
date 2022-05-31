@@ -28,6 +28,8 @@
 
 package org.opennms.features.deviceconfig.rest.impl;
 
+import static org.opennms.features.deviceconfig.service.DeviceConfigService.DEVICE_CONFIG_PREFIX;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -41,30 +43,33 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.xml.bind.DatatypeConverter;
 
-import com.google.common.base.Strings;
-import net.redhogs.cronparser.CronExpressionDescriptor;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.criteria.restrictions.Restriction;
+import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfig;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigQueryResult;
+import org.opennms.features.deviceconfig.persistence.api.DeviceConfigStatus;
 import org.opennms.features.deviceconfig.rest.BackupRequestDTO;
+import org.opennms.features.deviceconfig.rest.BackupResponseDTO;
 import org.opennms.features.deviceconfig.rest.api.DeviceConfigDTO;
 import org.opennms.features.deviceconfig.rest.api.DeviceConfigRestService;
+import org.opennms.features.deviceconfig.service.DeviceConfigConstants;
 import org.opennms.features.deviceconfig.service.DeviceConfigService;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -75,12 +80,13 @@ import org.quartz.TriggerBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+
+import net.redhogs.cronparser.CronExpressionDescriptor;
 
 public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultDeviceConfigRestService.class);
-    public static final String BACKUP_STATUS_SUCCESS = "success";
-    public static final String BACKUP_STATUS_FAILED = "failed";
     public static final String DEFAULT_ENCODING = StandardCharsets.UTF_8.name();
     public static final String BINARY_ENCODING = "binary";
 
@@ -135,7 +141,7 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
             String ipAddress,
             Integer ipInterfaceId,
             String configType,
-            String searchTerm,
+            Set<DeviceConfigStatus> statuses,
             Long createdAfter,
             Long createdBefore
     ) {
@@ -148,6 +154,7 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
             ipAddress,
             ipInterfaceId,
             configType,
+            statuses,
             createdAfter,
             createdBefore);
 
@@ -176,10 +183,11 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
         Integer offset,
         String orderBy,
         String order,
-        String searchTerm
+        String searchTerm,
+        Set<DeviceConfigStatus> statuses
     ) {
         List<DeviceConfigDTO> dtos =
-            this.deviceConfigDao.getLatestConfigForEachInterface(limit, offset, orderBy, order, searchTerm)
+            this.deviceConfigDao.getLatestConfigForEachInterface(limit, offset, orderBy, order, searchTerm, statuses)
                 .stream()
                 .map(this::createDeviceConfigDto)
                 .filter(Objects::nonNull)
@@ -187,7 +195,7 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
 
         final int totalCount =
             (limit != null || offset != null)
-            ? deviceConfigDao.getLatestConfigCountForEachInterface(searchTerm)
+            ? deviceConfigDao.getLatestConfigCountForEachInterface(searchTerm, statuses)
             : dtos.size();
 
         final long offsetForResponse = offset != null ? offset.longValue() : 0L;
@@ -197,7 +205,7 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
 
     /** {@inheritDoc} */
     @Override
-    public Response getDeviceConfigsByInterface(Integer ipInterfaceId) {
+    public Response getDeviceConfigsByInterface(Integer ipInterfaceId, String configType) {
         var criteria = getCriteria(
             null,
             null,
@@ -206,6 +214,7 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
             null,
             null,
             ipInterfaceId,
+            configType,
             null,
             null,
             null);
@@ -259,7 +268,7 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
         if (ids.size() == 1) {
             return downloadSingleDeviceConfig(ids.get(0));
         } else {
-            return downloadMultipleDeviceCofigs(ids);
+            return downloadMultipleDeviceConfigs(ids);
         }
     }
 
@@ -285,7 +294,7 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
             .entity(outputStream.toByteArray()).build();
     }
 
-    private Response downloadMultipleDeviceCofigs(List<Long> ids) {
+    private Response downloadMultipleDeviceConfigs(List<Long> ids) {
         final Map<String, byte[]> fileNameToDataMap = ids.stream()
             .map(deviceConfigDao::get)
             .filter(dc -> dc != null && dc.getConfig() != null && dc.getConfig().length > 0)
@@ -336,16 +345,26 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
     }
 
     private static ScheduleInfo getScheduleInfo(Date current, String schedulePattern) {
+        if (Strings.isNullOrEmpty(schedulePattern) || DeviceConfigConstants.NEVER.equalsIgnoreCase(schedulePattern)) {
+            return new ScheduleInfo(null, "Never");
+        }
+
         final String cronDescription;
         try {
             cronDescription = CronExpressionDescriptor.getDescription(schedulePattern);
         } catch (ParseException pe) {
-            return new ScheduleInfo(null, "unknown");
+            LOG.error("Invalid cron expression {}", schedulePattern, pe);
+            return new ScheduleInfo(null, "Invalid Schedule");
         }
 
-        final Date nextScheduledBackup = getNextRunDate(schedulePattern, current);
+        try {
+            final Date nextScheduledBackup = getNextRunDate(schedulePattern, current);
+            return new ScheduleInfo(nextScheduledBackup, cronDescription);
+        } catch (Exception e) {
+            LOG.error("Invalid cron expression {}", schedulePattern, e);
+            return new ScheduleInfo(null, "Invalid Schedule");
+        }
 
-        return new ScheduleInfo(nextScheduledBackup, cronDescription);
     }
 
     @Override
@@ -355,19 +374,34 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
             LOG.error(message);
             return Response.status(Response.Status.BAD_REQUEST).entity(message).build();
         }
+        List<BackupResponseDTO> backupResponses = new ArrayList<>();
 
         for (var requestDto : backupRequestDtoList) {
             try {
-                deviceConfigService.triggerConfigBackup(requestDto.getIpAddress(),
-                    requestDto.getLocation(), requestDto.getServiceName());
-            } catch (Exception e) {
+                if (requestDto.getBlocking()) {
+                    deviceConfigService.triggerConfigBackup(requestDto.getIpAddress(), requestDto.getLocation(), requestDto.getServiceName(), true).get();
+                } else {
+                    deviceConfigService.triggerConfigBackup(requestDto.getIpAddress(), requestDto.getLocation(), requestDto.getServiceName(), true);
+                }
+            } catch (IllegalArgumentException e) {
                 LOG.error("Unable to trigger config backup for {} at location {} with configType {}",
-                    requestDto.getIpAddress(), requestDto.getLocation(), requestDto.getServiceName());
-                return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+                        requestDto.getIpAddress(), requestDto.getLocation(), requestDto.getServiceName());
+                backupResponses.add(new BackupResponseDTO(Status.BAD_REQUEST.getStatusCode(), e.getMessage(), requestDto));
+            } catch (IOException | ExecutionException | InterruptedException e) {
+                LOG.error("Unable to trigger config backup for {} at location {} with configType {}",
+                        requestDto.getIpAddress(), requestDto.getLocation(), requestDto.getServiceName());
+                backupResponses.add(new BackupResponseDTO(Status.INTERNAL_SERVER_ERROR.getStatusCode(), e.getMessage(), requestDto));
             }
         }
+        if (backupResponses.isEmpty()) {
+            return Response.accepted().build();
+        } else if (backupRequestDtoList.size() == 1 && backupResponses.size() == 1) {
+            BackupResponseDTO singleResponse = backupResponses.get(0);
+            return Response.status(singleResponse.getStatus()).entity(singleResponse.getFailureMessage()).build();
+        }
+        // multi response with some failures.
+        return Response.status(207).entity(backupResponses).build();
 
-        return Response.accepted().build();
     }
 
     private Criteria getCriteria(
@@ -379,6 +413,7 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
         String ipAddress,
         Integer ipInterfaceId,
         String configType,
+        Set<DeviceConfigStatus> statuses,
         Long createdAfter,
         Long createdBefore
     ) {
@@ -422,6 +457,13 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
             criteriaBuilder.ilike("configType", configType);
         }
 
+        if (statuses != null && !statuses.isEmpty()) {
+            List<Restriction> restrictions = statuses.stream()
+                .map(status -> Restrictions.ilike("status", status.name())).collect(Collectors.toList());
+
+            criteriaBuilder.or(restrictions.stream().toArray(Restriction[]::new));
+        }
+
         if (createdAfter != null) {
             criteriaBuilder.ge("createdTime", new Date(createdAfter));
         }
@@ -442,26 +484,24 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
         final String encoding = pair.getLeft();
         final String config = pair.getRight();
 
-        var dto = new DeviceConfigDTO(
-            queryResult.getId(),
-            queryResult.getMonitoredServiceId(),
-            queryResult.getIpAddr(),
-            queryResult.getCreatedTime(),
-            queryResult.getLastUpdated(),
-            queryResult.getLastSucceeded(),
-            queryResult.getLastFailed(),
-            encoding,
-            queryResult.getConfigType(),
-            queryResult.getFilename(),
-            config,
-            queryResult.getFailureReason(),
-            queryResult.getServiceName()
-        );
+        var dto = new DeviceConfigDTO();
+        dto.setId(queryResult.getId());
+        dto.setServiceName(queryResult.getServiceName());
+        dto.setIpAddress(queryResult.getIpAddr());
+        dto.setLastBackupDate(queryResult.getCreatedTime());
+        dto.setLastUpdatedDate(queryResult.getLastUpdated());
+        dto.setLastSucceededDate(queryResult.getLastSucceeded());
+        dto.setLastFailedDate(queryResult.getLastFailed());
+        dto.setEncoding(encoding);
+        dto.setConfigType(queryResult.getConfigType());
+        dto.setConfigName(createConfigName(queryResult.getServiceName()));
+        dto.setFileName(queryResult.getFilename());
+        dto.setConfig(config);
+        dto.setFailureReason(queryResult.getFailureReason());
 
-        // determine backup status, not handling all cases for now
-        boolean backupSuccess = determineBackupSuccess(queryResult.getLastSucceeded(), queryResult.getLastUpdated());
-        dto.setIsSuccessfulBackup(backupSuccess);
-        dto.setBackupStatus(backupSuccess ? BACKUP_STATUS_SUCCESS : BACKUP_STATUS_FAILED);
+        DeviceConfigStatus backupStatus = DeviceConfig.determineBackupStatus(queryResult.getLastUpdated(), queryResult.getLastSucceeded());
+        dto.setIsSuccessfulBackup(backupStatus.equals(DeviceConfigStatus.SUCCESS));
+        dto.setBackupStatus(backupStatus.name().toLowerCase(Locale.ROOT));
 
         dto.setIpInterfaceId(queryResult.getIpInterfaceId());
         dto.setNodeId(queryResult.getNodeId());
@@ -480,26 +520,24 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
         final String encoding = pair.getLeft();
         final String config = pair.getRight();
 
-        var dto = new DeviceConfigDTO(
-            deviceConfig.getId(),
-            deviceConfig.getIpInterface().getId(),
-            InetAddressUtils.str(deviceConfig.getIpInterface().getIpAddress()),
-            deviceConfig.getCreatedTime(),
-            deviceConfig.getLastUpdated(),
-            deviceConfig.getLastSucceeded(),
-            deviceConfig.getLastFailed(),
-            encoding,
-            deviceConfig.getConfigType(),
-            deviceConfig.getFileName(),
-            config,
-            deviceConfig.getFailureReason(),
-            deviceConfig.getServiceName()
-        );
+        var dto = new DeviceConfigDTO();
+        dto.setId(deviceConfig.getId());
+        dto.setServiceName(deviceConfig.getServiceName());
+        dto.setIpAddress(InetAddressUtils.str(deviceConfig.getIpInterface().getIpAddress()));
+        dto.setLastBackupDate(deviceConfig.getCreatedTime());
+        dto.setLastUpdatedDate(deviceConfig.getLastUpdated());
+        dto.setLastSucceededDate(deviceConfig.getLastSucceeded());
+        dto.setLastFailedDate(deviceConfig.getLastFailed());
+        dto.setEncoding(encoding);
+        dto.setConfigType(deviceConfig.getConfigType());
+        dto.setConfigName(createConfigName(deviceConfig.getServiceName()));
+        dto.setFileName(deviceConfig.getFileName());
+        dto.setConfig(config);
+        dto.setFailureReason(deviceConfig.getFailureReason());
 
-        // determine backup status, not handling all cases for now
-        boolean backupSuccess = determineBackupSuccess(deviceConfig.getLastSucceeded(), deviceConfig.getLastUpdated());
-        dto.setIsSuccessfulBackup(backupSuccess);
-        dto.setBackupStatus(backupSuccess ? BACKUP_STATUS_SUCCESS : BACKUP_STATUS_FAILED);
+        DeviceConfigStatus backupStatus = DeviceConfig.determineBackupStatus(deviceConfig);
+        dto.setIsSuccessfulBackup(backupStatus.equals(DeviceConfigStatus.SUCCESS));
+        dto.setBackupStatus(backupStatus.name().toLowerCase(Locale.ROOT));
 
         final OnmsIpInterface ipInterface = deviceConfig.getIpInterface();
         final OnmsNode node = ipInterface.getNode();
@@ -529,6 +567,7 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
         // Calculate next scheduled date over all services
         schedules.values().stream()
             .map(ScheduleInfo::getNextScheduledBackup)
+            .filter(v -> v != null)
             .min(Date::compareTo)
             .ifPresent(dto::setNextScheduledBackupDate);
     }
@@ -572,22 +611,31 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
             ? Charset.forName(encoding) : Charset.defaultCharset();
     }
 
-    /**
-     * Currently, backup status is {@link BACKUP_STATUS_SUCCESS} if a backup config exists
-     * for this device and there have been no failures since last backup,
-     * otherwise status is {@link BACKUP_STATUS_FAILED}.
-     */
-    private static boolean determineBackupSuccess(Date lastSucceeded, Date lastUpdated) {
-        return
-            lastSucceeded != null &&
-            lastSucceeded.getTime() >= lastUpdated.getTime();
-    }
-
     private static String createDownloadFileName(DeviceConfig dc) {
         OnmsIpInterface ipInterface = dc.getIpInterface();
         String ipAddress = InetAddressUtils.str(ipInterface.getIpAddress());
         String deviceName = ipInterface.getNode().getLabel();
 
         return createDownloadFileName(deviceName, ipAddress, dc.getConfigType(), dc.getCreatedTime());
+    }
+
+    /** Convert a service name to a "friendly" configuration name. */
+    private static String createConfigName(String serviceName) {
+        if (Strings.isNullOrEmpty(serviceName) || !serviceName.startsWith(DEVICE_CONFIG_PREFIX)) {
+            return serviceName;
+        }
+
+        int index = serviceName.indexOf('-');
+        String suffix = index >= 0 ? serviceName.substring(index + 1) : "";
+
+        if (index < 0 || suffix.toLowerCase(Locale.ROOT).equals("default")) {
+            // "DeviceConfig" or "DeviceConfig-default"
+            return "Startup Configuration";
+        } else {
+            String name = Arrays.stream(suffix.split("-"))
+                .map(StringUtils::capitalize).collect(Collectors.joining(" "));
+
+            return name + " Configuration";
+        }
     }
 }

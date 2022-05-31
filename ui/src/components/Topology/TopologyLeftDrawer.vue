@@ -5,7 +5,6 @@
     :modelValue="isOpen"
     @update:modelValue="closeDrawer"
     :labels="{ close: 'close', title: 'View and Search' }"
-    width="20em"
   >
     <div class="container">
       <slot name="search"></slot>
@@ -14,7 +13,10 @@
   </FeatherDrawer>
 </template>
 
-<script setup lang="ts">
+<script
+  setup
+  lang="ts"
+>
 import { useStore } from 'vuex'
 import { FeatherDrawer } from '@featherds/drawer'
 
@@ -41,18 +43,27 @@ onMounted(() => {
 </script>
 
 <style lang="scss">
+@import "@featherds/styles/themes/variables";
+
 #map-left-drawer {
   .container {
-    padding: 20px;
+    padding: 20px 50px 20px 20px;
     .search-bar {
       width: 15rem;
     }
   }
   .content {
     height: auto;
+    top: unset;
+    left: unset;
   }
   .greyedOut {
     display: none;
   }
 }
+
+body > .feather-menu-dropdown {
+    z-index: calc(var(--feather-zindex-modal) + 1) !important; // to have the list diplayed above search content element
+  }
 </style>
+

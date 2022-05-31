@@ -195,7 +195,7 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
             assertTrue(this.cm.getJSONConfiguration(SCHEMA_NAME_EVENTD, DEFAULT_CONFIG_ID).isPresent());
 
             // check if CM was called for schema
-            verify(cmSpy, times(6)).changeConfigDefinition(anyString(), any(ConfigDefinition.class));
+            verify(cmSpy, times(5)).changeConfigDefinition(anyString(), any(ConfigDefinition.class));
 
             // check if xml file was moved into archive folder
             assertFalse(Files.exists(Path.of(this.opennmsHome + "/etc/" + SCHEMA_NAME_EVENTD + "-configuration.xml"))); // should be gone since we moved the file

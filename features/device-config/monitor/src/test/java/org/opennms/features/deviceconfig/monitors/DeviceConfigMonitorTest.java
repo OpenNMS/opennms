@@ -90,7 +90,7 @@ public class DeviceConfigMonitorTest {
         var config = new byte[] {1, 2, 3};
         var filename = "filename";
 
-        when(retriever.retrieveConfig(any(), any(), any(), any(), any(), anyInt(), any(), any(), any())).thenReturn(
+        when(retriever.retrieveConfig(any(), any(), any(), any(), any(), any(), any(), any(), any())).thenReturn(
                 CompletableFuture.completedFuture(Either.right(new Retriever.Success(config, filename)))
         );
 
@@ -110,7 +110,7 @@ public class DeviceConfigMonitorTest {
 
         var retrievalFailure = "retrieval failure";
 
-        when(retriever.retrieveConfig(any(), any(), any(), any(), any(), anyInt(), any(), any(), any())).thenReturn(
+        when(retriever.retrieveConfig(any(), any(), any(), any(), any(), any(), any(), any(), any())).thenReturn(
                 CompletableFuture.completedFuture(Either.left(new Retriever.Failure(retrievalFailure)))
         );
 
@@ -150,12 +150,54 @@ public class DeviceConfigMonitorTest {
         assertThat(doesItRun(params), is(false));
     }
 
+    @Test
+    public void testNeverSchedule() {
+        final Map<String, Object> params = new HashMap<>(this.params);
+        params.put(DeviceConfigConstants.SCHEDULE, "never");
+
+        params.put(DeviceConfigMonitor.LAST_RETRIEVAL, String.valueOf(Instant.now().minus(6, ChronoUnit.MINUTES).toEpochMilli()));
+
+        final DeviceConfigMonitor deviceConfigMonitor = new DeviceConfigMonitor();
+        final Retriever retriever = mock(Retriever.class);
+
+        deviceConfigMonitor.setRetriever(retriever);
+        when(retriever.retrieveConfig(any(), any(), any(), any(), any(), any(), any(), any(), any())).thenReturn(
+                CompletableFuture.completedFuture(Either.left(new Retriever.Failure("didRun")))
+        );
+
+        PollStatus pollStatus = deviceConfigMonitor.poll(svc, params);
+
+        assertThat(pollStatus.getStatusCode(), is(PollStatus.SERVICE_UNKNOWN));
+        assertThat(pollStatus.getReason(), is("Not scheduled"));
+    }
+
+    @Test
+    public void testTriggerNeverSchedule() {
+        final Map<String, Object> params = new HashMap<>(this.params);
+        params.put(DeviceConfigConstants.SCHEDULE, "never");
+
+        params.put(DeviceConfigMonitor.LAST_RETRIEVAL, String.valueOf(Instant.now().minus(6, ChronoUnit.MINUTES).toEpochMilli()));
+        params.put(DeviceConfigConstants.TRIGGERED_POLL, "true");
+
+        final DeviceConfigMonitor deviceConfigMonitor = new DeviceConfigMonitor();
+        final Retriever retriever = mock(Retriever.class);
+
+        deviceConfigMonitor.setRetriever(retriever);
+        when(retriever.retrieveConfig(any(), any(), any(), any(), any(), any(), any(), any(), any())).thenReturn(
+                CompletableFuture.completedFuture(Either.left(new Retriever.Failure("didRun")))
+        );
+
+        PollStatus pollStatus = deviceConfigMonitor.poll(svc, params);
+
+        assertThat(pollStatus.getStatusCode() != PollStatus.SERVICE_UNKNOWN, is(true));
+    }
+
     public boolean doesItRun(final Map<String, Object> params) {
         final DeviceConfigMonitor deviceConfigMonitor = new DeviceConfigMonitor();
         final Retriever retriever = mock(Retriever.class);
 
         deviceConfigMonitor.setRetriever(retriever);
-        when(retriever.retrieveConfig(any(), any(), any(), any(), any(), anyInt(), any(), any(), any())).thenReturn(
+        when(retriever.retrieveConfig(any(), any(), any(), any(), any(), any(), any(), any(), any())).thenReturn(
                 CompletableFuture.completedFuture(Either.left(new Retriever.Failure("didRun")))
         );
 
@@ -169,7 +211,7 @@ public class DeviceConfigMonitorTest {
         var deviceConfigMonitor = new DeviceConfigMonitor();
         deviceConfigMonitor.setRetriever(retriever);
 
-        when(retriever.retrieveConfig(any(), any(), any(), any(), any(), anyInt(), any(), any(), any())).thenReturn(
+        when(retriever.retrieveConfig(any(), any(), any(), any(), any(), any(), any(), any(), any())).thenReturn(
                 new CompletableFuture()
         );
 

@@ -11,4 +11,6 @@ This section describes additional administrative tasks you may want to perform o
 * xref:admin/http-ssl.adoc[HTTPS/SSL configuration]
 * xref:admin/request-logging.adoc[request logging]
 * xref:admin/restart.adoc[shutdown and restart]
+* xref:admin/logging/log-file-viewer.adoc[view log files]
 * xref:admin/housekeeping/introduction.adoc[housekeeping tasks]
+* xref:admin/webui/ui-preview.adoc[UI Preview]

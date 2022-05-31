@@ -19,7 +19,7 @@
   </div>
 </template>
   
-<script setup lang=ts>
+<script setup lang="ts">
 import { StartEndTime } from '@/types'
 import { PropType } from 'vue'
 import Graph from './Graph.vue'

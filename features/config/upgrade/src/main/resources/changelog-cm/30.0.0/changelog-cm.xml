@@ -25,8 +25,4 @@
         </cm:changeSchema>
         <cm:importConfig schemaId="org.opennms.features.datachoices" filePath="org.opennms.features.datachoices.cfg"/>
     </changeSet>
-
-    <changeSet author="freddy" id="add-cron-schedule-pattern">
-        <cm:importSchemaFromXsd id="provisiond" xsdFileName="provisiond-configuration-v2.xsd" xsdFileHash="a550cb4391aeb8a658ac1f9a4c09bbda7b34728df62024b192eaf14a39120fb4" rootElement="provisiond-configuration"/>
-    </changeSet>
 </databaseChangeLog>

@@ -29,16 +29,19 @@
 package org.opennms.features.deviceconfig.service.impl;
 
 import static org.opennms.netmgt.poller.support.AbstractServiceMonitor.getKeyedString;
+import static org.opennms.features.deviceconfig.service.DeviceConfigService.DEVICE_CONFIG_PREFIX;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import com.google.common.base.Strings;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.deviceconfig.persistence.api.ConfigType;
 import org.opennms.features.deviceconfig.service.DeviceConfigConstants;
@@ -48,6 +51,7 @@ import org.opennms.netmgt.config.ReadOnlyPollerConfigManager;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.poller.DeviceConfig;
 import org.opennms.netmgt.poller.LocationAwarePollerClient;
@@ -83,7 +87,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     private PollerConfig pollerConfig;
 
     @Override
-    public void triggerConfigBackup(String ipAddress, String location, String service) throws IOException {
+    public CompletableFuture<Boolean> triggerConfigBackup(String ipAddress, String location, String service, boolean persist) throws IOException {
         try {
             InetAddress.getByName(ipAddress);
         } catch (UnknownHostException e) {
@@ -91,20 +95,31 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
             throw new IllegalArgumentException("Unknown/Invalid IpAddress " + ipAddress);
         }
 
-        CompletableFuture<PollerResponse> future = pollDeviceConfig(ipAddress, location, service);
-        future.whenComplete(((pollerResponse, throwable) -> {
-            if (throwable != null) {
-                LOG.info("Error while manually triggering config backup for IpAddress {} at location {} for service {}",
-                         ipAddress, location, service, throwable);
-            }
-        }));
+        return pollDeviceConfig(ipAddress, location, service, persist)
+                .thenApply(response -> {
+                    if (response.getPollStatus().isAvailable()) {
+                        return true;
+                    } else {
+                        throw new RuntimeException("Requesting backup failed: " + response.getPollStatus().getReason());
+                    }
+                }).whenComplete((Boolean, throwable) -> {
+                    if (throwable != null) {
+                        LOG.error("Error while getting device config for IpAddress {} at location {}", ipAddress, location, throwable);
+                    }
+                });
     }
 
     @Override
-    public CompletableFuture<DeviceConfig> getDeviceConfig(String ipAddress, String location, String service, int timeout) throws IOException {
-        return pollDeviceConfig(ipAddress, location, service)
+    public CompletableFuture<DeviceConfig> getDeviceConfig(String ipAddress, String location, String service, boolean persist, int timeout) throws IOException {
+        return pollDeviceConfig(ipAddress, location, service, persist)
                 .orTimeout(timeout, TimeUnit.MILLISECONDS)
-                .thenApply(resp -> resp.getPollStatus().getDeviceConfig())
+                .thenApply(resp -> {
+                    if (resp.getPollStatus().isAvailable()) {
+                        return resp.getPollStatus().getDeviceConfig();
+                    } else {
+                        throw new RuntimeException("Requesting backup failed: " + resp.getPollStatus().getReason());
+                    }
+                })
                 .whenComplete((config, throwable) -> {
                     if (throwable != null) {
                         LOG.error("Error while getting device config for IpAddress {} at location {}", ipAddress, location, throwable);
@@ -113,8 +128,8 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     }
 
     @Override
-    public List<RetrievalDefinition> getRetrievalDefinitions(final String ipAddress, final String location)  {
-        final var iface = this.ipInterfaceDao.findByIpAddressAndLocation(ipAddress, location);
+    public List<RetrievalDefinition> getRetrievalDefinitions(final String ipAddress, final String location) {
+        final var iface = findMatchingInterface(ipAddress, location, null);
         PollerConfig pollerConfig;
         try {
             pollerConfig = this.getPollerConfig();
@@ -143,14 +158,14 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
                     final var serviceName = match.serviceName;
 
                     final var pollerParameters = locationAwarePollerClient.poll()
-                                                                          .withService(new SimpleMonitoredService(InetAddressUtils.addr(ipAddress),
-                                                                                                                  iface.getNode().getId(),
-                                                                                                                  iface.getNode().getLabel(),
-                                                                                                                  match.serviceName,
-                                                                                                                  location))
-                                                                          .withAttributes(match.service.getParameterMap())
-                                                                          .withPatternVariables(match.patternVariables)
-                                                                          .getInterpolatedAttributes();
+                            .withService(new SimpleMonitoredService(InetAddressUtils.addr(ipAddress),
+                                    iface.getNode().getId(),
+                                    iface.getNode().getLabel(),
+                                    match.serviceName,
+                                    location))
+                            .withAttributes(match.service.getParameterMap())
+                            .withPatternVariables(match.patternVariables)
+                            .getInterpolatedAttributes();
 
                     return new RetrievalDefinition() {
                         @Override
@@ -173,36 +188,75 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
                 .collect(Collectors.toList());
     }
 
-    private CompletableFuture<PollerResponse> pollDeviceConfig(String ipAddress, String location, String serviceName) throws IOException {
+    private CompletableFuture<PollerResponse> pollDeviceConfig(String ipAddress, String location, String serviceName, boolean persist) throws IOException {
         final var match = getPollerConfig().findService(ipAddress, serviceName)
                 .orElseThrow(IllegalArgumentException::new);
 
         final var monitor = getPollerConfig().getServiceMonitor(match.service.getName());
 
-        MonitoredService service = sessionUtils.withReadOnlyTransaction(() -> {
-            OnmsIpInterface ipInterface = ipInterfaceDao.findByIpAddressAndLocation(ipAddress, location);
+        final AbstractMap.SimpleImmutableEntry<Boolean, MonitoredService> boundServicePair = sessionUtils.withReadOnlyTransaction(() -> {
+            final OnmsIpInterface ipInterface = findMatchingInterface(ipAddress, location, serviceName);
             if (ipInterface == null) {
                 return null;
             }
-            OnmsNode node = ipInterface.getNode();
 
-            return new SimpleMonitoredService(ipInterface.getIpAddress(), node.getId(), node.getLabel(), match.serviceName, location);
+            final boolean bound = ipInterface.getMonitoredServices().stream()
+                    .map(OnmsMonitoredService::getServiceName).anyMatch(s -> serviceName.equals(s));
+
+            final OnmsNode node = ipInterface.getNode();
+
+            return new AbstractMap.SimpleImmutableEntry<>(bound, new SimpleMonitoredService(ipInterface.getIpAddress(), node.getId(), node.getLabel(), match.serviceName, location));
         });
 
-        if (service == null) {
+        if (boundServicePair == null) {
             throw new IllegalArgumentException("No interface found with ipAddress " + ipAddress + " at location " + location);
         }
 
+        final Boolean serviceBound = boundServicePair.getKey();
+        final MonitoredService service = boundServicePair.getValue();
+
+        if (!serviceBound) {
+            throw new IllegalArgumentException("Service " + serviceName + " not bound to interface with ipAddress " + ipAddress + " at location " + location);
+        }
+
         // All the service parameters should be loaded from metadata in PollerRequestBuilderImpl
-        // Persistence will be performed in DeviceConfigMonitorAdaptor.
-        return locationAwarePollerClient.poll()
-                .withService(service)
-                .withAdaptor(serviceMonitorAdaptor)
-                .withMonitor(monitor)
-                .withPatternVariables(match.patternVariables)
-                .withAttributes(match.service.getParameterMap())
-                .withAttribute(DeviceConfigConstants.TRIGGERED_POLL, "true")
-                .execute();
+        if (persist) {
+            // Persistence will be performed in DeviceConfigMonitorAdaptor.
+            return locationAwarePollerClient.poll()
+                    .withService(service)
+                    .withAdaptor(serviceMonitorAdaptor)
+                    .withMonitor(monitor)
+                    .withPatternVariables(match.patternVariables)
+                    .withAttributes(match.service.getParameterMap())
+                    .withAttribute(DeviceConfigConstants.TRIGGERED_POLL, "true")
+                    .execute();
+        } else {
+            // No persistence of config.
+            return locationAwarePollerClient.poll()
+                    .withService(service)
+                    .withMonitor(monitor)
+                    .withPatternVariables(match.patternVariables)
+                    .withAttributes(match.service.getParameterMap())
+                    .withAttribute(DeviceConfigConstants.TRIGGERED_POLL, "true")
+                    .execute();
+        }
+    }
+
+    private OnmsIpInterface findMatchingInterface(final String ipAddress, final String location, String serviceName) {
+        var ipInterfaces = this.ipInterfaceDao.findByIpAddressAndLocation(ipAddress, location);
+        OnmsIpInterface iface = ipInterfaces.size() > 0 ? ipInterfaces.get(0) : null;
+        if (ipInterfaces.size() > 1) {
+            var optionalInterface = ipInterfaces
+                    .stream().filter(ipInterface ->
+                            ipInterface.getMonitoredServices().stream().anyMatch(monitoredService -> {
+                                if (Strings.isNullOrEmpty(serviceName)) {
+                                    return monitoredService.getServiceName().startsWith(DEVICE_CONFIG_PREFIX);
+                                }
+                                return monitoredService.getServiceName().equals(serviceName);
+                            })).findFirst();
+            iface = optionalInterface.orElseGet(() -> ipInterfaces.stream().findFirst().orElse(null));
+        }
+        return iface;
     }
 
     public void setLocationAwarePollerClient(LocationAwarePollerClient locationAwarePollerClient) {

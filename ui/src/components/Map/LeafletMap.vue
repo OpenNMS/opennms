@@ -36,13 +36,20 @@
           >
             <LPopup>
               Node:
-              <router-link :to="`/node/${node.id}`" target="_blank">{{ node.label }}</router-link>
+              <router-link
+                :to="`/node/${node.id}`"
+                target="_blank"
+                >{{ node.label }}</router-link
+              >
               <br />
               Severity: {{ nodeLabelAlarmServerityMap[node.label] || 'NORMAL' }}
               <br />
               Category: {{ node.categories.length ? node.categories[0].name : 'N/A' }}
             </LPopup>
-            <LIcon :icon-url="setIcon(node)" :icon-size="iconSize" />
+            <LIcon
+              :icon-url="setIcon(node)"
+              :icon-size="iconSize"
+            />
           </LMarker>
           <LPolyline
             v-for="coordinatePair of computedEdges"
@@ -55,7 +62,10 @@
     </LMap>
   </div>
 </template>
-<script setup lang ="ts">
+<script
+  setup
+  lang="ts"
+>
 import 'leaflet/dist/leaflet.css'
 import {
   LMap,
@@ -64,7 +74,7 @@ import {
   LIcon,
   LPopup,
   LControlLayers,
-  LPolyline,
+  LPolyline
 } from '@vue-leaflet/vue-leaflet'
 import MarkerCluster from './MarkerCluster.vue'
 import { useStore } from 'vuex'
@@ -170,7 +180,7 @@ const computeEdges = () => {
   const edgeCoordinatesPairs:number[][][] = []
 
   for (const edge of Object.values(edges)) {
-    // attempt to get nodes cluster 
+    // attempt to get nodes cluster
     let sourceCoord = nodeClusterCoords.value[edge.source]
     let targetCoord = nodeClusterCoords.value[edge.target]
 
@@ -247,7 +257,11 @@ const setBoundingBox = (nodeLabels: string[]) => {
   }
 }
 
-const invalidateSizeFn = () => leafletObject.value.invalidateSize()
+const invalidateSizeFn = () => {
+  if(!leafletReady.value) return
+
+  return leafletObject.value.invalidateSize()
+}
 
 /*****Tile Layer*****/
 const tileProviders = [
@@ -256,21 +270,26 @@ const tileProviders = [
     visible: true,
     attribution:
       '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-    url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
   },
   {
     name: 'OpenTopoMap',
     visible: false,
     url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
     attribution:
-      'Map data: &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)',
-  },
+      'Map data: &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+  }
 ]
 
 defineExpose({ invalidateSizeFn, setBoundingBox, flyToNode })
 </script>
 
 <style scoped>
+.search-bar {
+  position: absolute;
+  margin-left: 10px;
+  margin-top: 10px;
+}
 .geo-map {
   height: 100%;
 }
@@ -313,3 +332,4 @@ defineExpose({ invalidateSizeFn, setBoundingBox, flyToNode })
   }
 }
 </style>
+

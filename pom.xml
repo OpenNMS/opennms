@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>opennms</artifactId>
-  <version>30.0.0-SNAPSHOT</version>
+  <version>31.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>OpenNMS</name>
   <url>http://opennms.org/</url>
@@ -164,7 +164,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>license-maven-plugin</artifactId>
-        <version>2.0.0</version>
+        <version>2.0.0.ONMS.1</version>
         <inherited>true</inherited>
 <!--        <executions>
           <execution>
@@ -619,7 +619,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.10.4</version>
+        <version>3.4.0</version>
         <configuration>
           <maxmemory>3g</maxmemory>
           <additionalparam>-Xdoclint:none</additionalparam>
@@ -719,7 +719,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jarsigner-plugin</artifactId>
-        <version>1.2</version>
+        <version>3.0.0</version>
         <configuration>
           <keystore>${webstart.keystore}</keystore>
           <keypass>${webstart.keypass}</keypass>
@@ -784,27 +784,6 @@
             </manifest>
           </archive>
         </configuration>
-      </plugin>
-      <!-- Make sure that this version of gmaven roughly matches the version of groovy that we depend on -->
-      <plugin>
-        <groupId>org.codehaus.gmaven</groupId>
-        <artifactId>gmaven-plugin</artifactId>
-        <version>1.4</version>
-        <configuration>
-          <providerSelection>1.8</providerSelection>
-        </configuration>
-        <dependencies>
-          <dependency>
-            <groupId>org.codehaus.gmaven.runtime</groupId>
-            <artifactId>gmaven-runtime-1.8</artifactId>
-            <version>1.4</version>
-          </dependency>
-          <dependency>
-            <groupId>org.codehaus.groovy</groupId>
-            <artifactId>groovy-all</artifactId>
-            <version>${groovyVersion}</version>
-          </dependency>
-        </dependencies>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -1186,6 +1165,10 @@
                    <exclude>com.sun.xml.bind.mvn:*</exclude>
                    <exclude>org.glassfish.jaxb:jaxb-core</exclude>
 
+                   <!-- use org.opennms.dependencies:org.opennms.dependencies.spring-beans-XX-shaded for CVE-2022-22965 -->
+                   <exclude>org.springframework:spring-beans</exclude>
+                   <exclude>org.apache.servicemix.bundles:org.apache.servicemix.bundles.spring-beans</exclude>
+
                  </excludes>
                </bannedDependencies>
              </rules>
@@ -1319,7 +1302,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
-        <version>3.0.1</version>
+        <version>3.2.1</version>
         <executions>
           <execution>
             <goals>
@@ -1572,7 +1555,7 @@
 
     <maven.eclipse.plugin.version>2.10</maven.eclipse.plugin.version>
     <maven.pax.plugin.version>1.5</maven.pax.plugin.version>
-    <maven.shade.plugin.version>3.2.4</maven.shade.plugin.version>
+    <maven.shade.plugin.version>3.3.0</maven.shade.plugin.version>
     <antlr.version>2.7.7</antlr.version>
     <sass.maven.plugin.version>1.1.2-ONMS-20131018-1</sass.maven.plugin.version>
 
@@ -1599,8 +1582,7 @@
     <install.version>${project.version}</install.version>
     <display.version>${install.version}</display.version>
     <opennms.home>${dist.dir}/${dist.name}</opennms.home>
-    <opennms.osgi.version>30.0.0.SNAPSHOT</opennms.osgi.version>
-    <maven.metadata.legacy>true</maven.metadata.legacy>
+    <opennms.osgi.version>31.0.0.SNAPSHOT</opennms.osgi.version>
     <root.dir>${project.basedir}</root.dir>
     <dist.dir>${root.dir}/target</dist.dir>
     <dist.name>opennms-${project.version}</dist.name>
@@ -1706,14 +1688,14 @@
     <cronParserCoreVersion>3.5</cronParserCoreVersion>
     <c3p0Version>0.9.5.4</c3p0Version>
     <curatorVersion>3.2.1</curatorVersion>
-    <cxfVersion>3.4.5</cxfVersion>
+    <cxfVersion>3.5.1</cxfVersion>
     <cxfServiceDescriptionOpenapiVersion>3.2.4</cxfServiceDescriptionOpenapiVersion>
     <cxfXjcVersion>3.3.0</cxfXjcVersion>
     <dhcp4javaVersion>1.1.0</dhcp4javaVersion>
     <dnsjavaVersion>2.1.9_1</dnsjavaVersion>
     <dropwizardMetricsVersion>3.1.2</dropwizardMetricsVersion>
     <ecjVersion>4.4.2</ecjVersion>
-    <eclipseGeminiVersion>2.0.0.RELEASE</eclipseGeminiVersion>
+    <eclipseGeminiVersion>2.1.0.RELEASE</eclipseGeminiVersion>
     <eclipselinkVersion>2.5.1</eclipselinkVersion>
     <elasticsearchNettyVersion>4.1.69.Final</elasticsearchNettyVersion>
     <elasticsearchTargetVersion>7.6.2</elasticsearchTargetVersion>
@@ -1726,7 +1708,7 @@
     <geohashVersion>1.4.0</geohashVersion>
     <geoipVersion>2.15.0</geoipVersion>
     <geronimoVersion>1.1.1</geronimoVersion>
-    <groovyVersion>2.4.21</groovyVersion>
+    <groovyVersion>2.5.16</groovyVersion>
     <grpcVersion>1.30.0</grpcVersion>
     <gsonVersion>2.8.5</gsonVersion>
     <guavaVersion>18.0</guavaVersion>
@@ -1742,7 +1724,7 @@
     <httpclientVersion>4.5.13</httpclientVersion>
     <httpasyncclientVersion>4.1.3</httpasyncclientVersion>
     <ipaddressVersion>5.3.3</ipaddressVersion>
-    <jacksonVersion>1.9.13</jacksonVersion>
+    <jacksonVersion>1.9.13-atlassian-6</jacksonVersion>
     <jackson2Version>2.12.5</jackson2Version>
     <snakeyamlVersion>1.29</snakeyamlVersion>
     <jacocoVersion>0.8.5</jacocoVersion>
@@ -1797,12 +1779,12 @@
     <paxWebVersion>7.3.23</paxWebVersion>
     <protobufVersion>3.16.1</protobufVersion>
     <protobuf2Version>2.6.1</protobuf2Version>
-    <postgresqlVersion>42.2.18</postgresqlVersion>
+    <postgresqlVersion>42.3.3</postgresqlVersion>
     <powermockVersion>2.0.9</powermockVersion>
     <okhttpVersion>3.10.0</okhttpVersion>
     <okioVersion>1.14.0</okioVersion>
-    <opennmsApiVersion>0.8.1-SNAPSHOT</opennmsApiVersion>
-    <opennmsApiVersionOsgi>0.8.1.SNAPSHOT</opennmsApiVersionOsgi>
+    <opennmsApiVersion>1.0.0-SNAPSHOT</opennmsApiVersion>
+    <opennmsApiVersionOsgi>1.0.0.SNAPSHOT</opennmsApiVersionOsgi>
     <osgiVersion>7.0.0</osgiVersion>
     <osgiAnnotationVersion>7.0.0</osgiAnnotationVersion>
     <osgiCompendiumVersion>7.0.0</osgiCompendiumVersion>
@@ -1830,7 +1812,7 @@
     <snmp4jVersion>2.5.5</snmp4jVersion>
     <snmp4jagentVersion>2.5.3</snmp4jagentVersion>
     <sonarVersion>3.7.0.1746</sonarVersion>
-    <spockVersion>1.1-groovy-2.4</spockVersion>
+    <spockVersion>1.3-groovy-2.5</spockVersion>
     <swaggerUIVersion>3.13.0</swaggerUIVersion>
     <swaggerVersion>2.1.5</swaggerVersion>
     <swaggerParserVersion>2.0.24</swaggerParserVersion>
@@ -1860,7 +1842,7 @@
 
     <!-- moved here from topology features -->
     <jungVersion>2.0.1</jungVersion>
-    <vaadinVersion>8.13.0</vaadinVersion>
+    <vaadinVersion>8.14.3</vaadinVersion>
     <!-- Requiring a more recent plugin version which passes the classpath via ENV -->
     <vaadin.plugin.version>${vaadinVersion}</vaadin.plugin.version>
     <vaadinAddonContextMenuVersion>3.1.0</vaadinAddonContextMenuVersion>
@@ -1889,6 +1871,28 @@
   </properties>
 
   <profiles>
+    <profile>
+      <id>production</id>
+      <activation>
+        <property>
+          <name>build.type</name>
+          <value>production</value>
+        </property>
+      </activation>
+      <properties>
+        <runPingTests>true</runPingTests>
+        <skipPdfGeneration>false</skipPdfGeneration>
+        <skipSignJar>false</skipSignJar>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>license-maven-plugin</artifactId>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
     <profile>
       <id>enable.license</id>
       <activation>
@@ -2280,9 +2284,25 @@
       <!--  opennms dependencies that are outside of the opennms/trunk project -->
       <!--  PLEASE KEEP THESE IN ALPHABETICAL ORDER -->
       <dependency>
-        <groupId>org.opennms.api.integration</groupId>
-        <artifactId>opennms-provisioning</artifactId>
-        <version>1.0.0</version>
+        <groupId>org.opennms.integration.api</groupId>
+        <artifactId>api</artifactId>
+        <version>${opennmsApiVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.integration.api</groupId>
+        <artifactId>common</artifactId>
+        <version>${opennmsApiVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.integration.api</groupId>
+        <artifactId>config</artifactId>
+        <version>${opennmsApiVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.integration.api</groupId>
+        <artifactId>karaf-features</artifactId>
+        <version>${opennmsApiVersion}</version>
+        <type>pom</type>
       </dependency>
 
       <!--  opennms dependencies -->
@@ -2907,6 +2927,12 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
+        <artifactId>jackson1-dependencies</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
         <artifactId>jasypt-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
@@ -2980,6 +3006,12 @@
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
         <artifactId>jstl-dependencies</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>oia-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
       </dependency>
@@ -4264,6 +4296,11 @@
         <version>${jackson2Version}</version>
       </dependency>
       <dependency>
+        <groupId>com.fasterxml.jackson.module</groupId>
+        <artifactId>jackson-module-scala_2.12</artifactId>
+        <version>${jackson2Version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-validator</artifactId>
         <version>${hibernateValidatorVersion}</version>
@@ -4877,9 +4914,10 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.groovy</groupId>
-        <artifactId>groovy-all</artifactId>
-        <version>${groovyVersion}</version>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>groovy-dependencies</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
       </dependency>
       <dependency>
         <groupId>com.zaxxer</groupId>

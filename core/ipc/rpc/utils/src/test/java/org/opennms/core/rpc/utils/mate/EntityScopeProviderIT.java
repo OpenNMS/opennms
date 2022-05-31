@@ -31,23 +31,31 @@ package org.opennms.core.rpc.utils.mate;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.features.scv.api.Credentials;
+import org.opennms.features.scv.api.SecureCredentialsVault;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.OnmsGeolocation;
+import org.opennms.netmgt.model.OnmsMetaData;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations={
+@ContextConfiguration(locations = {
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
@@ -68,6 +76,10 @@ public class EntityScopeProviderIT {
     @Autowired
     private EntityScopeProvider provider;
 
+    @Autowired
+    private SecureCredentialsVault secureCredentialsVault;
+
+
     @Before
     public void setup() {
         this.populator.populateDatabase();
@@ -79,8 +91,8 @@ public class EntityScopeProviderIT {
 
         assertThat(scope.get(new ContextKey("node", "label")), is(Optional.of(new Scope.ScopeValue(Scope.ScopeName.NODE, "node1"))));
 
-        assertThat(scope.get(new ContextKey("node", "foreign-source")), is(Optional.of(new Scope.ScopeValue(Scope.ScopeName.NODE,"imported:"))));
-        assertThat(scope.get(new ContextKey("node", "foreign-id")), is(Optional.of(new Scope.ScopeValue(Scope.ScopeName.NODE,"1"))));
+        assertThat(scope.get(new ContextKey("node", "foreign-source")), is(Optional.of(new Scope.ScopeValue(Scope.ScopeName.NODE, "imported:"))));
+        assertThat(scope.get(new ContextKey("node", "foreign-id")), is(Optional.of(new Scope.ScopeValue(Scope.ScopeName.NODE, "1"))));
 
         assertThat(scope.get(new ContextKey("node", "netbios-domain")), is(Optional.empty()));
         assertThat(scope.get(new ContextKey("node", "netbios-name")), is(Optional.empty()));
@@ -92,15 +104,15 @@ public class EntityScopeProviderIT {
         assertThat(scope.get(new ContextKey("node", "sys-contact")), is(Optional.empty()));
         assertThat(scope.get(new ContextKey("node", "sys-description")), is(Optional.empty()));
 
-        assertThat(scope.get(new ContextKey("node", "location")), is(Optional.of(new Scope.ScopeValue(Scope.ScopeName.NODE,"Default"))));
-        assertThat(scope.get(new ContextKey("node", "area")), is(Optional.of(new Scope.ScopeValue(Scope.ScopeName.NODE,"Default"))));
+        assertThat(scope.get(new ContextKey("node", "location")), is(Optional.of(new Scope.ScopeValue(Scope.ScopeName.NODE, "Default"))));
+        assertThat(scope.get(new ContextKey("node", "area")), is(Optional.of(new Scope.ScopeValue(Scope.ScopeName.NODE, "Default"))));
     }
 
     @Test
     public final void testNodeGeohash() throws Exception {
         final Scope scope = this.provider.getScopeForNode(this.populator.getNode1().getId());
 
-        assertThat(scope.get(new ContextKey("node", "label")), is(Optional.of(new Scope.ScopeValue(Scope.ScopeName.NODE,"node1"))));
+        assertThat(scope.get(new ContextKey("node", "label")), is(Optional.of(new Scope.ScopeValue(Scope.ScopeName.NODE, "node1"))));
         // Geohash should be empty since the database populater does not set lat/lon by default
         assertThat(scope.get(new ContextKey("node", "geohash")), is(Optional.empty()));
 
@@ -123,12 +135,12 @@ public class EntityScopeProviderIT {
         final Scope scope = this.provider.getScopeForInterface(this.populator.getNode1().getId(), "192.168.1.1");
 
         assertThat(scope.get(new ContextKey("interface", "hostname")), is(Optional.empty()));
-        assertThat(scope.get(new ContextKey("interface", "address")), is(Optional.of(new Scope.ScopeValue(Scope.ScopeName.INTERFACE,"192.168.1.1"))));
+        assertThat(scope.get(new ContextKey("interface", "address")), is(Optional.of(new Scope.ScopeValue(Scope.ScopeName.INTERFACE, "192.168.1.1"))));
         assertThat(scope.get(new ContextKey("interface", "netmask")), is(Optional.empty()));
-        assertThat(scope.get(new ContextKey("interface", "if-index")), is(Optional.of(new Scope.ScopeValue(Scope.ScopeName.INTERFACE,"1"))));
-        assertThat(scope.get(new ContextKey("interface", "if-alias")), is(Optional.of(new Scope.ScopeValue(Scope.ScopeName.INTERFACE,"Initial ifAlias value"))));
-        assertThat(scope.get(new ContextKey("interface", "if-description")), is(Optional.of(new Scope.ScopeValue(Scope.ScopeName.INTERFACE,"ATM0"))));
-        assertThat(scope.get(new ContextKey("interface", "phy-addr")), is(Optional.of(new Scope.ScopeValue(Scope.ScopeName.INTERFACE,"34E45604BB69"))));
+        assertThat(scope.get(new ContextKey("interface", "if-index")), is(Optional.of(new Scope.ScopeValue(Scope.ScopeName.INTERFACE, "1"))));
+        assertThat(scope.get(new ContextKey("interface", "if-alias")), is(Optional.of(new Scope.ScopeValue(Scope.ScopeName.INTERFACE, "Initial ifAlias value"))));
+        assertThat(scope.get(new ContextKey("interface", "if-description")), is(Optional.of(new Scope.ScopeValue(Scope.ScopeName.INTERFACE, "ATM0"))));
+        assertThat(scope.get(new ContextKey("interface", "phy-addr")), is(Optional.of(new Scope.ScopeValue(Scope.ScopeName.INTERFACE, "34E45604BB69"))));
     }
 
     @Test
@@ -136,5 +148,28 @@ public class EntityScopeProviderIT {
         final Scope scope = this.provider.getScopeForService(this.populator.getNode1().getId(), InetAddressUtils.getInetAddress("192.168.1.1"), "ICMP");
 
         assertThat(scope.get(new ContextKey("service", "name")), is(Optional.of(new Scope.ScopeValue(Scope.ScopeName.SERVICE, "ICMP"))));
+    }
+
+    @Test
+    @Transactional
+    public void testScvInterpolation() {
+        Map<String, Object> attributes = new HashMap<>();
+        attributes.put("username", "${requisition:dcb:username}");
+        attributes.put("password", "${requisition:dcb:password}");
+
+        OnmsNode node = this.populator.getNode1();
+        OnmsMetaData metaData1 = new OnmsMetaData("requisition", "dcb:username", "${scv:alias:username}");
+        OnmsMetaData metaData2 = new OnmsMetaData("requisition", "dcb:password", "${scv:alias:password}");
+        node.getMetaData().add(metaData1);
+        node.getMetaData().add(metaData2);
+        this.populator.getNodeDao().saveOrUpdate(node);
+
+        this.secureCredentialsVault.setCredentials("alias", new Credentials("horizon", "OpenNMS@30"));
+
+        Map<String, Object> interpolatedAttributes = Interpolator.interpolateObjects(attributes, this.provider.getScopeForNode(this.populator.getNode1().getId()));
+
+        Assert.assertEquals(interpolatedAttributes.get("username"), "horizon");
+        Assert.assertEquals(interpolatedAttributes.get("password"), "OpenNMS@30");
+
     }
 }

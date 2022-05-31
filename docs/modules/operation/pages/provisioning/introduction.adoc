@@ -44,7 +44,7 @@ Directed discovery lets you specify what you want to provision based on an exist
 Using an import requisition, this mechanism directs {page-component-title} to add, update, or delete a node entity exactly as defined by the external source.
 No discovery process is used for finding more interfaces or services.
 
-IMPORTANT: An import requisition is an XML definition of node entities to be provisioned from an external source into {page-component-title}.
+IMPORTANT: An import requisition is a definition of node entities to provision from an external source into {page-component-title}.
 See the https://raw.githubusercontent.com/OpenNMS/opennms/develop/opennms-provision/opennms-provision-persistence/src/main/resources/xsds/model-import.xsd[requisition schema] (XSD) for more information.
 
 === Understanding the Process
@@ -62,11 +62,11 @@ The import phase begins when Provisiond receives a request to import a requisiti
 The requisition is marshalled into Java objects for processing.
 An audit, based on the unique foreign ID of the foreign source, determines whether the node already exists; the imported object is then added, updated, or deleted from the inventory.
 
-NOTE: If any syntactical or XML structural problems occur in the requisition, the entire import is abandoned and no import operations are completed.
+NOTE: If any syntactical or structural problems occur in the requisition, the entire import is abandoned and no import operations are completed.
 
 If a requisition node has an interface defined as the primary SNMP interface, then during the update and add operations the node is scanned for minimal SNMP attribute information.
 
-The node scan phase discovers details about the node and interfaces that were not directly provisioned.
+The node-scan phase discovers details about the node and interfaces that were not directly provisioned.
 All physical (SNMP) and logical (IP) interfaces are discovered and persisted based on any provisioning policies that may have been defined for the foreign source associated with the import requisition.
 
 After interface discovery, Provisiond moves to service detection on each IP interface entity.

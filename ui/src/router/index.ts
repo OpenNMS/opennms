@@ -4,6 +4,13 @@ import DeviceConfigBackup from '@/containers/DeviceConfigBackup.vue'
 import FileEditor from '@/containers/FileEditor.vue'
 import Resources from '@/components/Resources/Resources.vue'
 import Graphs from '@/components/Resources/Graphs.vue'
+import useRole from '@/composables/useRole'
+import useSnackbar from '@/composables/useSnackbar'
+import useSpinner from '@/composables/useSpinner'
+
+const { adminRole, filesystemEditorRole, dcbRole, rolesAreLoaded } = useRole()
+const { showSnackBar } = useSnackbar()
+const { startSpinner, stopSpinner } = useSpinner()
 
 const router = createRouter({
   history: createWebHashHistory('/opennms/ui'),
@@ -27,12 +34,39 @@ const router = createRouter({
     {
       path: '/file-editor',
       name: 'FileEditor',
-      component: FileEditor
+      component: FileEditor,
+      beforeEnter: (to, from) => {
+        const checkRoles = () => {
+          if (!filesystemEditorRole.value) {
+            showSnackBar({ msg: 'No role access to file editor.' })
+            router.push(from.path)
+          }
+        }
+
+        if (rolesAreLoaded.value) checkRoles()
+        else whenever(rolesAreLoaded, () => checkRoles())
+      }
+    },
+    {
+      path: '/configuration',
+      name: 'Configuration',
+      component: () => import('@/containers/ProvisionDConfig.vue')
     },
     {
       path: '/logs',
       name: 'Logs',
-      component: () => import('@/containers/Logs.vue')
+      component: () => import('@/containers/Logs.vue'),
+      beforeEnter: (to, from) => {
+        const checkRoles = () => {
+          if (!adminRole.value) {
+            showSnackBar({ msg: 'No role access to logs.' })
+            router.push(from.path)
+          }
+        }
+
+        if (rolesAreLoaded.value) checkRoles()
+        else whenever(rolesAreLoaded, () => checkRoles())
+      }
     },
     {
       path: '/map',
@@ -81,7 +115,34 @@ const router = createRouter({
     {
       path: '/device-config-backup',
       name: 'DeviceConfigBackup',
-      component: DeviceConfigBackup
+      component: DeviceConfigBackup,
+      beforeEnter: (to, from) => {
+        const checkRoles = () => {
+          if (!dcbRole.value) {
+            showSnackBar({ msg: 'No role access to DCB.' })
+            router.push(from.path)
+          }
+        }
+
+        if (rolesAreLoaded.value) checkRoles()
+        else whenever(rolesAreLoaded, () => checkRoles())
+      }
+    },
+    {
+      path: '/scv',
+      name: 'SCV',
+      component: () => import('@/containers/SecureCredentialsVault.vue'),
+      beforeEnter: (to, from) => {
+        const checkRoles = () => {
+          if (!adminRole.value) {
+            showSnackBar({ msg: 'Must be admin to access SCV.' })
+            router.push(from.path)
+          }
+        }
+
+        if (rolesAreLoaded.value) checkRoles()
+        else whenever(rolesAreLoaded, () => checkRoles())
+      }
     },
     {
       path: '/:pathMatch(.*)*', // catch other paths and redirect
@@ -90,4 +151,6 @@ const router = createRouter({
   ]
 })
 
+router.beforeEach(() => startSpinner())
+router.afterEach(() => stopSpinner())
 export default router

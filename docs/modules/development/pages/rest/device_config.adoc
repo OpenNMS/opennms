@@ -27,11 +27,11 @@ This API also supports following query params: limit, offset, orderBy order, dev
 
 | `/device-config/latest`
 | GET
-| Retrieves the latest configuration for all the devices.
+| Retrieves the latest configuration for all the devices. This API supports the following query parameters: limit, offset, orderBy, order, search, status.
 
 | `/device-config/download?id=\{id1, id2}`
 | GET
-| Download the configurations with the given ID.
+| Download the configurations with the given ID or IDs.
 
 | `/device-config/backup`
 | POST
@@ -44,6 +44,6 @@ This API also supports following query params: limit, offset, orderBy order, dev
 .Trigger device configuration backup
 [source,bash]
 ----
-curl -u admin:admin -d '{"ipAddress":"192.168.1.123","location":"Default","serviceName":"DeviceConfig-default"}' -H "Content-Type: application/json" -X POST http://localhost:8980/opennms/rest/device-config/backup -v
+curl -u admin:admin -d '[{"ipAddress":"192.168.1.123","location":"Default","serviceName":"DeviceConfig-default", "blocking": false}]' -H "Content-Type: application/json" -X POST http://localhost:8980/opennms/rest/device-config/backup -v
 ----
 

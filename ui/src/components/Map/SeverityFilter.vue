@@ -9,7 +9,10 @@
   />
 </template>
 
-<script setup lang="ts">
+<script
+  setup
+  lang="ts"
+>
 import { useStore } from 'vuex'
 import { FeatherSelect } from '@featherds/select'
 
@@ -29,12 +32,13 @@ const onSeveritySelect = () => store.dispatch('mapModule/setSelectedSeverity', s
 
 <style lang="scss">
 @import "@featherds/styles/themes/variables";
+
 .severity-select {
   position: absolute;
   width: 250px;
-  right: 51px;
-  top: 11px;
-  z-index: 1000;
+  right: 60px;
+  top: 80px;
+  z-index: var($zindex-tooltip);
   .feather-input-wrapper {
     background: var($primary-text-on-color);
     border: 2px solid var($secondary);
@@ -45,3 +49,4 @@ const onSeveritySelect = () => store.dispatch('mapModule/setSelectedSeverity', s
   }
 }
 </style>
+

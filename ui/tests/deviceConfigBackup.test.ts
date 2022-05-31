@@ -18,6 +18,7 @@ const mockDeviceConfigBackups: DeviceConfigBackup[] = [
     scheduledInterval: { deviceConfig: 'daily' },
     config: 'mock cisco config',
     configType: 'running',
+    configName: 'Running Configuration',
     ipInterfaceId: 1,
     lastBackupDate: 1643831118973,
     lastFailedDate: 1643831118973,
@@ -43,6 +44,7 @@ const mockDeviceConfigBackups: DeviceConfigBackup[] = [
     scheduledInterval: { deviceConfig: 'daily' },
     config: 'mock aruba config',
     configType: 'default',
+    configName: 'Startup Configuration',
     ipInterfaceId: 1,
     lastBackupDate: 1643831118973,
     lastFailedDate: 1643831118973,
@@ -76,8 +78,8 @@ test('action btns enable and disable correctly', async () => {
   const viewHistoryBtn = wrapper.get('[data-test="view-history-btn"]')
   const downloadBtn = wrapper.get('[data-test="download-btn"]')
   const backupNowBtn = wrapper.get('[data-test="backup-now-btn"]')
-  const checkboxes = wrapper.findAll('.device-config-checkbox')
-  const firstDeviceConfig = wrapper.find('.device-config-checkbox > .feather-checkbox')
+  const checkboxes = wrapper.findAll('.dcb-config-checkbox')
+  const firstDeviceConfig = wrapper.find('.dcb-config-checkbox > .feather-checkbox')
   const allCheckbox = wrapper.find('[data-test="all-checkbox"] > .feather-checkbox')
 
   // two DCB mock records

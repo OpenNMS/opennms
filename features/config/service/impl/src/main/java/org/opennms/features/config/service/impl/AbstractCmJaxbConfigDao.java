@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2021-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,16 +28,15 @@
 
 package org.opennms.features.config.service.impl;
 
-import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.exception.ConfigNotFoundException;
 import org.opennms.features.config.exception.ValidationException;
+import org.opennms.features.config.service.api.CmJaxbConfigDao;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.service.api.EventType;
 import org.opennms.features.config.service.api.JsonAsString;
 import org.opennms.features.config.service.util.BeanFieldCopyUtil;
 import org.opennms.features.config.service.util.ConfigConvertUtil;
-import org.opennms.features.config.service.util.DefaultAbstractCmJaxbConfigDaoUpdateCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,7 +54,7 @@ import java.util.function.Consumer;
  * @param <E> Configuration class
  * @version $Id: $
  */
-public abstract class AbstractCmJaxbConfigDao<E> {
+public abstract class AbstractCmJaxbConfigDao<E> implements CmJaxbConfigDao {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractCmJaxbConfigDao.class);
 
     @Autowired
@@ -66,34 +65,7 @@ public abstract class AbstractCmJaxbConfigDao<E> {
     private ConcurrentHashMap<String, E> lastKnownEntityMap = new ConcurrentHashMap<>();
 
     /**
-     * ConfigName use for the Config and Schema
-     *
-     * @return ConfigName
-     */
-    protected abstract String getConfigName();
-
-    /**
-     * It will provide the default callback for all ConfigDao, override if you needed
-     *
-     * @return Consumer
-     */
-    Consumer<ConfigUpdateInfo> getUpdateCallback() {
-        return new DefaultAbstractCmJaxbConfigDaoUpdateCallback<>(this);
-    }
-
-    /**
-     * The default configId when getConfig without passing configId
-     *
-     * @return configId
-     */
-    protected String getDefaultConfigId() {
-        return ConfigDefinition.DEFAULT_CONFIG_ID;
-    }
-
-    /**
      * <p>Constructor for AbstractJaxbConfigDao.</p>
-     * It will use {@link DefaultAbstractCmJaxbConfigDaoUpdateCallback},
-     * override getUpdateCallback if you need to change.
      *
      * @param entityClass a {@link java.lang.Class} object.
      * @param description a {@link java.lang.String} object.
@@ -110,14 +82,13 @@ public abstract class AbstractCmJaxbConfigDao<E> {
     @PostConstruct
     public void postConstruct() {
         Set<String> configIds = configurationManagerService.getConfigIds(this.getConfigName());
-        configIds.forEach(configId -> this.addOnReloadedCallback(configId, getUpdateCallback()));
+        configIds.forEach(configId -> this.addOnReloadedCallback(configId, this.getUpdateCallback()));
+        var validateCallback = this.getValidationCallback();
+        if (validateCallback != null) {
+            this.addValidationCallback(validateCallback);
+        }
     }
 
-    /**
-     * It will load the default config
-     *
-     * @return ConfigObject
-     */
     public E loadConfig() {
         return this.loadConfig(this.getDefaultConfigId());
     }
@@ -151,13 +122,6 @@ public abstract class AbstractCmJaxbConfigDao<E> {
         });
     }
 
-    /**
-     * It will the config in cache, if nothing found it will load from db.
-     * <b>Please notice that, config can be different in db.</b>
-     *
-     * @param configId
-     * @return config
-     */
     public E getConfig(String configId) {
         // cannot use computeIfAbsent, it will cause IllegalStateException
         E config = lastKnownEntityMap.get(configId);
@@ -193,7 +157,6 @@ public abstract class AbstractCmJaxbConfigDao<E> {
         configurationManagerService.updateConfiguration(this.getConfigName(), configId, new JsonAsString(jsonConfigString), isReplace);
     }
 
-
     /**
      * it will update the default config
      *
@@ -224,5 +187,10 @@ public abstract class AbstractCmJaxbConfigDao<E> {
     public void addOnReloadedCallback(String configId, Consumer<ConfigUpdateInfo> callback) {
         Objects.requireNonNull(callback);
         configurationManagerService.registerEventHandler(EventType.UPDATE, new ConfigUpdateInfo(this.getConfigName(), configId), callback);
+    }
+
+    public void addValidationCallback(Consumer<ConfigUpdateInfo> callback) {
+        Objects.requireNonNull(callback);
+        configurationManagerService.registerEventHandler(EventType.VALIDATE, new ConfigUpdateInfo(this.getConfigName()), callback);
     }
 }

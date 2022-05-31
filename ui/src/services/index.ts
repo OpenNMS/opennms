@@ -7,7 +7,13 @@ import {
   getNodeAvailabilityPercentage
 } from './nodeService'
 
-import { getGraphDefinitionsByResourceId, getDefinitionData, getGraphMetrics, getPreFabGraphs } from './graphService'
+import { getProvisionDService, putProvisionDService, populateProvisionD } from './configurationService'
+import {
+  getGraphDefinitionsByResourceId,
+  getDefinitionData,
+  getGraphMetrics,
+  getPreFabGraphs
+} from './graphService'
 
 import {
   getDeviceConfigBackups,
@@ -19,6 +25,7 @@ import {
 } from './deviceService'
 
 import { getFileNames, getFile, getSnippets, postFile, deleteFile, getFileExtensions } from './configService'
+import { getAliases, getCredentialsByAlias, addCredentials, updateCredentials } from './scvService'
 
 import { getAlarms, modifyAlarm } from './alarmService'
 import { getEvents } from './eventService'
@@ -62,6 +69,9 @@ export default {
   getFileNames,
   getFileExtensions,
   getOpenApi,
+  getProvisionDService,
+  populateProvisionD,
+  putProvisionDService,
   getResources,
   getGraphMetrics,
   getPreFabGraphs,
@@ -78,5 +88,9 @@ export default {
   downloadDeviceConfigs,
   getVendorOptions,
   getOsImageOptions,
-  getHistoryByIpInterface
+  getHistoryByIpInterface,
+  getAliases,
+  getCredentialsByAlias,
+  addCredentials,
+  updateCredentials
 }

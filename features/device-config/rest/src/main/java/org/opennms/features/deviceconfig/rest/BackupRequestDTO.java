@@ -36,10 +36,19 @@ public class BackupRequestDTO {
 
     private String serviceName;
 
+    private Boolean blocking = false;
+
     public BackupRequestDTO(String ipAddress, String location, String serviceName) {
         this.ipAddress = ipAddress;
         this.location = location;
         this.serviceName = serviceName;
+    }
+
+    public BackupRequestDTO(String ipAddress, String location, String serviceName, boolean blocking) {
+        this.ipAddress = ipAddress;
+        this.location = location;
+        this.serviceName = serviceName;
+        this.blocking = blocking;
     }
 
     public BackupRequestDTO() {
@@ -67,5 +76,13 @@ public class BackupRequestDTO {
 
     public void setServiceName(String serviceName) {
         this.serviceName = serviceName;
+    }
+
+    public Boolean getBlocking() {
+        return blocking;
+    }
+
+    public void setBlocking(Boolean blocking) {
+        this.blocking = blocking;
     }
 }

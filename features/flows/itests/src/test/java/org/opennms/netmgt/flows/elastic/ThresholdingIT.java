@@ -104,6 +104,7 @@ import io.searchbox.client.JestClient;
         "classpath:/META-INF/opennms/applicationContext-testThresholdingDaos.xml",
         "classpath:/META-INF/opennms/applicationContext-testPollerConfigDaos.xml",
         "classpath:/META-INF/opennms/applicationContext-rpc-utils.xml",
+        "classpath:/META-INF/opennms/applicationContext-jceks-scv.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase()

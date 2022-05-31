@@ -60,15 +60,15 @@ public class ThresholdingConfigExtensionManagerTest {
     private static final String dsLabel = "ds label";
     private static final String dsType = "ds type";
     private static final FilterOperator filterOperator = FilterOperator.AND;
-    private static final double rearm = 1.0;
+    private static final String rearm = "1.0";
     private static final String rearmedUEI = "rearmed UEI";
     private static final boolean relaxed = true;
     private static final ResourceFilter resourceFilter = mock(ResourceFilter.class);
     private static final String content = "content";
     private static final String field = "field";
-    private static final int trigger = 2;
+    private static final String trigger = "2";
     private static final String triggeredUEI = "triggered uei";
-    private static final double value = 3.0;
+    private static final String value = "3.0";
     private static final ThresholdType type = ThresholdType.HIGH;
 
     /**
@@ -181,14 +181,14 @@ public class ThresholdingConfigExtensionManagerTest {
         assertThat(basethresholddef.getDsType(), equalTo(dsType));
         assertThat(basethresholddef.getDsLabel().get(), equalTo(dsLabel));
         assertThat(basethresholddef.getFilterOperator().name(), equalTo(filterOperator.name()));
-        assertThat(Double.parseDouble(basethresholddef.getRearm()), equalTo(rearm));
+        assertThat(basethresholddef.getRearm(), equalTo(rearm));
         assertThat(basethresholddef.getRearmedUEI().get(), equalTo(rearmedUEI));
         assertThat(basethresholddef.getRelaxed(), equalTo(relaxed));
         assertThat(basethresholddef.getResourceFilters().get(0).getContent().get(), equalTo(content));
         assertThat(basethresholddef.getResourceFilters().get(0).getField(), equalTo(field));
-        assertThat(Integer.parseInt(basethresholddef.getTrigger()), equalTo(trigger));
+        assertThat(basethresholddef.getTrigger(), equalTo(trigger));
         assertThat(basethresholddef.getTriggeredUEI().get(), equalTo(triggeredUEI));
         assertThat(basethresholddef.getType().name(), equalTo(type.name()));
-        assertThat(Double.parseDouble(basethresholddef.getValue()), equalTo(value));
+        assertThat(basethresholddef.getValue(), equalTo(value));
     }
 }

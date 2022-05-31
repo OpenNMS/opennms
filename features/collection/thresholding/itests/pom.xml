@@ -5,7 +5,7 @@
     <parent>
         <artifactId>org.opennms.features.collection.thresholding</artifactId>
         <groupId>org.opennms.features.collection</groupId>
-        <version>30.0.0-SNAPSHOT</version>
+        <version>31.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.opennms.features.collection.thresholding.itests</artifactId>
@@ -97,6 +97,12 @@
         <dependency>
             <groupId>org.opennms.features.distributed</groupId>
             <artifactId>org.opennms.features.distributed.kv-store.blob.in-memory</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.scv</groupId>
+            <artifactId>org.opennms.features.scv.jceks-impl</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>

@@ -6,6 +6,15 @@ export interface VuexContext {
   dispatch: Dispatch
 }
 
+export type UpdateModelFunction = (_value: any) => any
+
+export interface SnackbarProps {
+  msg: string
+  center?: boolean
+  error?: boolean
+  timeout?: number
+}
+
 export interface IdLabelProps {
   id: string
   label: string
@@ -316,17 +325,6 @@ export interface AppInfo {
   version: string
 }
 
-export interface Notification {
-  msg: string
-  severity: NotificationSeverity
-}
-
-export enum NotificationSeverity {
-  ERROR = 'error',
-  WARNING = 'warning',
-  SUCCESS = 'success'
-}
-
 export interface StartEndTime {
   startTime: string | number
   endTime: string | number
@@ -459,10 +457,4 @@ export interface Plugin {
   menuEntry: string
   moduleFileName: string
   resourceRootPath: string
-}
-
-export interface Toast {
-  basic: string
-  detail: string
-  hasErrors: boolean
 }

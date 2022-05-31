@@ -28,6 +28,8 @@
 
 package org.opennms.features.config.service.api;
 
+import org.json.JSONObject;
+
 import static org.opennms.features.config.dao.api.ConfigDefinition.DEFAULT_CONFIG_ID;
 
 import java.util.Objects;
@@ -38,20 +40,31 @@ public class ConfigUpdateInfo {
 
     final private String configName;
     final private String configId;
+    final private JSONObject configJson;
 
     /**
      * ConfigId is nullable, when it is null. It will reload all configIds.
      *
      * @param configName
      * @param configId
+     * @param configJson (nullable)
      */
-    public ConfigUpdateInfo(String configName, String configId) {
+    public ConfigUpdateInfo(String configName, String configId, JSONObject configJson) {
         this.configName = Objects.requireNonNull(configName);
         this.configId = Objects.requireNonNull(configId);
+        this.configJson = configJson;
     }
 
     public ConfigUpdateInfo(String configName) {
-        this(configName, DEFAULT_CONFIG_ID);
+        this(configName, DEFAULT_CONFIG_ID, null);
+    }
+
+    public ConfigUpdateInfo(String configName, String configId) {
+        this(configName, configId, null);
+    }
+
+    public ConfigUpdateInfo(String configName, JSONObject configJson) {
+        this(configName, DEFAULT_CONFIG_ID, configJson);
     }
 
     public String getConfigName() {
@@ -60,6 +73,10 @@ public class ConfigUpdateInfo {
 
     public String getConfigId() {
         return configId;
+    }
+
+    public JSONObject getConfigJson() {
+        return configJson;
     }
 
     @Override

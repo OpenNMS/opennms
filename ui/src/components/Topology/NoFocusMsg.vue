@@ -15,7 +15,12 @@
         <li>use the default focus</li>
       </ul>
 
-      <FeatherButton @click="useDefaultFocus" primary class="btn" :disabled="!defaultObjects">
+      <FeatherButton
+        @click="useDefaultFocus"
+        primary
+        class="btn"
+        :disabled="!defaultObjects"
+      >
         <span v-if="defaultObjects">Use Default Focus</span>
         <span v-else>No Nodes Available</span>
       </FeatherButton>
@@ -23,7 +28,10 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script
+  setup
+  lang="ts"
+>
 import { FeatherButton } from '@featherds/button'
 import { PropType } from 'vue'
 import { useStore } from 'vuex'
@@ -39,7 +47,10 @@ defineProps({
 })
 </script>
 
-<style scoped lang="scss">
+<style
+  scoped
+  lang="scss"
+>
 @import "@featherds/styles/mixins/elevation";
 @import "@featherds/styles/mixins/typography";
 
@@ -67,6 +78,7 @@ defineProps({
 
   .content {
     margin-left: 2rem;
+    margin-top: 20px;
 
     .btn {
       margin-left: 20px;
@@ -75,3 +87,4 @@ defineProps({
   }
 }
 </style>
+
