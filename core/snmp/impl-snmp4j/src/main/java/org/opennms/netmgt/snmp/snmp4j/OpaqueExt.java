@@ -129,6 +129,9 @@ public class OpaqueExt extends Opaque {
         if (bytes.length < 3) {
             return createErrorAdapter("To short", bytes);
         }
+
+        //At the time the class is ignored. If you nead to filter classes
+        //use "int clazz = bytes[0] & 0b11000000;"
         
         //existing implementations here do not support extended type so the custom type retrieving is implemented
         int offset;
@@ -158,14 +161,23 @@ public class OpaqueExt extends Opaque {
             }
 
             switch (type) {
-                case 120:
+                case 120: // Should the class not be ignored, then it was initially implemented for context-specific class (clazz == 0b10000000). Differences in other classes if any are unknown
                     if (length == 4 ) { //check length
                         float floatValue = buffer.getFloat();
                         return new DoubleAdapter((double)floatValue);
                     }
-                    break;
-                default:
-                    break;
+                    if (length == 8 ) { // not sure if some devicec also provide double
+                        double doubleValue = buffer.getDouble();
+                        return new DoubleAdapter(doubleValue);
+                    }
+                //only the support for type 120 is at the time implemented
+                //implement here other formats when required. e.g
+                //
+                //  break;
+                //case ???:
+                //  return new StringWithNumberCheckAdapter(???);
+                //default:
+                //  return createUnsupportedAdapter(bytes);
             }
             
         } catch (IOException ex) {
