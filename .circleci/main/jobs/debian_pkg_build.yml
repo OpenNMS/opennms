@@ -34,10 +34,6 @@ jobs:
           gnupg_key: opennms@opennms.org
           packages: target/debs/*.deb
       - run:
-          name: List content under target/debs folder
-          command: |
-            ls ~/project/target/debs
-      - run:
           name: Gather system logs
           when: always
           command: |
@@ -59,12 +55,6 @@ jobs:
           command: |
             cd opennms-container/sentinel
             env DOCKER_ARCH="linux/amd64" ./build_container_image.sh
-      - run:
-          name: List content under build-results folder
-          command: |
-            ls ~/build-results
-            ls  ~/project/opennms-container/horizon/images/container.oci
-            ls  ~/project/opennms-container/sentinel/images/container.oci
       #- store_artifacts:
       #    when: always
       #    path: ~/build-results
