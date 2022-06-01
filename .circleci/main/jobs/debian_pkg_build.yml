@@ -84,12 +84,12 @@ jobs:
       #- cache-workflow-assets:
       #    cache_prefix: deb-sentinel
       #    source_path: target/debs
-      #- cache-oci:
-      #    key: horizon
-      #    path: opennms-container/horizon/images/
-      #- cache-oci:
-      #    key: sentinel
-      #    path: opennms-container/sentinel/images/
+      - cache-oci:
+          key: horizon
+          path: opennms-container/horizon/images/
+      - cache-oci:
+          key: sentinel
+          path: opennms-container/sentinel/images/
 
   horizon-deb-build:
     executor: debian-build-executor
