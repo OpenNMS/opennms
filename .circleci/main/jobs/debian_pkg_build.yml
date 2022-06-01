@@ -1,5 +1,5 @@
 jobs:
-  debs-build:
+  debian-pkg-build:
     executor: debian-build-executor
     resource_class: xlarge
     steps:
@@ -17,7 +17,7 @@ jobs:
           name: Build OpenNMS Debian Packages
           command: |
             export NODE_OPTIONS=--max_old_space_size=1024
-            export CCI_MAXCPU=2
+            export CCI_MAXCPU=4
             export MAVEN_OPTS="-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
             .circleci/scripts/makedeb.sh opennms
       - run:

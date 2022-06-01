@@ -612,7 +612,7 @@ workflows:
           requires:
             - horizon-rpm-build
             - minion-deb-build
-            - debs-build
+            - debian-pkg-build
             - integration-test
             - smoke-test-core
             - smoke-test-flaky
@@ -641,7 +641,7 @@ workflows:
                 - /.*arm64.*/
       - horizon-image-single-arch:
           requires:
-            - debs-build
+            - debian-pkg-build
           matrix:
             parameters:
               architecture: [linux/arm64]
@@ -681,7 +681,7 @@ workflows:
           requires:
             - tarball-assembly
             - minion-rpm-build
-            - debs-build
+            - debian-pkg-build
           filters:
             branches:
               only:
@@ -696,7 +696,7 @@ workflows:
           requires:
             - tarball-assembly
             - minion-rpm-build
-            - debs-build
+            - debian-pkg-build
           filters:
             branches:
               only:
@@ -711,7 +711,7 @@ workflows:
           requires:
             - tarball-assembly
             - minion-rpm-build
-            - debs-build
+            - debian-pkg-build
           filters:
             branches:
               only:
@@ -726,7 +726,7 @@ workflows:
           requires:
             - tarball-assembly
             - tarball-assembly
-            - debs-build
+            - debian-pkg-build
           filters:
             branches:
               only:
@@ -741,7 +741,7 @@ workflows:
           requires:
             - tarball-assembly
             - tarball-assembly
-            - debs-build
+            - debian-pkg-build
           filters:
             branches:
               ignore:
@@ -756,7 +756,7 @@ workflows:
       - horizon-publish-oci:
           requires:
             - minion-deb-build
-            - debs-build
+            - debian-pkg-build
             - integration-test
             - smoke-test-core
             - smoke-test-flaky
@@ -773,7 +773,7 @@ workflows:
       - sentinel-publish-oci:
           requires:
             - minion-deb-build
-            - debs-build
+            - debian-pkg-build
             - integration-test
             - smoke-test-core
             - smoke-test-flaky
@@ -803,7 +803,7 @@ workflows:
             branches:
               ignore:
                 - /^merge-foundation.*/
-      - debs-build:
+      - debian-pkg-build:
           requires:
             - build 
           filters:
@@ -812,7 +812,7 @@ workflows:
                 - /^merge-foundation.*/          
       - sentinel-image-single-arch:
           requires:
-            - debs-build
+            - debian-pkg-build
           matrix:
             parameters:
               architecture: [linux/arm64]
@@ -1206,7 +1206,7 @@ jobs:
       - cache-workflow-assets:
           cache_prefix: rpm-sentinel
           source_path: target/rpm/RPMS/noarch
-  #deb_builds#
+  #debian_pkg_build#
 
   horizon-image-single-arch:
     parameters:
