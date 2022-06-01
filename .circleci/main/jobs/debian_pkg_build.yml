@@ -69,15 +69,15 @@ jobs:
       #    when: always
       #    path: ~/build-results
       #    destination: build-results
-      #- store_artifacts:
-      #    path: ~/project/target/debs
-      #    destination: debs
-      #- store_artifacts:
-      #    path: ~/project/opennms-container/horizon/images/container.oci
-      #    destination: horizon.oci
-      #- store_artifacts:
-      #    path: ~/project/opennms-container/sentinel/images/container.oci
-      #    destination: sentinel.oci
+      - store_artifacts:
+          path: ~/project/target/debs
+          destination: debs
+      - store_artifacts:
+          path: ~/project/opennms-container/horizon/images/container.oci
+          destination: horizon.oci
+      - store_artifacts:
+          path: ~/project/opennms-container/sentinel/images/container.oci
+          destination: sentinel.oci
       #- cache-workflow-assets:
       #    cache_prefix: deb-horizon
       #    source_path: target/debs
