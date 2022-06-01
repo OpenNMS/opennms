@@ -28,6 +28,7 @@
 
 package org.opennms.features.deviceconfig.rest.impl;
 
+import org.apache.commons.lang3.NotImplementedException;
 import static org.opennms.features.deviceconfig.service.DeviceConfigService.DEVICE_CONFIG_PREFIX;
 
 import java.io.ByteArrayOutputStream;
@@ -94,7 +95,9 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
         "lastupdated", "lastUpdated",
         "devicename", "ipInterface.node.label",
         "lastbackup", "createdTime",
-        "ipaddress", "ipInterface.ipAddr"
+        "ipaddress", "ipInterface.ipAddr",
+        "location", "ipInterface.node.location.locationName",
+        "status", "status"
     );
 
     private final DeviceConfigDao deviceConfigDao;
@@ -493,7 +496,7 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
         dto.setConfig(config);
         dto.setFailureReason(queryResult.getFailureReason());
 
-        DeviceConfigStatus backupStatus = DeviceConfig.determineBackupStatus(queryResult.getLastUpdated(), queryResult.getLastSucceeded());
+        DeviceConfigStatus backupStatus = queryResult.getStatusOrDefault();
         dto.setIsSuccessfulBackup(backupStatus.equals(DeviceConfigStatus.SUCCESS));
         dto.setBackupStatus(backupStatus.name().toLowerCase(Locale.ROOT));
 
@@ -529,7 +532,7 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
         dto.setConfig(config);
         dto.setFailureReason(deviceConfig.getFailureReason());
 
-        DeviceConfigStatus backupStatus = DeviceConfig.determineBackupStatus(deviceConfig);
+        DeviceConfigStatus backupStatus = deviceConfig.getStatusOrDefault();
         dto.setIsSuccessfulBackup(backupStatus.equals(DeviceConfigStatus.SUCCESS));
         dto.setBackupStatus(backupStatus.name().toLowerCase(Locale.ROOT));
 
