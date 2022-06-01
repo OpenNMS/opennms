@@ -1725,7 +1725,7 @@
     <jasperreportsVersion>6.3.0</jasperreportsVersion>
     <jasperreportsMavenPluginVersion>1.0-beta-4-OPENNMS-20160912-1</jasperreportsMavenPluginVersion>
     <!-- this should match what's in Karaf's lib/jdk9plus directory -->
-    <jaxbRuntimeVersion>2.3.3</jaxbRuntimeVersion>
+    <jaxbRuntimeVersion>3.0.2</jaxbRuntimeVersion>
     <!-- this should match what's in Karaf's lib/jdk9plus directory -->
     <jakartaXmlBindVersion>2.3.3</jakartaXmlBindVersion>
     <jcifsVersion>2.1.6</jcifsVersion>
