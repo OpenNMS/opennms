@@ -1,10 +1,10 @@
 [[log-statistics]]
-= Instrumentation Log Statistics
+= Instrumentation Log Reader
 
 The instrumentation log reader provides information on how long data collection takes for each node in the system, and which nodes are taking the most time.
 You can view this information in the Instrumentation Log Statistics UI (menu:Gears icon[Additional Tools>Instrumentation Log Reader].
 
-The instrumentation log reader requires instrumentation logs produced with a DEBUG level.
+By default, the instrumentation log level is INFO.
 The instrument log reader reads each line of the file to determine the time at which events took place during data collection, and uses that information to compute the following information:
 
 . average time per collection of a service
