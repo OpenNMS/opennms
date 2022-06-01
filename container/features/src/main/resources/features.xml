@@ -498,8 +498,10 @@
         <bundle>mvn:org.opennms/opennms-config/${project.version}</bundle>
     </feature>
     <feature name="opennms-kafka" version="${project.version}" description="OpenNMS :: Features :: Kafka">
+        <feature prerequisite="true">wrap</feature>
         <feature>jackson-core</feature>
         <bundle dependency="true">mvn:org.scala-lang/scala-library/${scalaLibraryVersion}</bundle>
+        <bundle dependency="true">wrap:mvn:org.apache.zookeeper/zookeeper/${zookeeperVersion}</bundle>
         <bundle dependency="true">mvn:com.typesafe.scala-logging/scala-logging_${scalaVersion}/${scalaLoggingVersion}</bundle>
         <bundle dependency="true">wrap:mvn:com.yammer.metrics/metrics-core/2.2.0$Bundle-Version=2.2.0&amp;Export-Package=*;-noimport:=true;version="2.2.0"</bundle>
         <bundle dependency="true">wrap:mvn:com.yammer.metrics/metrics-annotation/2.2.0$Bundle-Version=2.2.0&amp;Export-Package=*;-noimport:=true;version="2.2.0"</bundle>

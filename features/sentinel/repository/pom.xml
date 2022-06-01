@@ -86,6 +86,7 @@
                                 <feature>sentinel-plugin-sample</feature>
 
                                 <!-- Other features -->
+                                <feature>cassandra-driver/${cassandraVersion}</feature>
                                 <feature>hawtio</feature>
                             </features>
                             <repository>${project.build.directory}/maven-repo</repository>
@@ -168,6 +169,13 @@
             <artifactId>opennms</artifactId>
             <version>${project.version}</version>
             <classifier>features</classifier>
+            <type>xml</type>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.karaf</groupId>
+            <artifactId>opennms</artifactId>
+            <version>${project.version}</version>
+            <classifier>sentinel</classifier>
             <type>xml</type>
         </dependency>
         <dependency>

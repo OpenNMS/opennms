@@ -1675,7 +1675,7 @@
     <camelVersion>2.19.1</camelVersion>
     <cassandraUnitVersion>3.11.2.0</cassandraUnitVersion>
     <!-- Match Newts version -->
-    <cassandraVersion>3.5.0</cassandraVersion>
+    <cassandraVersion>3.11.2</cassandraVersion>
     <cloverVersion>3.2.0</cloverVersion>
     <commonsBeanutilsVersion>1.9.4</commonsBeanutilsVersion>
     <commonsCodecVersion>1.15</commonsCodecVersion>
@@ -1696,6 +1696,7 @@
     <cronParserCoreVersion>3.5</cronParserCoreVersion>
     <c3p0Version>0.9.5.4</c3p0Version>
     <curatorVersion>3.2.1</curatorVersion>
+    <curatorTestVersion>2.9.1</curatorTestVersion>
     <cxfVersion>3.5.1</cxfVersion>
     <cxfServiceDescriptionOpenapiVersion>3.2.4</cxfServiceDescriptionOpenapiVersion>
     <cxfXjcVersion>3.3.0</cxfXjcVersion>
@@ -1835,7 +1836,7 @@
     <xmlApisExtVersion>1.3.04</xmlApisExtVersion>
     <wsdl4jVersion>1.6.3</wsdl4jVersion>
     <wsmanVersion>1.2.3</wsmanVersion>
-    <zookeeperVersion>3.4.7</zookeeperVersion>
+    <zookeeperVersion>3.5.10</zookeeperVersion>
     <zookeeper2Version>3.6.3</zookeeper2Version>
     <zstdJniVersion>1.5.2-1</zstdJniVersion>
     <minaSshdVersion>2.8.0</minaSshdVersion>
@@ -3651,6 +3652,66 @@
         <groupId>org.apache.camel</groupId>
         <artifactId>camel-spring</artifactId>
         <version>${camelVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.curator</groupId>
+        <artifactId>curator-client</artifactId>
+        <version>${curatorVersion}</version>
+        <exclusions>
+          <exclusion>
+            <artifactId>log4j</artifactId>
+            <groupId>log4j</groupId>
+          </exclusion>
+          <exclusion>
+            <artifactId>org.apache.zookeeper</artifactId>
+            <groupId>zookeeper</groupId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.curator</groupId>
+        <artifactId>curator-framework</artifactId>
+        <version>${curatorVersion}</version>
+        <exclusions>
+          <exclusion>
+            <artifactId>log4j</artifactId>
+            <groupId>log4j</groupId>
+          </exclusion>
+          <exclusion>
+            <artifactId>org.apache.zookeeper</artifactId>
+            <groupId>zookeeper</groupId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.curator</groupId>
+        <artifactId>curator-recipes</artifactId>
+        <version>${curatorVersion}</version>
+        <exclusions>
+          <exclusion>
+            <artifactId>log4j</artifactId>
+            <groupId>log4j</groupId>
+          </exclusion>
+          <exclusion>
+            <artifactId>org.apache.zookeeper</artifactId>
+            <groupId>zookeeper</groupId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.curator</groupId>
+        <artifactId>curator-test</artifactId>
+        <version>${curatorTestVersion}</version>
+        <exclusions>
+          <exclusion>
+            <artifactId>log4j</artifactId>
+            <groupId>log4j</groupId>
+          </exclusion>
+          <exclusion>
+            <artifactId>org.apache.zookeeper</artifactId>
+            <groupId>zookeeper</groupId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.apache.xmlgraphics</groupId>
