@@ -81,8 +81,10 @@
 ** xref:service-assurance/monitors/VmwareMonitor.adoc[]
 ** xref:service-assurance/monitors/WebMonitor.adoc[]
 ** xref:service-assurance/monitors/Win32ServiceMonitor.adoc[]
+** xref:service-assurance/monitors/WmiMonitor.adoc[]
 ** xref:service-assurance/monitors/WsManMonitor.adoc[]
 ** xref:service-assurance/monitors/XmpMonitor.adoc[]
+
 * xref:telemetryd/introduction.adoc[]
 ** xref:telemetryd/listeners/introduction.adoc[]
 *** xref:telemetryd/listeners/tcp.adoc[]
