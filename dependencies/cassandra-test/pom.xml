@@ -84,8 +84,9 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <!-- has to match the version in cassandra-unit, don't ever depend on newts-cassandra-test as anything but scope=test! -->
-      <version>21.0</version>
+      <!-- can't go past 25 for now, this should only apply to scope=test
+           see: https://github.com/jsevellec/cassandra-unit/issues/336 -->
+      <version>25.1-jre</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -101,8 +102,7 @@
     <dependency>
       <groupId>com.datastax.cassandra</groupId>
       <artifactId>cassandra-driver-core</artifactId>
-      <!-- match cassandraunit -->
-      <version>3.7.1</version>
+      <version>3.11.2</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>
