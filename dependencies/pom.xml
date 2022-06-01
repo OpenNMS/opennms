@@ -17,6 +17,7 @@
     <module>aws</module>
     <module>camel</module>
     <module>camel-test</module>
+    <module>cassandra-test</module>
     <module>cxf</module>
     <module>dnsjava</module>
     <module>drools</module>
