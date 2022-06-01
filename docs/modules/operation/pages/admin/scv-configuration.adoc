@@ -1,0 +1,85 @@
+[[scv-overview]]
+= Secure Credentials Vault
+
+Secure Credentials Vault (SCV) lets you encrypt credentials the {page-component-title} system uses.
+SCV uses a Java KeyStore (JKS) to store credentials in JKS format. 
+SCV is enabled by default on OpenNMS.
+
+== Configuring SCV password
+
+ Use the System property `org.opennms.features.scv.jceks.key` to configure the SCV password.
+Keystore file is stored in `${OPENNMS_HOME}/etc` as `scv.jce`.
+
+== Storing credentials in SCV
+
+SCV entries are identified by an `alias`. 
+For each alias, you can store `username`, `password`, and a set of key-value pair attributes.
+To access or add credentials, navigate to *UI Preview>Secure Credentials Vault*.
+
+== Accessing SCV entries
+
+Access SCV entries from metadata with context `scv`. 
+
+For example: ${scv:juniper-vm:username}
+This metadata expression can access the username from the `juniper-vm` alias.
+
+For example: ${scv:juniper-vm:password}
+This metadata expression can access the password from the `juniper-vm` alias.
+
+For ex: ${scv:juniper-vm:user1}
+This metadata expression can access the `user1` property from the `juniper-vm` alias.
+
+== Karaf commands
+
+You can update and access SCV entries from the Karaf shell.
+
+[source, karaf]
+----
+ssh -p 8101 admin@localhost
+----
+
+Once in the shell, you can set credentials from the `scv-set` command as follows:
+
+[source, console]
+.Set SCV entries
+----
+admin@opennms()> scv-set --help
+DESCRIPTION
+        opennms:scv-set
+
+	Sets and securely store the credentials for the given alias.
+
+SYNTAX
+        opennms:scv-set alias username password
+
+ARGUMENTS
+        alias
+                Alias used to retrieve the credentials.
+                (required)
+        username
+                Username to store.
+                (required)
+        password
+                Password to store.
+                (required)
+----
+
+You can also access SCV entries from the `scv-get` command as follows:
+
+[source, console]
+.Get SCV entries
+----
+admin@opennms()> scv-get --help
+DESCRIPTION
+        opennms:scv-get
+
+	Retrieves the username and attributes for the given alias.
+
+SYNTAX
+        opennms:scv-get alias
+
+ARGUMENTS
+        alias
+                Alias used to retrieve the credentials.
+                (required)
+----
