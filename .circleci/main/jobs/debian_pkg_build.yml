@@ -28,33 +28,33 @@ jobs:
             export CCI_VAADINJAVAMAXMEM=768m
             export MAVEN_OPTS="-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
             .circleci/scripts/makedeb.sh sentinel
-      #- sign-packages/sign-debs:
-      #    skip_if_forked_pr: true
-      #    gnupg_home: ~/tmp/gpg
-      #    gnupg_key: opennms@opennms.org
-      #    packages: target/debs/*.deb
-      #- run:
-      #    name: Gather system logs
-      #    when: always
-      #    command: |
-      #      mkdir -p ~/build-results/system-logs
-      #      (dmesg || :) > ~/build-results/system-logs/dmesg 2>&1
-      #      (ps auxf || :) > ~/build-results/system-logs/ps 2>&1
-      #      (free -m || :) > ~/build-results/system-logs/free 2>&1
-      #      (docker stats --no-stream || :) > ~/build-results/system-logs/docker_stats 2>&1
-      #      cp -R /tmp/jvmprocmon ~/build-results/system-logs/ || :
-      ##- setup_remote_docker:
-      #    docker_layer_caching: true
-      #- run:
-      #    name: Fetch DEB artifacts and build horizon container image
-      #    command: |
-      #      cd opennms-container/horizon
-      #      env DOCKER_ARCH="linux/amd64" ./build_container_image.sh
-      #- run:
-      #    name: Fetch DEB artifacts and build sentinel container image
-      #    command: |
-      #      cd opennms-container/sentinel
-      #      env DOCKER_ARCH="linux/amd64" ./build_container_image.sh
+      - sign-packages/sign-debs:
+          skip_if_forked_pr: true
+          gnupg_home: ~/tmp/gpg
+          gnupg_key: opennms@opennms.org
+          packages: target/debs/*.deb
+      - run:
+          name: Gather system logs
+          when: always
+          command: |
+            mkdir -p ~/build-results/system-logs
+            (dmesg || :) > ~/build-results/system-logs/dmesg 2>&1
+            (ps auxf || :) > ~/build-results/system-logs/ps 2>&1
+            (free -m || :) > ~/build-results/system-logs/free 2>&1
+            (docker stats --no-stream || :) > ~/build-results/system-logs/docker_stats 2>&1
+            cp -R /tmp/jvmprocmon ~/build-results/system-logs/ || :
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: Fetch OpenNMS Debian artifacts and build horizon container image
+          command: |
+            cd opennms-container/horizon
+            env DOCKER_ARCH="linux/amd64" ./build_container_image.sh
+      - run:
+          name: Fetch Sentinel Debian artifacts and build sentinel container image
+          command: |
+            cd opennms-container/sentinel
+            env DOCKER_ARCH="linux/amd64" ./build_container_image.sh
       #- store_artifacts:
       #    when: always
       #    path: ~/build-results
