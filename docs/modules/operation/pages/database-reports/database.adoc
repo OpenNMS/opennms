@@ -205,9 +205,6 @@ NOTE: If the `Read Fields` functionality is not available, use the `Data preview
 [[ga-database-reports-access-performance-data]]
 == Accessing performance data
 
-WARNING: Before OpenNMS Horizon 17 and OpenNMS Meridian 2016, you could access the performance data stored in .rrd or .jrobin files directly by using the jrobin language extension the RrdDataSource provides.
-         This is no longer possible; you must use the Measurements Datasource.
-
 To access performance data within reports, we created a custom Measurement Datasource that lets you query the Measurements API and process the returned data in your reports.
 Please refer to the link:http://docs.opennms.org/opennms/branches/develop/guide-development/guide-development.html#_measurements_api[official Measurements API documentation] on how to use the Measurements API.
 
