@@ -65,9 +65,9 @@
       ref="tooltip"
       class="tooltip"
       :style="{ ...tooltipPos }"
-      v-if="vertices[targetNodeId] && vertices[targetNodeId].namespace === 'nodes'"
+      v-if="vertices[targetNodeId] && vertices[targetNodeId].tooltip"
     >
-      <div v-html="vertices[targetNodeId]?.tooltip ?? ''"></div>
+      {{vertices[targetNodeId].tooltip}}
     </div>
   </div>
   <NoFocusMsg
@@ -141,6 +141,7 @@ const menuYPos = ref(0)
 const groupClick = ref(false)
 
 const getD3NodeCoords = () => d3Nodes.value.filter((d3Node) => d3Node.id === targetNodeId.value).map((d3Node) => ({ x: d3Node.x, y: d3Node.y }))[0]
+
 const closeContextMenu = () => showContextMenu.value = false
 onClickOutside(contextMenu, () => closeContextMenu())
 
@@ -152,7 +153,9 @@ const highlightFocusedObjects = computed<boolean>(() => store.state.topologyModu
 
 const tooltipPos = computed(() => {
   const defaultPos = { left: '-9999px', top: '-99999px' }
+
   if (!graph.value || !tooltip.value) return defaultPos
+
   if (!targetNodeId.value) return defaultPos
 
   // attempt to get the node position from the layout. If layout is d3, use the function
@@ -162,9 +165,32 @@ const tooltipPos = computed(() => {
   // translate coordinates: SVG -> DOM
   const domPoint = graph.value.translateFromSvgToDomCoordinates(nodePos)
 
+  const additionalOffset = {
+    nodeIconWidth: 32,
+    tooltipMinWidth: 100,
+    tooltipOffsetWidth: tooltip.value.offsetWidth,
+    tooltipMinHeight: 30,
+    tooltipOffsetHeight: tooltip.value.offsetHeight,
+    domPointXAjustment: 4 // adjustment needed to horizontally centered tooltip relatively to node icon
+  }
+
+  const pos = {
+    left: (
+      Number(domPoint.x)
+        + (additionalOffset.nodeIconWidth / 2)
+        - ((additionalOffset.tooltipOffsetWidth - additionalOffset.tooltipMinWidth) / 2)
+        - additionalOffset.domPointXAjustment)
+      .toFixed(0),
+    top: (
+      Number(domPoint.y)
+        - (additionalOffset.tooltipOffsetHeight
+        - additionalOffset.tooltipMinHeight))
+      .toFixed(0)
+  }
+
   return {
-    left: displayTooltip.value ? (domPoint.x - 120 + 'px') : (-9999 + 'px'),
-    top: displayTooltip.value ? (domPoint.y - 130 + 'px') : (-9999 + 'px')
+    left: displayTooltip.value ? `${pos.left}px` : `${defaultPos.left}`,
+    top: displayTooltip.value ? `${pos.top}px` : `${defaultPos.top}`
   }
 })
 
