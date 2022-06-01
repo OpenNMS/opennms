@@ -202,14 +202,26 @@
         <bundle>mvn:org.opennms.features.distributed/coordination-shell/${project.version}</bundle>
     </feature>
 
+    <feature name="cassandra-driver" version="${cassandraVersion}" description="Datastax Cassandra Driver">
+        <feature version="${guavaVersion}" prerequisite="true">guava</feature>
+        <feature version="[${netty4Version},5)">netty4</feature>
+        <bundle dependency="true">mvn:io.dropwizard.metrics/metrics-core/${dropwizardMetricsVersion}</bundle>
+        <bundle dependency="true">mvn:com.github.jnr/jnr-ffi/2.1.7</bundle>
+        <bundle dependency="true">mvn:com.github.jnr/jnr-posix/3.0.44</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/${jackson2Version}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson2Version}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/${jackson2Version}</bundle>
+        <bundle dependency="true">mvn:com.datastax.cassandra/cassandra-driver-core/${cassandraVersion}</bundle>
+    </feature>
+
     <feature name="zookeeper-dependencies" version="${zookeeperVersion}" description="ZooKeeper Dependencies">
+        <feature version="${guavaVersion}" prerequisite="true">guava</feature>
         <bundle dependency="true">mvn:org.apache.zookeeper/zookeeper/${zookeeperVersion}</bundle>
-        <bundle dependency="true">mvn:com.google.guava/guava/16.0.1</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/2.10.0</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/2.10.0</bundle>
-        <bundle dependency="true">mvn:org.apache.curator/curator-client/2.9.1</bundle>
-        <bundle dependency="true">mvn:org.apache.curator/curator-framework/2.9.1</bundle>
-        <bundle dependency="true">mvn:org.apache.curator/curator-recipes/2.9.1</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/${jackson2Version}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/${jackson2Version}</bundle>
+        <bundle dependency="true">mvn:org.apache.curator/curator-client/${curatorVersion}</bundle>
+        <bundle dependency="true">mvn:org.apache.curator/curator-framework/${curatorVersion}</bundle>
+        <bundle dependency="true">mvn:org.apache.curator/curator-recipes/${curatorVersion}</bundle>
     </feature>
 
     <!-- Newts -->
