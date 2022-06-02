@@ -2,10 +2,11 @@
 = Event Analysis Report
 
 
-This report provides an analysis of all events over the past 30 days.  This report contains the following six sections:
+This report provides an analysis of all events over the past 30 days.
+This report contains the following sections:
 
 * All events by source
-* Top 25 events by unique event identifier ("UEI") and event source
+* Top 25 events by unique event identifier (UEI) and event source
 * Top 25 event hours
 * Top 25 events by node
 * Top 25 events by node and UEI

@@ -3,7 +3,7 @@
 
 This report provides a summary of availability across one or more surveillance categories.
 
-Each surveillance category includes a table of average, minimum and maximum values for the following availability data for the specified surveillance category over the specified date range:
+Each surveillance category includes a table of average, minimum, and maximum values for the following availability data for the specified surveillance category over the specified date range:
 
 * Number of outages
 * Mean Time To Repair ("MTTR") (in hours)
@@ -12,7 +12,8 @@ Each surveillance category includes a table of average, minimum and maximum valu
 * Percent availability (per unit in category)
 
 This report has a pie chart showing percent available time to outage time.
-It then provides a stacked bar chart showing the available time and the outage time for each day in the specified date range. The report then lists the top 25 nodes based on downtime and their respective and downtime percentages.
+It then provides a stacked bar chart showing the available time and the outage time for each day in the specified date range. 
+The report then lists the top 25 nodes based on downtime and their respective and downtime percentages.
 
 You can customize the report with a company logo (approximately 195px by 50px) in the header and footer.
 

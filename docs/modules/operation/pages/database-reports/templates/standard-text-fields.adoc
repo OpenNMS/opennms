@@ -13,6 +13,6 @@ It can also be used with other characters, for example, typing `prod%` as the va
 
 Typing `%prod%` into the text field will match any record that has the four characters "prod" anywhere in that text field.
 
-Any string that can be used in a Postgres query element that uses the LIKE predicate operator will work.
+Any string that can be used in a PostgreSQL query element that uses the LIKE predicate operator will work.
 ****
 ====

@@ -3,11 +3,11 @@
 
 
 This assessment management report assists in creating and reviewing a network device maintenance strategy.
-This report has a pie chart with each slice representing the three different contract states: in contract, expired and no contract.
+This report has a pie chart with each slice representing the three different contract states: in contract, expired, and no contract.
 
-The next chart is a stacked bar chart and groups the devices by their age and shows the number of assets in each age group that have an active contract, an expired contract or no contract.
+The next chart is a stacked bar chart and groups the devices by their age and shows the number of assets in each age group that have an active contract, an expired contract, or no contract.
 
-The last chart is a stacked bar chart that breaks the devices down by age groups and shows the number of devices in each group that have active contracts that are valid for the next twelve months and devices whose contract expires in the next twelve months.
+The last chart is a stacked bar chart that breaks the devices down by age group and shows the number of devices in each group that have active contracts that are valid for the next 12 months and devices whose contract expires in the next 12 months.
 
 // COMMENT: The text in the app under this report title has a couple of typos in it.  It should probably be rewritten to be a little more clear.
 
@@ -26,7 +26,7 @@ You can customize this report with a company logo (approximately 195px by 50px) 
 | Default
 
 | Date Format
-| Specify the date format in the maintenance contracts date fields
+| Specify the date format in the maintenance contracts date fields.
 | YYYY-MM-DD
 // QUESTION: Not sure why this is here.  Shouldn't the expiration date be stored as a date field?  If so, format is not necessary, unless it is for output.  If it is an output format preference, it should be a more generic parameter.  If all the dates in the maintenance contracts have different formats, then this will be problematic.
 

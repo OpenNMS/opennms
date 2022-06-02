@@ -79,7 +79,8 @@ This is not a JasperReport.
 
 | xref:operation:database-reports/templates/maintenance-stragegy.adoc#maintenance-strategy-report[Maintenance Contracts Strategy]
 | Asset Management
-| Provides an overview of assets, showing how many within each age group have an active contract, no contract or an expired contract; and shows how many will be expiring in the next 12 months.
+| Provides an overview of assets, showing how many within each age group have an active contract, no contract, or an expired contract. 
+It also shows how many will expire in the next 12 months.
 
 | xref:operation:database-reports/templates/morning.adoc[Early Morning Report]
 | Status

@@ -4,9 +4,10 @@
 
 This report provides a global overview of outages, notifications, and events in the last 24 hours.
 
-In the Outage Overview section, there are two pie charts, one that shows the current outages and one that shows the outages resolved in the last 24 hours. The slices of each pie represent the percent of the four types of outages: nodes, interfaces, services, and management.
+In the Outage Overview section, there are two pie charts, one that shows the current outages and one that shows the outages resolved in the last 24 hours.
+The slices of each pie represent the percent of the four types of outages: nodes, interfaces, services, and management.
 
-The next section provides outage details in two tables, the first shows the current outages by nodes and the second table shows the resolved outages by node.
+The next section provides outage details in two tables: the first shows the current outages by nodes and the second shows the resolved outages by node.
 
 The third section is a stacked bar chart that shows the current outages stacked on the resolved outages over the last 24 hours.
 
@@ -18,8 +19,8 @@ It includes a pie chart and table showing the number of notifications by the med
 // QUESTION: I am not sure what "media type"
 
 The fifth section provides and overview of events over the last 24 hours.
-The first stacked bar chart shows, for each of the last 24 hours, the number of each of the 7 types of events: indeterminate, cleared, normal, warning, minor, major, and critical.
-The second stacked bar chart shoes the top 20 nodes with each type of event per node.
+The first stacked bar chart shows, for each of the last 24 hours, the number of each of the seven types of event: indeterminate, cleared, normal, warning, minor, major, and critical.
+The second stacked bar chart shows the top 20 nodes with each type of event per node.
 
 This report has no parameters, but you can customize it with a company logo (approximately 195px by 50px) in the page header.
 

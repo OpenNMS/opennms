@@ -10,7 +10,7 @@ This report provides the following availability data for nodes that have the use
 * Percent outage (per node in category)
 * Percent availability (per node in category)
 
-The report provides summary statistics (average, minimum and maximum) are provided for each availability data points listed above.
+The report provides summary statistics (average, minimum, and maximum) for each availability data point listed above.
 
 You can customize the report with a company logo (approximately 195px by 50px) in the header and footer.
 

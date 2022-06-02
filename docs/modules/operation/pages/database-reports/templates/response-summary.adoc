@@ -16,7 +16,7 @@ You can customize this report with a company logo (approximately 195px by 50px) 
 | Default
 
 | Surveillance Category
-| Identify one or more surveillance categories to filter nodes to be included in the report.
+| Identify one or more surveillance categories to filter nodes to include in the report.
 To select multiple categories use wildcards as described below.
 If no categories match the entered string, the report will have no data.
 | %
