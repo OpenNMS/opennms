@@ -32,8 +32,14 @@ import java.net.InetSocketAddress;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
+import org.opennms.netmgt.telemetry.api.receiver.GracefulShutdownListener;
 import org.opennms.netmgt.telemetry.api.receiver.Listener;
+import org.opennms.netmgt.telemetry.listeners.utils.NettyEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,7 +61,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import io.netty.util.internal.SocketUtils;
 
-public class TcpListener implements Listener {
+public class TcpListener implements GracefulShutdownListener {
     private static final Logger LOG = LoggerFactory.getLogger(TcpListener.class);
 
     private final String name;
@@ -70,6 +76,8 @@ public class TcpListener implements Listener {
     private EventLoopGroup workerGroup;
 
     private ChannelFuture socketFuture;
+
+    private Future<String> stopFuture;
 
     public TcpListener(final String name,
                        final TcpParser parser,
@@ -144,20 +152,55 @@ public class TcpListener implements Listener {
     }
 
     public void stop() throws InterruptedException {
-        LOG.info("Closing channel...");
-        this.socketFuture.channel().close();
-        if (this.socketFuture.channel().parent() != null) {
-            this.socketFuture.channel().parent().close();
-        }
-        var future = this.socketFuture.channel().closeFuture();
-        if (future != null) {
-            future.sync();
-        }
+        NettyEventListener workerListener = new NettyEventListener("worker");
+        NettyEventListener bossListener = new NettyEventListener("boss");
 
-        this.parser.stop();
+        LOG.info("Closing worker group...");
+        this.workerGroup.shutdownGracefully().addListener(workerListener);
 
         LOG.info("Closing boss group...");
-        this.bossGroup.shutdownGracefully().sync();
+        this.bossGroup.shutdownGracefully().addListener(bossListener);
+
+        if (this.socketFuture != null) {
+            LOG.info("Closing channel...");
+            this.socketFuture.channel().close().sync();
+            if (this.socketFuture.channel().parent() != null) {
+                this.socketFuture.channel().parent().close().sync();
+            }
+        }
+
+        LOG.info("Stopping parser...");
+        if (this.parser != null) {
+            this.parser.stop();
+        }
+
+        stopFuture = new Future<String>() {
+            @Override
+            public boolean cancel(boolean mayInterruptIfRunning) {
+                return false;
+            }
+
+            @Override
+            public boolean isCancelled() {
+                return false;
+            }
+
+            @Override
+            public boolean isDone() {
+                return workerListener.isDone() && bossListener.isDone();
+            }
+
+            @Override
+            public String get() {
+                return name + "[" + workerListener.getName() + ":" + workerListener.isDone() + ","
+                        + bossListener.getName() + ":" + bossListener.isDone() + "]";
+            }
+
+            @Override
+            public String get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+                return get();
+            }
+        };
     }
 
     @Override
@@ -179,5 +222,10 @@ public class TcpListener implements Listener {
 
     public void setPort(final int port) {
         this.port = port;
+    }
+
+    @Override
+    public Future getShutdownFuture() {
+        return stopFuture;
     }
 }
