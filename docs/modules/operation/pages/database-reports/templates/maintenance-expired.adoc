@@ -6,8 +6,7 @@ This report can also show assets with maintenance contracts that have already ex
 
 The report includes a table that list assets that match the criteria defined by the parameters.
 This table is sorted by node and then ordered by expiration date.
-The report includes the node label, manufacturer, maintenance contract, expiration date and status.
-// QUESTION: It is not clear what is in the field "maintenance contract" in the report.  Need answer so this is more clear.
+The report includes the node label, manufacturer, title of maintenance contract exists, expiration date and status.
 
 This table also lists the matching assets by manufacturer and includes the following additional information:
 
@@ -25,45 +24,27 @@ One logo is in the report header, another in the page header and a third in the 
 == Parameters
 
 [options="header, autowidth"]
-[cols="1,2,3,4"]
+[cols="1,2,3"]
 
 |===
 | Field
-| Type
 | Description
 | Default
 
 | Show Expired Maintenance Contracts
-| String
 | Specify true or false.
 True will include contracts that have already expired along with assets with maintenance contracts that will expire within the number of days specified for the warning threshold below.
 | true
 
 | Format for Expire Date
-| String
 | Specify the format for the expiration date.
 | YYYY-MM-DD
-// QUESTION: Not sure why this is here.  Shouldn't the expiration date be stored as a date field?  If so, format is not necessary, unless it is for output.  If it is an output format preference, it should be a more generic parameter.  If all the dates in the maintenance contracts have different formats, then this will be problematic.
+
+// COMMENT: Not sure why this is here.  Shouldn't the expiration date be stored as a date field?  If so, format is not necessary, unless it is for output.  If it is an output format preference, it should be a more generic parameter.  If all the dates in the maintenance contracts have different formats, then this will be problematic.
 
 | Warning Threshold for Contract Expiration
-| Integer
 | The number of days in the threshold period.
 | 20
-
-| Report Format
-| Choice
-| Dropdown menu with a choice of PDF or CSV
-| PDF
-
-| Deliver the Report
-| Checkbox
-| Check the box to deliver the report via email upon report creation
-| Unchecked
-
-| Schedule the Report
-| Checkbox
-| Check this box to create a schedule for the report
-| Unchecked
 
 |===
 

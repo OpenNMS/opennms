@@ -2,56 +2,39 @@
 = Response Time by Node Report
 
 This report lists the response times by nodes across specified surveillance categories.
-// QUESTION: The above text comes from the app and it implies that more than one category can be selected, but the syntax for that is not clear.
 
-It produces a table of all assets that match the specified category and for each IP interface, it provides the average, minimum and maximum ICMP latency of the period of the report.
+This report has a table for each matching surveillance category that contains the devices and a row for  each IP interface the minimum, average, and maximum ICMP latency of the period of the report.
 
 This report can be customized with company logos in the page header and page footer that is approximately 150px by 50px.
 
 == Parameters
 
 [options="header, autowidth"]
-[cols="1,2,3,4"]
+[cols="1,2,3"]
 
 |===
 | Field
-| Type
 | Description
 | Default
 
 | Surveillance Category
-| String
-| Identify a category to filter nodes to be included in the report.
-If no categories match the entered string, the report will not have data.
+| Identify one or more surveillance categories to filter nodes to be included in the report.
+To select multiple categories use wildcards as described below.
+If no categories match the entered string, the report will have no data.
 | %
+
 // COMMENT: The default should probably be set to "Routers" like the Availability Summary.
 
 | Start Date
-| Date
 | The starting date for the data contained in this report.
-| Today - 7 days
+| 7 days before today
 
 | End Date
-| Date
 | The end date for the data contained in this report.
 If the End Date is later than the Start Date, the report will fail.
 | Today
 
-| Report Format
-| Choice
-| Dropdown menu with a choice of PDF or CSV
-| PDF
-
-| Deliver the Report
-| Checkbox
-| Check the box to deliver the report via email upon report creation
-| Unchecked
-
-| Schedule the Report
-| Checkbox
-| Check this box to create a schedule for the report
-| Unchecked
-
 |===
 
+include::standard-text-fields.adoc[]
 include::standard.adoc[]

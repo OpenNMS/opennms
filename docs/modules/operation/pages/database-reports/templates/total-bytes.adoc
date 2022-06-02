@@ -15,45 +15,27 @@ This report can be customized with a company logo in the header and footer that 
 == Parameters
 
 [options="header, autowidth"]
-[cols="1,2,3,4"]
+[cols="1,2,3"]
 
 |===
 | Field
-| Type
 | Description
 | Default
 
 | Surveillance Category
-| String
-| Identify a category to filter nodes to be included in the report.
-If no categories match the entered string, the report will not have data.
+| Identify one or more surveillance categories to filter nodes to be included in the report.
+To select multiple categories use wildcards as described below.
+If no categories match the entered string, the report will have no data.
 | Routers
 
 | Start Date
-| Date
 | The starting date for the data contained in this report.
-| Today - 7 days
+| 7 days before today
 
 | End Date
-| Date
 | The end date for the data contained in this report. If the End Date is later than the Start Date, the report will fail.
 | Today
-
-| Report Format
-| Choice
-| Dropdown menu with a choice of PDF or CSV
-| PDF
-
-| Deliver the Report
-| Checkbox
-| Check the box to deliver the report via email upon report creation
-| Unchecked
-
-| Schedule the Report
-| Checkbox
-| Check this box to create a schedule for the report
-| Unchecked
-
 |===
 
+include::standard-text-fields.adoc[]
 include::standard.adoc[]

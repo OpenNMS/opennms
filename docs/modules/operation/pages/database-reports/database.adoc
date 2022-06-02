@@ -48,15 +48,16 @@ OpenNMS provides the following sample report templates, located in `$\{OPENNMS_H
 | Status
 | List of availability statistics for each node in user-specified category during a user-specified number of days.
 
-| Default Calendar
-| Unknown
-| xxxx
-// QUESTION: Need help getting info on this report.  It is not a JasperReport.
+| xref:operation:database-reports/templates/availability.adoc[Default Calendar]
+| Status
+| Same Availability information as Default Classic except the two tables on daily availability are presented as a calendar.
+This is not a JasperReport.
 
-| Default Classic
-| Unknown
-| xxxx
-// QUESTION: Need help getting info on this report.  It is not a JasperReport.
+| xref:operation:database-reports/templates/availability.adoc[Default Classic]
+| Status
+| Availability information of network focusing on last month and current month to date.
+Information on devices with most problems and monitored services.
+This is not a JasperReport.
 
 | xref:operation:database-reports/templates/event.adoc[Event Analysis]
 | Status
@@ -65,7 +66,7 @@ OpenNMS provides the following sample report templates, located in `$\{OPENNMS_H
 | xref:operation:database-reports/templates/grafana.adoc[Grafana Dashboards]
 | Grafana
 | Create Report from Grafana Dashboard, 3 options are provided.
-// ToDo: Get more detail on reports, find out why helper file with zoneid is not work; check to see if zoneid is depracated.
+// COMMENT: Why is helper file with zoneid not working; check to see if zoneid is depracated.
 
 | xref:operation:database-reports/templates/interface-avail.adoc[Interface Availability]
 | Status

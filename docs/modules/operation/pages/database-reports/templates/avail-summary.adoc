@@ -5,61 +5,46 @@
 == Report Contents
 
 This report provides a summary of availability across one or more surveillance categories.
-One page report with average, minimum and maximum values for the following availability data for the specified surveillance category over the specified date range:
+
+Each surveillance category includes a table of average, minimum and maximum values for the following availability data for the specified surveillance category over the specified date range:
 
 * Number of Outages
-* Mean Time To Restore ("MTTR") (in hours)
+* Mean Time To Repair ("MTTR") (in hours)
 * Length of Time for Each Outage (in hours)
 * Percent Outage (per unit in category)
 * Percent Availability (per unit in category)
-//QUESTION: Need to validate explanation of the last two
 
 This report has a pie chart showing percent available time to outage time.
-It can be customized with a company logo in the header that is approximately 195px by 50px.
+It then provides a stacked bar chart showing the available time and the outage time for each day in the specified date range. The report then lists the top 25 nodes based on downtime and their respective and downtime percentages.
+
+This report can be customized with a company logo in the header that is approximately 195px by 50px.
 
 == Parameters
 
 [options="header, autowidth"]
-[cols="1,2,3,4"]
+[cols="1,2,3"]
 
 |===
 | Field
-| Type
 | Description
 | Default
 
 | Surveillance Category
-| String
-| Identify a category to filter nodes to be included in the report. 
-If no categories match the entered string, the report will not have data.
+| Identify one or more surveillance categories to filter nodes to be included in the report.
+To select multiple categories use wildcards as described below.
+If no categories match the entered string, the report will have no data.
 | %
-//COMMENT: This default should be changed to "Routers" like the default in the Availability report.
-//COMMENT: Would it be possible to get the list of existing categories and put it into a dropdown?  That might also allow multiple categories to be selected
+// COMMENT: This default should be changed to "Routers" like the default in the Availability report.
 
 | Time Range in Days
-| Integer
 | The range in days from the Report Start Date.
 | 7
 
 | Start Date
-| Date
 | The starting date for the data contained in this report.
-| Today - 7 days
+| 7 days before today
 
-| Report Format
-| Choice
-| Dropdown menu with a choice of PDF or CSV
-| PDF
-
-| Deliver the Report
-| Checkbox
-| Check the box to deliver the report via email upon report creation
-| Unchecked
-
-| Schedule the Report
-| Checkbox
-| Check this box to create a schedule for the report
-| Unchecked
 |===
 
+include::standard-text-fields.adoc[]
 include::standard.adoc[]

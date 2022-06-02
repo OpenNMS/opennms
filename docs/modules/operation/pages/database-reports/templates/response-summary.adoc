@@ -2,56 +2,38 @@
 = Response Time Summary Report
 
 == Report Content
-This report provides a summary of the response time for nodes whose category matches the specified Surveillance Category over the specified time period.
+This report has a table for each matching surveillance category that contains the devices and a row for  each IP interface the minimum, average, and maximum ICMP latency of the period of the report. For each device in the tables, there is a stacked bar chart that shows the availability and outage time in seconds for that device.
 
 This report can be customized with a company logo in the header and footer that is approximately 195px by 50px.
-// QUESTION:  THE Response Time Summary Report and the Response Time by Node Report look like they are providing the same information.  I am sure this is not true, but I cannot identify the differences.  The summaries in the app are identical.
 
 == Parameters
 
 [options="header, autowidth"]
-[cols="1,2,3,4"]
+[cols="1,2,3"]
 
 |===
 | Field
-| Type
 | Description
 | Default
 
 
 | Surveillance Category
-| String
-| Identify a category to filter nodes to be included in the report.
-If not categories match the entered string, the report will not have data.
+| Identify one or more surveillance categories to filter nodes to be included in the report.
+To select multiple categories use wildcards as described below.
+If no categories match the entered string, the report will have no data.
 | %
 // COMMENT: The default should probably be set to "Routers" like the Availability Summary.
 
 | Report Time Range
-| Integer
 | The range in days from the report start date. Must be an integer.
 | 7
 
 | Start Date
-| Date
 | The starting date for the data contained in this report.
-| Today - 7 days
-
-| Report Format
-| Choice
-| Dropdown menu with a choice of PDF or CSV
-| PDF
-
-| Deliver the Report
-| Checkbox
-| Check the box to deliver the report via email upon report creation
-| Unchecked
-
-| Schedule the Report
-| Checkbox
-| Check this box to create a schedule for the report
-| Unchecked
+| 7 days before today
 
 
 |===
 
+include::standard-text-fields.adoc[]
 include::standard.adoc[]

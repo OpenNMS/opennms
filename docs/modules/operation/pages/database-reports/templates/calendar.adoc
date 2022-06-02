@@ -5,24 +5,4 @@
 Standard OpenNMS report in calendar format.
 
 
-== Parameters
-
-[options="header"]
-[cols="1,3"]
-
-|===
-| Field
-| Description
-
-| Report Category
-|
-
-| End date
-|
-
-|===
-
-
-
-
-include::standard.adoc[]
+// ToDo: The contents of this report are exactly the same as the "Classic" report with the only exception being that table 2 and table 3 are replaced with calendars with day on the calendar having the corresponding data from the row of the corresponding table in the Classic Report.  I can either make that reference and explain the difference or I can copy and past the text from the Classic report and make the edit here.  I believe the latter approach would be better.

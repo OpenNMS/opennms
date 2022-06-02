@@ -2,50 +2,33 @@
 = Maintenance Contracts Strategy Report
 
 == Report Contents
-This assessment management report is designed to assist in creating and reviewing a network management maintenance strategy.
-This report has a pie chart showing the number of assets in the various contract state (for example, active contract, expired contract, no contract, etc.)
-//QUESTION: confirm these are the correct slices.  It is not clear from the SQL query.  I think there are only three states but the sample pie chart shows five slices.
+This assessment management report is designed to assist in creating and reviewing a network device maintenance strategy.
+This report has a pie chart with each slice representing the three different contract states: in contract, expired and no contract.
 
-The next chart is a stacked bar chart and groups the assets by their age and shows the number of assets in each age group that have an active contract, an expired contract or no contract.
+The next chart is a stacked bar chart and groups the devices by their age and shows the number of assets in each age group that have an active contract, an expired contract or no contract.
 
-The last chart is a stacked bar chart that breaks the assets down by age groups and shows the number of assets in each group that have active contracts that are valid for the next twelve months and assets whose contract expires in the next twelve months.
-//QUESTION: Is "asset" the right noun.
+The last chart is a stacked bar chart that breaks the devices down by age groups and shows the number of devices in each group that have active contracts that are valid for the next twelve months and devices whose contract expires in the next twelve months.
 
 // COMMENT: The text in the app under this report title has a couple of typos in it.  It should probably be rewritten to be a little more clear.
+
 // COMMENT: The text on the report also needs to be edited.
-This report can be customized with a company logo in the page header that is approximately 195px by 50px
+
+This report can be customized with a company logo in the page header that is approximately 195px by 50px.
 
 == Parameters
 
 [options="header, autowidth"]
-[cols="1,2,3,4"]
+[cols="1,2,3"]
 
 |===
 | Field
-| Type
 | Description
 | Default
 
 | Date Format
-| String
 | Specify the date format in the maintenance contracts date fields.
 | YYYY-MM-DD
 // QUESTION: Not sure why this is here.  Shouldn't the expiration date be stored as a date field?  If so, format is not necessary, unless it is for output.  If it is an output format preference, it should be a more generic parameter.  If all the dates in the maintenance contracts have different formats, then this will be problematic.
-
-| Report Format
-| Choice
-| Dropdown menu with a choice of PDF or CSV
-| PDF
-
-| Deliver the Report
-| Checkbox
-| Check the box to deliver the report via email upon report creation
-| Unchecked
-
-| Schedule the Report
-| Checkbox
-| Check this box to create a schedule for the report
-| Unchecked
 
 |===
 
