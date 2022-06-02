@@ -653,7 +653,7 @@ workflows:
       #          - /^master-.*/
       #          - /^release-.*/
       #          - /^foundation.*/
-      #          - /^merge-foundation.*/
+      3          - /^merge-foundation.*/
       #          - /^features.*/
       #          - /.*smoke.*/
       #          - /^dependabot.*/
@@ -666,7 +666,6 @@ workflows:
             - smoke-test-core
             - smoke-test-flaky
             - smoke-test-minion
-            - smoke-test-minimal
             - smoke-test-sentinel
           filters:
             branches:
@@ -683,7 +682,6 @@ workflows:
             - smoke-test-core
             - smoke-test-flaky
             - smoke-test-minion
-            - smoke-test-minimal
             - smoke-test-sentinel
           filters:
             branches:
@@ -700,7 +698,6 @@ workflows:
             - smoke-test-core
             - smoke-test-flaky
             - smoke-test-minion
-            - smoke-test-minimal
             - smoke-test-sentinel
           filters:
             branches:
@@ -760,7 +757,6 @@ workflows:
             - smoke-test-core
             - smoke-test-flaky
             - smoke-test-minion
-            - smoke-test-minimal
             - smoke-test-sentinel
           filters:
             branches:
@@ -784,7 +780,6 @@ workflows:
             - smoke-test-core
             - smoke-test-flaky
             - smoke-test-minion
-            - smoke-test-minimal
             - smoke-test-sentinel
           filters:
             branches:
@@ -798,7 +793,6 @@ workflows:
             - smoke-test-flaky
             - smoke-test-minion
             - smoke-test-sentinel
-            - smoke-test-minimal
             - integration-test
           filters:
             branches:
@@ -815,7 +809,6 @@ workflows:
             - smoke-test-core
             - smoke-test-flaky
             - smoke-test-minion
-            - smoke-test-minimal
             - smoke-test-sentinel
           filters:
             branches:
