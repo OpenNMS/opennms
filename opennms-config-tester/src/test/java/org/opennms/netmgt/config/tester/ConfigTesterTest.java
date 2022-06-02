@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -327,18 +327,6 @@ public class ConfigTesterTest {
         testConfigFile("notifications.xml");
     }
 
-    @Test
-    @Ignore
-    public void testNsclientConfig() {
-        testConfigFile("nsclient-config.xml");
-    }
-
-    @Test
-    @Ignore
-    public void testNsclientDatacollectionConfig() {
-        testConfigFile("nsclient-datacollection-config.xml");
-    }
-
     /**
      * Used by the ActiveMQ broker embedded inside applicationContext-daemon.xml.
      */
@@ -596,18 +584,6 @@ public class ConfigTesterTest {
     public void testWSManConfigFiles() {
         testConfigFile("wsman-config.xml");
         testConfigFile("wsman-datacollection-config.xml");
-    }
-
-    @Test
-    @Ignore
-    public void testXmpConfig() {
-        testConfigFile("xmp-config.xml");
-    }
-
-    @Test
-    @Ignore
-    public void testXmpDatacollectionConfig() {
-        testConfigFile("xmp-datacollection-config.xml");
     }
 
     @Test
