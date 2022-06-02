@@ -82,11 +82,6 @@
       <version>${fstVersion}</version>
     </dependency>
     <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>com.swrve</groupId>
       <artifactId>rate-limited-logger</artifactId>
     </dependency>
@@ -97,9 +92,10 @@
       <artifactId>org.opennms.core.test-api.lib</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms.newts</groupId>
-      <artifactId>newts-cassandra-test</artifactId>
-      <version>${newtsVersion}</version>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>cassandra-test-dependencies</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
       <scope>test</scope>
       <exclusions>
         <exclusion>
