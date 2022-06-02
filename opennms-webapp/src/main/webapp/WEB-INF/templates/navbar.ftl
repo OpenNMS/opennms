@@ -88,7 +88,7 @@
                 <a class="dropdown-item" name="nav-admin-flow" href="${baseHref}admin/classification/index.jsp" style="white-space: nowrap">Flow Management</a>
               </#if>
               <#if isAdmin >
-                <a class="dropdown-item" name="nav-admin-support" href="${baseHref}support/index.htm">Support</a>
+                <a class="dropdown-item" name="nav-admin-support" href="${baseHref}support/index.jsp">Support</a>
               </#if>
               <#if request.remoteUser?has_content >
                 <a class="dropdown-item" name="nav-admin-self-service" href="${baseHref}account/selfService/index.jsp">Change Password</a>
