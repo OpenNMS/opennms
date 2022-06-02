@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -246,24 +246,6 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
         OnmsAlarm[] alarms = m_daoAlarmRepo.getMatchingAlarms(AlarmUtil.getOnmsCriteria(criteria));
         assertEquals(1, alarms.length);
     }
-
-    /*
-    @Ignore
-    @Test
-    @Transactional
-    @JUnitTemporaryDatabase
-    public void testNodeFilter(){
-        AlarmCriteria criteria = getCriteria(new NodeFilter(1));
-        
-        OnmsAlarm[] alarms = m_daoAlarmRepo.getMatchingAlarms(AlarmUtil.getOnmsCriteria(criteria));
-        assertEquals(1, alarms.length);
-        
-        criteria = getCriteria(new NodeFilter(100));
-        
-        alarms = m_daoAlarmRepo.getMatchingAlarms(AlarmUtil.getOnmsCriteria(criteria));
-        assertEquals(0, alarms.length);
-    }
-    */
 
     @Test
     @Transactional

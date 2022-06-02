@@ -156,18 +156,6 @@ public class DefaultDeviceConfigRestServiceIT {
         }
     }
 
-    @Ignore("Fix to work with DeviceConfigDao.getLatestConfigs() or delete.")
-    @Test
-    @Transactional
-    public void retrieveAll() {
-        var res = getDeviceConfigs(null, null, null, null, null, null, null, null, null, null, null);
-        assertThat(res, hasSize(VERSIONS * INTERFACES));
-        for (var itf : interfaces) {
-            var set = res.stream().filter(dc -> dc.getIpInterfaceId() == itf.getId()).collect(Collectors.toSet());
-            assertThat(set, hasSize(VERSIONS));
-        }
-    }
-
     @Test
     @Transactional
     public void filterOnInterface() {
@@ -216,47 +204,6 @@ public class DefaultDeviceConfigRestServiceIT {
             assertThat(
                 res.stream().map(DeviceConfigDTO::getLastBackupDate).map(Date::getTime).collect(toList()),
                 contains(IntStream.range(0, VERSIONS).map(i -> VERSIONS - i - 1).boxed().map(DefaultDeviceConfigRestServiceIT::createdTime).toArray()));
-        }
-    }
-
-    @Ignore("Fix to work with DeviceConfigDao.getLatestConfigs() or delete.")
-    @Test
-    @Transactional
-    public void sortAsc() {
-        for (var itf : interfaces) {
-            var res = getDeviceConfigs(null, null, "createdTime", "asc", null, null, itf.getId(), null, null, null, null);
-            assertThat(res, hasSize(VERSIONS));
-
-            assertThat(
-                res.stream().map(DeviceConfigDTO::getLastBackupDate).map(Date::getTime).collect(toList()),
-                contains(IntStream.range(0, VERSIONS).boxed().map(DefaultDeviceConfigRestServiceIT::createdTime).toArray()));
-        }
-    }
-
-    @Ignore("Fix to work with DeviceConfigDao.getLatestConfigs() or delete.")
-    @Test
-    @Transactional
-    public void sortAscWithLimitAndOffset() {
-        for (var itf : interfaces) {
-            {
-                final int limit = 5;
-                var res = getDeviceConfigs(limit, 0, "createdTime", "asc", null, null, itf.getId(), null, null, null, null);
-                assertThat(res, hasSize(limit));
-
-                assertThat(
-                    res.stream().map(DeviceConfigDTO::getLastBackupDate).map(Date::getTime).collect(toList()),
-                    contains(IntStream.range(0, limit).boxed().map(DefaultDeviceConfigRestServiceIT::createdTime).toArray()));
-            }
-            {
-                final int limit = 5;
-                final int offset = 10;
-                var res = getDeviceConfigs(limit, offset, "createdTime", "asc", null, null, itf.getId(), null, null, null, null);
-                assertThat(res, hasSize(limit));
-
-                assertThat(
-                    res.stream().map(DeviceConfigDTO::getLastBackupDate).map(Date::getTime).collect(toList()),
-                    contains(IntStream.range(offset, offset + limit).boxed().map(DefaultDeviceConfigRestServiceIT::createdTime).toArray()));
-            }
         }
     }
 

@@ -183,23 +183,22 @@ public class SshScriptingServiceImplIT {
         sshd.start();
     }
 
-    @Test
     public void testIpAddresses() throws Exception {
-        testIpAddress("::1", "0000:0000:0000:0000:0000:0000:0000:0001");
-        testIpAddress("localhost", "127.0.0.1");
+        checkIpAddress("::1", "0000:0000:0000:0000:0000:0000:0000:0001");
+        checkIpAddress("localhost", "127.0.0.1");
 
         final String anIPv4Address = "192.168.31.1";
-        testIpAddress("localhost", anIPv4Address, anIPv4Address, null);
+        checkIpAddress("localhost", anIPv4Address, anIPv4Address, null);
 
         final String anIPv6Address = "2001:0638:0301:11a0::1";
-        testIpAddress("::1", "2001:0638:0301:11a0:0000:0000:0000:0001", null, anIPv6Address);
+        checkIpAddress("::1", "2001:0638:0301:11a0:0000:0000:0000:0001", null, anIPv6Address);
     }
 
-    public void testIpAddress(final String hostname, final String expectedIp) throws Exception {
-        testIpAddress(hostname, expectedIp, null, null);
+    public void checkIpAddress(final String hostname, final String expectedIp) throws Exception {
+        checkIpAddress(hostname, expectedIp, null, null);
     }
 
-    public void testIpAddress(final String hostname, final String expectedIp, final String ipv4Address, final String ipv6Address) throws Exception {
+    public void checkIpAddress(final String hostname, final String expectedIp, final String ipv4Address, final String ipv6Address) throws Exception {
         final SshScriptingServiceImpl ss = new SshScriptingServiceImpl();
 
         ss.setTftpServerIPv4Address(ipv4Address);
@@ -215,7 +214,7 @@ public class SshScriptingServiceImplIT {
         assertThat(result.isSuccess(), is(true));
     }
 
-    public void testDevice(final String filename, final String username, final String password, final String hostname, final String filenameSuffix, final String tftpServer) throws IOException {
+    public void checkDevice(final String filename, final String username, final String password, final String hostname, final String filenameSuffix, final String tftpServer) throws IOException {
         final SshScriptingServiceImpl ss = new SshScriptingServiceImpl();
         ss.setTftpServerIPv4Address(tftpServer);
 
@@ -238,27 +237,27 @@ public class SshScriptingServiceImplIT {
      * Method for local testing dcb example scripts using real hardware. Of course, ignored by default.
      */
     @Test
-    @Ignore
+    @Ignore("enable to test DCB")
     public void testDevices() throws Exception {
         final String tftpServer = "10.174.24.55";
 
         // tested with Aruba 6100 switch
-        testDevice("aruba-cx-cli.dcb", "dcb", "DCBpass!", "10.174.24.41", "001", tftpServer);
-        testDevice("aruba-cx-json.dcb", "dcb", "DCBpass!", "10.174.24.41", "002", tftpServer);
+        checkDevice("aruba-cx-cli.dcb", "dcb", "DCBpass!", "10.174.24.41", "001", tftpServer);
+        checkDevice("aruba-cx-json.dcb", "dcb", "DCBpass!", "10.174.24.41", "002", tftpServer);
 
         // tested with Aruba 2450 switch
-        testDevice("aruba-os-config.dcb", "dcb", "DCBpass!", "10.174.24.42", "003", tftpServer);
+        checkDevice("aruba-os-config.dcb", "dcb", "DCBpass!", "10.174.24.42", "003", tftpServer);
 
         // tested with Cisco 2960 switch
-        testDevice("cisco-ios-running.dcb", "dcb", "DCBpass!", "10.174.24.43", "004", tftpServer);
-        testDevice("cisco-ios-startup.dcb", "dcb", "DCBpass!", "10.174.24.43", "005", tftpServer);
+        checkDevice("cisco-ios-running.dcb", "dcb", "DCBpass!", "10.174.24.43", "004", tftpServer);
+        checkDevice("cisco-ios-startup.dcb", "dcb", "DCBpass!", "10.174.24.43", "005", tftpServer);
 
         // tested with Juniper SRX-1500 firewall
-        testDevice("juniper-junos-config-gz.dcb", "dcb", "DCBpass!", "10.174.24.44", "006", tftpServer);
-        testDevice("juniper-junos-config-txt.dcb", "dcb", "DCBpass!", "10.174.24.44", "007", tftpServer);
-        testDevice("juniper-junos-config-set.dcb", "dcb", "DCBpass!", "10.174.24.44", "008", tftpServer);
+        checkDevice("juniper-junos-config-gz.dcb", "dcb", "DCBpass!", "10.174.24.44", "006", tftpServer);
+        checkDevice("juniper-junos-config-txt.dcb", "dcb", "DCBpass!", "10.174.24.44", "007", tftpServer);
+        checkDevice("juniper-junos-config-set.dcb", "dcb", "DCBpass!", "10.174.24.44", "008", tftpServer);
 
         // tested with Palo Alto virtual firewall (PA-VM-ESX-10.0.4)
-        testDevice("paloalto-panos-config.dcb", "dcb", "DCBpass!", "10.174.24.45", "009", tftpServer);
+        checkDevice("paloalto-panos-config.dcb", "dcb", "DCBpass!", "10.174.24.45", "009", tftpServer);
     }
 }
