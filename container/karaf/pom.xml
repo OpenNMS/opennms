@@ -43,7 +43,7 @@
                         <!-- OPENNMS: Replace the standard and spring-legacy features files with our modified versions -->
                         <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/standard</repository>
                         <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/spring-legacy</repository>
-                        <!-- OPENNMS: Add the OpenNMS feature repository -->
+                        <!-- OPENNMS: Add the OpenNMS feature repositories -->
                         <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/features</repository>
                         <!-- OPENNMS: Add the OpenNMS Karaf extensions feature repository -->
                         <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/karaf-extensions</repository>

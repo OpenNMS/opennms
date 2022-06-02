@@ -82,11 +82,6 @@
       <version>${fstVersion}</version>
     </dependency>
     <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>com.swrve</groupId>
       <artifactId>rate-limited-logger</artifactId>
     </dependency>
@@ -97,36 +92,11 @@
       <artifactId>org.opennms.core.test-api.lib</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms.newts</groupId>
-      <artifactId>newts-cassandra-test</artifactId>
-      <version>${newtsVersion}</version>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>cassandra-test-dependencies</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
       <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-log4j12</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>com.sun.xml.bind</groupId>
-          <artifactId>jaxb-impl</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>log4j</groupId>
-          <artifactId>log4j</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>ch.qos.logback</groupId>
-          <artifactId>logback-core</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>ch.qos.logback</groupId>
-          <artifactId>logback-classic</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>io.netty</groupId>
-          <artifactId>netty-all</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>

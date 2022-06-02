@@ -76,6 +76,11 @@
                   <classifier>spring-legacy</classifier>
                 </artifact>
                 <artifact>
+                  <file>${project.build.outputDirectory}/features-core.xml</file>
+                  <type>xml</type>
+                  <classifier>core</classifier>
+                </artifact>
+                <artifact>
                   <file>${project.build.outputDirectory}/features.xml</file>
                   <type>xml</type>
                   <classifier>features</classifier>

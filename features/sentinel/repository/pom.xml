@@ -82,6 +82,7 @@
                                 <feature>sentinel-thresholding-service</feature>
 
                                 <!-- Other features -->
+                                <feature>cassandra-driver/${cassandraVersion}</feature>
                                 <feature>hawtio-offline</feature>
                             </features>
                             <repository>${project.build.directory}/maven-repo</repository>
@@ -164,6 +165,20 @@
             <artifactId>opennms</artifactId>
             <version>${project.version}</version>
             <classifier>features</classifier>
+            <type>xml</type>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.karaf</groupId>
+            <artifactId>opennms</artifactId>
+            <version>${project.version}</version>
+            <classifier>sentinel</classifier>
+            <type>xml</type>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.karaf</groupId>
+            <artifactId>opennms</artifactId>
+            <version>${project.version}</version>
+            <classifier>spring-legacy</classifier>
             <type>xml</type>
         </dependency>
         <dependency>
