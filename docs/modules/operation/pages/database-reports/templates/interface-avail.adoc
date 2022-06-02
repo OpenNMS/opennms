@@ -1,20 +1,19 @@
 [[interface-avail-report]]
 = Interface Availability Report
 
-== Report Contents
 
 This report shows interface availability for interfaces with outages within the time range.
-It is a multipage report that provides the following availability data for all router interfaces by IP address over the user-specified date range:
+It is a multi-page report that provides the following availability data for all router interfaces by IP address over the user-specified date range:
 
-* Number of Outages
+* Number of outages
 * Mean Time To Repair ("MTTR") (in hours)
-* Length of Time for Each Outage (in hours)
-* Percent Outage (per unit in category)
-* Percent Availability (per unit in category)
+* Length of time for each outage (in hours)
+* Percent outage (per unit in category)
+* Percent availability (per unit in category)
 
 //QUESTION: Need to validate explanation of the last two, in the summary chart at the end, are these averages over the entire period or per day?
 
-This report can be customized with a company logo in both the header and footer that is approximately 195px by 50px.
+This report can be customized with a company logo (approximately 195px by 50px) in both the header and footer.
 
 == Parameters
 

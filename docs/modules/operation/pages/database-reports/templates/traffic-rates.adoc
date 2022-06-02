@@ -1,10 +1,9 @@
 [[traffic-rate-report]]
 = Average and Peak Traffic Rates for Nodes by Interface Report
 
-== Report Content
 This report provides the average and peak traffic rates for nodes whose category matches the specified surveillance category with the specified report time frame.
 
-This report can be customized with a company logo in the header and footer that is approximately 195px by 50px.
+You can customize this report with a company logo (approximately 195px by 50px) in the header and footer.
 
 == Parameters
 
@@ -28,7 +27,7 @@ If no categories match the entered string, the report will have no data.
 | 7 days before today
 
 | End Date
-| The end date for the data contained in this report. If the End Date is later than the Start Date, the report will fail.
+| The end date for the data contained in this report. If the end date is later than the start date, the report will have no data.
 | Today
 
 |===

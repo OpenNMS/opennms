@@ -2,15 +2,13 @@
 = Total Bytes Transferred by Interface Report
 Total bytes transferred by interface.
 
-== Report Content
-
 This report provides the total number of bytes transferred by each interface whose category matches the specified category during the specified time period.  For each interface, the report provides:
 
 * Bytes Received
 * Bytes Transmitted
 * Total Bytes in and Out
 
-This report can be customized with a company logo in the header and footer that is approximately 195px by 50px.
+You can customize this report with a company logo (approximately 195px by 50px) in the header and footer.
 
 == Parameters
 
@@ -33,7 +31,7 @@ If no categories match the entered string, the report will have no data.
 | 7 days before today
 
 | End Date
-| The end date for the data contained in this report. If the End Date is later than the Start Date, the report will fail.
+| The end date for the data contained in this report. If the end date is later than the start date, the report will have no data.
 | Today
 |===
 

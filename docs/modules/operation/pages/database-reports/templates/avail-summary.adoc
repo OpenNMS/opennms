@@ -1,23 +1,20 @@
 [[avail-summary-report]]
 = Availability Summary Report (Default Configuration for Past 7 Days)
 
-
-== Report Contents
-
 This report provides a summary of availability across one or more surveillance categories.
 
 Each surveillance category includes a table of average, minimum and maximum values for the following availability data for the specified surveillance category over the specified date range:
 
-* Number of Outages
+* Number of outages
 * Mean Time To Repair ("MTTR") (in hours)
-* Length of Time for Each Outage (in hours)
-* Percent Outage (per unit in category)
-* Percent Availability (per unit in category)
+* Length of time for each outage (in hours)
+* Percent outage (per unit in category)
+* Percent availability (per unit in category)
 
 This report has a pie chart showing percent available time to outage time.
 It then provides a stacked bar chart showing the available time and the outage time for each day in the specified date range. The report then lists the top 25 nodes based on downtime and their respective and downtime percentages.
 
-This report can be customized with a company logo in the header that is approximately 195px by 50px.
+You can customize the report with a company logo (approximately 195px by 50px) in the header and footer.
 
 == Parameters
 
@@ -30,14 +27,14 @@ This report can be customized with a company logo in the header that is approxim
 | Default
 
 | Surveillance Category
-| Identify one or more surveillance categories to filter nodes to be included in the report.
+| Identify one or more surveillance categories to include in the report.
 To select multiple categories use wildcards as described below.
 If no categories match the entered string, the report will have no data.
 | %
 // COMMENT: This default should be changed to "Routers" like the default in the Availability report.
 
 | Time Range in Days
-| The range in days from the Report Start Date.
+| The range in days from the report start date.
 | 7
 
 | Start Date

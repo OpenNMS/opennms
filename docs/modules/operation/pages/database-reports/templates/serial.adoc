@@ -1,17 +1,16 @@
 [[serial-interface-report]]
 = Serial Interface Utilization Summary Report
 
-== Report Content
 
 This report provides the following availability data for serial interfaces over the user-specified date range:
 
-* Number of Outages
+* Number of outages
 * Mean Time To Repair ("MTTR") (in hours)
-* Length of Time for Each Outage (in hours)
-* Percent Outage (per unit in category)
-* Percent Availability (per unit in category)
+* Length of time for each outage (in hours)
+* Percent outage (per unit in category)
+* Percent availability (per unit in category)
 
-This report can be customized with a company logo in the header and footer that is approximately 195px by 50px logo.
+You can customize this report with a company logo (approximately 195px by 50px) in the header and footer.
 
 == Parameters
 
@@ -24,13 +23,12 @@ This report can be customized with a company logo in the header and footer that 
 | Default
 
 | Time Range in Days
-| The range in days from the Report Start Date.
+| The range in days from the report start date.
 | 7
 
 | Start Date
 | The starting date for the data contained in this report.
 | 7 days before today
-
 
 |===
 

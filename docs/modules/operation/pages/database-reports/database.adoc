@@ -41,16 +41,16 @@ OpenNMS provides the following sample report templates, located in `$\{OPENNMS_H
 
 |  xref:operation:database-reports/templates/avail-summary.adoc[Availability Summary]
 | Status
-| One page summary showing summary statistics on outages and availability for user-specified surveillance category during a user-specified number of days.
+|Summary of statistics on outages and availability for user-specified surveillance category during a user-specified number of days.
 
 
 | xref:operation:database-reports/templates/availability.adoc[Availability by Node]
 | Status
-| List of availability statistics for each node in user-specified category during a user-specified number of days.
+| List of availability statistics for each node in user-specified surveillance category during a user-specified number of days.
 
 | xref:operation:database-reports/templates/availability.adoc[Default Calendar]
 | Status
-| Same Availability information as Default Classic except the two tables on daily availability are presented as a calendar.
+| Same availability information as Default Classic except that the two tables on daily availability are presented as a calendar.
 This is not a JasperReport.
 
 | xref:operation:database-reports/templates/availability.adoc[Default Classic]
@@ -65,7 +65,7 @@ This is not a JasperReport.
 
 | xref:operation:database-reports/templates/grafana.adoc[Grafana Dashboards]
 | Grafana
-| Create Report from Grafana Dashboard, 3 options are provided.
+| Create Report from Grafana Dashboard, three options are provided.
 // COMMENT: Why is helper file with zoneid not working; check to see if zoneid is depracated.
 
 | xref:operation:database-reports/templates/interface-avail.adoc[Interface Availability]
@@ -83,7 +83,7 @@ This is not a JasperReport.
 
 | xref:operation:database-reports/templates/morning.adoc[Early Morning Report]
 | Status
-| Summary of status of network nodes over the past 24 hours.
+| Summary of network node status over the past 24 hours.
 
 | xref:operation:database-reports/templates/response-summary.adoc[Response Time Summary]
 | Status

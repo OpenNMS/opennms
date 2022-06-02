@@ -1,7 +1,6 @@
 [[morning-report]]
 = Early Morning Report
 
-== Report Contents
 
 This report provides a global overview of outages, notifications, and events in the last 24 hours.
 
@@ -22,7 +21,7 @@ The fifth section provides and overview of events over the last 24 hours.
 The first stacked bar chart shows, for each of the last 24 hours, the number of each of the 7 types of events: indeterminate, cleared, normal, warning, minor, major, and critical.
 The second stacked bar chart shoes the top 20 nodes with each type of event per node.
 
-This report has no parameters, but it can be customized with a company logo in the page header that is approximately 195px by 50 px.
+This report has no parameters, but you can customize it with a company logo (approximately 195px by 50px) in the page header.
 
 
 include::standard.adoc[]

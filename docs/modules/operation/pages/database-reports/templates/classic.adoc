@@ -2,7 +2,6 @@
 = Default Classic Report
 
 
-== Report Contents
 This report is generated directly from the {page-component-title} Java code and has no optional parameters for selecting a subset of the network devices.
 
 The period is the current month to the last full day before the day the report was generated (i.e., yesterday).

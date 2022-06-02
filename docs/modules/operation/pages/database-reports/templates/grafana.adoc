@@ -79,37 +79,31 @@ image::database-reports/PDF-Report.png[pdf report]
 == Parameters
 
 [options="header, autowidth"]
-[cols="1,2,3,4"]
+[cols="1,2,3"]
 
 |===
 | Field
-| Type
 | Description
 | Default
 
 | Title
-| String
 | Title for the report.
 | "Grafana Dashboard Report"
 
 | Description
-| String
 | Brief description of the report
 |
 
 | Time Zone
-| Dropdown
 | The time zone for the data in this report.
 A dropdown provides all the available options.
 | Default System Time Zone
 
 | Start Date
-| Date
 | Select the start date for the report.
 | Yesterday
 
 | End Date
-| Date
 | Select the end date for the report
 | Today
 
@@ -124,19 +118,5 @@ A dropdown provides all the available options.
 //| String
 // End Hidden Parameters
 
-| Report Format
-| Choice
-| Dropdown menu with a choice of PDF or CSV
-| PDF
-
-| Deliver the Report
-| Checkbox
-| Check the box to deliver the report via email upon report creation
-| Unchecked
-
-| Schedule the Report
-| Checkbox
-| Check this box to create a schedule for the report
-| Unchecked
 
 |===

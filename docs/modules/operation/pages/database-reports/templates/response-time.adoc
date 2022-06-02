@@ -5,7 +5,7 @@ This report lists the response times by nodes across specified surveillance cate
 
 This report has a table for each matching surveillance category that contains the devices and a row for  each IP interface the minimum, average, and maximum ICMP latency of the period of the report.
 
-This report can be customized with company logos in the page header and page footer that is approximately 150px by 50px.
+You can customize this report with a company logo (approximately 195px by 50px) in the header and footer.
 
 == Parameters
 
@@ -31,7 +31,7 @@ If no categories match the entered string, the report will have no data.
 
 | End Date
 | The end date for the data contained in this report.
-If the End Date is later than the Start Date, the report will fail.
+If the end date is later than the Start Date, the report will have no data.
 | Today
 
 |===

@@ -1,8 +1,8 @@
 [[maintenance-strategy-report]]
 = Maintenance Contracts Strategy Report
 
-== Report Contents
-This assessment management report is designed to assist in creating and reviewing a network device maintenance strategy.
+
+This assessment management report assists in creating and reviewing a network device maintenance strategy.
 This report has a pie chart with each slice representing the three different contract states: in contract, expired and no contract.
 
 The next chart is a stacked bar chart and groups the devices by their age and shows the number of assets in each age group that have an active contract, an expired contract or no contract.
@@ -13,7 +13,7 @@ The last chart is a stacked bar chart that breaks the devices down by age groups
 
 // COMMENT: The text on the report also needs to be edited.
 
-This report can be customized with a company logo in the page header that is approximately 195px by 50px.
+You can customize this report with a company logo (approximately 195px by 50px) in the page header.
 
 == Parameters
 
@@ -26,7 +26,7 @@ This report can be customized with a company logo in the page header that is app
 | Default
 
 | Date Format
-| Specify the date format in the maintenance contracts date fields.
+| Specify the date format in the maintenance contracts date fields
 | YYYY-MM-DD
 // QUESTION: Not sure why this is here.  Shouldn't the expiration date be stored as a date field?  If so, format is not necessary, unless it is for output.  If it is an output format preference, it should be a more generic parameter.  If all the dates in the maintenance contracts have different formats, then this will be problematic.
 

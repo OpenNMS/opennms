@@ -1,7 +1,7 @@
 [[maintenance-expired-report]]
 = Maintenance Contracts Expired Report
 
-Asset management report shows all assets with maintenance contracts that are expiring within a threshold period, which starts today and extends for the number of days specified in the Warning Threshold parameter below.
+This is an asset management report that shows all assets with maintenance contracts that are expiring within a threshold period, which starts today and extends for the number of days specified in the warning threshold parameter below.
 This report can also show assets with maintenance contracts that have already expired.
 
 The report includes a table that list assets that match the criteria defined by the parameters.
@@ -18,8 +18,7 @@ This table also lists the matching assets by manufacturer and includes the follo
 * date installed
 * vendor phone number.
 
-This report can be customized with a 3 company logos that are approximately 195px by 50px.
-One logo is in the report header, another in the page header and a third in the page footer.
+You can customize this report with three company logos (approximately 195px by 50px), in the report header, the page header and the page footer.
 
 == Parameters
 
