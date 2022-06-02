@@ -662,14 +662,14 @@ workflows:
                 - /.*smoke.*/
               ignore:
                 - /^merge-foundation.*/
-                
-      - sentinel-rpm-build:
+      - rpm-builds:
           requires:
             - integration-test
           filters:
             branches:
               ignore:
                 - /^merge-foundation.*/
+                
       - integration-test:
           requires:
             - build
@@ -787,15 +787,6 @@ workflows:
                 - /^master-.*/
                 - /^release-.*/
                 - /^features\/.+/
-      # These don't actually require `integration-test` but we shouldn't bother
-      # spending cycles unless everything else passed
-      - horizon-rpm-build:
-          requires:
-            - integration-test
-          filters:
-            branches:
-              ignore:
-                - /^merge-foundation.*/
       - minion-deb-build:
           requires:
             - integration-test
