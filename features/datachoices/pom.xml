@@ -81,6 +81,11 @@
             <artifactId>freemarker</artifactId>
             <version>${freemarkerVersion}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.karaf.features</groupId>
+            <artifactId>org.apache.karaf.features.core</artifactId>
+            <version>${karafVersion}</version>
+        </dependency>
 
         <!-- Test Dependencies -->
         <dependency>
