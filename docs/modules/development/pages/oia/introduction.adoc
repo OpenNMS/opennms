@@ -1,7 +1,7 @@
 
 = Plugin Development with OIA
 
-The OpenNMS Integration API (OIA) implements a software development kit that provides a stable base to build plugins to extend the configuration of OpenNMS, consume its outputs, and expose expanded functionality.
+The OpenNMS Integration API (OIA) implements a software development kit that provides a stable base to build plugins to extend the configuration of OpenNMS, consume its outputs, and add new functionality.
 
 OIA clearly identifies, documents, and provides ongoing compatibility guarantees for its integration points, so plugin creators can write code that targets a clear set of interfaces and works with a broad range of OpenNMS releases.
 As OIA adoption increases, users benefit from an ecosystem of plugins that can be built more quickly, validated more easily, and assured to work with future releases of OpenNMS.
@@ -31,7 +31,7 @@ See the interfaces defined in the `api` module for a complete list.
 ** Coordination API
 ** Events
 
-* *Expose*
+* *Add new*
 ** Health checks
 *** Provide custom health checks to verify the sanity of your plugin
 ** Alarm persister extensions
@@ -43,6 +43,34 @@ See the interfaces defined in the `api` module for a complete list.
 ** https://github.com/OpenNMS/opennms-integration-api/blob/master/api/src/main/java/org/opennms/integration/api/v1/timeseries/README.md[Time series storage]
 ** Graph API extensions (i.e., custom topology)
 
-== Start a new project with OIA
+== Start and build a new project with OIA
 
-== Build a new plugin
+OIA provides a Maven archetype to help bootstrap plugin creation.
+
+Create a new plugin project using below maven command :
+
+```
+mvn archetype:generate -B -DarchetypeGroupId=org.opennms.integration.api -DarchetypeArtifactId=example-kar-plugin -DarchetypeVersion=1.0.0-SNAPSHOT -DgroupId=com.company -DartifactId=myplugin -Dversion=0.1.0-SNAPSHOT -Dpackage=com.company.myplugin -DpluginId=myplugin -DpluginName="My Plugin"
+```
+
+NOTE: You can replace name `myplugin` and package name `com.company.myplugin` and version with your own choices. Generated plugin adds some Java files and feature definitions which are only added as sample. They can be updated and deleted when needed.
+
+This plugin generates the following folder structure :
+
+----
+README.md <1>
+assembly  <2>
+karaf-features <3>
+plugin   <4>
+pom.xml  <5>
+----
+
+<1> Readme file on how to build and deploy plugin on {page-component-title}.
+<2> assembly builds `kar` file that can be deployed in {page-component-title}.
+<3> karaf-features consists of feature definitions.
+<4> plugin code that depends on OIA code.
+<5> parent pom.xml that declares the dependencies, and it's versions.
+
+=== Build and deploy plugin
+
+Generated README.md file should have all the required steps for building and deploying the plugin.
