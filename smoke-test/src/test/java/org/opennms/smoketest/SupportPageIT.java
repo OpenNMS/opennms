@@ -50,7 +50,7 @@ public class SupportPageIT extends OpenNMSSeleniumIT {
     @Test
     public void testAllButtonsArePresent() throws Exception {
         final String[] links = new String[] {
-                "the OpenNMS.com support page",
+                "OpenNMS Support Portal",
                 "Generate System Report",
                 "Collectd Statistics",
                 "About OpenNMS",
@@ -62,13 +62,6 @@ public class SupportPageIT extends OpenNMSSeleniumIT {
         for (final String text : links) {
             assertNotNull("Link with text '" + text + "' must exist.", driver.findElement(By.linkText(text)));
         }
-    }
-
-    @Test
-    public void testAllFormsArePresent() {
-        final WebElement form = driver.findElement(By.cssSelector("form[action='support/index.htm']"));
-        assertNotNull(form.findElement(By.cssSelector("input[type=text][name=username]")));
-        assertNotNull(form.findElement(By.cssSelector("input[type=password][name=password]")));
     }
 
     @Test
