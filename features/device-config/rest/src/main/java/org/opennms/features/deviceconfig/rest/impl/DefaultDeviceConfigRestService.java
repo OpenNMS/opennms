@@ -28,7 +28,6 @@
 
 package org.opennms.features.deviceconfig.rest.impl;
 
-import org.apache.commons.lang3.NotImplementedException;
 import static org.opennms.features.deviceconfig.service.DeviceConfigService.DEVICE_CONFIG_PREFIX;
 
 import java.io.ByteArrayOutputStream;
