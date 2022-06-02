@@ -40,10 +40,14 @@ When enabled, the `Data Choices` module collects the following anonymous statist
 * OS Name
 * OS Version
 * Number of alarms in the `alarms` table
+* Number of situations in the `alarms` table
 * Number of events in the `events` table
 * Number of IP interfaces in the `ipinterface` table
 * Number of nodes in the `node` table
 * Number of nodes, grouped by System OID
+* Number of locations
+* Number of Minions
+* List of installed features in Karaf
 
 [[ga-admin-user-setup]]
 === Admin User Setup
