@@ -610,7 +610,7 @@ workflows:
             - docker-content-trust
             - azure-sp-dct
           requires:
-            - horizon-rpm-build
+            - rpm-builds
             - minion-deb-build
             - debian-pkg-build
             - integration-test
@@ -827,9 +827,8 @@ workflows:
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
           requires:
-            - horizon-rpm-build
+            - rpm-builds
             - minion-deb-build
-            - sentinel-rpm-build
             - integration-test
             - smoke-test-core
             - smoke-test-flaky
@@ -851,9 +850,8 @@ workflows:
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
           requires:
-            - horizon-rpm-build
+            - rpm-builds
             - minion-deb-build
-            - sentinel-rpm-build
             - integration-test
             - smoke-test-core
             - smoke-test-flaky
@@ -867,7 +865,7 @@ workflows:
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
           requires:
-            - horizon-rpm-build
+            - rpm-builds
             - smoke-test-core
             - smoke-test-flaky
             - smoke-test-minion
@@ -882,9 +880,8 @@ workflows:
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
           requires:
-            - horizon-rpm-build
+            - rpm-builds
             - minion-deb-build
-            - sentinel-rpm-build
             - integration-test
             - smoke-test-core
             - smoke-test-flaky
@@ -1117,95 +1114,7 @@ jobs:
             echo "ACR Done!"
             # notary -d ~/.docker/trust/ -s "${NOTARY_AZ_SERVER}" list "${MINION_AZ_REPO}"
 
-  horizon-rpm-build:
-    executor: centos-build-executor
-    # Larger memory footprint required to speed up builds using Takari smartbuilder
-    resource_class: xlarge
-    steps:
-      - attach_workspace:
-          at: ~/
-      - sign-packages/setup-env:
-          skip_if_forked_pr: true
-          gnupg_home: ~/tmp/gpg
-      - run:
-          name: Build RPMs
-          command: |
-            export NODE_OPTIONS=--max_old_space_size=1024
-            export CCI_MAXCPU=4
-            export MAVEN_OPTS="-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
-            .circleci/scripts/makerpm.sh tools/packages/opennms/opennms.spec
-      - sign-packages/sign-rpms:
-          skip_if_forked_pr: true
-          gnupg_home: ~/tmp/gpg
-          gnupg_key: opennms@opennms.org
-          packages: target/rpm/RPMS/noarch/*.rpm
-      - store_artifacts:
-          path: ~/project/target/rpm/RPMS/noarch
-          destination: rpms
-      - cache-workflow-assets:
-          cache_prefix: rpm-horizon
-          source_path: target/rpm/RPMS/noarch
-
-  minion-rpm-build:
-    executor: centos-build-executor
-    # Larger memory footprint required to speed up builds using Takari smartbuilder
-    # Will need to increase resource class if horizon-rpm-build is under 15 min
-    resource_class: xlarge
-    steps:
-      - attach_workspace:
-          at: ~/
-      - sign-packages/setup-env:
-          skip_if_forked_pr: true
-          gnupg_home: ~/tmp/gpg
-      - run:
-          name: Build RPMs
-          command: |
-            export NODE_OPTIONS=--max_old_space_size=1024
-            export CCI_MAXCPU=4
-            export CCI_VAADINJAVAMAXMEM=768m
-            export MAVEN_OPTS="-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
-            .circleci/scripts/makerpm.sh tools/packages/minion/minion.spec
-      - sign-packages/sign-rpms:
-          skip_if_forked_pr: true
-          gnupg_home: ~/tmp/gpg
-          gnupg_key: opennms@opennms.org
-          packages: target/rpm/RPMS/noarch/*.rpm
-      - store_artifacts:
-          path: ~/project/target/rpm/RPMS/noarch
-          destination: rpms
-      - cache-workflow-assets:
-          cache_prefix: rpm-minion
-          source_path: target/rpm/RPMS/noarch
-  sentinel-rpm-build:
-    executor: centos-build-executor
-    # Larger memory footprint required to speed up builds using Takari smartbuilder
-    # Will need to increase resource class if horizon-rpm-build is under 19 min
-    resource_class: xlarge
-    steps:
-      - attach_workspace:
-          at: ~/
-      - sign-packages/setup-env:
-          skip_if_forked_pr: true
-          gnupg_home: ~/tmp/gpg
-      - run:
-          name: Build RPMs
-          command: |
-            export NODE_OPTIONS=--max_old_space_size=1024
-            export CCI_MAXCPU=4
-            export CCI_VAADINJAVAMAXMEM=768m
-            export MAVEN_OPTS="-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
-            .circleci/scripts/makerpm.sh tools/packages/sentinel/sentinel.spec
-      - sign-packages/sign-rpms:
-          skip_if_forked_pr: true
-          gnupg_home: ~/tmp/gpg
-          gnupg_key: opennms@opennms.org
-          packages: target/rpm/RPMS/noarch/*.rpm
-      - store_artifacts:
-          path: ~/project/target/rpm/RPMS/noarch
-          destination: rpms
-      - cache-workflow-assets:
-          cache_prefix: rpm-sentinel
-          source_path: target/rpm/RPMS/noarch
+  #rpm_builds#
   #debian_pkg_build#
 
   horizon-image-single-arch:
