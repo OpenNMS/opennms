@@ -1,7 +1,9 @@
 [[response-time-summary-report]]
 = Response Time Summary Report
 
-This report has a table for each matching surveillance category that contains the devices and a row for  each IP interface the minimum, average, and maximum ICMP latency of the period of the report. For each device in the tables, there is a stacked bar chart that shows the availability and outage time in seconds for that device.
+This report has a table for each surveillance category that contains the matching nodes.
+For each IP interface, the minimum, average, and maximum ICMP latency are displayed.
+Availability and outage times are also displayed for each node.
 
 You can customize this report with a company logo (approximately 195px by 50px) in the header and footer.
 
