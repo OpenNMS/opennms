@@ -653,7 +653,7 @@ workflows:
       #          - /^master-.*/
       #          - /^release-.*/
       #          - /^foundation.*/
-      3          - /^merge-foundation.*/
+      #          - /^merge-foundation.*/
       #          - /^features.*/
       #          - /.*smoke.*/
       #          - /^dependabot.*/
