@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -211,44 +211,6 @@ public class AlarmDaoIT implements InitializingBean {
 		newAlarm = alarms.iterator().next();
 		assertEquals("uei://org/opennms/test/EventDaoTest", newAlarm.getUei());
 		assertEquals(alarm.getLastEvent().getId(), newAlarm.getLastEvent().getId());
-	}
-
-	@Test
-	@Transactional
-	@Ignore
-	public void testWithoutDistPoller() {
-		OnmsEvent event = new OnmsEvent();
-		event.setEventLog("Y");
-		event.setEventDisplay("Y");
-		event.setEventCreateTime(new Date());
-		event.setDistPoller(m_distPollerDao.whoami());
-		event.setEventTime(new Date());
-		event.setEventSeverity(OnmsSeverity.CRITICAL.getId());
-		event.setEventUei("uei://org/opennms/test/EventDaoTest");
-		event.setEventSource("test");
-		m_eventDao.save(event);
-
-		OnmsNode node = m_nodeDao.findAll().iterator().next();
-
-		OnmsAlarm alarm = new OnmsAlarm();
-
-		alarm.setNode(node);
-		alarm.setUei(event.getEventUei());
-		alarm.setSeverityId(event.getEventSeverity());
-		alarm.setFirstEventTime(event.getEventTime());
-		alarm.setLastEvent(event);
-		alarm.setCounter(1);
-
-		ThrowableAnticipator ta = new ThrowableAnticipator();
-		ta.anticipate(new DataIntegrityViolationException("not-null property references a null or transient value: org.opennms.netmgt.model.OnmsAlarm.distPoller; nested exception is org.hibernate.PropertyValueException: not-null property references a null or transient value: org.opennms.netmgt.model.OnmsAlarm.distPoller"));
-
-		try {
-			m_alarmDao.save(alarm);
-		} catch (Throwable t) {
-			ta.throwableReceived(t);
-		}
-
-		ta.verifyAnticipated();
 	}
 
 	@Test

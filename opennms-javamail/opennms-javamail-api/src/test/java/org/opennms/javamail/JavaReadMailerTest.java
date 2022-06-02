@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -60,7 +60,7 @@ public class JavaReadMailerTest {
      * @throws InterruptedException
      */
     @Test
-    @Ignore
+    @Ignore("manual test to run against gmail")
     public void testReadMessagesWithSearchTerm() throws JavaMailerException, MessagingException, InterruptedException {
         
         String gmailAccount = getUser();
@@ -199,17 +199,6 @@ public class JavaReadMailerTest {
         return new JavaSendMailer(config);
     }
     
-    @Test
-    @Ignore
-    public void testGetText() throws JavaMailerException, MessagingException, IOException {
-        JavaReadMailer rm = createGoogleReadMailer(getUser(), getPassword());
-        List<Message> msgs = rm.retrieveMessages();
-        for (Message msg : msgs) {
-            JavaReadMailer.getText(msg);
-            JavaReadMailer.string2Lines("abc\nxyz");
-        }
-    }
-
     private JavaReadMailer createGoogleReadMailer(String gmailAccount, String gmailPassword) throws JavaMailerException {
         ReadmailConfig config = new ReadmailConfig();
         config.setDebug(true);

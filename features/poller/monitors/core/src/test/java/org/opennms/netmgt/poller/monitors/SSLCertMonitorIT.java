@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -220,7 +220,7 @@ public class SSLCertMonitorIT {
     }
 
     @Test
-    @Ignore // point at an XMPP server that supports STARTTLS to use this test
+    @Ignore("point at an XMPP server that supports STARTTLS to use this test")
     public void testXMPPStartTLS() throws UnknownHostException {
         SSLCertMonitor monitor = new SSLCertMonitor();
         Map<String, Object> parameters = new ConcurrentSkipListMap<String, Object>();
@@ -244,19 +244,4 @@ public class SSLCertMonitorIT {
         assertTrue(status.isAvailable());
     }
 
-    @Test
-    @Ignore
-    public void testInternetWebsite() throws UnknownHostException {
-        SSLCertMonitor monitor = new SSLCertMonitor();
-        Map<String, Object> parameters = new ConcurrentSkipListMap<String, Object>();
-        parameters.put("port", "443");
-        parameters.put("retry", "0");
-        parameters.put("timeout", "500");
-        parameters.put("verbose", "true");
-        parameters.put("days", "5");
-
-        MonitoredService svc = MonitorTestUtils.getMonitoredService(3, "www.google.com", DnsUtils.resolveHostname("www.google.com", false), "SSLCert");
-        PollStatus status = monitor.poll(svc, parameters);
-        assertTrue(status.isAvailable());
-    }
 }

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -478,35 +478,6 @@ public class FlowQueryIT {
         hostTraffic = smartQueryService.getHostSeries(ImmutableSet.of("10.1.1.12", "192.168.1.100"), 10,
                 true, getFilters()).get();
         assertThat(hostTraffic.rowKeySet(), hasSize(6));
-    }
-
-    @Ignore
-    @Test
-    public void canGetConversations() throws Exception {
-        // Load the default set of flows
-        loadDefaultFlows();
-
-        // Get all the conversations
-        List<String> conversations =
-                smartQueryService.getConversations(".*", ".*", ".*", ".*", ".*", 10, getFilters()).get();
-        assertThat(conversations, hasSize(4));
-
-        // Find all the conversations with a null application
-        conversations =
-                smartQueryService.getConversations(".*", ".*", ".*", ".*", "null", 10, getFilters()).get();
-        assertThat(conversations, hasSize(1));
-
-        // Find all the conversations involving 10.1.1.12 as the lower IP
-        conversations =
-                smartQueryService.getConversations(".*", ".*", "10.1.1.12", ".*", ".*", 10, getFilters()).get();
-        assertThat(conversations, hasSize(2));
-
-        // Find a specific conversation
-        conversations =
-                smartQueryService.getConversations("test", "6", "10.1.1.11", "192.168.1.100", "http", 10, getFilters()).get();
-        assertThat(conversations, hasSize(1));
-        assertThat(conversations.iterator().next(), equalTo("[\"test\",6,\"10.1.1.11\",\"192.168.1.100\",\"http\"]"));
-
     }
 
     @Test

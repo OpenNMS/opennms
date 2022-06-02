@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -56,33 +56,6 @@ public class GenericURLStreamHandlerTest {
     @Before
     public void setUp() throws Exception {
         m_testClass = StubGenericURLConnection.class;
-    }
-
-    /**
-     * Test should expect a NoSuchMethodException and this exception is thrown. I don't know why this test will not work.
-     * <p/>
-     * TODO indigo: Fix this test to verify NoSuchMethodException
-     * <p/>
-     * java.lang.AssertionError: Expected exception: java.lang.NoSuchMethodException
-     * java.lang.NoSuchMethodException: org.opennms.core.utils.url.ProtectedStubGenericURLConnection.<init>(java.net.URL)
-     */
-    @Ignore
-    @Test(expected = NoSuchMethodException.class)
-    public void testFailToCreateURLStreamHandler() {
-        URL testUrl = null;
-        try {
-            testUrl = new URL("http://myhost");
-        } catch (MalformedURLException e) {
-            Assert.fail("Test URL in testCreateURLStreamHandler test is incorrect. Error message: " + e.getMessage());
-        }
-
-        try {
-            Class<? extends URLConnection> c = org.opennms.core.utils.url.ProtectedStubGenericURLConnection.class;
-            m_generGenericURLStreamHandler = new GenericURLStreamHandler(c);
-            m_generGenericURLStreamHandler.openConnection(testUrl);
-        } catch (IOException e) {
-            Assert.fail("Could not open connection. Error message: " + e.getMessage());
-        }
     }
 
     @Test
