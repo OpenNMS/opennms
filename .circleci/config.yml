@@ -551,6 +551,7 @@ workflows:
                 - /^foundation.*/
                 - /^release-.*/
                 - develop
+                - /.*smoke.*/
       - minion-rpm-build:
           requires:
             - build
@@ -560,6 +561,7 @@ workflows:
                 - /^foundation.*/
                 - /^release-.*/
                 - develop
+                - /.*smoke.*/
       - sentinel-rpm-build:
           requires:
             - build
@@ -569,6 +571,7 @@ workflows:
                 - /^foundation.*/
                 - /^release-.*/
                 - develop
+                - /.*smoke.*/
       - integration-test:
           requires:
             - build
