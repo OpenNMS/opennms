@@ -11,11 +11,6 @@
     <artifactId>coordination-zookeeper</artifactId>
     <packaging>bundle</packaging>
     <name>OpenNMS :: Features :: Distributed :: Coordination :: Zookeeper</name>
-    <properties>
-        <guava16.version>16.0.1</guava16.version>
-        <jackson.version>2.10.0</jackson.version>
-        <curator.version>2.9.1</curator.version>
-    </properties>
     <build>
         <plugins>
             <plugin>
@@ -41,6 +36,10 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>org.opennms.core.test-api</groupId>
+            <artifactId>org.opennms.core.test-api.lib</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.opennms.features.distributed</groupId>
             <artifactId>coordination-api</artifactId>
             <version>${project.version}</version>
@@ -51,15 +50,23 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.curator</groupId>
-            <artifactId>curator-recipes</artifactId>
-            <version>${curator.version}</version>
+            <groupId>org.apache.zookeeper</groupId>
+            <artifactId>zookeeper</artifactId>
+            <version>${zookeeperVersion}</version>
             <exclusions>
                 <exclusion>
                     <artifactId>log4j</artifactId>
                     <groupId>log4j</groupId>
                 </exclusion>
+                <exclusion>
+                    <artifactId>slf4j-log4j12</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-recipes</artifactId>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -84,13 +91,6 @@
         <dependency>
             <groupId>org.apache.curator</groupId>
             <artifactId>curator-test</artifactId>
-            <version>${curator.version}</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>log4j</artifactId>
-                    <groupId>log4j</groupId>
-                </exclusion>
-            </exclusions>
             <scope>test</scope>
         </dependency>
     </dependencies>
