@@ -545,7 +545,7 @@ public abstract class AbstractOpenNMSSeleniumHelper {
 
     protected void supportPage() {
         LOG.debug("navigating to the support page");
-        getDriver().get(getBaseUrlInternal() + "opennms/support/index.htm");
+        getDriver().get(getBaseUrlInternal() + "opennms/support/index.jsp");
     }
 
     protected void goBack() {
