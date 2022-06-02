@@ -38,8 +38,6 @@ You can customize this report with a company logo (approximately 195px by 50px) 
 | This URL base for {page-component-title} embedded links will be used for all links to data in this report.
 | \http://hostname:8980/opennms
 
-// COMMENT: Might be nice to get some other sample values.  Not sure what typical configurations look like (e.g., is "localhost" the only thing that changes or can this be configured on another port).
-
 |===
 
 include::standard.adoc[]

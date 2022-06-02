@@ -39,8 +39,6 @@ True will include contracts that have already expired along with assets with mai
 | Specify the format for the expiration date.
 | YYYY-MM-DD
 
-// COMMENT: Not sure why this is here.  Shouldn't the expiration date be stored as a date field?  If so, format is not necessary, unless it is for output.  If it is an output format preference, it should be a more generic parameter.  If all the dates in the maintenance contracts have different formats, then this will be problematic.
-
 | Warning Threshold for Contract Expiration
 | The number of days in the threshold period.
 | 20

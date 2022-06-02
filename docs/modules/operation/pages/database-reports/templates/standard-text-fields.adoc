@@ -1,7 +1,7 @@
 
 //This file includes standard text for the reports that have text fields and that can use the SQL wildcard symbol "%" in the field.  It should appear after the parameter table and the first instance of a text field should be market with ✢ character.  It assumes the next section starts right after this text.
 ._Click to learn more about using wildcards in text fields_
-[%collapsible,%indent=14]
+[%collapsible]
 ====
 [Sidebar]
 ****

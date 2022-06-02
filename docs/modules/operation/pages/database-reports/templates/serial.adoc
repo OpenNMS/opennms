@@ -1,7 +1,6 @@
 [[serial-interface-report]]
 = Serial Interface Utilization Summary Report
 
-
 This report provides the following availability data for serial interfaces over the user-specified date range:
 
 * Number of outages

@@ -41,17 +41,6 @@ This report can be customized with a company logo (approximately 195px by 50px) 
 | Start date for the report.
 | 7 days before today
 
-// Hidden Parameters
-//| Node ID
-//| \**Not sure what this means - it is in the sub-report**
-//| 3
-//Need to find out what this means.  Is the node a group of interfaces?
-
-//| Node Label
-//| Name for the node that will appear at the top of the table of data by IP address.
-//| nodelabel
-// End Hidden Parameters
-
 |===
 
 include::standard.adoc[]

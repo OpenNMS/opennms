@@ -32,7 +32,6 @@ You can customize the report with a company logo (approximately 195px by 50px) i
 To select multiple categories use wildcards as described below.
 If no categories match the entered string, the report will have no data.
 | %
-// COMMENT: This default should be changed to "Routers" like the default in the Availability report.
 
 | Time Range in Days
 | The range in days from the report start date.

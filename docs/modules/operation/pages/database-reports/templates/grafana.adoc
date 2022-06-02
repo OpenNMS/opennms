@@ -106,16 +106,4 @@ A dropdown provides all the available options.
 | Select the end date for the report
 | Today
 
-// Hidden Parameters
-//| Date Format
-//| String
-
-//| Grafana Dashboard UID
-//| String
-
-//| Grafana Endpoint UID
-//| String
-// End Hidden Parameters
-
-
 |===

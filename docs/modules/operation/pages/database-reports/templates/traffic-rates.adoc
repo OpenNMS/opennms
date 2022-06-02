@@ -20,7 +20,6 @@ You can customize this report with a company logo (approximately 195px by 50px) 
 To select multiple categories use wildcards as described below.
 If no categories match the entered string, the report will have no data.
 | %
-// COMMENT: The default should probably be set to "Routers" like the Availability Summary.
 
 | Start Date
 | The starting date for the data contained in this report.

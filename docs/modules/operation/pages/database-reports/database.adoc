@@ -66,7 +66,6 @@ This is not a JasperReport.
 | xref:operation:database-reports/templates/grafana.adoc[Grafana Dashboards]
 | Grafana
 | Create Report from Grafana Dashboard, three options are provided.
-// COMMENT: Why is helper file with zoneid not working; check to see if zoneid is depracated.
 
 | xref:operation:database-reports/templates/interface-avail.adoc[Interface Availability]
 | Status
@@ -75,7 +74,6 @@ This is not a JasperReport.
 | xref:operation:database-reports/templates/maintenance-expired.adoc[Maintenance Contracts Expired]
 | Asset Management
 | Shows which assets with maintenance contracts are going to expire within a given time range.
-// COMMENT: The name of this report is misleading to me.
 
 | xref:operation:database-reports/templates/maintenance-stragegy.adoc#maintenance-strategy-report[Maintenance Contracts Strategy]
 | Asset Management
@@ -92,7 +90,7 @@ It also shows how many will expire in the next 12 months.
 
 | xref:operation:database-reports/templates/response-time.adoc[Response Time by Node]
 | Status
-| Response times by node.
+| How long it takes a node to respond, listed by node.
 
 | xref:operation:database-reports/templates/serial.adoc[Serial Interface Utilization Summary]
 | Status
@@ -112,11 +110,7 @@ It also shows how many will expire in the next 12 months.
 
 |===
 
-// Comment: The current Jasper Reports version is 6.19.1 and these reports were written for 6.3.0, so modifying the jrxml files with the current version is very challenging.  The vast majority of the reports that I have tried with the current version do not render without at least several modifications.  Is there any plan to upgrade the Jasper Reports code?
-
-// Comment: The app's list of database reports needs some editing.  There are inconsistencies across the descriptions and pages prompting for Report Parameters. Finally, the order of the reports seem random.
-
-[[ga-database-report-add-custom-report]]
+[ga-database-report-add-custom-report]]
 
 == Modify existing reports
 
