@@ -547,22 +547,28 @@ workflows:
             - build
           filters:
             branches:
-              ignore:
-                - /^merge-foundation.*/
+              only:
+                - /^foundation.*/
+                - /^release-.*/
+                - develop
       - minion-rpm-build:
           requires:
             - build
           filters:
             branches:
-              ignore:
-                - /^merge-foundation.*/
+              only:
+                - /^foundation.*/
+                - /^release-.*/
+                - develop
       - sentinel-rpm-build:
           requires:
             - build
           filters:
             branches:
-              ignore:
-                - /^merge-foundation.*/
+              only:
+                - /^foundation.*/
+                - /^release-.*/
+                - develop
       - integration-test:
           requires:
             - build
