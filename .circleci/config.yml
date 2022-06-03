@@ -541,22 +541,31 @@ workflows:
             - build
           filters:
             branches:
-              ignore:
-                - /^merge-foundation.*/
+              only:
+                - /^foundation.*/
+                - /^release-.*/
+                - develop
+                - /.*smoke.*/
       - minion-rpm-build:
           requires:
             - build
           filters:
             branches:
-              ignore:
-                - /^merge-foundation.*/
+              only:
+                - /^foundation.*/
+                - /^release-.*/
+                - develop
+                - /.*smoke.*/
       - sentinel-rpm-build:
           requires:
             - build
           filters:
             branches:
-              ignore:
-                - /^merge-foundation.*/
+              only:
+                - /^foundation.*/
+                - /^release-.*/
+                - develop
+                - /.*smoke.*/
       - integration-test:
           requires:
             - build
@@ -628,23 +637,23 @@ workflows:
                 - /^features.*/
                 - /.*smoke.*/
                 - /^dependabot.*/
-      - smoke-test-minimal:
-          requires:
-            - tarball-assembly
-            - horizon-rpm-build
-            - tarball-assembly
-            - sentinel-rpm-build
-          filters:
-            branches:
-              ignore:
-                - develop
-                - /^master-.*/
-                - /^release-.*/
-                - /^foundation.*/
-                - /^merge-foundation.*/
-                - /^features.*/
-                - /.*smoke.*/
-                - /^dependabot.*/
+      #- smoke-test-minimal:
+      #    requires:
+      #      - tarball-assembly
+      #      - horizon-rpm-build
+      #      - minion-rpm-build
+      #      - sentinel-rpm-build
+      #    filters:
+      #      branches:
+      #        only:
+      #          - develop
+      #          - /^master-.*/
+      #          - /^release-.*/
+      #          - /^foundation.*/
+      #          - /^merge-foundation.*/
+      #          - /^features.*/
+      #          - /.*smoke.*/
+      #          - /^dependabot.*/
       - horizon-publish-oci:
           requires:
             - horizon-deb-build
@@ -654,7 +663,6 @@ workflows:
             - smoke-test-core
             - smoke-test-flaky
             - smoke-test-minion
-            - smoke-test-minimal
             - smoke-test-sentinel
           filters:
             branches:
@@ -671,7 +679,6 @@ workflows:
             - smoke-test-core
             - smoke-test-flaky
             - smoke-test-minion
-            - smoke-test-minimal
             - smoke-test-sentinel
           filters:
             branches:
@@ -731,7 +738,6 @@ workflows:
             - smoke-test-core
             - smoke-test-flaky
             - smoke-test-minion
-            - smoke-test-minimal
             - smoke-test-sentinel
           filters:
             branches:
@@ -755,7 +761,6 @@ workflows:
             - smoke-test-core
             - smoke-test-flaky
             - smoke-test-minion
-            - smoke-test-minimal
             - smoke-test-sentinel
           filters:
             branches:
@@ -769,7 +774,6 @@ workflows:
             - smoke-test-flaky
             - smoke-test-minion
             - smoke-test-sentinel
-            - smoke-test-minimal
             - integration-test
           filters:
             branches:
@@ -786,7 +790,6 @@ workflows:
             - smoke-test-core
             - smoke-test-flaky
             - smoke-test-minion
-            - smoke-test-minimal
             - smoke-test-sentinel
           filters:
             branches:
