@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -103,7 +103,7 @@ public class TcpListener implements Listener {
                         ch.pipeline()
                                 .addFirst(new ChannelInboundHandlerAdapter() {
                                     @Override
-                                    public  void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+                                    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
                                         packetsReceived.mark();
                                         super.channelRead(ctx, msg);
                                     }
@@ -113,8 +113,7 @@ public class TcpListener implements Listener {
                                     protected void decode(final ChannelHandlerContext ctx,
                                                           final ByteBuf in,
                                                           final List<Object> out) throws Exception {
-                                        session.parse(in)
-                                               .ifPresent(out::add);
+                                        session.parse(in).ifPresent(out::add);
                                     }
                                 })
                                 .addLast(new SimpleChannelInboundHandler<CompletableFuture<?>>() {
@@ -146,7 +145,9 @@ public class TcpListener implements Listener {
 
     public void stop() throws InterruptedException {
         LOG.info("Closing channel...");
-        this.socketFuture.channel().close().sync();
+        this.socketFuture.channel().close();
+        this.socketFuture.channel().parent().close();
+        this.socketFuture.channel().closeFuture().sync();
 
         this.parser.stop();
 

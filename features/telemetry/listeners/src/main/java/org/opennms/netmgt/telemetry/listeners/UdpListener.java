@@ -115,7 +115,9 @@ public class UdpListener implements Listener {
 
     public void stop() throws InterruptedException {
         LOG.info("Closing channel...");
-        this.socketFuture.channel().close().sync();
+        this.socketFuture.channel().close();
+        this.socketFuture.channel().parent().close();
+        this.socketFuture.channel().closeFuture().sync();
 
         this.parsers.forEach(Parser::stop);
 
