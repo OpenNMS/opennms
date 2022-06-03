@@ -1731,7 +1731,7 @@
     <jcifsVersion>2.1.6</jcifsVersion>
     <jcommonVersion>1.0.23</jcommonVersion>
     <jettyVersion>9.4.44.v20210927</jettyVersion>
-    <jestVersion>5.3.3</jestVersion>
+    <jestVersion>6.3.1</jestVersion>
     <jestGsonVersion>${gsonVersion}</jestGsonVersion>
     <jfreechartVersion>1.0.19</jfreechartVersion>
     <jicmpVersion>2.0.4</jicmpVersion>
