@@ -146,6 +146,16 @@ You can manually back up devices from the OpenNMS UI under *Info>Device Configs*
 You can also use the REST API to trigger device configuration retrieval outside of a monitor schedule.
 (See xref:development:rest/device_config.adoc[Device Config Rest API].)
 
+== Poller thread pool adjustments
+
+Device Config backup shares resources with Poller, particularly poller threads.
+If too many backups are running in parallel that take too long, Poller may not have sufficient threads to schedule other monitors.
+As a rough estimate, start with number of devices you expect will ever be simultaneously backed up, multiply by the time (in minutes). Increase the existing thread pool size by the resulting figure.
+For example: 50 devices each backup running 1 minute, should increase pool size by 50.
+
+Changes to the poller thread pool size take effect the next time OpenNMS is restarted.
+
+
 == Trigger/retrieve device config from Karaf shell
 
 You can also use the Karaf shell to manually trigger and retrieve a device configuration backup for test purposes.
