@@ -739,7 +739,7 @@ const validateCronTab = (item: LocalConfiguration, oldErrors: LocalErrors) => {
 const validateHost = (host: string, fieldName = '') => {
   let hostError = ''
 
-  // no spaces, may starts and ends with brackets, may contain (but not start with) hyphen or dot or colon, cannot be over 49 chars
+  // no spaces, may starts and ends with brackets, may contain (but not start with) hyphen or dot or colon, cannot be over 49 chars (e.g. IPv6 - vmware://[2001:db8:0:8d3:0:8a2e:70:7344])
   const customHostnameRegex = /^[?[a-zA-Z\d]{1}[a-zA-Z\d.-:]{0,48}]?$/
   
   // same as customHostnameRegex but including underscore and space (e.g. 0.0.0.0:1111/zone/req_name?expression=exp)
