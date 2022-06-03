@@ -1657,7 +1657,7 @@
     <activemqVersion>5.14.5</activemqVersion>
     <atomikosVersion>3.9.2</atomikosVersion>
     <batikVersion>1.7</batikVersion>
-    <bouncyCastleVersion>1.68</bouncyCastleVersion>
+    <bouncyCastleVersion>1.70</bouncyCastleVersion>
     <bsfVersion>2.4.0</bsfVersion>
     <bsonVersion>3.5.0</bsonVersion>
     <caffeineVersion>2.8.0</caffeineVersion>
