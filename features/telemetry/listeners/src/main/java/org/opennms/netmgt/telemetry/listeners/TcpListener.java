@@ -156,6 +156,7 @@ public class TcpListener implements GracefulShutdownListener {
         NettyEventListener bossListener = new NettyEventListener("boss");
 
         LOG.info("Closing worker group...");
+        // switch to use even listener rather than sync to prevent shutdown deadlock hang
         this.workerGroup.shutdownGracefully().addListener(workerListener);
 
         LOG.info("Closing boss group...");

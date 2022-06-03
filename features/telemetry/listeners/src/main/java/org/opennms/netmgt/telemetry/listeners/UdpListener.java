@@ -123,8 +123,10 @@ public class UdpListener implements GracefulShutdownListener {
 
     public void stop() throws InterruptedException {
         NettyEventListener bossListener = new NettyEventListener("boss");
+
         LOG.info("Closing boss group...");
         if (this.bossGroup != null) {
+            // switch to use even listener rather than sync to prevent shutdown deadlock hang
             this.bossGroup.shutdownGracefully().addListener(bossListener);
         }
 

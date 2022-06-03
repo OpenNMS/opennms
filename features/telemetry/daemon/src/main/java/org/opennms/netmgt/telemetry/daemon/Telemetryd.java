@@ -170,7 +170,11 @@ public class Telemetryd implements SpringServiceDaemon {
                 listener.stop();
                 if (listener instanceof GracefulShutdownListener) {
                     Future<?> future = ((GracefulShutdownListener) listener).getShutdownFuture();
-                    stopFutures.add(future);
+                    if (future == null) {
+                        LOG.warn("Shutdown future is missing for {}.", listener.getName());
+                    } else {
+                        stopFutures.add(future);
+                    }
                 }
             } catch (InterruptedException e) {
                 LOG.warn("Error while stopping listener.", e);
