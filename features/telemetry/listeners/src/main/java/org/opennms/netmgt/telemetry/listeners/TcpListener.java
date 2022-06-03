@@ -146,8 +146,13 @@ public class TcpListener implements Listener {
     public void stop() throws InterruptedException {
         LOG.info("Closing channel...");
         this.socketFuture.channel().close();
-        this.socketFuture.channel().parent().close();
-        this.socketFuture.channel().closeFuture().sync();
+        if (this.socketFuture.channel().parent() != null) {
+            this.socketFuture.channel().parent().close();
+        }
+        var future = this.socketFuture.channel().closeFuture();
+        if (future != null) {
+            future.sync();
+        }
 
         this.parser.stop();
 

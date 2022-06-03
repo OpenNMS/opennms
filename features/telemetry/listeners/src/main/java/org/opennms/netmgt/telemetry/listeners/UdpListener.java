@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -116,8 +116,13 @@ public class UdpListener implements Listener {
     public void stop() throws InterruptedException {
         LOG.info("Closing channel...");
         this.socketFuture.channel().close();
-        this.socketFuture.channel().parent().close();
-        this.socketFuture.channel().closeFuture().sync();
+        if (this.socketFuture.channel().parent() != null) {
+            this.socketFuture.channel().parent().close();
+        }
+        var future = this.socketFuture.channel().closeFuture();
+        if(future != null){
+            future.sync();
+        }
 
         this.parsers.forEach(Parser::stop);
 
