@@ -222,7 +222,7 @@ public class DeviceConfigDaoIT {
             }
             deviceConfig.setLastUpdated(Date.from(Instant.now().plusSeconds(i * 60)));
             deviceConfig.setLastSucceeded(deviceConfig.getLastUpdated());
-            deviceConfig.setStatus(DeviceConfig.determineBackupStatus(deviceConfig));
+            deviceConfig.setStatus(DeviceConfigStatus.SUCCESS);
             deviceConfigDao.saveOrUpdate(deviceConfig);
         }
     }
@@ -236,7 +236,7 @@ public class DeviceConfigDaoIT {
         deviceConfig.setLastUpdated(Date.from(Instant.now().plus(2, HOURS)));
         deviceConfig.setLastFailed(Date.from(Instant.now().plus(2, HOURS)));
         deviceConfig.setFailureReason("Not able to connect to SSHServer");
-        deviceConfig.setStatus(DeviceConfig.determineBackupStatus(deviceConfig));
+        deviceConfig.setStatus(DeviceConfigStatus.FAILED);
         deviceConfigDao.saveOrUpdate(deviceConfig);
     }
 

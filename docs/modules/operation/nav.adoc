@@ -208,4 +208,5 @@
 ** xref:admin/restore/introduction.adoc[]
 ** xref:admin/logging/log-file-viewer.adoc[]
 ** xref:admin/housekeeping/introduction.adoc[]
+** xref:admin/scv-configuration.adoc[]
 

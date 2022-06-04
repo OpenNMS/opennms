@@ -57,7 +57,9 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
         "lastupdated", "last_updated",
         "devicename", "nodelabel",
         "lastbackup", "created_time",
-        "ipaddress", "ipaddr"
+        "ipaddress", "ipaddr",
+        "location", "location",
+        "status", "status"
     );
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceConfigDaoImpl.class);
