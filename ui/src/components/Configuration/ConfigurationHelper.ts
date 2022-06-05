@@ -750,13 +750,13 @@ const validateHost = (host: string) => {
 /**
  * Field required
  * Field invalid if:
- *  - has space as 1st character or
+ *  - has space as first or last character
  *  - has: not alpha, digit, _, -, and .
  * @param fieldVal Field value
  * @returns Blank if valid, else error message
  */
 const validateZoneField = (fieldVal: string) => {
-  const regex = /^[\s]|[^\w\d\-.]/
+  const regex = /^[\s]|[^\w\d\-.\s]|[\s]$/
 
   return !fieldVal || regex.test(fieldVal) ? ErrorStrings.InvalidZoneName : ''
 }
@@ -764,13 +764,13 @@ const validateZoneField = (fieldVal: string) => {
 /**
  * Field not required
  * Field invalid if:
- *  - has space as 1st character or
+ *  - has space as first or last character
  *  - has: /, \, ?, &, *, ', "
  * @param fieldVal field value
  * @returns Blank if valid, else error message
  */
 const validateRequisitionNameField = (fieldVal: string) => {
-  const regex = /^[\s]|[/\\?&*'"]/
+  const regex = /^[\s]|[/\\?&*'"]|[\s]$/
   
   return regex.test(fieldVal) ? ErrorStrings.InvalidRequisitionName : ''
 }
@@ -959,6 +959,8 @@ export const ConfigurationHelper = {
   parseHint,
   stripOriginalIndexes,
   validateHost,
+  validateZoneField,
+  validateRequisitionNameField,
   validateLocalItem,
   validateName,
   validateOccurance,
