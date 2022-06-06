@@ -102,6 +102,6 @@ NOTE: To create an advanced cron schedule, click the checkbox and add the approp
 
 Note the following field validation information:
 
-* Zone and Requisition fields cannot start or end with a space, but space if valid in between
-* Zone field can contain alpha, digit,`-`, `.`, and space in between
+* Zone and Requisition fields cannot start or end with a space, but can have a space within the string
+* Zone field can contain alpha, digit,`-`, `.`, and space within the string
 * Requisition name cannot include the following: `/`, `\`, `?`, `*`, `'`, or `"`.
