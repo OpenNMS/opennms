@@ -1,15 +1,27 @@
 <datacollection-group xmlns="http://xmlns.opennms.org/xsd/config/datacollection" name="F5">
    <resourceType name="ltmPoolStatName" label="F5 LTM Pool Stats (F5 BigIP MIB)" resourceLabel="${ltmPoolStatName}">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+         <parameter key="sibling-column-name" value="ltmPoolStatName"/>
+         <parameter key="replace-all" value="s/\s+/_/"/>
+         <parameter key="replace-all" value="s/\//_/"/>
+      </storageStrategy>
    </resourceType>
    <resourceType name="ltmVSStatName" label="F5 LTM Virtual Server Stats (F5 BigIP MIB)" resourceLabel="${ltmVSStatName}">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+         <parameter key="sibling-column-name" value="ltmVSStatName"/>
+         <parameter key="replace-all" value="s/\s+/_/"/>
+         <parameter key="replace-all" value="s/\//_/"/>
+      </storageStrategy>
    </resourceType>
    <resourceType name="f5ifName" label="F5 Interface Name (F5 BigIP MIB)" resourceLabel="${f5ifName}">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+         <parameter key="sibling-column-name" value="f5ifName"/>
+         <parameter key="replace-all" value="s/\s+/_/"/>
+         <parameter key="replace-all" value="s/\//_/"/>
+      </storageStrategy>
    </resourceType>
    <resourceType name="f5CpuN" label="F5 Multi-CPU" resourceLabel="F5 Multi-CPU: Host ${string(subIndex(0, n))} / CPU ${subIndex(n,1)}">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
@@ -21,11 +33,19 @@
    </resourceType>
    <resourceType name="gtmWideipStatEntry" label="F5 GTM Wide IP" resourceLabel="F5 Wide IP: ${gtmWideipStatName}">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+         <parameter key="sibling-column-name" value="gtmWideipStatName"/>
+         <parameter key="replace-all" value="s/\s+/_/"/>
+         <parameter key="replace-all" value="s/\//_/"/>
+      </storageStrategy>
    </resourceType>
    <resourceType name="f5trunkStat" label="F5 Trunk" resourceLabel="F5 Trunk: ${sysTrunkStatName}">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+         <parameter key="sibling-column-name" value="sysTrunkStatName"/>
+         <parameter key="replace-all" value="s/\s+/_/"/>
+         <parameter key="replace-all" value="s/\//_/"/>
+      </storageStrategy>
    </resourceType>
    <group name="bigip-ltmpool-stat" ifType="all">
       <mibObj oid=".1.3.6.1.4.1.3375.2.2.5.2.3.1.1" instance="ltmPoolStatName" alias="ltmPoolStatName" type="string"/>
