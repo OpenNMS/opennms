@@ -5,7 +5,7 @@ The last two parameters for most reports are checkboxes for delivery and schedul
 Checking the "Deliver this report" checkbox will provide the delivery options described below.
 Checking the "Schedule this report" checkbox will open up the scheduling editor, which is described in the Schedule Editor section below.
 
-=== Report Delivery Options
+== Report Delivery Options
 
 Specify the following report delivery options:
 
@@ -17,7 +17,7 @@ Specify the following report delivery options:
 ** Email report (use a comma to separate multiple email addresses)
 ** Webhook (posts generated report to specified http endpoint)
 
-=== Schedule Editor
+== Schedule Editor
 
 Specify the schedule for automatic report delivery:
 
