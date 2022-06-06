@@ -132,7 +132,7 @@ jobs:
       - pack-config
       - continuation/continue:
           circleci_domain: circleci.com
-          configuration_path: .circleci/main.yml
+          configuration_path: /tmp/build/.circleci/main.yml
           parameters: '{ "trigger-coverage": true }'
 
   trigger-path-filtering:
@@ -268,5 +268,5 @@ jobs:
           destination: pipeline-parameters.json
       - continuation/continue:
           circleci_domain: circleci.com
-          configuration_path: .circleci/main.yml
+          configuration_path: /tmp/build/.circleci/main.yml
           parameters: /tmp/pipeline-parameters.json
