@@ -1,6 +1,8 @@
 [[ref-daemon-config-files-statsd]]
 = Statsd
 
+The Statsd daemon generates statistical TopN reports based on node data.
+
 .Statsd log file overview
 [options="header"]
 [cols="2,3"]
