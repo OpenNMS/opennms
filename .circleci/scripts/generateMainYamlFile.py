@@ -64,7 +64,7 @@ for folder in [workflow_folder,job_folder]:
         #os.remove(_file)
 
 os.mkdir(os.path.join("/tmp","build"))
-shutil.copy(os.path.join(".circleci"),os.path.join("/tmp","build"))
+shutil.copytree(os.path.join(".circleci"),os.path.join("/tmp","build",".circleci"))
 
 with open(pathToModifiedFile,"w") as f:
     for _l in _mainFileContent:
