@@ -2,6 +2,8 @@
 [[ref-daemon-config-files-telemetryd]]
 = Telemetryd
 
+Processes xref:operation:telemetryd/introduction.adoc[telemetry] data received from nodes.
+
 .Telemetryd configuration file overview
 [options="header"]
 [cols="2,3,1,1"]
@@ -40,4 +42,17 @@
 | Credentials for connecting to Elasticsearch nodes.
 | no
 | no
+|===
+
+.Telemetryd log file overview
+[options="header"]
+[cols="2,3"]
+
+|===
+| File
+| Description
+
+| telemetryd.log
+| Logs relating to Telemetryd server events.
+
 |===
