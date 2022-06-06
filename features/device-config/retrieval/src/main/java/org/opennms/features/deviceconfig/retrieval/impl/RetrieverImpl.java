@@ -32,6 +32,7 @@ import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.net.SocketAddress;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
@@ -108,6 +109,8 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
         vs.put(SCRIPT_VAR_CONFIG_TYPE, configType);
 
         if (protocol == Protocol.TFTP) {
+            // Keep timeout common between TFTP server and scripting service
+            Instant timeoutInstant = Instant.now().plus(timeout);
             // the file receiver is registered with the tftp server
             // -> it triggers the file upload as soon as the future that is returned is created
             // -> it waits for the file or for a timeout
@@ -115,7 +118,7 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
             var tftpFileReceiver = new TftpFileReceiverImpl(
                     target,
                     filenameSuffix,
-                    () -> sshScriptingService.execute(script, user, password, target, hostKeyFingerprint, vs, timeout)
+                    () -> sshScriptingService.execute(script, user, password, target, hostKeyFingerprint, vs, Duration.between(Instant.now(), timeoutInstant).minusSeconds(1))
             );
 
             try {
@@ -124,7 +127,7 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
                 try {
                     return FutureUtils.completionStage(
                             tftpFileReceiver::completeNowOrLater,
-                            timeout,
+                            Duration.between(Instant.now(), timeoutInstant),
                             tftpFileReceiver::onTimeout,
                             executor
                     ).whenComplete((e, t) -> tftpServer.unregister(tftpFileReceiver));
@@ -171,8 +174,13 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
         }
 
         private void fail(String msg, Optional<String> stdout, Optional<String> stderr) {
-            LOG.error(msg);
-            future.complete(Either.left(new Failure(msg, stdout, stderr)));
+            if (!future.isDone()) {
+                LOG.error(msg);
+                future.complete(Either.left(new Failure(msg, stdout, stderr)));
+            }
+            else {
+                LOG.debug("TftpFileReceiverImpl attempting to fail an already completed future, msg \"{}\"- ignoring...", msg);
+            }
         }
 
         @Override
@@ -182,8 +190,8 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
             // trigger the upload
             // -> if triggering the upload failed then complete the future with that failure
             try {
-                if (uploadTrigger.get().isFailed()) {
-                    final SshScriptingService.Result result = uploadTrigger.get();
+                SshScriptingService.Result result = uploadTrigger.get();
+                if (result.isFailed()) {
                     fail(scriptingFailureMsg(this.target, result.message), result.stdout, result.stderr);
                 }
             } catch (Throwable e) {

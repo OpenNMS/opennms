@@ -173,15 +173,12 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
                 hostKeyFingerprint,
                 configType,
                 stringParameters,
-                Duration.ofMillis(timeout)
+                Duration.ofMillis(timeout).minusSeconds(1)
         ).thenApply(either ->
                 either.fold(
                         failure -> {
-                            var reason = "Device config retrieval could not be triggered - target: " + target + ";  message: " + failure.message
-                                         + "\nstdout: " + failure.stdout
-                                         + "\nstderr: " + failure.stderr;
-                            LOG.error(reason);
-                            final var pollStatus = PollStatus.unavailable(reason);
+                            LOG.error("Device config retrieval could not be triggered - target: {}; script: {};  message: {} \nstdout: {}\nstderr: {}", target, script, failure.message, failure.stdout, failure.stderr);
+                            final var pollStatus = PollStatus.unavailable(failure.message);
                             pollStatus.setDeviceConfig(new DeviceConfig());
                             return pollStatus;
                         },
@@ -195,6 +192,7 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
         );
 
         try {
+            LOG.debug("Starting retrieval, waiting at most {} milliseconds", timeout);
             return future.toCompletableFuture().get(timeout, TimeUnit.MILLISECONDS);
         } catch (Exception e) {
             LOG.error("Device config retrieval failed - target: " + target, e);
