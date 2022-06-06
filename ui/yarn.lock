@@ -1225,10 +1225,10 @@ core-util-is@~1.0.0:
   resolved "https://registry.yarnpkg.com/core-util-is/-/core-util-is-1.0.3.tgz#a6042d3634c2b27e9328f837b965fac83808db85"
   integrity sha512-ZQBvi1DcpJ4GDqanjucZ2Hj3wEO5pZDS89BWbkcrvdxksJorwUDDZamX9ldFkp9aw2lmBDLgkObEA4DWNJ9FYQ==
 
-cronstrue@^2.7.0:
-  version "2.7.0"
-  resolved "https://registry.yarnpkg.com/cronstrue/-/cronstrue-2.7.0.tgz#6304b0d063b6b84c84c89a4c05c5379f13fc08fd"
-  integrity sha512-L/rml71SHNvUIkTVXe+DmirLJpNQK3G25+nYp+0MDiepjhGAepgu1+E63BlKlyXaGgOotpNrWncQRTSQlltlTA==
+cronstrue@^2.9.0:
+  version "2.9.0"
+  resolved "https://registry.yarnpkg.com/cronstrue/-/cronstrue-2.9.0.tgz#f63c376060c8e019d748564d6eb128d6cac76210"
+  integrity sha512-PZSsUZU7O+R0JdsquKMXlm41tm62oO5fVYoXi6QI/eRAYxgbkPJ/OcLrVxUM+JNRy5yv0QEI84YG1mUjEo4RLA==
 
 cross-fetch@^3.1.5:
   version "3.1.5"
@@ -3235,4 +3235,3 @@ yallist@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/yallist/-/yallist-4.0.0.tgz#9bb92790d9c0effec63be73519e11a35019a3a72"
   integrity sha512-3wdGidZyq5PB084XLES5TpOSRA3wjXAlIWMhum2kRcv/41Sn2emQ0dycQW4uZXLejwKvg6EsvbdlVL+FYEct7A==
-  
