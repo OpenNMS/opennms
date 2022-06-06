@@ -308,7 +308,7 @@ public abstract class JaxbUtils {
     public static XMLFilter getXMLFilterForNamespace(final String namespace) throws SAXException {
         XMLFilter filter = namespace == null ? new SimpleNamespaceFilter("", false) : new SimpleNamespaceFilter(namespace, true);
 
-        LOG.trace("namespace filter for namesapce {}: {}", namespace, filter);
+        LOG.trace("namespace filter for namespace {}: {}", namespace, filter);
         final XMLReader xmlReader = XMLReaderFactory.createXMLReader();
         xmlReader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
 
