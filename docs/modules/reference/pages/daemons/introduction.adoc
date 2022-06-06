@@ -66,7 +66,7 @@ See the xref:operation:admin/daemon-config-files.adoc[system administration] sec
 This can be helpful for devices that cannot be directly polled to check service state.
 
 | PerspectivePoller
-|
+| Handles Application Perspective Monitoring availability calculations.
 
 | Pollerd
 | Poller daemon is responsible for the service availability monitoring.
