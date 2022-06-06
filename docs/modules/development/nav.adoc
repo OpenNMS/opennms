@@ -64,6 +64,8 @@
 *** xref:bsm/bsm-development.adoc[]
 *** xref:rest/situation-feedback.adoc[]
 
+* xref:oia/introduction.adoc[]
+
 * xref:docs/introduction.adoc[]
 ** xref:docs/writing.adoc[]
 ** xref:docs/images.adoc[]

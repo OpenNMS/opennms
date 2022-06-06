@@ -1,3 +1,4 @@
+
 = Time Series Storage
 
 {page-component-title} stores performance data in a time series storage, JRobin by default.
