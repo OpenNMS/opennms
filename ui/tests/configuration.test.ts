@@ -2,7 +2,7 @@ import { mount } from '@vue/test-utils'
 import store from '@/store'
 import { ConfigurationHelper } from '../src/components/Configuration/ConfigurationHelper'
 import { RequisitionTypes, RequisitionData, ErrorStrings, VMWareFields } from '../src/components/Configuration/copy/requisitionTypes'
-import { test, expect } from 'vitest'
+import { test, expect, describe, it } from 'vitest'
 import { LocalConfiguration, ProvisionDServerConfiguration } from '@/components/Configuration/configuration.types'
 import ConfigurationTable from '@/components/Configuration/ConfigurationTable.vue'
 
@@ -115,9 +115,10 @@ test('Convert item to URL query string', () => {
   )
 })
 
-test('Validate host/zone fn should allow ipv4, ipv6, and domains', () => {
+test('Validate host fn should allow ipv4, ipv6, and domains', () => {
   expect(ConfigurationHelper.validateHost('192.168.31.130')).toEqual('')
   expect(ConfigurationHelper.validateHost('2345:0425:2CA1:0000:0000:0567:5673:23b5')).toEqual('')
+  expect(ConfigurationHelper.validateHost('[2345:0425:2CA1:0000:0000:0567:5673:23b5]')).toEqual('')
   expect(ConfigurationHelper.validateHost('domain.com')).toEqual('')
   expect(ConfigurationHelper.validateHost('domain.xyz')).toEqual('')
   expect(ConfigurationHelper.validateHost('my.best.domain.com')).toEqual('')
@@ -136,6 +137,38 @@ test('Validate host/zone fn should allow ipv4, ipv6, and domains', () => {
   const longHostname = 'testalonghostnameover49characterslongtestalonghostn'
   expect(ConfigurationHelper.validateHost(longHostname)).toEqual(ErrorStrings.InvalidHostname)
 })
+
+describe('Zone field - validateZoneField()', () => {
+  it('should be valid', () => {
+    expect(ConfigurationHelper.validateZoneField('Zone-field_value .123')).toEqual('')
+  })
+  it('should be invalid', () => {
+    expect(ConfigurationHelper.validateZoneField('')).toEqual(ErrorStrings.InvalidZoneName)
+    expect(ConfigurationHelper.validateZoneField(' Zone-field_value .123')).toEqual(ErrorStrings.InvalidZoneName)
+    expect(ConfigurationHelper.validateZoneField('Zone-field_value .123 ')).toEqual(ErrorStrings.InvalidZoneName)
+    expect(ConfigurationHelper.validateZoneField('zone/')).toEqual(ErrorStrings.InvalidZoneName)
+    expect(ConfigurationHelper.validateZoneField('[zone')).toEqual(ErrorStrings.InvalidZoneName)
+    expect(ConfigurationHelper.validateZoneField('zone@')).toEqual(ErrorStrings.InvalidZoneName)
+  })
+})
+
+describe('Requisition namd field - validateRequisitionNameField()', () => {
+  it('should be valid', () => {
+    expect(ConfigurationHelper.validateRequisitionNameField('Requisition-name_field .123')).toEqual('')
+  })
+  it('should be invalid', () => {
+    expect(ConfigurationHelper.validateRequisitionNameField(' Requisition-name_field .123')).toEqual(ErrorStrings.InvalidRequisitionName)
+    expect(ConfigurationHelper.validateRequisitionNameField('Requisition-name_field .123 ')).toEqual(ErrorStrings.InvalidRequisitionName)
+    expect(ConfigurationHelper.validateRequisitionNameField('/requisition')).toEqual(ErrorStrings.InvalidRequisitionName)
+    expect(ConfigurationHelper.validateRequisitionNameField('requisition/')).toEqual(ErrorStrings.InvalidRequisitionName)
+    expect(ConfigurationHelper.validateRequisitionNameField('requisition?')).toEqual(ErrorStrings.InvalidRequisitionName)
+    expect(ConfigurationHelper.validateRequisitionNameField('&requisition')).toEqual(ErrorStrings.InvalidRequisitionName)
+    expect(ConfigurationHelper.validateRequisitionNameField('requisition*')).toEqual(ErrorStrings.InvalidRequisitionName)
+    expect(ConfigurationHelper.validateRequisitionNameField('requisition\'')).toEqual(ErrorStrings.InvalidRequisitionName)
+    expect(ConfigurationHelper.validateRequisitionNameField('requisition"')).toEqual(ErrorStrings.InvalidRequisitionName)
+  })
+})
+
 
 test('The HTTP/S type config path does not contain params', () => {
   const httpUrlIn = 'http://abc.xyz/mypath?key1=key2'
