@@ -1,11 +1,12 @@
 
 import glob
-import os 
+import os
+import shutil 
 import sys
 
 _mainFile="@main.yml"
 pathToMainFile=os.path.join(".circleci","main",_mainFile)
-pathToModifiedFile=os.path.join("/tmp",_mainFile)
+pathToModifiedFile=os.path.join("/tmp","build",_mainFile)
 
 workflow_folder="workflows"
 job_folder="jobs"
@@ -61,6 +62,9 @@ for folder in [workflow_folder,job_folder]:
     for _file in _files:
         os.rename(_file,_file+"_analyzed")
         #os.remove(_file)
+
+os.mkdir(os.path.join("/tmp","build"))
+shutil.copy(os.path.join(".circleci"),os.path.join("/tmp","build"))
 
 with open(pathToModifiedFile,"w") as f:
     for _l in _mainFileContent:
