@@ -160,7 +160,7 @@ jobs:
             BASE_REVISION: << parameters.base-revision >>
             MAPPING: << parameters.mapping >>
             OUTPUT_PATH: /tmp/pipeline-parameters.json
-          command: .circleci/pyscripts/process_mapping.py           
+          command: python3 .circleci/pyscripts/process_mapping.py           
       - pack-config
       - run:
           name: check for empty trigger config
