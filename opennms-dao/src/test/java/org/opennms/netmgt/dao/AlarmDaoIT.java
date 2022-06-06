@@ -386,8 +386,10 @@ public class AlarmDaoIT implements InitializingBean {
 		Assert.assertEquals(0, summaries.stream().filter(s -> s.getSituationSeverity().equals(OnmsSeverity.CLEARED)).count());
 		Assert.assertEquals(0, summaries.stream().filter(s -> s.getSituationSeverity().equals(OnmsSeverity.INDETERMINATE)).count());
 		Assert.assertEquals(1, summaries.get(0).getRelatedAlarms());
-	}
 
+		// verify the total number of situations
+		assertThat(m_alarmDao.getNumSituations(), equalTo(7L));
+	}
 
 	@Test
 	@Transactional

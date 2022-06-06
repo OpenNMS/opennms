@@ -79,4 +79,10 @@ public interface SnmpInterfaceDao extends LegacyOnmsDao<OnmsSnmpInterface, Integ
     List<OnmsSnmpInterface> findAllHavingFlows(final Integer nodeId);
     List<OnmsSnmpInterface> findAllHavingIngressFlows(final Integer nodeId);
     List<OnmsSnmpInterface> findAllHavingEgressFlows(final Integer nodeId);
+
+    /**
+     * Returns the number of interfaces that have been marked as having flows irrespective of the
+     * MAX_FLOW_AGE and INGRESS_AND_EGRESS_REQUIRED properties settings.
+     */
+    long getNumInterfacesWithFlows();
 }
