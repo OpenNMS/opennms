@@ -1705,12 +1705,12 @@
     <geoipVersion>2.15.0</geoipVersion>
     <geronimoVersion>1.1.1</geronimoVersion>
     <groovyVersion>2.5.16</groovyVersion>
-    <grpcVersion>1.30.0</grpcVersion>
+    <grpcVersion>1.46.0</grpcVersion>
     <gsonVersion>2.8.5</gsonVersion>
     <guavaVersion>18.0</guavaVersion>
     <guavagRPCVersion>28.2-jre</guavagRPCVersion>
     <guavaOldVersion>17.0</guavaOldVersion>
-    <gwtVersion>2.8.2</gwtVersion>
+    <gwtVersion>2.9.0</gwtVersion>
     <gwtPluginVersion>${gwtVersion}</gwtPluginVersion>
     <h2databaseVersion>1.4.197</h2databaseVersion>
     <hibernateValidatorVersion>4.3.2.Final</hibernateValidatorVersion>
@@ -1759,7 +1759,7 @@
     <lmaxDisruptorVersion>3.3.2</lmaxDisruptorVersion>
     <log4jVersion>99.99.99-use-log4j2</log4jVersion>
     <log4j2Version>2.17.2</log4j2Version>
-    <logbackClassicVersion>1.2.10</logbackClassicVersion>
+    <logbackClassicVersion>1.2.11</logbackClassicVersion>
     <mapstructVersion>1.4.1.Final</mapstructVersion>
     <minaVersion>2.1.5</minaVersion>
     <mockitoVersion>3.4.6</mockitoVersion>

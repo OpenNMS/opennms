@@ -31,8 +31,10 @@ package org.opennms.netmgt.flows.elastic;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
@@ -281,6 +283,9 @@ public class MarkerCacheIT {
             expectEgressInterfaces(egress);
             expectIngressInterfaces(ingress);
         }
+
+        // verify the total number of interfaces marked with flows
+        assertThat(snmpInterfaceDao.getNumInterfacesWithFlows(), equalTo(2L));
     }
 
     private void expectAllInterfaces(final Integer... expectedInterfaces) {
