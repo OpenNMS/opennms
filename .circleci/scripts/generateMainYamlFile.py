@@ -6,7 +6,7 @@ import sys
 
 _mainFile="@main.yml"
 pathToMainFile=os.path.join(".circleci","main",_mainFile)
-pathToModifiedFile=os.path.join("/tmp","build","circleci","main",_mainFile)
+pathToModifiedFile=os.path.join("/tmp","build",".circleci","main",_mainFile)
 
 workflow_folder="workflows"
 job_folder="jobs"
