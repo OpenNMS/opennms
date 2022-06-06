@@ -30,6 +30,8 @@ base = subprocess.run(
     capture_output=True
 ).stdout.decode('utf-8').strip()
 
+
+
 if head == base:
     try:
         # If building on the same branch as BASE_REVISION, we will get the
@@ -57,7 +59,12 @@ changes = subprocess.run(
 
 print("Changed files between "+str(base)+" and "+str(head))
 print(changes)
-print("End of changed files")
+print("=== End of changed files")
+
+lastestCommit= subprocess.run(['git','log','--oneline','-1'],check=True,capture_output=True).stdout.decode('utf-8').strip()
+print("Commit message ")
+print(lastestCommit)
+print("=== End of commit message")
 
 mappings = [
     m.split() for m in
@@ -88,3 +95,4 @@ print(mappings)
 
 with open(output_path, 'w') as fp:
     fp.write(json.dumps(mappings))
+    
