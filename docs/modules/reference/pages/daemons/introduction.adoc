@@ -90,7 +90,7 @@ This can be helpful for devices that cannot be directly polled to check service 
 | Checks SNMP interface admin status. Separate from Pollerd's SnmpMonitor.
 
 | Statsd
-|
+| Generates statistical reports from node data.
 
 | Syslogd
 | A syslog daemon that allows retrieval and parsing of syslog messages to generate events.
