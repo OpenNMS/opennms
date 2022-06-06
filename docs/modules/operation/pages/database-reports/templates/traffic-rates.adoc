@@ -33,4 +33,3 @@ If the end date is later than the start date, the report will have no data.
 |===
 
 include::standard-text-fields.adoc[]
-include::standard.adoc[]

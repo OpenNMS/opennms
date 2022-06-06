@@ -44,4 +44,3 @@ If no categories match the entered string, the report will have no data.
 |===
 
 include::standard-text-fields.adoc[]
-include::standard.adoc[]

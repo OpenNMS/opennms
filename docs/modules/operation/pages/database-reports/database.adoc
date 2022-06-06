@@ -75,7 +75,7 @@ This is not a JasperReport.
 | Asset Management
 | Shows which assets with maintenance contracts are going to expire within a given time range.
 
-| xref:operation:database-reports/templates/maintenance-stragegy.adoc#maintenance-strategy-report[Maintenance Contracts Strategy]
+| xref:operation:database-reports/templates/maintenance-strategy.adoc[Maintenance Contracts Strategy]
 | Asset Management
 | Provides an overview of assets, showing how many within each age group have an active contract, no contract, or an expired contract. 
 It also shows how many will expire in the next 12 months.
@@ -110,7 +110,7 @@ It also shows how many will expire in the next 12 months.
 
 |===
 
-[ga-database-report-add-custom-report]]
+[[ga-database-report-add-custom-report]]
 
 == Modify existing reports
 
