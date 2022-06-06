@@ -951,9 +951,9 @@ jobs:
           name: Build RPMs
           command: |
             export NODE_OPTIONS=--max_old_space_size=1024
-            export CCI_MAXCPU=4
+            export CCI_MAXCPU=3
             export CCI_VAADINJAVAMAXMEM=768m
-            export MAVEN_OPTS="-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
+            export MAVEN_OPTS="-Xmx6g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
             .circleci/scripts/makerpm.sh tools/packages/minion/minion.spec
       - sign-packages/sign-rpms:
           skip_if_forked_pr: true
