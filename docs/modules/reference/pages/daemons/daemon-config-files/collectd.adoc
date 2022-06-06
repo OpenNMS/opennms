@@ -118,5 +118,5 @@ Attributes are extracted from the HTTP responses using a regular expression.
 | Logs relating to collector server events.
 
 | instrumentation.log
-| Collection statistics used to populate the Instrumentation Log Reader in the web UI admin section.
+| Collection statistics used to populate the xref:operation:admin/webui/log-reader.adoc[Instrumentation Log Reader] in the web UI admin section.
 |===
