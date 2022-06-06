@@ -6,7 +6,7 @@ import sys
 
 _mainFile="@main.yml"
 pathToMainFile=os.path.join(".circleci","main",_mainFile)
-pathToModifiedFile=os.path.join("/tmp","build",_mainFile)
+pathToModifiedFile=os.path.join("/tmp","build","circleci","main",_mainFile)
 
 workflow_folder="workflows"
 job_folder="jobs"
@@ -50,7 +50,6 @@ for k in _data.keys():
     
     _string_to_append=""
     for l in _data[k]:
-        print(l)
         _string_to_append+=l
 
     print("Replacing the occurance on line "+str(_position_of_occurance))
@@ -61,9 +60,7 @@ for folder in [workflow_folder,job_folder]:
     _files=glob.glob(os.path.join(pathToFolders,folder,"*.yml"))
 
     for _file in _files:
-        print(_file)
         os.rename(_file,_file+"_analyzed")
-        #os.remove(_file)
 
 os.mkdir(os.path.join("/tmp","build"))
 shutil.copytree(os.path.join(".circleci"),os.path.join("/tmp","build",".circleci"))
