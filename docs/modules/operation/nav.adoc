@@ -184,6 +184,7 @@
 *** xref:admin/system-properties/system-proxies.adoc[]
 ** xref:admin/config-tester.adoc[]
 ** xref:admin/rmi.adoc[]
+** xref:admin/external-auth.adoc[]
 ** xref:admin/geocoder.adoc[]
 ** xref:admin/http-ssl.adoc[]
 *** xref:admin/https/https-server.adoc[]
