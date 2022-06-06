@@ -56,7 +56,7 @@ See the xref:operation:admin/daemon-config-files.adoc[system administration] sec
 | The Karaf runtime is the framework that maintains all the other daemons running within the {page-component-title} system.
 
 | KarafStartupMonitor
-|
+| Used in startup script to detect if Karaf started properly.
 
 | Notifd
 | Notification daemon can send notifications to other systems based on event UEIs.
