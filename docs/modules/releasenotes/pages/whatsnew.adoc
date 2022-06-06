@@ -89,7 +89,7 @@ An unspeakable amount of work has gone into documentation improvements and addit
 Notable additions include:
 
 * Developer documentation for OSGi in OpenNMS, the OpenNMS Plugin API (OIA), the config management API, device config backup APIs, and the Health REST service.
-* Operation documentation updates relating to SNMP property extenders, performance data and collection, thresholding, the log file viewer, SCV,  and the new UI preview.
+* Operation documentation updates relating to SNMP property extenders, performance data and collection, thresholding, the log file viewer, SCV, and the new UI preview.
 * Documentation improvements regarding "housekeeping" and other administrative tasks, alarms, Business Service Monitoring, Passive Status Monitoring, and more.
 
 == Important Internal Changes
