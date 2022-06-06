@@ -652,16 +652,6 @@ workflows:
                 - /^master-.*/
                 - /^release-.*/
                 - /.*arm64.*/
-      - minion-rpm-build:
-          requires:
-            - build
-          filters:
-            branches:
-              only:
-                - develop
-                - /.*smoke.*/
-              ignore:
-                - /^merge-foundation.*/
       - rpm-builds:
           requires:
             - integration-test
