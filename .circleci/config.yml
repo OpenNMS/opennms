@@ -52,7 +52,7 @@ commands:
             export PATH="$CIRCLE_BIN_DIR:$PATH"
             curl -fLSs https://raw.githubusercontent.com/CircleCI-Public/circleci-cli/master/install.sh | DESTDIR="$CIRCLE_BIN_DIR" bash
             "$CIRCLE_BIN_DIR/circleci" version
-            "$CIRCLE_BIN_DIR/circleci" config pack .circleci/main --skip-update-check > .circleci/main.yml || exit 1
+            "$CIRCLE_BIN_DIR/circleci" config pack /tmp/main.yml --skip-update-check > /tmp/main.yml || exit 1
       - store_artifacts:
           path: .circleci/main.yml
           destination: main.yml

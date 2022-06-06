@@ -5,6 +5,7 @@ import sys
 
 _mainFile="@main.yml"
 pathToMainFile=os.path.join(".circleci","main",_mainFile)
+pathToModifiedFile=os.path.join("/tmp",_mainFile)
 
 workflow_folder="workflows"
 job_folder="jobs"
@@ -61,6 +62,6 @@ for folder in [workflow_folder,job_folder]:
         os.rename(_file,_file+"_analyzed")
         #os.remove(_file)
 
-with open(pathToMainFile,"w") as f:
+with open(pathToModifiedFile,"w") as f:
     for _l in _mainFileContent:
         f.write(_l)
