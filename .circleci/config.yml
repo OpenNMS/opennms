@@ -940,7 +940,7 @@ jobs:
     executor: centos-build-executor
     # Larger memory footprint required to speed up builds using Takari smartbuilder
     # Will need to increase resource class if horizon-rpm-build is under 15 min
-    resource_class: medium
+    resource_class: large
     steps:
       - attach_workspace:
           at: ~/
@@ -983,7 +983,7 @@ jobs:
     executor: centos-build-executor
     # Larger memory footprint required to speed up builds using Takari smartbuilder
     # Will need to increase resource class if horizon-rpm-build is under 19 min
-    resource_class: xlarge
+    resource_class: large
     steps:
       - attach_workspace:
           at: ~/
@@ -1024,7 +1024,7 @@ jobs:
           path: opennms-container/sentinel/images/
   horizon-deb-build:
     executor: debian-build-executor
-    resource_class: medium
+    resource_class: large
     steps:
       - attach_workspace:
           at: ~/
@@ -1070,7 +1070,7 @@ jobs:
           source_path: target/debs
   minion-deb-build:
     executor: debian-build-executor
-    resource_class: medium
+    resource_class: large
     steps:
       - attach_workspace:
           at: ~/
@@ -1098,7 +1098,7 @@ jobs:
           source_path: target/debs
   sentinel-deb-build:
     executor: debian-build-executor
-    resource_class: medium
+    resource_class: large
     steps:
       - attach_workspace:
           at: ~/
