@@ -98,9 +98,6 @@ This can be helpful for devices that cannot be directly polled to check service 
 | Telemetryd
 | The Telemetry daemon collects sensor data sent from nodes to {page-component-title}.
 
-| TestLoadLibraries
-|
-
 | Ticketer
 | The ticketing integration lets Horizon create trouble tickets in external systems.
 
