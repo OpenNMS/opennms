@@ -23,6 +23,3 @@ The first stacked bar chart shows, for each of the last 24 hours, the number of 
 The second stacked bar chart shows the top 20 nodes with each type of event per node.
 
 This report has no parameters, but you can customize it with a company logo (approximately 195px by 50px) in the page header.
-
-
-include::standard.adoc[]

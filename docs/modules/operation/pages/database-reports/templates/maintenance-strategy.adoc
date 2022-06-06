@@ -24,6 +24,3 @@ You can customize this report with a company logo (approximately 195px by 50px) 
 | Specify the date format in the maintenance contracts date fields.
 | YYYY-MM-DD
 
-|===
-
-include::standard.adoc[]

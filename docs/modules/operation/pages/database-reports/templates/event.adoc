@@ -39,5 +39,3 @@ You can customize this report with a company logo (approximately 195px by 50px) 
 | \http://hostname:8980/opennms
 
 |===
-
-include::standard.adoc[]

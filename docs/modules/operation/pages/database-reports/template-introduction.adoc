@@ -1,4 +1,4 @@
-
+[[ga-report-templates-intro]]
 = Report Templates
 
 The last two parameters for most reports are checkboxes for delivery and scheduling of the report.
@@ -19,7 +19,8 @@ Specify the following report delivery options:
 
 === Schedule Editor
 
-Specify the following types of schedule:
+Specify the schedule for automatic report delivery:
+
 * Daily
 * Days per week (specific day(s) of the week)
 * Days per month (specific day(s) of the month, for example, third Sunday of the month)

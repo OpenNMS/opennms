@@ -44,5 +44,3 @@ True will include contracts that have already expired along with assets with mai
 | 20
 
 |===
-
-include::standard.adoc[]

@@ -30,5 +30,3 @@ You can customize this report with a company logo (approximately 195px by 50px) 
 | 7 days before today
 
 |===
-
-include::standard.adoc[]
