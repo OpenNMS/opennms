@@ -327,6 +327,7 @@ commands:
       - restore-nodejs-cache
       - run:
           name: Compile OpenNMS
+          no_output_timeout: 20m
           command: |
             export OPENNMS_VERSION="$(.circleci/scripts/pom2version.sh pom.xml)"
             .circleci/scripts/configure-signing.sh
