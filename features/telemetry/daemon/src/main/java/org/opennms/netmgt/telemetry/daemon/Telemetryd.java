@@ -38,6 +38,7 @@ import java.util.stream.Collectors;
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.core.ipc.sink.api.MessageConsumerManager;
 import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
+import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.netmgt.telemetry.api.receiver.GracefulShutdownListener;
 import org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry;
 import org.opennms.netmgt.daemon.DaemonTools;
@@ -184,7 +185,7 @@ public class Telemetryd implements SpringServiceDaemon {
 
         // wait for 60s (overridable by property)
         try {
-            this.waitForStop(stopFutures, Integer.getInteger("org.opennms.features.telemetry.shutdownTimeout", 60));
+            this.waitForStop(stopFutures, SystemProperties.getInteger("org.opennms.features.telemetry.shutdownTimeout", 60));
         } catch (ExecutionException | InterruptedException e) {
             LOG.warn("Error while waiting stop future.", e);
         }
