@@ -28,6 +28,17 @@ This will happen automatically, but if you rely on programatically manipulating 
 The Horizon and Sentinel Docker images are now based on a minimal install of Ubuntu, rather than CentOS.
 Symlinks are provided to match the old paths in `/opt` but it's possible you will run into subtle differences when transitioning.
 
+=== Collectd Strict Interval
+
+The `org.opennms.netmgt.collectd.strictInterval` setting now defaults to `true`.
+
+Previously, Collectd would not re-schedule collection for a device until _after_ the previous collection completes.
+This means that if OpenNMS is collecting at a 5-minute interval, and it takes 1 minute to collect the data, then the next collection will start _6_ minutes after the previous collection was launched.
+
+The new default behavior is to always schedule collection as a predictable interval.
+
+You can change to the previous behavior by creating a property file in `$OPENNMS_HOME/etc/opennms.properties.d/` with the contents: `org.opennms.netmgt.collectd.strictInterval=false`.
+
 == New Features and Improvements
 
 === New UI (Early Access)
@@ -66,7 +77,7 @@ It is now possible to configure thresholding on flow data.
 
 * The XML collector can now treat link:https://issues.opennms.org/browse/NMS-14084[a collected value as an enumerated value], which lets you convert strings into integers to store as a gauge.
 * It is now possible to passively "collect" data from incoming events as time-series data, including those that come from traps or syslog.
-  The eventconf has additional options to configure what data collect from parameters including regular-expression matches.
+  The eventconf has additional options to configure what data to collect from parameters including regular-expression matches.
 * The BgpSessionMonitor can now be configured to use a custom OID prefix for devices that publish peer tables in a non-standard location.
 
 Additions or updates to graphs and collections have been made for:
