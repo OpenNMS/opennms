@@ -148,6 +148,7 @@ onClickOutside(contextMenu, () => closeContextMenu())
 const vertices = computed<Nodes>(() => store.state.topologyModule.vertices)
 const edges = computed<Edges>(() => store.state.topologyModule.edges)
 const layout = computed<Layouts>(() => store.getters['topologyModule/getLayout'])
+const namespace = computed(() => store.state.topologyModule.namespace)
 const focusObjects = computed<string[]>(() => store.state.topologyModule.focusObjects || [])
 const highlightFocusedObjects = computed<boolean>(() => store.state.topologyModule.highlightFocusedObjects)
 
@@ -270,22 +271,23 @@ const forceLayout = new ForceLayout({
 const d3ForceEnabled = computed({
   get: () => configs.view.layoutHandler instanceof ForceLayout,
   set: (value: boolean) => {
-    if (value) {
-      configs.view.layoutHandler = forceLayout
-    } else {
-      configs.view.layoutHandler = new SimpleLayout()
-    }
+    configs.view.layoutHandler = value ? forceLayout : new SimpleLayout()
   }
 })
 
 const trigger = ref(true)
 
 watch(layout, async (layout) => {
-  if (Object.keys(layout).length === 0) {
-    d3ForceEnabled.value = true
-  } else {
-    d3ForceEnabled.value = false
-  }
+  d3ForceEnabled.value = Object.keys(layout).length === 0
+
+  trigger.value = false
+  await nextTick()
+  trigger.value = true
+})
+
+watch(namespace, async () => {
+  // to have d3Nodes with coordinates for tooltip positioning
+  d3ForceEnabled.value = store.state.topologyModule.selectedView === 'd3'
 
   trigger.value = false
   await nextTick()
