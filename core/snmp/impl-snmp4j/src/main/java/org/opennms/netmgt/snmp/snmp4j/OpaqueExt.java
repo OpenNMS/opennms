@@ -147,7 +147,7 @@ public class OpaqueExt extends Opaque {
             type = bytes[1];
             if (type < BITTS_EX_TYPE) {
                 offset = 2;
-            } else { // otherwise too big type - not supported jet
+            } else { // otherwise too big type - not supported yet
                 return createUnsupportedAdapter(bytes);
             }
         }
