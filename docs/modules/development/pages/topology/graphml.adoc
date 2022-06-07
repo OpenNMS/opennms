@@ -343,7 +343,7 @@ The following strategies are supported:
 
 The following figure visualizes a graphml defining multiple layers (see below for the graphml definition).
 
-image::topology$layers-example.jpg[]
+image::topology/layers-example.jpg[]
 
 From the given example, the user can select the `Breadcrumb Example` Topology Provider from the menu.
 The user can switch between `Layer 1`, `Layer 2`, and `Layer 3`.

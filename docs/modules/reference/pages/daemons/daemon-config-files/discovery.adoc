@@ -1,6 +1,8 @@
 [[ref-daemon-config-files-discovery]]
 = Discovery
 
+Scans unknown nodes to xref:operation:provisioning/auto-discovery.adoc[auto discover] potential nodes to monitor.
+
 .Discovery configuration file overview
 [options="header"]
 [cols="2,3,1,1"]
@@ -14,4 +16,18 @@
 | Configure generic behavior of Discovery; for example, scan ranges, retry or timeouts, SNMP communities.
 | yes
 | no
+|===
+
+.Discovery log file overview
+[options="header"]
+[cols="2,3"]
+
+|===
+| File
+| Description
+
+| discovery.log
+| Logs relating to discovery scans.
+Once the discovery scan is complete, Provisiond will handle adding the node to the database for monitoring.
+
 |===
