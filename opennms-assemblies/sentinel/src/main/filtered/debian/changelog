@@ -1,3 +1,14 @@
+opennms-sentinel (30.0.0-1) stable; urgency=low
+
+  * New major release. It contains a number of new features, most notably a
+    preview of a new web UI, and the ability to back up infrastructure device
+    configs.
+    
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/30.0.0/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 07 Jun 2022 14:12:00 -0400
+ 
 opennms-sentinel (29.0.10-1) stable; urgency=medium
 
   * New minor release. It contains a number of security dependency
