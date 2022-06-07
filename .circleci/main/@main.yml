@@ -670,7 +670,7 @@ workflows:
       - smoke-test-core:
           requires:
             - tarball-assembly
-            - minion-rpm-build
+            - rpm-builds
             - debian-pkg-build
           filters:
             branches:
@@ -685,7 +685,7 @@ workflows:
       - smoke-test-flaky:
           requires:
             - tarball-assembly
-            - minion-rpm-build
+            - rpm-builds
             - debian-pkg-build
           filters:
             branches:
@@ -700,7 +700,7 @@ workflows:
       - smoke-test-minion:
           requires:
             - tarball-assembly
-            - minion-rpm-build
+            - rpm-builds
             - debian-pkg-build
           filters:
             branches:
