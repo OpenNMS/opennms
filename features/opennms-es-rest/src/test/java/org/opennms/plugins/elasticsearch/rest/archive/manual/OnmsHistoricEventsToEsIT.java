@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -35,7 +35,7 @@ import org.opennms.plugins.elasticsearch.rest.archive.OnmsHistoricEventsToEs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Ignore
+@Ignore("manual test meant to be run against a real elasticsearch")
 public class OnmsHistoricEventsToEsIT {
 	private static final Logger LOG = LoggerFactory.getLogger(OnmsHistoricEventsToEsIT.class);
 	

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -56,24 +56,6 @@ public class Snmp4JStrategyIT extends MockSnmpAgentITCase {
 
 	private final Snmp4JStrategy m_strategy = new Snmp4JStrategy();
 	
-
-    @Test
-    @Ignore
-    public void testSendWithNullConfig() throws Exception {
-        SnmpObjId[] oids = new SnmpObjId[] { SnmpObjId.get(".1.3.5.1.1.3.0") };
-        SnmpValue[] retvalues = null;
-        
-        PDU pdu = m_strategy.buildPdu(null, PDU.GET, oids, null);
-        if (pdu != null) {
-            retvalues = m_strategy.send(null, pdu, true);
-        }
-        
-        SnmpValue[] values = retvalues;
-        
-        assertNotNull("values should not be null", values);
-        assertEquals("values list size", 1, values.length);
-        assertSnmpValueEquals("values[0]", SnmpValue.SNMP_INT32, 42, values[0]);
-    }
 
     @Test
     public void testSendWithGetPduSingleValue() throws Exception {
