@@ -829,7 +829,7 @@ jobs:
     resource_class: large
     steps:
       - run-build:
-          number-vcpu: 8
+          number-vcpu: 4
 
   tarball-assembly:
     machine:
