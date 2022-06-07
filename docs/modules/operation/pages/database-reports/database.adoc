@@ -48,12 +48,12 @@ OpenNMS provides the following sample report templates, located in `$\{OPENNMS_H
 | Status
 | List of availability statistics for each node in user-specified surveillance category during a user-specified number of days.
 
-| xref:operation:database-reports/templates/availability.adoc[Default Calendar]
+| xref:operation:database-reports/templates/calendar.adoc[Default Calendar]
 | Status
 | Same availability information as Default Classic except that the two tables on daily availability are presented as a calendar.
 This is not a JasperReport.
 
-| xref:operation:database-reports/templates/availability.adoc[Default Classic]
+| xref:operation:database-reports/templates/classic.adoc[Default Classic]
 | Status
 | Availability information of network focusing on last month and current month to date.
 Information on devices with most problems and monitored services.

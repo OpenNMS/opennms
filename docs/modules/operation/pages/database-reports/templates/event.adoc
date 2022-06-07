@@ -11,7 +11,6 @@ This report contains the following sections:
 * Top 25 events by node
 * Top 25 events by node and UEI
 * Top 25 nodes with generic enterprise default traps
-// QUESTION: Need explanation of last section
 
 The first section includes a pie showing all events by source, along with a table with the data for the pie chart.
 This section also includes two line charts showing the total average processed events per hour and the events per day.
