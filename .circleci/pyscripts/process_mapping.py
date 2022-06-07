@@ -61,7 +61,7 @@ print("Changed files between "+str(base)+" and "+str(head))
 print(changes)
 print("=== End of changed files")
 
-lastestCommit= subprocess.run(['git','log','--oneline','-1'],check=True,capture_output=True).stdout.decode('utf-8').strip()
+lastestCommit= subprocess.run(['git','log','-1'],check=True,capture_output=True).stdout.decode('utf-8').strip()
 print("Commit message ")
 print(lastestCommit)
 print("=== End of commit message")
