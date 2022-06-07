@@ -1,3 +1,6 @@
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
 [[ga-role-user-management-pre-authentication]]
 === Web UI Pre-Authentication
 
