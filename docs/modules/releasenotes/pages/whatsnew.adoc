@@ -32,7 +32,7 @@ Symlinks are provided to match the old paths in `/opt` but it's possible you wil
 
 The `org.opennms.netmgt.collectd.strictInterval` setting now defaults to `true`.
 
-Previously, Collectd would not re-schedule collection for a device until _after_ the previous collection completes.
+Previously, Collectd would not reschedule collection for a device until _after_ the previous collection completes.
 This means that if OpenNMS is collecting at a 5-minute interval, and it takes 1 minute to collect the data, then the next collection will start _6_ minutes after the previous collection was launched.
 
 The new default behavior is to always schedule collection as a predictable interval.
