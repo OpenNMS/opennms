@@ -50,7 +50,7 @@ OIA provides a Maven archetype to help bootstrap plugin creation.
 Create a new plugin project using the following Maven command:
 
 ```
-mvn archetype:generate -B -DarchetypeGroupId=org.opennms.integration.api -DarchetypeArtifactId=example-kar-plugin -DarchetypeVersion=1.0.0-SNAPSHOT -DgroupId=com.company -DartifactId=myplugin -Dversion=0.1.0-SNAPSHOT -Dpackage=com.company.myplugin -DpluginId=myplugin -DpluginName="My Plugin"
+mvn archetype:generate -B -DarchetypeGroupId=org.opennms.integration.api -DarchetypeArtifactId=example-kar-plugin -DarchetypeVersion=1.0.0 -DgroupId=com.company -DartifactId=myplugin -Dversion=0.1.0-SNAPSHOT -Dpackage=com.company.myplugin -DpluginId=myplugin -DpluginName="My Plugin"
 ```
 
 NOTE: You can replace name myplugin, package name com.company.myplugin, and version with your own choices.
