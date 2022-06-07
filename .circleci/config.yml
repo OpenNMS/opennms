@@ -910,7 +910,7 @@ jobs:
           command: |
             export NODE_OPTIONS=--max_old_space_size=1024
             export CCI_MAXCPU=2
-            export MAVEN_OPTS="-Xmx4g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
+            export MAVEN_OPTS="-Xmx5g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
             .circleci/scripts/makerpm.sh tools/packages/opennms/opennms.spec
       - sign-packages/sign-rpms:
           skip_if_forked_pr: true
