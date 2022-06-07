@@ -166,7 +166,7 @@ public class OpaqueExt extends Opaque {
                         float floatValue = buffer.getFloat();
                         return new DoubleAdapter((double)floatValue);
                     }
-                    if (length == 8 ) { // not sure if some devicec also provide double
+                    if (length == 8 ) { // not sure if some device also provide double
                         double doubleValue = buffer.getDouble();
                         return new DoubleAdapter(doubleValue);
                     }
