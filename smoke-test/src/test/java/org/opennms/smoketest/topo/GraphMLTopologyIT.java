@@ -66,7 +66,6 @@ import com.google.common.collect.Lists;
  * @author mvrueden
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-@Ignore
 public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
 
     public static final String LABEL = "GraphML Topology Provider (test-graph)";
@@ -316,7 +315,7 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
     /**
      * Creates and publishes a requisition with 2 dummy nodes with predefined parameters
      */
-    private void createDummyNodes() throws IOException, InterruptedException {
+    private void        createDummyNodes() throws IOException, InterruptedException {
 
         // First node has foreign ID "node1", label - "North 2" and category "Routers"
         // Second node has foreign ID "node2", label - "North 3" and categories "Routers" and "Servers"
