@@ -13,6 +13,7 @@
       <include-collection dataCollectionGroup="AKCP sensorProbe"/>
       <include-collection dataCollectionGroup="Alvarion"/>
       <include-collection dataCollectionGroup="APC"/>
+      <include-collection dataCollectionGroup="Aruba"/>
       <include-collection dataCollectionGroup="Ascend"/>
       <include-collection dataCollectionGroup="Asterisk"/>
       <include-collection dataCollectionGroup="Bluecat"/>
