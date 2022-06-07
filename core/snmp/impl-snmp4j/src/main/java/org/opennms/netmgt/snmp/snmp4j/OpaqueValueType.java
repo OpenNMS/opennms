@@ -34,7 +34,7 @@ package org.opennms.netmgt.snmp.snmp4j;
  */
 public enum OpaqueValueType {
     ERROR, //use on erroneous data
-    UNSUPPORTED, //use when some opaque format is not implemented jet / will not be implemented (Opaque can even contain objects)
+    UNSUPPORTED, //use when some opaque format is not implemented yet / will not be implemented (Opaque can even contain objects)
     STRING, 
     DOUBLE, 
     LONG
