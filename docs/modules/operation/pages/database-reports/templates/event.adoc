@@ -16,7 +16,17 @@ The first section includes a pie showing all events by source, along with a tabl
 This section also includes two line charts showing the total average processed events per hour and the events per day.
 Finally, it contains a table with information about the database providing the above information.
 
-The next four sections each contain a table and a line chart showing a breakdown of the top 25 events over the last 30 days broken down by event source, hours, node, and node and UEI.
+The next four sections each contain a table and a corresponding line chart showing a breakdown of the top 25 events over the last 30 days broken down from different perspectives.
+
+The "Top 25 events by UEI and event source" shows the top 25 instances of the various combinations of UEI (for example, hodes/NodeDown, threshold/highThresholdExceeded, etc.) and event sources (for example, OpenNMS.Poller.DefaultPollContext, OpenNMS.Threshd.hrStorageUsed, etc.).
+
+The next section, "Top 25 event hours," counts the number of times each UEI occurs within  every hour of the 30-day window and then lists the top 25 combinations of UEI and hour.
+This table will show the top hours when a specific UEI occurred.
+
+The next section shows the top 25 nodes with the most events over the 30-day window.
+
+The next section counts the number of each UEI event that occurred at each node over the 30-day window and lists the top 25 combinations of UEI and node.
+
 The last section shows the top 25 nodes with the most common traps, assuming that SNMP traps are being received.
 
 You can customize this report with a company logo (approximately 195px by 50px) in the header.
