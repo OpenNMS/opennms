@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -194,20 +194,6 @@ public class AuthorizationIT implements InitializingBean {
         assertEquals(1, matching3.size());
 
         System.err.println(matching3);
-    }
-
-    @Test
-    @Transactional
-    @Ignore("What does this even do?  Category 'groups' aren't even exposed in DAOs.")
-    @JUnitTemporaryDatabase
-    public void testGetCategoriesWithAuthorizedGroups() {
-
-        List<OnmsCategory> categories = m_categoryDao.getCategoriesWithAuthorizedGroup("RoutersGroup");
-
-        assertNotNull(categories);
-        assertEquals(1, categories.size());
-        assertEquals("Routers", categories.get(0).getName());
-
     }
 
     public void enableAuthorizationFilter(final String... groupNames) {
