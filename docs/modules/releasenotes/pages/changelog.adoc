@@ -10,7 +10,7 @@ Release 30.0.0 is the first in the Horizon 30 series, introducing a number of ne
 most notably a preview of a new web UI, and the ability to back up infrastructure device
 configs.
  
-The codename for Horizon 30.0.0 is https://wikipedia.org/wiki/$$Turkey_(bird)$$[_Turkey_].
+The codename for Horizon 30.0.0 is https://wikipedia.org/wiki/$$Nutria$$[_Nutria_].
 
 === Epic
 
