@@ -2535,6 +2535,21 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.assemblies</groupId>
+        <artifactId>org.opennms.assemblies.remote-poller-onejar</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>org.opennms.features.remote-poller</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>org.opennms.features.remote-poller-jnlp</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.assemblies</groupId>
         <artifactId>org.opennms.assemblies.http-remoting</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -3270,21 +3285,6 @@
         <groupId>org.opennms.features</groupId>
         <artifactId>jmxconfiggenerator</artifactId>
         <classifier>onejar</classifier>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.assemblies</groupId>
-        <artifactId>org.opennms.assemblies.remote-poller-onejar</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.features</groupId>
-        <artifactId>org.opennms.features.remote-poller</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.features</groupId>
-        <artifactId>org.opennms.features.remote-poller-jnlp</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
