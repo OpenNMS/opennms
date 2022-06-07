@@ -52,9 +52,9 @@ commands:
             export PATH="$CIRCLE_BIN_DIR:$PATH"
             curl -fLSs https://raw.githubusercontent.com/CircleCI-Public/circleci-cli/master/install.sh | DESTDIR="$CIRCLE_BIN_DIR" bash
             "$CIRCLE_BIN_DIR/circleci" version
-            "$CIRCLE_BIN_DIR/circleci" config pack /tmp/build/.circleci/main --skip-update-check > /tmp/build/.circleci/main.yml || exit 1
+            "$CIRCLE_BIN_DIR/circleci" config pack /tmp/.circleci/main --skip-update-check > /tmp/.circleci/main.yml || exit 1
       - store_artifacts:
-          path: /tmp/build/.circleci/main.yml
+          path: /tmp/.circleci/main.yml
           destination: main.yml
 
 workflows:
@@ -153,7 +153,7 @@ jobs:
       # we do it ourselves because otherwise we have to do a full un-cached checkout every time
       - run:
           name: generate main.yml file
-          command: python3 .circleci/scripts/generateMainYamlFile.py
+          command: python3 .circleci/pyscripts/generate_mainyml.py
       - run:
           name: process mapping
           environment:
@@ -176,5 +176,5 @@ jobs:
           destination: pipeline-parameters.json
       - continuation/continue:
           circleci_domain: circleci.com
-          configuration_path: /tmp/build/.circleci/main.yml
+          configuration_path: /tmp/.circleci/main.yml
           parameters: /tmp/pipeline-parameters.json

@@ -32,8 +32,6 @@ jobs:
       - store_artifacts:
           path: ~/project/target/rpm/RPMS/noarch
           destination: rpms
-
-
   horizon-rpm-build:
     executor: centos-build-executor
     # Larger memory footprint required to speed up builds using Takari smartbuilder
