@@ -12,7 +12,6 @@ The next section provides outage details in two tables: the first shows the curr
 The third section is a stacked bar chart that shows the current outages stacked on the resolved outages over the last 24 hours.
 
 The fourth section provides an overview of notifications over the past 24 hours.
-It includes a pie chart and table showing the number of notifications by the media type.
 
 // QUESTION: I still don't know what the slices are, there was nothing in this section of the sample report.  I forgot to ask Mark to send me a copy of this report using real data.
 
