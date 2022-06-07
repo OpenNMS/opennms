@@ -156,7 +156,7 @@ public class OpaqueExt extends Opaque {
         try (BERInputStream is = new BERInputStream(buffer)) {
             int length = BER.decodeLength(is);
             
-            if (bytes.length - buffer.position() != length) { //remaining length must de eqoal to data length
+            if (bytes.length - buffer.position() != length) { //remaining length must de equal to data length
                 return createErrorAdapter("Wrong length of wraped data", bytes);
             }
 
