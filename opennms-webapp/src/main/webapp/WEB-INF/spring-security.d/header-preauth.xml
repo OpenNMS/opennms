@@ -16,6 +16,7 @@
     <beans:property name="failOnError" value="false" />
     <beans:property name="userHeader" value="X-Remote-User" />
     <beans:property name="credentialsHeader" value="" />
+    <beans:property name="authoritiesHeader" value="X-Remote-Roles" />
     <beans:property name="authenticationManager" ref="authenticationManager" />
   </beans:bean>
 
