@@ -182,9 +182,9 @@ public class Telemetryd implements SpringServiceDaemon {
         }
         listeners.clear();
 
-        // wait for 60s
+        // wait for 60s (overridable by property)
         try {
-            this.waitForStop(stopFutures, 60);
+            this.waitForStop(stopFutures, Integer.getInteger("org.opennms.features.telemetry.shutdownTimeout", 60));
         } catch (ExecutionException | InterruptedException e) {
             LOG.warn("Error while waiting stop future.", e);
         }
