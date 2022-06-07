@@ -11,8 +11,8 @@ working_directory=tempfile.TemporaryDirectory()
 shutil.copytree(".circleci",os.path.join(working_directory.name,".circleci"))
 
 main_filename="@main.yml"
-path_to_main=os.path.join(working_directory,".circleci","main",main_filename)
-path_to_modified_main=os.path.join(working_directory,".circleci","main",main_filename)
+path_to_main=os.path.join(working_directory.name,".circleci","main",main_filename)
+path_to_modified_main=os.path.join(working_directory.name,".circleci","main",main_filename)
  
 workflow_folder="workflows"
 job_folder="jobs"
