@@ -29,7 +29,11 @@
 package org.opennms.netmgt.collectd;
 
 
-import org.opennms.netmgt.collection.api.*;
+import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.AttributeType;
+import org.opennms.netmgt.collection.api.CollectionAttribute;
+import org.opennms.netmgt.collection.api.NumericCollectionAttributeType;
+import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.config.datacollection.MibObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
