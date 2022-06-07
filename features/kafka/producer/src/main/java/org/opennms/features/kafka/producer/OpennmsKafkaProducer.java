@@ -337,13 +337,13 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
         sendRecord(() -> {
             final OpennmsModelProtos.Alarm mappedAlarm = protobufMapper.toAlarm(alarm).build();
             LOG.debug("Sending alarm with reduction key: {}", reductionKey);
-            if (suppressIncrementalAlarms) {
-                recordIncrementalAlarm(reductionKey, alarm);
-            }
             return new ProducerRecord<>(alarmTopic, reductionKey.getBytes(encoding), mappedAlarm.toByteArray());
         }, recordMetadata -> {
             // We've got an ACK from the server that the alarm was forwarded
             // Let other threads know when we've successfully forwarded an alarm
+            if (suppressIncrementalAlarms) {
+                recordIncrementalAlarm(reductionKey, alarm);
+            }
             forwardedAlarm.countDown();
         });
     }
