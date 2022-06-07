@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -47,9 +47,11 @@ import io.netty.channel.socket.DatagramPacket;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 import io.netty.util.ReferenceCountUtil;
 import io.netty.util.internal.SocketUtils;
+import org.opennms.netmgt.telemetry.api.receiver.GracefulShutdownListener;
 import org.opennms.netmgt.telemetry.api.receiver.Listener;
 import org.opennms.netmgt.telemetry.api.receiver.Parser;
 import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.NettyEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,8 +59,12 @@ import java.net.InetSocketAddress;
 import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
-public class UdpListener implements Listener {
+public class UdpListener implements GracefulShutdownListener {
     private static final Logger LOG = LoggerFactory.getLogger(UdpListener.class);
 
     public static final RateLimitedLog RATE_LIMITED_LOG = RateLimitedLog
@@ -77,6 +83,8 @@ public class UdpListener implements Listener {
     private String host = null;
     private int port = 50000;
     private int maxPacketSize = 8096;
+
+    private Future<String> stopFuture;
 
     public UdpListener(final String name, final List<UdpParser> parsers, final MetricRegistry metrics) {
         this.name = Objects.requireNonNull(name);
@@ -119,13 +127,50 @@ public class UdpListener implements Listener {
     }
 
     public void stop() throws InterruptedException {
-        LOG.info("Closing channel...");
-        this.socketFuture.channel().close().sync();
+        NettyEventListener bossListener = new NettyEventListener("boss");
+
+        LOG.info("Closing boss group...");
+        if (this.bossGroup != null) {
+            // switch to use even listener rather than sync to prevent shutdown deadlock hang
+            this.bossGroup.shutdownGracefully().addListener(bossListener);
+        }
+
+        if (this.socketFuture != null) {
+            LOG.info("Closing channel...");
+            this.socketFuture.channel().close().sync();
+            if (this.socketFuture.channel().parent() != null) {
+                this.socketFuture.channel().parent().close().sync();
+            }
+        }
 
         this.parsers.forEach(Parser::stop);
 
-        LOG.info("Closing boss group...");
-        this.bossGroup.shutdownGracefully().sync();
+        stopFuture = new Future<String>() {
+            @Override
+            public boolean cancel(boolean mayInterruptIfRunning) {
+                return false;
+            }
+
+            @Override
+            public boolean isCancelled() {
+                return false;
+            }
+
+            @Override
+            public boolean isDone() {
+                return bossListener.isDone();
+            }
+
+            @Override
+            public String get() {
+                return name + "[" + bossListener.getName() + ":" + bossListener.isDone() + "]";
+            }
+
+            @Override
+            public String get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+                return get();
+            }
+        };
     }
 
     public String getHost() {
@@ -155,6 +200,11 @@ public class UdpListener implements Listener {
     @Override
     public String getName() {
         return name;
+    }
+
+    @Override
+    public Future getShutdownFuture() {
+        return stopFuture;
     }
 
 
