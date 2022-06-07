@@ -51,6 +51,17 @@ const _ = require('lodash');
       $uibModalInstance.dismiss('cancel');
     };
 
+    $scope.getValueRowCount = function (entry) {
+      // Expand size of value textarea to up to 3 rows if user enters 3+ lines
+      if (!entry.value || entry.value.indexOf('\n') < 0) {
+        return 1;
+      }
+
+      const lineBreaks = (entry.value.match(/\n/g) || []).length;
+
+      return Math.min(lineBreaks + 1, 3);
+    }
+
     // Initialization
     $scope.interfacesWithServices = [];
     $scope.availableScopes = {};

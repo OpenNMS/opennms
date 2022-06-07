@@ -371,10 +371,16 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
     public void testProducerSuppression() throws Exception {
         kafkaProducer.setSuppressIncrementalAlarms(true);
 
+        // Fire up the consumer
+        kafkaConsumer = startConsumer();
+
         // Send an alarm
         final OnmsAlarm alarm = nodeDownAlarmWithRelatedAlarm();
         alarmDao.save(alarm);
         kafkaProducer.handleNewOrUpdatedAlarm(alarm);
+
+        // Wait for callback to save incremental alarm metadata
+        Thread.sleep(10000);
 
         // Increment the alarm and re-send
         alarm.setCounter(2);
@@ -382,9 +388,6 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         alarm.getRelatedAlarms().iterator().next().setCounter(2);
         alarmDao.save(alarm);
         kafkaProducer.handleNewOrUpdatedAlarm(alarm);
-
-        // Fire up the consumer
-        kafkaConsumer = startConsumer();
 
         // One alarm should have been consumed
         await().atMost(1, TimeUnit.MINUTES).until(() -> !kafkaConsumer.getAlarms().isEmpty());
