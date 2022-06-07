@@ -130,7 +130,8 @@ public class OpaqueExt extends Opaque {
             return createErrorAdapter("To short", bytes);
         }
 
-        //At the time the class is ignored. If you nead to filter classes
+        //Bits 8 and 7 contains "class". It can be relevant for future extensions.
+        //At the time the "class" is ignored. If you nead to filter "classes" additionaly to type
         //use "int clazz = bytes[0] & 0b11000000;"
         
         //existing implementations here do not support extended type so the custom type retrieving is implemented
@@ -161,7 +162,7 @@ public class OpaqueExt extends Opaque {
             }
 
             switch (type) {
-                case 120: // Should the class not be ignored, then it was initially implemented for context-specific class (clazz == 0b10000000). Differences in other classes if any are unknown
+                case 120: // If the "class" will not be later ignored, then it was initially implemented for context-specific class (clazz == 0b10000000). I am not sure whether type 120 is the same in all "classes".
                     if (length == 4 ) { //check length
                         float floatValue = buffer.getFloat();
                         return new DoubleAdapter((double)floatValue);
