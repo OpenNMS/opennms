@@ -642,7 +642,7 @@ public class TopologyIT extends OpenNMSSeleniumIT {
          *
          * @return true if the layerToggleButton has been pressed already and the layers are visible, otherwise false
          */
-        private boolean isLayoutComponentVisible() {
+        public boolean isLayoutComponentVisible() {
             WebElement layerToggleButton = testCase.findElementById("layerToggleButton");
             return layerToggleButton.getCssValue("class").contains("expanded");
         }

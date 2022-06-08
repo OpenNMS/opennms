@@ -37,6 +37,7 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertTrue;
 import static org.opennms.smoketest.TopologyIT.waitForTransition;
 
 import org.junit.After;
@@ -59,6 +60,8 @@ import org.opennms.smoketest.graphml.GraphmlDocument;
 import org.opennms.smoketest.utils.RestClient;
 
 import com.google.common.collect.Lists;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Tests the 'GraphML' Topology Provider
@@ -75,6 +78,8 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
     private TopologyIT.TopologyUIPage topologyUIPage;
 
     private RestClient restClient;
+
+    private static final Logger LOG = LoggerFactory.getLogger(GraphMLTopologyIT.class);
 
     @Before
     public void setUp() throws IOException, InterruptedException {
@@ -133,6 +138,7 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
         assertEquals(Layout.D3, topologyUIPage.getSelectedLayout());
 
         // Switch Layer
+        LOG.debug("canUseTopology: isLayoutComponentVisible {}", topologyUIPage.isLayoutComponentVisible());
         topologyUIPage.selectLayer("Markets");
         assertEquals(0, topologyUIPage.getSzl());
         assertEquals(1, topologyUIPage.getFocusedVertices().size());
@@ -205,6 +211,8 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
     @Test
     public void verifyCanFilterByCategory() throws IOException, InterruptedException {
         topologyUIPage.selectTopologyProvider(() -> LABEL);
+        topologyUIPage.defaultFocus();
+        LOG.debug("verifyCanFilterByCategory: isLayoutComponentVisible {}", topologyUIPage.isLayoutComponentVisible());
         topologyUIPage.selectLayer("Markets");
         topologyUIPage.setSzl(0);
         topologyUIPage.clearFocus();
