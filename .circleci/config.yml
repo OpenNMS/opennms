@@ -289,6 +289,7 @@ commands:
                 MAVEN_ARGS="-Dbuild.type=production $MAVEN_ARGS javadoc:aggregate"
                 ;;
             esac
+
             ./compile.pl -DskipTests=true -Dbuild.skip.tarball=true \
               -DupdatePolicy=never \
               -Daether.connector.resumeDownloads=false \
@@ -316,6 +317,8 @@ commands:
                 --batch-mode \
                 install
             popd
+            echo $(($(cat /sys/fs/cgroup/cpu/cpu.shares)/1024))
+
       - update-maven-cache
       - run:
           name: Remove Extra Maven Repository OpenNMS Files
@@ -908,6 +911,7 @@ jobs:
       - run:
           name: Build RPMs
           command: |
+            echo $(($(cat /sys/fs/cgroup/cpu/cpu.shares)/1024))
             export NODE_OPTIONS=--max_old_space_size=1024
             export CCI_MAXCPU=1
             export MAVEN_OPTS="-Xmx5g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
