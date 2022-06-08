@@ -317,7 +317,6 @@ commands:
                 --batch-mode \
                 install
             popd
-            echo $(($(cat /sys/fs/cgroup/cpu/cpu.shares)/1024))
 
       - update-maven-cache
       - run:
@@ -832,7 +831,7 @@ jobs:
     resource_class: medium
     steps:
       - run-build:
-          number-vcpu: 1
+          number-vcpu: $(($(cat /sys/fs/cgroup/cpu/cpu.shares)/1024))
 
   tarball-assembly:
     machine:
@@ -911,9 +910,8 @@ jobs:
       - run:
           name: Build RPMs
           command: |
-            echo $(($(cat /sys/fs/cgroup/cpu/cpu.shares)/1024))
             export NODE_OPTIONS=--max_old_space_size=1024
-            export CCI_MAXCPU=1
+            export CCI_MAXCPU=$(($(cat /sys/fs/cgroup/cpu/cpu.shares)/1024))
             export MAVEN_OPTS="-Xmx5g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
             .circleci/scripts/makerpm.sh tools/packages/opennms/opennms.spec
       - sign-packages/sign-rpms:
