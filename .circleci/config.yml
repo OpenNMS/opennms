@@ -274,11 +274,17 @@ commands:
       - restore-maven-cache
       - restore-nodejs-cache
       - run:
-          name: Compile OpenNMS
+          name: Clean up
           command: |
             export OPENNMS_VERSION="$(.circleci/scripts/pom2version.sh pom.xml)"
-            .circleci/scripts/configure-signing.sh
             mvn clean -DskipTests=true
+      - run:
+          name: Compile OpenNMS
+          command: |
+            echo $OPENNMS_VERSION
+            export OPENNMS_VERSION="$(.circleci/scripts/pom2version.sh pom.xml)"
+            .circleci/scripts/configure-signing.sh
+            #mvn clean -DskipTests=true
             << parameters.node-memory >>
             export MAVEN_OPTS="$MAVEN_OPTS -Xmx8g -XX:ReservedCodeCacheSize=1g"
             MAVEN_ARGS="install"
@@ -828,10 +834,10 @@ jobs:
     executor: centos-build-executor
     # Building currently requires the xlarge containers in order for the webpack compilation
     # in the core/web-assets module to complete reliably
-    resource_class: medium
+    resource_class: xlarge
     steps:
       - run-build:
-          number-vcpu: 2
+          number-vcpu: 8
 
   tarball-assembly:
     machine:
