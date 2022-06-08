@@ -7,40 +7,44 @@ SCV is enabled by default on OpenNMS.
 
 == Configuring SCV password
 
- Use the System property `org.opennms.features.scv.jceks.key` to configure the SCV password.
-Keystore file is stored in `${OPENNMS_HOME}/etc` as `scv.jce`.
+The SCV password is defined by the `org.opennms.features.scv.jceks.key` system property in the `$\{OPENNMS_HOME}/etc/opennms.propteries.d/svc.properties` file.
+The SCV keystore file is stored at `$\{OPENNMS_HOME}/etc/scv.jce`.
 
 == Storing credentials in SCV
 
-SCV entries are identified by an `alias`. 
+SCV entries are identified by an alias. 
 For each alias, you can store `username`, `password`, and a set of key-value pair attributes.
-To access or add credentials, navigate to *UI Preview>Secure Credentials Vault*.
+To access or add credentials, navigate to menu:UI Preview[Secure Credentials Vault].
 
 == Accessing SCV entries
 
-Access SCV entries from metadata with context `scv`. 
+Access SCV entries from metadata with context `scv`.
 
-For example: ${scv:juniper-vm:username}
+${scv:juniper-vm:username}::
 This metadata expression can access the username from the `juniper-vm` alias.
 
-For example: ${scv:juniper-vm:password}
+${scv:juniper-vm:password}::
 This metadata expression can access the password from the `juniper-vm` alias.
 
-For ex: ${scv:juniper-vm:user1}
+${scv:juniper-vm:user1}::
 This metadata expression can access the `user1` property from the `juniper-vm` alias.
+
+${scv:corp-directory:domain}::
+This metadata expression can access the `domain` property from the `corp-directory` alias.
+
 
 == Karaf commands
 
 You can update and access SCV entries from the Karaf shell.
 
-[source, karaf]
+[source, console]
 ----
 ssh -p 8101 admin@localhost
 ----
 
 Once in the shell, you can set credentials from the `scv-set` command as follows:
 
-[source, console]
+[source, karaf]
 .Set SCV entries
 ----
 admin@opennms()> scv-set --help
@@ -66,7 +70,7 @@ ARGUMENTS
 
 You can also access SCV entries from the `scv-get` command as follows:
 
-[source, console]
+[source, karaf]
 .Get SCV entries
 ----
 admin@opennms()> scv-get --help
