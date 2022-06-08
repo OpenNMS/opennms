@@ -172,7 +172,7 @@ You can view the resulting performance graphs in menu:Reports[Resource Graphs].
 
 If your time series data type is not `nodeSnmp` or `interfaceSnmp`, you need to create a resource-type file in `$\{OPENNMS_HOME}/etc/resource-types.d`.
 Make sure you match the name with the event definition's `resourceType`.
-There is also `$\{instance}` variable available that can be used to enrich the resource type's label.
+There is also `$\{instance}` variable available that you can use to enrich the resource type's label.
 
 [source, xml]
 ----
