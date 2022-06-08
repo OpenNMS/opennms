@@ -1,7 +1,7 @@
 jobs:
   debian-pkg-build:
     executor: debian-build-executor
-    resource_class: xlarge
+    resource_class: large
     steps:
       - attach_workspace:
           at: ~/
