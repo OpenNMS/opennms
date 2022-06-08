@@ -826,10 +826,10 @@ jobs:
     executor: centos-build-executor
     # Building currently requires the xlarge containers in order for the webpack compilation
     # in the core/web-assets module to complete reliably
-    resource_class: large
+    resource_class: xlarge
     steps:
       - run-build:
-          number-vcpu: 4
+          number-vcpu: 8
 
   tarball-assembly:
     machine:
@@ -898,7 +898,7 @@ jobs:
   horizon-rpm-build:
     executor: centos-build-executor
     # Larger memory footprint required to speed up builds using Takari smartbuilder
-    resource_class: xlarge
+    resource_class: large
     steps:
       - attach_workspace:
           at: ~/
