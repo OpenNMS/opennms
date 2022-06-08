@@ -139,11 +139,16 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
                 return PollStatus.unknown("Not scheduled");
             }
 
-            final Date nextRun = getNextRunDate(cronSchedule, lastRun);
-
-            if (!nextRun.before(new Date())) {
-                return PollStatus.unknown("Skipping. Next retrieval scheduled for " + nextRun);
+            try {
+                final Date nextRun = getNextRunDate(cronSchedule, lastRun);
+                if (!nextRun.before(new Date())) {
+                    return PollStatus.unknown("Skipping. Next retrieval scheduled for " + nextRun);
+                }
+            } catch (Exception e) {
+                LOG.error("Exception in parsing cron expression {}", cronSchedule, e);
+                return PollStatus.down("Invalid cron expression : " + cronSchedule);
             }
+
         }
 
         if (parameters.containsKey(SCRIPT_ERROR)) {

@@ -562,8 +562,7 @@
         <logmsg dest="logndisplay">
             %service% config backup started on interface %interface%.
         </logmsg>
-        <severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" alarm-type="3" auto-clean="true"/>
+        <severity>Normal</severity>
     </event>
     <event>
         <uei>uei.opennms.org/deviceconfig/configBackupFailed</uei>
