@@ -2,17 +2,20 @@
 = Secure Credentials Vault
 
 Secure Credentials Vault (SCV) lets you encrypt credentials the {page-component-title} system uses.
-SCV uses a Java KeyStore (JKS) to store credentials in JKS format. 
-SCV is enabled by default on OpenNMS.
+SCV uses a Java KeyStore (JKS) to store credentials in JKS format.
+SCV is enabled by default on {page-component-title}.
 
 == Configuring SCV password
 
-The SCV password is defined by the `org.opennms.features.scv.jceks.key` system property in the `$\{OPENNMS_HOME}/etc/opennms.propteries.d/svc.properties` file.
+A custom SCV password can be defined with the `org.opennms.features.scv.jceks.key` system property in the `$\{OPENNMS_HOME}/etc/opennms.properties.d/svc.properties` file.
 The SCV keystore file is stored at `$\{OPENNMS_HOME}/etc/scv.jce`.
+
+IMPORTANT: The SCV password cannot be changed once it has credentials stored.
+The keystore file must be deleted and credentials re-added if you want to change the password from the default after the file has been created.
 
 == Storing credentials in SCV
 
-SCV entries are identified by an alias. 
+SCV entries are identified by an alias.
 For each alias, you can store `username`, `password`, and a set of key-value pair attributes.
 To access or add credentials, navigate to menu:UI Preview[Secure Credentials Vault].
 
