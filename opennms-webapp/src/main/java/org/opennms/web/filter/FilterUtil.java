@@ -29,6 +29,7 @@
 package org.opennms.web.filter;
 
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -53,12 +54,11 @@ public abstract class FilterUtil {
     }
 
     public static String[] parse(String filterString) {
-        String[] filterParameter = (filterString == null) ? null :Arrays.stream(filterString.split("&amp;"))
+        String decodedString = URLDecoder.decode(filterString, StandardCharsets.UTF_8);
+        String[] filterParameter = (filterString == null) ? null :Arrays.stream(decodedString.split("&amp;"))
                 .filter(fp -> fp.startsWith("filter="))
                 .map(fp -> fp.replace("filter=", ""))
-                .map(fp -> fp = URLDecoder.decode(fp))
                 .toArray(String[]::new);
         return filterParameter;
     }
-
 }
