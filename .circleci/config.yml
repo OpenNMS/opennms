@@ -829,7 +829,7 @@ jobs:
     resource_class: medium
     steps:
       - run-build:
-          number-vcpu: 2
+          number-vcpu: 1
 
   tarball-assembly:
     machine:
