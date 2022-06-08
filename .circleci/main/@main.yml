@@ -657,7 +657,7 @@ workflows:
             - horizon-deb-build
           matrix:
             parameters:
-              architecture: [linux/amd64,linux/arm64,linux/arm/v7]
+              architecture: [linux/amd64,linux/arm64]
           filters:
             branches:
               only:
@@ -851,7 +851,7 @@ workflows:
             - sentinel-deb-build
           matrix:
             parameters:
-              architecture: [linux/amd64,linux/arm64,linux/arm/v7]
+              architecture: [linux/amd64,linux/arm64]
           filters:
             branches:
               only:
