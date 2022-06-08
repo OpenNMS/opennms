@@ -826,10 +826,10 @@ jobs:
     executor: centos-build-executor
     # Building currently requires the xlarge containers in order for the webpack compilation
     # in the core/web-assets module to complete reliably
-    resource_class: large
+    resource_class: medium
     steps:
       - run-build:
-          number-vcpu: 4
+          number-vcpu: 2
 
   tarball-assembly:
     machine:
