@@ -46,11 +46,11 @@ parameters:
   next_branch:
     description: the auto-merge target branch
     type: string
-    default: release-29.x
+    default: release-30.x
   next_branch_label:
     description: the auto-merge target branch (escaped, no slashes)
     type: string
-    default: release-29.x
+    default: release-30.x
 
   ### sub-tree "module" build setup ###
   trigger-setup:
