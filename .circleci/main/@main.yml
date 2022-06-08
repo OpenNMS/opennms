@@ -635,8 +635,9 @@ workflows:
               only:
                 - develop
                 - /^master-.*/
+                - /^foundation.*/
                 - /^release-.*/
-                - /.*arm64.*/
+                - /.*smoke.*/
       - minion-image-multi-arch:
           context:
             - docker-content-trust
@@ -648,30 +649,33 @@ workflows:
               only:
                 - develop
                 - /^master-.*/
+                - /^foundation.*/
                 - /^release-.*/
-                - /.*arm64.*/
+                - /.*smoke.*/
       - horizon-image-single-arch:
           requires:
             - horizon-deb-build
           matrix:
             parameters:
-              architecture: [linux/arm64]
+              architecture: [linux/amd64,linux/arm64]
           filters:
             branches:
               only:
                 - develop
                 - /^master-.*/
+                - /^foundation.*/
                 - /^release-.*/
-                - /.*arm64.*/
+                - /.*smoke.*/
       - horizon-deb-build:
           requires:
             - build
           filters:
             branches:
               only:
+                - develop
+                - /^master-.*/
                 - /^foundation.*/
                 - /^release-.*/
-                - develop
                 - /.*smoke.*/
       - minion-rpm-build:
           requires:
@@ -679,9 +683,10 @@ workflows:
           filters:
             branches:
               only:
+                - develop
+                - /^master-.*/
                 - /^foundation.*/
                 - /^release-.*/
-                - develop
                 - /.*smoke.*/
       - sentinel-rpm-build:
           requires:
@@ -689,9 +694,10 @@ workflows:
           filters:
             branches:
               only:
+                - develop
+                - /^master-.*/
                 - /^foundation.*/
                 - /^release-.*/
-                - develop
                 - /.*smoke.*/
       - integration-test:
           requires:
@@ -845,14 +851,15 @@ workflows:
             - sentinel-deb-build
           matrix:
             parameters:
-              architecture: [linux/arm64]
+              architecture: [linux/amd64,linux/arm64]
           filters:
             branches:
               only:
                 - develop
                 - /^master-.*/
+                - /^foundation.*/
                 - /^release-.*/
-                - /.*arm64.*/
+                - /.*smoke.*/
       - create-merge-foundation-branch:
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
@@ -1094,8 +1101,7 @@ jobs:
             docker push ${MINION_AZ_REPO}:${TAG}
             echo "pushed to AZ"
       - store_artifacts:
-          path: ~/project/opennms-container/minion/images/minion-linux-arm64.oci
-          destination: minion-linux-arm64.oci
+          path: ~/project/opennms-container/minion/images/minion-linux-*.oci
 
   minion-image-multi-arch:
     machine:
