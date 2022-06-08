@@ -274,17 +274,11 @@ commands:
       - restore-maven-cache
       - restore-nodejs-cache
       - run:
-          name: Clean up
-          command: |
-            export OPENNMS_VERSION="$(.circleci/scripts/pom2version.sh pom.xml)"
-            mvn clean -DskipTests=true
-      - run:
           name: Compile OpenNMS
           command: |
-            echo $OPENNMS_VERSION
             export OPENNMS_VERSION="$(.circleci/scripts/pom2version.sh pom.xml)"
             .circleci/scripts/configure-signing.sh
-            #mvn clean -DskipTests=true
+            mvn clean -DskipTests=true
             << parameters.node-memory >>
             export MAVEN_OPTS="$MAVEN_OPTS -Xmx8g -XX:ReservedCodeCacheSize=1g"
             MAVEN_ARGS="install"
@@ -295,7 +289,6 @@ commands:
                 MAVEN_ARGS="-Dbuild.type=production $MAVEN_ARGS javadoc:aggregate"
                 ;;
             esac
-
             ./compile.pl -DskipTests=true -Dbuild.skip.tarball=true \
               -DupdatePolicy=never \
               -Daether.connector.resumeDownloads=false \
@@ -323,7 +316,6 @@ commands:
                 --batch-mode \
                 install
             popd
-
       - update-maven-cache
       - run:
           name: Remove Extra Maven Repository OpenNMS Files
@@ -843,7 +835,7 @@ jobs:
     machine:
       image: ubuntu-2004:202010-01
       docker_layer_caching: true
-    resource_class: medium
+    resource_class: xlarge
     environment:
       DOCKER_CLI_EXPERIMENTAL: enabled
     parameters:
@@ -906,7 +898,7 @@ jobs:
   horizon-rpm-build:
     executor: centos-build-executor
     # Larger memory footprint required to speed up builds using Takari smartbuilder
-    resource_class: medium
+    resource_class: xlarge
     steps:
       - attach_workspace:
           at: ~/
@@ -917,8 +909,8 @@ jobs:
           name: Build RPMs
           command: |
             export NODE_OPTIONS=--max_old_space_size=1024
-            export CCI_MAXCPU=$(($(cat /sys/fs/cgroup/cpu/cpu.shares)/1024))
-            export MAVEN_OPTS="-Xmx5g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
+            export CCI_MAXCPU=4
+            export MAVEN_OPTS="-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
             .circleci/scripts/makerpm.sh tools/packages/opennms/opennms.spec
       - sign-packages/sign-rpms:
           skip_if_forked_pr: true
@@ -948,7 +940,7 @@ jobs:
     executor: centos-build-executor
     # Larger memory footprint required to speed up builds using Takari smartbuilder
     # Will need to increase resource class if horizon-rpm-build is under 15 min
-    resource_class: large
+    resource_class: xlarge
     steps:
       - attach_workspace:
           at: ~/
@@ -959,9 +951,9 @@ jobs:
           name: Build RPMs
           command: |
             export NODE_OPTIONS=--max_old_space_size=1024
-            export CCI_MAXCPU=3
+            export CCI_MAXCPU=4
             export CCI_VAADINJAVAMAXMEM=768m
-            export MAVEN_OPTS="-Xmx6g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
+            export MAVEN_OPTS="-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
             .circleci/scripts/makerpm.sh tools/packages/minion/minion.spec
       - sign-packages/sign-rpms:
           skip_if_forked_pr: true
@@ -991,7 +983,7 @@ jobs:
     executor: centos-build-executor
     # Larger memory footprint required to speed up builds using Takari smartbuilder
     # Will need to increase resource class if horizon-rpm-build is under 19 min
-    resource_class: large
+    resource_class: xlarge
     steps:
       - attach_workspace:
           at: ~/
@@ -1002,9 +994,9 @@ jobs:
           name: Build RPMs
           command: |
             export NODE_OPTIONS=--max_old_space_size=1024
-            export CCI_MAXCPU=2
+            export CCI_MAXCPU=4
             export CCI_VAADINJAVAMAXMEM=768m
-            export MAVEN_OPTS="-Xmx6g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
+            export MAVEN_OPTS="-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
             .circleci/scripts/makerpm.sh tools/packages/sentinel/sentinel.spec
       - sign-packages/sign-rpms:
           skip_if_forked_pr: true
@@ -1032,7 +1024,7 @@ jobs:
           path: opennms-container/sentinel/images/
   horizon-deb-build:
     executor: debian-build-executor
-    resource_class: large
+    resource_class: xlarge
     steps:
       - attach_workspace:
           at: ~/
@@ -1078,7 +1070,7 @@ jobs:
           source_path: target/debs
   minion-deb-build:
     executor: debian-build-executor
-    resource_class: large
+    resource_class: xlarge
     steps:
       - attach_workspace:
           at: ~/
@@ -1106,7 +1098,7 @@ jobs:
           source_path: target/debs
   sentinel-deb-build:
     executor: debian-build-executor
-    resource_class: large
+    resource_class: xlarge
     steps:
       - attach_workspace:
           at: ~/
@@ -1180,7 +1172,7 @@ jobs:
   integration-test:
     executor: integration-test-executor
     parallelism: 8
-    resource_class: medium
+    resource_class: xlarge
     steps:
       - attach_workspace:
           at: ~/
@@ -1189,7 +1181,7 @@ jobs:
   integration-test-with-coverage:
     executor: integration-test-executor
     parallelism: 10
-    resource_class: medium
+    resource_class: xlarge
     steps:
       - attach_workspace:
           at: ~/
@@ -1408,4 +1400,3 @@ jobs:
           name: Publish Packages
           command: |
             .circleci/scripts/publish-cloudsmith.sh
-
