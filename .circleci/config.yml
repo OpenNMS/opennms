@@ -831,7 +831,7 @@ jobs:
     resource_class: medium
     steps:
       - run-build:
-          number-vcpu: $(($(cat /sys/fs/cgroup/cpu/cpu.shares)/1024))
+          number-vcpu: 2
 
   tarball-assembly:
     machine:
