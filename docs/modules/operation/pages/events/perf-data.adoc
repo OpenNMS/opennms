@@ -1,31 +1,23 @@
-= Performance Data
+= SNMP Trap Performance Data
 
-This feature lets users persist performance data from SNMP traps in a time series database.
-{page-component-title} already persists traps in an events form.
-Trap output is not the same as SNMP; it always embeds values into a string.
-Events support named regex extraction, a good starting point for persisting extracted parameters into time series.
+The `opennms-events-collector` feature lets you persist performance data from SNMP traps as time-series data.
+Unlike SNMP collection where you can define data types, SNMP traps always embed values as strings.
+The events collector can take the string values from event parameters and convert them into numeric values to persist over time.
 
 == How it works
 
-- The feature uses event matching with eventconf to check that the collection information exists.
-- It tries to look up parameters stated in the config against the event's parameters.
-- If `paramValue` exists in eventconf, {page-component-title} converts the matching key into numeric values.
-- Based on the collection setting, it will persist data into `nodeSnmp`, `interfaceSnmp`, or `resource type`.
+* The feature uses matching within the event definition to check that the collection information exists.
+* It tries to look up parameters stated in the config against the event's parameters.
+* If `paramValue` exists in the event definition, {page-component-title} converts the matching key into numeric values.
+* Based on the collection setting, it will persist data into the designated resource type.
 
-== Install and configure event-sourced performance data collection
-
-. <<collection-config,Configure eventconf with collection>>.
-. <<snmp-graph, Create snmp-graph.properties>>.
-. <<resource-types, Create resource-types if you are using the generic type>>.
-. <<karaf-collector,Enable opennms-events-collector in Karaf>>.
-
-View result performance graph in menu:Reports[Reports > Resource Graphs].
+== Configuration and use
 
 [[collection-config]]
-=== Config eventconf with collection
+=== Configure event definition for collection
 
 This is an example of event collection config.
-Put the file in the etc/events directory and make sure it is registered in eventconf.xml.
+Put the file in the `$\{OPENNMS_HOME}/etc/events` directory and make sure it is registered in `eventconf.xml`.
 If your event will keep firing a lot and you only want the performance data without overwhelming the event table, consider setting `<logmsg dest="donotpersist"></logmsg>`.
 
 [source, xml]
@@ -61,8 +53,8 @@ If your event will keep firing a lot and you only want the performance data with
             </rrd>
             <collection name="TIME" type="counter"/>
             <collection name="STATUS" type="gauge">
-              <paramValue key="primary" value="1"/>
-              <paramValue key="secondary" value="2"/>
+                <paramValue key="primary" value="1"/>
+                <paramValue key="secondary" value="2"/>
             </collection>
         </collectionGroup>
         <collectionGroup name="eventTypeGroup" resourceType="eventType" instance="STATUS">
@@ -121,7 +113,8 @@ Make sure to quote the regex in CDATA.
 
 [[snmp-graph]]
 === Create snmp-graph.properties
-You need to create separate snmp-graph settings in the `$\{OPENNMS_HOME}/etc/snmp-graph.properties.d` directory.
+
+You need to create separate snmp-graph settings file in the `$\{OPENNMS_HOME}/etc/snmp-graph.properties.d` directory.
 
 [source, properties]
 ----
@@ -172,11 +165,14 @@ report.uei.opennms.org_traps_test_varbind.command=--title="uei.opennms.org_traps
  GPRINT:octIn:AVERAGE:"Avg  \\: %8.2lf %s"
 ----
 
+You can view the resulting performance graphs in menu:Reports[Resource Graphs].
+
 [[resource-types]]
-=== Create resource-types if you are using generic type
-If your time series data type is not nodeSnmp/interfaceSnmp, you need to create a resource-type file in etc/resource-types.d.
-Make sure you match the name with evenconf's resourceType.
-There is also `$\{instance}` variable available to provide a name to help indicate what an event binds to.
+=== Create resource-types (optional)
+
+If your time series data type is not `nodeSnmp` or `interfaceSnmp`, you need to create a resource-type file in `$\{OPENNMS_HOME}/etc/resource-types.d`.
+Make sure you match the name with the event definition's `resourceType`.
+There is also `$\{instance}` variable available that can be used to enrich the resource type's label.
 
 [source, xml]
 ----
