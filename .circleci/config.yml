@@ -280,7 +280,7 @@ commands:
             .circleci/scripts/configure-signing.sh
             mvn clean -DskipTests=true
             << parameters.node-memory >>
-            export MAVEN_OPTS="$MAVEN_OPTS -Xmx8g -XX:ReservedCodeCacheSize=1g"
+            export MAVEN_OPTS="$MAVEN_OPTS -Xmx7g -XX:ReservedCodeCacheSize=1g"
             MAVEN_ARGS="install"
             case "${CIRCLE_BRANCH}" in
               "master"*|"release-"*|develop)
