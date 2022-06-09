@@ -35,7 +35,7 @@ You can customize this report with three company logos (approximately 195px by 5
 True will include contracts that have already expired along with assets with maintenance contracts that will expire within the number of days specified for the warning threshold below.
 | true
 
-| Format for Expire Date
+| Format for Expiration Date
 | Specify the format for the expiration date.
 | YYYY-MM-DD
 
