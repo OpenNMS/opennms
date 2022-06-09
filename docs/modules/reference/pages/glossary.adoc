@@ -12,17 +12,31 @@ ALEC groups related alarms so you can better manage the more complex situations 
 Application Perspective Monitoring (APM):: A method that uses the Minion infrastructure to monitor a service’s availability from different perspectives to help identify if nodes are down for everyone or if an outage affects only certain sites. When a service is not responsive an outage will be generated with the corresponding perspective that sees the outage.
 (See xref:operation:application-perspective-monitoring/introduction.adoc#application-perspective[Application Perspective Monitoring].)
 
+Azure:: Microsoft Azure is a cloud-based hosting service that allows users to launch and maintain Microsoft Windows or Linux virtual machines.
+
 Cassandra:: Open-source distributed/scale-out NoSQL database designed to hold large amounts of structured or unstructured data across many servers.
 (See xref:deployment:time-series-storage/newts/introduction.adoc#ga-opennms-operation-newts[Newts].)
 
+CircleCI:: CircleCI is a continuous integration and delivery platform that hosts OpenNMS's CI/CD environment. It integrates with and monitors OpenNMS GitHub repositories, and automatically launches and tests a new build when a commit is detected.
+
+Discourse:: Discourse is an open-source forum platform built on the Ember.js framework. It forms the basis for OpenNMS's community forums (https://opennms.discourse.group/).
+
 Discovery:: A process that uses ICMP to find network devices and services in your network and then automatically adds them to monitoring.
 (See xref:operation:provisioning/introduction.adoc#discovery-auto[Provisioning].)
+
+Docker:: Docker is an open-source virtualization service consisting of three components: Docker Compose (a tool for defining and running multi-container Docker applications), Docker Swarm (a tool providing native clustering functionality for Docker containers), and Docker Volume (a tool that allows for the independent persistence of data). 
+(See https://en.wikipedia.org/wiki/Docker_(software) [Docker (Software)].)
 
 Dominion:: The service on an OpenNMS core that controls the operation of Minions.
 (See xref:reference:configuration/minion-confd/minion-confd.adoc#dominion [Configuring Minion via Confd].)
 
 Elasticsearch:: Elasticsearch is a search engine based on the Lucene library. OpenNMS persists/forwards certain data to Elasticsearch to store flow records and warehouse events and alarm history for long-term storage of this data.
 (See xref:operation:elasticsearch/introduction.adoc#elasticsearch[Elasticsearch Integration].)
+
+Flows:: Summaries of network traffic sent by network devices. (See xref:operation:flows/introduction.adoc[Flows].)
+
+Foreign Source:: A data source hosted outside of your local network. To monitor a foreign source, a foreign source definition must be set. 
+(See xref:operation:provisioning/getting-started.adoc#foreign-source-definition[Foreign source definition].)
 
 Helm:: Helm is an an OpenNMS application for creating flexible dashboards to display and customize fault management and performance management data from Horizon and Meridian.
 Helm works with the Grafana analytics program to customize the data you can view.
@@ -38,6 +52,8 @@ Default time series database for new {page-component-title} instances.
 
 Kafka:: Clusterable, open-source message broker designed for high-throughput/low-latency event streaming originally developed at LinkedIn, now supported by the Apache community.
 (See xref:deployment:core/setup-message-broker.adoc#setup-message-broker[Set Up Message Broker].)
+
+Kibana:: Kibana is a component of the Elastic Stack (comprised of Elasticsearch, Logstash, and Kibana). It provides visualization capabilities for data indexed in an Elasticsearch cluster.
 
 KSC Reports:: Key SNMP customized (KSC) reports provide a way to generate prefabricated graphical views of collected data. They let you display data from different devices and sources (SNMP, ICMP, HTTP) on one page.
 (See xref:operation:admin/webui/opsboard/dashlet/ksc.adoc#ksc[KSC Reports].)
@@ -60,7 +76,6 @@ Newts:: Newts (New-Fangled Time Series Datastore) is an OpenNMS time series data
 Use it as an alternative persistence strategy instead of JRobin or RRDtool.
 (See xref:deployment:time-series-storage/newts/introduction.adoc#ga-opennms-operation-newts[Newts].)
 
-
 Operator board:: Customizable dashboard to visualize monitoring information. (See xref:operation:admin/webui/opsboard/introduction.adoc#ops-board[Operator Board].)
 
 PostgreSQL:: Commonly used open-source relational database known for its stability.
@@ -75,6 +90,9 @@ Provisioning:: The process of getting your devices, applications, and services i
 
 Remote Method Invocation (RMI):: Java API that lets one Java Virtual Machine (JVM) running object to invoke methods on an object running in another JVM. RMI integration lets you access Horizon/Meridian through jconsole or remote manage them.
 (See xref:operation:admin/rmi.adoc#rmi[Enabling RMI].)
+
+Requisitions:: Sets of nodes to be imported into Horizon for monitoring and management. Requisitions can be iteratively built and imported at a later date.
+(See xref:operation:provisioning/getting-started.adoc#requisition-create[Create a Requisition].)
 
 Round Robin Database (RRD):: Special type of database designed for collection, visualization, and analysis of time-series data.
 Data is maintained as a fixed-size circular-buffer that overwrites the oldest data with new data.
