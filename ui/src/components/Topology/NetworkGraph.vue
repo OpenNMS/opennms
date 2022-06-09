@@ -217,8 +217,8 @@ const eventHandlers: EventHandlers = {
   'view:contextmenu': ({ event }: ViewEvent<any>) => {
     event.preventDefault()
     contextMenuType.value = ContextMenuType.background
-    menuXPos.value = event.layerX
-    menuYPos.value = event.layerY
+    menuXPos.value = event.x
+    menuYPos.value = event.y
     showContextMenu.value = true
   },
   // on right clicking node
@@ -236,8 +236,8 @@ const eventHandlers: EventHandlers = {
 
     contextMenuType.value = ContextMenuType.node
     contextNode.value = vertices.value[node]
-    menuXPos.value = event.layerX
-    menuYPos.value = event.layerY
+    menuXPos.value = event.x
+    menuYPos.value = event.y
     showContextMenu.value = true
   },
   // on hover, display tooltip
