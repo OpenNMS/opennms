@@ -375,7 +375,7 @@ To get the appropriate interface descriptor depends on the input parameter.
 
 To establish a secure connection to the Measurements API, you must import the public certificate of the running {page-component-title} to the Java Truststore.
 In addition, you must configure {page-component-title} to use that Java Truststore.
-Please follow the instructions in this <<admin/http-ssl.adoc#ga-operation-ssl-opennms-trust-store,chapter>> to set up the Java Truststore correctly.
+Please follow the instructions in this <<admin/http-ssl.adoc#ga-operation-ssl-opennms-trust-store,section>> to set up the Java Truststore correctly.
 
 In addition, set the property `org.opennms.netmgt.jasper.measurement.ssl.enable` in `$OPENNMS_HOME\etc\opennms.properties` to "true" to ensure that only secure connections are established.
 
@@ -385,6 +385,6 @@ An SSL-secured connection can be established even if `org.opennms.netmgt.jasper.
 [[ga-database-reports-limitations]]
 == Limitations
 
- * Only a JDBC Datasource to the {page-component-title} database connection can be passed to a report, or no datasource at all.
+Only a JDBC Datasource to the {page-component-title} database connection can be passed to a report, or no datasource at all.
 One does not have to use the data source, though.
 
