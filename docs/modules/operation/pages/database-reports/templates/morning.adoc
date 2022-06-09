@@ -14,7 +14,7 @@ The third section is a stacked bar chart that shows the current outages stacked 
 The fourth section provides an overview of notifications over the past 24 hours.
 It contains a pie chart and a table showing how the notifications were received, for example: email, chat, etc.
 
-The fifth section provides and overview of events over the last 24 hours.
+The fifth section provides an overview of events over the last 24 hours.
 The first stacked bar chart shows, for each of the last 24 hours, the number of each of the seven types of event: indeterminate, cleared, normal, warning, minor, major, and critical.
 The second stacked bar chart shows the top 20 nodes with each type of event per node.
 

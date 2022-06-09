@@ -4,7 +4,7 @@
 This is an asset management report that shows all assets with maintenance contracts that will expire within a threshold period, which starts today and extends for the number of days specified in the warning threshold parameter below.
 This report can also show assets with maintenance contracts that have already expired.
 
-The report includes a table that list assets that match the criteria defined by the parameters.
+The report includes a table that lists assets that match the criteria defined by the parameters.
 This table is sorted by node and then ordered by expiration date.
 The report includes the node label, manufacturer, title of maintenance contract exists, expiration date, and status.
 

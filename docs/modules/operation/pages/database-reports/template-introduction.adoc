@@ -15,8 +15,9 @@ Specify the following report delivery options:
 ** Save a copy of the report (view in the *Persisted Reports* tab)
 // where is it saved?
 ** Email report (use a comma to separate multiple email addresses)
-** Webhook (posts generated report to specified http endpoint)
+** Webhook (posts generated report to specified HTTP endpoint)
 
+[[schedule-editor]]
 == Schedule Editor
 
 Specify the schedule for automatic report delivery:

@@ -2,7 +2,7 @@
 = Default Classic Report
 
 
-This report is generated directly from the {page-component-title} Java code and has no optional parameters for selecting a subset of the network devices.
+This report is generated directly from the {page-component-title} Java code and has no optional parameters to select a subset of the network devices.
 
 The period is the current month to the last full day before the day the report was generated (in other words, yesterday).
 All the data is presented in tables.
@@ -23,7 +23,7 @@ The average of these 30 data points appears in the next table.
 
 // QUESTION: I think the denominator here is the number of minutes that each service was monitored.  It could be total number of minutes.  This should be checked.
 
-The next two tables show the average availability for every monitored service (on each device) for previous full month and the same average availability for the beginning of the current month to the last full day.
+The next two tables show the average availability for every monitored service (on each device) for the previous full month and the same average availability for the beginning of the current month to the last full day.
 
 The remaining eight tables show the top service outages for each service for the last full month.
 Each entry includes the device, duration of outage, and the date/time when the outage occurred.

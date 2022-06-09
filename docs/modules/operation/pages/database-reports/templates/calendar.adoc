@@ -5,13 +5,13 @@
 Standard OpenNMS report in calendar format.
 
 This report is generated directly from the {page-component-title} Java code and has no optional parameters for selecting a subset of the network devices.
-The report contains the same information as the "Default Classic Report" with the exception that the information in the second and third tables present the data in the format of a calendar month.
+The report contains the same information as the "Default Classic Report" with the exception that the information in the second and third tables presents the data in the format of a calendar month.
 
 The period is the current month to the last full day before the day the report was generated (in other words, yesterday).
 All the data is presented in tables.
 
-The first table contains a table of the monthly availability percentage for all services monitored by {page-component-title} for the past year.
-It also lists the number of nodes that had outages, the number of interfaces and the number of services.
+The first table contains a table of the monthly availability percentage for all services {page-component-title} monitored for the past year.
+It also lists the number of nodes that had outages, the number of interfaces, and the number of services.
 // QUESTION: Not sure if this last set of information show the maximum or current number of interfaces and services.
 
 The next two figures present the daily average of services monitored and availability of services divided by the total number of minutes for the last full month before the current month.
@@ -27,7 +27,7 @@ The average of these 30 data points appears in the next table.
 
 // QUESTION: I think the denominator here is the number of minutes that each service was monitored.  It could be total number of minutes.  This should be checked.
 
-The next two tables show the average availability for every monitored service (on each device) for previous full month and the same average availability for the beginning of the current month to the last full day.
+The next two tables show the average availability for every monitored service (on each device) for the previous full month and the same average availability for the beginning of the current month to the last full day.
 
 The remaining eight tables show the top service outages for each service for the last full month.
 Each entry includes the device, duration of outage, and the date/time when the outage occurred.
