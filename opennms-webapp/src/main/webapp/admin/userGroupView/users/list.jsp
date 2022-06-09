@@ -170,11 +170,11 @@
          <tr id="user-<%= userid %>">
           <% if (!curUser.getUserId().equals("admin") && !curUser.getUserId().equals("rtc")) { %>
           <td rowspan="2" class="text-center"> 
-            <a id="<%= "users("+sanitizedUserId+").doDelete" %>" href="javascript:deleteUser('<%=sanitizedUserId%>')" onclick="return confirm('Are you sure you want to delete the user <%=sanitizedUserId%>?')"><i class="fa fa-trash-o fa-2x"></i></a>
+            <a id="<%= "users("+sanitizedUserId+").doDelete" %>" href="javascript:deleteUser('<%=sanitizedUserId%>')" onclick="return confirm('Are you sure you want to delete the user <%=sanitizedUserId%>?')"><i class="fa fa-trash fa-2x"></i></a>
           </td>
           <% } else { %>
           <td rowspan="2" class="text-center">
-            <i class="fa fa-trash-o fa-2x" onclick="alert('Sorry, the admin user cannot be deleted.')"></i>
+            <i class="fa fa-trash fa-2x" onclick="alert('Sorry, the admin user cannot be deleted.')"></i>
           </td>
           <% } %>
           <td rowspan="2" class="text-center">

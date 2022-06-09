@@ -28,7 +28,7 @@
         <button class="btn btn-primary" name="run" id="execute" ng-click="execute()" ng-disabled="reportForm.$invalid || !report.scheduleOptions.isValid() || (report.isGrafanaReport() && !report.isGrafanaEndpointSelected())">
             <span ng-if="meta.online && !options.deliverReport && !options.scheduleReport"><i class="fa fa-play"></i> Create</span>
             <span ng-if="options.deliverReport && !options.scheduleReport"><i class="fa fa-share"></i> Deliver</span>
-            <span ng-if="options.deliverReport && options.scheduleReport"><i class="fa fa-clock-o"></i> Schedule</span>
+            <span ng-if="options.deliverReport && options.scheduleReport"><i class="fa fa-clock"></i> Schedule</span>
 
             Report
         </button>

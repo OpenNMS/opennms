@@ -94,11 +94,11 @@
     if (alarm.getAckTime() == null) {
         ackButtonName = "Acknowledge";
         action = AcknowledgeType.ACKNOWLEDGED.getShortName();
-        ackButtonIcon = "fa fa-check-square-o";
+        ackButtonIcon = "fa fa-square-check";
     } else {
         ackButtonName = "Unacknowledge";
         action = AcknowledgeType.UNACKNOWLEDGED.getShortName();
-        ackButtonIcon = "fa fa-square-o";
+        ackButtonIcon = "fa fa-square";
     }
 
     String escalateAction = AlarmSeverityChangeController.ESCALATE_ACTION;
@@ -363,10 +363,10 @@
                 <td>
                     <c:choose>
                     <c:when test="${relatedVar.situation}">
-                    <i class="fa fa-check-square-o">
+                    <i class="fa fa-square-check">
                         </c:when>
                         <c:otherwise>
-                        <i class="fa fa-square-o">
+                        <i class="fa fa-square">
                             </c:otherwise>
                             </c:choose>
                 </td>

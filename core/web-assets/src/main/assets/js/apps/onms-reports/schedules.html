@@ -50,17 +50,17 @@
                 </td>
                 <td>
                     <span ng-if="schedule.deliveryOptions.sendMail || false" title="Mail to {{schedule.deliveryOptions.mailTo}}">
-                        <i class="fa fa-envelope-o"></i>
+                        <i class="fa fa-envelope"></i>
                     </span>
                 </td>
                 <td>
                     <span ng-if="schedule.deliveryOptions.webhook || false" title="POST to {{schedule.deliveryOptions.webhookUrl}}">
-                        <i class="fa fa-paper-plane-o"></i>
+                        <i class="fa fa-paper-plane"></i>
                     </span>
                 </td>
                 <td>
                     <span title="Cron Expression">
-                        <i class="fa fa-clock-o"></i> <small>{{schedule.cronExpression}}</small>
+                        <i class="fa fa-clock"></i> <small>{{schedule.cronExpression}}</small>
                     </span>
                 </td>
                 <td>{{schedule.triggerName}}</td>

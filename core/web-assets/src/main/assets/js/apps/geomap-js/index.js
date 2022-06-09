@@ -284,14 +284,14 @@ const render = function(options) {
             var center = createButton('Center on marker', 'fa fa-location-arrow', container, function() {
                 centerOnMap();
             });
-            var includeAcknowledgedAlarmsButton = createButton('Include acknowledged alarms in status calculation', 'fa fa-square-o', container, function() {
+            var includeAcknowledgedAlarmsButton = createButton('Include acknowledged alarms in status calculation', 'fa fa-square', container, function() {
                 query.includeAcknowledgedAlarms = !query.includeAcknowledgedAlarms;
-                L.DomUtil.removeClass(includeAcknowledgedAlarmsButton, 'fa-check-square-o');
-                L.DomUtil.removeClass(includeAcknowledgedAlarmsButton, 'fa-square-o');
+                L.DomUtil.removeClass(includeAcknowledgedAlarmsButton, 'fa-square-check');
+                L.DomUtil.removeClass(includeAcknowledgedAlarmsButton, 'fa-square');
                 if (query.includeAcknowledgedAlarms) {
-                    L.DomUtil.addClass(includeAcknowledgedAlarmsButton, 'fa-check-square-o');
+                    L.DomUtil.addClass(includeAcknowledgedAlarmsButton, 'fa-square-check');
                 } else {
-                    L.DomUtil.addClass(includeAcknowledgedAlarmsButton, 'fa-square-o');
+                    L.DomUtil.addClass(includeAcknowledgedAlarmsButton, 'fa-square');
                 }
                 loadGeolocations(query);
             });
@@ -354,7 +354,7 @@ const render = function(options) {
                 buttonClick(e.target, 'Alarms');
             });
 
-            var outageButton = createButton('Calculate status based on outages', 'fa fa-flash', container, function(e) {
+            var outageButton = createButton('Calculate status based on outages', 'fa fa-bolt', container, function(e) {
                 buttonClick(e.target, 'Outages');
             });
 

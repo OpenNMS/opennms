@@ -94,10 +94,10 @@
 
 					<h4>Filter by Example</h4>
 					<p>
-						You can click on the <i class="fa fa-plus-square-o"></i> icon next to a value to only show rows that contain that value. 
-						If you click on the <i class="fa fa-minus-square-o"></i> icon, it will remove rows with that value from the results.
-						For timestamp values, clicking on the <i class="fa fa-toggle-left"></i> icon will show timestamps newer than the specified
-						value and clicking on the <i class="fa fa-toggle-right"></i> icon will show timestamps older than the value.
+						You can click on the <i class="fa fa-plus-square"></i> icon next to a value to only show rows that contain that value. 
+						If you click on the <i class="fa fa-minus-square"></i> icon, it will remove rows with that value from the results.
+						For timestamp values, clicking on the <i class="fa square-left"></i> icon will show timestamps newer than the specified
+						value and clicking on the <i class="fa square-right"></i> icon will show timestamps older than the value.
 					</p>
 
 					<h4>Sorting</h4>
@@ -238,43 +238,43 @@
 				<tr ng-repeat="item in items">
 					<td class="text-nowrap" style="line-height:24px;">
 						{{item['location-name']}}
-						<a href style="text-decoration: none;" ng-click="deleteItem(item)"><i class="fa fa-trash-o fa-lg"></i></a>
-						<a href style="text-decoration: none;" ng-click="addSearchClause({property:'locationName',operator:'EQ',value:item['location-name']})"><i class="fa fa-plus-square-o fa-lg"></i></a>
-						<a href style="text-decoration: none;" ng-click="addSearchClause({property:'locationName',operator:'NE',value:item['location-name']})"><i class="fa fa-minus-square-o fa-lg"></i></a>
+						<a href style="text-decoration: none;" ng-click="deleteItem(item)"><i class="fa fa-trash fa-lg"></i></a>
+						<a href style="text-decoration: none;" ng-click="addSearchClause({property:'locationName',operator:'EQ',value:item['location-name']})"><i class="fa fa-plus-square fa-lg"></i></a>
+						<a href style="text-decoration: none;" ng-click="addSearchClause({property:'locationName',operator:'NE',value:item['location-name']})"><i class="fa fa-minus-square fa-lg"></i></a>
 					</td>
 					<td class="text-nowrap">
 						<onms-list-edit-in-place item="item" value="item['monitoring-area']" value-type="'text'" on-submit="update(item)">
-							<a href style="text-decoration: none;" ng-click="addSearchClause({property:'monitoringArea',operator:'EQ',value:item['monitoring-area']})"><i class="fa fa-plus-square-o fa-lg"></i></a>
-							<a href style="text-decoration: none;" ng-click="addSearchClause({property:'monitoringArea',operator:'NE',value:item['monitoring-area']})"><i class="fa fa-minus-square-o fa-lg"></i></a>
+							<a href style="text-decoration: none;" ng-click="addSearchClause({property:'monitoringArea',operator:'EQ',value:item['monitoring-area']})"><i class="fa fa-plus-square fa-lg"></i></a>
+							<a href style="text-decoration: none;" ng-click="addSearchClause({property:'monitoringArea',operator:'NE',value:item['monitoring-area']})"><i class="fa fa-minus-square fa-lg"></i></a>
 						</onms-list-edit-in-place>
 					</td>
 					<td class="text-nowrap">
 						<onms-list-edit-in-place item="item" value="item['geolocation']" value-type="'text'" on-submit="update(item)">
-							<a href style="text-decoration: none;" ng-click="addSearchClause({property:'geolocation',operator:'EQ',value:item['geolocation']})"><i class="fa fa-plus-square-o fa-lg"></i></a>
-							<a href style="text-decoration: none;" ng-click="addSearchClause({property:'geolocation',operator:'NE',value:item['geolocation']})"><i class="fa fa-minus-square-o fa-lg"></i></a>
+							<a href style="text-decoration: none;" ng-click="addSearchClause({property:'geolocation',operator:'EQ',value:item['geolocation']})"><i class="fa fa-plus-square fa-lg"></i></a>
+							<a href style="text-decoration: none;" ng-click="addSearchClause({property:'geolocation',operator:'NE',value:item['geolocation']})"><i class="fa fa-minus-square fa-lg"></i></a>
 						</onms-list-edit-in-place>
 					</td>
 					<td class="text-nowrap">
 						<onms-list-edit-in-place item="item" value="item['latitude']" value-type="'number'" step="'any'" on-submit="update(item)">
 							<span ng-show="item['latitude'] !== null">
-								<a href style="text-decoration: none;" ng-click="addSearchClause({property:'latitude',operator:'EQ',value:item['latitude']})"><i class="fa fa-plus-square-o fa-lg"></i></a>
-								<a href style="text-decoration: none;" ng-click="addSearchClause({property:'latitude',operator:'NE',value:item['latitude']})"><i class="fa fa-minus-square-o fa-lg"></i></a>
+								<a href style="text-decoration: none;" ng-click="addSearchClause({property:'latitude',operator:'EQ',value:item['latitude']})"><i class="fa fa-plus-square fa-lg"></i></a>
+								<a href style="text-decoration: none;" ng-click="addSearchClause({property:'latitude',operator:'NE',value:item['latitude']})"><i class="fa fa-minus-square fa-lg"></i></a>
 							</span>
 						</onms-list-edit-in-place>
 					</td>
 					<td class="text-nowrap">
 						<onms-list-edit-in-place item="item" value="item['longitude']" value-type="'number'" step="'any'" on-submit="update(item)">
 							<span ng-show="item['longitude'] !== null">
-								<a href style="text-decoration: none;" ng-click="addSearchClause({property:'longitude',operator:'EQ',value:item['longitude']})"><i class="fa fa-plus-square-o fa-lg"></i></a>
-								<a href style="text-decoration: none;" ng-click="addSearchClause({property:'longitude',operator:'NE',value:item['longitude']})"><i class="fa fa-minus-square-o fa-lg"></i></a>
+								<a href style="text-decoration: none;" ng-click="addSearchClause({property:'longitude',operator:'EQ',value:item['longitude']})"><i class="fa fa-plus-square fa-lg"></i></a>
+								<a href style="text-decoration: none;" ng-click="addSearchClause({property:'longitude',operator:'NE',value:item['longitude']})"><i class="fa fa-minus-square fa-lg"></i></a>
 							</span>
 						</onms-list-edit-in-place>
 					</td>
 					<td class="text-nowrap">
 						<onms-list-edit-in-place item="item" value="item['priority']" value-type="'number'" on-submit="update(item)">
 							<span ng-show="item['priority'] !== null">
-								<a href style="text-decoration: none;" ng-click="addSearchClause({property:'priority',operator:'EQ',value:item['priority']})"><i class="fa fa-plus-square-o fa-lg"></i></a>
-								<a href style="text-decoration: none;" ng-click="addSearchClause({property:'priority',operator:'NE',value:item['priority']})"><i class="fa fa-minus-square-o fa-lg"></i></a>
+								<a href style="text-decoration: none;" ng-click="addSearchClause({property:'priority',operator:'EQ',value:item['priority']})"><i class="fa fa-plus-square fa-lg"></i></a>
+								<a href style="text-decoration: none;" ng-click="addSearchClause({property:'priority',operator:'NE',value:item['priority']})"><i class="fa fa-minus-square fa-lg"></i></a>
 							</span>
 						</onms-list-edit-in-place>
 					</td>

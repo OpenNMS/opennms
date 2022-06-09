@@ -90,7 +90,7 @@
   <strong>Search constraints: 
       <% for(int i=0; i < length; i++) { %>
         <% Filter filter = (Filter)parms.filters.get(i); %> 
-        &nbsp; <span class="label label-default"><%=filter.getTextDescriptionAsSanitizedHtml()%></span> <a href="<%=OutageUtil.makeLink(req, parms, filter, false)%>"> <i class="fa fa-minus-square-o"></i></a>
+        &nbsp; <span class="label label-default"><%=filter.getTextDescriptionAsSanitizedHtml()%></span> <a href="<%=OutageUtil.makeLink(req, parms, filter, false)%>"> <i class="fa fa-minus-square"></i></a>
       <% } %>
   </strong>
   <br/>

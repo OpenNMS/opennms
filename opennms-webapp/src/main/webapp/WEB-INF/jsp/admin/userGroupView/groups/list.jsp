@@ -122,10 +122,10 @@
           <td width="5%" class="text-center">
             <c:choose>
               <c:when test='${fn:escapeXml(group.name) != "Admin"}'>
-                <a id="${group.name}.doDelete" href="javascript:deleteGroup('${fn:escapeXml(group.name)}')" onclick="return confirm('Are you sure you want to delete the group ${fn:escapeXml(group.name)}?')"><i class="fa fa-trash-o fa-2x"></i></a>
+                <a id="${group.name}.doDelete" href="javascript:deleteGroup('${fn:escapeXml(group.name)}')" onclick="return confirm('Are you sure you want to delete the group ${fn:escapeXml(group.name)}?')"><i class="fa fa-trash fa-2x"></i></a>
               </c:when>
               <c:otherwise>
-                <i class="fa fa-trash-o fa-2x" onclick="alert('Sorry, the ${fn:escapeXml(group.name)} group cannot be deleted.')"></i>
+                <i class="fa fa-trash fa-2x" onclick="alert('Sorry, the ${fn:escapeXml(group.name)} group cannot be deleted.')"></i>
               </c:otherwise>
             </c:choose>
           </td>

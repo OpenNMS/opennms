@@ -100,10 +100,10 @@
     // optional bookmark
     final OnmsFilterFavorite favorite = (OnmsFilterFavorite) req.getAttribute("favorite");
 
-    pageContext.setAttribute("addPositiveFilter", "<i class=\"fa fa-plus-square-o\"></i>");
-    pageContext.setAttribute("addNegativeFilter", "<i class=\"fa fa-minus-square-o\"></i>");
-    pageContext.setAttribute("addBeforeFilter", "<i class=\"fa fa-toggle-right\"></i>");
-    pageContext.setAttribute("addAfterFilter", "<i class=\"fa fa-toggle-left\"></i>");
+    pageContext.setAttribute("addPositiveFilter", "<i class=\"fa fa-plus-square\"></i>");
+    pageContext.setAttribute("addNegativeFilter", "<i class=\"fa fa-minus-square\"></i>");
+    pageContext.setAttribute("addBeforeFilter", "<i class=\"fa square-right\"></i>");
+    pageContext.setAttribute("addAfterFilter", "<i class=\"fa square-left\"></i>");
     pageContext.setAttribute("filterFavoriteSelectTagHandler", new FilterFavoriteSelectTagHandler("All Alarms"));
     
     // get sound constants from session, request or opennms.properties
@@ -598,21 +598,21 @@
                   if (alarms[i].isSituation()) {
                       if(parms.getFilters().contains(new SituationFilter(true))) {
               %>
-              <i class="fa fa-check-square-o"></i>
+              <i class="fa fa-square-check"></i>
               <%
               } else {
               %>
-              <a href="<%=this.makeLink(callback, parms, new SituationFilter(true), true, favorite)%>" class="filterLink" title="Show only situations"><i class="fa fa-check-square-o"></i></a>
+              <a href="<%=this.makeLink(callback, parms, new SituationFilter(true), true, favorite)%>" class="filterLink" title="Show only situations"><i class="fa fa-square-check"></i></a>
               <%
                   }
               } else {
                   if(parms.getFilters().contains(new SituationFilter(false))) {
               %>
-              <i class="fa fa-square-o"></i>
+              <i class="fa fa-square"></i>
               <%
               } else {
               %>
-              <a href="<%=this.makeLink(callback, parms, new SituationFilter(false), true, favorite)%>" class="filterLink" title="Show only alarms"><i class="fa fa-square-o"></i></a>
+              <a href="<%=this.makeLink(callback, parms, new SituationFilter(false), true, favorite)%>" class="filterLink" title="Show only alarms"><i class="fa fa-square"></i></a>
               <%
                       }
                   }
