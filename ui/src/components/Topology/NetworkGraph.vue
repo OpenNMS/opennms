@@ -65,9 +65,9 @@
       ref="tooltip"
       class="tooltip"
       :style="{ ...tooltipPos }"
-      v-if="vertices[targetNodeId] && vertices[targetNodeId].namespace === 'nodes'"
+      v-if="vertices[targetNodeId] && vertices[targetNodeId].tooltip"
     >
-      <div v-html="vertices[targetNodeId]?.tooltip ?? ''"></div>
+      {{vertices[targetNodeId].tooltip}}
     </div>
   </div>
   <NoFocusMsg
@@ -141,19 +141,22 @@ const menuYPos = ref(0)
 const groupClick = ref(false)
 
 const getD3NodeCoords = () => d3Nodes.value.filter((d3Node) => d3Node.id === targetNodeId.value).map((d3Node) => ({ x: d3Node.x, y: d3Node.y }))[0]
+
 const closeContextMenu = () => showContextMenu.value = false
 onClickOutside(contextMenu, () => closeContextMenu())
 
 const vertices = computed<Nodes>(() => store.state.topologyModule.vertices)
 const edges = computed<Edges>(() => store.state.topologyModule.edges)
 const layout = computed<Layouts>(() => store.getters['topologyModule/getLayout'])
+const namespace = computed(() => store.state.topologyModule.namespace)
 const focusObjects = computed<string[]>(() => store.state.topologyModule.focusObjects || [])
 const highlightFocusedObjects = computed<boolean>(() => store.state.topologyModule.highlightFocusedObjects)
+const selectedView = computed<string>(() => store.state.topologyModule.selectedView)
 
 const tooltipPos = computed(() => {
   const defaultPos = { left: '-9999px', top: '-99999px' }
-  if (!graph.value || !tooltip.value) return defaultPos
-  if (!targetNodeId.value) return defaultPos
+
+  if (!graph.value || !tooltip.value || !targetNodeId.value || !displayTooltip.value) return defaultPos
 
   // attempt to get the node position from the layout. If layout is d3, use the function
   const nodePos = layout.value.nodes ? layout.value.nodes[targetNodeId.value] : getD3NodeCoords()
@@ -162,10 +165,51 @@ const tooltipPos = computed(() => {
   // translate coordinates: SVG -> DOM
   const domPoint = graph.value.translateFromSvgToDomCoordinates(nodePos)
 
-  return {
-    left: displayTooltip.value ? (domPoint.x - 120 + 'px') : (-9999 + 'px'),
-    top: displayTooltip.value ? (domPoint.y - 130 + 'px') : (-9999 + 'px')
+  let additionalOffset = {
+    nodeIconWidth: 32,
+    tooltipMinWidth: 100,
+    tooltipOffsetWidth: tooltip.value.offsetWidth,
+    tooltipMinHeight: 30,
+    tooltipOffsetHeight: tooltip.value.offsetHeight,
+    domPointXAjustment: 0
   }
+  let pos = defaultPos
+
+  switch(selectedView.value) {
+    case 'circle':
+      additionalOffset = {
+        ...additionalOffset,
+        domPointXAjustment: 4 // adjustment needed to horizontally centered tooltip relatively to node icon
+      }
+
+      pos = {
+        left: `${
+          (Number(domPoint.x)
+              + (additionalOffset.nodeIconWidth / 2)
+              - ((additionalOffset.tooltipOffsetWidth - additionalOffset.tooltipMinWidth) / 2)
+              - additionalOffset.domPointXAjustment)
+            .toFixed(0)
+        }px`,
+        top: `${
+          (Number(domPoint.y)
+              - (additionalOffset.tooltipOffsetHeight
+              - additionalOffset.tooltipMinHeight))
+            .toFixed(0)
+        }px`
+      }
+
+      break
+    case 'd3':
+      pos = {
+        left: `${Number(domPoint.x).toFixed(0)}px`,
+        top: `${Number(domPoint.y).toFixed(0)}px`
+      }
+
+      break
+    default:
+  }
+
+  return pos
 })
 
 const eventHandlers: EventHandlers = {
@@ -212,6 +256,34 @@ const eventHandlers: EventHandlers = {
   'node:pointerout': () => {
     cancelTooltipDebounce.value = true
     displayTooltip.value = false
+  },
+  'node:dragstart': () => {
+    d3ForceEnabled.value = false // to keep other nodes in place when one is dragged
+    cancelTooltipDebounce.value = true
+    displayTooltip.value = false
+  },
+  'node:dragend': (node) => {
+    // get node's position for tooltip
+    if(selectedView.value === 'd3') {
+      const nodeId = Object.keys(node)[0]
+      const {x: nodeX, y: nodeY} = Object.values(node)[0]
+      d3Nodes.value.map(d3Node => {
+        if(d3Node.id === nodeId) {
+          d3Node.x = nodeX
+          d3Node.y = nodeY
+        }
+        return d3Node
+      })
+    }
+
+    // show tooltip
+    cancelTooltipDebounce.value = false
+    const showTooltip = useDebounceFn(() => {
+      if (!cancelTooltipDebounce.value) {
+        displayTooltip.value = true
+      }
+    }, 1000)
+    showTooltip()
   }
 }
 
@@ -244,22 +316,23 @@ const forceLayout = new ForceLayout({
 const d3ForceEnabled = computed({
   get: () => configs.view.layoutHandler instanceof ForceLayout,
   set: (value: boolean) => {
-    if (value) {
-      configs.view.layoutHandler = forceLayout
-    } else {
-      configs.view.layoutHandler = new SimpleLayout()
-    }
+    configs.view.layoutHandler = value ? forceLayout : new SimpleLayout()
   }
 })
 
 const trigger = ref(true)
 
 watch(layout, async (layout) => {
-  if (Object.keys(layout).length === 0) {
-    d3ForceEnabled.value = true
-  } else {
-    d3ForceEnabled.value = false
-  }
+  d3ForceEnabled.value = Object.keys(layout).length === 0
+
+  trigger.value = false
+  await nextTick()
+  trigger.value = true
+})
+
+watch(namespace, async () => {
+  // to have d3Nodes with coordinates for tooltip positioning
+  d3ForceEnabled.value = store.state.topologyModule.selectedView === 'd3'
 
   trigger.value = false
   await nextTick()

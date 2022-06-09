@@ -14,8 +14,8 @@ const getCircleLayout = (state: State): Record<string, NodePoint> => {
 
   for (let i = 0; i < vertexNames.length; i++) {
     layout[vertexNames[i]] = {
-      x: centerX + radius * Math.cos((2 * Math.PI * i) / vertexNames.length),
-      y: centerY + radius * Math.sin((2 * Math.PI * i) / vertexNames.length)
+      x: Number((centerX + radius * Math.cos((2 * Math.PI * i) / vertexNames.length)).toFixed(0)),
+      y: Number((centerY + radius * Math.sin((2 * Math.PI * i) / vertexNames.length)).toFixed(0))
     }
   }
 
