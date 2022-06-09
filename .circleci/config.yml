@@ -953,7 +953,7 @@ jobs:
             export NODE_OPTIONS=--max_old_space_size=1024
             export CCI_MAXCPU=4
             export CCI_VAADINJAVAMAXMEM=768m
-            export MAVEN_OPTS="-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
+            export MAVEN_OPTS="-Xmx7g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
             .circleci/scripts/makerpm.sh tools/packages/minion/minion.spec
       - sign-packages/sign-rpms:
           skip_if_forked_pr: true
@@ -996,7 +996,7 @@ jobs:
             export NODE_OPTIONS=--max_old_space_size=1024
             export CCI_MAXCPU=4
             export CCI_VAADINJAVAMAXMEM=768m
-            export MAVEN_OPTS="-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
+            export MAVEN_OPTS="-Xmx7g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
             .circleci/scripts/makerpm.sh tools/packages/sentinel/sentinel.spec
       - sign-packages/sign-rpms:
           skip_if_forked_pr: true
