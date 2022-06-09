@@ -60,8 +60,6 @@ import org.opennms.smoketest.graphml.GraphmlDocument;
 import org.opennms.smoketest.utils.RestClient;
 
 import com.google.common.collect.Lists;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Tests the 'GraphML' Topology Provider
@@ -78,8 +76,6 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
     private TopologyIT.TopologyUIPage topologyUIPage;
 
     private RestClient restClient;
-
-    private static final Logger LOG = LoggerFactory.getLogger(GraphMLTopologyIT.class);
 
     @Before
     public void setUp() throws IOException, InterruptedException {
@@ -99,6 +95,9 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
         topologyUIPage.open();
         // Select EnLinkd, otherwise the "GraphML Topology Provider (test-graph)" is always pre-selected due to history restoration
         topologyUIPage.selectTopologyProvider(TopologyProvider.ENLINKD);
+        // if Layers is opened then close to set initial condition
+        topologyUIPage.closeLayerSelectionComponent();
+        assertTrue(!topologyUIPage.isLayoutComponentVisible());
     }
 
     @After
@@ -138,8 +137,8 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
         assertEquals(Layout.D3, topologyUIPage.getSelectedLayout());
 
         // Switch Layer
-        LOG.debug("canUseTopology: isLayoutComponentVisible {}", topologyUIPage.isLayoutComponentVisible());
         topologyUIPage.selectLayer("Markets");
+        assertTrue(topologyUIPage.isLayoutComponentVisible());
         assertEquals(0, topologyUIPage.getSzl());
         assertEquals(1, topologyUIPage.getFocusedVertices().size());
         assertEquals("North 4", topologyUIPage.getFocusedVertices().get(0).getLabel());
@@ -212,8 +211,9 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
     public void verifyCanFilterByCategory() throws IOException, InterruptedException {
         topologyUIPage.selectTopologyProvider(() -> LABEL);
         topologyUIPage.defaultFocus();
-        LOG.debug("verifyCanFilterByCategory: isLayoutComponentVisible {}", topologyUIPage.isLayoutComponentVisible());
+
         topologyUIPage.selectLayer("Markets");
+        assertTrue(topologyUIPage.isLayoutComponentVisible());
         topologyUIPage.setSzl(0);
         topologyUIPage.clearFocus();
 
