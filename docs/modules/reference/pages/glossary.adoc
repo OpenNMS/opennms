@@ -103,7 +103,7 @@ RMI integration lets you access {page-component-title} through jconsole or remot
 (See xref:operation:admin/rmi.adoc#rmi[Enabling RMI].)
 
 Requisitions:: Sets of nodes to import into {page-component-title} for monitoring and management.
-Requisitions can be iteratively built and imported at a later date.
+You can build requisitions iteratively and import them at a later date.
 (See xref:operation:provisioning/getting-started.adoc#requisition-create[Create a Requisition].)
 
 Round Robin Database (RRD):: Special type of database designed for collection, visualization, and analysis of time-series data.
