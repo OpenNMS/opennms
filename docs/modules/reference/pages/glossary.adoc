@@ -17,7 +17,8 @@ Azure:: Microsoft Azure is a cloud-based hosting service that allows users to la
 Cassandra:: Open-source distributed/scale-out NoSQL database designed to hold large amounts of structured or unstructured data across many servers.
 (See xref:deployment:time-series-storage/newts/introduction.adoc#ga-opennms-operation-newts[Newts].)
 
-CircleCI:: CircleCI is a continuous integration and delivery platform that hosts OpenNMS's CI/CD environment. It integrates with and monitors OpenNMS GitHub repositories, and automatically launches and tests a new build when a commit is detected.
+CircleCI:: CircleCI is a continuous integration and delivery platform that hosts OpenNMS's CI/CD environment.
+It integrates with and monitors OpenNMS GitHub repositories, and automatically launches and tests a new build when a commit is detected.
 
 Discourse:: Discourse is an open-source forum platform built on the Ember.js framework. It forms the basis for OpenNMS's community forums (https://opennms.discourse.group/).
 
