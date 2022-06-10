@@ -99,7 +99,7 @@ PRIS:: PRovisioning Integration Server, an optional service to gather node inven
 Use to generate requisition XML files for creating/updating/removing nodes for monitoring.
 
 Provisioning:: The process of getting your devices, applications, and services into monitoring.
-(See xref:operation:provisioning/introduction.adoc#discovery-auto[Provisioning].)
+(See xref:operation:provisioning/introduction.adoc[Provisioning].)
 
 Remote Method Invocation (RMI):: Java API that lets one Java Virtual Machine (JVM) running object to invoke methods on an object running in another JVM. 
 RMI integration lets you access a remote Horizon and/or Meridian instance for monitoring and management.
