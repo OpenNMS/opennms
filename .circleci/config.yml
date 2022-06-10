@@ -51,6 +51,12 @@ defaults: &defaults
       type: string
       default: foundation-2020
 
+parameters:
+  trigger-flaky:
+    description: whether to enable running flaky smoke tests
+    type: boolean
+    default: false
+
 docker_container_config: &docker_container_config
   executor: docker-executor
 
@@ -1217,10 +1223,17 @@ jobs:
     # medium class which has 2 vCPUs and 8 GB RAM
     #resource_class: large
     steps:
-      - attach_workspace:
-          at: ~/
-      - run-smoke-tests:
-          suite: core
+      - run:
+          name: "skip if flaky tests are enabled"
+          command: echo "trigger-flaky=<< pipeline.parameters.trigger-flaky >>"
+      - when:
+          condition:
+            not: << pipeline.parameters.trigger-flaky >>
+          steps:
+            - attach_workspace:
+                at: ~/
+            - run-smoke-tests:
+                suite: core
   smoke-test-flaky:
     executor: smoke-test-executor
     parallelism: 5
@@ -1228,10 +1241,16 @@ jobs:
     # medium class which has 2 vCPUs and 8 GB RAM
     #resource_class: large
     steps:
-      - attach_workspace:
-          at: ~/
-      - run-smoke-tests:
-          suite: flaky
+      - run:
+          name: "run if flaky tests are enabled"
+          command: echo "trigger-flaky=<< pipeline.parameters.trigger-flaky >>"
+      - when:
+          condition: << pipeline.parameters.trigger-flaky >>
+          steps:
+            - attach_workspace:
+                at: ~/
+            - run-smoke-tests:
+                suite: flaky
   smoke-test-minion:
     executor: smoke-test-executor
     parallelism: 4
@@ -1239,10 +1258,17 @@ jobs:
     # medium class which has 2 vCPUs and 8 GB RAM
     #resource_class: large
     steps:
-      - attach_workspace:
-          at: ~/
-      - run-smoke-tests:
-          suite: minion
+      - run:
+          name: "skip if flaky tests are enabled"
+          command: echo "trigger-flaky=<< pipeline.parameters.trigger-flaky >>"
+      - when:
+          condition:
+            not: << pipeline.parameters.trigger-flaky >>
+          steps:
+            - attach_workspace:
+                at: ~/
+            - run-smoke-tests:
+                suite: minion
   smoke-test-sentinel:
     executor: smoke-test-executor
     parallelism: 5
@@ -1250,10 +1276,17 @@ jobs:
     # medium class which has 2 vCPUs and 8 GB RAM
     #resource_class: large
     steps:
-      - attach_workspace:
-          at: ~/
-      - run-smoke-tests:
-          suite: sentinel
+      - run:
+          name: "skip if flaky tests are enabled"
+          command: echo "trigger-flaky=<< pipeline.parameters.trigger-flaky >>"
+      - when:
+          condition:
+            not: << pipeline.parameters.trigger-flaky >>
+          steps:
+            - attach_workspace:
+                at: ~/
+            - run-smoke-tests:
+                suite: sentinel
   smoke-test-minimal:
     executor: smoke-test-executor
     steps:
