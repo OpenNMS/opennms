@@ -95,7 +95,8 @@ Provisioning:: The process of getting your devices, applications, and services i
 Remote Method Invocation (RMI):: Java API that lets one Java Virtual Machine (JVM) running object to invoke methods on an object running in another JVM. RMI integration lets you access Horizon/Meridian through jconsole or remote manage them.
 (See xref:operation:admin/rmi.adoc#rmi[Enabling RMI].)
 
-Requisitions:: Sets of nodes to be imported into Horizon for monitoring and management. Requisitions can be iteratively built and imported at a later date.
+Requisitions:: Sets of nodes to import into {page-component-title} for monitoring and management.
+Requisitions can be iteratively built and imported at a later date.
 (See xref:operation:provisioning/getting-started.adoc#requisition-create[Create a Requisition].)
 
 Round Robin Database (RRD):: Special type of database designed for collection, visualization, and analysis of time-series data.
