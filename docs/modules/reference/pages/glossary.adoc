@@ -122,4 +122,4 @@ OpenNMS uses snaps to distribute platform binaries, upgrades, and initiate rollb
 
 Time series, time-series database (TSDB):: Time series is a sequence of data points that occur in successive order over a period of time.
 A time series database (TSDB) is designed to store and serve time series data.
-(See xref:deployment:time-series-storage/timeseries/time-series-storage.adoc#time-series[Time Series Storage] and https://en.wikipedia.org/wiki/Time_series_database[time series database].)
+(See xref:deployment:time-series-storage/timeseries/time-series-storage.adoc[Time Series Storage] and https://en.wikipedia.org/wiki/Time_series_database[time series database].)
