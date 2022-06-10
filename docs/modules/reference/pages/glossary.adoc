@@ -41,7 +41,7 @@ Docker:: Docker is an open-source virtualization service consisting of three com
 Dominion:: The service on an OpenNMS core that controls the operation of Minions.
 (See xref:reference:configuration/minion-confd/minion-confd.adoc#dominion[Configuring Minion via Confd].)
 
-Elasticsearch:: Elasticsearch is a search engine based on the Lucene library.
+Elasticsearch:: Elasticsearch is a No-SQL database with an integrated search engine based on the Lucene library.
 OpenNMS persists/forwards certain data to Elasticsearch to store flow records and warehouse events and alarm history for long-term storage of this data.
 (See xref:operation:elasticsearch/introduction.adoc#elasticsearch[Elasticsearch Integration].)
 
@@ -56,7 +56,7 @@ To customize monitoring of nodes in a foreign source, you can set a foreign sour
 (See xref:operation:provisioning/getting-started.adoc#foreign-source-definition[Foreign Source Definition].)
 
 Grafana:: Grafana is an open-source analysis and visualization web application.
-It monitors data sources and generates charts, graphs, and alerts.
+It connects to data sources and generates dashboards with charts, graphs, and alerts.
 (See https://grafana.com/[Grafana].)
 
 Helm:: Helm is an an OpenNMS application for creating flexible dashboards to display and customize fault management and performance management data from Horizon and Meridian.
