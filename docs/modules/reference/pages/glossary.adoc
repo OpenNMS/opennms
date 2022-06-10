@@ -61,7 +61,7 @@ JRobin:: JRobin is a clone of RRDTool (see below) written in Java.
 Default time series database for new {page-component-title} instances.
 
 Kafka:: Clusterable, open-source message broker designed for high-throughput/low-latency event streaming originally developed at LinkedIn, now supported by the Apache community.
-(See xref:deployment:core/setup-message-broker.adoc#setup-message-broker[Set Up Message Broker].)
+(See xref:deployment:core/setup-message-broker.adoc[Set Up Message Broker].)
 
 Kibana:: Kibana is a component of the Elastic Stack (comprised of Elasticsearch, Logstash, and Kibana).
 It provides visualization capabilities for data indexed in an Elasticsearch cluster.
