@@ -117,8 +117,8 @@ It also supports thresholding for streaming telemetry if you are using OpenNMS N
 (See xref:deployment:sentinel/introduction.adoc#sentinel[Sentinel].)
 
 Snaps:: Self-contained software packages that run in a sandbox and have mediated access to host systems.
-OpenNMS uses snaps to distribute platform binaries, upgrades, and initiate rollbacks.
-(See https://dev.cloud.opennms.com/docs/opennms-cloud/welcome/introduction.html?q=snaps#minion-architecture[OpenNMS Appliance Service - Architecture].)
+Our Appliance Service uses snaps to distribute operating system packages and Minion service updates.
+(See https://dev.cloud.opennms.com/docs/opennms-cloud/welcome/introduction.html#_software_management[Appliance Software Management].)
 
 Time series, time-series database (TSDB):: Time series is a sequence of data points that occur in successive order over a period of time.
 A time series database (TSDB) is designed to store and serve time series data.
