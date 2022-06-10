@@ -11,7 +11,7 @@ ALEC groups related alarms so you can better manage the more complex situations 
 
 Application Perspective Monitoring (APM):: A method that uses the Minion infrastructure to monitor a service’s availability from different perspectives to help identify if nodes are down for everyone or if an outage affects only certain sites. 
 When a service is not responsive an outage will be generated with the corresponding perspective that sees the outage.
-(See xref:operation:application-perspective-monitoring/introduction.adoc#application-perspective[Application Perspective Monitoring].)
+(See xref:operation:application-perspective-monitoring/introduction.adoc[Application Perspective Monitoring].)
 
 Azure:: Microsoft Azure is a cloud-based hosting service that allows users to launch and maintain Microsoft Windows or Linux virtual machines.
 
