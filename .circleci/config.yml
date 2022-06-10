@@ -1013,9 +1013,9 @@ jobs:
       - cache-workflow-assets:
           cache_prefix: rpm-horizon
           source_path: target/rpm/RPMS/noarch
-      - save-artifacts:
+      - cache-oci:
+          key: horizon
           path: opennms-container/horizon/images/
-          location: horizon
   minion-rpm-build:
     executor: centos-build-executor
     # Larger memory footprint required to speed up builds using Takari smartbuilder
@@ -1056,9 +1056,9 @@ jobs:
       - cache-workflow-assets:
           cache_prefix: rpm-minion
           source_path: target/rpm/RPMS/noarch
-      - save-artifacts:
+      - cache-oci:
+          key: minion
           path: opennms-container/minion/images/
-          location: minion
   sentinel-rpm-build:
     executor: centos-build-executor
     # Larger memory footprint required to speed up builds using Takari smartbuilder
@@ -1099,9 +1099,9 @@ jobs:
       - cache-workflow-assets:
           cache_prefix: rpm-sentinel
           source_path: target/rpm/RPMS/noarch
-      - save-artifacts:
+      - cache-oci:
+          key: sentinel
           path: opennms-container/sentinel/images/
-          location: sentinel
   horizon-deb-build:
     executor: debian-build-executor
     resource_class: xlarge
