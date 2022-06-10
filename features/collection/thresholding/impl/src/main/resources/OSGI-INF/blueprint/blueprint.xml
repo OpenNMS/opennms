@@ -10,7 +10,7 @@
     <reference id="blobStore" interface="org.opennms.features.distributed.kvstore.api.BlobStore"/>
     <reference id="secureCredentialsVault" interface="org.opennms.features.scv.api.SecureCredentialsVault" availability="mandatory"/>
 
-    <bean id="entityScopeProvider" class="org.opennms.core.rpc.utils.mate.EntityScopeProviderImpl">
+    <bean id="entityScopeProvider" class="org.opennms.core.rpc.utils.mate.scope.EntityScopeProviderImpl">
         <property name="nodeDao" ref="nodeDao"/>
         <property name="ipInterfaceDao" ref="ipInterfaceDao"/>
         <property name="monitoredServiceDao" ref="monitoredServiceDao"/>

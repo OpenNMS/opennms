@@ -13,5 +13,7 @@
 
     <context:annotation-config />
 
-    <bean name="rpcTargetHelper" class="org.opennms.core.rpc.utils.RpcTargetHelper" />
+    <bean name="entityScopeProvider" class="org.opennms.core.rpc.utils.mate.scope.EntityScopeProviderImpl" primary="true"/>
+
+    <onmsgi:service ref="entityScopeProvider" interface="org.opennms.core.rpc.utils.mate.EntityScopeProvider"/>
 </beans>

@@ -3,12 +3,12 @@
   <parent>
     <groupId>org.opennms.core.ipc</groupId>
     <artifactId>org.opennms.core.ipc.rpc</artifactId>
-    <version>30.0.1-SNAPSHOT</version>
+    <version>30.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core.ipc.rpc</groupId>
-  <artifactId>org.opennms.core.ipc.rpc.utils</artifactId>
-  <name>OpenNMS :: Core :: IPC :: RPC :: Utils</name>
+  <artifactId>org.opennms.core.ipc.rpc.scope-provider</artifactId>
+  <name>OpenNMS :: Core :: IPC :: RPC :: Scope Providers</name>
   <packaging>bundle</packaging>
   <build>
     <plugins>
@@ -29,7 +29,8 @@
   <dependencies>
     <dependency>
       <groupId>org.opennms.core.ipc.rpc</groupId>
-      <artifactId>org.opennms.core.ipc.rpc.api</artifactId>
+      <artifactId>org.opennms.core.ipc.rpc.utils</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -39,11 +40,6 @@
       <groupId>org.opennms.features.scv</groupId>
       <artifactId>org.opennms.features.scv.api</artifactId>
       <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>ch.hsr</groupId>
-      <artifactId>geohash</artifactId>
-      <version>${geohashVersion}</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
@@ -61,10 +57,19 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.db</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-dao-mock</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.scv</groupId>
       <artifactId>org.opennms.features.scv.jceks-impl</artifactId>
       <version>${project.version}</version>
-      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>

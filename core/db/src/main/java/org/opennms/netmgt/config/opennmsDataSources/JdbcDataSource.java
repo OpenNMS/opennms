@@ -30,11 +30,17 @@ package org.opennms.netmgt.config.opennmsDataSources;
 
 
 import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import org.opennms.core.rpc.utils.mate.Interpolator;
+import org.opennms.core.rpc.utils.mate.SecureCredentialsVaultScope;
+import org.opennms.features.scv.api.SecureCredentialsVault;
+import org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault;
 
 /**
  * Top-level element for the opennms-database.xml configuration
@@ -422,4 +428,21 @@ public class JdbcDataSource implements java.io.Serializable {
         this.userName = userName;
     }
 
+    public String interpolateAttribute(final String value) {
+        return interpolateAttribute(value, "/opt/opennms/etc/scv.jce","QqSezYvBtk2gzrdpggMHvt5fJGWCdkRw");
+    }
+
+    public String interpolateAttribute(final String value, final String keystoreFile, final String password) {
+        final SecureCredentialsVault secureCredentialsVault = new JCEKSSecureCredentialsVault(keystoreFile, password);
+        final Interpolator.Result result = Interpolator.interpolate(value, new SecureCredentialsVaultScope(secureCredentialsVault));
+        return result.output;
+    }
+
+    public String interpolateUsername() {
+        return interpolateAttribute(getUserName());
+    }
+
+    public String interpolatePassword() {
+        return interpolateAttribute(getPassword());
+    }
 }

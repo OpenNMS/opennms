@@ -78,5 +78,15 @@
       <artifactId>org.opennms.core.test-api.xml</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.core.ipc.rpc</groupId>
+      <artifactId>org.opennms.core.ipc.rpc.utils</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.scv</groupId>
+      <artifactId>org.opennms.features.scv.jceks-impl</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 </project>

@@ -18,6 +18,7 @@
     <module>kafka</module>
     <module>mock-impl</module>
     <module>shell-commands</module>
+    <module>scope-provider</module>
     <module>utils</module>
     <module>xml</module>
   </modules>
