@@ -30,9 +30,9 @@ package org.opennms.features.ifttt;
 
 import static com.jayway.awaitility.Awaitility.await;
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.powermock.api.mockito.PowerMockito.mock;
-import static org.powermock.api.mockito.PowerMockito.when;
-import static org.mockito.ArgumentMatchers.anyObject;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -47,8 +47,6 @@ import java.util.stream.Collectors;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.test.MockLogAppender;
@@ -62,13 +60,11 @@ import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
-import org.powermock.modules.junit4.PowerMockRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionOperations;
 
-@RunWith(PowerMockRunner.class)
 public class IfTttDaemonTest {
     private static final Logger LOG = LoggerFactory.getLogger(IfTttDaemonTest.class);
 
@@ -227,10 +223,10 @@ public class IfTttDaemonTest {
 
     public Map<String, List<ResultEntry>> runIfTttDaemonTest(final int timeout, final int entryCount) throws Exception {
         final AlarmDao alarmDao = mock(AlarmDao.class);
-        when(alarmDao.findMatching((Criteria) anyObject())).thenReturn(alarmMap.values().stream().collect(Collectors.toList()));
+        when(alarmDao.findMatching((Criteria) any())).thenReturn(new ArrayList<>(alarmMap.values()));
 
         final TransactionOperations transactionOperations = mock(TransactionOperations.class);
-        when(transactionOperations.execute(anyObject())).thenAnswer((Answer<Void>) invocationOnMock -> {
+        when(transactionOperations.execute(any())).thenAnswer((Answer<Void>) invocationOnMock -> {
             TransactionCallbackWithoutResult transactionCallbackWithoutResult = invocationOnMock.getArgument(0);
             transactionCallbackWithoutResult.doInTransaction(null);
             return null;
@@ -255,7 +251,7 @@ public class IfTttDaemonTest {
 
         addAlarm(100, 4, EventConstants.NODE_LOST_SERVICE_EVENT_UEI, OnmsSeverity.MAJOR, false);
         addAlarm(101, 4, "uei.opennms.org/bsm/serviceProblem", OnmsSeverity.MAJOR, false);
-        when(alarmDao.findMatching((Criteria) anyObject())).thenReturn(alarmMap.values().stream().collect(Collectors.toList()));
+        when(alarmDao.findMatching((Criteria) any())).thenReturn(new ArrayList<>(alarmMap.values()));
 
         await().atMost(timeout, SECONDS).until(() -> allEntrySizesMatch(receivedEntries, entryCount - 1));
         LOG.debug("#2: {}", receivedEntries);

@@ -51,6 +51,16 @@ public interface SnmpInterfaceDao extends LegacyOnmsDao<OnmsSnmpInterface, Integ
      */
     OnmsSnmpInterface findByNodeIdAndIfIndex(Integer nodeId, Integer ifIndex);
 
+    List<OnmsSnmpInterface> findByNodeId(Integer nodeId);
+
+    List<OnmsSnmpInterface> findByMacLinksOfNode(Integer nodeId);
+
+    /**
+     * Returns all OnmsSnmpInterfaces that have a physAddr that matches an isisISAdjNeighSNPAAddress of an IsIsLink related to the given
+     * node. Used to retrieve all OnmsSnmpInterfaces that need to be accessed when finding IsIs links of a node.
+     */
+    List<OnmsSnmpInterface> findBySnpaAddressOfRelatedIsIsLink(int nodeId);
+
     /**
      * <p>findByForeignKeyAndIfIndex</p>
      *
@@ -69,4 +79,10 @@ public interface SnmpInterfaceDao extends LegacyOnmsDao<OnmsSnmpInterface, Integ
     List<OnmsSnmpInterface> findAllHavingFlows(final Integer nodeId);
     List<OnmsSnmpInterface> findAllHavingIngressFlows(final Integer nodeId);
     List<OnmsSnmpInterface> findAllHavingEgressFlows(final Integer nodeId);
+
+    /**
+     * Returns the number of interfaces that have been marked as having flows irrespective of the
+     * MAX_FLOW_AGE and INGRESS_AND_EGRESS_REQUIRED properties settings.
+     */
+    long getNumInterfacesWithFlows();
 }

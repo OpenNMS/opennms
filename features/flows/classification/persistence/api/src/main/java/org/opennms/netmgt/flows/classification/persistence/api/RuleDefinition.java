@@ -77,11 +77,25 @@ public interface RuleDefinition {
 
     default boolean hasDefinition() {
         return hasProtocolDefinition()
-                || hasDstAddressDefinition()
-                || hasDstPortDefinition()
-                || hasSrcAddressDefinition()
-                || hasSrcPortDefinition()
-                || hasExportFilterDefinition();
+               || hasDstAddressDefinition()
+               || hasDstPortDefinition()
+               || hasSrcAddressDefinition()
+               || hasSrcPortDefinition()
+               || hasExportFilterDefinition();
+    }
+
+    default RuleDefinition reversedRule() {
+        final DefaultRuleDefinition result = new DefaultRuleDefinition();
+        result.setName(getName());
+        result.setDstAddress(getSrcAddress());
+        result.setDstPort(getSrcPort());
+        result.setSrcAddress(getDstAddress());
+        result.setSrcPort(getDstPort());
+        result.setProtocol(getProtocol());
+        result.setExporterFilter(getExporterFilter());
+        result.setGroupPosition(getGroupPosition());
+        result.setPosition(getPosition());
+        return result;
     }
 
     static boolean isDefined(String value) {

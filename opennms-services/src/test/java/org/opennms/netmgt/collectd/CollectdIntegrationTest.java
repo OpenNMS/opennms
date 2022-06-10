@@ -51,6 +51,7 @@ import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.utils.InsufficientInformationException;
+import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.support.DefaultServiceCollectorRegistry;
 import org.opennms.netmgt.collection.test.api.CollectorTestUtils;
 import org.opennms.netmgt.config.CollectdConfigFactory;
@@ -184,6 +185,9 @@ public class CollectdIntegrationTest {
         EasyMock.expect(mockThresholdingService.createSession(EasyMock.anyInt(), EasyMock.anyString(), EasyMock.anyString(), EasyMock.anyObject(),
                                                               EasyMock.anyObject())).andReturn(mockThresholdingSession);
         m_collectd.setThresholdingService(mockThresholdingService);
+
+        mockThresholdingSession.accept(anyObject(CollectionSet.class));
+        EasyMock.expectLastCall().anyTimes();
 
         OnmsServiceType snmp = new OnmsServiceType("SNMP");
         NetworkBuilder netBuilder = new NetworkBuilder();

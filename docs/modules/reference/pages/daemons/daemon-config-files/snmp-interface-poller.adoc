@@ -1,6 +1,9 @@
 [[ref-daemon-config-files-snmppoller]]
 = SNMP Interface Poller
 
+Monitors the state of xref:operation:snmp-poller/concepts.adoc[SNMP interfaces] based on the administrative and/or operational state of the interface.
+This is independent of the xref:operation:performance-data-collection/introduction.adoc[data collection] functionality.
+
 [options="header"]
 [cols="1,3"]
 |===

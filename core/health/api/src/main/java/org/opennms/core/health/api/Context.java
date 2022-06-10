@@ -28,6 +28,8 @@
 
 package org.opennms.core.health.api;
 
+import java.time.Duration;
+
 /**
  * A Context object to store all parameters required by the {@link HealthCheckService}
  * to calculate the overall {@link Health}.
@@ -35,7 +37,10 @@ package org.opennms.core.health.api;
  * @author mvrueden
  */
 public class Context {
+    // timout for executing a health check
     private long timeout; // ms
+    // the maximum age that cached healthiness responses may have
+    private Duration maxAge = Duration.ZERO;
 
     public void setTimeout(long timeoutInMs) {
         this.timeout = timeoutInMs;
@@ -43,5 +48,13 @@ public class Context {
 
     public long getTimeout() {
         return timeout;
+    }
+
+    public void setMaxAge(Duration value) {
+        this.maxAge = value;
+    }
+
+    public Duration getMaxAge() {
+        return maxAge;
     }
 }

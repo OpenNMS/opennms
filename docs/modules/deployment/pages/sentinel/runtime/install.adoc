@@ -83,3 +83,7 @@ TIP: By default the Karaf Shell is restricted to 127.0.0.1.
      If you want enable remote access, set `sshHost=0.0.0.0` in `org.apache.karaf.shell.cfg`.
      The change is applied immediately and a Sentinel restart is not required.
      If you have a firewall running on your host, allow `8301/tcp` to grant access to the Karaf Shell.
+
+== Set up flow processing
+
+To set up flow processing with Sentinel, see xref:operation:flows/sentinel/sentinel.adoc#flows-scaling[scale flows data].

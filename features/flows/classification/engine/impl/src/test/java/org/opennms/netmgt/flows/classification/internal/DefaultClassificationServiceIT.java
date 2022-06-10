@@ -91,7 +91,7 @@ public class DefaultClassificationServiceIT {
     private Group userGroupCsv; // the user group that is not attached to hibernate
 
     @Before
-    public void setUp() {
+    public void setUp() throws InterruptedException {
         FilterService filterService = new DefaultFilterService(filterDao);
         classificationService = new DefaultClassificationService(
                 ruleDao,

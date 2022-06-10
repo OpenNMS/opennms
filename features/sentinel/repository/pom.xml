@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms.features.sentinel</groupId>
         <artifactId>sentinel-parent</artifactId>
-        <version>27.1.2-SNAPSHOT</version>
+        <version>29.0.6-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>repository</artifactId>
@@ -27,29 +27,26 @@
                         <configuration>
                             <descriptors>
                                 <descriptor>mvn:org.apache.karaf.features/standard/${karafVersion}/xml/features</descriptor>
-                                <descriptor>mvn:org.apache.karaf.features/spring/${karafVersion}/xml/features</descriptor>
-                                <descriptor>mvn:org.apache.karaf.features/spring-legacy/${karafVersion}/xml/features</descriptor>
                                 <!-- Add OpenNMS features -->
                                 <descriptor>mvn:org.opennms.newts/newts-karaf/${newtsVersion}/xml/features</descriptor>
                                 <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/features</descriptor>
+                                <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/spring-legacy</descriptor>
                                 <!-- Add Sentinel features -->
                                 <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/sentinel</descriptor>
                                 <!-- Additional tools -->
                                 <descriptor>mvn:io.hawt/hawtio-karaf/${hawtio.version}/xml/features</descriptor>
                             </descriptors>
-                            <!-- To ensure that all JAR files for a feature 
+                            <!-- To ensure that all JAR files for a feature
                                 are included in the repository tar.gz file, add the feature to this list. -->
                             <features>
                                 <!-- OpenNMS features -->
                                 <feature>opennms-core-ipc-rpc-jms</feature>
-                                <feature>opennms-core-ipc-rpc-aws-sqs</feature>
                                 <feature>opennms-core-tracing-jaeger</feature>
                                 <feature>opennms-events-sink-dispatcher</feature>
                                 <feature>opennms-core-ipc-sink-camel</feature>
                                 <feature>opennms-core-ipc-sink-kafka</feature>
                                 <feature>opennms-core-ipc-sink-camel-server</feature>
                                 <feature>opennms-core-ipc-sink-kafka-server</feature>
-                                <feature>opennms-core-ipc-sink-aws-sqs</feature>
                                 <feature>opennms-send-event-command</feature>
                                 <feature>opennms-syslogd-listener-javanet</feature>
                                 <feature>opennms-syslogd-listener-camel-netty</feature>
@@ -82,9 +79,8 @@
                                 <feature>sentinel-jsonstore-postgres</feature>
                                 <feature>sentinel-thresholding-service</feature>
 
-
                                 <!-- Other features -->
-                                <feature>hawtio-offline</feature>
+                                <feature>hawtio</feature>
                             </features>
                             <repository>${project.build.directory}/maven-repo</repository>
                         </configuration>
@@ -157,10 +153,22 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.opennms.dependencies</groupId>
+            <artifactId>oia-dependencies</artifactId>
+            <type>pom</type>
+        </dependency>
+        <dependency>
             <groupId>org.opennms.karaf</groupId>
             <artifactId>opennms</artifactId>
             <version>${project.version}</version>
             <classifier>features</classifier>
+            <type>xml</type>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.karaf</groupId>
+            <artifactId>opennms</artifactId>
+            <version>${project.version}</version>
+            <classifier>spring-legacy</classifier>
             <type>xml</type>
         </dependency>
         <dependency>
@@ -257,11 +265,6 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.opennms.core.ipc.rpc</groupId>
-            <artifactId>org.opennms.core.ipc.rpc.aws-sqs-impl</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.opennms.core.ipc.sink.camel</groupId>
             <artifactId>org.opennms.core.ipc.sink.camel.common</artifactId>
             <version>${project.version}</version>
@@ -274,16 +277,6 @@
         <dependency>
             <groupId>org.opennms.core.ipc.sink.kafka</groupId>
             <artifactId>org.opennms.core.ipc.sink.kafka.server</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.core.ipc.sink.aws.sqs</groupId>
-            <artifactId>org.opennms.core.ipc.sink.aws.sqs.client</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.core.ipc.sink.aws.sqs</groupId>
-            <artifactId>org.opennms.core.ipc.sink.aws.sqs.server</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -383,6 +376,11 @@
         <dependency>
             <groupId>org.opennms.features.telemetry.protocols.nxos</groupId>
             <artifactId>org.opennms.features.telemetry.protocols.nxos.adapter</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.telemetry</groupId>
+            <artifactId>org.opennms.features.telemetry.shell</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -550,40 +548,25 @@
 
     <repositories>
         <repository>
-            <snapshots><enabled>false</enabled></snapshots>
-            <releases><enabled>true</enabled></releases>
             <id>opennms-repo</id>
-            <name>OpenNMS Repository</name>
-            <url>https://maven.opennms.org/content/groups/opennms.org-release</url>
-        </repository>
-        <repository>
+            <url>https://maven.opennms.org/content/groups/opennms.org-release/</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
+        </repository>
+        <repository>
             <id>sonatype-public-repo</id>
-            <name>Sonatype Public Maven Repository</name>
             <url>https://maven.opennms.org/content/repositories/sonatype-public-repo/</url>
-        </repository>
-        <repository>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <id>coova</id>
-            <name>Coova Repository</name>
-            <url>https://maven.opennms.org/content/repositories/coova/</url>
         </repository>
         <repository>
-            <id>sonatype.org-snapshot</id>
-            <name>Sonatype OSS Snapshots Repository</name>
-            <url>https://maven.opennms.org/content/groups/sonatype.org-snapshot/</url>
-            <releases><enabled>false</enabled></releases>
-            <snapshots><enabled>true</enabled></snapshots>
+            <id>coova</id>
+            <url>https://maven.opennms.org/content/repositories/coova/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
         </repository>
     </repositories>
 </project>

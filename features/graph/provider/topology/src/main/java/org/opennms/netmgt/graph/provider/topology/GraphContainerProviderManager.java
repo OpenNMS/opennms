@@ -116,11 +116,13 @@ public class GraphContainerProviderManager {
     }
 
     public void onUnbind(final GraphContainerProviderRegistration containerProviderRegistration, final Map<String, String> properties) {
-        final List<ServiceRegistration<?>> removedServices = serviceRegistrations.remove(containerProviderRegistration.getDelegate());
-        if (removedServices != null) {
-            for (ServiceRegistration<?> removedService : removedServices) {
-                if (removedService != null) {
-                    removedService.unregister();
+        if (containerProviderRegistration != null) {
+            final List<ServiceRegistration<?>> removedServices = serviceRegistrations.remove(containerProviderRegistration.getDelegate());
+            if (removedServices != null) {
+                for (ServiceRegistration<?> removedService : removedServices) {
+                    if (removedService != null) {
+                        removedService.unregister();
+                    }
                 }
             }
         }

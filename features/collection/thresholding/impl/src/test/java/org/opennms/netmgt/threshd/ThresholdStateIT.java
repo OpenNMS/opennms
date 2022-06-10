@@ -81,9 +81,9 @@ public class ThresholdStateIT {
         monitor = new BlobStoreAwareMonitor(blobStore);
         when(thresholdingSession.getThresholdStateMonitor()).thenReturn(monitor);
         when(thresholdingSession.getBlobStore()).thenReturn(blobStore);
-        when(scope.get(new ContextKey("requisition", "value"))).thenReturn(Optional.of("99.0"));
-        when(scope.get(new ContextKey("requisition", "rearm"))).thenReturn(Optional.of("0.5"));
-        when(scope.get(new ContextKey("requisition", "trigger"))).thenReturn(Optional.of("2"));
+        when(scope.get(new ContextKey("requisition", "value"))).thenReturn(Optional.of(new Scope.ScopeValue(Scope.ScopeName.DEFAULT, "99.0")));
+        when(scope.get(new ContextKey("requisition", "rearm"))).thenReturn(Optional.of(new Scope.ScopeValue(Scope.ScopeName.DEFAULT, "0.5")));
+        when(scope.get(new ContextKey("requisition", "trigger"))).thenReturn(Optional.of(new Scope.ScopeValue(Scope.ScopeName.DEFAULT, "2")));
     }
     
     @After

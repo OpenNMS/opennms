@@ -429,11 +429,8 @@ public class VmwareCimCollector extends AbstractRemoteServiceCollector {
         final String vmwareManagementServer = (String) parameters.get(VmwareImporter.METADATA_MANAGEMENT_SERVER);
         final String vmwareManagedObjectId = (String) parameters.get(VmwareImporter.METADATA_MANAGED_OBJECT_ID);
         final VmwareServer vmwareServer = (VmwareServer) parameters.get(VmwareImporter.VMWARE_SERVER_KEY);
-
-        CollectionSetBuilder builder = new CollectionSetBuilder(agent);
+        final CollectionSetBuilder builder = new CollectionSetBuilder(agent);
         builder.withStatus(CollectionStatus.FAILED);
-
-        VmwareViJavaAccess vmwareViJavaAccess = new VmwareViJavaAccess(vmwareServer);
 
         if (collection.getVmwareCimGroup().length < 1) {
             logger.info("No groups to collect. Returning empty collection set.");
@@ -441,8 +438,80 @@ public class VmwareCimCollector extends AbstractRemoteServiceCollector {
             return builder.build();
         }
 
-        try {
+        try (final VmwareViJavaAccess vmwareViJavaAccess = new VmwareViJavaAccess(vmwareServer)) {
             vmwareViJavaAccess.connect(ParameterMap.getKeyedInteger(parameters, "timeout", VmwareViJavaAccess.DEFAULT_TIMEOUT));
+            final HostSystem hostSystem = vmwareViJavaAccess.getHostSystemByManagedObjectId(vmwareManagedObjectId);
+            String powerState = null;
+            if (hostSystem == null) {
+                logger.debug("hostSystem=null");
+            } else {
+                final HostRuntimeInfo hostRuntimeInfo = hostSystem.getRuntime();
+                if (hostRuntimeInfo == null) {
+                    logger.debug("hostRuntimeInfo=null");
+                } else {
+                    final HostSystemPowerState hostSystemPowerState = hostRuntimeInfo.getPowerState();
+                    if (hostSystemPowerState == null) {
+                        logger.debug("hostSystemPowerState=null");
+                    } else {
+                        powerState = hostSystemPowerState.toString();
+                    }
+                }
+            }
+            logger.debug("The power state for host system '{}' is '{}'", vmwareManagedObjectId, powerState);
+            if ("poweredOn".equals(powerState)) {
+                final HashMap<String, List<CIMObject>> cimObjects = new HashMap<String, List<CIMObject>>();
+                for (final VmwareCimGroup vmwareCimGroup : collection.getVmwareCimGroup()) {
+                    final String cimClass = vmwareCimGroup.getCimClass();
+                    if (!cimObjects.containsKey(cimClass)) {
+                        List<CIMObject> cimList = null;
+                        try {
+                            cimList = vmwareViJavaAccess.queryCimObjects(hostSystem, cimClass, InetAddressUtils.str(agent.getAddress()));
+                        } catch (Exception e) {
+                            logger.warn("Error retrieving CIM values from host system '{}'. Error message: '{}'", vmwareManagedObjectId, e.getMessage());
+                            return builder.build();
+                        }
+                        cimObjects.put(cimClass, cimList);
+                    }
+                    final List<CIMObject> cimList = cimObjects.get(cimClass);
+                    if (cimList == null) {
+                        logger.warn("Error getting objects of CIM class '{}' from host system '{}'", cimClass, vmwareManagedObjectId);
+                        continue;
+
+                    }
+                    final String keyAttribute = vmwareCimGroup.getKey();
+                    final String attributeValue = vmwareCimGroup.getValue();
+                    final String instanceAttribute = vmwareCimGroup.getInstance();
+                    for (final CIMObject cimObject : cimList) {
+                        boolean addObject = false;
+                        if (keyAttribute != null && attributeValue != null) {
+                            final String cimObjectValue = vmwareViJavaAccess.getPropertyOfCimObject(cimObject, keyAttribute);
+                            if (attributeValue.equals(cimObjectValue)) {
+                                addObject = true;
+                            } else {
+                                addObject = false;
+                            }
+                        } else {
+                            addObject = true;
+                        }
+                        if (addObject) {
+                            final String instance = vmwareViJavaAccess.getPropertyOfCimObject(cimObject, instanceAttribute);
+                            final NodeLevelResource nodeResource = new NodeLevelResource(agent.getNodeId());
+                            final Resource resource = new DeferredGenericTypeResource(nodeResource, vmwareCimGroup.getResourceType(), instance);
+                            for (final Attrib attrib : vmwareCimGroup.getAttrib()) {
+                                final AttributeType type = attrib.getType();
+                                String value = vmwareViJavaAccess.getPropertyOfCimObject(cimObject, attrib.getName());
+                                if (valueModifiers.containsKey(attrib.getName())) {
+                                    final String modifiedValue = valueModifiers.get(attrib.getName()).modifyValue(attrib.getName(), value, cimObject, vmwareViJavaAccess);
+                                    logger.debug("Applying value modifier for instance value " + attrib.getName() + "[" + instance + "]='" + value + "' => '" + modifiedValue + "' for node " + agent.getNodeId());
+                                    value = modifiedValue;
+                                }
+                                builder.withAttribute(resource, vmwareCimGroup.getName(), attrib.getAlias(), value, type);
+                            }
+                        }
+                    }
+                }
+                builder.withStatus(CollectionStatus.SUCCEEDED);
+            }
         } catch (MalformedURLException e) {
             logger.warn("Error connecting VMware management server '{}': '{}' exception: {} cause: '{}'", vmwareManagementServer, e.getMessage(), e.getClass().getName(), e.getCause());
             return builder.build();
@@ -450,99 +519,6 @@ public class VmwareCimCollector extends AbstractRemoteServiceCollector {
             logger.warn("Error connecting VMware management server '{}': '{}' exception: {} cause: '{}'", vmwareManagementServer, e.getMessage(), e.getClass().getName(), e.getCause());
             return builder.build();
         }
-
-        HostSystem hostSystem = vmwareViJavaAccess.getHostSystemByManagedObjectId(vmwareManagedObjectId);
-
-        String powerState = null;
-
-        if (hostSystem == null) {
-            logger.debug("hostSystem=null");
-        } else {
-            HostRuntimeInfo hostRuntimeInfo = hostSystem.getRuntime();
-
-            if (hostRuntimeInfo == null) {
-                logger.debug("hostRuntimeInfo=null");
-            } else {
-                HostSystemPowerState hostSystemPowerState = hostRuntimeInfo.getPowerState();
-                if (hostSystemPowerState == null) {
-                    logger.debug("hostSystemPowerState=null");
-                } else {
-                    powerState = hostSystemPowerState.toString();
-                }
-            }
-        }
-
-        logger.debug("The power state for host system '{}' is '{}'", vmwareManagedObjectId, powerState);
-
-        if ("poweredOn".equals(powerState)) {
-            HashMap<String, List<CIMObject>> cimObjects = new HashMap<String, List<CIMObject>>();
-
-            for (final VmwareCimGroup vmwareCimGroup : collection.getVmwareCimGroup()) {
-
-                String cimClass = vmwareCimGroup.getCimClass();
-
-                if (!cimObjects.containsKey(cimClass)) {
-                    List<CIMObject> cimList = null;
-                    try {
-                        cimList = vmwareViJavaAccess.queryCimObjects(hostSystem, cimClass, InetAddressUtils.str(agent.getAddress()));
-                    } catch (Exception e) {
-                        logger.warn("Error retrieving CIM values from host system '{}'. Error message: '{}'", vmwareManagedObjectId, e.getMessage());
-                        return builder.build();
-                    } finally {
-                        vmwareViJavaAccess.disconnect();
-                    }
-                    cimObjects.put(cimClass, cimList);
-                }
-
-                final List<CIMObject> cimList = cimObjects.get(cimClass);
-
-                if (cimList == null) {
-                    logger.warn("Error getting objects of CIM class '{}' from host system '{}'", cimClass, vmwareManagedObjectId);
-                    continue;
-
-                }
-
-                String keyAttribute = vmwareCimGroup.getKey();
-                String attributeValue = vmwareCimGroup.getValue();
-                String instanceAttribute = vmwareCimGroup.getInstance();
-
-                for (CIMObject cimObject : cimList) {
-                    boolean addObject = false;
-
-                    if (keyAttribute != null && attributeValue != null) {
-                        String cimObjectValue = vmwareViJavaAccess.getPropertyOfCimObject(cimObject, keyAttribute);
-
-                        if (attributeValue.equals(cimObjectValue)) {
-                            addObject = true;
-                        } else {
-                            addObject = false;
-                        }
-                    } else {
-                        addObject = true;
-                    }
-
-                    if (addObject) {
-                        final String instance = vmwareViJavaAccess.getPropertyOfCimObject(cimObject, instanceAttribute);
-                        final NodeLevelResource nodeResource = new NodeLevelResource(agent.getNodeId());
-                        final Resource resource = new DeferredGenericTypeResource(nodeResource,vmwareCimGroup.getResourceType(), instance);
-                        for (Attrib attrib : vmwareCimGroup.getAttrib()) {
-                            final AttributeType type = attrib.getType();
-                            String value = vmwareViJavaAccess.getPropertyOfCimObject(cimObject, attrib.getName());
-                            if (valueModifiers.containsKey(attrib.getName())) {
-                                String modifiedValue = valueModifiers.get(attrib.getName()).modifyValue(attrib.getName(), value, cimObject, vmwareViJavaAccess);
-                                logger.debug("Applying value modifier for instance value " + attrib.getName() + "[" + instance + "]='" + value + "' => '" + modifiedValue + "' for node " + agent.getNodeId());
-                                value = modifiedValue;
-                            }
-                            builder.withAttribute(resource, vmwareCimGroup.getName(), attrib.getAlias(), value, type);
-                        }
-                    }
-                }
-            }
-            builder.withStatus(CollectionStatus.SUCCEEDED);
-        }
-
-        vmwareViJavaAccess.disconnect();
-
         return builder.build();
     }
 

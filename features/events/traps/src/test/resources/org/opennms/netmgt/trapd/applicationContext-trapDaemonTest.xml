@@ -18,4 +18,11 @@
   <!-- update config for tests -->
   <bean id="trapdConfigUpdate" class="org.opennms.netmgt.trapd.TrapdConfigConfigUpdater"/>
 
+  <bean name="memoryTwinPublisher" class="org.opennms.core.ipc.twin.memory.MemoryTwinPublisher">
+  </bean>
+
+  <bean name="memoryTwinSubscriber" class="org.opennms.core.ipc.twin.memory.MemoryTwinSubscriber">
+    <constructor-arg index="0" ref="memoryTwinPublisher"/>
+    <constructor-arg index="1" value="Default"/>
+  </bean>
 </beans>

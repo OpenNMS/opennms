@@ -45,28 +45,22 @@ public class SnmpGetter extends TableTracker {
 	/**
 	 * The SnmpPeer object used to communicate via SNMP with the remote host.
 	 */
-    private SnmpAgentConfig m_agentConfig;
-    private Integer m_nodeid;
-    private LocationAwareSnmpClient m_client;
-    private String m_location;
+    private final SnmpAgentConfig m_agentConfig;
+    private final LocationAwareSnmpClient m_client;
+    private final String m_location;
     private static final Logger LOG = LoggerFactory.getLogger(SnmpGetter.class);
 
-    public SnmpGetter(SnmpAgentConfig peer, LocationAwareSnmpClient client, String location, Integer nodeid) {
+    public SnmpGetter(SnmpAgentConfig peer, LocationAwareSnmpClient client, String location) {
         m_agentConfig = peer;
         m_client = client;
         m_location = location;
-        m_nodeid=nodeid;
     }
 
-   public Integer getNodeId() {
-       return m_nodeid;
-   }
-    
    public SnmpValue get(SnmpObjId entryoid,Integer index) {
        SnmpObjId instance = SnmpObjId.get(new int[] {index});
-       List<SnmpObjId> oids = new ArrayList<SnmpObjId>(1);
+       List<SnmpObjId> oids = new ArrayList<>(1);
            oids.add(SnmpObjId.get(entryoid, instance));
-       List<SnmpValue> val= get(oids);
+       List<SnmpValue> val = get(oids);
        if (val == null || val.size() != 1 || val.get(0) == null || val.get(0).isError()) 
            return null;
        return val.get(0);
@@ -74,24 +68,24 @@ public class SnmpGetter extends TableTracker {
    
    public List<SnmpValue> get(List<SnmpObjId> entryoids, Integer index) {
        SnmpObjId instance = SnmpObjId.get(new int[] {index});
-       List<SnmpObjId> oids = new ArrayList<SnmpObjId>(entryoids.size());
+       List<SnmpObjId> oids = new ArrayList<>(entryoids.size());
        for (SnmpObjId entryoid: entryoids)
            oids.add(SnmpObjId.get(entryoid, instance));
        return get(oids);
    }
    
    public List<SnmpValue> get(List<SnmpObjId> oids) {
-       List<SnmpValue> val= null;
+       List<SnmpValue> val;
        LOG.debug("get: oids '{}'", oids);
        try {
            val = m_client.get(m_agentConfig, oids).withLocation(m_location).execute().get();
        } catch (InterruptedException e) {
-           LOG.error("run: node [{}]: InterruptedException: snmp GET {}: {}", 
-                    getNodeId(), oids, e.getMessage());
+           LOG.error("get: InterruptedException: snmp GET {}: {}",
+                    oids, e.getMessage());
            return null;
        } catch (ExecutionException e) {
-           LOG.error("run: node [{}]: ExecutionException: snmp GET {}: {}", 
-                    getNodeId(), oids,e.getMessage());
+           LOG.error("get: ExecutionException: snmp GET {}: {}",
+                    oids, e.getMessage());
            return null;
        }
        LOG.debug("get: oid '{}' found value '{}'", oids, val);

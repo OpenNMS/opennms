@@ -54,7 +54,6 @@ import org.opennms.netmgt.dao.mock.MockSessionUtils;
 import org.opennms.netmgt.dao.mock.MockSnmpInterfaceDao;
 import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.flows.api.FlowRepository;
-import org.opennms.netmgt.flows.api.FlowSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,8 +99,7 @@ public class DefaultDirectionIT {
             final FlowRepository elasticFlowRepository = new InitializingFlowRepository(
                     new ElasticFlowRepository(new MetricRegistry(), jestClient, IndexStrategy.MONTHLY, documentEnricher,
                             new MockSessionUtils(), new MockNodeDao(), new MockSnmpInterfaceDao(),
-                            new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings(),
-                            mock(SmartQueryService.class)), jestClient);
+                            new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings()), jestClient);
             // persist data
             elasticFlowRepository.persist(Lists.newArrayList(getMockFlowWithoutDirection()),
                     FlowDocumentTest.getMockFlowSource());

@@ -37,15 +37,33 @@ public class OnmsKafkaConfigProvider implements KafkaConfigProvider {
 
     private final String kafkaSysPropPrefix;
 
+    private final String commonKafkaSysPropPrefix;
+
     public OnmsKafkaConfigProvider(String kafkaSysPropPrefix) {
         this.kafkaSysPropPrefix = kafkaSysPropPrefix;
+        commonKafkaSysPropPrefix = null;
     }
 
+    public OnmsKafkaConfigProvider(String kafkaSysPropPrefix, String commonKafkaSysPropPrefix) {
+        this.kafkaSysPropPrefix = kafkaSysPropPrefix;
+        this.commonKafkaSysPropPrefix = commonKafkaSysPropPrefix;
+    }
     @Override
     public Properties getProperties() {
         final Properties kafkaConfig = new Properties();
         kafkaConfig.put("group.id", SystemInfoUtils.getInstanceId());
+        Properties config = loadKafkaConfigFromSysPropPrefix(kafkaSysPropPrefix);
+        if (config.containsKey("bootstrap.servers")) {
+            kafkaConfig.putAll(config);
+        } else if (commonKafkaSysPropPrefix != null) {
+            Properties fallbackConfig = loadKafkaConfigFromSysPropPrefix(commonKafkaSysPropPrefix);
+            kafkaConfig.putAll(fallbackConfig);
+        }
+        return kafkaConfig;
+    }
 
+    private Properties loadKafkaConfigFromSysPropPrefix(String kafkaSysPropPrefix) {
+        final Properties kafkaConfig = new Properties();
         // Find all of the system properties that start with provided prefix (kafkaSysPropPrefix)
         // and add them to the config.
         // See https://kafka.apache.org/0100/documentation.html#newconsumerconfigs for the list of supported properties

@@ -48,17 +48,16 @@ To enable and configure a TCP listener for BMP on Minion, connect to the Karaf C
 
 NOTE: The protocol must also be enabled on {page-component-title} for the messages to be processed.
 
-[source, console]
+.From the Minion's Karaf console
+[source, karaf]
 ----
-$ ssh -p 8201 admin@localhost
-...
-admin@minion()> config:edit --alias tcp-5000 --factory org.opennms.features.telemetry.listeners
-admin@minion()> config:property-set name BMP
-admin@minion()> config:property-set class-name org.opennms.netmgt.telemetry.listeners.TcpListener
-admin@minion()> config:property-set parameters.port 5000
-admin@minion()> config:property-set parsers.0.name BMP
-admin@minion()> config:property-set parsers.0.class-name org.opennms.netmgt.telemetry.protocols.bmp.parser.BmpParser
-admin@minion()> config:update
+config:edit --alias tcp-5000 --factory org.opennms.features.telemetry.listeners
+config:property-set name BMP
+config:property-set class-name org.opennms.netmgt.telemetry.listeners.TcpListener
+config:property-set parameters.port 5000
+config:property-set parsers.0.name BMP
+config:property-set parsers.0.class-name org.opennms.netmgt.telemetry.protocols.bmp.parser.BmpParser
+config:update
 ----
 
 If you do not specify the queue name, the fallback is the name of the parser.
@@ -190,7 +189,7 @@ To load the adapter while {page-component-title} is running, use the following c
 
 [source, console]
 ----
-admin@opennms()> feature:install opennms-telemetry-bmp-stats
+feature:install opennms-telemetry-bmp-stats
 ----
 
 To ensure that the feature continues to be installed on subsequent restarts, add `opennms-telemetry-bmp-stats` to the `featuresBoot` property in `$OPENNMS_HOME/etc/org.apache.karaf.features.cfg`.
@@ -222,51 +221,52 @@ You can configure the following parameters when connecting to external sources l
 | ${karaf.etc}/routeinfo
 |===
 
-Configure the above parameters as follows:
+Configure the above parameters as follows on the core via Karaf:
 
-[source, console]
+[source, karaf]
 ----
-$ ssh -p 8101 admin@localhost
-...
-admin@opennms()> config:edit org.opennms.features.telemetry.protocols.bmp.adapter.persist
-admin@opennms()> config:property-set rpkiUrl http://localhost:8080/api/export.json
-admin@opennms()> config:update
+config:edit org.opennms.features.telemetry.protocols.bmp.adapter.persist
+config:property-set rpkiUrl http://localhost:8080/api/export.json
+config:update
 ----
 
 ==== Running BMP Adapter on Sentinel
 
 BMP Persisting Adapter can also run on Sentinel.
 Sentinel must start the appropriate BMP adapter.
-In Sentinel, adapters are configured either by placing a .cfg file in $SENTINEL_HOME/etc or via a `config:edit` statement.
+In Sentinel, adapters are configured either by placing a .cfg file in `$\{SENTINEL_HOME}/etc` or via a `config:edit` statement.
 
-The following example configures the consumption of `BMP` messages and saves the configuration in `$SENTINEL_HOME/etc/org.opennms.features.telemetry.adapters-bmp.cfg`.
+The following example configures the consumption of `BMP` messages and saves the configuration in `$\{SENTINEL_HOME}/etc/org.opennms.features.telemetry.adapters-bmp.cfg`.
 
 First, login to the Karaf Shell.
 
 [source, console]
 ----
 $ ssh -p 8301 admin@localhost
-...
-admin@sentinel> config:edit --alias BMP --factory org.opennms.features.telemetry.adapters
-admin@sentinel> config:property-set name BMP
-admin@sentinel> config:property-set adapters.0.name BMP-Persisting-Adapter
-admin@sentinel> config:property-set adapters.0.class-name org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpPersistingAdapter
-admin@sentinel> config:update
 ----
 
-Install the following features to start processing BMP messages on Sentinel.
-
-[source, console]
+[source, karaf]
 ----
-admin@opennms()> feature:install sentinel-core
-admin@opennms()> feature:install sentinel-persistence <1>
-admin@opennms()> feature:install sentinel-jms <2>
-admin@opennms()> feature:install sentinel-blobstore-noop
-admin@opennms()> feature:install sentinel-jsonstore-postgres
-admin@opennms()> feature:install sentinel-telemetry-bmp-persist
+config:edit --alias BMP --factory org.opennms.features.telemetry.adapters
+config:property-set name BMP
+config:property-set adapters.0.name BMP-Persisting-Adapter
+config:property-set adapters.0.class-name org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpPersistingAdapter
+config:update
 ----
 
-<1> Needs datasource configuration setup per xref:deployment:sentinel/flow-processing.adoc#sentinel-flow-processing[Sentinel Flow Processing].
+Install the following features via Karaf shell to start processing BMP messages on Sentinel.
+
+[source, karaf]
+----
+feature:install sentinel-core
+feature:install sentinel-persistence <1>
+feature:install sentinel-jms <2>
+feature:install sentinel-blobstore-noop
+feature:install sentinel-jsonstore-postgres
+feature:install sentinel-telemetry-bmp-persist
+----
+
+<1> Needs datasource configuration setup per xref:operation:flows/sentinel/sentinel.adoc#flows-scaling[Sentinel Flow Processing].
 <2> Can alternatively be set to `sentinel-kafka` based on your selected message broker.
 Refer to xref:reference:configuration/sentinel-features.adoc#ga-kafka-configuration[Sentinel Kafka Configuration].
 

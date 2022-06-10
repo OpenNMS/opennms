@@ -1,37 +1,46 @@
-#!/bin/sh -
+#!/usr/bin/env bash
 
+INCOMING_ARGS=("$@")
+
+# shellcheck disable=SC2154
 OPENNMS_HOME="${install.dir}"
 OPENNMS_BINDIR="${install.bin.dir}"
 
-RUNAS="root"
+[ -z "$RUNAS" ] && RUNAS=opennms
 
 # if we have ulimit, attempt to raise it
-ulimit -a >/dev/null 2>&1
-if [ $? -eq 0 ]; then
+# shellcheck disable=SC3045
+if ulimit -a >/dev/null 2>&1; then
 	for SIZE in 1024 2048 4096 8192 16384 20480; do
-		CURRENT=`ulimit -n`
-		if [ $CURRENT = "unlimited" ]; then
+		CURRENT="$(ulimit -n)"
+		if [ "$CURRENT" = "unlimited" ]; then
 			break
 		fi
-		if [ $CURRENT -lt $SIZE ]; then
-			ulimit -n $SIZE >/dev/null 2>&1
-			if [ $? -gt 0 ]; then
+		if [ "$CURRENT" -lt "$SIZE" ]; then
+			if ulimit -n "$SIZE" >/dev/null 2>&1; then
 				break
 			fi
 		fi
 	done
 fi
 
-myuser="`id -u -n`"
-if [ x"$myuser" = x"$RUNAS" ]; then
-	true # all is well
-else
-	echo "Error: you must run this script as $RUNAS, not '$myuser'" >&2
-	exit 4 # According to LSB: 4 - user had insufficient privileges
+if [ -f "$OPENNMS_HOME/etc/opennms.conf" ]; then
+	# shellcheck disable=SC1090,SC1091
+	. "$OPENNMS_HOME/etc/opennms.conf"
 fi
 
-if [ -f "$OPENNMS_HOME/etc/opennms.conf" ]; then
-	. "$OPENNMS_HOME/etc/opennms.conf"
+SUDO="$(command -v sudo 2>/dev/null || which sudo 2>/dev/null || :)"
+myuser="$(id -u -n)"
+if [ "$myuser" != "$RUNAS" ]; then
+	if [ "$myuser" = "root" ] && [ -n "$SUDO" ] && [ -x "$SUDO" ]; then
+		echo "WARNING: relaunching as $RUNAS" >&2
+		_cmd=("$SUDO" "-u" "$RUNAS" "$0" "${INCOMING_ARGS[@]}");
+		exec "${_cmd[@]}"
+	fi
+	echo "ERROR: you must run this script as ${RUNAS}, not '${myuser}'." >&2
+	echo "       Create or edit ${OPENNMS_HOME}/etc/opennms.conf and set 'RUNAS=${myuser}'" >&2
+	echo "       if you wish for OpenNMS to run as ${myuser} instead." >&2
+	exit 4 # According to LSB: 4 - user had insufficient privileges
 fi
 
 OPTIONS=""
@@ -49,6 +58,7 @@ for opt in $ADDITIONAL_MANAGER_OPTIONS; do
 	esac
 done
 
+# shellcheck disable=SC2086
 exec "$OPENNMS_BINDIR"/runjava -r -- \
 	$OPTIONS \
 	-Dopennms.home="$OPENNMS_HOME" \

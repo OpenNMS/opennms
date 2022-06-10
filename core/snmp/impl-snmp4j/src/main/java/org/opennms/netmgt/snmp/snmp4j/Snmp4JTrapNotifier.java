@@ -140,7 +140,7 @@ public class Snmp4JTrapNotifier implements CommandResponder {
 		}
     }
 
-    public static class Snmp4JV2TrapInformation extends TrapInformation {
+    public static class Snmp4JV2V3TrapInformation extends TrapInformation {
 
         /**
          * The received PDU
@@ -179,6 +179,11 @@ public class Snmp4JTrapNotifier implements CommandResponder {
         static final OID SNMP_TRAP_OID = new OID(".1.3.6.1.6.3.1.1.4.1.0");
 
         /**
+         * SNMP v2/v3 version
+         */
+        private final int m_version;
+
+        /**
          * Constructs a new trap information instance that contains the sending
          * agent, the community string, and the Protocol Data Unit.
          * 
@@ -189,11 +194,30 @@ public class Snmp4JTrapNotifier implements CommandResponder {
          * @param pdu
          *            The encapsulated Protocol Data Unit.
          */
-        public Snmp4JV2TrapInformation(InetAddress agent, String community, PDU pdu) {
+        public Snmp4JV2V3TrapInformation(InetAddress agent, String community, PDU pdu) {
+            this(agent, community, pdu, 2);
+        }
+
+        /**
+         * Constructs a new trap information instance that contains the sending
+         * agent, the community string, and the Protocol Data Unit.
+         *
+         * @param agent
+         *            The sending agent's address
+         * @param community
+         *            The community string from the SNMP packet.
+         * @param pdu
+         *            The encapsulated Protocol Data Unit.
+         * @param version
+         *            The SNMP version, 2 or 3
+         */
+        public Snmp4JV2V3TrapInformation(InetAddress agent, String community, PDU pdu, int version) {
             super(agent, community);
             m_pdu = pdu;
             m_pduTypeString = PDU.getTypeString(m_pdu.getType());
+            m_version = version;
         }
+
 
         /**
          * Returns the Protocol Data Unit that was encapsulated within the SNMP
@@ -247,7 +271,7 @@ public class Snmp4JTrapNotifier implements CommandResponder {
 
         @Override
         public String getVersion() {
-            return "v2";
+            return m_version == 2 ? "v2" : "v3";
         }
 
         @Override
@@ -363,7 +387,7 @@ public class Snmp4JTrapNotifier implements CommandResponder {
             if (command instanceof PDUv1) {
                 m_listener.trapReceived(new Snmp4JV1TrapInformation(addr.getInetAddress(), new String(e.getSecurityName()), (PDUv1)command));
             } else {
-                m_listener.trapReceived(new Snmp4JV2TrapInformation(addr.getInetAddress(), new String(e.getSecurityName()), command));
+                m_listener.trapReceived(new Snmp4JV2V3TrapInformation(addr.getInetAddress(), new String(e.getSecurityName()), command, e.getSecurityModel()));
             }
         }
     }

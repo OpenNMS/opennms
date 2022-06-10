@@ -1,11 +1,11 @@
 .Configure PostgreSQL database access
 [source, console]
 ----
-sudo vi /opt/opennms/etc/opennms-datasources.xml
+sudo -u opennms vi /opt/opennms/etc/opennms-datasources.xml
 ----
 
 .Set credentials to access the PostgreSQL database
-[source, opennms-datasources.xml]
+[source, xml]
 ----
 <jdbc-data-source name="opennms"
                     database-name="opennms"<1>
@@ -40,19 +40,19 @@ sudo /opt/opennms/bin/runjava -s
 sudo /opt/opennms/bin/install -dis
 ----
 
+[[initialize-core-cap]]
 ._Assign CAP_NET_RAW capabilities_
 {page-component-title} runs as a non-root user, which requires having a Linux kernel greater than 3.10.
 If you run on an older kernel, and are unable to upgrade your OS, you need to assign CAP_NET_RAW capabilities:
 
-Run `systemctl edit --full opennms.service` and add the following lines to the `[Service]` section:
+Run `systemctl edit --full opennms.service` and add the following line to the `[Service]` section:
 
-[source, console]
+[source, properties]
 ----
-CapabilityBoundingSet=CAP_NET_RAW
-AmbientCapabilities=CAP_NET_RAW
+AmbientCapabilities=CAP_NET_RAW CAP_NET_BIND_SERVICE
 ----
 
-Reload the sytemd unit with `systemctl daemon-reload` and restart the service with `systemctl restart opennms`.
+Reload the systemd unit with `systemctl daemon-reload` and restart the service with `systemctl restart opennms`.
 
 (For more background on this issue, see https://opennms.discourse.group/t/h29-wont-start-with-permission-error-to-open-icmp-socket/2387[H29+ won't start with permission error to open ICMP socket] on Discourse.)
 
@@ -62,13 +62,10 @@ Reload the sytemd unit with `systemctl daemon-reload` and restart the service wi
 sudo systemctl enable --now opennms
 ----
 
+[[initialize-core-firewall]]
 .Allow connection to the web UI from your network
 [source, console]
 ----
 sudo firewall-cmd --permanent --add-port=8980/tcp
 sudo systemctl reload firewalld
 ----
-
-TIP: To receive SNMP Traps or Syslog messages you must allow incoming traffic on your host firewall as well.
-     By default, the OpenNMS {page-component-title} SNMP trap daemon listens on 162/udp and the Syslog daemon listens on 10514/udp.
-     The SNMP Trap daemon is enabled by default, the OpenNMS Syslog daemon is disabled.

@@ -92,7 +92,7 @@ public abstract class AbstractTrapReceiverTest implements TrapNotificationListen
     @After
     public void tearDown() {
         try {
-            SnmpUtils.unregisterForTraps(this, TRAP_DESTINATION, TRAP_PORT);
+            SnmpUtils.unregisterForTraps(this);
             LOG.info("Unregistered Trap Listener for {} on port {}", TRAP_DESTINATION, TRAP_PORT);
         } catch (IOException e) {
             Assert.fail();

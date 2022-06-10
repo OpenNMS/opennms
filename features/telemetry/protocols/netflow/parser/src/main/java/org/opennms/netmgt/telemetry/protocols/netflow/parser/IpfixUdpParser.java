@@ -35,6 +35,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.distributed.core.api.Identity;
 import org.opennms.netmgt.dnsresolver.api.DnsResolver;
 import org.opennms.netmgt.events.api.EventForwarder;
@@ -57,13 +58,19 @@ import io.netty.buffer.ByteBuf;
 
 public class IpfixUdpParser extends UdpParserBase implements UdpParser, Dispatchable {
 
+    private final IpFixMessageBuilder messageBuilder = new IpFixMessageBuilder();
+
     public IpfixUdpParser(final String name,
                           final AsyncDispatcher<TelemetryMessage> dispatcher,
                           final EventForwarder eventForwarder,
                           final Identity identity,
                           final DnsResolver dnsResolver,
                           final MetricRegistry metricRegistry) {
-        super(Protocol.IPFIX, name, new IpFixMessageBuilder(), dispatcher, eventForwarder, identity, dnsResolver, metricRegistry);
+        super(Protocol.IPFIX, name, dispatcher, eventForwarder, identity, dnsResolver, metricRegistry);
+    }
+
+    public IpFixMessageBuilder getMessageBuilder() {
+        return this.messageBuilder;
     }
 
     @Override
@@ -119,10 +126,38 @@ public class IpfixUdpParser extends UdpParserBase implements UdpParser, Dispatch
         }
 
         @Override
+        public String getDescription() {
+            return String.format("%s:%s", InetAddressUtils.str(this.remoteAddress.getAddress()), this.remoteAddress.getPort());
+        }
+
+        @Override
         public InetAddress getRemoteAddress() {
             return this.remoteAddress.getAddress();
         }
 
     }
 
+    public Long getFlowActiveTimeoutFallback() {
+        return this.messageBuilder.getFlowActiveTimeoutFallback();
+    }
+
+    public void setFlowActiveTimeoutFallback(final Long flowActiveTimeoutFallback) {
+        this.messageBuilder.setFlowActiveTimeoutFallback(flowActiveTimeoutFallback);
+    }
+
+    public Long getFlowInactiveTimeoutFallback() {
+        return this.messageBuilder.getFlowInactiveTimeoutFallback();
+    }
+
+    public void setFlowInactiveTimeoutFallback(final Long flowInactiveTimeoutFallback) {
+        this.messageBuilder.setFlowInactiveTimeoutFallback(flowInactiveTimeoutFallback);
+    }
+
+    public Long getFlowSamplingIntervalFallback() {
+        return this.messageBuilder.getFlowSamplingIntervalFallback();
+    }
+
+    public void setFlowSamplingIntervalFallback(final Long flowSamplingIntervalFallback) {
+        this.messageBuilder.setFlowSamplingIntervalFallback(flowSamplingIntervalFallback);
+    }
 }

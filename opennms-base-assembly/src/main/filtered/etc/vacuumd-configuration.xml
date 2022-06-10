@@ -51,9 +51,6 @@
                 trigger-name="selectPathOutagesNodes"
                 action-name="clearPathOutages" />
 
-    <automation name="cleanUpRpStatusChanges" interval="600000" active="true" 
-                action-name="cleanUpRpStatusChanges" />
-    
     <!-- Enable these automation for monitoring maintenance contracts -->
     <!--
     <automation name="maintenanceCheck" interval="84600000" active="true" 

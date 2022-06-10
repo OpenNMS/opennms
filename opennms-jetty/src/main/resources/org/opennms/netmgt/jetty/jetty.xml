@@ -4,7 +4,8 @@
 <Configure id="Server" class="org.eclipse.jetty.server.Server">
 
   <New id="httpConfig" class="org.eclipse.jetty.server.HttpConfiguration">
-     <Set name="requestHeaderSize"><SystemProperty name="org.opennms.netmgt.jetty.requestHeaderSize" default="4000" /></Set>
+    <Set name="requestHeaderSize"><SystemProperty name="org.opennms.netmgt.jetty.requestHeaderSize" default="4000" /></Set>
+    <Set name="sendServerVersion"><SystemProperty name="org.opennms.netmgt.jetty.sendServerVersion" default="false" /></Set>
   </New>
 
   <Call name="addConnector">
@@ -68,12 +69,15 @@
     <Set name="useCipherSuitesOrder"><Property name="jetty.sslContext.useCipherSuitesOrder" default="true"/></Set>
     <Set name="sslSessionCacheSize"><Property name="jetty.sslContext.sslSessionCacheSize" default="-1"/></Set>
     <Set name="sslSessionTimeout"><Property name="jetty.sslContext.sslSessionTimeout" default="-1"/></Set>
-    <Set name="ExcludeCipherSuites">
-      <Array type="java.lang.String">
-        <Item>.*_CBC_.*</Item>
-        <Item>.*_DHE_.*</Item>
-     </Array>
-    </Set>
+    <Set name="renegotiationAllowed">TRUE</Set>
+    <Call name="addExcludeCipherSuites">
+      <Arg>
+        <Array type="java.lang.String">
+          <Item>.*_CBC_.*</Item>
+          <Item>.*_DHE_.*</Item>
+        </Array>
+      </Arg>
+    </Call>
     <Call name="addExcludeProtocols">
       <Arg>
         <Array type="java.lang.String">

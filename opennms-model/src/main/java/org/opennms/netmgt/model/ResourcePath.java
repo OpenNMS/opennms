@@ -32,6 +32,7 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -44,6 +45,8 @@ import java.util.stream.Collectors;
  * or some other form by the {@link org.opennms.netmgt.dao.api.ResourceStorageDao}
  * implementation.
  *
+ * The elements of the path must not contain a forward slash (/).
+ *
  * @author jwhite
  */
 public class ResourcePath implements Iterable<String>, Comparable<ResourcePath> {
@@ -54,27 +57,28 @@ public class ResourcePath implements Iterable<String>, Comparable<ResourcePath> 
     private final List<String> elements = new ArrayList<>();
 
     public ResourcePath(String... path) {
-        for (String el : path) {
-            elements.add(el);
-        }
+        this(Arrays.asList(path));
     }
 
     public ResourcePath(Iterable<String> pathElements) {
         for (String el : pathElements) {
+            if(el != null && el.contains("/")) {
+                throw new IllegalArgumentException(String.format("path elements must not contain a forward slash. Offender: %s in %s", el, pathElements));
+            }
             elements.add(el);
         }
     }
 
     public ResourcePath(ResourcePath parent, String... path) {
-        elements.addAll(parent.elements);
-        for (String el : path) {
-            elements.add(el);
-        }
+        this(parent, Arrays.asList(path));
     }
 
-    public ResourcePath(ResourcePath parent, Iterable<String> path) {
+    public ResourcePath(ResourcePath parent, Iterable<String> pathElements) {
         elements.addAll(parent.elements);
-        for (String el : path) {
+        for (String el : pathElements) {
+            if(el != null && el.contains("/")) {
+                throw new IllegalArgumentException(String.format("path elements must not contain a forward slash. Offender: %s in %s", el, pathElements));
+            }
             elements.add(el);
         }
     }

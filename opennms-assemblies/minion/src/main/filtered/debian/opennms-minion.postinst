@@ -15,10 +15,13 @@ if [ ! -f "${ETCDIR}/host.key" ]; then
 	chown "${MINIONUSER}:${MINIONUSER}" "${ETCDIR}/host.key"
 fi
 
+"${MINIONHOME}/bin/update-package-permissions" "opennms-minion"
+
 # Generate a new UUID to replace the default UUID if it is still present
 UUID="$(uuidgen -t)"
 sed -i "s|id = 00000000-0000-0000-0000-000000ddba11|id = $UUID|g" "${ETCDIR}/org.opennms.minion.controller.cfg"
-chown -R "${MINIONUSER}:${MINIONUSER}" "${ETCDIR}" "${MINIONHOME}" "${MINIONDATA}" "${MINIONLOG}"
+
+"${MINIONHOME}/bin/fix-permissions" -R "${MINIONHOME}"/* "${ETCDIR}" "${MINIONDATA}" "${MINIONLOG}" "${ETCDIR}/org.opennms.minion.controller.cfg"
 
 # Remove the directory used as the local Maven repo cache
 rm -rf "${MINIONHOME}/.local"

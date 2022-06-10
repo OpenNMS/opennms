@@ -56,7 +56,6 @@ import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsEventCollection;
 import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsMetaData;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.minion.OnmsMinion;
@@ -226,11 +225,6 @@ public class RestClient {
     public Response getResponseForInterface(String nodeCriteria, String ipAddress) {
         final WebTarget target = getTarget().path("nodes").path(nodeCriteria).path("ipinterfaces").path(ipAddress);
         return getBuilder(target).get();
-    }
-
-    public Response setNodeLevelMetadata(String nodeCriteria, OnmsMetaData metaData) {
-        final WebTarget target = getTargetV2().path("nodes").path(nodeCriteria).path("metadata");
-        return getBuilder(target).post(Entity.entity(metaData, MediaType.APPLICATION_XML));
     }
 
     public OnmsEventCollection getEventsForNode(int nodeId) {

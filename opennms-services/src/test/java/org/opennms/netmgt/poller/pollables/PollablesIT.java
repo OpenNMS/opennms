@@ -71,6 +71,7 @@ import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockInterface;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockNode;
+import org.opennms.netmgt.mock.MockPersisterFactory;
 import org.opennms.netmgt.mock.MockPollerConfig;
 import org.opennms.netmgt.mock.MockService;
 import org.opennms.netmgt.mock.MockVisitor;
@@ -153,7 +154,7 @@ public class PollablesIT {
     private MockScheduler m_scheduler;
     private MockTimer m_timer;
 
-    private PersisterFactory m_persisterFactory = null;
+    private PersisterFactory m_persisterFactory = new MockPersisterFactory();
     private ThresholdingService m_thresholdingService = null;
 
     @Autowired

@@ -51,6 +51,17 @@
    <group name="netsnmp-memory-nonlinux" rrdRepository="${install.share.dir}/rrd/snmp/">
       <expression description="Trigger an alert when the amount of unused real/physical memory expressed as a percentage of total system memory reaches or goes below 5% for two consecutive measurement intervals" type="low" ds-type="node" value="5.0" rearm="10.0" trigger="2" filterOperator="OR" expression="memAvailReal / memTotalReal * 100.0"/>
    </group>
+   <group name="opennms-jvm-jmx" rrdRepository="${install.share.dir}/rrd/snmp">
+      <threshold description="Trigger an alarm when the ActiveMQ Broker Memory Usage exceeds 90% of the limit for two samples" type="high" ds-type="node" value="90" rearm="80" trigger="2" filterOperator="OR" ds-name="MemPctUsage"/>
+      <threshold description="Trigger an alarm when the ActiveMQ Broker Temp Usage exceeds 90% of the limit for two samples" type="high" ds-type="node" value="90" rearm="80" trigger="2" filterOperator="OR" ds-name="TempPctUsage"/>
+      <threshold description="Trigger an alarm when the ActiveMQ Broker Store Usage exceeds 90% of the limit for two samples" type="high" ds-type="node" value="90" rearm="80" trigger="2" filterOperator="OR" ds-name="StorePctUsage"/>
+      <threshold description="Trigger an alarm when an ActiveMQ Queue shows blocked sends for two sample periods" type="high" ds-type="queueMetrics" value="1" rearm="0" trigger="2" filterOperator="OR" ds-name="BlkdSends"/>
+      <threshold description="Trigger an alarm when the Memory Usage of an ActiveMQ Queue exceeds 95% of the limit for two samples" type="high" ds-type="queueMetrics" value="95.0" rearm="75.0" trigger="2" filterOperator="OR" ds-name="MemPctUsage"/>
+      <expression description="Trigger an alarm when the number of open file handles exceeds 90% of the maximum for two samples" type="high" ds-type="node" value="90.0" rearm="85.0" trigger="2" filterOperator="OR" expression="OsOpenFDCount / OsMaxFDCount * 100.0"/>
+      <expression description="Trigger an alarm when the used JVM heap exceeds 90% of the maximum JVM heap for two samples" type="high" ds-type="node" value="95.0" rearm="85.0" trigger="2" filterOperator="OR" expression="HeapUsageUsed / HeapUsageMax * 100"/>
+      <expression description="Trigger an alarm when the ActiveMQ Total Enqueued Messages and Total Dequeued Messages of a queue vary by greater than 15% for two samples" type="high" ds-type="queueMetrics" value="15.0" rearm="10.0" trigger="2" filterOperator="OR" expression="((EnqueCnt + DequeCnt) == 0) ? 0 : (((EnqueCnt - DequeCnt) / ((EnqueCnt + DequeCnt) / 2)) * 100)"/>
+      <expression description="Trigger an alarm when the ActiveMQ Total Enqueued Messages and Total Dequeued Messages of a queue vary by greater than 15% for two samples" type="low" ds-type="queueMetrics" value="-15.0" rearm="-10.0" trigger="2" filterOperator="OR" expression="((EnqueCnt + DequeCnt) == 0) ? 0 : (((EnqueCnt - DequeCnt) / ((EnqueCnt + DequeCnt) / 2)) * 100)"/>
+   </group>
    <group name="coffee" rrdRepository="${install.share.dir}/rrd/snmp/">
       <expression description="Trigger an alert when the coffee pot level reaches or goes below 25% in one measurement interval" type="low" ds-type="node" value="25.0" rearm="100.0" trigger="1" filterOperator="OR" expression="coffeePotLevel / coffeePotCapacity * 100.0"/>
    </group>

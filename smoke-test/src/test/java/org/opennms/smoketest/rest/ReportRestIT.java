@@ -78,6 +78,8 @@ public class ReportRestIT extends AbstractRestIT {
         if (usersObject.getInt("count") == 2) { // Only create users if not already created
             postUser(createUser("test", "Test User", "test@opennms.org", "21232F297A57A5A743894A0E4A801FC3" /* admin */,  "ROLE_USER"));
             postUser(createUser("ulf", "Report Designer", "ulf@opennms.org", "21232F297A57A5A743894A0E4A801FC3" /* admin */, "ROLE_REPORT_DESIGNER", "ROLE_USER"));
+            // wait for the user config cache to refresh
+            Thread.sleep(1100);
         }
 
         clearReports();

@@ -10,7 +10,6 @@
 ** xref:minion/off-heap-storage.adoc[]
 * xref:sentinel/introduction.adoc[]
 ** xref:sentinel/runtime/install.adoc[]
-** xref:sentinel/flow-processing.adoc[]
 
 * xref:time-series-storage/timeseries/time-series-storage.adoc[]
 ** xref:time-series-storage/timeseries/rrdtool.adoc[]
@@ -27,3 +26,8 @@
 *** xref:time-series-storage/timeseries/configuration.adoc[]
 
 * xref:opentracing/jaeger-tracing.adoc[]
+
+* xref:upgrade/introduction.adoc[]
+** xref:upgrade/diff.adoc[]
+** xref:upgrade/basic.adoc[]
+

@@ -28,6 +28,8 @@
 
 package org.opennms.features.distributed.dao.healthcheck;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 import org.opennms.core.health.api.Context;
@@ -36,6 +38,9 @@ import org.opennms.core.health.api.Response;
 import org.opennms.core.health.api.Status;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
+
+import static org.opennms.core.health.api.HealthCheckConstants.DAO;
+import static org.opennms.core.health.api.HealthCheckConstants.LOCAL;
 
 /**
  * Verifies that at least the NodeDao can be consumed as a OSGi service, otherwise
@@ -57,6 +62,11 @@ public class DaoHealthCheck implements HealthCheck {
     @Override
     public String getDescription() {
         return "Retrieving NodeDao";
+    }
+
+    @Override
+    public List<String> getTags() {
+        return Arrays.asList(LOCAL, DAO);
     }
 
     @Override

@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.flows</artifactId>
-        <version>27.1.2-SNAPSHOT</version>
+        <version>29.0.6-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.features.flows</groupId>
@@ -13,7 +13,7 @@
     <name>OpenNMS :: Features :: Flows :: Integration Tests</name>
     <properties>
         <skipITs>true</skipITs>
-        <nephronVersion>0.1.1</nephronVersion>
+        <nephronVersion>0.3.0</nephronVersion>
         <jsonSimpleVersion>1.1.1</jsonSimpleVersion>
     </properties>
     <build>
@@ -51,9 +51,10 @@
                 <version>1.5</version>
                 <configuration>
                     <alias>localhost</alias>
-                    <keysize>1024</keysize>
-                    <keyalg>DSA</keyalg>
+                    <keysize>2048</keysize>
+                    <keyalg>RSA</keyalg>
                     <dname>CN=localhost, OU=Flows baby flows, O=The OpenNMS Group, C=US</dname>
+                    <ext>SubjectAlternativeName=dns:localhost</ext>
                 </configuration>
             </plugin>
         </plugins>
@@ -61,11 +62,11 @@
     <dependencies>
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
+            <artifactId>osgi.core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
+            <artifactId>osgi.cmpn</artifactId>
         </dependency>
         <dependency>
             <groupId>org.opennms.features.flows</groupId>
@@ -162,6 +163,7 @@
         <dependency>
             <groupId>org.opennms.core.test-api</groupId>
             <artifactId>org.opennms.core.test-api.kafka</artifactId>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -264,25 +266,5 @@
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.opennms.core.test-api</groupId>
-            <artifactId>org.opennms.core.test-api.kafka</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
-
-    <repositories>
-        <repository>
-            <id>sonatype.org-snapshot</id>
-            <name>Sonatype OSS Snapshots Repository</name>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
 </project>

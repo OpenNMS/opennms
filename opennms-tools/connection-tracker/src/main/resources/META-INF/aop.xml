@@ -1,5 +1,0 @@
-<aspectj>
-  <aspect name="org.opennms.debug.ConnectionTracker" />
-  <weaver options="-verbose">
-  </weaver>
-</aspectj>

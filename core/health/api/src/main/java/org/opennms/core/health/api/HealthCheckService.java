@@ -28,8 +28,11 @@
 
 package org.opennms.core.health.api;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
+import java.util.concurrent.CompletionStage;
+
+import io.vavr.control.Either;
 
 /**
  * The {@link HealthCheckService} performs various {@link HealthCheck}s and returns
@@ -43,7 +46,7 @@ public interface HealthCheckService {
      * Performs various {@link HealthCheck}s asynchronously and returns a {@link CompletableFuture} which
      * contains the {@link Health} representing each {@link HealthCheck}s {@link Response}.
      *
-     * It is up to the implementator to respect timeouts and handle exceptions accordingly, when
+     * It is up to the implementation to respect timeouts and handle exceptions accordingly, when
      * these situations arise when calling {@link HealthCheck#perform(Context)}.
      *
      * Callback methods can be provided to print information before and after a {@link HealthCheck} is invoked.
@@ -52,9 +55,18 @@ public interface HealthCheckService {
      * represent the value when calling {@link HealthCheck#perform(Context)} directly.
      *
      * @param context The context object
-     * @param onStartConsumer Callback method which is invoked before the {@link HealthCheck#perform(Context)} method is invoked. May be null.
-     * @param onFinishConsumer Callback method which is invoked after the {@link HealthCheck#perform(Context)} method is invoked. May be null.
-     * @return The {@link CompletableFuture} to retrieve the {@link Health} from.
+     * @param listener gets informed about health check progress. May be null. In case the {@code Either} contains an
+     *                 error no listener callbacks are called at all. If the {@code Either} contains a {@CompletionStage}
+     *                 all listener callbacks are guaranteed to be called before that completion stage completes.
+     * @param tags selects the single health checks that are included in the overall check; every health check that has any of the given tags is included.
+     * @return Either an error message if no matching health checks could be determined or a {@link CompletableFuture} to retrieve the {@link Health} from.
      */
-    CompletableFuture<Health> performAsyncHealthCheck(Context context, Consumer<HealthCheck> onStartConsumer, Consumer<Response> onFinishConsumer);
+    Either<String, CompletionStage<Health>> performAsyncHealthCheck(Context context, ProgressListener listener, List<String> tags);
+
+    interface ProgressListener {
+        default void onHealthChecksFound(List<HealthCheck> checks) {};
+        default void onPerform(HealthCheck check) {};
+        default void onResponse(HealthCheck check, Response response) {};
+        default void onAllHealthChecksCompleted(Health health) {};
+    }
 }

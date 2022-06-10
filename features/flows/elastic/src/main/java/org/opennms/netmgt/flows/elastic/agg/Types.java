@@ -29,11 +29,8 @@
 package org.opennms.netmgt.flows.elastic.agg;
 
 import org.opennms.netmgt.flows.api.Conversation;
-import org.opennms.netmgt.flows.api.ConversationKey;
 import org.opennms.netmgt.flows.api.Host;
 import org.opennms.netmgt.flows.elastic.ConversationKeyUtils;
-
-import io.searchbox.core.search.aggregation.TermsAggregation;
 
 /**
  * Type definitions that consolidate the logic used to query and
@@ -48,14 +45,20 @@ import io.searchbox.core.search.aggregation.TermsAggregation;
  * @author jwhite
  */
 public class Types {
+
+    private static final String AGG_TOPK = "TOPK";
+    private static final String AGG_TOTAL = "TOTAL";
+
     public static final ApplicationType APPLICATION = new ApplicationType();
     public static final ConversationType CONVERSATION = new ConversationType();
     public static final HostType HOST = new HostType();
+    public static final DscpType DSCP = new DscpType();
 
     public interface Type<T> {
         String getKey();
         T toEntity(String key);
         T getOtherEntity();
+        String getAggregationType();
     }
 
     public static class ApplicationType implements Type<String> {
@@ -71,6 +74,11 @@ public class Types {
                 return UNKNOWN_APPLICATION_NAME_DISPLAY;
             }
             return key;
+        }
+
+        @Override
+        public String getAggregationType() {
+            return AGG_TOPK;
         }
 
         @Override
@@ -91,6 +99,11 @@ public class Types {
         }
 
         @Override
+        public String getAggregationType() {
+            return AGG_TOPK;
+        }
+
+        @Override
         public Conversation getOtherEntity() {
             return OTHER;
         }
@@ -108,8 +121,35 @@ public class Types {
         }
 
         @Override
+        public String getAggregationType() {
+            return AGG_TOPK;
+        }
+
+        @Override
         public Host getOtherEntity() {
             return OTHER;
+        }
+    }
+
+    public static class DscpType implements Type<String> {
+        public static final String OTHER_DSCP_NAME_DISPLAY = "Other";
+
+        public String getKey() {
+            return "dscp";
+        }
+
+        public String toEntity(String key) {
+            return key;
+        }
+
+        @Override
+        public String getAggregationType() {
+            return AGG_TOTAL;
+        }
+
+        @Override
+        public String getOtherEntity() {
+            return OTHER_DSCP_NAME_DISPLAY;
         }
     }
 

@@ -3,6 +3,8 @@
 # shellcheck disable=SC1090,SC1091
 . "$SHUNITDIR/init.sh"
 
+RUNAS="$(id -u -n)"; export RUNAS
+
 oneTimeSetUp() {
 	MYUSER="$(id -u -n)"
 	TESTDIR="$(get_testdir opennms)"
@@ -124,6 +126,13 @@ testAdditionalManagerOptionsArrayTwoArguments() {
 	assertNotContains "$output" "'-DisThreadContextMapInheritable=true'"
 	assertContains "$output" "'-Dgroovy.use.classvalue=false'"
 	assertNotContains "$output" "'-Dgroovy.use.classvalue=true'"
+}
+
+testRunasRelaunch() {
+	#echo RUNAS=raccoonfink >> "$INSTPREFIX/etc/opennms.conf"
+	#export RUNAS=raccoonfink
+	output="$(RUNAS=raccoonfink runOpennms -f start 2>&1 || :)"
+	assertContains "$output" "ERROR: you must run this script as raccoonfink"
 }
 
 testJavaHeapSize() {

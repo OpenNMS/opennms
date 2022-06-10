@@ -1,0 +1,5 @@
+{{- /* Upon updating this file please ensure that the schema minion-config-schema.yml accurately reflects the keys that
+are used by this template. */ -}}
+{{range gets "/ipc/kafka/*" -}}
+{{base .Key}} = {{.Value}}
+{{end -}}

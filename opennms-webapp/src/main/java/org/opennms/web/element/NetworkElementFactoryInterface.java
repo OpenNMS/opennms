@@ -28,10 +28,15 @@
 
 package org.opennms.web.element;
 
+import java.net.InetAddress;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.opennms.core.rpc.utils.mate.EntityScopeProvider;
+import org.opennms.core.rpc.utils.mate.FallbackScope;
+import org.opennms.core.rpc.utils.mate.Interpolator;
+import org.opennms.core.rpc.utils.mate.Scope;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsMonitoringSystem;
@@ -473,4 +478,10 @@ public interface NetworkElementFactoryInterface {
 	ApplicationStatus getApplicationStatus(final OnmsApplication onmsApplication, final long start, final long end);
 	
 	Map<OnmsMonitoredService, Map<String, Double>> getApplicationServiceStatus(final OnmsApplication onmsApplication, final long start, final long end);
+
+	Scope getScopeForNode(final Integer nodeId);
+
+	Scope getScopeForInterface(final Integer nodeId, final String ipAddress);
+
+	Scope getScopeForService(final Integer nodeId, final InetAddress ipAddress, final String serviceName);
 }

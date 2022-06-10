@@ -1,4 +1,12 @@
-#!/bin/sh -e
+#!/bin/sh
+
+set -e
+
+# attempt to work around repository flakiness
+retry()
+{
+	"$@" || "$@"
+}
 
 find_tests()
 {
@@ -26,7 +34,7 @@ echo "#### Making sure git is up-to-date"
 git fetch --all
 
 echo "#### Generate project structure .json"
-./compile.pl -s .circleci/scripts/structure-settings.xml --batch-mode --fail-at-end --legacy-local-repository -Prun-expensive-tasks -Pbuild-bamboo org.opennms.maven.plugins:structure-maven-plugin:1.0:structure
+./compile.pl -s .circleci/scripts/structure-settings.xml --batch-mode --fail-at-end -Prun-expensive-tasks -Pbuild-bamboo org.opennms.maven.plugins:structure-maven-plugin:1.0:structure
 
 echo "#### Determining tests to run"
 cd ~/project
@@ -37,9 +45,7 @@ if [ ! -s /tmp/this_node_projects ]; then
 fi
 
 echo "#### Set loopback to 127.0.0.1"
-# circleci has started making 127.0.0.1 resolve to a generated hostname, which we don't want
-sudo sed -i -e '/^127.0.[01].1/d' /etc/hosts
-echo "127.0.0.1 localhost" | sudo tee -a /etc/hosts
+sudo sed -i 's/127.0.1.1/127.0.0.1/g' /etc/hosts
 
 echo "#### Allowing non-root ICMP"
 sudo sysctl net.ipv4.ping_group_range='0 429496729'
@@ -54,8 +60,8 @@ sudo rm -f /etc/apt/sources.list.d/*
 
 # kill other apt commands first to avoid problems locking /var/lib/apt/lists/lock - see https://discuss.circleci.com/t/could-not-get-lock-var-lib-apt-lists-lock/28337/6
 sudo killall -9 apt || true && \
-            sudo apt update && \
-            sudo env DEBIAN_FRONTEND=noninteractive apt -y --no-install-recommends install \
+            retry sudo apt update && \
+            retry sudo env DEBIAN_FRONTEND=noninteractive apt -y --no-install-recommends install \
                 ca-certificates \
                 tzdata \
                 software-properties-common \
@@ -63,7 +69,6 @@ sudo killall -9 apt || true && \
 
 # install some keys
 curl -sSf https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc | sudo tee -a /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc
-curl -sSf https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public | sudo tee -a /etc/apt/trusted.gpg.d/adoptopenjdk_key.asc
 curl -sSf https://debian.opennms.org/OPENNMS-GPG-KEY | sudo tee -a /etc/apt/trusted.gpg.d/opennms_key.asc
 
 # limit more sources and add mirrors
@@ -71,17 +76,13 @@ echo "deb mirror://mirrors.ubuntu.com/mirrors.txt $(lsb_release -cs) main restri
 deb http://archive.ubuntu.com/ubuntu/ $(lsb_release -cs) main restricted" | sudo tee -a /etc/apt/sources.list
 sudo add-apt-repository 'deb http://debian.opennms.org stable main'
 
-# add the Adopt OpenJDK repository
-sudo add-apt-repository "deb https://adoptopenjdk.jfrog.io/adoptopenjdk/deb $(lsb_release -cs) main"
-
 # add the R repository
 sudo add-apt-repository "deb https://cloud.r-project.org/bin/linux/ubuntu $(lsb_release -cs)-cran40/"
 
-sudo apt update && \
+retry sudo apt update && \
             RRDTOOL_VERSION=$(apt-cache show rrdtool | grep Version: | grep -v opennms | awk '{ print $2 }') && \
             echo '* libraries/restart-without-asking boolean true' | sudo debconf-set-selections && \
-            sudo env DEBIAN_FRONTEND=noninteractive apt -f --no-install-recommends install \
-                adoptopenjdk-8-hotspot \
+            retry sudo env DEBIAN_FRONTEND=noninteractive apt -f --no-install-recommends install \
                 r-base \
                 "rrdtool=$RRDTOOL_VERSION" \
                 jrrd2 \
@@ -89,13 +90,25 @@ sudo apt update && \
                 jicmp6 \
             || exit 1
 
-export JAVA_HOME=/usr/lib/jvm/adoptopenjdk-8-hotspot-amd64
+export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
 export MAVEN_OPTS="$MAVEN_OPTS -Xmx8g -XX:ReservedCodeCacheSize=1g"
 
+# shellcheck disable=SC3045
+ulimit -n 65536
+
+MAVEN_ARGS="install"
+
+case "${CIRCLE_BRANCH}" in
+  "master"*|"release-"*|develop)
+    MAVEN_ARGS="-Dbuild.type=production $MAVEN_ARGS"
+  ;;
+esac
+
 echo "#### Building Assembly Dependencies"
-./compile.pl install -P'!checkstyle' \
+./compile.pl $MAVEN_ARGS \
+           -P'!checkstyle' \
+           -P'!production' \
            -Pbuild-bamboo \
-           -DupdatePolicy=never \
            -Dbuild.skip.tarball=true \
            -Dmaven.test.skip.exec=true \
            -DskipTests=true \
@@ -107,9 +120,10 @@ echo "#### Building Assembly Dependencies"
            --projects "$(< /tmp/this_node_projects paste -s -d, -)"
 
 echo "#### Executing tests"
-./compile.pl install -P'!checkstyle' \
+./compile.pl $MAVEN_ARGS \
+           -P'!checkstyle' \
+           -P'!production' \
            -Pbuild-bamboo \
-           -DupdatePolicy=never \
            -Dbuild.skip.tarball=true \
            -DfailIfNoTests=false \
            -DskipITs=false \

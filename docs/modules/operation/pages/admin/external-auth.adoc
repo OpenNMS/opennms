@@ -1,0 +1,77 @@
+[[ga-admin-external-auth]]
+= External Authentication
+
+If you have an existing directory for authenticating users, you can configure {page-component-title} to use that system to grant users access to log in, in addition to allowing log in from users defined directly within your {page-component-title} server.
+
+== Configuring external authentication
+
+The {page-component-title} webapp uses link:https://spring.io/projects/spring-security[Spring Security] for its user authentication, authorization, and accounting (AAA) concerns.
+Configuring external authentication requires configuring Spring Security correctly for your own environment.
+
+
+The Spring Security configuration files are located in at `$\{OPENNMS_HOME}/jetty-webapps/opennms/WEB-INF`.
+Only one authentication service can be enabled in the `spring-security.d` subdirectory.
+
+The following files are used for external authentication:
+
+applicationContext-spring-security.xml::
+The main Spring Security context configuration file for the OpenNMS webapp.
+The `authentication-provider` setting must be uncommented to switch on external authentication.
+
+[source, xml]
+----
+    <!-- To enable external (e.g. LDAP, RADIUS) authentication, uncomment the following.
+         You must also rename and customize exactly ONE of the example files in the
+         spring-security.d subdirectory.-->
+    <authentication-provider ref="externalAuthenticationProvider" />
+----
+
+spring-security.d::
+Directory containing example files for common use cases.
+You must copy one of these files to a name of your own choosing, as long as it ends in `.xml`, and edit its details as outlined below.
+There cannot be more than one non-disabled xml file in this directory.
+
+*.xml.disabled::
+Skeleton files to use as a starter for your configuration.
+The "disabled" files are ignored when Spring Security loads.
+
+== Anatomy of an LDAP configuration
+
+Whether the authentication source is an Active Directory, a Novell eDirectory, or some other LDAP-enabled directory, the basic components (expressed as "beans" in Spring Framework lingo) that need to exist and be configured are the same.
+
+While Active Directory and OpenLDAP (and others) implement the same LDAP protocol, their schemas are substantially different.
+The biggest difference is the `memberOf` attribute, which is not supported by default LDAP v3 specification, and is not present in common OpenLDAP installs, but comes standard with AD.
+This has a significant implication in that you cannot filter a user search by nested group membership, and most installs tend not to be fully hierarchical (user's DN doesn't cite a home group).
+You can either create dedicated per-role LDAP groups or map existing groups to roles by selecting and configuring the appropriate `userGroupLdapAuthoritiesPopulator`.
+
+contextSource::
+Define your LDAP server URL(s) and search base.
+If you have multiple LDAP servers, include them as separate `<beans:value>` entries.
+
+authenticationSource::
+Provide credentials to bind to your directory in the `defaultUser` and `defaultPassword` properties.
+
+userSearch::
+Tells Spring Security where to find the users in your directory.
+
+userGroupLdapAuthoritiesPopulator::
+Tells Spring Security where to find groups in your directory.
+By defining `groupToRoleMap` entries, groups in your directory can be mapped to one or more security roles to determine what level of access to grant to the user.
+
+NOTE: If your directory requires an SSL connection, and is signed with a private certificate authority, make sure to add the certificates to your xref:admin/https/https-client.adoc[truststore].
+
+After making any changes to Spring Security configuration, you must restart {page-component-title} for the changes to take effect.
+Before doing this, it's a good idea to check that your changes have not led to malformed XML files:
+
+[source, console]
+----
+xmllint --noout applicationContext-spring-security.xml spring-security.d/*.xml
+----
+
+If this command produces no output, then the XML files are well-formed.
+If you have all the details right, you'll be able to log in to the webapp with your directory credentials after restarting OpenNMS.
+
+
+== Troubleshooting
+
+If your server is not allowing login via your configured external authentication provider, authentication logs are written to `$\{OPENNMS_HOME}/logs/web.log`.

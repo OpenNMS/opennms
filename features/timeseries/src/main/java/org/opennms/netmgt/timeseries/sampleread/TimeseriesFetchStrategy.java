@@ -73,6 +73,7 @@ import org.opennms.netmgt.model.ResourceId;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.netmgt.timeseries.TimeseriesStorageManager;
+import org.opennms.netmgt.timeseries.TimeseriesStorageManagerImpl;
 import org.opennms.netmgt.timeseries.sampleread.aggregation.NewtsLikeSampleAggregator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -31,6 +31,7 @@ package org.opennms.netmgt.dao.api;
 import java.util.Collection;
 import java.util.List;
 
+import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
@@ -79,4 +80,7 @@ public interface ResourceDao {
      * @return {@code true} iff, the resource was found and deleted
      */
     public boolean deleteResourceById(final ResourceId resourceId);
+
+
+    public ResourceId getResourceId(CollectionResource resource, long nodeId);
 }

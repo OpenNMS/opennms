@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.opennms.features.distributed</groupId>
         <artifactId>org.opennms.features.distributed.dao</artifactId>
-        <version>27.1.2-SNAPSHOT</version>
+        <version>29.0.6-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.features.distributed</groupId>
@@ -42,6 +42,7 @@
                             com.google.common.base,
                             com.google.common.cache,
                             com.google.common.collect,
+                            com.google.common.util.concurrent,
 
                             org.aopalliance.aop,
 

@@ -111,7 +111,7 @@ public class SnmpUtilsIT extends MockSnmpAgentITCase {
 	@After
     public void cleanupTrapListener() throws Exception {
     	if (m_trapListener != null) {
-    		SnmpUtils.unregisterForTraps(m_trapListener, null, 9162);
+    		SnmpUtils.unregisterForTraps(m_trapListener);
     	}
     	
     	if (m_oldProperty == null) {

@@ -1,15 +1,10 @@
-<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
-           xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0"
-           xsi:schemaLocation="
-		http://www.osgi.org/xmlns/blueprint/v1.0.0
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
 		http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
 
 		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0
-		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd
-
-		http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0
-		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
-">
+		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd">
 
     <cm:property-placeholder id="ClassificationEngineProperties" persistent-id="org.opennms.features.flows.classification" update-strategy="reload">
         <cm:default-properties>
@@ -61,11 +56,11 @@
         <argument ref="classificationMetricRegistry"/>
         <argument ref="defaultClassificationEngine" />
     </bean>
-    <bean id="threadSafeClassificationEngine" class="org.opennms.netmgt.flows.classification.internal.ThreadSafeClassificationEngine">
+    <bean id="asyncReloadingClassificationEngine" class="org.opennms.netmgt.flows.classification.internal.AsyncReloadingClassificationEngine">
         <argument ref="timingClassificationEngine" />
     </bean>
     <bean id="classificationEngineInitializer" class="org.opennms.netmgt.flows.classification.internal.ClassificationEngineInitializer">
-        <argument ref="threadSafeClassificationEngine"/>
+        <argument ref="timingClassificationEngine"/>
         <argument ref="sessionUtils" />
     </bean>
 
@@ -84,12 +79,12 @@
           destroy-method="stop" />
 
     <!-- Expose Services -->
-    <service interface="org.opennms.netmgt.flows.classification.ClassificationEngine" ref="threadSafeClassificationEngine"/>
+    <service interface="org.opennms.netmgt.flows.classification.ClassificationEngine" ref="timingClassificationEngine"/>
     <service interface="org.opennms.netmgt.flows.classification.ClassificationService">
         <bean class="org.opennms.netmgt.flows.classification.internal.DefaultClassificationService">
             <argument ref="classificationRuleDao"/>
             <argument ref="classificationGroupDao"/>
-            <argument ref="threadSafeClassificationEngine"/>
+            <argument ref="asyncReloadingClassificationEngine"/>
             <argument ref="cachingFilterService" />
             <argument ref="sessionUtils"/>
         </bean>
@@ -101,7 +96,7 @@
     -->
     <bean id="classificationEngineReload" class="org.opennms.netmgt.flows.classification.internal.ClassificationEngineReloader" destroy-method="shutdown">
         <argument ref="sentinelIdentity" />
-        <argument ref="threadSafeClassificationEngine" />
+        <argument ref="timingClassificationEngine" />
         <argument value="${sentinel.cache.engine.reloadInterval}" />
     </bean>
 

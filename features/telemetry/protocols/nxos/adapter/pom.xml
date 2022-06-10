@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.features.telemetry.protocols</groupId>
     <artifactId>org.opennms.features.telemetry.protocols.nxos</artifactId>
-    <version>27.1.2-SNAPSHOT</version>
+    <version>29.0.6-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.telemetry.protocols.nxos</groupId>
@@ -38,7 +38,7 @@
     </dependency>
     <dependency>
       <groupId>org.osgi</groupId>
-      <artifactId>org.osgi.core</artifactId>
+      <artifactId>osgi.core</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>

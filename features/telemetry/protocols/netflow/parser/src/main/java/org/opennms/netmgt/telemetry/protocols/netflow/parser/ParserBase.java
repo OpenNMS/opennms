@@ -97,8 +97,6 @@ public abstract class ParserBase implements Parser {
 
     private final String name;
 
-    private final MessageBuilder messageBuilder;
-
     private final AsyncDispatcher<TelemetryMessage> dispatcher;
 
     private final EventForwarder eventForwarder;
@@ -147,7 +145,6 @@ public abstract class ParserBase implements Parser {
 
     public ParserBase(final Protocol protocol,
                       final String name,
-                      final MessageBuilder messageBuilder,
                       final AsyncDispatcher<TelemetryMessage> dispatcher,
                       final EventForwarder eventForwarder,
                       final Identity identity,
@@ -155,7 +152,6 @@ public abstract class ParserBase implements Parser {
                       final MetricRegistry metricRegistry) {
         this.protocol = Objects.requireNonNull(protocol);
         this.name = Objects.requireNonNull(name);
-        this.messageBuilder = Objects.requireNonNull(messageBuilder);
         this.dispatcher = Objects.requireNonNull(dispatcher);
         this.eventForwarder = Objects.requireNonNull(eventForwarder);
         this.identity = Objects.requireNonNull(identity);
@@ -191,6 +187,8 @@ public abstract class ParserBase implements Parser {
         setThreads(DEFAULT_NUM_THREADS);
     }
 
+    protected abstract MessageBuilder getMessageBuilder();
+
     @Override
     public void start(ScheduledExecutorService executorService) {
         executor = new ThreadPoolExecutor(
@@ -221,6 +219,11 @@ public abstract class ParserBase implements Parser {
     @Override
     public String getName() {
         return this.name;
+    }
+
+    @Override
+    public String getDescription() {
+        return this.protocol.description;
     }
 
     public void setMaxClockSkew(final long maxClockSkew) {
@@ -325,7 +328,7 @@ public abstract class ParserBase implements Parser {
                         // Let's serialize
                         final FlowMessage.Builder flowMessage;
                         try {
-                            flowMessage = this.messageBuilder.buildMessage(record, enrichment);
+                            flowMessage = this.getMessageBuilder().buildMessage(record, enrichment);
                         } catch (final  Exception e) {
                             throw new RuntimeException(e);
                         }

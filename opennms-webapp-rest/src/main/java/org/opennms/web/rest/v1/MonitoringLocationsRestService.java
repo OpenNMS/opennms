@@ -29,6 +29,10 @@
 package org.opennms.web.rest.v1;
 
 import java.text.ParseException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -84,7 +88,9 @@ public class MonitoringLocationsRestService extends OnmsRestService {
 	@GET
 	@Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
 	public OnmsMonitoringLocationDefinitionList getForeignSources() throws ParseException {
-		return new OnmsMonitoringLocationDefinitionList(m_monitoringLocationDao.findAll());
+		final List<OnmsMonitoringLocation> onmsMonitoringLocationList = m_monitoringLocationDao.findAll();
+		Collections.sort(onmsMonitoringLocationList, Comparator.comparing(OnmsMonitoringLocation::getLocationName));
+		return new OnmsMonitoringLocationDefinitionList(onmsMonitoringLocationList);
 	}
 
 	@GET

@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.restrictions.Restrictions;
+import org.opennms.core.rpc.utils.mate.EntityScopeProvider;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsNode;
@@ -52,9 +53,11 @@ import com.google.common.collect.Lists;
 public class NodeAssetSearchProvider implements SearchProvider {
 
     private final NodeDao nodeDao;
+    private final EntityScopeProvider entityScopeProvider;
 
-    public NodeAssetSearchProvider(NodeDao nodeDao) {
+    public NodeAssetSearchProvider(final NodeDao nodeDao, final EntityScopeProvider entityScopeProvider) {
         this.nodeDao = Objects.requireNonNull(nodeDao);
+        this.entityScopeProvider = Objects.requireNonNull(entityScopeProvider);
     }
 
     @Override
@@ -125,7 +128,7 @@ public class NodeAssetSearchProvider implements SearchProvider {
         final List<OnmsNode> matchingNodes = nodeDao.findMatching(criteriaBuilder.orderBy("label").limit(query.getMaxResults()).toCriteria());
         final List<SearchResultItem> results = matchingNodes.stream()
             .map(node -> {
-                final SearchResultItem result = new SearchResultItemBuilder().withOnmsNode(node).build();
+                final SearchResultItem result = new SearchResultItemBuilder().withOnmsNode(node, entityScopeProvider).build();
                 final OnmsAssetRecord record = node.getAssetRecord();
                 final List<Matcher> matcherList = Lists.newArrayList(
                         new Matcher("Category", record.getCategory()),

@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.flows.api;
 
-import java.time.Instant;
 import java.util.Optional;
 
 public interface Flow {
@@ -220,6 +219,14 @@ public interface Flow {
      * TOS.
      */
     Integer getTos();
+
+    default Integer getDscp() {
+        return getTos() != null ? getTos() >>> 2 : null;
+    }
+
+    default Integer getEcn() {
+        return getTos() != null ? getTos() & 0x03 : null;
+    }
 
     /**
      * Netfow version

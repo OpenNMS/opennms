@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -55,7 +55,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.PrimaryType;
-import org.opennms.netmgt.provision.persist.PrimaryTypeAdapter;
+import org.opennms.netmgt.model.PrimaryTypeAdapter;
 
 
 /**
@@ -395,10 +395,11 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
         m_status = value;
     }
 
-    public void validate() throws ValidationException {
+    public void validate(RequisitionNode node) throws ValidationException {
         if (m_ipAddress == null) {
             throw new ValidationException("Requisition interface 'ip-addr' is a required attribute!");
         }
+
         if (m_monitoredServices != null) {
             Set<String> serviceNameSet = new HashSet<>();
             for (final RequisitionMonitoredService svc : m_monitoredServices) {
@@ -406,6 +407,17 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
                 if (!serviceNameSet.add(svc.getServiceName())) {
                     throw new ValidationException("Duplicate service name: " + svc.getServiceName());
                 }
+            }
+        }
+
+        // there can be only one primary interface per node
+        if (m_snmpPrimary == PrimaryType.PRIMARY) {
+            long otherPrimaryInterfaces = node.getInterfaces().stream()
+                    .filter(iface -> PrimaryType.PRIMARY == iface.getSnmpPrimary())
+                    .filter(iface -> !iface.getIpAddr().equals(this.getIpAddr()))
+                    .count();
+            if (otherPrimaryInterfaces > 0) {
+                throw new ValidationException("Node foreign ID (" + node.getForeignId() + ") contains multiple primary interfaces. Maximum one is allowed.");
             }
         }
     }

@@ -1,10 +1,10 @@
 name: horizon
-version: '27.1.1-SNAPSHOT'
+version: '29.0.6-SNAPSHOT'
 title: Horizon
 prerelease: true
 asciidoc:
   attributes:
-    full-display-version: '27.1.1-SNAPSHOT'
+    full-display-version: '29.0.6-SNAPSHOT'
     experimental: true
     prerelease: true
     source-language: asciidoc@
@@ -14,17 +14,17 @@ asciidoc:
     compatible-rhel7: '7.x'
     compatible-rhel8: '8.x'
     compatible-ubuntu: '20.04 LTS'
-    compatible-debian: '9 - 10'
-    compatible-opennms-helm: '3+'
-    compatible-oia: '0.2.x'
+    compatible-debian: '9 - 11'
+    compatible-opennms-helm: '7+'
+    compatible-oia: '0.6.x'
     compatible-cassandra: '3.11.x'
     compatible-elasticsearch: '6.7.0 - 7.6.2'
-    compatible-javajdk: 'OpenJDK 8, OpenJDK 11'
+    compatible-javajdk: 'OpenJDK 11'
     compatible-kafka: '1.x - 2.x'
-    compatible-postgresql: '10.x - 13.x'
+    compatible-postgresql: '10.x - 14.x'
     compatible-rrdtool: '1.7.x'
     jasperreportsversion: '6.3.0'
-    postgresql-version: '13'
+    postgresql-version: '14'
 nav:
 - modules/ROOT/index.adoc
 - modules/releasenotes/nav.adoc

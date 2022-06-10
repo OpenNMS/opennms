@@ -80,7 +80,7 @@ public class Migrator {
     private static final Logger LOG = LoggerFactory.getLogger(Migrator.class);
     private static final Pattern POSTGRESQL_VERSION_PATTERN = Pattern.compile("^(?:PostgreSQL|EnterpriseDB) (\\d+\\.\\d+)");
     private static final float POSTGRESQL_MIN_VERSION_INCLUSIVE = Float.parseFloat(System.getProperty("opennms.postgresql.minVersion", "10.0"));
-    private static final float POSTGRESQL_MAX_VERSION_EXCLUSIVE = Float.parseFloat(System.getProperty("opennms.postgresql.maxVersion", "14.0"));
+    private static final float POSTGRESQL_MAX_VERSION_EXCLUSIVE = Float.parseFloat(System.getProperty("opennms.postgresql.maxVersion", "15.0"));
 
     private static final String IPLIKE_SQL_RESOURCE = "iplike.sql";
 
@@ -418,10 +418,10 @@ public class Migrator {
         try {
             c = m_adminDataSource.getConnection();
             st = c.createStatement();
-            rs = st.executeQuery("SELECT usename FROM pg_user WHERE usename = '" + getDatabaseUser() + "'");
+            rs = st.executeQuery("SELECT usename FROM pg_user WHERE usename = '" + getUserForONMSDB() + "'");
             if (rs.next()) {
                 final String datname = rs.getString("usename");
-                if (datname != null && datname.equalsIgnoreCase(getDatabaseUser())) {
+                if (datname != null && datname.equalsIgnoreCase(getUserForONMSDB())) {
                     return true;
                 } else {
                     return false;
@@ -452,12 +452,18 @@ public class Migrator {
         try {
             c = m_adminDataSource.getConnection();
             st = c.createStatement();
-            st.execute("CREATE USER " + getDatabaseUser() + " WITH PASSWORD '" + getDatabasePassword() + "'");
+            st.execute("CREATE USER " + getUserForONMSDB() + " WITH PASSWORD '" + getDatabasePassword() + "'");
         } catch (final SQLException e) {
             throw new MigrationException("an error occurred creating the OpenNMS user", e);
         } finally {
             cleanUpDatabase(c, null, st, rs);
         }
+    }
+
+    protected String getUserForONMSDB() {
+        String user = getDatabaseUser();
+        user = user.indexOf("@")>0? user.substring(0, user.indexOf("@")):user;
+        return user;
     }
 
     /**
@@ -548,7 +554,7 @@ public class Migrator {
             c = m_adminDataSource.getConnection();
             st = c.createStatement();
             st.execute("CREATE DATABASE \"" + getDatabaseName() + "\" WITH ENCODING='UNICODE'");
-            st.execute("GRANT ALL ON DATABASE \"" + getDatabaseName() + "\" TO \"" + getDatabaseUser() + "\"");
+            st.execute("GRANT ALL ON DATABASE \"" + getDatabaseName() + "\" TO \"" + getUserForONMSDB() + "\"");
         } catch (final SQLException e) {
             throw new MigrationException("an error occurred creating the OpenNMS database: " + e, e);
         } finally {
@@ -837,8 +843,41 @@ public class Migrator {
         }
     }
 
-    public void addTimescaleDBExtension() throws MigrationException {
+    /**
+     * This method creates the Timescale extension
+     * If is a new database will add it to template1 so any other database created after has access to Timescale extension
+     * If the database (opennms) already exists the it will enfoce the extension on that database and template1.
+     * @param isNewDatabase
+     * @throws MigrationException
+     */
+    public void addTimescaleDBExtension(boolean isNewDatabase) throws MigrationException {
         LOG.info("adding timescaledb extension in template db");
+
+        Connection c = null;
+        Statement st = null;
+
+        try {
+            if (isNewDatabase)
+                c = m_adminDataSource.getConnection();
+            else
+                c = m_dataSource.getConnection();
+            st = c.createStatement();
+            st.execute("CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE");
+        } catch (SQLException e) {
+            throw new MigrationException("could not add timescaledb extension", e);
+        } finally {
+            cleanUpDatabase(c, null, st, null);
+        }
+
+    }
+
+    /**
+     * This method creates the Timescale extension on the user database (opennms) and then on template1
+     * to give access to the extension to new databases.
+     * @throws MigrationException
+     */
+    public void addTimescaleDBExtensionOnDatabase() throws MigrationException {
+        LOG.info("adding timescaledb extension in db");
 
         Connection c = null;
         Statement st = null;
@@ -846,7 +885,11 @@ public class Migrator {
         try {
             c = m_adminDataSource.getConnection();
             st = c.createStatement();
-            st.execute("CREATE EXTENSION IF NOT EXISTS timescaledb;");
+            st.execute("ALTER ROLE " + getDatabaseUser() + " WITH SUPERUSER");
+            addTimescaleDBExtension(false);
+            st.execute("ALTER ROLE " + getDatabaseUser() + " WITH NOSUPERUSER");
+            addTimescaleDBExtension(true);
+
         } catch (SQLException e) {
             throw new MigrationException("could not add timescaledb extension", e);
         } finally {
@@ -970,12 +1013,16 @@ public class Migrator {
     public void setupDatabase(boolean updateDatabase, boolean vacuum, boolean fullVacuum, boolean iplike, boolean timescaleDB) throws MigrationException, Exception, IOException {
         validateDatabaseVersion();
 
-        // Creating extension in template1 before creating opennms DB.
-        if(timescaleDB) {
-            addTimescaleDBExtension();
-        }
         if (updateDatabase) {
             prepareDatabase();
+        }
+
+        if (timescaleDB) {
+            if (databaseExists()) {
+                addTimescaleDBExtensionOnDatabase();
+            } else {
+                addTimescaleDBExtension(true);
+            }
         }
 
         checkUnicode();

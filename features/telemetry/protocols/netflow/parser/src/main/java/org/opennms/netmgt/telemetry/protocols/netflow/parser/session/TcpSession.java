@@ -41,9 +41,14 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.MissingTemplateException;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.state.ExporterState;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.state.OptionState;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.state.TemplateState;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
@@ -173,5 +178,29 @@ public class TcpSession implements Session {
     public boolean verifySequenceNumber(long observationDomainId, final long sequenceNumber) {
         final SequenceNumberTracker tracker = this.sequenceNumbers.computeIfAbsent(observationDomainId, (k) -> this.sequenceNumberTracker.get());
         return tracker.verify(sequenceNumber);
+    }
+
+    public Stream<ExporterState> dumpInternalState() {
+        return this.templates.keySet().stream()
+                             .mapToLong(key -> key.observationDomainId)
+                             .distinct()
+                             .mapToObj(domain -> {
+                                 final String key = String.format("%s#%s", InetAddressUtils.str(this.remoteAddress), domain);
+
+                                 final ExporterState.Builder exporter = ExporterState.builder(key);
+
+                                 this.templates.entrySet().stream()
+                                               .filter(e -> Objects.equals(e.getKey().observationDomainId, domain))
+                                               .forEach(e -> exporter.withTemplate(TemplateState.builder(e.getKey().templateId)));
+
+                                 this.options.entrySet().stream()
+                                             .filter(e -> Objects.equals(e.getKey().observationDomainId, domain))
+                                             .forEach(e -> e.getValue().forEach((selectors, values) ->
+                                                                                        exporter.withOptions(OptionState.builder(e.getKey().templateId)
+                                                                                                                        .withSelectors(selectors)
+                                                                                                                        .withValues(values))));
+
+                                 return exporter.build();
+                             });
     }
 }

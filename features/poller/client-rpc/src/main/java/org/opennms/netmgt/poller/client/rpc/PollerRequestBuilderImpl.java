@@ -40,6 +40,7 @@ import org.opennms.core.rpc.utils.MetadataConstants;
 import org.opennms.core.rpc.utils.mate.FallbackScope;
 import org.opennms.core.rpc.utils.mate.Interpolator;
 import org.opennms.core.rpc.utils.mate.MapScope;
+import org.opennms.core.rpc.utils.mate.Scope;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -140,7 +141,7 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
             this.client.getEntityScopeProvider().getScopeForNode(service.getNodeId()),
             this.client.getEntityScopeProvider().getScopeForInterface(service.getNodeId(), service.getIpAddr()),
             this.client.getEntityScopeProvider().getScopeForService(service.getNodeId(), service.getAddress(), service.getSvcName()),
-            MapScope.singleContext("pattern", this.patternVariables)
+            MapScope.singleContext(Scope.ScopeName.SERVICE, "pattern", this.patternVariables)
         ));
 
         final RpcTarget target = client.getRpcTargetHelper().target()
@@ -182,7 +183,7 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
             // Invoke the adapters in the same order as which they were added
             for (ServiceMonitorAdaptor adaptor : adaptors) {
                 // The adapters may update the status
-                pollStatus = adaptor.handlePollResult(service, interpolatedAttributes, pollStatus);
+                pollStatus = adaptor.handlePollResult(service, new HashMap<>(interpolatedAttributes), pollStatus);
             }
             results.setPollStatus(pollStatus);
             return results;

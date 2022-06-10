@@ -45,8 +45,8 @@ public class OspfIpAddrTableGetter extends SnmpGetter {
     public final static SnmpObjId IPADENT_IFINDEX = SnmpObjId.get(".1.3.6.1.2.1.4.20.1.2");
     public final static SnmpObjId IPADENT_NETMASK = SnmpObjId.get(".1.3.6.1.2.1.4.20.1.3");
 
-	public OspfIpAddrTableGetter(SnmpAgentConfig peer, LocationAwareSnmpClient client, String location, Integer nodeid) {
-	    super(peer, client, location,nodeid);
+	public OspfIpAddrTableGetter(SnmpAgentConfig peer, LocationAwareSnmpClient client, String location) {
+	    super(peer, client, location);
 	}
 
     public OspfElement get(OspfElement element) {

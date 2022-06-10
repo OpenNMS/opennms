@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,10 +29,12 @@
 package org.opennms.netmgt.provision.service;
 
 import static org.opennms.core.utils.InetAddressUtils.addr;
+import static org.opennms.netmgt.provision.service.lifecycle.Lifecycles.RESOURCE;
 
 import java.io.File;
 import java.net.InetAddress;
 import java.net.URL;
+import java.util.Objects;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -111,8 +113,6 @@ public class Provisioner implements SpringServiceDaemon {
     private final Map<Integer, ScheduledFuture<?>> m_scheduledNodes = new ConcurrentHashMap<Integer, ScheduledFuture<?>>();
     private volatile EventForwarder m_eventForwarder;
     private SnmpAgentConfigFactory m_agentConfigFactory;
-    
-    private volatile TimeTrackingMonitor m_stats;
 
     private final ThreadFactory newSuspectThreadFactory = new ThreadFactoryBuilder()
             .setNameFormat("newSuspectExecutor")
@@ -130,6 +130,8 @@ public class Provisioner implements SpringServiceDaemon {
     @Autowired
     private TracerRegistry m_tracerRegistry;
 
+    @Autowired
+    private MonitorHolder monitorHolder;
 
     /**
      * <p>setProvisionService</p>
@@ -236,7 +238,8 @@ public class Provisioner implements SpringServiceDaemon {
         m_manager.initializeAdapters();
         String enabled = System.getProperty(SCHEDULE_RESCAN_FOR_EXISTING_NODES, "true");
         if (Boolean.valueOf(enabled)) {
-            scheduleRescanForExistingNodes();
+            // use a static monitor name for startup use only
+            scheduleRescanForExistingNodes("startup");
         } else {
             LOG.warn("The schedule rescan for existing nodes is disabled.");
         }
@@ -256,6 +259,7 @@ public class Provisioner implements SpringServiceDaemon {
         m_importSchedule.stop();
         m_scheduledExecutor.shutdown();
         m_newSuspectExecutor.shutdown();
+        monitorHolder.shutdown();
     }
 
     /**
@@ -272,8 +276,8 @@ public class Provisioner implements SpringServiceDaemon {
     /**
      * <p>scheduleRescanForExistingNodes</p>
      */
-    protected void scheduleRescanForExistingNodes() {        
-        List<NodeScanSchedule> schedules = m_provisionService.getScheduleForNodes();
+    protected void scheduleRescanForExistingNodes(String monitorKey) {
+        List<NodeScanSchedule> schedules = m_provisionService.getScheduleForNodes(monitorKey);
         
         checkNodeListForRemovals(schedules);
         
@@ -299,9 +303,9 @@ public class Provisioner implements SpringServiceDaemon {
      * @param location a {@link org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation} object.
      * @return a {@link org.opennms.netmgt.provision.service.NodeScan} object.
      */
-    public NodeScan createNodeScan(Integer nodeId, String foreignSource, String foreignId, OnmsMonitoringLocation location) {
+    public NodeScan createNodeScan(Integer nodeId, String foreignSource, String foreignId, OnmsMonitoringLocation location, String monitorKey) {
         LOG.info("createNodeScan called");
-        return new NodeScan(nodeId, foreignSource, foreignId, location, m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator, null);
+        return new NodeScan(nodeId, foreignSource, foreignId, location, m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator, null, monitorHolder.getMonitor(monitorKey));
     }
 
     /**
@@ -310,9 +314,9 @@ public class Provisioner implements SpringServiceDaemon {
      * @param ipAddress a {@link java.net.InetAddress} object.
      * @return a {@link org.opennms.netmgt.provision.service.NewSuspectScan} object.
      */
-    public NewSuspectScan createNewSuspectScan(InetAddress ipAddress, String foreignSource, String location) {
-        LOG.info("createNewSuspectScan called with IP: "+ipAddress+ "and foreignSource"+foreignSource == null ? "null" : foreignSource);
-        return new NewSuspectScan(ipAddress, m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator, foreignSource, location);
+    public NewSuspectScan createNewSuspectScan(InetAddress ipAddress, String foreignSource, String location, String monitorKey) {
+        LOG.info("createNewSuspectScan called with IP: {}, foreignSource {} and monitorKey {}", ipAddress, foreignSource == null ? "null" : foreignSource, monitorKey);
+        return new NewSuspectScan(ipAddress, m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator, foreignSource, location, monitorHolder.getMonitor(monitorKey));
     }
 
     /**
@@ -321,9 +325,9 @@ public class Provisioner implements SpringServiceDaemon {
      * @param nodeId a nodeId
      * @return a {@link org.opennms.netmgt.provision.service.ForceRescanScan} object.
      */
-    public ForceRescanScan createForceRescanScan(Integer nodeId) {
+    public ForceRescanScan createForceRescanScan(Integer nodeId, String monitorKey) {
         LOG.info("createForceRescanScan called with nodeId: "+nodeId);
-        return new ForceRescanScan(nodeId, m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator);
+        return new ForceRescanScan(nodeId, m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator, monitorHolder.getMonitor(monitorKey));
     }
 
     //Helper functions for the schedule
@@ -355,7 +359,7 @@ public class Provisioner implements SpringServiceDaemon {
     }
 
     private ScheduledFuture<?> scheduleNodeScan(NodeScanSchedule schedule) {
-        NodeScan nodeScan = createNodeScan(schedule.getNodeId(), schedule.getForeignSource(), schedule.getForeignId(), schedule.getLocation());
+        NodeScan nodeScan = createNodeScan(schedule.getNodeId(), schedule.getForeignSource(), schedule.getForeignId(), schedule.getLocation(), schedule.getMonitorKey());
         LOG.warn("nodeScan = {}", nodeScan);
         return nodeScan.schedule(m_scheduledExecutor, schedule);
     }
@@ -454,10 +458,20 @@ public class Provisioner implements SpringServiceDaemon {
      */
     protected RequisitionImport importModelFromResource(final Resource resource, final String rescanExisting, final ProvisionMonitor monitor) throws Exception {
         final LifeCycleInstance doImport = m_lifeCycleRepository.createLifeCycleInstance("import", m_importActivities);
-        doImport.setAttribute("resource", resource);
-        doImport.setAttribute("rescanExisting", rescanExisting);
+        doImport.setAttribute(RESOURCE, resource);
+        doImport.setAttribute(ImportJob.RESCAN_EXISTING, rescanExisting);
+        doImport.setAttribute(ImportJob.MONITOR, monitor);
+
+        if (monitor != null) {
+            monitor.start();
+        }
         doImport.trigger();
         doImport.waitFor();
+        if (monitor != null) {
+            // this stop time is only mean for all scheduling works are done. It didn't mean for scanning done.
+            monitor.finish();
+        }
+
         final RequisitionImport ri = doImport.findAttributeByType(RequisitionImport.class);
         if (ri.isAborted()) {
             throw new ModelImportException("Import failed for resource " + resource.toString(), ri.getError());
@@ -492,18 +506,19 @@ public class Provisioner implements SpringServiceDaemon {
      * @param event a {@link org.opennms.netmgt.events.api.model.IEvent} object.
      */
     @EventHandler(uei = EventConstants.RELOAD_IMPORT_UEI)
-    public void doImport(final IEvent event) {
+    public void doImport(final IEvent event) throws ExecutionException {
         final String url = getEventUrl(event);
         final String rescanExistingOnImport = getEventRescanExistingOnImport(event);
 
+        ProvisionMonitor monitor = monitorHolder.createMonitor(url);
+        monitor.start();
         if (url != null) {
-            doImport(url, rescanExistingOnImport);
+            doImport(url, rescanExistingOnImport, monitor);
         } else {
             final String msg = "reloadImport event requires 'url' parameter";
             LOG.error("doImport: {}", msg);
-            send(importFailedEvent(msg, url, rescanExistingOnImport));
+            send(importFailedEvent(msg, url, rescanExistingOnImport), monitor);
         }
-        
     }
 
     /**
@@ -511,12 +526,12 @@ public class Provisioner implements SpringServiceDaemon {
      *
      * @param url a {@link java.lang.String} object.
      */
-    public void doImport(final String url, final String rescanExisting) {
-        
+    public void doImport(final String url, final String rescanExisting, ProvisionMonitor monitor) {
+        Objects.requireNonNull(monitor);
         try {
             
             LOG.info("doImport: importing from url: {}, rescanExisting ? {}", url, rescanExisting);
-
+            monitor.beginImporting();
             final Resource resource;
 
             final URL u = new URL(url);
@@ -537,24 +552,22 @@ public class Provisioner implements SpringServiceDaemon {
                 resource = new UrlResource(url);
             }
 
-            m_stats = new TimeTrackingMonitor();
-            
-            send(importStartedEvent(resource, rescanExisting));
-    
-            final RequisitionImport ri = importModelFromResource(resource, rescanExisting, m_stats);
+            send(importStartedEvent(resource, rescanExisting), monitor);
+
+            final RequisitionImport ri = importModelFromResource(resource, rescanExisting, monitor);
             String foreignSource = null;
             if (ri != null && ri.getRequisition() != null) {
                 foreignSource = ri.getRequisition().getForeignSource();
             }
-
-            LOG.info("Finished Importing: {}", m_stats);
+            monitor.finishImporting();
+            LOG.info("Finished Importing: {}", monitor);
     
-            send(importSuccessEvent(m_stats, url, rescanExisting, foreignSource));
+            send(importSuccessEvent(monitor, url, rescanExisting, foreignSource), monitor);
     
         } catch (final Throwable t) {
             final String msg = "Exception importing "+url;
             LOG.error("Exception importing {} using rescanExisting={}", url, rescanExisting, t);
-            send(importFailedEvent((msg+": "+t.getMessage()), url, rescanExisting));
+            send(importFailedEvent((msg+": "+t.getMessage()), url, rescanExisting), monitor);
         }
     }
 
@@ -572,7 +585,7 @@ public class Provisioner implements SpringServiceDaemon {
             /* we don't force a scan on node added so new suspect doesn't cause 2 simultaneous node scans
              * New nodes that are created another way shouldn't have a 'lastCapsPoll' timestamp set 
              */ 
-            scheduleForNode = getProvisionService().getScheduleForNode(e.getNodeid().intValue(), false);
+            scheduleForNode = getProvisionService().getScheduleForNode(e.getNodeid().intValue(), false, getMonitorKey(e));
         } catch (Throwable t) {
             LOG.error("getScheduleForNode fails", t);
         }
@@ -590,17 +603,18 @@ public class Provisioner implements SpringServiceDaemon {
      */
     @EventHandler(uei = EventConstants.FORCE_RESCAN_EVENT_UEI)
     public void handleForceRescan(IEvent e) {
-        final Integer nodeId = new Integer(e.getNodeid().intValue());
+        final Integer nodeId = e.getNodeid().intValue();
+        final String monitorKey = getMonitorKey(e);
         removeNodeFromScheduleQueue(nodeId);
         Runnable r = new Runnable() {
             @Override
             public void run() {
                 try {
-                    ForceRescanScan scan = createForceRescanScan(nodeId);
+                    ForceRescanScan scan = createForceRescanScan(nodeId, monitorKey);
                     Task t = scan.createTask();
                     t.schedule();
                     t.waitFor();
-                    NodeScanSchedule scheduleForNode = getProvisionService().getScheduleForNode(nodeId, false); // It has 'false' because a node scan was already executed by ForceRescanScan.
+                    NodeScanSchedule scheduleForNode = getProvisionService().getScheduleForNode(nodeId, false, monitorKey); // It has 'false' because a node scan was already executed by ForceRescanScan.
                     if (scheduleForNode != null) {
                         addToScheduleQueue(scheduleForNode);
                     }
@@ -658,7 +672,7 @@ public class Provisioner implements SpringServiceDaemon {
                     final String foreignSource = paramMap.get("foreignSource");
                     LOG.debug("Triggering new suspect scan for: {} at location: {} with foreign source: {}.",
                             addr, effectiveLocation, foreignSource);
-                    final NewSuspectScan scan = createNewSuspectScan(addr, foreignSource, effectiveLocation);
+                    final NewSuspectScan scan = createNewSuspectScan(addr, foreignSource, effectiveLocation, getMonitorKey(event));
                     Task t = scan.createTask();
                     t.schedule();
                     t.waitFor();
@@ -689,9 +703,13 @@ public class Provisioner implements SpringServiceDaemon {
         	return;
         }
         String rescanExisting = Boolean.TRUE.toString(); // Default
+        String monitorKey = null;
         for (IParm parm : e.getParmCollection()) {
             if (EventConstants.PARM_RESCAN_EXISTING.equals(parm.getParmName()) && ("false".equalsIgnoreCase(parm.getValue().getContent()) || "dbonly".equalsIgnoreCase(parm.getValue().getContent()))) {
                 rescanExisting = Boolean.FALSE.toString();
+            }
+            if (EventConstants.PARM_MONITOR_KEY.equals(parm.getParmName())) {
+                monitorKey = parm.getValue().getContent();
             }
         }
         if (!Boolean.valueOf(rescanExisting)) {
@@ -700,7 +718,7 @@ public class Provisioner implements SpringServiceDaemon {
         }
         
         removeNodeFromScheduleQueue(new Long(e.getNodeid()).intValue());
-        NodeScanSchedule scheduleForNode = getProvisionService().getScheduleForNode(e.getNodeid().intValue(), true);
+        NodeScanSchedule scheduleForNode = getProvisionService().getScheduleForNode(e.getNodeid().intValue(), true, monitorKey);
         if (scheduleForNode != null) {
             addToScheduleQueue(scheduleForNode);
         }
@@ -783,7 +801,7 @@ public class Provisioner implements SpringServiceDaemon {
     public void handleAddNode(IEvent event) {
         if (m_provisionService.isDiscoveryEnabled()) {
             try {
-                doAddNode(event.getInterface(), EventUtils.getParm(event, EventConstants.PARM_NODE_LABEL));
+                doAddNode(event.getInterface(), EventUtils.getParm(event, EventConstants.PARM_NODE_LABEL), getMonitorKey(event));
             } catch (Throwable e) {
                 LOG.error("Unexpected exception processing event: {}", event.getUei(), e);
             }
@@ -794,16 +812,16 @@ public class Provisioner implements SpringServiceDaemon {
      * @param ipAddr
      * @param nodeLabel
      */
-    private void doAddNode(String ipAddr, String nodeLabel) {
+    private void doAddNode(String ipAddr, String nodeLabel, String monitorKey) {
 
         OnmsNode node = new OnmsNode();
         node.setLabel(nodeLabel);
 
         OnmsIpInterface iface = new OnmsIpInterface(addr(ipAddr), node);
         iface.setIsManaged("M");
-        iface.setPrimaryString("N");
+        iface.setSnmpPrimary("N");
 
-        m_provisionService.insertNode(node);
+        m_provisionService.insertNode(node, monitorKey);
 
     }
 
@@ -895,15 +913,8 @@ public class Provisioner implements SpringServiceDaemon {
                          .replaceAll("(password=)[^;&]*(;&)?", "$1***$2");
         }
     }
-    
-    /**
-     * <p>getStats</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String getStats() { return (m_stats == null ? "No Stats Availabile" : m_stats.toString()); }
 
-    private Event importSuccessEvent(final TimeTrackingMonitor stats, final String url, final String rescanExisting, final String foreignSource) {
+    private Event importSuccessEvent(final ProvisionMonitor stats, final String url, final String rescanExisting, final String foreignSource) {
     
         return new EventBuilder( EventConstants.IMPORT_SUCCESSFUL_UEI, NAME )
             .addParam( EventConstants.PARM_IMPORT_RESOURCE, stripCredentials(url) )
@@ -913,8 +924,10 @@ public class Provisioner implements SpringServiceDaemon {
             .getEvent();
     }
 
-    private void send(final Event event) {
+    private void send(final Event event, ProvisionMonitor monitor) {
+        monitor.beginSendingEvent(event);
         m_eventForwarder.sendNow(event);
+        monitor.finishSendingEvent(event);
     }
 
     private Event importFailedEvent(final String msg, final String url, final String rescanExisting) {
@@ -960,5 +973,10 @@ public class Provisioner implements SpringServiceDaemon {
 
     public ExecutorService getNewSuspectExecutor() {
         return m_newSuspectExecutor;
+    }
+
+    private String getMonitorKey(IEvent e) {
+        var param = e.getParm(EventConstants.PARM_MONITOR_KEY);
+        return param != null ? param.getValue().getContent() : null;
     }
 }

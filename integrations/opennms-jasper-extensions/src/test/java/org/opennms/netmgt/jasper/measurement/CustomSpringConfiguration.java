@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.jrobin.core.RrdException;
+import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.dao.support.InterfaceSnmpResourceType;
 import org.opennms.netmgt.measurements.api.FetchResults;
@@ -111,6 +112,11 @@ public class CustomSpringConfiguration {
             @Override
             public boolean deleteResourceById(ResourceId resourceId) {
                 throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public ResourceId getResourceId(CollectionResource resource, long nodeId) {
+                return null;
             }
         };
     }

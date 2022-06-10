@@ -145,20 +145,20 @@ public class ServiceTest {
         );
 
         lldpelements = Arrays.asList(
-        createLldpElement(30,nodes.get(0), "Element0"),
-        createLldpElement(31,nodes.get(1), "match1.1"),
-        createLldpElement(32,nodes.get(2), "Element2"),
-        createLldpElement(33,nodes.get(3), "match1.2"),
-        createLldpElement(34,nodes.get(4), "match2.1"),
-        createLldpElement(35,nodes.get(5), "match2.2"));
+        createLldpElement(30,nodes.get(0), "Element0", "host30"),
+        createLldpElement(31,nodes.get(1), "match1.1", "host31"),
+        createLldpElement(32,nodes.get(2), "Element2", "host32"),
+        createLldpElement(33,nodes.get(3), "match1.2", "host33"),
+        createLldpElement(34,nodes.get(4), "match2.1", "host34"),
+        createLldpElement(35,nodes.get(5), "match2.2", "host35"));
 
         lldpLinks = Arrays.asList(
-           createLldpLink(0, nodes.get(0), "nomatch1", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_PORTCOMPONENT,  "nomatch2", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_PORTCOMPONENT, "nomatch3"),
-                createLldpLink(1, nodes.get(1), "match1.5", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME,  "match1.3", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_MACADDRESS, "match1.2"),
-                createLldpLink(2, nodes.get(2), "nomatch4", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_PORTCOMPONENT,  "nomatch5", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_PORTCOMPONENT, "nomatch6"),
-                createLldpLink(3, nodes.get(3), "match1.3", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_MACADDRESS,  "match1.5", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME, "match1.1"),
-                createLldpLink(4, nodes.get(4), "match2.5", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_AGENTCIRCUITID,  "match2.3", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACEALIAS, "match2.2"),
-                createLldpLink(5, nodes.get(5), "match2.3", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACEALIAS,  "match2.5", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_AGENTCIRCUITID, "match2.1")
+           createLldpLink(0, nodes.get(0), "nomatch1", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_PORTCOMPONENT,  "nomatch2", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_PORTCOMPONENT, "nomatch3","host0"),
+            createLldpLink(1, nodes.get(1), "match1.5", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME,  "match1.3", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_MACADDRESS, "match1.2","host1"),
+            createLldpLink(2, nodes.get(2), "nomatch4", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_PORTCOMPONENT,  "nomatch5", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_PORTCOMPONENT, "nomatch6","host2"),
+            createLldpLink(3, nodes.get(3), "match1.3", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_MACADDRESS,  "match1.5", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME, "match1.1","host3"),
+            createLldpLink(4, nodes.get(4), "match2.5", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_AGENTCIRCUITID,  "match2.3", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACEALIAS, "match2.2","host4"),
+            createLldpLink(5, nodes.get(5), "match2.3", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACEALIAS,  "match2.5", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_AGENTCIRCUITID, "match2.1","host5")
         );
 
         EasyMock.expect(topologyEntityCache.getCdpLinkTopologyEntities()).andReturn(cdpLinks).anyTimes();
@@ -232,13 +232,13 @@ public class ServiceTest {
         assertEquals(allLinks.get(5), matchedLinks.get(1).getRight());
     }
 
-    private LldpElementTopologyEntity createLldpElement(Integer id, OnmsNode node, String lLdpChassisId) {
-        return new LldpElementTopologyEntity(id, lLdpChassisId, node.getId());
+    private LldpElementTopologyEntity createLldpElement(Integer id, OnmsNode node, String lLdpChassisId, String sysname) {
+        return new LldpElementTopologyEntity(id, lLdpChassisId,sysname, node.getId());
     }
 
     private LldpLinkTopologyEntity createLldpLink(int id, OnmsNode node, String portId, LldpUtils.LldpPortIdSubType portIdSubType
-            , String remotePortId, LldpUtils.LldpPortIdSubType remotePortIdSubType, String remoteChassisId) {
-        return new LldpLinkTopologyEntity(id, node.getId(), remoteChassisId, remotePortId, remotePortIdSubType, portId, portIdSubType, "dwscr", -1);
+            , String remotePortId, LldpUtils.LldpPortIdSubType remotePortIdSubType, String remoteChassisId, String remoteSysname) {
+        return new LldpLinkTopologyEntity(id, node.getId(), remoteChassisId, remoteSysname, remotePortId, remotePortIdSubType, "dwscr", portId, portIdSubType, "dwscr", -1);
     }
 
     private OspfLinkTopologyEntity createOspfLink(int id, OnmsNode node, InetAddress ipAddress, InetAddress remoteAddress) {
@@ -281,9 +281,8 @@ public class ServiceTest {
 
     private CdpLinkTopologyEntity createCdpLink(int id, OnmsNode node, String cdpCacheDeviceId, String cdpInterfaceName,
                                                               String cdpCacheDevicePort) {
-        CdpLinkTopologyEntity link = new CdpLinkTopologyEntity(id, node.getId(), 123, cdpInterfaceName,
+        return new CdpLinkTopologyEntity(id, node.getId(), 123, cdpInterfaceName,
                 "cdpCacheAddress", cdpCacheDeviceId, cdpCacheDevicePort);
-        return link;
     }
 
 }

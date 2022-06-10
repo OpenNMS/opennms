@@ -5,7 +5,7 @@
   <parent>
     <artifactId>org.opennms.core.grpc</artifactId>
     <groupId>org.opennms.core</groupId>
-    <version>27.1.2-SNAPSHOT</version>
+    <version>29.0.6-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
@@ -32,6 +32,11 @@
   </build>
 
   <dependencies>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>osgi.cmpn</artifactId>
+      <scope>provided</scope>
+    </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.lib</artifactId>

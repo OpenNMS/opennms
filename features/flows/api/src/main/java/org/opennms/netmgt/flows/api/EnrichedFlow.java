@@ -45,8 +45,6 @@ public class EnrichedFlow {
 
     private String host;
 
-    private String convoKey;
-
     private String location;
 
     private Locality srcLocality;
@@ -103,10 +101,6 @@ public class EnrichedFlow {
         return exporterNodeInfo;
     }
 
-    public String getConvoKey() {
-        return convoKey;
-    }
-
     public void setApplication(String application) {
         this.application = application;
     }
@@ -141,10 +135,6 @@ public class EnrichedFlow {
 
     public void setExporterNodeInfo(NodeInfo exporterNodeInfo) {
         this.exporterNodeInfo = exporterNodeInfo;
-    }
-
-    public void setConvoKey(String convoKey) {
-        this.convoKey = convoKey;
     }
 
     public long getClockCorrection() {

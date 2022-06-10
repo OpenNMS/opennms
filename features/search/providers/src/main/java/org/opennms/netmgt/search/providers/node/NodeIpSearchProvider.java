@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.rpc.utils.mate.EntityScopeProvider;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
@@ -50,9 +51,11 @@ import org.opennms.netmgt.search.providers.SearchResultItemBuilder;
 public class NodeIpSearchProvider implements SearchProvider {
 
     private final NodeDao nodeDao;
+    private final EntityScopeProvider entityScopeProvider;
 
-    public NodeIpSearchProvider(final NodeDao nodeDao) {
+    public NodeIpSearchProvider(final NodeDao nodeDao, final EntityScopeProvider entityScopeProvider) {
         this.nodeDao = Objects.requireNonNull(nodeDao);
+        this.entityScopeProvider = Objects.requireNonNull(entityScopeProvider);
     }
 
     @Override
@@ -71,7 +74,7 @@ public class NodeIpSearchProvider implements SearchProvider {
         final Criteria criteria = criteriaBuilder.orderBy("label").distinct().limit(query.getMaxResults()).toCriteria();
         final List<OnmsNode> matchingNodes = nodeDao.findMatching(criteria);
         final List<SearchResultItem> searchResultItems = matchingNodes.stream().map(node -> {
-            final SearchResultItem searchResultItem = new SearchResultItemBuilder().withOnmsNode(node).build();
+            final SearchResultItem searchResultItem = new SearchResultItemBuilder().withOnmsNode(node, entityScopeProvider).build();
             node.getIpInterfaces().stream()
                     .filter(ipInterface -> QueryUtils.matches(ipInterface.getIpAddress().toString(), input))
                     .forEach(ipInterface -> searchResultItem.addMatch(new Match("ipInterface.ipAddress", "IP Address", InetAddressUtils.str(ipInterface.getIpAddress()))));

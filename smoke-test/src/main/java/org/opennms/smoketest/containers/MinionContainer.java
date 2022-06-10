@@ -29,9 +29,7 @@
 package org.opennms.smoketest.containers;
 
 import static java.nio.file.Files.createTempDirectory;
-import static java.util.concurrent.TimeUnit.MINUTES;
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.awaitility.Awaitility.await;
+import static org.opennms.smoketest.utils.KarafShellUtils.awaitHealthCheckSucceeded;
 import static org.opennms.smoketest.utils.OverlayUtils.jsonMapper;
 
 import java.io.File;
@@ -46,16 +44,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.io.FileUtils;
-import org.awaitility.core.ConditionTimeoutException;
 import org.opennms.smoketest.stacks.IpcStrategy;
 import org.opennms.smoketest.stacks.MinionProfile;
 import org.opennms.smoketest.stacks.NetworkProtocol;
 import org.opennms.smoketest.stacks.StackModel;
 import org.opennms.smoketest.utils.DevDebugUtils;
-import org.opennms.smoketest.utils.KarafShellUtils;
 import org.opennms.smoketest.utils.OverlayUtils;
 import org.opennms.smoketest.utils.SshClient;
 import org.opennms.smoketest.utils.TestContainerUtils;
@@ -86,14 +81,18 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
     static final String ALIAS = "minion";
 
     private final StackModel model;
-    private final MinionProfile profile;
 
-    public MinionContainer(StackModel model, MinionProfile profile) {
+    private final String id;
+    private final String location;
+    private final GenericContainer container;
+
+    private MinionContainer(final StackModel model, final String id, final String location) {
         super("minion");
         this.model = Objects.requireNonNull(model);
-        this.profile = Objects.requireNonNull(profile);
+        this.id = Objects.requireNonNull(id);
+        this.location = Objects.requireNonNull(location);
 
-        GenericContainer container = withExposedPorts(MINION_DEBUG_PORT, MINION_SSH_PORT, MINION_SYSLOG_PORT, MINION_SNMP_TRAP_PORT, MINION_TELEMETRY_FLOW_PORT, MINION_TELEMETRY_IPFIX_TCP_PORT, MINION_TELEMETRY_JTI_PORT, MINION_TELEMETRY_NXOS_PORT, MINION_JETTY_PORT)
+        this.container = withExposedPorts(MINION_DEBUG_PORT, MINION_SSH_PORT, MINION_SYSLOG_PORT, MINION_SNMP_TRAP_PORT, MINION_TELEMETRY_FLOW_PORT, MINION_TELEMETRY_IPFIX_TCP_PORT, MINION_TELEMETRY_JTI_PORT, MINION_TELEMETRY_NXOS_PORT, MINION_JETTY_PORT)
                 .withCreateContainerCmdModifier(cmd -> {
                     final CreateContainerCmd createCmd = (CreateContainerCmd)cmd;
                     TestContainerUtils.setGlobalMemAndCpuLimits(createCmd);
@@ -109,6 +108,13 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
                 .withCommand("-c")
                 .waitingFor(new WaitForMinion(this));
 
+        // Help make development/debugging easier
+        DevDebugUtils.setupMavenRepoBind(this, "/opt/minion/.m2");
+    }
+
+    public MinionContainer(final StackModel model, final MinionProfile profile) {
+        this(model, profile.getId(), profile.getLocation());
+
         container.addFileSystemBind(writeMinionConfig(profile).toString(),
                 "/opt/minion/minion-config.yaml", BindMode.READ_ONLY, SelinuxContext.SINGLE);
 
@@ -116,11 +122,16 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
             withEnv("KARAF_DEBUG", "true");
             withEnv("JAVA_DEBUG_PORT", "*:" + MINION_DEBUG_PORT);
         }
-
-        // Help make development/debugging easier
-        DevDebugUtils.setupMavenRepoBind(this, "/opt/minion/.m2");
     }
-    
+
+    public MinionContainer(final StackModel model, final Map<String, String> configuration) {
+        this(model, configuration.get("MINION_ID"), configuration.get("MINION_LOCATION"));
+
+        for(final Map.Entry<String, String> entry : configuration.entrySet()) {
+            container.addEnv(entry.getKey(), entry.getValue());
+        }
+    }
+
     private Path writeMinionConfig(MinionProfile profile) {
         try {
             final Path minionConfig = createTempDirectory(ALIAS).toAbsolutePath().resolve("minion-config.yaml");
@@ -147,32 +158,16 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
         OverlayUtils.writeYaml(minionConfigYaml, jsonMapper.readValue(config, Map.class));
         
         if (IpcStrategy.KAFKA.equals(model.getIpcStrategy())) {
-            String kafkaRpc = "{\n" +
+            String kafkaIpc = "{\n" +
                     "\t\"ipc\": {\n" +
-                    "\t\t\"rpc\": {\n" +
-                    "\t\t\t\"kafka\": {\n" +
-                    "\t\t\t\t\"bootstrap.servers\": \""+ OpenNMSContainer.KAFKA_ALIAS +":9092\",\n" +
-                    "\t\t\t\t\"acks\": 1,\n" +
-                    "\t\t\t\t\"compression.type\": \""+ model.getKafkaCompressionStrategy().getCodec() +"\"\n" +
-                    "\t\t\t}\n" +
+                    "\t\t\"kafka\": {\n" +
+                    "\t\t\t\"bootstrap.servers\": \""+ OpenNMSContainer.KAFKA_ALIAS +":9092\",\n" +
+                    "\t\t\t\"acks\": 1,\n" +
+                    "\t\t\t\"compression.type\": \""+ model.getKafkaCompressionStrategy().getCodec() +"\"\n" +
                     "\t\t}\n" +
                     "\t}\n" +
                     "}";
-            
-            OverlayUtils.writeYaml(minionConfigYaml, jsonMapper.readValue(kafkaRpc, Map.class));
-
-            String kafkaSink = "{\n" +
-                    "\t\"ipc\": {\n" +
-                    "\t\t\"sink\": {\n" +
-                    "\t\t\t\"kafka\": {\n" +
-                    "\t\t\t\t\"bootstrap.servers\": \""+ OpenNMSContainer.KAFKA_ALIAS +":9092\",\n" +
-                    "\t\t\t\t\"acks\": 1,\n" +
-                    "\t\t\t\t\"compression.type\": \""+ model.getKafkaCompressionStrategy().getCodec() +"\"\n" +
-                    "\t\t\t}\n" +
-                    "\t\t}\n" +
-                    "\t}\n" +
-                    "}";
-            OverlayUtils.writeYaml(minionConfigYaml, jsonMapper.readValue(kafkaSink, Map.class));
+            OverlayUtils.writeYaml(minionConfigYaml, jsonMapper.readValue(kafkaIpc, Map.class));
         } else if (IpcStrategy.GRPC.equals(model.getIpcStrategy())) {
             String grpc = "{\n" +
                     "\t\"ipc\": {\n" +
@@ -212,7 +207,7 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
 
 
     public String getLocation() {
-        return profile.getLocation();
+        return this.location;
     }
 
     public InetSocketAddress getNetworkProtocolAddress(NetworkProtocol protocol) {
@@ -248,15 +243,7 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
         protected void waitUntilReady() {
             LOG.info("Waiting for Minion health check...");
             final InetSocketAddress sshAddr = container.getSshAddress();
-            final long timeoutMins = 5;
-            final AtomicReference<String> lastOutput = new AtomicReference<>();
-            try {
-                await().atMost(timeoutMins, MINUTES).pollInterval(5, SECONDS)
-                        .until(() -> KarafShellUtils.testHealthCheck(sshAddr, lastOutput));
-            } catch(ConditionTimeoutException e) {
-                LOG.error("Minion did not finish starting after {} minutes. Last output: {}", lastOutput);
-                throw new RuntimeException(e);
-            }
+            awaitHealthCheckSucceeded(sshAddr, 5, "Minion");
         }
     }
 
@@ -285,6 +272,6 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
     }
 
     public String getId() {
-        return profile.getId();
+        return this.id;
     }
 }

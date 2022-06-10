@@ -46,13 +46,12 @@ import org.opennms.integration.api.v1.timeseries.IntrinsicTagNames;
 import org.opennms.integration.api.v1.timeseries.Metric;
 import org.opennms.integration.api.v1.timeseries.Sample;
 import org.opennms.integration.api.v1.timeseries.StorageException;
-import org.opennms.integration.api.v1.timeseries.Tag;
+import org.opennms.integration.api.v1.timeseries.TagMatcher;
 import org.opennms.integration.api.v1.timeseries.TimeSeriesFetchRequest;
 import org.opennms.integration.api.v1.timeseries.TimeSeriesStorage;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableMetric;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableSample;
 import org.opennms.netmgt.timeseries.TimeseriesStorageManager;
-import org.opennms.netmgt.timeseries.meta.TimeSeriesMetaDataDao;
 import org.opennms.newts.api.Resource;
 
 import com.codahale.metrics.MetricRegistry;
@@ -80,7 +79,6 @@ public class TimeseriesWriterTest {
         LatchedTimeseriesStorage store = new LatchedTimeseriesStorage(numWriterThreads);
         MetricRegistry registry = new MetricRegistry();
         TimeseriesWriter writer = new TimeseriesWriter(ringBufferSize, numWriterThreads, registry);
-        writer.setTimeSeriesMetaDataDao(Mockito.mock(TimeSeriesMetaDataDao.class));
         when(storageManager.get()).thenReturn(store);
         writer.setTimeSeriesStorage(storageManager);
 
@@ -110,7 +108,6 @@ public class TimeseriesWriterTest {
         TimeseriesWriter writer = new TimeseriesWriter(ringBufferSize, numWriterThreads, registry);
         when(storageManager.get()).thenReturn(timeseriesStorage);
         writer.setTimeSeriesStorage(storageManager);
-        writer.setTimeSeriesMetaDataDao(Mockito.mock(TimeSeriesMetaDataDao.class));
 
         lock.lock();
         Metric metric = createMetric().build();
@@ -192,7 +189,7 @@ public class TimeseriesWriterTest {
     private ImmutableMetric.MetricBuilder createMetric() {
         return ImmutableMetric
                 .builder()
-                .intrinsicTag(IntrinsicTagNames.resourceId, "a:b")
+                .intrinsicTag(IntrinsicTagNames.resourceId, "a/b")
                 .intrinsicTag(IntrinsicTagNames.name, "c")
                 .intrinsicTag(IntrinsicTagNames.mtype, Metric.Mtype.counter.name());
     }
@@ -205,7 +202,7 @@ public class TimeseriesWriterTest {
         }
 
         @Override
-        public List<Metric> getMetrics(Collection<Tag> tags) throws StorageException {
+        public List<Metric> findMetrics(Collection<TagMatcher> tagMatchers) throws StorageException {
             return null;
         }
 

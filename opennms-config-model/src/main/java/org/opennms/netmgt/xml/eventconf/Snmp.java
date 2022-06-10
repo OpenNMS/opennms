@@ -46,7 +46,7 @@ import org.opennms.netmgt.config.utils.ConfigUtils;
 @XmlRootElement(name="snmp")
 @XmlAccessorType(XmlAccessType.NONE)
 @ValidateUsing("eventconf.xsd")
-@XmlType(propOrder={"m_id", "m_idText", "m_version", "m_specific", "m_generic", "m_community"})
+@XmlType(propOrder={"m_id", "m_idText", "m_version", "m_specific", "m_generic", "m_community", "m_trapOID"})
 public class Snmp implements Serializable {
     private static final long serialVersionUID = 2L;
 
@@ -56,6 +56,9 @@ public class Snmp implements Serializable {
     // @NotNull
     @XmlElement(name="id", required=true)
     private String m_id;
+
+    @XmlElement(name="trapoid")
+    private String m_trapOID;
 
     /**
      * The SNMP enterprise ID text
@@ -95,6 +98,14 @@ public class Snmp implements Serializable {
 
     public void setId(final String id) {
         m_id = ConfigUtils.assertNotEmpty(id, "id");
+    }
+
+    public String getTrapOID() {
+        return m_trapOID;
+    }
+
+    public void setTrapOID(String m_trapOID) {
+        this.m_trapOID = m_trapOID;
     }
 
     /** The SNMP enterprise ID text */
@@ -143,7 +154,7 @@ public class Snmp implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(m_id, m_idText, m_version, m_specific, m_generic, m_community);
+        return Objects.hash(m_id, m_idText, m_version, m_specific, m_generic, m_community, m_trapOID);
     }
 
     @Override
@@ -158,7 +169,8 @@ public class Snmp implements Serializable {
                     Objects.equals(this.m_version, that.m_version) &&
                     Objects.equals(this.m_specific, that.m_specific) &&
                     Objects.equals(this.m_generic, that.m_generic) &&
-                    Objects.equals(this.m_community, that.m_community);
+                    Objects.equals(this.m_community, that.m_community) &&
+                    Objects.equals(this.m_trapOID, that.m_trapOID);
         }
         return false;
     }

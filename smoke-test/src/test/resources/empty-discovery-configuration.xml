@@ -1,0 +1,9 @@
+<discovery-configuration xmlns="http://xmlns.opennms.org/xsd/config/discovery" packets-per-second="1" initial-sleep-time="30000" restart-sleep-time="86400000" retries="1" timeout="2000">
+   <!-- see examples/discovery-configuration.xml for options -->
+   <!--
+   <include-range>
+      <begin>192.168.0.1</begin>
+      <end>192.168.0.254</end>
+   </include-range>
+   -->
+</discovery-configuration>

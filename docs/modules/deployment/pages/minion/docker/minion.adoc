@@ -44,7 +44,7 @@ services:
 <3> Optional. Use to control the minimal Java heap size.
 <4> Optional. Use to control the maximum Java heap size.
 <5> Configuration file for connectivity and features
-<6> Keystore file with encrypted credentials for authenticating REST and Broker endpoints
+<6> Keystore file with encrypted credentials for authenticating broker endpoints.
 <7> Run our health check to indicate the Minion is ready. It uses the `opennms:health-check` internally running in Karaf.
 <8> Publish ports for Syslog, SNMP trap listener, and the SSH access to the Karaf shell.
 
@@ -66,27 +66,25 @@ sysctls:
 [source, minion-config.yaml]
 ----
 ---
-http-url: 'http://core-instance-ip:8980/opennms'<1>
-broker-url: 'failover:tcp://core-instance-ip:61616'<2>
-id: 'my-minion'<3>
-location: 'my-location'<4>
+broker-url: 'failover:tcp://core-instance-ip:61616'<1>
+id: 'my-minion'<2>
+location: 'my-location'<3>
 
 netmgt:
-  syslog:<5>
+  syslog:<4>
     syslog.listen.interface: "0.0.0.0"
     syslog.listen.port: 1514
 
-  traps:<6>
+  traps:<5>
     trapd.listen.interface: "0.0.0.0"
     trapd.listen.port: 1162
 ----
 
-<1> Replace the REST endpoint URL that goes to your {page-component-title} Core instance.
-<2> Replace the broker endpoint URL that goes to your {page-component-title} Core instance. If you have ActiveMQ with SSL running, replace `tcp` with `ssl`.
-<3> Replace `my-location` with a location name that represents the remote location where the Minion is running.
-<4> Optional. You can set a unique human-readable Minion identifier; if not set, a unique identifier is generated.
-<5> Enable the Syslog listener on the Minion on port 1514/udp.
-<6> Enable the SNMP trap listener on the Minion on port 1162/udp.
+<1> Replace the broker endpoint URL that goes to your {page-component-title} Core instance. If you have ActiveMQ with SSL running, replace `tcp` with `ssl`.
+<2> Replace `my-location` with a location name that represents the remote location where the Minion is running.
+<3> Optional. You can set a unique human-readable Minion identifier; if not set, a unique identifier is generated.
+<4> Enable the Syslog listener on the Minion on port 1514/udp.
+<5> Enable the SNMP trap listener on the Minion on port 1162/udp.
 
 TIP: To run with Apache Kafka or configure flow listeners, see the configuration reference in the link:https://github.com/OpenNMS/opennms/blob/master/opennms-container/minion/CONFD_README.md[Confd readme].
 
@@ -117,7 +115,6 @@ docker-compose exec minion bin/client opennms:health-check
 .The endpoints should be reachable and the bundles should be installed successful
 [source, output]
 ----
-Connecting to OpenNMS ReST API   [ Success  ]
 Verifying installed bundles      [ Success  ]
 Connecting to JMS Broker         [ Success  ]
 => Everything is awesome

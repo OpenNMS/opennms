@@ -47,6 +47,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.grpc.common.GrpcIpcServer;
+import org.opennms.core.grpc.common.GrpcIpcServerBuilder;
 import org.opennms.core.ipc.grpc.client.GrpcClientConstants;
 import org.opennms.core.ipc.grpc.client.MinionGrpcClient;
 import org.opennms.core.ipc.grpc.common.RpcRequestProto;
@@ -91,8 +93,8 @@ public class GrpcIpcRpcIT {
 
         grpcClient = new MinionGrpcClient(minionIdentity, configAdmin);
         grpcClient.bind(echoRpcModule);
-        server = new OpennmsGrpcServer();
-        server.setConfigAdmin(configAdmin);
+        GrpcIpcServer grpcIpcServer = new GrpcIpcServerBuilder(configAdmin, port, "PT0S");
+        server = new OpennmsGrpcServer(grpcIpcServer);
         echoClient = new MockEchoClient(server);
         server.start();
         grpcClient.start();
@@ -120,7 +122,7 @@ public class GrpcIpcRpcIT {
 
     @Test(timeout = 30000)
     public void testRpcAtRemoteLocation() {
-        await().atMost(10, TimeUnit.SECONDS).pollInterval(2, TimeUnit.SECONDS)
+        await().atMost(15, TimeUnit.SECONDS).pollInterval(2, TimeUnit.SECONDS)
                 .until(() -> {
                             grpcClient.dispatch(new HeartbeatModule(), null, new Heartbeat());
                             return server.getRpcHandlerByLocation().size();
@@ -135,12 +137,11 @@ public class GrpcIpcRpcIT {
         } catch (InterruptedException | ExecutionException e) {
             fail();
         }
-
     }
 
     @Test(timeout = 30000)
     public void testLargeMessageWithRpcAtRemoteLocation() {
-        await().atMost(10, TimeUnit.SECONDS).pollInterval(2, TimeUnit.SECONDS)
+        await().atMost(15, TimeUnit.SECONDS).pollInterval(2, TimeUnit.SECONDS)
                 .until(() -> {
                             grpcClient.dispatch(new HeartbeatModule(), null, new Heartbeat());
                             return server.getRpcHandlerByLocation().size();

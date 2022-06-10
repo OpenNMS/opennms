@@ -35,6 +35,7 @@ import java.util.Objects;
  */
 public final class ImmutableSnmp implements ISnmp {
     private final String id;
+    private final String trapOID;
     private final String idText;
     private final String version;
     private final Integer specific;
@@ -50,6 +51,7 @@ public final class ImmutableSnmp implements ISnmp {
         generic = builder.generic;
         community = builder.community;
         timeStamp = builder.timeStamp;
+        trapOID = builder.trapOID;
     }
 
     public static Builder newBuilder() {
@@ -75,6 +77,7 @@ public final class ImmutableSnmp implements ISnmp {
         private Integer generic;
         private String community;
         private Long timeStamp;
+        private String trapOID;
 
         private Builder() {
         }
@@ -91,6 +94,11 @@ public final class ImmutableSnmp implements ISnmp {
 
         public Builder setId(String id) {
             this.id = id;
+            return this;
+        }
+
+        public Builder setTrapOID(String trapOID) {
+            this.trapOID = trapOID;
             return this;
         }
 
@@ -132,6 +140,11 @@ public final class ImmutableSnmp implements ISnmp {
     @Override
     public String getId() {
         return id;
+    }
+
+    @Override
+    public String getTrapOID() {
+        return trapOID;
     }
 
     @Override

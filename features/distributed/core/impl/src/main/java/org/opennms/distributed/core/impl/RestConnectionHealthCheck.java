@@ -29,10 +29,16 @@
 package org.opennms.distributed.core.impl;
 
 import org.opennms.core.health.api.Context;
-import org.opennms.distributed.core.api.RestClient;
 import org.opennms.core.health.api.HealthCheck;
 import org.opennms.core.health.api.Response;
 import org.opennms.core.health.api.Status;
+import org.opennms.distributed.core.api.RestClient;
+
+import java.util.Arrays;
+import java.util.List;
+
+import static org.opennms.core.health.api.HealthCheckConstants.MINION;
+import static org.opennms.core.health.api.HealthCheckConstants.REST;
 
 /**
  * Verifies the connection to the OpenNMS ReST API.
@@ -51,6 +57,11 @@ public class RestConnectionHealthCheck implements HealthCheck {
     public Response perform(Context context) throws Exception {
         restClient.ping();
         return new Response(Status.Success);
+    }
+
+    @Override
+    public List<String> getTags() {
+        return Arrays.asList(MINION, REST);
     }
 
     @Override

@@ -125,17 +125,6 @@ public abstract class Bootstrap {
 
     static {
 
-        // enable TLS 1.3 support for clients if running on Java 8 and TLS 1.3 support is available
-        // cf. https://docs.oracle.com/javase/8/docs/technotes/guides/security/jsse/JSSERefGuide.html#enabling-tls-1.3
-        String javaVersion = System.getProperty("java.version");
-        if (javaVersion != null && javaVersion.startsWith("1.8")) {
-            // the ProtocolVersion class changed into an enum when TLS 1.3 support was added
-            if (Enum.class.isAssignableFrom(sun.security.ssl.ProtocolVersion.class)) {
-                System.setProperty("jdk.tls.client.protocols", "TLSv1.1,TLSv1.2,TLSv1.3");
-                System.setProperty("https.protocols", "TLSv1.1,TLSv1.2,TLSv1.3");
-            }
-        }
-
         // Here we determine the canonical files for the excluded sub-folders under
         // $OPENNMS_HOME, and add them to the list of excludes
         try {

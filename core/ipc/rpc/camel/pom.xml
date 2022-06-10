@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.core.ipc</groupId>
     <artifactId>org.opennms.core.ipc.rpc</artifactId>
-    <version>27.1.2-SNAPSHOT</version>
+    <version>29.0.6-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core.ipc.rpc</groupId>
@@ -95,6 +95,10 @@
         </exclusion>
         <exclusion>
           <groupId>com.sun.xml.bind</groupId>
+          <artifactId>jaxb-core</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.sun.xml.bind</groupId>
           <artifactId>jaxb-impl</artifactId>
         </exclusion>
       </exclusions>
@@ -130,6 +134,10 @@
         <exclusion>
           <groupId>org.springframework</groupId>
           <artifactId>spring-tx</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.sun.xml.bind</groupId>
+          <artifactId>jaxb-core</artifactId>
         </exclusion>
         <exclusion>
           <groupId>com.sun.xml.bind</groupId>

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -242,14 +242,14 @@ public class DefaultPollContext implements PollContext {
 	@Override
 	public List<OnmsIpInterface> getPollableNodesByIp(String ipaddr) {
                 CriteriaBuilder builder = new CriteriaBuilder(OnmsIpInterface.class);
-                builder.eq("ipAddress", InetAddressUtils.addr(ipaddr)).eq("isSnmpPrimary", PrimaryType.PRIMARY).eq("isManaged", "M");
+                builder.eq("ipAddress", InetAddressUtils.addr(ipaddr)).eq("snmpPrimary", PrimaryType.PRIMARY.getCharCode()).eq("isManaged", "M");
 		return getIpInterfaceDao().findMatching(builder.toCriteria());
 	}
 
 	@Override
 	public List<OnmsIpInterface> getPollableNodes() {
                 CriteriaBuilder builder = new CriteriaBuilder(OnmsIpInterface.class);
-                builder.eq("isSnmpPrimary", PrimaryType.PRIMARY).eq("isManaged", "M");
+                builder.eq("snmpPrimary", PrimaryType.PRIMARY.getCharCode()).eq("isManaged", "M");
 		return getIpInterfaceDao().findMatching(builder.toCriteria());
 	}
 

@@ -37,17 +37,20 @@ import java.util.function.Function;
 import com.google.common.collect.Maps;
 
 public class ObjectScope<T> implements Scope {
+    private final ScopeName scopeName;
     private final T object;
     private final Map<ContextKey, Function<T, Optional<String>>> accessors = Maps.newHashMap();
 
-    public ObjectScope(final T object) {
+    public ObjectScope(final ScopeName scopeName, final T object) {
+        this.scopeName = Objects.requireNonNull(scopeName);
         this.object = Objects.requireNonNull(object);
     }
 
     @Override
-    public Optional<String> get(final ContextKey contextKey) {
+    public Optional<ScopeValue> get(final ContextKey contextKey) {
         return this.accessors.getOrDefault(contextKey, (missing) -> Optional.empty())
-                .apply(this.object);
+                .apply(this.object)
+                .map(value -> new ScopeValue(this.scopeName, value));
     }
 
     @Override

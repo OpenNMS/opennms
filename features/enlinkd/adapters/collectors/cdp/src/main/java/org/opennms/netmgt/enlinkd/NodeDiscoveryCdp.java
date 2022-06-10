@@ -132,8 +132,7 @@ public final class NodeDiscoveryCdp extends NodeCollector {
         }
         final CdpInterfacePortNameGetter cdpInterfacePortNameGetter = new CdpInterfacePortNameGetter(peer, 
                                                                                                      getLocationAwareSnmpClient(),
-                                                                                                     getLocation(),
-                                                                                                     getNodeId());
+                                                                                                     getLocation());
         for (CdpLink link: links)
             m_cdpTopologyService.store(getNodeId(),cdpInterfacePortNameGetter.get(link));
         

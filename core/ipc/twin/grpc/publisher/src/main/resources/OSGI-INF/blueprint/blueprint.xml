@@ -1,0 +1,29 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="
+		http://www.osgi.org/xmlns/blueprint/v1.0.0
+		https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+">
+
+    <reference id="configAdmin" interface="org.osgi.service.cm.ConfigurationAdmin" />
+
+    <reference id="grpcIpcServer" interface="org.opennms.core.grpc.common.GrpcIpcServer" />
+
+    <reference id="localTwinSubscriber" interface="org.opennms.core.ipc.twin.common.LocalTwinSubscriber"/>
+
+    <bean id="grpcTwinPublisher" class="org.opennms.core.ipc.twin.grpc.publisher.GrpcTwinPublisher"
+          init-method="start" destroy-method="close">
+        <argument ref="localTwinSubscriber"/>
+        <argument ref="grpcIpcServer"/>
+    </bean>
+
+    <service ref="localTwinSubscriber" interface="org.opennms.core.ipc.twin.api.TwinSubscriber"/>
+
+    <service ref="grpcTwinPublisher" interface="org.opennms.core.ipc.twin.api.TwinPublisher">
+        <service-properties>
+            <entry key="strategy" value="grpc"/>
+            <entry key="registration.export" value="true"/>
+        </service-properties>
+    </service>
+
+</blueprint>

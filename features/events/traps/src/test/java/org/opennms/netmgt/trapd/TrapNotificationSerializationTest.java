@@ -97,7 +97,7 @@ public class TrapNotificationSerializationTest {
 		snmp4JV2cTrapPdu.add(new VariableBinding(new OID(
 				".1.3.6.1.6.3.1.1.4.1.0"), new OctetString("mockhost")));
 
-		TrapInformation snmp4JV2cTrap = new Snmp4JTrapNotifier.Snmp4JV2TrapInformation(
+		TrapInformation snmp4JV2cTrap = new Snmp4JTrapNotifier.Snmp4JV2V3TrapInformation(
 				inetAddress, new String("public"), snmp4JV2cTrapPdu);
 		assertTrue(writeTrapNotificationObject(snmp4JV2cTrap));
 	}
@@ -115,7 +115,7 @@ public class TrapNotificationSerializationTest {
 		snmp4JV3TrapPdu.add(new VariableBinding(new OID(
 				".1.3.6.1.6.3.1.1.4.1.0"), new OctetString("mockhost")));
 
-		TrapInformation snmp4JV3Trap = new Snmp4JTrapNotifier.Snmp4JV2TrapInformation(
+		TrapInformation snmp4JV3Trap = new Snmp4JTrapNotifier.Snmp4JV2V3TrapInformation(
 				inetAddress, new String("public"), snmp4JV3TrapPdu);
 		assertTrue(writeTrapNotificationObject(snmp4JV3Trap));
 	}

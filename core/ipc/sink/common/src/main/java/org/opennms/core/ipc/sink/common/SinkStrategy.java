@@ -40,8 +40,6 @@ public class SinkStrategy {
 
     private static final String KAFKA_SINK_STRATEGY_NAME = "kafka";
 
-    private static final String SQS_SINK_STRATEGY_NAME = "sqs";
-
     private static final String GRPC_SINK_STRATEGY_NAME = "grpc";
 
     private static final String OSGI_SINK_STRATEGY_NAME = "osgi";
@@ -49,7 +47,6 @@ public class SinkStrategy {
     public static enum Strategy {
         CAMEL(CAMEL_SINK_STRATEGY_NAME, "JMS implementation using Camel"),
         KAFKA(KAFKA_SINK_STRATEGY_NAME, "Kafka implementation using the Kafka consumer/producer APIs"),
-        SQS(SQS_SINK_STRATEGY_NAME, "AWS SQS implementation using the AWS SDK"),
         GRPC(GRPC_SINK_STRATEGY_NAME, "GRPC implementation using gRPC APIs"),
         OSGI(OSGI_SINK_STRATEGY_NAME, "OSGI Delegate implementation");
 

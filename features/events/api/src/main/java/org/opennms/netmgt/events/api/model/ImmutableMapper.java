@@ -245,6 +245,7 @@ public class ImmutableMapper {
 
         return ImmutableSnmp.newBuilder()
                 .setId(snmp.getId())
+                .setTrapOID(snmp.getTrapOID())
                 .setIdText(snmp.getIdtext())
                 .setVersion(snmp.getVersion())
                 .setSpecific(snmp.hasSpecific() ? snmp.getSpecific() : null)

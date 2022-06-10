@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+import "proto/twin-message.proto";
+option java_multiple_files = true;
+option java_package = "org.opennms.core.ipc.twin.grpc.common";
+option java_outer_classname = "TwinGrpcIpc";
+
+// service definitions of Twin IPC between Minion and OpenNMS
+service OpenNMSTwinIpc {
+  // Streams Twin request/Response from Minion to OpenNMS
+  rpc RpcStreaming (stream TwinRequestProto) returns (stream TwinResponseProto) {
+  }
+  // Stream Twin updates from OpenNMS to Minion.
+  rpc SinkStreaming (MinionHeader) returns (stream TwinResponseProto) {
+  }
+}
+/*
+   Twin Request object used by Minion to make RPC Request.
+ */
+/*
+message TwinRequestProto {
+  string consumer_key = 1;
+  string system_id = 2;
+  string location = 3;
+  map<string, string> tracing_info = 4;
+}
+
+*/
+/*
+    Twin Response object sent by OpenNMS for RPC response as well as for Sink update.
+ *//*
+
+message TwinResponseProto {
+  string consumer_key = 1;
+  bytes twin_object = 2;
+  string system_id = 3;
+  string location = 4;
+  map<string, string> tracing_info = 5;
+}
+*/
+
+message MinionHeader {
+  string system_id = 1;
+  string location = 2;
+}

@@ -1,0 +1,17 @@
+[[ref-daemon-config-files-bsmd]]
+= Bsmd
+
+Processes updates of xref:operation:bsm/introduction.adoc[business service monitoring] availability.
+
+.Bsmd log file overview
+[options="header"]
+[cols="2,3"]
+
+|===
+| File
+| Description
+
+| bsmd.log
+| Logs relating to bsmd server events.
+
+|===

@@ -29,12 +29,19 @@
 package org.opennms.netmgt.trapd;
 
 import static com.jayway.awaitility.Awaitility.await;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
+import static org.junit.Assert.assertTrue;
 
 import java.net.InetAddress;
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
+import org.hamcrest.Matchers;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -128,14 +135,40 @@ public class TrapdIT {
 
     @Test
     public void testSnmpV2cTrapSend() throws Exception {
-        SnmpObjId enterpriseId = SnmpObjId.get(".1.3.6.1.4.1.5813");
-        SnmpObjId trapOID = SnmpObjId.get(enterpriseId, new SnmpInstId(1));
+        SnmpObjId enterpriseId = SnmpObjId.get(".1.3.6.1.4.1.5813.0.6");
         SnmpTrapBuilder pdu = SnmpUtils.getV2TrapBuilder();
         pdu.addVarBind(SnmpObjId.get(".1.3.6.1.2.1.1.3.0"), SnmpUtils.getValueFactory().getTimeTicks(0));
-        pdu.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.1.0"), SnmpUtils.getValueFactory().getObjectId(trapOID));
-        pdu.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.3.0"), SnmpUtils.getValueFactory().getObjectId(enterpriseId));
+        pdu.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.1.0"), SnmpUtils.getValueFactory().getObjectId(enterpriseId));
 
         EventBuilder defaultTrapBuilder = new EventBuilder("uei.opennms.org/default/trap", "trapd");
+        defaultTrapBuilder.setInterface(localAddr);
+        defaultTrapBuilder.setSnmpVersion("v2c");
+        m_mockEventIpcManager.getEventAnticipator().anticipateEvent(defaultTrapBuilder.getEvent());
+
+        EventBuilder newSuspectBuilder = new EventBuilder(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI, "trapd");
+        newSuspectBuilder.setInterface(localAddr);
+        newSuspectBuilder.setEnterpriseId(".1.3.6.1.4.1.5813");
+        m_mockEventIpcManager.getEventAnticipator().anticipateEvent(newSuspectBuilder.getEvent());
+
+        pdu.send(localhost, m_trapdConfig.getSnmpTrapPort(), "public");
+
+        // Wait until we received the expected events
+        await().until(() -> m_mockEventIpcManager.getEventAnticipator().getAnticipatedEventsReceived(), hasSize(2));
+    }
+
+    /**
+     * Verifies that we can match event with trapoid mask element.
+     * @throws Exception
+     */
+    @Test
+    public void testSnmpV2cTrapWithTrapOID() throws Exception {
+        SnmpObjId enterpriseId = SnmpObjId.get(".1.3.6.1.4.1.55.0.5");
+        SnmpTrapBuilder pdu = SnmpUtils.getV2TrapBuilder();
+        pdu.addVarBind(SnmpObjId.get(".1.3.6.1.2.1.1.3.0"), SnmpUtils.getValueFactory().getTimeTicks(0));
+        pdu.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.1.0"), SnmpUtils.getValueFactory().getObjectId(enterpriseId));
+
+        // eventconf.xml has a matching event with trapoid mask element.
+        EventBuilder defaultTrapBuilder = new EventBuilder("uei.opennms.org/IANA/Example/traps/exampleEnterpriseTrapWithOID", "trapd");
         defaultTrapBuilder.setInterface(localAddr);
         defaultTrapBuilder.setSnmpVersion("v2c");
         m_mockEventIpcManager.getEventAnticipator().anticipateEvent(defaultTrapBuilder.getEvent());
@@ -148,6 +181,41 @@ public class TrapdIT {
 
         // Wait until we received the expected events
         await().until(() -> m_mockEventIpcManager.getEventAnticipator().getAnticipatedEventsReceived(), hasSize(2));
+        List<Event> eventList = m_mockEventIpcManager.getEventAnticipator().getAnticipatedEventsReceived();
+        Assert.assertThat(eventList.size(), Matchers.equalTo(2));
+        Optional<Event> eventWithSnmp = eventList.stream().filter(event -> event.getSnmp() != null).findFirst();
+        assertTrue(eventWithSnmp.isPresent());
+        Assert.assertThat(eventWithSnmp.get().getSnmp().getTrapOID(), Matchers.equalTo(".1.3.6.1.4.1.55.0.5"));
+    }
+
+    @Test
+    public void testSnmpV1TrapWithTrapOID() throws Exception {
+        // Verify for SNMP V1 Trap
+        SnmpV1TrapBuilder pdu = SnmpUtils.getV1TrapBuilder();
+        pdu.setEnterprise(SnmpObjId.get(".1.3.6.1.4.1.9.9.276"));
+        pdu.setGeneric(6);
+        pdu.setSpecific(4);
+        pdu.setTimeStamp(0);
+        pdu.setAgentAddress(localAddr);
+
+        // eventconf.xml has a matching event with trapoid mask element.
+        EventBuilder defaultTrapBuilder = new EventBuilder("uei.opennms.org/IANA/Example/traps/exampleTrapOIDForSNMPV1", "trapd");
+        defaultTrapBuilder.setInterface(localAddr);
+        defaultTrapBuilder.setSnmpVersion("v1");
+        m_mockEventIpcManager.getEventAnticipator().anticipateEvent(defaultTrapBuilder.getEvent());
+        EventBuilder newSuspectBuilder = new EventBuilder(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI, "trapd");
+        newSuspectBuilder.setInterface(localAddr);
+        m_mockEventIpcManager.getEventAnticipator().anticipateEvent(newSuspectBuilder.getEvent());
+
+        pdu.send(localhost, m_trapdConfig.getSnmpTrapPort(), "public");
+
+        // Wait until we received the expected events
+        await().until(() -> m_mockEventIpcManager.getEventAnticipator().getAnticipatedEventsReceived(), hasSize(2));
+        List<Event> eventList = m_mockEventIpcManager.getEventAnticipator().getAnticipatedEventsReceived();
+        Assert.assertThat(eventList.size(), Matchers.equalTo(2));
+        Optional<Event> eventWithSnmp = eventList.stream().filter(event -> event.getSnmp() != null).findFirst();
+        assertTrue(eventWithSnmp.isPresent());
+        Assert.assertThat(eventWithSnmp.get().getSnmp().getTrapOID(), Matchers.equalTo(".1.3.6.1.4.1.9.9.276.0.4"));
     }
 
     /**

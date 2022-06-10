@@ -40,7 +40,7 @@ public final class EmptyScope implements Scope {
     }
 
     @Override
-    public Optional<String> get(ContextKey contextKey) {
+    public Optional<ScopeValue> get(ContextKey contextKey) {
         return Optional.empty();
     }
 

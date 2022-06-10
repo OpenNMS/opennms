@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -214,44 +214,6 @@ public class AlarmDaoIT implements InitializingBean {
 
 	@Test
 	@Transactional
-	@Ignore
-	public void testWithoutDistPoller() {
-		OnmsEvent event = new OnmsEvent();
-		event.setEventLog("Y");
-		event.setEventDisplay("Y");
-		event.setEventCreateTime(new Date());
-		event.setDistPoller(m_distPollerDao.whoami());
-		event.setEventTime(new Date());
-		event.setEventSeverity(OnmsSeverity.CRITICAL.getId());
-		event.setEventUei("uei://org/opennms/test/EventDaoTest");
-		event.setEventSource("test");
-		m_eventDao.save(event);
-
-		OnmsNode node = m_nodeDao.findAll().iterator().next();
-
-		OnmsAlarm alarm = new OnmsAlarm();
-
-		alarm.setNode(node);
-		alarm.setUei(event.getEventUei());
-		alarm.setSeverityId(event.getEventSeverity());
-		alarm.setFirstEventTime(event.getEventTime());
-		alarm.setLastEvent(event);
-		alarm.setCounter(1);
-
-		ThrowableAnticipator ta = new ThrowableAnticipator();
-		ta.anticipate(new DataIntegrityViolationException("not-null property references a null or transient value: org.opennms.netmgt.model.OnmsAlarm.distPoller; nested exception is org.hibernate.PropertyValueException: not-null property references a null or transient value: org.opennms.netmgt.model.OnmsAlarm.distPoller"));
-
-		try {
-			m_alarmDao.save(alarm);
-		} catch (Throwable t) {
-			ta.throwableReceived(t);
-		}
-
-		ta.verifyAnticipated();
-	}
-
-	@Test
-	@Transactional
 	public void testAlarmSummary() {
 		OnmsEvent event = new OnmsEvent();
 		event.setEventLog("Y");
@@ -385,8 +347,10 @@ public class AlarmDaoIT implements InitializingBean {
 		Assert.assertEquals(0, summaries.stream().filter(s -> s.getSituationSeverity().equals(OnmsSeverity.CLEARED)).count());
 		Assert.assertEquals(0, summaries.stream().filter(s -> s.getSituationSeverity().equals(OnmsSeverity.INDETERMINATE)).count());
 		Assert.assertEquals(1, summaries.get(0).getRelatedAlarms());
-	}
 
+		// verify the total number of situations
+		assertThat(m_alarmDao.getNumSituations(), equalTo(7L));
+	}
 
 	@Test
 	@Transactional

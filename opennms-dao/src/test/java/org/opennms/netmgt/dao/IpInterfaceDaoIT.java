@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -49,6 +49,7 @@ import org.hibernate.criterion.Restrictions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
@@ -57,6 +58,7 @@ import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,6 +92,18 @@ public class IpInterfaceDaoIT implements InitializingBean {
     @Before
     public void setUp() {
         m_databasePopulator.populateDatabase();
+    }
+
+    @Test
+    @Transactional
+    public void testPrimaryType() {
+        CriteriaBuilder cb = new CriteriaBuilder(OnmsIpInterface.class).eq("snmpPrimary", PrimaryType.PRIMARY.getCharCode());
+        Collection<OnmsIpInterface> ifaces = m_ipInterfaceDao.findMatching(cb.toCriteria());
+        assertEquals(Integer.valueOf(1), ifaces.iterator().next().getIfIndex());
+
+        cb = new CriteriaBuilder(OnmsIpInterface.class).eq("snmpPrimary", PrimaryType.NOT_ELIGIBLE.getCharCode());
+        ifaces = m_ipInterfaceDao.findMatching(cb.toCriteria());
+        assertEquals(Integer.valueOf(3), ifaces.iterator().next().getIfIndex());
     }
 
     @Test
@@ -171,6 +185,7 @@ public class IpInterfaceDaoIT implements InitializingBean {
 
     @Test
     @Transactional
+    @SuppressWarnings("unlikely-arg-type")
     public void testGetInterfacesForNodes() throws UnknownHostException {
         Map<InetAddress, Integer> interfaceNodes = m_ipInterfaceDao.getInterfacesForNodes();
         assertNotNull("interfaceNodes", interfaceNodes);

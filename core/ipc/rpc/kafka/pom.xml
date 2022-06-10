@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.opennms.core.ipc</groupId>
         <artifactId>org.opennms.core.ipc.rpc</artifactId>
-        <version>27.1.2-SNAPSHOT</version>
+        <version>29.0.6-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.core.ipc.rpc</groupId>
@@ -89,7 +89,7 @@
       </dependency>
       <dependency>
         <groupId>org.osgi</groupId>
-        <artifactId>org.osgi.compendium</artifactId>
+        <artifactId>osgi.cmpn</artifactId>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -151,7 +151,7 @@
       </dependency>
       <dependency>
         <groupId>org.osgi</groupId>
-        <artifactId>org.osgi.core</artifactId>
+        <artifactId>osgi.core</artifactId>
         <scope>test</scope>
       </dependency>
       <dependency>

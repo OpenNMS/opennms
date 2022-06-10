@@ -5,7 +5,7 @@
     <parent>
         <artifactId>org.opennms.features</artifactId>
         <groupId>org.opennms</groupId>
-        <version>27.1.2-SNAPSHOT</version>
+        <version>29.0.6-SNAPSHOT</version>
     </parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>datachoices</artifactId>
@@ -68,12 +68,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-core-asl</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-mapper-asl</artifactId>
+            <groupId>org.opennms.dependencies</groupId>
+            <artifactId>jackson1-dependencies</artifactId>
+            <type>pom</type>
         </dependency>
         <dependency>
             <groupId>org.opennms</groupId>
@@ -83,6 +80,11 @@
             <groupId>org.freemarker</groupId>
             <artifactId>freemarker</artifactId>
             <version>${freemarkerVersion}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.karaf.features</groupId>
+            <artifactId>org.apache.karaf.features.core</artifactId>
+            <version>${karafVersion}</version>
         </dependency>
 
         <!-- Test Dependencies -->

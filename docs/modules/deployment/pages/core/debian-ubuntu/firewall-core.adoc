@@ -1,0 +1,22 @@
+.Enable Masquerade to allow port forwarding
+[source, console]
+----
+sudo vi /etc/ufw/before.rules
+----
+
+.For SNMP Trap forwarding, add the following lines at the top before the `*filter` section
+[source, console]
+----
+*nat
+:PREROUTING ACCEPT [0:0]
+-A PREROUTING -p udp --dport 162 -j REDIRECT --to-port 10162
+COMMIT
+----
+
+.Apply the firewall changes
+[source, console]
+----
+sudo ufw allow in 162/udp
+sudo ufw allow in 10162/udp
+sudo ufw reload
+----

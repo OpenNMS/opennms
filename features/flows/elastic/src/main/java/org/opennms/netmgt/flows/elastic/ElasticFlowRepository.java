@@ -28,18 +28,24 @@
 
 package org.opennms.netmgt.flows.elastic;
 
-import java.io.IOException;
-import java.time.Duration;
-import java.time.Instant;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.Histogram;
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.swrve.ratelimitedlogger.RateLimitedLog;
+import io.opentracing.Scope;
+import io.opentracing.Tracer;
+import io.opentracing.util.GlobalTracer;
+import io.searchbox.client.JestClient;
+import io.searchbox.core.Bulk;
+import io.searchbox.core.Index;
 import org.opennms.core.tracing.api.TracerConstants;
 import org.opennms.core.tracing.api.TracerRegistry;
 import org.opennms.distributed.core.api.Identity;
@@ -51,40 +57,33 @@ import org.opennms.features.jest.client.template.IndexSettings;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
-import org.opennms.netmgt.flows.api.Conversation;
-import org.opennms.netmgt.flows.api.Directional;
 import org.opennms.netmgt.flows.api.EnrichedFlowForwarder;
 import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.flows.api.FlowSource;
-import org.opennms.netmgt.flows.api.Host;
-import org.opennms.netmgt.flows.api.TrafficSummary;
-import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.codahale.metrics.Counter;
-import com.codahale.metrics.Histogram;
-import com.codahale.metrics.Meter;
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.Timer;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import com.google.common.collect.Table;
-import com.swrve.ratelimitedlogger.RateLimitedLog;
-
-import io.opentracing.Scope;
-import io.opentracing.Tracer;
-import io.opentracing.util.GlobalTracer;
-import io.searchbox.client.JestClient;
-import io.searchbox.core.Bulk;
-import io.searchbox.core.Index;
+import java.io.IOException;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.TimerTask;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 
 public class ElasticFlowRepository implements FlowRepository {
 
@@ -96,6 +95,13 @@ public class ElasticFlowRepository implements FlowRepository {
             .withRateLimit(LOG)
             .maxRate(5).every(Duration.ofSeconds(30))
             .build();
+
+    private final ThreadFactory threadFactory = new ThreadFactoryBuilder()
+            .setNameFormat("initialize-marker-cache")
+            .build();
+    private final ExecutorService executorService = Executors.newSingleThreadExecutor(threadFactory);
+
+    private final CountDownLatch markerCacheSyncDone = new CountDownLatch(1);
 
     private static final String INDEX_NAME = "netflow";
 
@@ -143,13 +149,13 @@ public class ElasticFlowRepository implements FlowRepository {
 
     private final IndexSettings indexSettings;
 
-    private final SmartQueryService smartQueryService;
-
     private final EnrichedFlowForwarder enrichedFlowForwarder;
 
     private boolean enableFlowForwarding = false;
 
-    private int bulkRetryCount = 1;
+    private int bulkSize = 1000;
+    private int bulkRetryCount = 5;
+    private int bulkFlushMs = 500;
 
     /**
      * Can be used to skip persisting the flows into ES>
@@ -162,13 +168,27 @@ public class ElasticFlowRepository implements FlowRepository {
      * This maps a node ID to a set if snmpInterface IDs.
      */
     private final Map<Direction, Cache<Integer, Set<Integer>>> markerCache = Maps.newEnumMap(Direction.class);
+    
+    private class FlowBulk {
+        private List<FlowDocument> documents = Lists.newArrayListWithCapacity(ElasticFlowRepository.this.bulkSize);
+        private ReentrantLock lock = new ReentrantLock();
+        private long lastPersist = 0;
+
+        public FlowBulk() {
+        }
+    }
+
+    /**
+     * Collect flow documents ready for persistence.
+     */
+    private final Map<Thread, FlowBulk> flowBulks = Maps.newConcurrentMap();
+    private java.util.Timer flushTimer;
 
     public ElasticFlowRepository(MetricRegistry metricRegistry, JestClient jestClient, IndexStrategy indexStrategy,
                                  DocumentEnricher documentEnricher,
                                  SessionUtils sessionUtils, NodeDao nodeDao, SnmpInterfaceDao snmpInterfaceDao,
                                  Identity identity, TracerRegistry tracerRegistry, EnrichedFlowForwarder enrichedFlowForwarder,
-                                 IndexSettings indexSettings,
-                                 SmartQueryService smartQueryService) {
+                                 IndexSettings indexSettings) {
         this.client = Objects.requireNonNull(jestClient);
         this.indexStrategy = Objects.requireNonNull(indexStrategy);
         this.documentEnricher = Objects.requireNonNull(documentEnricher);
@@ -179,7 +199,6 @@ public class ElasticFlowRepository implements FlowRepository {
         this.tracerRegistry = tracerRegistry;
         this.enrichedFlowForwarder = enrichedFlowForwarder;
         this.indexSettings = Objects.requireNonNull(indexSettings);
-        this.smartQueryService = Objects.requireNonNull(smartQueryService);
 
         this.emptyFlows = metricRegistry.counter("emptyFlows");
         flowsPersistedMeter = metricRegistry.meter("flowsPersisted");
@@ -196,6 +215,12 @@ public class ElasticFlowRepository implements FlowRepository {
                 .expireAfterWrite(1, TimeUnit.HOURS)
                 .build());
 
+        this.startTimer();
+
+        executorService.execute(this::initializeMarkerCache);
+    }
+
+    private void initializeMarkerCache() {
         this.sessionUtils.withTransaction(() -> {
             for (final OnmsNode node : this.nodeDao.findAllHavingIngressFlows()) {
                 this.markerCache.get(Direction.INGRESS).put(node.getId(),
@@ -210,8 +235,72 @@ public class ElasticFlowRepository implements FlowRepository {
                                 .map(OnmsSnmpInterface::getIfIndex)
                                 .collect(Collectors.toCollection(Sets::newConcurrentHashSet)));
             }
+            markerCacheSyncDone.countDown();
             return null;
         });
+    }
+
+    private void waitForMarkerCacheSync() {
+        try {
+            markerCacheSyncDone.await();
+        } catch (InterruptedException e) {
+            LOG.warn("Marker Cache sync wait was interrupted", e);
+        }
+    }
+
+    public ElasticFlowRepository(final MetricRegistry metricRegistry, final JestClient jestClient, final IndexStrategy indexStrategy,
+                                 final DocumentEnricher documentEnricher, final SessionUtils sessionUtils, final NodeDao nodeDao,
+                                 final SnmpInterfaceDao snmpInterfaceDao, final Identity identity, final TracerRegistry tracerRegistry,
+                                 final EnrichedFlowForwarder enrichedFlowForwarder, final IndexSettings indexSettings, final int bulkSize,
+                                 final int bulkFlushMs) {
+        this(metricRegistry, jestClient, indexStrategy, documentEnricher, sessionUtils, nodeDao, snmpInterfaceDao, identity, tracerRegistry, enrichedFlowForwarder, indexSettings);
+        this.bulkSize = bulkSize;
+        this.bulkFlushMs = bulkFlushMs;
+    }
+
+    private void startTimer() {
+        if (flushTimer != null) {
+            return;
+        }
+
+        if (bulkFlushMs > 0) {
+            int delay = Math.max(1, bulkFlushMs / 2);
+            flushTimer = new java.util.Timer("ElasticFlowRepositoryFlush");
+            flushTimer.scheduleAtFixedRate(new TimerTask() {
+                @Override
+                public void run() {
+                    final long currentTimeMillis = System.currentTimeMillis();
+                    for(final Map.Entry<Thread, ElasticFlowRepository.FlowBulk> entry : flowBulks.entrySet()) {
+                        final ElasticFlowRepository.FlowBulk flowBulk = entry.getValue();
+                        if (currentTimeMillis - flowBulk.lastPersist > bulkFlushMs) {
+                            if (flowBulk.lock.tryLock()) {
+                                try {
+                                    if (flowBulk.documents.size() > 0) {
+                                        try {
+                                            persistBulk(flowBulk.documents);
+                                            flowBulk.lastPersist = currentTimeMillis;
+                                        } catch (Throwable t) {
+                                            LOG.error("An error occurred while flushing one or more bulks in ElasticFlowRepository.", t);
+                                        }
+                                    }
+                                } finally {
+                                    flowBulk.lock.unlock();
+                                }
+                            }
+                        }
+                    }
+                }
+            }, delay, delay);
+        } else {
+            flushTimer = null;
+        }
+    }
+
+    private void stopTimer() {
+        if (flushTimer != null) {
+            flushTimer.cancel();
+            flushTimer = null;
+        }
     }
 
     @Override
@@ -223,7 +312,7 @@ public class ElasticFlowRepository implements FlowRepository {
             LOG.info("Received empty flows from {} @ {}. Nothing to do.", source.getSourceAddress(), source.getLocation());
             return;
         }
-
+        waitForMarkerCacheSync();
         LOG.debug("Enriching {} flow documents.", flows.size());
         final List<FlowDocument> flowDocuments;
         try (final Timer.Context ctx = logEnrichementTimer.time()) {
@@ -240,34 +329,16 @@ public class ElasticFlowRepository implements FlowRepository {
         if (skipElasticsearchPersistence) {
             RATE_LIMITED_LOGGER.info("Flow persistence disabled. Dropping {} flow documents.", flowDocuments.size());
         } else {
-            LOG.debug("Persisting {} flow documents.", flowDocuments.size());
-            final Tracer tracer = getTracer();
-            try (final Timer.Context ctx = logPersistingTimer.time();
-                 Scope scope = tracer.buildSpan(TRACER_FLOW_MODULE).startActive(true)) {
-                // Add location and source address tags to span.
-                scope.span().setTag(TracerConstants.TAG_LOCATION, source.getLocation());
-                scope.span().setTag(TracerConstants.TAG_SOURCE_ADDRESS, source.getSourceAddress());
-                scope.span().setTag(TracerConstants.TAG_THREAD, Thread.currentThread().getName());
-                final BulkRequest<FlowDocument> bulkRequest = new BulkRequest<>(client, flowDocuments, (documents) -> {
-                    final Bulk.Builder bulkBuilder = new Bulk.Builder();
-                    for (FlowDocument flowDocument : documents) {
-                        final String index = indexStrategy.getIndex(indexSettings, INDEX_NAME, Instant.ofEpochMilli(flowDocument.getTimestamp()));
-                        final Index.Builder indexBuilder = new Index.Builder(flowDocument)
-                                .index(index);
-                        bulkBuilder.addAction(indexBuilder.build());
-                    }
-                    return new BulkWrapper(bulkBuilder);
-                }, bulkRetryCount);
-                try {
-                    // the bulk request considers retries
-                    bulkRequest.execute();
-                } catch (BulkException ex) {
-                    throw new PersistenceException(ex.getMessage(), ex.getBulkResult().getFailedDocuments());
-                } catch (IOException ex) {
-                    LOG.error("An error occurred while executing the given request: {}", ex.getMessage(), ex);
-                    throw new FlowException(ex.getMessage(), ex);
+            final FlowBulk flowBulk = this.flowBulks.computeIfAbsent(Thread.currentThread(), (thread) -> new FlowBulk());
+            flowBulk.lock.lock();
+            try {
+                flowBulk.documents.addAll(flowDocuments);
+                if (flowBulk.documents.size() >= this.bulkSize) {
+                    this.persistBulk(flowBulk.documents);
+                    flowBulk.lastPersist = System.currentTimeMillis();
                 }
-                flowsPersistedMeter.mark(flowDocuments.size());
+            } finally {
+                flowBulk.lock.unlock();
             }
         }
 
@@ -332,114 +403,41 @@ public class ElasticFlowRepository implements FlowRepository {
         }
     }
 
-    @Override
-    public CompletableFuture<Long> getFlowCount(List<Filter> filters) {
-        return smartQueryService.getFlowCount(filters);
-    }
+    private void persistBulk(final List<FlowDocument> bulk) throws FlowException {
+        LOG.debug("Persisting {} flow documents.", bulk.size());
+        final Tracer tracer = getTracer();
+        try (final Timer.Context ctx = logPersistingTimer.time();
+             Scope scope = tracer.buildSpan(TRACER_FLOW_MODULE).startActive(true)) {
+            // Add location and source address tags to span.
+            scope.span().setTag(TracerConstants.TAG_THREAD, Thread.currentThread().getName());
+            final BulkRequest<FlowDocument> bulkRequest = new BulkRequest<>(client, bulk, (documents) -> {
+                final Bulk.Builder bulkBuilder = new Bulk.Builder();
+                for (FlowDocument flowDocument : documents) {
+                    final String index = indexStrategy.getIndex(indexSettings, INDEX_NAME, Instant.ofEpochMilli(flowDocument.getTimestamp()));
+                    final Index.Builder indexBuilder = new Index.Builder(flowDocument)
+                            .index(index);
+                    bulkBuilder.addAction(indexBuilder.build());
+                }
+                return new BulkWrapper(bulkBuilder);
+            }, bulkRetryCount);
+            try {
+                // the bulk request considers retries
+                bulkRequest.execute();
+            } catch (BulkException ex) {
+                if (ex.getBulkResult() != null) {
+                    throw new PersistenceException(ex.getMessage(), ex.getBulkResult().getFailedItems());
+                } else {
+                    throw new PersistenceException(ex.getMessage(), Collections.emptyList());
+                }
+            } catch (IOException ex) {
+                LOG.error("An error occurred while executing the given request: {}", ex.getMessage(), ex);
+                throw new FlowException(ex.getMessage(), ex);
+            }
+            flowsPersistedMeter.mark(bulk.size());
 
-    @Override
-    public CompletableFuture<List<String>> getApplications(String matchingPrefix, long limit, List<Filter> filters) {
-        return smartQueryService.getApplications(matchingPrefix, limit, filters);
+            bulk.clear();
+        }
     }
-
-    @Override
-    public CompletableFuture<List<TrafficSummary<String>>> getTopNApplicationSummaries(int N, boolean includeOther,
-                                                                                       List<Filter> filters) {
-        return smartQueryService.getTopNApplicationSummaries(N, includeOther, filters);
-    }
-
-    @Override
-    public CompletableFuture<List<TrafficSummary<String>>> getApplicationSummaries(Set<String> applications,
-                                                                                   boolean includeOther,
-                                                                                   List<Filter> filters) {
-        return smartQueryService.getApplicationSummaries(applications, includeOther, filters);
-    }
-
-    @Override
-    public CompletableFuture<Table<Directional<String>, Long, Double>> getApplicationSeries(Set<String> applications,
-                                                                                            long step,
-                                                                                            boolean includeOther,
-                                                                                            List<Filter> filters) {
-        return smartQueryService.getApplicationSeries(applications, step, includeOther, filters);
-    }
-
-    @Override
-    public CompletableFuture<Table<Directional<String>, Long, Double>> getTopNApplicationSeries(int N, long step,
-                                                                                                boolean includeOther,
-                                                                                                List<Filter> filters) {
-        return smartQueryService.getTopNApplicationSeries(N, step, includeOther, filters);
-    }
-
-    @Override
-    public CompletableFuture<List<String>> getConversations(String locationPattern, String protocolPattern,
-                                                            String lowerIPPattern, String upperIPPattern,
-                                                            String applicationPattern, long limit,
-                                                            List<Filter> filters) {
-        return smartQueryService.getConversations(locationPattern, protocolPattern,
-                lowerIPPattern, upperIPPattern,
-                applicationPattern, limit,
-                filters);
-    }
-
-    @Override
-    public CompletableFuture<List<TrafficSummary<Conversation>>> getTopNConversationSummaries(int N,
-                                                                                              boolean includeOther,
-                                                                                              List<Filter> filters) {
-        return smartQueryService.getTopNConversationSummaries(N, includeOther, filters);
-    }
-
-    @Override
-    public CompletableFuture<List<TrafficSummary<Conversation>>> getConversationSummaries(Set<String> conversations,
-                                                                                          boolean includeOther,
-                                                                                          List<Filter> filters) {
-        return smartQueryService.getConversationSummaries(conversations, includeOther, filters);
-    }
-
-    @Override
-    public CompletableFuture<Table<Directional<Conversation>, Long, Double>> getConversationSeries(Set<String> conversations, long step, boolean includeOther, List<Filter> filters) {
-        return smartQueryService.getConversationSeries(conversations, step, includeOther, filters);
-    }
-
-    @Override
-    public CompletableFuture<Table<Directional<Conversation>, Long, Double>> getTopNConversationSeries(int N,
-                                                                                                          long step,
-                                                                                                          boolean includeOther,
-                                                                                                          List<Filter> filters) {
-        return smartQueryService.getTopNConversationSeries(N, step, includeOther, filters);
-    }
-
-    @Override
-    public CompletableFuture<List<String>> getHosts(String regex, long limit, List<Filter> filters) {
-        return smartQueryService.getHosts(regex, limit, filters);
-    }
-
-    @Override
-    public CompletableFuture<List<TrafficSummary<Host>>> getTopNHostSummaries(int N, boolean includeOther,
-                                                                              List<Filter> filters) {
-        return smartQueryService.getTopNHostSummaries(N, includeOther, filters);
-    }
-
-    @Override
-    public CompletableFuture<List<TrafficSummary<Host>>> getHostSummaries(Set<String> hosts,
-                                                                            boolean includeOther,
-                                                                            List<Filter> filters) {
-        return smartQueryService.getHostSummaries(hosts, includeOther, filters);
-    }
-
-    @Override
-    public CompletableFuture<Table<Directional<Host>, Long, Double>> getHostSeries(Set<String> hosts, long step,
-                                                                                     boolean includeOther,
-                                                                                     List<Filter> filters) {
-        return smartQueryService.getHostSeries(hosts, step, includeOther, filters);
-    }
-
-    @Override
-    public CompletableFuture<Table<Directional<Host>, Long, Double>> getTopNHostSeries(int N, long step,
-                                                                                         boolean includeOther,
-                                                                                         List<Filter> filters) {
-        return smartQueryService.getTopNHostSeries(N, step, includeOther, filters);
-    }
-
 
     public Identity getIdentity() {
         return identity;
@@ -452,6 +450,17 @@ public class ElasticFlowRepository implements FlowRepository {
     public void start() {
         if (tracerRegistry != null && identity != null) {
             tracerRegistry.init(identity.getId());
+        }
+
+        startTimer();
+    }
+
+    public void stop() throws FlowException {
+        stopTimer();
+        markerCacheSyncDone.countDown();
+        executorService.shutdownNow();
+        for(final FlowBulk flowBulk : flowBulks.values()) {
+            persistBulk(flowBulk.documents);
         }
     }
 
@@ -470,6 +479,14 @@ public class ElasticFlowRepository implements FlowRepository {
         this.enableFlowForwarding = enableFlowForwarding;
     }
 
+    public int getBulkSize() {
+        return this.bulkSize;
+    }
+
+    public void setBulkSize(final int bulkSize) {
+        this.bulkSize = bulkSize;
+    }
+
     public int getBulkRetryCount() {
         return bulkRetryCount;
     }
@@ -478,6 +495,16 @@ public class ElasticFlowRepository implements FlowRepository {
         this.bulkRetryCount = bulkRetryCount;
     }
 
+    public int getBulkFlushMs() {
+        return bulkFlushMs;
+    }
+
+    public void setBulkFlushMs(final int bulkFlushMs) {
+        this.bulkFlushMs = bulkFlushMs;
+
+        stopTimer();
+        startTimer();
+    }
     public boolean isSkipElasticsearchPersistence() {
         return skipElasticsearchPersistence;
     }

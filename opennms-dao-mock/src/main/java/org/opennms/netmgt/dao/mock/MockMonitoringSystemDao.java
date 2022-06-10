@@ -43,4 +43,9 @@ public class MockMonitoringSystemDao extends AbstractMockDao<OnmsMonitoringSyste
     protected String getId(final OnmsMonitoringSystem ms) {
         return ms == null? null : ms.getId();
     }
+
+    @Override
+    public long getNumMonitoringSystems(String type) {
+        return 0;
+    }
 }

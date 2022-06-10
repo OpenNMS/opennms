@@ -21,8 +21,6 @@
 
 	<!-- Override the collectd-configuration with one that includes the HttpCollector -->
 	<bean id="collectdConfigStream" class="org.opennms.core.test.ConfigurationTestUtils" factory-method="getInputStreamForResource">
-		<!-- Dummy string value that will fetch the current classloader -->
-		<constructor-arg value="SOME_JAVA_LANG_STRING"/>
 		<!-- Classpath resource that contains a minimal capsd configuration -->
 		<constructor-arg value="/org/opennms/netmgt/capsd/collectd-configuration.xml"/>
 	</bean>

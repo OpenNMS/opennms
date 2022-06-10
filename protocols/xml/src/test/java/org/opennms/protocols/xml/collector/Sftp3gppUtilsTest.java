@@ -28,10 +28,15 @@
 
 package org.opennms.protocols.xml.collector;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.opennms.features.distributed.kvstore.api.BlobStore;
+import org.opennms.features.distributed.kvstore.blob.inmemory.InMemoryMapBlobStore;
+import org.opennms.netmgt.model.ResourcePath;
 
 /**
  * The Test Class for Sftp3gppUtils.
@@ -86,10 +91,21 @@ public class Sftp3gppUtilsTest {
     public void testNMS6365() throws Exception {
         String format = Sftp3gppUtils.get3gppFormat("dnsDns");
         Map<String,String> properties = Sftp3gppUtils.get3gppProperties(format, "system|/service=callp1|");
-        Assert.assertEquals("system|/service=callp1|", properties.get("label"));
+        assertEquals("system|/service=callp1|", properties.get("label"));
 
         System.setProperty("org.opennms.collectd.xml.3gpp.useSimpleParserForMeasObjLdn", "true");
         properties = Sftp3gppUtils.get3gppProperties(format, "system|/service=callp1|");
-        Assert.assertEquals("/service=callp1", properties.get("label"));
+        assertEquals("/service=callp1", properties.get("label"));
+    }
+
+    @Test
+    public void shouldSaveLastFileName() throws Exception {
+        String filename = "myFile";
+        String serviceName= "myServiceName";
+        ResourcePath path = ResourcePath.fromString("aa/bb/cc");
+        String targetPath = "dd/ee/ff";
+        BlobStore blobStore = InMemoryMapBlobStore.withDefaultTicks();
+        Sftp3gppUtils.setLastFilename(blobStore, serviceName, path, targetPath, filename);
+        assertEquals(filename, Sftp3gppUtils.getLastFilename(blobStore, serviceName, path, targetPath));
     }
 }

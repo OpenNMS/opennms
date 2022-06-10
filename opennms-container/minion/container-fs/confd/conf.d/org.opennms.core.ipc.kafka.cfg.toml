@@ -1,0 +1,7 @@
+[template]
+src = "org.opennms.core.ipc.kafka.cfg.tmpl"
+dest = "/opt/minion/etc/org.opennms.core.ipc.kafka.cfg"
+keys = [
+    "/ipc/kafka"
+]
+reload_cmd = "/opt/minion/confd/scripts/remove-if-empty /opt/minion/etc/org.opennms.core.ipc.kafka.cfg"

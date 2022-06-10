@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -703,21 +703,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
     }
 
     @Override
-    public void unregisterForTraps(final TrapNotificationListener listener, InetAddress address, int snmpTrapPort) throws IOException {
-        final RegistrationInfo info = s_registrations.remove(listener);
-        final Snmp session = info.getSession();
-        try {
-            session.close();
-        } catch (final IOException e) {
-            LOG.error("session error unregistering for traps", e);
-            throw e;
-        } finally {
-            Snmp4JStrategy.reapSession(session);
-        }
-    }
-
-    @Override
-    public void unregisterForTraps(final TrapNotificationListener listener, final int snmpTrapPort) throws IOException {
+    public void unregisterForTraps(final TrapNotificationListener listener) throws IOException {
         final RegistrationInfo info = s_registrations.remove(listener);
         final Snmp session = info.getSession();
         try {
@@ -759,6 +745,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
         SnmpAgentConfig config = new SnmpAgentConfig();
         config.setAddress(InetAddress.getByName(address));
         config.setPort(port);
+        config.setReadCommunity(community);
         config.setVersion(pdu instanceof PDUv1 ? SnmpAgentConfig.VERSION1 : SnmpAgentConfig.VERSION2C);
         return config;
     }

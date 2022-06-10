@@ -41,6 +41,7 @@ public class ImmutableSnmpTest {
     public void test() {
         Snmp snmp = new Snmp();
         snmp.setId("ID");
+        snmp.setTrapOID("trapOID");
         snmp.setIdtext("ID-TEXT");
         snmp.setVersion("v2c");
         snmp.setSpecific(0);

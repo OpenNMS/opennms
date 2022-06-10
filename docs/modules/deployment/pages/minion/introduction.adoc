@@ -9,7 +9,7 @@ Use Minions to monitor devices and services in hard-to-reach, remote network loc
 
 * no need to set up and maintain a large set of firewall rules for multiple management protocols
 * avoid the difficulty of communicating with managed devices over unreliable networks, using UDP-based management protocols
-* simplify network communication to the message broker and REST endpoint
+* simplify network communication to the message broker
 
 == How it works
 

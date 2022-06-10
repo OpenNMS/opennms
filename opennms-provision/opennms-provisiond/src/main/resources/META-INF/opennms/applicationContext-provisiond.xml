@@ -181,14 +181,13 @@
     <property name="configResource" ref="provisiondConfigResourceLocation" />
     <property name="reloadCheckInterval" value="-1" />
   </bean>
-  
-  
 
-
- <bean id="quartzScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+  <bean id="quartzScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
     <property name="schedulerName" value="provisiond" />
-  </bean>  
-     
+  </bean>
+
+  <bean id="monitorHolder" class="org.opennms.netmgt.provision.service.MonitorHolder"/>
+
   <bean id="provisiondImportSchedule" class="org.opennms.netmgt.provision.service.ImportScheduler" >
     <constructor-arg ref="quartzScheduler" />
     <property name="provisioner" ref="daemon" />

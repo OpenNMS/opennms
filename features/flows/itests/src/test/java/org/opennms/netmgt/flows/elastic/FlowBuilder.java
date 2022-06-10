@@ -43,6 +43,7 @@ public class FlowBuilder {
     private Direction direction = Direction.INGRESS;
     private String srcHostname = null;
     private String dstHostname = null;
+    private Integer tos = null;
 
     public FlowBuilder withExporter(String fs, String fid, int nodeId) {
         exporterNode = new NodeDocument();
@@ -70,6 +71,11 @@ public class FlowBuilder {
     public FlowBuilder withHostnames(final String srcHostname, final String dstHostname) {
         this.srcHostname = srcHostname;
         this.dstHostname = dstHostname;
+        return this;
+    }
+
+    public FlowBuilder withTos(final Integer tos) {
+        this.tos = tos;
         return this;
     }
 
@@ -112,6 +118,7 @@ public class FlowBuilder {
         flow.setSrcLocality(Locality.PRIVATE);
         flow.setDstLocality(Locality.PRIVATE);
         flow.setFlowLocality(Locality.PRIVATE);
+        flow.setTos(tos);
         flows.add(flow);
         return this;
     }

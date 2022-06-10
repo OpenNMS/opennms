@@ -57,6 +57,11 @@ public abstract class ResourceTypeUtils {
     public static final String RESPONSE_DIRECTORY = "response";
 
     /**
+     * Directory name of where status data is stored.
+     */
+    public static final String STATUS_DIRECTORY = "status";
+
+    /**
      * Directory name of where all other collected data is stored.
      */
     public static final String SNMP_DIRECTORY = "snmp";
@@ -67,6 +72,7 @@ public abstract class ResourceTypeUtils {
     public static final String FOREIGN_SOURCE_DIRECTORY = "fs";
 
     private static final Pattern s_responseDirectoryPattern =  Pattern.compile("^" + RESPONSE_DIRECTORY + ".+$");
+    private static final Pattern s_statusDirectoryPattern =  Pattern.compile("^" + STATUS_DIRECTORY + ".+$");
 
     /**
      * <p>isStoreByGroup</p>
@@ -94,6 +100,10 @@ public abstract class ResourceTypeUtils {
      */
     public static boolean isResponseTime(String relativePath) {
         return s_responseDirectoryPattern.matcher(relativePath).matches();
+    }
+
+    public static boolean isStatus(String relativePath) {
+        return s_statusDirectoryPattern.matcher(relativePath).matches();
     }
 
     /**

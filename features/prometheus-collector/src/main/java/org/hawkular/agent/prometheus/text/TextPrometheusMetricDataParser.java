@@ -102,6 +102,8 @@ public class TextPrometheusMetricDataParser extends PrometheusMetricDataParser<M
                                             .setValue(Util.convertStringToDouble(textSample.getValue()))
                                             .addLabels(textSample.getLabels()));
                             break;
+                        case UNTYPED:
+                        //treat UNTYPED as gauge
                         case GAUGE:
                             builders.put(textSample.getLabels(),
                                     new Gauge.Builder().setName(name)
@@ -260,6 +262,9 @@ public class TextPrometheusMetricDataParser extends PrometheusMetricDataParser<M
                             case GAUGE:
                                 context.allowedNames.add(context.name);
                                 break;
+                            case UNTYPED:
+                                context.allowedNames.add(context.name);
+                                break;
                             case SUMMARY:
                                 context.allowedNames.add(context.name + "_count");
                                 context.allowedNames.add(context.name + "_sum");
@@ -292,6 +297,7 @@ public class TextPrometheusMetricDataParser extends PrometheusMetricDataParser<M
                 }
             } catch (Exception e) {
                 log.debug("Failed to process line - it will be ignored: {}", line);
+                log.debug("Exception: {}", e);
             }
 
             // go to the next line

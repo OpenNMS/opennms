@@ -29,6 +29,7 @@
 package org.opennms.core.ipc.sink.kafka.client;
 
 import static org.opennms.core.ipc.common.kafka.KafkaSinkConstants.DEFAULT_MAX_BUFFER_SIZE;
+import static org.opennms.core.ipc.common.kafka.KafkaSinkConstants.KAFKA_COMMON_CONFIG_PID;
 import static org.opennms.core.ipc.common.kafka.KafkaSinkConstants.MAX_BUFFER_SIZE_PROPERTY;
 import static org.opennms.core.ipc.sink.api.Message.SINK_METRIC_PRODUCER_DOMAIN;
 
@@ -213,8 +214,8 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
             kafkaConfig.clear();
             kafkaConfig.put("key.serializer", StringSerializer.class.getCanonicalName());
             kafkaConfig.put("value.serializer", ByteArraySerializer.class.getCanonicalName());
-            // Retrieve all of the properties from org.opennms.core.ipc.sink.kafka.cfg
-            KafkaConfigProvider configProvider = new OsgiKafkaConfigProvider(KafkaSinkConstants.KAFKA_CONFIG_PID, configAdmin);
+            // Retrieve all of the properties from org.opennms.core.ipc.sink.kafka.cfg, fallback to common pid.
+            KafkaConfigProvider configProvider = new OsgiKafkaConfigProvider(KafkaSinkConstants.KAFKA_CONFIG_PID, configAdmin, KAFKA_COMMON_CONFIG_PID);
             kafkaConfig.putAll(configProvider.getProperties());
             LOG.info("KafkaRemoteMessageDispatcherFactory: initializing the Kafka producer with: {}", kafkaConfig);
             producer = Utils.runWithGivenClassLoader(() -> new KafkaProducer<>(kafkaConfig), KafkaProducer.class.getClassLoader());

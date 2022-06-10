@@ -84,6 +84,8 @@ public class FlowDocumentBuilder {
         getUInt32Value(enrichedFlow.getFlow().getProtocol()).ifPresent(builder::setProtocol);
         getUInt32Value(enrichedFlow.getFlow().getTcpFlags()).ifPresent(builder::setTcpFlags);
         getUInt32Value(enrichedFlow.getFlow().getTos()).ifPresent(builder::setTos);
+        getUInt32Value(enrichedFlow.getFlow().getDscp()).ifPresent(dscp -> builder.setDscp(dscp));
+        getUInt32Value(enrichedFlow.getFlow().getEcn()).ifPresent(ecn -> builder.setEcn(ecn));
         getUInt32Value(enrichedFlow.getFlow().getFlowRecords()).ifPresent(builder::setNumFlowRecords);
         getUInt64Value(enrichedFlow.getFlow().getFlowSeqNum()).ifPresent(builder::setFlowSeqNum);
         String vlan = enrichedFlow.getFlow().getVlan() != null ? Integer.toUnsignedString(enrichedFlow.getFlow().getVlan()) : null;
@@ -97,7 +99,6 @@ public class FlowDocumentBuilder {
         getString(enrichedFlow.getApplication()).ifPresent(builder::setApplication);
         getString(enrichedFlow.getHost()).ifPresent(builder::setHost);
         getString(enrichedFlow.getLocation()).ifPresent(builder::setLocation);
-        getString(enrichedFlow.getConvoKey()).ifPresent(builder::setConvoKey);
         builder.setDstLocality(fromLocality(enrichedFlow.getDstLocality()));
         builder.setSrcLocality(fromLocality(enrichedFlow.getSrcLocality()));
         builder.setFlowLocality(fromLocality(enrichedFlow.getFlowLocality()));

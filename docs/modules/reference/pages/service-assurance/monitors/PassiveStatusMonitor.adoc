@@ -1,0 +1,71 @@
+
+= PassiveStatusMonitor
+
+Passive nodes are nodes that {page-component-title} is unable to directly communicate with because either they are 'not real' or because there is no network path directly to the device.
+They are termed 'Passive' because {page-component-title} cannot actively poll them and instead passively relies on information sent from somewhere else.
+
+[[ref-passivestatuskeeper]]
+== PassiveStatusKeeper
+The PassiveStatusKeeper maintains the status of passive services in memory with a hash table.
+The PassiveStatusMonitor is called by pollerd, just as the other IP-based monitors.
+However, its behavior is to report the status currently represented in the PassiveStatusKeeper's hash table.
+No polling on the network is performed.
+This hash table will either contain the latest status reported by a passive status event, or, if no status messages have been received, the PassiveStatusKeeper defaults to status "Up".
+
+During {page-component-title} initialization, the outages database table is queried to set the initial state of any passive service based on the last-known outage condition when services previously stopped.
+
+== Passive Status Events
+The PassiveStatusKeeper updates its hash table when a `uei.opennms.org/services/passiveServiceStatus` is processed.
+The event must include the following parameters:
+
+passiveNodeLabel::
+Must be exactly the same as the node name in {page-component-title} and is case sensitive.
+passiveIpAddr::
+The IP interface of the node with a PassiveStatusMonitor service
+passiveServiceName::
+The name of the PassiveStatusMonitor service
+passiveStatus::
+Must be either `Up` or `Down` and is case sensitive.
+passiveReasonCode::
+Optional field, typically only present in down events, that can be used to enrich the event with specific information regarding the reason for the service down event.
+
+Any event with this specific UEI and parameter set triggers a PassiveStatusKeeper update.
+If sending events directly from an external system such as via xref:operation:events/sources/rest.adoc[REST] or xref:operation:events/sources/kafka.adoc[Kafka Consumer], the event can be sent directly with these parameters for Eventd to process.
+If you will be extracting passive status updates from traps or syslog messages, you can use the xref:operation:events/event-translator.adoc#ga-event-translator-psk[event translator] to generate the `uei.opennms.org/services/passiveServiceStatus` events.
+
+== Monitor Facts
+
+[cols="1,7"]
+|===
+| Class Name
+| `org.opennms.netmgt.poller.monitors.PassiveStatusMonitor`
+|===
+
+== Configuration and Use
+
+There are no specific parameters for configuring the PassiveStatusMonitor.
+
+
+== Examples
+
+If you will have only one service to monitor passively, set a basic service in `$\{OPENNMS_HOME}/etc/pollerd-configuration.xml`.
+
+[source, xml]
+----
+<service name="PassiveStatus" interval="60000" user-defined="true" status="on"><1>
+</service>
+<monitor service="PassiveStatus" class-name="org.opennms.netmgt.poller.monitors.PassiveServiceMonitor" />
+----
+<1> As the monitor checks the PassiveStatusKeeper table in memory, small interval times allow for quick responses to updates with minimal overhead.
+Interval times of 30 seconds to 60 seconds (as used in this example) are typical for this type of monitor.
+
+If you will have multiple passive monitors on a node, using xref:operation:service-assurance/polling-packages.adoc#ga-pollerd-packages-patterns[service patterns] can make configuration easy.
+With the following example, any service added to a node that matches the wildcard "Passive-*" will match a PassiveStatusKeeper update event for the matching `passiveServiceName` parameter.
+
+[source, xml]
+----
+<service name="Passive-" interval="60000" user-defined="true" status="on">
+    <pattern><![CDATA[^Passive-(?<name>.*)$]]></pattern>
+</service>
+<monitor service="Passive-" class-name="org.opennms.netmgt.poller.monitors.PassiveServiceMonitor" />
+----

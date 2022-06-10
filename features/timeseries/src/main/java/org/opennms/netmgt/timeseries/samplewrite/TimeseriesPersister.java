@@ -29,13 +29,15 @@
 package org.opennms.netmgt.timeseries.samplewrite;
 
 import java.util.Collections;
-import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import org.opennms.core.cache.Cache;
+import org.opennms.integration.api.v1.timeseries.Tag;
 import org.opennms.netmgt.collection.api.AbstractPersister;
 import org.opennms.netmgt.collection.api.AttributeGroup;
+import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.PersistException;
@@ -57,26 +59,26 @@ public class TimeseriesPersister extends AbstractPersister {
     private final RrdRepository repository;
     private final TimeseriesWriter writer;
     private final MetaTagDataLoader metaDataLoader;
-    private final Cache<ResourcePath, Map<String, String>> metaTagsByResourceCache;
+    private final Cache<ResourcePath, Set<Tag>> configuredAdditionalMetaTagCache;
     private TimeseriesPersistOperationBuilder builder;
     private final MetricRegistry metricRegistry;
 
     protected TimeseriesPersister(ServiceParameters params, RrdRepository repository, TimeseriesWriter timeseriesWriter,
-                                  MetaTagDataLoader metaDataLoader, Cache<ResourcePath, Map<String, String>> metaTagsByResourceCache,
+                                  MetaTagDataLoader metaDataLoader, Cache<ResourcePath, Set<Tag>> configuredAdditionalMetaTagCache,
                                   MetricRegistry metricRegistry) {
         super(params, repository);
         this.repository = repository;
         writer = timeseriesWriter;
         this.metaDataLoader = metaDataLoader;
-        this.metaTagsByResourceCache = metaTagsByResourceCache;
+        this.configuredAdditionalMetaTagCache = configuredAdditionalMetaTagCache;
         this.metricRegistry = Objects.requireNonNull(metricRegistry, "metricRegistry can not be null");
     }
 
     @Override
     public void visitResource(CollectionResource resource) {
         super.visitResource(resource);
-        // compute meta data for this resource
-        this.metaTagsByResourceCache.put(resource.getPath(), metaDataLoader.load(resource));
+        // compute user defined meta data for this resource
+        this.configuredAdditionalMetaTagCache.put(resource.getPath(), metaDataLoader.load(resource));
     }
 
     /** {@inheritDoc} */
@@ -86,7 +88,7 @@ public class TimeseriesPersister extends AbstractPersister {
         if (shouldPersist()) {
             // Set the builder before any calls to persistNumericAttribute are made
             CollectionResource resource = group.getResource();
-            Map<String, String> metaTags = getMetaTags(resource);
+            Set<Tag> metaTags = getUserDefinedMetaTags(resource);
             builder = new TimeseriesPersistOperationBuilder(writer, repository, resource, group.getName(), metaTags, this.metricRegistry);
             if (resource.getTimeKeeper() != null) {
                 builder.setTimeKeeper(resource.getTimeKeeper());
@@ -95,13 +97,13 @@ public class TimeseriesPersister extends AbstractPersister {
         }
     }
 
-    private Map<String, String> getMetaTags(final CollectionResource resource) {
+    private Set<Tag> getUserDefinedMetaTags(final CollectionResource resource) {
         try {
-            return metaTagsByResourceCache.get(resource.getPath());
+            return configuredAdditionalMetaTagCache.get(resource.getPath());
         } catch (ExecutionException e) {
             LOG.warn("An exception occurred while trying to retrieve meta tags for {}", resource.getPath(), e);
         }
-        return Collections.emptyMap();
+        return Collections.emptySet();
     }
 
     @Override
@@ -118,14 +120,15 @@ public class TimeseriesPersister extends AbstractPersister {
         popShouldPersist();
     }
 
-    /** {@inheritDoc} */
-    @Override
+    @Override // Override to implement our own string attribute handling
     public void persistNumericAttribute(CollectionAttribute attribute) {
-        // override super class in order to persist the metric indentifiers in the meta data table
-        super.persistNumericAttribute(attribute);
+        boolean shouldIgnorePersist = isIgnorePersist() && AttributeType.COUNTER.equals(attribute.getType());
+        LOG.debug("Persisting {} {}", attribute, (shouldIgnorePersist ? ". Ignoring value because of sysUpTime changed." : ""));
+        Number value = shouldIgnorePersist ? Double.NaN : attribute.getNumericValue();
+        builder.setAttributeValue(attribute.getAttributeType(), value);
         if(attribute.getMetricIdentifier() != null) {
             ResourcePath path = ResourceTypeUtils.getResourcePathWithRepository(repository, ResourcePath.get(attribute.getResource().getPath(), attribute.getAttributeType().getGroupType().getName()));
-            this.builder.persistStringAttribute(path, attribute.getMetricIdentifier(), attribute.getName());
+            this.builder.persistStringAttributeForMetricLevel(path,  attribute.getName(), attribute.getMetricIdentifier(), attribute.getName());
         }
     }
 }

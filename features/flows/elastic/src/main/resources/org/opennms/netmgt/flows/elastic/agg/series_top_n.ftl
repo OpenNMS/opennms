@@ -13,7 +13,7 @@
           {
             "term": {
               "aggregation_type": {
-               "value": "TOPK"
+               "value": "${aggregationType?json_string}"
               }
             }
           }

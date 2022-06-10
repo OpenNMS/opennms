@@ -8,11 +8,10 @@ sudo vi etc/featuresBoot.d/disable-activemq.boot
 [source, disable-activemq.boot]
 ----
 !minion-jms
-!opennms-core-ipc-rpc-jms
-!opennms-core-ipc-sink-camel
+!opennms-core-ipc-jms
 ----
 
-.Create a file to install gRPC features on start-up
+.Create a file to install gRPC features on startup
 [source, shell]
 ----
 sudo vi etc/featuresBoot.d/grpc.boot
@@ -30,7 +29,7 @@ opennms-core-ipc-grpc-client
 ssh -p 8201 admin@localhost
 ----
 
-.Configure the Minion location and REST endpoint
+.Configure the Minion location
 [source, karaf]
 ----
 config:edit org.opennms.minion.controller<1>
@@ -81,7 +80,6 @@ opennms:health-check
 admin@minion> opennms:health-check
 Verifying the health of the container
 
-Connecting to OpenNMS ReST API   [ Success  ]
 Verifying installed bundles      [ Success  ]
 Connecting to gRPC IPC Server    [ Success  ]
 

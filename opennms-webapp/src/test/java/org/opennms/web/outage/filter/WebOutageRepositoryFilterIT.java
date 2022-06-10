@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -198,23 +198,6 @@ public class WebOutageRepositoryFilterIT implements InitializingBean {
     }
     
     @Test
-    @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
-    @Ignore
-    public void testNegativeNodeFilter(){
-//        NegativeNodeFilter filter = new NegativeNodeFilter(2);
-//        OutageCriteria criteria = new OutageCriteria(filter);
-//        
-//        NegativeNodeFilter filter2 = new NegativeNodeFilter(1);
-//        OutageCriteria criteria2 = new OutageCriteria(filter2);
-//        
-//        Outage[] outages = m_daoOutageRepo.getMatchingOutages(criteria);
-//        assertEquals(2, outages.length);
-//        
-//        outages = m_daoOutageRepo.getMatchingOutages(criteria2);
-//        assertEquals(1, outages.length);
-    }
-    
-    @Test
     @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testNegativeServiceFilter(){
         NegativeServiceFilter filter = new NegativeServiceFilter(2, null);
@@ -222,23 +205,6 @@ public class WebOutageRepositoryFilterIT implements InitializingBean {
         
         Outage[] outages = m_daoOutageRepo.getMatchingOutages(criteria);
         assertEquals(1, outages.length);
-    }
-    
-    @Test
-    @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
-    @Ignore
-    public void testNodeFilter(){
-//        NodeFilter filter = new NodeFilter(1, m_appContext);
-//        OutageCriteria criteria = new OutageCriteria(filter);
-//        
-//        NodeFilter filter2 = new NodeFilter(2, m_appContext);
-//        OutageCriteria criteria2 = new OutageCriteria(filter2);
-//        
-//        Outage[] outages = m_daoOutageRepo.getMatchingOutages(criteria);
-//        assertEquals(2, outages.length);
-//        
-//        outages = m_daoOutageRepo.getMatchingOutages(criteria2);
-//        assertEquals(1, outages.length);
     }
     
     @Test

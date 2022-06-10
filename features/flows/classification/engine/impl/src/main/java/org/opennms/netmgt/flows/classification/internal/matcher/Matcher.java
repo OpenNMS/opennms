@@ -32,7 +32,5 @@ import org.opennms.netmgt.flows.classification.ClassificationRequest;
 
 @FunctionalInterface
 public interface Matcher {
-    Matcher ANY = definition -> true;
-
     boolean matches(ClassificationRequest request);
 }

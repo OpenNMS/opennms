@@ -45,6 +45,7 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.flows.api.FlowSource;
 import org.opennms.netmgt.flows.classification.ClassificationRequest;
+import org.opennms.netmgt.flows.classification.IpAddr;
 import org.opennms.netmgt.model.OnmsNode;
 
 import com.google.common.collect.Lists;
@@ -52,7 +53,7 @@ import com.google.common.collect.Lists;
 public class DocumentEnricherTest {
 
     @Test
-    public void verifyCacheUsage() {
+    public void verifyCacheUsage() throws InterruptedException {
         final MockDocumentEnricherFactory factory = new MockDocumentEnricherFactory();
         final DocumentEnricher enricher = factory.getEnricher();
         final NodeDao nodeDao = factory.getNodeDao();
@@ -117,7 +118,7 @@ public class DocumentEnricherTest {
     }
 
     @Test
-    public void testCreateClassificationRequest() {
+    public void testCreateClassificationRequest() throws InterruptedException {
         final MockDocumentEnricherFactory factory = new MockDocumentEnricherFactory();
         final DocumentEnricher enricher = factory.getEnricher();
 
@@ -146,7 +147,7 @@ public class DocumentEnricherTest {
     }
 
     @Test
-    public void testDirection() {
+    public void testDirection() throws InterruptedException {
         final MockDocumentEnricherFactory factory = new MockDocumentEnricherFactory();
         final DocumentEnricher enricher = factory.getEnricher();
 
@@ -159,8 +160,8 @@ public class DocumentEnricherTest {
         d1.setDirection(Direction.INGRESS);
 
         final ClassificationRequest c1 = enricher.createClassificationRequest(d1);
-        assertEquals("1.1.1.1", c1.getSrcAddress());
-        assertEquals("2.2.2.2", c1.getDstAddress());
+        assertEquals(IpAddr.of("1.1.1.1"), c1.getSrcAddress());
+        assertEquals(IpAddr.of("2.2.2.2"), c1.getDstAddress());
         assertEquals(new Integer(1), c1.getSrcPort());
         assertEquals(new Integer(2), c1.getDstPort());
 
@@ -174,8 +175,8 @@ public class DocumentEnricherTest {
 
         // check that fields stay as theay are even when EGRESS is used
         final ClassificationRequest c2 = enricher.createClassificationRequest(d2);
-        assertEquals("1.1.1.1", c2.getSrcAddress());
-        assertEquals("2.2.2.2", c2.getDstAddress());
+        assertEquals(IpAddr.of("1.1.1.1"), c2.getSrcAddress());
+        assertEquals(IpAddr.of("2.2.2.2"), c2.getDstAddress());
         assertEquals(new Integer(1), c2.getSrcPort());
         assertEquals(new Integer(2), c2.getDstPort());
 
@@ -188,14 +189,14 @@ public class DocumentEnricherTest {
         d3.setDirection(null);
 
         final ClassificationRequest c3 = enricher.createClassificationRequest(d3);
-        assertEquals("1.1.1.1", c3.getSrcAddress());
-        assertEquals("2.2.2.2", c3.getDstAddress());
+        assertEquals(IpAddr.of("1.1.1.1"), c3.getSrcAddress());
+        assertEquals(IpAddr.of("2.2.2.2"), c3.getDstAddress());
         assertEquals(new Integer(1), c3.getSrcPort());
         assertEquals(new Integer(2), c3.getDstPort());
     }
 
     @Test
-    public void testClockCorrection() {
+    public void testClockCorrection() throws InterruptedException {
         final MockDocumentEnricherFactory factory = new MockDocumentEnricherFactory(2400_000L);
         final DocumentEnricher enricher = factory.getEnricher();
 

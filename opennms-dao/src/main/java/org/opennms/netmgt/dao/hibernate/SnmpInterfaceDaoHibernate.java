@@ -31,6 +31,8 @@ package org.opennms.netmgt.dao.hibernate;
 import java.util.Collection;
 import java.util.List;
 
+import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.springframework.util.Assert;
@@ -47,10 +49,32 @@ public class SnmpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsSnmpInte
     public OnmsSnmpInterface findByNodeIdAndIfIndex(Integer nodeId, Integer ifIndex) {
         Assert.notNull(nodeId, "nodeId may not be null");
         Assert.notNull(ifIndex, "ifIndex may not be null");
-        return findUnique("select distinct snmpIf from OnmsSnmpInterface as snmpIf where snmpIf.node.id = ? and snmpIf.ifIndex = ?", 
+        return findUnique("select snmpIf from OnmsSnmpInterface as snmpIf where snmpIf.node.id = ? and snmpIf.ifIndex = ?",
                           nodeId, 
                           ifIndex);
         
+    }
+
+    @Override
+    public List<OnmsSnmpInterface> findByNodeId(Integer nodeId) {
+        Assert.notNull(nodeId, "nodeId may not be null");
+        return find("select snmpIf from OnmsSnmpInterface as snmpIf where snmpIf.node.id = ?",
+                nodeId);
+
+    }
+
+    @Override
+    public List<OnmsSnmpInterface> findByMacLinksOfNode(Integer nodeId) {
+        Assert.notNull(nodeId, "nodeId may not be null");
+        return find("from OnmsSnmpInterface snmpIf where snmpIf.physAddr in (select l.macAddress from BridgeMacLink l where l.node.id = ?)",
+                nodeId);
+
+    }
+
+    @Override
+    public List<OnmsSnmpInterface> findBySnpaAddressOfRelatedIsIsLink(int nodeId) {
+        return find("from OnmsSnmpInterface snmpIf where snmpIf.physAddr in (select l.isisISAdjNeighSNPAAddress from IsIsLink l where l.node.id = ?)",
+                nodeId);
     }
 
     @Override
@@ -58,7 +82,7 @@ public class SnmpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsSnmpInte
         Assert.notNull(foreignSource, "foreignSource may not be null");
         Assert.notNull(foreignId, "foreignId may not be null");
         Assert.notNull(ifIndex, "ifIndex may not be null");
-        return findUnique("select distinct snmpIf from OnmsSnmpInterface as snmpIf join snmpIf.node as node where node.foreignSource = ? and node.foreignId = ? and node.type = 'A' and snmpIf.ifIndex = ?", 
+        return findUnique("select snmpIf from OnmsSnmpInterface as snmpIf join snmpIf.node as node where node.foreignSource = ? and node.foreignId = ? and node.type = 'A' and snmpIf.ifIndex = ?",
                           foreignSource, 
                           foreignId, 
                           ifIndex);
@@ -69,7 +93,7 @@ public class SnmpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsSnmpInte
         Assert.notNull(nodeId, "nodeId may not be null");
         Assert.notNull(description, "description may not be null");
 
-        return findUnique("SELECT DISTINCT snmpIf FROM OnmsSnmpInterface AS snmpIf WHERE snmpIf.node.id = ? AND (LOWER(snmpIf.ifDescr) = LOWER(?) OR LOWER(snmpIf.ifName) = LOWER(?))", 
+        return findUnique("SELECT snmpIf FROM OnmsSnmpInterface AS snmpIf WHERE snmpIf.node.id = ? AND (LOWER(snmpIf.ifDescr) = LOWER(?) OR LOWER(snmpIf.ifName) = LOWER(?))",
             nodeId, 
             description,
             description
@@ -108,4 +132,12 @@ public class SnmpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsSnmpInte
     public List<OnmsSnmpInterface> findAllHavingEgressFlows(final Integer nodeId) {
         return find("select iface from OnmsSnmpInterface as iface where iface.node.id = ? and EXTRACT(EPOCH FROM (NOW() - lastEgressFlow)) <= " + OnmsSnmpInterface.MAX_FLOW_AGE, nodeId);
     }
+
+    @Override
+    public long getNumInterfacesWithFlows() {
+        CriteriaBuilder criteriaBuilder = new CriteriaBuilder(OnmsSnmpInterface.class);
+        criteriaBuilder.or(Restrictions.isNotNull("lastIngressFlow"), Restrictions.isNotNull("lastEgressFlow"));
+        return countMatching(criteriaBuilder.toCriteria());
+    }
+
 }

@@ -97,6 +97,14 @@
             <attrib name="MaxFileDescriptorCount" alias="OsMaxFDCount" type="gauge"/>
             <attrib name="OpenFileDescriptorCount" alias="OsOpenFDCount" type="gauge"/>
          </mbean>
+         <mbean name="Heap Memory" objectname="java.lang:type=Memory">
+            <comp-attrib name="HeapMemoryUsage" alias="HeapUsed" type="Composite">
+               <comp-member name="init" alias="HeapUsageInit" type="gauge"/>
+               <comp-member name="max" alias="HeapUsageMax" type="gauge"/>
+               <comp-member name="used" alias="HeapUsageUsed" type="gauge"/>
+               <comp-member name="committed" alias="HeapUsgCmmttd" type="gauge"/>
+            </comp-attrib>
+         </mbean>
          <mbean name="JVM Threading" objectname="java.lang:type=Threading">
             <attrib name="ThreadCount" alias="ThreadCount" type="gauge"/>
             <attrib name="PeakThreadCount" alias="PeakThreadCount" type="gauge"/>
@@ -325,6 +333,16 @@
             <attrib name="TempLimit" alias="TempLimit" type="gauge"/>
             <attrib name="TempPercentUsage" alias="TempPctUsage" type="gauge"/>
          </mbean>
+         <mbean name="org.apache.activemq" resource-type="queueMetrics" objectname="org.apache.activemq:type=Broker,brokerName=localhost,destinationType=Queue,destinationName=*">
+            <attrib name="DequeueCount" alias="DequeCnt" type="counter"/>
+            <attrib name="EnqueueCount" alias="EnqueCnt" type="counter"/>
+            <attrib name="BlockedSends" alias="BlkdSends" type="gauge"/>
+            <attrib name="MemoryPercentUsage" alias="MemPctUsage" type="gauge"/>
+            <attrib name="MemoryLimit" alias="MemLimit" type="gauge"/>
+            <attrib name="AverageEnqueueTime" alias="AvgEnQTime" type="gauge"/>
+            <attrib name="MaxEnqueueTime" alias="MaxtEnQTime" type="gauge"/>
+            <attrib name="MinEnqueueTime" alias="MintEnQTime" type="gauge"/>
+         </mbean>
          <mbean name="org.opennms.netmgt.flows.flowsPersisted" objectname="org.opennms.netmgt.flows:name=flowsPersisted">
             <attrib name="Count" alias="FlowPerst" type="counter"/>
             <attrib name="OneMinuteRate" alias="FlowPerst1m" type="gauge"/>
@@ -465,7 +483,38 @@
             <attrib name="99thPercentile" alias="Duration99" type="gauge"/>
             <attrib name="999thPercentile" alias="Duration999" type="gauge"/>
          </mbean>
-         
+
+         <!-- Twin Metrics -->
+         <mbean name="org.opennms.core.ipc.twin.publisher.sinkUpdateSent" resource-type="twinMetrics"
+                objectname="org.opennms.core.ipc.twin.publisher:name=*.sinkUpdateSent">
+            <attrib name="Count" alias="SinkUpdateSent" type="counter"/>
+         </mbean>
+
+         <mbean name="org.opennms.core.ipc.twin.publisher.sinkUpdateSent" resource-type="twinMetrics"
+                objectname="org.opennms.core.ipc.twin.publisher:name=*.twinResponseSent">
+            <attrib name="Count" alias="TwinResponseSent" type="counter"/>
+         </mbean>
+
+         <mbean name="org.opennms.core.ipc.twin.publisher.twinEmptyResponseSent" resource-type="twinMetrics"
+                objectname="org.opennms.core.ipc.twin.publisher:name=*.twinEmptyResponseSent">
+            <attrib name="Count" alias="TwinEmptyResponseSent" type="counter"/>
+         </mbean>
+
+         <mbean name="org.opennms.core.ipc.twin.subscriber.requestSent" resource-type="twinMetrics"
+                objectname="org.opennms.core.ipc.twin.subscriber:name=*.requestSent">
+            <attrib name="Count" alias="RequestSent" type="counter"/>
+         </mbean>
+
+         <mbean name="org.opennms.core.ipc.twin.subscriber.updateReceived" resource-type="twinMetrics"
+                objectname="org.opennms.core.ipc.twin.subscriber:name=*.updateReceived">
+            <attrib name="Count" alias="UpdateReceived" type="counter"/>
+         </mbean>
+
+         <mbean name="org.opennms.core.ipc.twin.subscriber.updateDropped" resource-type="twinMetrics"
+                objectname="org.opennms.core.ipc.twin.subscriber:name=*.updateDropped">
+            <attrib name="Count" alias="UpdateDropped" type="counter"/>
+         </mbean>
+
          <!-- Alarmd -->
          <mbean name="drools.alarmd.facts" objectname="org.opennms.features.drools.alarmd:name=facts">
             <attrib name="Value" alias="DroolsAlarmdFacts" type="gauge"/>
@@ -475,6 +524,7 @@
          </mbean>
          <mbean name="drools.alarmd.actions.queued" objectname="org.opennms.features.drools.alarmd:name=atomicActionsQueued">
             <attrib name="OneMinuteRate" alias="DroolsAlarmdActQu1m" type="gauge"/>
+            <attrib name="FiveMinuteRate" alias="DroolsAlarmdActQu5m" type="gauge"/>
             <attrib name="Count" alias="DroolsAlarmdActQu" type="counter"/>
          </mbean>
          <mbean name="drools.alarmd.alarms" objectname="org.opennms.features.drools.alarmd:name=numAlarmsFromLastSnapshot">
@@ -490,6 +540,24 @@
             <attrib name="98thPercentile" alias="DroolsAlarmdLv98" type="gauge"/>
             <attrib name="99thPercentile" alias="DroolsAlarmdLv99" type="gauge"/>
             <attrib name="999thPercentile" alias="DroolsAlarmdLv999" type="gauge"/>
+         </mbean>
+
+         <!-- ALEC -->
+         <mbean name="ALEC Graph Stats" resource-type="ALECgraph" objectname="org.opennms.alec.driver.main.Driver.dbscan:name=*,type=gauges">
+            <attrib name="Value" alias="ALECgraphStat" type="gauge"/>
+         </mbean>
+         <mbean name="ALEC Tick Stats" objectname="org.opennms.alec.driver.main.Driver.dbscan:name=ticks,type=timers">
+            <attrib name="50thPercentile" alias="ALECtick50" type="gauge"/>
+            <attrib name="75thPercentile" alias="ALECtick75" type="gauge"/>
+            <attrib name="95thPercentile" alias="ALECtick95" type="gauge"/>
+            <attrib name="98thPercentile" alias="ALECtick98" type="gauge"/>
+            <attrib name="99thPercentile" alias="ALECtick99" type="gauge"/>
+            <attrib name="999thPercentile" alias="ALECtick999" type="gauge"/>
+            <attrib name="OneMinuteRate" alias="ALECtickRate1m" type="gauge"/>
+            <attrib name="FiveMinuteRate" alias="ALECtickRate5m" type="gauge"/>
+            <attrib name="Max" alias="ALECtickMax" type="gauge"/>
+            <attrib name="Min" alias="ALECtickMin" type="gauge"/>
+            <attrib name="Count" alias="ALECtickCounter" type="counter"/>
          </mbean>
 
       </mbeans>

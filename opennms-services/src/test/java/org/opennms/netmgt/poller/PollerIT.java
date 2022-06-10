@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2004-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2004-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -80,6 +80,7 @@ import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockInterface;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockNode;
+import org.opennms.netmgt.mock.MockPersisterFactory;
 import org.opennms.netmgt.mock.MockPollerConfig;
 import org.opennms.netmgt.mock.MockService;
 import org.opennms.netmgt.mock.MockService.SvcMgmtStatus;
@@ -247,6 +248,7 @@ public class PollerIT implements TemporaryDatabaseAware<MockDatabase> {
         m_poller.setPollerConfig(m_pollerConfig);
         m_poller.setPollOutagesDao(m_pollerConfig);
         m_poller.setLocationAwarePollerClient(m_locationAwarePollerClient);
+        m_poller.setPersisterFactory(new MockPersisterFactory());
     }
 
     @After
@@ -303,84 +305,6 @@ public class PollerIT implements TemporaryDatabaseAware<MockDatabase> {
             }
         }
         assertTrue(foundNodeDown);
-    }
-
-    @Test
-    @Ignore
-    public void testBug1564() {
-        // NODE processing = true;
-        m_pollerConfig.setNodeOutageProcessingEnabled(true);
-        MockNode node = m_network.getNode(2);
-        MockService icmpService = m_network.getService(2, "192.168.1.3", "ICMP");
-        MockService smtpService = m_network.getService(2, "192.168.1.3", "SMTP");
-        MockService snmpService = m_network.getService(2, "192.168.1.3", "SNMP");
-
-        // start the poller
-        startDaemons();
-
-        //
-        // Bring Down the HTTP service and expect nodeLostService Event
-        //
-
-        resetAnticipated();
-        anticipateDown(snmpService);
-        // One service works fine
-        snmpService.bringDown();
-
-        verifyAnticipated(10000);
-
-        // Now we simulate the restart, the node
-        // looses all three at the same time
-
-        resetAnticipated();
-        anticipateDown(node);
-
-        icmpService.bringDown();
-        smtpService.bringDown();
-        snmpService.bringDown();
-
-        verifyAnticipated(10000);
-
-        anticipateDown(smtpService);
-        verifyAnticipated(10000);
-        anticipateDown(snmpService);
-        verifyAnticipated(10000);
-
-        // This is to simulate a restart,
-        // where I turn off the node behaviour
-
-        m_pollerConfig.setNodeOutageProcessingEnabled(false);
-
-        anticipateUp(snmpService);
-        snmpService.bringUp();
-
-        verifyAnticipated(10000);
-
-        anticipateUp(smtpService);
-        smtpService.bringUp();
-
-        verifyAnticipated(10000);
-
-        // Another restart - let's see if this will work?
-
-        m_pollerConfig.setNodeOutageProcessingEnabled(true);
-        // So everything is down, now
-        // SNMP will regain and SMTP will regain
-        // will the node come up?
-
-
-        smtpService.bringDown();
-
-        anticipateUp(smtpService);
-        smtpService.bringUp();
-
-        verifyAnticipated(10000,true);
-
-        anticipateUp(snmpService);
-        snmpService.bringUp();
-
-        verifyAnticipated(10000);
-
     }
 
     @Test

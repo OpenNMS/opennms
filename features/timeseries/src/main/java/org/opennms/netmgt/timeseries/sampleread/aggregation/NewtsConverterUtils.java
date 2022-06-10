@@ -66,7 +66,7 @@ public class NewtsConverterUtils {
 
     private static Results.Row<org.opennms.newts.api.Sample> sampleToRow(final Sample sample) {
 
-        Optional<Map<String, String>> resourceAttributes = sample.getMetric().getMetaTags().isEmpty() ?
+        Optional<Map<String, String>> resourceAttributes = sample.getMetric().getExternalTags().isEmpty() ?
                 Optional.absent() : Optional.of(asMap(sample.getMetric().getMetaTags()));
 
         final Timestamp timestamp = Timestamp.fromEpochMillis(sample.getTime().toEpochMilli());
