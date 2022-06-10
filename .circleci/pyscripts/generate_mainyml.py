@@ -1,13 +1,30 @@
+#!/usr/bin/env python3
 
+import subprocess
 import glob
 import os
 import shutil 
 import sys
 import tempfile
 
+
+#this shouldn't be here
+subprocess.Process()
+print(os.getcwd())
+base = subprocess.run(
+    ['grep', '-rm','1', '@org.junit.experimental.categories.Category(org.opennms.smoketest.junit.FlakyTests.class)','./'],
+    check=True,
+    capture_output=True
+).stdout.decode('utf-8').strip()
+print(base)
+print("We are not suppose to have this line here")
+#end this shouldn't be here
+
+
 working_directory=tempfile.TemporaryDirectory()
 
-#make a copy of the .circleci folder into our working directory
+# We don't want to modify the main files, make a copy of the .circleci folder 
+# into our working directory 
 shutil.copytree(".circleci",os.path.join(working_directory.name,".circleci"))
 
 main_filename="@main.yml"
@@ -26,10 +43,11 @@ print("components_path:",components_path)
 
 main_yml_content={}
 
-#Read the @main.yml file
+# Read the @main.yml file
 with open(path_to_main,"r") as f:
     main_yml_content=f.readlines()
 
+# Load the yml files into a dictionary for easier processing
 components_data={}
 for folder in [workflow_folder,job_folder]:
     print("Processing",folder,"component")
@@ -53,7 +71,7 @@ for folder in [workflow_folder,job_folder]:
             print("\tDeleting extra",components_data[token][0].strip(),"entries")
             del components_data[token][0] 
 
-print("Combining and generating the new @main.yml")
+print("Generating the @main.yml")
 
 for token in components_data.keys():
     print("Processing "+token.strip())
@@ -87,6 +105,7 @@ with open(path_to_modified_main,"w") as f:
     for _l in main_yml_content:
         f.write(_l)
 
+# move the .circleci with updated main.yml file into tmp directory
 shutil.move(os.path.join(working_directory.name,".circleci"),"/tmp/")
 
 working_directory.cleanup()
