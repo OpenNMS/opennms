@@ -75,7 +75,7 @@ Instance:: A single, unique copy of a running program.
 If a program has multiple instances, that indicates that the program has been loaded into memory more than once.
 
 Jira:: Jira is a project management platform used by OpenNMS to track software issues, feature requests, and IT requests.
-(See https://en.wikipedia.org/wiki/Jira_(software)[Jira].)
+(See https://issues.opennms.com[OpenNMS Jira].)
 
 JRobin:: JRobin is a clone of RRDTool (see below) written in Java.
 Default time series database for new {page-component-title} instances.
@@ -95,7 +95,7 @@ Originally designed by Google, it is now maintained by the Cloud Native Computin
 (See https://kubernetes.io/[Kubernetes].)
 
 Location:: The geographical location of a node that is being managed using OpenNMS.
-Nodes can be manually assigned a location (See xref:operation:reference/provisioning/handlers/dns.adoc[Location]), or the location can be determined using the GeoIP Provisioning Adapter (See xref:operation:reference/provisioning/adapters/geoip.adoc[GeoIP]).
+Nodes can be manually assigned a location (See xref:reference:provisioning/handlers/dns.adoc[Location]), or the location can be determined using the GeoIP Provisioning Adapter (See xref:reference:provisioning/adapters/geoip.adoc[GeoIP]).
 
 Meridian:: Subscription-based, optimized, and stable version of the OpenNMS Horizon platform.
 Annual release with monthly security patches that includes only the most stable and secure Horizon features.
