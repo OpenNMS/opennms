@@ -103,7 +103,7 @@ Provisioning:: The process of getting your devices, applications, and services i
 
 Remote Method Invocation (RMI):: Java API that lets one Java Virtual Machine (JVM) running object to invoke methods on an object running in another JVM. 
 RMI integration lets you access a remote Horizon and/or Meridian instance for monitoring and management.
-(See xref:operation:admin/rmi.adoc#rmi[Enabling RMI].)
+(See xref:operation:admin/rmi.adoc[Enabling RMI].)
 
 Requisitions:: Sets of nodes to import into {page-component-title} for monitoring and management.
 You can build requisitions iteratively and import them at a later date.
