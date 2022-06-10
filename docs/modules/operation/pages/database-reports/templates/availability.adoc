@@ -2,36 +2,51 @@
 = Availability by Node Report
 Availability by node across one or more surveillance categories.
 
+This report provides the following availability data for nodes that have the user-specified surveillance category over the specified date range:
+
+* Number of outages
+* Mean Time To Repair ("MTTR") (in hours)
+* Length of time for each outage (in hours)
+* Percent outage (per node in category)
+* Percent availability (per node in category)
+
+The report provides summary statistics (average, minimum, and maximum) for each availability data point listed above.
+
+You can customize the report with a company logo (approximately 195px by 50px) in the header and footer.
+
 == Parameters
 
-[options="header"]
-[cols="1,3"]
+[options="header, autowidth"]
+[cols="1,2,3"]
 
 |===
 | Field
 | Description
+| Default
 
 | Surveillance Category
-| Use the % sign as a placeholder for any string literal.
+| Identify one or more surveillance categories to include in the report.
+To select multiple categories use wildcards as described below.
+If no categories match the entered string, the report will have no data.
+| Routers
 
-| Report Time Range in Days
-| The range in days from the report start date. Must be an integer.
-//what is default behaviour?
+
+| Number of Days
+| The range in days from the report start date.
+| 7
 
 | Availability Warning
-| 
+| Availability percentage that triggers a warning.
+| 98
 
 | Availability Critical
-|
-
-// Availability warning/critical also appear in the Interface availability and SNMP availability reports.
+| Availability percentage at which status is considered critical.
+| 97
 
 | Start Date
-|
-
-| Report Format
-| Specify PDF or CSV.
+| The starting date for the data contained in this report.
+| 7 days before today
 
 |===
 
-include::standard.adoc[]
+include::standard-text-fields.adoc[]

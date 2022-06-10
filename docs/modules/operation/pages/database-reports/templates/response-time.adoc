@@ -1,31 +1,37 @@
 [[response-time-report]]
 = Response Time by Node Report
 
-Response time by node across one or more surveillance categories.
+This report lists the response times by nodes across specified surveillance categories.
 
-// same parameters as total-bytes.adoc and traffic-rates.adoc
+This report has a table for each matching surveillance category that contains the devices and a row for each IP interface with the minimum, average, and maximum ICMP latency of the period of the report.
+
+You can customize this report with a company logo (approximately 195px by 50px) in the header and footer.
 
 == Parameters
 
-[options="header"]
-[cols="1,3"]
+[options="header, autowidth"]
+[cols="1,2,3"]
 
 |===
 | Field
 | Description
+| Default
 
 | Surveillance Category
-| Use the % sign as a placeholder for any string literal.
+| Identify one or more surveillance categories to filter nodes to be included in the report.
+To select multiple categories use wildcards as described below.
+If no categories match the entered string, the report will have no data.
+| %
 
-| Report Start Date
-|
+| Start Date
+| The starting date for the data contained in this report.
+| 7 days before today
 
-| Report End Date
-| Note the report fails if the end date is later than the current time.
-
-| Report Format
-| Specify PDF or CSV.
+| End Date
+| The end date for the data contained in this report.
+If the end date is later than the start date, the report will have no data.
+| Today
 
 |===
 
-include::standard.adoc[]
+include::standard-text-fields.adoc[]

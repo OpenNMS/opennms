@@ -4,25 +4,32 @@
 
 Standard OpenNMS report in calendar format.
 
+This report is generated directly from the {page-component-title} Java code and has no optional parameters for selecting a subset of the network devices.
+The report contains the same information as the "Default Classic Report" with the exception that the information in the second and third tables presents the data in the format of a calendar month.
 
-== Parameters
+The period is the current month to the last full day before the day the report was generated (in other words, yesterday).
+All the data is presented in tables.
 
-[options="header"]
-[cols="1,3"]
+The first table contains a table of the monthly availability percentage for all services {page-component-title} monitored for the past year.
+It also lists the number of nodes that had outages, the number of interfaces, and the number of services.
+// QUESTION: Not sure if this last set of information show the maximum or current number of interfaces and services.
 
-|===
-| Field
-| Description
+The next two figures present the daily average of services monitored and availability of services divided by the total number of minutes for the last full month before the current month.
+The first of these figures covers the last full month and the second the current month to date.
+These figures use a monthly calendar format instead of a standard table.
 
-| Report Category
-|
+// QUESTION: The report says that the denominator is the "total svc minutes" but it is unclear whether it is using the total number of minutes in the period or the total number of minutes that the service was being monitored.  I dropped the "services" from the phrase.  I believe this is probably done taking the daily number of minutes that s service was available by the daily number of minutes that service was being monitored, and then averaging those percentagesI mention this because there are other ways that this can be calculated (e.g., Using the total number of minutes in a day as the denominator).  This should probably be checked.
 
-| End date
-|
+The next table lists the devices with the worst availability over the past month.
 
-|===
+The next table lists the last 30 days of daily availability, dividing the average availability of every monitored service (on each device) by the total number of minutes.
+The average of these 30 data points appears in the next table.
 
+// QUESTION: I think the denominator here is the number of minutes that each service was monitored.  It could be total number of minutes.  This should be checked.
 
+The next two tables show the average availability for every monitored service (on each device) for the previous full month and the same average availability for the beginning of the current month to the last full day.
 
+The remaining eight tables show the top service outages for each service for the last full month.
+Each entry includes the device, duration of outage, and the date/time when the outage occurred.
 
-include::standard.adoc[]
+// QUESTION: I am not sure if this is correct.  In the sample report I reviewed, the names of the services were: Velocloud-Blork, Velocloud-Blurf, HTTPS, and OpenNMS-JVM.  The first four of these tables has no entries.  The last column on this one row table is "Service Lost Time" and I believe they meant date/time that the longest outage for this service began.  That should be confirmed.  I would also recommend changing the column heading as "Service Lost Time" sounds like a synonym for the second column heading, "Duration of Outage".
