@@ -56,7 +56,8 @@ Default time series database for new {page-component-title} instances.
 Kafka:: Clusterable, open-source message broker designed for high-throughput/low-latency event streaming originally developed at LinkedIn, now supported by the Apache community.
 (See xref:deployment:core/setup-message-broker.adoc#setup-message-broker[Set Up Message Broker].)
 
-Kibana:: Kibana is a component of the Elastic Stack (comprised of Elasticsearch, Logstash, and Kibana). It provides visualization capabilities for data indexed in an Elasticsearch cluster.
+Kibana:: Kibana is a component of the Elastic Stack (comprised of Elasticsearch, Logstash, and Kibana).
+It provides visualization capabilities for data indexed in an Elasticsearch cluster.
 
 KSC Reports:: Key SNMP customized (KSC) reports provide a way to generate prefabricated graphical views of collected data. They let you display data from different devices and sources (SNMP, ICMP, HTTP) on one page.
 (See xref:operation:admin/webui/opsboard/dashlet/ksc.adoc#ksc[KSC Reports].)
