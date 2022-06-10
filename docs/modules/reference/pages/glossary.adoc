@@ -47,6 +47,8 @@ To monitor a foreign source, you must set a foreign source definition.
 
 Helm:: Helm is an an OpenNMS application for creating flexible dashboards to display and customize fault management and performance management data from Horizon and Meridian.
 Helm works with the Grafana analytics program to customize the data you can view.
+Not to be confused with the https://helm.sh/[Kubernetes Helm] package manager.
+(See https://docs.opennms.com/helm/latest[HELM documentation].)
 
 Horizon:: Open-source solution from OpenNMS that helps users visualize and monitor everything on their local and remote networks.
 Free, community-driven project includes the latest technology and features delivered through a rapid release cycle.
