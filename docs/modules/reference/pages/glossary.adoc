@@ -37,7 +37,8 @@ Elasticsearch:: Elasticsearch is a search engine based on the Lucene library. Op
 Flows:: Summaries of network traffic sent by network devices. 
 (See xref:operation:flows/introduction.adoc[Flows].)
 
-Foreign Source:: A data source hosted outside of your local network. To monitor a foreign source, a foreign source definition must be set. 
+Foreign Source:: A data source hosted outside of your local network.
+To monitor a foreign source, you must set a foreign source definition. 
 (See xref:operation:provisioning/getting-started.adoc#foreign-source-definition[Foreign source definition].)
 
 Helm:: Helm is an an OpenNMS application for creating flexible dashboards to display and customize fault management and performance management data from Horizon and Meridian.
