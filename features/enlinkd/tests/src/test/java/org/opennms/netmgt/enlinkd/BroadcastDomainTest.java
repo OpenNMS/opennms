@@ -1748,7 +1748,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         
         ndbtB.calculate();
         
-        assertEquals(0, ndbtB.getFailed().size());
+        assertEquals(1, ndbtB.getFailed().size());
 
     }
 
@@ -1971,7 +1971,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
 
         ndbtB.calculate();
         
-        assertEquals(0, ndbtB.getFailed().size());
+        assertEquals(1, ndbtB.getFailed().size());
 
     }
 
@@ -1993,7 +1993,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
 
         ndbtB.calculate();
         
-        assertEquals(0, ndbtB.getFailed().size());
+        assertEquals(1, ndbtB.getFailed().size());
 
     }
 
@@ -2018,7 +2018,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
 
         ndbtB.calculate();
         
-        assertEquals(0, ndbtB.getFailed().size());
+        assertEquals(1, ndbtB.getFailed().size());
 
     }
 
@@ -2046,7 +2046,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
 
         ndbtB.calculate();
         
-        assertEquals(0, ndbtB.getFailed().size());
+        assertEquals(1, ndbtB.getFailed().size());
 
     }
     @Test
