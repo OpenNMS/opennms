@@ -9,7 +9,6 @@ import tempfile
 
 
 #this shouldn't be here
-subprocess.Process()
 print(os.getcwd())
 base = subprocess.run(
     ['grep', '-rm','1', '@org.junit.experimental.categories.Category(org.opennms.smoketest.junit.FlakyTests.class)','./'],
