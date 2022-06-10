@@ -112,8 +112,8 @@ You can build requisitions iteratively and import them at a later date.
 Round Robin Database (RRD):: Special type of database designed for collection, visualization, and analysis of time-series data.
 Data is maintained as a fixed-size circular-buffer that overwrites the oldest data with new data.
 
-Sentinel:: Karaf container that provides scalability for data processing, including flows, SNMP traps, syslog messages, and streaming telemetry in OpenNMS.
-It also supports thresholding for streaming telemetry if you are using OpenNMS Newts.
+Sentinel:: Karaf container that provides scalability for data processing of flow data.
+It also supports thresholding for streaming telemetry if you are using the xref:deployment:time-series-storage/newts/introduction.adoc[Newts] time-series strategy.
 (See xref:deployment:sentinel/introduction.adoc[Sentinel].)
 
 Snaps:: Self-contained software packages that run in a sandbox and have mediated access to host systems.
