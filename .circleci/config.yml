@@ -100,6 +100,7 @@ commands:
           command: |
             mkdir -p ~/.artifacts
             chmod 777 ~/.artifacts
+            ls -l ~/.artifacts
             if [ ! -d << parameters.path >> ] || [ "$(find << parameters.path >> -type f | wc -l)" -eq 0 ]; then
               echo "warning: no files found in <<parameters.path >>"
               exit 0
