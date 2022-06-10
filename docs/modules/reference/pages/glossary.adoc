@@ -16,7 +16,7 @@ When a service is not responsive an outage will be generated with the correspond
 Azure:: Microsoft Azure is a cloud hosting platform from Microsoft that allows users to host a variety of different services.
 
 Cassandra:: Open-source distributed/scale-out NoSQL database designed to hold large amounts of structured or unstructured data across many servers.
-(See xref:deployment:time-series-storage/newts/introduction.adoc#ga-opennms-operation-newts[Newts].)
+(See xref:deployment:time-series-storage/newts/introduction.adoc[Newts].)
 
 CircleCI:: CircleCI is a continuous integration and delivery platform that hosts OpenNMS's CI/CD environment.
 It integrates with and monitors OpenNMS GitHub repositories, and automatically launches and tests a new build when a commit is detected.
