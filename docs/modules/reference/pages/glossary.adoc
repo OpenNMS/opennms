@@ -42,7 +42,7 @@ Flows:: Summaries of network traffic sent by network devices.
 (See xref:operation:flows/introduction.adoc[Flows].)
 
 Foreign Source:: A data source hosted outside of your local network.
-To monitor a foreign source, you must set a foreign source definition. 
+To customize monitoring of nodes in a foreign source, you can set a foreign source definition with your desired detectors and policies.
 (See xref:operation:provisioning/getting-started.adoc#foreign-source-definition[Foreign source definition].)
 
 Helm:: Helm is an an OpenNMS application for creating flexible dashboards to display and customize fault management and performance management data from Horizon and Meridian.
