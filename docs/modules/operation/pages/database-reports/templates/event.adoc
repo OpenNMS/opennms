@@ -18,7 +18,7 @@ Finally, it contains a table with information about the database providing the a
 
 The next four sections each contain a table and a corresponding line chart showing a breakdown of the top 25 events over the last 30 days broken down from different perspectives.
 
-The "Top 25 events by UEI and event source" shows the top 25 instances of the various combinations of UEI (for example, hodes/NodeDown, threshold/highThresholdExceeded, etc.) and event sources (for example, OpenNMS.Poller.DefaultPollContext, OpenNMS.Threshd.hrStorageUsed, etc.).
+The "Top 25 events by UEI and event source" shows the top 25 instances of the various combinations of UEI (for example, `nodes/NodeDown`, `threshold/highThresholdExceeded`, etc.) and event sources (for example, `OpenNMS.Poller.DefaultPollContext`, `OpenNMS.Threshd.hrStorageUsed`, etc.).
 
 The next section, "Top 25 event hours," counts the number of times each UEI occurs within  every hour of the 30-day window and then lists the top 25 combinations of UEI and hour.
 This table will show the top hours when a specific UEI occurred.
