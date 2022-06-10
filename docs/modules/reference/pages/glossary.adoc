@@ -89,7 +89,7 @@ Use it as an alternative persistence strategy instead of JRobin or RRDtool.
 (See xref:deployment:time-series-storage/newts/introduction.adoc#ga-opennms-operation-newts[Newts].)
 
 Operator board:: Customizable dashboard to visualize monitoring information. 
-(See xref:operation:admin/webui/opsboard/introduction.adoc#ops-board[Operator Board].)
+(See xref:operation:admin/webui/opsboard/introduction.adoc[Operator Board].)
 
 PostgreSQL:: Commonly used open-source relational database known for its stability.
 PostgreSQL scales up but not out.
