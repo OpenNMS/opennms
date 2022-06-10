@@ -1,5 +1,6 @@
 [[grafana-report]]
-= Create PDF reports from Grafana dashboards using {page-component-title}
+= Grafana Dashboard Reports
+
 
 {page-component-title} provides three templates to create a PDF report from an existing Grafana dashboard.
 You can also schedule and email these PDF reports to anyone:
@@ -53,8 +54,9 @@ You can now use {page-component-title} to create PDF reports of Grafana dashboar
 
 . In the {page-component-title} UI, choose menu:Reports[Database Reports].
 . In the *Report Templates* area, click *Grafana Dashboard Report <Xppp>*, where <Xppp> represents the number of panels per page you want to display.
-. In the *Report Parameters* area, specify the appropriate information.
-.. Note that *Grafana Endpoint* is the data source. Select a Grafana dashboard from the list.
+. In the *Report Parameters* area, specify the appropriate information (see table below).
+.. Note that *Grafana Endpoint* is the data source.
+Select a Grafana dashboard from the list.
 .. You can also specify CSV for report type.
 . Click *Create Report*.
 .. You are prompted to save the report locally or open it.
@@ -73,3 +75,36 @@ Separate multiple recipient emails with a comma.
 Scheduled reports appear in the *Report Schedules* tab, where you can edit or delete them:
 
 image::database-reports/PDF-Report.png[pdf report]
+
+== Parameters
+
+[options="header, autowidth"]
+[cols="1,2,3"]
+
+|===
+| Field
+| Description
+| Default
+
+| Title
+| Title for the report.
+| "Grafana Dashboard Report"
+
+| Description
+| Brief description of the report
+|
+
+| Time Zone
+| The time zone for the data in this report.
+A dropdown provides all the available options.
+| Default System Time Zone
+
+| Start Date
+| Select the start date for the report.
+| Yesterday
+
+| End Date
+| Select the end date for the report
+| Today
+
+|===

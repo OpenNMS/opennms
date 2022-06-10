@@ -28,6 +28,88 @@ The {page-component-title} Report Engine passes a JDBC connection to the {page-c
 
 For more details on how JasperReports works, please refer to the Jaspersoft Studio link:http://community.jaspersoft.com/documentation/tibco-jaspersoft-studio-user-guide/v610/getting-started-jaspersoft-studio[official documentation].
 
+[[ga-database-report-use-existing-report]]
+
+== Using existing reports
+
+OpenNMS provides the following sample report templates, located in `$\{OPENNMS_HOME}/etc/report-templates`, which you can customize to suit your needs:
+
+
+[options="header, autowidth"]
+|===
+| Report Name            | Category     | Description
+
+|  xref:operation:database-reports/templates/avail-summary.adoc[Availability Summary]
+| Status
+|Summary of statistics on outages and availability for user-specified surveillance category during a user-specified number of days.
+
+
+| xref:operation:database-reports/templates/availability.adoc[Availability by Node]
+| Status
+| List of availability statistics for each node in user-specified surveillance category during a user-specified number of days.
+
+| xref:operation:database-reports/templates/calendar.adoc[Default Calendar]
+| Status
+| Same availability information as Default Classic except that the two tables on daily availability are presented as a calendar.
+This is not a JasperReport.
+
+| xref:operation:database-reports/templates/classic.adoc[Default Classic]
+| Status
+| Availability information of network focusing on last month and current month to date.
+Information on devices with most problems and monitored services.
+This is not a JasperReport.
+
+| xref:operation:database-reports/templates/event.adoc[Event Analysis]
+| Status
+| Tables and charts showing different slices on the top 25 events over the past 30 days.
+
+| xref:operation:database-reports/templates/grafana.adoc[Grafana Dashboards]
+| Grafana
+| Create Report from Grafana Dashboard, three options are provided.
+
+| xref:operation:database-reports/templates/interface-avail.adoc[Interface Availability]
+| Status
+| Shows the availability of interfaces with outages within a time range.
+
+| xref:operation:database-reports/templates/maintenance-expired.adoc[Maintenance Contracts Expired]
+| Asset Management
+| Shows which assets with maintenance contracts are going to expire within a given time range.
+
+| xref:operation:database-reports/templates/maintenance-strategy.adoc[Maintenance Contracts Strategy]
+| Asset Management
+| Provides an overview of assets, showing how many within each age group have an active contract, no contract, or an expired contract. 
+It also shows how many will expire in the next 12 months.
+
+| xref:operation:database-reports/templates/morning.adoc[Early Morning Report]
+| Status
+| Summary of network node status over the past 24 hours.
+
+| xref:operation:database-reports/templates/response-summary.adoc[Response Time Summary]
+| Status
+| Summary of response times across surveillance category.
+
+| xref:operation:database-reports/templates/response-time.adoc[Response Time by Node]
+| Status
+| How long it takes a node to respond, listed by node.
+
+| xref:operation:database-reports/templates/serial.adoc[Serial Interface Utilization Summary]
+| Status
+| Summary of serial interface utilization.
+
+| xref:operation:database-reports/templates/snmp.adoc[SNMP Interface Availability]
+| Status
+| Status of SNMP interfaces over time range.
+
+| xref:operation:database-reports/templates/total-bytes.adoc[Total Bytes Transferred by Interface]
+| Usage
+| Bytes transferred by interface.
+
+| xref:operation:database-reports/templates/traffic-rates.adoc[Average and Peak Traffic Rates for Nodes by Interface]
+| Usage
+| Average and peak traffic rates for nodes by interface.
+
+|===
+
 [[ga-database-report-add-custom-report]]
 
 == Modify existing reports
@@ -119,11 +201,9 @@ NOTE: If the `Read Fields` functionality is not available, use the `Data preview
 [[ga-database-reports-access-performance-data]]
 == Accessing performance data
 
-WARNING: Before OpenNMS Horizon 17 and OpenNMS Meridian 2016, you could access the performance data stored in .rrd or .jrobin files directly by using the jrobin language extension the RrdDataSource provides.
-         This is no longer possible; you must use the Measurements Datasource.
-
 To access performance data within reports, we created a custom Measurement Datasource that lets you query the Measurements API and process the returned data in your reports.
-Please refer to the link:http://docs.opennms.org/opennms/branches/develop/guide-development/guide-development.html#_measurements_api[official Measurements API documentation] on how to use the Measurements API.
+Please refer to the 
+xref:development:rest/measurements.adoc[Measurements API documentation] on how to use the Measurements API.
 
 NOTE:  When using the Measurements Datasource within a report, an HTTP connection to the Measurements API is established only if the report is not running within {page-component-title}; for example, when used with Jaspersoft Studio.
 
@@ -296,7 +376,7 @@ To get the appropriate interface descriptor depends on the input parameter.
 
 To establish a secure connection to the Measurements API, you must import the public certificate of the running {page-component-title} to the Java Truststore.
 In addition, you must configure {page-component-title} to use that Java Truststore.
-Please follow the instructions in this <<admin/http-ssl.adoc#ga-operation-ssl-opennms-trust-store,chapter>> to set up the Java Truststore correctly.
+Please follow the instructions in this <<admin/http-ssl.adoc#ga-operation-ssl-opennms-trust-store,section>> to set up the Java Truststore correctly.
 
 In addition, set the property `org.opennms.netmgt.jasper.measurement.ssl.enable` in `$OPENNMS_HOME\etc\opennms.properties` to "true" to ensure that only secure connections are established.
 
@@ -306,6 +386,6 @@ An SSL-secured connection can be established even if `org.opennms.netmgt.jasper.
 [[ga-database-reports-limitations]]
 == Limitations
 
- * Only a JDBC Datasource to the {page-component-title} database connection can be passed to a report, or no datasource at all.
+Only a JDBC Datasource to the {page-component-title} database connection can be passed to a report, or no datasource at all.
 One does not have to use the data source, though.
 

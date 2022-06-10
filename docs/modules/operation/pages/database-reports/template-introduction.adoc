@@ -1,10 +1,11 @@
+[[ga-report-templates-intro]]
+= Report Templates
 
-//This file includes standard text for the format and delivery sections of each report template dialog.
+The last two parameters for most reports are checkboxes for delivery and scheduling of the report.
+Checking the "Deliver this report" checkbox will provide the delivery options described below.
+Checking the "Schedule this report" checkbox will open up the scheduling editor, which is described in the <<schedule-editor, Schedule Editor>> section below.
 
-In addition, the report screen includes delivery and schedule options.
-Click the *Deliver this report* (for report delivery options) and *Schedule this report* (for the schedule editor) checkboxes to specify this information.
-
-=== Report Delivery Options
+== Report Delivery Options
 
 Specify the following report delivery options:
 
@@ -14,11 +15,13 @@ Specify the following report delivery options:
 ** Save a copy of the report (view in the *Persisted Reports* tab)
 // where is it saved?
 ** Email report (use a comma to separate multiple email addresses)
-** Webhook (posts generated report to specified http endpoint)
+** Webhook (posts generated report to specified HTTP endpoint)
 
-=== Schedule Editor
+[[schedule-editor]]
+== Schedule Editor
 
-Specify the following types of schedule:
+Specify the schedule for automatic report delivery:
+
 * Daily
 * Days per week (specific day(s) of the week)
 * Days per month (specific day(s) of the month, for example, third Sunday of the month)
