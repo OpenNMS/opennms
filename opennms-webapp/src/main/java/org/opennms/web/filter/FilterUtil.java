@@ -54,10 +54,10 @@ public abstract class FilterUtil {
     }
 
     public static String[] parse(String filterString) {
-        String decodedString = URLDecoder.decode(filterString, StandardCharsets.UTF_8);
-        String[] filterParameter = (decodedString == null) ? null :Arrays.stream(decodedString.split("&amp;"))
+        String[] filterParameter = (filterString == null) ? null :Arrays.stream(filterString.split("&amp;"))
                 .filter(fp -> fp.startsWith("filter="))
                 .map(fp -> fp.replace("filter=", ""))
+                .map(fp -> fp = URLDecoder.decode(fp))
                 .toArray(String[]::new);
         return filterParameter;
     }
