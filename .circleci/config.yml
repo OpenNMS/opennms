@@ -106,6 +106,7 @@ commands:
             fi
             if [ -e ~/.artifacts/<< parameters.location >>.txt ]; then
               echo "artifact file ~/.artifacts/<< parameters.location >>.txt already exists -- location must be unique"
+              cat ~/.artifacts/<< parameters.location >>.txt
               exit 1
             fi
             curl \
@@ -348,11 +349,15 @@ commands:
       - restore-maven-cache
       - restore-nodejs-cache
       - run:
+          name: Cleanup OpenNMS
+          command: |
+            export OPENNMS_VERSION="$(.circleci/scripts/pom2version.sh pom.xml)"
+            mvn clean -DskipTests=true
+      - run:
           name: Compile OpenNMS
           command: |
             export OPENNMS_VERSION="$(.circleci/scripts/pom2version.sh pom.xml)"
             .circleci/scripts/configure-signing.sh
-            mvn clean -DskipTests=true
             << parameters.node-memory >>
             export MAVEN_OPTS="$MAVEN_OPTS -Xmx7g -XX:ReservedCodeCacheSize=1g"
             MAVEN_ARGS="install"
