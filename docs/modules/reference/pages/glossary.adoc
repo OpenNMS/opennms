@@ -53,7 +53,7 @@ Not to be confused with the https://helm.sh/[Kubernetes Helm] package manager.
 Horizon:: Open-source solution from OpenNMS that helps users visualize and monitor everything on their local and remote networks.
 Free, community-driven project includes the latest technology and features delivered through a rapid release cycle.
 
-IFTTT:: If This Then That (https://ifttt.com/[IFTTT]) service integrates apps, devices, and services. 
+IFTTT:: If This Then That (https://ifttt.com/[IFTTT]) is an automation and workflow service that integrates apps, devices, and services. 
 {page-component-title} can integrate with IFTTT to trigger actions on other services based on customized alarms.
 (See xref:operation:alarms/ifttt-integration.adoc[IFTTT Integration].)
 
