@@ -8,6 +8,7 @@ ActiveMQ:: Java-based open-source message broker supported by the Apache communi
 
 ALEC:: The Architecture for Learning Enabled Correlation (ALEC) is an OpenNMS framework that uses artificial intelligence and machine learning to provide alarm triage.
 ALEC groups related alarms so you can better manage the more complex situations they might represent.
+(See https://docs.opennms.com/alec/latest/[ALEC documentation].)
 
 Application Perspective Monitoring (APM):: A method that uses the Minion infrastructure to monitor a service’s availability from different perspectives to help identify if nodes are down for everyone or if an outage affects only certain sites. 
 When a service is not responsive an outage will be generated with the corresponding perspective that sees the outage.
