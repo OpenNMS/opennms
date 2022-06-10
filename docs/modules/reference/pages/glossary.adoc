@@ -34,7 +34,8 @@ Dominion:: The service on an OpenNMS core that controls the operation of Minions
 Elasticsearch:: Elasticsearch is a search engine based on the Lucene library. OpenNMS persists/forwards certain data to Elasticsearch to store flow records and warehouse events and alarm history for long-term storage of this data.
 (See xref:operation:elasticsearch/introduction.adoc#elasticsearch[Elasticsearch Integration].)
 
-Flows:: Summaries of network traffic sent by network devices. (See xref:operation:flows/introduction.adoc[Flows].)
+Flows:: Summaries of network traffic sent by network devices. 
+(See xref:operation:flows/introduction.adoc[Flows].)
 
 Foreign Source:: A data source hosted outside of your local network. To monitor a foreign source, a foreign source definition must be set. 
 (See xref:operation:provisioning/getting-started.adoc#foreign-source-definition[Foreign source definition].)
