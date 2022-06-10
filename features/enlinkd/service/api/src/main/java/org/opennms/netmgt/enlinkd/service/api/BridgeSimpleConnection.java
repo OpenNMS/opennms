@@ -398,12 +398,6 @@ public class BridgeSimpleConnection implements Topology {
             }
 
         }
-        // all macs on the same port
-        if (mac2 == null) {
-        	bbports.add(0, xp1);
-        	bbports.add(1, yp1);
-        	return bbports;
-        }
         LOG.warn("condition3: no simple connection found [{}] -> [{}]", bridgexFt.getNodeId(), bridgeyFt.getNodeId());
         return bbports;
    }
