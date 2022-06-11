@@ -54,12 +54,8 @@ public abstract class FilterUtil {
     }
 
     public static String[] parse(String filterString) {
-        String[] filterParameter = null;
-        if(filterString == null){
-            return filterParameter;
-        }
         String decodedString = URLDecoder.decode(filterString, StandardCharsets.UTF_8);
-        filterParameter = (decodedString == null) ? null :Arrays.stream(decodedString.split("&amp;"))
+        String[] filterParameter = (decodedString == null) ? null : Arrays.stream(decodedString.split("&amp;"))
                 .filter(fp -> fp.startsWith("filter="))
                 .map(fp -> fp.replace("filter=", ""))
                 .toArray(String[]::new);
