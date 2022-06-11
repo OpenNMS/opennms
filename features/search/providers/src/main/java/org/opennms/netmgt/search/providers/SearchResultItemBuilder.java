@@ -30,8 +30,8 @@ package org.opennms.netmgt.search.providers;
 
 import java.util.Objects;
 
-import org.opennms.core.rpc.utils.mate.EntityScopeProvider;
-import org.opennms.core.rpc.utils.mate.Interpolator;
+import org.opennms.core.mate.api.EntityScopeProvider;
+import org.opennms.core.mate.api.Interpolator;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.search.api.Match;
 import org.opennms.netmgt.search.api.SearchResultItem;

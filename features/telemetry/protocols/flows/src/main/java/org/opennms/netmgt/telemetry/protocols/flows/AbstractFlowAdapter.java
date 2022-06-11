@@ -35,7 +35,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
-import org.opennms.core.rpc.utils.mate.ContextKey;
+import org.opennms.core.mate.api.ContextKey;
 import org.opennms.netmgt.flows.api.Converter;
 import org.opennms.netmgt.flows.api.DetailedFlowException;
 import org.opennms.netmgt.flows.api.Flow;

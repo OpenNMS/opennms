@@ -76,7 +76,7 @@
         <property name="nodeDao" ref="nodeDao"/>
     </bean>
 
-    <bean id="entityScopeProvider" class="org.opennms.core.rpc.utils.mate.scope.EntityScopeProviderImpl">
+    <bean id="entityScopeProvider" class="org.opennms.core.mate.EntityScopeProviderImpl">
         <property name="nodeDao" ref="nodeDao"/>
         <property name="ipInterfaceDao" ref="ipInterfaceDao"/>
         <property name="snmpInterfaceDao" ref="snmpInterfaceDao"/>
@@ -84,7 +84,7 @@
         <property name="sessionUtils" ref="sessionUtils"/>
         <property name="scv" ref="secureCredentialsVault"/>
     </bean>
-    <service interface="org.opennms.core.rpc.utils.mate.EntityScopeProvider" ref="entityScopeProvider"/>
+    <service interface="org.opennms.core.mate.api.EntityScopeProvider" ref="entityScopeProvider"/>
 
     <bean id="timeseriesStorageManager" class="org.opennms.netmgt.timeseries.TimeseriesStorageManagerImpl" />
     <reference-list interface="org.opennms.integration.api.v1.timeseries.TimeSeriesStorage" availability="optional">

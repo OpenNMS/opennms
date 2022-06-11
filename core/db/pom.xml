@@ -79,8 +79,8 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.core.ipc.rpc</groupId>
-      <artifactId>org.opennms.core.ipc.rpc.utils</artifactId>
+      <groupId>org.opennms.core.mate</groupId>
+      <artifactId>org.opennms.core.mate.api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
