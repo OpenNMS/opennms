@@ -13,5 +13,7 @@
 
     <context:annotation-config />
 
+    <import resource="classpath:/META-INF/opennms/applicationContext-entity-scope-provider.xml" />
+
     <bean name="rpcTargetHelper" class="org.opennms.core.rpc.utils.RpcTargetHelper" />
 </beans>

@@ -29,7 +29,7 @@
   <dependencies>
     <dependency>
       <groupId>org.opennms.core.mate</groupId>
-      <artifactId>org.opennms.core.mate.api</artifactId>
+      <artifactId>org.opennms.core.mate.impl</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
