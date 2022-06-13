@@ -42,7 +42,8 @@ Docker:: Docker is an open-source virtualization service consisting of three com
 Dominion:: The service on an OpenNMS core that controls the operation of Minions.
 (See xref:reference:configuration/minion-confd/minion-confd.adoc#dominion[Configuring Minion via Confd].)
 
-Elasticsearch:: Elasticsearch is a NoSQL database (See https://azure.microsoft.com/en-us/overview/nosql-database/[What is NoSQL?]) with an integrated search engine based on the Lucene library.
+Elasticsearch:: Elasticsearch is a NoSQL database with an integrated search engine based on the Lucene library.
+(See https://azure.microsoft.com/en-us/overview/nosql-database/[What is NoSQL?])
 OpenNMS persists/forwards certain data to Elasticsearch to store flow records and warehouse events and alarm history for long-term storage of this data.
 (See xref:operation:elasticsearch/introduction.adoc#elasticsearch[Elasticsearch Integration].)
 
@@ -57,7 +58,7 @@ To customize monitoring of nodes in a foreign source, you can set a foreign sour
 (See xref:operation:provisioning/getting-started.adoc#foreign-source-definition[Foreign Source Definition].)
 
 Geolocation:: The actual physical location of a node monitored by {page-component-title}.
-Nodes can be manually assigned a location, or the location can be automatically determined using the GeoIP Provisioning Adapter (See xref:reference:provisioning/adapters/geoip.adoc[GeoIP]).
+Nodes can be manually assigned a location, or the location can be automatically determined using the xref:reference:provisioning/adapters/geoip.adoc[GeoIP Provisioning Adapter].
 
 Grafana:: Grafana is an open-source analysis and visualization web application.
 It connects to data sources and generates dashboards with charts, graphs, and alerts.
