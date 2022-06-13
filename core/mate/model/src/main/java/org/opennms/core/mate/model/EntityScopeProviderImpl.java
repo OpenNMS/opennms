@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.mate.impl;
+package org.opennms.core.mate.model;
 
 import java.net.InetAddress;
 import java.util.ArrayList;

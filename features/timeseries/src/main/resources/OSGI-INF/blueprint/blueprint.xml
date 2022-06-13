@@ -76,7 +76,7 @@
         <property name="nodeDao" ref="nodeDao"/>
     </bean>
 
-    <bean id="entityScopeProvider" class="org.opennms.core.mate.EntityScopeProviderImpl">
+    <bean id="entityScopeProvider" class="org.opennms.core.mate.model.EntityScopeProviderImpl">
         <property name="nodeDao" ref="nodeDao"/>
         <property name="ipInterfaceDao" ref="ipInterfaceDao"/>
         <property name="snmpInterfaceDao" ref="snmpInterfaceDao"/>

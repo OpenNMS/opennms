@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.mate.impl;
+package org.opennms.core.mate.model;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -63,7 +63,7 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
-        "classpath:/META-INF/opennms/applicationContext-rpc-utils.xml",
+        "classpath:/META-INF/opennms/applicationContext-entity-scope-provider.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
 })
 @JUnitConfigurationEnvironment

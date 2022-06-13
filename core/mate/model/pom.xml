@@ -3,12 +3,12 @@
   <parent>
     <groupId>org.opennms.core</groupId>
     <artifactId>org.opennms.core.mate</artifactId>
-    <version>30.0.0-SNAPSHOT</version>
+    <version>30.0.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core.mate</groupId>
-  <artifactId>org.opennms.core.mate.impl</artifactId>
-  <name>OpenNMS :: Core :: Mate :: Impl</name>
+  <artifactId>org.opennms.core.mate.model</artifactId>
+  <name>OpenNMS :: Core :: Mate :: Model</name>
   <packaging>bundle</packaging>
   <build>
     <plugins>
@@ -34,7 +34,6 @@
     <dependency>
       <groupId>org.opennms.core.mate</groupId>
       <artifactId>org.opennms.core.mate.api</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>ch.hsr</groupId>

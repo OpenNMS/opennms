@@ -13,7 +13,7 @@
 
     <context:annotation-config />
 
-    <bean name="entityScopeProvider" class="org.opennms.core.mate.impl.EntityScopeProviderImpl" primary="true"/>
+    <bean name="entityScopeProvider" class="org.opennms.core.mate.model.EntityScopeProviderImpl" primary="true"/>
 
     <onmsgi:service ref="entityScopeProvider" interface="org.opennms.core.mate.api.EntityScopeProvider"/>
 </beans>
