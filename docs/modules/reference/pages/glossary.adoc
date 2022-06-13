@@ -6,7 +6,7 @@
 ActiveMQ:: Java-based open-source message broker supported by the Apache community.
 (See xref:deployment:core/setup-message-broker.adoc#setup-message-broker[Set Up Message Broker].)
 
-Alarms:: Indicators for problems occurring in networks monitored by OpenNMS.
+Alarms:: Indicators for problems occurring in networks {page-component-title} monitors.
 (See xref:operation:alarms/introduction.adoc[Alarms].)
 
 ALEC:: The Architecture for Learning Enabled Correlation (ALEC) is an OpenNMS framework that uses artificial intelligence and machine learning to provide alarm triage.
@@ -19,8 +19,9 @@ When a service is not responsive an outage will be generated with the correspond
 
 Azure:: Microsoft Azure is a cloud hosting platform from Microsoft that allows users to host a variety of different services.
 
-Azure Kubernetes Service:: The Azure Kubernetes Service (AKS) employs Microsoft Azure to offload overhead and simplify the process of deploying a managed Kubernetes cluster.
-Critical tasks such as health monitoring and maintenance are handled by Azure, and agent nodes are managed and maintained by users.
+Azure Kubernetes Service:: The Azure Kubernetes Service (AKS) uses Microsoft Azure to offload overhead and simplify the process of deploying a managed Kubernetes cluster.
+Azure handles critical tasks such as health monitoring and maintenance.
+Users manage and maintain agent nodes.
 (See https://docs.microsoft.com/en-us/azure/aks/intro-kubernetes[Introduction to AKS].)
 
 Cassandra:: Open-source distributed/scale-out NoSQL database designed to hold large amounts of structured or unstructured data across many servers.
@@ -74,7 +75,7 @@ IFTTT:: If This Then That (https://ifttt.com/[IFTTT]) is an automation and workf
 Instance:: A single, unique copy of a running program.
 If a program has multiple instances, that indicates that the program has been loaded into memory more than once.
 
-Jira:: Jira is a project management platform used by OpenNMS to track software issues, feature requests, and IT requests.
+Jira:: Jira is a project management platform {page-component-title} uses to track software issues, feature requests, and IT requests.
 (See https://issues.opennms.com[OpenNMS Jira].)
 
 JRobin:: JRobin is a clone of RRDTool (see below) written in Java.
@@ -91,10 +92,10 @@ They let you display data from different devices and sources (SNMP, ICMP, HTTP) 
 (See xref:operation:admin/webui/opsboard/dashlet/ksc.adoc#ksc[KSC Reports].)
 
 Kubernetes:: Kubernetes is an open-source container orchestration system for automating software deployments, scaling, and management.
-Originally designed by Google, it is now maintained by the Cloud Native Computing Foundation.
+Originally designed by Google, the Cloud Native Computing Foundation now maintains it.
 (See https://kubernetes.io/[Kubernetes].)
 
-Location:: The geographical location of a node that is being managed using OpenNMS.
+Location:: The monitoring location of a node.
 Nodes can be manually assigned a location (See xref:reference:provisioning/handlers/dns.adoc[Location]), or the location can be determined using the GeoIP Provisioning Adapter (See xref:reference:provisioning/adapters/geoip.adoc[GeoIP]).
 
 Meridian:: Subscription-based, optimized, and stable version of the OpenNMS Horizon platform.
@@ -111,7 +112,7 @@ Minions communicate with these remote devices while OpenNMS performs coordinatio
 Nephron:: OpenNMS component that enables horizontal scaling of flow processing.
 Not required for flow processing, but can improve performance for deployments with a very high volume of flow documents.
 
-Network Operating Center:: A Network Operating Center (NOC) is comprised of one or more locations where a network is monitored and controlled.
+Network Operating Center:: A Network Operating Center (NOC) is one or more locations where a network is monitored and controlled.
 (See https://en.wikipedia.org/wiki/Network_operations_center[Network Operations Center].)
 
 Newts:: Newts (New-Fangled Time Series Datastore) is an OpenNMS time series data store based on Apache Cassandra.
@@ -119,7 +120,7 @@ Use it as an alternative persistence strategy instead of JRobin or RRDtool.
 (See xref:deployment:time-series-storage/newts/introduction.adoc#ga-opennms-operation-newts[Newts].)
 
 Notifications:: Messages delivered to a set of recipients.
-OpenNMS uses notifications to inform users about events in their monitored networks without forcing them to log in and look at the UI.
+{page-component-title} notifications inform users about events in their monitored networks without forcing them to log in and look at the UI.
 (See xref:operation:notifications/introduction.adoc[Notifications].)
 
 Operator board:: Customizable dashboard to visualize monitoring information.
