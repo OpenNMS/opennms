@@ -27,7 +27,7 @@ You can view detailed information about a node's connections (discovered links) 
 
 The Enhanced Linkd topology map supports layered protocol maps.
 
-Click the Layers Button on the right panel of the Topology Map to access available Layers.
+Choose menu:Maps[Topology] to display the topology map, and click the Layers icon on the right panel of the map to access available layers:
 
 Supported Layers Maps:
 
