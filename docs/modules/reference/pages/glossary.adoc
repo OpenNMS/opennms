@@ -42,11 +42,11 @@ Docker:: Docker is an open-source virtualization service consisting of three com
 Dominion:: The service on an OpenNMS core that controls the operation of Minions.
 (See xref:reference:configuration/minion-confd/minion-confd.adoc#dominion[Configuring Minion via Confd].)
 
-Elasticsearch:: Elasticsearch is a No-SQL database with an integrated search engine based on the Lucene library.
+Elasticsearch:: Elasticsearch is a NoSQL database (See https://azure.microsoft.com/en-us/overview/nosql-database/[What is NoSQL?]) with an integrated search engine based on the Lucene library.
 OpenNMS persists/forwards certain data to Elasticsearch to store flow records and warehouse events and alarm history for long-term storage of this data.
 (See xref:operation:elasticsearch/introduction.adoc#elasticsearch[Elasticsearch Integration].)
 
-Events:: Structured historical records of occurrences in {page-component-title} and the nodes, interfaces, and services it manages.
+Events:: Structured historical records of activities in {page-component-title} and the nodes, interfaces, and services it manages.
 (See xref:operation:events/anatomy-events.adoc[Anatomy of an Event].)
 
 Flows:: Summaries of network traffic sent by network devices.
@@ -56,9 +56,14 @@ Foreign Source:: A data source hosted outside of your local network.
 To customize monitoring of nodes in a foreign source, you can set a foreign source definition with your desired detectors and policies.
 (See xref:operation:provisioning/getting-started.adoc#foreign-source-definition[Foreign Source Definition].)
 
+Geolocation:: The actual physical location of a node monitored by {page-component-title}.
+Nodes can be manually assigned a location, or the location can be automatically determined using the GeoIP Provisioning Adapter (See xref:reference:provisioning/adapters/geoip.adoc[GeoIP]).
+
 Grafana:: Grafana is an open-source analysis and visualization web application.
 It connects to data sources and generates dashboards with charts, graphs, and alerts.
 (See https://grafana.com/[Grafana].)
+OpenNMS HELM is a Grafana plugin that allows users to customize fault management and performance management data from {page-component-title}.
+(See https://docs.opennms.com/helm/latest[HELM Documentation].)
 
 Helm:: Helm is an an OpenNMS application for creating flexible dashboards to display and customize fault management and performance management data from Horizon and Meridian.
 Helm works with the Grafana analytics program to customize the data you can view.
@@ -96,7 +101,7 @@ Originally designed by Google, the Cloud Native Computing Foundation now maintai
 (See https://kubernetes.io/[Kubernetes].)
 
 Location:: The monitoring location of a node.
-Nodes can be manually assigned a location (See xref:reference:provisioning/handlers/dns.adoc[Location]), or the location can be determined using the GeoIP Provisioning Adapter (See xref:reference:provisioning/adapters/geoip.adoc[GeoIP]).
+This is distinct from geolocation, which is the actual physical location of the node.
 
 Meridian:: Subscription-based, optimized, and stable version of the OpenNMS Horizon platform.
 Annual release with monthly security patches that includes only the most stable and secure Horizon features.
