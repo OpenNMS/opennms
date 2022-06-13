@@ -46,7 +46,7 @@ for all supported protocols OSPF, ISIS, Bridge, LLDP and CDP including User Defi
 
 * *ISIS* – displays the IS-IS topology information Enhanced Linkd discovers.
 
-*Layer3* displays OSPF and IS-IS combined topology information discovered by Enhanced Linkd
+*Layer3* – displays OSPF and IS-IS combined topology information Enhanced Linkd discovers.
 
 *UserDefined* displays the User Defined topology information
 
