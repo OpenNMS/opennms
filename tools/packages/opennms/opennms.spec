@@ -611,6 +611,12 @@ rm -rf %{buildroot}%{instprefix}/share
 rsync -avr --exclude=examples %{buildroot}%{instprefix}/etc/ %{buildroot}%{sharedir}/etc-pristine/
 chmod -R go-w %{buildroot}%{sharedir}/etc-pristine/
 
+# Copy the /jetty-webapps/opennms/WEB-INF spring-security files into /spring-security-pristine
+mkdir -p %{buildroot}%{sharedir}/spring-security-pristine/spring-security.d/
+rsync -avr %{buildroot}%{instprefix}/jetty-webapps/opennms/WEB-INF/spring-security.d/ %{buildroot}%{sharedir}/spring-security-pristine/spring-security.d/
+cp %{buildroot}%{instprefix}/jetty-webapps/opennms/WEB-INF/applicationContext-spring-security.xml %{buildroot}%{sharedir}/spring-security-pristine/applicationContext-spring-security.xml
+chmod -R go-w %{buildroot}%{sharedir}/spring-security-pristine/
+
 install -d -m 755 "%{buildroot}%{_initrddir}" "%{buildroot}%{_sysconfdir}/sysconfig" "%{buildroot}%{_unitdir}"
 install -m 644 %{buildroot}%{instprefix}/etc/opennms.service %{buildroot}%{_unitdir}
 
@@ -717,6 +723,7 @@ find %{buildroot}%{instprefix}/bin \
 # Put various shared directories in the package
 find %{buildroot}%{instprefix}/bin \
 	%{buildroot}%{sharedir}/etc-pristine \
+	%{buildroot}%{sharedir}/spring-security-pristine \
 	%{buildroot}%{sharedir}/mibs \
 	%{buildroot}%{sharedir}/reports \
 	%{buildroot}%{sharedir}/rrd \
