@@ -64,6 +64,11 @@ install: build
 	rsync -avr --exclude=examples debian/temp/etc/ debian/opennms-common/var/lib/opennms/etc-pristine/
 	chmod -R go-w debian/opennms-common/var/lib/opennms/etc-pristine/
 
+	mkdir -p debian/opennms-common/var/lib/opennms/spring-security-pristine/spring-security.d/
+	rsync -avr --exclude=examples debian/temp/jetty-webapps/opennms/WEB-INF/spring-security.d/ debian/opennms-common/var/lib/opennms/spring-security-pristine/
+	cp debian/temp/jetty-webapps/opennms/WEB-INF/applicationContext-spring-security.xml debian/opennms-common/var/lib/opennms/spring-security-pristine/applicationContext-spring-security.xml
+	chmod -R go-w debian/opennms-common/var/lib/opennms/spring-security-pristine/
+	
 	##
 	## Setup the alarm northbounders
 	##
