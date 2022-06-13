@@ -38,7 +38,7 @@ for all supported protocols OSPF, ISIS, Bridge, LLDP and CDP including User Defi
 
 * *LLDP* – displays the Link Layer Discovery Protocol topology information Enhanced Linkd discovers.
 
-*Layer2* displays CDP and LLDP combined topology information discovered by Enhanced Linkd
+* *Layer2* – displays CDP and LLDP combined topology information Enhanced Linkd discovers.
 
 * *Bridge* – shows only Bridge links.
 
