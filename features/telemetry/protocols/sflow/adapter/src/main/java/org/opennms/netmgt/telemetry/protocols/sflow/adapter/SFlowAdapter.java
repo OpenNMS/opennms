@@ -28,25 +28,71 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.adapter;
 
+import static org.opennms.netmgt.telemetry.protocols.common.utils.BsonUtils.first;
+import static org.opennms.netmgt.telemetry.protocols.common.utils.BsonUtils.get;
+import static org.opennms.netmgt.telemetry.protocols.common.utils.BsonUtils.getArray;
+import static org.opennms.netmgt.telemetry.protocols.common.utils.BsonUtils.getDocument;
+import static org.opennms.netmgt.telemetry.protocols.common.utils.BsonUtils.getString;
+
+import java.time.Instant;
+import java.util.List;
+
 import org.bson.BsonDocument;
+import org.bson.BsonValue;
 import org.bson.RawBsonDocument;
+import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLogEntry;
 import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
 import org.opennms.netmgt.telemetry.protocols.flows.AbstractFlowAdapter;
 
 import com.codahale.metrics.MetricRegistry;
+import com.google.common.collect.Lists;
 
 public class SFlowAdapter extends AbstractFlowAdapter<BsonDocument> {
 
     public SFlowAdapter(final AdapterDefinition adapterConfig,
                         final MetricRegistry metricRegistry,
                         final FlowRepository flowRepository) {
-        super(adapterConfig, metricRegistry, flowRepository, new SFlowConverter());
+        super(adapterConfig, metricRegistry, flowRepository);
     }
 
     @Override
     protected BsonDocument parse(TelemetryMessageLogEntry message) {
         return new RawBsonDocument(message.getByteArray());
+    }
+
+    private static RuntimeException invalidDocument() {
+        throw new RuntimeException("Invalid Document");
+    }
+
+    @Override
+    public List<Flow> convert(final BsonDocument packet, final Instant receivedAt) {
+        return convertDocument(packet, receivedAt);
+    }
+
+    public static List<Flow> convertDocument(final BsonDocument packet, final Instant receivedAt) {
+        final List<Flow> result = Lists.newLinkedList();
+
+        final SFlow.Header header = new SFlow.Header(packet);
+
+        for (final BsonValue sample : getArray(packet, "data", "samples").orElseThrow(SFlowAdapter::invalidDocument)) {
+            final BsonDocument sampleDocument = sample.asDocument();
+
+            final String format = getString(sampleDocument, "format").orElseThrow(SFlowAdapter::invalidDocument);
+            if ("0:1".equals(format) || "0:3".equals(format)) {
+                // Handle only (expanded) flow samples
+
+                if (first(get(sampleDocument, "data", "flows", "0:1", "ipv4"),
+                          get(sampleDocument, "data", "flows", "0:1", "ipv6"),
+                          get(sampleDocument, "data", "flows", "0:3"),
+                          get(sampleDocument, "data", "flows", "0:4")).isPresent()) {
+                    // Handle only flows containing IP related records
+                    result.add(new SFlow(header, getDocument(sampleDocument, "data").orElseThrow(SFlowAdapter::invalidDocument), receivedAt));
+                }
+            }
+        }
+
+        return result;
     }
 }

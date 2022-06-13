@@ -41,20 +41,20 @@ import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.opennms.netmgt.flows.api.Converter;
 import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.telemetry.protocols.netflow.adapter.Utils;
-import org.opennms.netmgt.telemetry.protocols.netflow.adapter.common.NetflowConverter;
+import org.opennms.netmgt.telemetry.protocols.netflow.adapter.common.NetflowMessage;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.InvalidPacketException;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.Protocol;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.proto.Header;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.proto.Packet;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.SequenceNumberTracker;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.TcpSession;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.IpFixMessageBuilder;
 import org.opennms.netmgt.telemetry.protocols.netflow.transport.FlowMessage;
 
 import io.netty.buffer.ByteBuf;
@@ -66,19 +66,15 @@ import io.netty.buffer.Unpooled;
  */
 public class IpFixProtobufValidationTest {
 
-    private Converter ipFixConverter;
-
     @Test
     public void canValidateIpFixFlowsWithJsonOutput() {
         // Generate flows from existing packet payloads
-        ipFixConverter = new NetflowConverter();
         List<Flow> flows = getFlowsForPayloadsInSession("/flows/ipfix_test_1.dat",
                 "/flows/ipfix_test_2.dat");
         assertThat(flows, hasSize(8));
-        Utils.JsonConverter jsonConverter = new Utils.JsonConverter();
-        List<String> jsonStrings = jsonConverter.getJsonStringFromResources("/flows/ipfix_test_1.json",
-                "/flows/ipfix_test_2.json");
-        List<Flow> jsonData = jsonConverter.convert(jsonStrings, Instant.now());
+        List<Flow> jsonData = Utils.getJsonFlowFromResources(Instant.now(),
+                                                             "/flows/ipfix_test_1.json",
+                                                             "/flows/ipfix_test_2.json");
         assertThat(jsonData, hasSize(8));
         for (int i = 0; i < 8; i++) {
             Assert.assertEquals(flows.get(i).getFlowSeqNum(), jsonData.get(i).getFlowSeqNum());
@@ -143,15 +139,8 @@ public class IpFixProtobufValidationTest {
                 header = new Header(slice(buffer, Header.SIZE));
                 final Packet packet = new Packet(session, header, slice(buffer, header.payloadLength()));
                 packet.getRecords().forEach(rec -> {
-
-                    final FlowMessage flowMessage;
-                    try {
-                        flowMessage = Utils.buildAndSerialize(Protocol.IPFIX, rec).build();
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-
-                    flows.addAll(ipFixConverter.convert(flowMessage, Instant.now()));
+                    final FlowMessage flowMessage = new IpFixMessageBuilder().buildMessage(rec, (address) -> Optional.empty()).build();
+                    flows.add(new NetflowMessage(flowMessage, Instant.now()));
                 });
             } catch (InvalidPacketException e) {
                 throw new RuntimeException(e);
