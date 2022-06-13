@@ -380,11 +380,17 @@ commands:
               -Psmoke \
               --batch-mode \
               $MAVEN_ARGS
+      - run:
+          name: Create javadoc tar file
+          command: |   
             if [ -d target/site/apidocs ]; then
               pushd target/site/apidocs
                 tar -czf "../../artifacts/opennms-${OPENNMS_VERSION}-javadoc.tar.gz" *
               popd
             fi
+      - run:
+          name: Create opennms-doc
+          command: |  
             pushd opennms-doc
               ../compile.pl \
                 -DupdatePolicy=never \
