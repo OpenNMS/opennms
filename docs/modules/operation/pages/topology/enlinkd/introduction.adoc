@@ -48,7 +48,7 @@ for all supported protocols OSPF, ISIS, Bridge, LLDP and CDP including User Defi
 
 *Layer3* – displays OSPF and IS-IS combined topology information Enhanced Linkd discovers.
 
-*UserDefined* displays the User Defined topology information
+*UserDefined* – displays user-defined topology information.
 
 [[ga-enlinkd-daemon]]
 == Enlinkd daemon
