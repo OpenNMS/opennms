@@ -30,7 +30,8 @@ The Enhanced Linkd topology map supports layered protocol maps.
 Choose menu:Maps[Topology] to display the topology map, and click the Layers icon on the right panel of the map to access available layers:
 
 
-*All* _(Selected by default)_ displays the topology information discovered by the Enhanced Linkd,
+* *All* (default) – displays the topology information Enhanced Linkd discovers, for all supported protocols (OSPF, ISIS, Bridge, LLDP, and CDP).
+It also includes a user-defined option. 
 for all supported protocols OSPF, ISIS, Bridge, LLDP and CDP including User Defined to generate the overall topology
 
 * *CDP* – displays the Cisco Discovery Protocol topology information Enhanced Linkd discovers.
