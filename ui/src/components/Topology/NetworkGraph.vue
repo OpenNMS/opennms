@@ -128,7 +128,7 @@ const graph = ref<Instance>()
 const selectedNodes = ref<string[]>([]) // string ids
 const selectedNodeObjects = ref<Node[]>([]) // full nodes
 const tooltip = ref<HTMLDivElement>()
-const displayTooltip = ref(false)
+const showTooltip = ref(false)
 const cancelTooltipDebounce = ref(false)
 const targetNodeId = ref('')
 const d3Nodes = ref<d3Node[]>([])
@@ -142,8 +142,32 @@ const groupClick = ref(false)
 
 const getD3NodeCoords = () => d3Nodes.value.filter((d3Node) => d3Node.id === targetNodeId.value).map((d3Node) => ({ x: d3Node.x, y: d3Node.y }))[0]
 
+
+const displayContextMenu = (x: number, y: number) => {
+  menuXPos.value = x
+  menuYPos.value = y
+  showContextMenu.value = true
+}
 const closeContextMenu = () => showContextMenu.value = false
 onClickOutside(contextMenu, () => closeContextMenu())
+
+
+const displayTooltip = (show = false) => {
+  if (!show) { // hide
+    cancelTooltipDebounce.value = true
+    showTooltip.value= false
+  } else { // show
+    cancelTooltipDebounce.value = false
+
+    const tooltip = useDebounceFn(() => {
+      if (!cancelTooltipDebounce.value) {
+        showTooltip.value = true
+      }
+    }, 1000)
+
+    tooltip()
+  }
+}
 
 const vertices = computed<Nodes>(() => store.state.topologyModule.vertices)
 const edges = computed<Edges>(() => store.state.topologyModule.edges)
@@ -156,7 +180,7 @@ const selectedView = computed<string>(() => store.state.topologyModule.selectedV
 const tooltipPos = computed(() => {
   const defaultPos = { left: '-9999px', top: '-99999px' }
 
-  if (!graph.value || !tooltip.value || !targetNodeId.value || !displayTooltip.value) return defaultPos
+  if (!graph.value || !tooltip.value || !targetNodeId.value || !showTooltip.value) return defaultPos
 
   // attempt to get the node position from the layout. If layout is d3, use the function
   const nodePos = layout.value.nodes ? layout.value.nodes[targetNodeId.value] : getD3NodeCoords()
@@ -217,9 +241,7 @@ const eventHandlers: EventHandlers = {
   'view:contextmenu': ({ event }: ViewEvent<any>) => {
     event.preventDefault()
     contextMenuType.value = ContextMenuType.background
-    menuXPos.value = event.x
-    menuYPos.value = event.y
-    showContextMenu.value = true
+    displayContextMenu(event.x, event.y)
   },
   // on right clicking node
   'node:contextmenu': ({ node, event }: NodeEvent<any>) => {
@@ -236,31 +258,19 @@ const eventHandlers: EventHandlers = {
 
     contextMenuType.value = ContextMenuType.node
     contextNode.value = vertices.value[node]
-    menuXPos.value = event.x
-    menuYPos.value = event.y
-    showContextMenu.value = true
+    displayContextMenu(event.x, event.y)
   },
   // on hover, display tooltip
   'node:pointerover': ({ node }: NodeEvent<any>) => {
-    cancelTooltipDebounce.value = false
     targetNodeId.value = node
-
-    const showTooltip = useDebounceFn(() => {
-      if (!cancelTooltipDebounce.value) {
-        displayTooltip.value = true
-      }
-    }, 1000)
-
-    showTooltip()
+    displayTooltip(true)
   },
   'node:pointerout': () => {
-    cancelTooltipDebounce.value = true
-    displayTooltip.value = false
+    displayTooltip(false)
   },
   'node:dragstart': () => {
     d3ForceEnabled.value = false // to keep other nodes in place when one is dragged
-    cancelTooltipDebounce.value = true
-    displayTooltip.value = false
+    displayTooltip(false)
   },
   'node:dragend': (node) => {
     // get node's position for tooltip
@@ -276,14 +286,7 @@ const eventHandlers: EventHandlers = {
       })
     }
 
-    // show tooltip
-    cancelTooltipDebounce.value = false
-    const showTooltip = useDebounceFn(() => {
-      if (!cancelTooltipDebounce.value) {
-        displayTooltip.value = true
-      }
-    }, 1000)
-    showTooltip()
+    displayTooltip(true)
   }
 }
 
