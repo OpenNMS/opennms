@@ -1,8 +1,9 @@
-from library import tests
+from library import tests,libgit
 import json 
 import subprocess
 
 x=tests.tests(True)
+_git=libgit.libgit()
 
 print("Flaky testcases:")
 for t in x.retrieveFlakyTests():
@@ -13,12 +14,19 @@ print("Smoke testcases (without Flaky):")
 for t in x.retrieveSmokeTests():
     print("\t",t)
 
+print(">>> GIT Testing Area <<<")
+lastestCommit= _git.getLastCommit()
+print(lastestCommit)
+print(_git.getChangedFilesInCommits("HEAD","HEAD~"))
+print(_git.getChangedFilesOnFileSystem())
+print(_git.extractKeywordsFromLastCommit())
+print(">>>END GIT Testing Area <<<")
+
 _data={}
 with open("/tmp/pipeline-parameters.json","r") as f:
     _data=json.load(f)
 
 #Lets see if we can detect "#flak-tests"
-lastestCommit= subprocess.run(['git','log','-1'],check=True,capture_output=True).stdout.decode('utf-8').strip()
 print("Commit message ")
 print(lastestCommit)
 

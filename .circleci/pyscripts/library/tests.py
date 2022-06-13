@@ -1,4 +1,3 @@
-from distutils.log import debug
 import subprocess
 import glob 
 import os 
@@ -6,7 +5,7 @@ import os
 class tests:
     _debug=False
     _testcases=[]
-    _testcases_filename=["Test","IT"]
+    _testcases_filename_template=["Test","IT"]
     _flakyTests=[]
     _smokeTests=[]
     _integrationTests=[]
@@ -14,7 +13,7 @@ class tests:
     
     def __init__(self,debug=False) -> None:
         self._debug=debug
-        for e in self._testcases_filename:
+        for e in self._testcases_filename_template:
             self._testcases.extend(self._scanFolders('**/test/java/**/*'+e+'.java'))
 
         self.retrieveFlakyTests()
