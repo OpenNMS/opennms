@@ -355,7 +355,7 @@ commands:
             export OPENNMS_VERSION="$(.circleci/scripts/pom2version.sh pom.xml)"
             mvn clean -DskipTests=true
       - run:
-          name: Compile OpenNMS
+          name: Setup compile environment
           command: |
             export OPENNMS_VERSION="$(.circleci/scripts/pom2version.sh pom.xml)"
             .circleci/scripts/configure-signing.sh
@@ -369,6 +369,9 @@ commands:
                 MAVEN_ARGS="-Dbuild.type=production $MAVEN_ARGS javadoc:aggregate"
                 ;;
             esac
+      - run:
+          name: Compile OpenNMS
+          command: |
             ./compile.pl -DskipTests=true -Dbuild.skip.tarball=true \
               -DupdatePolicy=never \
               -Daether.connector.resumeDownloads=false \
@@ -1019,9 +1022,12 @@ jobs:
       - cache-workflow-assets:
           cache_prefix: rpm-horizon
           source_path: target/rpm/RPMS/noarch
-      - cache-oci:
-          key: horizon
+      - save-artifacts:
           path: opennms-container/horizon/images/
+          location: horizon-oci
+      #- cache-oci:
+      #    key: horizon
+      #    path: opennms-container/horizon/images/
   minion-rpm-build:
     executor: centos-build-executor
     # Larger memory footprint required to speed up builds using Takari smartbuilder
