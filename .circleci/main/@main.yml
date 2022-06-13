@@ -673,8 +673,10 @@ workflows:
             branches:
               only:
                 - develop
-                - /^master-.*/
+                - /^dependabot\/.*/
+                - /^features.*/
                 - /^foundation.*/
+                - /^master-.*/
                 - /^release-.*/
                 - /.*smoke.*/
       - minion-rpm-build:
@@ -684,8 +686,10 @@ workflows:
             branches:
               only:
                 - develop
-                - /^master-.*/
+                - /^dependabot\/.*/
+                - /^features.*/
                 - /^foundation.*/
+                - /^master-.*/
                 - /^release-.*/
                 - /.*smoke.*/
       - sentinel-rpm-build:
@@ -695,8 +699,10 @@ workflows:
             branches:
               only:
                 - develop
-                - /^master-.*/
+                - /^dependabot\/.*/
+                - /^features.*/
                 - /^foundation.*/
+                - /^master-.*/
                 - /^release-.*/
                 - /.*smoke.*/
       - integration-test:
@@ -710,71 +716,66 @@ workflows:
           requires:
             - tarball-assembly
             - horizon-deb-build
-            - minion-rpm-build
             - sentinel-deb-build
           filters:
             branches:
               only:
                 - develop
+                - /^dependabot.*/
+                - /^features.*/
+                - /^foundation.*/
                 - /^master-.*/
                 - /^release-.*/
-                - /^foundation.*/
-                - /^features.*/
                 - /.*smoke.*/
-                - /^dependabot.*/
       - smoke-test-flaky:
           requires:
             - tarball-assembly
             - horizon-deb-build
-            - minion-rpm-build
             - sentinel-deb-build
           filters:
             branches:
               only:
                 - develop
+                - /^dependabot.*/
+                - /^features.*/
+                - /^foundation.*/
                 - /^master-.*/
                 - /^release-.*/
-                - /^foundation.*/
-                - /^features.*/
                 - /.*smoke.*/
-                - /^dependabot.*/
       - smoke-test-minion:
           requires:
             - tarball-assembly
             - horizon-deb-build
-            - minion-rpm-build
             - sentinel-deb-build
           filters:
             branches:
               only:
                 - develop
+                - /^dependabot.*/
+                - /^features.*/
+                - /^foundation.*/
                 - /^master-.*/
                 - /^release-.*/
-                - /^foundation.*/
-                - /^features.*/
                 - /.*smoke.*/
-                - /^dependabot.*/
       - smoke-test-sentinel:
           requires:
             - tarball-assembly
             - horizon-deb-build
-            - tarball-assembly
             - sentinel-deb-build
           filters:
             branches:
               only:
                 - develop
+                - /^dependabot.*/
+                - /^features.*/
+                - /^foundation.*/
                 - /^master-.*/
                 - /^release-.*/
-                - /^foundation.*/
-                - /^features.*/
                 - /.*smoke.*/
-                - /^dependabot.*/
 #      - smoke-test-minimal:
 #          requires:
 #            - tarball-assembly
 #            - horizon-deb-build
-#            - tarball-assembly
 #            - sentinel-deb-build
 #          filters:
 #            branches:
@@ -783,7 +784,6 @@ workflows:
 #                - /^master-.*/
 #                - /^release-.*/
 #                - /^foundation.*/
-#                - /^merge-foundation.*/
 #                - /^features.*/
 #                - /.*smoke.*/
 #                - /^dependabot.*/
