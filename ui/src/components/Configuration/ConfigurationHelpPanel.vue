@@ -62,7 +62,10 @@ import { LocalConfiguration } from './configuration.types'
  */
 const props = defineProps({
   active: Boolean,
-  onClose: { type: Function as PropType<(payload: MouseEvent) => void> },
+  onClose: { 
+    type: Function as PropType<(payload: MouseEvent) => void>,
+    required: true
+  },
   item: { type: Object as PropType<LocalConfiguration>, required: true }
 })
 
