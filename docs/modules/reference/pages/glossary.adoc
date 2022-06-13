@@ -6,7 +6,7 @@
 ActiveMQ:: Java-based open-source message broker supported by the Apache community.
 (See xref:deployment:core/setup-message-broker.adoc#setup-message-broker[Set Up Message Broker].)
 
-Alarms:: Indicators for problems occurring in networks {page-component-title} monitors.
+Alarms:: Indicators for problems occurring on entities that {page-component-title} monitors.
 (See xref:operation:alarms/introduction.adoc[Alarms].)
 
 ALEC:: The Architecture for Learning Enabled Correlation (ALEC) is an OpenNMS framework that uses artificial intelligence and machine learning to provide alarm triage.
@@ -18,11 +18,6 @@ When a service is not responsive an outage will be generated with the correspond
 (See xref:operation:application-perspective-monitoring/introduction.adoc[Application Perspective Monitoring].)
 
 Azure:: Microsoft Azure is a cloud hosting platform from Microsoft that allows users to host a variety of different services.
-
-Azure Kubernetes Service:: The Azure Kubernetes Service (AKS) uses Microsoft Azure to offload overhead and simplify the process of deploying a managed Kubernetes cluster.
-Azure handles critical tasks such as health monitoring and maintenance.
-Users manage and maintain agent nodes.
-(See https://docs.microsoft.com/en-us/azure/aks/intro-kubernetes[Introduction to AKS].)
 
 Cassandra:: Open-source distributed/scale-out NoSQL database designed to hold large amounts of structured or unstructured data across many servers.
 (See xref:deployment:time-series-storage/newts/introduction.adoc[Newts].)
@@ -36,7 +31,8 @@ There, users can find knowledge base articles, support, announcements, and gener
 Discovery:: A process that uses ICMP to find network devices and services in your network and then automatically adds them to monitoring.
 (See xref:operation:provisioning/introduction.adoc#discovery-auto[Provisioning].)
 
-Docker:: Docker is an open-source virtualization service consisting of three components: Docker Compose (a tool for defining and running multi-container Docker applications), Docker Swarm (a tool providing native clustering functionality for Docker containers), and Docker Volume (a tool that allows for the independent persistence of data).
+Docker:: Docker is an open-source container virtualization service that allows you to deploy application-level services without worrying about operating system maintenance.
+{page-component-titles} components may optionally be deployed as Docker containers.
 (See https://docs.docker.com/[Docker].)
 
 Dominion:: The service on an OpenNMS core that controls the operation of Minions.
@@ -44,7 +40,7 @@ Dominion:: The service on an OpenNMS core that controls the operation of Minions
 
 Elasticsearch:: Elasticsearch is a NoSQL database with an integrated search engine based on the Lucene library.
 (See https://azure.microsoft.com/en-us/overview/nosql-database/[What is NoSQL?])
-OpenNMS persists/forwards certain data to Elasticsearch to store flow records and warehouse events and alarm history for long-term storage of this data.
+{page-component-title} persists/forwards certain data to Elasticsearch to store flow records and warehouse events and alarm history for long-term storage of this data.
 (See xref:operation:elasticsearch/introduction.adoc#elasticsearch[Elasticsearch Integration].)
 
 Events:: Structured historical records of activities in {page-component-title} and the nodes, interfaces, and services it manages.
@@ -63,10 +59,10 @@ Nodes can be manually assigned a location, or the location can be automatically 
 Grafana:: Grafana is an open-source analysis and visualization web application.
 It connects to data sources and generates dashboards with charts, graphs, and alerts.
 (See https://grafana.com/[Grafana].)
-OpenNMS HELM is a Grafana plugin that allows users to customize fault management and performance management data from {page-component-title}.
+OpenNMS HELM is a Grafana plugin that allows users to create customized dashboards with data from {page-component-title}.
 (See https://docs.opennms.com/helm/latest[HELM Documentation].)
 
-Helm:: Helm is an an OpenNMS application for creating flexible dashboards to display and customize fault management and performance management data from Horizon and Meridian.
+Helm:: Helm is an OpenNMS application for creating flexible dashboards to display and customize fault, flow, and performance data from {page-component-title}.
 Helm works with the Grafana analytics program to customize the data you can view.
 Not to be confused with the https://helm.sh/[Kubernetes Helm] package manager.
 (See https://docs.opennms.com/helm/latest[HELM Documentation].)
@@ -101,7 +97,8 @@ Kubernetes:: Kubernetes is an open-source container orchestration system for aut
 Originally designed by Google, the Cloud Native Computing Foundation now maintains it.
 (See https://kubernetes.io/[Kubernetes].)
 
-Location:: The monitoring location of a node.
+Location:: Also referred to as "monitoring location" or "Minion location".
+Nodes assigned to a monitoring location will be monitored by Minions assigned to the same location.
 This is distinct from geolocation, which is the actual physical location of the node.
 
 Meridian:: Subscription-based, optimized, and stable version of the OpenNMS Horizon platform.
