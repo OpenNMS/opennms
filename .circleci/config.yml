@@ -112,6 +112,7 @@ commands:
               cat ~/.artifacts/<< parameters.location >>.txt
               exit 1
             fi
+            echo "Running curl"
             curl \
               -sS \
               -L \
