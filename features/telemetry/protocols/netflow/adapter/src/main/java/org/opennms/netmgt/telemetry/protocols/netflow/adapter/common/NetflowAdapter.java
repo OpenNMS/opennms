@@ -28,6 +28,11 @@
 
 package org.opennms.netmgt.telemetry.protocols.netflow.adapter.common;
 
+import java.time.Instant;
+import java.util.Collections;
+import java.util.List;
+
+import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLogEntry;
 import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
@@ -46,7 +51,7 @@ public class NetflowAdapter extends AbstractFlowAdapter<FlowMessage> {
     public NetflowAdapter(final AdapterDefinition adapterConfig,
                           final MetricRegistry metricRegistry,
                           final FlowRepository flowRepository) {
-        super(adapterConfig, metricRegistry, flowRepository, new NetflowConverter());
+        super(adapterConfig, metricRegistry, flowRepository);
     }
 
     @Override
@@ -57,5 +62,10 @@ public class NetflowAdapter extends AbstractFlowAdapter<FlowMessage> {
             LOG.error("Unable to parse message from proto", e);
         }
         return null;
+    }
+
+    @Override
+    public List<Flow> convert(final FlowMessage packet, final Instant receivedAt) {
+        return Collections.singletonList(new NetflowMessage(packet, receivedAt));
     }
 }
