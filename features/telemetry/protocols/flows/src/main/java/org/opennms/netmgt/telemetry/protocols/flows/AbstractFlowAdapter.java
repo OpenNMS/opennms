@@ -64,8 +64,6 @@ public abstract class AbstractFlowAdapter<P> implements Adapter {
 
     private final FlowRepository flowRepository;
 
-    private final Converter<P> converter;
-
     private String metaDataNodeLookup;
     private ContextKey contextKey;
 
@@ -92,13 +90,11 @@ public abstract class AbstractFlowAdapter<P> implements Adapter {
 
     public AbstractFlowAdapter(final AdapterDefinition adapterConfig,
                                final MetricRegistry metricRegistry,
-                               final FlowRepository flowRepository,
-                               final Converter<P> converter) {
+                               final FlowRepository flowRepository) {
         Objects.requireNonNull(adapterConfig);
         Objects.requireNonNull(metricRegistry);
 
         this.flowRepository = Objects.requireNonNull(flowRepository);
-        this.converter = Objects.requireNonNull(converter);
 
         this.logParsingTimer = metricRegistry.timer(name("adapters", adapterConfig.getFullName(), "logParsing"));
         this.packetsPerLogHistogram = metricRegistry.histogram(name("adapters", adapterConfig.getFullName(), "packetsPerLog"));
@@ -127,7 +123,7 @@ public abstract class AbstractFlowAdapter<P> implements Adapter {
 
                     flowPackets += 1;
 
-                    final List<Flow> converted = converter.convert(flowPacket, Instant.ofEpochMilli(eachMessage.getTimestamp()));
+                    final List<Flow> converted = this.convert(flowPacket, Instant.ofEpochMilli(eachMessage.getTimestamp()));
                     flows.addAll(converted);
 
                     this.entriesConverted.mark(converted.size());
@@ -163,6 +159,8 @@ public abstract class AbstractFlowAdapter<P> implements Adapter {
     }
 
     protected abstract P parse(TelemetryMessageLogEntry message);
+
+    protected abstract List<Flow> convert(final P packet, final Instant receivedAt);
 
     public void destroy() {
         // not needed
