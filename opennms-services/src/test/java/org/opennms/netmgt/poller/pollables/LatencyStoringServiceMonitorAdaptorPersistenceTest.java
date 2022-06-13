@@ -166,7 +166,7 @@ public class LatencyStoringServiceMonitorAdaptorPersistenceTest {
                 anyList(),
                 anyList())).thenReturn(null);
 
-        // verify(m_rrdStrategy, atLeastOnce()).createFile(anyObject());
+        // verify(m_rrdStrategy, atLeastOnce()).createFile(any());
 
         when(m_rrdStrategy.openFile(eq(getResponseTimeRoot().toPath()
                 .resolve(pathToResourceInResponseTime.resolve("smtp-base.jrb")).toString()))).thenReturn(null);
