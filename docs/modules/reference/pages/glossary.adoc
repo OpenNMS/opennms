@@ -74,8 +74,8 @@ IFTTT:: If This Then That (https://ifttt.com/[IFTTT]) is an automation and workf
 {page-component-title} can integrate with IFTTT to trigger actions on other services based on customized alarms.
 (See xref:operation:alarms/ifttt-integration.adoc[IFTTT Integration].)
 
-Instance:: A single, unique copy of a running program.
-If a program has multiple instances, that indicates that the program has been loaded into memory more than once.
+Instance:: (1) A single, unique occurrence of an element, document, or running program.
+(2) Used in data collection for storing tabular data as separate data points.
 
 Jira:: Jira is a project management platform {page-component-title} uses to track software issues, feature requests, and IT requests.
 (See https://issues.opennms.com[OpenNMS Jira].)
