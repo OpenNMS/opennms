@@ -1742,7 +1742,7 @@
     <jfreechartVersion>1.0.19</jfreechartVersion>
     <jicmpVersion>2.0.4</jicmpVersion>
     <jicmp6Version>2.0.3</jicmp6Version>
-    <jinteropVersion>3.1.0</jinteropVersion>
+    <jinteropVersion>3.4.0</jinteropVersion>
     <jldapVersion>4.3</jldapVersion>
     <jmhVersion>1.33</jmhVersion>
     <jmxremote.optional.version>1.0_01-ea</jmxremote.optional.version>
