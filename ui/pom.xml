@@ -64,7 +64,7 @@
             <phase>generate-resources</phase>
             <configuration>
               <skip>${skipNodeJSBuild}</skip>
-              <nodeVersion>${nodeNewUIVersion}</nodeVersion>
+              <nodeVersion>${nodeVersion}</nodeVersion>
               <yarnVersion>${yarnVersion}</yarnVersion>
             </configuration>
           </execution>

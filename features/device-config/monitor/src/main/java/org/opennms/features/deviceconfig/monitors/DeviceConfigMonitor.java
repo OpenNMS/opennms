@@ -32,10 +32,14 @@ import static java.util.stream.Collectors.toMap;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.StringReader;
 import java.net.InetSocketAddress;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.KeyFactory;
+import java.security.spec.EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
 import java.time.Duration;
 import java.util.Date;
 import java.util.HashMap;
@@ -72,10 +76,12 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
     public static final String SSH_PORT = "ssh-port";
     public static final String SSH_TIMEOUT = "ssh-timeout";
     public static final String PASSWORD = "password";
+    public static final String AUTH_KEY = "auth-key";
     public static final String HOST_KEY = "host-key";
     public static final String LAST_RETRIEVAL = "lastRetrieval";
     public static final String SCRIPT_FILE = "script-file";
     private static final String SCRIPT_ERROR = "script-error";
+    public static final String SHELL = "shell";
 
     private static final Duration DEFAULT_DURATION = Duration.ofMinutes(1); // 60sec
     private static final int DEFAULT_SSH_PORT = 22;
@@ -163,19 +169,25 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
         String script = getObjectAsStringFromParams(parameters, SCRIPT);
         String user = getObjectAsStringFromParams(parameters, USERNAME);
         String password = getObjectAsStringFromParams(parameters, PASSWORD);
+        String authKey = getObjectAsStringFromParams(parameters, AUTH_KEY);
         Integer port = getKeyedInteger(parameters, SSH_PORT, DEFAULT_SSH_PORT);
         String configType = getKeyedString(parameters, DeviceConfigConstants.CONFIG_TYPE, ConfigType.Default);
         Long timeout = getKeyedLong(parameters, SSH_TIMEOUT, DEFAULT_DURATION.toMillis());
         String hostKeyFingerprint = getKeyedString(parameters, HOST_KEY, null);
         var stringParameters = parameters.entrySet().stream().collect(toMap(Map.Entry::getKey, e -> String.valueOf(e.getValue())));
+        String shell = getKeyedString(parameters, SHELL, null);
+
         final var target = new InetSocketAddress(svc.getAddress(), port);
+
         var future = retriever.retrieveConfig(
                 Retriever.Protocol.TFTP,
                 script,
                 user,
                 password,
+                authKey,
                 target,
                 hostKeyFingerprint,
+                shell,
                 configType,
                 stringParameters,
                 Duration.ofMillis(timeout).minusSeconds(1)
@@ -235,7 +247,7 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
     private String getObjectAsStringFromParams(Map<String, Object> params, String key) {
         Object obj = params.get(key);
         if (obj == null) {
-            throw new IllegalArgumentException(key + " doesn't exist");
+            return null;
         }
         if (obj instanceof String) {
             return (String) obj;
