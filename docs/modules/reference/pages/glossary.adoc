@@ -76,6 +76,7 @@ IFTTT:: If This Then That (https://ifttt.com/[IFTTT]) is an automation and workf
 
 Instance:: (1) A single, unique occurrence of an element, document, or running program.
 (2) Used in data collection for storing tabular data as separate data points.
+(3) Used to refer to the {page-component-title} Core in the OpenNMS Appliance Service UI.
 
 Jira:: Jira is a project management platform {page-component-title} uses to track software issues, feature requests, and IT requests.
 (See https://issues.opennms.com[OpenNMS Jira].)
