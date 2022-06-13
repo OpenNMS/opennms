@@ -23,6 +23,7 @@ print("Commit message ")
 print(lastestCommit)
 
 if "#tests-flak" in lastestCommit:
+    print("Detected tests-flak keyword")
     _data["trigger-flaky-tests"]=True
 print("=== End of commit message")
 
