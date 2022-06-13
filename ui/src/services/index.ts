@@ -39,7 +39,7 @@ import { getResources, getResourceForNode } from './resourceService'
 import {
   getVerticesAndEdges,
   getNodesTopologyDataByLevelAndFocus,
-  getPowerGridTopologyDataByLevelAndFocus,
+  getPowergridTopologyDataByLevelAndFocus,
   getTopologyGraphs,
   getTopologyGraphByContainerAndNamespace
 } from './topologyService'
@@ -80,7 +80,7 @@ export default {
   getGraphDefinitionsByResourceId,
   getTopologyGraphByContainerAndNamespace,
   getNodesTopologyDataByLevelAndFocus,
-  getPowerGridTopologyDataByLevelAndFocus,
+  getPowergridTopologyDataByLevelAndFocus,
   getTopologyGraphs,
   getPlugins,
   getDeviceConfigBackups,

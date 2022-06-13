@@ -117,7 +117,7 @@ const getObjectDataByLevelAndFocus = async (context: ContextWithState) => {
     if (context.state.selectedDisplay !== DisplayType.powergrid) {
       resp = await API.getNodesTopologyDataByLevelAndFocus(SZLRequest)
     } else {
-      resp = await API.getPowerGridTopologyDataByLevelAndFocus(
+      resp = await API.getPowergridTopologyDataByLevelAndFocus(
         context.state.container,
         context.state.namespace,
         SZLRequest
@@ -263,7 +263,7 @@ const updateVerticesIconPaths = (context: ContextWithState) => {
 
 const updateSubLayerIndicator = (context: ContextWithState) => {
   const idsWithSubLayers = context.state.idsWithSubLayers
-  const { graphs = [] }: TopologyGraphList = getters.getPowerGridGraphs(context.state)
+  const { graphs = [] }: TopologyGraphList = getters.getPowergridGraphs(context.state)
   const vertices = context.state.vertices
 
   for (const graph of graphs) {

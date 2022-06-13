@@ -4,18 +4,16 @@ export enum ContextMenuType {
   background = 'background'
 }
 
-export const PowerGrid = 'PowerGrid'
-
 export enum ViewType {
   map = 'map',
   d3 = 'd3',
   circle = 'circle'
 }
 
-interface tGraph {
+interface GraphType {
   [key: string]: string
 }
-export const DisplayType: tGraph = {
+export const DisplayType: GraphType = {
   application: 'application',
   bsm: 'bsm',
   'cities.transformers.substations.switches': 'powergrid',

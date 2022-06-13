@@ -13,44 +13,35 @@
     <!-- Views -->
     <FeatherDropdownItem>
       <FeatherCheckbox
-        @update:modelValue="selectView('map')"
-        v-model="views['map']"
+        @update:modelValue="selectView(ViewType.map)"
+        v-model="views[ViewType.map]"
         >Map Layout</FeatherCheckbox
       >
     </FeatherDropdownItem>
 
     <FeatherDropdownItem>
       <FeatherCheckbox
-        @update:modelValue="selectView('d3')"
-        v-model="views['d3']"
+        @update:modelValue="selectView(ViewType.d3)"
+        v-model="views[ViewType.d3]"
         >D3 Layout</FeatherCheckbox
       >
     </FeatherDropdownItem>
 
     <FeatherDropdownItem>
       <FeatherCheckbox
-        @update:modelValue="selectView('circle')"
-        v-model="views['circle']"
+        @update:modelValue="selectView(ViewType.circle)"
+        v-model="views[ViewType.circle]"
         >Circle Layout</FeatherCheckbox
       >
     </FeatherDropdownItem>
 
     <div v-if="isTopologyView">
       <hr />
-
       <!-- Displays -->
-      <!-- <FeatherDropdownItem>
+      <!-- <FeatherDropdownItem v-if="hasPowergridGraphs">
         <FeatherCheckbox
-          @update:modelValue="selectDisplay('linkd')"
-          v-model="displays['linkd']"
-          >Enhanced Linkd</FeatherCheckbox
-        >
-      </FeatherDropdownItem> -->
-
-      <!-- <FeatherDropdownItem v-if="hasPowerGridGraphs">
-        <FeatherCheckbox
-          @update:modelValue="selectDisplay(PowerGrid)"
-          v-model="displays[PowerGrid]"
+          @update:modelValue="selectDisplay(DisplayType.powergrip)"
+          v-model="displays[DisplayType.powergrip]"
           >PowerGrid</FeatherCheckbox
         >
       </FeatherDropdownItem> -->
@@ -77,7 +68,7 @@ import { useStore } from 'vuex'
 import { FeatherButton } from '@featherds/button'
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 import { FeatherCheckbox } from '@featherds/checkbox'
-import { DisplayType } from './topology.constants'
+import { ViewType, DisplayType } from './topology.constants'
 import { TopologyGraphList } from '@/types/topology'
 
 const store = useStore()

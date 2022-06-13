@@ -1,4 +1,4 @@
-import { PowerGrid, DisplayType } from '@/components/Topology/topology.constants'
+import { ViewType, DisplayType } from '@/components/Topology/topology.constants'
 import { graphsPowergrid } from '@/components/Topology/topology.helpers'
 import { NodePoint, TopologyGraphList } from '@/types/topology'
 import { orderBy } from 'lodash'
@@ -24,7 +24,7 @@ const getCircleLayout = (state: State): Record<string, NodePoint> => {
 }
 
 const getLayout = (state: State): Layouts => {
-  if (state.selectedView === 'circle') {
+  if (state.selectedView === ViewType.circle) {
     return {
       nodes: getCircleLayout(state)
     }
@@ -40,8 +40,8 @@ const getLayout = (state: State): Layouts => {
  * @returns boolean
  */
 const hasPowergridGraphs = (state: State): boolean => {
-  for (const graphs of state.topologyGraphs) {
-    if (graphs.label === PowerGrid) {
+  for (const { id = '' } of state.topologyGraphs) {
+    if (DisplayType[id] === DisplayType.powergrid) {
       return true
     }
   }
@@ -59,7 +59,7 @@ const hasPowergridGraphs = (state: State): boolean => {
  * @param state topology store
  * @returns TopologyGraphList
  */
-const getPowerGridGraphs = (state: State): TopologyGraphList => {
+const getPowergridGraphs = (state: State): TopologyGraphList => {
   if (hasPowergridGraphs(state)) {
     const powergridGraphs = state.topologyGraphs.filter(({id = ''}) => DisplayType[id] === DisplayType.powergrid)[0]
 
@@ -122,5 +122,5 @@ export default {
   getGraphs,
   getGraphsDisplay,
   hasPowergridGraphs,
-  getPowerGridGraphs
+  getPowergridGraphs
 }

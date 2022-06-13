@@ -1,6 +1,7 @@
+import { Edges, Node, Nodes } from 'v-network-graph'
 import { IdLabelProps } from '@/types'
 import { NodePoint, TopologyGraphList, TopologyGraph } from '@/types/topology'
-import { Edges, Node, Nodes } from 'v-network-graph'
+import { ViewType, DisplayType } from '@/components/topology/topology.constants'
 
 export interface State {
   isTopologyView: boolean // switch between geo-map and topology
@@ -27,8 +28,8 @@ export interface State {
 
 const state: State = {
   isTopologyView: false,
-  selectedView: 'map',
-  selectedDisplay: 'linkd',
+  selectedView: ViewType.map,
+  selectedDisplay: DisplayType.nodes,
   edges: {},
   vertices: {},
   semanticZoomLevel: 1,

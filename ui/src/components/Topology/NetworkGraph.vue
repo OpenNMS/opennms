@@ -105,7 +105,7 @@ import ContextMenu from './ContextMenu.vue'
 import NoFocusMsg from './NoFocusMsg.vue'
 import { onClickOutside } from '@vueuse/core'
 import { SimulationNodeDatum } from 'd3'
-import { ContextMenuType } from './topology.constants'
+import { ContextMenuType, ViewType } from './topology.constants'
 import TopologyModal from './TopologyModal.vue'
 import ICON_PATHS from './icons/iconPaths'
 import { useTopologyFocus } from './topology.composables'
@@ -176,7 +176,7 @@ const tooltipPos = computed(() => {
   let pos = defaultPos
 
   switch(selectedView.value) {
-    case 'circle':
+    case ViewType.circle:
       additionalOffset = {
         ...additionalOffset,
         domPointXAjustment: 4 // adjustment needed to horizontally centered tooltip relatively to node icon
@@ -199,7 +199,7 @@ const tooltipPos = computed(() => {
       }
 
       break
-    case 'd3':
+    case ViewType.d3:
       pos = {
         left: `${Number(domPoint.x).toFixed(0)}px`,
         top: `${Number(domPoint.y).toFixed(0)}px`
@@ -264,7 +264,7 @@ const eventHandlers: EventHandlers = {
   },
   'node:dragend': (node) => {
     // get node's position for tooltip
-    if(selectedView.value === 'd3') {
+    if(selectedView.value === ViewType.d3) {
       const nodeId = Object.keys(node)[0]
       const {x: nodeX, y: nodeY} = Object.values(node)[0]
       d3Nodes.value.map(d3Node => {
@@ -332,7 +332,7 @@ watch(layout, async (layout) => {
 
 watch(namespace, async () => {
   // to have d3Nodes with coordinates for tooltip positioning
-  d3ForceEnabled.value = store.state.topologyModule.selectedView === 'd3'
+  d3ForceEnabled.value = store.state.topologyModule.selectedView === ViewType.d3
 
   trigger.value = false
   await nextTick()
@@ -350,12 +350,12 @@ const setColor = (item: Node | Edge) => {
 const configs = reactive(
   defineConfigs({
     view: {
-      layoutHandler: store.state.topologyModule.selectedView === 'd3' ? forceLayout : new SimpleLayout()
+      layoutHandler: store.state.topologyModule.selectedView === ViewType.d3 ? forceLayout : new SimpleLayout()
     },
     node: {
       selectable: true,
       normal: {
-        type: 'circle',
+        type: ViewType.circle,
         color: node => setColor(node)
       }
     },

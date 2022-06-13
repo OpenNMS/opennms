@@ -63,7 +63,7 @@ const getTopologyGraphByContainerAndNamespace = async (
   }
 }
 
-const getPowerGridTopologyDataByLevelAndFocus = async (
+const getPowergridTopologyDataByLevelAndFocus = async (
   containerId: string,
   namespace: string,
   payload: SZLRequest
@@ -85,7 +85,7 @@ const getPowerGridTopologyDataByLevelAndFocus = async (
 export {
   getVerticesAndEdges,
   getNodesTopologyDataByLevelAndFocus,
-  getPowerGridTopologyDataByLevelAndFocus,
+  getPowergridTopologyDataByLevelAndFocus,
   getTopologyGraphs,
   getTopologyGraphByContainerAndNamespace
 }
