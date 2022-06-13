@@ -42,7 +42,7 @@ for all supported protocols OSPF, ISIS, Bridge, LLDP and CDP including User Defi
 
 * *Bridge* – shows only Bridge links.
 
-*OSPF* displays the OSPF topology information discovered by the Enhanced Linkd
+* *OSPF* – displays the Open Shortest Path First (OSPF) topology information Enhanced Linkd discovers.
 
 *ISIS* displays the IS-IS topology information discovered by the Enhanced Linkd
 
