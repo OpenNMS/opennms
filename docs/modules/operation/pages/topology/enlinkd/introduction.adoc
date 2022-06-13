@@ -25,7 +25,7 @@ You can view detailed information about a node's connections (discovered links) 
 [[ga-enlinkd-layers]]
 == Topology Layers
 
-Enhanced Linkd Topology Map supports Layers protocol maps.
+The Enhanced Linkd topology map supports layered protocol maps.
 
 Click the Layers Button on the right panel of the Topology Map to access available Layers.
 
