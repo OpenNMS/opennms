@@ -34,17 +34,17 @@ Choose menu:Maps[Topology] to display the topology map, and click the Layers ico
 It also includes a user-defined option. 
 for all supported protocols OSPF, ISIS, Bridge, LLDP and CDP including User Defined to generate the overall topology
 
-* *CDP* – displays the Cisco Discovery Protocol topology information Enhanced Linkd discovers.
+* *Cdp* – displays the Cisco Discovery Protocol topology information Enhanced Linkd discovers.
 
-* *LLDP* – displays the Link Layer Discovery Protocol topology information Enhanced Linkd discovers.
+* *Lldp* – displays the Link Layer Discovery Protocol topology information Enhanced Linkd discovers.
 
 * *Layer2* – displays CDP and LLDP combined topology information Enhanced Linkd discovers.
 
 * *Bridge* – shows only Bridge links.
 
-* *OSPF* – displays the Open Shortest Path First (OSPF) topology information Enhanced Linkd discovers.
+* *Ospf* – displays the Open Shortest Path First (OSPF) topology information Enhanced Linkd discovers.
 
-* *ISIS* – displays the IS-IS topology information Enhanced Linkd discovers.
+* *Isis* – displays the IS-IS topology information Enhanced Linkd discovers.
 
 *Layer3* – displays OSPF and IS-IS combined topology information Enhanced Linkd discovers.
 
