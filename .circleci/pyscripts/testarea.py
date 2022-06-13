@@ -1,5 +1,7 @@
 from library import tests
 import json 
+import subprocess
+
 x=tests.tests(True)
 
 print("Flaky testcases:")
@@ -15,7 +17,15 @@ _data={}
 with open("/tmp/pipeline-parameters.json","r") as f:
     _data=json.load(f)
 
-_data["pytest"]="worked"
+#Lets see if we can detect "#flak-tests"
+lastestCommit= subprocess.run(['git','log','-1'],check=True,capture_output=True).stdout.decode('utf-8').strip()
+print("Commit message ")
+print(lastestCommit)
+
+if "#tests-flak" in lastestCommit:
+    _data["trigger-flaky-tests"]=True
+print("=== End of commit message")
+
 
 with open("/tmp/pipeline-parameters.json","w") as f:
     json.dump(_data,f)
