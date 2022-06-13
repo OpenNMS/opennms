@@ -175,6 +175,9 @@ jobs:
                 echo '{ "trigger-prebuild": false, "trigger-build": true, "trigger-integration-tests": false }' > /tmp/pipeline-parameters.json
               fi
             fi
+      - run:
+          name: pyscript testArea
+          command: python3 .circleci/pyscripts/testarea.py
       - store_artifacts:
           path: /tmp/pipeline-parameters.json
           destination: pipeline-parameters.json

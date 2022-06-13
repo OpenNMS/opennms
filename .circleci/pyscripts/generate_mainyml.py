@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import subprocess
 import glob
 import os
 import shutil 
@@ -8,16 +7,7 @@ import sys
 import tempfile
 
 
-#this shouldn't be here
-print(os.getcwd())
-base = subprocess.run(
-    ['grep', '-rm','1', '@org.junit.experimental.categories.Category(org.opennms.smoketest.junit.FlakyTests.class)','./'],
-    check=True,
-    capture_output=True
-).stdout.decode('utf-8').strip()
-print(base)
-print("We are not suppose to have this line here")
-#end this shouldn't be here
+
 
 
 working_directory=tempfile.TemporaryDirectory()
