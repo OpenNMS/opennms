@@ -1,4 +1,4 @@
-import { PowerGrid } from '@/components/Topology/topology.constants'
+import { DisplayType } from '@/components/Topology/topology.constants'
 import API from '@/services'
 import { IdLabelProps, QueryParameters, VuexContext } from '@/types'
 import { SZLRequest, TopologyGraphList, VerticesAndEdges } from '@/types/topology'
@@ -114,7 +114,7 @@ const getObjectDataByLevelAndFocus = async (context: ContextWithState) => {
       verticesInFocus: context.state.focusObjects.map((obj) => obj.id)
     }
   
-    if (context.state.selectedDisplay !== PowerGrid) {
+    if (context.state.selectedDisplay !== DisplayType.powergrid) {
       resp = await API.getNodesTopologyDataByLevelAndFocus(SZLRequest)
     } else {
       resp = await API.getPowerGridTopologyDataByLevelAndFocus(
@@ -150,17 +150,25 @@ const setSelectedView = (context: VuexContext, view: string) => {
 const setSelectedDisplay = async (context: ContextWithState, display: string) => {
   context.commit('SET_SELECTED_DISPLAY', display)
 
-  if (display === PowerGrid) {
-    // get first available namespace items
-    const powergridGraphs: TopologyGraphList = getters.getPowerGridGraphs(context.state)
-    if (powergridGraphs.graphs && powergridGraphs.graphs.length) {
-      const containerId = powergridGraphs.id
-      const namespace = powergridGraphs.graphs[0].namespace
-      await context.dispatch('getTopologyGraphByContainerAndNamespace', { containerId, namespace })
-    }
-  } else {
-    await context.dispatch('getVerticesAndEdges')
-    context.dispatch('replaceFocusObjects', context.state.defaultObjects)
+  const graphsToDisplay = getters.getGraphsDisplay(context.state)
+
+  context.commit('SAVE_GRAPHS_DISPLAY', graphsToDisplay)
+  context.commit('SAVE_TOPOLOGY_GRAPHS_SUB_LAYERS', graphsToDisplay.graphs)
+
+  switch(display) {
+    case DisplayType.powergrid:
+      if(graphsToDisplay.graphs?.length) {
+        await context.dispatch('getTopologyGraphByContainerAndNamespace', { containerId: graphsToDisplay.id, namespace: graphsToDisplay.graphs[0].namespace })
+      }
+      break
+    case DisplayType.vmware:
+      context.commit('SET_CONTAINER_AND_NAMESPACE', {})
+      break
+    default:
+      await context.dispatch('getVerticesAndEdges')
+      context.dispatch('replaceFocusObjects', context.state.defaultObjects)
+      context.commit('SET_CONTAINER_AND_NAMESPACE', {})
+
   }
 }
 
@@ -255,16 +263,16 @@ const updateVerticesIconPaths = (context: ContextWithState) => {
 
 const updateSubLayerIndicator = (context: ContextWithState) => {
   const idsWithSubLayers = context.state.idsWithSubLayers
-  const powergridGraphs: TopologyGraphList = getters.getPowerGridGraphs(context.state)
+  const { graphs = [] }: TopologyGraphList = getters.getPowerGridGraphs(context.state)
   const vertices = context.state.vertices
 
-  for (const graph of powergridGraphs.graphs) {
+  for (const graph of graphs) {
     for (const vertex of Object.values(vertices)) {
       // if vertex has sublayer and is within graph namespace
       if (idsWithSubLayers.includes(vertex.id) && vertex.namespace === graph.namespace) {
         // add the the next layer object for the context nav
-        if (powergridGraphs.graphs[graph.index + 1]) {
-          vertex['subLayer'] = powergridGraphs.graphs[graph.index + 1]
+        if (graphs[graph.index + 1]) {
+          vertex['subLayer'] = graphs[graph.index + 1]
         }
       }
     }

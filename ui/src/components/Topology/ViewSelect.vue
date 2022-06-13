@@ -1,60 +1,95 @@
 <template>
   <FeatherDropdown>
     <template v-slot:trigger>
-      <FeatherButton primary link href="#" menu-trigger>View</FeatherButton>
+      <FeatherButton
+        primary
+        link
+        href="#"
+        menu-trigger
+        >View</FeatherButton
+      >
     </template>
 
     <!-- Views -->
     <FeatherDropdownItem>
-      <FeatherCheckbox @update:modelValue="selectView('map')" v-model="views['map']">Map Layout</FeatherCheckbox>
+      <FeatherCheckbox
+        @update:modelValue="selectView('map')"
+        v-model="views['map']"
+        >Map Layout</FeatherCheckbox
+      >
     </FeatherDropdownItem>
 
     <FeatherDropdownItem>
-      <FeatherCheckbox @update:modelValue="selectView('d3')" v-model="views['d3']">D3 Layout</FeatherCheckbox>
+      <FeatherCheckbox
+        @update:modelValue="selectView('d3')"
+        v-model="views['d3']"
+        >D3 Layout</FeatherCheckbox
+      >
     </FeatherDropdownItem>
 
     <FeatherDropdownItem>
       <FeatherCheckbox
         @update:modelValue="selectView('circle')"
         v-model="views['circle']"
-      >Circle Layout</FeatherCheckbox>
+        >Circle Layout</FeatherCheckbox
+      >
     </FeatherDropdownItem>
 
     <div v-if="isTopologyView">
       <hr />
 
       <!-- Displays -->
-      <FeatherDropdownItem>
+      <!-- <FeatherDropdownItem>
         <FeatherCheckbox
           @update:modelValue="selectDisplay('linkd')"
           v-model="displays['linkd']"
-        >Enhanced Linkd</FeatherCheckbox>
-      </FeatherDropdownItem>
+          >Enhanced Linkd</FeatherCheckbox
+        >
+      </FeatherDropdownItem> -->
 
-      <FeatherDropdownItem v-if="hasPowerGridGraphs">
+      <!-- <FeatherDropdownItem v-if="hasPowerGridGraphs">
         <FeatherCheckbox
           @update:modelValue="selectDisplay(PowerGrid)"
           v-model="displays[PowerGrid]"
-        >PowerGrid</FeatherCheckbox>
+          >PowerGrid</FeatherCheckbox
+        >
+      </FeatherDropdownItem> -->
+
+      <FeatherDropdownItem
+        v-for="({id = '', label}) in graphs"
+        :key="id"
+      >
+        <FeatherCheckbox
+          @update:modelValue="selectDisplay(id)"
+          v-model="displays[DisplayType[id]]"
+          >{{label}}</FeatherCheckbox
+        >
       </FeatherDropdownItem>
     </div>
   </FeatherDropdown>
 </template>
 
-<script setup lang="ts">
+<script
+  setup
+  lang="ts"
+>
 import { useStore } from 'vuex'
 import { FeatherButton } from '@featherds/button'
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 import { FeatherCheckbox } from '@featherds/checkbox'
-import { PowerGrid } from './topology.constants'
+import { DisplayType } from './topology.constants'
+import { TopologyGraphList } from '@/types/topology'
 
 const store = useStore()
 
 const views = ref<Record<string, boolean>>({ map: true }) //default view
 const displays = ref<Record<string, boolean>>({ linkd: true }) //default display
 
-const hasPowerGridGraphs = computed<boolean>(() => store.getters['topologyModule/hasPowerGridGraphs'])
 const isTopologyView = computed<boolean>(() => store.state.topologyModule.isTopologyView)
+
+const graphs = computed<TopologyGraphList[]>(() => {
+  return store.getters['topologyModule/getGraphs']
+})
 
 const selectView = (view: string) => {
   views.value = {} // reset
@@ -64,13 +99,17 @@ const selectView = (view: string) => {
 
 const selectDisplay = (display: string) => {
   displays.value = {} // reset
-  displays.value[display] = true // set selected
-  store.dispatch('topologyModule/setSelectedDisplay', display) // save to state
+  displays.value[DisplayType[display]] = true // set selected
+  store.dispatch('topologyModule/setSelectedDisplay', DisplayType[display]) // save to state
 }
 </script>
 
-<style scoped lang="scss">
+<style
+  scoped
+  lang="scss"
+>
 .view-select {
   width: 15rem;
 }
 </style>
+

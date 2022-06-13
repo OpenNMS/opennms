@@ -1,6 +1,5 @@
-import { PowerGrid } from '@/components/Topology/topology.constants'
-import { IdLabelProps, SearchResult } from '@/types'
-import { TopologyGraphList } from '@/types/topology'
+import { IdLabelProps } from '@/types'
+import { TopologyGraphList, TopologyGraph } from '@/types/topology'
 import { Edges, Node, Nodes } from 'v-network-graph'
 import { State } from './state'
 
@@ -14,6 +13,14 @@ const SAVE_VERTICES = (state: State, vertices: Nodes) => {
 
 const SAVE_TOPOLOGY_GRAPHS = (state: State, topologyGraphs: TopologyGraphList[]) => {
   state.topologyGraphs = topologyGraphs
+}
+
+const SAVE_GRAPHS_DISPLAY = (state: State, graphsDisplay: TopologyGraph) => {
+  state.graphsDisplay = graphsDisplay
+}
+
+const SAVE_TOPOLOGY_GRAPHS_SUB_LAYERS = (state: State, topologyGraphsSubLayers: TopologyGraph[]) => {
+  state.topologyGraphsSubLayers = topologyGraphsSubLayers
 }
 
 const SAVE_DEFAULT_OBJECTS = (state: State, defaultObjects: Node[]) => {
@@ -30,11 +37,6 @@ const SET_SELECTED_VIEW = (state: State, view: string) => {
 }
 
 const SET_SELECTED_DISPLAY = (state: State, display: string) => {
-  // close the powergrid sidebar if different display selected
-  if (display !== PowerGrid) {
-    state.isRightDrawerOpen = false
-  }
-
   state.selectedDisplay = display
 }
 
@@ -98,6 +100,8 @@ export default {
   SET_MODAL_STATE,
   UPDATE_NODE_ICONS,
   SAVE_TOPOLOGY_GRAPHS,
+  SAVE_GRAPHS_DISPLAY,
+  SAVE_TOPOLOGY_GRAPHS_SUB_LAYERS,
   SET_CONTAINER_AND_NAMESPACE,
   SAVE_IDS_WITH_SUBLAYERS
 }

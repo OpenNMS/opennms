@@ -3,7 +3,11 @@
     <div class="controls">
       <CtrlSemanticZoomLevel />
 
-      <FeatherButton class="refresh-btn" icon="Refresh" @click="refreshGraph">
+      <FeatherButton
+        class="refresh-btn"
+        icon="Refresh"
+        @click="refreshGraph"
+      >
         <FeatherIcon :icon="RefreshIcon" />
       </FeatherButton>
 
@@ -14,7 +18,10 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script
+  setup
+  lang="ts"
+>
 import CtrlSemanticZoomLevel from './CtrlSemanticZoomLevel.vue'
 import CtrlHighlightFocusedNode from './CtrlHighlightFocusedNodes.vue'
 import CtrlLayers from './CtrlLayers.vue'
@@ -34,10 +41,18 @@ defineProps({
   }
 })
 
+const graphsSubLayers = computed(() => store.state.topologyModule.topologyGraphsSubLayers)
+watch(graphsSubLayers, (gsl) => {
+  store.dispatch('topologyModule/setRightDrawerState', gsl.length > 0)
+})
+
 const width = computed<string>(() => store.state.topologyModule.isRightDrawerOpen ? '250px' : '65px')
 </script>
 
-<style scoped lang="scss">
+<style
+  scoped
+  lang="scss"
+>
 @import "@featherds/styles/mixins/elevation";
 @import "@featherds/styles/themes/variables";
 
@@ -77,3 +92,4 @@ const width = computed<string>(() => store.state.topologyModule.isRightDrawerOpe
   }
 }
 </style>
+

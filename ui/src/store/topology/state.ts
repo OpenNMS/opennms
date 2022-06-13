@@ -1,11 +1,11 @@
 import { IdLabelProps } from '@/types'
-import { NodePoint, TopologyGraphList } from '@/types/topology'
+import { NodePoint, TopologyGraphList, TopologyGraph } from '@/types/topology'
 import { Edges, Node, Nodes } from 'v-network-graph'
 
 export interface State {
   isTopologyView: boolean // switch between geo-map and topology
   selectedView: string // d3, circle layout etc.
-  selectedDisplay: string // linkd, powerGrid etc.
+  selectedDisplay: string // linkd, powergrid etc.
   edges: Edges
   vertices: Nodes
   semanticZoomLevel: number
@@ -18,6 +18,8 @@ export interface State {
   modalState: boolean
   nodeIcons: Record<string, string>
   topologyGraphs: TopologyGraphList[]
+  graphsDisplay: TopologyGraphList
+  topologyGraphsSubLayers: TopologyGraph[]
   container: string
   namespace: string
   idsWithSubLayers: string[]
@@ -39,6 +41,8 @@ const state: State = {
   modalState: false,
   nodeIcons: {},
   topologyGraphs: [],
+  graphsDisplay: {},
+  topologyGraphsSubLayers: [],
   container: '',
   namespace: '',
   idsWithSubLayers: []

@@ -1,4 +1,5 @@
-import { PowerGrid } from '@/components/Topology/topology.constants'
+import { PowerGrid, DisplayType } from '@/components/Topology/topology.constants'
+import { graphsPowergrid } from '@/components/Topology/topology.helpers'
 import { NodePoint, TopologyGraphList } from '@/types/topology'
 import { orderBy } from 'lodash'
 import { Layouts } from 'v-network-graph'
@@ -38,7 +39,7 @@ const getLayout = (state: State): Layouts => {
  * @param state topology store
  * @returns boolean
  */
-const hasPowerGridGraphs = (state: State): boolean => {
+const hasPowergridGraphs = (state: State): boolean => {
   for (const graphs of state.topologyGraphs) {
     if (graphs.label === PowerGrid) {
       return true
@@ -59,23 +60,67 @@ const hasPowerGridGraphs = (state: State): boolean => {
  * @returns TopologyGraphList
  */
 const getPowerGridGraphs = (state: State): TopologyGraphList => {
-  if (hasPowerGridGraphs(state)) {
-    const powerGridGraphs = state.topologyGraphs.filter((graphs) => graphs.label === PowerGrid)[0]
-    const orderedLayers = powerGridGraphs.id.split('.')
+  if (hasPowergridGraphs(state)) {
+    const powergridGraphs = state.topologyGraphs.filter(({id = ''}) => DisplayType[id] === DisplayType.powergrid)[0]
 
-    for (const graph of powerGridGraphs.graphs) {
-      graph.index = orderedLayers.indexOf(graph.label.toLowerCase())
+    if(powergridGraphs.graphs?.length) {
+      const orderedLayers = powergridGraphs.id?.split('.') || []
+
+      for (const graph of powergridGraphs.graphs) {
+        graph.index = orderedLayers.indexOf(graph.label.toLowerCase())
+      }
+  
+      powergridGraphs.graphs = orderBy(powergridGraphs.graphs, 'index', 'asc')
+  
+      return powergridGraphs
     }
-
-    powerGridGraphs.graphs = orderBy(powerGridGraphs.graphs, 'index', 'asc')
-
-    return powerGridGraphs
+    
   }
-  return { graphs: [], id: 'N/A', label: 'N/A' }
+  
+  return { graphs: [], id: 'N/A', label: 'N/A', type: 'N/A' }
+}
+
+const getGraphsDisplay = (state: State): TopologyGraphList => {
+  let graph: TopologyGraphList = { graphs: [], id: 'N/A', label: 'N/A', type: 'N/A' }
+  const graphsDisplay: TopologyGraphList = getGraphs(state).filter(({type}) => type === state.selectedDisplay)[0]
+  
+  switch(state.selectedDisplay){
+    case DisplayType.powergrid:
+      graph = {
+        ...graph,
+        ...graphsPowergrid(graphsDisplay)
+      }
+      break
+    case DisplayType.nodes:
+      break
+    default:
+  }
+
+  return graph
+}
+
+const getGraphs = (state: State): TopologyGraphList[] => {
+  const topologyGraphs = state.topologyGraphs.map(({graphs = [], id = '', label}) => {
+    const gs = graphs.map((g, index) => ({
+      ...g,
+      index 
+    }))
+
+    return {
+      graphs: gs,
+      id,
+      label,
+      type: DisplayType[id]
+    }
+  })
+
+  return topologyGraphs
 }
 
 export default {
   getLayout,
-  hasPowerGridGraphs,
+  getGraphs,
+  getGraphsDisplay,
+  hasPowergridGraphs,
   getPowerGridGraphs
 }

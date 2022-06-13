@@ -61,7 +61,8 @@ export interface TopologyGraph {
 }
 
 export interface TopologyGraphList {
-  graphs: TopologyGraph[]
-  id: string
-  label: string
+  graphs?: TopologyGraph[]
+  id?: string
+  label?: string
+  type?: string
 }

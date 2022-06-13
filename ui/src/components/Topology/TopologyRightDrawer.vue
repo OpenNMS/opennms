@@ -10,12 +10,19 @@
     </div>
     <FeatherList>
       <FeatherListItem
-        v-for="graph in powerGridGraphs.graphs"
+        v-for="graph in graphsDisplay.graphs"
         :key="graph.label"
         @click="selectTopologyGraph(graph.namespace)"
         :class="{ 'selected' : graph.namespace === selectedNamespace }"
         >{{ graph.label }}</FeatherListItem
       >
+      <!-- <FeatherListItem
+        v-for="graph in powergridGraphs.graphs"
+        :key="graph.label"
+        @click="selectTopologyGraph(graph.namespace)"
+        :class="{ 'selected' : graph.namespace === selectedNamespace }"
+        >{{ graph.label }}</FeatherListItem
+      > -->
     </FeatherList>
   </div>
 </template>
@@ -29,14 +36,13 @@ import { FeatherListItem, FeatherList } from '@featherds/list'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
 import Close from '@featherds/icon/navigation/Cancel'
-import { TopologyGraphList } from '@/types/topology'
 
 const store = useStore()
-const powerGridGraphs = computed<TopologyGraphList>(() => store.getters['topologyModule/getPowerGridGraphs'])
+const graphsDisplay = computed(() => store.state.topologyModule.graphsDisplay)
 const selectedNamespace = ref()
 
 const selectTopologyGraph = (namespace: string) => {
-  store.dispatch('topologyModule/getTopologyGraphByContainerAndNamespace', { containerId: powerGridGraphs.value.id, namespace })
+  store.dispatch('topologyModule/getTopologyGraphByContainerAndNamespace', { containerId: store.state.topologyModule.graphsDisplay.id, namespace })
 }
 
 const namespace = computed(() => store.state.topologyModule.namespace)
