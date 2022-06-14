@@ -553,8 +553,8 @@ workflows:
   #build_minimal#
   #workflow_docs#
   #workflow_ui#
+  #build_deployFlaky#
   #build_deploy#
-  #build_deploy_flaky#
 
 jobs:
   build:
