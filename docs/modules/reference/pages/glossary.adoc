@@ -17,6 +17,11 @@ Application Perspective Monitoring (APM):: A method that uses the Minion infrast
 When a service is not responsive an outage will be generated with the corresponding perspective that sees the outage.
 (See xref:operation:application-perspective-monitoring/introduction.adoc[Application Perspective Monitoring].)
 
+Auto-discovered nodes:: Nodes that are automatically added to {page-component-title} through routine or one-time discovery.
+(See xref:operation:provisioning/auto-discovery.adoc[Auto-Discovery].)
+
+Availability:: The ability of a resource or service to perform its intended function when required.
+
 Azure:: Microsoft Azure is a cloud hosting platform from Microsoft that allows users to host a variety of different services.
 
 Cassandra:: Open-source distributed/scale-out NoSQL database designed to hold large amounts of structured or unstructured data across many servers.
@@ -24,6 +29,12 @@ Cassandra:: Open-source distributed/scale-out NoSQL database designed to hold la
 
 CircleCI:: CircleCI is a continuous integration and delivery platform that hosts OpenNMS's CI/CD environment.
 It integrates with and monitors OpenNMS GitHub repositories, and automatically launches and tests a new build when a commit is detected.
+
+Daemon:: A {page-component-title} sub-service that performs a specific set of tasks.
+(See xref:reference:daemons/introduction.adoc[Introduction to Daemons].)
+
+Direct-discovered nodes:: Nodes that are added to {page-component-title} manually through the requisition UI.
+(See xref:operation:provisioning/directed-discovery.adoc[Directed Discovery].)
 
 Discourse:: Discourse is an open-source forum platform that hosts OpenNMS's community forums (https://opennms.discourse.group/).
 There, users can find knowledge base articles, support, announcements, and general discussion about all things OpenNMS.
@@ -127,6 +138,9 @@ Notifications:: Messages delivered to a set of recipients.
 {page-component-title} notifications inform users about events in their monitored networks without forcing them to log in and look at the UI.
 (See xref:operation:notifications/introduction.adoc[Notifications].)
 
+Observability:: The ability to measure the internal state of a system by examining its output.
+If the system's state can be estimated using only its output, it is considered "observable".
+
 Operator board:: Customizable dashboard to visualize monitoring information.
 (See xref:operation:admin/webui/opsboard/introduction.adoc[Operator Board].)
 
@@ -140,7 +154,7 @@ Use to generate requisition XML files for creating/updating/removing nodes for m
 Provisioning:: The process of getting your devices, applications, and services into monitoring.
 (See xref:operation:provisioning/introduction.adoc[Provisioning].)
 
-Remote Method Invocation (RMI):: Java API that lets one Java Virtual Machine (JVM) running object to invoke methods on an object running in another JVM.
+Remote Method Invocation (RMI):: Java API that lets one Java Virtual Machine (JVM) running object invoke methods on an object running in another JVM.
 RMI integration lets you access a remote Horizon and/or Meridian instance for monitoring and management.
 (See xref:operation:admin/rmi.adoc[Enabling RMI].)
 
@@ -158,6 +172,14 @@ It also supports thresholding for streaming telemetry if you are using the xref:
 Snaps:: Self-contained software packages that run in a sandbox and have mediated access to host systems.
 Our Appliance Service uses snaps to distribute operating system packages and Minion service updates.
 
+Telemetry:: The process of automatically recording and transmitting data from an external source to a system in a different location for monitoring or analysis.
+
 Time series, time-series database (TSDB):: Time series is a sequence of data points that occur in successive order over a period of time.
 A time series database (TSDB) is designed to store and serve time series data.
 (See xref:deployment:time-series-storage/timeseries/time-series-storage.adoc[Time Series Storage] and https://en.wikipedia.org/wiki/Time_series_database[Time Series Database].)
+
+Topology:: A description of a network's elements (devices, services) and the connections between them.
+(See xref:operation:topology/introduction.adoc[Introduction to Topology].)
+
+Traps:: Event triggers collected from SNMP-capable devices on the network by the {page-component-title} Trapd service daemon.
+(See xref:operation:events/sources/snmp-traps.adoc[SNMP Traps].)
