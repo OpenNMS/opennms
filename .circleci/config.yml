@@ -1072,7 +1072,7 @@ jobs:
           cache_prefix: rpm-minion
           source_path: target/rpm/RPMS/noarch
       - save-artifacts:
-          path: opennms-container/minion/images/container.oci
+          path: opennms-container/minion/images/
           location: minion-oci
   sentinel-rpm-build:
     executor: centos-build-executor
@@ -1115,7 +1115,7 @@ jobs:
           cache_prefix: rpm-sentinel
           source_path: target/rpm/RPMS/noarch
       - save-artifacts:
-          path: opennms-container/sentinel/images/container.oci
+          path: opennms-container/sentinel/images/
           location: sentinel-oci
   horizon-deb-build:
     executor: debian-build-executor
