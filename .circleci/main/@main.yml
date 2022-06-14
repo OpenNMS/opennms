@@ -683,6 +683,9 @@ workflows:
                 - /.*smoke.*/
                 - /^dependabot.*/
       - smoke-test-flaky:
+          when:
+          equal: [ true, << pipeline.parameters.trigger-flaky-tests >> ]
+
           requires:
             - tarball-assembly
             - rpm-builds
@@ -697,6 +700,7 @@ workflows:
                 - /^features.*/
                 - /.*smoke.*/
                 - /^dependabot.*/
+                --
       - smoke-test-minion:
           requires:
             - tarball-assembly
