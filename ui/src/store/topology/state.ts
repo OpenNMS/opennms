@@ -19,7 +19,7 @@ export interface State {
   modalState: boolean
   nodeIcons: Record<string, string>
   topologyGraphs: TopologyGraphList[]
-  graphsDisplay: TopologyGraphList
+  topologyGraphsDisplay: TopologyGraphList
   topologyGraphsSubLayers: TopologyGraph[]
   container: string
   namespace: string
@@ -42,7 +42,7 @@ const state: State = {
   modalState: false,
   nodeIcons: {},
   topologyGraphs: [],
-  graphsDisplay: {},
+  topologyGraphsDisplay: {},
   topologyGraphsSubLayers: [],
   container: '',
   namespace: '',

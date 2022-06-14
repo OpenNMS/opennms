@@ -1,7 +1,6 @@
 import { ViewType, DisplayType } from '@/components/Topology/topology.constants'
-import { graphsPowergrid } from '@/components/Topology/topology.helpers'
+import { formatTopologyGraphs, formatPowergridGraph } from '@/components/Topology/topology.helpers'
 import { NodePoint, TopologyGraphList } from '@/types/topology'
-import { orderBy } from 'lodash'
 import { Layouts } from 'v-network-graph'
 import { State } from './state'
 
@@ -34,93 +33,45 @@ const getLayout = (state: State): Layouts => {
 }
 
 /**
- * Determine whether powergrid graphs are available
- *
- * @param state topology store
- * @returns boolean
- */
-const hasPowergridGraphs = (state: State): boolean => {
-  for (const { id = '' } of state.topologyGraphs) {
-    if (DisplayType[id] === DisplayType.powergrid) {
-      return true
-    }
-  }
-  return false
-}
-
-/**
- * Return powergrid graphs, if available.
+ * Return topology display graphs, if available.
  * Otherwise return object with empty graphs array.
  * 
  * API does not return proper layer order,
  * but the id is made up of proper ordered layer names.
  * This can be used during layer selection / context menu nav.
- *
+ * 
  * @param state topology store
- * @returns TopologyGraphList
+ * @returns TopologyGraphList object with its sub layers list, if any
  */
-const getPowergridGraphs = (state: State): TopologyGraphList => {
-  if (hasPowergridGraphs(state)) {
-    const powergridGraphs = state.topologyGraphs.filter(({id = ''}) => DisplayType[id] === DisplayType.powergrid)[0]
+const getGraphsDisplay = (state: State): TopologyGraphList => {
+  let graph: TopologyGraphList = { graphs: [], id: 'N/A', label: 'N/A', type: 'N/A' }
 
-    if(powergridGraphs.graphs?.length) {
-      const orderedLayers = powergridGraphs.id?.split('.') || []
-
-      for (const graph of powergridGraphs.graphs) {
-        graph.index = orderedLayers.indexOf(graph.label.toLowerCase())
-      }
+  const topologyGraph: TopologyGraphList = formatTopologyGraphs(state.topologyGraphs).filter(({type}) => type === state.selectedDisplay)[0] || {}
   
-      powergridGraphs.graphs = orderBy(powergridGraphs.graphs, 'index', 'asc')
-  
-      return powergridGraphs
+  if(!topologyGraph.graphs?.length) {
+    graph = { ...topologyGraph }
+  } else {
+    switch(topologyGraph.type){
+      case DisplayType.powergrid:
+        graph = {
+          ...topologyGraph,
+          ...formatPowergridGraph(topologyGraph.graphs, topologyGraph.id) // not certain if ordering still relevant; layer order from API response seems in good order
+        }
+        break
+      case DisplayType.nodes:
+        break
+      default:
     }
     
   }
-  
-  return { graphs: [], id: 'N/A', label: 'N/A', type: 'N/A' }
-}
-
-const getGraphsDisplay = (state: State): TopologyGraphList => {
-  let graph: TopologyGraphList = { graphs: [], id: 'N/A', label: 'N/A', type: 'N/A' }
-  const graphsDisplay: TopologyGraphList = getGraphs(state).filter(({type}) => type === state.selectedDisplay)[0]
-  
-  switch(state.selectedDisplay){
-    case DisplayType.powergrid:
-      graph = {
-        ...graph,
-        ...graphsPowergrid(graphsDisplay)
-      }
-      break
-    case DisplayType.nodes:
-      break
-    default:
-  }
-
+        
   return graph
 }
 
-const getGraphs = (state: State): TopologyGraphList[] => {
-  const topologyGraphs = state.topologyGraphs.map(({graphs = [], id = '', label}) => {
-    const gs = graphs.map((g, index) => ({
-      ...g,
-      index 
-    }))
-
-    return {
-      graphs: gs,
-      id,
-      label,
-      type: DisplayType[id]
-    }
-  })
-
-  return topologyGraphs
-}
+const getGraphs = (state: State): TopologyGraphList[] => formatTopologyGraphs(state.topologyGraphs)
 
 export default {
   getLayout,
   getGraphs,
-  getGraphsDisplay,
-  hasPowergridGraphs,
-  getPowergridGraphs
+  getGraphsDisplay
 }

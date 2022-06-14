@@ -16,8 +16,8 @@ const SAVE_TOPOLOGY_GRAPHS = (state: State, topologyGraphs: TopologyGraphList[])
   state.topologyGraphs = topologyGraphs
 }
 
-const SAVE_GRAPHS_DISPLAY = (state: State, graphsDisplay: TopologyGraph) => {
-  state.graphsDisplay = graphsDisplay
+const SAVE_TOPOLOGY_GRAPHS_DISPLAY = (state: State, graphsDisplay: TopologyGraph) => {
+  state.topologyGraphsDisplay = graphsDisplay
 }
 
 const SAVE_TOPOLOGY_GRAPHS_SUB_LAYERS = (state: State, topologyGraphsSubLayers: TopologyGraph[]) => {
@@ -101,7 +101,7 @@ export default {
   SET_MODAL_STATE,
   UPDATE_NODE_ICONS,
   SAVE_TOPOLOGY_GRAPHS,
-  SAVE_GRAPHS_DISPLAY,
+  SAVE_TOPOLOGY_GRAPHS_DISPLAY,
   SAVE_TOPOLOGY_GRAPHS_SUB_LAYERS,
   SET_CONTAINER_AND_NAMESPACE,
   SAVE_IDS_WITH_SUBLAYERS

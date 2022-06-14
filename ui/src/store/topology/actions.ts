@@ -141,18 +141,18 @@ const changeIcon = (context: ContextWithState, nodeIdIconKey: Record<string, str
  * Saves menu selections
  */
 
-// d3, circle, etc.
+// map, d3, circle, etc.
 const setSelectedView = (context: VuexContext, view: string) => {
   context.commit('SET_SELECTED_VIEW', view)
 }
 
-// linkd, powerdrid, etc.
+// linkd, powergrid, etc.
 const setSelectedDisplay = async (context: ContextWithState, display: string) => {
   context.commit('SET_SELECTED_DISPLAY', display)
 
   const graphsToDisplay = getters.getGraphsDisplay(context.state)
-
-  context.commit('SAVE_GRAPHS_DISPLAY', graphsToDisplay)
+  
+  context.commit('SAVE_TOPOLOGY_GRAPHS_DISPLAY', graphsToDisplay)
   context.commit('SAVE_TOPOLOGY_GRAPHS_SUB_LAYERS', graphsToDisplay.graphs)
 
   switch(display) {
@@ -263,7 +263,7 @@ const updateVerticesIconPaths = (context: ContextWithState) => {
 
 const updateSubLayerIndicator = (context: ContextWithState) => {
   const idsWithSubLayers = context.state.idsWithSubLayers
-  const { graphs = [] }: TopologyGraphList = getters.getPowergridGraphs(context.state)
+  const { graphs = [] }: TopologyGraphList = getters.getGraphsDisplay(context.state)
   const vertices = context.state.vertices
 
   for (const graph of graphs) {

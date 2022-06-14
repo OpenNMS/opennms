@@ -38,11 +38,11 @@ import { FeatherIcon } from '@featherds/icon'
 import Close from '@featherds/icon/navigation/Cancel'
 
 const store = useStore()
-const graphsDisplay = computed(() => store.state.topologyModule.graphsDisplay)
+const graphsDisplay = computed(() => store.state.topologyModule.topologyGraphsDisplay)
 const selectedNamespace = ref()
 
 const selectTopologyGraph = (namespace: string) => {
-  store.dispatch('topologyModule/getTopologyGraphByContainerAndNamespace', { containerId: store.state.topologyModule.graphsDisplay.id, namespace })
+  store.dispatch('topologyModule/getTopologyGraphByContainerAndNamespace', { containerId: store.state.topologyModule.topologyGraphsDisplay.id, namespace })
 }
 
 const namespace = computed(() => store.state.topologyModule.namespace)
