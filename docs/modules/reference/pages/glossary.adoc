@@ -146,7 +146,7 @@ Operator board:: Customizable dashboard to visualize monitoring information.
 (See xref:operation:admin/webui/opsboard/introduction.adoc[Operator Board].)
 
 Passive discovery:: The process by which a `newSuspect` event is detected by the {page-component-title} Provisiond service and converted into a new node.
-The Trapd and Syslogd daemons can be configured to generate this event when messages are received from nodes that do not exist in {page-component-title}'s database.
+Users can configure the Trapd and Syslogd daemons to generate this event when {page-component-title} receives messages from nodes that do not exist in the database.
 (See xref:operation:provisioning/directed-discovery.adoc#requisition-new-suspect[Add nodes via newSuspect events].)
 
 PostgreSQL:: Commonly used open-source relational database known for its stability.
