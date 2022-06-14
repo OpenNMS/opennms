@@ -11,39 +11,25 @@
     </template>
 
     <!-- Views -->
-    <FeatherDropdownItem>
+    <FeatherDropdownItem
+      v-for="({type, label}) in Views"
+      :key="type"
+    >
       <FeatherCheckbox
-        @update:modelValue="selectView(ViewType.map)"
-        v-model="views[ViewType.map]"
-        >Map Layout</FeatherCheckbox
+        @update:modelValue="selectView(type)"
+        v-model="views[type]"
+        >{{label}}</FeatherCheckbox
       >
     </FeatherDropdownItem>
 
-    <FeatherDropdownItem>
-      <FeatherCheckbox
-        @update:modelValue="selectView(ViewType.d3)"
-        v-model="views[ViewType.d3]"
-        >D3 Layout</FeatherCheckbox
-      >
-    </FeatherDropdownItem>
-
-    <FeatherDropdownItem>
-      <FeatherCheckbox
-        @update:modelValue="selectView(ViewType.circle)"
-        v-model="views[ViewType.circle]"
-        >Circle Layout</FeatherCheckbox
-      >
-    </FeatherDropdownItem>
-
-    <div v-if="isTopologyView">
+    <!-- Displays -->
+    <div v-if="isTopologyView && graphs.length">
       <hr />
-      <!-- Displays -->
-      <!-- <FeatherDropdownItem v-if="hasPowergridGraphs">
+      <!-- <FeatherDropdownItem>
         <FeatherCheckbox
-          @update:modelValue="selectDisplay(DisplayType.powergrip)"
-          v-model="displays[DisplayType.powergrip]"
-          >PowerGrid</FeatherCheckbox
-        >
+          @update:modelValue="selectDisplay('linkd')"
+          v-model="displays['linkd']"
+        >Enhanced Linkd</FeatherCheckbox>
       </FeatherDropdownItem> -->
 
       <FeatherDropdownItem
@@ -68,7 +54,7 @@ import { useStore } from 'vuex'
 import { FeatherButton } from '@featherds/button'
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 import { FeatherCheckbox } from '@featherds/checkbox'
-import { ViewType, DisplayType } from './topology.constants'
+import { Views, DisplayType } from './topology.constants'
 import { TopologyGraphList } from '@/types/topology'
 
 const store = useStore()
@@ -78,9 +64,7 @@ const displays = ref<Record<string, boolean>>({ linkd: true }) //default display
 
 const isTopologyView = computed<boolean>(() => store.state.topologyModule.isTopologyView)
 
-const graphs = computed<TopologyGraphList[]>(() => {
-  return store.getters['topologyModule/getGraphs']
-})
+const graphs = computed<TopologyGraphList[]>(() => store.getters['topologyModule/getGraphs'])
 
 const selectView = (view: string) => {
   views.value = {} // reset

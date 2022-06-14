@@ -33,7 +33,7 @@ const SET_SEMANTIC_ZOOM_LEVEL = (state: State, SML: number) => {
 }
 
 const SET_SELECTED_VIEW = (state: State, view: string) => {
-  state.isTopologyView = view !== ViewType.map ? true : false
+  state.isTopologyView = view !== ViewType.map
   state.selectedView = view
 }
 
