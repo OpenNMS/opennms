@@ -617,6 +617,13 @@ workflows:
             branches:
               ignore:
                 - /^merge-foundation.*/
+      - integration-test:
+          requires:
+            - build
+          filters:
+            branches:
+              ignore:
+                - /^merge-foundation.*/
       - smoke-test-flaky:
           requires:
             - tarball-assembly
