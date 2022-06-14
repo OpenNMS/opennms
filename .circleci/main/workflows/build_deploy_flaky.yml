@@ -1,0 +1,43 @@
+workflows:
+  build-deploy-flaky:
+    when:
+      and:
+        - equal: [ false, << pipeline.parameters.trigger-coverage >> ]
+        - equal: [ true,  << pipeline.parameters.trigger-build >> ]
+        - equal: [ false, << pipeline.parameters.minimal >> ]
+        - equal: [ true, << pipeline.parameters.trigger-flaky-tests >> ]
+    jobs:
+      - build:
+          filters:
+            branches:
+              ignore:
+                - /^from-foundation.*/
+      - tarball-assembly:
+          requires:
+            - build
+      - debian-pkg-build:
+          requires:
+            - build 
+          filters:
+            branches:
+              ignore:
+                - /^merge-foundation.*/        
+      - rpm-builds:
+          requires:
+            - integration-test
+          filters:
+            branches:
+              ignore:
+                - /^merge-foundation.*/
+      - integration-test:
+          requires:
+            - build
+          filters:
+            branches:
+              ignore:
+                - /^merge-foundation.*/
+      - smoke-test-flaky:
+          requires:
+            - tarball-assembly
+            - rpm-builds
+            - debian-pkg-build
