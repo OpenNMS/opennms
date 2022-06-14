@@ -1016,9 +1016,9 @@ jobs:
           command: |
             cd opennms-container/horizon
             ./build_container_image.sh
-      - store_artifacts:
-          path: ~/project/opennms-container/horizon/images/container.oci
-          destination: horizon.oci
+      #- store_artifacts:
+      #    path: ~/project/opennms-container/horizon/images/container.oci
+      #    destination: horizon.oci
       - store_artifacts:
           path: ~/project/target/rpm/RPMS/noarch
           destination: rpms
@@ -1062,18 +1062,18 @@ jobs:
           command: |
             cd opennms-container/minion
             ./build_container_image.sh
-      - store_artifacts:
-          path: ~/project/opennms-container/minion/images/container.oci
-          destination: minion.oci
+      #- store_artifacts:
+      #    path: ~/project/opennms-container/minion/images/container.oci
+      #    destination: minion.oci
       - store_artifacts:
           path: ~/project/target/rpm/RPMS/noarch
           destination: rpms
       - cache-workflow-assets:
           cache_prefix: rpm-minion
           source_path: target/rpm/RPMS/noarch
-      - cache-oci:
-          key: minion
-          path: opennms-container/minion/images/
+      - save-artifacts:
+          path: opennms-container/minion/images/container.oci
+          location: minion-oci
   sentinel-rpm-build:
     executor: centos-build-executor
     # Larger memory footprint required to speed up builds using Takari smartbuilder
@@ -1105,18 +1105,18 @@ jobs:
           command: |
             cd opennms-container/sentinel
             ./build_container_image.sh
-      - store_artifacts:
-          path: ~/project/opennms-container/sentinel/images/container.oci
-          destination: sentinel.oci
+      #- store_artifacts:
+      #    path: ~/project/opennms-container/sentinel/images/container.oci
+      #    destination: sentinel.oci
       - store_artifacts:
           path: ~/project/target/rpm/RPMS/noarch
           destination: rpms
       - cache-workflow-assets:
           cache_prefix: rpm-sentinel
           source_path: target/rpm/RPMS/noarch
-      - cache-oci:
-          key: sentinel
-          path: opennms-container/sentinel/images/
+      - save-artifacts:
+          path: opennms-container/sentinel/images/container.oci
+          location: sentinel-oci
   horizon-deb-build:
     executor: debian-build-executor
     resource_class: xlarge
