@@ -45,7 +45,7 @@ It also includes a user-defined option.
 
 * *Isis* – displays the IS-IS topology information Enhanced Linkd discovers.
 
-*Layer3* – displays OSPF and IS-IS combined topology information Enhanced Linkd discovers.
+* *Layer3* – displays OSPF and IS-IS combined topology information Enhanced Linkd discovers.
 
 *UserDefined* – displays user-defined topology information.
 
