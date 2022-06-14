@@ -1,5 +1,5 @@
 workflows:
-  build-deploy-flaky:
+  build-deployFlaky:
     when:
       and:
         - equal: [ false, << pipeline.parameters.trigger-coverage >> ]
