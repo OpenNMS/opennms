@@ -47,15 +47,21 @@ import org.hibernate.type.StringType;
 import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.model.HeatMapElement;
+import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCategory;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsOutage;
+import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.ServiceSelector;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.model.outage.CurrentOutageDetails;
 import org.opennms.netmgt.model.outage.OutageSummary;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate3.HibernateCallback;
+
+import com.google.common.collect.Lists;
 
 public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer> implements OutageDao {
     @Autowired
@@ -247,15 +253,17 @@ public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer
                 // does not allow for parameter binding of column names.
                 // Instead, we compare the values against all valid column names to validate.
                 List<String> columns = new ArrayList<>(Arrays.asList(groupByColumns));
-                columns.add(entityIdColumn);
+                if (entityIdColumn != null) {
+                    columns.add(entityIdColumn);
+                }
                 columns.add(entityNameColumn);
                 if (restrictionColumn != null) {
                     columns.add(restrictionColumn);
                 }
-                HibernateUtils.validateHibernateColumnNames(session.getSessionFactory(), OnmsCategory.class, true, columns.toArray(new String[0]));
+                HibernateUtils.validateHibernateColumnNames(session.getSessionFactory(), Lists.newArrayList(OnmsServiceType.class, OnmsIpInterface.class, OnmsCategory.class, OnmsMonitoredService.class, OnmsOutage.class, OnmsNode.class), true, columns.toArray(new String[0]));
 
                 // NOW, this is safe
-                String queryStr = "select coalesce(" + entityNameColumn + ",'Uncategorized'), " + entityIdColumn + ", " +
+                String queryStr = "select coalesce(" + entityNameColumn + ",'Uncategorized'), " + (entityIdColumn != null ? entityIdColumn : "0") + ", " +
                         "count(distinct case when outages.outageid is not null and ifservices.status <> 'D' then ifservices.id else null end) as servicesDown, " +
                         "count(distinct case when ifservices.status <> 'D' then ifservices.id else null end) as servicesTotal, " +
                         "count(distinct case when outages.outageid is null and ifservices.status <> 'D' then node.nodeid else null end) as nodesUp, " +
@@ -267,7 +275,7 @@ public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer
                         "left outer join service on (ifservices.serviceid = service.serviceid) " +
                         "left outer join outages on (outages.ifserviceid = ifservices.id and outages.ifregainedservice is null) " +
                         "where nodeType <> 'D' " +
-                        (restrictionColumn != null ? "and coalesce(" + restrictionColumn + ",'Uncategorized')=':restrictionValue' " : "") +
+                        (restrictionColumn != null ? "and coalesce(" + restrictionColumn + ",'Uncategorized')=:restrictionValue " : "") +
                         "group by " + groupByClause + " having count(distinct case when ifservices.status <> 'D' then ifservices.id else null end) > 0";
 
 
