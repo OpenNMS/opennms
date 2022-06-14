@@ -50,7 +50,6 @@ import org.opennms.integration.api.v1.timeseries.StorageException;
 import org.opennms.integration.api.v1.timeseries.TagMatcher;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTagMatcher;
 import org.opennms.netmgt.model.ResourcePath;
-import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.timeseries.TimeseriesStorageManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
