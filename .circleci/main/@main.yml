@@ -700,7 +700,6 @@ workflows:
                 - /^features.*/
                 - /.*smoke.*/
                 - /^dependabot.*/
-                --
       - smoke-test-minion:
           requires:
             - tarball-assembly
