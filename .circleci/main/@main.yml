@@ -629,16 +629,16 @@ workflows:
             - tarball-assembly
             - rpm-builds
             - debian-pkg-build
-          filters:
-            branches:
-              only:
-                - develop
-                - /^master-.*/
-                - /^release-.*/
-                - /^foundation.*/
-                - /^features.*/
-                - /.*smoke.*/
-                - /^dependabot.*/
+      #   filters:
+      #     branches:
+      #       only:
+      #         - develop
+      #         - /^master-.*/
+      #         - /^release-.*/
+      #         - /^foundation.*/
+      #         - /^features.*/
+      #         - /.*smoke.*/
+      #         - /^dependabot.*/
                 
   build-deploy:
     when:
