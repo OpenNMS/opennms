@@ -6,9 +6,15 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import * as Vue from 'vue/dist/vue.esm-bundler'
+import * as Pinia from 'pinia'
+import * as Vuex from 'vuex'
 import { addStylesheet } from '@/components/Plugin/utils'
 import Container from '@/components/Plugin/Container.vue'
-window.Vue = Vue
+
+// lets plugins access vue & stores
+(window as any).Vue = Vue;
+(window as any).Pinia = Pinia;
+(window as any).Vuex = Vuex
 
 const baseUrl = import.meta.env.VITE_BASE_REST_URL
 const externalJsUrl = ref<string>('')

@@ -635,8 +635,10 @@ workflows:
               only:
                 - develop
                 - /^master-.*/
+                - /^features\/.+/
                 - /^foundation.*/
                 - /^release-.*/
+                - /.*docker.*/
                 - /.*smoke.*/
       - minion-image-multi-arch:
           context:
@@ -649,8 +651,10 @@ workflows:
               only:
                 - develop
                 - /^master-.*/
+                - /^features\/.+/
                 - /^foundation.*/
                 - /^release-.*/
+                - /.*docker.*/
                 - /.*smoke.*/
       - horizon-image-single-arch:
           requires:
@@ -663,8 +667,10 @@ workflows:
               only:
                 - develop
                 - /^master-.*/
+                - /^features\/.+/
                 - /^foundation.*/
                 - /^release-.*/
+                - /.*docker.*/
                 - /.*smoke.*/
       - horizon-deb-build:
           requires:
@@ -673,11 +679,13 @@ workflows:
             branches:
               only:
                 - develop
-                - /^dependabot\/.*/
-                - /^features.*/
-                - /^foundation.*/
                 - /^master-.*/
+                - /^dependabot\/.*/
+                - /^features\/.+/
+                - /^foundation.*/
                 - /^release-.*/
+                - /.*deb.*/
+                - /.*docker.*/
                 - /.*smoke.*/
       - minion-rpm-build:
           requires:
@@ -686,11 +694,12 @@ workflows:
             branches:
               only:
                 - develop
-                - /^dependabot\/.*/
-                - /^features.*/
-                - /^foundation.*/
                 - /^master-.*/
+                - /^dependabot\/.*/
+                - /^features\/.+/
+                - /^foundation.*/
                 - /^release-.*/
+                - /.*rpm.*/
                 - /.*smoke.*/
       - sentinel-rpm-build:
           requires:
@@ -699,11 +708,12 @@ workflows:
             branches:
               only:
                 - develop
-                - /^dependabot\/.*/
-                - /^features.*/
-                - /^foundation.*/
                 - /^master-.*/
+                - /^dependabot\/.*/
+                - /^features\/.+/
+                - /^foundation.*/
                 - /^release-.*/
+                - /.*rpm.*/
                 - /.*smoke.*/
       - integration-test:
           requires:
@@ -721,10 +731,10 @@ workflows:
             branches:
               only:
                 - develop
-                - /^dependabot.*/
-                - /^features.*/
-                - /^foundation.*/
                 - /^master-.*/
+                - /^dependabot.*/
+                - /^features\/.+/
+                - /^foundation.*/
                 - /^release-.*/
                 - /.*smoke.*/
       - smoke-test-flaky:
@@ -736,10 +746,10 @@ workflows:
             branches:
               only:
                 - develop
-                - /^dependabot.*/
-                - /^features.*/
-                - /^foundation.*/
                 - /^master-.*/
+                - /^dependabot.*/
+                - /^features\/.+/
+                - /^foundation.*/
                 - /^release-.*/
                 - /.*smoke.*/
       - smoke-test-minion:
@@ -751,10 +761,10 @@ workflows:
             branches:
               only:
                 - develop
-                - /^dependabot.*/
-                - /^features.*/
-                - /^foundation.*/
                 - /^master-.*/
+                - /^dependabot.*/
+                - /^features\/.+/
+                - /^foundation.*/
                 - /^release-.*/
                 - /.*smoke.*/
       - smoke-test-sentinel:
@@ -766,10 +776,10 @@ workflows:
             branches:
               only:
                 - develop
-                - /^dependabot.*/
-                - /^features.*/
-                - /^foundation.*/
                 - /^master-.*/
+                - /^dependabot.*/
+                - /^features\/.+/
+                - /^foundation.*/
                 - /^release-.*/
                 - /.*smoke.*/
 #      - smoke-test-minimal:
@@ -782,11 +792,11 @@ workflows:
 #              ignore:
 #                - develop
 #                - /^master-.*/
-#                - /^release-.*/
-#                - /^foundation.*/
-#                - /^features.*/
-#                - /.*smoke.*/
 #                - /^dependabot.*/
+#                - /^features\/.+/
+#                - /^foundation.*/
+#                - /^release-.*/
+#                - /.*smoke.*/
       - horizon-publish-oci:
           requires:
             - horizon-deb-build
@@ -805,6 +815,7 @@ workflows:
                 - /^master-.*/
                 - /^release-.*/
                 - /^features\/.+/
+                - /^foundation.*/
       - sentinel-publish-oci:
           requires:
             - horizon-deb-build
@@ -823,6 +834,7 @@ workflows:
                 - /^master-.*/
                 - /^release-.*/
                 - /^features\/.+/
+                - /^foundation.*/
       # These don't actually require `integration-test` but we shouldn't bother
       # spending cycles unless everything else passed
       - horizon-rpm-build:
@@ -830,8 +842,15 @@ workflows:
             - integration-test
           filters:
             branches:
-              ignore:
-                - /^merge-foundation.*/
+              only:
+                - develop
+                - /^master-.*/
+                - /^dependabot.*/
+                - /^features\/.+/
+                - /^foundation.*/
+                - /^release-.*/
+                - /.*rpm.*/
+                - /.*smoke.*/
       - minion-deb-build:
           requires:
             - integration-test
@@ -859,6 +878,7 @@ workflows:
                 - /^master-.*/
                 - /^foundation.*/
                 - /^release-.*/
+                - /.*docker.*/
                 - /.*smoke.*/
       - create-merge-foundation-branch:
           # technically only requires the RPM/deb builds, but only publish
