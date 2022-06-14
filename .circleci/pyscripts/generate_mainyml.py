@@ -65,7 +65,15 @@ print("Generating the @main.yml")
 for token in components_data.keys():
     print("Processing "+token.strip())
 
-    token_position=[i for i, item in enumerate(main_yml_content) if token in item and len(token.strip())==len(item.replace("#",""))]
+
+    token_position=[i for i, item in enumerate(main_yml_content) if token in item]
+
+
+    print("START DEBUG")
+    print("Token:"+token)
+    print("Token Positions:"+token_position)
+    print("END DEBUG")
+
     if len(token_position) > 1:
         print("\tSomething is wrong, we shouldn't have duplicate entry for "+token+" in "+main_filename)
         sys.exit(1)
