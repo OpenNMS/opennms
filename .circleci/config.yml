@@ -272,12 +272,21 @@ commands:
             sudo swapon /swapfile
             sudo sysctl vm.swappiness=5
             cat /proc/sys/vm/swappiness
-      - load-oci:
-          key: horizon
-      - load-oci:
-          key: minion
-      - load-oci:
-          key: sentinel
+      - fetch-artifacts:
+          path: opennms-container/horizon/images/
+          location: horizon-oci
+      - fetch-artifacts:
+          path: opennms-container/minion/images/
+          location: minion-oci
+      - fetch-artifacts:
+          path: opennms-container/sentinel/images/
+          location: sentinel-oci
+      - load-oci-withoutcache:
+          path: opennms-container/horizon/images/
+      - load-oci-withoutcache:
+          path: opennms-container/minion/images/
+      - load-oci-withoutcache:
+          path: opennms-container/sentinel/images/
       - run:
           name: Load Sentinel OCI image
           command: |
@@ -546,6 +555,25 @@ commands:
       - cache-workflow-assets:
           cache_prefix: oci-<< parameters.key >>
           source_path: << parameters.path >>
+  load-oci-withoutcache:
+    parameters:
+      path:
+        description: the path to oci file location
+        type: string
+    steps:
+      - run:
+          name: Load Docker Image(s) from << parameters.path >>
+          command: |
+            cd "<< parameters.path >>"
+            if [ "$(ls -1 *.oci | wc -l)" -eq 0 ]; then
+              echo "ERROR: No OCI files to load. Something probably went wrong earlier."
+              exit 1
+            fi
+            for FILE in *.oci; do
+              echo "Loading ${FILE} into Docker..."
+              docker image load -i "$FILE"
+            done
+
   load-oci:
     parameters:
       key:
