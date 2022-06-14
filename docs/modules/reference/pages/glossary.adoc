@@ -43,7 +43,7 @@ Discovery:: A process that uses ICMP to find network devices and services in you
 (See xref:operation:provisioning/introduction.adoc#discovery-auto[Provisioning].)
 
 Docker:: Docker is an open-source container virtualization service that allows you to deploy application-level services without worrying about operating system maintenance.
-{page-component-titles} components may optionally be deployed as Docker containers.
+{page-component-title} components may optionally be deployed as Docker containers.
 (See https://docs.docker.com/[Docker].)
 
 Dominion:: The service on an OpenNMS core that controls the operation of Minions.
@@ -143,6 +143,9 @@ If the system's state can be estimated using only its output, it is considered "
 
 Operator board:: Customizable dashboard to visualize monitoring information.
 (See xref:operation:admin/webui/opsboard/introduction.adoc[Operator Board].)
+
+Passive discovery:: The process by which a ``newSuspect`` event is detected by the {page-component-title} Provisiond service and converted into a new node.
+(See xref:operation:provisioning/directed-discovery.adoc#requisition-new-suspect[Add nodes via newSuspect events].)
 
 PostgreSQL:: Commonly used open-source relational database known for its stability.
 PostgreSQL scales up but not out.
