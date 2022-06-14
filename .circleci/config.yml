@@ -291,7 +291,7 @@ commands:
           name: Load Sentinel OCI image
           command: |
             cd opennms-container/sentinel
-            docker image load -i /tmp/oci-sentinel/container.oci
+            docker image load -i images/container.oci
       - run:
           name: Monitor JVM processes
           background: true
