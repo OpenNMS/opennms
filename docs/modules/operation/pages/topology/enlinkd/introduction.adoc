@@ -22,6 +22,33 @@ The following sections describe the Enlinkd daemon and its configuration.
 Additionally, the supported link discovery implementations are described as well as a list of the SNMP MIBs that the SNMP agents must expose for EnLinkd to gather links between nodes.
 You can view detailed information about a node's connections (discovered links) and supporting link data on the node detail page within the {page-component-title} Web UI.
 
+[[ga-enlinkd-layers]]
+== Topology Layers
+
+The Enhanced Linkd topology map supports layered protocol maps.
+
+Choose menu:Maps[Topology] to display the topology map, and click the Layers icon on the right panel of the map to access available layers:
+
+
+* *All* (default) – displays the topology Enhanced Linkd discovers, for all supported protocols (OSPF, ISIS, Bridge, LLDP and CDP).
+It also includes xref:development:rest/user-defined-links.adoc[User-Defined] topology.
+
+* *Cdp* – displays the Cisco Discovery Protocol (CDP) topology Enhanced Linkd discovers.
+
+* *Lldp* – displays the Link Layer Discovery Protocol (LLDP) topology Enhanced Linkd discovers.
+
+* *Layer2* – displays CDP and LLDP combined topology Enhanced Linkd discovers.
+
+* *Bridge* – shows only Bridge links.
+
+* *Ospf* – displays the Open Shortest Path First (OSPF) topology Enhanced Linkd discovers.
+
+* *Isis* – displays the Intermediate System to Intermediate System (IS-IS) topology Enhanced Linkd discovers.
+
+* *Layer3* – displays OSPF and IS-IS combined topology Enhanced Linkd discovers.
+
+* *UserDefined* – displays xref:development:rest/user-defined-links.adoc[User-Defined] topology.
+
 [[ga-enlinkd-daemon]]
 == Enlinkd daemon
 
