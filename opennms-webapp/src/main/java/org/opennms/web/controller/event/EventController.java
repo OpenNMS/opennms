@@ -123,13 +123,14 @@ public class EventController extends MultiActionController implements Initializi
         OnmsFilterFavorite favorite = getFavorite(
                 request.getParameter("favoriteId"),
                 request.getRemoteUser(),
-                request.getParameterValues("filter"));
+                FilterUtil.parse(request.getQueryString() == null ? "" : request.getQueryString()));
         return list(request, favorite);
     }
 
     private ModelAndView list(HttpServletRequest request, OnmsFilterFavorite favorite) {
         AcknowledgeType ackType = getAcknowledgeType(request);
-        ModelAndView modelAndView = createListModelAndView(request, getFilterCallback().parse(request.getParameterValues("filter")), ackType);
+        ModelAndView modelAndView = createListModelAndView(request,
+                getFilterCallback().parse(FilterUtil.parse(request.getQueryString() == null ? "" : request.getQueryString())), ackType);
         modelAndView.addObject("favorite", favorite);
         modelAndView.setViewName("event/list");
         return modelAndView;
@@ -406,5 +407,13 @@ public class EventController extends MultiActionController implements Initializi
         Assert.isTrue(DEFAULT_LONG_LIMIT > 0, "property defaultLongLimit must be set to a value greater than 0");
         Assert.notNull(m_webEventRepository, "webEventRepository must be set");
         Assert.notNull(favoriteService, "favoriteService must be set");
+    }
+
+    public void setWebEventRepository(WebEventRepository webEventRepository) {
+        this.m_webEventRepository = webEventRepository;
+    }
+
+    public void setFavoriteService(FilterFavoriteService favoriteService) {
+        this.favoriteService = favoriteService;
     }
 }
