@@ -66,12 +66,12 @@ for token in components_data.keys():
     print("Processing "+token.strip())
 
 
-    token_position=[i for i, item in enumerate(main_yml_content) if token in item]
+    token_position=[i for i, item in enumerate(main_yml_content) if token == item.replace("#","")]
 
 
     print("START DEBUG")
     print("Token:"+token)
-    print("Token Positions:"+token_position)
+    print("Token Positions:"+str(token_position))
     print("END DEBUG")
 
     if len(token_position) > 1:
