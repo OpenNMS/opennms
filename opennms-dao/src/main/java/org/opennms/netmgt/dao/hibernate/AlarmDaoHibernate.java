@@ -47,10 +47,17 @@ import org.opennms.netmgt.model.HeatMapElement;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsIpInterfaceList;
+import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
 import org.opennms.netmgt.model.alarm.SituationSummary;
 import org.springframework.orm.hibernate3.HibernateCallback;
+
+import com.google.common.collect.Lists;
 
 /**
  * <p>AlarmDaoHibernate class.</p>
@@ -179,15 +186,17 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
                 // does not allow for parameter binding of column names.
                 // Instead, we compare the values against all valid column names to validate.
                 List<String> columns = new ArrayList<>(Arrays.asList(groupByColumns));
-                columns.add(entityIdColumn);
+                if (entityIdColumn != null) {
+                    columns.add(entityIdColumn);
+                }
                 columns.add(entityNameColumn);
                 if (restrictionColumn != null) {
                     columns.add(restrictionColumn);
                 }
-                HibernateUtils.validateHibernateColumnNames(session.getSessionFactory(), OnmsCategory.class, true, columns.toArray(new String[0]));
+                HibernateUtils.validateHibernateColumnNames(session.getSessionFactory(), Lists.newArrayList(OnmsServiceType.class, OnmsIpInterface.class, OnmsCategory.class, OnmsMonitoredService.class, OnmsAlarm.class, OnmsNode.class), true, columns.toArray(new String[0]));
 
                 String queryStr =
-                        "select coalesce(" + entityNameColumn + ",'Uncategorized'), " + entityIdColumn + ", " +
+                        "select coalesce(" + entityNameColumn + ",'Uncategorized'), " + (entityIdColumn != null ? entityIdColumn : "0") + ", " +
                                 "count(distinct case when ifservices.status <> 'D' then ifservices.id else null end) as servicesTotal, " +
                                 "count(distinct node.nodeid) as nodeTotalCount, " +
                                 maximumSeverityQuery +
@@ -199,7 +208,7 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
                                 "left outer join service on (ifservices.serviceid = service.serviceid) " +
                                 "left outer join alarms on (alarms.nodeid = node.nodeid and alarms.alarmtype in (1,3)) " +
                                 "where nodeType <> 'D' " +
-                                (restrictionColumn != null ? "and coalesce(" + restrictionColumn + ",'Uncategorized')=':restrictionValue' " : "") +
+                                (restrictionColumn != null ? "and coalesce(" + restrictionColumn + ",'Uncategorized')=:restrictionValue " : "") +
                                 "group by " + groupByClause + " having count(distinct case when ifservices.status <> 'D' then ifservices.id else null end) > 0";
                 
                 Query query = session.createSQLQuery(queryStr);

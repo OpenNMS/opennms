@@ -34,6 +34,8 @@ import org.hibernate.persister.entity.AbstractEntityPersister;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.common.collect.Lists;
+
 public class HibernateUtils {
 
     /**
@@ -50,6 +52,9 @@ public class HibernateUtils {
         AbstractEntityPersister aep = (AbstractEntityPersister) factory.getClassMetadata(klass);
         for(int propertyIndex = 0; propertyIndex < aep.getPropertyNames().length; propertyIndex++) {
             for (String columnName : aep.getPropertyColumnNames(propertyIndex)) {
+                if (columnName == null) {
+                    continue;
+                }
                 if (includeTablePrefix) {
                     validColumnNames.add(String.format("%s.%s", aep.getTableName().toLowerCase(), columnName.toLowerCase()));
                 }
@@ -76,18 +81,25 @@ public class HibernateUtils {
      * Hibernate model class.
      *
      * @param factory               Active hibernate session factory
-     * @param klass                 Hibernate model object
+     * @param klasses               Hibernate model object classes
      * @param includeTablePrefix    If true, the given column names include the table name as a prefix
      * @param columnNames           List of column names to check the validity of.
      *
      * @throws IllegalArgumentException If any of the column names are invalid.
      */
-    public static void validateHibernateColumnNames(SessionFactory factory, Class klass, boolean includeTablePrefix, String ... columnNames) {
-        List<String> validColumnNames = getHibernateTableColumnNames(factory, klass, includeTablePrefix);
+    public static void validateHibernateColumnNames(final SessionFactory factory, final List<Class> klasses, final boolean includeTablePrefix, final String ... columnNames) {
+        List<String> validColumnNames = new ArrayList<>();
+        for(final Class klass : klasses) {
+            validColumnNames.addAll(getHibernateTableColumnNames(factory, klass, includeTablePrefix));
+        }
         for (String columnName : columnNames) {
             if (columnName != null && !validColumnNames.contains(columnName)) {
                 throw new IllegalArgumentException(String.format("Invalid column name specified: %s", columnName));
             }
         }
+    }
+
+    public static void validateHibernateColumnNames(final SessionFactory factory, final Class klass, final boolean includeTablePrefix, final String ... columnNames) {
+        validateHibernateColumnNames(factory, Lists.newArrayList(klass), includeTablePrefix, columnNames);
     }
 }
