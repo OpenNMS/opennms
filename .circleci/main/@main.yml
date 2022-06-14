@@ -587,12 +587,23 @@ workflows:
                 - /^foundation.*/
   #workflow_docs#
   #workflow_ui#
+  build-deploy-flaky:
+    when:
+      and:
+        - equal: [ true, << pipeline.parameters.trigger-flaky-tests >> ]
+    jobs:
+      - build:
+          filters:
+            branches:
+              ignore:
+                - /^from-foundation.*/
   build-deploy:
     when:
       and:
         - equal: [ false, << pipeline.parameters.trigger-coverage >> ]
         - equal: [ true,  << pipeline.parameters.trigger-build >> ]
         - equal: [ false, << pipeline.parameters.minimal >> ]
+        - equal: [ false, << pipeline.parameters.trigger-flaky-tests >> ]
     jobs:
       - build:
           filters:
@@ -683,9 +694,6 @@ workflows:
                 - /.*smoke.*/
                 - /^dependabot.*/
       - smoke-test-flaky:
-          when:
-          equal: [ true, << pipeline.parameters.trigger-flaky-tests >> ]
-
           requires:
             - tarball-assembly
             - rpm-builds
