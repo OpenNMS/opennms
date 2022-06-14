@@ -51,6 +51,10 @@ parameters:
     description: whether to trigger integration tests
     type: boolean
     default: false
+  trigger-flaky-tests:
+    description: whether to trigger flaky tests
+    type: boolean
+    default: false
     
   ### config.yml parameters for when triggers are used (not used in main.yml, but needed defined here for trigger executions) ###
   trigger-prebuild:
