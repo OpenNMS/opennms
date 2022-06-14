@@ -30,24 +30,24 @@ The Enhanced Linkd topology map supports layered protocol maps.
 Choose menu:Maps[Topology] to display the topology map, and click the Layers icon on the right panel of the map to access available layers:
 
 
-* *All* (default) – displays the topology information Enhanced Linkd discovers, for all supported protocols (OSPF, ISIS, Bridge, LLDP, and CDP).
-It also includes a user-defined option.
+* *All* (default) – displays the topology Enhanced Linkd discovers, for all supported protocols (OSPF, ISIS, Bridge, LLDP and CDP).
+It also includes xref:development:rest/user-defined-links.adoc[User-Defined] topology.
 
-* *Cdp* – displays the Cisco Discovery Protocol topology information Enhanced Linkd discovers.
+* *Cdp* – displays the Cisco Discovery Protocol (CDP) topology Enhanced Linkd discovers.
 
-* *Lldp* – displays the Link Layer Discovery Protocol topology information Enhanced Linkd discovers.
+* *Lldp* – displays the Link Layer Discovery Protocol (LLDP) topology Enhanced Linkd discovers.
 
-* *Layer2* – displays CDP and LLDP combined topology information Enhanced Linkd discovers.
+* *Layer2* – displays CDP and LLDP combined topology Enhanced Linkd discovers.
 
 * *Bridge* – shows only Bridge links.
 
-* *Ospf* – displays the Open Shortest Path First (OSPF) topology information Enhanced Linkd discovers.
+* *Ospf* – displays the Open Shortest Path First (OSPF) topology Enhanced Linkd discovers.
 
-* *Isis* – displays the IS-IS topology information Enhanced Linkd discovers.
+* *Isis* – displays the Intermediate System to Intermediate System (IS-IS) topology Enhanced Linkd discovers.
 
-* *Layer3* – displays OSPF and IS-IS combined topology information Enhanced Linkd discovers.
+* *Layer3* – displays OSPF and IS-IS combined topology Enhanced Linkd discovers.
 
-* *UserDefined* – displays user-defined topology information.
+* *UserDefined* – displays xref:development:rest/user-defined-links.adoc[User-Defined] topology.
 
 [[ga-enlinkd-daemon]]
 == Enlinkd daemon
