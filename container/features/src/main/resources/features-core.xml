@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<features name="opennms-core-${project.version}"
+          xmlns="http://karaf.apache.org/xmlns/features/v1.3.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.3.0 http://karaf.apache.org/xmlns/features/v1.3.0"
+>
+
+    <!--
+         This file is for features that should be shared across Horizon, Minion, and Sentinel.
+         Note that _any_ bundle dependency that has classes exported in `custom.properties` must
+         have `dependency="true"` set, so that it won't try to re-load those classes on the
+         Karaf side.
+    -->
+
+    <feature name="cassandra-driver" version="${cassandraVersion}" description="Datastax Cassandra Driver">
+        <feature version="${guavaOsgiVersion}" prerequisite="true">guava</feature>
+        <feature version="[${netty4Version},5)">netty4</feature>
+        <bundle dependency="true">mvn:io.dropwizard.metrics/metrics-core/${dropwizardMetricsVersion}</bundle>
+        <bundle dependency="true">mvn:com.github.jnr/jnr-ffi/2.1.7</bundle>
+        <bundle dependency="true">mvn:com.github.jnr/jnr-posix/3.0.44</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/${jackson2Version}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson2Version}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/${jackson2Version}</bundle>
+        <bundle dependency="true">mvn:com.datastax.cassandra/cassandra-driver-core/${cassandraVersion}</bundle>
+    </feature>
+
+    <feature name="guava" version="${guavaOsgiVersion}" description="Google :: Guava">
+        <feature prerequisite="true">wrap</feature>
+        <bundle start-level="30" dependency="true">wrap:mvn:com.google.guava/guava/${guavaVersion}</bundle>
+        <!-- <bundle start-level="30" dependency="true">wrap:mvn:com.google.code.findbugs/jsr305/1.3.9</bundle> -->
+    </feature>
+
+    <feature name="guava17" version="17.0" description="Google :: Guava">
+        <bundle>mvn:com.google.guava/guava/17.0</bundle>
+    </feature>
+
+    <feature name="guava21" version="21.0" description="Google :: Guava">
+        <bundle>mvn:com.google.guava/guava/21.0</bundle>
+    </feature>
+
+    <feature name="guava25" version="25.0" description="Google :: Guava">
+        <bundle>mvn:com.google.guava/guava/25.0-jre</bundle>
+    </feature>
+
+    <feature name="netty4" version="${netty4Version}" description="Netty">
+        <bundle dependency="true">mvn:io.netty/netty-buffer/${netty4Version}</bundle>
+        <bundle dependency="true">mvn:io.netty/netty-codec/${netty4Version}</bundle>
+        <bundle dependency="true">mvn:io.netty/netty-codec-dns/${netty4Version}</bundle>
+        <bundle dependency="true">mvn:io.netty/netty-common/${netty4Version}</bundle>
+        <bundle dependency="true">mvn:io.netty/netty-handler/${netty4Version}</bundle>
+        <bundle dependency="true">mvn:io.netty/netty-resolver/${netty4Version}</bundle>
+        <bundle dependency="true">mvn:io.netty/netty-resolver-dns/${netty4Version}</bundle>
+        <bundle dependency="true">mvn:io.netty/netty-transport/${netty4Version}</bundle>
+        <!--
+        <bundle dependency="true">mvn:io.netty/netty-transport-native-epoll/${netty4Version}</bundle>
+        <bundle dependency="true">mvn:io.netty/netty-transport-native-unix-common/${netty4Version}</bundle>
+        -->
+    </feature>
+
+    <feature name="zookeeper-dependencies" version="${zookeeperVersion}" description="ZooKeeper Dependencies">
+        <feature prerequisite="true">wrap</feature>
+        <feature version="${guavaOsgiVersion}" prerequisite="true">guava</feature>
+        <bundle dependency="true">wrap:mvn:org.apache.zookeeper/zookeeper/${zookeeperVersion}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/${jackson2Version}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/${jackson2Version}</bundle>
+        <bundle dependency="true">mvn:org.apache.curator/curator-client/${curatorVersion}</bundle>
+        <bundle dependency="true">mvn:org.apache.curator/curator-framework/${curatorVersion}</bundle>
+        <bundle dependency="true">mvn:org.apache.curator/curator-recipes/${curatorVersion}</bundle>
+    </feature>
+
+    <feature name="scv-api" version="${project.version}" description="Secure Credentials Vault">
+        <bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.api/${project.version}</bundle>
+    </feature>
+
+    <feature name="scv-shell" version="${project.version}" description="Secure Credentials Vault Shell">
+        <feature>scv-api</feature>
+        <bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.shell/${project.version}</bundle>
+    </feature>
+
+    <feature name="scv-jceks-impl" version="${project.version}" description="Secure Credentials Vault JCEKS Impl">
+        <feature version="${guavaOsgiVersion}" prerequisite="true">guava</feature>
+        <feature>scv-api</feature>
+        <bundle dependency="true">mvn:commons-codec/commons-codec/${commonsCodecVersion}</bundle>
+        <bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.jceks-impl/${project.version}</bundle>
+    </feature>
+</features>

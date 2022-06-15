@@ -1721,6 +1721,7 @@
     <grpcVersion>1.46.0</grpcVersion>
     <gsonVersion>2.8.5</gsonVersion>
     <guavaVersion>18.0</guavaVersion>
+    <guavaOsgiVersion>${guavaVersion}</guavaOsgiVersion>
     <guavagRPCVersion>28.2-jre</guavagRPCVersion>
     <guavaOldVersion>17.0</guavaOldVersion>
     <gwtVersion>2.9.0</gwtVersion>
@@ -4055,6 +4056,13 @@
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
         <version>${guavaVersion}</version>
+        <exclusions>
+          <!-- not necessary at runtime -->
+          <exclusion>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>com.google.gwt</groupId>
@@ -4066,6 +4074,13 @@
         <groupId>com.google.gwt</groupId>
         <artifactId>gwt-dev</artifactId>
         <version>${gwtVersion}</version>
+        <exclusions>
+          <!-- not necessary at runtime -->
+          <exclusion>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <!-- Vaadin -->
       <dependency>
@@ -4845,6 +4860,13 @@
         <groupId>com.swrve</groupId>
         <artifactId>rate-limited-logger</artifactId>
         <version>${rateLimitedLoggerVersion}</version>
+        <exclusions>
+          <!-- not necessary at runtime -->
+          <exclusion>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.spockframework</groupId>
