@@ -267,8 +267,8 @@
    <event>
       <uei>uei.opennms.org/nodes/nodeCategoryMembershipChanged</uei>
       <event-label>OpenNMS-defined node event: nodeCategoryMembershipChanged</event-label>
-      <descr>&lt;p>Node category membership has changed for node
-            (%parm[nodelabel]%)&lt;/p></descr>
+      <descr>&lt;p>Node (%parm[nodelabel]%) has changed its
+          membership from (%parm[nodePrevLocation]%) to (%parm[nodeCurrentLocation]%).&lt;/p></descr>
       <logmsg dest="logndisplay">
             Node category membership has changed for node (%parm[nodelabel]%).
         </logmsg>
