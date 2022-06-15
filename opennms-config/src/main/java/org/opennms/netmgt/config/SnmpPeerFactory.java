@@ -620,7 +620,9 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         }
         encryptConfig(snmpConfig);
         snmpConfig.getDefinitions().forEach(this::encryptConfig);
-        snmpConfig.getSnmpProfiles().getSnmpProfiles().forEach(this::encryptConfig);
+        if (snmpConfig.getSnmpProfiles() != null) {
+            snmpConfig.getSnmpProfiles().getSnmpProfiles().forEach(this::encryptConfig);
+        }
     }
 
     private void decryptSnmpConfig(SnmpConfig snmpConfig) {
@@ -639,7 +641,9 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         decryptConfig(snmpConfig);
 
         snmpConfig.getDefinitions().forEach(this::decryptConfig);
-        snmpConfig.getSnmpProfiles().getSnmpProfiles().forEach(this::decryptConfig);
+        if (snmpConfig.getSnmpProfiles() != null) {
+            snmpConfig.getSnmpProfiles().getSnmpProfiles().forEach(this::decryptConfig);
+        }
     }
 
     private void decryptConfig(Configuration config) {
