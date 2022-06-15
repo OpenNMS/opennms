@@ -38,7 +38,7 @@ print(">>>END GIT Testing Area <<<")
 print("Initial Triggers Enabled",triggers_enabled)
 for key in trigger_keywords.keys():
     for git_key in git_keywords:
-        if git_key in trigger_keywords[key]:
+        if git_key.replace("#","") in trigger_keywords[key]:
             triggers_enabled[key]=True
 
 #Clean up
