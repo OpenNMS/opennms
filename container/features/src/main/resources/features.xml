@@ -118,7 +118,7 @@
     <feature name="commons-jxpath" version="${commonsJxpathVersion}" description="Apache :: commons-jxpath">
         <feature>commons-beanutils</feature>
         <feature>javax.servlet</feature>
-        <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jdom/1.1_4</bundle>
+        <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jdom/2.0.6.1_1</bundle>
         <bundle dependency="true">wrap:mvn:javax.servlet.jsp/jsp-api/2.2</bundle>
         <bundle>mvn:commons-jxpath/commons-jxpath/${commonsJxpathVersion}</bundle>
     </feature>
