@@ -68,12 +68,6 @@ for token in components_data.keys():
 
     token_position=[i for i, item in enumerate(main_yml_content) if token == item.strip().replace("#","")]
 
-
-    print("START DEBUG")
-    print("Token:"+token)
-    print("Token Positions:"+str(token_position))
-    print("END DEBUG")
-
     if len(token_position) > 1:
         print("\tSomething is wrong, we shouldn't have duplicate entry for "+token+" in "+main_filename)
         sys.exit(1)
