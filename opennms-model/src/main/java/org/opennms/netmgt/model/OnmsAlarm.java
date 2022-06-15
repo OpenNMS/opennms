@@ -1113,6 +1113,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     @Override
     public void clear(String ackUser) {
         m_severity = OnmsSeverity.CLEARED;
+        acknowledge(ackUser);
     }
     
     /** {@inheritDoc} */

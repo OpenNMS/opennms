@@ -380,7 +380,7 @@ public class AckdIT implements InitializingBean {
 //        Assert.assertEquals(notif.getAckTime(), bldr.getEvent().getTime());
         
         OnmsAlarm alarm = m_alarmDao.get(vo.m_alarmId);
-        Assert.assertEquals(alarm.getAckUser(), null);
+        Assert.assertEquals(alarm.getAckUser(), user);
         Assert.assertEquals(OnmsSeverity.CLEARED.getId(), alarm.getSeverityId().intValue());
 //        Assert.assertEquals(alarm.getAckTime(), bldr.getEvent().getTime());
     }
