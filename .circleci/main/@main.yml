@@ -1504,7 +1504,10 @@ jobs:
           command: echo "trigger-flaky=<< pipeline.parameters.trigger-flaky-smoke >>"
       - when:
           condition:
-            not: << pipeline.parameters.trigger-flaky-smoke >>
+            not:
+              or:
+                - << pipeline.parameters.trigger-flaky-smoke >>
+                - matches: { pattern: "^.*flaky.*$", value: << pipeline.git.branch >> }
           steps:
             - attach_workspace:
                 at: ~/
@@ -1521,7 +1524,10 @@ jobs:
           name: "run if flaky tests are enabled"
           command: echo "trigger-flaky=<< pipeline.parameters.trigger-flaky-smoke >>"
       - when:
-          condition: << pipeline.parameters.trigger-flaky-smoke >>
+          condition:
+            or:
+              - << pipeline.parameters.trigger-flaky-smoke >>
+              - matches: { pattern: "^.*flaky.*$", value: << pipeline.git.branch >> }
           steps:
             - attach_workspace:
                 at: ~/
@@ -1539,7 +1545,10 @@ jobs:
           command: echo "trigger-flaky=<< pipeline.parameters.trigger-flaky-smoke >>"
       - when:
           condition:
-            not: << pipeline.parameters.trigger-flaky-smoke >>
+            not:
+              or:
+                - << pipeline.parameters.trigger-flaky-smoke >>
+                - matches: { pattern: "^.*flaky.*$", value: << pipeline.git.branch >> }
           steps:
             - attach_workspace:
                 at: ~/
@@ -1557,7 +1566,10 @@ jobs:
           command: echo "trigger-flaky=<< pipeline.parameters.trigger-flaky-smoke >>"
       - when:
           condition:
-            not: << pipeline.parameters.trigger-flaky-smoke >>
+            not:
+              or:
+                - << pipeline.parameters.trigger-flaky-smoke >>
+                - matches: { pattern: "^.*flaky.*$", value: << pipeline.git.branch >> }
           steps:
             - attach_workspace:
                 at: ~/
