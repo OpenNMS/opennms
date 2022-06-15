@@ -6,8 +6,7 @@
 ActiveMQ:: Java-based open-source message broker supported by the Apache community.
 (See xref:deployment:core/setup-message-broker.adoc#setup-message-broker[Set Up Message Broker].)
 
-Alarms:: Indicators for problems occurring on entities that {page-component-title} monitors.
-(See xref:operation:alarms/introduction.adoc[Alarms].)
+xref:operation:alarms/introduction.adoc[Alarms]:: Indicators for problems occurring on entities that {page-component-title} monitors.
 
 Architecture for Learning Enabled Correlation (ALEC):: An OpenNMS framework that uses artificial intelligence and machine learning to provide alarm triage.
 ALEC groups related alarms so you can better manage the more complex situations they might represent.
@@ -21,15 +20,16 @@ Auto-discovered nodes:: Nodes that are automatically added to {page-component-ti
 (See xref:operation:provisioning/auto-discovery.adoc[Auto-Discovery].)
 
 Availability:: The percentage of time a node has been detected as being accessible.
-{page-component-title} typically shows availability statistics for the past 24 hours; this is calculated by subtracting the amount of outage time for a node, interface, or service.
+{page-component-title} typically shows availability statistics for the past 24 hours.
+This is calculated by subtracting the amount of outage time for a node, interface, or service during the time period.
 
 Azure:: Microsoft Azure is a cloud hosting platform that allows users to host a variety of different services.
 
 Bean Scripting Framework (BSF):: A framework that allows scripting to be used in Java code via a set of Java classes.
-{page-component-title} uses BSF-compatible scripts to determine the status of a service.
-(See xref:reference:provisioning/detectors/BsfDetector.adoc[BSFDetector].)
+The {page-component-title} xref:reference:provisioning/detectors/BsfDetector.adoc[BSF Detector] runs arbitrary BSF scripts to determine the existence of a service, and the xref:reference:service-assurance/monitors/BSFMonitor.adoc[BSF Monitor] uses scripts to determine the status of a service.
 
 Cassandra:: An open-source distributed/scale-out NoSQL database designed to hold large amounts of structured or unstructured data across many servers.
+The optional Newts storage strategy requires a Cassandra instance as back-end storage.
 (See xref:deployment:time-series-storage/newts/introduction.adoc[Newts].)
 
 CircleCI:: A continuous integration and delivery platform that hosts OpenNMS's CI/CD environment.
@@ -44,8 +44,8 @@ Direct-discovered nodes:: Nodes that are added to {page-component-title} manuall
 Discourse:: An open-source forum platform that hosts https://opennms.discourse.group/[OpenNMS's community forums].
 There, users can find knowledge base articles, support, announcements, and general discussion about all things OpenNMS.
 
-Discovery:: A process that uses ICMP to find network devices and services in your network and then automatically adds them to monitoring.
-(See xref:operation:provisioning/introduction.adoc#discovery-auto[Provisioning].)
+xref:operation:provisioning/introduction.adoc#discovery-auto[Discovery]::
+A process that uses ICMP to find network devices and services in your network and then automatically adds them to monitoring.
 
 Docker:: An open-source container virtualization service that allows you to deploy application-level services without worrying about operating system maintenance.
 {page-component-title} components may optionally be deployed as Docker containers.
@@ -83,7 +83,8 @@ HELM works with the Grafana analytics program to customize the data you can view
 Not to be confused with the https://helm.sh/[Kubernetes Helm] package manager.
 (See https://docs.opennms.com/helm/latest[HELM Documentation].)
 
-Horizon:: An open-source solution from OpenNMS that helps users visualize and monitor everything on their local and remote networks.
+Horizon:: An open-source solution from The OpenNMS Group that helps users visualize and monitor everything on their local and remote networks.
+(See https://www.opennms.com/horizon/[OpenNMS Horizon].)
 The free, community-driven project includes the latest technology and features and is delivered through a rapid release cycle.
 
 IFTTT:: If This Then That (https://ifttt.com/[IFTTT]) is an automation and workflow service that integrates apps, devices, and services.
@@ -119,7 +120,6 @@ Kubernetes:: An open-source container orchestration system for automating softwa
 Originally designed by Google, the Cloud Native Computing Foundation now maintains it.
 (See https://kubernetes.io/[Kubernetes].)
 
-Lightweight Directory Access Protocol (LDAP):: An industry standard protocol used by {page-component-title} to access and maintain distributed directory information services on an IP network.
 
 Location:: Also referred to as "monitoring location" or "Minion location".
 Nodes assigned to a monitoring location will be monitored by Minions assigned to the same location.
@@ -191,13 +191,12 @@ Sentinel:: Karaf container that provides scalability for data processing of flow
 It also supports thresholding for streaming telemetry if you are using the xref:deployment:time-series-storage/newts/introduction.adoc[Newts] time-series strategy.
 (See xref:deployment:sentinel/introduction.adoc[Sentinel].)
 
-Service:: Software that performs a specified set of tasks (automation, listening for data requests, etc.).
-
 Simple Mail Transfer Protocol (SMTP):: An internet standard protocol.
 {page-component-title} monitors SMTP availability on network nodes to ensure that email messages can be sent and received.
 (See xref:reference:service-assurance/monitors/MailTransportMonitor.adoc[MailTransportMonitor].])
 
-Simple Network Management Protocol (SNMP):: An internet standard protocol used by {page-component-title} to collect, organize, and modify information about managed devices on an IP network.
+Simple Network Management Protocol (SNMP):: An internet standard protocol used to collect, organize, and modify information about managed devices on an IP network.
+(See xref:operation:provisioning/getting-started.adoc#provision-snmp-configuration[Configure SNMP for Provisioning].)
 
 Snaps:: Self-contained software packages that run in a sandbox and have mediated access to host systems.
 Our Appliance Service uses snaps to distribute operating system packages and Minion service updates.
