@@ -181,10 +181,10 @@ public class Installer {
 
             m_migrator.setDatabaseName(dsConfig.getDatabaseName());
             m_migrator.setSchemaName(dsConfig.getSchemaName());
-            m_migrator.setAdminUser(adminDsConfig.getUserName());
-            m_migrator.setAdminPassword(adminDsConfig.getPassword());
-            m_migrator.setDatabaseUser(dsConfig.getUserName());
-            m_migrator.setDatabasePassword(dsConfig.getPassword());
+            m_migrator.setAdminUser(adminDsConfig.interpolateUsername());
+            m_migrator.setAdminPassword(adminDsConfig.interpolatePassword());
+            m_migrator.setDatabaseUser(dsConfig.interpolateUsername());
+            m_migrator.setDatabasePassword(dsConfig.interpolatePassword());
         }
 
         checkIPv6();
