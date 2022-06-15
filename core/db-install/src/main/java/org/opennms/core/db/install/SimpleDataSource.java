@@ -94,7 +94,7 @@ public class SimpleDataSource implements DataSource {
      * @throws java.lang.ClassNotFoundException if any.
      */
     public SimpleDataSource(JdbcDataSource ds) throws ClassNotFoundException {
-        this(ds.getClassName(), ds.getUrl(), ds.interpolateUsername(), ds.interpolatePassword());
+        this(ds.getClassName(), ds.getUrl(), ds.getUserName(), ds.getPassword());
         
         for (Param param : ds.getParamCollection()) {
             m_properties.put(param.getName(), param.getValue());

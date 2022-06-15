@@ -28,20 +28,20 @@
 
 package org.opennms.core.mate.api;
 
+import static org.hamcrest.Matchers.hasItem;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.pagesequence.PageSequence;
 import org.opennms.netmgt.config.pagesequence.Parameter;
-
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.hasItem;
 
 public class MetaDataUtilsTest {
     final Map<ContextKey, String> metaData = new HashMap<>();
@@ -80,21 +80,21 @@ public class MetaDataUtilsTest {
 
         final Map<String, Object> interpolatedAttributes = Interpolator.interpolateObjects(attributes, new MapScope(Scope.ScopeName.NODE, this.metaData));
 
-        Assert.assertEquals(attributes.size(), interpolatedAttributes.size());
-        Assert.assertEquals("aaaval1bbb", interpolatedAttributes.get("attribute1"));
-        Assert.assertEquals("aaaval3bbb", interpolatedAttributes.get("attribute2"));
-        Assert.assertEquals("aaadefaultbbbaaaval4bbb", interpolatedAttributes.get("attribute3"));
-        Assert.assertEquals("aaabbb", interpolatedAttributes.get("attribute4"));
-        Assert.assertEquals("aaabbb", interpolatedAttributes.get("attribute5"));
-        Assert.assertEquals("aaadefaultbbb", interpolatedAttributes.get("attribute6"));
-        Assert.assertTrue(interpolatedAttributes.get("attribute7") instanceof Integer);
-        Assert.assertTrue(interpolatedAttributes.get("attribute8") instanceof Long);
-        Assert.assertEquals(42, interpolatedAttributes.get("attribute7"));
-        Assert.assertEquals(42L, interpolatedAttributes.get("attribute8"));
-        Assert.assertEquals("aaa${abc}bbb", interpolatedAttributes.get("attribute9"));
-        Assert.assertEquals("aaaworkingbbb", interpolatedAttributes.get("attribute10"));
-        Assert.assertEquals("aaaworkingbbb", interpolatedAttributes.get("attribute11"));
-        Assert.assertEquals("xx${ctx6:key1}aaaaaaaayy", interpolatedAttributes.get("attribute12"));
+        assertEquals(attributes.size(), interpolatedAttributes.size());
+        assertEquals("aaaval1bbb", interpolatedAttributes.get("attribute1"));
+        assertEquals("aaaval3bbb", interpolatedAttributes.get("attribute2"));
+        assertEquals("aaadefaultbbbaaaval4bbb", interpolatedAttributes.get("attribute3"));
+        assertEquals("aaabbb", interpolatedAttributes.get("attribute4"));
+        assertEquals("aaabbb", interpolatedAttributes.get("attribute5"));
+        assertEquals("aaadefaultbbb", interpolatedAttributes.get("attribute6"));
+        assertTrue(interpolatedAttributes.get("attribute7") instanceof Integer);
+        assertTrue(interpolatedAttributes.get("attribute8") instanceof Long);
+        assertEquals(42, interpolatedAttributes.get("attribute7"));
+        assertEquals(42L, interpolatedAttributes.get("attribute8"));
+        assertEquals("aaa${abc}bbb", interpolatedAttributes.get("attribute9"));
+        assertEquals("aaaworkingbbb", interpolatedAttributes.get("attribute10"));
+        assertEquals("aaaworkingbbb", interpolatedAttributes.get("attribute11"));
+        assertEquals("xx${ctx6:key1}aaaaaaaayy", interpolatedAttributes.get("attribute12"));
     }
 
     @Test
@@ -104,18 +104,18 @@ public class MetaDataUtilsTest {
         final Map<String, Object> input = new HashMap<>();
         input.put("page-sequence", pageSequence);
         final Map<String, Object> output = Interpolator.interpolateObjects(input, new MapScope(Scope.ScopeName.NODE, this.metaData));
-        Assert.assertEquals("8980", ((PageSequence)output.get("page-sequence")).getPages().get(0).getPort());
-        Assert.assertEquals("1234", ((PageSequence)output.get("page-sequence")).getPages().get(1).getPort());
-        Assert.assertEquals("8980", ((PageSequence)output.get("page-sequence")).getPages().get(2).getPort());
-        Assert.assertThat(((PageSequence)output.get("page-sequence")).getPages().get(1).getParameters(), Matchers.hasItem(new Parameter("j_username", "papapape")));
+        assertEquals("8980", ((PageSequence)output.get("page-sequence")).getPages().get(0).getPort());
+        assertEquals("1234", ((PageSequence)output.get("page-sequence")).getPages().get(1).getPort());
+        assertEquals("8980", ((PageSequence)output.get("page-sequence")).getPages().get(2).getPort());
+        assertThat(((PageSequence)output.get("page-sequence")).getPages().get(1).getParameters(), hasItem(new Parameter("j_username", "papapape")));
     }
 
     @Test
     public void testNewRegExpPattern() {
         final Interpolator.Result result = Interpolator.interpolate("foo-${aaa}-bar-${ctx1:key1|down}-bla-${ctx2:key4|down}-blupp-${bbb}", new MapScope(Scope.ScopeName.NODE, this.metaData));
-        Assert.assertEquals(2, result.parts.size());
-        Assert.assertEquals("val1", result.parts.get(0).value.value);
-        Assert.assertEquals("val4", result.parts.get(1).value.value);
-        Assert.assertEquals("foo-${aaa}-bar-val1-bla-val4-blupp-${bbb}", result.output);
+        assertEquals(2, result.parts.size());
+        assertEquals("val1", result.parts.get(0).value.value);
+        assertEquals("val4", result.parts.get(1).value.value);
+        assertEquals("foo-${aaa}-bar-val1-bla-val4-blupp-${bbb}", result.output);
     }
 }

@@ -82,8 +82,8 @@ public class HikariCPConnectionFactory extends BaseConnectionFactory {
         final HikariConfig config = new HikariConfig(properties);
         config.setPoolName(dataSource.getName());
         config.setJdbcUrl(dataSource.getUrl());
-        config.setUsername(dataSource.interpolateUsername());
-        config.setPassword(dataSource.interpolatePassword());
+        config.setUsername(dataSource.getUserName());
+        config.setPassword(dataSource.getPassword());
         config.setDriverClassName(dataSource.getClassName());
         // NMS-9387: Block indefinitely when waiting for a connection
         config.setConnectionTimeout(0);

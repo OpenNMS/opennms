@@ -36,7 +36,9 @@ import java.security.cert.CertificateException;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.opennms.features.scv.api.Credentials;
 import org.opennms.features.scv.api.SecureCredentialsVault;
 import org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault;
@@ -44,7 +46,10 @@ import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 
 public class PasswordEncryptionTest {
 
-    private final String SCV_FILE = File.createTempFile("test-scv", ".jce").getAbsolutePath();
+    @Rule
+    public TemporaryFolder temporaryFolder = new TemporaryFolder();
+
+    private String SCV_FILE;
     private final String SCV_FILE_PASSWORD = "scvFilePassword";
     private final String SCV_ALIAS = "scvalias";
     private final String SCV_USERNAME = "scvUsername";
@@ -55,6 +60,8 @@ public class PasswordEncryptionTest {
 
     @Before
     public void before() throws IOException, KeyStoreException, CertificateException, NoSuchAlgorithmException {
+        SCV_FILE = temporaryFolder.newFile("test-scv.jce").getAbsolutePath();
+
         final File scvFile = new File(SCV_FILE);
 
         if (scvFile.exists()) {
@@ -71,17 +78,17 @@ public class PasswordEncryptionTest {
 
         jdbcDataSource.setUserName("superUsername");
         jdbcDataSource.setPassword("superSecretPassword");
-        Assert.assertEquals("superUsername", jdbcDataSource.interpolateAttribute(jdbcDataSource.getUserName(), SCV_FILE, SCV_FILE_PASSWORD));
-        Assert.assertEquals("superSecretPassword", jdbcDataSource.interpolateAttribute(jdbcDataSource.getPassword(), SCV_FILE, SCV_FILE_PASSWORD));
+        Assert.assertEquals("superUsername", jdbcDataSource.interpolateAttribute(jdbcDataSource.getRawUserName(), SCV_FILE, SCV_FILE_PASSWORD));
+        Assert.assertEquals("superSecretPassword", jdbcDataSource.interpolateAttribute(jdbcDataSource.getRawPassword(), SCV_FILE, SCV_FILE_PASSWORD));
 
         jdbcDataSource.setUserName("${scv:scvalias:username}");
         jdbcDataSource.setPassword("${scv:scvalias:password}");
-        Assert.assertEquals(SCV_USERNAME, jdbcDataSource.interpolateAttribute(jdbcDataSource.getUserName(), SCV_FILE, SCV_FILE_PASSWORD));
-        Assert.assertEquals(SCV_PASSWORD, jdbcDataSource.interpolateAttribute(jdbcDataSource.getPassword(), SCV_FILE, SCV_FILE_PASSWORD));
+        Assert.assertEquals(SCV_USERNAME, jdbcDataSource.interpolateAttribute(jdbcDataSource.getRawUserName(), SCV_FILE, SCV_FILE_PASSWORD));
+        Assert.assertEquals(SCV_PASSWORD, jdbcDataSource.interpolateAttribute(jdbcDataSource.getRawPassword(), SCV_FILE, SCV_FILE_PASSWORD));
 
         jdbcDataSource.setUserName("${scv:unknownalias:username|defaultUsername}");
         jdbcDataSource.setPassword("${scv:unknownalias:password|defaultPassword}");
-        Assert.assertEquals("defaultUsername", jdbcDataSource.interpolateAttribute(jdbcDataSource.getUserName(), SCV_FILE, SCV_FILE_PASSWORD));
-        Assert.assertEquals("defaultPassword", jdbcDataSource.interpolateAttribute(jdbcDataSource.getPassword(), SCV_FILE, SCV_FILE_PASSWORD));
+        Assert.assertEquals("defaultUsername", jdbcDataSource.interpolateAttribute(jdbcDataSource.getRawUserName(), SCV_FILE, SCV_FILE_PASSWORD));
+        Assert.assertEquals("defaultPassword", jdbcDataSource.interpolateAttribute(jdbcDataSource.getRawPassword(), SCV_FILE, SCV_FILE_PASSWORD));
     }
 }

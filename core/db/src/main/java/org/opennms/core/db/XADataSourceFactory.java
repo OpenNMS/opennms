@@ -99,8 +99,8 @@ public abstract class XADataSourceFactory {
 			xaDataSource.setServerName(url.getHost());
 			xaDataSource.setPortNumber(url.getPort());
 			xaDataSource.setDatabaseName(ds.getDatabaseName());
-			xaDataSource.setUser(ds.interpolateUsername());
-			xaDataSource.setPassword(ds.interpolatePassword());
+			xaDataSource.setUser(ds.getUserName());
+			xaDataSource.setPassword(ds.getPassword());
 
 			if (pool != null) {
 				if (pool.getLoginTimeout() > 0) {

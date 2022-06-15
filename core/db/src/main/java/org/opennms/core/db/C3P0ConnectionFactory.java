@@ -60,8 +60,8 @@ public class C3P0ConnectionFactory extends BaseConnectionFactory {
 	@Override
 	protected void initializePool(final JdbcDataSource dataSource) throws SQLException {
 		m_pool = new ComboPooledDataSource();
-		m_pool.setPassword(dataSource.interpolatePassword());
-		m_pool.setUser(dataSource.interpolateUsername());
+		m_pool.setPassword(dataSource.getPassword());
+		m_pool.setUser(dataSource.getUserName());
 		m_pool.setJdbcUrl(dataSource.getUrl());
 		try {
 			m_pool.setDriverClass(dataSource.getClassName());

@@ -147,14 +147,14 @@ public class DatabaseChecker {
                 }
                 try {
                     Class.forName(dataSource.getClassName());
-                    connection = DriverManager.getConnection(dataSource.getUrl(), dataSource.interpolateUsername(), dataSource.interpolatePassword());
+                    connection = DriverManager.getConnection(dataSource.getUrl(), dataSource.getUserName(), dataSource.getPassword());
                 } catch (final Throwable t) {
                     final String errorMessage = "Unable to connect to data source '{}' at URL '{}' with username '{}', check opennms-datasources.xml and your database permissions.";
                     if (m_required.contains(name)) {
-                        LOG.error(errorMessage, name, dataSource.getUrl(), dataSource.interpolateUsername());
+                        LOG.error(errorMessage, name, dataSource.getUrl(), dataSource.getUserName());
                         throw new InvalidDataSourceException("Data source '" + name + "' failed.", t);
                     } else {
-                        LOG.warn(errorMessage, name, dataSource.getUrl(), dataSource.interpolateUsername());
+                        LOG.warn(errorMessage, name, dataSource.getUrl(), dataSource.getUserName());
                     }
                 }
             } finally {
