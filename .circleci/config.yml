@@ -17,6 +17,10 @@ parameters:
     description: whether to trigger garbage collection for older feature images
     type: boolean
     default: false
+  trigger-flaky:
+    description: whether to enable running flaky smoke tests
+    type: boolean
+    default: false
 
 setup: true
 
@@ -60,6 +64,7 @@ workflows:
         - equal: [ true, << pipeline.parameters.trigger-coverage-api >> ]
         - equal: [ false, << pipeline.parameters.trigger-prebuild >> ]
         - equal: [ false, << pipeline.parameters.trigger-automation >> ]
+        - equal: [ false, << pipeline.parameters.trigger-flaky >> ]
     jobs:
       - trigger-path-filtering:
           base-revision: << pipeline.git.branch >>
@@ -72,17 +77,39 @@ workflows:
         - equal: [ false, << pipeline.parameters.trigger-coverage-api >> ]
         - equal: [ true, << pipeline.parameters.trigger-prebuild >> ]
         - equal: [ false, << pipeline.parameters.trigger-automation >> ]
+        - equal: [ false, << pipeline.parameters.trigger-flaky >> ]
     jobs:
       - trigger-path-filtering:
           base-revision: << pipeline.git.branch >>
           mapping: |
-            .*                trigger-coverage false
-            ((?!docs/).)*     trigger-build    true
-            docs/.*           trigger-docs     true
-            ui/.*             trigger-ui       true
-            .circleci/.*      trigger-build    true
-            .circleci/.*      trigger-docs     true
-            .circleci/.*      trigger-ui       true
+            .*                trigger-coverage    false
+            .*                trigger-flaky-smoke false
+            ((?!docs/).)*     trigger-build       true
+            docs/.*           trigger-docs        true
+            ui/.*             trigger-ui          true
+            .circleci/.*      trigger-build       true
+            .circleci/.*      trigger-docs        true
+            .circleci/.*      trigger-ui          true
+
+  pre-build-with-flaky:
+    when:
+      and:
+        - equal: [ false, << pipeline.parameters.trigger-coverage-api >> ]
+        - equal: [ true, << pipeline.parameters.trigger-prebuild >> ]
+        - equal: [ false, << pipeline.parameters.trigger-automation >> ]
+        - equal: [ true, << pipeline.parameters.trigger-flaky >> ]
+    jobs:
+      - trigger-path-filtering:
+          base-revision: << pipeline.git.branch >>
+          mapping: |
+            .*                trigger-coverage    false
+            .*                trigger-flaky-smoke true
+            ((?!docs/).)*     trigger-build       true
+            docs/.*           trigger-docs        true
+            ui/.*             trigger-ui          true
+            .circleci/.*      trigger-build       true
+            .circleci/.*      trigger-docs        true
+            .circleci/.*      trigger-ui          true
 
   automation:
     when:
