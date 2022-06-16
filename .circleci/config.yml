@@ -960,7 +960,7 @@ jobs:
       DOCKER_CLI_EXPERIMENTAL: enabled
     parameters:
       number-vcpu:
-        default: 5
+        default: 4
         type: integer
       vaadin-javamaxmem:
         default: 1g
@@ -1018,7 +1018,7 @@ jobs:
   horizon-rpm-build:
     executor: centos-build-executor
     # Larger memory footprint required to speed up builds using Takari smartbuilder
-    resource_class: large
+    resource_class: xlarge
     steps:
       - attach_workspace:
           at: ~/
@@ -1044,9 +1044,6 @@ jobs:
           command: |
             cd opennms-container/horizon
             ./build_container_image.sh
-      #- store_artifacts:
-      #    path: ~/project/opennms-container/horizon/images/container.oci
-      #    destination: horizon.oci
       - store_artifacts:
           path: ~/project/target/rpm/RPMS/noarch
           destination: rpms
@@ -1056,9 +1053,6 @@ jobs:
       - save-artifacts:
           path: opennms-container/horizon/images/
           location: horizon-oci
-      #- cache-oci:
-      #    key: horizon
-      #    path: opennms-container/horizon/images/
   minion-rpm-build:
     executor: centos-build-executor
     # Larger memory footprint required to speed up builds using Takari smartbuilder
@@ -1076,7 +1070,7 @@ jobs:
             export NODE_OPTIONS=--max_old_space_size=1024
             export CCI_MAXCPU=4
             export CCI_VAADINJAVAMAXMEM=768m
-            export MAVEN_OPTS="-Xmx7g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
+            export MAVEN_OPTS="-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
             .circleci/scripts/makerpm.sh tools/packages/minion/minion.spec
       - sign-packages/sign-rpms:
           skip_if_forked_pr: true
@@ -1090,9 +1084,6 @@ jobs:
           command: |
             cd opennms-container/minion
             ./build_container_image.sh
-      #- store_artifacts:
-      #    path: ~/project/opennms-container/minion/images/container.oci
-      #    destination: minion.oci
       - store_artifacts:
           path: ~/project/target/rpm/RPMS/noarch
           destination: rpms
@@ -1106,7 +1097,7 @@ jobs:
     executor: centos-build-executor
     # Larger memory footprint required to speed up builds using Takari smartbuilder
     # Will need to increase resource class if horizon-rpm-build is under 19 min
-    resource_class: large
+    resource_class: xlarge
     steps:
       - attach_workspace:
           at: ~/
@@ -1119,7 +1110,7 @@ jobs:
             export NODE_OPTIONS=--max_old_space_size=1024
             export CCI_MAXCPU=4
             export CCI_VAADINJAVAMAXMEM=768m
-            export MAVEN_OPTS="-Xmx7g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
+            export MAVEN_OPTS="-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
             .circleci/scripts/makerpm.sh tools/packages/sentinel/sentinel.spec
       - sign-packages/sign-rpms:
           skip_if_forked_pr: true
@@ -1133,9 +1124,6 @@ jobs:
           command: |
             cd opennms-container/sentinel
             ./build_container_image.sh
-      #- store_artifacts:
-      #    path: ~/project/opennms-container/sentinel/images/container.oci
-      #    destination: sentinel.oci
       - store_artifacts:
           path: ~/project/target/rpm/RPMS/noarch
           destination: rpms
