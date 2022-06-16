@@ -272,6 +272,12 @@ commands:
             sudo swapon /swapfile
             sudo sysctl vm.swappiness=5
             cat /proc/sys/vm/swappiness
+      - run:
+          name: Test OCI availablity
+          command: |
+          ls opennms-container/horizon/images/ 
+          ls opennms-container/minion/images/ 
+          ls opennms-container/sentinel/images/ 
       - fetch-artifacts:
           path: opennms-container/horizon/images/
           location: horizon-oci
