@@ -275,9 +275,9 @@ commands:
       - run:
           name: Test OCI availablity
           command: |
-          ls opennms-container/horizon/images/ 
-          ls opennms-container/minion/images/ 
-          ls opennms-container/sentinel/images/ 
+            ls opennms-container/horizon/images/ 
+            ls opennms-container/minion/images/ 
+            ls opennms-container/sentinel/images/ 
       - fetch-artifacts:
           path: opennms-container/horizon/images/
           location: horizon-oci
