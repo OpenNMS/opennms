@@ -1092,18 +1092,6 @@
               <repositoryType>PLUGIN</repositoryType>
             </DynamicDependency>
             <DynamicDependency>
-              <groupId>com.google.code.gson</groupId>
-              <artifactId>gson</artifactId>
-              <version>2.8.0</version> <!-- minion-core -->
-              <repositoryType>MAIN</repositoryType>
-            </DynamicDependency>
-            <DynamicDependency>
-              <groupId>com.google.code.gson</groupId>
-              <artifactId>gson</artifactId>
-              <version>2.8.5</version> <!-- smoke-tests -->
-              <repositoryType>MAIN</repositoryType>
-            </DynamicDependency>
-            <DynamicDependency>
               <groupId>javax.samples.jnlp</groupId>
               <artifactId>jnlp-servlet</artifactId>
               <version>1.6.0</version>
@@ -1718,7 +1706,7 @@
     <geronimoVersion>1.1.1</geronimoVersion>
     <groovyVersion>2.5.16</groovyVersion>
     <grpcVersion>1.46.0</grpcVersion>
-    <gsonVersion>2.8.5</gsonVersion>
+    <gsonVersion>2.8.9</gsonVersion>
     <guavaVersion>18.0</guavaVersion>
     <guavagRPCVersion>28.2-jre</guavagRPCVersion>
     <guavaOldVersion>17.0</guavaOldVersion>
