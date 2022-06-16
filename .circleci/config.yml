@@ -65,6 +65,10 @@ parameters:
     description: whether to trigger the main build
     type: boolean
     default: false
+  trigger-flaky:
+    description: whether to enable running flaky smoke tests
+    type: boolean
+    default: false
 
 setup: << pipeline.parameters.trigger-setup >>
 
@@ -106,12 +110,6 @@ aliases:
       # setup_dct_env must have been run first because it provide DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE
       # that is required for loading the
       docker trust key load $KEY_FOLDER/$DCT_DELEGATE_KEY_NAME.key
-
-parameters:
-  trigger-flaky:
-    description: whether to enable running flaky smoke tests
-    type: boolean
-    default: false
 
 docker_container_config: &docker_container_config
   executor: docker-executor
