@@ -93,18 +93,23 @@
 			</li>
 			<li>
 			<i class="fa fa-fw fa-users"></i>
-			There are  
-			<a href="notification/browse?acktype=unack">
-			<%
-				count = repository.countMatchingNotifications(
-					new NotificationCriteria(
-						AcknowledgeType.UNACKNOWLEDGED,
-						new Filter[0]
-					)
-				);
-				format = formatter.format( count );
-				out.println( java.text.MessageFormat.format( format, new Object[] { new Integer(count) } ));
-			%>
+				<%
+					count = repository.countMatchingNotifications(
+							new NotificationCriteria(
+									AcknowledgeType.UNACKNOWLEDGED,
+									new Filter[0]
+							)
+					);
+				 	if( count == 1) { %>
+						There is
+					<% } else { %>
+						There are
+					<% } %>
+				<a href="notification/browse?acktype=unack">
+				<%
+					format = formatter.format( count );
+					out.println( java.text.MessageFormat.format( format, new Object[] { new Integer(count) } ));
+				%>
 			</a>
 			</li>
 			<li><i class="fa fa-fw fa-calendar"></i> <a href="roles">On-Call Schedule</a></li>
