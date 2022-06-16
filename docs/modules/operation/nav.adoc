@@ -122,6 +122,24 @@
 **** xref:topology/enlinkd/layer-3/is-is-discovery.adoc[]
 
 * xref:database-reports/database.adoc[]
+** xref:database-reports/template-introduction.adoc[]
+*** xref:database-reports/templates/availability.adoc[Availability by Node]
+*** xref:database-reports/templates/avail-summary.adoc[Availability Summary]
+*** xref:database-reports/templates/classic.adoc[Default Classic]
+*** xref:database-reports/templates/calendar.adoc[Default Calendar]
+*** xref:database-reports/templates/event.adoc[Event Analysis]
+*** xref:database-reports/templates/grafana.adoc[Grafana Dashboard]
+*** xref:database-reports/templates/interface-avail.adoc[Interface Availability]
+*** xref:database-reports/templates/maintenance-expired.adoc[Maintenance Contracts Expiring]
+*** xref:database-reports/templates/maintenance-strategy.adoc[Maintenance Contracts Strategy]
+*** xref:database-reports/templates/morning.adoc[Early Morning]
+*** xref:database-reports/templates/response-summary.adoc[Response Time Summary]
+*** xref:database-reports/templates/response-time.adoc[Response Time by Node]
+*** xref:database-reports/templates/serial.adoc[Serial Interface Utilization]
+*** xref:database-reports/templates/snmp.adoc[SNMP Interface Availability]
+*** xref:database-reports/templates/total-bytes.adoc[Total Bytes Transferred by Interface]
+*** xref:database-reports/templates/traffic-rates.adoc[Avg/Peak Traffic Rates for Nodes by Interface]
+
 
 * xref:ticketing/introduction.adoc[]
 

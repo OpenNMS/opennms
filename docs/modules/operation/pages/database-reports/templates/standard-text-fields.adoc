@@ -1,0 +1,18 @@
+
+//This file includes standard text for the reports that have text fields and that can use the SQL wildcard symbol "%" in the field.  It should appear after the parameter table and the first instance of a text field should be market with ✢ character.  It assumes the next section starts right after this text.
+.Click to learn more about using wildcards in text fields
+[%collapsible]
+====
+[sidebar]
+****
+Text fields allow the use of the percent character `%` as a wildcard.
+
+To match every record, enter the percent character by itself as the value for the text field.
+
+It can also be used with other characters, for example, typing `prod%` as the value for a text field will match all records that start with "prod" in that field.
+
+Typing `%prod%` into the text field will match any record that has the four characters "prod" anywhere in that text field.
+
+Any string that can be used in a PostgreSQL query element that uses the LIKE predicate operator will work.
+****
+====
