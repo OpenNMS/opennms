@@ -1057,7 +1057,7 @@ jobs:
     executor: centos-build-executor
     # Larger memory footprint required to speed up builds using Takari smartbuilder
     # Will need to increase resource class if horizon-rpm-build is under 15 min
-    resource_class: large
+    resource_class: xlarge
     steps:
       - attach_workspace:
           at: ~/
