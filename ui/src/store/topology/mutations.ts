@@ -25,7 +25,7 @@ const SAVE_TOPOLOGY_GRAPHS_SUB_LAYERS = (state: State, topologyGraphsSubLayers: 
 }
 
 const SAVE_DEFAULT_OBJECTS = (state: State, defaultObjects: Node[]) => {
-  state.defaultObjects = defaultObjects
+  state.defaultObjects = defaultObjects.filter((dos) => dos)
 }
 
 const SET_SEMANTIC_ZOOM_LEVEL = (state: State, SML: number) => {
@@ -50,7 +50,7 @@ const SET_RIGHT_DRAWER_OPEN = (state: State, bool: boolean) => {
 }
 
 const ADD_FOCUS_OBJECTS = (state: State, ids: IdLabelProps[]) => {
-  state.focusObjects = ids
+  state.focusObjects = ids.filter((id) => id)
 }
 
 const ADD_FOCUS_OBJECT = (state: State, id: IdLabelProps) => {

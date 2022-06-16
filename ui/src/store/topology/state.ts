@@ -14,7 +14,7 @@ export interface State {
   isRightDrawerOpen: boolean
   focusObjects: IdLabelProps[]
   layout: Record<string, NodePoint>
-  defaultObjects: Node[] | null
+  defaultObjects: Node[]
   highlightFocusedObjects: boolean
   modalState: boolean
   nodeIcons: Record<string, string>
@@ -37,7 +37,7 @@ const state: State = {
   isRightDrawerOpen: false,
   focusObjects: [],
   layout: {},
-  defaultObjects: null,
+  defaultObjects: [],
   highlightFocusedObjects: false,
   modalState: false,
   nodeIcons: {},
