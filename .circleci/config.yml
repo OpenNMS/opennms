@@ -668,27 +668,7 @@ workflows:
       - tarball-assembly:
           requires:
             - build
-      - horizon-rpm-build:
-          requires:
-            - build
-          filters:
-            branches:
-              only:
-                - /^foundation.*/
-                - /^release-.*/
-                - develop
-                - /.*smoke.*/
-      - minion-rpm-build:
-          requires:
-            - build
-          filters:
-            branches:
-              only:
-                - /^foundation.*/
-                - /^release-.*/
-                - develop
-                - /.*smoke.*/
-      - sentinel-rpm-build:
+      - combined-rpm-build:
           requires:
             - build
           filters:
@@ -708,9 +688,7 @@ workflows:
       - smoke-test-core:
           requires:
             - tarball-assembly
-            - horizon-rpm-build
-            - minion-rpm-build
-            - sentinel-rpm-build
+            - combined-rpm-build
           filters:
             branches:
               only:
@@ -724,9 +702,7 @@ workflows:
       - smoke-test-flaky:
           requires:
             - tarball-assembly
-            - horizon-rpm-build
-            - minion-rpm-build
-            - sentinel-rpm-build
+            - combined-rpm-build
           filters:
             branches:
               only:
@@ -740,9 +716,7 @@ workflows:
       - smoke-test-minion:
           requires:
             - tarball-assembly
-            - horizon-rpm-build
-            - minion-rpm-build
-            - sentinel-rpm-build
+            - combined-rpm-build
           filters:
             branches:
               only:
@@ -756,9 +730,7 @@ workflows:
       - smoke-test-sentinel:
           requires:
             - tarball-assembly
-            - horizon-rpm-build
-            - minion-rpm-build
-            - sentinel-rpm-build
+            - combined-rpm-build
           filters:
             branches:
               only:
@@ -772,9 +744,7 @@ workflows:
       #- smoke-test-minimal:
       #    requires:
       #      - tarball-assembly
-      #      - horizon-rpm-build
-      #      - minion-rpm-build
-      #      - sentinel-rpm-build
+      #      - combined-rpm-build
       #    filters:
       #      branches:
       #        only:
@@ -1020,6 +990,103 @@ jobs:
           when: always
           path: ~/project/target/tarballs
           destination: tarballs
+  combined-rpm-build:
+    executor: centos-build-executor
+    # Larger memory footprint required to speed up builds using Takari smartbuilder
+    resource_class: xlarge
+    steps:
+      - attach_workspace:
+          at: ~/
+      - sign-packages/setup-env:
+          skip_if_forked_pr: true
+          gnupg_home: ~/tmp/gpg
+      - run:
+          name: Build Horizon RPMs
+          command: |
+            export NODE_OPTIONS=--max_old_space_size=1024
+            export CCI_MAXCPU=4
+            export MAVEN_OPTS="-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
+            .circleci/scripts/makerpm.sh tools/packages/opennms/opennms.spec
+            mkdir target/rpm/RPMS/noarch/horizon
+            mv target/rpm/RPMS/noarch/*.rpm target/rpm/RPMS/noarch/horizon/
+      - sign-packages/sign-rpms:
+          skip_if_forked_pr: true
+          gnupg_home: ~/tmp/gpg
+          gnupg_key: opennms@opennms.org
+          packages: target/rpm/RPMS/noarch/horizon/*.rpm
+
+      - run:
+          name: Build Minion RPMs
+          command: |
+            export NODE_OPTIONS=--max_old_space_size=1024
+            export CCI_MAXCPU=4
+            export CCI_VAADINJAVAMAXMEM=768m
+            export MAVEN_OPTS="-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
+            .circleci/scripts/makerpm.sh tools/packages/minion/minion.spec
+            mkdir target/rpm/RPMS/noarch/minion
+            mv target/rpm/RPMS/noarch/*.rpm target/rpm/RPMS/noarch/minion/
+      - sign-packages/sign-rpms:
+          skip_if_forked_pr: true
+          gnupg_home: ~/tmp/gpg
+          gnupg_key: opennms@opennms.org
+          packages: target/rpm/RPMS/noarch/minion/*.rpm
+      - run:
+          name: Build Sentinel RPMs
+          command: |
+            export NODE_OPTIONS=--max_old_space_size=1024
+            export CCI_MAXCPU=4
+            export CCI_VAADINJAVAMAXMEM=768m
+            export MAVEN_OPTS="-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
+            .circleci/scripts/makerpm.sh tools/packages/sentinel/sentinel.spec
+            mkdir target/rpm/RPMS/noarch/sentinel
+            mv target/rpm/RPMS/noarch/*.rpm target/rpm/RPMS/noarch/sentinel/            
+      - sign-packages/sign-rpms:
+          skip_if_forked_pr: true
+          gnupg_home: ~/tmp/gpg
+          gnupg_key: opennms@opennms.org
+          packages: target/rpm/RPMS/noarch/sentinel/*.rpm
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: Fetch Horizon RPM artifacts and build Horizon container image
+          command: |
+            mv target/rpm/RPMS/noarch/horizon/*.rpm  target/rpm/RPMS/noarch/
+            cd opennms-container/horizon
+            ./build_container_image.sh
+            mv target/rpm/RPMS/noarch/*.rpm target/rpm/RPMS/noarch/horizon/           
+      - run:
+          name: Fetch Minion RPM artifacts and build Minion container image
+          command: |
+            mv target/rpm/RPMS/noarch/minion/*.rpm  target/rpm/RPMS/noarch/
+            cd opennms-container/minion
+            ./build_container_image.sh
+            mv target/rpm/RPMS/noarch/*.rpm target/rpm/RPMS/noarch/minion/          
+      - run:
+          name: Fetch Sentinel RPM artifacts and build Sentinel container image
+          command: |
+            mv target/rpm/RPMS/noarch/sentinel/*.rpm  target/rpm/RPMS/noarch/
+            cd opennms-container/sentinel
+            ./build_container_image.sh 
+            mv target/rpm/RPMS/noarch/minion/*.rpm  target/rpm/RPMS/noarch/
+            mv target/rpm/RPMS/noarch/horizon/*.rpm  target/rpm/RPMS/noarch/
+            rm -r target/rpm/RPMS/noarch/sentinel     
+            rm -r target/rpm/RPMS/noarch/minion     
+            rm -r target/rpm/RPMS/noarch/horizon     
+      - store_artifacts:
+          path: ~/project/target/rpm/RPMS/noarch
+          destination: rpms
+      #- cache-workflow-assets:
+      #    cache_prefix: rpm-horizon
+      #    source_path: target/rpm/RPMS/noarch
+      - save-artifacts:
+          path: opennms-container/horizon/images/
+          location: horizon-oci
+      - save-artifacts:
+          path: opennms-container/sentinel/images/
+          location: sentinel-oci
+      - save-artifacts:
+          path: opennms-container/minion/images/
+          location: minion-oci
 
   horizon-rpm-build:
     executor: centos-build-executor
