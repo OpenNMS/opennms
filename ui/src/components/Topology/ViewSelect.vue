@@ -87,4 +87,11 @@ const selectDisplay = (display: string) => {
   width: 15rem;
 }
 </style>
+<style lang="scss">
+@import "@featherds/dropdown/scss/mixins";
+
+body > .feather-menu-dropdown > .feather-dropdown {
+  @include dropdown-menu-height(8); // to have the view dropdown list of 8 items
+}
+</style>
 
