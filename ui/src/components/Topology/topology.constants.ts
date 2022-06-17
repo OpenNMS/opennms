@@ -19,7 +19,7 @@ export const DisplayType: GraphType = {
   bsm: 'bsm',
   'cities.transformers.substations.switches': 'powergrid',
   powergrid: 'powergrid',
-  nodes: 'linkd', // nodes
+  nodes: 'nodes',
   vmware: 'vmware'
 }
 

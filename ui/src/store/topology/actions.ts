@@ -1,4 +1,4 @@
-import { DisplayType } from '@/components/Topology/topology.constants'
+import { ViewType, DisplayType } from '@/components/Topology/topology.constants'
 import API from '@/services'
 import { IdLabelProps, QueryParameters, VuexContext } from '@/types'
 import { SZLRequest, TopologyGraphList, VerticesAndEdges } from '@/types/topology'
@@ -140,13 +140,17 @@ const changeIcon = (context: ContextWithState, nodeIdIconKey: Record<string, str
 /**
  * Saves menu selections
  */
+const setIsTopologyView = (context: VuexContext, bool: boolean) => {
+  context.commit('SET_IS_TOPOLOGY_VIEW', bool)
+}
 
 // map, d3, circle, etc.
 const setSelectedView = (context: VuexContext, view: string) => {
   context.commit('SET_SELECTED_VIEW', view)
+  context.commit('SET_IS_TOPOLOGY_VIEW', view !== ViewType.map)
 }
 
-// linkd, powergrid, etc.
+// nodes, powergrid, etc.
 const setSelectedDisplay = async (context: ContextWithState, display: string) => {
   context.commit('SET_SELECTED_DISPLAY', display)
 
@@ -284,6 +288,7 @@ const updateSubLayerIndicator = (context: ContextWithState) => {
 export default {
   getVerticesAndEdges,
   setSemanticZoomLevel,
+  setIsTopologyView,
   setSelectedView,
   setSelectedDisplay,
   setModalState,

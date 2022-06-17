@@ -1,7 +1,6 @@
 import { Edges, Node, Nodes } from 'v-network-graph'
 import { IdLabelProps } from '@/types'
 import { TopologyGraphList, TopologyGraph } from '@/types/topology'
-import { ViewType } from '@/components/topology/topology.constants'
 import { State } from './state'
 
 const SAVE_EDGES = (state: State, edges: Edges) => {
@@ -32,8 +31,11 @@ const SET_SEMANTIC_ZOOM_LEVEL = (state: State, SML: number) => {
   state.semanticZoomLevel = SML
 }
 
+const SET_IS_TOPOLOGY_VIEW = (state: State, bool: boolean) => {
+  state.isTopologyView = bool
+}
+
 const SET_SELECTED_VIEW = (state: State, view: string) => {
-  state.isTopologyView = view !== ViewType.map
   state.selectedView = view
 }
 
@@ -89,6 +91,7 @@ export default {
   SAVE_EDGES,
   SAVE_VERTICES,
   SET_SEMANTIC_ZOOM_LEVEL,
+  SET_IS_TOPOLOGY_VIEW,
   SET_SELECTED_VIEW,
   SET_SELECTED_DISPLAY,
   SET_LEFT_DRAWER_OPEN,

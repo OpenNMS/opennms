@@ -33,9 +33,9 @@
       <hr />
       <!-- <FeatherDropdownItem>
               <FeatherCheckbox
-                @update:modelValue="selectDisplay('linkd')"
-                v-model="displays['linkd']"
-              >Enhanced Linkd</FeatherCheckbox>
+                @update:modelValue="selectDisplay('nodes')"
+                v-model="displays['nodes']"
+              >Nodes (Enhanced Linkd)</FeatherCheckbox>
             </FeatherDropdownItem> -->
       <FeatherDropdownItem
         v-for="({id = '', label}) in graphs"
@@ -66,22 +66,18 @@ import { TopologyGraphList } from '@/types/topology'
 
 const store = useStore()
 
-const views = ref<Record<string, boolean>>({ map: true }) //default view
-const displays = ref<Record<string, boolean>>({ linkd: true }) //default display
+const views = computed<Record<string, boolean>>(() => ({[store.state.topologyModule.selectedView]: true}))
+const displays = computed<Record<string, boolean>>(() => ({[store.state.topologyModule.selectedDisplay]: true}))
 
 const isTopologyView = computed<boolean>(() => store.state.topologyModule.isTopologyView)
 
 const graphs = computed<TopologyGraphList[]>(() => store.getters['topologyModule/getGraphs'])
 
 const selectView = (view: string) => {
-  views.value = {} // reset
-  views.value[view] = true // set selected
   store.dispatch('topologyModule/setSelectedView', view) // save to state
 }
 
 const selectDisplay = (display: string) => {
-  displays.value = {} // reset
-  displays.value[DisplayType[display]] = true // set selected
   store.dispatch('topologyModule/setSelectedDisplay', DisplayType[display]) // save to state
 }
 </script>

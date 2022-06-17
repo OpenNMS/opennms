@@ -5,8 +5,8 @@ import { ViewType, DisplayType } from '@/components/topology/topology.constants'
 
 export interface State {
   isTopologyView: boolean // switch between geo-map and topology
-  selectedView: string // d3, circle layout etc.
-  selectedDisplay: string // linkd, powergrid etc.
+  selectedView: string // map, d3, circle layout etc.
+  selectedDisplay: string // nodes, powergrid etc.
   edges: Edges
   vertices: Nodes
   semanticZoomLevel: number
@@ -28,8 +28,8 @@ export interface State {
 
 const state: State = {
   isTopologyView: false,
-  selectedView: ViewType.map,
-  selectedDisplay: DisplayType.nodes,
+  selectedView: ViewType.map, // default layout
+  selectedDisplay: DisplayType.nodes, // default graph
   edges: {},
   vertices: {},
   semanticZoomLevel: 1,
