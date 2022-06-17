@@ -29,6 +29,7 @@
 package org.opennms.netmgt.config.opennmsDataSources;
 
 
+import java.nio.file.Paths;
 import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -51,8 +52,10 @@ import org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault;
 @XmlRootElement(name = "jdbc-data-source")
 @XmlAccessorType(XmlAccessType.NONE)
 public class JdbcDataSource implements java.io.Serializable {
-
     private static final long serialVersionUID = -1120653287571635877L;
+
+    private static final String KEYSTORE_PASSWORD = System.getProperty("org.opennms.features.scv.jceks.key", "QqSezYvBtk2gzrdpggMHvt5fJGWCdkRw");
+    private static final String KEYSTORE_FILENAME = Paths.get(System.getProperty("opennms.home"), "etc", "scv.jce").toString();
 
     @XmlAttribute(name = "name", required = true)
     private String name;
@@ -429,7 +432,7 @@ public class JdbcDataSource implements java.io.Serializable {
     }
 
     public String interpolateAttribute(final String value) {
-        return interpolateAttribute(value, "/opt/opennms/etc/scv.jce","QqSezYvBtk2gzrdpggMHvt5fJGWCdkRw");
+        return interpolateAttribute(value, KEYSTORE_FILENAME, KEYSTORE_PASSWORD);
     }
 
     public String interpolateAttribute(final String value, final String keystoreFile, final String password) {
