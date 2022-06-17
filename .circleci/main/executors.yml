@@ -12,8 +12,10 @@ executors:
     docker:
       - image: opennms/antora:2.3.4-b7274
   integration-test-executor:
-    machine:
-      image: ubuntu-2004:202010-01
+    docker:
+      image: cimg/base:2020.10
+#    machine:
+#      image: ubuntu-2004:202010-01
   smoke-test-executor:
     machine:
       image: ubuntu-2004:202010-01

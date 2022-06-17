@@ -356,10 +356,6 @@ commands:
         default: true
         type: boolean
     steps:
-      - attach_workspace:
-          at: ~/
-      - run-build:
-          number-vcpu: 8
       - run:
           name: Monitor JVM processes
           background: true
