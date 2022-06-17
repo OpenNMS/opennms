@@ -41,8 +41,7 @@ Direct-discovered nodes:: Nodes that are added to {page-component-title} manuall
 Discourse:: An open-source forum platform that hosts https://opennms.discourse.group/[OpenNMS's community forums].
 There, users can find knowledge base articles, support, announcements, and general discussion about all things OpenNMS.
 
-xref:operation:provisioning/introduction.adoc#discovery-auto[Discovery]::
-A process that uses ICMP to find network devices and services in your network and then automatically adds them to monitoring.
+xref:operation:provisioning/introduction.adoc#discovery-auto[Discovery]:: A process that uses ICMP to find network devices and services in your network and then automatically adds them to monitoring.
 
 Docker:: An open-source container virtualization service that allows you to deploy application-level services without worrying about operating system maintenance.
 {page-component-title} components may optionally be deployed as Docker containers.
@@ -93,7 +92,7 @@ Java Management Extensions (JMX):: A set of tools for managing and monitoring se
 {page-component-title} uses it to collect long-term performance data for Java applications.
 (See xref:operation:admin/webui/jmx-config-generator/introduction.adoc[JMX Configuration Generator].)
 
-Jira:: A project management platform that The OpenNMS Group uses to track software issues, feature requests, and IT requests for its projects (including {page-component-title}). 
+Jira:: A project management platform that The OpenNMS Group uses to track software issues, feature requests, and IT requests for its projects (including {page-component-title}).
 (See https://issues.opennms.com[OpenNMS Jira].)
 
 JRobin:: A clone of RRDTool (see below) written in Java.
@@ -124,10 +123,10 @@ Message broker:: When using Minions and Sentinels, a message broker is required 
 {page-component-title} has an embedded ActiveMQ server available for smaller deployments.
 You can swap the broker with a dedicated ActiveMQ, gRPC, or Kafaka cluster to provide scalability and load balancing.
 
-xref:development:minion/introduction.adoc#minion[Minion]:: Instance of the Karaf OSGi service that enables OpenNMS to monitor devices and services in locations that OpenNMS cannot reach.
+xref:development:minion/introduction.adoc#minion[Minion]:: An instance of the Karaf OSGi service that enables OpenNMS to monitor devices and services in locations that OpenNMS cannot reach.
 Minions communicate with these remote devices while OpenNMS performs coordination and task delegation.
 
-Nephron:: OpenNMS component that enables horizontal scaling of flow processing.
+Nephron:: An OpenNMS component that enables horizontal scaling of flow processing.
 Not required for flow processing, but can improve performance for deployments with a very high volume of flow documents.
 
 Network Operating Center (NOC):: One or more locations where a network is monitored and controlled.
@@ -186,7 +185,6 @@ Simple Network Management Protocol (SNMP):: An internet standard protocol used t
 
 Snaps:: Self-contained software packages that run in a sandbox and have mediated access to host systems.
 Our Appliance Service uses snaps to distribute operating system packages and Minion service updates.
-
 
 Telemetry:: The process of automatically recording and transmitting data from an external source to a system in a different location for monitoring or analysis.
 The xref:operation:telemetryd/introduction.adoc[Telemetry daemon] in {page-component-title} accepts data sent from nodes in one of the supported protocol formats.
