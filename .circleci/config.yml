@@ -1009,6 +1009,8 @@ jobs:
             .circleci/scripts/makerpm.sh tools/packages/opennms/opennms.spec
             mkdir target/rpm/RPMS/noarch/horizon
             mv target/rpm/RPMS/noarch/*.rpm target/rpm/RPMS/noarch/horizon/
+            ls -l target/rpm/RPMS/noarch/horizon/
+            pwd
       - sign-packages/sign-rpms:
           skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
