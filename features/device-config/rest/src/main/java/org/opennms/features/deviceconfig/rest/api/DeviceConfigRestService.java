@@ -30,6 +30,8 @@ package org.opennms.features.deviceconfig.rest.api;
 
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigStatus;
 import org.opennms.features.deviceconfig.rest.BackupRequestDTO;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Set;
@@ -71,7 +73,7 @@ public interface DeviceConfigRestService {
      * @param createdAfter If set, only return items with saved backup after this date in epoch millis
      * @param createdBefore If set, only return items with saved backup before this date in epoch millis
      * @return Json response containing a list of device configs in the
-     *      shape of {@link org.opennms.features.deviceconfig.rest.api.DeviceConfigDTO }
+     *      shape of {@link DeviceConfigDTO }
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -126,12 +128,12 @@ public interface DeviceConfigRestService {
         @QueryParam("configType") @DefaultValue("") String configType);
 
     /**
-     * Delete a single device config.
-     * @param id
+     * Delete a single or multiple device config.
+     * @param id comman separated string of ids
      */
     @DELETE
-    @Path("{id : \\d+}")
-    void deleteDeviceConfig(@PathParam("id") long id);
+    @Path("/delete")
+    Response deleteDeviceConfig(@QueryParam("id") @DefaultValue("") String id);
 
     /**
      * Download configurations for the given id or comma-separated list of ids.

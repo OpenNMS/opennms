@@ -169,7 +169,7 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
 
     @Before
     public void before() throws IOException {
-        deviceConfigRestService = new DefaultDeviceConfigRestService(deviceConfigDao, deviceConfigService);
+        deviceConfigRestService = new DefaultDeviceConfigRestService(deviceConfigDao, deviceConfigService, sessionUtils);
     }
 
     @After

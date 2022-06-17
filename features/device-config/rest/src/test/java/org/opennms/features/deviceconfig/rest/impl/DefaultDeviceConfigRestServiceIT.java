@@ -37,6 +37,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -56,6 +57,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfig;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigStatus;
@@ -65,6 +67,7 @@ import org.opennms.features.deviceconfig.rest.api.DeviceConfigDTO;
 import org.opennms.features.deviceconfig.rest.api.DeviceConfigRestService;
 import org.opennms.features.deviceconfig.service.DeviceConfigService;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -102,6 +105,8 @@ public class DefaultDeviceConfigRestServiceIT {
 
     private DeviceConfigService deviceConfigService;
 
+    private SessionUtils sessionUtils;
+
     private static final int INTERFACES = 2;
     private static final int VERSIONS = 35;
 
@@ -119,7 +124,8 @@ public class DefaultDeviceConfigRestServiceIT {
             return null;
         });
         deviceConfigService = Mockito.mock(DeviceConfigService.class);
-        deviceConfigRestService = new DefaultDeviceConfigRestService(deviceConfigDao, deviceConfigService);
+        sessionUtils = Mockito.mock(SessionUtils.class);
+        deviceConfigRestService = new DefaultDeviceConfigRestService(deviceConfigDao, deviceConfigService, sessionUtils);
     }
 
     @After
@@ -261,6 +267,7 @@ public class DefaultDeviceConfigRestServiceIT {
     private static DeviceConfig createDeviceConfig(int version, OnmsIpInterface ipInterface1) {
         var dc = new DeviceConfig();
         dc.setConfig(new byte[version]);
+        dc.setId(Long.valueOf(version));
         dc.setCreatedTime(new Date(createdTime(version)));
         dc.setEncoding(DefaultDeviceConfigRestService.DEFAULT_ENCODING);
         dc.setIpInterface(ipInterface1);
@@ -274,4 +281,23 @@ public class DefaultDeviceConfigRestServiceIT {
     private static long createdTime(int num) {
         return num * 1000L * 60 * 60 * 24;
     }
+
+    @Test
+    public void testDeleteDeviceConfigService() throws IOException {
+
+        //passing valid ids
+        Response response = deviceConfigRestService.deleteDeviceConfig("50,51");
+        Assert.assertEquals(204, response.getStatus());
+
+        //passing invalid ids
+        response = deviceConfigRestService.deleteDeviceConfig("id1,id2");
+        Assert.assertEquals("Invalid 'id' parameter", response.getEntity());
+
+        //passing empty or blank value of ids
+        response = deviceConfigRestService.deleteDeviceConfig(" ");
+        Assert.assertEquals(400, response.getStatus());
+
+
+    }
+
 }
