@@ -56,7 +56,7 @@ const mockDeviceConfigBackups: DeviceConfigBackup[] = [
     operatingSystem: '',
     isSuccessfulBackup: true,
     monitoredServiceId: 1,
-    serviceName: 'DeviceConfig-default'
+    serviceName: ''
   }
 ]
 
@@ -80,6 +80,7 @@ test('action btns enable and disable correctly', async () => {
   const backupNowBtn = wrapper.get('[data-test="backup-now-btn"]')
   const checkboxes = wrapper.findAll('.dcb-config-checkbox')
   const firstDeviceConfig = wrapper.find('.dcb-config-checkbox > .feather-checkbox')
+  const checkboxArray = wrapper.findAll('.dcb-config-checkbox > .feather-checkbox')
   const allCheckbox = wrapper.find('[data-test="all-checkbox"] > .feather-checkbox')
 
   // two DCB mock records
@@ -113,4 +114,13 @@ test('action btns enable and disable correctly', async () => {
   expect(downloadBtn.attributes('aria-disabled')).toBe('true')
   expect(backupNowBtn.attributes('aria-disabled')).toBe('true')
   expect(allCheckbox.attributes('aria-checked')).toBe('false')
+
+  // select second config checkbox
+  await checkboxArray[1]?.trigger('click')
+  // expect backup btn to be disabled because the only one selected has no service name
+  expect(backupNowBtn.attributes('aria-disabled')).toBe('true')
+  // select first checkbox again
+  await firstDeviceConfig.trigger('click')
+  // expect backup btn enabled because at least one selected has a service name
+  expect(backupNowBtn.attributes('aria-disabled')).toBeUndefined()
 })
