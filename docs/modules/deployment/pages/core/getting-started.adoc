@@ -132,7 +132,7 @@ include::docker/initialize.adoc[]
 endif::[]
 ====
 
-== Encrypting database credentials
+== Encrypt database credentials
 
 It is also possible to store the PostgreSQL credentials in the Secure Credentials Vault.
 In order to achieve this you need to add the credentials by using the `scvcli` command line utility and reference these credentials in your `opennms-datasources.xml` file.
