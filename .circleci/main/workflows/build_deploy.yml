@@ -7,14 +7,19 @@ workflows:
         - equal: [ false, << pipeline.parameters.minimal >> ]
         - equal: [ false, << pipeline.parameters.trigger-flaky-tests >> ]
     jobs:
-      - build:
+      - integration-test:
           filters:
             branches:
               ignore:
-                - /^from-foundation.*/
+                - /^merge-foundation.*/
+#      - build:
+#          filters:
+#            branches:
+#              ignore:
+#                - /^from-foundation.*/
       - tarball-assembly:
           requires:
-            - build
+            - integration-test
       - minion-image-single-arch:
           matrix:
             parameters:
@@ -72,13 +77,13 @@ workflows:
             branches:
               ignore:
                 - /^merge-foundation.*/           
-      - integration-test:
-          requires:
-            - build
-          filters:
-            branches:
-              ignore:
-                - /^merge-foundation.*/
+#      - integration-test:
+#          requires:
+#            - build
+#          filters:
+#            branches:
+#              ignore:
+#                - /^merge-foundation.*/
       - smoke-test-core:
           requires:
             - tarball-assembly
@@ -198,7 +203,7 @@ workflows:
                 - /^merge-foundation.*/
       - debian-pkg-build:
           requires:
-            - build 
+            - integration-test 
           filters:
             branches:
               ignore:
