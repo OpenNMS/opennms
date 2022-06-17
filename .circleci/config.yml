@@ -1050,35 +1050,28 @@ jobs:
       - run:
           name: Fetch Horizon RPM artifacts and build Horizon container image
           command: |
-            ls
-            echo "---"
-            pwd
-            echo "+++"
-            ls target/rpm/RPMS/noarch/
-            echo "=_="
-            ls target/rpm/RPMS/noarch/horizon
-            mv target/rpm/RPMS/noarch/horizon/*.rpm  target/rpm/RPMS/noarch/
+            mv /root/project/target/rpm/RPMS/noarch/horizon/*.rpm  /root/project/target/rpm/RPMS/noarch/
             cd opennms-container/horizon
             ./build_container_image.sh
-            mv target/rpm/RPMS/noarch/*.rpm target/rpm/RPMS/noarch/horizon/           
+            mv /root/project/target/rpm/RPMS/noarch/*.rpm /root/project/target/rpm/RPMS/noarch/horizon/           
       - run:
           name: Fetch Minion RPM artifacts and build Minion container image
           command: |
-            mv target/rpm/RPMS/noarch/minion/*.rpm  target/rpm/RPMS/noarch/
+            mv /root/project/target/rpm/RPMS/noarch/minion/*.rpm  /root/project/target/rpm/RPMS/noarch/
             cd opennms-container/minion
             ./build_container_image.sh
-            mv target/rpm/RPMS/noarch/*.rpm target/rpm/RPMS/noarch/minion/          
+            mv /root/project/target/rpm/RPMS/noarch/*.rpm /root/project/target/rpm/RPMS/noarch/minion/          
       - run:
           name: Fetch Sentinel RPM artifacts and build Sentinel container image
           command: |
-            mv target/rpm/RPMS/noarch/sentinel/*.rpm  target/rpm/RPMS/noarch/
+            mv /root/project/target/rpm/RPMS/noarch/sentinel/*.rpm  /root/project/target/rpm/RPMS/noarch/
             cd opennms-container/sentinel
             ./build_container_image.sh 
-            mv target/rpm/RPMS/noarch/minion/*.rpm  target/rpm/RPMS/noarch/
-            mv target/rpm/RPMS/noarch/horizon/*.rpm  target/rpm/RPMS/noarch/
-            rm -r target/rpm/RPMS/noarch/sentinel     
-            rm -r target/rpm/RPMS/noarch/minion     
-            rm -r target/rpm/RPMS/noarch/horizon     
+            mv /root/project/target/rpm/RPMS/noarch/minion/*.rpm   /root/project/target/rpm/RPMS/noarch/
+            mv /root/project/target/rpm/RPMS/noarch/horizon/*.rpm  /root/project/target/rpm/RPMS/noarch/
+            rm -r /root/project/target/rpm/RPMS/noarch/sentinel     
+            rm -r /root/project/target/rpm/RPMS/noarch/minion     
+            rm -r /root/project/target/rpm/RPMS/noarch/horizon     
       - store_artifacts:
           path: ~/project/target/rpm/RPMS/noarch
           destination: rpms
