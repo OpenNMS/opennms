@@ -1056,7 +1056,7 @@ jobs:
             echo "+++"
             ls target/rpm/RPMS/noarch/
             echo "=_="
-            target/rpm/RPMS/noarch/horizon
+            ls target/rpm/RPMS/noarch/horizon
             mv target/rpm/RPMS/noarch/horizon/*.rpm  target/rpm/RPMS/noarch/
             cd opennms-container/horizon
             ./build_container_image.sh
