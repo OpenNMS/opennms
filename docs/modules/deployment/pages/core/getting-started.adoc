@@ -134,17 +134,17 @@ endif::[]
 
 == Encrypt database credentials
 
-It is also possible to store the PostgreSQL credentials in the Secure Credentials Vault.
-In order to achieve this you need to add the credentials by using the `scvcli` command line utility and reference these credentials in your `opennms-datasources.xml` file.
+It is also possible to store the PostgreSQL credentials in the secure credentials vault.
+To achieve this, use the `scvcli` command line utility to add the credentials, and reference these credentials in your `opennms-datasources.xml` file.
 
-.Create encrypted credentials for the PostgreSQL database connections.
+.Create encrypted credentials for the PostgreSQL database connections:
 [source, console]
 ----
 ./bin/scvcli set postgres opennms opennms-password
 ./bin/scvcli set postgres-admin postgres postgres-password
 ----
 
-.Reference the encrypted credentials stored in the Secure Credentials Vault.
+.Reference the encrypted credentials stored in the secure credentials vault:
 [source, xml]
 ----
 <jdbc-data-source name="opennms"
