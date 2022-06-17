@@ -1000,43 +1000,40 @@ jobs:
       - sign-packages/setup-env:
           skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
+      - run: 
+          name: Setup environment
+          command: |
+            export NODE_OPTIONS=--max_old_space_size=1024
+            export CCI_MAXCPU=4
+            export MAVEN_OPTS="-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"        
       - run:
           name: Build Horizon RPMs
           command: |
-            export NODE_OPTIONS=--max_old_space_size=1024
-            export CCI_MAXCPU=4
-            export MAVEN_OPTS="-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
             .circleci/scripts/makerpm.sh tools/packages/opennms/opennms.spec
             mkdir target/rpm/RPMS/noarch/horizon
             mv target/rpm/RPMS/noarch/*.rpm target/rpm/RPMS/noarch/horizon/
-      - sign-packages/sign-rpms:
-          skip_if_forked_pr: true
-          gnupg_home: ~/tmp/gpg
-          gnupg_key: opennms@opennms.org
-          packages: target/rpm/RPMS/noarch/horizon/*.rpm
-
+#     - sign-packages/sign-rpms:
+#         skip_if_forked_pr: true
+#         gnupg_home: ~/tmp/gpg
+#         gnupg_key: opennms@opennms.org
+#         packages: target/rpm/RPMS/noarch/horizon/*.rpm
+#
       - run:
           name: Build Minion RPMs
           command: |
-            export NODE_OPTIONS=--max_old_space_size=1024
-            export CCI_MAXCPU=4
             export CCI_VAADINJAVAMAXMEM=768m
-            export MAVEN_OPTS="-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
             .circleci/scripts/makerpm.sh tools/packages/minion/minion.spec
             mkdir target/rpm/RPMS/noarch/minion
             mv target/rpm/RPMS/noarch/*.rpm target/rpm/RPMS/noarch/minion/
-      - sign-packages/sign-rpms:
-          skip_if_forked_pr: true
-          gnupg_home: ~/tmp/gpg
-          gnupg_key: opennms@opennms.org
-          packages: target/rpm/RPMS/noarch/minion/*.rpm
+#      - sign-packages/sign-rpms:
+#          skip_if_forked_pr: true
+#          gnupg_home: ~/tmp/gpg
+#          gnupg_key: opennms@opennms.org
+#          packages: target/rpm/RPMS/noarch/minion/*.rpm
       - run:
           name: Build Sentinel RPMs
           command: |
-            export NODE_OPTIONS=--max_old_space_size=1024
-            export CCI_MAXCPU=4
             export CCI_VAADINJAVAMAXMEM=768m
-            export MAVEN_OPTS="-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
             .circleci/scripts/makerpm.sh tools/packages/sentinel/sentinel.spec
             mkdir target/rpm/RPMS/noarch/sentinel
             mv target/rpm/RPMS/noarch/*.rpm target/rpm/RPMS/noarch/sentinel/            
@@ -1044,7 +1041,7 @@ jobs:
           skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
           gnupg_key: opennms@opennms.org
-          packages: target/rpm/RPMS/noarch/sentinel/*.rpm
+          packages: target/rpm/RPMS/noarch/*/*.rpm
       - setup_remote_docker:
           docker_layer_caching: true
       - run:
