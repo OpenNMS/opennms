@@ -28,11 +28,17 @@
 
 package org.opennms.netmgt.flows.elastic;
 
-import com.codahale.metrics.MetricRegistry;
-import com.google.common.collect.Lists;
-import io.searchbox.client.JestClient;
-import io.searchbox.core.Search;
-import io.searchbox.core.SearchResult;
+import static com.jayway.awaitility.Awaitility.with;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.opennms.core.test.elastic.ElasticSearchRule;
@@ -51,15 +57,12 @@ import org.opennms.netmgt.flows.elastic.thresholding.FlowThresholding;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import com.codahale.metrics.MetricRegistry;
+import com.google.common.collect.Lists;
 
-import static com.jayway.awaitility.Awaitility.with;
-import static java.util.concurrent.TimeUnit.*;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import io.searchbox.client.JestClient;
+import io.searchbox.core.Search;
+import io.searchbox.core.SearchResult;
 
 public class BulkingIT {
     private static Logger LOG = LoggerFactory.getLogger(BulkingIT.class);
@@ -88,9 +91,11 @@ public class BulkingIT {
     }
 
     private FlowRepository createFlowRepository(final JestClient jestClient, final DocumentEnricher documentEnricher, int bulkSize, int bulkFlushMs) {
+        final FlowSettings flowSettings = new FlowSettings();
         final ElasticFlowRepository elasticFlowRepository = new ElasticFlowRepository(new MetricRegistry(), jestClient,
                 IndexStrategy.MONTHLY, documentEnricher, new MockSessionUtils(), new MockNodeDao(), new MockSnmpInterfaceDao(),
-                new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings(), mock(FlowThresholding.class));
+                new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings(),
+                mock(FlowThresholding.class), flowSettings);
         elasticFlowRepository.setBulkSize(bulkSize);
         elasticFlowRepository.setBulkFlushMs(bulkFlushMs);
         return new InitializingFlowRepository(elasticFlowRepository, jestClient);

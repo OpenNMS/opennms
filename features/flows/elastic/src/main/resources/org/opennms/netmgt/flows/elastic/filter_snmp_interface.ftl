@@ -1,4 +1,4 @@
-<#-- When filtering for a given SNMP interface also match the flow direction:
+<#-- When filtering for a given SNMP interface also match the flow direction if strictIngressEgress is enabled:
        A) For ingress traffic, the interface should be the input
        B) For egress traffic, the interface should be the output
 -->
@@ -12,14 +12,16 @@
               "terms": {
                 "netflow.input_snmp": [${snmpInterfaceId?long?c}]
               }
-            },
-            {
-              "terms": {
-                "netflow.direction": [
-                  "ingress"
-                ]
-              }
             }
+            <#if strictIngressEgress>
+              ,{
+                "terms": {
+                  "netflow.direction": [
+                  "ingress"
+                  ]
+                }
+              }
+            </#if>
           ]
         }
       },
@@ -30,14 +32,16 @@
               "terms": {
                 "netflow.output_snmp": [${snmpInterfaceId?long?c}]
               }
-            },
-            {
-              "terms": {
-                "netflow.direction": [
-                  "egress"
-                ]
-              }
             }
+            <#if strictIngressEgress>
+              ,{
+                "terms": {
+                  "netflow.direction": [
+                    "egress"
+                  ]
+                }
+              }
+            </#if>
           ]
         }
       }

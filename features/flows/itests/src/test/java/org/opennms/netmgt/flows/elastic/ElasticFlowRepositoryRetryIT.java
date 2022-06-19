@@ -99,10 +99,12 @@ public class ElasticFlowRepositoryRetryIT {
 
             final MockDocumentEnricherFactory mockDocumentEnricherFactory = new MockDocumentEnricherFactory();
             final DocumentEnricher documentEnricher = mockDocumentEnricherFactory.getEnricher();
+            final FlowSettings flowSettings = new FlowSettings();
             final FlowRepository elasticFlowRepository = new InitializingFlowRepository(
                     new ElasticFlowRepository(new MetricRegistry(), client, IndexStrategy.MONTHLY, documentEnricher,
                              new MockSessionUtils(), new MockNodeDao(), new MockSnmpInterfaceDao(),
-                            new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings(), mock(FlowThresholding.class)), client);
+                            new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings(),
+                            mock(FlowThresholding.class), flowSettings), client);
 
             consumer.accept(elasticFlowRepository);
 

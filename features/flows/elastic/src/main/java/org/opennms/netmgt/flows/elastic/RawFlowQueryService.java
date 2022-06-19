@@ -70,10 +70,11 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
     public static final String OTHER_NAME = "Other";
     public static final String UNKNOWN_APPLICATION_NAME = "Unknown";
 
-    private final SearchQueryProvider searchQueryProvider = new SearchQueryProvider();
+    private final SearchQueryProvider searchQueryProvider;
 
-    public RawFlowQueryService(JestClient client, IndexSelector indexSelector) {
+    public RawFlowQueryService(JestClient client, IndexSelector indexSelector, FlowSettings flowSettings) {
         super(client, indexSelector);
+        searchQueryProvider = new SearchQueryProvider(flowSettings);
     }
 
     @Override

@@ -197,13 +197,16 @@ public class ThresholdingIT {
 
         this.thresholdingService.getThresholdingSetPersister().reinitializeThresholdingSets();
 
+        final var flowSettings = new FlowSettings();
+
         this.thresholding = new FlowThresholding(this.thresholdingService,
                                                  collectionAgentFactory,
                                                  this.persisterFactory,
                                                  this.databasePopulator.getIpInterfaceDao(),
                                                  this.databasePopulator.getDistPollerDao(),
                                                  this.databasePopulator.getSnmpInterfaceDao(),
-                                                 this.filterDao);
+                                                 this.filterDao,
+                                                 flowSettings);
 
         this.thresholding.setStepSizeMs(1000);
 
@@ -219,7 +222,8 @@ public class ThresholdingIT {
                 tracerRegistry,
                 enrichedFlowForwarder,
                 indexSettings,
-                this.thresholding);
+                this.thresholding,
+                flowSettings);
 
         this.flowRepository = new InitializingFlowRepository(elasticFlowRepository, this.restClient);
     }

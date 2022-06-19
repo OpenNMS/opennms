@@ -128,11 +128,13 @@ public class KafkaFlowForwarderIT {
         interfaceToNodeCache.setNodeId("SomeLocation", InetAddressUtils.addr("192.168.2.2"), 2);
         interfaceToNodeCache.setNodeId("SomeLocation", InetAddressUtils.addr("192.168.1.1"), 3);
         final DocumentEnricher documentEnricher = mockDocumentEnricherFactory.getEnricher();
+        final FlowSettings flowSettings = new FlowSettings();
         try (final JestClient jestClient = restClientFactory.createClient()) {
             final ElasticFlowRepository elasticFlowRepository = new ElasticFlowRepository(new MetricRegistry(),
                     jestClient, IndexStrategy.MONTHLY, documentEnricher,
                     new MockSessionUtils(), new MockNodeDao(), new MockSnmpInterfaceDao(),
-                    new MockIdentity(), new MockTracerRegistry(), flowForwarder, new IndexSettings(), mock(FlowThresholding.class));
+                    new MockIdentity(), new MockTracerRegistry(), flowForwarder, new IndexSettings(),
+                    mock(FlowThresholding.class), flowSettings);
             elasticFlowRepository.setEnableFlowForwarding(true);
             elasticFlowRepository.persist(Lists.newArrayList(FlowDocumentTest.getMockFlow()), FlowDocumentTest.getMockFlowSource(), ProcessingOptions.builder().build());
         }

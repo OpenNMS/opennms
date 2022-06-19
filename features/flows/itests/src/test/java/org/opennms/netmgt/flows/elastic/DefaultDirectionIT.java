@@ -98,10 +98,12 @@ public class DefaultDirectionIT {
         try (final JestClient jestClient = restClientFactory.createClient()) {
             final MockDocumentEnricherFactory mockDocumentEnricherFactory = new MockDocumentEnricherFactory();
             final DocumentEnricher documentEnricher = mockDocumentEnricherFactory.getEnricher();
+            final FlowSettings flowSettings = new FlowSettings();
             final FlowRepository elasticFlowRepository = new InitializingFlowRepository(
                     new ElasticFlowRepository(new MetricRegistry(), jestClient, IndexStrategy.MONTHLY, documentEnricher,
                             new MockSessionUtils(), new MockNodeDao(), new MockSnmpInterfaceDao(),
-                            new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings(), mock(FlowThresholding.class)), jestClient);
+                            new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings(),
+                            mock(FlowThresholding.class), flowSettings), jestClient);
             // persist data
             elasticFlowRepository.persist(Lists.newArrayList(getMockFlowWithoutDirection()),
                                           FlowDocumentTest.getMockFlowSource(), ProcessingOptions.builder().build());

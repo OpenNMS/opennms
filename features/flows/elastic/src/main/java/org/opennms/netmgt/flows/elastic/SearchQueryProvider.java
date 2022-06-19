@@ -63,8 +63,11 @@ import freemarker.template.TemplateExceptionHandler;
 public class SearchQueryProvider implements FilterVisitor<String> {
 
     private final Configuration cfg = new Configuration(Configuration.VERSION_2_3_23);
+    private final FlowSettings flowSettings;
 
-    public SearchQueryProvider() {
+    public SearchQueryProvider(FlowSettings flowSettings) {
+        this.flowSettings = Objects.requireNonNull(flowSettings);
+
         // Setup Freemarker
         cfg.setClassForTemplateLoading(getClass(), "");
         cfg.setDefaultEncoding(StandardCharsets.UTF_8.name());
@@ -219,6 +222,7 @@ public class SearchQueryProvider implements FilterVisitor<String> {
     public String visit(SnmpInterfaceIdFilter snmpInterfaceIdFilter) {
         return render("filter_snmp_interface.ftl", ImmutableMap.builder()
                 .put("snmpInterfaceId", snmpInterfaceIdFilter.getSnmpInterfaceId())
+                .put("strictIngressEgress", flowSettings.isStrictIngressEgress())
                 .build());
     }
 

@@ -60,7 +60,6 @@ import org.hamcrest.collection.IsIterableContainingInOrder;
 import org.hamcrest.number.IsCloseTo;
 import org.joda.time.Instant;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.opennms.core.test.elastic.ElasticSearchRule;
@@ -134,6 +133,7 @@ public class AggregatedFlowQueryIT {
         rawIndexSettings.setIndexPrefix("flows");
         final IndexSettings aggIndexSettings = new IndexSettings();
         aggIndexSettings.setIndexPrefix("aggflows");
+        final FlowSettings flowSettings = new FlowSettings();
 
         // Here we load the flows by building the documents ourselves,
         // so we must initialize the repository manually
@@ -142,7 +142,7 @@ public class AggregatedFlowQueryIT {
 
         final IndexSelector rawIndexSelector = new IndexSelector(rawIndexSettings, RawFlowQueryService.INDEX_NAME,
                 IndexStrategy.MONTHLY, 120000);
-        rawFlowQueryService = new RawFlowQueryService(client, rawIndexSelector);
+        rawFlowQueryService = new RawFlowQueryService(client, rawIndexSelector, flowSettings);
 
         final AggregateIndexInitializer aggIndexInitializer = new AggregateIndexInitializer(client, aggIndexSettings);
         aggIndexInitializer.initialize();
@@ -159,7 +159,8 @@ public class AggregatedFlowQueryIT {
 
         flowRepository = new ElasticFlowRepository(metricRegistry, client, IndexStrategy.MONTHLY, documentEnricher,
             new MockSessionUtils(), new MockNodeDao(), new MockSnmpInterfaceDao(),
-            new MockIdentity(), new MockTracerRegistry(), documentForwarder, rawIndexSettings, mock(FlowThresholding.class), 0, 0);
+            new MockIdentity(), new MockTracerRegistry(), documentForwarder, rawIndexSettings,
+                mock(FlowThresholding.class), flowSettings, 0, 0);
         flowRepository.setEnableFlowForwarding(true);
 
         // The repository should be empty

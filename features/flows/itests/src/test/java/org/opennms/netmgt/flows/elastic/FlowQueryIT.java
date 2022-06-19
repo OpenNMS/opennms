@@ -63,7 +63,6 @@ import org.hamcrest.Matchers;
 import org.hamcrest.collection.IsIterableContainingInOrder;
 import org.hamcrest.number.IsCloseTo;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.opennms.core.test.elastic.ElasticSearchRule;
@@ -123,13 +122,15 @@ public class FlowQueryIT {
         settings.setIndexPrefix("flows");
         final IndexSelector rawIndexSelector = new IndexSelector(settings, RawFlowQueryService.INDEX_NAME,
                 IndexStrategy.MONTHLY, 120000);
-        final RawFlowQueryService rawFlowRepository = new RawFlowQueryService(client, rawIndexSelector);
+        final FlowSettings flowSettings = new FlowSettings();
+        final RawFlowQueryService rawFlowRepository = new RawFlowQueryService(client, rawIndexSelector, flowSettings);
         final AggregatedFlowQueryService aggFlowRepository = mock(AggregatedFlowQueryService.class);
         smartQueryService = new SmartQueryService(metricRegistry, rawFlowRepository, aggFlowRepository);
         smartQueryService.setAlwaysUseRawForQueries(true); // Always use RAW values for these tests
         flowRepository = new ElasticFlowRepository(metricRegistry, client, IndexStrategy.MONTHLY, documentEnricher,
                 new MockSessionUtils(), new MockNodeDao(), new MockSnmpInterfaceDao(),
-                new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), settings, mock(FlowThresholding.class), 0, 0);
+                new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), settings,
+                mock(FlowThresholding.class), flowSettings, 0, 0);
 
         final RawIndexInitializer initializer = new RawIndexInitializer(client, settings);
 

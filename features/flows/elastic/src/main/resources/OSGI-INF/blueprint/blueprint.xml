@@ -65,6 +65,9 @@
 
             <!-- Enrichment settings -->
             <cm:property name="clockSkewCorrectionThreshold" value="0" />
+
+            <!-- Moar settings -->
+            <cm:property name="strictIngressEgress" value="true" />
         </cm:default-properties>
     </cm:property-placeholder>
 
@@ -151,6 +154,10 @@
         <argument value="${clockSkewCorrectionThreshold}" />
     </bean>
 
+    <bean id="flowSettings" class="org.opennms.netmgt.flows.elastic.FlowSettings">
+        <property name="strictIngressEgress" value="${strictIngressEgress}"/>
+    </bean>
+
     <!-- Metrics -->
     <bean id="flowRepositoryMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
     <service ref="flowRepositoryMetricRegistry" interface="com.codahale.metrics.MetricSet">
@@ -185,6 +192,7 @@
     <bean id="rawFlowQueryService" class="org.opennms.netmgt.flows.elastic.RawFlowQueryService">
         <argument ref="jestClient"/>
         <argument ref="rawIndexSelector"/>
+        <argument ref="flowSettings"/>
     </bean>
 
     <bean id="aggIndexSelector" class="org.opennms.features.jest.client.index.IndexSelector">
@@ -218,6 +226,7 @@
 
     <!-- Thresholding -->
     <bean id="flowThresholding" class="org.opennms.netmgt.flows.elastic.thresholding.FlowThresholding" destroy-method="close">
+        <argument ref="flowSettings"/>
         <argument ref="thresholdingService"/>
         <argument ref="collectionAgentFactory"/>
         <argument ref="persisterFactory"/>
@@ -245,6 +254,7 @@
         <argument ref="enrichedFlowForwarder"/>
         <argument ref="rawIndexSettings"/>
         <argument ref="flowThresholding"/>
+        <argument ref="flowSettings"/>
 
         <property name="enableFlowForwarding" value="${enableForwarding}"/>
         <property name="bulkRetryCount" value="${bulkRetryCount}"/>

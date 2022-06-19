@@ -28,24 +28,25 @@
 
 package org.opennms.netmgt.flows.elastic;
 
-import com.codahale.metrics.Counter;
-import com.codahale.metrics.Histogram;
-import com.codahale.metrics.Meter;
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.Timer;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.swrve.ratelimitedlogger.RateLimitedLog;
-import io.opentracing.Scope;
-import io.opentracing.Tracer;
-import io.opentracing.util.GlobalTracer;
-import io.searchbox.client.JestClient;
-import io.searchbox.core.Bulk;
-import io.searchbox.core.Index;
+import java.io.IOException;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.TimerTask;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
+
 import org.opennms.core.tracing.api.TracerConstants;
 import org.opennms.core.tracing.api.TracerRegistry;
 import org.opennms.distributed.core.api.Identity;
@@ -70,24 +71,25 @@ import org.opennms.netmgt.threshd.api.ThresholdInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.time.Duration;
-import java.time.Instant;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.TimerTask;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.stream.Collectors;
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.Histogram;
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.swrve.ratelimitedlogger.RateLimitedLog;
+
+import io.opentracing.Scope;
+import io.opentracing.Tracer;
+import io.opentracing.util.GlobalTracer;
+import io.searchbox.client.JestClient;
+import io.searchbox.core.Bulk;
+import io.searchbox.core.Index;
 
 public class ElasticFlowRepository implements FlowRepository {
 
@@ -159,6 +161,8 @@ public class ElasticFlowRepository implements FlowRepository {
 
     private final FlowThresholding thresholding;
 
+    private final FlowSettings flowSettings;
+
     private boolean enableFlowForwarding = false;
 
     private int bulkSize = 1000;
@@ -197,7 +201,8 @@ public class ElasticFlowRepository implements FlowRepository {
                                  SessionUtils sessionUtils, NodeDao nodeDao, SnmpInterfaceDao snmpInterfaceDao,
                                  Identity identity, TracerRegistry tracerRegistry, EnrichedFlowForwarder enrichedFlowForwarder,
                                  IndexSettings indexSettings,
-                                 final FlowThresholding thresholding) {
+                                 final FlowThresholding thresholding,
+                                 FlowSettings flowSettings) {
         this.client = Objects.requireNonNull(jestClient);
         this.indexStrategy = Objects.requireNonNull(indexStrategy);
         this.documentEnricher = Objects.requireNonNull(documentEnricher);
@@ -209,6 +214,7 @@ public class ElasticFlowRepository implements FlowRepository {
         this.enrichedFlowForwarder = enrichedFlowForwarder;
         this.indexSettings = Objects.requireNonNull(indexSettings);
         this.thresholding = Objects.requireNonNull(thresholding);
+        this.flowSettings = Objects.requireNonNull(flowSettings);
 
         this.emptyFlows = metricRegistry.counter("emptyFlows");
         flowsPersistedMeter = metricRegistry.meter("flowsPersisted");
@@ -262,9 +268,10 @@ public class ElasticFlowRepository implements FlowRepository {
     public ElasticFlowRepository(final MetricRegistry metricRegistry, final JestClient jestClient, final IndexStrategy indexStrategy,
                                  final DocumentEnricher documentEnricher, final SessionUtils sessionUtils, final NodeDao nodeDao,
                                  final SnmpInterfaceDao snmpInterfaceDao, final Identity identity, final TracerRegistry tracerRegistry,
-                                 final EnrichedFlowForwarder enrichedFlowForwarder, final IndexSettings indexSettings, final FlowThresholding thresholding, final int bulkSize,
-                                 final int bulkFlushMs) {
-        this(metricRegistry, jestClient, indexStrategy, documentEnricher, sessionUtils, nodeDao, snmpInterfaceDao, identity, tracerRegistry, enrichedFlowForwarder, indexSettings, thresholding);
+                                 final EnrichedFlowForwarder enrichedFlowForwarder, final IndexSettings indexSettings,
+                                 final FlowThresholding thresholding, final FlowSettings flowSettings,
+                                 final int bulkSize, final int bulkFlushMs) {
+        this(metricRegistry, jestClient, indexStrategy, documentEnricher, sessionUtils, nodeDao, snmpInterfaceDao, identity, tracerRegistry, enrichedFlowForwarder, indexSettings, thresholding, flowSettings);
         this.bulkSize = bulkSize;
         this.bulkFlushMs = bulkFlushMs;
     }
@@ -384,14 +391,14 @@ public class ElasticFlowRepository implements FlowRepository {
 
                 if (flow.getInputSnmp() != null &&
                     flow.getInputSnmp() != 0 &&
-                    flow.getDirection() == Direction.INGRESS &&
+                    (!flowSettings.isStrictIngressEgress() || flow.getDirection() == Direction.INGRESS) &&
                     !ifaceMarkerCache.contains(flow.getInputSnmp())) {
                     ifaceMarkerCache.add(flow.getInputSnmp());
                     interfacesToUpdate.get(flow.getDirection()).computeIfAbsent(nodeId, k -> Lists.newArrayList()).add(flow.getInputSnmp());
                 }
                 if (flow.getOutputSnmp() != null &&
                     flow.getOutputSnmp() != 0 &&
-                    flow.getDirection() == Direction.EGRESS &&
+                    (!flowSettings.isStrictIngressEgress() || flow.getDirection() == Direction.EGRESS) &&
                     !ifaceMarkerCache.contains(flow.getOutputSnmp())) {
                     ifaceMarkerCache.add(flow.getOutputSnmp());
                     interfacesToUpdate.get(flow.getDirection()).computeIfAbsent(nodeId, k -> Lists.newArrayList()).add(flow.getOutputSnmp());

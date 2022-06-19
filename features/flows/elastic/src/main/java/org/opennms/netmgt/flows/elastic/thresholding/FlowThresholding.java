@@ -59,6 +59,7 @@ import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.flows.api.ProcessingOptions;
 import org.opennms.netmgt.flows.elastic.Direction;
 import org.opennms.netmgt.flows.elastic.FlowDocument;
+import org.opennms.netmgt.flows.elastic.FlowSettings;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.rrd.RrdRepository;
@@ -90,6 +91,8 @@ public class FlowThresholding implements Closeable {
 
     private final FilterDao filterDao;
 
+    private final FlowSettings flowSettings;
+
     public final long systemIdHash;
 
     private final ConcurrentMap<ExporterKey, Session> sessions = Maps.newConcurrentMap();
@@ -105,7 +108,8 @@ public class FlowThresholding implements Closeable {
                             final IpInterfaceDao ipInterfaceDao,
                             final DistPollerDao distPollerDao,
                             final SnmpInterfaceDao snmpInterfaceDao,
-                            final FilterDao filterDao) {
+                            final FilterDao filterDao,
+                            final FlowSettings flowSettings) {
         this.thresholdingService = Objects.requireNonNull(thresholdingService);
         this.collectionAgentFactory = Objects.requireNonNull(collectionAgentFactory);
         this.persisterFactory = Objects.requireNonNull(persisterFactory);
@@ -113,6 +117,7 @@ public class FlowThresholding implements Closeable {
         this.ipInterfaceDao = Objects.requireNonNull(ipInterfaceDao);
         this.snmpInterfaceDao = Objects.requireNonNull(snmpInterfaceDao);
         this.filterDao = Objects.requireNonNull(filterDao);
+        this.flowSettings = Objects.requireNonNull(flowSettings);
     }
 
     public long getStepSizeMs() {
@@ -294,7 +299,8 @@ public class FlowThresholding implements Closeable {
                         }
                     }
 
-                    return new Session(thresholdingSession,
+                    return new Session(flowSettings,
+                                       thresholdingSession,
                                        collectionAgent,
                                        systemIdHash,
                                        options.applicationThresholding,
@@ -328,8 +334,10 @@ public class FlowThresholding implements Closeable {
         private volatile Instant lastUpdate = null;
 
         private final AtomicLong sequenceNumber;
+        private final FlowSettings flowSettings;
 
-        private Session(final ThresholdingSession thresholdingSession,
+        private Session(final FlowSettings flowSettings,
+                        final ThresholdingSession thresholdingSession,
                         final CollectionAgent collectionAgent,
                         final long systemIdHash,
                         final boolean thresholding,
@@ -337,6 +345,7 @@ public class FlowThresholding implements Closeable {
                         final PackageDefinition packageDefinition) {
             this.sequenceNumber = new AtomicLong(systemIdHash | ThreadLocalRandom.current().nextInt());
 
+            this.flowSettings = Objects.requireNonNull(flowSettings);
             this.thresholdingSession = Objects.requireNonNull(thresholdingSession);
             this.collectionAgent = Objects.requireNonNull(collectionAgent);
 
@@ -347,13 +356,22 @@ public class FlowThresholding implements Closeable {
         }
 
         public void process(final Instant now, final FlowDocument document) {
-            final var applicationKey = new ApplicationKey(document.getDirection() == Direction.INGRESS
-                                                          ? document.getInputSnmp()
-                                                          : document.getOutputSnmp(),
-                                                          document.getDirection(),
-                                                          document.getApplication());
-
-            this.applications.computeIfAbsent(applicationKey, k -> new AtomicLong(0)).addAndGet(document.getBytes());
+            if (document.getInputSnmp() != null &&
+                document.getInputSnmp() != 0 &&
+                (!flowSettings.isStrictIngressEgress() || document.getDirection() == Direction.INGRESS)) {
+                var applicationKey = new ApplicationKey(document.getInputSnmp(),
+                        Direction.INGRESS,
+                        document.getApplication());
+                this.applications.computeIfAbsent(applicationKey, k -> new AtomicLong(0)).addAndGet(document.getBytes());
+            }
+            if (document.getOutputSnmp() != null &&
+                document.getOutputSnmp() != 0 &&
+                (!flowSettings.isStrictIngressEgress() || document.getDirection() == Direction.EGRESS)) {
+                var applicationKey = new ApplicationKey(document.getOutputSnmp(),
+                        Direction.EGRESS,
+                        document.getApplication());
+                this.applications.computeIfAbsent(applicationKey, k -> new AtomicLong(0)).addAndGet(document.getBytes());
+            }
 
             // Mark session as updated
             this.lastUpdate = now;
