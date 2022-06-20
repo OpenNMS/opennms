@@ -28,8 +28,8 @@ export interface State {
 
 const state: State = {
   isTopologyView: false,
-  selectedView: ViewType.map, // default layout
-  selectedDisplay: DisplayType.nodes, // default graph
+  selectedView: '',
+  selectedDisplay: '',
   edges: {},
   vertices: {},
   semanticZoomLevel: 1,

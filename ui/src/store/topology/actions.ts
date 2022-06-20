@@ -87,6 +87,7 @@ const getTopologyGraphByContainerAndNamespace = async (
   { containerId, namespace }: Record<string, string>
 ) => {
   const topologyGraph = await API.getTopologyGraphByContainerAndNamespace(containerId, namespace)
+  
   if (topologyGraph) {
     context.commit('SET_CONTAINER_AND_NAMESPACE', { container: containerId, namespace })
     parseVerticesAndEdges(topologyGraph, context, true) // true to prevent adding edges here
@@ -159,20 +160,8 @@ const setSelectedDisplay = async (context: ContextWithState, display: string) =>
   context.commit('SAVE_TOPOLOGY_GRAPHS_DISPLAY', graphsToDisplay)
   context.commit('SAVE_TOPOLOGY_GRAPHS_SUB_LAYERS', graphsToDisplay.graphs)
 
-  switch(display) {
-    case DisplayType.powergrid:
-      if(graphsToDisplay.graphs?.length) {
-        await context.dispatch('getTopologyGraphByContainerAndNamespace', { containerId: graphsToDisplay.id, namespace: graphsToDisplay.graphs[0].namespace })
-      }
-      break
-    case DisplayType.vmware:
-      context.commit('SET_CONTAINER_AND_NAMESPACE', {})
-      break
-    default:
-      await context.dispatch('getVerticesAndEdges')
-      context.dispatch('replaceFocusObjects', context.state.defaultObjects)
-      context.commit('SET_CONTAINER_AND_NAMESPACE', {})
-
+  if(graphsToDisplay.graphs?.length) {
+    await context.dispatch('getTopologyGraphByContainerAndNamespace', { containerId: graphsToDisplay.id, namespace: graphsToDisplay.graphs[0].namespace })
   }
 }
 

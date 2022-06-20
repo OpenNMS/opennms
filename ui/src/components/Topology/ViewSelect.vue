@@ -61,7 +61,7 @@ import { useStore } from 'vuex'
 import { FeatherButton } from '@featherds/button'
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 import { FeatherCheckbox } from '@featherds/checkbox'
-import { Views, DisplayType } from './topology.constants'
+import { Views, ViewType, DisplayType } from './topology.constants'
 import { TopologyGraphList } from '@/types/topology'
 
 const store = useStore()
@@ -80,6 +80,10 @@ const selectView = (view: string) => {
 const selectDisplay = (display: string) => {
   store.dispatch('topologyModule/setSelectedDisplay', DisplayType[display]) // save to state
 }
+
+onMounted(() => {
+  selectView(ViewType.map) // set default layout
+})
 </script>
 
 <style

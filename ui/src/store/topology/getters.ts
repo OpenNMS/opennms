@@ -1,5 +1,5 @@
 import { ViewType, DisplayType } from '@/components/Topology/topology.constants'
-import { formatTopologyGraphs, formatPowergridGraph } from '@/components/Topology/topology.helpers'
+import { formatTopologyGraphs, orderPowergridGraph } from '@/components/Topology/topology.helpers'
 import { NodePoint, TopologyGraphList } from '@/types/topology'
 import { Layouts } from 'v-network-graph'
 import { State } from './state'
@@ -44,27 +44,22 @@ const getLayout = (state: State): Layouts => {
  * @returns TopologyGraphList object with its sub layers list, if any
  */
 const getGraphsDisplay = (state: State): TopologyGraphList => {
-  let graph: TopologyGraphList = { graphs: [], id: 'N/A', label: 'N/A', type: 'N/A' }
-
   const topologyGraph: TopologyGraphList = formatTopologyGraphs(state.topologyGraphs).filter(({type}) => type === state.selectedDisplay)[0] || {}
   
-  if(!topologyGraph.graphs?.length) {
-    graph = { ...topologyGraph }
-  } else {
-    switch(topologyGraph.type){
-      case DisplayType.powergrid:
-        graph = {
-          ...topologyGraph,
-          ...formatPowergridGraph(topologyGraph.graphs, topologyGraph.id) // not certain if ordering still relevant; layer order from API response seems in good order
-        }
-        break
-      case DisplayType.nodes:
-        break
-      default:
+  let graph: TopologyGraphList = { graphs: [], id: 'N/A', label: 'N/A', type: 'N/A' }
+  
+  if(!topologyGraph.graphs?.length) return graph
+
+  if(topologyGraph.type === DisplayType.powergrid) {
+    graph = {
+      ...topologyGraph,
+      // ordering might no longer required since layer order from API response seems in good order
+      ...orderPowergridGraph(topologyGraph.graphs, topologyGraph.id)
     }
-    
+  } else {
+    graph = topologyGraph
   }
-        
+
   return graph
 }
 

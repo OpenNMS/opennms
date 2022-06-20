@@ -31,13 +31,14 @@ export const formatTopologyGraphs = (graphList: TopologyGraphList[]): TopologyGr
 /**
  * Order the graphs list by the display graph id
  * Note: this is probably no longer relevant since API response seems already being ordered
- * @param powergridGraphs 
- * @param graphId 
- * @returns ordered list
+ * 
+ * @param graphs 
+ * @param id 
+ * @returns 
  */
-export const formatPowergridGraph = (powergridGraphs: TopologyGraph[], graphId =''): object => {
-  let orderedGraphs = [ ...powergridGraphs ]
-  const orderedLayers = graphId?.split('.')
+export const orderPowergridGraph = (graphs: TopologyGraph[], id = ''): object => {
+  let orderedGraphs = [ ...graphs ]
+  const orderedLayers = id?.split('.')
 
   for (const graph of orderedGraphs) {
     graph.index = orderedLayers.indexOf(graph.label.toLowerCase())
