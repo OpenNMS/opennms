@@ -97,7 +97,7 @@ To do so, add a service parameter to the appropriate services in `poller-configu
 [[ga-pollerd-packages-overlapping-service]]
 == Overlapping services
 
-With the ability to specify multiple polling packages you can use the same service (like ICMP) multiple times.
+Since you can specify multiple polling packages, you can use the same service (like ICMP) multiple times.
 The order that polling packages are defined in `poller-configuration.xml` is important when IP interfaces match multiple polling packages with the same service configuration.
 
 The following shows which configuration is applied for a specific service:
@@ -192,7 +192,7 @@ There will be two variables (`${pattern:vhost}` and `${pattern:port}`), which yo
 
 Use the service pattern mechanism whenever there are multiple instances of a service on the same interface.
 You can make services identifiable by specifying a distinct service name for each instance, but there is no need to add a poller definition for each service.
-Common use cases for such services are HTTP virtual hosts, where multiple web applications run on the same web server, or BGP session monitoring where each router has multiple neighbors.
+Common use cases for such services are HTTP virtual hosts where multiple web applications run on the same web server, or BGP session monitoring where each router has multiple neighbors.
 
 [[ga-pollerd-packages-test-service-manually]]
 == Test services manually
