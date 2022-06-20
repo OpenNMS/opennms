@@ -278,7 +278,7 @@ commands:
       - restore-maven-cache
       - restore-nodejs-cache
       - run:
-          name: Compile OpenNMS
+          name: Setup Environment
           command: |
             export OPENNMS_VERSION="$(.circleci/scripts/pom2version.sh pom.xml)"
             .circleci/scripts/configure-signing.sh
@@ -292,6 +292,9 @@ commands:
                 MAVEN_ARGS="-Dbuild.type=production $MAVEN_ARGS javadoc:aggregate"
                 ;;
             esac
+      - run:
+          name: Compile OpenNMS
+          command: |        
             ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
               -Daether.connector.resumeDownloads=false \
               -Daether.connector.basic.threads=1 \
@@ -302,6 +305,9 @@ commands:
               -Psmoke \
               --batch-mode \
               $MAVEN_ARGS
+      - run:
+          name: Check if we have generated apidocs
+          command: |      
             if [ -d target/site/apidocs ]; then
               pushd target/site/apidocs
                 tar -czf "../../artifacts/opennms-${OPENNMS_VERSION}-javadoc.tar.gz" *
