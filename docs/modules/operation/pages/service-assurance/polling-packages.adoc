@@ -2,7 +2,7 @@
 [[ga-pollerd-packages]]
 = Poller Packages
 
-To define more complex monitoring configuration you can group service configurations into polling packages.
+You can group service configurations into polling packages to define more complex monitoring configurations.
 This allows you to assign different service configurations to nodes.
 
 To assign a polling package to nodes, use the xref:reference:configuration/filters/filters.adoc[filter] syntax.
@@ -10,7 +10,7 @@ To assign a polling package to nodes, use the xref:reference:configuration/filte
 Each polling package can have its own <<service-assurance/downtime-model.adoc#ga-service-assurance-downtime-model, downtime model>> configuration.
 
 You can configure multiple packages, and an interface can exist in more than one package.
-This provides great flexibility for how the service levels will be determined for a given device.
+This provides great flexibility for determining service levels on a given device.
 
 .Polling package assigned to nodes with rules and filters
 [source, xml]
@@ -26,7 +26,7 @@ This provides great flexibility for how the service levels will be determined fo
     This package is used for all IP interfaces that do not have 0.0.0.0 as an assigned IP address and is required.
 <3> Allow to specify if the configuration of services is applied on a range of IP interfaces (IPv4 or IPv6).
 
-Instead of the `include-range` you can add one or more specific IP interfaces:
+Instead of using `include-range`, you can add one or more specific IP interfaces:
 
 .Define a specific IP interface
 [source, xml]
@@ -65,7 +65,7 @@ Each polling package contains an RRD definition.
 </rrd>
 ----
 <1> Polling interval for all services in this polling package is reflected in the step size of 300 seconds.
-    All services in this package must be polled in a five-minute interval, otherwise response time measurements are not persisted correctly.
+    All services in this package must be polled on a five-minute interval, otherwise response time measurements are not persisted correctly.
 <2> 1 step size is persisted 2016 times: 1 * 5 min * 2016 = 7 d, 5 min accuracy for 7 d.
 <3> 12 steps average persistence 1488 times: 12 * 5 min * 1488 = 62 d, aggregated to 60 min for 62 d.
 <4> 288 steps average persistence 366 times: 288 * 5 min * 366 = 366 d, aggregated to 24 h for 366 d.
@@ -98,7 +98,7 @@ To do so, add a service parameter to the appropriate services in `poller-configu
 == Overlapping services
 
 With the ability to specify multiple polling packages you can use the same service (like ICMP) multiple times.
-The order that polling packages are defined in the `poller-configuration.xml` is important when IP interfaces match multiple polling packages with the same service configuration.
+The order that polling packages are defined in `poller-configuration.xml` is important when IP interfaces match multiple polling packages with the same service configuration.
 
 The following shows which configuration is applied for a specific service:
 
@@ -191,7 +191,7 @@ Matches all services with names starting with `HTTP-` followed by a hostname and
 There will be two variables (`${pattern:vhost}` and `${pattern:port}`), which you can use in the poller parameters.
 
 Use the service pattern mechanism whenever there are multiple instances of a service on the same interface.
-By specifying a distinct service name for each instance, the services are identifiable, but there is no need to add a poller definition per service.
+You can make services identifiable by specifying a distinct service name for each instance, but there is no need to add a poller definition for each service.
 Common use cases for such services are HTTP virtual hosts, where multiple web applications run on the same web server, or BGP session monitoring where each router has multiple neighbors.
 
 [[ga-pollerd-packages-test-service-manually]]
