@@ -34,7 +34,7 @@ Cassandra:: An open-source distributed/scale-out NoSQL database designed to hold
 The optional xref:deployment:time-series-storage/newts/introduction.adoc[Newts] storage strategy requires a Cassandra instance as back-end storage.
 
 Categories:: User-defined groups of entities on {page-component-title}-monitored networks.
-They allow you to define a matrix for aggregating monitoring results.
+They let you define a matrix for aggregating monitoring results.
 (See xref:operation:admin/webui/surveillance-view.adoc[Surveillance View].)
 
 CircleCI:: A continuous integration and delivery platform that hosts OpenNMS's CI/CD environment.
@@ -50,14 +50,14 @@ There, users can find knowledge base articles, support, announcements, and gener
 
 xref:operation:provisioning/introduction.adoc#discovery-auto[Discovery]:: A process that uses ICMP to find network devices and services in your network and then automatically adds them to monitoring.
 
-https://docs.docker.com/[Docker]:: An open-source container virtualization service that allows you to deploy application-level services without worrying about operating system maintenance.
+https://docs.docker.com/[Docker]:: An open-source container virtualization service that lets you deploy application-level services without worrying about operating system maintenance.
 {page-component-title} components may optionally be deployed as Docker containers.
 
 Dominion:: The service on an OpenNMS core that controls the operation of Minions.
 (See xref:reference:configuration/minion-confd/minion-confd.adoc#dominion[Configuring Minion via Confd].)
 
 Drools:: A Business Rules Management System solution that supports the Java Rules Engine API standard.
-It is used in the {page-component-title} Alarmd daemon to provide a more robust infrastructure for workflow and problem state management.
+It helps provide a more robust infrastructure for workflow and problem state management in the {page-component-title} Alarmd daemon.
 (See xref:operation:alarms/alarmd.adoc[Alarmd daemon].)
 
 Elasticsearch:: A NoSQL database with an integrated search engine based on the Lucene library.
@@ -78,7 +78,7 @@ Nodes can be manually assigned a location, or the location can be automatically 
 
 https://grafana.com/[Grafana]:: An open-source analysis and visualization web application.
 It connects to data sources and generates dashboards with charts, graphs, and alerts.
-https://docs.opennms.com/helm/latest[OpenNMS HELM] is a Grafana plugin that allows users to create customized dashboards with data from {page-component-title}.
+https://docs.opennms.com/helm/latest[OpenNMS HELM] is a Grafana plugin that lets users create customized dashboards with data from {page-component-title}.
 
 https://docs.opennms.com/helm/latest[HELM]:: An OpenNMS application for creating flexible dashboards to display and customize fault, flow, and performance data from {page-component-title}.
 HELM works with the Grafana analytics program to customize the data you can view.
@@ -122,9 +122,9 @@ Location:: Also referred to as "monitoring location" or "Minion location".
 Nodes assigned to a monitoring location will be monitored by Minions assigned to the same location.
 This is distinct from geolocation, which is the actual physical location of the node.
 
-Management Information Base (MIB):: A database used for managing entities on a network.
-Used in {page-component-title} to facilitate Transparent Bridge Discovery.
-(See xref:operation:topology/enlinkd/layer-2/bridge-discovery.adoc[Bridge Discovery].)
+Management Information Base (MIB):: A hardware or software vendor file that describes SNMP objects their products provide.
+The MIB files can be processed to convert the definition into data collection and event objects for {page-component-title} to work with.
+Many of the major vendor MIB definitions are included out of the box.
 
 https://www.opennms.com/meridian/[Meridian]:: A subscription-based, optimized, and stable version of the OpenNMS Horizon platform that includes only the most stable and secure Horizon features.
 It is distributed via annual release with monthly security patches.
@@ -133,7 +133,7 @@ Message broker:: When using Minions and Sentinels, a message broker is required 
 {page-component-title} has an embedded ActiveMQ server available for smaller deployments.
 You can swap the broker with a dedicated ActiveMQ, gRPC, or Kafaka cluster to provide scalability and load balancing.
 
-xref:development:minion/introduction.adoc#minion[Minion]:: An instance of the Karaf OSGi service that enables OpenNMS to monitor devices and services in locations that OpenNMS cannot reach.
+xref:development:minion/introduction.adoc#minion[Minion]:: A distributed component that enables OpenNMS to monitor devices and services in locations that OpenNMS cannot reach.
 Minions communicate with these remote devices while OpenNMS performs coordination and task delegation.
 
 Nephron:: An OpenNMS component that enables horizontal scaling of flow processing.
@@ -156,7 +156,7 @@ If the system's state can be estimated using only its output, it is considered "
 xref:operation:admin/webui/opsboard/introduction.adoc[Operator board]:: Customizable dashboard to visualize monitoring information.
 
 Outage:: Also known as _downtime_, this is a period of time that a service is unavailable or offline.
-It can be caused by systems or communications failures, or it can be planned as part of routine maintenance.
+It can be caused by systems or communications failures, or planned as part of routine maintenance.
 
 Passive discovery:: The process by which a `newSuspect` event is detected by the {page-component-title} Provisiond service and converted into a new node.
 Users can configure the Trapd and Syslogd daemons to generate this event when {page-component-title} receives messages from nodes that do not exist in the database.
@@ -211,5 +211,5 @@ xref:operation:topology/introduction.adoc[Topology]:: A description of a network
 xref:operation:events/sources/snmp-traps.adoc[Traps]:: Event triggers generated by SNMP-capable devices on the network and sent to the {page-component-title} Trapd service daemon.
 
 Unique Event Identifier (UEI):: A string that uniquely identifies an event's type.
-UEIs must begin with the string `uei..`.
+UEIs must begin with the string `uei.`.
 (See xref:operation:notifications/concepts.adoc#events-and-ueis[Events and UEIs].)
