@@ -210,7 +210,7 @@ opennms> opennms:poll --help
 DESCRIPTION
         opennms:poll
 
-	Invokes a monitor against a host at a specified location.
+	Invokes a monitor against a host at a specified location
 
 SYNTAX
         opennms:poll [options] host [attributes]
@@ -220,11 +220,11 @@ ARGUMENTS
                 Hostname or IP address of the system to poll
                 (required).
         attributes
-                Monitor specific attributes in key=value form.
+                Monitor specific attributes in key=value form
 
 OPTIONS
         --help
-                Display this help message.
+                Display this help message
         -l, --location
                 Location
                 (defaults to Default)
