@@ -89,7 +89,7 @@ Ignored when using Newts as time-series storage.
 .Configuration overview for SNMP data collection
 image::performance-management/collectors/01_snmp-datacollection-configuration.png[]
 
-=== Support for OPAQUE data type
+=== Support for opaque data types
 
 OpenNMS support also OPAQUE data type including MIB-import and data collection.
 Opauqe is ASN.1(Abstract Syntax Notation One) binary encoded data which is additionally wrapped in a hex string.
