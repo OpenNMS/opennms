@@ -277,30 +277,94 @@ it has a link to Mysore that does not support LLDP
         assertTrue(m_linkd.scheduleNodeCollection(srx100.getId()));
 
         assertEquals(0,m_lldpLinkDao.countAll());
+
         assertTrue(m_linkd.runSingleSnmpCollection(mumbai.getId()));
-        assertEquals(0,m_lldpLinkDao.countAll());
+        assertEquals(0,m_lldpLinkDao.findByNodeId(mumbai.getId()).size());
+
         assertTrue(m_linkd.runSingleSnmpCollection(delhi.getId()));
-        assertEquals(2,m_lldpLinkDao.countAll());
+        List<LldpLink> delhilldpLinks = m_lldpLinkDao.findByNodeId(delhi.getId());
+        printLldpTopology(delhilldpLinks);
+        assertEquals(2,delhilldpLinks.size());
+
         assertTrue(m_linkd.runSingleSnmpCollection(bangalore.getId()));
-        assertEquals(2,m_lldpLinkDao.countAll());
+        assertEquals(0,m_lldpLinkDao.findByNodeId(bangalore.getId()).size());
+
         assertTrue(m_linkd.runSingleSnmpCollection(bagmane.getId()));
-        assertEquals(5,m_lldpLinkDao.countAll());
+        List<LldpLink> bagmanelldpLinks = m_lldpLinkDao.findByNodeId(bagmane.getId());
+        printLldpTopology(bagmanelldpLinks);
+        assertEquals(3,bagmanelldpLinks.size());
+
         assertTrue(m_linkd.runSingleSnmpCollection(mysore.getId()));
-        assertEquals(5,m_lldpLinkDao.countAll());
+        assertEquals(0,m_lldpLinkDao.findByNodeId(mysore.getId()).size());
+
         assertTrue(m_linkd.runSingleSnmpCollection(spaceexsw1.getId()));
-        assertEquals(8,m_lldpLinkDao.countAll());
+        List<LldpLink> spaceexsw1lldpLinks = m_lldpLinkDao.findByNodeId(spaceexsw1.getId());
+        printLldpTopology(spaceexsw1lldpLinks);
+        assertEquals(3,spaceexsw1lldpLinks.size());
+
         assertTrue(m_linkd.runSingleSnmpCollection(spaceexsw2.getId()));
-        assertEquals(10,m_lldpLinkDao.countAll());
+        List<LldpLink> spaceexsw2lldpLinks = m_lldpLinkDao.findByNodeId(spaceexsw2.getId());
+        printLldpTopology(spaceexsw2lldpLinks);
+        assertEquals(2,spaceexsw2lldpLinks.size());
+
         assertTrue(m_linkd.runSingleSnmpCollection(j635042.getId()));
-        assertEquals(10,m_lldpLinkDao.countAll());
+        assertEquals(0,m_lldpLinkDao.findByNodeId(j635042.getId()).size());
+
         assertTrue(m_linkd.runSingleSnmpCollection(srx100.getId()));
+        assertEquals(0,m_lldpLinkDao.findByNodeId(srx100.getId()).size());
+
         assertEquals(10,m_lldpLinkDao.countAll());
-     
-        final List<LldpLink> topologyC = m_lldpLinkDao.findAll();
-        printLldpTopology(topologyC);
-        assertEquals(10,topologyC.size());
+        assertEquals(6,m_lldpElementDao.countAll());
         for (final LldpElement node: m_lldpElementDao.findAll()) {
             printLldpElement(node);
+        }
+
+        m_linkd.forceTopologyUpdaterRun(ProtocolSupported.LLDP);
+        m_linkd.runTopologyUpdater(ProtocolSupported.LLDP);
+
+        LldpOnmsTopologyUpdater topologyUpdater = m_linkd.getLldpTopologyUpdater();
+
+        OnmsTopology topology = topologyUpdater.getTopology();
+
+        assertNotNull(topology);
+        printOnmsTopology(topology);
+
+        for (OnmsTopologyEdge edge: topology.getEdges()) {
+            switch (edge.getSource().getVertex().getLabel()) {
+                case DELHI_NAME:
+                    switch (edge.getTarget().getVertex().getLabel()) {
+                        case BAGMANE_NAME:
+                            assertEquals("ge-1/1/5", edge.getSource().getIfname());
+                            assertEquals("28519 type LLDP_PORTID_SUBTYPE_LOCAL", edge.getSource().getAddr());
+                            assertEquals(28519, edge.getSource().getIfindex().intValue());
+                            assertEquals("ge-1/0/1", edge.getTarget().getIfname());
+                            assertEquals("513 type LLDP_PORTID_SUBTYPE_LOCAL", edge.getTarget().getAddr());
+                            assertEquals(513, edge.getTarget().getIfindex().intValue());
+                            break;
+                        case SPACE_EX_SW1_NAME:
+                            assertEquals("ge-1/1/6", edge.getSource().getIfname());
+                            assertEquals("28520 type LLDP_PORTID_SUBTYPE_LOCAL", edge.getSource().getAddr());
+                            assertEquals(28520, edge.getSource().getIfindex().intValue());
+                            assertEquals("ge-0/0/6.0", edge.getTarget().getIfname());
+                            assertEquals("528 type LLDP_PORTID_SUBTYPE_LOCAL", edge.getTarget().getAddr());
+                            assertEquals(528, edge.getTarget().getIfindex().intValue());
+                            break;
+                        default:
+                            fail();
+                    }
+                    break;
+                case SPACE_EX_SW1_NAME:
+                    assertEquals(SPACE_EX_SW2_NAME,edge.getTarget().getVertex().getLabel());
+                    assertEquals("ge-0/0/0.0", edge.getSource().getIfname());
+                    assertEquals("1361 type LLDP_PORTID_SUBTYPE_LOCAL", edge.getSource().getAddr());
+                    assertEquals(1361, edge.getSource().getIfindex().intValue());
+                    assertEquals("ge-0/0/0.0", edge.getTarget().getIfname());
+                    assertEquals("531 type LLDP_PORTID_SUBTYPE_LOCAL", edge.getTarget().getAddr());
+                    assertEquals(531, edge.getTarget().getIfindex().intValue());
+                    break;
+                default:
+                    fail();
+            }
         }
 
     }
@@ -517,36 +581,42 @@ Address          Interface              State     ID               Pri  Dead
         for (OnmsTopologyEdge edge: topology.getEdges()) {
             switch (edge.getSource().getVertex().getLabel()) {
                 case MUMBAI_NAME:
-                    if (edge.getTarget().getVertex().getLabel().equals(MYSORE_NAME)) {
-                        assertEquals("ge-0/1/1.0", edge.getSource().getIfname());
-                        assertEquals("192.168.5.21", edge.getSource().getAddr());
-                        assertEquals(978, edge.getSource().getIfindex().intValue());
-                        assertEquals("ge-0/0/1.0", edge.getTarget().getIfname());
-                        assertEquals("192.168.5.22", edge.getTarget().getAddr());
-                        assertEquals(508, edge.getTarget().getIfindex().intValue());
-                    } else  if (edge.getTarget().getVertex().getLabel().equals(BAGMANE_NAME)) {
-                        assertEquals("ge-0/0/2.0",edge.getSource().getIfname());
-                        assertEquals("192.168.5.17",edge.getSource().getAddr());
-                        assertEquals(977,edge.getSource().getIfindex().intValue());
-                        assertEquals("ge-1/0/0.0",edge.getTarget().getIfname());
-                        assertEquals("192.168.5.18",edge.getTarget().getAddr());
-                        assertEquals(534,edge.getTarget().getIfindex().intValue());
-                    } else  if (edge.getTarget().getVertex().getLabel().equals(DELHI_NAME)) {
-                        assertEquals("ge-0/1/2.0",edge.getSource().getIfname());
-                        assertEquals("192.168.5.9",edge.getSource().getAddr());
-                        assertEquals(519,edge.getSource().getIfindex().intValue());
-                        assertEquals("ge-1/0/2.0",edge.getTarget().getIfname());
-                        assertEquals("192.168.5.10",edge.getTarget().getAddr());
-                        assertEquals(28503,edge.getTarget().getIfindex().intValue());
-                    } else  if (edge.getTarget().getVertex().getLabel().equals(BANGALORE_NAME)) {
-                        assertEquals("ge-0/0/1.0",edge.getSource().getIfname());
-                        assertEquals("192.168.5.13",edge.getSource().getAddr());
-                        assertEquals(507,edge.getSource().getIfindex().intValue());
-                        assertEquals("ge-0/0/0.0",edge.getTarget().getIfname());
-                        assertEquals("192.168.5.14",edge.getTarget().getAddr());
-                        assertEquals(2401,edge.getTarget().getIfindex().intValue());
-                    } else {
-                        fail();
+                    switch (edge.getTarget().getVertex().getLabel()) {
+                        case MYSORE_NAME:
+                            assertEquals("ge-0/1/1.0", edge.getSource().getIfname());
+                            assertEquals("192.168.5.21", edge.getSource().getAddr());
+                            assertEquals(978, edge.getSource().getIfindex().intValue());
+                            assertEquals("ge-0/0/1.0", edge.getTarget().getIfname());
+                            assertEquals("192.168.5.22", edge.getTarget().getAddr());
+                            assertEquals(508, edge.getTarget().getIfindex().intValue());
+                            break;
+                        case BAGMANE_NAME:
+                            assertEquals("ge-0/0/2.0", edge.getSource().getIfname());
+                            assertEquals("192.168.5.17", edge.getSource().getAddr());
+                            assertEquals(977, edge.getSource().getIfindex().intValue());
+                            assertEquals("ge-1/0/0.0", edge.getTarget().getIfname());
+                            assertEquals("192.168.5.18", edge.getTarget().getAddr());
+                            assertEquals(534, edge.getTarget().getIfindex().intValue());
+                            break;
+                        case DELHI_NAME:
+                            assertEquals("ge-0/1/2.0", edge.getSource().getIfname());
+                            assertEquals("192.168.5.9", edge.getSource().getAddr());
+                            assertEquals(519, edge.getSource().getIfindex().intValue());
+                            assertEquals("ge-1/0/2.0", edge.getTarget().getIfname());
+                            assertEquals("192.168.5.10", edge.getTarget().getAddr());
+                            assertEquals(28503, edge.getTarget().getIfindex().intValue());
+                            break;
+                        case BANGALORE_NAME:
+                            assertEquals("ge-0/0/1.0", edge.getSource().getIfname());
+                            assertEquals("192.168.5.13", edge.getSource().getAddr());
+                            assertEquals(507, edge.getSource().getIfindex().intValue());
+                            assertEquals("ge-0/0/0.0", edge.getTarget().getIfname());
+                            assertEquals("192.168.5.14", edge.getTarget().getAddr());
+                            assertEquals(2401, edge.getTarget().getIfindex().intValue());
+                            break;
+                        default:
+                            fail();
+                            break;
                     }
                     break;
                 case BANGALORE_NAME:

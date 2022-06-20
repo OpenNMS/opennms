@@ -35,6 +35,7 @@ import org.opennms.netmgt.enlinkd.persistence.api.LldpLinkDao;
 import org.opennms.netmgt.dao.hibernate.AbstractDaoHibernate;
 import org.opennms.netmgt.enlinkd.model.LldpLink;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.springframework.util.Assert;
 
 /**
@@ -105,6 +106,22 @@ public class LldpLinkDaoHibernate extends AbstractDaoHibernate<LldpLink, Integer
 
         return find(sql.toString());
     }
-    
-    
+
+    @Override
+    public Integer getIfIndex(Integer nodeid, String portId) {
+        Assert.notNull(nodeid, "nodeId may not be null");
+        Assert.notNull(portId, "portId may not be null");
+
+        List<OnmsSnmpInterface> ifaces=
+                (List<OnmsSnmpInterface>) getHibernateTemplate().find("SELECT snmpIf FROM OnmsSnmpInterface AS snmpIf WHERE snmpIf.node.id = ? AND (LOWER(snmpIf.ifDescr) = LOWER(?) OR LOWER(snmpIf.ifName) = LOWER(?) OR snmpIf.physAddr = ?)",
+                       nodeid,
+                        portId,
+                       portId,
+                        portId
+                );
+        if (ifaces.size() == 1)
+            return ifaces.iterator().next().getIfIndex();
+        return -1;
+    }
+
 }
