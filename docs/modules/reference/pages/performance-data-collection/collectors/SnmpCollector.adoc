@@ -91,7 +91,7 @@ image::performance-management/collectors/01_snmp-datacollection-configuration.pn
 
 === Support for opaque data types
 
-OpenNMS support also OPAQUE data type including MIB-import and data collection.
+OpenNMS supports opaque data types including MIB import and data collection.
 Opauqe is ASN.1(Abstract Syntax Notation One) binary encoded data which is additionally wrapped in a hex string.
 The extracted from out of a hex string data can be of various types. 
 At the moment is the support for float data type implemented, but it can be easily extended if necessary. 
