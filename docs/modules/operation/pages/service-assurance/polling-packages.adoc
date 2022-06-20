@@ -152,9 +152,9 @@ The following shows which configuration is applied for a specific service:
 </package>
 ----
 <1> Polling interval in the packages are 300 seconds and 30 seconds.
-<2> Different polling interval for the ICMP service
-<3> Different retry settings for the ICMP service
-<4> Different timeout settings for the ICMP service
+<2> Different polling interval for the ICMP service.
+<3> Different retry settings for the ICMP service.
+<4> Different timeout settings for the ICMP service.
 
 The last polling package on the service will be applied.
 You can use this to define a less specific catch-all filter for a default configuration.
@@ -269,13 +269,13 @@ Parameter timeout: 3000 <5>
 Service is Up on 192.168.31.100 using org.opennms.netmgt.poller.monitors.IcmpMonitor: <6>
 	response-time: 407,0000 <7>
 ----
-<1> Service and package of this test
-<2> Applied service configuration from polling package for this test
+<1> Service and package of this test.
+<2> Applied service configuration from polling package for this test.
 <3> Service monitor used for this test.
-<4> RRD configuration for response time measurement
-<5> Retry and timeout settings for this test
+<4> RRD configuration for response time measurement.
+<5> Retry and timeout settings for this test.
 <6> Polling result for the service polled against the IP address.
-<7> Response time
+<7> Response time.
 
 == Test filters on Karaf Shell
 
