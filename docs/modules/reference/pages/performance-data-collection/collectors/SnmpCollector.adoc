@@ -95,7 +95,7 @@ OpenNMS support also OPAQUE data type including MIB-import and data collection.
 Opauqe is ASN.1(Abstract Syntax Notation One) binary encoded data which is additionally wrapped in a hex string.
 The extracted from out of a hex string data can be of various types. 
 At the moment is the support for float data type implemented, but it can be easily extended if necessary. 
-implemented, but it can be easily extended if necessary. Implemented float format have 120 as type field in ASN.1.
+Implemented float format have 120 as type field in ASN.1.
 To define the opaque type in a data collection the attribute, set the `mibObj` element `type` to `opaque`.
 
 [source, xml]
