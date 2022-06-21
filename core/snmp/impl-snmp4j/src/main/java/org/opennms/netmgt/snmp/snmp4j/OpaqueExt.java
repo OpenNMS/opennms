@@ -171,7 +171,7 @@ public class OpaqueExt extends Opaque {
                         double doubleValue = buffer.getDouble();
                         return new DoubleAdapter(doubleValue);
                     }
-                //only the support for type 120 is at the time implemented
+                //Only float format 120 as the type field in ASN.1 is supported
                 //implement here other formats when required. e.g
                 //
                 //  break;
