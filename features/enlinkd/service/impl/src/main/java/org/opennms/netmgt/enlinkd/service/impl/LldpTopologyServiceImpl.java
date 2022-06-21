@@ -93,7 +93,7 @@ public class LldpTopologyServiceImpl extends TopologyServiceImpl implements Lldp
             return;
         if (link.getLldpPortIfindex() == null) {
             LOG.debug("store: ifindex is null, {}", link);
-            link.setLldpPortIfindex(m_lldpLinkDao.getIfIndex(nodeId,link.getLldpPortId()));
+            link.setLldpPortIfindex(m_lldpLinkDao.getIfIndex(nodeId, link.getLldpPortId()));
         }
         saveLldpLink(nodeId, link);
         updatesAvailable();
