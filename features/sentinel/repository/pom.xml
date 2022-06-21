@@ -232,11 +232,6 @@
         </dependency>
         <dependency>
             <groupId>org.opennms.protocols</groupId>
-            <artifactId>org.opennms.protocols.xmp</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.protocols</groupId>
             <artifactId>org.opennms.protocols.nsclient</artifactId>
             <version>${project.version}</version>
         </dependency>

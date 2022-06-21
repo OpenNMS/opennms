@@ -28,7 +28,6 @@
 ** xref:performance-data-collection/collectors/wmi.adoc[]
 ** xref:performance-data-collection/collectors/wsman.adoc[]
 ** xref:performance-data-collection/collectors/xml.adoc[]
-** xref:performance-data-collection/collectors/xmp.adoc[]
 
 * xref:service-assurance/introduction.adoc[]
 ** xref:service-assurance/monitors/ActiveMQMonitor.adoc[]
@@ -86,7 +85,6 @@
 ** xref:service-assurance/monitors/Win32ServiceMonitor.adoc[]
 ** xref:service-assurance/monitors/WmiMonitor.adoc[]
 ** xref:service-assurance/monitors/WsManMonitor.adoc[]
-** xref:service-assurance/monitors/XmpMonitor.adoc[]
 
 * xref:telemetryd/introduction.adoc[]
 ** xref:telemetryd/listeners/introduction.adoc[]
