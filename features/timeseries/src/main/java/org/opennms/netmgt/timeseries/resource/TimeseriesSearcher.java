@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -92,7 +92,13 @@ public class TimeseriesSearcher {
         return getMetricFromCacheOrLoad(tagMatcher);
     }
 
-    private void buildCache(TagMatcher metricsMatcher, Set<Metric> metrics) {
+    /**
+     * We opt to make a single call to the TimeseriesStorage implementation
+     * to retrieve all resources for that node in one sweep, cache all the results, and
+     * build cache results for for resources bellow a node
+     * @param metrics
+     */
+    protected void buildCache(Set<Metric> metrics) {
         for (Metric metric : metrics) {
             ResourcePath pathOfMetric = ResourcePath.fromString(metric.getFirstTagByKey(IntrinsicTagNames.resourceId).getValue());
             ResourcePath currentPath = pathOfMetric;
@@ -115,7 +121,6 @@ public class TimeseriesSearcher {
     }
 
     public Set<Metric> search(ResourcePath path, int depth) throws StorageException {
-        long start = System.currentTimeMillis();
         TagMatcher indexMatcher = ImmutableTagMatcher.builder()
                 .type(TagMatcher.Type.EQUALS_REGEX)
                 .key(IntrinsicTagNames.resourceId)
@@ -125,23 +130,19 @@ public class TimeseriesSearcher {
 
         // found in cache => we are done
         if (metrics != null) {
-            LOG.debug("SEARCH CACHE matcher: {} metrics size: {} time: {}", indexMatcher, path, metrics.size(), System.currentTimeMillis() - start);
             return metrics;
         }
 
-        // if we detect a query for resources bellow a node, we opt to make a single call to the TimeseriesStorage implementation
-        // to retrieve all resources for that node in one sweep, cache all the results, and return the match for the specific
-        // resource requested
         int numPathElementsToNodeLevel = getNumPathElementsToNodeLevel(path);
         if (numPathElementsToNodeLevel > 0) {
             String wildcardPath = toResourceId(ResourcePath.get(Arrays.asList(path.elements()).subList(0, numPathElementsToNodeLevel)));
             getMetricsBelowWildcardPath(wildcardPath);
+            // assume result is already calculate in getMetricsBelowWildcardPath, return empty list if nothing find in cache
             metrics = getMetricsFromCacheOrAddEmptySet(indexMatcher);
         } else {
             // we are above the wildcard level -> let's just get metrics that are associated with the index matcher
             metrics = getMetricFromCacheOrLoad(indexMatcher);
         }
-        LOG.debug("SEARCH NO CACHE matcher: {} metrics size: {} time: {}", indexMatcher, path, metrics.size(), System.currentTimeMillis() - start);
         return metrics;
     }
 
@@ -153,7 +154,7 @@ public class TimeseriesSearcher {
                 return this.metricCacheLoader.load(matcher);
             });
             if (loaded.get()) {
-                this.buildCache(matcher, metrics);
+                this.buildCache(metrics);
             }
             return metrics;
         } catch (Exception e) {
