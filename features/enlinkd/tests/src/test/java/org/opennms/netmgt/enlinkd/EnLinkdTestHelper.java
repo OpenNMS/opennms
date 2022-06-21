@@ -105,8 +105,6 @@ public abstract class EnLinkdTestHelper {
         System.err.println("OnmsTopologyEdge: target/addr:" + edge.getTarget().getAddr());
         System.err.println("OnmsTopologyEdge: target/speed:" + edge.getTarget().getSpeed());
         System.err.println("OnmsTopologyEdge: target/toolTipText:" + edge.getTarget().getToolTipText());
-
-
     }
 
     protected static void printOnmsTopologyVertex(OnmsTopologyVertex vertex) {
