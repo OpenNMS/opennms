@@ -94,7 +94,7 @@ image::performance-management/collectors/01_snmp-datacollection-configuration.pn
 OpenNMS can import SNMP MIB definitions with opaque data types, specifically the float data type.
 Opaque data types are ASN.1(Abstract Syntax Notation One) binary encoded data which are additionally wrapped in a hex string.
 The extracted from out of a hex string data can be of various types. 
-At the moment is the support for float data type implemented, but it can be easily extended if necessary. 
+OpenNMS currently supports the float data type, but this can be extended, if necessary. 
 Implemented float format have 120 as type field in ASN.1.
 To define the opaque type in a data collection the attribute, set the `mibObj` element `type` to `opaque`.
 
