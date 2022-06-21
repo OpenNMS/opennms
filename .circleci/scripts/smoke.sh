@@ -58,9 +58,9 @@ ulimit -n 65536
 ./clean.pl
 
 cd ~/project/smoke-test
-if [ $SUITE = "minimal" ]; then
+if [ $SUITE = "flaky" ]; then
   echo "#### Executing minimal set smoke/system tests"
-  IT_TESTS="MenuHeaderIT,SinglePortFlowsIT"
+  IT_TESTS="MinionHeartBeatIT,MinionHeartbeatOutageIT,MinionHeartbeatOutageKafkaIT"
   SUITE=core
 else
   find_tests
