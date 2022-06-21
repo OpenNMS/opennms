@@ -57,13 +57,13 @@ export interface TopologyGraph {
   namespace: string
   description: string
   label: string
-  index: number
+  index?: number
 }
 
 export interface TopologyGraphList {
   graphs: TopologyGraph[]
   id: string
   label: string
-  description: string
+  description?: string
   type?: string
 }
