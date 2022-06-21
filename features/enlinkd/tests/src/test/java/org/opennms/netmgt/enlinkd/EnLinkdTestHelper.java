@@ -110,12 +110,12 @@ public abstract class EnLinkdTestHelper {
     }
 
     protected static void printOnmsTopologyVertex(OnmsTopologyVertex vertex) {
-        System.err.println("OnmsTopologyVertex: id:"+vertex.getId());
-        System.err.println("OnmsTopologyVertex: nodeid:"+vertex.getNodeid());
-        System.err.println("OnmsTopologyVertex: label:"+vertex.getLabel());
-        System.err.println("OnmsTopologyVertex: address:"+vertex.getAddress());
-        System.err.println("OnmsTopologyVertex: iconKey:"+vertex.getIconKey());
-        System.err.println("OnmsTopologyVertex: toolTipText:"+vertex.getToolTipText());
+        System.err.println("OnmsTopologyVertex: id:" + vertex.getId());
+        System.err.println("OnmsTopologyVertex: nodeid:" + vertex.getNodeid());
+        System.err.println("OnmsTopologyVertex: label:" + vertex.getLabel());
+        System.err.println("OnmsTopologyVertex: address:" + vertex.getAddress());
+        System.err.println("OnmsTopologyVertex: iconKey:" + vertex.getIconKey());
+        System.err.println("OnmsTopologyVertex: toolTipText:" + vertex.getToolTipText());
     }
 
 
