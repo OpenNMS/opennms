@@ -61,5 +61,5 @@ parameters:
     default: false
   trigger-flaky:
     type: boolean
-    default: false
+    default: true
 
