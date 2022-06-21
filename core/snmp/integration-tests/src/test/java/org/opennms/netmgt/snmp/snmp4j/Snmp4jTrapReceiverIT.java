@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -61,8 +61,6 @@ import org.snmp4j.CommandResponderEvent;
 import org.snmp4j.PDU;
 import org.snmp4j.PDUv1;
 import org.snmp4j.Snmp;
-import org.snmp4j.log.Log4jLogFactory;
-import org.snmp4j.log.LogFactory;
 import org.snmp4j.security.AuthMD5;
 import org.snmp4j.security.PrivDES;
 import org.snmp4j.security.UsmUser;
@@ -77,7 +75,6 @@ public class Snmp4jTrapReceiverIT extends MockSnmpAgentITCase implements Command
 
     @BeforeClass
     public static void setupSnmp4jLogging() {
-        LogFactory.setLogFactory(new Log4jLogFactory());
         MockLogAppender.setupLogging(true, "DEBUG");
     }
 
