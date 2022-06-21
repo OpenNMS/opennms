@@ -76,8 +76,8 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
 public abstract class EnLinkdTestHelper {
 
     protected static void printOnmsTopology(OnmsTopology topology) {
-        System.err.println("OnmsTopology: vertices:" +topology.getVertices().size());
-        System.err.println("OnmsTopology: edges:" +topology.getEdges().size());
+        System.err.println("OnmsTopology: vertices:" + topology.getVertices().size());
+        System.err.println("OnmsTopology: edges:" + topology.getEdges().size());
         for (OnmsTopologyVertex vertex: topology.getVertices()) {
             printOnmsTopologyVertex(vertex);
         }
