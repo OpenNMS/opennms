@@ -96,7 +96,7 @@ Opaque data types are ASN.1(Abstract Syntax Notation One) binary encoded data wh
 The extracted from out of a hex string data can be of various types. 
 OpenNMS currently supports the float data type, but this can be extended, if necessary. 
 Implemented float format have 120 as type field in ASN.1.
-To define the opaque type in a data collection the attribute, set the `mibObj` element `type` to `opaque`.
+To define the opaque type in a data collection, set the `mibObj` element's `type` attribute to `opaque`.
 
 [source, xml]
 ----
