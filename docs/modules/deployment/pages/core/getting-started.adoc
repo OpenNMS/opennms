@@ -132,6 +132,36 @@ include::docker/initialize.adoc[]
 endif::[]
 ====
 
+== Encrypt database credentials
+
+It is also possible to store the PostgreSQL credentials in the secure credentials vault.
+To achieve this, use the `scvcli` command line utility to add the credentials, and reference these credentials in your `opennms-datasources.xml` file.
+
+.Create encrypted credentials for the PostgreSQL database connections:
+[source, console]
+----
+./bin/scvcli set postgres opennms opennms-password
+./bin/scvcli set postgres-admin postgres postgres-password
+----
+
+.Reference the encrypted credentials stored in the secure credentials vault:
+[source, xml]
+----
+<jdbc-data-source name="opennms"
+                    database-name="opennms"
+                    class-name="org.postgresql.Driver"
+                    url="jdbc:postgresql://localhost:5432/opennms"
+                    user-name="${scv:postgres:username}"
+                    password="${scv:postgres:password}" />
+
+<jdbc-data-source name="opennms-admin"
+                    database-name="template1"
+                    class-name="org.postgresql.Driver"
+                    url="jdbc:postgresql://localhost:5432/template1"
+                    user-name="${scv:postgres-admin:username}"
+                    password="${scv:postgres-admin:password}" />
+----
+
 == Receive SNMP Traps/Informs
 
 OpenNMS {page-component-title} core lets you receive and process SNMP Traps/Informs out of the box.

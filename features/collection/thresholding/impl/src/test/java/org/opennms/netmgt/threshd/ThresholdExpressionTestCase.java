@@ -34,8 +34,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.opennms.core.rpc.utils.mate.EntityScopeProvider;
-import org.opennms.core.rpc.utils.mate.Scope;
+import org.opennms.core.mate.api.EntityScopeProvider;
+import org.opennms.core.mate.api.Scope;
 import org.opennms.netmgt.config.threshd.Expression;
 import org.opennms.netmgt.config.threshd.ThresholdType;
 
