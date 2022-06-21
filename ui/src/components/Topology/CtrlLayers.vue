@@ -18,7 +18,7 @@ import { FeatherButton } from '@featherds/button'
 import Menu from '@featherds/icon/navigation/Menu'
 
 const store = useStore()
-const disable = computed<boolean>(() => store.state.topologyModule.topologyGraphsSubLayers.length === 0)
+const disable = computed<boolean>(() => !store.state.topologyModule.topologyGraphsSubLayers.length)
 
 const isOpen = computed<boolean>(() => store.state.topologyModule.isRightDrawerOpen)
 

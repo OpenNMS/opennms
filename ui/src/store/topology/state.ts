@@ -18,7 +18,7 @@ export interface State {
   modalState: boolean
   nodeIcons: Record<string, string>
   topologyGraphs: TopologyGraphList[]
-  topologyGraphsDisplay: TopologyGraphList
+  topologyGraphsDisplay: TopologyGraphList | object
   topologyGraphsSubLayers: TopologyGraph[]
   container: string
   namespace: string

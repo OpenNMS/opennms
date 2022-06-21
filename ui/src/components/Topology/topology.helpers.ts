@@ -35,7 +35,7 @@ export const formatTopologyGraphs = (graphList: TopologyGraphList[]): TopologyGr
  * 
  * @param graphs 
  * @param id 
- * @returns 
+ * @returns an ordered list
  */
 export const orderPowergridGraph = (graphs: TopologyGraph[], id = ''): object => {
   let orderedGraphs = [ ...graphs ]

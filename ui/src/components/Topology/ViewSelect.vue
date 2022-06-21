@@ -31,12 +31,6 @@
     <!-- Displays -->
     <div v-if="isTopologyView && graphs.length">
       <hr />
-      <!-- <FeatherDropdownItem>
-              <FeatherCheckbox
-                @update:modelValue="selectDisplay('nodes')"
-                v-model="displays['nodes']"
-              >Nodes (Enhanced Linkd)</FeatherCheckbox>
-            </FeatherDropdownItem> -->
       <FeatherDropdownItem
         v-for="({id = '', label}) in graphs"
         :key="id"

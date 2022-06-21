@@ -15,7 +15,7 @@ const SAVE_TOPOLOGY_GRAPHS = (state: State, topologyGraphs: TopologyGraphList[])
   state.topologyGraphs = topologyGraphs
 }
 
-const SAVE_TOPOLOGY_GRAPHS_DISPLAY = (state: State, graphsDisplay: TopologyGraph) => {
+const SAVE_TOPOLOGY_GRAPHS_DISPLAY = (state: State, graphsDisplay: TopologyGraphList) => {
   state.topologyGraphsDisplay = graphsDisplay
 }
 

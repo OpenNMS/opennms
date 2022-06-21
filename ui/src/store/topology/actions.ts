@@ -255,13 +255,14 @@ const updateSubLayerIndicator = (context: ContextWithState) => {
   const { graphs = [] }: TopologyGraphList = getters.getGraphsDisplay(context.state)
   const vertices = context.state.vertices
 
-  for (const graph of graphs) {
+  for (const {namespace, index} of graphs) {
     for (const vertex of Object.values(vertices)) {
       // if vertex has sublayer and is within graph namespace
-      if (idsWithSubLayers.includes(vertex.id) && vertex.namespace === graph.namespace) {
+      if (idsWithSubLayers.includes(vertex.id) && vertex.namespace === namespace) {
         // add the the next layer object for the context nav
-        if (graphs[graph.index + 1]) {
-          vertex['subLayer'] = graphs[graph.index + 1]
+        const i = index ?? -1 // to ensure graph has index  property
+        if (i >= 0) {
+          vertex['subLayer'] = graphs[i + 1]
         }
       }
     }
