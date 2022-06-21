@@ -70,10 +70,7 @@
       {{vertices[targetNodeId].tooltip}}
     </div>
   </div>
-  <NoFocusMsg
-    :useDefaultFocus="useDefaultFocus"
-    v-if="focusObjects.length === 0"
-  />
+  <NoFocusMsg v-if="!focusObjects.length" />
   <TopologyModal
     :nodeId="contextNode.id"
     v-if="contextNode && contextNode.id"
@@ -108,7 +105,6 @@ import { SimulationNodeDatum } from 'd3'
 import { ContextMenuType, ViewType } from './topology.constants'
 import TopologyModal from './TopologyModal.vue'
 import ICON_PATHS from './icons/iconPaths'
-import { useTopologyFocus } from './topology.composables'
 
 interface d3Node extends Required<SimulationNodeDatum> {
   id: string
@@ -122,7 +118,6 @@ defineProps({
 })
 
 const store = useStore()
-const { useDefaultFocus } = useTopologyFocus()
 const zoomLevel = ref(1)
 const graph = ref<Instance>()
 const selectedNodes = ref<string[]>([]) // string ids
@@ -370,7 +365,7 @@ const configs = reactive(
   })
 )
 
-onMounted(() => useDefaultFocus())
+// onMounted(() => useDefaultFocus())
 </script>
 
 <style

@@ -26,9 +26,9 @@ const refreshGraph = async () => {
   displayGraph.value = true
 }
 
-onMounted(() => {
-  store.dispatch('topologyModule/getTopologyGraphs')
-  store.dispatch('topologyModule/setSelectedDisplay', DisplayType.nodes) // set default graph
+onMounted(async () => {
+  await store.dispatch('topologyModule/getTopologyGraphs')
+  await store.dispatch('topologyModule/setSelectedDisplay', DisplayType.nodes) // set default graph
 })
 </script>
 

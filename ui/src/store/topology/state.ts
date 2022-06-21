@@ -1,7 +1,6 @@
 import { Edges, Node, Nodes } from 'v-network-graph'
 import { IdLabelProps } from '@/types'
 import { NodePoint, TopologyGraphList, TopologyGraph } from '@/types/topology'
-import { ViewType, DisplayType } from '@/components/topology/topology.constants'
 
 export interface State {
   isTopologyView: boolean // switch between geo-map and topology

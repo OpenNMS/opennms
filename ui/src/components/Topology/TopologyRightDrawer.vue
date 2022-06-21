@@ -16,13 +16,6 @@
         :class="{ 'selected' : graph.namespace === selectedNamespace }"
         >{{ graph.label }}</FeatherListItem
       >
-      <!-- <FeatherListItem
-        v-for="graph in powergridGraphs.graphs"
-        :key="graph.label"
-        @click="selectTopologyGraph(graph.namespace)"
-        :class="{ 'selected' : graph.namespace === selectedNamespace }"
-        >{{ graph.label }}</FeatherListItem
-      > -->
     </FeatherList>
   </div>
 </template>

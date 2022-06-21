@@ -1,4 +1,4 @@
-import { ViewType, DisplayType } from '@/components/Topology/topology.constants'
+import { ViewType } from '@/components/Topology/topology.constants'
 import API from '@/services'
 import { IdLabelProps, QueryParameters, VuexContext } from '@/types'
 import { SZLRequest, TopologyGraphList, VerticesAndEdges } from '@/types/topology'
@@ -115,15 +115,11 @@ const getObjectDataByLevelAndFocus = async (context: ContextWithState) => {
       verticesInFocus: context.state.focusObjects.map((obj) => obj.id)
     }
   
-    if (context.state.selectedDisplay !== DisplayType.powergrid) {
-      resp = await API.getNodesTopologyDataByLevelAndFocus(SZLRequest)
-    } else {
-      resp = await API.getPowergridTopologyDataByLevelAndFocus(
-        context.state.container,
-        context.state.namespace,
-        SZLRequest
-      )
-    }
+    resp = await API.getNodesTopologyDataByLevelAndFocus(
+      context.state.container,
+      context.state.namespace,
+      SZLRequest
+    )
   
     if (resp) {
       parseVerticesAndEdges(resp, context)
