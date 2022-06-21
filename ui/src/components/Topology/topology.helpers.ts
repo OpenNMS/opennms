@@ -11,16 +11,17 @@ import { DisplayType } from './topology.constants'
 export const formatTopologyGraphs = (graphList: TopologyGraphList[]): TopologyGraphList[] => {
   if(!graphList.length) return []
   
-  const topologyGraphs = graphList.map(({graphs = [], id = '', label}) => {
+  const topologyGraphs = graphList.map(({graphs = [], id = '', label, description}) => {
     const graphsWithIndex = graphs.map((g, index) => ({
       ...g,
-      index 
+      index
     }))
 
     return {
       graphs: graphsWithIndex,
       id,
       label,
+      description,
       type: DisplayType[id]
     }
   })
@@ -47,6 +48,6 @@ export const orderPowergridGraph = (graphs: TopologyGraph[], id = ''): object =>
   orderedGraphs = orderBy(orderedGraphs, 'index', 'asc')
 
   return {
-    graphs: [...orderedGraphs]
+    graphs: orderedGraphs
   }
 }
