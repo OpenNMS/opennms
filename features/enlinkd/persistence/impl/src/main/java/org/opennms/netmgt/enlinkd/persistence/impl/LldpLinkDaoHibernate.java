@@ -123,7 +123,7 @@ public class LldpLinkDaoHibernate extends AbstractDaoHibernate<LldpLink, Integer
         if (ifaces.size() == 1) {
             return ((OnmsSnmpInterface) ifaces.iterator().next()).getIfIndex();
         }
-        ifaces = getHibernateTemplate().find("SELECT ipIf From OnmsIpInterface AS ipIf where ipIf.node.id = ? and ipIf.ipAddress = ?", nodeid,portId);
+        ifaces = getHibernateTemplate().find("SELECT ipIf FROM OnmsIpInterface AS ipIf WHERE ipIf.node.id = ? AND ipIf.ipAddress = ?", nodeid, portId);
         if (ifaces.size() == 1) {
             OnmsIpInterface ipif = (OnmsIpInterface) ifaces.iterator().next();
             if (ipif.getSnmpInterface() != null) {
