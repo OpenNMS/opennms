@@ -1553,6 +1553,8 @@ jobs:
                 at: ~/
             - run-smoke-tests:
                 suite: flaky
+            - store_test_results:
+                path: test-results
   smoke-test-minion:
     executor: smoke-test-executor
     parallelism: 4
