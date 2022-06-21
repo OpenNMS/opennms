@@ -14,7 +14,8 @@ ALEC groups related alarms so you can better manage the more complex situations 
 xref:operation:application-perspective-monitoring/introduction.adoc[Application Perspective Monitoring (APM)]:: A method that uses the Minion infrastructure to monitor a service’s availability from different perspectives to help identify if nodes are down for everyone or if an outage affects only certain sites.
 When a service is not responsive an outage will be generated with the corresponding perspective that sees the outage.
 
-Asset:: Any data, device, or other component that is monitored by {page-component-title}.
+Asset data:: A set of optional fields, similar to metadata, that can be associated with a node to provide additional information. 
+Examples include physical location and hardware specifications.
 
 Auto-discovered nodes:: Nodes that are automatically added to {page-component-title} through routine or one-time discovery.
 (See xref:operation:provisioning/auto-discovery.adoc[Auto-Discovery].)
@@ -28,7 +29,7 @@ Azure:: Microsoft Azure is a cloud hosting platform that allows users to host a 
 Bean Scripting Framework (BSF):: A framework that allows scripting to be used in Java code via a set of Java classes.
 The {page-component-title} xref:reference:provisioning/detectors/BsfDetector.adoc[BSF Detector] runs arbitrary BSF scripts to determine the existence of a service, and the xref:reference:service-assurance/monitors/BSFMonitor.adoc[BSF Monitor] uses scripts to determine the status of a service.
 
-xref:operation:bsm/introduction.adoc[Business Service Monitoring (BSM)]:: A {page-component-title} feature that monitors high-level business Service Monitor contexts and quickly identifies the most critical problems affecting them.
+xref:operation:bsm/introduction.adoc[Business Service Monitoring (BSM)]:: A {page-component-title} feature that lets you monitor and generate alerts for issues affecting complex business services spanning multiple nodes.
 
 Cassandra:: An open-source distributed/scale-out NoSQL database designed to hold large amounts of structured or unstructured data across many servers.
 The optional xref:deployment:time-series-storage/newts/introduction.adoc[Newts] storage strategy requires a Cassandra instance as back-end storage.
@@ -56,7 +57,7 @@ https://docs.docker.com/[Docker]:: An open-source container virtualization servi
 Dominion:: The service on an OpenNMS core that controls the operation of Minions.
 (See xref:reference:configuration/minion-confd/minion-confd.adoc#dominion[Configuring Minion via Confd].)
 
-Drools:: A Business Rules Management System solution that supports the Java Rules Engine API standard.
+Drools:: A system to manage business rules that supports the Java Rules Engine API standard.
 It helps provide a more robust infrastructure for workflow and problem state management in the {page-component-title} Alarmd daemon.
 (See xref:operation:alarms/alarmd.adoc[Alarmd daemon].)
 
