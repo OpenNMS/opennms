@@ -32,7 +32,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import org.opennms.core.rpc.utils.mate.EntityScopeProvider;
+import org.opennms.core.mate.api.EntityScopeProvider;
 import org.opennms.netmgt.config.dao.outages.api.ReadablePollOutagesDao;
 import org.opennms.netmgt.config.dao.thresholding.api.ReadableThreshdDao;
 import org.opennms.netmgt.config.dao.thresholding.api.ReadableThresholdingDao;

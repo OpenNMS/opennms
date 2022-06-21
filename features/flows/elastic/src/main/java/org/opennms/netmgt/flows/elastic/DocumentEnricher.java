@@ -41,7 +41,7 @@ import org.opennms.core.cache.Cache;
 import org.opennms.core.cache.CacheBuilder;
 import org.opennms.core.cache.CacheConfig;
 import org.opennms.core.cache.CacheConfigBuilder;
-import org.opennms.core.rpc.utils.mate.ContextKey;
+import org.opennms.core.mate.api.ContextKey;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
