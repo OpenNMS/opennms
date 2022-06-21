@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -60,7 +60,6 @@ import org.snmp4j.agent.mo.snmp.StorageType;
 import org.snmp4j.agent.mo.snmp.TransportDomains;
 import org.snmp4j.agent.mo.snmp.VacmMIB;
 import org.snmp4j.log.ConsoleLogFactory;
-import org.snmp4j.log.Log4jLogFactory;
 import org.snmp4j.log.LogAdapter;
 import org.snmp4j.log.LogFactory;
 import org.snmp4j.mp.MPv1;
@@ -97,14 +96,9 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
 	
     private static final String PROPERTY_SLEEP_ON_CREATE = "mockSnmpAgent.sleepOnCreate";
 
-    // initialize Log4J logging
+    // initialize logging
     static {
-        try {
-            Class.forName("org.apache.log4j.Logger");
-            LogFactory.setLogFactory(new Log4jLogFactory());
-        } catch (Exception e) {
-            LogFactory.setLogFactory(new ConsoleLogFactory());
-        }
+        LogFactory.setLogFactory(new ConsoleLogFactory());
 
         // Check to see if the pseudorandom byte generator device exists
         if (new File("/dev/urandom").exists()) {

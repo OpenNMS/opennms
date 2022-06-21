@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -175,8 +175,8 @@ public class MockProxy implements CommandResponder {
         response.setErrorStatus(0);
         response.setType(PDU.RESPONSE);
         
-        Vector<? extends VariableBinding> varBinds = response.getVariableBindings();
-        for(int i = 0; i < varBinds.size(); i++) {
+        final var varBinds = response.getVariableBindings();
+        for (int i=0; i < varBinds.size(); i++) {
             VariableBinding varBind = varBinds.get(i);
             VariableBinding nextVarBind = m_agent.get(varBind.getOid());
             if (nextVarBind == null) {
@@ -206,8 +206,8 @@ public class MockProxy implements CommandResponder {
         response.setErrorStatus(0);
         response.setType(PDU.RESPONSE);
         
-        Vector<? extends VariableBinding> varBinds = response.getVariableBindings();
-        for(int i = 0; i < varBinds.size(); i++) {
+        final var varBinds = response.getVariableBindings();
+        for (int i=0; i < varBinds.size(); i++) {
             VariableBinding varBind = varBinds.get(i);
             VariableBinding nextVarBind = m_agent.getNext(varBind.getOid());
             if (nextVarBind == null) {
