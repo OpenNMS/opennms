@@ -752,6 +752,7 @@ workflows:
                 - /^foundation.*/
                 - /^release-.*/
                 - /.*smoke.*/
+                - /.*flaky.*/
       - smoke-test-minion:
           requires:
             - tarball-assembly
