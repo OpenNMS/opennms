@@ -34,6 +34,7 @@ import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
+import org.openqa.selenium.By;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,7 +58,7 @@ public class AdminPageIT extends OpenNMSSeleniumIT {
         new String[] { "Delete Nodes", "//span[text()='Delete Nodes']" },
         new String[] { "Configure External Requisitions", "//h1[contains(text(), 'Configuration')]" },
         new String[] { "Configure Geocoder Service", "//div/nav/ol/li[text()='Geocoder Configuration']" },
-        new String[] { "Secure Credentials Vault", "//div/nav/ol/li[text()='Secure Credentials Vault']" },
+        new String[] { "Secure Credentials Vault", "//*[text()='Add Credentials']" },
 
         // Flow Management
         new String[] { "Manage Flow Classification", "//div/nav/ol/li[text()='Flow Classification']" },
@@ -123,7 +124,7 @@ public class AdminPageIT extends OpenNMSSeleniumIT {
             LOG.debug("clicking: '{}', expecting: '{}'", entry[0], entry[1]);
             adminPage();
             findElementByLink(entry[0]).click();
-            findElementByXpath(entry[1]);
+            waitForElement(By.xpath(entry[1]));
         }
     }
 }
