@@ -670,13 +670,36 @@ public class FlowQueryIT {
         ));
     }
 
+    @Test
+    public void canGetTopNAppsSeriesWithUnknownDirection() throws Exception {
+        // Load the flows with unknown directions
+        loadFlowsWithUnknownDirection();
+
+        // Top 10
+        Table<Directional<String>, Long, Double> appTraffic = smartQueryService.getTopNApplicationSeries(10, 10, false,
+                getFilters()).get();
+        assertThat(appTraffic.rowKeySet(), hasSize(6));
+
+        // Top 2 with others
+        appTraffic = smartQueryService.getTopNApplicationSeries(2, 10, true, getFilters()).get();
+        assertThat(appTraffic.rowKeySet(), hasSize(6));
+
+        // Top 1
+        appTraffic = smartQueryService.getTopNApplicationSeries(1, 10, false, getFilters()).get();
+        assertThat(appTraffic.rowKeySet(), hasSize(2));
+        assertThat(appTraffic.rowKeySet(), containsInAnyOrder(new Directional<>("https", true),
+                new Directional<>("https", false)));
+
+        verifyHttpsSeries(appTraffic, "https");
+    }
+
     private Object[] defaultFlowsFieldValues(Function<FlowDocument, Integer> fieldAccess) {
-        return DEFAULT_FLOWS
+        return getDefaultFlows()
                 .stream()
                 .map(fieldAccess)
                 .distinct()
                 .sorted()
-                .map(i -> i.toString())
+                .map(Object::toString)
                 .toArray()
                 ;
     }
@@ -735,7 +758,7 @@ public class FlowQueryIT {
                 .map(FlowQueryIT::filterPredicate)
                 .reduce(fd -> true, (p1, p2) -> fd -> p1.test(fd) && p2.test(fd));
 
-        Object[] memoryResult = DEFAULT_FLOWS
+        Object[] memoryResult = getDefaultFlows()
                 .stream()
                 .filter(predicate)
                 .map(fd -> FlowQueryIT.flowDoc2TrafficSummary(fd, aggregateBy.apply(fd).toString()))
@@ -767,7 +790,7 @@ public class FlowQueryIT {
                 .map(FlowQueryIT::filterPredicate)
                 .reduce(fd -> true, (p1, p2) -> fd -> p1.test(fd) && p2.test(fd));
 
-        Map<Directional<String>, Map<Long, Double>> memoryResult = DEFAULT_FLOWS
+        Map<Directional<String>, Map<Long, Double>> memoryResult = getDefaultFlows()
                 .stream()
                 .filter(predicate)
                 .map(fd -> flowDoc2Pair(fd, step, aggregateBy.apply(fd).toString()))
@@ -1010,42 +1033,63 @@ public class FlowQueryIT {
         return column;
     }
 
-    private static List<FlowDocument> DEFAULT_FLOWS = new FlowBuilder()
-            .withExporter("SomeFs", "SomeFid", 99)
-            .withSnmpInterfaceId(98)
-            // 192.168.1.100:43444 <-> 10.1.1.11:80 (110 bytes in [3,15])
-            .withDirection(Direction.INGRESS)
-            .withTos(4 + 64)
-            .withFlow(new Date(3), new Date(15), "192.168.1.100", 43444, "10.1.1.11", 80, 10)
-            .withDirection(Direction.EGRESS)
-            .withTos(8 + 128)
-            .withFlow(new Date(3), new Date(15), "10.1.1.11", 80, "192.168.1.100", 43444, 100)
-            // 192.168.1.100:43445 <-> 10.1.1.12:443 (1100 bytes in [13,26])
-            .withDirection(Direction.INGRESS)
-            .withHostnames(null, "la.le.lu")
-            .withTos(16 + 64)
-            .withFlow(new Date(13), new Date(26), "192.168.1.100", 43445, "10.1.1.12", 443, 100)
-            .withDirection(Direction.EGRESS)
-            .withHostnames("la.le.lu", null)
-            .withTos(32 + 128)
-            .withFlow(new Date(13), new Date(26), "10.1.1.12", 443, "192.168.1.100", 43445, 1000)
-            // 192.168.1.101:43442 <-> 10.1.1.12:443 (1210 bytes in [14, 45])
-            .withDirection(Direction.INGRESS)
-            .withHostnames("ingress.only", "la.le.lu")
-            .withFlow(new Date(14), new Date(45), "192.168.1.101", 43442, "10.1.1.12", 443, 110)
-            .withDirection(Direction.EGRESS)
-            .withHostnames("la.le.lu", null)
-            .withFlow(new Date(14), new Date(45), "10.1.1.12", 443, "192.168.1.101", 43442, 1100)
-            // 192.168.1.102:50000 <-> 10.1.1.13:50001 (200 bytes in [50, 52])
-            .withDirection(Direction.INGRESS)
-            .withFlow(new Date(50), new Date(52), "192.168.1.102", 50000, "10.1.1.13", 50001, 200)
-            .withDirection(Direction.EGRESS)
-            .withFlow(new Date(50), new Date(52), "10.1.1.13", 50001, "192.168.1.102", 50000, 100)
-            .build();
-
+    private static List<FlowDocument> getDefaultFlows() {
+        return getFlowSet(false);
+    }
 
     private void loadDefaultFlows() throws FlowException {
-        this.loadFlows(DEFAULT_FLOWS);
+        loadFlows(getDefaultFlows());
+    }
+
+    private void loadFlowsWithUnknownDirection() throws FlowException {
+        loadFlows(getFlowSet(true));
+    }
+
+    private static List<FlowDocument> getFlowSet(boolean useUnknownDirection) {
+        FlowBuilder flowBuilder = new FlowBuilder()
+                .withExporter("SomeFs", "SomeFid", 99)
+                .withSnmpInterfaceId(98)
+                // 192.168.1.100:43444 <-> 10.1.1.11:80 (110 bytes in [3,15])
+                .withDirection(Direction.INGRESS)
+                .withTos(4 + 64)
+                .withFlow(new Date(3), new Date(15), "192.168.1.100", 43444, "10.1.1.11", 80, 10)
+                .withDirection(Direction.EGRESS)
+                .withTos(8 + 128)
+                .withFlow(new Date(3), new Date(15), "10.1.1.11", 80, "192.168.1.100", 43444, 100);
+                // 192.168.1.100:43445 <-> 10.1.1.12:443 (1100 bytes in [13,26])
+                if (!useUnknownDirection) {
+                    flowBuilder.withDirection(Direction.INGRESS);
+                } else {
+                    flowBuilder.withDirection(Direction.UNKNOWN)
+                            .withInputSnmpInterfaceId(98)
+                            .withOutputSnmpInterfaceId(100);
+                }
+                flowBuilder.withHostnames(null, "la.le.lu")
+                .withTos(16 + 64)
+                .withFlow(new Date(13), new Date(26), "192.168.1.100", 43445, "10.1.1.12", 443, 100);
+                if (!useUnknownDirection) {
+                    flowBuilder.withDirection(Direction.EGRESS);
+                } else {
+                    flowBuilder.withDirection(Direction.UNKNOWN)
+                            .withInputSnmpInterfaceId(100)
+                            .withOutputSnmpInterfaceId(98);
+                }
+                flowBuilder.withHostnames("la.le.lu", null)
+                .withTos(32 + 128)
+                .withFlow(new Date(13), new Date(26), "10.1.1.12", 443, "192.168.1.100", 43445, 1000)
+                // 192.168.1.101:43442 <-> 10.1.1.12:443 (1210 bytes in [14, 45])
+                .withDirection(Direction.INGRESS)
+                .withHostnames("ingress.only", "la.le.lu")
+                .withFlow(new Date(14), new Date(45), "192.168.1.101", 43442, "10.1.1.12", 443, 110)
+                .withDirection(Direction.EGRESS)
+                .withHostnames("la.le.lu", null)
+                .withFlow(new Date(14), new Date(45), "10.1.1.12", 443, "192.168.1.101", 43442, 1100)
+                // 192.168.1.102:50000 <-> 10.1.1.13:50001 (200 bytes in [50, 52])
+                .withDirection(Direction.INGRESS)
+                .withFlow(new Date(50), new Date(52), "192.168.1.102", 50000, "10.1.1.13", 50001, 200)
+                .withDirection(Direction.EGRESS)
+                .withFlow(new Date(50), new Date(52), "10.1.1.13", 50001, "192.168.1.102", 50000, 100);
+        return flowBuilder.build();
     }
 
     private void loadFlows(final List<FlowDocument> flowDocuments) throws FlowException {

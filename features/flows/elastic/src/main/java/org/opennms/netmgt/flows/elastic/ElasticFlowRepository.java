@@ -367,17 +367,17 @@ public class ElasticFlowRepository implements FlowRepository {
 
                 if (flow.getInputSnmp() != null &&
                     flow.getInputSnmp() != 0 &&
-                    flow.getDirection() == Direction.INGRESS &&
+                    (flow.getDirection() == Direction.INGRESS || flow.getDirection() == Direction.UNKNOWN) &&
                     !ifaceMarkerCache.contains(flow.getInputSnmp())) {
                     ifaceMarkerCache.add(flow.getInputSnmp());
-                    interfacesToUpdate.get(flow.getDirection()).computeIfAbsent(nodeId, k -> Lists.newArrayList()).add(flow.getInputSnmp());
+                    interfacesToUpdate.get(Direction.INGRESS).computeIfAbsent(nodeId, k -> Lists.newArrayList()).add(flow.getInputSnmp());
                 }
                 if (flow.getOutputSnmp() != null &&
                     flow.getOutputSnmp() != 0 &&
-                    flow.getDirection() == Direction.EGRESS &&
+                    (flow.getDirection() == Direction.EGRESS || flow.getDirection() == Direction.UNKNOWN) &&
                     !ifaceMarkerCache.contains(flow.getOutputSnmp())) {
                     ifaceMarkerCache.add(flow.getOutputSnmp());
-                    interfacesToUpdate.get(flow.getDirection()).computeIfAbsent(nodeId, k -> Lists.newArrayList()).add(flow.getOutputSnmp());
+                    interfacesToUpdate.get(Direction.EGRESS).computeIfAbsent(nodeId, k -> Lists.newArrayList()).add(flow.getOutputSnmp());
                 }
             }
 
