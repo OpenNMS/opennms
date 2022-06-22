@@ -723,6 +723,7 @@ workflows:
             branches:
               ignore:
                 - /^merge-foundation.*/
+                - /^.*flaky.*/
       - smoke-test-core:
           requires:
             - tarball-assembly
