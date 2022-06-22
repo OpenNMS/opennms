@@ -196,8 +196,10 @@ jobs:
       - store_artifacts:
           path: /tmp/pipeline-parameters.json
           destination: pipeline-parameters.json
+      - store_artifacts:
+          path: /tmp/.circleci/main/@main.yml
+          destination: main_beforepack.yml
       - continuation/continue:
           circleci_domain: circleci.com
-          original_configuration_path: /tmp/.circleci/main/@main.yml
           configuration_path: /tmp/.circleci/main.yml
           parameters: /tmp/pipeline-parameters.json
