@@ -44,9 +44,10 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.integration.api.v1.timeseries.Aggregation;
+import org.opennms.integration.api.v1.timeseries.DataPoint;
 import org.opennms.integration.api.v1.timeseries.IntrinsicTagNames;
-import org.opennms.integration.api.v1.timeseries.Sample;
 import org.opennms.integration.api.v1.timeseries.StorageException;
+import org.opennms.integration.api.v1.timeseries.TimeSeriesData;
 import org.opennms.integration.api.v1.timeseries.TimeSeriesFetchRequest;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableMetric;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTimeSeriesFetchRequest;
@@ -134,10 +135,10 @@ public class TimeseriesPersisterIT {
                 .aggregation(Aggregation.NONE)
                 .step(Duration.ofMillis(1))
                 .build();
-        List<Sample> samples = this.storage.get().getTimeseries(request);
+        TimeSeriesData data = this.storage.get().getTimeSeriesData(request);
 
-        assertEquals(1, samples.size());
-        Sample row = samples.get(0);
+        assertEquals(1, data.getDataPoints().size());
+        DataPoint row = data.getDataPoints().get(0);
         assertEquals(900, row.getValue(), 0.00001);
     }
 }
