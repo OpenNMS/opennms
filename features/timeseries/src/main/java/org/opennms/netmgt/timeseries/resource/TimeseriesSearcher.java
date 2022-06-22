@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -39,6 +39,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.inject.Named;
 
@@ -66,13 +67,16 @@ public class TimeseriesSearcher {
 
     private final Cache<TagMatcher, Set<Metric>> indexMetricsByTagMatcher;
 
+    private final MetricCacheLoader metricCacheLoader;
+
     @Autowired
     public TimeseriesSearcher(TimeseriesStorageManager timeseriesStorageManager,
                               @Named("timeseriesSearcherCache") final CacheConfig cacheConfig) {
         this.timeseriesStorageManager = Objects.requireNonNull(timeseriesStorageManager, "timeseriesStorageManager must not be null");
+        this.metricCacheLoader = new MetricCacheLoader(timeseriesStorageManager);
         indexMetricsByTagMatcher = new org.opennms.core.cache.CacheBuilder<>()
                 .withConfig(cacheConfig)
-                .withCacheLoader(new MetricCacheLoader(timeseriesStorageManager))
+                .withCacheLoader(metricCacheLoader)
                 .build();
     }
 
@@ -88,6 +92,34 @@ public class TimeseriesSearcher {
         return getMetricFromCacheOrLoad(tagMatcher);
     }
 
+    /**
+     * We opt to make a single call to the TimeseriesStorage implementation
+     * to retrieve all resources for that node in one sweep, cache all the results, and
+     * build cache results for for resources bellow a node
+     * @param metrics
+     */
+    protected void buildCache(Set<Metric> metrics) {
+        for (Metric metric : metrics) {
+            ResourcePath pathOfMetric = ResourcePath.fromString(metric.getFirstTagByKey(IntrinsicTagNames.resourceId).getValue());
+            ResourcePath currentPath = pathOfMetric;
+            while (true) {
+                TagMatcher matcher = ImmutableTagMatcher.builder()
+                        .type(TagMatcher.Type.EQUALS_REGEX)
+                        .key(IntrinsicTagNames.resourceId)
+                        .value(toSearchRegex(currentPath, pathOfMetric.elements().length - currentPath.elements().length))
+                        .build();
+
+                getMetricsFromCacheOrAddEmptySet(matcher).add(metric);
+
+                if (currentPath.hasParent()) {
+                    currentPath = currentPath.getParent();
+                } else {
+                    break;
+                }
+            }
+        }
+    }
+
     public Set<Metric> search(ResourcePath path, int depth) throws StorageException {
         TagMatcher indexMatcher = ImmutableTagMatcher.builder()
                 .type(TagMatcher.Type.EQUALS_REGEX)
@@ -101,35 +133,12 @@ public class TimeseriesSearcher {
             return metrics;
         }
 
-        // if we detect a query for resources bellow a node, we opt to make a single call to the TimeseriesStorage implementation
-        // to retrieve all resources for that node in one sweep, cache all the results, and return the match for the specific
-        // resource requested
         int numPathElementsToNodeLevel = getNumPathElementsToNodeLevel(path);
         if (numPathElementsToNodeLevel > 0) {
             String wildcardPath = toResourceId(ResourcePath.get(Arrays.asList(path.elements()).subList(0, numPathElementsToNodeLevel)));
-            Set<Metric> metricsFromWildcard = getMetricsBelowWildcardPath(wildcardPath);
-
-            for (Metric metric : metricsFromWildcard) {
-                ResourcePath pathOfMetric = ResourcePath.fromString(metric.getFirstTagByKey(IntrinsicTagNames.resourceId).getValue());
-                ResourcePath currentPath = pathOfMetric;
-                while (true) {
-                    TagMatcher matcher = ImmutableTagMatcher.builder()
-                            .type(TagMatcher.Type.EQUALS_REGEX)
-                            .key(IntrinsicTagNames.resourceId)
-                            .value(toSearchRegex(currentPath, pathOfMetric.elements().length - currentPath.elements().length))
-                            .build();
-                    getMetricsFromCacheOrAddEmptySet(matcher).add(metric);
-                    if (currentPath.hasParent()) {
-                        currentPath = currentPath.getParent();
-                    } else {
-                        break;
-                    }
-                }
-            }
-
-            // Either we have found it by now or it doesn't exist => add empty list
+            getMetricsBelowWildcardPath(wildcardPath);
+            // assume result is already calculate in getMetricsBelowWildcardPath, return empty list if nothing find in cache
             metrics = getMetricsFromCacheOrAddEmptySet(indexMatcher);
-
         } else {
             // we are above the wildcard level -> let's just get metrics that are associated with the index matcher
             metrics = getMetricFromCacheOrLoad(indexMatcher);
@@ -139,7 +148,15 @@ public class TimeseriesSearcher {
 
     private Set<Metric> getMetricFromCacheOrLoad(TagMatcher matcher) throws StorageException {
         try {
-            return indexMetricsByTagMatcher.get(matcher);
+            AtomicBoolean loaded = new AtomicBoolean(false);
+            Set<Metric> metrics = indexMetricsByTagMatcher.get(matcher, () -> {
+                loaded.set(true);
+                return this.metricCacheLoader.load(matcher);
+            });
+            if (loaded.get()) {
+                this.buildCache(metrics);
+            }
+            return metrics;
         } catch (Exception e) {
             throw new StorageException(e);
         }

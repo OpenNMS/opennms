@@ -686,6 +686,7 @@ workflows:
                 - /^release-.*/
                 - /.*deb.*/
                 - /.*docker.*/
+                - /.*flaky.*/
                 - /.*smoke.*/
       - minion-rpm-build:
           requires:
@@ -722,6 +723,7 @@ workflows:
             branches:
               ignore:
                 - /^merge-foundation.*/
+                - /^.*flaky.*/
       - smoke-test-core:
           requires:
             - tarball-assembly
@@ -751,6 +753,7 @@ workflows:
                 - /^features\/.+/
                 - /^foundation.*/
                 - /^release-.*/
+                - /.*flaky.*/
                 - /.*smoke.*/
       - smoke-test-minion:
           requires:
@@ -856,15 +859,30 @@ workflows:
             - integration-test
           filters:
             branches:
-              ignore:
-                - /^merge-foundation.*/
+              only:
+                - develop
+                - /^master-.*/
+                - /^dependabot.*/
+                - /^features\/.+/
+                - /^foundation.*/
+                - /^release-.*/
+                - /.*deb.*/
       - sentinel-deb-build:
           requires:
             - build
           filters:
             branches:
-              ignore:
-                - /^merge-foundation.*/
+              only:
+                - develop
+                - /^master-.*/
+                - /^dependabot.*/
+                - /^features\/.+/
+                - /^foundation.*/
+                - /^release-.*/
+                - /.*deb.*/
+                - /.*docker.*/
+                - /.*flaky.*/
+                - /.*smoke.*/
       - sentinel-image-single-arch:
           requires:
             - sentinel-deb-build
