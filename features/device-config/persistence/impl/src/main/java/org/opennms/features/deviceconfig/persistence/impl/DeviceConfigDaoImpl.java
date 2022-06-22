@@ -394,12 +394,8 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
         saveOrUpdate(deviceConfig);
     }
 
-    public void deleteDeviceConfigs(Collection<DeviceConfig> entities){
-        this.deleteAll(entities);
-    }
-
-    @Override
-    public void deleteAll(Collection<DeviceConfig> entities) throws DataAccessException {
+    public void deleteDeviceConfigs(Collection<DeviceConfig> entities) throws DataAccessException{
         super.deleteAll(entities);
     }
+
 }
