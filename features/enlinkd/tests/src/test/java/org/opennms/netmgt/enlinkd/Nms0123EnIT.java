@@ -30,6 +30,8 @@ package org.opennms.netmgt.enlinkd;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.ITPN0111_IP;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.ITPN0111_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.ITPN0111_SNMP_RESOURCE;
@@ -58,7 +60,7 @@ public class Nms0123EnIT extends EnLinkdBuilderITCase {
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host = ITPN0111_IP, port = 161, resource = ITPN0111_SNMP_RESOURCE)
     })
-    public void testItpn0111Lldp() throws Exception {
+    public void testItpn0111Lldp() {
         
         m_nodeDao.save(builder.getItpn0111());
         m_nodeDao.flush();
@@ -70,10 +72,10 @@ public class Nms0123EnIT extends EnLinkdBuilderITCase {
         m_linkdConfig.getConfiguration().setUseIsisDiscovery(false);
 
         assertTrue(m_linkdConfig.useLldpDiscovery());
-        assertTrue(!m_linkdConfig.useCdpDiscovery());
-        assertTrue(!m_linkdConfig.useOspfDiscovery());
-        assertTrue(!m_linkdConfig.useBridgeDiscovery());
-        assertTrue(!m_linkdConfig.useIsisDiscovery());
+        assertFalse(m_linkdConfig.useCdpDiscovery());
+        assertFalse(m_linkdConfig.useOspfDiscovery());
+        assertFalse(m_linkdConfig.useBridgeDiscovery());
+        assertFalse(m_linkdConfig.useIsisDiscovery());
 
         final OnmsNode itpn0111 = m_nodeDao.findByForeignId("linkd", ITPN0111_NAME);
         
@@ -96,7 +98,7 @@ public class Nms0123EnIT extends EnLinkdBuilderITCase {
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host = ITPN0112_IP, port = 161, resource = ITPN0112_SNMP_RESOURCE)
     })
-    public void testItpn0112Lldp() throws Exception {
+    public void testItpn0112Lldp() {
         
         m_nodeDao.save(builder.getItpn0112());
         m_nodeDao.flush();
@@ -108,10 +110,10 @@ public class Nms0123EnIT extends EnLinkdBuilderITCase {
         m_linkdConfig.getConfiguration().setUseIsisDiscovery(false);
 
         assertTrue(m_linkdConfig.useLldpDiscovery());
-        assertTrue(!m_linkdConfig.useCdpDiscovery());
-        assertTrue(!m_linkdConfig.useOspfDiscovery());
-        assertTrue(!m_linkdConfig.useBridgeDiscovery());
-        assertTrue(!m_linkdConfig.useIsisDiscovery());
+        assertFalse(m_linkdConfig.useCdpDiscovery());
+        assertFalse(m_linkdConfig.useOspfDiscovery());
+        assertFalse(m_linkdConfig.useBridgeDiscovery());
+        assertFalse(m_linkdConfig.useIsisDiscovery());
 
         final OnmsNode itpn0112 = m_nodeDao.findByForeignId("linkd", ITPN0112_NAME);
         
