@@ -34,17 +34,23 @@ import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 
-@Command(scope = "opennms-snmp", name = "save-config", description = "Saves current config to file system.")
+@Command(scope = "opennms", name = "snmp-config-encrypt", description = "Encrypts snmp config and saves it on file system")
 @Service
-public class SyncSnmpConfigCommand implements Action {
+public class EncryptSnmpConfigCommand implements Action {
 
     @Reference
     public SnmpAgentConfigFactory snmpAgentConfigFactory;
 
     @Override
     public Object execute() throws Exception {
+        boolean encryptionEnabled = Boolean.getBoolean("org.opennms.snmp.encryption.enabled");
+        if (!encryptionEnabled) {
+            System.out.println("Encryption is not enabled, \n" +
+                    " Set System property `org.opennms.snmp.encryption.enabled` to true to enable encryption on Snmp.");
+            return null;
+        }
         snmpAgentConfigFactory.saveCurrent();
-        System.out.println("Saved current config to file system");
+        System.out.println("Saved encrypted config to snmp-config.xml");
         return null;
     }
 }

@@ -53,6 +53,7 @@ import org.opennms.netmgt.config.agents.AgentResponse;
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
 import org.opennms.netmgt.config.snmp.Definition;
+import org.opennms.netmgt.config.snmp.SnmpConfig;
 import org.opennms.netmgt.config.snmp.SnmpProfile;
 import org.opennms.netmgt.dao.mock.UnimplementedFilterDao;
 import org.opennms.netmgt.dao.mock.UnimplementedMonitoredServiceDao;
@@ -199,6 +200,11 @@ public class AgentConfigurationResourceTest {
 
         @Override
         public List<SnmpProfile> getProfiles() {
+            return null;
+        }
+
+        @Override
+        public SnmpConfig getSnmpConfig() {
             return null;
         }
     }

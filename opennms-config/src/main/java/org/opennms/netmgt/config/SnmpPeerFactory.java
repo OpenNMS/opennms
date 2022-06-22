@@ -420,6 +420,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
      *
      * @return a {@link org.opennms.netmgt.config.snmp.SnmpConfig} object.
      */
+    @Override
     public SnmpConfig getSnmpConfig() {
         getReadLock().lock();
         try {
