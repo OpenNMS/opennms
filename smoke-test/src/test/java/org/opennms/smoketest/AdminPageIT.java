@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -57,6 +57,7 @@ public class AdminPageIT extends OpenNMSSeleniumIT {
         new String[] { "Delete Nodes", "//span[text()='Delete Nodes']" },
         new String[] { "Configure External Requisitions", "//h1[contains(text(), 'Configuration')]" },
         new String[] { "Configure Geocoder Service", "//div/nav/ol/li[text()='Geocoder Configuration']" },
+        new String[] { "Secure Credentials Vault", "//div/nav/ol/li[text()='Secure Credentials Vault']" },
 
         // Flow Management
         new String[] { "Manage Flow Classification", "//div/nav/ol/li[text()='Flow Classification']" },
