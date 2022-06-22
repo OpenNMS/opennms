@@ -69,6 +69,8 @@ public class PollStatus implements Serializable {
     private final Map<String, Number> m_properties = Collections.synchronizedMap(new LinkedHashMap<String, Number>());
 
     private DeviceConfig deviceConfig;
+
+    private String dcbScriptDebugOutput;
     
     /**
      * <P>
@@ -558,5 +560,12 @@ public class PollStatus implements Serializable {
 
     public void setDeviceConfig(DeviceConfig deviceConfig) {
         this.deviceConfig = deviceConfig;
+    }
+
+    @XmlElement(name = "dcbScriptDebugOutput")
+    public String getDcbScriptDebugOutput() {return dcbScriptDebugOutput; }
+
+    public void setDcbScriptDebugOutput(String output) {
+        this.dcbScriptDebugOutput = output;
     }
 }
