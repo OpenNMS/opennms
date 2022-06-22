@@ -286,18 +286,16 @@ public class DefaultDeviceConfigRestServiceIT {
     public void testDeleteDeviceConfigService() throws IOException {
 
         //passing valid ids
-        Response response = deviceConfigRestService.deleteDeviceConfig("50,51");
+        Response response = deviceConfigRestService.deleteDeviceConfigs("50,51");
         Assert.assertEquals(204, response.getStatus());
 
         //passing invalid ids
-        response = deviceConfigRestService.deleteDeviceConfig("id1,id2");
+        response = deviceConfigRestService.deleteDeviceConfigs("id1,id2");
         Assert.assertEquals("Invalid 'id' parameter", response.getEntity());
 
         //passing empty or blank value of ids
-        response = deviceConfigRestService.deleteDeviceConfig(" ");
+        response = deviceConfigRestService.deleteDeviceConfigs(" ");
         Assert.assertEquals(400, response.getStatus());
-
-
     }
 
 }

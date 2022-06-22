@@ -30,11 +30,7 @@ package org.opennms.features.deviceconfig.rest.api;
 
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigStatus;
 import org.opennms.features.deviceconfig.rest.BackupRequestDTO;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Set;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
@@ -46,6 +42,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.List;
+import java.util.Set;
 
 @Path("/device-config")
 public interface DeviceConfigRestService {
@@ -132,8 +130,7 @@ public interface DeviceConfigRestService {
      * @param id comman separated string of ids
      */
     @DELETE
-    @Path("/delete")
-    Response deleteDeviceConfig(@QueryParam("id") @DefaultValue("") String id);
+    Response deleteDeviceConfigs(@QueryParam("id") String id);
 
     /**
      * Download configurations for the given id or comma-separated list of ids.

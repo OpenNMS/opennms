@@ -30,7 +30,16 @@ package org.opennms.features.deviceconfig.persistence.impl;
 
 import com.google.common.base.Strings;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
 import java.util.stream.Collectors;
 import org.hibernate.SQLQuery;
 import org.hibernate.transform.ResultTransformer;
@@ -385,7 +394,7 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
         saveOrUpdate(deviceConfig);
     }
 
-    public void deleteDeviceConfig(Collection<DeviceConfig> entities){
+    public void deleteDeviceConfigs(Collection<DeviceConfig> entities){
         this.deleteAll(entities);
     }
 

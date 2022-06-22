@@ -48,7 +48,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -86,8 +85,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 
 import net.redhogs.cronparser.CronExpressionDescriptor;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
+
 
 
 public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
@@ -244,7 +242,7 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
 
     /** {@inheritDoc} */
     @Override
-    public Response deleteDeviceConfig(String id) {
+    public Response deleteDeviceConfigs(String id) {
         if (Strings.isNullOrEmpty(id)) {
             LOG.debug("deleteDeviceConfig: empty or null id supplied by request");
             return Response.status(Status.BAD_REQUEST).entity("Invalid 'id' parameter").build();
@@ -260,7 +258,7 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
         }
 
         List<Long> ids = Arrays.stream(id.split(","))
-                .filter(s -> !Strings.isNullOrEmpty(s))
+                .filter(s -> !Strings.isNullOrEmpty(s.trim()))
                 .map(Long::parseLong)
                 .collect(Collectors.toList());
 
@@ -276,7 +274,7 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
 
         sessionUtils.withTransaction(() -> {
             try {
-                deviceConfigDao.deleteDeviceConfig(deviceConfigList);
+                deviceConfigDao.deleteDeviceConfigs(deviceConfigList);
             } catch (Exception e) {
                 LOG.error("Exception while deleting device configs, one or more ids not valid {}", e);
             }

@@ -28,10 +28,15 @@
 
 package org.opennms.features.deviceconfig.persistence.api;
 
-import java.util.*;
-
 import org.opennms.netmgt.dao.api.OnmsDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
+
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
 
 public interface DeviceConfigDao extends OnmsDao<DeviceConfig, Long> {
 
@@ -97,5 +102,5 @@ public interface DeviceConfigDao extends OnmsDao<DeviceConfig, Long> {
             String serviceName,
             String configType);
 
-    void deleteDeviceConfig(Collection<DeviceConfig> entities);
-    }
+    void deleteDeviceConfigs(Collection<DeviceConfig> entities);
+}
