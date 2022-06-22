@@ -36,8 +36,8 @@ The OctetString type represents arbitrary binary or textual data presented as a 
 
 == Opaque
 
-OpenNMS supports at the time only float numbers encoded as opaque. The floating point values (like gauges type) reflect
-the current state of a given metric.
+{page-component-title} only supports opaque values that encode floating point numbers.
+The floating point values (like gauges type) reflect the current state of a given metric.
 
 == String
 
