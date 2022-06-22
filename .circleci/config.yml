@@ -198,5 +198,6 @@ jobs:
           destination: pipeline-parameters.json
       - continuation/continue:
           circleci_domain: circleci.com
+          original_configuration_path: /tmp/.circleci/main/@main.yml
           configuration_path: /tmp/.circleci/main.yml
           parameters: /tmp/pipeline-parameters.json
