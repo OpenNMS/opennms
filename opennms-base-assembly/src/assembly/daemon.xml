@@ -67,6 +67,10 @@
       <directory>${project.build.directory}/jmx</directory>
       <outputDirectory>lib</outputDirectory>
     </fileSet>
+    <fileSet>
+      <directory>${project.build.directory}/scvcli</directory>
+      <outputDirectory>bin</outputDirectory>
+    </fileSet>
   </fileSets>
   <dependencySets>
     <dependencySet>

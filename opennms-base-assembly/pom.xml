@@ -105,6 +105,29 @@
               </artifactItems>
             </configuration>
           </execution>
+
+          <execution>
+            <id>copy-scv-cli</id>
+            <phase>process-resources</phase>
+            <goals><goal>copy</goal></goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.opennms.features.scv</groupId>
+                  <artifactId>org.opennms.features.scv.cli</artifactId>
+                  <type>jar</type>
+                  <classifier>jar-with-dependencies</classifier>
+                  <destFileName>org.opennms.features.scv.cli.jar</destFileName>
+                  <outputDirectory>${project.build.directory}/scvcli</outputDirectory>
+                </artifactItem>
+              </artifactItems>
+
+              <stripVersion>true</stripVersion>
+              <stripClassifier>true</stripClassifier>
+
+            </configuration>
+          </execution>
+
         </executions>
       </plugin>
       <plugin>
@@ -753,6 +776,12 @@
     <dependency>
       <groupId>org.opennms.features.reporting</groupId>
       <artifactId>org.opennms.features.reporting.jasper-reports</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.scv</groupId>
+      <artifactId>org.opennms.features.scv.cli</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.features</groupId>

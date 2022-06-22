@@ -1742,7 +1742,7 @@
     <jldapVersion>4.3</jldapVersion>
     <jmhVersion>1.33</jmhVersion>
     <jmxremote.optional.version>1.0_01-ea</jmxremote.optional.version>
-    <jnaVersion>4.4.0</jnaVersion>
+    <jnaVersion>5.11.0</jnaVersion>
     <jodaTimeVersion>2.1</jodaTimeVersion>
     <jqwikVersion>1.6.5</jqwikVersion>
     <jrrdVersion>1.1.0</jrrdVersion>
@@ -1766,7 +1766,7 @@
     <minaVersion>2.1.5</minaVersion>
     <mockitoVersion>3.4.6</mockitoVersion>
     <netty3Version>3.10.6.Final</netty3Version>
-    <netty4Version>4.1.75.Final</netty4Version>
+    <netty4Version>4.1.78.Final</netty4Version>
     <newtsVersion>1.5.5</newtsVersion>
     <paxExamVersion>4.13.1</paxExamVersion>
     <paxLoggingVersion>2.0.14</paxLoggingVersion>
@@ -1778,8 +1778,8 @@
     <powermockVersion>2.0.9</powermockVersion>
     <okhttpVersion>3.10.0</okhttpVersion>
     <okioVersion>1.14.0</okioVersion>
-    <opennmsApiVersion>1.0.0</opennmsApiVersion>
-    <opennmsApiVersionOsgi>1.0.0</opennmsApiVersionOsgi>
+    <opennmsApiVersion>1.0.1-SNAPSHOT</opennmsApiVersion>
+    <opennmsApiVersionOsgi>1.0.1.SNAPSHOT</opennmsApiVersionOsgi>
     <osgiVersion>7.0.0</osgiVersion>
     <osgiAnnotationVersion>7.0.0</osgiAnnotationVersion>
     <osgiCompendiumVersion>7.0.0</osgiCompendiumVersion>
@@ -2403,6 +2403,16 @@
       <dependency>
         <groupId>org.opennms.core.ipc.common</groupId>
         <artifactId>org.opennms.core.ipc.common.kafka-shell</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core.mate</groupId>
+        <artifactId>org.opennms.core.mate.api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core.mate</groupId>
+        <artifactId>org.opennms.core.mate.model</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -4249,11 +4259,6 @@
         <version>${jackson2Version}</version>
       </dependency>
       <dependency>
-        <groupId>com.fasterxml.jackson.module</groupId>
-        <artifactId>jackson-module-scala_2.12</artifactId>
-        <version>${jackson2Version}</version>
-      </dependency>
-      <dependency>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-validator</artifactId>
         <version>${hibernateValidatorVersion}</version>
@@ -4713,11 +4718,6 @@
         <groupId>xml-apis</groupId>
         <artifactId>xml-apis-ext</artifactId>
         <version>${xmlApisExtVersion}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.krupczak</groupId>
-        <artifactId>xmp</artifactId>
-        <version>1.40</version>
       </dependency>
       <dependency>
         <groupId>xmlunit</groupId>

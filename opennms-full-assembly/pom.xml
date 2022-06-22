@@ -888,25 +888,6 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.protocols</groupId>
-      <artifactId>org.opennms.protocols.xmp</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.protocols</groupId>
-      <artifactId>org.opennms.protocols.xmp</artifactId>
-      <version>${project.version}</version>
-      <type>tar.gz</type>
-      <classifier>etc</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.protocols</groupId>
-      <artifactId>org.opennms.protocols.xmp</artifactId>
-      <version>${project.version}</version>
-      <type>tar.gz</type>
-      <classifier>lib</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.protocols</groupId>
       <artifactId>selenium-monitor</artifactId>
       <version>${project.version}</version>
       <exclusions>

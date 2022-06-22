@@ -37,9 +37,9 @@ import java.util.Objects;
 
 import org.apache.commons.jexl2.ExpressionImpl;
 import org.apache.commons.jexl2.MapContext;
-import org.opennms.core.rpc.utils.mate.EmptyScope;
-import org.opennms.core.rpc.utils.mate.Interpolator;
-import org.opennms.core.rpc.utils.mate.Scope;
+import org.opennms.core.mate.api.EmptyScope;
+import org.opennms.core.mate.api.Interpolator;
+import org.opennms.core.mate.api.Scope;
 import org.opennms.core.utils.jexl.OnmsJexlEngine;
 import org.opennms.netmgt.config.threshd.Expression;
 import org.slf4j.Logger;
