@@ -73,4 +73,7 @@ with open(path_to_modified_main,"w") as f:
 ## move the .circleci with updated main.yml file into tmp directory
 shutil.move(os.path.join(working_directory.name,".circleci"),"/tmp/")
 
+for folder in component_folders:
+    shutil.rmtree(os.path.join("/tmp",".circleci","main",folder))
+
 working_directory.cleanup()
