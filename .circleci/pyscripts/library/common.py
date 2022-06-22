@@ -1,5 +1,6 @@
 import re
 import os 
+import shutil
 
 class common:
     def read_file(self,path):
@@ -35,6 +36,8 @@ class common:
                     print("We do not support nested index files")
                 else:
                     tmp_output.append(self.expand_keyword(tmp_match.group().strip(),path_to_main_folder))
+        
+        shutil.move(os.path.join(path_to_main_folder,folder,filepath),os.path.join(path_to_main_folder,folder,filepath+"_DONE"))
 
                 
         return tmp_output
@@ -42,4 +45,8 @@ class common:
     def expand_keyword(self,index,path_to_main_folder):
         folder=index.replace("#","").split(":")[0].strip()
         filepath=index.replace("#","").split(":")[1].strip()+".yml"
-        return self.read_file(os.path.join(path_to_main_folder,folder,filepath))[1:]
+        file_content=self.read_file(os.path.join(path_to_main_folder,folder,filepath))[1:]
+
+        shutil.move(os.path.join(path_to_main_folder,folder,filepath),os.path.join(path_to_main_folder,folder,filepath+"_DONE"))
+
+        return file_content
