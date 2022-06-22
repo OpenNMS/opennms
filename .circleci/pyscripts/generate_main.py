@@ -63,6 +63,8 @@ for e in main_yml_content:
                     final_output+=sub_command
             else:
                 final_output+=command
+    else:
+        final_output+=e
 
 with open(path_to_modified_main,"w") as f:
         f.write(final_output)
