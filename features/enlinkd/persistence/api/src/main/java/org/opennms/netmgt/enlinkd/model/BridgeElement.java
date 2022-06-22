@@ -67,13 +67,13 @@ public class BridgeElement implements Serializable {
 		DOT1D_STP_PROTOCOL_SPECIFICATION_IEEE8021D(3),
 		DOT1D_STP_PROTOCOL_SPECIFICATION_IEEE8021M(4),
 		DOT1D_STP_PROTOCOL_SPECIFICATION_IEEE8021AQ(5);
-		private int m_type;
+		private final int m_type;
 
 		BridgeDot1dStpProtocolSpecification(int type) {
 			m_type = type;
 		}
 		
-	    protected static final Map<Integer, String> s_typeMap = new HashMap<Integer, String>();
+	    protected static final Map<Integer, String> s_typeMap = new HashMap<>();
 
         static {
         	s_typeMap.put(1, "unknown" );
@@ -96,7 +96,7 @@ public class BridgeElement implements Serializable {
         public static BridgeDot1dStpProtocolSpecification get(Integer code) {
             if (code == null )
                 throw new IllegalArgumentException("Cannot create Dot1dStpProtocolSpecification from null code");
-            if (code.intValue() <= 0 ) 
+            if (code <= 0 )
                 throw new IllegalArgumentException("Cannot create Dot1dStpProtocolSpecification from" + code +" code");
             switch (code) {
             case 1: 	return DOT1D_STP_PROTOCOL_SPECIFICATION_UNKNOWN;
@@ -118,13 +118,13 @@ public class BridgeElement implements Serializable {
 		DOT1DBASETYPE_SOURCEROUTE_ONLY(3),
 		DOT1DBASETYPE_SRT(4);
 		
-		private int m_type;
+		private final int m_type;
 
 		BridgeDot1dBaseType(int type) {
 			m_type=type;
 		}
 		
-	    protected static final Map<Integer, String> s_typeMap = new HashMap<Integer, String>();
+	    protected static final Map<Integer, String> s_typeMap = new HashMap<>();
 
         static {
         	s_typeMap.put(1, "unknown" );
@@ -238,7 +238,7 @@ public class BridgeElement implements Serializable {
 	}
 
 
-    @Column(name="vlan", nullable = true)
+    @Column(name="vlan")
 	public Integer getVlan() {
 		return m_vlan;
 	}
@@ -249,7 +249,7 @@ public class BridgeElement implements Serializable {
 	}
 
 
-    @Column(name="vlanname",length=64, nullable=true)
+    @Column(name="vlanname",length=64)
 	public String getVlanname() {
 		return m_vlanname;
 	}
@@ -260,7 +260,7 @@ public class BridgeElement implements Serializable {
 	}
 
 
-    @Column(name="stpProtocolSpecification", nullable = true)
+    @Column(name="stpProtocolSpecification")
     @Type(type="org.opennms.netmgt.enlinkd.model.BridgeDot1dStpProtocolSpecificationUserType")
 	public BridgeDot1dStpProtocolSpecification getStpProtocolSpecification() {
 		return m_stpProtocolSpecification;
@@ -271,7 +271,7 @@ public class BridgeElement implements Serializable {
 	}
 
 
-    @Column(name="stpPriority", nullable = true)
+    @Column(name="stpPriority")
 	public Integer getStpPriority() {
 		return m_stpPriority;
 	}
@@ -282,7 +282,7 @@ public class BridgeElement implements Serializable {
 	}
 
 
-    @Column(name="stpDesignatedRoot",length=16, nullable = true)
+    @Column(name="stpDesignatedRoot",length=16)
 	public String getStpDesignatedRoot() {
 		return m_stpDesignatedRoot;
 	}
@@ -293,7 +293,7 @@ public class BridgeElement implements Serializable {
 	}
 
 
-    @Column(name="stpRootCost", nullable = true)
+    @Column(name="stpRootCost")
 	public Integer getStpRootCost() {
 		return m_stpRootCost;
 	}
@@ -304,7 +304,7 @@ public class BridgeElement implements Serializable {
 	}
 
 
-    @Column(name="stpRootPort", nullable = true)
+    @Column(name="stpRootPort")
 	public Integer getStpRootPort() {
 		return m_stpRootPort;
 	}
