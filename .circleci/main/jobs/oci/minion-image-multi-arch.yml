@@ -1,0 +1,71 @@
+jobs:
+  minion-image-multi-arch:
+    machine:
+      image: ubuntu-2004:202010-01
+    environment:
+      DOCKER_CLI_EXPERIMENTAL: enabled
+    steps:
+      - attach_workspace:
+          at: ~/
+      - dockerhub-login
+      - acr-login
+      - run: *setup_dct_env
+      - run: *setup_dct_key
+      - run:
+          name: Install notary
+          command: |
+            sudo wget https://github.com/theupdateframework/notary/releases/download/v0.6.1/notary-Linux-amd64 -O /usr/local/bin/notary
+            sudo chmod a+x /usr/local/bin/notary
+      - run:
+          name: Create & push multi-arch manifest
+          command: |
+            create_and_push_manifest(){
+              IMAGE_REF="${1}:${MINION_IMAGE_VERSION}"
+              docker manifest create ${IMAGE_REF} \
+                ${IMAGE_REF}-linux-amd64 \
+                ${IMAGE_REF}-linux-arm64 \
+                ${IMAGE_REF}-linux-arm-v7 \
+                --amend
+              SHA_256="$(docker manifest push "${IMAGE_REF}" --purge | cut -d ':' -f 2)"
+              echo "Manifest SHA-256: ${SHA_256}"
+              echo "Image-Ref: ${IMAGE_REF}"
+              MANIFEST_FROM_REG="$(docker manifest inspect "${IMAGE_REF}" -v)";
+              BYTES_SIZE="$(printf "${MANIFEST_FROM_REG}" | jq -r '.[].Descriptor.size' | uniq)";
+              echo "Manifest-inspect BYTES: ${BYTES_SIZE}";
+              echo "Manifest contents:\n";
+              printf "${MANIFEST_FROM_REG}" | jq -r '.[].Descriptor | "Architecture: " + .platform.architecture + .platform.variant + ", digest: " + .digest';
+              export SHA_256_${2}="${SHA_256}"
+              export BYTES_SIZE_${2}="${BYTES_SIZE}"
+            }
+
+            # Docker multi-arch manifest
+            create_and_push_manifest $MINION_DK_REPO DK
+
+            # Azure multi-arch manifest
+            create_and_push_manifest $MINION_AZ_REPO AZ
+
+            # Notary sign on Docker
+            export NOTARY_AUTH="$(printf "${DOCKERHUB_LOGIN}:${DOCKERHUB_PASS}" | base64 -w0)"
+            echo "Sign ${SHA_256_DK} with Docker notary"
+            # when the multi-arch image is signed by the delegate key then docker pull reports "No valid trust data..."
+            # -> the following lines can not be used:
+            #
+            # export NOTARY_DELEGATION_PASSPHRASE="${DCT_DELEGATE_KEY_PASSPHRASE}"
+            # notary -d ~/.docker/trust/ -s https://notary.docker.io addhash "${MINION_DK_REPO}" "${MINION_IMAGE_VERSION}" 946 --sha256 "${SHA_256_DK}" --roles targets/opennms-circle-delegate --publish --verbose
+            #
+            # -> use the targets key of the minion repository to sign the multi-arch image instead
+            export NOTARY_TARGETS_PASSPHRASE="${DCT_REPO_MINION_KEY_PASSPHRASE}"
+            notary -d ~/.docker/trust/ -s https://notary.docker.io addhash "${MINION_DK_REPO}" "${MINION_IMAGE_VERSION}" "${BYTES_SIZE_DK}" --sha256 "${SHA_256_DK}" --publish --verbose
+            echo "Dockerhub Done!"
+            # notary -d ~/.docker/trust/ -s https://notary.docker.io list "${MINION_DK_REPO}"
+
+            # Notary sign on Azure
+            NOTARY_AZ_SERVER="https://opennmspubacr.azurecr.io"
+            export NOTARY_AUTH="$(printf "${AZURE_SP}:${AZURE_SP_PASSWORD}" | base64 -w0)"
+
+            # publishing a new manifests requires targets key
+            export NOTARY_TARGETS_PASSPHRASE="${AZURE_DCT_REPO_MINION_KEY_PASSPHRASE}"
+            echo "Sign ${SHA_256_AZ} with Azure notary"
+            notary -d ~/.docker/trust/ -s "${NOTARY_AZ_SERVER}" addhash "${MINION_AZ_REPO}" "${MINION_IMAGE_VERSION}" "${BYTES_SIZE_AZ}" --sha256 "${SHA_256_AZ}" --publish --verbose
+            echo "ACR Done!"
+            # notary -d ~/.docker/trust/ -s "${NOTARY_AZ_SERVER}" list "${MINION_AZ_REPO}"

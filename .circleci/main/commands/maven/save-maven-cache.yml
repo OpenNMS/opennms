@@ -1,0 +1,8 @@
+commands:
+  save-maven-cache:
+    description: "Maven: Save cache"
+    steps:
+      - save_cache:
+          key: maven-dependencies-v3-{{ checksum "pom-version-cache.key" }}-{{ checksum "maven-dependency-pom-cache.key" }}
+          paths:
+            - ~/.m2

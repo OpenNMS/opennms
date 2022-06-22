@@ -1,0 +1,27 @@
+jobs:
+  # note, this is always run as part of the _next_ branch
+  # for example, if main_branch is `foundation-2016` and next_branch is `foundation-2017`,
+  # it will include the contents of the `foundation-2017` branch, thus we need to actually
+  # look _backwards_ to the previous_branch and main_branch to merge the correct bits.
+  merge-foundation-branch:
+    <<: *docker_container_config
+    steps:
+      - run:
+          name: "Branch Merge Parameters"
+          command: |
+            echo "previous: << pipeline.parameters.previous_branch >>, main: << pipeline.parameters.main_branch >>, next: << pipeline.parameters.next_branch >>"
+      - when:
+          condition: << pipeline.parameters.previous_branch >>
+          steps:
+            - cached-checkout-for-pushing
+            - run:
+                name: Checkout target and merge with merge branch
+                command: |
+                  export GIT_MERGE_AUTOEDIT=no
+                  git fetch --all
+                  git checkout << pipeline.parameters.main_branch >>
+                  git reset --hard origin/<< pipeline.parameters.main_branch >>
+                  git merge origin/merge-foundation/<< pipeline.parameters.previous_branch_label >>-to-<< pipeline.parameters.main_branch_label >>
+            - run:
+                name: Push to github
+                command: git push origin << pipeline.parameters.main_branch >>:<< pipeline.parameters.main_branch >>

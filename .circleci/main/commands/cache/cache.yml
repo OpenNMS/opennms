@@ -1,0 +1,108 @@
+commands:
+  cached-checkout:
+      description: "Checkout with caching"
+      steps:
+        - restore_cache:
+            keys:
+              - source-v3-{{ .Branch }}-{{ .Revision }}
+              - source-v3-{{ .Branch }}-
+              - source-v3-
+        - checkout
+        - run:
+            name: git config merge.renameLimit
+            command: git config merge.renameLimit 999999
+        - run:
+            name: git fetch origin
+            command: git fetch origin
+  save-cached-checkout:
+      description: "Cache a checkout"
+      steps:
+        - save_cache:
+            key: source-v3-{{ .Branch }}-{{ .Revision }}
+            paths:
+              - ".git"
+  cached-checkout-for-pushing:
+      description: "Configure a cached checkout that can push upstream"
+      steps:
+        - add_ssh_keys:
+            fingerprints:
+              - "5e:70:a4:1a:f3:9f:39:ca:2a:d9:b5:9a:6c:2b:c3:66"
+        - cached-checkout
+        - run:
+            name: Create git identity
+            command: |
+              git config user.email "cicd-system@opennms.com"
+              git config user.name "CI/CD System"
+  restore-nodejs-cache:
+      description: "NodeJS: Calculate cache key and restore cache"
+      steps:
+        - run:
+            name: Calculate cache key
+            command: find core/web-assets -name package\*.json -o -name bower.json | grep -v /target/ | sort -u | xargs cat > nodejs-dependency-json-cache.key
+        - restore_cache:
+            keys:
+              - nodejs-dependencies-v3-{{ checksum "pom-version-cache.key" }}-{{ checksum "nodejs-dependency-json-cache.key" }}
+              - nodejs-dependencies-v3-{{ checksum "pom-version-cache.key" }}-
+  save-nodejs-cache:
+    description: "NodeJS: Save cache"
+    steps:
+      - save_cache:
+          key: nodejs-dependencies-v3-{{ checksum "pom-version-cache.key" }}-{{ checksum "nodejs-dependency-json-cache.key" }}
+          paths:
+            - ~/.npm
+  restore-sonar-cache:
+      description: "Sonar: Restore sonar cache"
+      steps:
+        - restore_cache:
+            keys:
+              - sonar-cache-v2-{{ checksum "pom-version-cache.key" }}
+  save-sonar-cache:
+      description: "Sonar: Save sonar cache"
+      steps:
+        - save_cache:
+            key: sonar-cache-v2-{{ checksum "pom-version-cache.key" }}
+            paths:
+              - ~/.sonar
+  cache-workflow-assets:
+    parameters:
+      cache_prefix:
+        description: the cache prefix
+        type: string
+      source_path:
+        description: the source directory to cache
+        type: string
+    steps:
+      - run:
+          name: Stowing Assets in << parameters.source_path >> to cache prefix << parameters.cache_prefix >>
+          command: |
+            TARGET_PATH="/tmp/<< parameters.cache_prefix >>"
+            rsync -ar "$(echo "<< parameters.source_path >>" | sed -e 's,/*$,,')/" "${TARGET_PATH}/"
+            find "${TARGET_PATH}" -type d -print0 | xargs -0 chmod 775
+            find "${TARGET_PATH}" ! -type d -print0 | xargs -0 chmod 664
+      - save_cache:
+          key: << parameters.cache_prefix >>-v3-{{ .Branch }}-{{ .Revision }}-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - "/tmp/<< parameters.cache_prefix >>"
+  restore-workflow-assets:
+    parameters:
+      cache_prefix:
+        description: the cache prefix
+        type: string
+      target_path:
+        description: the target directory to restore into
+        type: string
+        default: ""
+    steps:
+      - restore_cache:
+          keys:
+            - << parameters.cache_prefix >>-v3-{{ .Branch }}-{{ .Revision }}-{{ .Environment.CIRCLE_SHA1 }}
+      - when:
+          condition: << parameters.target_path >>
+          steps:
+            - run:
+                name: Restoring assets to << parameters.target_path >> from cached prefix << parameters.cache_prefix >>
+                command: |
+                  SOURCE_PATH="/tmp/<< parameters.cache_prefix >>"
+                  mkdir -p "<< parameters.target_path >>"
+                  rsync -ar "${SOURCE_PATH}/" "$(echo "<< parameters.target_path >>" | sed -e 's,/*$,,')/"
+

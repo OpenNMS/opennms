@@ -1,0 +1,17 @@
+jobs:
+  horizon-publish-oci:
+    executor: centos-build-executor
+    steps:
+      - cached-checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - dockerhub-login
+      - acr-login
+      - load-oci:
+          key: horizon
+      - run:
+          name: tag horizon Docker image and publish to registry
+          command: |
+            cd opennms-container/horizon
+            ./tag.sh
+            ./publish.sh

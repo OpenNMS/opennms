@@ -1,0 +1,14 @@
+commands:
+  restore-maven-cache:
+      description: "Maven: Calculate cache key and restore cache"
+      steps:
+        - run:
+            name: Calculate cache key from pom files
+            command: find . -type f -name "pom.xml" | grep -v /target/ | sort -u | xargs cat > maven-dependency-pom-cache.key
+        - restore_cache:
+            keys:
+              - maven-dependencies-v3-{{ checksum "pom-version-cache.key" }}-{{ checksum "maven-dependency-pom-cache.key" }}
+              - maven-dependencies-v3-{{ checksum "pom-version-cache.key" }}-
+        - run:
+            name: Remove old artifacts to keep workspace size down
+            command: .circleci/scripts/clean-m2.sh

@@ -1,0 +1,17 @@
+jobs:
+  sentinel-publish-oci:
+    executor: centos-build-executor
+    steps:
+      - cached-checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - dockerhub-login
+      - acr-login
+      - load-oci:
+          key: sentinel
+      - run:
+          name: tag sentinel Docker image and publish to registry
+          command: |
+            cd opennms-container/sentinel
+            ./tag.sh
+            ./publish.sh

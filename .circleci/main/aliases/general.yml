@@ -1,0 +1,42 @@
+aliases:
+  - &setup_dct_env
+    name: Setup DCT environment
+    command: |
+      case "${CIRCLE_BRANCH}" in
+        "master-"*)
+           MINION_IMAGE_VERSION="$(~/project/.circleci/scripts/pom2version.sh ~/project/pom.xml)"
+          ;;
+        "release-"*)
+           MINION_IMAGE_VERSION="release-candidate"
+          ;;
+        "foundation-"20[1-2][0-9])
+           MINION_IMAGE_VERSION="${CIRCLE_BRANCH}"
+          ;;
+        "develop")
+           MINION_IMAGE_VERSION="bleeding"
+          ;;
+        *)
+          MINION_IMAGE_VERSION="${CIRCLE_BRANCH//\//-}"
+          ;;
+      esac
+      echo "export DOCKER_CONTENT_TRUST=1" >> $BASH_ENV
+      echo "export DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE=\"$DCT_DELEGATE_KEY_PASSPHRASE\"" >> $BASH_ENV
+      echo "export MINION_DK_REPO=docker.io/opennms/minion" >> $BASH_ENV
+      echo "export MINION_IMAGE_VERSION=\"$MINION_IMAGE_VERSION\"" >> $BASH_ENV
+      echo "export MINION_AZ_REPO=opennmspubacr.azurecr.io/opennms/minion" >> $BASH_ENV
+      echo "export KEY_FOLDER=~/.docker/trust/private" >> $BASH_ENV
+  - &setup_dct_key
+    name: Setup DCT key
+    command: |
+      mkdir -p $KEY_FOLDER
+      # the key that is used to sign single-arch images
+      echo "$DCT_DELEGATE_KEY" | base64 -d > $KEY_FOLDER/$DCT_DELEGATE_KEY_NAME.key
+      # the key that is used by Notary to sign the multi-arch minion image
+      echo "$DCT_REPO_MINION_KEY" | base64 -d > $KEY_FOLDER/$DCT_REPO_MINION_KEY_NAME.key
+      # Azure - key IDs has to match the original IDs
+      echo "$AZURE_DCT_CI_KEY" | base64 -d > $KEY_FOLDER/$AZURE_DCT_CI_KEY_ID.key
+      echo "$AZURE_DCT_REPO_MINION_KEY" | base64 -d > $KEY_FOLDER/$AZURE_DCT_REPO_MINION_KEY_ID.key
+      chmod 600 $KEY_FOLDER/*
+      # setup_dct_env must have been run first because it provide DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE
+      # that is required for loading the
+      docker trust key load $KEY_FOLDER/$DCT_DELEGATE_KEY_NAME.key

@@ -1,0 +1,13 @@
+workflows:
+  ui:
+    when:
+      and:
+        - equal: [ false, << pipeline.parameters.trigger-coverage >> ]
+        - equal: [ true,  << pipeline.parameters.trigger-ui >> ]
+        - equal: [ false, << pipeline.parameters.minimal >> ]
+    jobs:
+      - build-ui:
+          filters:
+            branches:
+              ignore:
+                - /^from-foundation.*/
