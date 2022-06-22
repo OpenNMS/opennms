@@ -175,10 +175,10 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
             this.uploadTrigger = uploadTrigger;
         }
 
-        private void fail(String msg, Optional<String> stdout, Optional<String> stderr) {
+        private void fail(String msg, Optional<String> stdout, Optional<String> stderr, String debug) {
             if (!future.isDone()) {
                 LOG.error(msg);
-                future.complete(Either.left(new Failure(msg, stdout, stderr)));
+                future.complete(Either.left(new Failure(msg, stdout, stderr, debug)));
             }
             else {
                 LOG.debug("TftpFileReceiverImpl attempting to fail an already completed future, msg \"{}\"- ignoring...", msg);
@@ -194,18 +194,18 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
             try {
                 SshScriptingService.Result result = uploadTrigger.get();
                 if (result.isFailed()) {
-                    fail(scriptingFailureMsg(this.target, result.message), result.stdout, result.stderr);
+                    fail(scriptingFailureMsg(this.target, result.message), result.stdout, result.stderr, result.scriptOutput);
                 }
             } catch (Throwable e) {
                 var msg = scriptingFailureMsg(this.target, e.getMessage());
                 LOG.error(msg, e);
-                fail(msg, Optional.empty(), Optional.empty());
+                fail(msg, Optional.empty(), Optional.empty(), null);
             }
         }
 
         public void onTimeout(CompletableFuture<Either<Failure, Success>> future) {
             this.future = future;
-            fail(timeoutFailureMsg(this.target), Optional.empty(), Optional.empty());
+            fail(timeoutFailureMsg(this.target), Optional.empty(), Optional.empty(), null);
         }
 
         @Override

@@ -62,6 +62,9 @@ public class DcbTriggerCommand implements Action {
     @Option(name = "-p", aliases = "--persist", description = "Whether to persist config or not")
     boolean persist = false;
 
+    @Option(name = "-v", aliases = "--verbose", description = "Watch script run line-by-line", required = false, multiValued = false)
+    boolean verbose = false;
+
     @Override
     public Object execute() throws Exception {
         try {

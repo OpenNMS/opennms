@@ -67,10 +67,16 @@ public interface Retriever {
 
         public final byte[] config;
         public final String filename;
+        public final String scriptOutput;
 
         public Success(byte[] config, String filename) {
+            this(config, filename, "");
+        }
+
+        public Success(byte[] config, String fileName, String scriptOutput) {
             this.config = config;
-            this.filename = filename;
+            this.filename = fileName;
+            this.scriptOutput = scriptOutput;
         }
     }
 
@@ -80,16 +86,24 @@ public interface Retriever {
         public final Optional<String> stdout;
         public final Optional<String> stderr;
 
+        public final String scriptOutput;
+
         public Failure(String message, Optional<String> stdout, Optional<String> stderr) {
+            this(message, stdout, stderr, "");
+        }
+
+        public Failure(String message, Optional<String> stdout, Optional<String> stderr, String scriptOutput) {
             this.message = message;
             this.stdout = stdout;
             this.stderr = stderr;
+            this.scriptOutput = scriptOutput;
         }
 
         public Failure(String message) {
             this.message = message;
             this.stdout = Optional.empty();
             this.stderr = Optional.empty();
+            this.scriptOutput = "";
         }
     }
 
