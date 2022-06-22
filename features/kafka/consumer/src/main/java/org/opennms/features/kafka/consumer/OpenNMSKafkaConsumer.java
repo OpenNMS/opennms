@@ -140,11 +140,11 @@ public class OpenNMSKafkaConsumer {
                     try {
                         EventsProto.Event pbEvent = EventsProto.Event.parseFrom(record.value());
                         pbEvents.add(pbEvent);
-                        forwardEventsToOpenNMS(pbEvents);
                     } catch (InvalidProtocolBufferException e) {
                         LOG.warn("Error while parsing event with key {}", record.key());
                     }
                 }
+                forwardEventsToOpenNMS(pbEvents);
             }
         }
 
