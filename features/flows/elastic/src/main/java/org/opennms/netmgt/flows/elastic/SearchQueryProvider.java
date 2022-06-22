@@ -35,6 +35,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.flows.filter.api.DscpFilter;
@@ -105,14 +106,15 @@ public class SearchQueryProvider implements FilterVisitor<String> {
 
     public String getSeriesFromQuery(Collection<String> from, long step, long start, long end,
                                      String groupByTerm, List<Filter> filters) {
-        return render("series_for_terms.ftl", ImmutableMap.builder()
+        ImmutableMap.Builder<Object, Object> builder = ImmutableMap.builder()
                 .put("filters", getFilterQueries(filters))
                 .put("from", from)
                 .put("groupByTerm", groupByTerm)
                 .put("step", step)
                 .put("start", start)
-                .put("end", end)
-                .build());
+                .put("end", end);
+        getSnmpInterfaceId(filters).ifPresent(iff -> builder.put("snmpInterfaceId", iff));
+        return render("series_for_terms.ftl", builder.build());
     }
 
     public String getSeriesFromQuery(int size, long step, long start, long end,
@@ -129,28 +131,30 @@ public class SearchQueryProvider implements FilterVisitor<String> {
 
     public String getSeriesFromMissingQuery(long step, long start, long end, String groupByTerm,
                                             String keyForMissingTerm, List<Filter> filters) {
-        return render("series_for_missing.ftl", ImmutableMap.builder()
+        ImmutableMap.Builder<Object, Object> builder = ImmutableMap.builder()
                 .put("filters", getFilterQueries(filters))
                 .put("groupByTerm", groupByTerm)
                 .put("keyForMissingTerm", keyForMissingTerm)
                 .put("step", step)
                 .put("start", start)
-                .put("end", end)
-                .build());
+                .put("end", end);
+        getSnmpInterfaceId(filters).ifPresent(iff -> builder.put("snmpInterfaceId", iff));
+        return render("series_for_missing.ftl", builder.build());
     }
 
     public String getSeriesFromOthersQuery(Collection<String> from, long step, long start, long end,
                                            String groupByTerm, boolean excludeMissing,
                                            List<Filter> filters) {
-        return render("series_for_others.ftl", ImmutableMap.builder()
+        ImmutableMap.Builder<Object, Object> builder = ImmutableMap.builder()
                 .put("filters", getFilterQueries(filters))
                 .put("from", from)
                 .put("groupByTerm", groupByTerm)
                 .put("excludeMissing", excludeMissing)
                 .put("step", step)
                 .put("start", start)
-                .put("end", end)
-                .build());
+                .put("end", end);
+        getSnmpInterfaceId(filters).ifPresent(iff -> builder.put("snmpInterfaceId", iff));
+        return render("series_for_others.ftl", builder.build());
     }
 
     public String getApplicationsQuery(String prefix, long limit, List<Filter> filters) {
@@ -195,6 +199,14 @@ public class SearchQueryProvider implements FilterVisitor<String> {
         } catch (IOException|TemplateException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private Optional<Integer> getSnmpInterfaceId(List<Filter> filters) {
+        return filters.stream()
+                .filter(f -> f instanceof SnmpInterfaceIdFilter)
+                .map(f -> (SnmpInterfaceIdFilter)f)
+                .map(SnmpInterfaceIdFilter::getSnmpInterfaceId)
+                .findFirst();
     }
 
     private List<String> getFilterQueries(List<Filter> filters) {

@@ -161,8 +161,6 @@ public class ElasticFlowRepository implements FlowRepository {
 
     private final FlowThresholding thresholding;
 
-    private final FlowSettings flowSettings;
-
     private boolean enableFlowForwarding = false;
 
     private int bulkSize = 1000;
@@ -201,8 +199,7 @@ public class ElasticFlowRepository implements FlowRepository {
                                  SessionUtils sessionUtils, NodeDao nodeDao, SnmpInterfaceDao snmpInterfaceDao,
                                  Identity identity, TracerRegistry tracerRegistry, EnrichedFlowForwarder enrichedFlowForwarder,
                                  IndexSettings indexSettings,
-                                 final FlowThresholding thresholding,
-                                 FlowSettings flowSettings) {
+                                 final FlowThresholding thresholding) {
         this.client = Objects.requireNonNull(jestClient);
         this.indexStrategy = Objects.requireNonNull(indexStrategy);
         this.documentEnricher = Objects.requireNonNull(documentEnricher);
@@ -214,7 +211,6 @@ public class ElasticFlowRepository implements FlowRepository {
         this.enrichedFlowForwarder = enrichedFlowForwarder;
         this.indexSettings = Objects.requireNonNull(indexSettings);
         this.thresholding = Objects.requireNonNull(thresholding);
-        this.flowSettings = Objects.requireNonNull(flowSettings);
 
         this.emptyFlows = metricRegistry.counter("emptyFlows");
         flowsPersistedMeter = metricRegistry.meter("flowsPersisted");
@@ -268,10 +264,9 @@ public class ElasticFlowRepository implements FlowRepository {
     public ElasticFlowRepository(final MetricRegistry metricRegistry, final JestClient jestClient, final IndexStrategy indexStrategy,
                                  final DocumentEnricher documentEnricher, final SessionUtils sessionUtils, final NodeDao nodeDao,
                                  final SnmpInterfaceDao snmpInterfaceDao, final Identity identity, final TracerRegistry tracerRegistry,
-                                 final EnrichedFlowForwarder enrichedFlowForwarder, final IndexSettings indexSettings,
-                                 final FlowThresholding thresholding, final FlowSettings flowSettings,
-                                 final int bulkSize, final int bulkFlushMs) {
-        this(metricRegistry, jestClient, indexStrategy, documentEnricher, sessionUtils, nodeDao, snmpInterfaceDao, identity, tracerRegistry, enrichedFlowForwarder, indexSettings, thresholding, flowSettings);
+                                 final EnrichedFlowForwarder enrichedFlowForwarder, final IndexSettings indexSettings, final FlowThresholding thresholding, final int bulkSize,
+                                 final int bulkFlushMs) {
+        this(metricRegistry, jestClient, indexStrategy, documentEnricher, sessionUtils, nodeDao, snmpInterfaceDao, identity, tracerRegistry, enrichedFlowForwarder, indexSettings, thresholding);
         this.bulkSize = bulkSize;
         this.bulkFlushMs = bulkFlushMs;
     }
@@ -391,17 +386,17 @@ public class ElasticFlowRepository implements FlowRepository {
 
                 if (flow.getInputSnmp() != null &&
                     flow.getInputSnmp() != 0 &&
-                    (!flowSettings.isStrictIngressEgress() || flow.getDirection() == Direction.INGRESS) &&
+                    (flow.getDirection() == Direction.INGRESS || flow.getDirection() == Direction.UNKNOWN) &&
                     !ifaceMarkerCache.contains(flow.getInputSnmp())) {
                     ifaceMarkerCache.add(flow.getInputSnmp());
-                    interfacesToUpdate.get(flow.getDirection()).computeIfAbsent(nodeId, k -> Lists.newArrayList()).add(flow.getInputSnmp());
+                    interfacesToUpdate.get(Direction.INGRESS).computeIfAbsent(nodeId, k -> Lists.newArrayList()).add(flow.getInputSnmp());
                 }
                 if (flow.getOutputSnmp() != null &&
                     flow.getOutputSnmp() != 0 &&
-                    (!flowSettings.isStrictIngressEgress() || flow.getDirection() == Direction.EGRESS) &&
+                    (flow.getDirection() == Direction.EGRESS || flow.getDirection() == Direction.UNKNOWN) &&
                     !ifaceMarkerCache.contains(flow.getOutputSnmp())) {
                     ifaceMarkerCache.add(flow.getOutputSnmp());
-                    interfacesToUpdate.get(flow.getDirection()).computeIfAbsent(nodeId, k -> Lists.newArrayList()).add(flow.getOutputSnmp());
+                    interfacesToUpdate.get(Direction.EGRESS).computeIfAbsent(nodeId, k -> Lists.newArrayList()).add(flow.getOutputSnmp());
                 }
             }
 

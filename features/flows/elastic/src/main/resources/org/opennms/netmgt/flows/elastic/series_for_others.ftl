@@ -10,6 +10,14 @@
       },
       </#if>
       "filter": [
+<#-- If no SNMP interface is set, then constrain the documents to INGRESS/EGRESS -->
+<#if !snmpInterfaceId??>
+  {
+  "terms": {
+  "netflow.direction": ["ingress", "egress"]
+  }
+  },
+</#if>
 <#list filters as filter>${filter}<#sep>,</#list>
       ],
       "must_not": {
@@ -22,7 +30,11 @@
   "aggs": {
     "direction": {
       "terms": {
-        "field": "netflow.direction",
+        <#if snmpInterfaceId??>
+          "script": "if(doc['netflow.direction'].value != 'unknown'){return doc['netflow.direction'].value;} if(doc['netflow.input_snmp'].value == ${snmpInterfaceId?long?c}){ return 'ingress';} if(doc['netflow.output_snmp'].value == ${snmpInterfaceId?long?c}){ return 'egress';}",
+        <#else>
+          "field": "netflow.direction",
+        </#if>
         "size": 2
       },
       "aggs": {

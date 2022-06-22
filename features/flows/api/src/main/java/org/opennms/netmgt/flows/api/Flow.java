@@ -44,6 +44,7 @@ public interface Flow {
     enum Direction {
         INGRESS,
         EGRESS,
+        UNKNOWN
     }
 
     enum SamplingAlgorithm {

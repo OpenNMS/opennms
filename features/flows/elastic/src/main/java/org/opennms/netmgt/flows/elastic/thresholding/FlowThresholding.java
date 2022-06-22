@@ -358,7 +358,7 @@ public class FlowThresholding implements Closeable {
         public void process(final Instant now, final FlowDocument document) {
             if (document.getInputSnmp() != null &&
                 document.getInputSnmp() != 0 &&
-                (!flowSettings.isStrictIngressEgress() || document.getDirection() == Direction.INGRESS)) {
+                (document.getDirection() == Direction.INGRESS || document.getDirection() == Direction.UNKNOWN)) {
                 var applicationKey = new ApplicationKey(document.getInputSnmp(),
                         Direction.INGRESS,
                         document.getApplication());
@@ -366,7 +366,7 @@ public class FlowThresholding implements Closeable {
             }
             if (document.getOutputSnmp() != null &&
                 document.getOutputSnmp() != 0 &&
-                (!flowSettings.isStrictIngressEgress() || document.getDirection() == Direction.EGRESS)) {
+                (document.getDirection() == Direction.EGRESS || document.getDirection() == Direction.UNKNOWN)) {
                 var applicationKey = new ApplicationKey(document.getOutputSnmp(),
                         Direction.EGRESS,
                         document.getApplication());
