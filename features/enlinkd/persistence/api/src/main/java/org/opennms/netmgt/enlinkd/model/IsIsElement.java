@@ -75,12 +75,12 @@ public final class IsIsElement implements Serializable {
         on(1),
         off(2);
         
-        private int m_value;
+        private final int m_value;
 
         IsisAdminState(int value) {
         	m_value=value;
         }
- 	    protected static final Map<Integer, String> s_typeMap = new HashMap<Integer, String>();
+ 	    protected static final Map<Integer, String> s_typeMap = new HashMap<>();
 
         static {
         	s_typeMap.put(1, "on" );
@@ -207,16 +207,14 @@ public final class IsIsElement implements Serializable {
 	 * @return a {@link java.lang.String} object.
 	 */
 	public String toString() {
-            StringBuffer strb = new StringBuffer();
-                strb.append("isiselement: nodeid:["); 
-                strb.append(getNode().getId());
-                strb.append("], AdminState:[");
-                strb.append(IsisAdminState.getTypeString(getIsisSysAdminState().getValue()));
-                strb.append("], SysID:[");
-                strb.append(getIsisSysID());
-                strb.append("]");
 
-            return strb.toString();
+        return "isiselement: nodeid:[" +
+                getNode().getId() +
+                "], AdminState:[" +
+                IsisAdminState.getTypeString(getIsisSysAdminState().getValue()) +
+                "], SysID:[" +
+                getIsisSysID() +
+                "]";
         }
 
 	public void merge(IsIsElement element) {
