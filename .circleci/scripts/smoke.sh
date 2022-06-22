@@ -61,7 +61,7 @@ cd ~/project/smoke-test
 if [ $SUITE = "flaky" ]; then
   echo "#### Executing minimal set smoke/system tests"
   IT_TESTS="MinionHeartBeatIT,MinionHeartbeatOutageIT,MinionHeartbeatOutageKafkaIT"
-  SUITE=core
+  SUITE=minion
 else
   find_tests
   echo "#### Executing complete suite of smoke/system tests"
