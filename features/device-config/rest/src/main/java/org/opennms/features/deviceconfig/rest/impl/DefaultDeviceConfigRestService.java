@@ -257,15 +257,10 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
             return Response.status(Status.BAD_REQUEST).entity("Invalid 'id' parameter").build();
         }
 
-        List<Long> ids = Arrays.stream(id.split(","))
+        List<Long> ids = Arrays.stream(id.split("\\s*,\\s*"))
                 .filter(s -> !Strings.isNullOrEmpty(s.trim()))
                 .map(Long::parseLong)
                 .collect(Collectors.toList());
-
-        if (ids.isEmpty()) {
-            LOG.debug("deleteDeviceConfig: no ids supplied by request");
-            return Response.status(Status.BAD_REQUEST).entity("Invalid 'id' parameter").build();
-        }
 
         final List<DeviceConfig> deviceConfigList = ids.stream()
                 .map(deviceConfigDao::get)
