@@ -39,6 +39,8 @@ public class FlowBuilder {
 
     private NodeDocument exporterNode;
     private Integer snmpInterfaceId;
+    private Integer inputSnmpInterfaceId;
+    private Integer outputSnmpInterfaceId;
     private String application = null;
     private Direction direction = Direction.INGRESS;
     private String srcHostname = null;
@@ -55,6 +57,16 @@ public class FlowBuilder {
 
     public FlowBuilder withSnmpInterfaceId(Integer snmpInterfaceId) {
         this.snmpInterfaceId = snmpInterfaceId;
+        return this;
+    }
+
+    public FlowBuilder withInputSnmpInterfaceId(int inputSnmpInterfaceId) {
+        this.inputSnmpInterfaceId = inputSnmpInterfaceId;
+        return this;
+    }
+
+    public FlowBuilder withOutputSnmpInterfaceId(int outputSnmpInterfaceId) {
+        this.outputSnmpInterfaceId = outputSnmpInterfaceId;
         return this;
     }
 
@@ -112,6 +124,9 @@ public class FlowBuilder {
             flow.setInputSnmp(snmpInterfaceId);
         } else if (direction == Direction.EGRESS) {
             flow.setOutputSnmp(snmpInterfaceId);
+        } else if (direction == Direction.UNKNOWN) {
+            flow.setInputSnmp(inputSnmpInterfaceId);
+            flow.setOutputSnmp(outputSnmpInterfaceId);
         }
         flow.setApplication(application);
         flow.setDirection(direction);
@@ -126,4 +141,5 @@ public class FlowBuilder {
     public List<FlowDocument> build() {
         return flows;
     }
+
 }

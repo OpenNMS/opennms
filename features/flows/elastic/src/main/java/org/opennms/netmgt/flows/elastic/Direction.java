@@ -41,6 +41,10 @@ public enum Direction {
     UNKNOWN;
 
     public static Direction from(Flow.Direction direction) {
+        if (direction == null) {
+            return UNKNOWN;
+        }
+
         switch (direction) {
             case INGRESS:
                 return INGRESS;
