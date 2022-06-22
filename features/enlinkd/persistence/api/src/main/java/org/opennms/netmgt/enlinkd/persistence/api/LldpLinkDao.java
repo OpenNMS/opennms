@@ -50,4 +50,6 @@ public interface LldpLinkDao extends OnmsDao<LldpLink, Integer> {
 
     void deleteByNodeId(Integer nodeId);
 
+    Integer getIfIndex(Integer nodeid, String portId);
+
 }
