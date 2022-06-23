@@ -66,16 +66,6 @@ public final class EnhancedLinkdConfigFactory extends EnhancedLinkdConfigManager
         reload();
     }
 
-    /**
-     * <p>Constructor for LinkdConfigFactory.</p>
-     *
-     * @param stream a {@link java.io.InputStream} object.
-     * @throws java.io.IOException if any.
-     */
-    public EnhancedLinkdConfigFactory(final InputStream stream) throws IOException {
-        reloadXML(stream);
-    }
-
     /** {@inheritDoc} */
     protected synchronized void saveXml(String xml) throws IOException {
         if (xml != null) {
