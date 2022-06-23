@@ -67,7 +67,7 @@
       <FeatherRailItem
         v-for="plugin of plugins"
         :key="plugin.extensionId"
-        :class="{ selected: isSelected(`/plugins/${plugin.extensionId}/${plugin.resourceRootPath}/${plugin.moduleFileName}`) }"
+        :class="{ selected: isSelected(`/plugins/${plugin.extensionId}/${plugin.resourceRootPath}/${plugin.moduleFileName}`, true) }"
         :href="`#/plugins/${plugin.extensionId}/${plugin.resourceRootPath}/${plugin.moduleFileName}`"
         :title="plugin.menuEntry"
         :icon="UpdateUtilities"
@@ -103,7 +103,10 @@ const { adminRole, filesystemEditorRole, dcbRole } = useRole()
 const plugins = computed<Plugin[]>(() => store.state.pluginModule.plugins)
 const navRailOpen = computed(() => store.state.appModule.navRailOpen)
 const onNavRailClick = () => store.dispatch('appModule/setNavRailOpen', !navRailOpen.value)
-const isSelected = (path: string) => path === route.fullPath
+const isSelected = (path: string, useInclude?: boolean): boolean => {
+  if (useInclude) return route.fullPath.includes(path)
+  return path === route.fullPath
+}
 </script>
 
 <style lang="scss">
