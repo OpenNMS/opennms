@@ -702,6 +702,7 @@ workflows:
                 - /^release-.*/
                 - /.*rpm.*/
                 - /.*smoke.*/
+                - /.*flaky.*/
       - sentinel-rpm-build:
           requires:
             - integration-test
@@ -716,6 +717,7 @@ workflows:
                 - /^release-.*/
                 - /.*rpm.*/
                 - /.*smoke.*/
+                - /.*flaky.*/
       - integration-test:
           requires:
             - build
