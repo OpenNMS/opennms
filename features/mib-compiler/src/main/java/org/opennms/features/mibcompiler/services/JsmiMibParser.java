@@ -451,6 +451,8 @@ public class JsmiMibParser implements MibParser, Serializable {
             return "string";
         if (type.equals(SmiPrimitiveType.UNSIGNED_32)) // Unsigned32 will be treated as integer.
             return "integer";
+        if (type.equals(SmiPrimitiveType.IP_ADDRESS)) // IpAddress will be treated as strings.
+            return "string";
         return type.toString().replaceAll("_", "").toLowerCase();
     }
 
