@@ -6,4 +6,5 @@ jobs:
       - run:
           name: Build
           command: |
+            ls
             cd ui && yarn install && yarn test && yarn build
