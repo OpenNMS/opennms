@@ -11,6 +11,7 @@ import API from '@/services'
 import * as Vue from 'vue/dist/vue.esm-bundler'
 import * as Pinia from 'pinia'
 import * as Vuex from 'vuex'
+import * as VueRouter from 'vue-router'
 
 import '@featherds/styles'
 import '@featherds/styles/themes/open-light.css'
@@ -24,7 +25,8 @@ import { externalComponent, getJSPath } from './components/Plugin/utils'
 (window as any).Vue = Vue;
 (window as any).Pinia = Pinia;
 (window as any).Vuex = Vuex;
-(window as any)['VRouter'] = router
+(window as any).VueRouter = VueRouter;
+(window as any)['VRouter'] = router;
 
 // plugin scripts must be loaded before app to use their routes
 const baseUrl = import.meta.env.VITE_BASE_REST_URL
