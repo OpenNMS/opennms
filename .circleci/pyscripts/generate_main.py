@@ -21,8 +21,11 @@ shutil.copytree(".circleci",os.path.join(working_directory.name,".circleci"))
 main_filename="@main.yml"
 path_to_main_folder=os.path.join(working_directory.name,".circleci","main")
 path_to_main_yml=os.path.join(path_to_main_folder,main_filename)
-path_to_modified_main=os.path.join(working_directory.name,".circleci","main",main_filename)
+path_to_modified_main=os.path.join(working_directory.name,".circleci","main",main_filename.replace("@",""))
  
+path_to_executors_yml=os.path.join(path_to_main_folder,"executors.yml")
+path_to_parameters_yml=os.path.join(path_to_main_folder,"parameters.yml")
+
 alias_folder="aliases"
 commands_folder="commands"
 workflow_folder="workflows"
@@ -66,9 +69,23 @@ for e in main_yml_content:
     else:
         final_output+=e
 
+final_output+="\n"
+executors_yml_content=common_library.read_file(path_to_executors_yml)
+for e in executors_yml_content:
+    final_output+=e
+
+final_output+="\n"
+parameters_yml_content=common_library.read_file(path_to_parameters_yml)
+for e in parameters_yml_content:
+    final_output+=e
+
 with open(path_to_modified_main,"w") as f:
         f.write(final_output)
 
+
+os.remove(os.path.join(working_directory.name,".circleci","main","@main.yml"))
+os.remove(os.path.join(working_directory.name,".circleci","main","executors.yml"))
+os.remove(os.path.join(working_directory.name,".circleci","main","parameters.yml"))
 
 ## move the .circleci with updated main.yml file into tmp directory
 shutil.move(os.path.join(working_directory.name,".circleci"),"/tmp/")

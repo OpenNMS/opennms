@@ -183,7 +183,7 @@ jobs:
       - run:
           name: Generate Main YAML file
           command: python3 .circleci/pyscripts/generate_main.py 
-      - pack-config
+      #- pack-config
       - run:
           name: check for empty trigger config
           command: |
