@@ -96,13 +96,13 @@ public class IsisTopologyServiceImpl extends TopologyServiceImpl implements Isis
 
     @Transactional
     protected void saveIsisLink(final int nodeId, final IsIsLink saveMe) {
-        new UpsertTemplate<IsIsLink, IsIsLinkDao>(m_transactionManager,
-                                                  m_isisLinkDao) {
+        new UpsertTemplate<>(m_transactionManager,
+                m_isisLinkDao) {
 
             @Override
             protected IsIsLink query() {
                 return m_dao.get(nodeId, saveMe.getIsisCircIndex(),
-                                 saveMe.getIsisISAdjIndex());
+                        saveMe.getIsisISAdjIndex());
             }
 
             @Override
@@ -180,7 +180,7 @@ public class IsisTopologyServiceImpl extends TopologyServiceImpl implements Isis
         List<IsIsElementTopologyEntity> elements = getTopologyEntityCache().getIsIsElementTopologyEntities();
         List<IsIsLinkTopologyEntity> allLinks = getTopologyEntityCache().getIsIsLinkTopologyEntities();
         // 1.) create lookupMaps
-        Map<Integer, IsIsElementTopologyEntity> elementmap = new HashMap<Integer, IsIsElementTopologyEntity>();
+        Map<Integer, IsIsElementTopologyEntity> elementmap = new HashMap<>();
         for (IsIsElementTopologyEntity element: elements) {
             elementmap.put(element.getNodeId(), element);
         }
@@ -194,7 +194,7 @@ public class IsisTopologyServiceImpl extends TopologyServiceImpl implements Isis
         }
 
         // 2. iterate
-        Set<Integer> parsed = new HashSet<Integer>();
+        Set<Integer> parsed = new HashSet<>();
         List<TopologyConnection<IsIsLinkTopologyEntity, IsIsLinkTopologyEntity>> results = new ArrayList<>();
 
         for (IsIsLinkTopologyEntity sourceLink : allLinks) {
