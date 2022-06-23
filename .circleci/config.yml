@@ -88,8 +88,8 @@ workflows:
             docs/.*           trigger-docs        true
             ui/.*             trigger-ui          true
             .circleci/.*      trigger-build       true
-            .circleci/.*      trigger-docs        true
-            .circleci/.*      trigger-ui          true
+            .circleci/main/jobs/build/build-docs.yml trigger-docs        true
+            .circleci/main/jobs/build/build-ui.yml trigger-ui        true
 
   pre-build-with-flaky:
     when:
@@ -108,8 +108,8 @@ workflows:
             docs/.*           trigger-docs        true
             ui/.*             trigger-ui          true
             .circleci/.*      trigger-build       true
-            .circleci/.*      trigger-docs        true
-            .circleci/.*      trigger-ui          true
+            .circleci/main/jobs/build/build-docs.yml trigger-docs        true
+            .circleci/main/jobs/build/build-ui.yml trigger-ui        true
 
   automation:
     when:
@@ -151,7 +151,7 @@ jobs:
       - image: cimg/python:3.10.1
     steps:
       - cached-checkout
-      - pack-config
+      #- pack-config
       - continuation/continue:
           circleci_domain: circleci.com
           configuration_path: .circleci/main.yml
