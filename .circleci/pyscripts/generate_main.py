@@ -21,7 +21,7 @@ shutil.copytree(".circleci",os.path.join(working_directory.name,".circleci"))
 main_filename="@main.yml"
 path_to_main_folder=os.path.join(working_directory.name,".circleci","main")
 path_to_main_yml=os.path.join(path_to_main_folder,main_filename)
-path_to_modified_main=os.path.join(working_directory.name,".circleci","main",main_filename.replace("@",""))
+path_to_modified_main=os.path.join(working_directory.name,".circleci",main_filename.replace("@",""))
  
 path_to_executors_yml=os.path.join(path_to_main_folder,"executors.yml")
 path_to_parameters_yml=os.path.join(path_to_main_folder,"parameters.yml")
@@ -89,6 +89,7 @@ os.remove(os.path.join(working_directory.name,".circleci","main","parameters.yml
 
 ## move the .circleci with updated main.yml file into tmp directory
 shutil.move(os.path.join(working_directory.name,".circleci"),"/tmp/")
+
 
 for folder in component_folders:
     shutil.rmtree(os.path.join("/tmp",".circleci","main",folder))
