@@ -124,7 +124,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
 
     private TextEncryptor textEncryptor;
 
-    private Boolean encryptionEnabled = Boolean.getBoolean(ENCRYPTION_ENABLED);
+    private final Boolean encryptionEnabled = Boolean.getBoolean(ENCRYPTION_ENABLED);
 
     /**
      * <p>Constructor for SnmpPeerFactory.</p>
@@ -171,6 +171,20 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
 
             s_singleton = new SnmpPeerFactory(resource);
             s_loaded.set(true);
+        }
+        if (s_singleton.encryptionEnabled) {
+            s_singleton.encryptSnmpConfig();
+        }
+    }
+
+    private void encryptSnmpConfig() {
+        initializeTextEncryptor();
+        if (textEncryptor != null) {
+            try {
+                s_singleton.saveCurrent();
+            } catch (IOException e) {
+                LOG.debug("Exception while saving encrypted credentials");
+            }
         }
     }
 
@@ -611,13 +625,9 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         if (!encryptionEnabled) {
             return;
         }
+        initializeTextEncryptor();
         if (textEncryptor == null) {
-            try {
-                textEncryptor = BeanUtils.getBean("daoContext", "textEncryptor", TextEncryptor.class);
-            } catch (Exception e) {
-                LOG.warn("Exception while trying to get textEncryptor", e);
-                return;
-            }
+            return;
         }
         encryptConfig(snmpConfig);
         snmpConfig.getDefinitions().forEach(this::encryptConfig);
@@ -630,14 +640,9 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         if (!encryptionEnabled) {
             return;
         }
-
+        initializeTextEncryptor();
         if (textEncryptor == null) {
-            try {
-                textEncryptor = BeanUtils.getBean("daoContext", "textEncryptor", TextEncryptor.class);
-            } catch (Exception e) {
-                LOG.warn("Exception while trying to get textEncryptor", e);
-                return;
-            }
+            return;
         }
         decryptConfig(snmpConfig);
 
@@ -700,6 +705,16 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
             LOG.error("Exception while trying to encrypt snmp config", e);
         }
 
+    }
+
+    private void initializeTextEncryptor() {
+        if (textEncryptor == null) {
+            try {
+                textEncryptor = BeanUtils.getBean("daoContext", "textEncryptor", TextEncryptor.class);
+            } catch (Exception e) {
+                LOG.warn("Exception while trying to get textEncryptor", e);
+            }
+        }
     }
 
     @VisibleForTesting

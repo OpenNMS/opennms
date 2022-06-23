@@ -1,0 +1,43 @@
+== Encrypting SNMP Credentials
+
+You can save SNMP credentials like readCommunity/WriteCommunity, authPassPhrase/privPassPhrase on the file system in encrypted format.
+
+=== Encryption methodology
+
+A random password is generated (once) for `snmp-config` alias and it is stored in java keystore file at `$OPENNMS_HOME/etc/scv.jce`.
+This password is used to encrypt/decrypt SNMP credentials.
+
+=== Enabling Encrption on SNMP Config
+
+Enable encryption on SNMP config by setting the following system property:
+[source, sh]
+----
+echo 'org.opennms.snmp.encryption.enabled=true' >> "$OPENNMS_HOME/etc/opennms.properties.d/snmp-encryption.properties"
+----
+
+SNMP config that is modified through the user interface will be encrypted directly on the file system.
+
+=== Karaf command to encrypt credentials
+
+SNMP credentials can be encrypted with following karaf command.
+This is handy whenever you want to update config directly on the file and want to encrypt them immediately.
+
+[source, console]
+----
+$ ssh -p 8101 admin@localhost
+...
+admin@opennms()> snmp-config-encrypt
+----
+
+=== Karaf command to decrypt credentials
+
+SNMP credentials can be decrypted to a file with following karaf command.
+By default, it will copy decrypted config to `snmp-config-decrypted.xml`.
+
+
+[source, console]
+----
+$ ssh -p 8101 admin@localhost
+...
+admin@opennms()> snmp-config-decrypt -f "snmp-config-decrypted.xml"
+----
