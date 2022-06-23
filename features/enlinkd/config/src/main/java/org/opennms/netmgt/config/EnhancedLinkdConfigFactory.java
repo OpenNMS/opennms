@@ -99,13 +99,11 @@ public final class EnhancedLinkdConfigFactory extends EnhancedLinkdConfigManager
         getWriteLock().lock();
         try {
             final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.ENLINKD_CONFIG_FILE_NAME);
-           LOG.debug("init: config file path: {}", cfgFile.getPath());
-            InputStream stream = null;
-            try {
-                stream = new FileInputStream(cfgFile);
-                reloadXML(stream);
-            } finally {
-                if (stream != null) {
+            LOG.debug("init: config file path: {}", cfgFile.getPath());
+            try (final InputStream stream = new FileInputStream(cfgFile)){
+                try(final Reader reader = new InputStreamReader(stream)) {
+                    m_config = JaxbUtils.unmarshal(EnlinkdConfiguration.class, reader);
+                } finally {
                     IOUtils.close(stream);
                 }
             }
@@ -115,20 +113,6 @@ public final class EnhancedLinkdConfigFactory extends EnhancedLinkdConfigManager
         }
     }
         
-    /**
-     * <p>reloadXML</p>
-     *
-     * @param stream a {@link java.io.InputStream} object.
-     * @throws java.io.IOException if any.
-     */
-    protected void reloadXML(final InputStream stream) throws IOException {
-        getWriteLock().lock();
-        try(final Reader reader = new InputStreamReader(stream)) {
-            m_config = JaxbUtils.unmarshal(EnlinkdConfiguration.class, reader);
-        } finally {
-            getWriteLock().unlock();
-        }
-    }
 
     /**
      * Saves the current in-memory configuration to disk
