@@ -36,12 +36,12 @@ import java.util.Set;
 public class TopologyShared implements Topology {
     
     public static TopologyShared   of(SharedSegment shs, List<MacPort> macPortsOnSegment) throws BridgeTopologyException {
-        TopologyShared tps = new TopologyShared(new ArrayList<BridgePort>(shs.getBridgePortsOnSegment()), 
+        TopologyShared tps = new TopologyShared(new ArrayList<>(shs.getBridgePortsOnSegment()),
                                                 macPortsOnSegment, shs.getDesignatedPort());
         
 
-        final Set<String>  noPortMacs = new HashSet<String>(shs.getMacsOnSegment());
-        macPortsOnSegment.stream().forEach(mp -> noPortMacs.removeAll(mp.getMacPortMap().keySet()));
+        final Set<String>  noPortMacs = new HashSet<>(shs.getMacsOnSegment());
+        macPortsOnSegment.forEach(mp -> noPortMacs.removeAll(mp.getMacPortMap().keySet()));
         
         if (noPortMacs.size() >0) {
             tps.setCloud(MacCloud.create(noPortMacs));
@@ -56,9 +56,9 @@ public class TopologyShared implements Topology {
     }
 
     private MacCloud cloud;
-    private BridgePort designated;
-    private List<BridgePort> left;
-    private List<MacPort> right;
+    private final BridgePort designated;
+    private final List<BridgePort> left;
+    private final List<MacPort> right;
 
     public List<BridgePort> getBridgePorts() {
         return left;
@@ -82,7 +82,7 @@ public class TopologyShared implements Topology {
 
     @Override
     public String printTopology() {
-        final StringBuffer strbfr = new StringBuffer();
+        final StringBuilder strbfr = new StringBuilder();
         strbfr.append("shared -> designated bridge:[");
         strbfr.append(designated.printTopology());
         strbfr.append("]\n");

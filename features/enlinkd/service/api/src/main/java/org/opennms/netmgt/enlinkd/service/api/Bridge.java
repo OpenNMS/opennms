@@ -39,7 +39,7 @@ import org.opennms.netmgt.enlinkd.model.BridgeElement;
 public class Bridge implements Topology {
 
     public static Set<String> getIdentifier(List<BridgeElement> elems) {
-        Set<String> identifiers = new HashSet<String>();
+        Set<String> identifiers = new HashSet<>();
         for (BridgeElement element: elems) {
             if (InetAddressUtils.isValidBridgeAddress(element.getBaseBridgeAddress())) {
                 identifiers.add(element.getBaseBridgeAddress());
@@ -71,11 +71,10 @@ public class Bridge implements Topology {
         return bridge;
     }
 
-    public static Bridge createRootBridge(BroadcastDomain domain, Integer nodeid) {
+    public static void createRootBridge(BroadcastDomain domain, Integer nodeid) {
         Bridge bridge = new Bridge(nodeid);
         bridge.setRootBridge();
         domain.getBridges().add(bridge);
-        return bridge;
     }
     
     public static Bridge create(BroadcastDomain domain, Integer nodeid, Integer rootport) {
@@ -88,7 +87,7 @@ public class Bridge implements Topology {
     private final Integer m_nodeId;
     private Integer m_rootPort;
     private boolean m_isRootBridge;
-    private Set<String> m_identifiers = new HashSet<String>();
+    private Set<String> m_identifiers = new HashSet<>();
     private String m_designated;
 
     private Bridge(Integer id) {
@@ -139,7 +138,7 @@ public class Bridge implements Topology {
 
     @Override
     public String printTopology() {
-    	StringBuffer strbfr = new StringBuffer();
+    	StringBuilder strbfr = new StringBuilder();
         strbfr.append("bridge: nodeid[");
         strbfr.append(m_nodeId);
         strbfr.append("],");

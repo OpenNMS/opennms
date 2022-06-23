@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -53,8 +54,8 @@ public class BridgeForwardingTable implements Topology {
                         + bridgeFt.getNodeId() + "]", exclude);
             }
         }
-        Set<BridgePortWithMacs> throughSet= new HashSet<BridgePortWithMacs>();
-        bridgeFt.getPorttomac().stream().filter(ptm ->!excluded.contains(ptm.getPort())).forEach(ptm -> throughSet.add(ptm));
+        Set<BridgePortWithMacs> throughSet= new HashSet<>();
+        bridgeFt.getPorttomac().stream().filter(ptm ->!excluded.contains(ptm.getPort())).forEach(throughSet::add);
         return throughSet;
     }
 
@@ -102,12 +103,12 @@ public class BridgeForwardingTable implements Topology {
                 
             BridgePortWithMacs bpwm = bridgeFt.getBridgePortWithMacs(bridgeport);
             if (bpwm == null ) {
-                bridgeFt.getPorttomac().add(BridgePortWithMacs.create(bridgeport,new HashSet<String>()));
+                bridgeFt.getPorttomac().add(BridgePortWithMacs.create(bridgeport, new HashSet<>()));
             }
             bridgeFt.getBridgePortWithMacs(bridgeport).getMacs().add(link.getMacAddress());
 
             if (bridgeFt.getMactoport().containsKey(link.getMacAddress())) {
-                bridgeFt.getDuplicated().put(link.getMacAddress(), new HashSet<BridgePort>());
+                bridgeFt.getDuplicated().put(link.getMacAddress(), new HashSet<>());
                 bridgeFt.getDuplicated().get(link.getMacAddress()).add(bridgeport);
 
                 if (LOG.isDebugEnabled()) {
@@ -150,9 +151,9 @@ public class BridgeForwardingTable implements Topology {
     
     private final Bridge m_bridge;
     private final Set<BridgeForwardingTableEntry> m_entries;
-    private Map<String, BridgePort> m_mactoport = new HashMap<String, BridgePort>();
-    private Map<String, Set<BridgePort>> m_duplicated = new HashMap<String, Set<BridgePort>>();
-    private Set<BridgePortWithMacs> m_porttomac = new HashSet<BridgePortWithMacs>();
+    private Map<String, BridgePort> m_mactoport = new HashMap<>();
+    private Map<String, Set<BridgePort>> m_duplicated = new HashMap<>();
+    private final Set<BridgePortWithMacs> m_porttomac = new HashSet<>();
 
     private BridgeForwardingTable(Bridge bridge, Set<BridgeForwardingTableEntry> entries) {
         m_bridge = bridge;
@@ -227,7 +228,7 @@ public class BridgeForwardingTable implements Topology {
 
     public BridgePort getPort(Integer bp) {
         BridgePortWithMacs bpwm = 
-            m_porttomac.stream().filter(bpm -> bpm.getPort().getBridgePort() == bp).iterator().next();
+            m_porttomac.stream().filter(bpm -> Objects.equals(bpm.getPort().getBridgePort(), bp)).iterator().next();
         if (bpwm == null)
             return null;    
         return bpwm.getPort();
@@ -241,10 +242,9 @@ public class BridgeForwardingTable implements Topology {
         final List<Topology> topologies = new ArrayList<>();
         topologies.add(m_bridge);
         topologies.addAll(m_entries);
-        final String topology = topologies.stream()
+        return topologies.stream()
                 .map(Topology::printTopology)
                 .collect(Collectors.joining("\n"));
-        return topology;
     }
 
 }

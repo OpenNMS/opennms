@@ -76,12 +76,10 @@ public class BridgePortWithMacs implements Topology {
 
     @Override
     public String printTopology() {
-        StringBuffer strbfr = new StringBuffer();
-        strbfr.append(m_port.printTopology());
-        strbfr.append(" macs:");
-        strbfr.append(m_macs);
-        
-        return strbfr.toString();
+
+        return m_port.printTopology() +
+                " macs:" +
+                m_macs;
     }
 
 

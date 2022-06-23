@@ -30,7 +30,6 @@ package org.opennms.netmgt.enlinkd.service.api;
 
 import java.util.List;
 
-import org.opennms.netmgt.enlinkd.model.LldpElementTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.UserDefinedLink;
 
 public interface UserDefinedLinkTopologyService extends TopologyService  {
