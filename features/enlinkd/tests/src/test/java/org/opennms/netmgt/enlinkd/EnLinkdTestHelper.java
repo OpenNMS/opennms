@@ -3528,19 +3528,19 @@ public abstract class EnLinkdTestHelper {
                 assertEquals(0, SharedSegment.getBridgeBridgeLinks(shared).size());
                 for (BridgeMacLink link: SharedSegment.getBridgeMacLinks(shared)) {
                     assertEquals(link.getBridgePort(),shared.getDesignatedPort().getBridgePort());
-                if (Objects.equals(link.getBridgePort(), portA1)) {
-                    assertEquals(mac1, link.getMacAddress());
-                } else if (Objects.equals(link.getBridgePort(), portA2)) {
-                    assertEquals(mac2, link.getMacAddress());
-                } else if (Objects.equals(link.getBridgePort(), portA3)) {
-                    assertEquals(mac3, link.getMacAddress());
-                } else if (Objects.equals(link.getBridgePort(), portA4)) {
-                    assertEquals(mac4, link.getMacAddress());
-                } else if (Objects.equals(link.getBridgePort(), portA5)) {
-                    assertEquals(mac5, link.getMacAddress());
-                } else {
-                    assertEquals(-1, 1);
-                }
+                    if (portA1.equals(link.getBridgePort())) {
+                        assertEquals(mac1, link.getMacAddress());
+                    } else if (portA2.equals(link.getBridgePort())) {
+                        assertEquals(mac2, link.getMacAddress());
+                    } else if (portA3.equals(link.getBridgePort())) {
+                        assertEquals(mac3, link.getMacAddress());
+                    } else if (portA4.equals(link.getBridgePort())) {
+                        assertEquals(mac4, link.getMacAddress());
+                    } else if (portA5.equals(link.getBridgePort())) {
+                        assertEquals(mac5, link.getMacAddress());
+                    } else {
+                        assertEquals(-1, 1);
+                    }
                 }
             }
 
@@ -3682,26 +3682,26 @@ public abstract class EnLinkdTestHelper {
                 assertEquals(0, SharedSegment.getBridgeBridgeLinks(shared).size());
                 for (BridgeMacLink link: SharedSegment.getBridgeMacLinks(shared)) {
                     assertEquals(link.getBridgePort(),shared.getDesignatedPort().getBridgePort());
-                    if (Objects.equals(link.getBridgePort(), portA1)) {
+                    if (portA1.equals(link.getBridgePort())) {
                         assertEquals(1, shared.getMacsOnSegment().size());
                         assertEquals(mac1, link.getMacAddress());
-                    } else if (Objects.equals(link.getBridgePort(), portA2)) {
+                    } else if (portA2.equals(link.getBridgePort())) {
                         assertEquals(1, shared.getMacsOnSegment().size());
                         assertEquals(mac2, link.getMacAddress());
-                    } else if (Objects.equals(link.getBridgePort(), portA3)) {
+                    } else if (portA3.equals(link.getBridgePort())) {
                         assertEquals(1, shared.getMacsOnSegment().size());
                         assertEquals(mac3, link.getMacAddress());
-                    } else if (Objects.equals(link.getBridgePort(), portA4)) {
+                    } else if (portA4.equals(link.getBridgePort())) {
                         assertEquals(1, shared.getMacsOnSegment().size());
                         assertEquals(mac4, link.getMacAddress());
-                    } else if (Objects.equals(link.getBridgePort(), portA23)) {
+                    } else if (portA23.equals(link.getBridgePort())) {
                         final Set<String> macs = shared.getMacsOnSegment();
                         assertEquals(4, macs.size());
                         assertTrue(macs.contains(mac231));
                         assertTrue(macs.contains(mac232));
                         assertTrue(macs.contains(mac233));
                         assertTrue(macs.contains(mac234));
-                    } else if (Objects.equals(link.getBridgePort(), portA24)) {
+                    } else if (portA24.equals(link.getBridgePort())) {
                         final Set<String> macs = shared.getMacsOnSegment();
                         assertEquals(5, macs.size());
                         assertTrue(macs.contains(mac241));
@@ -3709,7 +3709,7 @@ public abstract class EnLinkdTestHelper {
                         assertTrue(macs.contains(mac243));
                         assertTrue(macs.contains(mac244));
                         assertTrue(macs.contains(mac245));
-                    } else if (Objects.equals(link.getBridgePort(), portA25)) {
+                    } else if (portA25.equals(link.getBridgePort())) {
                         final Set<String> macs = shared.getMacsOnSegment();
                         assertEquals(3, macs.size());
                         assertTrue(macs.contains(mac251));
