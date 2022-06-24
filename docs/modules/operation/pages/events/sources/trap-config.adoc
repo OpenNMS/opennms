@@ -1,0 +1,5 @@
+
+[[trap-config]]
+= SNMP Trap Configuration How To
+In addition to internally generated events, OpenNMS can also receive SNMP traps via the trapd process.
+OpenNMS uses the `mask` tag to match SNMP traps in `eventconf.xml`.
