@@ -1,0 +1,13 @@
+
+[[trap-config]]
+= SNMP Trap Configuration How To
+In addition to internally generated events, OpenNMS can also receive SNMP traps via the trapd process.
+OpenNMS uses the `mask` tag to match SNMP traps in `eventconf.xml`.
+
+== Create event definitions from trap definitions in SNMP MIBs
+
+You can parse SNMP MIB definitions and create OpenNMS event definitions from any `TRAP-TYPE` and/or `NOTIFICATION-TYPE` macros they contain through the UI.
+
+Choose the gears icon and SNMP MIB Compiler.
+
+Two command-line utilities, ''mib2events'' and ''mib2opennms'', are also available to do the heavy lifting of making event definitions from MIB definitions. The GUI editor does at least as good a job as ''mib2events''. Only masochists should be using ''mib2opennms'' nowadays; it tends to produce more bus errors than event definitions.
