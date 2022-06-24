@@ -28,9 +28,9 @@ TIP: The `colordiff` command, available in Debian and Red Hat distributions, col
 
 Note the following in the config-diff.sh output:
 
- * Files you added
- * Files you modified
- * Files you deleted
+* Files you added
+* Files you modified
+* Files you deleted
 
-Back up the changed and added files so that you can merge them later as part of the upgrade process.
-Note the deleted files so that you can remove them after the upgrade.
+Back up any files that were changed and added so that you can merge them later as part of the upgrade process.
+Note any files that you have deleted so that you can remove them after the upgrade.

@@ -83,7 +83,6 @@
 ** xref:alarms/history.adoc[]
 ** xref:alarms/ifttt-integration.adoc[]
 
-
 * xref:notifications/introduction.adoc[]
 ** xref:notifications/getting-started.adoc[]
 ** xref:notifications/concepts.adoc[]
@@ -132,7 +131,6 @@
 *** xref:database-reports/templates/total-bytes.adoc[Total Bytes Transferred by Interface]
 *** xref:database-reports/templates/traffic-rates.adoc[Avg/Peak Traffic Rates for Nodes by Interface]
 
-
 * xref:ticketing/introduction.adoc[]
 
 * xref:workarounds/snmp.adoc[]
@@ -168,7 +166,6 @@
 * xref:alarm-correlation/situation-feedback.adoc[]
 * xref:meta-data.adoc[]
 * xref:snmp-poller/concepts.adoc[]
-
 
 * {page-component-title} Administration
 ** xref:admin/webui/introduction.adoc[]
@@ -211,6 +208,4 @@
 ** xref:admin/restart.adoc[]
 ** xref:admin/daemon-config-files.adoc[]
 ** xref:admin/logging/introduction.adoc[]
-** xref:admin/backup/introduction.adoc[]
-** xref:admin/restore/introduction.adoc[]
 ** xref:admin/housekeeping/introduction.adoc[]
