@@ -35,6 +35,8 @@ import org.opennms.netmgt.enlinkd.persistence.api.LldpLinkDao;
 import org.opennms.netmgt.dao.hibernate.AbstractDaoHibernate;
 import org.opennms.netmgt.enlinkd.model.LldpLink;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.springframework.util.Assert;
 
 /**
@@ -75,7 +77,7 @@ public class LldpLinkDaoHibernate extends AbstractDaoHibernate<LldpLink, Integer
     @Override
     public void deleteByNodeIdOlderThen(Integer nodeId, Date now) {
         getHibernateTemplate().bulkUpdate("delete from LldpLink lldpLink where lldpLink.node.id = ? and lldpLink.lldpLinkLastPollTime < ?",
-                                          new Object[] {nodeId,now});
+                nodeId, now);
     }
 
    @Override
@@ -89,7 +91,7 @@ public class LldpLinkDaoHibernate extends AbstractDaoHibernate<LldpLink, Integer
         final StringBuilder sql = new StringBuilder();
         sql.append("FROM LldpLink lldplink ");
         if(linkIds.size() == 1){
-            sql.append("where lldplink.id = " + linkIds.get(0) + " ");
+            sql.append("WHERE lldplink.id = ").append(linkIds.get(0)).append(" ");
         } else{
             sql.append("where lldplink.id in (");
             int counter = 0;
@@ -105,6 +107,34 @@ public class LldpLinkDaoHibernate extends AbstractDaoHibernate<LldpLink, Integer
 
         return find(sql.toString());
     }
-    
-    
+
+    @Override
+    public Integer getIfIndex(Integer nodeid, String portId) {
+        Assert.notNull(nodeid, "nodeId may not be null");
+        Assert.notNull(portId, "portId may not be null");
+
+        List<?> ifaces=
+                getHibernateTemplate().find("SELECT snmpIf FROM OnmsSnmpInterface AS snmpIf WHERE snmpIf.node.id = ? AND (LOWER(snmpIf.ifDescr) = LOWER(?) OR LOWER(snmpIf.ifName) = LOWER(?) OR snmpIf.physAddr = ?)",
+                       nodeid,
+                        portId,
+                       portId,
+                        portId
+                );
+        if (ifaces.size() == 1) {
+            return ((OnmsSnmpInterface) ifaces.iterator().next()).getIfIndex();
+        }
+        ifaces = getHibernateTemplate().find("SELECT ipIf FROM OnmsIpInterface AS ipIf WHERE ipIf.node.id = ? AND ipIf.ipAddress = ?", nodeid, portId);
+        if (ifaces.size() == 1) {
+            OnmsIpInterface ipif = (OnmsIpInterface) ifaces.iterator().next();
+            if (ipif.getSnmpInterface() != null) {
+                ifaces = getHibernateTemplate().find("SELECT snmpIf FROM OnmsSnmpInterface AS snmpIf WHERE snmpIf.id = ?)",
+                        ipif.getSnmpInterface().getId());
+            }
+            if (ifaces.size() == 1) {
+                return ((OnmsSnmpInterface) ifaces.iterator().next()).getIfIndex();
+            }
+        }
+        return -1;
+    }
+
 }

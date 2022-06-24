@@ -53,9 +53,11 @@ import javax.inject.Named;
 
 import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.integration.api.v1.timeseries.Aggregation;
+import org.opennms.integration.api.v1.timeseries.DataPoint;
 import org.opennms.integration.api.v1.timeseries.IntrinsicTagNames;
 import org.opennms.integration.api.v1.timeseries.Sample;
 import org.opennms.integration.api.v1.timeseries.StorageException;
+import org.opennms.integration.api.v1.timeseries.TimeSeriesData;
 import org.opennms.integration.api.v1.timeseries.TimeSeriesFetchRequest;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableMetric;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTimeSeriesFetchRequest;
@@ -180,7 +182,7 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
 
             // The Newts API only allows us to perform a query using a single (Newts) Resource ID,
             // so we perform multiple queries in parallel, and aggregate the results.
-            Map<String, Future<Map<Source, List<Sample>>>> measurementsByNewtsResourceId = Maps.newHashMapWithExpectedSize(sourcesByNewtsResourceId.size());
+            Map<String, Future<Map<Source, List<DataPoint>>>> measurementsByNewtsResourceId = Maps.newHashMapWithExpectedSize(sourcesByNewtsResourceId.size());
             for (Entry<String, List<Source>> entry : sourcesByNewtsResourceId.entrySet()) {
                 measurementsByNewtsResourceId.put(entry.getKey(),
                         threadPool.submit(() -> getMeasurementsForResourceCallable(entry.getKey(), entry.getValue(), startTs, endTs, lag)));
@@ -194,18 +196,18 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
                 timestamps = toSampleList(measurementsByNewtsResourceId.entrySet().iterator().next())
                         .values()
                         .iterator().next().stream()
-                        .map(Sample::getTime)
+                        .map(DataPoint::getTime)
                         .mapToLong(Instant::toEpochMilli).toArray();
             }
 
             // Create columns
             Map<String, double[]> columns = Maps.newHashMap();
-            for (Entry<String, Future<Map<Source, List<Sample>>>> entry : measurementsByNewtsResourceId.entrySet()) {
-                Map<Source, List<Sample>> sampleList;
+            for (Entry<String, Future<Map<Source, List<DataPoint>>>> entry : measurementsByNewtsResourceId.entrySet()) {
+                Map<Source, List<DataPoint>> sampleList;
                 sampleList = toSampleList(entry);
 
-                for (Entry<Source, List<Sample>> column : sampleList.entrySet()) {
-                    double[] values = column.getValue().stream().mapToDouble(Sample::getValue).toArray();
+                for (Entry<Source, List<DataPoint>> column : sampleList.entrySet()) {
+                    double[] values = column.getValue().stream().mapToDouble(DataPoint::getValue).toArray();
                     columns.put(column.getKey().getLabel(), values);
                 }
             }
@@ -220,7 +222,7 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
         }
     }
 
-    private Map<Source, List<Sample>> toSampleList(Entry<String, Future<Map<Source, List<Sample>>>> entry) {
+    private Map<Source, List<DataPoint>> toSampleList(Entry<String, Future<Map<Source, List<DataPoint>>>> entry) {
         try {
             return entry.getValue().get();
         } catch (InterruptedException | ExecutionException e) {
@@ -259,9 +261,9 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
         return sourcesByResource;
     }
 
-    private Map<Source, List<Sample>> getMeasurementsForResourceCallable(final String resourceId, final List<Source> listOfSources, final Instant start, final Instant end, final LateAggregationParams lag) throws StorageException {
+    private Map<Source, List<DataPoint>> getMeasurementsForResourceCallable(final String resourceId, final List<Source> listOfSources, final Instant start, final Instant end, final LateAggregationParams lag) throws StorageException {
 
-        Map<Source, List<Sample>> allSamples = new HashMap<>(listOfSources.size());
+        Map<Source, List<DataPoint>> allDataPoints = new HashMap<>(listOfSources.size());
 
         // get results for all sources
         for (Source source : listOfSources) {
@@ -284,26 +286,26 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
                     .aggregation(aggregationToUse)
                     .build();
 
-            List<Sample> samples;
+            TimeSeriesData timeSeriesData;
             try (Timer.Context context = sampleReadTsTimer.time()) {
                 LOG.debug("Querying TimeseriesStorage for resource id {} with request: {}", resourceId, request);
-                samples = storageManager.get().getTimeseries(request);
+                timeSeriesData = storageManager.get().getTimeSeriesData(request);
             }
             // aggregate if timeseries implementation didn't do it natively
             if (!shouldAggregateNatively) {
                 final List<Source> currentSources = Collections.singletonList(source);
-                samples = NewtsLikeSampleAggregator.builder()
+                timeSeriesData = NewtsLikeSampleAggregator.builder()
                         .resource(resourceId)
                         .start(start)
                         .end(end)
                         .metric(metric)
                         .currentSources(currentSources)
                         .lag(lag)
-                        .build().process(samplesToNewtsRowIterator(samples));
+                        .build().process(samplesToNewtsRowIterator(timeSeriesData));
             }
-            allSamples.put(source, samples);
+            allDataPoints.put(source, timeSeriesData.getDataPoints());
         }
-        return allSamples;
+        return allDataPoints;
     }
 
     private static Aggregation toAggregation(String fn) {

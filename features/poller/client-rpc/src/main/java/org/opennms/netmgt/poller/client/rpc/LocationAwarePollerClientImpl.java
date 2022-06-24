@@ -32,7 +32,7 @@ import java.util.Objects;
 
 import org.opennms.core.rpc.api.RpcClient;
 import org.opennms.core.rpc.api.RpcClientFactory;
-import org.opennms.core.rpc.utils.mate.EntityScopeProvider;
+import org.opennms.core.mate.api.EntityScopeProvider;
 import org.opennms.core.rpc.utils.RpcTargetHelper;
 import org.opennms.netmgt.poller.LocationAwarePollerClient;
 import org.opennms.netmgt.poller.PollerRequestBuilder;

@@ -64,12 +64,58 @@ import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
+import org.opennms.netmgt.topologies.service.api.OnmsTopology;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
+
 
 /**
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  */
 
 public abstract class EnLinkdTestHelper {
+
+    protected static void printOnmsTopology(OnmsTopology topology) {
+        System.err.println("OnmsTopology: vertices:" + topology.getVertices().size());
+        System.err.println("OnmsTopology: edges:" + topology.getEdges().size());
+        for (OnmsTopologyVertex vertex: topology.getVertices()) {
+            printOnmsTopologyVertex(vertex);
+        }
+        for (OnmsTopologyEdge edge: topology.getEdges()) {
+            printOnmsTopologyEdge(edge);
+        }
+    }
+
+    protected static void printOnmsTopologyEdge(OnmsTopologyEdge edge) {
+        System.err.println("OnmsTopologyEdge: id:" + edge.getId());
+        System.err.println("OnmsTopologyEdge: tooltip:" + edge.getToolTipText());
+
+        System.err.println("OnmsTopologyEdge: source/label:" + edge.getSource().getVertex().getLabel());
+        System.err.println("OnmsTopologyEdge: source/index:" + edge.getSource().getIndex());
+        System.err.println("OnmsTopologyEdge: source/ifindex:" + edge.getSource().getIfindex());
+        System.err.println("OnmsTopologyEdge: source/ifname:" + edge.getSource().getIfname());
+        System.err.println("OnmsTopologyEdge: source/addr:" + edge.getSource().getAddr());
+        System.err.println("OnmsTopologyEdge: source/speed:" + edge.getSource().getSpeed());
+        System.err.println("OnmsTopologyEdge: source/toolTipText:" + edge.getSource().getToolTipText());
+
+        System.err.println("OnmsTopologyEdge: target/label:" + edge.getTarget().getVertex().getLabel());
+        System.err.println("OnmsTopologyEdge: target/index:" + edge.getTarget().getIndex());
+        System.err.println("OnmsTopologyEdge: target/ifindex:" + edge.getTarget().getIfindex());
+        System.err.println("OnmsTopologyEdge: target/ifname:" + edge.getTarget().getIfname());
+        System.err.println("OnmsTopologyEdge: target/addr:" + edge.getTarget().getAddr());
+        System.err.println("OnmsTopologyEdge: target/speed:" + edge.getTarget().getSpeed());
+        System.err.println("OnmsTopologyEdge: target/toolTipText:" + edge.getTarget().getToolTipText());
+    }
+
+    protected static void printOnmsTopologyVertex(OnmsTopologyVertex vertex) {
+        System.err.println("OnmsTopologyVertex: id:" + vertex.getId());
+        System.err.println("OnmsTopologyVertex: nodeid:" + vertex.getNodeid());
+        System.err.println("OnmsTopologyVertex: label:" + vertex.getLabel());
+        System.err.println("OnmsTopologyVertex: address:" + vertex.getAddress());
+        System.err.println("OnmsTopologyVertex: iconKey:" + vertex.getIconKey());
+        System.err.println("OnmsTopologyVertex: toolTipText:" + vertex.getToolTipText());
+    }
+
 
     protected static void printLldpTopology(List<LldpLink> lldplinks) {
         for (LldpLink link : lldplinks)

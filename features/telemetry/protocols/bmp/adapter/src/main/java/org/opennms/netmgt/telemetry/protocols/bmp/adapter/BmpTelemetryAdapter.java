@@ -39,7 +39,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import org.opennms.core.rpc.utils.mate.ContextKey;
+import org.opennms.core.mate.api.ContextKey;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionAgent;

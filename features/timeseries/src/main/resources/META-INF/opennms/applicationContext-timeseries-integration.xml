@@ -61,7 +61,7 @@
   <bean id="resourceStorageDao" primary="true" class="org.opennms.netmgt.timeseries.resource.TimeseriesResourceStorageDao" />
   <onmsgi:service interface="org.opennms.netmgt.dao.api.ResourceStorageDao" ref="resourceStorageDao" />
 
-  <bean id="entityScopeProvider" class="org.opennms.core.rpc.utils.mate.EntityScopeProvider"/>
+  <bean id="entityScopeProvider" class="org.opennms.core.mate.api.EntityScopeProvider"/>
 
   <bean id="metaTagDataLoader" class="org.opennms.netmgt.timeseries.samplewrite.MetaTagDataLoader" />
 
