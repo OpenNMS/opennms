@@ -61,6 +61,8 @@ public interface SshScriptingService {
             Duration timeout
     );
 
+    String getScriptOutput();
+
     class Result {
         public final String message;
         public final Optional<String> stdout;

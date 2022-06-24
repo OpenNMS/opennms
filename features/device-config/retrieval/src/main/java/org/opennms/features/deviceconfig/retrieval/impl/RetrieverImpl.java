@@ -72,7 +72,7 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
     private static String SCRIPT_VAR_TFTP_SERVER_PORT = "tftpServerPort";
     private static String SCRIPT_VAR_CONFIG_TYPE = "configType";
 
-    private final SshScriptingService sshScriptingService;
+    final SshScriptingService sshScriptingService;
     private final TftpServer tftpServer;
     private final ExecutorService executor;
 
@@ -157,7 +157,7 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
         executor.shutdown();
     }
 
-    private static class TftpFileReceiverImpl implements TftpFileReceiver, FutureUtils.Completer<Either<Failure, Success>> {
+    private class TftpFileReceiverImpl implements TftpFileReceiver, FutureUtils.Completer<Either<Failure, Success>> {
 
         private final SocketAddress target;
         private final String fileNameSuffix;
@@ -199,13 +199,13 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
             } catch (Throwable e) {
                 var msg = scriptingFailureMsg(this.target, e.getMessage());
                 LOG.error(msg, e);
-                fail(msg, Optional.empty(), Optional.empty(), null);
+                fail(msg, Optional.empty(), Optional.empty(), sshScriptingService.getScriptOutput());
             }
         }
 
         public void onTimeout(CompletableFuture<Either<Failure, Success>> future) {
             this.future = future;
-            fail(timeoutFailureMsg(this.target), Optional.empty(), Optional.empty(), null);
+            fail(timeoutFailureMsg(this.target), Optional.empty(), Optional.empty(), sshScriptingService.getScriptOutput());
         }
 
         @Override
