@@ -74,6 +74,8 @@ public class SshScriptingServiceImpl implements SshScriptingService {
     private InetAddress tftpServerIPv4Address;
     private InetAddress tftpServerIPv6Address;
 
+    private String scriptDebugOutput;
+
     public void setTftpServerIPv4Address(final String tftpServerIPv4Address) throws UnknownHostException {
         if (!Strings.isNullOrEmpty(tftpServerIPv4Address)) {
             this.tftpServerIPv4Address = InetAddress.getByName(tftpServerIPv4Address);
@@ -119,13 +121,14 @@ public class SshScriptingServiceImpl implements SshScriptingService {
 
                                     var stdout = sshInteraction.stdout.toString(StandardCharsets.UTF_8);
                                     var stderr = sshInteraction.stderr.toString(StandardCharsets.UTF_8);
-                                    var debugOutput = sshInteraction.debugOutput.toString(StandardCharsets.UTF_8);
+                                    var debugOutput = sshInteraction.getDebugOutput();
                                     LOG.error("ssh scripting exception - {} \n### script ###\n {} \n### stdout ###\n {} \n### stderr ###\n {}", errorDescription, script, stdout, stderr, e);
                                     return Result.failure("ssh scripting exception - " + errorDescription, stdout, stderr, debugOutput);
                                 }
+                                scriptDebugOutput = sshInteraction.getDebugOutput();
                                 prevStatement = statement;
                             }
-                            return Result.success("Script execution succeeded",  sshInteraction.stdout.toString(StandardCharsets.UTF_8),  sshInteraction.stderr.toString(StandardCharsets.UTF_8), sshInteraction.debugOutput.toString(StandardCharsets.UTF_8));
+                            return Result.success("Script execution succeeded",  sshInteraction.stdout.toString(StandardCharsets.UTF_8),  sshInteraction.stderr.toString(StandardCharsets.UTF_8), sshInteraction.getDebugOutput());
                         }
                     } catch (Exception e) {
                         LOG.error("error with ssh interactions", e);
@@ -157,6 +160,11 @@ public class SshScriptingServiceImpl implements SshScriptingService {
         } else {
             return errorDesc + " - encountered when sending input \"" + statementWithVars + "\" following successful \"" + prevStatementWithVars + "\"";
         }
+    }
+
+    @Override
+    public String getScriptOutput() {
+        return scriptDebugOutput;
     }
 
     private static class SshInteractionImpl implements SshInteraction, AutoCloseable {
@@ -348,6 +356,10 @@ public class SshScriptingServiceImpl implements SshScriptingService {
         @Override
         public String replaceVars(String string) {
             return StrSubstitutor.replace(string, vars);
+        }
+
+        String getDebugOutput() {
+            return debugOutput.toString(StandardCharsets.UTF_8);
         }
     }
 
