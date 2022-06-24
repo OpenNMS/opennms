@@ -28,6 +28,12 @@ NOTE: PostgreSQL link:https://www.postgresql.org/about/news/announcing-apt-archi
 
 [{tabs}]
 ====
+CentOS/RHEL 8::
++
+--
+include::centos-rhel8/restore-centos-rhel8.adoc[]
+--
+
 ifeval::["{page-component-title}" == "Horizon"]
 Debian/Ubuntu::
 +
