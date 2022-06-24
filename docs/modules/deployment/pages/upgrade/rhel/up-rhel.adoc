@@ -68,7 +68,7 @@ yum -y install java-11-openjdk java-11-openjdk-devel
 ${OPENNMS_HOME}/bin/runjava -s
 ----
 
-. Check for configuration file changes, and update accordingly using the files you backed up in xref:deployment:upgrade/diff.adoc#run_diff[idenfity changed configuration files].
+. Check for configuration file changes, and update accordingly using the files you backed up in xref:deployment:upgrade/diff.adoc#run_diff[identify changed configuration files].
 +
 NOTE: If you upgrade in place, OpenNMS renames any shipped config that conflicts with an existing user-modified config to `.rpmnew` or `.rpmsave`.
 Inspect these files manually and reconcile any differences.
