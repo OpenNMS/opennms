@@ -1557,7 +1557,7 @@ jobs:
                 suite: core
   smoke-test-flaky:
     executor: smoke-test-executor
-    parallelism: 5
+    parallelism: 4
     # No resource class support for machine executors, we're constrained to use the default
     # medium class which has 2 vCPUs and 8 GB RAM
     #resource_class: large
