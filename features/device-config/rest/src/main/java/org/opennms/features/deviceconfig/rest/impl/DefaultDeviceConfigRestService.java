@@ -93,6 +93,8 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
     public static final String DEFAULT_ENCODING = StandardCharsets.UTF_8.name();
     public static final String BINARY_ENCODING = "binary";
 
+    private static final Pattern deletePattern = Pattern.compile("\\d+(, ?\\d+)*");
+
     private SessionUtils sessionUtils;
 
 
@@ -248,9 +250,7 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
             return Response.status(Status.BAD_REQUEST).entity("Invalid 'id' parameter").build();
         }
 
-        final String idParamPattern = "\\d+(, ?\\d+)*";
-        var pattern = Pattern.compile(idParamPattern);
-        var matcher = pattern.matcher(id);
+        var matcher = deletePattern.matcher(id);
 
         if (!matcher.matches()) {
             LOG.debug("deleteDeviceConfig: invalid id param supplied by request");
