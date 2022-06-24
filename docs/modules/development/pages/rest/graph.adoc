@@ -79,7 +79,7 @@ curl -X GET -u admin:admin http://localhost:8980/opennms/api/v2/graphs
 ----
 
 .Response
-[source, javascript]
+[source, json]
 ----
 [
     {
@@ -143,7 +143,7 @@ curl -X GET -u admin:admin http://localhost:8980/opennms/api/v2/graphs/bsm
 ----
 
 .Response
-[source, javascript]
+[source, json]
 ----
 {
     "description": "Displays the hierarchy of the defined Business Services and their computed operational states.",
@@ -174,7 +174,7 @@ curl -X GET -u admin:admin http://localhost:8980/opennms/api/v2/graphs/layer3-to
 ----
 
 .Response
-[source, javascript]
+[source, json]
 ----
 {
     "defaultFocus": {
@@ -451,7 +451,7 @@ curl -X POST -u admin:admin -H "Content-Type: application/json" -d '{ "semanticZ
 ----
 
 .Response
-[source, javascript]
+[source, json]
 ----
 {
     "edges": [
@@ -522,7 +522,7 @@ curl -X GET -u admin:admin http://localhost:8980/opennms/api/v2/graphs/search/su
 ----
 
 .Response
-[source, javascript]
+[source, json]
 ----
 [
     {
@@ -550,7 +550,7 @@ curl -X GET -u admin:admin http://localhost:8980/opennms/api/v2/graphs/search/re
 ----
 
 .Response
-[source, javascript]
+[source, json]
 ----
 [
     {
