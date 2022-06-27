@@ -6,6 +6,7 @@ Use the Graph API to read existing graph and graph containers in the system and 
 NOTE: If not otherwise specified, the `Content-Type` of the request and response is `application/json`.
 
 [options="header, %autowidth"]
+[cols="2,1,3"]
 |===
 | Resource
 | Method
@@ -39,6 +40,7 @@ At the moment, the context of a search must always be a concrete namespace and c
 
 
 [options="header, %autowidth"]
+[cols="2,1,3"]
 |===
 | Resource
 | Method
@@ -71,13 +73,13 @@ NOTE: The API lets you query any container and graph via REST, but in most cases
 === Retrieve all graph container information
 
 .Request
-[source,bash]
+[source, console]
 ----
 curl -X GET -u admin:admin http://localhost:8980/opennms/api/v2/graphs
 ----
 
 .Response
-[source,javascript]
+[source, json]
 ----
 [
     {
@@ -133,14 +135,15 @@ curl -X GET -u admin:admin http://localhost:8980/opennms/api/v2/graphs
 
 
 === Retrieve graph container 'bsm'
+
 .Request
-[source,bash]
+[source, console]
 ----
 curl -X GET -u admin:admin http://localhost:8980/opennms/api/v2/graphs/bsm
 ----
 
 .Response
-[source,javascript]
+[source, json]
 ----
 {
     "description": "Displays the hierarchy of the defined Business Services and their computed operational states.",
@@ -163,14 +166,15 @@ curl -X GET -u admin:admin http://localhost:8980/opennms/api/v2/graphs/bsm
 ----
 
 === Retrieve graph 'layer3-network' in container 'layer3-topology'
+
 .Request
-[source,bash]
+[source, console]
 ----
 curl -X GET -u admin:admin http://localhost:8980/opennms/api/v2/graphs/layer3-topology/layer3-network
 ----
 
 .Response
-[source,javascript]
+[source, json]
 ----
 {
     "defaultFocus": {
@@ -441,13 +445,13 @@ curl -X GET -u admin:admin http://localhost:8980/opennms/api/v2/graphs/layer3-to
 === Get a view of the graph
 
 .Request
-[source,bash]
+[source, console]
 ----
 curl -X POST -u admin:admin -H "Content-Type: application/json" -d '{ "semanticZoomLevel": 1, "verticesInFocus": ["horizon"] }' http://localhost:8980/opennms/api/v2/graphs/layer3-topology/layer3-network
 ----
 
 .Response
-[source,javascript]
+[source, json]
 ----
 {
     "edges": [
@@ -512,13 +516,13 @@ curl -X POST -u admin:admin -H "Content-Type: application/json" -d '{ "semanticZ
 === Search Suggestions
 
 .Request
-[source,bash]
+[source, console]
 ----
 curl -X GET -u admin:admin http://localhost:8980/opennms/api/v2/graphs/search/suggestions/layer3-network?s=horizon
 ----
 
 .Response
-[source,javascript]
+[source, json]
 ----
 [
     {
@@ -540,13 +544,13 @@ curl -X GET -u admin:admin http://localhost:8980/opennms/api/v2/graphs/search/su
 === Search Results
 
 .Request
-[source,bash]
+[source, console]
 ----
 curl -X GET -u admin:admin http://localhost:8980/opennms/api/v2/graphs/search/results/layer3-network?providerId=NodeSearchProvider&context=Node&criteria=90
 ----
 
 .Response
-[source,javascript]
+[source, json]
 ----
 [
     {
