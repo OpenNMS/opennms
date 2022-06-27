@@ -29,8 +29,10 @@ MYUSER="$(getent passwd "${MYID}" | cut -d: -f1)"
 export RUNAS="${MYUSER}"
 
 if [ "$MYID" -eq 0 ]; then
-  echo "RUNAS=${MYUSER}" >> /opt/opennms/etc/opennms.conf
-  chown "$MYUSER" /opt/opennms/etc/opennms.conf
+  if ! grep -Fxq "RUNAS=${MYUSER}" "${OPENNMS_HOME}/etc/opennms.conf"; then
+      echo "RUNAS=${MYUSER}" >> "${OPENNMS_HOME}/etc/opennms.conf"
+  fi
+  chown "$MYUSER" "${OPENNMS_HOME}/etc/opennms.conf"
 fi
 
 # Help function used in error messages and -h option
