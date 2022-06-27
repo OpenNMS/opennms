@@ -64,7 +64,7 @@ public final class CdpGlobalGroupTracker extends AggregateTracker
         public final static     String  CDP_GLOBAL_DEVICEID_FORMAT     = "cdpGlobalDeviceIdFormat";
 	
 	public final static NamedSnmpVar[] ms_elemList = new NamedSnmpVar[] {
-		/**
+		/*
 		 * cdpGlobalRun OBJECT-TYPE
 		 * SYNTAX     TruthValue
 		 * MAX-ACCESS read-write
@@ -78,7 +78,7 @@ public final class CdpGlobalGroupTracker extends AggregateTracker
 		 */
 		new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING,CDP_GLOBAL_RUN,".1.3.6.1.4.1.9.9.23.1.3.1"),
 
-		/**
+		/*
 		 * cdpGlobalDeviceId OBJECT-TYPE
                  *    SYNTAX     DisplayString
                  *    MAX-ACCESS read-only
@@ -90,7 +90,7 @@ public final class CdpGlobalGroupTracker extends AggregateTracker
 		 */
 		new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING,CDP_GLOBAL_DEVICEID,".1.3.6.1.4.1.9.9.23.1.3.4"),
 
-		/**
+		/*
                  * cdpGlobalDeviceIdFormat  OBJECT-TYPE
                  *    SYNTAX     INTEGER { 
                  *                 serialNumber(1), 
@@ -122,7 +122,7 @@ public final class CdpGlobalGroupTracker extends AggregateTracker
 
 	};
 
-    private SnmpStore m_store;
+    private final SnmpStore m_store;
 	
 	/**
 	 * <P>The class constructor is used to initialize the collector
@@ -131,7 +131,6 @@ public final class CdpGlobalGroupTracker extends AggregateTracker
 	 * data has been collected the passed signaler object is <EM>notified</em>
 	 * using the notifyAll() method.</P>
 	 *
-	 * @param address a {@link java.net.InetAddress} object.
 	 */
 	public CdpGlobalGroupTracker() {
         super(NamedSnmpVar.getTrackersFor(ms_elemList));
@@ -188,7 +187,7 @@ public final class CdpGlobalGroupTracker extends AggregateTracker
     	    try {
     	        cdpElement.setCdpGlobalDeviceIdFormat(CdpGlobalDeviceIdFormat.get(getCdpGlobalDeviceFormat()));
     	    } catch (IllegalArgumentException e) {
-    	        LOG.info("setCdpGlobalDeviceIdFormat not supported: ", e.getLocalizedMessage());
+    	        LOG.info("setCdpGlobalDeviceIdFormat not supported: {}", e.getLocalizedMessage());
     	    }
     	}    	
     	return cdpElement;
