@@ -36,7 +36,6 @@ import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.TableTracker;
 import org.opennms.netmgt.snmp.SnmpRowResult;
 import org.opennms.netmgt.snmp.SnmpInstId;
-import org.opennms.netmgt.snmp.RowCallback;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -106,15 +105,6 @@ public class MtxrLldpLocalTableTracker extends TableTracker {
         super(s_lldploctable_elemList);
     }
 
-    /**
-     * <p>Constructor for MikrotikLldpLocalTableTracker.</p>
-     *
-     * @param rowProcessor a {@link RowCallback} object.
-     */
-    public MtxrLldpLocalTableTracker(final RowCallback rowProcessor) {
-        super(rowProcessor, s_lldploctable_elemList);
-    }
-    
     /** {@inheritDoc} */
     @Override
     public SnmpRowResult createRowResult(final int columnCount, final SnmpInstId instance) {
