@@ -42,8 +42,7 @@ import org.opennms.netmgt.config.EnhancedLinkdConfig;
 import org.opennms.netmgt.config.datacollection.SnmpCollection;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.enlinkd.api.ReloadableTopologyDaemon;
-import org.opennms.netmgt.enlinkd.common.NodeCollector;
-import org.opennms.netmgt.enlinkd.common.TopologyUpdater;
+import org.opennms.netmgt.enlinkd.common.*;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyException;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.CdpTopologyService;
@@ -62,9 +61,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * <p>
- * Linkd class.
+ * EnhancedLinkd class.
  * </p>
- * 
+ *
+ * @author antonio
  * @author ranger
  * @version $Id: $
  */
@@ -102,7 +102,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
     /**
      * Map that contains Nodeid and List of NodeCollector.
      */
-    private Map<Integer, List<NodeCollector>> m_nodes = new HashMap<Integer, List<NodeCollector>>();
+    private final Map<Integer, List<NodeCollector>> m_nodes = new HashMap<>();
 
     @Autowired
     private LocationAwareSnmpClient m_locationAwareSnmpClient;
@@ -224,8 +224,6 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
      * This method schedules a {@link SnmpCollection} for node for each
      * package. Also schedule discovery link on package when not still
      * activated.
-     * 
-     * @param node
      */
     private List<NodeCollector> scheduleCollectionForNode(final Node node) {
 
@@ -491,10 +489,10 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
             scheduleNodeCollection(nodeid);
             return;
         } 
-        m_nodes.get(nodeid).stream().forEach(collection -> collection.wakeUp());
+        m_nodes.get(nodeid).forEach(Discovery::wakeUp);
     }
 
-    public void addNode(int intValue) {
+    public void addNode() {
         m_queryMgr.updatesAvailable();
     }
 
@@ -550,61 +548,22 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
         return m_queryMgr;
     }
 
-    /**
-     * <p>
-     * setQueryManager
-     * </p>
-     * 
-     * @param queryMgr
-     *            a {@link org.opennms.features.NodeTopologyService.persistence.api.linkd.EnhancedLinkdService} object.
-     */
     public void setQueryManager(NodeTopologyService queryMgr) {
         m_queryMgr = queryMgr;
     }
 
-    /**
-     * <p>
-     * getScheduler
-     * </p>
-     * 
-     * @return a {@link org.opennms.netmgt.enlinkd.scheduler.Scheduler} object.
-     */
     public LegacyScheduler getScheduler() {
         return m_scheduler;
     }
 
-    /**
-     * <p>
-     * setScheduler
-     * </p>
-     * 
-     * @param scheduler
-     *            a {@link org.opennms.netmgt.enlinkd.scheduler.Scheduler}
-     *            object.
-     */
     public void setScheduler(LegacyScheduler scheduler) {
         m_scheduler = scheduler;
     }
 
-    /**
-     * <p>
-     * getLinkdConfig
-     * </p>
-     * 
-     * @return a {@link org.opennms.netmgt.config.LinkdConfig} object.
-     */
     public EnhancedLinkdConfig getLinkdConfig() {
         return m_linkdConfig;
     }
 
-    /**
-     * <p>
-     * setLinkdConfig
-     * </p>
-     * 
-     * @param config
-     *            a {@link org.opennms.netmgt.config.LinkdConfig} object.
-     */
     public void setLinkdConfig(final EnhancedLinkdConfig config) {
         m_linkdConfig = config;
     }
