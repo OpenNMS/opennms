@@ -113,15 +113,15 @@ public class DiscoveryBridgeDomains extends Discovery {
         LOG.info("run: calculate topology on broadcast domains. Start");
         
         Map<Integer, Map<Integer, Set<BridgeForwardingTableEntry>>> nodeondomainbft 
-            = new HashMap<Integer, Map<Integer, Set<BridgeForwardingTableEntry>>>();
+            = new HashMap<>();
 
         Map<Integer, Set<BridgeForwardingTableEntry>> nodeBft 
-            = new HashMap<Integer, Set<BridgeForwardingTableEntry>>();
+            = new HashMap<>();
         Map<Integer, Set<String>> nodeMacs 
-        = new HashMap<Integer, Set<String>>();
+        = new HashMap<>();
 
         Set<Integer> nodeids 
-        = new HashSet<Integer>(
+        = new HashSet<>(
                 m_bridgeTopologyService.getUpdateBftMap().keySet());
         
         LOG.debug("run: nodes with updated bft {}", nodeids);
@@ -134,7 +134,7 @@ public class DiscoveryBridgeDomains extends Discovery {
                 continue;
             }
             nodeBft.put(nodeid, links);
-            Set<String> macs = new HashSet<String>();
+            Set<String> macs = new HashSet<>();
             for (BridgeForwardingTableEntry link : links) {
                 macs.add(link.getMacAddress());
             }
@@ -142,14 +142,14 @@ public class DiscoveryBridgeDomains extends Discovery {
             nodeMacs.put(nodeid, macs);
         }
 
-        Set<Integer> parsed = new HashSet<Integer>();
+        Set<Integer> parsed = new HashSet<>();
 
         for (Integer nodeidA : nodeBft.keySet()) {
             if (parsed.contains(nodeidA)) {
                 continue;
             }
             nodeondomainbft.put(nodeidA,
-                                new HashMap<Integer, Set<BridgeForwardingTableEntry>>());
+                    new HashMap<>());
             nodeondomainbft.get(nodeidA).put(nodeidA, nodeBft.get(nodeidA));
             parsed.add(nodeidA);
             for (Integer nodeidB : nodeBft.keySet()) {
@@ -165,7 +165,7 @@ public class DiscoveryBridgeDomains extends Discovery {
             }
         }
 
-        List<Callable<String>> taskList = new ArrayList<Callable<String>>();
+        List<Callable<String>> taskList = new ArrayList<>();
         for (Integer nodeid : nodeondomainbft.keySet()) {
             LOG.debug("run: nodes are on same domain {}",nodeondomainbft.get(nodeid).keySet());
             try {
@@ -211,7 +211,6 @@ public class DiscoveryBridgeDomains extends Discovery {
             } catch (BridgeTopologyException e) {
                 LOG.error("run: node: [{}], getting broadcast domain. Failed {}",
                           nodeid, e.getMessage());
-                continue;
             }
         }
 
@@ -243,10 +242,6 @@ public class DiscoveryBridgeDomains extends Discovery {
     @Override
     public String getName() {
         return "DiscoveryBridgeDomain";
-    }
-
-    public int getMaxthreads() {
-        return m_maxthreads;
     }
 
     public void setMaxthreads(int maxthreads) {

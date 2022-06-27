@@ -30,7 +30,6 @@ package org.opennms.netmgt.enlinkd.snmp;
 
 import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry;
 import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry.BridgeDot1qTpFdbStatus;
-import org.opennms.netmgt.snmp.RowCallback;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpRowResult;
@@ -50,7 +49,6 @@ import org.opennms.netmgt.snmp.TableTracker;
  * </P>
  *
  * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio</A>
- * @see Dot1dTpFdbTable
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213</A>
  * @version $Id: $
  */
@@ -60,7 +58,7 @@ public class Dot1qTpFdbTableTracker extends TableTracker {
     public final static SnmpObjId DOT1Q_TP_FDB_STATUS = SnmpObjId.get(".1.3.6.1.2.1.17.7.1.2.2.1.3");
 
     public static SnmpObjId[] ms_elemList = new SnmpObjId[] {
-    /**
+    /*
      * dot1qTpFdbPort OBJECT-TYPE SYNTAX Integer32 (0..65535) MAX-ACCESS
      * read-only STATUS current DESCRIPTION "Either the value '0', or the port
      * number of the port on which a frame having a source address equal to
@@ -75,7 +73,7 @@ public class Dot1qTpFdbTableTracker extends TableTracker {
 
     DOT1Q_TP_FDB_PORT,
 
-    /**
+    /*
      * dot1qTpFdbStatus OBJECT-TYPE SYNTAX INTEGER { other(1), invalid(2),
      * learned(3), self(4), mgmt(5) } MAX-ACCESS read-only STATUS current
      * DESCRIPTION "The status of this entry. The meanings of the values are:
@@ -168,10 +166,6 @@ public class Dot1qTpFdbTableTracker extends TableTracker {
      */
     public Dot1qTpFdbTableTracker() {
         super(ms_elemList);
-    }
-
-    public Dot1qTpFdbTableTracker(RowCallback rowProcessor) {
-        super(rowProcessor, ms_elemList);
     }
 
     /** {@inheritDoc} */
