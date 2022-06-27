@@ -1,0 +1,21 @@
+ jobs:
+  code-coverage:
+    executor: centos-build-executor
+    resource_class: medium
+    steps:
+      - attach_workspace:
+          at: ~/
+      - extract-pom-version
+      - restore-sonar-cache
+      - run:
+          name: Restore Target Directories (Code Coverage)
+          when: always
+          command: |
+            .circleci/scripts/codecoverage-restore.sh
+      - run:
+          name: Run SonarQube Code Analysis
+          when: always
+          command: |
+            export MAVEN_OPTS="-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
+            .circleci/scripts/sonar.sh
+      - save-sonar-cache

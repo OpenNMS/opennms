@@ -1,0 +1,358 @@
+workflows:
+  build-deploy:
+    when:
+      and:
+        - equal: [ false, << pipeline.parameters.trigger-coverage >> ]
+        - equal: [ true,  << pipeline.parameters.trigger-build >> ]
+        - equal: [ false, << pipeline.parameters.minimal >> ]
+    jobs:
+      - build:
+          filters:
+            branches:
+              ignore:
+                - /^from-foundation.*/
+      - tarball-assembly:
+          requires:
+            - build
+      - minion-image-single-arch:
+          matrix:
+            parameters:
+              architecture: [linux/amd64,linux/arm64,linux/arm/v7]
+          context:
+            - docker-content-trust
+            - azure-sp-dct
+          requires:
+            - horizon-rpm-build
+            - minion-deb-build
+            - sentinel-deb-build
+            - integration-test
+            - smoke-test-core
+            - smoke-test-flaky
+            - smoke-test-minion
+#            - smoke-test-minimal
+            - smoke-test-sentinel
+          filters:
+            branches:
+              only:
+                - develop
+                - /^master-.*/
+                - /^features\/.+/
+                - /^foundation.*/
+                - /^release-.*/
+                - /.*docker.*/
+                - /.*smoke.*/
+      - minion-image-multi-arch:
+          context:
+            - docker-content-trust
+            - azure-sp-dct
+          requires:
+            - minion-image-single-arch
+          filters:
+            branches:
+              only:
+                - develop
+                - /^master-.*/
+                - /^features\/.+/
+                - /^foundation.*/
+                - /^release-.*/
+                - /.*docker.*/
+                - /.*smoke.*/
+      - horizon-image-single-arch:
+          requires:
+            - horizon-deb-build
+          matrix:
+            parameters:
+              architecture: [linux/amd64,linux/arm64]
+          filters:
+            branches:
+              only:
+                - develop
+                - /^master-.*/
+                - /^features\/.+/
+                - /^foundation.*/
+                - /^release-.*/
+                - /.*docker.*/
+                - /.*smoke.*/
+      - horizon-deb-build:
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - develop
+                - /^master-.*/
+                - /^dependabot\/.*/
+                - /^features\/.+/
+                - /^foundation.*/
+                - /^release-.*/
+                - /.*deb.*/
+                - /.*docker.*/
+                - /.*smoke.*/
+      - minion-rpm-build:
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - develop
+                - /^master-.*/
+                - /^dependabot\/.*/
+                - /^features\/.+/
+                - /^foundation.*/
+                - /^release-.*/
+                - /.*rpm.*/
+                - /.*smoke.*/
+      - sentinel-rpm-build:
+          requires:
+            - integration-test
+          filters:
+            branches:
+              only:
+                - develop
+                - /^master-.*/
+                - /^dependabot\/.*/
+                - /^features\/.+/
+                - /^foundation.*/
+                - /^release-.*/
+                - /.*rpm.*/
+                - /.*smoke.*/
+      - integration-test:
+          requires:
+            - build
+          filters:
+            branches:
+              ignore:
+                - /^merge-foundation.*/
+      - smoke-test-core:
+          requires:
+            - tarball-assembly
+            - horizon-deb-build
+            - sentinel-deb-build
+          filters:
+            branches:
+              only:
+                - develop
+                - /^master-.*/
+                - /^dependabot.*/
+                - /^features\/.+/
+                - /^foundation.*/
+                - /^release-.*/
+                - /.*smoke.*/
+      - smoke-test-flaky:
+          requires:
+            - tarball-assembly
+            - horizon-deb-build
+            - sentinel-deb-build
+          filters:
+            branches:
+              only:
+                - develop
+                - /^master-.*/
+                - /^dependabot.*/
+                - /^features\/.+/
+                - /^foundation.*/
+                - /^release-.*/
+                - /.*smoke.*/
+      - smoke-test-minion:
+          requires:
+            - tarball-assembly
+            - horizon-deb-build
+            - sentinel-deb-build
+          filters:
+            branches:
+              only:
+                - develop
+                - /^master-.*/
+                - /^dependabot.*/
+                - /^features\/.+/
+                - /^foundation.*/
+                - /^release-.*/
+                - /.*smoke.*/
+      - smoke-test-sentinel:
+          requires:
+            - tarball-assembly
+            - horizon-deb-build
+            - sentinel-deb-build
+          filters:
+            branches:
+              only:
+                - develop
+                - /^master-.*/
+                - /^dependabot.*/
+                - /^features\/.+/
+                - /^foundation.*/
+                - /^release-.*/
+                - /.*smoke.*/
+#      - smoke-test-minimal:
+#          requires:
+#            - tarball-assembly
+#            - horizon-deb-build
+#            - sentinel-deb-build
+#          filters:
+#            branches:
+#              ignore:
+#                - develop
+#                - /^master-.*/
+#                - /^dependabot.*/
+#                - /^features\/.+/
+#                - /^foundation.*/
+#                - /^release-.*/
+#                - /.*smoke.*/
+      - horizon-publish-oci:
+          requires:
+            - horizon-deb-build
+            - minion-deb-build
+            - sentinel-deb-build
+            - integration-test
+            - smoke-test-core
+            - smoke-test-flaky
+            - smoke-test-minion
+#            - smoke-test-minimal
+            - smoke-test-sentinel
+          filters:
+            branches:
+              only:
+                - develop
+                - /^master-.*/
+                - /^release-.*/
+                - /^features\/.+/
+                - /^foundation.*/
+      - sentinel-publish-oci:
+          requires:
+            - horizon-deb-build
+            - minion-deb-build
+            - sentinel-deb-build
+            - integration-test
+            - smoke-test-core
+            - smoke-test-flaky
+            - smoke-test-minion
+#            - smoke-test-minimal
+            - smoke-test-sentinel
+          filters:
+            branches:
+              only:
+                - develop
+                - /^master-.*/
+                - /^release-.*/
+                - /^features\/.+/
+                - /^foundation.*/
+      # These don't actually require `integration-test` but we shouldn't bother
+      # spending cycles unless everything else passed
+      - horizon-rpm-build:
+          requires:
+            - integration-test
+          filters:
+            branches:
+              only:
+                - develop
+                - /^master-.*/
+                - /^dependabot.*/
+                - /^features\/.+/
+                - /^foundation.*/
+                - /^release-.*/
+                - /.*rpm.*/
+                - /.*smoke.*/
+      - minion-deb-build:
+          requires:
+            - integration-test
+          filters:
+            branches:
+              ignore:
+                - /^merge-foundation.*/
+      - sentinel-deb-build:
+          requires:
+            - build
+          filters:
+            branches:
+              ignore:
+                - /^merge-foundation.*/
+      - sentinel-image-single-arch:
+          requires:
+            - sentinel-deb-build
+          matrix:
+            parameters:
+              architecture: [linux/amd64,linux/arm64]
+          filters:
+            branches:
+              only:
+                - develop
+                - /^master-.*/
+                - /^foundation.*/
+                - /^release-.*/
+                - /.*docker.*/
+                - /.*smoke.*/
+      - create-merge-foundation-branch:
+          # technically only requires the RPM/deb builds, but only publish
+          # if everything passes
+          requires:
+            - horizon-rpm-build
+            - minion-deb-build
+            - sentinel-rpm-build
+            - integration-test
+            - smoke-test-core
+            - smoke-test-flaky
+            - smoke-test-minion
+#            - smoke-test-minimal
+            - smoke-test-sentinel
+          filters:
+            branches:
+              only: << pipeline.parameters.main_branch >>
+      - merge-foundation-branch:
+          # technically only requires the RPM/deb builds, but only publish
+          # if everything passes
+          requires:
+            - tarball-assembly
+          filters:
+            branches:
+              only: merge-foundation/<< pipeline.parameters.previous_branch_label >>-to-<< pipeline.parameters.main_branch_label >>
+      - create-merge-meridian-branch:
+          # technically only requires the RPM/deb builds, but only publish
+          # if everything passes
+          requires:
+            - horizon-rpm-build
+            - minion-deb-build
+            - sentinel-rpm-build
+            - integration-test
+            - smoke-test-core
+            - smoke-test-flaky
+            - smoke-test-minion
+#            - smoke-test-minimal
+            - smoke-test-sentinel
+          filters:
+            branches:
+              only: /^foundation.*/
+      - merge-poweredby-branch:
+          # technically only requires the RPM/deb builds, but only publish
+          # if everything passes
+          requires:
+            - horizon-rpm-build
+            - smoke-test-core
+            - smoke-test-flaky
+            - smoke-test-minion
+            - smoke-test-sentinel
+#            - smoke-test-minimal
+            - integration-test
+          filters:
+            branches:
+              only:
+                - /^foundation.*/
+      - publish-cloudsmith:
+          # technically only requires the RPM/deb builds, but only publish
+          # if everything passes
+          requires:
+            - horizon-rpm-build
+            - minion-deb-build
+            - sentinel-rpm-build
+            - integration-test
+            - smoke-test-core
+            - smoke-test-flaky
+            - smoke-test-minion
+#            - smoke-test-minimal
+            - smoke-test-sentinel
+          filters:
+            branches:
+              only:
+                - develop
+                - /^master-.*/
+                - /^release-.*/
+                - /^foundation.*/

@@ -1,0 +1,8 @@
+jobs:
+  smoke-test-minimal:
+    executor: smoke-test-executor
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run-smoke-tests:
+          suite: minimal

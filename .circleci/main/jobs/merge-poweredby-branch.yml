@@ -1,0 +1,20 @@
+jobs:
+  merge-poweredby-branch:
+    <<: *docker_container_config
+    steps:
+      - when:
+          condition: << pipeline.parameters.main_branch >>
+          steps:
+            - restore_cache:
+                keys:
+                  - poweredby-v1-{{ .Branch }}-{{ .Revision }}
+                  - poweredby-v1-{{ .Branch }}-
+                  - poweredby-v1-
+            - cached-checkout-for-pushing
+            - run:
+                name: Merge Foundation to PoweredBy
+                command: .circleci/scripts/merge-poweredby.sh
+            - save_cache:
+                key: poweredby-v1-{{ .Branch }}-{{ .Revision }}
+                paths:
+                  - ".git"
