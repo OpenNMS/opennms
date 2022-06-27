@@ -29,7 +29,10 @@
 package org.opennms.netmgt.enlinkd;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -153,7 +156,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     }
 
     @Test
-    public void testPrintTopologyFromLevel() throws Exception {
+    public void testPrintTopologyFromLevel() {
         TwoMergeBridgeTopology topology = new TwoMergeBridgeTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
@@ -172,7 +175,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     }
 
     @Test
-    public void testTwoSwitchWithOnlyOnePortcondition3() throws Exception {
+    public void testTwoSwitchWithOnlyOnePortcondition3() {
         Integer portAB = 16;
         Integer portBA = 24;
 
@@ -186,9 +189,9 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         OnmsNode nodeB= new OnmsNode();
         BridgeElement elementA = new BridgeElement();
         BridgeElement elementB = new BridgeElement();
-        Set<BridgeForwardingTableEntry> bftA = new HashSet<BridgeForwardingTableEntry>();
-        Set<BridgeForwardingTableEntry> bftB = new HashSet<BridgeForwardingTableEntry>();
-        List<BridgeElement> elemlist = new ArrayList<BridgeElement>();
+        Set<BridgeForwardingTableEntry> bftA = new HashSet<>();
+        Set<BridgeForwardingTableEntry> bftB = new HashSet<>();
+        List<BridgeElement> elemlist = new ArrayList<>();
 
         nodeA.setId(nodeAId);
         elementA.setNode(nodeA);
@@ -231,7 +234,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     }
 
     @Test
-    public void testTwoSwitchWithOnlyOnePortCondition2() throws Exception {
+    public void testTwoSwitchWithOnlyOnePortCondition2() {
         Integer portAB = 16;
         Integer portBA = 24;
 
@@ -245,9 +248,9 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         OnmsNode nodeB= new OnmsNode();
         BridgeElement elementA = new BridgeElement();
         BridgeElement elementB = new BridgeElement();
-        Set<BridgeForwardingTableEntry> bftA = new HashSet<BridgeForwardingTableEntry>();
-        Set<BridgeForwardingTableEntry> bftB = new HashSet<BridgeForwardingTableEntry>();
-        List<BridgeElement> elemlist = new ArrayList<BridgeElement>();
+        Set<BridgeForwardingTableEntry> bftA = new HashSet<>();
+        Set<BridgeForwardingTableEntry> bftB = new HashSet<>();
+        List<BridgeElement> elemlist = new ArrayList<>();
 
         nodeA.setId(nodeAId);
         elementA.setNode(nodeA);
@@ -296,7 +299,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     }
 
     @Test
-    public void testTwoSwitchWithOnlyOnePortCondition1() throws Exception {
+    public void testTwoSwitchWithOnlyOnePortCondition1() {
         Integer portAB = 16;
         Integer portBA = 24;
 
@@ -310,9 +313,9 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         OnmsNode nodeB= new OnmsNode();
         BridgeElement elementA = new BridgeElement();
         BridgeElement elementB = new BridgeElement();
-        Set<BridgeForwardingTableEntry> bftA = new HashSet<BridgeForwardingTableEntry>();
-        Set<BridgeForwardingTableEntry> bftB = new HashSet<BridgeForwardingTableEntry>();
-        List<BridgeElement> elemlist = new ArrayList<BridgeElement>();
+        Set<BridgeForwardingTableEntry> bftA = new HashSet<>();
+        Set<BridgeForwardingTableEntry> bftB = new HashSet<>();
+        List<BridgeElement> elemlist = new ArrayList<>();
 
         nodeA.setId(nodeAId);
         elementA.setNode(nodeA);
@@ -448,7 +451,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         		}
         		
         	} else {
-        		assertEquals(true, false);
+                fail();
         	}
         }
         
@@ -494,7 +497,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         			assertEquals(topology.portB2.intValue(), link.getBridgePort().intValue());
         		}
         	} else {
-        		assertEquals(true, false);
+                fail();
         	}
         	
         }
@@ -561,7 +564,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         
         Bridge.create(domain,topology.nodeAId);
         setBridgeElements(domain,topology.elemlist);
-;
+
         ndbt.addUpdatedBFT((topology.nodeAId),topology.bftA);
         ndbt.calculate();
 
@@ -724,12 +727,13 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         setBridgeElements(domain,topology.elemlist);
 
         Bridge elected = BroadcastDomain.electRootBridge(domain);
-        assertEquals(null, elected);
+        assertNull(elected);
 
         //B root
         domain.getBridge(topology.nodeAId).setDesignated(topology.macB);
         domain.getBridge(topology.nodeCId).setDesignated(topology.macB);
         elected = BroadcastDomain.electRootBridge(domain);
+        assert elected != null;
         assertEquals(topology.nodeBId.intValue(), elected.getNodeId().intValue());
 
         //A Root
@@ -737,6 +741,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         domain.getBridge(topology.nodeBId).setDesignated(topology.macA);
         domain.getBridge(topology.nodeCId).setDesignated(topology.macB);
         elected = BroadcastDomain.electRootBridge(domain);
+        assert elected != null;
         assertEquals(topology.nodeAId.intValue(), elected.getNodeId().intValue());
 
         //C Root
@@ -744,6 +749,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         domain.getBridge(topology.nodeBId).setDesignated(topology.macC);
         domain.getBridge(topology.nodeCId).setDesignated(null);
         elected = BroadcastDomain.electRootBridge(domain);
+        assert elected != null;
         assertEquals(topology.nodeCId.intValue(), elected.getNodeId().intValue());
 
         //C root
@@ -751,6 +757,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         domain.getBridge(topology.nodeBId).setDesignated(topology.macC);
         domain.getBridge(topology.nodeCId).setDesignated(null);
         elected = BroadcastDomain.electRootBridge(domain);
+        assert elected != null;
         assertEquals(topology.nodeCId.intValue(), elected.getNodeId().intValue());
         
        //D? root
@@ -758,6 +765,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         domain.getBridge(topology.nodeBId).setDesignated("dddddddddddd");
         domain.getBridge(topology.nodeCId).setDesignated(null);
         elected = BroadcastDomain.electRootBridge(domain);
+        assert elected != null;
         assertEquals(topology.nodeBId.intValue(), elected.getNodeId().intValue());
 
         //A root B is bypassed
@@ -765,6 +773,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         domain.getBridge(topology.nodeBId).setDesignated(null);
         domain.getBridge(topology.nodeCId).setDesignated(topology.macA);
         elected = BroadcastDomain.electRootBridge(domain);
+        assert elected != null;
         assertEquals(topology.nodeAId.intValue(), elected.getNodeId().intValue());
 
         //loop is bypassed
@@ -772,7 +781,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         domain.getBridge(topology.nodeBId).setDesignated(null);
         domain.getBridge(topology.nodeCId).setDesignated(topology.macA);
         try {
-            elected = BroadcastDomain.electRootBridge(domain);
+            BroadcastDomain.electRootBridge(domain);
         } catch (BridgeTopologyException e) {
             assertEquals("getUpperBridge, too many iterations", e.getMessage());
         }
@@ -781,8 +790,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         domain.getBridge(topology.nodeAId).setDesignated(null);
         domain.getBridge(topology.nodeBId).setDesignated(null);
         domain.getBridge(topology.nodeCId).setDesignated(null);
-        elected = BroadcastDomain.electRootBridge(domain);
-        assertEquals(null, elected);
+        assertNull(BroadcastDomain.electRootBridge(domain));
 
     }
     
@@ -1238,19 +1246,19 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         
         BroadcastDomain.hierarchySetUp(domain,domain.getBridge(topology.nodeGId));
         assertEquals(topology.nodeGId, ndbt.getDomain().getRootBridge().getNodeId());
-        assertEquals(true, ndbt.getDomain().getBridge(topology.nodeGId).isRootBridge());
-        assertEquals(null, ndbt.getDomain().getBridge(topology.nodeGId).getRootPort());
-        assertEquals(false, ndbt.getDomain().getBridge(topology.nodeDId).isRootBridge());
+        assertTrue(ndbt.getDomain().getBridge(topology.nodeGId).isRootBridge());
+        assertNull(ndbt.getDomain().getBridge(topology.nodeGId).getRootPort());
+        assertFalse(ndbt.getDomain().getBridge(topology.nodeDId).isRootBridge());
         assertEquals(topology.portDD, ndbt.getDomain().getBridge(topology.nodeDId).getRootPort());
-        assertEquals(false, ndbt.getDomain().getBridge(topology.nodeEId).isRootBridge());
+        assertFalse(ndbt.getDomain().getBridge(topology.nodeEId).isRootBridge());
         assertEquals(topology.portEE, ndbt.getDomain().getBridge(topology.nodeEId).getRootPort());
-        assertEquals(false, ndbt.getDomain().getBridge(topology.nodeFId).isRootBridge());
+        assertFalse(ndbt.getDomain().getBridge(topology.nodeFId).isRootBridge());
         assertEquals(topology.portFF, ndbt.getDomain().getBridge(topology.nodeFId).getRootPort());
-        assertEquals(false, ndbt.getDomain().getBridge(topology.nodeHId).isRootBridge());
+        assertFalse(ndbt.getDomain().getBridge(topology.nodeHId).isRootBridge());
         assertEquals(topology.portHH, ndbt.getDomain().getBridge(topology.nodeHId).getRootPort());
-        assertEquals(false, ndbt.getDomain().getBridge(topology.nodeIId).isRootBridge());
+        assertFalse(ndbt.getDomain().getBridge(topology.nodeIId).isRootBridge());
         assertEquals(topology.portII, ndbt.getDomain().getBridge(topology.nodeIId).getRootPort());
-        assertEquals(false, ndbt.getDomain().getBridge(topology.nodeLId).isRootBridge());
+        assertFalse(ndbt.getDomain().getBridge(topology.nodeLId).isRootBridge());
         assertEquals(topology.portLL, ndbt.getDomain().getBridge(topology.nodeLId).getRootPort());
     }
 
@@ -1687,7 +1695,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     }
 
     @Test
-    public void testTwentySwitchTopology() throws BridgeTopologyException {
+    public void testTwentySwitchTopology() {
         TwentyNodeTopology topology = new TwentyNodeTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
@@ -1731,7 +1739,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     }
 
     @Test
-    public void testTwentySwitchTopologySpiazzo() throws BridgeTopologyException {
+    public void testTwentySwitchTopologySpiazzo() {
         TwentyNodeTopology topology = new TwentyNodeTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
@@ -1753,7 +1761,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     }
 
     @Test
-    public void testTwentySwitchTopologySpiazzoSVig() throws BridgeTopologyException {
+    public void testTwentySwitchTopologySpiazzoSVig() {
         TwentyNodeTopology topology = new TwentyNodeTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
@@ -1774,7 +1782,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
 
     
     @Test
-    public void testTwentySwitchTopologyVRendMun() throws BridgeTopologyException {
+    public void testTwentySwitchTopologyVRendMun() {
         TwentyNodeTopology topology = new TwentyNodeTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
@@ -1796,7 +1804,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     }
     
     @Test
-    public void testTwentySwitchTopologyVigReMun() throws BridgeTopologyException {
+    public void testTwentySwitchTopologyVigReMun() {
         TwentyNodeTopology topology = new TwentyNodeTopology();
         BroadcastDomain domain = new BroadcastDomain();
         Bridge.create(domain,topology.vigrenmualv01Id);
@@ -1815,7 +1823,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     }
 
     @Test
-    public void testTwentySwitchTopologyDareMun() throws BridgeTopologyException {
+    public void testTwentySwitchTopologyDareMun() {
         TwentyNodeTopology topology = new TwentyNodeTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
@@ -1835,7 +1843,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     }
 
     @Test
-    public void testTwentySwitchTopologyAlvarion() throws BridgeTopologyException {
+    public void testTwentySwitchTopologyAlvarion() {
         TwentyNodeTopology topology = new TwentyNodeTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
@@ -1868,7 +1876,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
 
 
     @Test
-    public void testTwentySwitchTopologyTwoSteps() throws BridgeTopologyException {
+    public void testTwentySwitchTopologyTwoSteps() {
         TwentyNodeTopology topology = new TwentyNodeTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
@@ -1917,7 +1925,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     }
 
     @Test
-    public void testTwentySwitchTopologyVillpizzasw01B() throws BridgeTopologyException {
+    public void testTwentySwitchTopologyVillpizzasw01B() {
         TwentyNodeTopology topology = new TwentyNodeTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
@@ -1936,7 +1944,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     }
 
     @Test
-    public void testTwentySwitchTopologyVillpizzasw01A() throws BridgeTopologyException {
+    public void testTwentySwitchTopologyVillpizzasw01A() {
         TwentyNodeTopology topology = new TwentyNodeTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
@@ -1956,7 +1964,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     }
 
     @Test
-    public void testTwentySwitchTopologyLevel1() throws BridgeTopologyException {
+    public void testTwentySwitchTopologyLevel1() {
         TwentyNodeTopology topology = new TwentyNodeTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
@@ -1976,7 +1984,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     }
 
     @Test
-    public void testTwentySwitchTopologyLevel2() throws BridgeTopologyException {
+    public void testTwentySwitchTopologyLevel2() {
         TwentyNodeTopology topology = new TwentyNodeTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
@@ -1998,7 +2006,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     }
 
     @Test
-    public void testTwentySwitchTopologyLevel3() throws BridgeTopologyException {
+    public void testTwentySwitchTopologyLevel3() {
         TwentyNodeTopology topology = new TwentyNodeTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
@@ -2024,7 +2032,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
 
     //rsaspiazzowl1Id
     @Test
-    public void testTwentySwitchTopologyLevel4() throws BridgeTopologyException {
+    public void testTwentySwitchTopologyLevel4() {
         TwentyNodeTopology topology = new TwentyNodeTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
@@ -2076,11 +2084,11 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         Map<String, Set<BridgePort>> duplicated = bridgeFtpe.getDuplicated();
         assertEquals(5, duplicated.size());
 
-        assertTrue(duplicated.keySet().contains(topology.macdaremunasw01));  //port 5
-        assertTrue(duplicated.keySet().contains(topology.mac001ebe70cec0));  //port 5
-        assertTrue(duplicated.keySet().contains(topology.mac0022557fd68f));  //port 6
-        assertTrue(duplicated.keySet().contains(topology.macvrendmunasw01)); //port 8
-        assertTrue(duplicated.keySet().contains(topology.mac001906d5cf50));  //port 8
+        assertTrue(duplicated.containsKey(topology.macdaremunasw01));  //port 5
+        assertTrue(duplicated.containsKey(topology.mac001ebe70cec0));  //port 5
+        assertTrue(duplicated.containsKey(topology.mac0022557fd68f));  //port 6
+        assertTrue(duplicated.containsKey(topology.macvrendmunasw01)); //port 8
+        assertTrue(duplicated.containsKey(topology.mac001906d5cf50));  //port 8
         assertEquals(2,duplicated.get(topology.macdaremunasw01).size());  //port 5
         assertEquals(2,duplicated.get(topology.mac001ebe70cec0).size());  //port 5
         assertEquals(2,duplicated.get(topology.mac0022557fd68f).size());  //port 8
@@ -2144,7 +2152,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     }
     
     @Test
-    public void testUnresolvableTopology() throws BridgeTopologyException {
+    public void testUnresolvableTopology() {
         TwoUnresolvableTopology topology = new TwoUnresolvableTopology();
         BroadcastDomain domain = new BroadcastDomain();
         Bridge.create(domain, topology.nodeIdA);

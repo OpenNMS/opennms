@@ -50,6 +50,7 @@ import static org.opennms.netmgt.nb.NmsNetworkBuilder.NMMSW2_SNMP_RESOURCE;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.NMMSW2_SNMP_RESOURCE_2;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 import java.util.HashSet;
 import java.util.List;
@@ -99,7 +100,7 @@ public class Nms8000EnIT extends EnLinkdBuilderITCase {
             @JUnitSnmpAgent(host=NMMSW1_IP, port=161, resource=NMMSW1_SNMP_RESOURCE),
             @JUnitSnmpAgent(host=NMMSW2_IP, port=161, resource=NMMSW2_SNMP_RESOURCE)
     })
-    public void testCdpLinks() throws Exception {
+    public void testCdpLinks() {
         m_nodeDao.save(builder.getNMMR1());
         m_nodeDao.save(builder.getNMMR2());
         m_nodeDao.save(builder.getNMMR3());
@@ -114,11 +115,11 @@ public class Nms8000EnIT extends EnLinkdBuilderITCase {
         m_linkdConfig.getConfiguration().setUseLldpDiscovery(false);
         m_linkdConfig.getConfiguration().setUseIsisDiscovery(false);
 
-        assertTrue(!m_linkdConfig.useLldpDiscovery());
+        assertFalse(m_linkdConfig.useLldpDiscovery());
         assertTrue(m_linkdConfig.useCdpDiscovery());
-        assertTrue(!m_linkdConfig.useOspfDiscovery());
-        assertTrue(!m_linkdConfig.useBridgeDiscovery());
-        assertTrue(!m_linkdConfig.useIsisDiscovery());
+        assertFalse(m_linkdConfig.useOspfDiscovery());
+        assertFalse(m_linkdConfig.useBridgeDiscovery());
+        assertFalse(m_linkdConfig.useIsisDiscovery());
 
         final OnmsNode nmmr1 = m_nodeDao.findByForeignId("linkd", NMMR1_NAME);
         final OnmsNode nmmr2 = m_nodeDao.findByForeignId("linkd", NMMR2_NAME);
@@ -167,7 +168,7 @@ public class Nms8000EnIT extends EnLinkdBuilderITCase {
             @JUnitSnmpAgent(host=NMMSW1_IP, port=161, resource=NMMSW1_SNMP_RESOURCE_2),
             @JUnitSnmpAgent(host=NMMSW2_IP, port=161, resource=NMMSW2_SNMP_RESOURCE_2)
     })
-    public void testLldpLinks() throws Exception {
+    public void testLldpLinks() {
         m_nodeDao.save(builder.getNMMR1());
         m_nodeDao.save(builder.getNMMR2());
         m_nodeDao.save(builder.getNMMR3());
@@ -183,10 +184,10 @@ public class Nms8000EnIT extends EnLinkdBuilderITCase {
         m_linkdConfig.getConfiguration().setUseIsisDiscovery(false);
 
         assertTrue(m_linkdConfig.useLldpDiscovery());
-        assertTrue(!m_linkdConfig.useCdpDiscovery());
-        assertTrue(!m_linkdConfig.useOspfDiscovery());
-        assertTrue(!m_linkdConfig.useBridgeDiscovery());
-        assertTrue(!m_linkdConfig.useIsisDiscovery());
+        assertFalse(m_linkdConfig.useCdpDiscovery());
+        assertFalse(m_linkdConfig.useOspfDiscovery());
+        assertFalse(m_linkdConfig.useBridgeDiscovery());
+        assertFalse(m_linkdConfig.useIsisDiscovery());
 
         final OnmsNode nmmr1 = m_nodeDao.findByForeignId("linkd", NMMR1_NAME);
         final OnmsNode nmmr2 = m_nodeDao.findByForeignId("linkd", NMMR2_NAME);
@@ -288,7 +289,7 @@ public class Nms8000EnIT extends EnLinkdBuilderITCase {
         if (link.getLldpRemPortIdSubType() == LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL) {
             try {
                 reverseLink.setLldpPortIfindex(SystemProperties.getInteger(link.getLldpRemPortId()));
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
         }
 
