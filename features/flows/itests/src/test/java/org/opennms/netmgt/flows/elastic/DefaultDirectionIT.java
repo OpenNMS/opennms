@@ -121,7 +121,7 @@ public class DefaultDirectionIT {
             final JSONObject sourceJsonObject = (JSONObject) ((JSONObject) hitsJsonArray.get(0)).get("_source");
 
             LOG.info("Direction value is: " + sourceJsonObject.get("netflow.direction"));
-            assertEquals("ingress", sourceJsonObject.get("netflow.direction"));
+            assertEquals("unknown", sourceJsonObject.get("netflow.direction"));
         }
 
         // stop ES
