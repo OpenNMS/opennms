@@ -220,8 +220,6 @@
 ** xref:admin/daemon-config-files.adoc[]
 ** xref:admin/logging/introduction.adoc[]
 ** xref:admin/housekeeping/introduction.adoc[]
-** xref:admin/backup/introduction.adoc[]
-** xref:admin/restore/introduction.adoc[]
 ** xref:admin/logging/log-file-viewer.adoc[]
 ** xref:admin/housekeeping/introduction.adoc[]
 ** xref:admin/scv-configuration.adoc[]
