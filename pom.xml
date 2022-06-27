@@ -1762,7 +1762,7 @@
     <lmaxDisruptorVersion>3.3.2</lmaxDisruptorVersion>
     <log4j2Version>2.17.2</log4j2Version>
     <logbackClassicVersion>1.2.11</logbackClassicVersion>
-    <mapstructVersion>1.4.1.Final</mapstructVersion>
+    <mapstructVersion>1.5.2.Final</mapstructVersion>
     <minaVersion>2.1.5</minaVersion>
     <mockitoVersion>3.4.6</mockitoVersion>
     <netty3Version>3.10.6.Final</netty3Version>
