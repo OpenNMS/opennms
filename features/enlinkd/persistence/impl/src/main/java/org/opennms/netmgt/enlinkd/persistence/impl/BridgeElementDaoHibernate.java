@@ -84,7 +84,7 @@ public class BridgeElementDaoHibernate extends AbstractDaoHibernate<BridgeElemen
     @Override
     public void deleteByNodeIdOlderThen(Integer nodeId, Date now) {
         getHibernateTemplate().bulkUpdate("delete from BridgeElement rec where rec.node.id = ? and rec.bridgeNodeLastPollTime < ?",
-                                          new Object[] { nodeId, now });
+                nodeId, now);
     }
 
     @Override
