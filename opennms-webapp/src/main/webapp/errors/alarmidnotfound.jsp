@@ -53,7 +53,7 @@
 <p>
   <%=einfe.getMessage()%>. The alarm has been cleared or has an invalid alarm ID.
   <br/>
-  Re-enter the alarm ID here or <a href="alarm/list.htm?acktyp=unack">browse all
+  Re-enter the alarm ID below or <a href="alarm/list.htm?acktyp=unack">browse all
    alarms</a> to find the alarm you are looking for.
    <br /> If you get the same error message,
    you can assume that the alarm has been cleared.
