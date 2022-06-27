@@ -1,0 +1,74 @@
+
+= JDBCDetector
+
+The JDBCDetector connects to a JDBC-enabled database and tries to fetch its catalog.
+If the fetch is successful, it returns a `detected` value.
+If it is not successful, it returns a `not detected` value.
+
+== Detector facts
+
+[options="autowidth"]
+|===
+| Implementation | `org.opennms.netmgt.provision.detector.jdbc`
+|===
+
+== Configuration and use
+
+.Parameters for the JDBC detector.
+[options="header, autowidth"]
+[cols="1,4,1"]
+|===
+| Parameter
+| Description
+| Default value
+
+3+| *Required*
+
+| dbDriver
+| Database driver class name.
+| org.postgresql.Driver
+
+| password
+| JDBC password.
+| Empty String object.
+
+| url
+| JDBC URL to query.
+Note: this URL can differ based on JDBC drivers, databases, and so on.
+| `"jdbc:postgresql://" + OPENNMS_JDBC_HOSTNAME + "/opennms"`
+
+| user
+| JDBC username.
+| postgres
+
+3+| *Optional*
+
+| ipMatch
+| IP address to match.
+|
+
+| port
+| Port to query.
+|
+
+| retries
+| Number of times detector should try to connect to database.
+|
+
+| serviceName
+| Description
+|
+
+| timeout
+| Time limit for trying to connect to database.
+|
+|===
+
+== Examples
+
+[source,xml]
+----
+<detector name="Process-dhcpd" class="org.opennms.netmgt.provision.detector.snmp.HostResourceSWRunDetector">
+    <parameter key="serviceToDetect" value="dhcpd"/>
+</detector>
+----
