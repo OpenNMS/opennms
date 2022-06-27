@@ -82,7 +82,7 @@ public class IpNetToMedia implements Serializable {
         	m_value=value;
         }
 
- 	    protected static final Map<Integer, String> s_typeMap = new HashMap<>();
+        static final Map<Integer, String> s_typeMap = new HashMap<>();
 
         static {
         	s_typeMap.put(1, "other" );
@@ -213,11 +213,6 @@ public class IpNetToMedia implements Serializable {
         return m_sourceNode;
     }
 
-    /**
-     * <p>setSourceNode</p>
-     *
-     * @param sourceNode a {@link org.opennms.netmgt.model.OnmsNode} object.
-     */
     public void setSourceNode(OnmsNode sourceNode) {
         m_sourceNode = sourceNode;
     }
@@ -227,11 +222,6 @@ public class IpNetToMedia implements Serializable {
         return m_sourceIfIndex;
     }
     
-    /**
-     * <p>setSourceIfIndex</p>
-     *
-     * @param sourceIfIndex a {@link java.lang.Integer} object.
-     */
     public void setSourceIfIndex(Integer sourceIfIndex) {
         m_sourceIfIndex = sourceIfIndex;
     }
