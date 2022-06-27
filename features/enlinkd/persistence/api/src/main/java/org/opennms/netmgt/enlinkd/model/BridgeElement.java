@@ -73,19 +73,19 @@ public class BridgeElement implements Serializable {
 			m_type = type;
 		}
 		
-	    protected static final Map<Integer, String> s_typeMap = new HashMap<>();
+	    protected static final Map<Integer, String> TYPE_MAP = new HashMap<>();
 
         static {
-        	s_typeMap.put(1, "unknown" );
-        	s_typeMap.put(2, "decLb100" );
-        	s_typeMap.put(3, "ieee802.1d" );
-        	s_typeMap.put(4, "ieee802.1m" );
-        	s_typeMap.put(5, "ieee802.1aq" );
+        	TYPE_MAP.put(1, "unknown" );
+        	TYPE_MAP.put(2, "decLb100" );
+        	TYPE_MAP.put(3, "ieee802.1d" );
+        	TYPE_MAP.put(4, "ieee802.1m" );
+        	TYPE_MAP.put(5, "ieee802.1aq" );
         }
         
         public static String getTypeString(Integer code) {
-            if (s_typeMap.containsKey(code))
-                    return s_typeMap.get( code);
+            if (TYPE_MAP.containsKey(code))
+                    return TYPE_MAP.get( code);
             return "other-vendor-specific";
         }
 
