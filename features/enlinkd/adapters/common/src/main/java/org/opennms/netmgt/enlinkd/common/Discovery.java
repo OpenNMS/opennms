@@ -67,8 +67,8 @@ public abstract class Discovery implements ReadyRunnable {
      * as the collection point. The collection does not occur until the
      * <code>run</code> method is invoked.
      * 
-     * @param nodeid
-     * @param config
+     * @param interval the time in msec between collections
+     * @param initial the time in msec wait before performing a collection at all
      *            The SnmpPeer object to collect from.
      */
     public Discovery(long interval, long initial) {
@@ -105,26 +105,11 @@ public abstract class Discovery implements ReadyRunnable {
         runDiscovery();            
         reschedule();
     }
-    /**
-     * <p>
-     * getScheduler
-     * </p>
-     * 
-     * @return a {@link org.opennms.netmgt.enlinkd.scheduler.Scheduler} object.
-     */
+
     public LegacyScheduler getScheduler() {
         return m_scheduler;
     }
 
-    /**
-     * <p>
-     * setScheduler
-     * </p>
-     * 
-     * @param scheduler
-     *            a {@link org.opennms.netmgt.enlinkd.scheduler.Scheduler}
-     *            object.
-     */
     public void setScheduler(LegacyScheduler scheduler) {
         m_scheduler = scheduler;
     }
@@ -196,17 +181,6 @@ public abstract class Discovery implements ReadyRunnable {
 
     /**
      * <p>
-     * getPollInterval
-     * </p>
-     * 
-     * @return Returns the initial_sleep_time.
-     */
-    public long getPollInterval() {
-        return m_poll_interval;
-    }
-
-    /**
-     * <p>
      * setPollInterval
      * </p>
      * 
@@ -215,17 +189,6 @@ public abstract class Discovery implements ReadyRunnable {
      */
     public void setPollInterval(long interval) {
         m_poll_interval = interval;
-    }
-
-    /**
-     * <p>
-     * getInitialSleepTime
-     * </p>
-     * 
-     * @return Returns the initial_sleep_time.
-     */
-    public long getInitialSleepTime() {
-        return m_initial_sleep_time;
     }
 
     /**
@@ -262,9 +225,7 @@ public abstract class Discovery implements ReadyRunnable {
             Discovery other = (Discovery) obj;
             if (m_initial_sleep_time != other.m_initial_sleep_time)
                     return false;
-            if (m_poll_interval != other.m_poll_interval)
-                    return false;
-            return true;
+        return m_poll_interval == other.m_poll_interval;
     }
 
 }
