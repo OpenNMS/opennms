@@ -76,9 +76,6 @@ public class Node {
         return m_nodeId;
     }
 
-    public String getNodeidAsString() {
-        return Integer.toString(m_nodeId);
-    }
     public InetAddress getSnmpPrimaryIpAddr() {
         return m_snmpprimaryaddr;
     }

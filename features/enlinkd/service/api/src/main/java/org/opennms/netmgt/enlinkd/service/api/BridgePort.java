@@ -123,18 +123,15 @@ public class BridgePort implements Topology {
         
     public String printTopology() {
 
-        final StringBuffer strbfr = new StringBuffer();
-        strbfr.append("nodeid:["); 
-        strbfr.append(getNodeId());
-        strbfr.append("], bridgeport:[");
-        strbfr.append(getBridgePort());
-        strbfr.append("], ifindex:[");
-        strbfr.append(getBridgePortIfIndex());
-        strbfr.append("], vlan:[");
-        strbfr.append(getVlan());
-        strbfr.append("]");
-
-        return strbfr.toString();
+            return "nodeid:[" +
+                getNodeId() +
+                "], bridgeport:[" +
+                getBridgePort() +
+                "], ifindex:[" +
+                getBridgePortIfIndex() +
+                "], vlan:[" +
+                getVlan() +
+                "]";
     }
 
 }

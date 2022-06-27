@@ -122,13 +122,13 @@ public class CdpTopologyServiceImpl extends TopologyServiceImpl implements CdpTo
     
     @Transactional
     protected void saveCdpLink(final int nodeId, final CdpLink saveMe) {
-        new UpsertTemplate<CdpLink, CdpLinkDao>(m_transactionManager,
-                                                m_cdpLinkDao) {
+        new UpsertTemplate<>(m_transactionManager,
+                m_cdpLinkDao) {
 
             @Override
             protected CdpLink query() {
                 return m_dao.get(nodeId, saveMe.getCdpCacheIfIndex(),
-                                 saveMe.getCdpCacheDeviceIndex());
+                        saveMe.getCdpCacheDeviceIndex());
             }
 
             @Override
@@ -159,7 +159,7 @@ public class CdpTopologyServiceImpl extends TopologyServiceImpl implements CdpTo
         final Collection<CdpElementTopologyEntity> cdpElements = getTopologyEntityCache().getCdpElementTopologyEntities();
         final List<CdpLinkTopologyEntity> allLinks = getTopologyEntityCache().getCdpLinkTopologyEntities();
         // 1. create lookup maps:
-        Map<Integer, CdpElementTopologyEntity> cdpelementmap = new HashMap<Integer, CdpElementTopologyEntity>();
+        Map<Integer, CdpElementTopologyEntity> cdpelementmap = new HashMap<>();
         for (CdpElementTopologyEntity cdpelement: cdpElements) {
             cdpelementmap.put(cdpelement.getNodeId(), cdpelement);
         }
@@ -171,7 +171,7 @@ public class CdpTopologyServiceImpl extends TopologyServiceImpl implements CdpTo
                     targetLink.getCdpCacheDeviceId());
             targetLinkMap.put(key, targetLink);
         }
-        Set<Integer> parsed = new HashSet<Integer>();
+        Set<Integer> parsed = new HashSet<>();
 
         // 2. iterate
         List<TopologyConnection<CdpLinkTopologyEntity, CdpLinkTopologyEntity>> results = new ArrayList<>();

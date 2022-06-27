@@ -72,13 +72,13 @@ public class BridgeForwardingTableEntry implements Topology {
         DOT1D_TP_FDB_STATUS_OTHER(1), DOT1D_TP_FDB_STATUS_INVALID(2), DOT1D_TP_FDB_STATUS_LEARNED(
                 3), DOT1D_TP_FDB_STATUS_SELF(4), DOT1D_TP_FDB_STATUS_MGMT(5);
 
-        private int m_type;
+        private final int m_type;
 
         BridgeDot1qTpFdbStatus(int type) {
             m_type = type;
         }
 
-        protected static final Map<Integer, String> s_typeMap = new HashMap<Integer, String>();
+        static final Map<Integer, String> s_typeMap = new HashMap<>();
 
         static {
             s_typeMap.put(1, "other");
@@ -102,7 +102,7 @@ public class BridgeForwardingTableEntry implements Topology {
             if (code == null)
                 throw new IllegalArgumentException(
                                                    "Cannot create BridgeDot1qTpFdbStatus from null code");
-            if (code.intValue() <= 0)
+            if (code <= 0)
                 throw new IllegalArgumentException(
                                                    "Cannot create BridgeDot1qTpFdbStatus from"
                                                            + code + " code");
@@ -126,7 +126,7 @@ public class BridgeForwardingTableEntry implements Topology {
     }
 
     public static String printTopology(Set<BridgeForwardingTableEntry> bft) {
-        StringBuffer strbfr = new StringBuffer();
+        StringBuilder strbfr = new StringBuilder();
         boolean rn = false;
         for (BridgeForwardingTableEntry bftentry: bft) {
             if (rn) {
@@ -144,8 +144,8 @@ public class BridgeForwardingTableEntry implements Topology {
     }
     
     public static List<BridgeMacLink> create(BridgePort bp, Set<String> macs, BridgeMacLinkType type) {
-        List<BridgeMacLink> maclinks = new ArrayList<BridgeMacLink>();
-        macs.stream().forEach(mac -> maclinks.add(create(bp, mac, type)));
+        List<BridgeMacLink> maclinks = new ArrayList<>();
+        macs.forEach(mac -> maclinks.add(create(bp, mac, type)));
         return maclinks;
     }
 
@@ -165,7 +165,7 @@ public class BridgeForwardingTableEntry implements Topology {
     public static List<BridgeBridgeLink> create(BridgePort designatedPort, Set<BridgePort> ports) {
         OnmsNode designatedNode = new OnmsNode();
         designatedNode.setId(designatedPort.getNodeId());
-        List<BridgeBridgeLink> links = new ArrayList<BridgeBridgeLink>();
+        List<BridgeBridgeLink> links = new ArrayList<>();
         for (BridgePort port:ports) {
             if (port.equals(designatedPort)) {
                 continue;
@@ -188,8 +188,8 @@ public class BridgeForwardingTableEntry implements Topology {
     }
 
     public static Set<BridgeForwardingTableEntry> get(BridgePortWithMacs bft) {
-        Set<BridgeForwardingTableEntry> bftentries = new HashSet<BridgeForwardingTableEntry>();
-        bft.getMacs().stream().forEach(mac -> {
+        Set<BridgeForwardingTableEntry> bftentries = new HashSet<>();
+        bft.getMacs().forEach(mac -> {
             BridgeForwardingTableEntry bftentry = new BridgeForwardingTableEntry();
             bftentry.setNodeId(bft.getPort().getNodeId());
             bftentry.setBridgePort(bft.getPort().getBridgePort());
@@ -266,7 +266,7 @@ public class BridgeForwardingTableEntry implements Topology {
     }
 
     public String printTopology() {
-        StringBuffer strbfr = new StringBuffer();
+        StringBuilder strbfr = new StringBuilder();
 
         strbfr.append("[");
         strbfr.append(getMacAddress());
