@@ -48,8 +48,6 @@ public class VlanType implements Comparable<VlanType>, Serializable {
     public static final int VLAN_TYPE_VTP_DEPRECATED = 6;
     public static final int VLAN_TYPE_EXTREME_LAYERTWO = 7;
 
-    public static final int THREECOM_STARTING_INDEX = 7;
-
     public static final int VLAN_TYPE_THREECOM_vlanLayer2 = 8;
     public static final int VLAN_TYPE_THREECOM_vlanUnspecifiedProtocols = 9;
     public static final int VLAN_TYPE_THREECOM_vlanIPProtocol = 10;
@@ -150,7 +148,7 @@ public class VlanType implements Comparable<VlanType>, Serializable {
 
     private static int getIndex(Integer code) {
         for (int i = 0; i < s_order.length; i++) {
-            if (s_order[i] == code) {
+            if (s_order[i].equals(code)) {
                 return i;
             }
         }
@@ -175,7 +173,7 @@ public class VlanType implements Comparable<VlanType>, Serializable {
         return String.valueOf(m_vlanType);
     }
 
-    public static final VlanType get(Integer code) {
+    public static VlanType get(Integer code) {
         if (code == null)
             return VlanType.UNKNOWN;
         switch (code) {

@@ -40,11 +40,11 @@ import org.opennms.netmgt.enlinkd.model.OspfElement;
  */
 public interface OspfElementDao extends OnmsDao<OspfElement, Integer> {
     
-    public OspfElement findByNodeId(Integer id);
+    OspfElement findByNodeId(Integer id);
 
-    public OspfElement findByRouterId(InetAddress routerId);
+    OspfElement findByRouterId(InetAddress routerId);
 
-    public List<OspfElement> findAllByRouterId(InetAddress routerId);
+    List<OspfElement> findAllByRouterId(InetAddress routerId);
 
     /**
      * Returns all OspfElements that have an ospfRouterId that matches an ospfRemRouterId of an OspfLink related to the given
@@ -52,6 +52,6 @@ public interface OspfElementDao extends OnmsDao<OspfElement, Integer> {
      */
     List<OspfElement> findByRouterIdOfRelatedOspfLink(int nodeId);
 
-    public void deleteByNodeId(Integer nodeId);
+    void deleteByNodeId(Integer nodeId);
 
 }

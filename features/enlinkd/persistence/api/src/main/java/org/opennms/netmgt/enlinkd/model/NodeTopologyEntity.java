@@ -39,11 +39,11 @@ import com.google.common.base.MoreObjects;
 @ReadOnlyEntity
 public class NodeTopologyEntity implements Serializable {
 
-    private Integer id;
-    private OnmsNode.NodeType type;
-    private String sysObjectId;
-    private String label;
-    private String location;
+    private final Integer id;
+    private final OnmsNode.NodeType type;
+    private final String sysObjectId;
+    private final String label;
+    private final String location;
 
     public NodeTopologyEntity(Integer nodeid, OnmsNode.NodeType nodetype, String nodesysoid, String nodelabel, String location){
         this.id = nodeid;

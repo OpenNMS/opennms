@@ -43,17 +43,17 @@ import org.opennms.netmgt.enlinkd.model.BridgeBridgeLink;
  */
 public interface BridgeBridgeLinkDao extends OnmsDao<BridgeBridgeLink, Integer> {
     
-    public List<BridgeBridgeLink> findByNodeId(Integer id);
+    List<BridgeBridgeLink> findByNodeId(Integer id);
 
-    public List<BridgeBridgeLink> findByDesignatedNodeId(Integer id);
+    List<BridgeBridgeLink> findByDesignatedNodeId(Integer id);
 
-    public BridgeBridgeLink getByNodeIdBridgePort(Integer id, Integer port);
+    BridgeBridgeLink getByNodeIdBridgePort(Integer id, Integer port);
 
-    public BridgeBridgeLink getByNodeIdBridgePortIfIndex(Integer id, Integer ifindex);
+    BridgeBridgeLink getByNodeIdBridgePortIfIndex(Integer id, Integer ifindex);
 
-    public List<BridgeBridgeLink> getByDesignatedNodeIdBridgePort(Integer id, Integer port);
+    List<BridgeBridgeLink> getByDesignatedNodeIdBridgePort(Integer id, Integer port);
 
-    public List<BridgeBridgeLink> getByDesignatedNodeIdBridgePortIfIndex(Integer id, Integer ifindex);
+    List<BridgeBridgeLink> getByDesignatedNodeIdBridgePortIfIndex(Integer id, Integer ifindex);
 
     void deleteByNodeIdOlderThen(Integer nodeiId, Date now);
 
