@@ -301,16 +301,6 @@ checkJavaHome() {
     fi
 }
 
-get_real_path_if_possible() {
-    unresolved="$1"
-    readlink="$(command -v readlink 2>/dev/null)"
-    if [ -n "$readlink" ] && [ -n "$unresolved" ] && [ -x "$unresolved" ]; then
-        "$readlink" "$unresolved" || echo "$unresolved"
-    else
-        echo "$unresolved"
-    fi
-}
-
 
 #
 # Function: checkPath()
@@ -325,7 +315,7 @@ checkPath() {
 
     readlink="$(command -v readlink 2>/dev/null)"
     if [ -n "$readlink" ] && [ -n "$JP" ]; then
-        JP="$(readlink "$JP")"
+        JP="$(readlink -f "$JP")"
     fi
 
     if [ -n "$JP" ]; then
