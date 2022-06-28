@@ -48,6 +48,9 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * RequestTrackerTest
@@ -55,6 +58,8 @@ import org.junit.Test;
  * @author brozow
  */
 public class RequestTrackerTest {
+    private static final Logger LOG = LoggerFactory.getLogger(RequestTrackerTest.class);
+
     public static long TIMEOUT = 100;
 
     private static class TestReply implements ResponseWithId<Integer> {
@@ -370,7 +375,7 @@ public class RequestTrackerTest {
 
         long elapsedTime = cb.timeoutTimestamp - req.getSentTimestamp();
 
-        System.out.println("testTimeoutNoRetries processing took " + elapsedTime);
+        LOG.info("testTimeoutNoRetries processing took " + elapsedTime);
 
         // no more than two millis should pass before the timeout is processed
         assertThat( "Timeout processing elapsed time", elapsedTime, is(lessThan(TIMEOUT + 30)) );
@@ -406,7 +411,7 @@ public class RequestTrackerTest {
 
         long elapsedTime = cb.timeoutTimestamp - req.getSentTimestamp();
 
-        System.out.println("testTimeoutOneRetry processing took " + elapsedTime);
+        LOG.info("testTimeoutOneRetry processing took " + elapsedTime);
 
         // no more than two millis should pass before the timeout is processed
         assertThat( "Timeout processing elapsed time", elapsedTime, is(lessThan(2 * TIMEOUT + 30)) );
