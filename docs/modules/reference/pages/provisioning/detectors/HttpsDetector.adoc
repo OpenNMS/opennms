@@ -11,7 +11,4 @@ The HTTPSDetector finds and assigns services based on HTTPS.
 
 == Configuration and use
 
-.Parameters for the HTTPSDetector
-|===
-| Parameters for the HTTPSDetector are the same parameters as the <<provisioning/detectors/HttpDetector.adoc#HttpDetector, HTTPDetector>>.
-|===
+Parameters for the HTTPSDetector are the same parameters as the <<provisioning/detectors/HttpDetector.adoc#HttpDetector, HTTPDetector>>.

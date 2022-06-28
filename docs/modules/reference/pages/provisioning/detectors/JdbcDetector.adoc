@@ -13,6 +13,8 @@ If it is not successful, it returns the `not detected` value.
 
 == Configuration and use
 
+The JDBCDetector uses the xref:reference:provisioning/detectors.adoc#ref-detector-provisioning-common-parameters[common configuration parameters].
+
 .Parameters for the JDBCDetector
 [options="header, autowidth"]
 [cols="1,4,1"]

@@ -12,6 +12,8 @@ It binds a service with a given name when a particular scalar or table SNMP OID 
 
 == Configuration and use
 
+The SNMPDetector uses the xref:reference:provisioning/detectors.adoc#ref-detector-provisioning-common-parameters[common configuration parameters].
+
 .Parameters for the SNMPDetector
 [options="header"]
 [cols="1,4a,1"]
@@ -94,7 +96,7 @@ The service will be automatically assigned to any nodes that respond with a valu
 For provisioning, we have a requisition named `Server` that contains all servers in our data center.
 A detector with the name `HP-Insight-Drive-Logical` for this requisition is created with the following parameters:
 
-.Parameters for the SNMP detector
+.Parameters for the SNMPDetector
 [options="header, autowidth"]
 [cols="1,2"]
 |===
