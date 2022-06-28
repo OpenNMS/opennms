@@ -34,6 +34,10 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.lessThan;
+import static org.hamcrest.Matchers.is;
+
 import java.io.IOException;
 import java.util.concurrent.DelayQueue;
 import java.util.concurrent.Delayed;
@@ -366,8 +370,10 @@ public class RequestTrackerTest {
 
         long elapsedTime = cb.timeoutTimestamp - req.getSentTimestamp();
 
+        System.out.println("testTimeoutNoRetries processing took " + elapsedTime);
+
         // no more than two millis should pass before the timeout is processed
-        assertTrue( "Timeout processed too late", elapsedTime < (TIMEOUT + 10) );
+        assertThat( "Timeout processing elapsed time", elapsedTime, is(lessThan(TIMEOUT + 30)) );
 
 
     }
@@ -400,10 +406,10 @@ public class RequestTrackerTest {
 
         long elapsedTime = cb.timeoutTimestamp - req.getSentTimestamp();
 
+        System.out.println("testTimeoutOneRetry processing took " + elapsedTime);
+
         // no more than two millis should pass before the timeout is processed
-        assertTrue( "Timeout processed too late", elapsedTime < (2 * TIMEOUT + 10) );
-
-
+        assertThat( "Timeout processing elapsed time", elapsedTime, is(lessThan(2 * TIMEOUT + 30)) );
     }
 
 
