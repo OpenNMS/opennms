@@ -73,6 +73,7 @@
 *** xref:events/sources/kafka.adoc[]
 ** xref:events/eventbus.adoc[]
 ** xref:events/event-configuration.adoc[]
+** ** xref:events/trap-config.adoc[]
 ** xref:events/event-translator.adoc[]
 
 * xref:alarms/introduction.adoc[]
