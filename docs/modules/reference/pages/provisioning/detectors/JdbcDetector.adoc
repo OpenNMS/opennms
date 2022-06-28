@@ -9,12 +9,12 @@ If it is not successful, it returns a `not detected` value.
 
 [options="autowidth"]
 |===
-| Implementation | `org.opennms.netmgt.provision.detector.jdbc`
+| Implementation | `org.opennms.netmgt.provision.detector.jdbc.JdbcDetector`
 |===
 
 == Configuration and use
 
-.Parameters for the JDBC detector.
+.Parameters for the JDBC detector
 [options="header, autowidth"]
 [cols="1,4,1"]
 |===
@@ -35,7 +35,7 @@ If it is not successful, it returns a `not detected` value.
 | url
 | JDBC URL to query.
 Note: this URL can differ based on JDBC drivers, databases, and so on.
-| `"jdbc:postgresql://" + OPENNMS_JDBC_HOSTNAME + "/opennms"`
+| `jdbc:postgresql://localhost/opennms`
 
 | user
 | JDBC username.
@@ -49,7 +49,7 @@ Note: this URL can differ based on JDBC drivers, databases, and so on.
 
 | port
 | Port to query.
-|
+| 3306
 
 | retries
 | Number of times detector should try to connect to database.
@@ -64,11 +64,23 @@ Note: this URL can differ based on JDBC drivers, databases, and so on.
 |
 |===
 
+== Database driver
+The JDBCDetector is based on JDBC and requires a JDBC driver to communicate with any database.
+Since {page-component-title} uses a PostgreSQL database, the PostgreSQL JDBC driver is available out of the box.
+For all other database systems, you must provide a compatible JDBC driver as a JAR file.
+To provide a JDBC driver, place the driver-jar in your `$\{OPENNMS_HOME}/lib` folder.
+
 == Examples
 
 [source,xml]
 ----
-<detector name="Process-dhcpd" class="org.opennms.netmgt.provision.detector.snmp.HostResourceSWRunDetector">
-    <parameter key="serviceToDetect" value="dhcpd"/>
+<detector name="MySQL-JDBC" class="org.opennms.netmgt.provision.detector.jdbc.JdbcDetector">
+    <parameter key="password" value="borkborkbork"/>
+    <parameter key="user" value="opennms"/>
+    <parameter key="dbDriver" value="com.mysql.jdbc.Driver"/>
+    <parameter key="url" value="jdbc:mysql://OPENNMS_JDBC_HOSTNAME:3306/test"/>
+    <parameter key="timeout" value="5000"/>
 </detector>
 ----
+
+This example assumes you have loaded the MySQL driver file.
