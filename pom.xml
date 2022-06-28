@@ -4325,7 +4325,7 @@
       <dependency>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-validator-annotation-processor</artifactId>
-        <version>4.1.0.Final</version>
+        <version>7.0.4.Final</version>
       </dependency>
       <dependency>
         <groupId>javax.samples.jnlp</groupId>
