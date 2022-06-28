@@ -71,6 +71,7 @@
 
         <!-- Useful Commands -->
         <bundle>mvn:org.opennms.core/org.opennms.core.commands/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core/org.opennms.core.lib/${project.version}</bundle>
 
         <!-- SystemProperties -->
         <bundle>mvn:org.opennms.core/org.opennms.core.sysprops/${project.version}</bundle>
@@ -338,18 +339,6 @@
 
     <feature name="sentinel-timeseries-api" description="Sentinel :: Timeseries Storage API" version="${project.version}">
         <feature>sentinel-persistence</feature>
-        <feature>opennms-health</feature>
-        <feature>opennms-measurements-api</feature>
-        <feature>opennms-collection-api</feature>
-        <feature>opennms-core-ipc-rpc-api</feature>
-        <feature version="${opennmsApiVersion}">opennms-integration-api</feature>
-        <feature>newts-api</feature>
-
-        <bundle dependency="true">mvn:com.lmax/disruptor/${lmaxDisruptorVersion}</bundle>
-        <bundle dependency="true">wrap:mvn:net.agkn/hll/${hllVersion}</bundle>
-        <bundle>mvn:org.opennms.core/org.opennms.core.cache/${project.version}</bundle>
-
-        <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.persistence.osgi/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features/org.opennms.features.timeseries/${project.version}</bundle>
+        <feature>opennms-timeseries-api</feature>
     </feature>
 </features>
