@@ -24,11 +24,11 @@ The BSFDetector passes the `map`, `ip_addr`, `svc_name`, and `results` variables
 | Default value
 
 | fileName
-| Path to file on OpenNMS server containing BSF-compatible script to run.
+| Path to the file on the OpenNMS server that contains the BSF-compatible script to run.
 | none
 
 | langClass
-| Short name of language the script is written in.
+| Short name of the language the script is written in.
 Choices:
 
 * jython
@@ -46,7 +46,8 @@ Choices:
 | none
 
 | fileExtensions
-| Comma-separated list of file extensions be considered valid scripts for BSF instance.
+| Comma-separated list of file extensions.
+Include them to indicate the only file types that the BSF instance recognizes as containing valid scripts.
 | none
 
 | runType

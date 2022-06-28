@@ -2,7 +2,7 @@
 
 The WSManWQLDetector attempts to connect to the agent defined in `wsman-config.xml` and issues a WQL query.
 If the query successfully returns one or more items, the service is marked as detected.
-You can use the WS-Man WQL detector to define arbitrary services based on WQL filter results.
+You can use the WSManWQLDetector to define arbitrary services based on WQL filter results.
 
 == Detector facts
 
