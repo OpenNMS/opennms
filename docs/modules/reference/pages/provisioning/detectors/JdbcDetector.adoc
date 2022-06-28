@@ -1,9 +1,8 @@
-
-= JDBCDetector
+= JDBC Detector
 
 The JDBCDetector connects to a JDBC-enabled database and tries to fetch its catalog.
-If the fetch is successful, it returns a `detected` value.
-If it is not successful, it returns a `not detected` value.
+If the fetch is successful, it returns the `detected` value.
+If it is not successful, it returns the `not detected` value.
 
 == Detector facts
 
@@ -14,7 +13,7 @@ If it is not successful, it returns a `not detected` value.
 
 == Configuration and use
 
-.Parameters for the JDBC detector
+.Parameters for the JDBCDetector
 [options="header, autowidth"]
 [cols="1,4,1"]
 |===
@@ -43,30 +42,14 @@ Note: this URL can differ based on JDBC drivers, databases, and so on.
 
 3+| *Optional*
 
-| ipMatch
-| IP address to match.
-|
-
 | port
 | Port to query.
 | 3306
-
-| retries
-| Number of times detector should try to connect to database.
-|
-
-| serviceName
-| Description
-|
-
-| timeout
-| Time limit for trying to connect to database.
-|
 |===
 
 == Database driver
-The JDBCDetector is based on JDBC and requires a JDBC driver to communicate with any database.
-Since {page-component-title} uses a PostgreSQL database, the PostgreSQL JDBC driver is available out of the box.
+The JDBCDetector requires a JDBC driver to communicate with any database.
+Since {page-component-title} uses a PostgreSQL database, the PostgreSQL JDBC driver is included out of the box.
 For all other database systems, you must provide a compatible JDBC driver as a JAR file.
 To provide a JDBC driver, place the driver-jar in your `$\{OPENNMS_HOME}/lib` folder.
 

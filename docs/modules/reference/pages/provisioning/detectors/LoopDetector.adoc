@@ -1,8 +1,8 @@
 = Loop Detector
 
-The Loop Detector gives {page-component-title} users the ability to force a service onto an interface during service detection.
-Use the Loop Detector to ensure a specific service is added to all nodes without performing a check against the node.
-The primary use case for this type of detector is when using xref:reference:service-assurance/monitors/PassiveStatusMonitor.adoc[passive service monitoring].
+The LoopDetector gives {page-component-title} users the ability to force a service onto an interface during service detection.
+You can use the LoopDetector to ensure a specific service is added to all nodes without performing a check against the node.
+This type of detector is primarily used along with xref:reference:service-assurance/monitors/PassiveStatusMonitor.adoc[passive service monitoring].
 
 First, add a detector for the new service to the desired foreign-source definition.
 Use the LOOP class:
@@ -37,7 +37,7 @@ This configuration will cause the "PCR" service to be detected (without any actu
 |===
 | Parameter
 | Description
-| Default
+| Default value
 
 3+| *Required*
 

@@ -135,6 +135,7 @@
 *** xref:provisioning/detectors/HostResourceSWRunDetector.adoc[HostResourceSWRun]
 *** xref:provisioning/detectors/HttpDetector.adoc[HTTP]
 *** xref:provisioning/detectors/HttpsDetector.adoc[HTTPS]
+*** xref:provisioning/detectors/JdbcDetector.adoc[JDBC]
 *** xref:provisioning/detectors/LoopDetector.adoc[Loop]
 *** xref:provisioning/detectors/ReverseDNSLookupDetector.adoc[Reverse DNS]
 *** xref:provisioning/detectors/SnmpDetector.adoc[SNMP]

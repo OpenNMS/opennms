@@ -1,8 +1,7 @@
+= SNMP Service Detector
 
-= SNMP Detector
-
-Use this detector to find and assigns services based on SNMP.
-The detector binds a service with a given service name when a particular SNMP OID as scalar or table matches a given criteria.
+The SNMPDetector finds and assigns services based on SNMP.
+It binds a service with a given name when a particular scalar or table SNMP OID matches defined criteria.
 
 == Detector facts
 
@@ -13,7 +12,7 @@ The detector binds a service with a given service name when a particular SNMP OI
 
 == Configuration and use
 
-.Parameters for the SNMP service detector
+.Parameters for the SNMPDetector
 [options="header"]
 [cols="1,4a,1"]
 |===
@@ -24,22 +23,14 @@ The detector binds a service with a given service name when a particular SNMP OI
 3+| *Required*
 
 | oid
-| SNMP OID for scalar or table to detect the service.
+| Scalar or table SNMP OID used to detect service.
 | .1.3.6.1.2.1.1.2.0
 
 3+| *Optional*
 
-| retry
-| Number of retries to detect the service.
-| agent config
-
-| timeout
-| Timeout in milliseconds to wait for a response from the SNMP agent.
-| agent config
-
 | vbvalue
 | Expected return value to detect the service. +
-If not specified, the service is detected if the SNMP OID returns any valid value. +
+If not specified, a service is detected if SNMP OID returns any valid value. +
 Evaluated as a link:https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html[Java Regular Expression].
 | none
 
@@ -54,10 +45,10 @@ Evaluated as a link:https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pa
 | matchType
 | Set match type to evaluate the expected value in the SNMP table.
 
-* *exist*: ignore the expected #`vbalue`# and detect the service if the given table under OID exists.
+* *exist*: ignore expected #`vbalue`# and detect the service if given table under OID exists.
 * *all*: all values in the table must match against expected `vbalue` to detect the service.
-* *any*: at least one value in the table must match against expected `vbalue` to detect the service.
-* *none*: none of the values should match against expected value to detect service.
+* *any*: at least one value in table must match against expected `vbalue` to detect the service.
+* *none*: no values should match against expected value to detect the service.
 | exist
 
 | useSnmpProfiles
@@ -78,7 +69,7 @@ The service should be detected automatically if the server supports this OID.
 For provisioning, we have a requisition named `Server` that contains all servers in our data center.
 We create a detector with the name `Dell-OMSA-Global-State` for this requisition with the following parameters:
 
-.Parameters for the SNMP detector
+.Parameters for the SNMPDetector
 [options="header, autowidth"]
 [cols="1,2"]
 |===
@@ -108,7 +99,7 @@ A detector with the name `HP-Insight-Drive-Logical` for this requisition is crea
 [cols="1,2"]
 |===
 | Parameter
-| Value
+| Default value
 
 | name
 | HP-Insight-Drive-Logical

@@ -1,10 +1,10 @@
 = BSF Detector
 
-The BSF Detector lets you run arbitrary scripts using the Bean Scripting Framework to determine the existence of a service.
+The BSFDetector lets you run arbitrary scripts using the Bean Scripting Framework (BSF) to determine if a service exists.
 This can be a script written in any of the languages BSF supports.
 The only requirement is that the script returns the string `OK` if it passes.
 
-The BSF Detector passes the `map`, `ip_addr`, `svc_name`, and `results` variables as beans to the script.
+The BSFDetector passes the `map`, `ip_addr`, `svc_name`, and `results` variables as beans to the script.
 
 == Detector facts
 
@@ -15,20 +15,21 @@ The BSF Detector passes the `map`, `ip_addr`, `svc_name`, and `results` variable
 
 == Configuration and use
 
-.Optional parameters for the BSF service detector
+.Optional parameters for the BSFDetector
 [options="header"]
 [cols="1,3a,1"]
 |===
 | Parameter
 | Description
-| Default
+| Default value
 
 | fileName
-| The path to the file on the OpenNMS server which contains the BSF-compatible script to run.
+| Path to file on OpenNMS server containing BSF-compatible script to run.
 | none
 
 | langClass
-| The short name of the language the script is written in. Choices:
+| Short name of language the script is written in.
+Choices:
 
 * jython
 * beanshell
@@ -36,22 +37,24 @@ The BSF Detector passes the `map`, `ip_addr`, `svc_name`, and `results` variable
 | none
 
 | bsfEngine
-| The BSF engine to use when running the script. Choices:
+| BSF engine to use when running the script.
+Choices:
 
-* bsh.util.BeanShellBSFEngine
-* org.codehaus.groovy.bsf.GroovyEngine
-* org.apache.bsf.engines.jython.JythonEngine
+* `bsh.util.BeanShellBSFEngine`
+* `org.codehaus.groovy.bsf.GroovyEngine`
+* `org.apache.bsf.engines.jython.JythonEngine`
 | none
 
 | fileExtensions
-| A comma-separated list of file extensions to consider a valid script for this BSF instance.
+| Comma-separated list of file extensions be considered valid scripts for BSF instance.
 | none
 
 | runType
-| Mode to run the BSF script. Choices:
+| Mode to run BSF script.
+Choices:
 
-* *eval*: expects the script to print the OK/NOK status for validation
-* *exec*: expects the script to manipulate the provided results hashmap directly
+* *eval*: expects script to print `OK`/`NOK` status for validation.
+* *exec*: expects script to manipulate provided results hashmap directly.
 | eval
 |===
 
@@ -69,12 +72,12 @@ For minimal scripts with simple logic, a `run-type` of `eval` is the easiest opt
 Scripts running in `eval` mode must return a string matching a status code of `OK` or `NOK`.
 
 A script with more than one line of logic requires a `run-type` of `exec`.
-Scripts running in `exec` mode need not return anything, but they have to add a `status` entry with a `status code` to the `results` object.
+Scripts running in `exec` mode do not need to return anything, but they have to add a `status` entry with a `status code` to the `results` object.
 Additionally, the `results` object can also carry a `"reason":"message"` entry that is used in non-`OK` states.
 
 == Commonly used language settings
 
-The BSF detector supports many languages.
+The BSFDetector supports many languages.
 The following table provides the required setup for commonly used languages.
 
 .BSF language options
@@ -102,7 +105,7 @@ The following table provides the required setup for commonly used languages.
 | jython-[version].jar
 |===
 
-IMPORTANT: If you will be using a Groovy or Jython script, you will need to place the required library file in the `$\{OPENNMS_HOME}/lib` directory and restart the {page-component-title} service.
+IMPORTANT: If you are using a Groovy or Jython script, you need to place the required library file in the `$\{OPENNMS_HOME}/lib` directory and restart the {page-component-title} service.
 
 == Example configurations
 
