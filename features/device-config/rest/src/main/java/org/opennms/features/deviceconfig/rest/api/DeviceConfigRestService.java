@@ -127,7 +127,7 @@ public interface DeviceConfigRestService {
 
     /**
      * Delete a single or multiple device config.
-     * @param id comman separated string of ids
+     * @param id comma separated string of ids
      */
     @DELETE
     Response deleteDeviceConfigs(@QueryParam("id") String id);

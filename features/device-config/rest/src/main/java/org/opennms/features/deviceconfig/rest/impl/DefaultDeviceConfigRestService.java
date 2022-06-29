@@ -95,7 +95,7 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
 
     private static final Pattern deletePattern = Pattern.compile("\\d+(, ?\\d+)*");
 
-    private SessionUtils sessionUtils;
+    private final SessionUtils sessionUtils;
 
 
     private static final Map<String,String> ORDERBY_QUERY_PROPERTY_MAP = Map.of(
@@ -246,14 +246,14 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
     @Override
     public Response deleteDeviceConfigs(String id) {
         if (Strings.isNullOrEmpty(id)) {
-            LOG.debug("deleteDeviceConfig: empty or null id supplied by request");
+            LOG.debug("Bad request : empty or null DeviceConfig Id");
             return Response.status(Status.BAD_REQUEST).entity("Invalid 'id' parameter").build();
         }
 
         var matcher = deletePattern.matcher(id);
 
         if (!matcher.matches()) {
-            LOG.debug("deleteDeviceConfig: invalid id param supplied by request");
+            LOG.debug("Bad request : invalid id parameter '{}' ", id);
             return Response.status(Status.BAD_REQUEST).entity("Invalid 'id' parameter").build();
         }
 
