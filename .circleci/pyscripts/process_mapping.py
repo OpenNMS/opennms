@@ -79,6 +79,7 @@ mappings = dict(mappings)
 
 #Not a great idea, but we will use it for testing
 if "CIRCLE_BRANCH" in os.environ and os.environ["CIRCLE_BRANCH"] == "mem/jira/nms-14459":
+    print(changes)
     print(mappings)
     for e in mappings:
         if mappings[e]:
