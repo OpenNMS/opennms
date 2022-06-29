@@ -16,6 +16,10 @@ class common:
             _tmp=json.load(f)
         return _tmp
 
+    def save_json(self,path,content):
+        with open(path,"r") as f:
+            json.dump(content,f)
+
     def extract_keywords(self,path):
         re_pattern=re.compile("^.*#.*#")
         keywords={}
