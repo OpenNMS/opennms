@@ -61,7 +61,7 @@ public class DecryptSnmpConfigCommand implements Action {
         boolean encryptionEnabled = Boolean.getBoolean("org.opennms.snmp.encryption.enabled");
         if (!encryptionEnabled) {
             System.out.println("Encryption is not enabled, \n" +
-                    " Set System property `org.opennms.snmp.encryption.enabled` to true to enable encryption on Snmp.");
+                    " Set system property `org.opennms.snmp.encryption.enabled` to true to enable encryption on Snmp.");
             return null;
         }
 

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -46,7 +46,7 @@ public class EncryptSnmpConfigCommand implements Action {
         boolean encryptionEnabled = Boolean.getBoolean("org.opennms.snmp.encryption.enabled");
         if (!encryptionEnabled) {
             System.out.println("Encryption is not enabled, \n" +
-                    " Set System property `org.opennms.snmp.encryption.enabled` to true to enable encryption on Snmp.");
+                    " Set system property `org.opennms.snmp.encryption.enabled` to true to enable encryption on Snmp.");
             return null;
         }
         snmpAgentConfigFactory.saveCurrent();
