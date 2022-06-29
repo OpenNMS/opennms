@@ -35,8 +35,7 @@ if os.path.exists(path_to_pipeline_parameters):
     if not pipeline_parameters["trigger-build"] and \
        not pipeline_parameters["trigger-flaky-smoke"] and \
        not pipeline_parameters["trigger-coverage"] :
-        # We don't need to generate the main yaml file as we are not running anything
-        sys.exit(0)
+        print("We aren't building anything.. we really shouldn't generate the main yaml file")
 
 
 alias_folder="aliases"
@@ -53,7 +52,7 @@ print("path_to_modified_main:",path_to_modified_main)
 print("components_path:",components_path)
 
 if os.path.exists(os.path.join("/tmp",".circleci")):
-    print("clean up final destination:",os.path.join("/tmp",".circleci"))
+    print("clean up existing folder:",os.path.join("/tmp",".circleci"))
     shutil.rmtree(os.path.join("/tmp",".circleci"))
 
 
@@ -96,9 +95,7 @@ parameters_yml_content=common_library.read_file(path_to_parameters_yml)
 for e in parameters_yml_content:
     final_output+=e
 
-with open(path_to_modified_main,"w") as f:
-        f.write(final_output)
-
+common_library.write_file(path_to_modified_main,final_output)
 
 os.remove(os.path.join(working_directory.name,".circleci","main","@main.yml"))
 os.remove(os.path.join(working_directory.name,".circleci","main","executors.yml"))

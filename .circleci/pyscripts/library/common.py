@@ -10,13 +10,17 @@ class common:
             _tmp=f.readlines()
         return _tmp
     
+    def write_file(self,path,content):
+        with open(path,"w") as f:
+            f.write(content)
+        
     def load_json(self,path):
         _tmp={}
         with open(path,"r") as f:
             _tmp=json.load(f)
         return _tmp
 
-    def save_json(self,path,content):
+    def write_json(self,path,content):
         with open(path,"r") as f:
             json.dump(content,f)
 
