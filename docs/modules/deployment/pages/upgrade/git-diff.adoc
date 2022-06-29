@@ -1,0 +1,116 @@
+[[git-diff]]
+= Manage Configuration Changes with Git
+
+This tutorial was originally written on the OpenNMS Discourse forum (see https://opennms.discourse.group/t/managing-configuration-changes-with-git/2327[Managing Configuration Changes with Git]).
+
+If you want to manage your configuration files with git but haven't used it for version control before, GitHub's https://docs.github.com/en/get-started/using-git[Using Git] tutorial covers the basics.
+You can also read https://opennms.discourse.group/t/developing-with-git/2228[Developing with Git] on the OpenNMS Discourse forum.
+
+If you have an existing OpenNMS {page-component-title} installation, check for the `etc-pristine` directory.
+If your {page-component-title} environment does not have this directory, you will need to upgrade to a version that does.
+
+IMPORTANT: Remember to stop {page-component-title} before changing files in the `etc-pristine` directory.
+
+== Start with pristine `etc` directory
+
+[{tabs}]
+====
+Debian OSes::
++
+--
+IMPORTANT: `$OPENNMS_HOME/etc` is linked to `/etc/opennms`.
+Do not move that folder.
+Moving the folder will break the link and will cause future upgrades to fail.
+
+You can fix this by running the following code:
+
+[source, console]
+----
+cd /usr/share/opennms
+mv etc etc_bad
+ln -s /etc/opennms etc
+----
+
+Run the following code to move your customized configuration files to `/etc/opennms.bak` and replace them with the contents of `etc-pristine`:
+
+[source, console]
+----
+mv /etc/opennms /etc/opennms.bak
+cp -pR /usr/share/opennms/share/etc-pristine /etc/opennms
+----
+--
+
+Other OSes::
++
+--
+Run the following code to move your `$OPENNMS_HOME/etc` files to a safe place, then copy `etc-pristine` to the `$OPENNMS_HOME/etc` directory:
+
+[source, console]
+----
+mv $OPENNMS_HOME/etc $OPENNMS_HOME/etc.bak
+cp -pR $OPENNMS_HOME/share/etc-pristine $OPENNMS_HOME/etc
+----
+
+NOTE: On RPM-based installations, the pristine configuration files are located in `$OPENNMS_HOME/share/etc-pristine`.
+--
+====
+
+== Initialize git
+
+Run the code below to turn your `etc` directory into a git repository and add the pristine files as your first commit:
+
+[source, console]
+----
+cd $OPENNMS_HOME/etc
+git init
+cat << EOF > $OPENNMS_HOME/etc/.gitignore
+foreign-sources/
+imports/
+examples/
+include
+*.dpkg-old
+opennms-upgrade-status.properties
+libraries.properties
+pluginManifestData.xml
+org.opennms.features.datachoices.cfg
+include
+configured
+EOF
+git add .
+git commit -m "Initial checkin of OpenNMS x.x.x configuration."
+----
+
+Replace the `x.x.x` in the last line with your current {page-component-title} version.
+
+== Create branch
+
+Run the code below to create a new branch in your repository:
+
+[source, console]
+----
+cd $OPENNMS_HOME/etc
+git branch local-modifications
+git checkout local-modifications
+----
+
+[[make-changes]]
+== Make changes
+
+You can now edit your configuration files as you normally would.
+If you previously backed up your modified configuration files, you can run this code to restore them:
+
+[source, console]
+----
+rsync -avr $OPENNMS_HOME/etc.bak/ $OPENNMS_HOME/etc/
+----
+
+Any time you want to save your changes to the `etc` directory, run this code to commit them to the branch you created (in this case, `local-modifications`):
+
+[source, console]
+----
+cd $OPENNMS_HOME/etc
+git add .
+git commit -m "Added initial discovery ranges."
+----
+
+When you are finished modifying your configuration files, you can start {page-component-title}.
