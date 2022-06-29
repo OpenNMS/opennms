@@ -79,6 +79,7 @@ public abstract class TopologyUpdater extends Discovery implements OnmsTopologyU
     private final NodeTopologyService m_nodeTopologyService;
     private final TopologyService m_topologyService;
 
+    private final Object m_lock= new Object();
     private OnmsTopology m_topology;
     private boolean m_runned = false;
     private boolean m_registered = false;
@@ -142,7 +143,9 @@ public abstract class TopologyUpdater extends Discovery implements OnmsTopologyU
         final OnmsTopology oldTopology = m_topology.clone();
         final OnmsTopology newTopology = runDiscoveryInternally(oldTopology);
         if (oldTopology != newTopology) {
-            m_topology = newTopology;
+            synchronized (m_lock) {
+                m_topology = newTopology;
+            }
         }
         LOG.debug("run: end {}", getName());
     }
@@ -227,8 +230,10 @@ public abstract class TopologyUpdater extends Discovery implements OnmsTopologyU
     public abstract OnmsTopology buildTopology();
 
     @Override
-    public synchronized  OnmsTopology getTopology() {
-        return m_topology.clone();
+    public OnmsTopology getTopology() {
+        synchronized (m_lock) {
+            return m_topology.clone();
+        }
     }
 
     public NodeTopologyEntity getDefaultFocusPoint() { 
@@ -243,8 +248,10 @@ public abstract class TopologyUpdater extends Discovery implements OnmsTopologyU
         m_registered = registered;
     }
 
-    public synchronized  void setTopology(OnmsTopology topology) {
+    public void setTopology(OnmsTopology topology) {
+        synchronized (m_lock) {
             m_topology = topology;
+        }
     }
 
     public boolean isRunned() {
