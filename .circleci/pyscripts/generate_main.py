@@ -2,6 +2,7 @@
 
 import glob
 import json
+import sys
 import os
 import shutil 
 import re
@@ -31,6 +32,11 @@ pipeline_parameters={}
 
 if os.path.exists(path_to_pipeline_parameters):
     pipeline_parameters=common_library.load_json(path_to_pipeline_parameters)
+    if not pipeline_parameters["trigger-build"] and \
+       not pipeline_parameters["trigger-flaky-smoke"] and \
+       not pipeline_parameters["trigger-coverage"] :
+        # We don't need to generate the main yaml file as we are not running anything
+        sys.exit(0)
 
 
 alias_folder="aliases"
