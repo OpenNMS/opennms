@@ -107,14 +107,4 @@ libgit=lg.libgit()
 print(libgit.getLastCommit())
 print(libgit.getChangedFilesInCommits("HEAD","HEAD~1"))
 
-#test area 2
-if "CIRCLE_BRANCH" in os.environ and os.environ["CIRCLE_BRANCH"] == "mem/jira/nms-14459":
-    pipeline_parameters=common_library.load_json("/tmp/pipeline-parameters.json")
-    print(pipeline_parameters)
-    for e in pipeline_parameters:
-        if pipeline_parameters[e]:
-            pipeline_parameters[e]=False 
-    print(pipeline_parameters)
-    common_library.save_json("/tmp/pipeline-parameters.json",pipeline_parameters)
-
 

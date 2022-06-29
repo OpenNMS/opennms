@@ -76,8 +76,16 @@ mappings = filter(check_mapping, mappings)
 mappings = map(convert_mapping, mappings)
 mappings = dict(mappings)
 
-with open(output_path, 'w') as fp:
-    fp.write(json.dumps(mappings))
 
 #Not a great idea, but we will use it for testing
-os.chmod(output_path,755)
+if "CIRCLE_BRANCH" in os.environ and os.environ["CIRCLE_BRANCH"] == "mem/jira/nms-14459":
+    print(mappings)
+    for e in mappings:
+        if mappings[e]:
+            mappings[e]=False 
+    print(mappings)
+
+
+
+with open(output_path, 'w') as fp:
+    fp.write(json.dumps(mappings))
