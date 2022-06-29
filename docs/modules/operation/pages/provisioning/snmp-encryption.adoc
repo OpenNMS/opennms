@@ -4,7 +4,7 @@ You can save SNMP credentials like readCommunity/WriteCommunity, authPassPhrase/
 
 === Encryption methodology
 
-A random password is generated (once) for `snmp-config` alias and it is stored in java keystore file at `$OPENNMS_HOME/etc/scv.jce`.
+A random password is generated (once) for `snmp-config` alias and stored in the Java keystore file at `$\{OPENNMS_HOME}/etc/scv.jce`.
 This password is used to encrypt/decrypt SNMP credentials.
 
 === Enabling Encrption on SNMP Config
