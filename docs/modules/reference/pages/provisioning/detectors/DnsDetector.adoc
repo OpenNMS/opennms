@@ -1,7 +1,7 @@
 = DNS Service Detector
 
 The DNSDetector lets you find DNS services for monitoring in your network.
-A DNS service is detected when a server responds to a DNS query for an A resource record.
+A DNS service is detected when the node responds to a DNS query for an A resource record.
 You can customize the A record used in the query with the `lookup` configuration parameter.
 
 Use the command line tool `host` to simulate the detector:

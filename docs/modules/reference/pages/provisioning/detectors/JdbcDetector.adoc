@@ -68,4 +68,4 @@ To provide a JDBC driver, place the driver-jar in your `$\{OPENNMS_HOME}/lib` fo
 </detector>
 ----
 
-This example assumes you have loaded the MySQL driver file.
+This example assumes you have loaded the MySQL driver file (see xref:deployment:minion/installing-jdbc-driver.adoc[Install JDBC Driver]).

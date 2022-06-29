@@ -1,6 +1,6 @@
 = ActiveMQ Detector
 
-The ActiveMQDetector finds and assigns services based on the ActiveMQ broker.
+The ActiveMQDetector finds and assigns services based on the existence of ActiveMQ broker services.
 
 == Detector facts
 
