@@ -100,6 +100,10 @@ if "CIRCLE_BRANCH" in os.environ and os.environ["CIRCLE_BRANCH"] == "mem/jira/nm
             elif "sentinel" in change:
                 if "OCI_sentinel_image" not in What_to_build:
                     What_to_build.append("OCI_sentinel_image")
+        elif ".circleci" in change:
+            if "circleci_configuration" not in What_to_build:
+                What_to_build.append("circleci_configuration")
+
 
     print("What we should be building>>>")
     print(What_to_build)
