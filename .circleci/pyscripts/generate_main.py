@@ -26,6 +26,12 @@ path_to_modified_main=os.path.join(working_directory.name,".circleci",main_filen
 path_to_executors_yml=os.path.join(path_to_main_folder,"executors.yml")
 path_to_parameters_yml=os.path.join(path_to_main_folder,"parameters.yml")
 
+path_to_pipeline_parameters=os.path.join("/tmp","pipeline-parameters.json")
+pipeline_parameters={}
+
+if os.path.exists(path_to_pipeline_parameters):
+    pipeline_parameters=common_library.load_json(path_to_pipeline_parameters)
+
 
 alias_folder="aliases"
 commands_folder="commands"
