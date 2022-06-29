@@ -80,4 +80,4 @@ with open(output_path, 'w') as fp:
     fp.write(json.dumps(mappings))
 
 #Not a great idea, but we will use it for testing
-os.chmod(output_path,"755")
+os.chmod(output_path,755)
