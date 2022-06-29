@@ -22,13 +22,11 @@ These minimum configuration parameters are available in all detectors and descri
 | ipMatch
 | IP address to match.
 Use filters to match single addresses or address ranges.
-Substrings are matched by default (see note below this table for information on regular expression matching). +
-Note: ipMatch is a required parameter for xref:reference:provisioning/detectors/LoopDetector.adoc[LoopDetector].
+Substrings are matched by default (see note below this table for information on regular expression matching).
 |
 
 | retries
-| Number of times detector should try to connect to database. +
-Note: this is not included by default for xref:reference:provisioning/detectors/BsfDetector.adoc[BSFDetector].
+| Number of times detector should try to connect to database.
 |
 
 | serviceName
@@ -36,12 +34,12 @@ Note: this is not included by default for xref:reference:provisioning/detectors/
 |
 
 | timeout
-| Response time limit (in milliseconds). +
-Note: this is not included by default for xref:reference:provisioning/detectors/BsfDetector.adoc[BSFDetector].
+| Response time limit (in milliseconds).
 | 2000
 |===
 
-NOTE: If there is a `~` at the beginning of the parameter, the rest of the string will be used as a regular expression pattern match, otherwise the match will be a substring one.
+NOTE: If there is a `~` at the beginning of a parameter's value, the rest of the string will be handled as a regular expression pattern match.
+Otherwise, it will be processed as a substring match.
 The regular expression match is anchored at the beginning and end of the line, so you will likely need to put a `.*` on both sides of your pattern unless you are going to match on the entire line.
 
 [[ref-detector-provisioning-meta-data]]
