@@ -27,11 +27,12 @@
  *******************************************************************************/
 package org.opennms.netmgt.telemetry.protocols.netflow.parser;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.UnsignedValue;
@@ -72,19 +73,19 @@ public class NMS14130_Test {
     public void testIfIndex() {
         FlowMessage m;
         m = createMessage(1,2, null, null);
-        Assert.assertEquals(m.getInputSnmpIfindex().getValue(), 1);
-        Assert.assertEquals(m.getOutputSnmpIfindex().getValue(), 2);
+        assertEquals(m.getInputSnmpIfindex().getValue(), 1);
+        assertEquals(m.getOutputSnmpIfindex().getValue(), 2);
         m = createMessage(1,2, 3, 4);
-        Assert.assertEquals(m.getInputSnmpIfindex().getValue(), 1);
-        Assert.assertEquals(m.getOutputSnmpIfindex().getValue(), 2);
+        assertEquals(m.getInputSnmpIfindex().getValue(), 3);
+        assertEquals(m.getOutputSnmpIfindex().getValue(), 4);
         m = createMessage(null,2, 3, 4);
-        Assert.assertEquals(m.getInputSnmpIfindex().getValue(), 3);
-        Assert.assertEquals(m.getOutputSnmpIfindex().getValue(), 2);
+        assertEquals(m.getInputSnmpIfindex().getValue(), 3);
+        assertEquals(m.getOutputSnmpIfindex().getValue(), 4);
         m = createMessage(1,null, 3, 4);
-        Assert.assertEquals(m.getInputSnmpIfindex().getValue(), 1);
-        Assert.assertEquals(m.getOutputSnmpIfindex().getValue(), 4);
+        assertEquals(m.getInputSnmpIfindex().getValue(), 3);
+        assertEquals(m.getOutputSnmpIfindex().getValue(), 4);
         m = createMessage(null,null, 3, 4);
-        Assert.assertEquals(m.getInputSnmpIfindex().getValue(), 3);
-        Assert.assertEquals(m.getOutputSnmpIfindex().getValue(), 4);
+        assertEquals(m.getInputSnmpIfindex().getValue(), 3);
+        assertEquals(m.getOutputSnmpIfindex().getValue(), 4);
     }
 }
