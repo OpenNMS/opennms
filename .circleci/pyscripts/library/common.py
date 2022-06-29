@@ -1,5 +1,6 @@
 import re
 import os 
+import json
 import shutil
 
 class common:
@@ -7,6 +8,12 @@ class common:
         _tmp=""
         with open(path,"r") as f:
             _tmp=f.readlines()
+        return _tmp
+    
+    def load_json(self,path):
+        _tmp={}
+        with open(path,"r") as f:
+            _tmp=json.load(f)
         return _tmp
 
     def extract_keywords(self,path):
@@ -50,3 +57,13 @@ class common:
         shutil.move(os.path.join(path_to_main_folder,folder,filepath),os.path.join(path_to_main_folder,folder,filepath+"_DONE"))
 
         return file_content
+
+    def find_files(self,start_path,pattern,output=[]):
+        current_files=os.listdir(start_path)
+        for entry in current_files:
+            tmp_path=os.path.join(start_path,entry)
+            if os.path.isdir(tmp_path):
+                self.find_files(tmp_path,pattern,output)
+            elif pattern in entry:
+                output.append(tmp_path)
+        return output

@@ -1,0 +1,414 @@
+{
+    "build": {
+        "build": {
+            "filters":{
+                "branches":{
+                    "ignore":["/^from-foundation.*/"]
+                }
+            }
+        },
+        "integration-test": {
+            "requires":["build"],
+            "filters":{
+                "branches":{
+                    "ignore":["/^from-foundation.*/"]
+                }
+            }
+        },
+        "sentinel-deb-build": {
+            "requires":["build"]
+        },
+        "tarball-assembly": {
+            "requires":["build"]
+        },
+        "minion-deb-build":{
+            "requires":["integration-test"]
+        }
+    },
+    "smoke": {
+        "extends": ["build"],
+        "smoke-test-core": {
+            "requires":[
+                "tarball-assembly",
+                "horizon-deb-build",
+                "sentinel-deb-build"
+            ],
+            "filters":{
+                "branches":{
+                    "only":[
+                        "develop",
+                        "/^master-.*/",
+                        "/^dependabot.*/",
+                        "/^features\/.+/",
+                        "/^foundation.*/",
+                        "/^release-.*/",
+                        "/.*smoke.*/"
+                    ]
+                }
+            }
+        },
+        "smoke-test-flaky": {
+            "requires":[
+                "tarball-assembly",
+                "horizon-deb-build",
+                "sentinel-deb-build"
+            ],
+            "filters":{
+                "branches":{
+                    "only":[
+                        "develop",
+                        "/^master-.*/",
+                        "/^dependabot.*/",
+                        "/^features\/.+/",
+                        "/^foundation.*/",
+                        "/^release-.*/",
+                        "/.*smoke.*/"
+                    ]
+                }
+            }
+        },
+        "smoke-test-minion": {
+            "requires":[
+                "tarball-assembly",
+                "horizon-deb-build",
+                "sentinel-deb-build"
+            ],
+            "filters":{
+                "branches":{
+                    "only":[
+                        "develop",
+                        "/^master-.*/",
+                        "/^dependabot.*/",
+                        "/^features\/.+/",
+                        "/^foundation.*/",
+                        "/^release-.*/",
+                        "/.*smoke.*/"
+                    ]
+                }
+            }
+        },
+        "smoke-test-sentinel": {
+            "requires":[
+                "tarball-assembly",
+                "horizon-deb-build",
+                "sentinel-deb-build"
+            ],
+            "filters":{
+                "branches":{
+                    "only":[
+                        "develop",
+                        "/^master-.*/",
+                        "/^dependabot.*/",
+                        "/^features\/.+/",
+                        "/^foundation.*/",
+                        "/^release-.*/",
+                        "/.*smoke.*/"
+                    ]
+                }
+            }
+        }
+    },
+    "rpms": {
+        "extends": ["build"],
+        "minion-rpm-build": {
+            "requires":["build"],
+            "filters":{
+                "branches":{
+                    "only":[
+                        "develop",
+                        "/^master-.*/",
+                        "/^dependabot\/.*/",
+                        "/^features\/.+/",
+                        "/^foundation.*/",
+                        "/^release-.*/",
+                        "/.*rpm.*/",
+                        "/.*smoke.*/"
+                    ]
+                }
+            }
+        },
+        "horizon-rpm-build": {
+            "requires":["integration-test"],
+            "filters":{
+                "branches":{
+                    "only":[
+                        "develop",
+                        "/^master-.*/",
+                        "/^dependabot\/.*/",
+                        "/^features\/.+/",
+                        "/^foundation.*/",
+                        "/^release-.*/",
+                        "/.*rpm.*/",
+                        "/.*smoke.*/"
+                    ]
+                }
+            }
+        },
+        "sentinel-rpm-build": {
+            "requires":["integration-test"],
+            "filters":{
+                "branches":{
+                    "only":[
+                        "develop",
+                        "/^master-.*/",
+                        "/^dependabot\/.*/",
+                        "/^features\/.+/",
+                        "/^foundation.*/",
+                        "/^release-.*/",
+                        "/.*rpm.*/",
+                        "/.*smoke.*/"
+                    ]
+                }
+            }
+        }
+    },
+    "debs": {
+        "extends": ["build"],
+        "horizon-deb-build": {
+            "requires":["build"],
+            "filters":{
+                "branches":{
+                    "only":[
+                        "develop",
+                        "/^master-.*/",
+                        "/^dependabot\/.*/",
+                        "/^features\/.+/",
+                        "/^foundation.*/",
+                        "/^release-.*/",
+                        "/.*deb.*/",
+                        "/.*docker.*/",
+                        "/.*smoke.*/"
+                    ]
+                }
+            }
+        },
+        "sentinel-deb-build": {
+            "requires":["build"],
+            "filters":{
+                "branches":{
+                    "ignore":[
+                        "/^merge-foundation.*/"
+                    ]
+                }
+            }
+        },
+        "minion-deb-build": {
+            "requires":["integration-test"],
+            "filters":{
+                "branches":{
+                    "ignore":[
+                        "/^merge-foundation.*/"
+                    ]
+                }
+            }
+        }
+    },
+    "deploy": {
+        "extends": ["build","smoke","rpms","debs"],
+        "minion-image-single-arch": {
+            "requires":["horizon-rpm-build","minion-deb-build",
+            "sentinel-deb-build",
+            "integration-test",
+            "smoke-test-core",
+            "smoke-test-flaky",
+            "smoke-test-minion",
+            "smoke-test-sentinel"],
+            "variations": ["linux/amd64","linux/arm64","linux/arm/v7"],
+            "context": ["docker-content-trust","azure-sp-dct"],
+            "filters":{
+                    "branches":{
+                        "only":[
+                            "develop",
+                            "/^master-.*/",
+                            "/^features\/.+/",
+                            "/^foundation.*/",
+                            "/^release-.*/",
+                            "/.*docker.*/",
+                            "/.*smoke.*/"
+                        ]
+                    }
+                }
+        },
+        "minion-image-multi-arch": {
+            "context": ["docker-content-trust","azure-sp-dct"],
+            "requires": ["minion-image-single-arch"],
+            "filters":{
+                "branches":{
+                    "only":[
+                        "develop",
+                        "/^master-.*/",
+                        "/^features\/.+/",
+                        "/^foundation.*/",
+                        "/^release-.*/",
+                        "/.*docker.*/",
+                        "/.*smoke.*/"
+                    ]
+                }
+            }
+        },
+        "horizon-image-single-arch": {
+            "variations": ["linux/amd64","linux/arm64"],
+            "requires": ["horizon-deb-build"],
+            "filters":{
+                "branches":{
+                    "only":[
+                        "develop",
+                        "/^master-.*/",
+                        "/^features\/.+/",
+                        "/^foundation.*/",
+                        "/^release-.*/",
+                        "/.*docker.*/",
+                        "/.*smoke.*/"
+                    ]
+                }
+            }
+        },
+        "sentinel-publish-oci": {
+            "requires":[
+                "horizon-deb-build",
+                "minion-deb-build",
+                "sentinel-deb-build",
+                "integration-test",
+                "smoke-test-core",
+                "smoke-test-flaky",
+                "smoke-test-minion",
+                "smoke-test-sentinel"
+            ],
+            "filters":{
+                "branches":{
+                    "only":[
+                        "develop",
+                        "/^master-.*/",
+                        "/^features\/.+/",
+                        "/^foundation.*/"
+                    ]
+                }
+            }
+        },
+        "sentinel-image-single-arch": {
+            "requires":["sentinel-deb-build"],
+            "filters":{
+                "branches":{
+                    "only":[
+                        "develop",
+                        "/^master-.*/",
+                        "/^features\/.+/",
+                        "/^foundation.*/",
+                        "/^release-.*/",
+                        "/.*docker.*/",
+                        "/.*smoke.*/"
+                    ]
+                }
+            }
+        },
+        "create-merge-foundation-branch": {
+            "requires":[
+                "horizon-rpm-build",
+                "minion-deb-build",
+                "sentinel-rpm-build",
+                "integration-test",
+                "smoke-test-core",
+                "smoke-test-flaky",
+                "smoke-test-minion",
+                "smoke-test-sentinel"
+            ],
+            "filters":{
+                "branches":{
+                    "only":[
+                        "<< pipeline.parameters.main_branch >>"
+                    ]
+                }
+            }
+        },
+        "merge-foundation-branch": {
+            "requires":["tarball-assembly"],
+            "filters":{
+                "branches":{
+                    "only":[
+                        "merge-foundation/<< pipeline.parameters.previous_branch_label >>-to-<< pipeline.parameters.main_branch_label >>"
+                    ]
+                }
+            }
+        },
+        "create-merge-meridian-branch": {
+            "requires":[
+                "horizon-rpm-build",
+                "minion-deb-build",
+                "sentinel-rpm-build",
+                "integration-test",
+                "smoke-test-core",
+                "smoke-test-flaky",
+                "smoke-test-minion",
+                "smoke-test-sentinel"
+            ],
+            "filters":{
+                "branches":{
+                    "only":[
+                        "/^foundation.*/"
+                    ]
+                }
+            }
+        },
+        "horizon-publish-oci": {
+            "requires":[
+                "horizon-rpm-build",
+                "minion-deb-build",
+                "sentinel-rpm-build",
+                "integration-test",
+                "smoke-test-core",
+                "smoke-test-flaky",
+                "smoke-test-minion",
+                "smoke-test-sentinel"
+            ],
+            "filters":{
+                "branches":{
+                    "only":[
+                        "develop",
+                        "/^master-.*/",
+                        "/^features\/.+/",
+                        "/^foundation.*/"
+                    ]
+                }
+            }
+        },
+        "merge-poweredby-branch": {
+            "requires":[
+                "horizon-rpm-build",
+                "smoke-test-core",
+                "smoke-test-flaky",
+                "smoke-test-minion",
+                "smoke-test-sentinel",
+                "integration-test"
+            ],
+            "filters":{
+                "branches":{
+                    "only":[
+                        "/^foundation.*/"
+                    ]
+                }
+            }
+        },
+        "publish-cloudsmith": {
+            "requires":[
+                "horizon-rpm-build",
+                "minion-deb-build",
+                "sentinel-rpm-build",
+                "integration-test",
+                "smoke-test-core",
+                "smoke-test-flaky",
+                "smoke-test-minion",
+                "smoke-test-sentinel"
+            ],
+            "filters":{
+                "branches":{
+                    "only":[
+                        "develop",
+                        "/^master-.*/",
+                        "/^release-.*/",
+                        "/^foundation.*/"
+                    ]
+                }
+            }
+        }
+    }
+}

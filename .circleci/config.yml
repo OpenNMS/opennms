@@ -87,7 +87,7 @@ workflows:
             ((?!docs/).)*     trigger-build       true
             docs/.*           trigger-docs        true
             ui/.*             trigger-ui          true
-            .circleci/.*      trigger-build       true
+            .circleci/.*      trigger-build       false
             .circleci/main/jobs/build/build-docs.yml trigger-docs        true
             .circleci/main/jobs/build/build-ui.yml trigger-ui        true
 

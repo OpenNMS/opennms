@@ -2,12 +2,12 @@
 
 import glob
 import json
-from operator import index
 import os
 import shutil 
 import re
 import tempfile
 from library import common
+from library import libgit as lg
 
 
 common_library=common.common()
@@ -15,7 +15,7 @@ common_library=common.common()
 working_directory=tempfile.TemporaryDirectory()
 
 # We don't want to modify the main files, make a copy of the .circleci folder 
-# into our working directory 
+# into a working directory 
 shutil.copytree(".circleci",os.path.join(working_directory.name,".circleci"))
 
 main_filename="@main.yml"
@@ -25,6 +25,7 @@ path_to_modified_main=os.path.join(working_directory.name,".circleci",main_filen
  
 path_to_executors_yml=os.path.join(path_to_main_folder,"executors.yml")
 path_to_parameters_yml=os.path.join(path_to_main_folder,"parameters.yml")
+
 
 alias_folder="aliases"
 commands_folder="commands"
@@ -38,6 +39,10 @@ print("main_filename:",main_filename)
 print("path_to_main:",path_to_main_yml)
 print("path_to_modified_main:",path_to_modified_main)
 print("components_path:",components_path)
+
+if os.path.exists(os.path.join("/tmp",".circleci")):
+    print("clean up final destination:",os.path.join("/tmp",".circleci"))
+    shutil.rmtree(os.path.join("/tmp",".circleci"))
 
 
 # Read the @main.yml file
@@ -90,8 +95,15 @@ os.remove(os.path.join(working_directory.name,".circleci","main","parameters.yml
 ## move the .circleci with updated main.yml file into tmp directory
 shutil.move(os.path.join(working_directory.name,".circleci"),"/tmp/")
 
-
 for folder in component_folders:
     shutil.rmtree(os.path.join("/tmp",".circleci","main",folder))
 
 working_directory.cleanup()
+
+
+
+##--> EXP AREA <--##
+libgit=lg.libgit()
+print(libgit.getLastCommit())
+print(libgit.getChangedFilesInCommits("HEAD","HEAD~1"))
+
