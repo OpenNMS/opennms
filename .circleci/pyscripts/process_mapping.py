@@ -79,13 +79,31 @@ mappings = dict(mappings)
 
 #Not a great idea, but we will use it for testing
 if "CIRCLE_BRANCH" in os.environ and os.environ["CIRCLE_BRANCH"] == "mem/jira/nms-14459":
-    print(changes) 
     # If *IT.java files have changed -> enable integration builds
     # If *Test.java files have changed -> enable smoke builds
     # if Dockerfiles (under opennms-container) have changed enable docker builds
+    What_to_build=[]
+    for change in changes:
+        if "IT.java" in change:
+            if "Integration_tests" not in What_to_build:
+                What_to_build.append("Integration_tests")
+        elif "Test.java" in change:
+            if "Smoke_tests" not in What_to_build:
+                What_to_build.append("Smoke_tests")
+        elif "opennms-container" in change:
+            if "horizon" in change:
+                if "OCI_horizon_image" not in What_to_build:
+                    What_to_build.append("OCI_horizon_image")
+            elif "minion" in change:
+                if "OCI_minion_image" not in What_to_build:
+                    What_to_build.append("OCI_minion_image")
+            elif "sentinel" in change:
+                if "OCI_sentinel_image" not in What_to_build:
+                    What_to_build.append("OCI_sentinel_image")
 
-    print(os.listdir("."))
-
+    print("What we should be building>>>")
+    print(What_to_build)
+    print("What we are actually building>>>")
     print(mappings)
     for e in mappings:
         if mappings[e]:
