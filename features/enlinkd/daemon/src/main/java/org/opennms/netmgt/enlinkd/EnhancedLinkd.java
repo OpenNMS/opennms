@@ -477,10 +477,6 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
         }
     }
 
-    public DiscoveryBridgeDomains getDiscoveryBridgeDomains() {
-        return m_discoveryBridgeDomains;
-    }
-    
     void wakeUpNodeCollection(int nodeid) {
 
         if (!m_nodes.containsKey(nodeid)) {
@@ -519,9 +515,8 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
     void unscheduleNodeCollection(int nodeid) {
         synchronized (m_nodes) {
             if (m_nodes.containsKey(nodeid)) {
-                m_nodes.remove(nodeid).stream().
-                forEach(coll -> 
-                    coll.unschedule());
+                m_nodes.remove(nodeid).
+                forEach(Discovery::unschedule);
             }        
         }
     }
@@ -539,7 +534,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
                         nodeid);   
         synchronized (m_nodes) {
                if (m_nodes.containsKey(nodeid)) {
-                   m_nodes.get(nodeid).stream().forEach(coll -> coll.suspend());
+                   m_nodes.get(nodeid).forEach(Discovery::suspend);
                } 
         }
     }
@@ -570,9 +565,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
     public String getSource() {
         return "enlinkd";
     }
-    public LocationAwareSnmpClient getLocationAwareSnmpClient() {
-        return m_locationAwareSnmpClient;
-    }        
+
     public BridgeTopologyService getBridgeTopologyService() {
         return m_bridgeTopologyService;
     }
@@ -718,15 +711,15 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
         }
 
         synchronized (m_nodes) {
-            final Set<Node> nodes = new HashSet<Node>();
+            final Set<Node> nodes = new HashSet<>();
             for (List<NodeCollector> list: m_nodes.values()) {
-                list.stream().forEach(coll -> {
+                list.forEach(coll -> {
                     coll.unschedule(); 
                     nodes.add(coll.getNode());
                 });
             }
             m_nodes.clear();
-            nodes.stream().
+            nodes.
                 forEach(node -> m_nodes.put(node.getNodeId(), scheduleCollectionForNode(node)));
         }
     }
