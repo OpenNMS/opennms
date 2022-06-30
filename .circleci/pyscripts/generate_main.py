@@ -104,8 +104,11 @@ for e in main_yml_content:
                 for line in sample_workflow:
                     if type(line)==list:
                         for entry_lvl2 in line:
-                            #if type(entry_lvl2) == list:
-                            final_output+=entry_lvl2+"\n"
+                            if type(entry_lvl2) == list:
+                                for entry_lvl3 in entry_lvl2:
+                                    final_output+=entry_lvl3+"\n"
+                            else:
+                                final_output+=entry_lvl2+"\n"
                     else:
                         final_output+=line+"\n"
             print("EXP AREA End")
