@@ -20,13 +20,7 @@ commands:
   #commands:oci/oci#
   #commands:generic/generic#
 
-workflows:
-  #workflows-block#
-  #workflows:weekly-coverage#
-  #workflows:build-minimal#
-  #workflows:docs#
-  #workflows:ui#
-  #workflows:build-deploy#
+#workflows#
 
 jobs:
   #jobs:build/build.index#
