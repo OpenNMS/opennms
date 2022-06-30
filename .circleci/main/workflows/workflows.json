@@ -1,7 +1,6 @@
 {
     "build": {
-        "build": {
-        },
+        "build": { },
         "integration-test": {
             "requires":["build"]
         },
