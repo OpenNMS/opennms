@@ -107,7 +107,7 @@ for e in main_yml_content:
                             #if type(entry_lvl2) == list:
                             final_output+=entry_lvl2+"\n"
                     else:
-                        final_output+=entry_lvl2+"\n"
+                        final_output+=line+"\n"
             print("EXP AREA End")
             #<<End of EXP Area>>#
             continue
