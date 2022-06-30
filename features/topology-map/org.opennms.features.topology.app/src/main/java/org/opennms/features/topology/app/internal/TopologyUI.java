@@ -484,7 +484,11 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
 
         @Override
         public void graphChanged(GraphContainer graphContainer) {
-            refreshInfoPanel();
+            try {
+                refreshInfoPanel();
+            } catch (Exception e) {
+                LOG.debug("Error updating UI elements: {}", e.getMessage());
+            }
         }
     }
 

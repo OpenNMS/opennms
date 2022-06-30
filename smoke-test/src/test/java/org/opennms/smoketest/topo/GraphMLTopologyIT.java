@@ -28,16 +28,15 @@
 
 package org.opennms.smoketest.topo;
 
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.opennms.smoketest.TopologyIT.waitForTransition;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-
-import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.is;
-import static org.opennms.smoketest.TopologyIT.waitForTransition;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -57,6 +56,8 @@ import org.opennms.smoketest.OpenNMSSeleniumIT;
 import org.opennms.smoketest.TopologyIT;
 import org.opennms.smoketest.graphml.GraphmlDocument;
 import org.opennms.smoketest.utils.RestClient;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.TimeoutException;
 
 import com.google.common.collect.Lists;
 
@@ -373,5 +374,24 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
 
     private static TopologyIT.FocusedVertex focusVertex(TopologyIT.TopologyUIPage topologyUIPage, String namespace, String label) {
         return new TopologyIT.FocusedVertex(topologyUIPage, namespace, label);
+    }
+
+    @Test
+    public void testNMS14379() throws Exception {
+        importGraph();
+        topologyUIPage.open();
+        topologyUIPage.selectTopologyProvider(() -> LABEL);
+        topologyUIPage.defaultFocus();
+        topologyUIPage.findVertex("East Region").contextMenu().click("Navigate To", "Markets (East Region)");
+        frontPage();
+        deleteGraph();
+        topologyUIPage.open();
+        try {
+            // if dialog is not yet visible, try to interact with a node
+            topologyUIPage.findVertex("East 1").select();
+        } catch (NoSuchElementException | TimeoutException e) {
+            // ignore if dialog is already visible
+        }
+        findElementByXpath("//div[text() = 'Clicking okay will switch to the default topology provider.']");
     }
 }
