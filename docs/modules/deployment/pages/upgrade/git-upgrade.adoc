@@ -1,14 +1,16 @@
 [[git-upgrade]]
 = Upgrade {page-component-title} with Git
 
-This tutorial was originally written on the OpenNMS Discourse forum (see https://opennms.discourse.group/t/managing-configuration-changes-with-git/2327[Managing Configuration Changes with Git]).
+This content was originally written on the OpenNMS Discourse forum (see https://opennms.discourse.group/t/managing-configuration-changes-with-git/2327[Managing Configuration Changes with Git]).
+Follow the directions here to upgrade with Git if you xref:deployment:upgrade/git-diff.adoc#git-diff[use Git to manage configuration changes].
+The steps below assume you have already set up your xref:deployment:upgrade/git-diff.adoc[configuration folders as a Git repository].
 
 IMPORTANT: Remember to stop {page-component-title} before beginning an upgrade.
 
 == Commit configuration changes
 
 Run the `git status` command to check if changes to the `etc` directory have been committed.
-If files have been modified, follow the instructions in xref:deployment:upgrade/git-diff.adoc#make-changes[Make your changes] to commit them.
+If files have been modified, follow the instructions in xref:deployment:upgrade/git-diff.adoc#make-changes[Make changes] to commit them.
 
 == Switch to pristine branch
 
@@ -55,7 +57,7 @@ Update your modified branch by merging your `master` branch into your current wo
 git merge master
 ----
 
-If git finds a conflict, the `merge` command will generate an error message:
+If Git finds a conflict, the `merge` command generates an error message:
 
 [source, console]
 ----

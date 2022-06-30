@@ -1,9 +1,9 @@
 [[git-diff]]
 = Manage Configuration Changes with Git
 
-This tutorial was originally written on the OpenNMS Discourse forum (see https://opennms.discourse.group/t/managing-configuration-changes-with-git/2327[Managing Configuration Changes with Git]).
+This content was originally written on the OpenNMS Discourse forum (see https://opennms.discourse.group/t/managing-configuration-changes-with-git/2327[Managing Configuration Changes with Git]).
 
-If you want to manage your configuration files with git but haven't used it for version control before, GitHub's https://docs.github.com/en/get-started/using-git[Using Git] tutorial covers the basics.
+If you want to manage your configuration files with Git but haven't used it for version control before, GitHub's https://docs.github.com/en/get-started/using-git[Using Git] tutorial covers the basics.
 You can also read https://opennms.discourse.group/t/developing-with-git/2228[Developing with Git] on the OpenNMS Discourse forum.
 
 If you have an existing OpenNMS {page-component-title} installation, check for the `etc-pristine` directory.
@@ -11,7 +11,7 @@ If your {page-component-title} environment does not have this directory, you wil
 
 IMPORTANT: Remember to stop {page-component-title} before changing files in the `etc-pristine` directory.
 
-== Start with pristine `etc` directory
+== Start with a pristine `etc` directory
 
 [{tabs}]
 ====
@@ -20,7 +20,7 @@ Debian OSes::
 --
 IMPORTANT: `$OPENNMS_HOME/etc` is linked to `/etc/opennms`.
 Do not move that folder.
-Moving the folder will break the link and will cause future upgrades to fail.
+Moving the folder will break the link and cause future upgrades to fail.
 
 You can fix this by running the following code:
 
@@ -55,9 +55,9 @@ NOTE: On RPM-based installations, the pristine configuration files are located i
 --
 ====
 
-== Initialize git
+== Initialize Git
 
-Run the code below to turn your `etc` directory into a git repository and add the pristine files as your first commit:
+Run the code below to turn your `etc` directory into a Git repository and add the pristine files as your first commit:
 
 [source, console]
 ----

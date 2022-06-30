@@ -7,7 +7,7 @@ You need to back up your customized configuration files so that you can merge th
 Consider one of the following options to identify changed configuration files:
 
 * <<config-diff, Run the config-diff.sh script>> to show which files have changed.
-* Make the `$\{OPENNMS_HOME}/etc` folder a git repository to track changes between versions (see xref:deployment:upgrade/git-diff.adoc[Manage Configuration Changes with Git]).
+* Make the `$\{OPENNMS_HOME}/etc` folder a Git repository to track changes between versions (see xref:deployment:upgrade/git-diff.adoc[Manage Configuration Changes with Git]).
 
 [[config-diff]]
 == Run the config-diff.sh script
