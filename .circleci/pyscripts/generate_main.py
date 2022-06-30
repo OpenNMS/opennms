@@ -78,9 +78,10 @@ for e in main_yml_content:
     re_match=re.match(re_pattern,e)
     if re_match:
         block_type,step=re_match.group().split(":")
-        print("Processing",block_type,step)
         if block_type == "#workflows":
             continue
+        else:
+            print("Processing",block_type,step)
         commands=keywords[block_type.replace("#","").strip()][re_match.group().strip()]["commands"]
         for command in commands:
             if type(command) == list:
