@@ -64,8 +64,8 @@ import org.opennms.features.topology.api.browsers.SelectionAwareTable;
 import org.opennms.features.topology.api.info.InfoPanelItemProvider;
 import org.opennms.features.topology.api.info.item.DefaultInfoPanelItem;
 import org.opennms.features.topology.api.info.item.InfoPanelItem;
-import org.opennms.features.topology.api.support.hops.DefaultVertexHopCriteria;
 import org.opennms.features.topology.api.support.hops.CriteriaUtils;
+import org.opennms.features.topology.api.support.hops.DefaultVertexHopCriteria;
 import org.opennms.features.topology.api.support.hops.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.CollapsibleCriteria;
 import org.opennms.features.topology.api.topo.Criteria;
@@ -126,7 +126,6 @@ import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
@@ -1077,8 +1076,12 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
             }
         }
 
-        updateTabVisibility();
-        updateMenu();
+        try {
+            updateTabVisibility();
+            updateMenu();
+        } catch (Exception e) {
+            LOG.debug("Error updating UI elements: {}", e.getMessage());
+        }
 
         if (m_currentHudDisplay != null) {
             m_currentHudDisplay.setVertexFocusCount(getFocusVertices(m_graphContainer));
