@@ -2,20 +2,37 @@
 [[ga-events-sources-snmp-traps]]
 = SNMP Traps
 
-If SNMP-capable devices in the network are configured to send *traps* to {page-component-title}, these traps are transformed into events according to preconfigured rules.
-The `Trapd` service daemon, which lets {page-component-title} receive SNMP traps, is enabled by default.
+OpenNMS {page-component-title} can receive and process SNMP traps/informs from SNMP-capable devices out of the box.
+It receives SNMP traps via the trapd service daemon, which is enabled by default.
 
-IMPORTANT: Disabling the `Trapd` service daemon will render {page-component-title} *incapable* of receiving SNMP traps.
+IMPORTANT: Disabling `trapd` renders {page-component-title} *incapable* of receiving SNMP traps.
 
-Event definitions are included with {page-component-title} for traps from many vendors' equipment.
+{page-component-title} transforms these traps into events according to preconfigured rules included by default and customized by users.
 
-== Trap Value Representation
+== How it works
+
+
+
+included by default and customized by users through Management Information Base (MIB) files and event configuration.
+
+By default, {page-component-title} includes
+
+OpenNMS can also receive SNMP traps via the trapd process.
+OpenNMS uses the `mask` tag to match SNMP traps in `eventconf.xml`.
+
+
+
+
+
+{page-component-title} includes event definitions for traps from many vendors' equipment.
+
+== Trap value representation
 
 When octet strings are translated into event parameters, OpenNMS first attempts to treat them as character encodings.
 If all bytes in the string are valid UTF-8 or ISO-8859-1 characters, the string is stored as these characters.
 If this is not possible, the value is encoded as a Base64 string.
 
-== Traps Forwarded via Proxy
+== Traps forwarded via proxy
 
 When SNMP traps are forwarded through a proxy using SNMPv2c or SNMPv3, preserving the original source IP address is a challenge due to the lack of an `agent-addr` field in the `TRAP-V2` PDU used in those protocol versions.
 https://tools.ietf.org/html/rfc3584#page-42[RFC 3584] defines an optional varbind `snmpTrapAddress (.1.3.6.1.6.3.18.1.3.0)` that can be added to forwarded traps to convey the original source IP address.
