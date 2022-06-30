@@ -36,6 +36,8 @@ if os.path.exists(path_to_pipeline_parameters):
        not pipeline_parameters["trigger-flaky-smoke"] and \
        not pipeline_parameters["trigger-coverage"] :
         print("We aren't building anything.. we really shouldn't generate the main yaml file")
+    if pipeline_parameters["trigger-rpms"]:
+        print("We want to build rpms build")
 
 
 alias_folder="aliases"
