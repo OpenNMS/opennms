@@ -115,7 +115,8 @@ sample_workflow.append(libyaml.create_space(level)+"jobs:")
 level+=2
 if pipeline_parameters["trigger-rpms"]:
     sample_workflow=libyaml.generate_yaml(workflow_data,"rpms",level,sample_workflow)
-    print(sample_workflow)
+    for line in sample_workflow:
+        print(line)
 print("EXP AREA End")
 #<<End of EXP Area>>#
 
