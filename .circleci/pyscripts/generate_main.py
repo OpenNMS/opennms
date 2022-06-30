@@ -9,6 +9,7 @@ import re
 import tempfile
 from library import common
 from library import libgit as lg
+from library import libyaml
 
 
 common_library=common.common()
@@ -98,6 +99,23 @@ for e in parameters_yml_content:
     final_output+=e
 
 common_library.write_file(path_to_modified_main,final_output)
+
+#<<EXP Area>>#
+workflow_path=os.path.join(".circleci","main","workflows","workflows.json")
+workflow_data=common_library.load_json(workflow_path)
+sample_workflow=[]
+level=0
+sample_workflow.append(libyaml.create_space(level)+"workflows:")
+level=level+2
+sample_workflow.append(libyaml.create_space(level)+"auto-build:")
+level+=2
+sample_workflow.append(libyaml.create_space(level)+"jobs:")
+level+=2
+if pipeline_parameters["trigger-rpms"]:
+    sample_workflow=libyaml.generate_yaml(workflow_data,"rpms",level,sample_workflow)
+    print(sample_workflow)
+#<<End of EXP Area>>#
+
 
 os.remove(os.path.join(working_directory.name,".circleci","main","@main.yml"))
 os.remove(os.path.join(working_directory.name,".circleci","main","executors.yml"))

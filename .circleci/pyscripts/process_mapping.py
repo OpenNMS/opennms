@@ -132,6 +132,10 @@ if "CIRCLE_BRANCH" in os.environ and os.environ["CIRCLE_BRANCH"] == "mem/jira/nm
     else:
         mappings["trigger-debs"]=False
 
+    if "integration" in git_keywords:   
+        mappings["trigger-debs"]=True
+    else:
+        mappings["trigger-debs"]=False
     
 with open(output_path, 'w') as fp:
     fp.write(json.dumps(mappings))
