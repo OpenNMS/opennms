@@ -27,7 +27,6 @@ commands:
           command: |
             export OPENNMS_VERSION="$(.circleci/scripts/pom2version.sh pom.xml)"
             .circleci/scripts/configure-signing.sh
-            ./clean.pl
             << parameters.node-memory >>
             export MAVEN_OPTS="-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
             MAVEN_ARGS="install"
