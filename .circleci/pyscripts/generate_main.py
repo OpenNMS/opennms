@@ -101,6 +101,7 @@ for e in parameters_yml_content:
 common_library.write_file(path_to_modified_main,final_output)
 
 #<<EXP Area>>#
+libyaml=libyaml.libyaml()
 workflow_path=os.path.join(".circleci","main","workflows","workflows.json")
 workflow_data=common_library.load_json(workflow_path)
 sample_workflow=[]
