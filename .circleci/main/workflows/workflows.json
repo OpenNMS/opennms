@@ -1,18 +1,10 @@
 {
     "build": {
         "build": {
-            "filters":{
-                "branches":{
-                    "ignore":["/^from-foundation.*/"]
-                }
             }
         },
         "integration-test": {
-            "requires":["build"],
-            "filters":{
-                "branches":{
-                    "ignore":["/^from-foundation.*/"]
-                }
+            "requires":["build"]
             }
         },
         "sentinel-deb-build": {
