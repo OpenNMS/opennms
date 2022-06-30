@@ -119,6 +119,7 @@
                           <feature>sentinel-api-layer</feature>
                           <feature>sentinel-timeseries-api</feature>
                           <feature>opennms-timseries-api</feature>
+                          <feature>opennms-newts</feature>
                       </features>
                   </configuration>
               </execution>
@@ -672,6 +673,11 @@
       <artifactId>org.opennms.features.distributed.serviceregistry</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.newts</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.topologies</groupId>
