@@ -17,18 +17,34 @@ fi
 
 DATA_DIR="${OPENNMS_HOME}/data"
 
+while getopts vcfhnpqrsS:j:a: c
+do
+  case $c in
+      x)
+          no_sudo=1
+          ;;
+
+      \?)
+          die "Invalid option."
+          ;;
+  esac
+done
+
 SUDO="$(command -v sudo 2>/dev/null || which sudo 2>/dev/null || :)"
 myuser="$(id -u -n)"
 if [ "$myuser" != "$RUNAS" ]; then
-  if [ "$myuser" = "root" ] && [ -n "$SUDO" ] && [ -x "$SUDO" ]; then
+  if [ $no_sudo ]; then
+    echo "WARNING: running script as current user"    
+  elif [ "$myuser" = "root" ] && [ -n "$SUDO" ] && [ -x "$SUDO" ]; then
     echo "WARNING: relaunching as $RUNAS" >&2
     _cmd=("$SUDO" "-u" "$RUNAS" "$0" "${INCOMING_ARGS[@]}");
     exec "${_cmd[@]}"
+  else
+    echo "ERROR: you must run this script as ${RUNAS}, not '${myuser}'." >&2
+    echo "       Create or edit ${OPENNMS_HOME}/etc/opennms.conf and set 'RUNAS=${myuser}'" >&2
+    echo "       if you wish for OpenNMS to run as ${myuser} instead." >&2
+    exit 4 # According to LSB: 4 - user had insufficient privileges
   fi
-  echo "ERROR: you must run this script as ${RUNAS}, not '${myuser}'." >&2
-  echo "       Create or edit ${OPENNMS_HOME}/etc/opennms.conf and set 'RUNAS=${myuser}'" >&2
-  echo "       if you wish for OpenNMS to run as ${myuser} instead." >&2
-  exit 4 # According to LSB: 4 - user had insufficient privileges
 fi
 
 echo "This script will try to fix karaf configuration problems by:"
@@ -65,6 +81,11 @@ then
   cp -p "$PRISTINE_DIR/profile.cfg" "$ETC_DIR/"
 else
   echo "WARNING: Directory ${PRISTINE_DIR} does not exist. Skipping config restoration."
+fi
+
+if [ $no_sudo ]; then
+    # attempt to correct permissions
+    $OPENNMS_HOME/bin/fix-permissions.sh
 fi
 
 echo

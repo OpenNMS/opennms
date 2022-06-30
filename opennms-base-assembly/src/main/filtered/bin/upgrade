@@ -12,24 +12,54 @@ if [ -f "$OPENNMS_HOME/etc/opennms.conf" ]; then
 	. "$OPENNMS_HOME/etc/opennms.conf"
 fi
 
+while getopts vcfhnpqrsS:j:a: c
+do
+  case $c in
+      x)
+          no_sudo=1
+          ;;
+
+      \?)
+          die "Invalid option."
+          ;;
+  esac
+done
+
+
 SUDO="$(command -v sudo 2>/dev/null || which sudo 2>/dev/null || :)"
 myuser="$(id -u -n)"
 if [ "$myuser" != "$RUNAS" ]; then
-	if [ "$myuser" = "root" ] && [ -n "$SUDO" ] && [ -x "$SUDO" ]; then
+	if [ $no_sudo ]; then
+        echo "WARNING: running script as the current user."
+    elif [ "$myuser" = "root" ] && [ -n "$SUDO" ] && [ -x "$SUDO" ]; then
 		echo "WARNING: relaunching as $RUNAS" >&2
 		_cmd=("$SUDO" "-u" "$RUNAS" "$0" "${INCOMING_ARGS[@]}");
 		exec "${_cmd[@]}"
-	fi
-	echo "ERROR: you must run this script as ${RUNAS}, not '${myuser}'." >&2
-	echo "       Create or edit ${OPENNMS_HOME}/etc/opennms.conf and set 'RUNAS=${myuser}'" >&2
-	echo "       if you wish for OpenNMS to run as ${myuser} instead." >&2
-	exit 4 # According to LSB: 4 - user had insufficient privileges
+    else
+        echo "ERROR: you must run this script as ${RUNAS}, not '${myuser}'." >&2
+        echo "       Create or edit ${OPENNMS_HOME}/etc/opennms.conf and set 'RUNAS=${myuser}'" >&2
+        echo "       if you wish for OpenNMS to run as ${myuser} instead." >&2
+        exit 4 # According to LSB: 4 - user had insufficient privileges
+    fi
 fi
 
 APP_CLASS=org.opennms.upgrade.support.Upgrade
-# shellcheck disable=SC2086
-exec "$OPENNMS_HOME/bin/runjava" -r -- $JAVA_OPTIONS \
-	-Dopennms.home="$OPENNMS_HOME" \
-	-Dlog4j.configurationFile="$OPENNMS_HOME"/etc/log4j2-tools.xml \
-	-Dopennms.manager.class="$APP_CLASS" \
-	-jar "$OPENNMS_HOME/lib/opennms_bootstrap.jar" "$@"
+if [ $no_sudo ]; then
+    # shellcheck disable=SC2086
+    "$OPENNMS_HOME/bin/runjava" -r -- $JAVA_OPTIONS \
+        -Dopennms.home="$OPENNMS_HOME" \
+        -Dlog4j.configurationFile="$OPENNMS_HOME"/etc/log4j2-tools.xml \
+        -Dopennms.manager.class="$APP_CLASS" \
+        -jar "$OPENNMS_HOME/lib/opennms_bootstrap.jar" "$@"
+    
+    "$OPENNMS_HOME"/bin/fix-permissions
+
+else
+    # shellcheck disable=SC2086
+    exec "$OPENNMS_HOME/bin/runjava" -r -- $JAVA_OPTIONS \
+        -Dopennms.home="$OPENNMS_HOME" \
+        -Dlog4j.configurationFile="$OPENNMS_HOME"/etc/log4j2-tools.xml \
+        -Dopennms.manager.class="$APP_CLASS" \
+        -jar "$OPENNMS_HOME/lib/opennms_bootstrap.jar" "$@"
+fi
+

@@ -58,11 +58,23 @@ for opt in $ADDITIONAL_MANAGER_OPTIONS; do
 	esac
 done
 
-# shellcheck disable=SC2086
-exec "$OPENNMS_BINDIR"/runjava -r -- \
-	$OPTIONS \
-	-Dopennms.home="$OPENNMS_HOME" \
-	-Dlog4j.configurationFile="$OPENNMS_HOME"/etc/log4j2-tools.xml \
-	-cp "$OPENNMS_HOME/lib/opennms_bootstrap.jar" \
-	org.opennms.bootstrap.InstallerBootstrap \
-	"$@"
+if [ $no_sudo ]; then
+    # shellcheck disable=SC2086
+    "$OPENNMS_BINDIR"/runjava -r -- \
+        $OPTIONS \
+        -Dopennms.home="$OPENNMS_HOME" \
+        -Dlog4j.configurationFile="$OPENNMS_HOME"/etc/log4j2-tools.xml \
+        -cp "$OPENNMS_HOME/lib/opennms_bootstrap.jar" \
+        org.opennms.bootstrap.InstallerBootstrap \
+        "$@"
+    "$OPENNMS_BINDIR"/fix-permissions
+else 
+    # shellcheck disable=SC2086
+    exec "$OPENNMS_BINDIR"/runjava -r -- \
+        $OPTIONS \
+        -Dopennms.home="$OPENNMS_HOME" \
+        -Dlog4j.configurationFile="$OPENNMS_HOME"/etc/log4j2-tools.xml \
+        -cp "$OPENNMS_HOME/lib/opennms_bootstrap.jar" \
+        org.opennms.bootstrap.InstallerBootstrap \
+        "$@"
+fi

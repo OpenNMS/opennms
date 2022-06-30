@@ -43,37 +43,6 @@ fi
 # The user to run as
 [ -z "$RUNAS" ] && RUNAS=opennms
 
-if [ -e "${opennms_home}/bin/_lib.sh" ]; then
-    # shellcheck disable=SC1090,SC1091
-    . "${opennms_home}/bin/_lib.sh"
-
-    # Load opennms.conf, if it exists, to override $RUNAS
-    if [ -f "${opennms_home}/etc/opennms.conf" ]; then
-        # shellcheck disable=SC1090
-        __onms_read_conf "${opennms_home}/etc/opennms.conf"
-    fi
-
-    SUDO="$(command -v sudo 2>/dev/null || which sudo 2>/dev/null || :)"
-    myuser="$(id -u -n)"
-    if [ "$myuser" != "$RUNAS" ]; then
-        if [ "$myuser" = "root" ] && [ -n "$SUDO" ] && [ -x "$SUDO" ]; then
-            _cmd=("$SUDO" "-u" "$RUNAS" "$0" "${INCOMING_ARGS[@]}");
-            exec "${_cmd[@]}"
-        fi
-        echo "ERROR: you must run this script as ${RUNAS}, not '${myuser}'." >&2
-        exit 4 # According to LSB: 4 - user had insufficient privileges
-    fi
-fi
-
-minimum_version="11.0"
-maximum_version="11.9999"
-
-searchdirs=("/usr/lib/jvm" "/usr/java" "/System/Library/Java/JavaVirtualMachines" "/Library/Java/JavaVirtualMachines" "/Library/Java/Home" "/usr" "/opt")
-
-dryrun=0
-
-java_conf="$opennms_home/etc/java.conf"
-basename="$(basename "$0")"
 
 die(){
     echo "${basename}: $*" >&2
@@ -89,7 +58,6 @@ tell(){
         echo "${basename}: $*" >&3
     fi
 }
-
 
 #
 # Function: printHelp()
@@ -130,6 +98,8 @@ printHelp() {
     echo "      options) or execute a JRE (-r option)."
     echo ""
     echo "  -q  Quiet mode.  Be fairly quiet."
+    echo ""
+    echo "  -x  Run the script as the current user, ignoring RUNAS"
     echo ""
     echo "The \"-s\" option chooses a JRE based on these factors:"
     echo ""
@@ -557,7 +527,7 @@ saveJava() {
     return 0
 }
 
-parseArgsAndDoStuff() {
+parseArgs() {
     exclusive=0
 
     verbose=0
@@ -625,6 +595,9 @@ parseArgsAndDoStuff() {
           v)
               verbose=1
               ;;
+          x)
+              no_sudo=1
+              ;;
 
           \?)
               die "Invalid option.  Use \"-h\" for help."
@@ -632,7 +605,9 @@ parseArgsAndDoStuff() {
       esac
     done
     shift "$((OPTIND - 1))"
+}
 
+doStuff() {
     if [ $exclusive -eq 0 ]; then
         warn "You must choose one of the command-line options."
         die "Use \"-h\" for help."
@@ -679,4 +654,45 @@ parseArgsAndDoStuff() {
     die "Internal error... got to end of script and shouldn't have."
 }
 
-parseArgsAndDoStuff "$@"
+parseArgs "$@"
+
+if [ -e "${opennms_home}/bin/_lib.sh" ]; then
+    # shellcheck disable=SC1090,SC1091
+    . "${opennms_home}/bin/_lib.sh"
+
+    # Load opennms.conf, if it exists, to override $RUNAS
+    if [ -f "${opennms_home}/etc/opennms.conf" ]; then
+        # shellcheck disable=SC1090
+        __onms_read_conf "${opennms_home}/etc/opennms.conf"
+    fi
+
+    SUDO="$(command -v sudo 2>/dev/null || which sudo 2>/dev/null || :)"
+    myuser="$(id -u -n)"
+    if [ $no_sudo ]; then
+        echo "WARNING: running script as the current user."
+    elif [ "$myuser" != "$RUNAS" ]; then
+        if [ "$myuser" = "root" ] && [ -n "$SUDO" ] && [ -x "$SUDO" ]; then
+            _cmd=("$SUDO" "-u" "$RUNAS" "$0" "${INCOMING_ARGS[@]}");
+            exec "${_cmd[@]}"
+        fi
+        echo "ERROR: you must run this script as ${RUNAS}, not '${myuser}'." >&2
+        exit 4 # According to LSB: 4 - user had insufficient privileges
+    fi
+fi
+
+minimum_version="11.0"
+maximum_version="11.9999"
+
+searchdirs=("/usr/lib/jvm" "/usr/java" "/System/Library/Java/JavaVirtualMachines" "/Library/Java/JavaVirtualMachines" "/Library/Java/Home" "/usr" "/opt")
+
+dryrun=0
+
+java_conf="$opennms_home/etc/java.conf"
+basename="$(basename "$0")"
+
+doStuff
+
+if [ $no_sudo ]; then
+    $OPENNMS_HOME/bin/fix-permissions.sh
+fi
+
