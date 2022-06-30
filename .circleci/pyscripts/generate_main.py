@@ -81,13 +81,38 @@ for e in main_yml_content:
     re_match=re.match(re_pattern,e)
     if re_match:
         if "#workflows#" in re_match.group():
-            final_output+="#workflows#\n"
+            
+            #<<EXP Area>>#
+            print("EXP AREA Start")
+            libyaml=libyaml.libyaml()
+            workflow_path=os.path.join(".circleci","main","workflows","workflows.json")
+            workflow_data=common_library.load_json(workflow_path)
+            sample_workflow=[]
+            level=0
+            sample_workflow.append(libyaml.create_space(level)+"workflows:")
+            level=level+2
+            sample_workflow.append(libyaml.create_space(level)+"auto-build:")
+            level+=2
+            sample_workflow.append(libyaml.create_space(level)+"jobs:")
+            level+=2
+            if pipeline_parameters["trigger-rpms"]:
+                sample_workflow=libyaml.generate_yaml(workflow_data,"rpms",level,sample_workflow)
+            else:
+                sample_workflow=libyaml.generate_yaml(workflow_data,"build",level,sample_workflow)
+            
+            if sample_workflow:
+                for line in sample_workflow:
+                    if type(line)==list:
+                        for entry_lvl2 in line:
+                            #if type(entry_lvl2) == list:
+                            final_output+=entry_lvl2+"\n"
+                    else:
+                        final_output+=entry_lvl2+"\n"
+            print("EXP AREA End")
+            #<<End of EXP Area>>#
             continue
         block_type,step=re_match.group().split(":")
-        if block_type == "#workflows":
-            continue
-        else:
-            print("Processing",block_type,step)
+        print("Processing",block_type,step)
         commands=keywords[block_type.replace("#","").strip()][re_match.group().strip()]["commands"]
         for command in commands:
             if type(command) == list:
@@ -108,27 +133,9 @@ parameters_yml_content=common_library.read_file(path_to_parameters_yml)
 for e in parameters_yml_content:
     final_output+=e
 
-common_library.write_file(path_to_modified_main,final_output)
 
-#<<EXP Area>>#
-print("EXP AREA Start")
-libyaml=libyaml.libyaml()
-workflow_path=os.path.join(".circleci","main","workflows","workflows.json")
-workflow_data=common_library.load_json(workflow_path)
-sample_workflow=[]
-level=0
-sample_workflow.append(libyaml.create_space(level)+"workflows:")
-level=level+2
-sample_workflow.append(libyaml.create_space(level)+"auto-build:")
-level+=2
-sample_workflow.append(libyaml.create_space(level)+"jobs:")
-level+=2
-if pipeline_parameters["trigger-rpms"]:
-    sample_workflow=libyaml.generate_yaml(workflow_data,"rpms",level,sample_workflow)
-    for line in sample_workflow:
-        print(line)
-print("EXP AREA End")
-#<<End of EXP Area>>#
+
+common_library.write_file(path_to_modified_main,final_output)
 
 
 os.remove(os.path.join(working_directory.name,".circleci","main","@main.yml"))
