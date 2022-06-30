@@ -80,7 +80,7 @@ re_pattern="^.*#.*#"
 for e in main_yml_content:
     re_match=re.match(re_pattern,e)
     if re_match:
-        if "workflows" in re_match.group().split(":"):
+        if "#workflows#" in re_match.group():
             continue
         block_type,step=re_match.group().split(":")
         if block_type == "#workflows":
