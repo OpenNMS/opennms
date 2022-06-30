@@ -1,11 +1,9 @@
 {
     "build": {
         "build": {
-            }
         },
         "integration-test": {
             "requires":["build"]
-            }
         },
         "sentinel-deb-build": {
             "requires":["build"]
