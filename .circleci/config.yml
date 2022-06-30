@@ -183,7 +183,6 @@ jobs:
       - run:
           name: Generate Main YAML file
           command: python3 .circleci/pyscripts/generate_main.py 
-      #- pack-config
       - run:
           name: check for empty trigger config
           command: |
@@ -197,8 +196,8 @@ jobs:
           path: /tmp/pipeline-parameters.json
           destination: pipeline-parameters.json
       - store_artifacts:
-          path: /tmp/.circleci/main/main.yml
-          destination: main.yml
+          path: /tmp/.circleci/main.yml
+          destination: /tmp/.circleci/main-v1.yml
       - continuation/continue:
           circleci_domain: circleci.com
           configuration_path: /tmp/.circleci/main.yml
