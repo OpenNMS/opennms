@@ -1,4 +1,7 @@
 {
+    "build-with-tar": {
+        "build-with-tar": { }
+    },
     "build": {
         "build": { },
         "integration-test": {

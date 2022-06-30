@@ -81,7 +81,6 @@ for e in main_yml_content:
     re_match=re.match(re_pattern,e)
     if re_match:
         if "#workflows#" in re_match.group():
-            
             #<<EXP Area>>#
             print("EXP AREA Start")
             libyaml=libyaml.libyaml()
@@ -101,7 +100,7 @@ for e in main_yml_content:
             elif pipeline_parameters["trigger-debs"]:
                 sample_workflow=libyaml.generate_yaml(workflow_data,"debs",level,sample_workflow)
             else:
-                sample_workflow=libyaml.generate_yaml(workflow_data,"build",level,sample_workflow)
+                sample_workflow=libyaml.generate_yaml(workflow_data,"build-with-tar",level,sample_workflow)
             
             if sample_workflow:
                 for line in sample_workflow:

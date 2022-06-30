@@ -1,0 +1,97 @@
+commands:
+  run-build-with-tar:
+    description: "Run the main build with tarball"
+    parameters:
+      number-vcpu:
+        default: 8
+        type: integer
+      node-memory:
+        default: echo "NODE_OPTIONS Not Set"
+        type: string
+      vaadin-javamaxmem:
+        default: 1g
+        type: string
+    steps:
+      - cached-checkout
+      - save-cached-checkout
+      - extract-pom-version
+      - run:
+          name: Check for Releasability
+          command: |
+            export OPENNMS_VERSION="$(.circleci/scripts/pom2version.sh pom.xml)"
+            .circleci/scripts/release-lint.sh "${OPENNMS_VERSION}"
+      - restore-maven-cache
+      - restore-nodejs-cache
+      - run:
+          name: Setup Environment
+          command: |
+            export OPENNMS_VERSION="$(.circleci/scripts/pom2version.sh pom.xml)"
+            .circleci/scripts/configure-signing.sh
+            ./clean.pl
+            << parameters.node-memory >>
+            export MAVEN_OPTS="-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
+            MAVEN_ARGS="install"
+            case "${CIRCLE_BRANCH}" in
+              "master-"*|"release-"*|develop)
+                mkdir -p target/artifacts
+                MAVEN_ARGS="-Dbuild.type=production $MAVEN_ARGS javadoc:aggregate"
+                ;;
+            esac
+      - run:
+          name: Compile OpenNMS
+          command: |        
+            ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
+              -Daether.connector.resumeDownloads=false \
+              -Daether.connector.basic.threads=1 \
+              -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
+              -DvaadinJavaMaxMemory=<< parameters.vaadin-javamaxmem >> \
+              -DmaxCpus=<< parameters.number-vcpu >> \
+              -Prun-expensive-tasks \
+              -Psmoke \
+              --batch-mode \
+              $MAVEN_ARGS
+      - run:
+          name: Check if we have generated apidocs
+          command: |      
+            if [ -d target/site/apidocs ]; then
+              pushd target/site/apidocs
+                tar -czf "../../artifacts/opennms-${OPENNMS_VERSION}-javadoc.tar.gz" *
+              popd
+            fi
+      - run:
+          name: Assemble tarballs and related artifacts
+          command: |
+            ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
+              -Daether.connector.resumeDownloads=false \
+              -Daether.connector.basic.threads=1 \
+              -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
+              -DvaadinJavaMaxMemory=<< parameters.vaadin-javamaxmem >> \
+              -DmaxCpus=<< parameters.number-vcpu >> \
+              -Pbuild-bamboo \
+              -Prun-expensive-tasks \
+              -Dopennms.home=/opt/opennms \
+              --batch-mode \
+              $MAVEN_ARGS
+      - update-maven-cache
+      - run:
+          name: Remove Extra Maven Repository OpenNMS Files
+          command: |
+            # move these out of the way so they're not stored in the maven pre-cache
+            cd ~/.m2/repository/org/opennms
+            mkdir /tmp/maven-keep
+            mv $(ls -1 | grep -v -E '^(jicmp-api|jicmp6-api|jrrd-api|jrrd2-api|lib|maven)$') /tmp/maven-keep
+      - save-maven-cache
+      - run:
+          name: Restore Extra Maven Repository OpenNMS Files
+          command: |
+            # now move them back so they end up in the workspace for builds further down the workflow
+            mv /tmp/maven-keep/* ~/.m2/repository/org/opennms/
+      - save-nodejs-cache
+      - store_artifacts:
+          path: ~/project/target/artifacts
+          destination: artifacts
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - project
+            - .m2
