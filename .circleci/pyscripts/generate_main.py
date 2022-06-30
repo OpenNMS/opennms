@@ -80,6 +80,7 @@ for e in main_yml_content:
         block_type,step=re_match.group().split(":")
         commands=keywords[block_type.replace("#","").strip()][re_match.group().strip()]["commands"]
         for command in commands:
+            print(command)
             if type(command) == list:
                 for sub_command in command:
                     final_output+=sub_command
