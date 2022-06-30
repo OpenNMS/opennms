@@ -21,6 +21,7 @@ commands:
   #commands:generic/generic#
 
 workflows:
+  #workflows-block#
   #workflows:weekly-coverage#
   #workflows:build-minimal#
   #workflows:docs#
