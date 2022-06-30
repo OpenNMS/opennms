@@ -112,7 +112,10 @@ if "CIRCLE_BRANCH" in os.environ and os.environ["CIRCLE_BRANCH"] == "mem/jira/nm
     if "circleci_configuration" in What_to_build and len(What_to_build) == 1 :
         mappings["trigger-build"]=False
 
-
-
+    mappings["trigger-docker"]=False
+    mappings["trigger-smoke"]=False
+    mappings["trigger-rpms"]=False
+    mappings["trigger-debs"]=False
+    
 with open(output_path, 'w') as fp:
     fp.write(json.dumps(mappings))
