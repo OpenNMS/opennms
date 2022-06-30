@@ -65,6 +65,8 @@ keywords=common_library.extract_keywords(path_to_main_yml)
 
 for keyword in keywords:
     for sub_keyword in keywords[keyword]:
+        if keyword == "workflows":
+            continue
         tmp_page=sub_keyword.replace("#","").replace(keyword+":","") 
         if ".index" in tmp_page:
             keywords[keyword][sub_keyword]["commands"]=common_library.expand_index(sub_keyword,path_to_main_folder,[])
