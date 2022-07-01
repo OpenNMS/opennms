@@ -31,3 +31,54 @@ This section describes how to configure {page-component-title} to use RRDTool an
 
 CAUTION: The way data is stored in different time series databases makes it extremely hard to migrate from one technology to another.
 You cannot prevent data loss when you switch from one to another.
+
+== Running two time series writes in parallel
+
+The default time series strategy [rrd,newts,integration] is used for both read/write by default.
+It is possible to add another time series write in parallel to the default strategy.
+
+== Writing to newts in parallel
+
+You can enable writing to newts without having `newts` as default time series strategy.
+
+.Create a file to load the `opennms-newts` feature.
+[source, console]
+----
+sudo vi etc/featuresBoot.d/newts.boot
+----
+
+.Add feature and save the file
+[source, newts.boot]
+----
+opennms-newts
+----
+
+.Restart {page-component-title} Core instance to apply the changes
+[source, console]
+----
+sudo systemctl restart opennms
+----
+
+== Writing to Time Series Integration Plugin in parallel
+
+You can enable writing to any time series integration plugin in parallel without having `integration` as default time series strategy.
+
+
+.Create a file to load the `opennms-timeseries-api` feature.
+[source, console]
+----
+sudo vi etc/featuresBoot.d/timeseries.boot
+----
+
+.Add feature and save the file
+[source, timeseries.boot]
+----
+opennms-timeseries-api
+----
+
+.Restart {page-component-title} Core instance to apply the changes
+[source, console]
+----
+sudo systemctl restart opennms
+----
+
