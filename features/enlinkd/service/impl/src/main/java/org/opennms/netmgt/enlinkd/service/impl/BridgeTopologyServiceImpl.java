@@ -81,7 +81,7 @@ public class BridgeTopologyServiceImpl extends TopologyServiceImpl implements Br
     private BridgeStpLinkDao m_bridgeStpLinkDao;
     private IpNetToMediaDao m_ipNetToMediaDao;
 
-    private final Map<Integer, Set<BridgeForwardingTableEntry>> m_nodetoBroadcastDomainMap= new HashMap<>();
+    private final Map<Integer, Set<BridgeForwardingTableEntry>> m_nodetoBroadcastDomainMap = new HashMap<>();
     private final Set<Integer> m_bridgecollectionsscheduled = new HashSet<>();
     volatile Set<BroadcastDomain> m_domains;
 
