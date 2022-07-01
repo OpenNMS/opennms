@@ -79,7 +79,7 @@ public abstract class TopologyUpdater extends Discovery implements OnmsTopologyU
     private final NodeTopologyService m_nodeTopologyService;
     private final TopologyService m_topologyService;
 
-    private final Object m_lock= new Object();
+    private final Object m_lock = new Object();
     private OnmsTopology m_topology;
     private boolean m_runned = false;
     private boolean m_registered = false;
