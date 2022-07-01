@@ -494,7 +494,7 @@
         <feature>opennms-snmp</feature>
         <bundle>mvn:org.opennms.core.mate/org.opennms.core.mate.api/${project.version}</bundle>
         <bundle dependency="true">wrap:mvn:com.googlecode.concurrent-locks/concurrent-locks/1.0.0</bundle>
-        <bundle dependency="true">wrap:mvn:org.jasypt/jasypt/1.9.0</bundle>
+        <bundle dependency="true">wrap:mvn:org.jasypt/jasypt/1.9.3</bundle>
         <bundle>mvn:org.opennms/opennms-config/${project.version}</bundle>
     </feature>
     <feature name="opennms-kafka" version="${project.version}" description="OpenNMS :: Features :: Kafka">
@@ -2053,4 +2053,5 @@
         <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.persistence.osgi/${project.version}</bundle>
         <bundle>mvn:org.opennms.features/org.opennms.features.newts/${project.version}</bundle>
     </feature>
+
 </features>
