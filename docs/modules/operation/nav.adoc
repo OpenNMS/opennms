@@ -89,6 +89,7 @@
 ** xref:alarms/alarm-notes.adoc[]
 ** xref:alarms/alarm-sound-flash.adoc[]
 ** xref:alarms/history.adoc[]
+** xref:alarms/alarm-advanced-search.adoc[]
 ** xref:alarms/ifttt-integration.adoc[]
 
 * xref:notifications/introduction.adoc[]
