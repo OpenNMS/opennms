@@ -93,13 +93,14 @@ public class ReplayPcap implements Action {
 
 
         try (final InputStream in = new FileInputStream(pcapFile)) {
+            System.out.printf("Processing packets from '%s'.\n", pcapFile);
             final AtomicLong packetCount = new AtomicLong();
             final Pcap pcap = Pcap.openStream(in);
             pcap.loop(packet -> {
                 if (packet.hasProtocol(Protocol.UDP)) {
                     packetCount.getAndIncrement();
                     if (packetCounterFrequency > 0 && packetCount.get() % packetCounterFrequency == 0) {
-                        System.out.printf("Processing packet %d\n", packetCount.get());
+                        System.out.printf("Processing packet #%d.\n", packetCount.get());
                     }
                     final UDPPacket udp = (UDPPacket) packet.getPacket(Protocol.UDP);
 
@@ -115,7 +116,7 @@ public class ReplayPcap implements Action {
                 }
                 return true;
             });
-            System.out.printf("Completed processing %d packets.\n", packetCount.get());
+            System.out.printf("Done processing %d packets.\n", packetCount.get());
         }
         return null;
     }
