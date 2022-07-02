@@ -1543,7 +1543,7 @@
 
     <!--
       This is on by default now that root is not required for pinging.
-      If you have issues with this, see https://docs.opennms.org/ for enabling non-root ping.
+      If you have issues with this, see https://docs.opennms.com/ for enabling non-root ping.
       However, we need to set the default in a profile (NMS-8838).
     <runPingTests>true</runPingTests> -->
 
