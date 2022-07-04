@@ -57,7 +57,6 @@ commands:
                 tar -czf "../../artifacts/opennms-${OPENNMS_VERSION}-javadoc.tar.gz" *
               popd
             fi
-      - qemu-user-static
       - install-buildx
       - dockerhub-login
       - acr-login
