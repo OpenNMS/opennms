@@ -148,7 +148,7 @@ public class FlowDocumentBuilder {
             case UNKNOWN:
                 return Direction.UNKNOWN;
             default:
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("Unknown direction: " + direction.name());
         }
     }
 

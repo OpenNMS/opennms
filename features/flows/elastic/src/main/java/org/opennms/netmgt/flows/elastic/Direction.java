@@ -53,7 +53,7 @@ public enum Direction {
             case UNKNOWN:
                 return UNKNOWN;
             default:
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("Unknown direction: " + direction.name());
         }
     }
 
