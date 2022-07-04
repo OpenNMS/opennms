@@ -372,6 +372,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
      */
     protected static boolean shouldUpdateAlarmForSnapshot(OnmsAlarm alarmInMem, OnmsAlarm alarmInDb) {
         return !Objects.equals(alarmInMem.getLastEventTime(), alarmInDb.getLastEventTime()) ||
+                !Objects.equals(alarmInMem.getLastSeverityChangedTime(), alarmInDb.getLastSeverityChangedTime()) ||
                 !Objects.equals(alarmInMem.getAckTime(), alarmInDb.getAckTime());
     }
 

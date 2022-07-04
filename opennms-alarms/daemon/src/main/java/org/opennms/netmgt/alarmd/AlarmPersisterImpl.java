@@ -210,7 +210,8 @@ public class AlarmPersisterImpl implements AlarmPersister {
         // Always set these
         alarm.setLastEvent(persistedEvent);
         alarm.setLastEventTime(persistedEvent.getEventTime());
-        
+
+        OnmsSeverity previousSeverity = alarm.getSeverity();
         if (!isResolutionEvent(event)) {
             incrementCounter(alarm);
             
@@ -297,6 +298,10 @@ public class AlarmPersisterImpl implements AlarmPersister {
             }
         }
 
+        if (!previousSeverity.equals(alarm.getSeverity())) {
+            alarm.setLastSeverityChangedTime(persistedEvent.getEventTime());
+        }
+
         updateRelatedAlarms(alarm, event);
 
         persistedEvent.setAlarm(alarm);
@@ -376,6 +381,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
         if (event.getAlarmData().getManagedObject() != null) {
             alarm.setManagedObjectType(event.getAlarmData().getManagedObject().getType());
         }
+        alarm.setLastSeverityChangedTime(e.getEventTime());
         e.setAlarm(alarm);
         return alarm;
     }

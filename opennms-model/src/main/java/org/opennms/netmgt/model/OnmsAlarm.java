@@ -210,6 +210,8 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
 
     private boolean m_partOfSituation;
 
+    private Date m_lastSeverityChangedTime;
+
     /**
      * default constructor
      */
@@ -1302,6 +1304,16 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
             return getLastAutomationTime();
         }
         return getLastEventTime();
+    }
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="lastSeverityChangedTime")
+    public Date getLastSeverityChangedTime() {
+        return m_lastSeverityChangedTime;
+    }
+
+    public void setLastSeverityChangedTime(Date lastSeverityChangedTime) {
+        m_lastSeverityChangedTime = lastSeverityChangedTime;
     }
 
 }

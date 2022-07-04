@@ -77,6 +77,9 @@ public class DefaultAlarmService implements AlarmService {
         }
         final OnmsSeverity previousSeverity = alarmInTrans.getSeverity();
         alarmInTrans.setSeverity(OnmsSeverity.CLEARED);
+        if (!previousSeverity.equals(alarmInTrans.getSeverity())) {
+            alarmInTrans.setLastSeverityChangedTime(now);
+        }
         updateAutomationTime(alarmInTrans, now);
         alarmDao.update(alarmInTrans);
         alarmEntityNotifier.didUpdateAlarmSeverity(alarmInTrans, previousSeverity);
@@ -117,6 +120,9 @@ public class DefaultAlarmService implements AlarmService {
         }
         final OnmsSeverity previousSeverity = alarmInTrans.getSeverity();
         alarmInTrans.setSeverity(OnmsSeverity.get(alarmInTrans.getLastEvent().getEventSeverity()));
+        if (!previousSeverity.equals(alarmInTrans.getSeverity())) {
+            alarmInTrans.setLastSeverityChangedTime(now);
+        }
         updateAutomationTime(alarmInTrans, now);
         alarmDao.update(alarmInTrans);
         alarmEntityNotifier.didUpdateAlarmSeverity(alarmInTrans, previousSeverity);
@@ -133,6 +139,9 @@ public class DefaultAlarmService implements AlarmService {
         }
         final OnmsSeverity previousSeverity = alarmInTrans.getSeverity();
         alarmInTrans.setSeverity(OnmsSeverity.get(previousSeverity.getId() + 1));
+        if (!previousSeverity.equals(alarmInTrans.getSeverity())) {
+            alarmInTrans.setLastSeverityChangedTime(now);
+        }
         updateAutomationTime(alarmInTrans, now);
         alarmDao.update(alarmInTrans);
         alarmEntityNotifier.didUpdateAlarmSeverity(alarmInTrans, previousSeverity);
@@ -177,6 +186,9 @@ public class DefaultAlarmService implements AlarmService {
         }
         final OnmsSeverity previousSeverity = alarmInTrans.getSeverity();
         alarmInTrans.setSeverity(severity);
+        if (!previousSeverity.equals(alarmInTrans.getSeverity())) {
+            alarmInTrans.setLastSeverityChangedTime(now);
+        }
         updateAutomationTime(alarm, now);
         alarmDao.update(alarmInTrans);
         alarmEntityNotifier.didUpdateAlarmSeverity(alarmInTrans, previousSeverity);
