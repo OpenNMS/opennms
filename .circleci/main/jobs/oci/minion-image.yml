@@ -1,8 +1,5 @@
 jobs:
   minion-image:
-    parameters:
-      architecture:
-        type: string
     machine:
       image: ubuntu-2004:202010-01
     environment:
