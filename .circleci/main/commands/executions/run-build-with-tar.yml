@@ -106,15 +106,8 @@ commands:
           destination: artifacts
       - store_artifacts:
           when: always
-          path: ~/project/target/config-schema
-          destination: config-schema
-      - store_artifacts:
-          when: always
           path: ~/project/target/tarballs
           destination: tarballs
-      - store_artifacts:
-          path: ~/project/opennms-container/minion/images/minion.oci
-          destination: minion.oci
       - cache-workflow-assets:
           cache_prefix: minion-config-schema
           source_path: target/config-schema/
