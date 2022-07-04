@@ -34,17 +34,20 @@ Don't include `.dcb` extension when specifying the file name in metadata.
 | username
 | Username for SSH login. 
 Overwrite in metadata as `dcb:username`.
+Note that you can use xref:operation:meta-data.adoc#ga-metadata-scv[Secure Credentials Vault (SCV) metadata].
 | admin
 
 | password
 | Password for SSH login. 
 Overwrite in metadata as `dcb:password`.
+Note that you can use Secure Credentials Vault (SCV) metadata.
 | admin
 
 3+| *Optional*
 
 | config-type
 | If device has multiple configurations, specify the config-type with each service.
+The config-type and service name suffix should match (kebab-case for service name, camelCase for config-type).
 Overwrite in metadata as `dcb:config-type`.
 | default
 

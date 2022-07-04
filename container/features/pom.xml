@@ -100,6 +100,7 @@
                       <descriptors>
                           <descriptor>mvn:org.apache.karaf.features/framework/${karafVersion}/xml/features</descriptor>
                           <descriptor>mvn:org.apache.karaf.features/standard/${karafVersion}/xml/features</descriptor>
+                          <descriptor>mvn:org.opennms.newts/newts-karaf/${newtsVersion}/xml/features</descriptor>
                           <descriptor>file:${project.build.directory}/classes/features.xml</descriptor>
                           <descriptor>file:${project.build.directory}/classes/features-minion.xml</descriptor>
                           <descriptor>file:${project.build.directory}/classes/features-sentinel.xml</descriptor>
@@ -117,6 +118,7 @@
                           <feature>minion-api-layer</feature>
                           <feature>sentinel-api-layer</feature>
                           <feature>sentinel-timeseries-api</feature>
+                          <feature>opennms-timseries-api</feature>
                       </features>
                   </configuration>
               </execution>
@@ -362,6 +364,13 @@
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.newts</groupId>
+      <artifactId>newts-karaf</artifactId>
+      <version>${newtsVersion}</version>
+      <classifier>features</classifier>
+      <type>xml</type>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>

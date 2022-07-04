@@ -18,13 +18,19 @@ For example, `0 0 0 * * ?` runs every 24 hrs at 12:00 a.m. `0 0 1 * * ?` runs ev
 If you want to enable device config backup on existing nodes in a requisition, select the desired requisition and edit the node definition.
 . Click on the edit icon and click *Add Node*.
 . Set up your requisition as described in xref:operation:provisioning/getting-started.adoc#requisition-create[Create a requisition].
-. Add `DeviceConfig` service on the interface where we are backing up the config. If device has multiple config types, you can add services with prefix `DeviceConfig-`.
+. Add one or more `DeviceConfig` services on the interface where we are backing up the config.
+.. If a device has multiple config types, use the prefix `DeviceConfig-` to add services.
++
+For example use `DeviceConfig-running` to specify a configuration that the device currently has while running. +
+The UI displays this as "Running Configuration". +
++
+For `DeviceConfig-running-xml`, the UI displays "Running Xml Configuration".
 . Click *Add Meta-Data*, and define the following key-value pairs:
-.. `dcb:username`: username for the device
-.. `dcb:password`: password for the device
-.. `dcb:script-file`: name of the device configuration script for this type of device without .dcb extension
+.. `dcb:username`: username for the device. This can also be an xref:operation:meta-data.adoc#ga-metadata-scv[SCV metadata expression].
+.. `dcb:password`: password for the device. This can also be an SCV metadata expression.
+.. `dcb:script-file`: name of the device configuration script for this type of device without .dcb extension. Note that if you have multiple configurations for the same device, the script file name should be different for each.
 .. `dcb:schedule`: a cron expression to specify the time to fetch the device backup configuration (default is `never`)
-.. `dcb:retention-period`: an optional Java period expression to specify the length of time before "stale" configuration data is deleted from the database (default is `P1Y`, one year).
+.. `dcb:retention-period`: an optional Java `Period` expression to specify the length of time before "stale" configuration data is deleted from the database (default is `P1Y`, one year).
 . Click *Save* to save the metadata and then *Save* to save the requisition.
 . Click *Return* and click *Synchronize*.
 . Choose a scan option and click *Synchronize*.

@@ -28,14 +28,23 @@
 
 package org.opennms.netmgt.config.api;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.util.List;
 
 import org.opennms.netmgt.config.snmp.Definition;
+import org.opennms.netmgt.config.snmp.SnmpConfig;
 import org.opennms.netmgt.config.snmp.SnmpProfile;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 
 public interface SnmpAgentConfigFactory {
+
+    /**
+     * <p>saveCurrent</p>
+     * Saves current configuration in memory to file system.
+     */
+    void saveCurrent() throws IOException;
+
     /**
      * <p>getAgentConfig</p>
      *
@@ -81,5 +90,7 @@ public interface SnmpAgentConfigFactory {
      * @return a List of snmp profiles.
      */
     List<SnmpProfile> getProfiles();
+
+    public SnmpConfig getSnmpConfig();
 
 }

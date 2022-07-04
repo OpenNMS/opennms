@@ -33,6 +33,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.List;
@@ -52,6 +53,7 @@ import org.opennms.netmgt.config.agents.AgentResponse;
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
 import org.opennms.netmgt.config.snmp.Definition;
+import org.opennms.netmgt.config.snmp.SnmpConfig;
 import org.opennms.netmgt.config.snmp.SnmpProfile;
 import org.opennms.netmgt.dao.mock.UnimplementedFilterDao;
 import org.opennms.netmgt.dao.mock.UnimplementedMonitoredServiceDao;
@@ -167,6 +169,11 @@ public class AgentConfigurationResourceTest {
         }
 
         @Override
+        public void saveCurrent() throws IOException {
+            //Ignore
+        }
+
+        @Override
         public SnmpAgentConfig getAgentConfig(InetAddress address, String location) {
             return new SnmpAgentConfig(address, getDefaults());
         }
@@ -193,6 +200,11 @@ public class AgentConfigurationResourceTest {
 
         @Override
         public List<SnmpProfile> getProfiles() {
+            return null;
+        }
+
+        @Override
+        public SnmpConfig getSnmpConfig() {
             return null;
         }
     }

@@ -91,6 +91,8 @@
         <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="timeseriesStorageManager" />
     </reference-list>
 
+    <service interface="org.opennms.netmgt.timeseries.TimeseriesStorageManager" ref="timeseriesStorageManager"/>
+
     <bean id="statisticsCollector" class="org.opennms.netmgt.timeseries.stats.StatisticsCollectorImpl">
         <argument value="${writer_threads}"/>
     </bean>
@@ -120,6 +122,8 @@
     <service interface="org.opennms.netmgt.collection.api.PersisterFactory" ref="timeseriesPersisterFactory">
         <service-properties>
             <entry key="strategy" value="integration">
+            </entry>
+            <entry key="registration.export" value="true">
             </entry>
         </service-properties>
     </service>
