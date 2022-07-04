@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -97,6 +97,9 @@
 			</option>
 			<% } %>
 		</select>
+
+        <label for="nestedSeverityNot">Negate Severity:</label>
+        <input type="checkbox" name="nestedSeverityNot" />
 	</div>
 
 	<!-- Use clear:left to make sure that this column breaks onto a new row -->
@@ -109,6 +112,9 @@
 			<option value="<%=serviceNameMap.get(name)%>"><%=name%></option>
 			<% } %>
 		</select>
+
+        <label for="nestedServiceNot">Negate Service:</label>
+        <input type="checkbox" name="nestedServiceNot" />
 	</div>
 
 	<div class="form-group col-sm-6">
@@ -158,6 +164,9 @@
 			<option value="<%=category%>"><%=category%></option>
 			<% } %>
 		</select>
+
+        <label for="nestedCategoryNot">Negate Category:</label>
+        <input type="checkbox" name="nestedCategoryNot" />
 	</div>
 
 	<div class="col-sm-6 my-2">
