@@ -98,9 +98,6 @@ commands:
             mv /tmp/maven-keep/* ~/.m2/repository/org/opennms/
       - save-nodejs-cache
       - store_artifacts:
-          path: ~/project/target/artifacts
-          destination: artifacts
-      - store_artifacts:
           when: always
           path: ~/project/target/artifacts
           destination: artifacts
@@ -108,9 +105,6 @@ commands:
           when: always
           path: ~/project/target/tarballs
           destination: tarballs
-      - cache-workflow-assets:
-          cache_prefix: minion-config-schema
-          source_path: target/config-schema/
       - persist_to_workspace:
           root: ~/
           paths:
