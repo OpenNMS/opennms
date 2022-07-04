@@ -95,7 +95,7 @@ public class CdpOnmsTopologyUpdater extends TopologyUpdater {
         for(TopologyConnection<CdpLinkTopologyEntity, CdpLinkTopologyEntity> pair : m_cdpTopologyService.match()) {
             topology.getEdges().add(
                 OnmsTopologyEdge.create(
-                        Topology.getDefaultEdgeId(pair.getLeft().getId().intValue(), pair.getRight().getId().intValue()),
+                        Topology.getDefaultEdgeId(pair.getLeft().getId(), pair.getRight().getId()),
                         create(topology.getVertex(pair.getLeft().getNodeIdAsString()),
                                pair.getLeft(),
                                nodeToOnmsSnmpTable.get(pair.getLeft().getNodeId(), pair.getLeft().getCdpCacheIfIndex())),
