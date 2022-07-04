@@ -57,6 +57,10 @@ commands:
                 tar -czf "../../artifacts/opennms-${OPENNMS_VERSION}-javadoc.tar.gz" *
               popd
             fi
+      - qemu-user-static
+      - install-buildx
+      - dockerhub-login
+      - acr-login
       - run:
           name: Assemble tarballs and related artifacts
           command: |
@@ -72,7 +76,7 @@ commands:
               --batch-mode \
               $MAVEN_ARGS
       - run:
-          name: Build Minion OCI
+          name: Build Minion OCI 
           command: |
             cd opennms-container/minion
 
