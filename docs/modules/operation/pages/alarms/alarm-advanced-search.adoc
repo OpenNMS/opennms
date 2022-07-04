@@ -1,37 +1,44 @@
 
-[[ga-alarm-advanced-search]]
-= Alarm Advanced Search
+[[ga-advanced-alarm-search]]
+= Advanced Alarm Search
 
-Often users wish to query the alarm list with more customizations to narrow down the search. The Horizon alarm list page has a button to filter your searches based on different criteria.
+Often users wish to query the alarm list with more customizations to narrow down the search.
+The Horizon alarm list page has a button to filter your searches based on different criteria.
 
 The following are the criteria which can be searched upon:
 
 * Alarm Text Contains
 ** Performs a substring filter on both the log message and the description
-** To negate this search, prefix the inputted text with `-`. This will return results which do not contain the provided input text.
+** To negate this search, prefix the inputted text with `-`.
+This will return results which do not contain the provided input text.
 
 * TCP/IP Address Like
 ** Performs an `IPLIKE` on the provided IP Address to filter the results.
-** To negate this search, prefix the inputted text with `-`. This will return results which does not satisfy the `IPLIKE` function.
+** To negate this search, prefix the inputted text with `-`.
+This will return results which does not satisfy the `IPLIKE` function.
 
 * Node Label Contains
 ** Performs a substring filter on the Node Label.
-** To negate this search, prefix the inputted text with `-`. This will return results which does not contain the provided input text.
+** To negate this search, prefix the inputted text with `-`.
+This will return results which does not contain the provided input text.
 
 * Severity
 ** Filter the alarms list based on the alarm severity.
-** To negate this search, toggle the checkbox below titled "Negate Severity". This will return results which does not match the set Severity.
+** To negate this search, toggle the checkbox below titled "Negate Severity".
+This will return results which does not match the set Severity.
 
 * Service
 ** Filter the alarms list based on the alarm service.
-** To negate this search, toggle the checkbox below titled "Negate Service". This will return results which does not match the set Service.
+** To negate this search, toggle the checkbox below titled "Negate Service".
+This will return results which does not match the set Service.
 
 * Alarm type
 ** Select this dropdown to include Only Alarms, Only Situations or Both.
 
 * Category
 ** Filter the alarms list based on the nodes category.
-** To negate this search, toggle the checkbox titled "Negate Category". This will return results which does not match the set Category.
+** To negate this search, toggle the checkbox titled "Negate Category".
+This will return results which does not match the set Category.
 
 * Filter for Alarm's First Event After
 ** Select the timestamp to show alarms after the time of the first event relating to this alarm.
