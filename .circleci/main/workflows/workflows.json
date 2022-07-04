@@ -1,7 +1,9 @@
 {
     "build-with-tar": {
         "build-with-tar": { },
-        "minion-image":{ },
+        "minion-image":{ 
+            "requires":["build-with-tar"]
+        },
         "integration-test": {
             "requires":["minion-image"]
         }
