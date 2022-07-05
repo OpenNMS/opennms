@@ -217,7 +217,8 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
                 if (future != null) {
                     LOG.debug("received config - target: " + this.target + "; address: " + address.getHostAddress());
                     // strip the '.' and filenameSuffix from the filename
-                    future.complete(Either.right(new Success(content, fileName.substring(0, fileName.length() - fileNameSuffix.length()))));
+                    uploadTrigger.get();
+                    future.complete(Either.right(new Success(content, fileName.substring(0, fileName.length() - fileNameSuffix.length()), sshScriptingService.getScriptOutput())));
                 }
             }
         }

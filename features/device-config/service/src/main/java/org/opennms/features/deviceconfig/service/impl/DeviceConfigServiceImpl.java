@@ -97,7 +97,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
 
         return pollDeviceConfig(ipAddress, location, service, persist)
                 .thenApply(response -> {
-                    return new DeviceConfigBackupResponse(response.getPollStatus().getReason(), response.getPollStatus().getDcbScriptDebugOutput());
+                    return new DeviceConfigBackupResponse(response.getPollStatus().getReason(), response.getPollStatus().getDeviceConfig().getScriptOutput());
                 }).whenComplete((response, throwable) -> {
                     if (throwable != null) {
                         LOG.error("Error while getting device config for IpAddress {} at location {}", ipAddress, location, throwable);

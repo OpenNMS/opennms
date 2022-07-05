@@ -196,15 +196,13 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
                         failure -> {
                             LOG.error("Device config retrieval could not be triggered - target: {}; script: {};  message: {} \nstdout: {}\nstderr: {}", target, script, failure.message, failure.stdout, failure.stderr);
                             final var pollStatus = PollStatus.unavailable(failure.message);
-                            pollStatus.setDeviceConfig(new DeviceConfig());
-                            pollStatus.setDcbScriptDebugOutput(failure.scriptOutput);
+                            pollStatus.setDeviceConfig(new DeviceConfig(failure.scriptOutput));
                             return pollStatus;
                         },
                         success -> {
                             LOG.debug("Retrieved device configuration - target: " + target);
                             var pollStatus = PollStatus.up();
-                            pollStatus.setDeviceConfig(new DeviceConfig(success.config, success.filename));
-                            pollStatus.setDcbScriptDebugOutput(success.scriptOutput);
+                            pollStatus.setDeviceConfig(new DeviceConfig(success.config, success.filename, success.scriptOutput));
                             return pollStatus;
                         }
                 )
