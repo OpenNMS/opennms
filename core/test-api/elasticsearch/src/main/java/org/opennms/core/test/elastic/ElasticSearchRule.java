@@ -28,6 +28,11 @@
 
 package org.opennms.core.test.elastic;
 
+import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
+import org.junit.rules.TestRule;
+import org.junit.runner.Description;
+import org.junit.runners.model.Statement;
+
 import static org.opennms.core.test.elastic.ElasticSearchServerConfig.ES_HTTP_PORT;
 
 import java.io.File;
@@ -35,13 +40,12 @@ import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.junit.rules.TestRule;
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
+
 
 /**
  * A JUnit rule which starts an embedded elastic-search instance.
  */
+@EnableRuleMigrationSupport
 public class ElasticSearchRule implements TestRule {
 
     /** An elastic-search cluster consisting of one node. */
