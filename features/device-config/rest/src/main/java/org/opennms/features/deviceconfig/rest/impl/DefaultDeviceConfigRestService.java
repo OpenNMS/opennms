@@ -86,17 +86,12 @@ import com.google.common.collect.Maps;
 
 import net.redhogs.cronparser.CronExpressionDescriptor;
 
-
-
 public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultDeviceConfigRestService.class);
     public static final String DEFAULT_ENCODING = StandardCharsets.UTF_8.name();
     public static final String BINARY_ENCODING = "binary";
-
     private static final Pattern deletePattern = Pattern.compile("\\d+(, ?\\d+)*");
-
     private final SessionUtils sessionUtils;
-
 
     private static final Map<String,String> ORDERBY_QUERY_PROPERTY_MAP = Map.of(
         "lastupdated", "lastUpdated",
@@ -126,7 +121,7 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
     public DefaultDeviceConfigRestService(DeviceConfigDao deviceConfigDao, DeviceConfigService deviceConfigService, SessionUtils sessionUtils) {
         this.deviceConfigDao = deviceConfigDao;
         this.deviceConfigService = deviceConfigService;
-        this.sessionUtils = sessionUtils;
+        this.sessionUtils =  Objects.requireNonNull(sessionUtils);
     }
 
     /** {@inheritDoc} */
@@ -262,13 +257,12 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
                 .map(Long::parseLong)
                 .collect(Collectors.toList());
 
-        final List<DeviceConfig> deviceConfigList = ids.stream()
-                .map(deviceConfigDao::get)
-                .map(DeviceConfig.class::cast)
-                .collect(Collectors.toList());
-
         sessionUtils.withTransaction(() -> {
             try {
+                final List<DeviceConfig> deviceConfigList = ids.stream()
+                        .map(deviceConfigDao::get)
+                        .map(DeviceConfig.class::cast)
+                        .collect(Collectors.toList());
                 deviceConfigDao.deleteDeviceConfigs(deviceConfigList);
             } catch (Exception e) {
                 LOG.error("Exception while deleting device configs, one or more ids not valid {}", e);
