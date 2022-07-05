@@ -113,7 +113,10 @@ commands:
             # now move them back so they end up in the workspace for builds further down the workflow
             mv /tmp/maven-keep/* ~/.m2/repository/org/opennms/
       - save-nodejs-cache
-
+      - run:
+          name: Clean up the workspace
+          command: |
+            ./clean.pl
       - persist_to_workspace:
           root: ~/
           paths:
