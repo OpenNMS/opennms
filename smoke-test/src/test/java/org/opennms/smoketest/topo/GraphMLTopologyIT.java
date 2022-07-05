@@ -56,6 +56,7 @@ import org.opennms.smoketest.OpenNMSSeleniumIT;
 import org.opennms.smoketest.TopologyIT;
 import org.opennms.smoketest.graphml.GraphmlDocument;
 import org.opennms.smoketest.utils.RestClient;
+import org.openqa.selenium.ElementNotInteractableException;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.TimeoutException;
 
@@ -389,7 +390,7 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
         try {
             // if dialog is not yet visible, try to interact with a node
             topologyUIPage.findVertex("East 1").select();
-        } catch (NoSuchElementException | TimeoutException e) {
+        } catch (NoSuchElementException | TimeoutException | ElementNotInteractableException e) {
             // ignore if dialog is already visible
         }
         findElementByXpath("//div[text() = 'Clicking okay will switch to the default topology provider.']");
