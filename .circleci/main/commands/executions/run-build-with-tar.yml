@@ -98,7 +98,6 @@ commands:
           command: |
             rm ~/project/target/tarballs/*
             rm ~/project/target/artifacts/*
-            rm ~/~/project/target/config-schema/*
       - update-maven-cache
       - run:
           name: Remove Extra Maven Repository OpenNMS Files
