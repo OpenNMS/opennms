@@ -114,7 +114,7 @@ public class TracingInfoCarrier implements TextMap {
 
     public static void updateTracingMetadata(Tracer tracer, Span span, BiConsumer<String, String> tracingInfoConsumer) {
         TracingInfoCarrier tracingInfoCarrier = new TracingInfoCarrier();
-        tracer.inject(span.context(), Format.Builtin.TEXT_MAP, tracingInfoCarrier);
+        tracer.inject(span.context(), Format.Builtin.TEXT_MAP_INJECT, tracingInfoCarrier);
         tracingInfoCarrier.getTracingInfoMap().forEach(tracingInfoConsumer);
     }
 
@@ -124,7 +124,7 @@ public class TracingInfoCarrier implements TextMap {
                                                                   String reference) {
         // Extract base tracer context from TracingMetadata
         Tracer.SpanBuilder spanBuilder;
-        SpanContext context = tracer.extract(Format.Builtin.TEXT_MAP, new TextMapExtractAdapter(tracingMetadata));
+        SpanContext context = tracer.extract(Format.Builtin.TEXT_MAP_EXTRACT, new TextMapExtractAdapter(tracingMetadata));
         if (context != null &&
                 (References.CHILD_OF.equals(reference) || References.FOLLOWS_FROM.equals(reference))) {
             spanBuilder = tracer.buildSpan(tracingOperationKey).addReference(reference, context);
