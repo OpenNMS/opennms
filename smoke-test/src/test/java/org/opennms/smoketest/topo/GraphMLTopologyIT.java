@@ -390,6 +390,9 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
         try {
             // if dialog is not yet visible, try to interact with a node
             topologyUIPage.findVertex("East 1").select();
+            topologyUIPage.findVertex("East 2").select();
+            topologyUIPage.findVertex("East 3").select();
+            topologyUIPage.findVertex("East 4").select();
         } catch (NoSuchElementException | TimeoutException | ElementNotInteractableException e) {
             // ignore if dialog is already visible
         }
