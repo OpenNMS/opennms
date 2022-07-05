@@ -69,9 +69,9 @@ public class NetflowMessage implements Flow {
                 return Direction.INGRESS;
             case EGRESS:
                 return Direction.EGRESS;
+            default:
+                return Direction.UNKNOWN;
         }
-        return Direction.INGRESS;
-
     }
 
     @Override

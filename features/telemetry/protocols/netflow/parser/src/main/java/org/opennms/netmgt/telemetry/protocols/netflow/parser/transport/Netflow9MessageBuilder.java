@@ -116,7 +116,7 @@ public class Netflow9MessageBuilder implements MessageBuilder {
                     break;
                 case "DIRECTION":
                     Long directionValue = getLongValue(value);
-                    Direction direction = Direction.UNRECOGNIZED;
+                    Direction direction = Direction.UNKNOWN;
                     if (directionValue != null) {
                         switch (directionValue.intValue()) {
                             case 0:
@@ -127,9 +127,7 @@ public class Netflow9MessageBuilder implements MessageBuilder {
                                 break;
                         }
                     }
-                    if (!direction.equals(Direction.UNRECOGNIZED)) {
-                        builder.setDirection(direction);
-                    }
+                    builder.setDirection(direction);
                     break;
                 case "IPV4_DST_ADDR":
                     ipv4DstAddress = getInetAddress(value);
