@@ -6,6 +6,12 @@
         },
         "integration-test": {
             "requires":["minion-image"]
+        },
+        "sentinel-deb-build": {
+            "requires":["build-with-tar"]
+        },
+        "minion-deb-build":{
+            "requires":["integration-test"]
         }
     },
     "build": {

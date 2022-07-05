@@ -8,4 +8,3 @@ jobs:
           at: ~/
       - run-integration-tests:
           rerun-failtest-count: 1
-          changes-only: false
