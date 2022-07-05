@@ -29,9 +29,14 @@
 package org.opennms.web.alarm;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.servlet.ServletContext;
 
@@ -78,7 +83,9 @@ import org.opennms.web.alarm.filter.NodeLocationFilter;
 import org.opennms.web.alarm.filter.NodeNameLikeFilter;
 import org.opennms.web.alarm.filter.PartialUEIFilter;
 import org.opennms.web.alarm.filter.ServiceFilter;
+import org.opennms.web.alarm.filter.ServiceOrFilter;
 import org.opennms.web.alarm.filter.SeverityFilter;
+import org.opennms.web.alarm.filter.SeverityOrFilter;
 import org.opennms.web.alarm.filter.SituationFilter;
 import org.opennms.web.filter.Filter;
 
@@ -101,6 +108,18 @@ public abstract class AlarmUtil extends Object {
 
     /** Constant <code>POSITIVE_CHECKBOX_VALUE="ON"</code> */
     public static final String POSITIVE_CHECKBOX_VALUE = "on";
+
+    /** Constant <code>NEGATION_PREFIX_SYMBOL="!"</code> */
+    public static final String NEGATION_PREFIX_SYMBOL = "!";
+
+    /** Constant <code>ARRAY_DELIMITER=","</code> */
+    public static final String ARRAY_DELIMITER = ",";
+
+    /**
+     * Constant <code>MULTI_CHECKBOX_PATTERN="[a-zA-Z]+-\d+=1"</code>
+     * Matches filter strings such as the format "severity-4=1" or "service-1=1" or similar
+     */
+    private static final Pattern MULTI_CHECKBOX_PATTERN = Pattern.compile("[a-zA-Z]+-\\d+=1");
 
     public static OnmsCriteria getOnmsCriteria(final AlarmCriteria alarmCriteria) {
         final OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class);
@@ -228,17 +247,16 @@ public abstract class AlarmUtil extends Object {
         String value = tokenizedFilterString[1];
 
         if (type.equals(SeverityFilter.TYPE)) {
-            OnmsSeverity severity = OnmsSeverity.get(WebSecurityUtils.safeParseInt(value));
-            String[] nestedFilterString = findFilterString(allFilters, NegativeSeverityFilter.NESTED_TYPE);
-            if (isCheckboxToggled(nestedFilterString)) {
-                filter = new NegativeSeverityFilter(severity);
-            } else {
-                filter = new SeverityFilter(severity);
+            String[] ids = value.split(ARRAY_DELIMITER);
+            OnmsSeverity[] severities = new OnmsSeverity[ids.length];
+            for (int index = 0; index < ids.length; index++) {
+                severities[index] = OnmsSeverity.get(WebSecurityUtils.safeParseInt(ids[index]));
             }
+            filter = new SeverityOrFilter(severities);
         } else if (type.equals(NodeFilter.TYPE)) {
             filter = new NodeFilter(WebSecurityUtils.safeParseInt(value), servletContext);
         } else if (type.equals(NodeNameLikeFilter.TYPE)) {
-            if (value.startsWith("-")) {
+            if (value.startsWith(NEGATION_PREFIX_SYMBOL)) {
                 filter = new NegativeNodeNameLikeFilter(value.substring(1));
             } else {
                 filter = new NodeNameLikeFilter(value);
@@ -246,13 +264,12 @@ public abstract class AlarmUtil extends Object {
         } else if (type.equals(InterfaceFilter.TYPE)) {
             filter = new InterfaceFilter(InetAddressUtils.addr(value));
         } else if (type.equals(ServiceFilter.TYPE)) {
-            int serviceId = WebSecurityUtils.safeParseInt(value);
-            String[] nestedFilterString = findFilterString(allFilters, NegativeServiceFilter.NESTED_TYPE);
-            if (isCheckboxToggled(nestedFilterString)) {
-                filter = new NegativeServiceFilter(serviceId, servletContext);
-            } else {
-                filter = new ServiceFilter(serviceId, servletContext);
+            String[] ids = value.split(ARRAY_DELIMITER);
+            Integer[] serviceIds = new Integer[ids.length];
+            for (int index = 0; index < ids.length; index++) {
+                serviceIds[index] = WebSecurityUtils.safeParseInt(ids[index]);
             }
+            filter = new ServiceOrFilter(serviceIds, servletContext);
         } else if (type.equals(PartialUEIFilter.TYPE)) {
             filter = new PartialUEIFilter(value);
         } else if (type.equals(ExactUEIFilter.TYPE)) {
@@ -274,13 +291,13 @@ public abstract class AlarmUtil extends Object {
         } else if (type.equals(NegativeAcknowledgedByFilter.TYPE)) {
             filter = new NegativeAcknowledgedByFilter(value);
         } else if (type.equals(IPAddrLikeFilter.TYPE)) {
-            if (value.startsWith("-")) {
+            if (value.startsWith(NEGATION_PREFIX_SYMBOL)) {
                 filter = new NegativeIPAddrLikeFilter(value.substring(1));
             } else {
                 filter = new IPAddrLikeFilter(value);
             }
         } else if (type.equals(AlarmTextFilter.TYPE)) {
-            if (value.startsWith("-")) {
+            if (value.startsWith(NEGATION_PREFIX_SYMBOL)) {
                 filter = new NegativeAlarmTextFilter(value.substring(1));
             } else {
                 filter = new AlarmTextFilter(value);
@@ -453,6 +470,8 @@ public abstract class AlarmUtil extends Object {
     }
 
     public static List<Filter> getFilterList(String[] filterStrings, ServletContext servletContext) {
+        filterStrings = handleCheckboxDuplication(filterStrings);
+
         List<Filter> filterList = new ArrayList<>();
         if (filterStrings != null) {
             for (String filterString : filterStrings) {
@@ -463,5 +482,82 @@ public abstract class AlarmUtil extends Object {
             }
         }
         return filterList;
+    }
+
+    /**
+     * <p>handleCheckboxDuplication</p>
+     *
+     * @param filterStrings array of filter strings
+     * @return an array of filter strings which have checkbox deduplication handled. With multi-select there could be
+     * multiple IDs selected so we try to consolidate it into a single filter string
+     */
+    private static String[] handleCheckboxDuplication(String[] filterStrings) {
+        if (filterStrings == null) {
+            return filterStrings;
+        }
+        Map<String, List<String>> selectedCheckboxes = dedupCheckboxSelections(filterStrings);
+
+        if (selectedCheckboxes.isEmpty()) {
+            return filterStrings;
+        }
+        return replaceCheckboxValues(filterStrings, selectedCheckboxes);
+    }
+
+    /**
+     * <p>dedupCheckboxSelections</p>
+     *
+     * @param filterStrings array of filter strings
+     * @return a Map of Filter type to List of IDs associated with the filter.
+     */
+    private static Map<String, List<String>> dedupCheckboxSelections(String[] filterStrings) {
+        Map<String, List<String>> selectedCheckboxes = new HashMap<>();
+
+        for (String filterString : filterStrings) {
+
+            if (MULTI_CHECKBOX_PATTERN.matcher(filterString).matches()) {
+
+                String[] filterStringHyphenSplit = filterString.split("-");
+                String type = filterStringHyphenSplit[0];
+                String remainder = filterStringHyphenSplit[1];
+                String idStr = remainder.split("=")[0];
+
+                if (selectedCheckboxes.containsKey(type)) {
+                    selectedCheckboxes.get(type).add(idStr);
+                } else {
+                    List<String> checkedIds = new ArrayList<>();
+                    checkedIds.add(idStr);
+                    selectedCheckboxes.put(type, checkedIds);
+                }
+            }
+        }
+        return selectedCheckboxes;
+    }
+
+    /**
+     * <p>replaceCheckboxValues</p>
+     *
+     * @param filterStrings array of filter strings
+     * @param selectedCheckboxes map of multiselect filter to IDs
+     * @return the new filter string array with consolidated multi-select checkbox values
+     */
+    private static String[] replaceCheckboxValues(String[] filterStrings, Map<String, List<String>> selectedCheckboxes) {
+        List<String> collectedFilterList = Arrays.stream(filterStrings).filter(thisFilterString -> {
+            for (String selectedKey : selectedCheckboxes.keySet()) {
+                if (thisFilterString.startsWith(selectedKey + "-")) {
+                    return false;
+                }
+            }
+            return true;
+        }).collect(Collectors.toList());
+
+        for (String selectedKey : selectedCheckboxes.keySet()) {
+            List<String> selectedIds = selectedCheckboxes.get(selectedKey);
+            String joinedIds = String.join(ARRAY_DELIMITER, selectedIds);
+            String checkboxFormattedFilter = String.format("%s=%s", selectedKey, joinedIds);
+
+            collectedFilterList.add(checkboxFormattedFilter);
+        }
+
+        return collectedFilterList.toArray(new String[0]);
     }
 }

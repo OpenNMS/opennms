@@ -45,9 +45,6 @@ public class NegativeServiceFilter extends NotEqualOrNullFilter<Integer> {
     /** Constant <code>TYPE="servicenot"</code> */
     public static final String TYPE = "servicenot";
 
-    /** Constant <code>NESTED_TYPE="nestedServiceNot"</code> */
-    public static final String NESTED_TYPE = "nestedServiceNot";
-
     private ServletContext m_servletContext;
 
     /**

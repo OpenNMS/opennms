@@ -50,14 +50,14 @@ public class NegativeNodeNameLikeFilter extends NoSubstringFilter {
     /** {@inheritDoc} */
     @Override
     public String getSQLTemplate() {
-        return " alarmid NOT IN (SELECT alarmid FROM alarms JOIN node ON alarms.nodeid=node.nodeid WHERE node.nodelabel ILIKE '%s') ";
+        return " ALARMID NOT IN (SELECT ALARMID FROM ALARMS JOIN NODE ON ALARMS.NODEID=NODE.NODEID WHERE NODE.NODELABEL ILIKE %s) ";
     }
 
     /** {@inheritDoc} */
     @Override
     public Criterion getCriterion() {
         return Restrictions.sqlRestriction(" {alias}.alarmid NOT IN (SELECT alarmid FROM alarms JOIN node ON alarms.nodeid=node.nodeid WHERE node.nodelabel ILIKE ?)",
-                new Object[]{this.getValue()}, new Type[]{StringType.INSTANCE});
+                new Object[]{getBoundValue(this.getValue())}, new Type[]{StringType.INSTANCE});
     }
 
     /**
