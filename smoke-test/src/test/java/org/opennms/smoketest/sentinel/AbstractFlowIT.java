@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018-2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -67,8 +67,7 @@ import io.searchbox.core.Search;
 import io.searchbox.core.SearchResult;
 import io.searchbox.indices.DeleteIndex;
 
-@Category(org.opennms.smoketest.junit.FlakyTests.class)
-//@Category(org.opennms.smoketest.junit.SentinelTests.class)
+@Category(org.opennms.smoketest.junit.SentinelTests.class)
 public abstract class AbstractFlowIT {
 
     @Rule

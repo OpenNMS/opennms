@@ -425,7 +425,7 @@ public class ElasticFlowRepository implements FlowRepository {
                 bulkRequest.execute();
             } catch (BulkException ex) {
                 if (ex.getBulkResult() != null) {
-                    throw new PersistenceException(ex.getMessage(), ex.getBulkResult().getFailedDocuments());
+                    throw new PersistenceException(ex.getMessage(), ex.getBulkResult().getFailedItems());
                 } else {
                     throw new PersistenceException(ex.getMessage(), Collections.emptyList());
                 }

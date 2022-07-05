@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -136,73 +136,6 @@ public class PageSequenceMonitorIT {
     }
 
     @Test
-    @Ignore("EBay tests stopped working, we REALLY need to make our own repeatable version of this test")
-    public void testHttps() throws Exception {
-        m_params.put("page-sequence", "" +
-            "<?xml version=\"1.0\"?>" +
-            "<page-sequence>\n" + 
-            "  <page scheme=\"https\" host=\"scgi.ebay.com\" path=\"/ws/eBayISAPI.dll\" query=\"RegisterEnterInfo\" port=\"443\" user-agent=\"Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 5.0)\" successMatch=\"ebaystatic.com/\"/>\n" + 
-            "</page-sequence>\n");
-
-        try {
-            PollStatus googleStatus = m_monitor.poll(getHttpService("scgi.ebay.com"), m_params);
-            assertTrue("Expected available but was "+googleStatus+": reason = "+googleStatus.getReason(), googleStatus.isAvailable());
-            assertTrue("Expected a DS called 'response-time' but did not find one", googleStatus.getProperties().containsKey(PollStatus.PROPERTY_RESPONSE_TIME));
-        } finally {
-            // Print some debug output if necessary
-        }
-    }
-
-    @Test
-    @Ignore("EBay tests stopped working, we REALLY need to make our own repeatable version of this test")
-    public void testHttpsWithHostValidation() throws Exception {
-        m_params.put("page-sequence", "" +
-            "<?xml version=\"1.0\"?>" +
-            "<page-sequence>\n" + 
-            "  <page scheme=\"https\" path=\"/ws/eBayISAPI.dll\" query=\"RegisterEnterInfo\" port=\"443\" user-agent=\"Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 5.0)\" successMatch=\"ebaystatic.com/\" virtual-host=\"scgi.ebay.com\" disable-ssl-verification=\"false\"/>\n" + 
-            "</page-sequence>\n");
-
-        try {
-            m_monitor.poll(getHttpService("scgi.ebay.com"), m_params);
-            fail("Expected SSL host mismatch error");
-        } catch (Throwable e) {
-            assertTrue("Wrong exception caught: " + e.getClass().getName(), e instanceof AssertionError);
-        }
-    }
-
-    @Test
-    @Ignore("EBay tests stopped working, we REALLY need to make our own repeatable version of this test")
-    public void testHttpsWithoutHostValidation() throws Exception {
-        m_params.put("page-sequence", "" +
-            "<?xml version=\"1.0\"?>" +
-            "<page-sequence>\n" + 
-            "  <page scheme=\"https\" path=\"/ws/eBayISAPI.dll\" query=\"RegisterEnterInfo\" port=\"443\" user-agent=\"Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 5.0)\" successMatch=\"ebaystatic.com/\" virtual-host=\"scgi.ebay.com\"/>\n" + 
-            "</page-sequence>\n");
-
-        try {
-            PollStatus googleStatus = m_monitor.poll(getHttpService("scgi.ebay.com"), m_params);
-            assertTrue("Expected available but was "+googleStatus+": reason = "+googleStatus.getReason(), googleStatus.isAvailable());
-            assertTrue("Expected a DS called 'response-time' but did not find one", googleStatus.getProperties().containsKey(PollStatus.PROPERTY_RESPONSE_TIME));
-        } finally {
-            // Print some debug output if necessary
-        }
-
-        m_params.put("page-sequence", "" +
-            "<?xml version=\"1.0\"?>" +
-            "<page-sequence>\n" + 
-            "  <page scheme=\"https\" path=\"/ws/eBayISAPI.dll\" query=\"RegisterEnterInfo\" port=\"443\" user-agent=\"Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 5.0)\" successMatch=\"ebaystatic.com/\" virtual-host=\"scgi.ebay.com\" disable-host-verification=\"true\"/>\n" + 
-            "</page-sequence>\n");
-
-        try {
-            PollStatus googleStatus = m_monitor.poll(getHttpService("scgi.ebay.com"), m_params);
-            assertTrue("Expected available but was "+googleStatus+": reason = "+googleStatus.getReason(), googleStatus.isAvailable());
-            assertTrue("Expected a DS called 'response-time' but did not find one", googleStatus.getProperties().containsKey(PollStatus.PROPERTY_RESPONSE_TIME));
-        } finally {
-            // Print some debug output if necessary
-        }
-    }
-
-    @Test
     @JUnitHttpServer(port=10342, webapps=@Webapp(context="/opennms", path="src/test/resources/loginTestWar"))
     public void testLogin() throws Exception {
 
@@ -220,34 +153,6 @@ public class PageSequenceMonitorIT {
 
         PollStatus status = m_monitor.poll(getHttpService("localhost"), m_params);
         assertTrue("Expected available but was "+status+": reason = "+status.getReason(), status.isAvailable());
-        assertTrue("Expected a DS called 'response-time' but did not find one", status.getProperties().containsKey(PollStatus.PROPERTY_RESPONSE_TIME));
-    }
-
-    @Test
-    @Ignore("Don't depend on external services for ITs")
-    public void testVirtualHost() throws Exception {
-        m_params.put("page-sequence", "" +
-            "<?xml version=\"1.0\"?>" +
-            "<page-sequence>\n" + 
-            "  <page user-agent=\"Donald\" path=\"/\" scheme=\"https\" port=\"443\" successMatch=\"OpenNMS monitors millions of devices from a single instance\" virtual-host=\"www.opennms.com\"/>\n" +
-            "</page-sequence>\n");
-
-        PollStatus status = m_monitor.poll(getHttpService("www.opennms.com"), m_params);
-        assertTrue("Expected available but was "+status+": reason = "+status.getReason(), status.isAvailable());
-        assertTrue("Expected a DS called 'response-time' but did not find one", status.getProperties().containsKey(PollStatus.PROPERTY_RESPONSE_TIME));
-    }
-
-    @Test
-    @Ignore("This test doesn't work against the new version of the website")
-    public void testVirtualHostBadBehaviorForWordpressPlugin() throws Exception {
-        m_params.put("page-sequence", "" +
-            "<?xml version=\"1.0\"?>" +
-            "<page-sequence>\n" + 
-            "  <page path=\"/\" port=\"80\" successMatch=\"OpenNMS monitors millions of devices from a single instance\" user-agent=\"Jakarta Commons-HttpClient/3.0.1\" virtual-host=\"www.opennms.com\"/>\n" + 
-            "</page-sequence>\n");
-
-        PollStatus status = m_monitor.poll(getHttpService("www.opennms.com"), m_params);
-        assertTrue("Expected unavailable but was "+status+": reason = "+status.getReason(), status.isDown());
         assertTrue("Expected a DS called 'response-time' but did not find one", status.getProperties().containsKey(PollStatus.PROPERTY_RESPONSE_TIME));
     }
 

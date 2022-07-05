@@ -1,0 +1,40 @@
+[[backup]]
+= Back up OpenNMS {page-component-title}
+
+This section describes a basic backup process for a default OpenNMS {page-component-title} xref:deployment:core/getting-started.adoc#getting-started-core[installation].
+OpenNMS {page-component-title} binaries, logs, RRD archives, configurations, and the database are backed up during this process.
+
+NOTE: The backup storage path in this example is `/tmp` for demonstration purposes.
+Please be aware that `/tmp` is not persisted, as most operating systems will delete the content at bootup.
+
+[[backup-objectives]]
+== Objectives
+
+* Create a backup of OpenNMS {page-component-title} components.
+* Create a PostgreSQL database backup.
+* Run a restore without having OpenNMS installation packages available.
+
+[[backup-requirements]]
+== Requirements
+
+* A system user with administrative permissions (sudo).
+* Database password for `opennms` and `postgres` user.
+
+== Create backup
+
+[{tabs}]
+====
+CentOS/RHEL 8::
++
+--
+include::centos-rhel8/backup-centos-rhel8.adoc[]
+--
+
+ifeval::["{page-component-title}" == "Horizon"]
+Debian/Ubuntu::
++
+--
+include::debian-ubuntu/backup-debian-ubuntu.adoc[]
+--
+endif::[]
+====

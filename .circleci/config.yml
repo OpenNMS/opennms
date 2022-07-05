@@ -65,6 +65,10 @@ parameters:
     description: whether to trigger the main build
     type: boolean
     default: false
+  trigger-flaky:
+    description: whether to enable running flaky smoke tests
+    type: boolean
+    default: false
 
 setup: << pipeline.parameters.trigger-setup >>
 
@@ -182,7 +186,7 @@ commands:
                 -Pbuild-bamboo \
                 -Prun-expensive-tasks \
                 -Psmoke \
-                --legacy-local-repository \
+                -Denable.license=true \
                 --batch-mode \
                 dependency:resolve-plugins \
                 de.qaware.maven:go-offline-maven-plugin:resolve-dependencies
@@ -327,17 +331,19 @@ commands:
       - restore-nodejs-cache
       - run:
           name: Compile OpenNMS
+          no_output_timeout: 20m
           command: |
             export OPENNMS_VERSION="$(.circleci/scripts/pom2version.sh pom.xml)"
             .circleci/scripts/configure-signing.sh
             ./clean.pl
             << parameters.node-memory >>
             export MAVEN_OPTS="$MAVEN_OPTS -Xmx8g -XX:ReservedCodeCacheSize=1g"
-            MAVEN_TARGETS="install"
+            MAVEN_ARGS="install"
             case "${CIRCLE_BRANCH}" in
-              "master-"*|"release-"*|develop|jira/NMS-13820)
+              "master"*|"release-"*|develop)
+                # release branches get full javadoc
                 mkdir -p target/artifacts
-                MAVEN_TARGETS="$MAVEN_TARGETS javadoc:aggregate"
+                MAVEN_ARGS="-Dbuild.type=production $MAVEN_ARGS javadoc:aggregate"
                 ;;
             esac
             ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
@@ -349,7 +355,7 @@ commands:
               -Prun-expensive-tasks \
               -Psmoke \
               --batch-mode \
-              $MAVEN_TARGETS
+              $MAVEN_ARGS
             if [ -d target/site/apidocs ]; then
               pushd target/site/apidocs
                 tar -czf "../../artifacts/opennms-${OPENNMS_VERSION}-javadoc.tar.gz" *
@@ -643,7 +649,6 @@ workflows:
             - smoke-test-core
             - smoke-test-flaky
             - smoke-test-minion
-            - smoke-test-minimal
             - smoke-test-sentinel
           filters:
             branches:
@@ -666,22 +671,41 @@ workflows:
             - build
           filters:
             branches:
-              ignore:
-                - /^merge-foundation.*/
+              only:
+                - develop
+                - /^dependabot\/.*/
+                - /^features.*/
+                - /^foundation.*/
+                - /^master-.*/
+                - /^release-.*/
+                - /.*rpm.*/
+                - /.*smoke.*/
       - minion-rpm-build:
           requires:
             - build
           filters:
             branches:
-              ignore:
-                - /^merge-foundation.*/
+              only:
+                - develop
+                - /^foundation.*/
+                - /^master-.*/
+                - /^release-.*/
+                - /.*rpm.*/
+                - /.*smoke.*/
       - sentinel-rpm-build:
           requires:
             - build
           filters:
             branches:
-              ignore:
-                - /^merge-foundation.*/
+              only:
+                - develop
+                - /^dependabot\/.*/
+                - /^features.*/
+                - /^foundation.*/
+                - /^master-.*/
+                - /^release-.*/
+                - /.*rpm.*/
+                - /.*smoke.*/
       - integration-test:
           requires:
             - build
@@ -693,83 +717,78 @@ workflows:
           requires:
             - tarball-assembly
             - horizon-rpm-build
-            - minion-rpm-build
             - sentinel-rpm-build
           filters:
             branches:
               only:
                 - develop
+                - /^dependabot.*/
+                - /^features.*/
+                - /^foundation.*/
                 - /^master-.*/
                 - /^release-.*/
-                - /^foundation.*/
-                - /^features.*/
                 - /.*smoke.*/
-                - /^dependabot.*/
       - smoke-test-flaky:
           requires:
             - tarball-assembly
             - horizon-rpm-build
-            - minion-rpm-build
             - sentinel-rpm-build
           filters:
             branches:
               only:
                 - develop
+                - /^dependabot.*/
+                - /^features.*/
+                - /^foundation.*/
                 - /^master-.*/
                 - /^release-.*/
-                - /^foundation.*/
-                - /^features.*/
                 - /.*smoke.*/
-                - /^dependabot.*/
       - smoke-test-minion:
           requires:
             - tarball-assembly
             - horizon-rpm-build
-            - minion-rpm-build
             - sentinel-rpm-build
           filters:
             branches:
               only:
                 - develop
+                - /^dependabot.*/
+                - /^features.*/
+                - /^foundation.*/
                 - /^master-.*/
                 - /^release-.*/
-                - /^foundation.*/
-                - /^features.*/
                 - /.*smoke.*/
-                - /^dependabot.*/
       - smoke-test-sentinel:
           requires:
             - tarball-assembly
             - horizon-rpm-build
-            - tarball-assembly
             - sentinel-rpm-build
           filters:
             branches:
               only:
                 - develop
+                - /^dependabot.*/
+                - /^features.*/
+                - /^foundation.*/
                 - /^master-.*/
                 - /^release-.*/
-                - /^foundation.*/
-                - /^features.*/
                 - /.*smoke.*/
-                - /^dependabot.*/
-      - smoke-test-minimal:
-          requires:
-            - tarball-assembly
-            - horizon-rpm-build
-            - tarball-assembly
-            - sentinel-rpm-build
-          filters:
-            branches:
-              ignore:
-                - develop
-                - /^master-.*/
-                - /^release-.*/
-                - /^foundation.*/
-                - /^merge-foundation.*/
-                - /^features.*/
-                - /.*smoke.*/
-                - /^dependabot.*/
+      #- smoke-test-minimal:
+      #    requires:
+      #      - tarball-assembly
+      #      - horizon-rpm-build
+      #      - minion-rpm-build
+      #      - sentinel-rpm-build
+      #    filters:
+      #      branches:
+      #        only:
+      #          - develop
+      #          - /^master-.*/
+      #          - /^release-.*/
+      #          - /^foundation.*/
+      #          - /^features.*/
+      #          - /.*smoke.*/
+      #          - /^dependabot.*/
       - horizon-publish-oci:
           requires:
             - horizon-deb-build
@@ -779,7 +798,6 @@ workflows:
             - smoke-test-core
             - smoke-test-flaky
             - smoke-test-minion
-            - smoke-test-minimal
             - smoke-test-sentinel
           filters:
             branches:
@@ -796,7 +814,6 @@ workflows:
             - smoke-test-core
             - smoke-test-flaky
             - smoke-test-minion
-            - smoke-test-minimal
             - smoke-test-sentinel
           filters:
             branches:
@@ -838,7 +855,6 @@ workflows:
             - smoke-test-core
             - smoke-test-flaky
             - smoke-test-minion
-            - smoke-test-minimal
             - smoke-test-sentinel
           filters:
             branches:
@@ -862,7 +878,6 @@ workflows:
             - smoke-test-core
             - smoke-test-flaky
             - smoke-test-minion
-            - smoke-test-minimal
             - smoke-test-sentinel
           filters:
             branches:
@@ -876,7 +891,6 @@ workflows:
             - smoke-test-flaky
             - smoke-test-minion
             - smoke-test-sentinel
-            - smoke-test-minimal
             - integration-test
           filters:
             branches:
@@ -893,7 +907,6 @@ workflows:
             - smoke-test-core
             - smoke-test-flaky
             - smoke-test-minion
-            - smoke-test-minimal
             - smoke-test-sentinel
           filters:
             branches:
@@ -1079,8 +1092,13 @@ jobs:
           name: Assemble tarballs and related artifacts
           command: |
             export MAVEN_OPTS="-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
-            # general assembly
-            date
+            export MAVEN_ARGS="install"
+            case "${CIRCLE_BRANCH}" in
+              "master"*|"release-"*|develop)
+                # release branches should enable extra "production" stuff like license indexing
+                MAVEN_ARGS="-Dbuild.type=production $MAVEN_ARGS"
+                ;;
+            esac
             ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
               -Daether.connector.resumeDownloads=false \
               -Daether.connector.basic.threads=1 \
@@ -1090,7 +1108,8 @@ jobs:
               -Pbuild-bamboo \
               -Prun-expensive-tasks \
               -Dopennms.home=/opt/opennms \
-              install --batch-mode
+              --batch-mode \
+              $MAVEN_ARGS
       - run:
           name: Build Minion OCI
           command: |
@@ -1519,10 +1538,20 @@ jobs:
     # medium class which has 2 vCPUs and 8 GB RAM
     #resource_class: large
     steps:
-      - attach_workspace:
-          at: ~/
-      - run-smoke-tests:
-          suite: core
+      - run:
+          name: "skip if flaky tests are enabled"
+          command: echo "trigger-flaky=<< pipeline.parameters.trigger-flaky >>"
+      - when:
+          condition:
+            not:
+              or:
+                - << pipeline.parameters.trigger-flaky >>
+                - matches: { pattern: "^.*flaky.*$", value: << pipeline.git.branch >> }
+          steps:
+            - attach_workspace:
+                at: ~/
+            - run-smoke-tests:
+                suite: core
   smoke-test-flaky:
     executor: smoke-test-executor
     parallelism: 5
@@ -1530,10 +1559,19 @@ jobs:
     # medium class which has 2 vCPUs and 8 GB RAM
     #resource_class: large
     steps:
-      - attach_workspace:
-          at: ~/
-      - run-smoke-tests:
-          suite: flaky
+      - run:
+          name: "run if flaky tests are enabled"
+          command: echo "trigger-flaky=<< pipeline.parameters.trigger-flaky >>"
+      - when:
+          condition:
+            or:
+              - << pipeline.parameters.trigger-flaky >>
+              - matches: { pattern: "^.*flaky.*$", value: << pipeline.git.branch >> }
+          steps:
+            - attach_workspace:
+                at: ~/
+            - run-smoke-tests:
+                suite: flaky
   smoke-test-minion:
     executor: smoke-test-executor
     parallelism: 4
@@ -1541,10 +1579,20 @@ jobs:
     # medium class which has 2 vCPUs and 8 GB RAM
     #resource_class: large
     steps:
-      - attach_workspace:
-          at: ~/
-      - run-smoke-tests:
-          suite: minion
+      - run:
+          name: "skip if flaky tests are enabled"
+          command: echo "trigger-flaky=<< pipeline.parameters.trigger-flaky >>"
+      - when:
+          condition:
+            not:
+              or:
+                - << pipeline.parameters.trigger-flaky >>
+                - matches: { pattern: "^.*flaky.*$", value: << pipeline.git.branch >> }
+          steps:
+            - attach_workspace:
+                at: ~/
+            - run-smoke-tests:
+                suite: minion
   smoke-test-sentinel:
     executor: smoke-test-executor
     parallelism: 5
@@ -1552,10 +1600,20 @@ jobs:
     # medium class which has 2 vCPUs and 8 GB RAM
     #resource_class: large
     steps:
-      - attach_workspace:
-          at: ~/
-      - run-smoke-tests:
-          suite: sentinel
+      - run:
+          name: "skip if flaky tests are enabled"
+          command: echo "trigger-flaky=<< pipeline.parameters.trigger-flaky >>"
+      - when:
+          condition:
+            not:
+              or:
+                - << pipeline.parameters.trigger-flaky >>
+                - matches: { pattern: "^.*flaky.*$", value: << pipeline.git.branch >> }
+          steps:
+            - attach_workspace:
+                at: ~/
+            - run-smoke-tests:
+                suite: sentinel
   smoke-test-minimal:
     executor: smoke-test-executor
     steps:

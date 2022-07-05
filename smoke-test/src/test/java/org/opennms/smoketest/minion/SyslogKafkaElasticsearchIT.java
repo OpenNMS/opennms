@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018-2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -67,8 +67,7 @@ import io.searchbox.core.SearchResult;
  * 
  * @author Seth
  */
-@Category(org.opennms.smoketest.junit.FlakyTests.class)
-//@Category(org.opennms.smoketest.junit.MinionTests.class)
+@Category(org.opennms.smoketest.junit.MinionTests.class)
 public class SyslogKafkaElasticsearchIT {
 
     private static final Logger LOG = LoggerFactory.getLogger(SyslogKafkaElasticsearchIT.class);

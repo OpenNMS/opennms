@@ -505,6 +505,14 @@ if [ "%{enable_snapshots}" = 1 ]; then
 	OPTS_UPDATE_POLICY="-DupdatePolicy=always"
 fi
 
+OPTS_PRODUCTION=""
+
+case "${CIRCLE_BRANCH}" in
+	"master"*|"release-"*|develop)
+		OPTS_PRODUCTION="-Dbuild.type=production"
+	;;
+esac
+
 if [ "%{skip_compile}" = 1 ]; then
 	echo "=== SKIPPING COMPILE ==="
 	TOPDIR=`pwd`
@@ -512,6 +520,7 @@ if [ "%{skip_compile}" = 1 ]; then
 		$OPTS_SKIP_TESTS \
 		$OPTS_SETTINGS_XML \
 		$OPTS_ENABLE_SNAPSHOTS \
+		$OPTS_PRODUCTION \
 		-Dinstall.version="%{version}-%{release}" \
 		-Ddist.name="%{name}-%{version}-%{release}.%{_arch}" \
 		-Dopennms.home="%{instprefix}" \
@@ -523,6 +532,7 @@ else
 		$OPTS_SKIP_TESTS \
 		$OPTS_SETTINGS_XML \
 		$OPTS_ENABLE_SNAPSHOTS \
+		$OPTS_PRODUCTION \
 		-Daether.connector.basic.threads=1 \
 		-Daether.connector.resumeDownloads=false \
 		-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
@@ -540,6 +550,7 @@ echo "=== BUILDING ASSEMBLIES ==="
 	$OPTS_SKIP_TESTS \
 	$OPTS_SETTINGS_XML \
 	$OPTS_ENABLE_SNAPSHOTS \
+	$OPTS_PRODUCTION \
 	-Daether.connector.basic.threads=1 \
 	-Daether.connector.resumeDownloads=false \
 	-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
@@ -599,6 +610,14 @@ rm -rf %{buildroot}%{instprefix}/share
 # Copy the /etc directory into /etc/pristine
 rsync -avr --exclude=examples %{buildroot}%{instprefix}/etc/ %{buildroot}%{sharedir}/etc-pristine/
 chmod -R go-w %{buildroot}%{sharedir}/etc-pristine/
+
+# Copy the /jetty-webapps/opennms/WEB-INF spring-security files into /web-inf-pristine
+mkdir -p %{buildroot}%{sharedir}/web-inf-pristine/spring-security.d/
+rsync -avr %{buildroot}%{instprefix}/jetty-webapps/opennms/WEB-INF/spring-security.d/ %{buildroot}%{sharedir}/web-inf-pristine/spring-security.d/
+cp %{buildroot}%{instprefix}/jetty-webapps/opennms/WEB-INF/applicationContext-spring-security.xml %{buildroot}%{sharedir}/web-inf-pristine/applicationContext-spring-security.xml
+cp %{buildroot}%{instprefix}/jetty-webapps/opennms/WEB-INF/web.xml %{buildroot}%{sharedir}/web-inf-pristine/web.xml
+cp %{buildroot}%{instprefix}/etc/examples/jetty.xml %{buildroot}%{sharedir}/web-inf-pristine/jetty.xml
+chmod -R go-w %{buildroot}%{sharedir}/web-inf-pristine/
 
 install -d -m 755 "%{buildroot}%{_initrddir}" "%{buildroot}%{_sysconfdir}/sysconfig" "%{buildroot}%{_unitdir}"
 install -m 644 %{buildroot}%{instprefix}/etc/opennms.service %{buildroot}%{_unitdir}
@@ -706,6 +725,7 @@ find %{buildroot}%{instprefix}/bin \
 # Put various shared directories in the package
 find %{buildroot}%{instprefix}/bin \
 	%{buildroot}%{sharedir}/etc-pristine \
+	%{buildroot}%{sharedir}/web-inf-pristine \
 	%{buildroot}%{sharedir}/mibs \
 	%{buildroot}%{sharedir}/reports \
 	%{buildroot}%{sharedir}/rrd \

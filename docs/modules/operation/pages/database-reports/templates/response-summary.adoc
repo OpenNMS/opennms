@@ -1,0 +1,36 @@
+[[response-time-summary-report]]
+= Response Time Summary Report
+
+This report has a table for each surveillance category that contains the matching nodes.
+For each IP interface, the minimum, average, and maximum ICMP latency are displayed.
+Availability and outage times are also displayed for each node.
+
+You can customize this report with a company logo (approximately 195px by 50px) in the header and footer.
+
+== Parameters
+
+[options="header, autowidth"]
+[cols="1,2,3"]
+
+|===
+| Field
+| Description
+| Default
+
+| Surveillance Category
+| Identify one or more surveillance categories to filter nodes to include in the report.
+To select multiple categories use wildcards as described below.
+If no categories match the entered string, the report will have no data.
+| %
+
+| Report Time Range
+| The range in days from the report start date.
+| 7
+
+| Start Date
+| The starting date for the data contained in this report.
+| 7 days before today
+
+|===
+
+include::standard-text-fields.adoc[]
