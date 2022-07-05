@@ -278,12 +278,12 @@ public class Netflow9MessageBuilder implements MessageBuilder {
         }
 
         // Set input interface
-        first(inputSnmp, ingressPhysicalInterface).ifPresent(ifIndex -> {
+        first(ingressPhysicalInterface, inputSnmp).ifPresent(ifIndex -> {
             builder.setInputSnmpIfindex(ifIndex);
         });
 
         // Set output interface
-        first(outputSnmp, egressPhysicalInterface).ifPresent(ifIndex -> {
+        first(egressPhysicalInterface, outputSnmp).ifPresent(ifIndex -> {
             builder.setOutputSnmpIfindex(ifIndex);
         });
 
