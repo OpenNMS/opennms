@@ -36,6 +36,7 @@ You cannot prevent data loss when you switch from one to another.
 
 The default time series strategy (RRD, Newts, integration) is used for both read/write by default.
 It is possible to add another time series write in parallel to the default strategy.
+This additional time series storage may be used for validation purposes or as a backup time series before moving from one time series to another.
 
 == Write to Newts in parallel
 
