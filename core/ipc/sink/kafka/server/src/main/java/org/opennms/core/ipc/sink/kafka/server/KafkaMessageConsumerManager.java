@@ -239,7 +239,7 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
             Tracer.SpanBuilder spanBuilder;
             Map<String, String> tracingInfoMap = new HashMap<>();
             sinkMessage.getTracingInfoMap().forEach(tracingInfoMap::put);
-            SpanContext context = tracer.extract(Format.Builtin.TEXT_MAP, new TextMapExtractAdapter(tracingInfoMap));
+            SpanContext context = tracer.extract(Format.Builtin.TEXT_MAP_EXTRACT, new TextMapExtractAdapter(tracingInfoMap));
             if (context != null) {
                 // Span on consumer side will follow the span from producer (minion).
                 spanBuilder = tracer.buildSpan(module.getId()).addReference(References.FOLLOWS_FROM, context);

@@ -480,7 +480,7 @@ public class KafkaRpcServerManager {
             Tracer.SpanBuilder spanBuilder;
             Map<String, String> tracingInfoMap = new HashMap<>();
             rpcMessage.getTracingInfoMap().forEach(tracingInfoMap::put);
-            SpanContext context = tracer.extract(Format.Builtin.TEXT_MAP, new TextMapExtractAdapter(tracingInfoMap));
+            SpanContext context = tracer.extract(Format.Builtin.TEXT_MAP_EXTRACT, new TextMapExtractAdapter(tracingInfoMap));
             if (context != null) {
                 spanBuilder = tracer.buildSpan(rpcMessage.getModuleId()).asChildOf(context);
             } else {

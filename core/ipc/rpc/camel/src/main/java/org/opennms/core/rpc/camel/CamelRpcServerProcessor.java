@@ -144,7 +144,7 @@ public class CamelRpcServerProcessor implements AsyncProcessor {
             tracingInfo.putAll(TracingInfoCarrier.unmarshalTracinginfo(tracingInfoObj));
         }
         Tracer.SpanBuilder spanBuilder;
-        SpanContext context = tracer.extract(Format.Builtin.TEXT_MAP, new TextMapExtractAdapter(tracingInfo));
+        SpanContext context = tracer.extract(Format.Builtin.TEXT_MAP_EXTRACT, new TextMapExtractAdapter(tracingInfo));
         if (context != null) {
             spanBuilder = tracer.buildSpan(module.getId()).asChildOf(context);
         } else {
