@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -103,6 +103,6 @@ public class AlarmsPageIT extends OpenNMSSeleniumIT {
     @Test
     public void testAlarmIdNotFoundPage() throws InterruptedException {
         driver.get(getBaseUrlInternal() + "opennms/alarm/detail.htm?id=999999999");
-        findElementByXpath("//h1[text()='Alarm ID Not Found']");
+        findElementByXpath("//h1[text()='Alarm Cleared or Not Found']");
     }
 }
