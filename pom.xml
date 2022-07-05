@@ -1724,7 +1724,7 @@
     <hikaricpVersion>2.5.1</hikaricpVersion>
     <httpcoreVersion>4.4.15</httpcoreVersion>
     <httpclientVersion>4.5.13</httpclientVersion>
-    <httpasyncclientVersion>4.1.3</httpasyncclientVersion>
+    <httpasyncclientVersion>4.1.5</httpasyncclientVersion>
     <ipaddressVersion>5.3.3</ipaddressVersion>
     <jacksonVersion>1.9.13-atlassian-6</jacksonVersion>
     <jackson2Version>2.10.5</jackson2Version>
