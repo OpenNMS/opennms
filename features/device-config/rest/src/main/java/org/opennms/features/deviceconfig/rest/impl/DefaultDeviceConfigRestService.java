@@ -54,6 +54,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.xml.bind.DatatypeConverter;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opennms.core.criteria.Criteria;
@@ -90,7 +91,7 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultDeviceConfigRestService.class);
     public static final String DEFAULT_ENCODING = StandardCharsets.UTF_8.name();
     public static final String BINARY_ENCODING = "binary";
-    private static final Pattern deletePattern = Pattern.compile("\\d+(, ?\\d+)*");
+    private static final Pattern deletePattern = Pattern.compile("\\d+");
     private final SessionUtils sessionUtils;
 
     private static final Map<String,String> ORDERBY_QUERY_PROPERTY_MAP = Map.of(
@@ -239,27 +240,25 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
 
     /** {@inheritDoc} */
     @Override
-    public Response deleteDeviceConfigs(String id) {
-        if (Strings.isNullOrEmpty(id)) {
+    public Response deleteDeviceConfigs(List<String> ids) {
+        if (CollectionUtils.isEmpty(ids)) {
             LOG.debug("Bad request : empty or null DeviceConfig Id");
             return Response.status(Status.BAD_REQUEST).entity("Invalid 'id' parameter").build();
         }
+        boolean result =  ids.stream().allMatch(id -> deletePattern.matcher(id).matches());
 
-        var matcher = deletePattern.matcher(id);
-
-        if (!matcher.matches()) {
-            LOG.debug("Bad request : invalid id parameter '{}' ", id);
+        if (!result) {
+            LOG.debug("Bad request : invalid id parameter '{}' ", ids);
             return Response.status(Status.BAD_REQUEST).entity("Invalid 'id' parameter").build();
         }
 
-        List<Long> ids = Arrays.stream(id.split("\\s*,\\s*"))
-                .filter(s -> !Strings.isNullOrEmpty(s.trim()))
+        List<Long> lstOfId = ids.stream().filter(s -> !Strings.isNullOrEmpty(s.trim()))
                 .map(Long::parseLong)
                 .collect(Collectors.toList());
 
         sessionUtils.withTransaction(() -> {
             try {
-                final List<DeviceConfig> deviceConfigList = ids.stream()
+                final List<DeviceConfig> deviceConfigList = lstOfId.stream()
                         .map(deviceConfigDao::get)
                         .map(DeviceConfig.class::cast)
                         .collect(Collectors.toList());

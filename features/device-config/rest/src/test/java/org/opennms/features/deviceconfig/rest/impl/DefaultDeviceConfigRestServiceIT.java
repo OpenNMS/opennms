@@ -39,6 +39,7 @@ import static org.hamcrest.Matchers.is;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -286,15 +287,20 @@ public class DefaultDeviceConfigRestServiceIT {
     public void testDeleteDeviceConfigService() throws IOException {
 
         //passing valid ids
-        Response response = deviceConfigRestService.deleteDeviceConfigs("50,51");
+        List<String> lstOfIds = Arrays.asList(new String []{"50","51"});
+        Response response = deviceConfigRestService.deleteDeviceConfigs(lstOfIds);
         Assert.assertEquals(204, response.getStatus());
 
         //passing invalid ids
-        response = deviceConfigRestService.deleteDeviceConfigs("id1,id2");
+        lstOfIds.clear();
+        lstOfIds = Arrays.asList(new String []{"id1","id2"});
+        response = deviceConfigRestService.deleteDeviceConfigs(lstOfIds);
         Assert.assertEquals("Invalid 'id' parameter", response.getEntity());
 
         //passing empty or blank value of ids
-        response = deviceConfigRestService.deleteDeviceConfigs(" ");
+        lstOfIds.clear();
+        lstOfIds = Arrays.asList(new String []{" "});
+        response = deviceConfigRestService.deleteDeviceConfigs(lstOfIds);
         Assert.assertEquals(400, response.getStatus());
     }
 

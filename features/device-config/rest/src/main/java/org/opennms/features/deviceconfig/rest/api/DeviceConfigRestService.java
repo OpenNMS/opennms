@@ -127,10 +127,10 @@ public interface DeviceConfigRestService {
 
     /**
      * Delete a single or multiple device config.
-     * @param id comma separated string of ids
+     * @param ids comma separated string of ids
      */
     @DELETE
-    Response deleteDeviceConfigs(@QueryParam("id") String id);
+    Response deleteDeviceConfigs(@QueryParam("id") List<String> ids);
 
     /**
      * Download configurations for the given id or comma-separated list of ids.
