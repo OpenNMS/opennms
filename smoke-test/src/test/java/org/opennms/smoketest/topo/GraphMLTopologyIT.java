@@ -387,6 +387,7 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
         frontPage();
         deleteGraph();
         topologyUIPage.open();
+        Thread.sleep(5000);
         try {
             // if dialog is not yet visible, try to interact with a node
             topologyUIPage.findVertex("East 1").select();
@@ -396,6 +397,7 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
         } catch (NoSuchElementException | TimeoutException | ElementNotInteractableException e) {
             // ignore if dialog is already visible
         }
+        Thread.sleep(5000);
         findElementByXpath("//div[text() = 'Clicking okay will switch to the default topology provider.']");
     }
 }
