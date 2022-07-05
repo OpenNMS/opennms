@@ -39,7 +39,6 @@ sudo dnf -y install postgresql-server postgresql
 ----
 
 .Change the access policy for PostgreSQL
-[source, console]
 
 See xref:deployment:core/centos-rhel8/postgresql.adoc#core-centos-rhel8-pg_hba[pg_hba].
 
@@ -63,7 +62,6 @@ sudo /opt/opennms/bin/install -dis
 ----
 
 .Firewall configuration
-[source, console]
 
 Depending on where OpenNMS gets restored, you need to set the firewall settings again.
 
@@ -71,7 +69,6 @@ See xref:deployment:core/centos-rhel/initialize-core.adoc#initialize-core-firewa
 xref:deployment:core/centos-rhel/firewall-core.adoc[firewall].
 
 .Start OpenNMS service
-
 [source, console]
 ----
 sudo systemctl start opennms
