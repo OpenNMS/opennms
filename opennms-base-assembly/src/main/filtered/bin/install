@@ -29,10 +29,27 @@ if [ -f "$OPENNMS_HOME/etc/opennms.conf" ]; then
 	. "$OPENNMS_HOME/etc/opennms.conf"
 fi
 
+
+while getopts vcfhnpqrsS:j:a: c
+do
+  case $c in
+      x)
+          no_sudo=1
+          ;;
+
+      \?)
+          echo "Invalid option."
+          exit 1
+          ;;
+  esac
+done
+
 SUDO="$(command -v sudo 2>/dev/null || which sudo 2>/dev/null || :)"
 myuser="$(id -u -n)"
 if [ "$myuser" != "$RUNAS" ]; then
-	if [ "$myuser" = "root" ] && [ -n "$SUDO" ] && [ -x "$SUDO" ]; then
+    if [ $no_sudo ]; then
+        echo "WARNING: Running script as current user"
+	elif [ "$myuser" = "root" ] && [ -n "$SUDO" ] && [ -x "$SUDO" ]; then
 		echo "WARNING: relaunching as $RUNAS" >&2
 		_cmd=("$SUDO" "-u" "$RUNAS" "$0" "${INCOMING_ARGS[@]}");
 		exec "${_cmd[@]}"
@@ -58,7 +75,8 @@ for opt in $ADDITIONAL_MANAGER_OPTIONS; do
 	esac
 done
 
-if [ $no_sudo ]; then
+if [ $no_sudo ] && [ "$myuser" != "$RUNAS" ]; then
+    echo "Atytempting to run install as $myuser..."
     # shellcheck disable=SC2086
     "$OPENNMS_BINDIR"/runjava -r -- \
         $OPTIONS \

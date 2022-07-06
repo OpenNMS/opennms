@@ -20,7 +20,8 @@ do
           ;;
 
       \?)
-          die "Invalid option."
+          echo "Invalid option."
+          exit 1
           ;;
   esac
 done
@@ -44,7 +45,8 @@ if [ "$myuser" != "$RUNAS" ]; then
 fi
 
 APP_CLASS=org.opennms.upgrade.support.Upgrade
-if [ $no_sudo ]; then
+if [ $no_sudo ] && [ "$myuser" != "$RUNAS" ]; then
+    echo "Attempting to run upgrade as $myuser..."
     # shellcheck disable=SC2086
     "$OPENNMS_HOME/bin/runjava" -r -- $JAVA_OPTIONS \
         -Dopennms.home="$OPENNMS_HOME" \
