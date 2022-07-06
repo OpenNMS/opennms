@@ -81,10 +81,7 @@ commands:
             find ./opennms-assemblies/sentinel/target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} "./target/tarballs/sentinel-${OPENNMS_VERSION}.tar.gz" \;
             cp ./opennms-assemblies/xsds/target/*-xsds.tar.gz "./target/artifacts/opennms-${OPENNMS_VERSION}-xsds.tar.gz"
             cp target/*-source.tar.gz ./target/artifacts/
-      - store_artifacts:
-          when: always
-          path: ~/project/opennms-assemblies/minion/target/
-          destination: artifacts
+            cp ~/project/opennms-assemblies/minion/target/*.tar.gz ./target/artifacts/
       - store_artifacts:
           when: always
           path: ~/project/target/artifacts
