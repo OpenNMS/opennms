@@ -347,13 +347,23 @@ public class FlowThresholding implements Closeable {
         }
 
         public void process(final Instant now, final FlowDocument document) {
-            final var applicationKey = new ApplicationKey(document.getDirection() == Direction.INGRESS
-                                                          ? document.getInputSnmp()
-                                                          : document.getOutputSnmp(),
-                                                          document.getDirection(),
-                                                          document.getApplication());
+            if (document.getInputSnmp() != null &&
+                document.getInputSnmp() != 0 &&
+                (document.getDirection() == Direction.INGRESS || document.getDirection() == Direction.UNKNOWN)) {
+                final var applicationKey = new ApplicationKey(document.getInputSnmp(),
+                                                              Direction.INGRESS,
+                                                              document.getApplication());
+                this.applications.computeIfAbsent(applicationKey, k -> new AtomicLong(0)).addAndGet(document.getBytes());
+            }
 
-            this.applications.computeIfAbsent(applicationKey, k -> new AtomicLong(0)).addAndGet(document.getBytes());
+            if (document.getOutputSnmp() != null
+                && document.getOutputSnmp() != 0 &&
+                (document.getDirection() == Direction.EGRESS || document.getDirection() == Direction.UNKNOWN)) {
+                final var applicationKey = new ApplicationKey(document.getOutputSnmp(),
+                                                              Direction.EGRESS,
+                                                              document.getApplication());
+                this.applications.computeIfAbsent(applicationKey, k -> new AtomicLong(0)).addAndGet(document.getBytes());
+            }
 
             // Mark session as updated
             this.lastUpdate = now;

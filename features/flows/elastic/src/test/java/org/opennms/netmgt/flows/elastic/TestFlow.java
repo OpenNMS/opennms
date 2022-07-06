@@ -72,6 +72,8 @@ public class TestFlow implements Flow {
                 return Direction.INGRESS;
             case EGRESS:
                 return Direction.EGRESS;
+            case UNKNOWN:
+                return Direction.UNKNOWN;
             default:
                 throw new IllegalArgumentException("Unknown direction: " + flowDocument.getDirection().name());
         }

@@ -82,6 +82,10 @@
       <artifactId>opennms-dao-api</artifactId>
     </dependency>
     <dependency>
+      <groupId>commons-beanutils</groupId>
+      <artifactId>commons-beanutils</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.core.tracing</groupId>
       <artifactId>org.opennms.core.tracing.api</artifactId>
       <version>${project.version}</version>

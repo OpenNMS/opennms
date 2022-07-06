@@ -36,6 +36,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.opennms.core.cache.Cache;
 import org.opennms.core.cache.CacheBuilder;
@@ -88,6 +89,8 @@ public class DocumentEnricher {
 
     private final long clockSkewCorrectionThreshold;
 
+    private final DocumentMangler mangler;
+
     public DocumentEnricher(MetricRegistry metricRegistry,
                             NodeDao nodeDao,
                             IpInterfaceDao ipInterfaceDao,
@@ -95,7 +98,8 @@ public class DocumentEnricher {
                             SessionUtils sessionUtils,
                             ClassificationEngine classificationEngine,
                             CacheConfig cacheConfig,
-                            final long clockSkewCorrectionThreshold) {
+                            final long clockSkewCorrectionThreshold,
+                            final DocumentMangler mangler) {
         this.nodeDao = Objects.requireNonNull(nodeDao);
         this.ipInterfaceDao = Objects.requireNonNull(ipInterfaceDao);
         this.interfaceToNodeCache = Objects.requireNonNull(interfaceToNodeCache);
@@ -124,6 +128,8 @@ public class DocumentEnricher {
         this.nodeLoadTimer = metricRegistry.timer("nodeLoadTime");
 
         this.clockSkewCorrectionThreshold = clockSkewCorrectionThreshold;
+
+        this.mangler = Objects.requireNonNull(mangler);
     }
 
     public List<FlowDocument> enrich(final Collection<Flow> flows, final FlowSource source) {
@@ -132,8 +138,12 @@ public class DocumentEnricher {
             return Collections.emptyList();
         }
 
-        return sessionUtils.withTransaction(() -> flows.stream().map(flow -> {
-            final FlowDocument document = FlowDocument.from(flow);
+        return sessionUtils.withTransaction(() -> flows.stream().flatMap(flow -> {
+            final FlowDocument document = this.mangler.mangle(FlowDocument.from(flow));
+            if (document == null) {
+                return Stream.empty();
+            }
+
             // Metadata from message
             document.setHost(source.getSourceAddress());
             document.setLocation(source.getLocation());
@@ -188,7 +198,7 @@ public class DocumentEnricher {
                 }
             }
 
-            return document;
+            return Stream.of(document);
         }).collect(Collectors.toList()));
     }
 

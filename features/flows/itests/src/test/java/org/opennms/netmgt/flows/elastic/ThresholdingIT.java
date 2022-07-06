@@ -38,6 +38,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import javax.script.ScriptEngineManager;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -181,7 +183,8 @@ public class ThresholdingIT {
                                                                   .withName("flows.node")
                                                                   .withMaximumSize(1000)
                                                                   .withExpireAfterWrite(300)
-                                                                  .build(), 0);
+                                                                  .build(), 0,
+                                                          new DocumentMangler(new ScriptEngineManager()));
 
         final var nodeDao = new MockNodeDao();
         final var snmpInterfaceDao = new MockSnmpInterfaceDao();
