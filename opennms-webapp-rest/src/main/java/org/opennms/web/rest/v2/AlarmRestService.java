@@ -28,26 +28,6 @@
 
 package org.opennms.web.rest.v2;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.concurrent.Callable;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.SecurityContext;
-import javax.ws.rs.core.UriInfo;
-
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.jaxrs.ext.search.SearchBean;
@@ -80,6 +60,25 @@ import org.opennms.web.svclayer.TroubleTicketProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.SecurityContext;
+import javax.ws.rs.core.UriInfo;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.Callable;
 
 /**
  * Basic Web Service using REST for {@link OnmsAlarm} entity.
@@ -277,7 +276,7 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
     @Path("{id}/memo")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response removeMemo(@Context final SecurityContext securityContext, @PathParam("id") final Integer alarmId) {
-        SecurityHelper.assertUserEditCredentials(securityContext, securityContext.getUserPrincipal().getName());
+        SecurityHelper.assertUserEditCredentials(securityContext);
         m_repository.removeStickyMemo(alarmId);
         return Response.noContent().build();
     }
@@ -286,7 +285,7 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
     @Path("{id}/journal")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response removeJournal(@Context final SecurityContext securityContext, @PathParam("id") final Integer alarmId) {
-        SecurityHelper.assertUserEditCredentials(securityContext, securityContext.getUserPrincipal().getName());
+        SecurityHelper.assertUserEditCredentials(securityContext);
         m_repository.removeReductionKeyMemo(alarmId);
         return Response.noContent().build();
     }
@@ -294,7 +293,7 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
     @POST
     @Path("{id}/ticket/create")
     public Response createTicket(@Context final SecurityContext securityContext, @PathParam("id") final Integer alarmId) throws Exception {
-        SecurityHelper.assertUserEditCredentials(securityContext, securityContext.getUserPrincipal().getName());
+        SecurityHelper.assertUserEditCredentials(securityContext);
 
         return runIfTicketerPluginIsEnabled(() -> {
             final Map<String, String> parameters = new HashMap<>();
@@ -307,7 +306,7 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
     @POST
     @Path("{id}/ticket/update")
     public Response updateTicket(@Context final SecurityContext securityContext, @PathParam("id") final Integer alarmId) throws Exception {
-        SecurityHelper.assertUserEditCredentials(securityContext, securityContext.getUserPrincipal().getName());
+        SecurityHelper.assertUserEditCredentials(securityContext);
 
         return runIfTicketerPluginIsEnabled(() -> {
             m_troubleTicketProxy.updateTicket(alarmId);
@@ -318,7 +317,7 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
     @POST
     @Path("{id}/ticket/close")
     public Response closeTicket(@Context final SecurityContext securityContext, @PathParam("id") final Integer alarmId) throws Exception {
-        SecurityHelper.assertUserEditCredentials(securityContext, securityContext.getUserPrincipal().getName());
+        SecurityHelper.assertUserEditCredentials(securityContext);
 
         return runIfTicketerPluginIsEnabled(() -> {
             m_troubleTicketProxy.closeTicket(alarmId);
