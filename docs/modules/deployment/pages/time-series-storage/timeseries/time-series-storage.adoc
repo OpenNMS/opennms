@@ -24,7 +24,7 @@ Depending on I/O capabilities it works well for small- to medium-size installati
 The time series is stored on a dedicated Cassandra cluster, which gives growth flexibility and lets time series data persist in a large scale.
 |===
 
-You can use time series storage integrations with plugins based on our OpenNMS Plugin API (OIA).
+You can use time series storage integrations with plugins based on our OpenNMS Plugin API (formerly OIA).
 Several plugins are available as a replacement for the ones shipped with OpenNMS {page-component-title} (see xref:time-series-storage/timeseries/ts-integration-layer.adoc#ts-integration-layer[time series integration layer]).
 
 This section describes how to configure {page-component-title} to use RRDTool and Newts.
