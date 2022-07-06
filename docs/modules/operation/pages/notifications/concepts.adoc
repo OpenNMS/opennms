@@ -18,7 +18,7 @@ Also related, but presently only loosely coupled to notifications, are Alarms an
 
 == Events and UEIs
 
-As discussed in the <<events/anatomy-events.adoc#events, Events>>, events are central to the operation of {page-component-title}.
+As discussed in the <<events/introduction.adoc#events, Events>>, events are central to the operation of {page-component-title}.
 Almost everything that happens in the system is the result of, or the cause of, one or more events; Every notification is triggered by exactly one event.
 A good understanding of events is therefore essential to a working knowledge of notifications.
 

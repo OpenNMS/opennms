@@ -95,4 +95,4 @@ For example:
 
 Send an event to reload the configuration of Eventd.
 
-`$OPENNMS_HOME/bin/send-event.pl -p 'daemonName Eventd' uei.opennms.org/internal/reloadDaemonConfig`
+`$\{OPENNMS_HOME}/bin/send-event.pl -p 'daemonName Eventd' uei.opennms.org/internal/reloadDaemonConfig`

@@ -11,7 +11,7 @@ Event definitions are included with {page-component-title} for traps from many v
 
 == Trap Value Representation
 
-When octet strings are translated into event parameters, OpenNMS first attempts to treat them as character encodings.
+When octet strings are translated into event parameters, {page-component-title} first attempts to treat them as character encodings.
 If all bytes in the string are valid UTF-8 or ISO-8859-1 characters, the string is stored as these characters.
 If this is not possible, the value is encoded as a Base64 string.
 
@@ -32,4 +32,3 @@ To configure {page-component-title} to honor `snmpTrapAddress` when present, set
 <1> Set the SNMP trap daemon listening port to 1162/udp
 <2> Don't create new nodes when receiving a SNMP Trap with an unknown source IP address
 <3> Try using the identifier source IP address from the `snmpTrapAddress` varbind instead of the UDP source IP address
-
