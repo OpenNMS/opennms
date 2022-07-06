@@ -895,7 +895,7 @@
     "@vue/compiler-dom" "3.2.37"
     "@vue/shared" "3.2.37"
 
-"@vue/devtools-api@^6.0.0", "@vue/devtools-api@^6.0.0-beta.11", "@vue/devtools-api@^6.1.4":
+"@vue/devtools-api@^6.0.0-beta.11", "@vue/devtools-api@^6.1.4":
   version "6.1.4"
   resolved "https://registry.yarnpkg.com/@vue/devtools-api/-/devtools-api-6.1.4.tgz#b4aec2f4b4599e11ba774a50c67fa378c9824e53"
   integrity sha512-IiA0SvDrJEgXvVxjNkHPFfDx6SXw0b/TUkqMcDZWNg9fnCAHbTpoo59YfJ9QLFkwa3raau5vSlRVzMSLDnfdtQ==
@@ -948,10 +948,10 @@
   resolved "https://registry.yarnpkg.com/@vue/shared/-/shared-3.2.37.tgz#8e6adc3f2759af52f0e85863dfb0b711ecc5c702"
   integrity sha512-4rSJemR2NQIo9Klm1vabqWjD8rs/ZaJSzMxkMNeJS6lHiUjjUeYFbooN19NgFjztubEKh3WlZUeOLVdbbUWHsw==
 
-"@vue/test-utils@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@vue/test-utils/-/test-utils-2.0.0.tgz#06455934091d237d71d81bac6617485de38b1c58"
-  integrity sha512-zL5kygNq7hONrO1CzaUGprEAklAX+pH8J1MPMCU3Rd2xtSYkZ+PmKU3oEDRg8VAGdL5lNJHzDgrud5amFPtirw==
+"@vue/test-utils@^2.0.2":
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/@vue/test-utils/-/test-utils-2.0.2.tgz#0b5edd683366153d5bc5a91edc62f292118710eb"
+  integrity sha512-E2P4oXSaWDqTZNbmKZFVLrNN/siVN78YkEqs7pHryWerrlZR9bBFLWdJwRoguX45Ru6HxIflzKl4vQvwRMwm5g==
 
 "@vueuse/core@^8.3.1", "@vueuse/core@^8.7.5":
   version "8.7.5"
@@ -3132,12 +3132,12 @@ vue-eslint-parser@^9.0.1, vue-eslint-parser@^9.0.3:
     lodash "^4.17.21"
     semver "^7.3.6"
 
-vue-router@4.0.16:
-  version "4.0.16"
-  resolved "https://registry.yarnpkg.com/vue-router/-/vue-router-4.0.16.tgz#9477beeeef36e80e04d041a1738801a55e6e862e"
-  integrity sha512-JcO7cb8QJLBWE+DfxGUL3xUDOae/8nhM1KVdnudadTAORbuxIC/xAydC5Zr/VLHUDQi1ppuTF5/rjBGzgzrJNA==
+vue-router@4.1.1:
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/vue-router/-/vue-router-4.1.1.tgz#90cc533efafdcf90d157bdc20a376760cdb59c10"
+  integrity sha512-Wp1mEf2xCwT0ez7o9JvgpfBp9JGnVb+dPERzXDbugTatzJAJ60VWOhJKifQty85k+jOreoFHER4r5fu062PhPw==
   dependencies:
-    "@vue/devtools-api" "^6.0.0"
+    "@vue/devtools-api" "^6.1.4"
 
 vue-tsc@^0.38.2:
   version "0.38.2"
