@@ -664,13 +664,20 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
 
     private void setupErrorHandler() {
         setErrorHandler(new DefaultErrorHandler() {
+            private ConfirmationDialog confirmationDialog;
+
             @Override
             public void error(com.vaadin.server.ErrorEvent event) {
                 Throwable t = findNoSuchProviderException(event.getThrowable());
                 if (t instanceof NoSuchProviderException) {
                     final NoSuchProviderException exception = (NoSuchProviderException) t;
                     LOG.warn("Access to a graph/meta topology provider was made, which does not exist anymore: The error message was: {} Don't worry, I know what to do.", exception.getMessage());
-                    new ConfirmationDialog()
+
+                    if (confirmationDialog != null && confirmationDialog.isVisible()) {
+                        return;
+                    }
+
+                    confirmationDialog = new ConfirmationDialog()
                             .withCaption("Selected topology no longer available")
                             .withCancelButton(false)
                             .withDescription(() -> {
@@ -691,8 +698,8 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
                                     // (hopefully she logged out as we suggested, otherwise an error is shown)
                                     UI.getCurrent().close();
                                 }
-                            })
-                            .open();
+                            });
+                    confirmationDialog.open();
                 } else {
                     Notification.show("An Unexpected Exception Occurred: see karaf.log", Notification.Type.TRAY_NOTIFICATION);
                     LOG.warn("An Unexpected Exception Occurred: in the TopologyUI", event.getThrowable());

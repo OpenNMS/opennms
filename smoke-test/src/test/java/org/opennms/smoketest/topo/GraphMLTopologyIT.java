@@ -399,5 +399,6 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
         }
         Thread.sleep(5000);
         findElementByXpath("//div[text() = 'Clicking okay will switch to the default topology provider.']");
+        findElementByXpath("//span[@class='v-button-caption' and text() = 'ok']").click();
     }
 }
