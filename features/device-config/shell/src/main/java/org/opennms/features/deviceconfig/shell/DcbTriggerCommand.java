@@ -85,11 +85,14 @@ public class DcbTriggerCommand implements Action {
                         if (persist) {
                             System.out.println(" and persisted");
                         }
+                        else {
+                            System.out.println();
+                        }
                     } else {
                         System.err.println("Failed to trigger device config backup: " + response.getErrorMessage());
                     }
                     if (verbose && !Strings.isNullOrEmpty(response.getScriptOutput())) {
-                        System.out.println(String.format("---SSH script output---\n%s\n----------end----------", response.getScriptOutput()));
+                        System.out.printf("---SSH script output---\n%s\n----------end----------\n", response.getScriptOutput());
                     }
                     break;
                 } catch (InterruptedException e) {
