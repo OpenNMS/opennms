@@ -43,6 +43,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 import org.opennms.core.concurrent.FutureUtils;
@@ -163,6 +164,8 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
         private final String fileNameSuffix;
         private final Supplier<SshScriptingService.Result> uploadTrigger;
 
+        private CompletableFuture<SshScriptingService.Result> scriptFuture = null;
+
         private volatile CompletableFuture<Either<Failure, Success>> future;
 
         public TftpFileReceiverImpl(
@@ -192,7 +195,8 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
             // trigger the upload
             // -> if triggering the upload failed then complete the future with that failure
             try {
-                SshScriptingService.Result result = uploadTrigger.get();
+                scriptFuture = CompletableFuture.supplyAsync(uploadTrigger);
+                SshScriptingService.Result result = scriptFuture.get();
                 if (result.isFailed()) {
                     fail(scriptingFailureMsg(this.target, result.message), result.stdout, result.stderr, result.scriptOutput);
                 }
@@ -216,9 +220,18 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
                 // -> just to be sure check that the future is set
                 if (future != null) {
                     LOG.debug("received config - target: " + this.target + "; address: " + address.getHostAddress());
+                    // At this point the script has successfully sent the file via TFTP, but the tftp command
+                    // and any following lines may not have been fully processed by the scripting service yet.
+                    // Give it one second to finish up any remaining trivial commands and complete preparing debug output.
+                    String scriptOutput = sshScriptingService.getScriptOutput();
+                    if (scriptFuture != null && !scriptFuture.isDone()) {
+                        try {
+                            scriptOutput = scriptFuture.get(1, TimeUnit.SECONDS).scriptOutput;
+                        }
+                        catch (Exception e) {}
+                    }
                     // strip the '.' and filenameSuffix from the filename
-                    uploadTrigger.get();
-                    future.complete(Either.right(new Success(content, fileName.substring(0, fileName.length() - fileNameSuffix.length()), sshScriptingService.getScriptOutput())));
+                    future.complete(Either.right(new Success(content, fileName.substring(0, fileName.length() - fileNameSuffix.length()), scriptOutput)));
                 }
             }
         }
