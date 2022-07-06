@@ -9,17 +9,17 @@ Choose from the following search criteria:
 
 * Alarm Text Contains
 ** Performs a substring filter on both the log message and the description.
-** To negate this search, prefix the input text with `-`.
+** To negate this search, prefix the input text with `!`.
 This returns results that do not contain the provided input text.
 
 * TCP/IP Address Like
 ** Performs an `IPLIKE` on the provided IP Address to filter the results.
-** To negate this search, prefix the input text with `-`.
+** To negate this search, prefix the input text with `!`.
 This returns results that do not satisfy the `IPLIKE` function.
 
 * Node Label Contains
 ** Performs a substring filter on the node label.
-** To negate this search, prefix the input text with `-`.
+** To negate this search, prefix the input text with `!`.
 This returns results that do not contain the provided input text.
 
 * Severity
