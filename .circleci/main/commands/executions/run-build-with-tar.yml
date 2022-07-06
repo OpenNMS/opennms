@@ -83,6 +83,10 @@ commands:
             cp target/*-source.tar.gz ./target/artifacts/
       - store_artifacts:
           when: always
+          path: ~/project/opennms-assemblies/minion/target/
+          destination: artifacts
+      - store_artifacts:
+          when: always
           path: ~/project/target/artifacts
           destination: artifacts
       - store_artifacts:
