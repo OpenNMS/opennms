@@ -62,6 +62,9 @@ RUNJAVA_OPTIONS=""
 # when it cannot connect using the Attach API (automatically or by PID)
 JMX_URL="service:jmx:rmi:///jndi/rmi://127.0.0.1:1099/jmxrmi"
 
+# Whether to include a thread dump before we start shutting down
+THREAD_DUMP=1
+
 # Whether to enable the Pyroscope agent
 [ -z "$PYROSCOPE_AGENT_ENABLED" ] && PYROSCOPE_AGENT_ENABLED=0
 
@@ -561,7 +564,9 @@ doStop() {
 	fi
 
 	PID="$(getPid)"
-	if [ "$PID" -gt 0 ]; then
+	if [ -z "$THREAD_DUMP" ] || [ "$THREAD_DUMP" -eq 0 ]; then
+		echo "=== Skipping Complimentary Thread Dump ===" >> "$REDIRECT"
+	elif [ "$PID" -gt 0 ]; then
 		echo "=== ${install.package.description} Complimentary Thread Dump ===" >> "$REDIRECT"
 		kill -3 "$PID" >> "$REDIRECT" 2>&1
 	else
