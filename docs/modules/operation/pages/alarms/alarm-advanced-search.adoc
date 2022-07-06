@@ -24,13 +24,17 @@ This returns results that do not contain the provided input text.
 
 * Severity
 ** Filter the alarms list based on the alarm severity.
-** To negate this search, toggle the *Negate Severity* checkbox.
-This returns results that do not match the set severity.
+** This is a multi-select checkbox.
+Select the Severities you wish to filter by.
+By default they are unselected which return all alarms.
+Selecting one or multiple severities will restrict your search results by those selected.
 
 * Service
 ** Filter the alarms list based on the alarm service.
-** To negate this search, toggle the *Negate Service* checkbox.
-This returns results that do not match the set service.
+** This is a multi-select checkbox.
+Select the Services you wish to filter by.
+By default they are unselected which return all alarms.
+Selecting one or multiple services will restrict your search results by those selected.
 
 * Alarm type
 ** Select this dropdown to include only alarms, only situations, or both.
