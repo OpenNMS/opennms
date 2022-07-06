@@ -82,6 +82,9 @@ commands:
             cp ./opennms-assemblies/xsds/target/*-xsds.tar.gz "./target/artifacts/opennms-${OPENNMS_VERSION}-xsds.tar.gz"
             cp target/*-source.tar.gz ./target/artifacts/
             cp ~/project/opennms-assemblies/minion/target/*.tar.gz ./target/artifacts/
+      - save-artifacts:
+          path: ~/project/opennms-assemblies/minion/target/
+          location: miniontarget
       - store_artifacts:
           when: always
           path: ~/project/target/artifacts
@@ -91,7 +94,7 @@ commands:
           path: ~/project/target/tarballs
           destination: tarballs
       - store_artifacts:
-          when: always
+          when: always    
           path: ~/project/target/config-schema
           destination: config-schema
       - run:

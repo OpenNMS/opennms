@@ -14,6 +14,9 @@ commands:
         default: true
         type: boolean
     steps:
+      - fetch-artifacts:
+          path: ~/project/opennms-assemblies/minion/target/
+          location: miniontarget
       - run:
           name: Monitor JVM processes
           background: true
