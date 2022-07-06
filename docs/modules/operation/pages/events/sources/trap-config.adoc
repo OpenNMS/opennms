@@ -21,28 +21,28 @@ Event configurations for traps use the `<mask>` tag to match incoming SNMP trap 
 .Cisco systems event
 [source, xml]
 ----
-&lt;event&gt;
-  &lt;mask&gt;
-    &lt;maskelement&gt;
-      &lt;mename&gt;id&lt;/mename&gt;
-      &lt;mevalue&gt;.1.3.6.1.4.1.9.9.70.2&lt;/mevalue&gt;
-    &lt;/maskelement&gt;
-    &lt;maskelement&gt;
-      &lt;mename&gt;generic&lt;/mename&gt;
-      &lt;mevalue&gt;6&lt;/mevalue&gt;
-    &lt;/maskelement&gt;
-    &lt;maskelement&gt;
-      &lt;mename&gt;specific&lt;/mename&gt;
-      &lt;mevalue&gt;17&lt;/mevalue&gt;
-    &lt;/maskelement&gt;
-  &lt;/mask&gt;
-  &lt;uei&gt;http://uei.opennms.org/vendor/Cisco/traps/ciscoC3800SysAggregateStatusChange&lt;/uei&gt;
-  &lt;event-label&gt;CISCO-C3800-MIB defined trap event: ciscoC3800SysAggregateStatusChange&lt;/event-label&gt;
-  &lt;descr&gt;&#38lt;p&#38gt;Notification that the aggregate status of a node
+<event>
+  <mask>
+    <maskelement>
+      <mename>id</mename>
+      <mevalue>.1.3.6.1.4.1.9.9.70.2</mevalue>
+    </maskelement>
+    <maskelement>
+      <mename>generic</mename>
+      <mevalue>6</mevalue>
+    </maskelement>
+    <maskelement>
+      <mename>specific</mename>
+      <mevalue>17</mevalue>
+    </maskelement>
+  </mask>
+  <uei>http://uei.opennms.org/vendor/Cisco/traps/ciscoC3800SysAggregateStatusChange</uei>
+  <event-label>CISCO-C3800-MIB defined trap event: ciscoC3800SysAggregateStatusChange</event-label>
+  <descr>&#38lt;p&#38gt;Notification that the aggregate status of a node
          has changed.&#38lt;/p&#38gt;&#38lt;table&#38gt;
          &#38lt;tr&#38gt;&#38lt;td&#38gt;&#38lt;b&#38gt;
-         c3800SysNextTrapSeqNum&#38lt;/b&#38gt;&lt;/td&#38gt;&#38lt;td&#38gt;%parm[#1]%
-         &#38lt;/td&#38gt;&#38lt;td&#38gt;&#38lt;p;&#38gt;&lt;/p&#38gt;&#38lt;/td;&#38gt;&#38lt;/tr&#38gt;&#38lt;tr&#38gt;&#38lt;td&#38gt;&#38lt;b&#38gt;
+         c3800SysNextTrapSeqNum&#38lt;/b&#38gt;</td&#38gt;&#38lt;td&#38gt;%parm[#1]%
+         &#38lt;/td&#38gt;&#38lt;td&#38gt;&#38lt;p;&#38gt;</p&#38gt;&#38lt;/td;&#38gt;&#38lt;/tr&#38gt;&#38lt;tr&#38gt;&#38lt;td&#38gt;&#38lt;b&#38gt;
          sysName&#38lt;/b&#38gt;&#38lt;/td&#38gt;&#38lt;td&#38gt;%parm[#2]%
          &#38lt;/td&#38gt;&#38lt;td&#38gt;&#38lt;p;&#38gt;&#38lt;/p&#38gt;&#38lt;/td;&#38gt;&#38lt;/tr&#38gt;&#38lt;tr&#38gt;&#38lt;td&#38gt;&#38lt;b&#38gt;
          c3800SysTrapSeverity&#38lt;/b&#38gt;&#38lt;/td&#38gt;&#38lt;td&#38gt;%parm[#3]%
@@ -51,19 +51,19 @@ Event configurations for traps use the `<mask>` tag to match incoming SNMP trap 
          &#38lt;/td;&#38gt;&#38lt;/tr&#38gt;&#38lt;tr&#38gt;&#38lt;td&#38gt;&#38lt;b&#38gt;
          c3800SysAggregateStatus&#38lt;/b&#38gt;&#38lt;/td&#38gt;&#38lt;td&#38gt;%parm[#4]%
          &#38lt;/td&#38gt;&#38lt;td&#38gt;&#38lt;p;&#38gt;
-         clear(1) minor(2) major(3)&lt;/p&gt;
+         clear(1) minor(2) major(3)</p>
          &#38lt;/td;&#38gt;&#38lt;/tr&#38gt;&#38lt;/table&#38gt;
-  &lt;/descr&gt;
-  &lt;logmsg dest='logndisplay'&gt;&lt;p&gt;Cisco Event: C3900: Node Status has changed.&lt;/p&gt;&lt;/logmsg&gt;
-  &lt;severity&gt;Indeterminate&lt;/severity&gt;
-&lt;/event&gt;
-</pre>
+  </descr>
+  <logmsg dest='logndisplay'><p>Cisco Event: C3900: Node Status has changed.</p></logmsg>
+  <severity>Indeterminate</severity>
+</event>
+----
 
-This is a Cisco Systems event for their C3800 device. Parts of it look similar to the internally generated events, with the main difference being the <code>&lt;mask&gt;</code> block. This block consists of <code>&lt;maskelement&gt;</code> tags, and the event will only match if all the defined tags are met.
+This is a Cisco Systems event for their C3800 device. Parts of it look similar to the internally generated events, with the main difference being the <mask> block. This block consists of <maskelement> tags, and the event will only match if all the defined tags are met.
 
 This particular event will match an SNMP trap whose enterprise OID (id) is equal to ".1.3.6.1.4.1.9.9.70.2", its generic trap value is enterprise specific (6) and its specific trap value is 17.
 
-The possible mask values include the following:
+The possible `mename` values include the following:
 
 * uei
 * source
@@ -79,18 +79,19 @@ The possible mask values include the following:
 
 It is possible to use the "%" symbol to indicate a wildcard in the mask values. For example, to match all Cisco events, I could use:
 
-<pre>
-&lt;mask&gt;
-  &lt;maskelement&gt;
-    &lt;mename&gt;id&lt;/mename&gt;
-    &lt;mevalue&gt;.1.3.6.1.4.1.9.%&lt;/mevalue&gt;
-  &lt;/maskelement&gt;
-&lt;/mask&gt;
-</pre>
+[source, xml]
+----
+<mask>
+  <maskelement>
+    <mename>id</mename>
+    <mevalue>.1.3.6.1.4.1.9.%</mevalue>
+  </maskelement>
+</mask>
+----
 
 Note: The order in which events are listed in the <code>eventconf.xml</code> file is extremely important. The search will stop with the first event definition that matches the given event. Thus if the above code with the wildcard was listed before the more specific <code>ciscoC3800SysAggregateStatusChange</code> event, the latter event would never be generated. Also note that the wildcard is simply a substring match. If an event was generated from a Cisco device with the Enterprise OID of ".1.3.6.1.4.1.9" it would ''not'' match this event, as there is no trailing ".". If the trailing "." is left off, care must be taken so that a trap with an OID of ".1.3.6.1.4.1.99" is listed before the ".1.3.6.1.4.1.9%" event or else it will match the more generic event.
 
-== Using the <code>parm</code> Replacement Token with trap events
+== Use the `parm` replacement token with trap events
 
 Some events, especially SNMP traps, have additional information sent with them called "variable bindings" or "varbinds" for short. In the <code>ciscoC3800SysAggregateStatusChange</code> event listed above, there are four of them, and they can be accessed using the <code>parm</code> replacement token. Each parameter consists of a name and a value.
 
@@ -104,31 +105,33 @@ Some events, especially SNMP traps, have additional information sent with them c
 
 For example, the <code>ciscoC3800SysAggregateStatusChange</code> event description lists out each of the parameters. Thus the second paramater, the <code>sysName</code> is printed out using <code>%parm[#2]%</code>.
 
-== Filtering on varbinds (OpenNMS 1.10 and beyond)
+== Filter on varbinds
 
 Let's take a look at the example `ciscoC3800SysAggregateStatusChange` event once more. What should its severity be? Since the event is generated whenever the status changes, you don't know if the change is "bad" (from operational to non-operational) or "good" (the non-operational status is cleared). That information is contained within the parameters that are passed with the event, particularly parameter #3, the trap severity.
 
 In version 1.1.0, the ability to filter on variable bindings was added. This is done in the <code>&lt;mask&gt;</code> block. To re-write the above event:
-<pre>
-&lt;mask&gt;
-  &lt;maskelement&gt;
-    &lt;mename&gt;id&lt;/mename&gt;
-    &lt;mevalue&gt;.1.3.6.1.4.1.9.9.70.2&lt;/mevalue&gt;
-  &lt;/maskelement&gt;
-  &lt;maskelement&gt;
-    &lt;mename&gt;generic&lt;/mename&gt;
-    &lt;mevalue&gt;6&lt;/mevalue&gt;
-  &lt;/maskelement&gt;
-  &lt;maskelement&gt;
-    &lt;mename&gt;specific&lt;/mename&gt;
-    &lt;mevalue&gt;17&lt;/mevalue&gt;
-  &lt;/maskelement&gt;
-  &lt;varbind&gt;
-    &lt;vbnumber&gt;3&lt;/vbnumber&gt;
-    &lt;vbvalue&gt;3&lt;/vbvalue&gt;
-  &lt;/varbind&gt;
-&lt;/mask&gt;
-</pre>
+
+[source, xml]
+----
+<mask>
+  <maskelement>
+    <mename>id</mename>
+    <mevalue>.1.3.6.1.4.1.9.9.70.2</mevalue>
+  </maskelement>
+  <maskelement>
+    <mename>generic</mename>
+    <mevalue>6</mevalue>
+  </maskelement>
+  <maskelement>
+    <mename>specific</mename>
+    <mevalue>17</mevalue>
+  </maskelement>
+  <varbind>
+    <vbnumber>3</vbnumber>
+    <vbvalue>3</vbvalue>
+  </varbind>
+</mask>
+----
 
 With a "status change" event, you will likely want to create separate events for each status value. To do this, copy the event definition once for each status value, add the varbind mask, and then change the:
 
@@ -141,38 +144,42 @@ to be appropriate for the varbind value. In the Cisco example, adding a mask wit
 
 It is also possible to match more than one varbind, and more than one value per varbind:
 
-<pre>
-&lt;varbind&gt;
-  &lt;vbnumber&gt;3&lt;/vbnumber&gt;
-  &lt;vbvalue&gt;2&lt;/vbvalue&gt;
-  &lt;vbvalue&gt;3&lt;/vbvalue&gt;
-&lt;/varbind&gt;
-&lt;varbind&gt;
-  &lt;vbnumber&gt;4&lt;/vbnumber&gt;
-  &lt;vbvalue&gt;2&lt;/vbvalue&gt;
-  &lt;vbvalue&gt;3&lt;/vbvalue&gt;
-&lt;/varbind&gt;
-</pre>
+[source,xml]
+----
+<varbind>
+  <vbnumber>3</vbnumber>
+  <vbvalue>2</vbvalue>
+  <vbvalue>3</vbvalue>
+</varbind>
+<varbind>
+  <vbnumber>4</vbnumber>
+  <vbvalue>2</vbvalue>
+  <vbvalue>3</vbvalue>
+</varbind>
+----
 
 The above code snippet will match if the third parameter has a value of "2" or "3" <i>and</i> the fourth parameter has a value of "2" or "3".
 
 This feature was updated before the 1.6.0 release to allow a regular expression match on the varbind value. Just specify the expression prefixed with a with a "~".
 
-<pre>
-&lt;varbind&gt;
-  &lt;vbnumber&gt;1&lt;/vbnumber&gt;
-  &lt;vbvalue&gt;~[Dd]own&lt;/vbvalue&gt;
-&lt;/varbind&gt;
-</pre>
+[source,xml]
+----
+<varbind>
+  <vbnumber>1</vbnumber>
+  <vbvalue>~[Dd]own</vbvalue>
+</varbind>
+----
 
 This will match a varbind 1 containing the word "Down" or "down" anywhere within its value. You can also do quick prefix matches with the '%' in a varbind value:
 
-<pre>
-&lt;varbind&gt;
-  &lt;vbnumber&gt;1&lt;/vbnumber&gt;
-  &lt;vbvalue&gt;Error:%&lt;/vbvalue&gt;
-&lt;/varbind&gt;
-</pre>
+[source,xml]
+----
+<varbind>
+  <vbnumber>1</vbnumber>
+  <vbvalue>Error:%</vbvalue>
+</varbind>
+----
+
 This will match varbind 1 with any string beginning with "Error:".
 '''Again, note that the order in which events are listed is very important. Put the most specific events first.'''
 
@@ -193,7 +200,8 @@ The trap contains the following varbind:  cHsrpGrpStandbyState whose possible va
 
 We want to display the literal meaning of the HSRP status inside the logmsg. Here is the original event definition:
 
-<pre>
+[source,xml]
+----
 <event>
  <mask>
   <maskelement>
@@ -211,24 +219,26 @@ We want to display the literal meaning of the HSRP status inside the logmsg. Her
  </mask>
  <uei>uei.opennms.org/vendor/Cisco/traps/cHsrpStateChange</uei>
  <event-label>CISCO-HSRP-MIB defined trap event: cHsrpStateChange</event-label>
- <descr>&lt;p&gt;A cHsrpStateChange notification is sent when a
+ <descr><p>A cHsrpStateChange notification is sent when a
  cHsrpGrpStandbyState transitions to either active or
  standby state, or leaves active or standby state. There
  will be only one notification issued when the state change
- is from standby to active and vice versa.&lt;/p&gt;&lt;table&gt;
- &lt;tr&gt;&lt;td&gt;&lt;b&gt;
- cHsrpGrpStandbyState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
- initial(1) learn(2) listen(3) speak(4) standby(5) active(6)&lt;/p&gt;
- &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+ is from standby to active and vice versa.</p><table>
+ <tr><td><b>
+ cHsrpGrpStandbyState</b></td><td>%parm[#1]%
+ </td><td><p;>
+ initial(1) learn(2) listen(3) speak(4) standby(5) active(6)</p>
+ </td;></tr></table>
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: HSRP State Change.&lt;/p&gt;</logmsg>
+ <logmsg dest='logndisplay'><p>Cisco Event: HSRP State Change.</p></logmsg>
  <severity>Minor</severity>
  </event>
-</pre>
+----
 
 This is how we would change the event definition so that the status is decoded inside the logmsg:
-<pre>
+
+[source,xml]
+----
 <event>
  <mask>
   <maskelement>
@@ -246,18 +256,18 @@ This is how we would change the event definition so that the status is decoded i
  </mask>
  <uei>uei.opennms.org/vendor/Cisco/traps/cHsrpStateChange</uei>
  <event-label>CISCO-HSRP-MIB defined trap event: cHsrpStateChange</event-label>
- <descr>&lt;p&gt;A cHsrpStateChange notification is sent when a
+ <descr><p>A cHsrpStateChange notification is sent when a
  cHsrpGrpStandbyState transitions to either active or
  standby state, or leaves active or standby state. There
  will be only one notification issued when the state change
- is from standby to active and vice versa.&lt;/p&gt;&lt;table&gt;
- &lt;tr&gt;&lt;td&gt;&lt;b&gt;
- cHsrpGrpStandbyState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
- initial(1) learn(2) listen(3) speak(4) standby(5) active(6)&lt;/p&gt;
- &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+ is from standby to active and vice versa.</p><table>
+ <tr><td><b>
+ cHsrpGrpStandbyState</b></td><td>%parm[#1]%
+ </td><td><p;>
+ initial(1) learn(2) listen(3) speak(4) standby(5) active(6)</p>
+ </td;></tr></table>
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: HSRP State Change to %parm[#1]%.&lt;/p&gt;</logmsg>
+ <logmsg dest='logndisplay'><p>Cisco Event: HSRP State Change to %parm[#1]%.</p></logmsg>
  <severity>Minor</severity>
  <varbindsdecode>
  <parmid>parm[#1]</parmid>
@@ -269,10 +279,12 @@ This is how we would change the event definition so that the status is decoded i
  <decode varbindvalue="6" varbinddecodedstring="active"/>
  </varbindsdecode>
 </event>
-</pre>
+----
 
 Here the parm[#1] (So the first varbind into the trap is translated using the decode map.
 If the value of the first OID in this trap is 6 the the log message will be:
-<pre>
-&lt;p&gt;Cisco Event: HSRP State Change to active.&lt;/p&gt;
-</pre>
+
+[source,xml]
+----
+<p>Cisco Event: HSRP State Change to active.</p>
+----
