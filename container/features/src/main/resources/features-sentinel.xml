@@ -218,31 +218,7 @@
     <!-- Newts -->
     <feature name="sentinel-newts" description="OpenNMS :: Sentinel :: Newts" version="${project.version}">
         <feature>sentinel-core</feature>
-        <feature>groovy</feature>
-        <feature>guava</feature>
-        <feature>opennms-measurements-api</feature>
-        <feature>opennms-collection-api</feature>
-        <feature>opennms-dao-api</feature>
-        <feature>newts-cassandra</feature>
-        <feature>newts-cassandra-search</feature>
-        <feature>fst</feature>
-
-        <bundle dependency="true">wrap:mvn:com.googlecode.concurrent-trees/concurrent-trees/${concurrentTreesVersion}</bundle>
-        <bundle dependency="true">mvn:com.lmax/disruptor/${lmaxDisruptorVersion}</bundle>
-        <bundle dependency="true">wrap:mvn:com.swrve/rate-limited-logger/${rateLimitedLoggerVersion}</bundle>
-        <bundle dependency="true">mvn:org.apache.commons/commons-pool2/2.4.2</bundle>
-        <bundle dependency="true">mvn:redis.clients/jedis/2.8.1</bundle>
-        <bundle dependency="true">mvn:args4j/args4j/${args4jVersion}</bundle>
-
-        <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.persistence.osgi/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features/org.opennms.features.newts/${project.version}</bundle>
-    </feature>
-    
-    <feature name="fst" description="FST" version="${project.version}">
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/2.6.6</bundle>
-        <bundle dependency="true">mvn:org.javassist/javassist/3.19.0-GA</bundle>
-        <bundle dependency="true">mvn:org.objenesis/objenesis/2.4</bundle>
-        <bundle dependency="true">mvn:de.ruedigermoeller/fst/${fstVersion}</bundle>
+        <feature>opennms-newts</feature>
     </feature>
 
     <feature name="sentinel-kvstore-api"

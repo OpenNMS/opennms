@@ -338,6 +338,7 @@
         <dependency>
             <groupId>org.opennms.features.poller</groupId>
             <artifactId>org.opennms.features.poller.client-rpc</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opennms.features.poller.monitors</groupId>
