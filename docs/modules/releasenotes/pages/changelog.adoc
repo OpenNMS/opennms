@@ -2,6 +2,56 @@
 
 = Changelog
 
+[[releasenotes-changelog-29.0.11]]
+
+== Release 29.0.11
+
+Release 29.0.11 contains a number of bug fixes and enhancements.
+
+The codename for Horizon 29.0.11 is https://wikipedia.org/wiki/$$Hawk$$[_Hawk_].
+
+
+=== Bug
+
+* Admin guide lacks a chapter on logging (Issue http://issues.opennms.org/browse/NMS-8861[NMS-8861])
+* Error responses are not handled correctly when handling ElasticSearch responses (Issue http://issues.opennms.org/browse/NMS-13785[NMS-13785])
+* [Web] - WebServer Fingerprinting (Issue http://issues.opennms.org/browse/NMS-13987[NMS-13987])
+* Telemetryd does not shut down gracefully (Issue http://issues.opennms.org/browse/NMS-14003[NMS-14003])
+* Event/Alarm advanced search not passing search terms (Issue http://issues.opennms.org/browse/NMS-14161[NMS-14161])
+* Users with ROLE_USER face Access Denied when accessing Resource Graphs from Reports Section (Issue http://issues.opennms.org/browse/NMS-14193[NMS-14193])
+* Exception when searching assets (Issue http://issues.opennms.org/browse/NMS-14240[NMS-14240])
+* Rogue opennms-tools/phonebook/pom.xml (Issue http://issues.opennms.org/browse/NMS-14266[NMS-14266])
+* Remove "Commercial Support" ticket lookup from web ui support section (Issue http://issues.opennms.org/browse/NMS-14280[NMS-14280])
+* Kafka-Producer Alarm Resync Failing Post Entire Kafka Cluster Outage (Issue http://issues.opennms.org/browse/NMS-14321[NMS-14321])
+* Replace old logo references in some files/reports with the new logo (Issue http://issues.opennms.org/browse/NMS-14372[NMS-14372])
+* runas=root entry in opennms.conf gets duplicated (Issue http://issues.opennms.org/browse/NMS-14396[NMS-14396])
+* Kafka Consumer stops commits when overloaded (Issue http://issues.opennms.org/browse/NMS-14415[NMS-14415])
+
+=== Story
+
+* Document how to upgrade OpenNMS (Issue http://issues.opennms.org/browse/NMS-13692[NMS-13692])
+* Add new KPIs to datachoices telemetry (Issue http://issues.opennms.org/browse/NMS-14203[NMS-14203])
+
+=== Task
+
+* LoopMonitor & detector (Issue http://issues.opennms.org/browse/NMS-11042[NMS-11042])
+* Document PassiveServiceMonitor (Issue http://issues.opennms.org/browse/NMS-11052[NMS-11052])
+* WmiMonitor (Issue http://issues.opennms.org/browse/NMS-11065[NMS-11065])
+* Circle ci caching OIA issue (Issue http://issues.opennms.org/browse/NMS-14291[NMS-14291])
+
+=== Enhancement
+
+* Add a note to remember delete the browsers cache when upgrading OpenNMS (Issue http://issues.opennms.org/browse/NMS-8504[NMS-8504])
+* there is no documentation on the instrumentation log reader (Issue http://issues.opennms.org/browse/NMS-10393[NMS-10393])
+* event nodeCategoryMembershipChanged should be more verbose (Issue http://issues.opennms.org/browse/NMS-10634[NMS-10634])
+* Migrate External Auth into docs (Issue http://issues.opennms.org/browse/NMS-13574[NMS-13574])
+* Document how to set up SSL with Jetty (Issue http://issues.opennms.org/browse/NMS-13684[NMS-13684])
+* DCB: Error reporting needs love (Issue http://issues.opennms.org/browse/NMS-14128[NMS-14128])
+* Correct errors on Business Service Monitoring docs (Issue http://issues.opennms.org/browse/NMS-14337[NMS-14337])
+* Snmp Link Up does not clear Snmp Link Down (Issue http://issues.opennms.org/browse/NMS-14378[NMS-14378])
+* upgrade JNA to 5 (Issue http://issues.opennms.org/browse/NMS-14417[NMS-14417])
+
+
 [[releasenotes-changelog-29.0.10]]
 
 == Release 29.0.10
