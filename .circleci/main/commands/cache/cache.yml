@@ -137,7 +137,7 @@ commands:
               -H "Content-Type: application/json" \
               -H "Circle-Token: ${CIRCLE_API_TOKEN}" \
               -X GET \
-              "https://circleci.com/api/v2/project/gh/OpenNMS/jicmp/${CIRCLE_BUILD_NUM}/artifacts" \
+              "https://circleci.com/api/v2/project/gh/OpenNMS/opennms/${CIRCLE_BUILD_NUM}/artifacts" \
             | grep -o 'https://[^"]*' \
             | grep "/<< parameters.location >>/" \
             > ~/.artifacts/<< parameters.location >>.txt
