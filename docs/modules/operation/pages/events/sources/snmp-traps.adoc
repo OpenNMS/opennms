@@ -7,19 +7,45 @@ It receives SNMP traps via the trapd service daemon, which is enabled by default
 
 IMPORTANT: Disabling `trapd` renders {page-component-title} *incapable* of receiving SNMP traps.
 
-{page-component-title} transforms these traps into events according to preconfigured rules included by default and customized by users.
+{page-component-title} transforms these traps into events according to preconfigured rules included by default and those created by users.
 
-== How it works
+== Before you begin
+There are a few tasks you must complete before OpenNMS can receive SNMP traps:
 
+. Configure the port on which OpenNMS can receive SNMP traps (see xref:deployment:core/getting-started.adoc#receive-snmp-traps[Receive SNMP Traps/Informs]).
+. Ensure that SNMP-capable devices on your network are configured tp send traps to OpenNMS.
+
+[[trap-config]]
+== SNMP Trap Configuration: How To
+
+Configuring SNMP traps lets you customize the types of trap information you receive and the conditions under which you receive you receive it. ##or ONMS converts it to event?##
+For example, you may want to see an event only when a device is down, or when a combination of criteria are met (give examples).
+OpenNMS converts these traps to events only when the conditions you define are met.
+
+There are several ways to configure {page-component-title} to customize the events you receive and see:
+
+* Determine what problem you are trying to solve (i.e., I want to know X about my Cisco router)
+* Manually send the corresponding event to OpenNMS server and see how OpenNMS handles it
+* Then configure the event to meet your requirements
+
+* Manually send events to determine watch them come in as undefined events, then use the recorded data to generate event definitions (when there aren't MIBs available to import)
+
+Audit the default Management Information Base (MIB) files and comment out the ones you do not need.
+* Import MIB files that are not included in OpenNMS that you do need.
+* Create trap definitions to specify criteria for when OpenNMS creates an event
+** Define varbinds for further granularity on the conditions for creating an event
+
+=== Edit 
 
 
 included by default and customized by users through Management Information Base (MIB) files and event configuration.
 
 By default, {page-component-title} includes
 
-OpenNMS can also receive SNMP traps via the trapd process.
 OpenNMS uses the `mask` tag to match SNMP traps in `eventconf.xml`.
 
+===
+unformatted events - no MIB file
 
 
 

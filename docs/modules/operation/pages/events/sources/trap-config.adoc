@@ -1,7 +1,20 @@
 
 [[trap-config]]
 = SNMP Trap Configuration: How To
-In addition to internally generated events, OpenNMS can also receive SNMP traps via the trapd process.
+In addition to internally generated events, {page-component-title} can also receive SNMP traps via the trapd process.
+
+By default, 
+
+== Before you begin
+There are a few tasks you must complete before you can receive SNMP traps:
+
+. Make sure OpenNMS can receive SNMP traps (see xref:deployment:core/getting-started.adoc#receive-snmp-traps[Receive SNMP Traps/Informs]).
+. Ensure that SNMP-capable devices on your network are configured tp send traps to OpenNMS.
+
+
+
+
+
 OpenNMS uses the `mask` tag to match SNMP traps in `eventconf.xml`.
 
 == Create event definitions from trap definitions in SNMP MIBs
