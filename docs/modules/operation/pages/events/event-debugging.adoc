@@ -1,6 +1,24 @@
 
+= Event Troubleshooting
+
+== Debugging
+
+When debugging events, it may be helpful to lower the minimum severity at which `Eventd` will log from the default level of `WARN`.
+To change this setting, edit `$\{OPENNMS_HOME}/etc/log4j2.xml` and locate the following line:
+
+[source,xml]
+----
+<KeyValuePair key="eventd"               value="WARN" />
+----
+
+Changes to `log42.xml` will take effect within 60 seconds with no extra action needed.
+At level `DEBUG`, Eventd will log a verbose description of every event it handles to `$\{OPENNMS_HOME}/logs/eventd.log`.
+On busy systems, this setting may create so much noise as to be impractical.
+In these cases, you can get terse event summaries by setting Eventd 
+to log at level `INFO` and setting `logEventSummaries="yes"` in `$\{OPENNMS_HOME}/etc/eventd-configuration.xml`.
+
 [[send-event]]
-= send-event.pl utility
+== send-event.pl utility
 
 The send-event.pl utility lets you create and send an event to trigger processes inside of {page-component-title}.
 It is most frequently used to reload daemon configuration without having to restart {page-component-title}.
@@ -91,8 +109,21 @@ For example:
 
 `'testUrl \https://www.opennms.org/ReportSection?filter=FOO_BAR_BAZ%%20eq%%20%%27101%%27'`
 
-== Example
+=== Example
 
 Send an event to reload the configuration of Eventd.
 
-`$\{OPENNMS_HOME}/bin/send-event.pl -p 'daemonName Eventd' uei.opennms.org/internal/reloadDaemonConfig`
+[source, console]
+----
+$\{OPENNMS_HOME}/bin/send-event.pl -p 'daemonName Eventd' uei.opennms.org/internal/reloadDaemonConfig
+----
+
+== Karaf Shell
+
+Use the `opennms:show-event-config` command to render the event definition for one or more event UEIs (matching a substring) to XML.
+This command is useful for displaying event definitions that may not be easily accessible on disk, or verifying that particular events were actually loaded.
+
+[source, karaf]
+----
+opennms:show-event-config -u uei.opennms.org/alarms
+----
