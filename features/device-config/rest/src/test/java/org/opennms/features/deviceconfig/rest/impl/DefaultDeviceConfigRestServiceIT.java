@@ -292,13 +292,11 @@ public class DefaultDeviceConfigRestServiceIT {
         Assert.assertEquals(204, response.getStatus());
 
         //passing invalid ids
-        lstOfIds.clear();
         lstOfIds = Arrays.asList(new String []{"id1","id2"});
         response = deviceConfigRestService.deleteDeviceConfigs(lstOfIds);
         Assert.assertEquals("Invalid 'id' parameter", response.getEntity());
 
         //passing empty or blank value of ids
-        lstOfIds.clear();
         lstOfIds = Arrays.asList(new String []{" "});
         response = deviceConfigRestService.deleteDeviceConfigs(lstOfIds);
         Assert.assertEquals(400, response.getStatus());
