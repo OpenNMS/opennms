@@ -7,6 +7,9 @@ jobs:
     steps:
       - attach_workspace: 
           at: ~/
+      - fetch-artifacts:
+          path: ~/project/opennms-assemblies/minion/target/
+          location: miniontarget
       - qemu-user-static
       - install-buildx
       - dockerhub-login
