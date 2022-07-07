@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.elastic;
+package org.opennms.netmgt.flows.processing.enrichment;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -34,41 +34,24 @@ import static org.hamcrest.Matchers.notNullValue;
 
 import org.junit.Test;
 import org.opennms.netmgt.flows.api.ConversationKey;
+import org.opennms.netmgt.flows.processing.ConversationKeyUtils;
 
 public class ConversationKeyUtilsTest {
 
     @Test
     public void canCreateAndParseConversationKey() {
-        FlowDocument flowIn = new FlowDocument();
-        flowIn.setDirection(Direction.INGRESS);
-        flowIn.setLocation("SomeLoc");
-        flowIn.setProtocol(1);
-        flowIn.setSrcAddr("1.1.1.1");
-        flowIn.setDstAddr("2.2.2.2");
-        flowIn.setApplication("ulf");
-
-        FlowDocument flowOut = new FlowDocument();
-        flowOut.setDirection(Direction.EGRESS);
-        flowOut.setLocation(flowIn.getLocation());
-        flowOut.setProtocol(flowIn.getProtocol());
-        flowOut.setSrcAddr(flowIn.getDstAddr());
-        flowOut.setDstAddr(flowIn.getSrcAddr());
-        flowOut.setApplication(flowIn.getApplication());
-
-        String inKey = ConversationKeyUtils.getConvoKeyAsJsonString(flowIn);
-        String outKey = ConversationKeyUtils.getConvoKeyAsJsonString(flowOut);
+        String key = ConversationKeyUtils.getConvoKeyAsJsonString("SomeLoc", 1, "1.1.1.1", "2.2.2.2", "ulf");
 
         // We should have generated some key, and both should match
-        assertThat(inKey, notNullValue());
-        assertThat(inKey, equalTo(outKey));
+        assertThat(key, notNullValue());
 
         ConversationKey expectedKey = new ConversationKey(
-                flowIn.getLocation(),
-                flowIn.getProtocol(),
-                flowIn.getSrcAddr(),
-                flowIn.getDstAddr(),
-                flowIn.getApplication());
-        ConversationKey actualKey = ConversationKeyUtils.fromJsonString(inKey);
+                "SomeLoc",
+                1,
+                "1.1.1.1",
+                "2.2.2.2",
+                "ulf");
+        ConversationKey actualKey = ConversationKeyUtils.fromJsonString(key);
         assertThat(actualKey, equalTo(expectedKey));
     }
 }

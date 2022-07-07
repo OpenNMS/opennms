@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.elastic.thresholding;
+package org.opennms.netmgt.flows.processing.impl;
 
 import java.io.Closeable;
 import java.io.File;
@@ -61,13 +61,13 @@ import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.filter.api.FilterDao;
-import org.opennms.netmgt.flows.api.ProcessingOptions;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.flows.classification.ClassificationRuleProvider;
 import org.opennms.netmgt.flows.classification.FilterService;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
-import org.opennms.netmgt.flows.elastic.Direction;
-import org.opennms.netmgt.flows.elastic.FlowDocument;
+import org.opennms.netmgt.flows.api.Flow.Direction;
+import org.opennms.netmgt.flows.processing.ProcessingOptions;
+import org.opennms.netmgt.flows.processing.enrichment.EnrichedFlow;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.rrd.RrdRepository;
@@ -82,8 +82,8 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-public class FlowThresholding implements Closeable, ClassificationEngine.ClassificationRulesReloadedListener {
-    private static final Logger LOG = LoggerFactory.getLogger(FlowThresholding.class);
+public class FlowThresholdingImpl implements Closeable, ClassificationEngine.ClassificationRulesReloadedListener {
+    private static final Logger LOG = LoggerFactory.getLogger(FlowThresholdingImpl.class);
 
     public static final String NAME = "flowThreshold";
     public static final String SERVICE_NAME = "Flow-Threshold";
@@ -117,16 +117,16 @@ public class FlowThresholding implements Closeable, ClassificationEngine.Classif
 
     private ReentrantReadWriteLock classificationRuleListReadWriteLock = new ReentrantReadWriteLock();
 
-    public FlowThresholding(final ThresholdingService thresholdingService,
-                            final CollectionAgentFactory collectionAgentFactory,
-                            final PersisterFactory persisterFactory,
-                            final IpInterfaceDao ipInterfaceDao,
-                            final DistPollerDao distPollerDao,
-                            final SnmpInterfaceDao snmpInterfaceDao,
-                            final FilterDao filterDao,
-                            final FilterService filterService,
-                            final ClassificationRuleProvider classificationRuleProvider,
-                            final ClassificationEngine classificationEngine) {
+    public FlowThresholdingImpl(final ThresholdingService thresholdingService,
+                                final CollectionAgentFactory collectionAgentFactory,
+                                final PersisterFactory persisterFactory,
+                                final IpInterfaceDao ipInterfaceDao,
+                                final DistPollerDao distPollerDao,
+                                final SnmpInterfaceDao snmpInterfaceDao,
+                                final FilterDao filterDao,
+                                final FilterService filterService,
+                                final ClassificationRuleProvider classificationRuleProvider,
+                                final ClassificationEngine classificationEngine) {
         this.thresholdingService = Objects.requireNonNull(thresholdingService);
         this.collectionAgentFactory = Objects.requireNonNull(collectionAgentFactory);
         this.persisterFactory = Objects.requireNonNull(persisterFactory);
@@ -312,7 +312,7 @@ public class FlowThresholding implements Closeable, ClassificationEngine.Classif
         }
     }
 
-    public void threshold(final List<FlowDocument> documents,
+    public void threshold(final List<EnrichedFlow> documents,
                           final ProcessingOptions options) throws ExecutionException, ThresholdInitializationException {
 
         if (!(options.applicationThresholding || options.applicationDataCollection)) {
@@ -322,19 +322,19 @@ public class FlowThresholding implements Closeable, ClassificationEngine.Classif
         final var now = Instant.now();
 
         for (final var document : documents) {
-            if (document.getNodeExporter() != null && !Strings.isNullOrEmpty(document.getApplication())) {
-                final var exporterKey = new ExporterKey(document.getNodeExporter().getInterfaceId());
+            if (document.getExporterNodeInfo() != null && !Strings.isNullOrEmpty(document.getApplication())) {
+                final var exporterKey = new ExporterKey(document.getExporterNodeInfo().getInterfaceId());
 
                 final var session = this.sessions.computeIfAbsent(exporterKey, key -> {
                     LOG.debug("Accepting session for exporterKey={}", exporterKey);
 
                     final OnmsIpInterface iface = this.ipInterfaceDao.get(exporterKey.interfaceId);
 
-                    final CollectionAgent collectionAgent = FlowThresholding.this.collectionAgentFactory.createCollectionAgent(iface);
+                    final CollectionAgent collectionAgent = FlowThresholdingImpl.this.collectionAgentFactory.createCollectionAgent(iface);
 
                     final ThresholdingSession thresholdingSession;
                     try {
-                        thresholdingSession = FlowThresholding.this.thresholdingService.createSession(iface.getNodeId(),
+                        thresholdingSession = FlowThresholdingImpl.this.thresholdingService.createSession(iface.getNodeId(),
                                 collectionAgent.getHostAddress(),
                                 SERVICE_NAME,
                                 new ServiceParameters(Collections.emptyMap()));
@@ -345,7 +345,7 @@ public class FlowThresholding implements Closeable, ClassificationEngine.Classif
                     // Find the collection package for this exporter
                     PackageDefinition packageDefinition = null;
                     for (final PackageDefinition pkg : options.packages) {
-                        if (pkg.getFilterRule() == null || FlowThresholding.this.filterDao.isValid(collectionAgent.getHostAddress(), pkg.getFilterRule())) {
+                        if (pkg.getFilterRule() == null || FlowThresholdingImpl.this.filterDao.isValid(collectionAgent.getHostAddress(), pkg.getFilterRule())) {
                             packageDefinition = pkg;
                             break;
                         }
@@ -460,7 +460,7 @@ public class FlowThresholding implements Closeable, ClassificationEngine.Classif
             indexKeyMap.get(indexKey).get(application).addAndGet(bytes);
         }
 
-        public void process(final Instant now, final FlowDocument document) {
+        public void process(final Instant now, final EnrichedFlow document) {
             if (document.getInputSnmp() != null &&
                     document.getInputSnmp() != 0 &&
                     (document.getDirection() == Direction.INGRESS || document.getDirection() == Direction.UNKNOWN)) {
@@ -503,5 +503,75 @@ public class FlowThresholding implements Closeable, ClassificationEngine.Classif
             timer = null;
         }
         this.sessions.clear();
+    }
+
+    public static class IndexKey {
+        public final int iface;
+        public final Direction direction;
+
+        public IndexKey(final int iface,
+                        final Direction direction) {
+            this.iface = iface;
+            this.direction = direction;
+        }
+
+        @Override
+        public boolean equals(final Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (!(o instanceof IndexKey)) {
+                return false;
+            }
+            final IndexKey that = (IndexKey) o;
+            return Objects.equals(this.iface, that.iface) &&
+                   Objects.equals(this.direction, that.direction);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(this.iface,
+                                this.direction);
+        }
+
+        @Override
+        public String toString() {
+            return "IndexKey{" +
+                   "iface=" + iface +
+                   ", direction=" + direction +
+                   '}';
+        }
+    }
+
+    public static class ExporterKey {
+        public final int interfaceId;
+
+        public ExporterKey(final int interfaceId) {
+            this.interfaceId = interfaceId;
+        }
+
+        @Override
+        public boolean equals(final Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (!(o instanceof ExporterKey)) {
+                return false;
+            }
+            final ExporterKey that = (ExporterKey) o;
+            return Objects.equals(this.interfaceId, that.interfaceId);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(this.interfaceId);
+        }
+
+        @Override
+        public String toString() {
+            return "ExporterKey{" +
+                    "interfaceId=" + interfaceId +
+                    '}';
+        }
     }
 }

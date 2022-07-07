@@ -26,13 +26,6 @@
             <cm:property name="connTimeout" value="5000" /> <!-- 5 second timeout for Elasticsearch operations -->
             <cm:property name="readTimeout" value="30000" /> <!-- 30 second timeout for Elasticsearch socket reads -->
             <cm:property name="retries" value="0" /> <!-- Disable retries by default -->
-            <cm:property name="enableForwarding" value="false" /> <!-- Disable flow forwarding -->
-            <cm:property name="nodeCache.enabled" value="true" /> <!-- Set to false to disable caching -->
-            <cm:property name="nodeCache.maximumSize" value="10000"/> <!-- Set value for unlimited size -->
-            <cm:property name="nodeCache.expireAfterWrite" value="0"/> <!-- in seconds. Set to 0 to never evict elements -->
-            <cm:property name="nodeCache.recordStats" value="true"/> <!-- Set to false to not expose cache statistics via jmx -->
-            <cm:property name="flowThreshold.stepSizeMs" value="300000"/>
-            <cm:property name="flowThreshold.idleTimeoutMs" value="900000"/>
             <cm:property name="skipElasticsearchPersistence" value="false"/> <!-- Set to false to disable persisting flows to ES. -->
 
             <!-- Bulk Action settings -->
@@ -62,28 +55,12 @@
             <cm:property name="alwaysUseRawForQueries" value="true" />
             <cm:property name="timeRangeDurationAggregateThresholdMs" value="120000" /> <!-- 2 minutes -->
             <cm:property name="timeRangeEndpointAggregateThresholdMs" value="604800000" /> <!-- 7 days -->
-
-            <!-- Enrichment settings -->
-            <cm:property name="clockSkewCorrectionThreshold" value="0" />
-
-            <!-- Flow Mangling -->
-            <cm:property name="mangleScriptPath" value="" />
         </cm:default-properties>
     </cm:property-placeholder>
 
     <!-- Used to define credentials in a properties file and enforcing the bundle to reload when credentials change -->
     <bean id="credentialsProvider" class="org.opennms.features.jest.client.credentials.DefaultCredentialsProvider">
         <argument value="elastic-credentials.xml" />
-    </bean>
-
-    <!-- Configure node cache -->
-    <bean id="nodeCacheConfig" class="org.opennms.core.cache.CacheConfig">
-        <argument value="nodes"/>
-        <property name="metricRegistry" ref="flowRepositoryMetricRegistry" />
-        <property name="enabled" value="${nodeCache.enabled}" />
-        <property name="maximumSize" value="${nodeCache.maximumSize}" />
-        <property name="expireAfterWrite" value="${nodeCache.expireAfterWrite}" />
-        <property name="recordStats" value="${nodeCache.recordStats}" />
     </bean>
 
     <!-- Proxy for the JestClientFactory -->
@@ -135,35 +112,6 @@
         <property name="routingPartitionSize" value="${aggregate.settings.index.routing_partition_size}"/>
     </bean>
 
-    <!-- Mangling -->
-    <bean id="sem" class="org.opennms.features.osgi.script.OSGiScriptEngineManager">
-        <argument ref="blueprintBundleContext" />
-    </bean>
-    <bean id="mangler" class="org.opennms.netmgt.flows.elastic.DocumentMangler">
-        <argument ref="sem" />
-        <property name="path" value="${mangleScriptPath}"/>
-    </bean>
-
-    <!-- Enrichment -->
-    <reference id="interfaceToNodeCache" interface="org.opennms.netmgt.dao.api.InterfaceToNodeCache" availability="mandatory" />
-    <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory" />
-    <reference id="ipInterfaceDao" interface="org.opennms.netmgt.dao.api.IpInterfaceDao" availability="mandatory" />
-    <reference id="snmpInterfaceDao" interface="org.opennms.netmgt.dao.api.SnmpInterfaceDao" availability="mandatory" />
-    <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils" availability="mandatory" />
-    <reference id="classificationEngine" interface="org.opennms.netmgt.flows.classification.ClassificationEngine" availability="mandatory" />
-    <reference id="configurationAdmin" interface="org.osgi.service.cm.ConfigurationAdmin"/>
-    <bean id="documentEnricher" class="org.opennms.netmgt.flows.elastic.DocumentEnricher">
-        <argument ref="flowRepositoryMetricRegistry" />
-        <argument ref="classificationEngine" />
-        <argument ref="nodeDao" />
-        <argument ref="ipInterfaceDao" />
-        <argument ref="interfaceToNodeCache" />
-        <argument ref="sessionUtils" />
-        <argument ref="nodeCacheConfig" />
-        <argument value="${clockSkewCorrectionThreshold}" />
-        <argument ref="mangler" />
-    </bean>
-
     <!-- Metrics -->
     <bean id="flowRepositoryMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
     <service ref="flowRepositoryMetricRegistry" interface="com.codahale.metrics.MetricSet">
@@ -186,7 +134,6 @@
 
     <reference id="identity" interface="org.opennms.distributed.core.api.Identity"/>
     <reference id="tracerRegistry" interface="org.opennms.core.tracing.api.TracerRegistry"/>
-    <reference id="enrichedFlowForwarder" interface="org.opennms.netmgt.flows.api.EnrichedFlowForwarder"/>
 
     <!-- The query services -->
     <bean id="rawIndexSelector" class="org.opennms.features.jest.client.index.IndexSelector">
@@ -223,52 +170,17 @@
     </bean>
     <service interface="org.opennms.netmgt.flows.api.FlowQueryService" ref="smartQueryService" />
 
-    <reference id="thresholdingService" interface="org.opennms.netmgt.threshd.api.ThresholdingService"/>
-    <reference id="collectionAgentFactory" interface="org.opennms.netmgt.collection.api.CollectionAgentFactory"/>
-    <reference id="persisterFactory" interface="org.opennms.netmgt.collection.api.PersisterFactory"/>
-    <reference id="distPollerDao" interface="org.opennms.netmgt.dao.api.DistPollerDao"/>
-    <reference id="filterDao" interface="org.opennms.netmgt.filter.api.FilterDao"/>
-    <reference id="asyncReloadingClassificationEngine" interface="org.opennms.netmgt.flows.classification.ClassificationEngine"/>
-
-    <reference id="cachingFilterService" interface="org.opennms.netmgt.flows.classification.FilterService" />
-    <reference id="classificationRuleProvider" interface="org.opennms.netmgt.flows.classification.ClassificationRuleProvider" />
-
-    <!-- Thresholding -->
-    <bean id="flowThresholding" class="org.opennms.netmgt.flows.elastic.thresholding.FlowThresholding" destroy-method="close">
-        <argument ref="thresholdingService"/>
-        <argument ref="collectionAgentFactory"/>
-        <argument ref="persisterFactory"/>
-        <argument ref="ipInterfaceDao"/>
-        <argument ref="distPollerDao"/>
-        <argument ref="snmpInterfaceDao"/>
-        <argument ref="filterDao"/>
-        <argument ref="cachingFilterService"/>
-        <argument ref="classificationRuleProvider"/>
-        <argument ref="asyncReloadingClassificationEngine"/>
-
-        <property name="stepSizeMs" value="${flowThreshold.stepSizeMs}"/>
-        <property name="idleTimeoutMs" value="${flowThreshold.idleTimeoutMs}"/>
-    </bean>
-
     <!-- The repository -->
     <bean id="elasticFlowRepository" class="org.opennms.netmgt.flows.elastic.ElasticFlowRepository"
           init-method="start" destroy-method="stop">
         <argument ref="flowRepositoryMetricRegistry"/>
         <argument ref="jestClient"/>
         <argument ref="rawIndexStrategy"/>
-        <argument ref="documentEnricher"/>
-        <argument ref="sessionUtils"/>
-        <argument ref="nodeDao"/>
-        <argument ref="snmpInterfaceDao"/>
         <argument ref="identity"/>
         <argument ref="tracerRegistry"/>
-        <argument ref="enrichedFlowForwarder"/>
         <argument ref="rawIndexSettings"/>
-        <argument ref="flowThresholding"/>
 
-        <property name="enableFlowForwarding" value="${enableForwarding}"/>
         <property name="bulkRetryCount" value="${bulkRetryCount}"/>
-        <property name="skipElasticsearchPersistence" value="${skipElasticsearchPersistence}"/>
         <property name="bulkSize" value="${bulkSize}"/>
         <property name="bulkFlushMs" value="${bulkFlushMs}"/>
     </bean>
@@ -281,9 +193,18 @@
         <argument ref="rawIndexSettings" />
         <argument ref="aggIndexSettings" />
     </bean>
-    <service interface="org.opennms.netmgt.flows.api.FlowRepository" ref="initializingElasticFlowRepository" />
+    <bean id="switchedElasticFlowRepository" class="org.opennms.netmgt.flows.processing.persisting.SwitchedFlowRepository">
+        <argument ref="initializingElasticFlowRepository" />
+        <property name="disabled" value="${skipElasticsearchPersistence}" />
+    </bean>
+    <service interface="org.opennms.netmgt.flows.processing.persisting.FlowRepository" ref="switchedElasticFlowRepository">
+        <service-properties>
+            <entry key="flows.repository.id" value="elastic" />
+        </service-properties>
+    </service>
 
     <!-- Health Check -->
+    <reference id="configurationAdmin" interface="org.osgi.service.cm.ConfigurationAdmin"/>
     <service interface="org.opennms.core.health.api.HealthCheck">
         <bean class="org.opennms.features.jest.client.RequireConfigurationElasticHealthCheck" >
             <argument ref="jestClient"/>

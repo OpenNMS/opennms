@@ -12,6 +12,7 @@
   <name>OpenNMS :: Features :: Flows (Parent)</name>
   <modules>
     <module>api</module>
+    <module>processing</module>
     <module>classification</module>
     <module>elastic</module>
     <module>itests</module>

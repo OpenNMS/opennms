@@ -26,34 +26,27 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.elastic;
+package org.opennms.netmgt.flows.processing;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
+import org.opennms.netmgt.flows.api.Flow;
+
 public class FlowBuilder {
 
-    private final List<FlowDocument> flows = new ArrayList<>();
+    private final List<Flow> flows = new ArrayList<>();
 
-    private NodeDocument exporterNode;
     private Integer snmpInterfaceId;
     private Integer inputSnmpInterfaceId;
     private Integer outputSnmpInterfaceId;
     private String application = null;
-    private Direction direction = Direction.INGRESS;
+    private Flow.Direction direction = Flow.Direction.INGRESS;
     private String srcHostname = null;
     private String dstHostname = null;
     private Integer tos = null;
-
-    public FlowBuilder withExporter(String fs, String fid, int nodeId) {
-        exporterNode = new NodeDocument();
-        exporterNode.setForeignSource(fs);
-        exporterNode.setForeignId(fid);
-        exporterNode.setNodeId(nodeId);
-        return this;
-    }
 
     public FlowBuilder withSnmpInterfaceId(Integer snmpInterfaceId) {
         this.snmpInterfaceId = snmpInterfaceId;
@@ -75,7 +68,7 @@ public class FlowBuilder {
         return this;
     }
 
-    public FlowBuilder withDirection(Direction direction) {
+    public FlowBuilder withDirection(Flow.Direction direction) {
         this.direction = Objects.requireNonNull(direction);
         return this;
     }
@@ -100,7 +93,7 @@ public class FlowBuilder {
     }
 
     public FlowBuilder withFlow(Date firstSwitched, Date deltaSwitched, Date lastSwitched, String sourceIp, int sourcePort, String destIp, int destPort, long numBytes) {
-        final FlowDocument flow = new FlowDocument();
+        final TestFlow flow = new TestFlow();
         flow.setTimestamp(lastSwitched.getTime());
         flow.setFirstSwitched(firstSwitched.getTime());
         flow.setDeltaSwitched(deltaSwitched.getTime());
@@ -117,28 +110,21 @@ public class FlowBuilder {
         };
         flow.setBytes(numBytes);
         flow.setProtocol(6); // TCP
-        if (exporterNode !=  null) {
-            flow.setNodeExporter(exporterNode);
-        }
-        if (direction == Direction.INGRESS) {
+        if (direction == Flow.Direction.INGRESS) {
             flow.setInputSnmp(snmpInterfaceId);
-        } else if (direction == Direction.EGRESS) {
+        } else if (direction == Flow.Direction.EGRESS) {
             flow.setOutputSnmp(snmpInterfaceId);
-        } else if (direction == Direction.UNKNOWN) {
+        } else if (direction == Flow.Direction.UNKNOWN) {
             flow.setInputSnmp(inputSnmpInterfaceId);
             flow.setOutputSnmp(outputSnmpInterfaceId);
         }
-        flow.setApplication(application);
         flow.setDirection(direction);
-        flow.setSrcLocality(Locality.PRIVATE);
-        flow.setDstLocality(Locality.PRIVATE);
-        flow.setFlowLocality(Locality.PRIVATE);
         flow.setTos(tos);
         flows.add(flow);
         return this;
     }
 
-    public List<FlowDocument> build() {
+    public List<Flow> build() {
         return flows;
     }
 

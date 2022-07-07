@@ -33,7 +33,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.opennms.netmgt.flows.api.Flow;
-import org.opennms.netmgt.flows.api.FlowRepository;
+import org.opennms.netmgt.flows.processing.Pipeline;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLogEntry;
 import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
 import org.opennms.netmgt.telemetry.protocols.flows.AbstractFlowAdapter;
@@ -50,8 +50,8 @@ public class NetflowAdapter extends AbstractFlowAdapter<FlowMessage> {
 
     public NetflowAdapter(final AdapterDefinition adapterConfig,
                           final MetricRegistry metricRegistry,
-                          final FlowRepository flowRepository) {
-        super(adapterConfig, metricRegistry, flowRepository);
+                          final Pipeline pipeline) {
+        super(adapterConfig, metricRegistry, pipeline);
     }
 
     @Override

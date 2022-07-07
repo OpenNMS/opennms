@@ -41,13 +41,13 @@ import static org.opennms.netmgt.flows.persistence.model.SamplingAlgorithm.UNREC
 
 import java.util.Optional;
 
-import org.opennms.netmgt.flows.api.EnrichedFlow;
 import org.opennms.netmgt.flows.persistence.model.Direction;
 import org.opennms.netmgt.flows.persistence.model.FlowDocument;
 import org.opennms.netmgt.flows.persistence.model.Locality;
 import org.opennms.netmgt.flows.persistence.model.NetflowVersion;
 import org.opennms.netmgt.flows.persistence.model.NodeInfo;
 import org.opennms.netmgt.flows.persistence.model.SamplingAlgorithm;
+import org.opennms.netmgt.flows.processing.enrichment.EnrichedFlow;
 
 import com.google.common.base.Strings;
 import com.google.protobuf.DoubleValue;
@@ -56,45 +56,44 @@ import com.google.protobuf.UInt64Value;
 
 public class FlowDocumentBuilder {
 
-
     public static FlowDocument buildFlowDocument(EnrichedFlow enrichedFlow) {
         FlowDocument.Builder builder = FlowDocument.newBuilder();
-        builder.setTimestamp(enrichedFlow.getFlow().getTimestamp());
-        builder.setDirection(fromDirection(enrichedFlow.getFlow().getDirection()));
-        getUInt64Value(enrichedFlow.getFlow().getDstAs()).ifPresent(builder::setDstAs);
-        getString(enrichedFlow.getFlow().getDstAddr()).ifPresent(builder::setDstAddress);
-        enrichedFlow.getFlow().getDstAddrHostname().ifPresent(builder::setDstHostname);
-        getUInt32Value(enrichedFlow.getFlow().getDstMaskLen()).ifPresent(builder::setDstMaskLen);
-        getUInt32Value(enrichedFlow.getFlow().getDstPort()).ifPresent(builder::setDstPort);
-        getString(enrichedFlow.getFlow().getSrcAddr()).ifPresent(builder::setSrcAddress);
-        enrichedFlow.getFlow().getSrcAddrHostname().ifPresent(builder::setSrcHostname);
-        getUInt64Value(enrichedFlow.getFlow().getSrcAs()).ifPresent(builder::setSrcAs);
-        getUInt32Value(enrichedFlow.getFlow().getSrcMaskLen()).ifPresent(builder::setSrcMaskLen);
-        getUInt32Value(enrichedFlow.getFlow().getSrcPort()).ifPresent(builder::setSrcPort);
-        getUInt32Value(enrichedFlow.getFlow().getEngineId()).ifPresent(builder::setEngineId);
-        getUInt32Value(enrichedFlow.getFlow().getEngineType()).ifPresent(builder::setEngineType);
-        getUInt64Value(enrichedFlow.getFlow().getBytes()).ifPresent(builder::setNumBytes);
-        getUInt64Value(enrichedFlow.getFlow().getPackets()).ifPresent(builder::setNumPackets);
-        getUInt64Value(enrichedFlow.getFlow().getDeltaSwitched()).ifPresent(builder::setDeltaSwitched);
-        getUInt64Value(enrichedFlow.getFlow().getFirstSwitched()).ifPresent(builder::setFirstSwitched);
-        getUInt64Value(enrichedFlow.getFlow().getLastSwitched()).ifPresent(builder::setLastSwitched);
-        getUInt32Value(enrichedFlow.getFlow().getInputSnmp()).ifPresent(builder::setInputSnmpIfindex);
-        getUInt32Value(enrichedFlow.getFlow().getOutputSnmp()).ifPresent(builder::setOutputSnmpIfindex);
-        getUInt32Value(enrichedFlow.getFlow().getIpProtocolVersion()).ifPresent(builder::setIpProtocolVersion);
-        getUInt32Value(enrichedFlow.getFlow().getProtocol()).ifPresent(builder::setProtocol);
-        getUInt32Value(enrichedFlow.getFlow().getTcpFlags()).ifPresent(builder::setTcpFlags);
-        getUInt32Value(enrichedFlow.getFlow().getTos()).ifPresent(builder::setTos);
-        getUInt32Value(enrichedFlow.getFlow().getDscp()).ifPresent(dscp -> builder.setDscp(dscp));
-        getUInt32Value(enrichedFlow.getFlow().getEcn()).ifPresent(ecn -> builder.setEcn(ecn));
-        getUInt32Value(enrichedFlow.getFlow().getFlowRecords()).ifPresent(builder::setNumFlowRecords);
-        getUInt64Value(enrichedFlow.getFlow().getFlowSeqNum()).ifPresent(builder::setFlowSeqNum);
-        String vlan = enrichedFlow.getFlow().getVlan() != null ? Integer.toUnsignedString(enrichedFlow.getFlow().getVlan()) : null;
+        builder.setTimestamp(enrichedFlow.getTimestamp());
+        builder.setDirection(fromDirection(enrichedFlow.getDirection()));
+        getUInt64Value(enrichedFlow.getDstAs()).ifPresent(builder::setDstAs);
+        getString(enrichedFlow.getDstAddr()).ifPresent(builder::setDstAddress);
+        enrichedFlow.getDstAddrHostname().ifPresent(builder::setDstHostname);
+        getUInt32Value(enrichedFlow.getDstMaskLen()).ifPresent(builder::setDstMaskLen);
+        getUInt32Value(enrichedFlow.getDstPort()).ifPresent(builder::setDstPort);
+        getString(enrichedFlow.getSrcAddr()).ifPresent(builder::setSrcAddress);
+        enrichedFlow.getSrcAddrHostname().ifPresent(builder::setSrcHostname);
+        getUInt64Value(enrichedFlow.getSrcAs()).ifPresent(builder::setSrcAs);
+        getUInt32Value(enrichedFlow.getSrcMaskLen()).ifPresent(builder::setSrcMaskLen);
+        getUInt32Value(enrichedFlow.getSrcPort()).ifPresent(builder::setSrcPort);
+        getUInt32Value(enrichedFlow.getEngineId()).ifPresent(builder::setEngineId);
+        getUInt32Value(enrichedFlow.getEngineType()).ifPresent(builder::setEngineType);
+        getUInt64Value(enrichedFlow.getBytes()).ifPresent(builder::setNumBytes);
+        getUInt64Value(enrichedFlow.getPackets()).ifPresent(builder::setNumPackets);
+        getUInt64Value(enrichedFlow.getDeltaSwitched()).ifPresent(builder::setDeltaSwitched);
+        getUInt64Value(enrichedFlow.getFirstSwitched()).ifPresent(builder::setFirstSwitched);
+        getUInt64Value(enrichedFlow.getLastSwitched()).ifPresent(builder::setLastSwitched);
+        getUInt32Value(enrichedFlow.getInputSnmp()).ifPresent(builder::setInputSnmpIfindex);
+        getUInt32Value(enrichedFlow.getOutputSnmp()).ifPresent(builder::setOutputSnmpIfindex);
+        getUInt32Value(enrichedFlow.getIpProtocolVersion()).ifPresent(builder::setIpProtocolVersion);
+        getUInt32Value(enrichedFlow.getProtocol()).ifPresent(builder::setProtocol);
+        getUInt32Value(enrichedFlow.getTcpFlags()).ifPresent(builder::setTcpFlags);
+        getUInt32Value(enrichedFlow.getTos()).ifPresent(builder::setTos);
+        getUInt32Value(enrichedFlow.getDscp()).ifPresent(dscp -> builder.setDscp(dscp));
+        getUInt32Value(enrichedFlow.getEcn()).ifPresent(ecn -> builder.setEcn(ecn));
+        getUInt32Value(enrichedFlow.getFlowRecords()).ifPresent(builder::setNumFlowRecords);
+        getUInt64Value(enrichedFlow.getFlowSeqNum()).ifPresent(builder::setFlowSeqNum);
+        String vlan = enrichedFlow.getVlan() != null ? Integer.toUnsignedString(enrichedFlow.getVlan()) : null;
         getString(vlan).ifPresent(builder::setVlan);
-        getString(enrichedFlow.getFlow().getNextHop()).ifPresent(builder::setNextHopAddress);
-        enrichedFlow.getFlow().getNextHopHostname().ifPresent(builder::setNextHopHostname);
-        builder.setSamplingAlgorithm(fromSamplingAlgorithm(enrichedFlow.getFlow().getSamplingAlgorithm()));
-        getDoubleValue(enrichedFlow.getFlow().getSamplingInterval()).ifPresent(builder::setSamplingInterval);
-        NetflowVersion netflowVersion = fromNetflowVersion(enrichedFlow.getFlow().getNetflowVersion());
+        getString(enrichedFlow.getNextHop()).ifPresent(builder::setNextHopAddress);
+        enrichedFlow.getNextHopHostname().ifPresent(builder::setNextHopHostname);
+        builder.setSamplingAlgorithm(fromSamplingAlgorithm(enrichedFlow.getSamplingAlgorithm()));
+        getDoubleValue(enrichedFlow.getSamplingInterval()).ifPresent(builder::setSamplingInterval);
+        NetflowVersion netflowVersion = fromNetflowVersion(enrichedFlow.getNetflowVersion());
         Optional.ofNullable(netflowVersion).ifPresent(builder::setNetflowVersion);
         getString(enrichedFlow.getApplication()).ifPresent(builder::setApplication);
         getString(enrichedFlow.getHost()).ifPresent(builder::setHost);
@@ -208,7 +207,7 @@ public class FlowDocumentBuilder {
         return NetflowVersion.UNRECOGNIZED;
     }
 
-    private static Optional<NodeInfo> buildNodeInfo(org.opennms.netmgt.flows.api.NodeInfo nodeInfo) {
+    private static Optional<NodeInfo> buildNodeInfo(org.opennms.netmgt.flows.processing.enrichment.NodeInfo nodeInfo) {
         if (nodeInfo != null) {
             NodeInfo.Builder builder = NodeInfo.newBuilder();
             builder.setNodeId(nodeInfo.getNodeId());

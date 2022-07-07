@@ -26,12 +26,11 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.elastic;
+package org.opennms.netmgt.flows.processing.enrichment;
 
 import java.lang.reflect.Field;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
 
 import org.mockito.Mockito;
@@ -54,6 +53,8 @@ import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.flows.classification.FilterService;
 import org.opennms.netmgt.flows.classification.internal.DefaultClassificationEngine;
 import org.opennms.netmgt.flows.classification.persistence.api.RuleBuilder;
+import org.opennms.netmgt.flows.processing.impl.DocumentEnricherImpl;
+import org.opennms.netmgt.flows.processing.impl.DocumentMangler;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Lists;
@@ -65,7 +66,7 @@ public class MockDocumentEnricherFactory {
     private final InterfaceToNodeCache interfaceToNodeCache;
     private final MockAssetRecordDao assetRecordDao;
     private final MockCategoryDao categoryDao;
-    private final DocumentEnricher enricher;
+    private final DocumentEnricherImpl enricher;
     private final ClassificationEngine classificationEngine;
 
     private final AtomicInteger nodeDaoGetCounter = new AtomicInteger(0);
@@ -87,7 +88,7 @@ public class MockDocumentEnricherFactory {
                 new RuleBuilder().withName("http").withSrcPort("80").withProtocol("tcp,udp").build(),
                 new RuleBuilder().withName("https").withSrcPort("443").withProtocol("tcp,udp").build()
         ), FilterService.NOOP);
-        enricher = new DocumentEnricher(
+        enricher = new DocumentEnricherImpl(
                 new MetricRegistry(),
                 nodeDao, ipInterfaceDao,
                 interfaceToNodeCache, new MockSessionUtils(), classificationEngine,
@@ -115,7 +116,7 @@ public class MockDocumentEnricherFactory {
         return interfaceToNodeCache;
     }
 
-    public DocumentEnricher getEnricher() {
+    public DocumentEnricherImpl getEnricher() {
         return enricher;
     }
 

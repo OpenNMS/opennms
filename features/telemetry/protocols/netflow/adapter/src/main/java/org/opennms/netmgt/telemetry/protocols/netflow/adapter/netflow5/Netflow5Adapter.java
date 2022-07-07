@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow5;
 
-import org.opennms.netmgt.flows.api.FlowRepository;
+import org.opennms.netmgt.flows.processing.Pipeline;
 import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
 import org.opennms.netmgt.telemetry.protocols.netflow.adapter.common.NetflowAdapter;
 
@@ -38,8 +38,8 @@ public class Netflow5Adapter extends NetflowAdapter {
 
     public Netflow5Adapter(final AdapterDefinition adapterConfig,
                            final MetricRegistry metricRegistry,
-                           final FlowRepository flowRepository) {
-        super(adapterConfig, metricRegistry, flowRepository);
+                           final Pipeline pipeline) {
+        super(adapterConfig, metricRegistry, pipeline);
     }
 
 }
