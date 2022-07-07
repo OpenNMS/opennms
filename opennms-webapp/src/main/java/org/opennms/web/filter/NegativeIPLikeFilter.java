@@ -26,42 +26,39 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.alarm.filter;
+package org.opennms.web.filter;
 
-import org.opennms.netmgt.model.OnmsSeverity;
-import org.opennms.web.filter.NotEqualsFilter;
-import org.opennms.web.filter.SQLType;
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Restrictions;
+import org.hibernate.type.StringType;
+
 
 /**
- * Encapsulates negative severity filtering functionality, that is filtering OUT
- * this value instead of only filtering IN this value.
+ * Encapsulates all interface filtering functionality.
  */
-public class NegativeSeverityFilter extends NotEqualsFilter<OnmsSeverity> {
-    /** Constant <code>TYPE="severitynot"</code> */
-    public static final String TYPE = "severitynot";
+public abstract class NegativeIPLikeFilter extends OneArgFilter<String> {
 
-    public NegativeSeverityFilter(final OnmsSeverity severity) {
-        super(TYPE, SQLType.SEVERITY, "ALARMS.SEVERITY", "severity", severity);
+    /**
+     * <p>Constructor for IPLikeFilter.</p>
+     *
+     * @param filterType a {@link String} object.
+     * @param fieldName a {@link String} object.
+     * @param propertyName a {@link String} object.
+     * @param ipLikePattern a {@link String} object.
+     */
+    public NegativeIPLikeFilter(final String filterType, final String fieldName, final String propertyName, final String ipLikePattern) {
+        super(filterType, SQLType.STRING, fieldName, propertyName, ipLikePattern);
     }
 
+    /** {@inheritDoc} */
     @Override
-    public String getTextDescription() {
-        return (TYPE + " is not " + getValue().getLabel());
+    public String getSQLTemplate() {
+        return " `NOT IPLIKE`(" + getSQLFieldName() + ", %s) ";
     }
 
+    /** {@inheritDoc} */
     @Override
-    public String toString() {
-        return ("<AlarmFactory.NegativeSeverityFilter: " + this.getDescription() + ">");
-    }
-
-    public int getSeverity() {
-        return getValue().getId();
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-        if (obj == null) return false;
-        if (!(obj instanceof NegativeSeverityFilter)) return false;
-        return (this.toString().equals(obj.toString()));
+    public Criterion getCriterion() {
+        return Restrictions.not(Restrictions.sqlRestriction("iplike( {alias}." + getPropertyName() + ", ?)", getValue(), StringType.INSTANCE));
     }
 }

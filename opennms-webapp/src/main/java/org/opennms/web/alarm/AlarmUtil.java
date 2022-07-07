@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,9 +29,14 @@
 package org.opennms.web.alarm;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.servlet.ServletContext;
 
@@ -39,6 +44,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.StringUtils;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCriteria;
@@ -59,12 +65,16 @@ import org.opennms.web.alarm.filter.InterfaceFilter;
 import org.opennms.web.alarm.filter.LocationFilter;
 import org.opennms.web.alarm.filter.LogMessageMatchesAnyFilter;
 import org.opennms.web.alarm.filter.NegativeAcknowledgedByFilter;
+import org.opennms.web.alarm.filter.NegativeAlarmTextFilter;
+import org.opennms.web.alarm.filter.NegativeCategoryFilter;
 import org.opennms.web.alarm.filter.NegativeEventParmLikeFilter;
 import org.opennms.web.alarm.filter.NegativeExactUEIFilter;
+import org.opennms.web.alarm.filter.NegativeIPAddrLikeFilter;
 import org.opennms.web.alarm.filter.NegativeInterfaceFilter;
 import org.opennms.web.alarm.filter.NegativeLocationFilter;
 import org.opennms.web.alarm.filter.NegativeNodeFilter;
 import org.opennms.web.alarm.filter.NegativeNodeLocationFilter;
+import org.opennms.web.alarm.filter.NegativeNodeNameLikeFilter;
 import org.opennms.web.alarm.filter.NegativePartialUEIFilter;
 import org.opennms.web.alarm.filter.NegativeServiceFilter;
 import org.opennms.web.alarm.filter.NegativeSeverityFilter;
@@ -73,7 +83,9 @@ import org.opennms.web.alarm.filter.NodeLocationFilter;
 import org.opennms.web.alarm.filter.NodeNameLikeFilter;
 import org.opennms.web.alarm.filter.PartialUEIFilter;
 import org.opennms.web.alarm.filter.ServiceFilter;
+import org.opennms.web.alarm.filter.ServiceOrFilter;
 import org.opennms.web.alarm.filter.SeverityFilter;
+import org.opennms.web.alarm.filter.SeverityOrFilter;
 import org.opennms.web.alarm.filter.SituationFilter;
 import org.opennms.web.filter.Filter;
 
@@ -93,6 +105,21 @@ public abstract class AlarmUtil extends Object {
 
     /** Constant <code>ANY_RELATIVE_TIMES_OPTION="Any"</code> */
     public static final String ANY_RELATIVE_TIMES_OPTION = "Any";
+
+    /** Constant <code>POSITIVE_CHECKBOX_VALUE="ON"</code> */
+    public static final String POSITIVE_CHECKBOX_VALUE = "on";
+
+    /** Constant <code>NEGATION_PREFIX_SYMBOL="!"</code> */
+    public static final String NEGATION_PREFIX_SYMBOL = "!";
+
+    /** Constant <code>ARRAY_DELIMITER=","</code> */
+    public static final String ARRAY_DELIMITER = ",";
+
+    /**
+     * Constant <code>MULTI_CHECKBOX_PATTERN="[a-zA-Z]+-\d+=1"</code>
+     * Matches filter strings such as the format "severity-4=1" or "service-1=1" or similar
+     */
+    private static final Pattern MULTI_CHECKBOX_PATTERN = Pattern.compile("[a-zA-Z]+-\\d+=1");
 
     public static OnmsCriteria getOnmsCriteria(final AlarmCriteria alarmCriteria) {
         final OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class);
@@ -204,37 +231,45 @@ public abstract class AlarmUtil extends Object {
     /**
      * <p>getFilter</p>
      *
+     * @param allFilters a {@link java.lang.String}[] object holding all filter Strings
      * @param filterString a {@link java.lang.String} object.
      * @return a {@link org.opennms.web.filter.Filter} object.
      */
-    public static Filter getFilter(String filterString, ServletContext servletContext) {
+    public static Filter getFilter(String[] allFilters, String filterString, ServletContext servletContext) {
         if (filterString == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
         Filter filter = null;
 
-        String[] tempTokens = filterString.split("=");
-        String type;
-        String value;
-        try {
-            type = tempTokens[0];
-            String[] values = (String[]) ArrayUtils.remove(tempTokens, 0);
-            value = org.apache.commons.lang.StringUtils.join(values, "=");
-        } catch (NoSuchElementException e) {
-            throw new IllegalArgumentException("Could not tokenize filter string: " + filterString);
-        }
+        String[] tokenizedFilterString = tokenizeFilterString(filterString);
+        String type = tokenizedFilterString[0];
+        String value = tokenizedFilterString[1];
 
         if (type.equals(SeverityFilter.TYPE)) {
-            filter = new SeverityFilter(OnmsSeverity.get(WebSecurityUtils.safeParseInt(value)));
+            String[] ids = value.split(ARRAY_DELIMITER);
+            OnmsSeverity[] severities = new OnmsSeverity[ids.length];
+            for (int index = 0; index < ids.length; index++) {
+                severities[index] = OnmsSeverity.get(WebSecurityUtils.safeParseInt(ids[index]));
+            }
+            filter = new SeverityOrFilter(severities);
         } else if (type.equals(NodeFilter.TYPE)) {
             filter = new NodeFilter(WebSecurityUtils.safeParseInt(value), servletContext);
         } else if (type.equals(NodeNameLikeFilter.TYPE)) {
-            filter = new NodeNameLikeFilter(value);
+            if (value.startsWith(NEGATION_PREFIX_SYMBOL)) {
+                filter = new NegativeNodeNameLikeFilter(value.substring(1));
+            } else {
+                filter = new NodeNameLikeFilter(value);
+            }
         } else if (type.equals(InterfaceFilter.TYPE)) {
             filter = new InterfaceFilter(InetAddressUtils.addr(value));
         } else if (type.equals(ServiceFilter.TYPE)) {
-            filter = new ServiceFilter(WebSecurityUtils.safeParseInt(value), servletContext);
+            String[] ids = value.split(ARRAY_DELIMITER);
+            Integer[] serviceIds = new Integer[ids.length];
+            for (int index = 0; index < ids.length; index++) {
+                serviceIds[index] = WebSecurityUtils.safeParseInt(ids[index]);
+            }
+            filter = new ServiceOrFilter(serviceIds, servletContext);
         } else if (type.equals(PartialUEIFilter.TYPE)) {
             filter = new PartialUEIFilter(value);
         } else if (type.equals(ExactUEIFilter.TYPE)) {
@@ -256,9 +291,17 @@ public abstract class AlarmUtil extends Object {
         } else if (type.equals(NegativeAcknowledgedByFilter.TYPE)) {
             filter = new NegativeAcknowledgedByFilter(value);
         } else if (type.equals(IPAddrLikeFilter.TYPE)) {
-            filter = new IPAddrLikeFilter(value);
+            if (value.startsWith(NEGATION_PREFIX_SYMBOL)) {
+                filter = new NegativeIPAddrLikeFilter(value.substring(1));
+            } else {
+                filter = new IPAddrLikeFilter(value);
+            }
         } else if (type.equals(AlarmTextFilter.TYPE)) {
-            filter = new AlarmTextFilter(value);
+            if (value.startsWith(NEGATION_PREFIX_SYMBOL)) {
+                filter = new NegativeAlarmTextFilter(value.substring(1));
+            } else {
+                filter = new AlarmTextFilter(value);
+            }
         } else if (type.equals(LogMessageMatchesAnyFilter.TYPE)) {
             filter = new LogMessageMatchesAnyFilter(value);
         } else if (type.equals(BeforeLastEventTimeFilter.TYPE)) {
@@ -284,10 +327,63 @@ public abstract class AlarmUtil extends Object {
         } else if (type.equals(SituationFilter.TYPE)) {
             filter = new SituationFilter(Boolean.valueOf(value));
         } else if (type.equals(CategoryFilter.TYPE)) {
-            filter = new CategoryFilter(value);
+            String[] nestedFilterString = findFilterString(allFilters, NegativeCategoryFilter.NESTED_TYPE);
+            if (isCheckboxToggled(nestedFilterString)) {
+                filter = new NegativeCategoryFilter(value);
+            } else {
+                filter = new CategoryFilter(value);
+            }
         }
 
         return filter;
+    }
+
+    /**
+     * <p>findFilterString</p>
+     *
+     * @param allFilters a {@link java.lang.String}[] object representing all filters.
+     * @param filterString a {@link java.lang.String} object.
+     * @return a {@link java.lang.String}[] object representing the type and value tokenized.
+     */
+    private static String[] findFilterString(String[] allFilters, String filterString) {
+        if (allFilters == null) {
+            return null;
+        }
+        for (String thisFilter : allFilters) {
+            if (thisFilter.startsWith(filterString)) {
+                return tokenizeFilterString(thisFilter);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * <p>tokenizeFilterString</p>
+     *
+     * @param filterString a {@link java.lang.String} object.
+     * @return a {@link java.lang.String}[] object representing the type and value tokenized.
+     */
+    private static String[] tokenizeFilterString(String filterString) {
+        String[] tempTokens = filterString.split("=");
+        try {
+            String type = tempTokens[0];
+            String[] values = (String[]) ArrayUtils.remove(tempTokens, 0);
+            String value = org.apache.commons.lang.StringUtils.join(values, "=");
+            return new String[]{type, value};
+        } catch (NoSuchElementException e) {
+            throw new IllegalArgumentException("Could not tokenize filter string: " + filterString);
+        }
+    }
+
+    /**
+     * <p>isCheckboxToggled</p>
+     *
+     * @param tokenizedFilterString a {@link java.lang.String}[] object representing the type and value tokenized.
+     * @return a {@link java.lang.Boolean}[] representing if the option is toggled.
+     */
+    private static boolean isCheckboxToggled(String[] tokenizedFilterString) {
+        return tokenizedFilterString != null &&
+                StringUtils.equalsTrimmed(tokenizedFilterString[1], POSITIVE_CHECKBOX_VALUE);
     }
 
     /**
@@ -374,15 +470,94 @@ public abstract class AlarmUtil extends Object {
     }
 
     public static List<Filter> getFilterList(String[] filterStrings, ServletContext servletContext) {
+        filterStrings = handleCheckboxDuplication(filterStrings);
+
         List<Filter> filterList = new ArrayList<>();
         if (filterStrings != null) {
             for (String filterString : filterStrings) {
-                Filter filter = AlarmUtil.getFilter(filterString, servletContext);
+                Filter filter = AlarmUtil.getFilter(filterStrings, filterString, servletContext);
                 if (filter != null) {
                     filterList.add(filter);
                 }
             }
         }
         return filterList;
+    }
+
+    /**
+     * <p>handleCheckboxDuplication</p>
+     *
+     * @param filterStrings array of filter strings
+     * @return an array of filter strings which have checkbox deduplication handled. With multi-select there could be
+     * multiple IDs selected so we try to consolidate it into a single filter string
+     */
+    private static String[] handleCheckboxDuplication(String[] filterStrings) {
+        if (filterStrings == null) {
+            return filterStrings;
+        }
+        Map<String, List<String>> selectedCheckboxes = dedupCheckboxSelections(filterStrings);
+
+        if (selectedCheckboxes.isEmpty()) {
+            return filterStrings;
+        }
+        return replaceCheckboxValues(filterStrings, selectedCheckboxes);
+    }
+
+    /**
+     * <p>dedupCheckboxSelections</p>
+     *
+     * @param filterStrings array of filter strings
+     * @return a Map of Filter type to List of IDs associated with the filter.
+     */
+    private static Map<String, List<String>> dedupCheckboxSelections(String[] filterStrings) {
+        Map<String, List<String>> selectedCheckboxes = new HashMap<>();
+
+        for (String filterString : filterStrings) {
+
+            if (MULTI_CHECKBOX_PATTERN.matcher(filterString).matches()) {
+
+                String[] filterStringHyphenSplit = filterString.split("-");
+                String type = filterStringHyphenSplit[0];
+                String remainder = filterStringHyphenSplit[1];
+                String idStr = remainder.split("=")[0];
+
+                if (selectedCheckboxes.containsKey(type)) {
+                    selectedCheckboxes.get(type).add(idStr);
+                } else {
+                    List<String> checkedIds = new ArrayList<>();
+                    checkedIds.add(idStr);
+                    selectedCheckboxes.put(type, checkedIds);
+                }
+            }
+        }
+        return selectedCheckboxes;
+    }
+
+    /**
+     * <p>replaceCheckboxValues</p>
+     *
+     * @param filterStrings array of filter strings
+     * @param selectedCheckboxes map of multiselect filter to IDs
+     * @return the new filter string array with consolidated multi-select checkbox values
+     */
+    private static String[] replaceCheckboxValues(String[] filterStrings, Map<String, List<String>> selectedCheckboxes) {
+        List<String> collectedFilterList = Arrays.stream(filterStrings).filter(thisFilterString -> {
+            for (String selectedKey : selectedCheckboxes.keySet()) {
+                if (thisFilterString.startsWith(selectedKey + "-")) {
+                    return false;
+                }
+            }
+            return true;
+        }).collect(Collectors.toList());
+
+        for (String selectedKey : selectedCheckboxes.keySet()) {
+            List<String> selectedIds = selectedCheckboxes.get(selectedKey);
+            String joinedIds = String.join(ARRAY_DELIMITER, selectedIds);
+            String checkboxFormattedFilter = String.format("%s=%s", selectedKey, joinedIds);
+
+            collectedFilterList.add(checkboxFormattedFilter);
+        }
+
+        return collectedFilterList.toArray(new String[0]);
     }
 }

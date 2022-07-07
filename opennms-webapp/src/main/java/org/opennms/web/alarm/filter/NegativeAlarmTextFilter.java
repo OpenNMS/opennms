@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2022 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -28,40 +28,38 @@
 
 package org.opennms.web.alarm.filter;
 
-import org.opennms.netmgt.model.OnmsSeverity;
-import org.opennms.web.filter.NotEqualsFilter;
-import org.opennms.web.filter.SQLType;
+import org.opennms.web.filter.AndFilter;
 
-/**
- * Encapsulates negative severity filtering functionality, that is filtering OUT
- * this value instead of only filtering IN this value.
- */
-public class NegativeSeverityFilter extends NotEqualsFilter<OnmsSeverity> {
-    /** Constant <code>TYPE="severitynot"</code> */
-    public static final String TYPE = "severitynot";
+public class NegativeAlarmTextFilter extends AndFilter {
+    /** Constant <code>TYPE="alarmtextNot"</code> */
+    public static final String TYPE = "alarmtextNot";
 
-    public NegativeSeverityFilter(final OnmsSeverity severity) {
-        super(TYPE, SQLType.SEVERITY, "ALARMS.SEVERITY", "severity", severity);
+    private final String value;
+
+    public NegativeAlarmTextFilter(String substring) {
+        super(new NegativeLogMessageSubstringFilter(substring), new NegativeDescriptionSubstringFilter(substring));
+        this.value = substring;
     }
 
     @Override
     public String getTextDescription() {
-        return (TYPE + " is not " + getValue().getLabel());
+        return ("alarm text not containing \"" + value + "\"");
     }
 
     @Override
     public String toString() {
-        return ("<AlarmFactory.NegativeSeverityFilter: " + this.getDescription() + ">");
-    }
-
-    public int getSeverity() {
-        return getValue().getId();
+        return ("<NegativeAlarmTextFilter: " + this.getDescription() + ">");
     }
 
     @Override
-    public boolean equals(final Object obj) {
+    public String getDescription() {
+        return TYPE + "!=" + value;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
         if (obj == null) return false;
-        if (!(obj instanceof NegativeSeverityFilter)) return false;
-        return (this.toString().equals(obj.toString()));
+        if (!(obj instanceof NegativeAlarmTextFilter)) return false;
+        return this.toString().equals(obj.toString());
     }
 }

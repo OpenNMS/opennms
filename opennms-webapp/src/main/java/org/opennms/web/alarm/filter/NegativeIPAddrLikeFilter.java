@@ -28,63 +28,54 @@
 
 package org.opennms.web.alarm.filter;
 
-import javax.servlet.ServletContext;
-
-import org.opennms.web.element.NetworkElementFactory;
-import org.opennms.web.filter.NotEqualOrNullFilter;
-import org.opennms.web.filter.SQLType;
+import org.opennms.web.filter.NegativeIPLikeFilter;
 
 /**
- * Encapsulates all service filtering functionality.
+ * Encapsulates all interface filtering functionality.
  *
  * @author ranger
  * @version $Id: $
  * @since 1.8.1
  */
-public class NegativeServiceFilter extends NotEqualOrNullFilter<Integer> {
-    /** Constant <code>TYPE="servicenot"</code> */
-    public static final String TYPE = "servicenot";
-
-    private ServletContext m_servletContext;
+public class NegativeIPAddrLikeFilter extends NegativeIPLikeFilter {
+    /** Constant <code>TYPE="iplikeNot"</code> */
+    public static final String TYPE = "iplikeNot";
 
     /**
-     * <p>Constructor for NegativeServiceFilter.</p>
+     * <p>Constructor for NegativeIPAddrLikeFilter.</p>
      *
-     * @param serviceId a int.
+     * @param ipLikePattern a {@link String} object.
      */
-    public NegativeServiceFilter(int serviceId, ServletContext servletContext) {
-        super(TYPE, SQLType.INT, "SERVICEID", "serviceType.id", serviceId);
-        m_servletContext = servletContext;
+    public NegativeIPAddrLikeFilter(String ipLikePattern) {
+        super(TYPE, "IPADDR", "ipAddr", ipLikePattern);
     }
 
     /**
      * <p>getTextDescription</p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return a {@link String} object.
      */
+    @Override
     public String getTextDescription() {
-        String serviceName = Integer.toString(getValue());
-        serviceName = NetworkElementFactory.getInstance(m_servletContext).getServiceNameFromId(getValue());
-
-        return ("service is not " + serviceName);
+        return ("IP Address not like \"" + getValue() + "\"");
     }
 
     /**
      * <p>toString</p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return a {@link String} object.
      */
     @Override
     public String toString() {
-        return ("<AlarmFactory.NegativeServiceFilter: " + this.getDescription() + ">");
+        return ("<NegativeIPLikeFilter: " + this.getDescription() + ">");
     }
 
     /**
-     * <p>getServiceId</p>
+     * <p>getIpLikePattern</p>
      *
-     * @return a int.
+     * @return a {@link String} object.
      */
-    public int getServiceId() {
+    public String getIpLikePattern() {
         return getValue();
     }
 
@@ -92,7 +83,7 @@ public class NegativeServiceFilter extends NotEqualOrNullFilter<Integer> {
     @Override
     public boolean equals(Object obj) {
         if (obj == null) return false;
-        if (!(obj instanceof NegativeServiceFilter)) return false;
+        if (!(obj instanceof NegativeIPAddrLikeFilter)) return false;
         return (this.toString().equals(obj.toString()));
     }
 }
