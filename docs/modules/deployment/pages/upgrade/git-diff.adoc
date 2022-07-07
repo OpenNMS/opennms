@@ -22,7 +22,7 @@ IMPORTANT: `$OPENNMS_HOME/etc` is linked to `/etc/opennms`.
 Do not move that folder.
 Moving the folder will break the link and cause future upgrades to fail.
 
-You can fix this by running the following code:
+Run the following code to prevent breaking the link between folders:
 
 [source, console]
 ----
