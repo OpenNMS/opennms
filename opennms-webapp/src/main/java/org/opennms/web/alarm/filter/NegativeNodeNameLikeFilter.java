@@ -28,63 +28,64 @@
 
 package org.opennms.web.alarm.filter;
 
-import javax.servlet.ServletContext;
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Restrictions;
+import org.hibernate.type.StringType;
+import org.hibernate.type.Type;
+import org.opennms.web.filter.NoSubstringFilter;
 
-import org.opennms.web.element.NetworkElementFactory;
-import org.opennms.web.filter.NotEqualOrNullFilter;
-import org.opennms.web.filter.SQLType;
-
-/**
- * Encapsulates all service filtering functionality.
- *
- * @author ranger
- * @version $Id: $
- * @since 1.8.1
- */
-public class NegativeServiceFilter extends NotEqualOrNullFilter<Integer> {
-    /** Constant <code>TYPE="servicenot"</code> */
-    public static final String TYPE = "servicenot";
-
-    private ServletContext m_servletContext;
+public class NegativeNodeNameLikeFilter extends NoSubstringFilter {
+    /** Constant <code>TYPE="nodenamelikeNOT"</code> */
+    public static final String TYPE = "nodenamelikeNOT";
 
     /**
-     * <p>Constructor for NegativeServiceFilter.</p>
+     * <p>Constructor for NodeNameLikeFilter.</p>
      *
-     * @param serviceId a int.
+     * @param substring a {@link String} object.
      */
-    public NegativeServiceFilter(int serviceId, ServletContext servletContext) {
-        super(TYPE, SQLType.INT, "SERVICEID", "serviceType.id", serviceId);
-        m_servletContext = servletContext;
+    public NegativeNodeNameLikeFilter(String substring) {
+        super(TYPE, "NODELABEL", "node.label", substring);
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public String getSQLTemplate() {
+        return " ALARMID NOT IN (SELECT ALARMID FROM ALARMS JOIN NODE ON ALARMS.NODEID=NODE.NODEID WHERE NODE.NODELABEL ILIKE %s) ";
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Criterion getCriterion() {
+        return Restrictions.sqlRestriction(" {alias}.alarmid NOT IN (SELECT alarmid FROM alarms JOIN node ON alarms.nodeid=node.nodeid WHERE node.nodelabel ILIKE ?)",
+                new Object[]{getBoundValue(this.getValue())}, new Type[]{StringType.INSTANCE});
     }
 
     /**
      * <p>getTextDescription</p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return a {@link String} object.
      */
+    @Override
     public String getTextDescription() {
-        String serviceName = Integer.toString(getValue());
-        serviceName = NetworkElementFactory.getInstance(m_servletContext).getServiceNameFromId(getValue());
-
-        return ("service is not " + serviceName);
+        return ("Node name not containing \"" + getValue() + "\"");
     }
 
     /**
      * <p>toString</p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return a {@link String} object.
      */
     @Override
     public String toString() {
-        return ("<AlarmFactory.NegativeServiceFilter: " + this.getDescription() + ">");
+        return ("<NegativeNodeNameLikeFilter: " + this.getDescription() + ">");
     }
 
     /**
-     * <p>getServiceId</p>
+     * <p>getSubstring</p>
      *
-     * @return a int.
+     * @return a {@link String} object.
      */
-    public int getServiceId() {
+    public String getSubstring() {
         return getValue();
     }
 
@@ -92,7 +93,8 @@ public class NegativeServiceFilter extends NotEqualOrNullFilter<Integer> {
     @Override
     public boolean equals(Object obj) {
         if (obj == null) return false;
-        if (!(obj instanceof NegativeServiceFilter)) return false;
+        if (!(obj instanceof NegativeNodeNameLikeFilter)) return false;
         return (this.toString().equals(obj.toString()));
     }
+    
 }
