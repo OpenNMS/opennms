@@ -73,6 +73,11 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.flows</groupId>
+      <artifactId>org.opennms.features.flows.processing</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.flows.classification.engine</groupId>
       <artifactId>org.opennms.features.flows.classification.engine.api</artifactId>
       <version>${project.version}</version>
@@ -124,10 +129,6 @@
       <groupId>org.freemarker</groupId>
       <artifactId>freemarker</artifactId>
       <version>${freemarkerVersion}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.swrve</groupId>
-      <artifactId>rate-limited-logger</artifactId>
     </dependency>
 
     <dependency>
@@ -192,9 +193,5 @@
       <version>${json-simpleVersion}</version>
       <scope>test</scope>
     </dependency>
-      <dependency>
-          <groupId>org.opennms.features.collection</groupId>
-          <artifactId>org.opennms.features.collection.thresholding.api</artifactId>
-      </dependency>
   </dependencies>
 </project>

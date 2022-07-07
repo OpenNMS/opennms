@@ -321,6 +321,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.opennms.features.flows</groupId>
+            <artifactId>org.opennms.features.flows.processing</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.opennms.features.flows.classification</groupId>
             <artifactId>org.opennms.features.flows.classification.shell</artifactId>
             <version>${project.version}</version>

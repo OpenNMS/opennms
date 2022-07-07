@@ -26,24 +26,57 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.elastic;
+package org.opennms.netmgt.flows.processing.enrichment;
 
-import java.util.LinkedList;
 import java.util.List;
 
-import org.opennms.netmgt.flows.api.EnrichedFlow;
-import org.opennms.netmgt.flows.api.EnrichedFlowForwarder;
+public class NodeInfo {
 
-public class MockDocumentForwarder implements EnrichedFlowForwarder {
+    // ID of the interface which was selected during IP to node lookup
+    private Integer interfaceId;
 
-    private List<EnrichedFlow> flows = new LinkedList<>();
+    private Integer nodeId;
+    private String foreignId;
+    private String foreignSource;
+    private List<String> categories = List.of();
 
-    @Override
-    public void forward(EnrichedFlow enrichedFlow) {
-        flows.add(enrichedFlow);
+    public Integer getInterfaceId() {
+        return this.interfaceId;
     }
 
-    public List<EnrichedFlow> getFlows() {
-        return flows;
+    public void setInterfaceId(final Integer interfaceId) {
+        this.interfaceId = interfaceId;
+    }
+
+    public Integer getNodeId() {
+        return this.nodeId;
+    }
+
+    public void setNodeId(final Integer nodeId) {
+        this.nodeId = nodeId;
+    }
+
+    public String getForeignId() {
+        return this.foreignId;
+    }
+
+    public void setForeignId(final String foreignId) {
+        this.foreignId = foreignId;
+    }
+
+    public String getForeignSource() {
+        return this.foreignSource;
+    }
+
+    public void setForeignSource(final String foreignSource) {
+        this.foreignSource = foreignSource;
+    }
+
+    public List<String> getCategories() {
+        return this.categories;
+    }
+
+    public void setCategories(final List<String> categories) {
+        this.categories = categories;
     }
 }

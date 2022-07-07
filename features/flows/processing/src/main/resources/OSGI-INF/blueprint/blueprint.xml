@@ -1,0 +1,127 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
+		http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+
+		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0
+		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd">
+
+    <!-- Configuration properties -->
+    <cm:property-placeholder id="flowProcessingProperties" persistent-id="org.opennms.features.flows.persistence.elastic" update-strategy="reload">
+        <cm:default-properties>
+            <cm:property name="nodeCache.enabled" value="true" /> <!-- Set to false to disable caching -->
+            <cm:property name="nodeCache.maximumSize" value="10000"/> <!-- Set value for unlimited size -->
+            <cm:property name="nodeCache.expireAfterWrite" value="0"/> <!-- in seconds. Set to 0 to never evict elements -->
+            <cm:property name="nodeCache.recordStats" value="true"/> <!-- Set to false to not expose cache statistics via jmx -->
+
+            <cm:property name="flowThreshold.stepSizeMs" value="300000"/>
+            <cm:property name="flowThreshold.idleTimeoutMs" value="900000"/>
+
+            <!-- Enrichment settings -->
+            <cm:property name="clockSkewCorrectionThreshold" value="0" />
+
+            <!-- Flow Mangling -->
+            <cm:property name="mangleScriptPath" value="" />
+        </cm:default-properties>
+    </cm:property-placeholder>
+
+    <!-- Configure node cache -->
+    <bean id="nodeCacheConfig" class="org.opennms.core.cache.CacheConfig">
+        <argument value="nodes"/>
+        <property name="metricRegistry" ref="flowPipelineMetricRegistry" />
+        <property name="enabled" value="${nodeCache.enabled}" />
+        <property name="maximumSize" value="${nodeCache.maximumSize}" />
+        <property name="expireAfterWrite" value="${nodeCache.expireAfterWrite}" />
+        <property name="recordStats" value="${nodeCache.recordStats}" />
+    </bean>
+
+    <!-- Metrics -->
+    <bean id="flowPipelineMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
+    <service ref="flowPipelineMetricRegistry" interface="com.codahale.metrics.MetricSet">
+        <service-properties>
+            <entry key="name" value="org.opennms.netmgt.flows.elastic" />
+            <entry key="description" value="Elasticsearch Flow Repository" />
+        </service-properties>
+    </service>
+    <bean id="flowPipelineMetricRegistryJmxReporterBuilder" class="com.codahale.metrics.JmxReporter" factory-method="forRegistry">
+        <argument ref="flowPipelineMetricRegistry"/>
+    </bean>
+    <bean id="flowPipelineMetricRegistryDomainedJmxReporterBuilder" factory-ref="flowPipelineMetricRegistryJmxReporterBuilder" factory-method="inDomain">
+        <argument value="org.opennms.netmgt.flows"/>
+    </bean>
+    <bean id="flowPipelineMetricRegistryJmxReporter"
+          factory-ref="flowPipelineMetricRegistryDomainedJmxReporterBuilder"
+          factory-method="build"
+          init-method="start"
+          destroy-method="stop" />
+
+    <reference id="identity" interface="org.opennms.distributed.core.api.Identity"/>
+
+    <reference id="thresholdingService" interface="org.opennms.netmgt.threshd.api.ThresholdingService"/>
+    <reference id="collectionAgentFactory" interface="org.opennms.netmgt.collection.api.CollectionAgentFactory"/>
+    <reference id="persisterFactory" interface="org.opennms.netmgt.collection.api.PersisterFactory"/>
+    <reference id="distPollerDao" interface="org.opennms.netmgt.dao.api.DistPollerDao"/>
+    <reference id="filterDao" interface="org.opennms.netmgt.filter.api.FilterDao"/>
+
+    <!-- Mangling -->
+    <bean id="sem" class="org.opennms.features.osgi.script.OSGiScriptEngineManager">
+        <argument ref="blueprintBundleContext" />
+    </bean>
+    <bean id="mangler" class="org.opennms.netmgt.flows.processing.impl.DocumentMangler">
+        <argument ref="sem" />
+        <property name="path" value="${mangleScriptPath}"/>
+    </bean>
+
+    <!-- Enrichment -->
+    <reference id="interfaceToNodeCache" interface="org.opennms.netmgt.dao.api.InterfaceToNodeCache" availability="mandatory" />
+    <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory" />
+    <reference id="ipInterfaceDao" interface="org.opennms.netmgt.dao.api.IpInterfaceDao" availability="mandatory" />
+    <reference id="snmpInterfaceDao" interface="org.opennms.netmgt.dao.api.SnmpInterfaceDao" availability="mandatory" />
+    <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils" availability="mandatory" />
+    <reference id="classificationEngine" interface="org.opennms.netmgt.flows.classification.ClassificationEngine" availability="mandatory" />
+    <bean id="documentEnricher" class="org.opennms.netmgt.flows.processing.impl.DocumentEnricherImpl">
+        <argument ref="flowPipelineMetricRegistry" />
+        <argument ref="classificationEngine" />
+        <argument ref="nodeDao" />
+        <argument ref="ipInterfaceDao" />
+        <argument ref="interfaceToNodeCache" />
+        <argument ref="sessionUtils" />
+        <argument ref="nodeCacheConfig" />
+	<argument value="${clockSkewCorrectionThreshold}" />
+        <argument ref="mangler" />
+    </bean>
+
+    <bean id="interfaceMarker" class="org.opennms.netmgt.flows.processing.impl.InterfaceMarkerImpl" destroy-method="stop">
+        <argument ref="sessionUtils" />
+        <argument ref="nodeDao" />
+        <argument ref="snmpInterfaceDao" />
+    </bean>
+
+    <!-- Thresholding -->
+    <bean id="flowThresholding" class="org.opennms.netmgt.flows.processing.impl.FlowThresholdingImpl" destroy-method="close">
+        <argument ref="thresholdingService"/>
+        <argument ref="collectionAgentFactory"/>
+        <argument ref="persisterFactory"/>
+        <argument ref="ipInterfaceDao"/>
+        <argument ref="distPollerDao"/>
+        <argument ref="snmpInterfaceDao"/>
+        <argument ref="filterDao"/>
+
+        <property name="stepSizeMs" value="${flowThreshold.stepSizeMs}"/>
+        <property name="idleTimeoutMs" value="${flowThreshold.idleTimeoutMs}"/>
+    </bean>
+
+    <!-- The final pipeline -->
+    <bean id="pipeline" class="org.opennms.netmgt.flows.processing.impl.PipelineImpl">
+        <argument ref="flowPipelineMetricRegistry" />
+        <argument ref="documentEnricher" />
+        <argument ref="interfaceMarker" />
+        <argument ref="flowThresholding" />
+    </bean>
+    <service ref="pipeline" interface="org.opennms.netmgt.flows.processing.Pipeline" />
+
+    <!-- Bind flow repositories to the pipeline -->
+    <reference-list id="repositories" interface="org.opennms.netmgt.flows.processing.persisting.FlowRepository" availability="optional">
+        <reference-listener ref="pipeline" bind-method="onBind" unbind-method="onUnbind" />
+    </reference-list>
+</blueprint>

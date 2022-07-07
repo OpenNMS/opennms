@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.elastic;
+package org.opennms.netmgt.flows.processing.impl;
 
 import java.net.InetAddress;
 import java.util.Collection;
@@ -53,6 +53,8 @@ import org.opennms.netmgt.flows.api.FlowSource;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.flows.classification.ClassificationRequest;
 import org.opennms.netmgt.flows.classification.persistence.api.Protocols;
+import org.opennms.netmgt.flows.processing.enrichment.EnrichedFlow;
+import org.opennms.netmgt.flows.processing.enrichment.NodeInfo;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -64,8 +66,8 @@ import com.codahale.metrics.Timer;
 import com.google.common.base.Strings;
 import com.google.common.cache.CacheLoader;
 
-public class DocumentEnricher {
-    private static final Logger LOG = LoggerFactory.getLogger(DocumentEnricher.class);
+public class DocumentEnricherImpl {
+    private static final Logger LOG = LoggerFactory.getLogger(DocumentEnricherImpl.class);
 
     private static final String NODE_METADATA_CACHE = "flows.node.metadata";
 
@@ -80,10 +82,10 @@ public class DocumentEnricher {
     private final ClassificationEngine classificationEngine;
 
     // Caches NodeDocument data for a given node Id.
-    private final Cache<InterfaceToNodeCache.Entry, Optional<NodeDocument>> nodeInfoCache;
+    private final Cache<InterfaceToNodeCache.Entry, Optional<NodeInfo>> nodeInfoCache;
 
     // Caches NodeDocument data for a given node metadata.
-    private final Cache<NodeMetadataKey, Optional<NodeDocument>> nodeMetadataCache;
+    private final Cache<NodeMetadataKey, Optional<NodeInfo>> nodeMetadataCache;
 
     private final Timer nodeLoadTimer;
 
@@ -91,15 +93,15 @@ public class DocumentEnricher {
 
     private final DocumentMangler mangler;
 
-    public DocumentEnricher(MetricRegistry metricRegistry,
-                            NodeDao nodeDao,
-                            IpInterfaceDao ipInterfaceDao,
-                            InterfaceToNodeCache interfaceToNodeCache,
-                            SessionUtils sessionUtils,
-                            ClassificationEngine classificationEngine,
-                            CacheConfig cacheConfig,
-                            final long clockSkewCorrectionThreshold,
-                            final DocumentMangler mangler) {
+    public DocumentEnricherImpl(final MetricRegistry metricRegistry,
+                                final NodeDao nodeDao,
+                                final IpInterfaceDao ipInterfaceDao,
+                                final InterfaceToNodeCache interfaceToNodeCache,
+                                final SessionUtils sessionUtils,
+                                final ClassificationEngine classificationEngine,
+                                final CacheConfig cacheConfig,
+                                final long clockSkewCorrectionThreshold,
+                                final DocumentMangler mangler) {
         this.nodeDao = Objects.requireNonNull(nodeDao);
         this.ipInterfaceDao = Objects.requireNonNull(ipInterfaceDao);
         this.interfaceToNodeCache = Objects.requireNonNull(interfaceToNodeCache);
@@ -108,23 +110,23 @@ public class DocumentEnricher {
 
         this.nodeInfoCache = new CacheBuilder()
                 .withConfig(cacheConfig)
-                .withCacheLoader(new CacheLoader<InterfaceToNodeCache.Entry, Optional<NodeDocument>>() {
+                .withCacheLoader(new CacheLoader<InterfaceToNodeCache.Entry, Optional<NodeInfo>>() {
                     @Override
-                    public Optional<NodeDocument> load(InterfaceToNodeCache.Entry entry) {
+                    public Optional<NodeInfo> load(InterfaceToNodeCache.Entry entry) {
                         return getNodeInfo(entry);
                     }
                 }).build();
 
-       CacheConfig nodeMetadataCacheConfig = buildMetadataCacheConfig(cacheConfig);
-
+       final CacheConfig nodeMetadataCacheConfig = buildMetadataCacheConfig(cacheConfig);
        this.nodeMetadataCache = new CacheBuilder()
                .withConfig(nodeMetadataCacheConfig)
-               .withCacheLoader(new CacheLoader<NodeMetadataKey, Optional<NodeDocument>>() {
+               .withCacheLoader(new CacheLoader<NodeMetadataKey, Optional<NodeInfo>>() {
                    @Override
-                   public Optional<NodeDocument> load(NodeMetadataKey key) {
+                   public Optional<NodeInfo> load(NodeMetadataKey key) {
                        return getNodeInfoFromMetadataContext(key.contextKey, key.value);
                    }
                }).build();
+
         this.nodeLoadTimer = metricRegistry.timer("nodeLoadTime");
 
         this.clockSkewCorrectionThreshold = clockSkewCorrectionThreshold;
@@ -132,14 +134,14 @@ public class DocumentEnricher {
         this.mangler = Objects.requireNonNull(mangler);
     }
 
-    public List<FlowDocument> enrich(final Collection<Flow> flows, final FlowSource source) {
+    public List<EnrichedFlow> enrich(final Collection<Flow> flows, final FlowSource source) {
         if (flows.isEmpty()) {
             LOG.info("Nothing to enrich.");
             return Collections.emptyList();
         }
 
         return sessionUtils.withTransaction(() -> flows.stream().flatMap(flow -> {
-            final FlowDocument document = this.mangler.mangle(FlowDocument.from(flow));
+            final EnrichedFlow document = this.mangler.mangle(EnrichedFlow.from(flow));
             if (document == null) {
                 return Stream.empty();
             }
@@ -149,26 +151,26 @@ public class DocumentEnricher {
             document.setLocation(source.getLocation());
 
             // Node data
-            getNodeInfoFromCache(source.getLocation(), source.getSourceAddress(), source.getContextKey(), flow.getNodeIdentifier()).ifPresent(document::setNodeExporter);
-            if (document.getDstAddr() != null) {
-                getNodeInfoFromCache(source.getLocation(), document.getDstAddr(), null, null).ifPresent(document::setNodeDst);
+            getNodeInfoFromCache(source.getLocation(), source.getSourceAddress(), source.getContextKey(), flow.getNodeIdentifier()).ifPresent(document::setExporterNodeInfo);
+            if (flow.getDstAddr() != null) {
+                getNodeInfoFromCache(source.getLocation(), flow.getDstAddr(), null, null).ifPresent(document::setSrcNodeInfo);
             }
-            if (document.getSrcAddr() != null) {
-                getNodeInfoFromCache(source.getLocation(), document.getSrcAddr(), null, null).ifPresent(document::setNodeSrc);
+            if (flow.getSrcAddr() != null) {
+                getNodeInfoFromCache(source.getLocation(), flow.getSrcAddr(), null, null).ifPresent(document::setDstNodeInfo);
             }
 
             // Locality
-            if (document.getSrcAddr() != null) {
-                document.setSrcLocality(isPrivateAddress(document.getSrcAddr()) ? Locality.PRIVATE : Locality.PUBLIC);
+            if (flow.getSrcAddr() != null) {
+                document.setSrcLocality(isPrivateAddress(flow.getSrcAddr()) ? EnrichedFlow.Locality.PRIVATE : EnrichedFlow.Locality.PUBLIC);
             }
-            if (document.getDstAddr() != null) {
-                document.setDstLocality(isPrivateAddress(document.getDstAddr()) ? Locality.PRIVATE : Locality.PUBLIC);
+            if (flow.getDstAddr() != null) {
+                document.setDstLocality(isPrivateAddress(flow.getDstAddr()) ? EnrichedFlow.Locality.PRIVATE : EnrichedFlow.Locality.PUBLIC);
             }
 
-            if (Locality.PUBLIC.equals(document.getDstLocality()) || Locality.PUBLIC.equals(document.getSrcLocality())) {
-                document.setFlowLocality(Locality.PUBLIC);
-            } else if (Locality.PRIVATE.equals(document.getDstLocality()) || Locality.PRIVATE.equals(document.getSrcLocality())) {
-                document.setFlowLocality(Locality.PRIVATE);
+            if (EnrichedFlow.Locality.PUBLIC.equals(document.getDstLocality()) || EnrichedFlow.Locality.PUBLIC.equals(document.getSrcLocality())) {
+                document.setFlowLocality(EnrichedFlow.Locality.PUBLIC);
+            } else if (EnrichedFlow.Locality.PRIVATE.equals(document.getDstLocality()) || EnrichedFlow.Locality.PRIVATE.equals(document.getSrcLocality())) {
+                document.setFlowLocality(EnrichedFlow.Locality.PRIVATE);
             }
 
             final ClassificationRequest classificationRequest = createClassificationRequest(document);
@@ -179,9 +181,6 @@ public class DocumentEnricher {
                 document.setApplication(classificationEngine.classify(classificationRequest));
             }
 
-            // Conversation tagging
-            document.setConvoKey(ConversationKeyUtils.getConvoKeyAsJsonString(document));
-
             // Fix skewed clock
             // If received time and export time differ to much, correct all timestamps by the difference
             if (this.clockSkewCorrectionThreshold > 0) {
@@ -191,10 +190,10 @@ public class DocumentEnricher {
                     document.setClockCorrection(-skew);
 
                     // Fix the skew on all timestamps of the flow
-                    document.setTimestamp(document.getTimestamp() - skew);
-                    document.setFirstSwitched(document.getFirstSwitched() - skew);
-                    document.setDeltaSwitched(document.getDeltaSwitched() - skew);
-                    document.setLastSwitched(document.getLastSwitched() - skew);
+                    document.setTimestamp(flow.getTimestamp() - skew);
+                    document.setFirstSwitched(flow.getFirstSwitched() - skew);
+                    document.setDeltaSwitched(flow.getDeltaSwitched() - skew);
+                    document.setLastSwitched(flow.getLastSwitched() - skew);
                 }
             }
 
@@ -207,12 +206,12 @@ public class DocumentEnricher {
         return inetAddress.isLoopbackAddress() || inetAddress.isLinkLocalAddress() || inetAddress.isSiteLocalAddress();
     }
 
-    private Optional<NodeDocument> getNodeInfoFromCache(final String location, final String ipAddress, final ContextKey contextKey, final String value) {
-        Optional<NodeDocument> nodeDocument = Optional.empty();
+    private Optional<NodeInfo> getNodeInfoFromCache(final String location, final String ipAddress, final ContextKey contextKey, final String value) {
+        Optional<NodeInfo> nodeDocument = Optional.empty();
         if (contextKey != null && !Strings.isNullOrEmpty(value)) {
             final NodeMetadataKey metadataKey = new NodeMetadataKey(contextKey, value);
             try {
-                nodeDocument = nodeMetadataCache.get(metadataKey);
+                nodeDocument = this.nodeMetadataCache.get(metadataKey);
             } catch (ExecutionException e) {
                 LOG.error("Error while retrieving NodeDocument from NodeMetadataCache: {}.", e.getMessage(), e);
                 throw new RuntimeException(e);
@@ -222,10 +221,10 @@ public class DocumentEnricher {
             }
         }
 
-        final var entry = interfaceToNodeCache.getFirst(location, InetAddressUtils.addr(ipAddress));
+        final var entry = this.interfaceToNodeCache.getFirst(location, InetAddressUtils.addr(ipAddress));
         if(entry.isPresent()) {
             try {
-                return nodeInfoCache.get(entry.get());
+                return this.nodeInfoCache.get(entry.get());
             } catch (ExecutionException e) {
                 LOG.error("Error while retrieving NodeDocument from NodeInfoCache: {}.", e.getMessage(), e);
                 throw new RuntimeException(e);
@@ -262,10 +261,10 @@ public class DocumentEnricher {
         }
     }
 
-    private Optional<NodeDocument> getNodeInfoFromMetadataContext(ContextKey contextKey, String value) {
+    private Optional<NodeInfo> getNodeInfoFromMetadataContext(ContextKey contextKey, String value) {
         // First, try to find interface
         final List<OnmsIpInterface> ifaces;
-        try (Timer.Context ctx = nodeLoadTimer.time()) {
+        try (Timer.Context ctx = this.nodeLoadTimer.time()) {
             ifaces = this.ipInterfaceDao.findInterfacesWithMetadata(contextKey.getContext(), contextKey.getKey(), value);
         }
         if (!ifaces.isEmpty()) {
@@ -275,8 +274,8 @@ public class DocumentEnricher {
 
         // Alternatively, try to find node and chose primary interface
         final List<OnmsNode> nodes;
-        try (Timer.Context ctx = nodeLoadTimer.time()) {
-            nodes = nodeDao.findNodeWithMetaData(contextKey.getContext(), contextKey.getKey(), value);
+        try (Timer.Context ctx = this.nodeLoadTimer.time()) {
+            nodes = this.nodeDao.findNodeWithMetaData(contextKey.getContext(), contextKey.getKey(), value);
         }
         if(!nodes.isEmpty()) {
             final var node = nodes.get(0);
@@ -286,18 +285,18 @@ public class DocumentEnricher {
         return Optional.empty();
     }
 
-    private Optional<NodeDocument> getNodeInfo(final InterfaceToNodeCache.Entry entry) {
+    private Optional<NodeInfo> getNodeInfo(final InterfaceToNodeCache.Entry entry) {
         final OnmsNode onmsNode;
-        try (Timer.Context ctx = nodeLoadTimer.time()) {
-            onmsNode = nodeDao.get(entry.nodeId);
+        try (Timer.Context ctx = this.nodeLoadTimer.time()) {
+            onmsNode = this.nodeDao.get(entry.nodeId);
         }
 
         return mapOnmsNodeToNodeDocument(onmsNode, entry.interfaceId);
     }
 
-    private Optional<NodeDocument> mapOnmsNodeToNodeDocument(final OnmsNode onmsNode, final int interfaceId) {
+    private Optional<NodeInfo> mapOnmsNodeToNodeDocument(final OnmsNode onmsNode, final int interfaceId) {
         if(onmsNode != null) {
-            final NodeDocument nodeDocument = new NodeDocument();
+            final NodeInfo nodeDocument = new NodeInfo();
             nodeDocument.setForeignSource(onmsNode.getForeignSource());
             nodeDocument.setForeignId(onmsNode.getForeignId());
             nodeDocument.setNodeId(onmsNode.getId());
@@ -309,12 +308,11 @@ public class DocumentEnricher {
         return Optional.empty();
     }
 
-    protected static ClassificationRequest createClassificationRequest(FlowDocument document) {
+    public static ClassificationRequest createClassificationRequest(EnrichedFlow document) {
         final ClassificationRequest request = new ClassificationRequest();
-        request.setProtocol(document.getProtocol() == null ? null : Protocols.getProtocol(document.getProtocol()));
+        request.setProtocol(Protocols.getProtocol(document.getProtocol()));
         request.setLocation(document.getLocation());
         request.setExporterAddress(document.getHost());
-
         request.setDstAddress(document.getDstAddr());
         request.setDstPort(document.getDstPort());
         request.setSrcAddress(document.getSrcAddr());
@@ -325,7 +323,7 @@ public class DocumentEnricher {
 
     private CacheConfig buildMetadataCacheConfig(CacheConfig cacheConfig) {
         // Use existing config for the nodes with a new name for node metadata cache.
-        CacheConfig metadataCacheConfig = new CacheConfigBuilder()
+        final CacheConfig metadataCacheConfig = new CacheConfigBuilder()
                 .withName(NODE_METADATA_CACHE)
                 .withMaximumSize(cacheConfig.getMaximumSize())
                 .withExpireAfterWrite(cacheConfig.getExpireAfterWrite())

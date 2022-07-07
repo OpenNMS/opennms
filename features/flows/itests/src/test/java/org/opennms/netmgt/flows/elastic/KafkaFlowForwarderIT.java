@@ -55,22 +55,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.opennms.core.test.elastic.ElasticSearchRule;
-import org.opennms.core.test.elastic.ElasticSearchServerConfig;
 import org.opennms.core.test.kafka.JUnitKafkaServer;
-import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.features.jest.client.RestClientFactory;
-import org.opennms.features.jest.client.index.IndexStrategy;
-import org.opennms.features.jest.client.template.IndexSettings;
-import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
-import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.mock.MockNodeDao;
-import org.opennms.netmgt.dao.mock.MockSessionUtils;
-import org.opennms.netmgt.dao.mock.MockSnmpInterfaceDao;
-import org.opennms.netmgt.flows.api.ProcessingOptions;
-import org.opennms.netmgt.flows.elastic.thresholding.FlowThresholding;
 import org.opennms.netmgt.flows.persistence.KafkaFlowForwarder;
 import org.opennms.netmgt.flows.persistence.model.FlowDocument;
+import org.opennms.netmgt.flows.processing.enrichment.EnrichedFlow;
+import org.opennms.netmgt.flows.processing.enrichment.NodeInfo;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
 import org.osgi.service.cm.ConfigurationAdmin;
@@ -79,8 +68,6 @@ import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.protobuf.InvalidProtocolBufferException;
-
-import io.searchbox.client.JestClient;
 
 public class KafkaFlowForwarderIT {
 
@@ -92,12 +79,6 @@ public class KafkaFlowForwarderIT {
 
     @Rule
     public JUnitKafkaServer kafkaServer = new JUnitKafkaServer();
-
-    @Rule
-    public ElasticSearchRule elasticSearchRule = new ElasticSearchRule(new ElasticSearchServerConfig()
-            .withStartDelay(0)
-            .withManualStartup()
-    );
 
     @Before
     public void setup() throws IOException {
@@ -117,25 +98,17 @@ public class KafkaFlowForwarderIT {
     @Test(timeout = 60000)
     public void testKafkaPersistenceForFlows() throws Exception {
         // start ES
-        elasticSearchRule.startServer();
-        final RestClientFactory restClientFactory = new RestClientFactory(elasticSearchRule.getUrl());
-        final MockDocumentEnricherFactory mockDocumentEnricherFactory = new MockDocumentEnricherFactory();
-        NodeDao nodeDao = mockDocumentEnricherFactory.getNodeDao();
-        nodeDao.saveOrUpdate(createOnmsNode(1, null, null));
-        nodeDao.saveOrUpdate(createOnmsNode(2, "fs", "fid"));
-        final InterfaceToNodeCache interfaceToNodeCache = mockDocumentEnricherFactory.getInterfaceToNodeCache();
-        interfaceToNodeCache.setNodeId("SomeLocation", InetAddressUtils.addr("192.168.1.2"), 1);
-        interfaceToNodeCache.setNodeId("SomeLocation", InetAddressUtils.addr("192.168.2.2"), 2);
-        interfaceToNodeCache.setNodeId("SomeLocation", InetAddressUtils.addr("192.168.1.1"), 3);
-        final DocumentEnricher documentEnricher = mockDocumentEnricherFactory.getEnricher();
-        try (final JestClient jestClient = restClientFactory.createClient()) {
-            final ElasticFlowRepository elasticFlowRepository = new ElasticFlowRepository(new MetricRegistry(),
-                    jestClient, IndexStrategy.MONTHLY, documentEnricher,
-                    new MockSessionUtils(), new MockNodeDao(), new MockSnmpInterfaceDao(),
-                    new MockIdentity(), new MockTracerRegistry(), flowForwarder, new IndexSettings(), mock(FlowThresholding.class));
-            elasticFlowRepository.setEnableFlowForwarding(true);
-            elasticFlowRepository.persist(Lists.newArrayList(FlowDocumentTest.getMockFlow()), FlowDocumentTest.getMockFlowSource(), ProcessingOptions.builder().build());
-        }
+        final var flow = EnrichedFlow.from(FlowDocumentTest.getMockFlow());
+        flow.setSrcNodeInfo(new NodeInfo() {{
+            this.setNodeId(1);
+            this.setForeignId("");
+        }});
+        flow.setDstNodeInfo(new NodeInfo() {{
+            this.setNodeId(2);
+            this.setForeignId("fid");
+        }});
+        this.flowForwarder.persist(Lists.newArrayList(flow));
+
         KafkaConsumerRunner kafkaConsumerRunner = new KafkaConsumerRunner(kafkaConfig, topicName);
         Executors.newSingleThreadExecutor().execute(kafkaConsumerRunner);
         await().atMost(30, TimeUnit.SECONDS).pollInterval(5, TimeUnit.SECONDS).until(() ->
@@ -148,7 +121,6 @@ public class KafkaFlowForwarderIT {
             assertEquals("", flowDocument.getSrcNode().getForeginId());
             assertEquals("fid", flowDocument.getDestNode().getForeginId());
         });
-        elasticSearchRule.stopServer();
         kafkaConsumerRunner.destroy();
     }
 
