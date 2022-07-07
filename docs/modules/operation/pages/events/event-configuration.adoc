@@ -68,7 +68,6 @@ See <<events/anatomy-events.adoc#ga-events-anatomy-of-an-event, Anatomy of an Ev
 When setting event severities, it's important to consider each event in the context of your infrastructure as a whole.
 Events whose severity is critical at the zoomed-in level of a single device may not merit a `Critical` severity in the zoomed-out view of your entire enterprise.
 Since an event with `Critical` severity can never have its alarms escalated, this severity level should usually be reserved for events that unequivocally indicate a truly critical impact to the business.
-Rock legend Nigel Tufnel offered https://www.youtube.com/watch?v=4xgx4k83zzc[some wisdom] on the subject.
 
 [[replacement-tokens]]
 === Replacement tokens
