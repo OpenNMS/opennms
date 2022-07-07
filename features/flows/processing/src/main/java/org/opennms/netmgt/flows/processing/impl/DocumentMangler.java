@@ -26,20 +26,14 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.elastic;
+package org.opennms.netmgt.flows.processing.impl;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 
 import javax.script.Compilable;
 import javax.script.CompiledScript;
@@ -48,8 +42,8 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import javax.script.SimpleBindings;
 
-import org.apache.commons.beanutils.BeanMap;
 import org.opennms.core.fileutils.FileUpdateWatcher;
+import org.opennms.netmgt.flows.processing.enrichment.EnrichedFlow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -134,7 +128,7 @@ public class DocumentMangler {
         LOG.info("Script loaded successfully");
     }
 
-    public FlowDocument mangle(final FlowDocument flow) {
+    public EnrichedFlow mangle(final EnrichedFlow flow) {
         if (this.script == null) {
             return flow;
         }
@@ -147,8 +141,8 @@ public class DocumentMangler {
 
             if (result == null){
                 return null;
-            } else if (result instanceof FlowDocument) {
-                return (FlowDocument) result;
+            } else if (result instanceof EnrichedFlow) {
+                return (EnrichedFlow) result;
             } else {
                 RL_LOG.error("Mangle script returns garbage: {}", result.getClass());
                 return null;

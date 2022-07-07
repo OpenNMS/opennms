@@ -56,6 +56,8 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import javax.script.ScriptEngineManager;
+
 import org.apache.commons.lang3.tuple.Pair;
 import org.elasticsearch.painless.PainlessPlugin;
 import org.hamcrest.Matcher;
@@ -63,9 +65,9 @@ import org.hamcrest.Matchers;
 import org.hamcrest.collection.IsIterableContainingInOrder;
 import org.hamcrest.number.IsCloseTo;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
+import org.opennms.core.cache.CacheConfigBuilder;
 import org.opennms.core.test.elastic.ElasticSearchRule;
 import org.opennms.core.test.elastic.ElasticSearchServerConfig;
 import org.opennms.elasticsearch.plugin.DriftPlugin;
@@ -73,9 +75,10 @@ import org.opennms.features.jest.client.RestClientFactory;
 import org.opennms.features.jest.client.index.IndexSelector;
 import org.opennms.features.jest.client.index.IndexStrategy;
 import org.opennms.features.jest.client.template.IndexSettings;
+import org.opennms.netmgt.dao.mock.MockInterfaceToNodeCache;
+import org.opennms.netmgt.dao.mock.MockIpInterfaceDao;
 import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.dao.mock.MockSessionUtils;
-import org.opennms.netmgt.dao.mock.MockSnmpInterfaceDao;
 import org.opennms.netmgt.flows.api.Conversation;
 import org.opennms.netmgt.flows.api.Directional;
 import org.opennms.netmgt.flows.api.Flow;
@@ -83,16 +86,20 @@ import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.api.FlowSource;
 import org.opennms.netmgt.flows.api.Host;
 import org.opennms.netmgt.flows.api.LimitedCardinalityField;
-import org.opennms.netmgt.flows.api.ProcessingOptions;
+import org.opennms.netmgt.flows.classification.FilterService;
+import org.opennms.netmgt.flows.classification.internal.DefaultClassificationEngine;
+import org.opennms.netmgt.flows.classification.persistence.api.RuleBuilder;
 import org.opennms.netmgt.flows.api.TrafficSummary;
 import org.opennms.netmgt.flows.elastic.agg.AggregatedFlowQueryService;
-import org.opennms.netmgt.flows.elastic.thresholding.FlowThresholding;
+import org.opennms.netmgt.flows.processing.FlowBuilder;
+import org.opennms.netmgt.flows.processing.impl.DocumentEnricherImpl;
 import org.opennms.netmgt.flows.filter.api.DscpFilter;
 import org.opennms.netmgt.flows.filter.api.ExporterNodeFilter;
 import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.netmgt.flows.filter.api.FilterVisitor;
 import org.opennms.netmgt.flows.filter.api.SnmpInterfaceIdFilter;
 import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
+import org.opennms.netmgt.flows.processing.impl.DocumentMangler;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.ImmutableSet;
@@ -109,13 +116,12 @@ public class FlowQueryIT {
 
     private ElasticFlowRepository flowRepository;
 
+    private DocumentEnricherImpl documentEnricher;
+
     private SmartQueryService smartQueryService;
 
     @Before
     public void setUp() throws MalformedURLException, ExecutionException, InterruptedException {
-        final MockDocumentEnricherFactory mockDocumentEnricherFactory = new MockDocumentEnricherFactory();
-        final DocumentEnricher documentEnricher = mockDocumentEnricherFactory.getEnricher();
-
         final MetricRegistry metricRegistry = new MetricRegistry();
         final RestClientFactory restClientFactory = new RestClientFactory(elasticSearchRule.getUrl());
         final JestClient client = restClientFactory.createClient();
@@ -127,9 +133,28 @@ public class FlowQueryIT {
         final AggregatedFlowQueryService aggFlowRepository = mock(AggregatedFlowQueryService.class);
         smartQueryService = new SmartQueryService(metricRegistry, rawFlowRepository, aggFlowRepository);
         smartQueryService.setAlwaysUseRawForQueries(true); // Always use RAW values for these tests
-        flowRepository = new ElasticFlowRepository(metricRegistry, client, IndexStrategy.MONTHLY, documentEnricher,
-                new MockSessionUtils(), new MockNodeDao(), new MockSnmpInterfaceDao(),
-                new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), settings, mock(FlowThresholding.class), 0, 0);
+        flowRepository = new ElasticFlowRepository(metricRegistry, client, IndexStrategy.MONTHLY,
+                new MockIdentity(), new MockTracerRegistry(), settings, 0, 0);
+
+        final var classificationEngine = new DefaultClassificationEngine(() -> Lists.newArrayList(
+                new RuleBuilder().withName("http").withDstPort("80").withProtocol("tcp,udp").build(),
+                new RuleBuilder().withName("https").withDstPort("443").withProtocol("tcp,udp").build(),
+                new RuleBuilder().withName("http").withSrcPort("80").withProtocol("tcp,udp").build(),
+                new RuleBuilder().withName("https").withSrcPort("443").withProtocol("tcp,udp").build()),
+                                                                         FilterService.NOOP);
+
+        documentEnricher = new DocumentEnricherImpl(metricRegistry,
+                                                    new MockNodeDao(),
+                                                    new MockIpInterfaceDao(),
+                                                    new MockInterfaceToNodeCache(),
+                                                    new MockSessionUtils(),
+                                                    classificationEngine,
+                                                    new CacheConfigBuilder()
+                                                                  .withName("flows.node")
+                                                                  .withMaximumSize(1000)
+                                                                  .withExpireAfterWrite(300)
+                                                                  .build(), 0,
+                                                    new DocumentMangler(new ScriptEngineManager()));
 
         final RawIndexInitializer initializer = new RawIndexInitializer(client, settings);
 
@@ -601,9 +626,8 @@ public class FlowQueryIT {
     @Test
     public void hasCorrectOrdering() throws Exception {
         this.loadFlows(new FlowBuilder()
-                .withExporter("SomeFs", "SomeFid", 99)
                 .withSnmpInterfaceId(98)
-                .withDirection(Direction.INGRESS)
+                .withDirection(Flow.Direction.INGRESS)
 
                 // More documents - less data
                 .withFlow(new Date(0), new Date(10), "192.168.0.1", 1234, "192.168.1.1", 1234, 100)
@@ -666,7 +690,7 @@ public class FlowQueryIT {
         verifyHttpsSeries(appTraffic, "https");
     }
 
-    private Object[] defaultFlowsFieldValues(Function<FlowDocument, Integer> fieldAccess) {
+    private Object[] defaultFlowsFieldValues(Function<Flow, Integer> fieldAccess) {
         return getDefaultFlows()
                 .stream()
                 .map(fieldAccess)
@@ -677,7 +701,7 @@ public class FlowQueryIT {
                 ;
     }
 
-    private void canGetFieldValues(LimitedCardinalityField field, Function<FlowDocument, Integer> fieldAccess) throws Exception {
+    private void canGetFieldValues(LimitedCardinalityField field, Function<Flow, Integer> fieldAccess) throws Exception {
         loadDefaultFlows();
 
         Object[] memoryResult = defaultFlowsFieldValues(fieldAccess);
@@ -687,46 +711,46 @@ public class FlowQueryIT {
         assertThat(elasticResult, containsInAnyOrder(memoryResult));
     }
 
-    private static Predicate<FlowDocument> filterPredicate(Filter filter) {
-        return filter.visit(new FilterVisitor<Predicate<FlowDocument>>() {
+    private static Predicate<Flow> filterPredicate(Filter filter) {
+        return filter.visit(new FilterVisitor<Predicate<Flow>>() {
             @Override
-            public Predicate<FlowDocument> visit(ExporterNodeFilter exporterNodeFilter) {
+            public Predicate<Flow> visit(ExporterNodeFilter exporterNodeFilter) {
                 throw new RuntimeException("not yet implemented");
             }
 
             @Override
-            public Predicate<FlowDocument> visit(TimeRangeFilter timeRangeFilter) {
+            public Predicate<Flow> visit(TimeRangeFilter timeRangeFilter) {
                 return fd -> fd.getLastSwitched() >= timeRangeFilter.getStart() && fd.getDeltaSwitched() <= timeRangeFilter.getEnd();
             }
 
             @Override
-            public Predicate<FlowDocument> visit(SnmpInterfaceIdFilter snmpInterfaceIdFilter) {
-                return fd -> snmpInterfaceIdFilter.getSnmpInterfaceId() == (fd.getDirection() == Direction.INGRESS ? fd.getInputSnmp() : fd.getOutputSnmp());
+            public Predicate<Flow> visit(SnmpInterfaceIdFilter snmpInterfaceIdFilter) {
+                return fd -> snmpInterfaceIdFilter.getSnmpInterfaceId() == (fd.getDirection() == Flow.Direction.INGRESS ? fd.getInputSnmp() : fd.getOutputSnmp());
             }
 
             @Override
-            public Predicate<FlowDocument> visit(DscpFilter dscpFilter) {
+            public Predicate<Flow> visit(DscpFilter dscpFilter) {
                 return fd -> dscpFilter.getDscp().isEmpty() || dscpFilter.getDscp().contains(fd.getDscp());
             }
 
         });
     }
 
-    private void canGetFieldSummaries(LimitedCardinalityField field, Function<FlowDocument, Integer> aggregateBy) throws Exception {
+    private void canGetFieldSummaries(LimitedCardinalityField field, Function<Flow, Integer> aggregateBy) throws Exception {
         loadDefaultFlows();
         canGetFieldSeriesOfLoadedFlows(field, aggregateBy, null);
     }
 
-    private void canGetFieldSeries(LimitedCardinalityField field, Function<FlowDocument, Integer> aggregateBy) throws Exception {
+    private void canGetFieldSeries(LimitedCardinalityField field, Function<Flow, Integer> aggregateBy) throws Exception {
         loadDefaultFlows();
         canGetFieldSeriesOfLoadedFlows(field, aggregateBy, null);
     }
 
-    private void canGetFieldSummariesOfLoadedFlows(LimitedCardinalityField field, Function<FlowDocument, Integer> aggregateBy, Filter filter) throws Exception {
+    private void canGetFieldSummariesOfLoadedFlows(LimitedCardinalityField field, Function<Flow, Integer> aggregateBy, Filter filter) throws Exception {
 
         List<Filter> filters = filter != null ? getFilters(filter) : getFilters();
 
-        Predicate<FlowDocument> predicate = filters
+        Predicate<Flow> predicate = filters
                 .stream()
                 .map(FlowQueryIT::filterPredicate)
                 .reduce(fd -> true, (p1, p2) -> fd -> p1.test(fd) && p2.test(fd));
@@ -744,7 +768,7 @@ public class FlowQueryIT {
                 .values()
                 .stream()
                 .map(o -> o.get())
-                .sorted(Comparator.comparing(s -> new Integer(s.getEntity())))
+                .sorted(Comparator.comparing(s -> Integer.valueOf(s.getEntity())))
                 .toArray();
 
         List<TrafficSummary<String>> elasticResult = smartQueryService.getFieldSummaries(field, filters).get();
@@ -752,13 +776,13 @@ public class FlowQueryIT {
         assertThat(elasticResult, contains(memoryResult));
     }
 
-    private void canGetFieldSeriesOfLoadedFlows(LimitedCardinalityField field, Function<FlowDocument, Integer> aggregateBy, Filter filter) throws Exception {
+    private void canGetFieldSeriesOfLoadedFlows(LimitedCardinalityField field, Function<Flow, Integer> aggregateBy, Filter filter) throws Exception {
 
         int step = 8;
 
         List<Filter> filters = filter != null ? getFilters(filter) : getFilters();
 
-        Predicate<FlowDocument> predicate = filters
+        Predicate<Flow> predicate = filters
                 .stream()
                 .map(FlowQueryIT::filterPredicate)
                 .reduce(fd -> true, (p1, p2) -> fd -> p1.test(fd) && p2.test(fd));
@@ -829,7 +853,7 @@ public class FlowQueryIT {
 
     private List<Filter> allFilterCombinations(
             LimitedCardinalityField field,
-            Function<FlowDocument, Integer> fieldAccess,
+            Function<Flow, Integer> fieldAccess,
             Function<List<Integer>, Filter> filterCreator
     ) {
         List<Filter> res = new ArrayList<>();
@@ -858,7 +882,7 @@ public class FlowQueryIT {
 
     private void canFilterSeriesByLimitedCardinalityField(
             LimitedCardinalityField field,
-            Function<FlowDocument, Integer> fieldAccess,
+            Function<Flow, Integer> fieldAccess,
             Function<List<Integer>, Filter> filterCreator
     ) throws Exception {
         loadDefaultFlows();
@@ -869,7 +893,7 @@ public class FlowQueryIT {
 
     private void canFilterSummariesByLimitedCardinalityField(
             LimitedCardinalityField field,
-            Function<FlowDocument, Integer> fieldAccess,
+            Function<Flow, Integer> fieldAccess,
             Function<List<Integer>, Filter> filterCreator
     ) throws Exception {
         loadDefaultFlows();
@@ -880,27 +904,27 @@ public class FlowQueryIT {
 
     @Test
     public void canFilterSeriesByDscp() throws Exception {
-        canFilterSeriesByLimitedCardinalityField(LimitedCardinalityField.DSCP, FlowDocument::getDscp, DscpFilter::new);
+        canFilterSeriesByLimitedCardinalityField(LimitedCardinalityField.DSCP, Flow::getDscp, DscpFilter::new);
     }
 
 
     @Test
     public void canFilterSummariesByDscp() throws Exception {
-        canFilterSummariesByLimitedCardinalityField(LimitedCardinalityField.DSCP, FlowDocument::getDscp, DscpFilter::new);
+        canFilterSummariesByLimitedCardinalityField(LimitedCardinalityField.DSCP, Flow::getDscp, DscpFilter::new);
     }
 
-    private static <K> TrafficSummary<K> flowDoc2TrafficSummary(FlowDocument fd, K key) {
+    private static <K> TrafficSummary<K> flowDoc2TrafficSummary(Flow fd, K key) {
         return TrafficSummary
                 .from(key)
                 .withBytes(
-                        fd.getDirection() == Direction.INGRESS ? fd.getBytes() : 0,
-                        fd.getDirection() == Direction.EGRESS ? fd.getBytes() : 0)
+                        fd.getDirection() == Flow.Direction.INGRESS ? fd.getBytes() : 0,
+                        fd.getDirection() == Flow.Direction.EGRESS ? fd.getBytes() : 0)
                 .withCongestionEncountered(fd.getTos() != null && fd.getTos() % 4 == 3)
                 .withNonEcnCapableTransport(fd.getTos() != null && fd.getTos() % 4 == 0)
                 .build();
     }
 
-    private static <K> Pair<Directional<K>, Map<Long, Double>> flowDoc2Pair(FlowDocument fd, long step, K key) {
+    private static <K> Pair<Directional<K>, Map<Long, Double>> flowDoc2Pair(Flow fd, long step, K key) {
         long firstSwitched = fd.getFirstSwitched();
         long lastSwitched = fd.getLastSwitched();
         long duration = lastSwitched - firstSwitched;
@@ -914,7 +938,7 @@ public class FlowQueryIT {
             double value = bytes * (to - from) / duration;
             res.put(idx * step, value);
         }
-        return Pair.of(new Directional(key, fd.getDirection() == Direction.INGRESS), res);
+        return Pair.of(new Directional(key, fd.getDirection() == Flow.Direction.INGRESS), res);
     }
 
     private static <K> TrafficSummary<K> mergeTrafficSummaries(TrafficSummary<K> t1, TrafficSummary<K> t2) {
@@ -1006,34 +1030,33 @@ public class FlowQueryIT {
         return column;
     }
 
-    private static List<FlowDocument> getDefaultFlows() {
+    private static List<Flow> getDefaultFlows() {
         return getFlowSet(false);
     }
 
-    private void loadDefaultFlows() throws FlowException {
+    private void loadDefaultFlows() throws Exception {
         loadFlows(getDefaultFlows());
     }
 
-    private void loadFlowsWithUnknownDirection() throws FlowException {
+    private void loadFlowsWithUnknownDirection() throws Exception {
         loadFlows(getFlowSet(true));
     }
 
-    private static List<FlowDocument> getFlowSet(boolean useUnknownDirection) {
+    private static List<Flow> getFlowSet(boolean useUnknownDirection) {
         FlowBuilder flowBuilder = new FlowBuilder()
-                .withExporter("SomeFs", "SomeFid", 99)
                 .withSnmpInterfaceId(98)
                 // 192.168.1.100:43444 <-> 10.1.1.11:80 (110 bytes in [3,15])
-                .withDirection(Direction.INGRESS)
+                .withDirection(Flow.Direction.INGRESS)
                 .withTos(4 + 64)
                 .withFlow(new Date(3), new Date(15), "192.168.1.100", 43444, "10.1.1.11", 80, 10)
-                .withDirection(Direction.EGRESS)
+                .withDirection(Flow.Direction.EGRESS)
                 .withTos(8 + 128)
                 .withFlow(new Date(3), new Date(15), "10.1.1.11", 80, "192.168.1.100", 43444, 100);
                 // 192.168.1.100:43445 <-> 10.1.1.12:443 (1100 bytes in [13,26])
                 if (!useUnknownDirection) {
-                    flowBuilder.withDirection(Direction.INGRESS);
+                    flowBuilder.withDirection(Flow.Direction.INGRESS);
                 } else {
-                    flowBuilder.withDirection(Direction.UNKNOWN)
+                    flowBuilder.withDirection(Flow.Direction.UNKNOWN)
                             .withInputSnmpInterfaceId(98)
                             .withOutputSnmpInterfaceId(100);
                 }
@@ -1041,9 +1064,9 @@ public class FlowQueryIT {
                 .withTos(16 + 64)
                 .withFlow(new Date(13), new Date(26), "192.168.1.100", 43445, "10.1.1.12", 443, 100);
                 if (!useUnknownDirection) {
-                    flowBuilder.withDirection(Direction.EGRESS);
+                    flowBuilder.withDirection(Flow.Direction.EGRESS);
                 } else {
-                    flowBuilder.withDirection(Direction.UNKNOWN)
+                    flowBuilder.withDirection(Flow.Direction.UNKNOWN)
                             .withInputSnmpInterfaceId(100)
                             .withOutputSnmpInterfaceId(98);
                 }
@@ -1051,23 +1074,27 @@ public class FlowQueryIT {
                 .withTos(32 + 128)
                 .withFlow(new Date(13), new Date(26), "10.1.1.12", 443, "192.168.1.100", 43445, 1000)
                 // 192.168.1.101:43442 <-> 10.1.1.12:443 (1210 bytes in [14, 45])
-                .withDirection(Direction.INGRESS)
+                .withDirection(Flow.Direction.INGRESS)
                 .withHostnames("ingress.only", "la.le.lu")
                 .withFlow(new Date(14), new Date(45), "192.168.1.101", 43442, "10.1.1.12", 443, 110)
-                .withDirection(Direction.EGRESS)
+                .withDirection(Flow.Direction.EGRESS)
                 .withHostnames("la.le.lu", null)
                 .withFlow(new Date(14), new Date(45), "10.1.1.12", 443, "192.168.1.101", 43442, 1100)
                 // 192.168.1.102:50000 <-> 10.1.1.13:50001 (200 bytes in [50, 52])
-                .withDirection(Direction.INGRESS)
+                .withDirection(Flow.Direction.INGRESS)
                 .withFlow(new Date(50), new Date(52), "192.168.1.102", 50000, "10.1.1.13", 50001, 200)
-                .withDirection(Direction.EGRESS)
+                .withDirection(Flow.Direction.EGRESS)
                 .withFlow(new Date(50), new Date(52), "10.1.1.13", 50001, "192.168.1.102", 50000, 100);
         return flowBuilder.build();
     }
 
-    private void loadFlows(final List<FlowDocument> flowDocuments) throws FlowException {
-        final List<Flow> flows = flowDocuments.stream().map(TestFlow::new).collect(Collectors.toList());
-        flowRepository.persist(flows, new FlowSource("test", "127.0.0.1", null), ProcessingOptions.builder().build());
+    private void loadFlows(final List<Flow> flows) throws Exception {
+        final var enriched = this.documentEnricher.enrich(flows,
+                                                          new FlowSource("test",
+                                                                         "127.0.0.1",
+                                                                         null));
+
+        flowRepository.persist(enriched);
 
         // Retrieve all the flows we just persisted
         await().atMost(60, TimeUnit.SECONDS).until(() -> smartQueryService.getFlowCount(Collections.singletonList(

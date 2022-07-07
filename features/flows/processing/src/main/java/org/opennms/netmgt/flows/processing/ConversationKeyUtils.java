@@ -26,20 +26,21 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.elastic;
+package org.opennms.netmgt.flows.processing;
 
 import java.io.StringWriter;
 import java.util.Objects;
 
 import org.opennms.netmgt.flows.api.ConversationKey;
+import org.opennms.netmgt.flows.api.Flow;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 /**
- * Utility class for building the {@link ConversationKey} from
- * a {@link FlowDocument} and converting it to/from a string
- * so that it can be used in group-by statements when querying.
+ * Utility class for building the {@link ConversationKey} and
+ * converting it to/from a string so that it can be used in
+ * group-by statements when querying.
  *
  * These methods are optimized for speed when generating the key,
  * with the constraint that we must also be able to decode the key.
@@ -58,26 +59,28 @@ public class ConversationKeyUtils {
                 (String)array[2], (String)array[3], (String)array[4]);
     }
     
-    public static String getConvoKeyAsJsonString(FlowDocument document) {
+    public static String getConvoKeyAsJsonString(final String location,
+                                                 final Integer protocol,
+                                                 final String srcAddr,
+                                                 final String dstAddr,
+                                                 final String application) {
         // Only generate the key if all of the required fields are set
-        if (document.getLocation() != null
-                && document.getProtocol() != null
-                && document.getSrcAddr() != null
-                && document.getDstAddr() != null) {
+        if (location != null
+                && protocol != null
+                && srcAddr != null
+                && dstAddr != null) {
             // Build the JSON string manually
             // This is faster than creating some new object on which we can use gson.toJson or similar
             final StringWriter writer = new StringWriter();
             writer.write("[");
 
             // Use GSON to encode the location, since this may contain characters that need to be escape
-            writer.write(gson.toJson(document.getLocation()));
+            writer.write(gson.toJson(location));
             writer.write(",");
-            writer.write(Integer.toString(document.getProtocol()));
+            writer.write(Integer.toString(protocol));
             writer.write(",");
 
             // Write out addresses in canonical format (lower one first)
-            final String srcAddr = document.getSrcAddr();
-            final String dstAddr = document.getDstAddr();
             if (Objects.compare(srcAddr, dstAddr, String::compareTo) < 0) {
                 writer.write(gson.toJson(srcAddr));
                 writer.write(",");
@@ -89,8 +92,8 @@ public class ConversationKeyUtils {
             }
             writer.write(",");
 
-            if (document.getApplication() != null) {
-                writer.write(gson.toJson(document.getApplication()));
+            if (application != null) {
+                writer.write(gson.toJson(application));
             } else {
                 writer.write("null");
             }

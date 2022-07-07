@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.flows.elastic;
 
-import static org.mockito.Mockito.mock;
 
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -43,13 +42,9 @@ import org.opennms.features.jest.client.RestClientFactory;
 import org.opennms.features.jest.client.executors.DefaultRequestExecutor;
 import org.opennms.features.jest.client.index.IndexStrategy;
 import org.opennms.features.jest.client.template.IndexSettings;
-import org.opennms.netmgt.dao.mock.MockNodeDao;
-import org.opennms.netmgt.dao.mock.MockSessionUtils;
-import org.opennms.netmgt.dao.mock.MockSnmpInterfaceDao;
 import org.opennms.netmgt.flows.api.FlowException;
-import org.opennms.netmgt.flows.api.FlowRepository;
-import org.opennms.netmgt.flows.api.ProcessingOptions;
-import org.opennms.netmgt.flows.elastic.thresholding.FlowThresholding;
+import org.opennms.netmgt.flows.processing.enrichment.EnrichedFlow;
+import org.opennms.netmgt.flows.processing.persisting.FlowRepository;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Throwables;
@@ -84,8 +79,7 @@ public class ElasticFlowRepositoryRetryIT {
     public void verifySaveSucceedsWhenServerBecomesAvailable() throws Exception {
         // try persisting data
         apply((repository) -> repository.persist(
-                Lists.newArrayList(FlowDocumentTest.getMockFlow()),
-                FlowDocumentTest.getMockFlowSource(), ProcessingOptions.builder().build()));
+                Lists.newArrayList(EnrichedFlow.from(FlowDocumentTest.getMockFlow()))));
     }
 
     private void apply(FlowRepositoryConsumer consumer) throws Exception {
@@ -97,12 +91,9 @@ public class ElasticFlowRepositoryRetryIT {
             executionTime.resetStartTime();
             elasticServerRule.startServer();
 
-            final MockDocumentEnricherFactory mockDocumentEnricherFactory = new MockDocumentEnricherFactory();
-            final DocumentEnricher documentEnricher = mockDocumentEnricherFactory.getEnricher();
             final FlowRepository elasticFlowRepository = new InitializingFlowRepository(
-                    new ElasticFlowRepository(new MetricRegistry(), client, IndexStrategy.MONTHLY, documentEnricher,
-                             new MockSessionUtils(), new MockNodeDao(), new MockSnmpInterfaceDao(),
-                            new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings(), mock(FlowThresholding.class)), client);
+                    new ElasticFlowRepository(new MetricRegistry(), client, IndexStrategy.MONTHLY,
+                            new MockIdentity(), new MockTracerRegistry(), new IndexSettings()), client);
 
             consumer.accept(elasticFlowRepository);
 

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,19 +26,16 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.api;
+package org.opennms.netmgt.flows.processing;
 
 import java.util.List;
 
-public interface NodeInfo {
+import org.opennms.netmgt.flows.api.Flow;
+import org.opennms.netmgt.flows.api.FlowException;
+import org.opennms.netmgt.flows.api.FlowSource;
 
-    Integer getNodeId();
-
-    String getForeignId();
-
-    String getForeignSource();
-
-    List<String> getCategories();
-
-
+public interface Pipeline {
+    void process(final List<Flow> flows,
+                 final FlowSource source,
+                 final ProcessingOptions processingOptions) throws FlowException;
 }

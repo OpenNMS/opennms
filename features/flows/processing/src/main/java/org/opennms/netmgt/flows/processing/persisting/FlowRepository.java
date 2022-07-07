@@ -26,14 +26,18 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.api;
+package org.opennms.netmgt.flows.processing.persisting;
 
 import java.util.Collection;
+
+import org.opennms.netmgt.flows.api.FlowException;
+import org.opennms.netmgt.flows.processing.enrichment.EnrichedFlow;
 
 /**
  * Primary interface used to persist flows.
  */
 public interface FlowRepository {
 
-    void persist(Collection<Flow> packets, FlowSource source, ProcessingOptions options) throws FlowException;
+    void persist(final Collection<EnrichedFlow> flows) throws FlowException;
+
 }
