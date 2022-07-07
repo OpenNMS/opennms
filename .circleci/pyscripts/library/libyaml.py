@@ -147,15 +147,16 @@ class libyaml:
                                 _line.append(self.create_space(level+4)+"requires:")
                                 for entry_lvl3 in input_json[key][entry][entry_lvl2]:
                                     _line.append(self.create_space(level+6)+"- "+entry_lvl3)
-                            elif entry_lvl2 in "filters" and not disable_filters:
-                                _line.append(self.create_space(level+4)+"filters:")
-                                for entry_lvl3 in input_json[key][entry][entry_lvl2]:
-                                    if type(input_json[key][entry][entry_lvl2][entry_lvl3]) == dict:
-                                        _line.append(self.create_space(level+6)+""+entry_lvl3+":")
-                                        for entry_lvl4 in input_json[key][entry][entry_lvl2][entry_lvl3]:
-                                            _line.append(self.create_space(level+8)+""+entry_lvl4+":")
-                                            for entry_lvl5 in input_json[key][entry][entry_lvl2][entry_lvl3][entry_lvl4]:
-                                                _line.append(self.create_space(level+10)+"- "+entry_lvl5)
+                            elif entry_lvl2 in "filters":
+                                if not disable_filters:
+                                    _line.append(self.create_space(level+4)+"filters:")
+                                    for entry_lvl3 in input_json[key][entry][entry_lvl2]:
+                                        if type(input_json[key][entry][entry_lvl2][entry_lvl3]) == dict:
+                                            _line.append(self.create_space(level+6)+""+entry_lvl3+":")
+                                            for entry_lvl4 in input_json[key][entry][entry_lvl2][entry_lvl3]:
+                                                _line.append(self.create_space(level+8)+""+entry_lvl4+":")
+                                                for entry_lvl5 in input_json[key][entry][entry_lvl2][entry_lvl3][entry_lvl4]:
+                                                    _line.append(self.create_space(level+10)+"- "+entry_lvl5)
                             else:
                                 _line.append(self.create_space(level+2)+"- "+str(input_json[key][entry][entry_lvl2]))
                     else:
