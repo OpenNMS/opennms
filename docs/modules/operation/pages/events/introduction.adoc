@@ -4,7 +4,7 @@
 
 Events are central to the operation of the {page-component-title} platform, so it's critical to have a firm grasp of this topic.
 
-IMPORTANT: Whenever something in {page-component-title} appears to work by magic, it's probably events working behind the curtain.
+Whenever something in {page-component-title} appears to work by magic, it's probably events working behind the curtain.
 
 [[ga-events-event-bus]]
 == The event bus
