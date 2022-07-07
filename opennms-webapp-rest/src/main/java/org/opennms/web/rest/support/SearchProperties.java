@@ -80,7 +80,13 @@ public abstract class SearchProperties {
 
 	static final SortedSet<SearchProperty> ALARM_PROPERTIES = new TreeSet<>(Arrays.asList(
 		new SearchProperty(OnmsAlarm.class, "id", "ID", INTEGER),
-		new SearchProperty(OnmsAlarm.class, null, "affectedNodeCount", null, "affectedNodeCount", INTEGER, false, false, null),
+		new SearchProperty(OnmsAlarm.class, null, "affectedNodeCount", null, "Affected Node Count", INTEGER,
+			false, false,
+			ImmutableMap.<String, String> builder()
+				.put("0", "0")
+				.put("1", "1")
+				.build()
+			),
 		new SearchProperty(OnmsAlarm.class, "alarmAckTime", "Acknowledged Time", TIMESTAMP),
 		new SearchProperty(OnmsAlarm.class, "alarmAckUser", "Acknowledging User", STRING),
 		new SearchProperty(OnmsAlarm.class, "alarmType", "Alarm Type", INTEGER, ImmutableMap.<String,String>builder()
@@ -111,7 +117,12 @@ public abstract class SearchProperties {
 		new SearchProperty(OnmsAlarm.class, "qosAlarmState", "QoS Alarm State", STRING),
 		new SearchProperty(OnmsAlarm.class, "reductionKey", "Reduction Key", STRING),
 		new SearchProperty(OnmsAlarm.class, "severity", "Severity", INTEGER, ONMS_SEVERITIES),
-		new SearchProperty(OnmsAlarm.class, null, "situationAlarmCount", null, "situationAlarmCount", INTEGER, false, false, null),
+		new SearchProperty(OnmsAlarm.class, null, "situationAlarmCount", null, "Situation Alarm Count", INTEGER, false, false,
+			ImmutableMap.<String, String> builder()
+				.put("0", "0")
+				.put("1", "1")
+				.build()
+		),
 		new SearchProperty(OnmsAlarm.class, "suppressedTime", "Suppressed Time", TIMESTAMP),
 		new SearchProperty(OnmsAlarm.class, "suppressedUntil", "Suppressed Until", TIMESTAMP),
 		new SearchProperty(OnmsAlarm.class, "suppressedUser", "Suppressed User", STRING),
