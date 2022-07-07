@@ -29,16 +29,16 @@ path_to_executors_yml=os.path.join(path_to_main_folder,"executors.yml")
 path_to_parameters_yml=os.path.join(path_to_main_folder,"parameters.yml")
 
 path_to_pipeline_parameters=os.path.join("/tmp","pipeline-parameters.json")
-pipeline_parameters={}
+pipeline_parameters=common_library.load_json(path_to_pipeline_parameters)
 
-if os.path.exists(path_to_pipeline_parameters):
-    pipeline_parameters=common_library.load_json(path_to_pipeline_parameters)
-    if not pipeline_parameters["trigger-build"] and \
-       not pipeline_parameters["trigger-flaky-smoke"] and \
-       not pipeline_parameters["trigger-coverage"] :
-        print("We aren't building anything.. we really shouldn't generate the main yaml file")
-    if pipeline_parameters["trigger-rpms"]:
-        print("We want to build rpms build")
+#if os.path.exists(path_to_pipeline_parameters):
+#    pipeline_parameters=common_library.load_json(path_to_pipeline_parameters)
+#    if not pipeline_parameters["trigger-build"] and \
+#       not pipeline_parameters["trigger-flaky-smoke"] and \
+#       not pipeline_parameters["trigger-coverage"] :
+#        print("We aren't building anything.. we really shouldn't generate the main yaml file")
+#    if pipeline_parameters["trigger-rpms"]:
+#        print("We want to build rpms build")
 
 
 alias_folder="aliases"
@@ -65,7 +65,7 @@ keywords=common_library.extract_keywords(path_to_main_yml)
 
 for keyword in keywords:
     for sub_keyword in keywords[keyword]:
-        print("Keyword",keyword)
+        #print("Keyword",keyword)
         if "workflows" in keyword:
             continue
         tmp_page=sub_keyword.replace("#","").replace(keyword+":","") 
@@ -82,7 +82,6 @@ for e in main_yml_content:
     if re_match:
         if "#workflows#" in re_match.group():
             #<<EXP Area>>#
-            print("EXP AREA Start")
             libyaml=libyaml.libyaml()
             workflow_path=os.path.join(".circleci","main","workflows","workflows.json")
             workflow_data=common_library.load_json(workflow_path)
@@ -121,11 +120,10 @@ for e in main_yml_content:
                                 final_output+=entry_lvl2+"\n"
                     else:
                         final_output+=line+"\n"
-            print("EXP AREA End")
             #<<End of EXP Area>>#
             continue
         block_type,step=re_match.group().split(":")
-        print("Processing",block_type,step)
+        #print("Processing",block_type,step)
         commands=keywords[block_type.replace("#","").strip()][re_match.group().strip()]["commands"]
         for command in commands:
             if type(command) == list:
@@ -166,8 +164,8 @@ working_directory.cleanup()
 
 
 ##--> EXP AREA <--##
-libgit=lg.libgit()
-print(libgit.getLastCommit())
-print(libgit.getChangedFilesInCommits("HEAD","HEAD~1"))
+#libgit=lg.libgit()
+#print(libgit.getLastCommit())
+#print(libgit.getChangedFilesInCommits("HEAD","HEAD~1"))
 
 
