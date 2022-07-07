@@ -1,6 +1,12 @@
 {
     "build-with-tar": {
-        "build-with-tar": { },
+        "build-with-tar": {
+            "filters":{
+                "branches":{
+                    "ignore":["/^from-foundation.*/"]
+                }
+            }
+         },
         "minion-image":{ 
             "requires":["build-with-tar"]
         },
