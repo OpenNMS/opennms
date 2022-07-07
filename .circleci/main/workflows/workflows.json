@@ -15,9 +15,20 @@
         }
     },
     "build": {
-        "build": { },
+        "build": {
+            "filters":{
+                "branches":{
+                    "ignore":["/^from-foundation.*/"]
+                }
+            }
+        },
         "integration-test": {
-            "requires":["build"]
+            "requires":["build"],
+            "filters":{
+                "branches":{
+                    "ignore":["/^from-foundation.*/"]
+                }
+            }
         },
         "sentinel-deb-build": {
             "requires":["build"]
@@ -115,13 +126,55 @@
     "rpms": {
         "extends": ["build"],
         "minion-rpm-build": {
-            "requires":["build"]
+            "requires":["build"],
+            "filters":{
+                "branches":{
+                    "only":[
+                        "develop",
+                        "/^master-.*/",
+                        "/^dependabot\/.*/",
+                        "/^features\/.+/",
+                        "/^foundation.*/",
+                        "/^release-.*/",
+                        "/.*rpm.*/",
+                        "/.*smoke.*/"
+                    ]
+                }
+            }
         },
         "horizon-rpm-build": {
-            "requires":["integration-test"]
+            "requires":["integration-test"],
+            "filters":{
+                "branches":{
+                    "only":[
+                        "develop",
+                        "/^master-.*/",
+                        "/^dependabot\/.*/",
+                        "/^features\/.+/",
+                        "/^foundation.*/",
+                        "/^release-.*/",
+                        "/.*rpm.*/",
+                        "/.*smoke.*/"
+                    ]
+                }
+            }
         },
         "sentinel-rpm-build": {
-            "requires":["integration-test"]
+            "requires":["integration-test"],
+            "filters":{
+                "branches":{
+                    "only":[
+                        "develop",
+                        "/^master-.*/",
+                        "/^dependabot\/.*/",
+                        "/^features\/.+/",
+                        "/^foundation.*/",
+                        "/^release-.*/",
+                        "/.*rpm.*/",
+                        "/.*smoke.*/"
+                    ]
+                }
+            }
         }
     },
     "debs": {
