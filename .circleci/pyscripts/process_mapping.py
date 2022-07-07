@@ -109,6 +109,7 @@ if "CIRCLE_BRANCH" in os.environ and os.environ["CIRCLE_BRANCH"] == "mem/jira/nm
     print("What we should be building>>>")
     print(What_to_build)
     git_keywords=libgit.extractKeywordsFromLastCommit()
+    print(git_keywords)
     if "circleci_configuration" in What_to_build and len(What_to_build) == 1 :
         mappings["trigger-build"]=False
 
