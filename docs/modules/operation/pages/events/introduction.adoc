@@ -6,7 +6,7 @@ Events are structured historical records of things that happen in {page-componen
 Events are central to the operation of the {page-component-title} platform, so it's critical to have a firm grasp of this topic.
 Whenever something in {page-component-title} appears to work by magic, it's probably events working behind the curtain.
 
-Events may originate within {page-component-title} itself, or from an external source like <<events/sources/snmp-traps.adoc#ga-events-sources-snmp-traps, SNMP traps>>, <<events/sources/syslog.adoc#ga-events-sources-syslog, syslog messages>>, or a variety of other <<events/event-sources.adoc#ga-events-sources-of-events, sources>>.
+Events may originate within {page-component-title} itself, or from an external source via <<events/sources/snmp-traps.adoc#ga-events-sources-snmp-traps, SNMP traps>>, <<events/sources/syslog.adoc#ga-events-sources-syslog, syslog messages>>, or a variety of other <<events/event-sources.adoc#ga-events-sources-of-events, sources>>.
 Event definition files are used to provide a standard framework for Eventd to process events evenly, regardless of how they were sent to the server.
 
 [[ga-events-event-bus]]
