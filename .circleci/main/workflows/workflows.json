@@ -1,4 +1,13 @@
 {
+    "build-only":{
+        "build": {
+            "filters":{
+                "branches":{
+                    "ignore":["/^from-foundation.*/"]
+                }
+            }
+        }
+    },
     "build-with-tar": {
         "build-with-tar": {
             "filters":{
