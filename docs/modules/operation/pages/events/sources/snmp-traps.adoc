@@ -2,12 +2,10 @@
 [[ga-events-sources-snmp-traps]]
 = SNMP Traps
 
-If SNMP-capable devices in the network are configured to send *traps* to {page-component-title}, these traps are transformed into events according to preconfigured rules.
-The `Trapd` service daemon, which lets {page-component-title} receive SNMP traps, is enabled by default.
+If SNMP-capable devices in the network are configured to send traps to {page-component-title}, these traps are transformed into events according to preconfigured rules.
+The Trapd service daemon, which lets {page-component-title} receive SNMP traps, is enabled by default.
 
-IMPORTANT: Disabling the `Trapd` service daemon will render {page-component-title} *incapable* of receiving SNMP traps.
-
-Event definitions are included with {page-component-title} for traps from many vendors' equipment.
+{page-component-title} includes event definitions for traps from many vendors' equipment.
 
 == Trap Value Representation
 
@@ -29,6 +27,6 @@ To configure {page-component-title} to honor `snmpTrapAddress` when present, set
                      new-suspect-on-trap="false"<2>
                      use-address-from-varbind="true" /><3>
 ----
-<1> Set the SNMP trap daemon listening port to 1162/udp
-<2> Don't create new nodes when receiving a SNMP Trap with an unknown source IP address
-<3> Try using the identifier source IP address from the `snmpTrapAddress` varbind instead of the UDP source IP address
+<1> Set the SNMP trap daemon listening port to 1162/udp.
+<2> Don't create new nodes when receiving a SNMP Trap with an unknown source IP address.
+<3> Try using the identifier source IP address from the `snmpTrapAddress` varbind instead of the UDP source IP address.

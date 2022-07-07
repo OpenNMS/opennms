@@ -4,8 +4,8 @@
 
 Syslog messages sent over the network to {page-component-title} can be transformed into events according to preconfigured rules.
 
-IMPORTANT: The `Syslogd` service daemon, which enables {page-component-title} to receive syslog messages over the network, must be enabled for this functionality to work.
-This service daemon is *disabled* by default.
+IMPORTANT: The Syslogd service daemon, which enables {page-component-title} to receive syslog messages over the network, must be enabled for this functionality to work.
+This service daemon is disabled by default.
 
 == Parsers
 

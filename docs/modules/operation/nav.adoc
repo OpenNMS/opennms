@@ -61,6 +61,10 @@
 **** xref:performance-data-collection/shell/stress-testing.adoc[]
 
 * xref:events/introduction.adoc[]
+** xref:events/event-configuration.adoc[]
+*** xref:events/event-definition.adoc[]
+*** xref:events/event-tokens.adoc[]
+** xref:events/event-translator.adoc[]
 ** xref:events/event-sources.adoc[]
 *** xref:events/sources/eif-adapter.adoc[]
 *** xref:events/sources/kafka.adoc[]
@@ -71,10 +75,6 @@
 *** xref:events/sources/syslog.adoc[]
 *** xref:events/sources/tl1.adoc[]
 *** xref:events/sources/xml-tcp.adoc[]
-** xref:events/event-configuration.adoc[]
-*** xref:events/event-definition.adoc[]
-*** xref:events/event-tokens.adoc[]
-** xref:events/event-translator.adoc[]
 
 * xref:alarms/introduction.adoc[]
 ** xref:alarms/alarmd.adoc[]

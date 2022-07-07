@@ -13,7 +13,7 @@ For example:
 * open a ticket in your integrated ticketing system
 * order new ink cartridges when your printer is out of toner
 
-Format: `bin/send-event.pl <uei> [host:port] [options]`
+Format: `$\{OPENNMS_HOME}/bin/send-event.pl <uei> [host:port] [options]`
 
 The `host:port` defines the hostname and port to send the event; by default the local host.
 
