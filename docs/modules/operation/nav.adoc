@@ -64,7 +64,7 @@
 ** xref:events/event-configuration.adoc[]
 *** xref:events/event-definition.adoc[]
 *** xref:events/event-tokens.adoc[]
-*** xref:events/sources/events-debugging.adoc[]
+*** xref:events/event-debugging.adoc[]
 ** xref:events/event-translator.adoc[]
 ** xref:events/event-sources.adoc[]
 *** xref:events/sources/eif-adapter.adoc[]
