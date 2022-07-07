@@ -106,11 +106,11 @@ if "CIRCLE_BRANCH" in os.environ and os.environ["CIRCLE_BRANCH"] == "mem/jira/nm
             if "circleci_configuration" not in What_to_build:
                 What_to_build.append("circleci_configuration")
 
-    print("What we should be building>>>")
-    print(What_to_build)
+    print("What we want to build:",What_to_build)
     git_keywords=libgit.extractKeywordsFromLastCommit()
-    print(git_keywords)
+    print("Git Keywords:",git_keywords)
     if "circleci_configuration" in What_to_build and len(What_to_build) == 1 :
+        #if circleci_configuration is the only entry, don't run a full build
         mappings["trigger-build"]=False
 
     if "smoke" in git_keywords:   
@@ -140,6 +140,8 @@ if "CIRCLE_BRANCH" in os.environ and os.environ["CIRCLE_BRANCH"] == "mem/jira/nm
 
     if "experimentalPath" in git_keywords:
         mappings["trigger-experimental"]=True
+    else:
+        mappings["trigger-experimental"]=False
 
     
 with open(output_path, 'w') as fp:

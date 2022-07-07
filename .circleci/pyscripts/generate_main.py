@@ -105,7 +105,10 @@ for e in main_yml_content:
             elif "trigger-experimental" in pipeline_parameters.keys():
                 sample_workflow=libyaml.generate_yaml(workflow_data,"build-with-tar",level,sample_workflow)
             else:
-                sample_workflow=libyaml.generate_yaml(workflow_data,"build",level,sample_workflow)
+                if pipeline_parameters["trigger-build"]:
+                    sample_workflow=libyaml.generate_yaml(workflow_data,"build",level,sample_workflow)
+                else:
+                    print("We need to generate an empty workflow")
             
             if sample_workflow:
                 for line in sample_workflow:
