@@ -25,16 +25,16 @@ This returns results that do not contain the provided input text.
 * Severity
 ** Filter the alarms list based on the alarm severity.
 ** This is a multi-select checkbox.
-Select the Severities you wish to filter by.
-By default they are unselected which return all alarms.
-Selecting one or multiple severities will restrict your search results by those selected.
+Select the severities you wish to filter by.
+By default they are unselected, which returns all alarms.
+Selecting one or multiple severities restricts your search results to those selected.
 
 * Service
 ** Filter the alarms list based on the alarm service.
 ** This is a multi-select checkbox.
-Select the Services you wish to filter by.
-By default they are unselected which return all alarms.
-Selecting one or multiple services will restrict your search results by those selected.
+Select the services you wish to filter by.
+By default they are unselected, which returns all alarms.
+Selecting one or multiple services restricts your search results to those selected.
 
 * Alarm type
 ** Select this dropdown to include only alarms, only situations, or both.
@@ -44,7 +44,7 @@ Selecting one or multiple services will restrict your search results by those se
 ** To negate this search, toggle the *Negate Category* checkbox.
 This returns results that do not match the set category.
 
-* Filter for Alarms after First Event
+* Filter for Alarms After First Event
 ** Select the timestamp to show alarms after the time of the alarm's first event.
 
 * Filter for Alarms Before First Event
