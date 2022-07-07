@@ -2,6 +2,17 @@
 [[ga-events-event-definition]]
 = Event Definition
 
+
+== Associate an event to a specific node
+
+There are two ways to associate an existing node to a given event prior sending it to the event bus:
+
+* Set the `nodeId` field of event to the database ID of the desired node.
+* For requisitioned nodes, set the `_foreignSource` and `_foreignId` as parameters to the event.
+Then, any incoming event without a `nodeId` and these two parameters will trigger a lookup on the database.
+If a node is found, the `nodeId` attribute will be dynamically set on the event, regardless of which method has been used to send it to the event bus.
+
+
 [[ga-events-anatomy-of-an-event]]
 == Anatomy of an event
 
