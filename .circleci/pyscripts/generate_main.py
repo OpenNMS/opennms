@@ -90,7 +90,10 @@ for e in main_yml_content:
             level=0
             sample_workflow.append(libyaml.create_space(level)+"workflows:")
             level=level+2
-            sample_workflow.append(libyaml.create_space(level)+"auto-build:")
+            if "trigger-experimental" in pipeline_parameters.keys():
+                sample_workflow.append(libyaml.create_space(level)+"auto-exp-build:")
+            else:
+                sample_workflow.append(libyaml.create_space(level)+"auto-build:")
             level+=2
             sample_workflow.append(libyaml.create_space(level)+"jobs:")
             level+=2
@@ -99,8 +102,10 @@ for e in main_yml_content:
                 sample_workflow=libyaml.generate_yaml(workflow_data,"rpms",level,sample_workflow)
             elif pipeline_parameters["trigger-debs"]:
                 sample_workflow=libyaml.generate_yaml(workflow_data,"debs",level,sample_workflow)
+            elif "trigger-experimental" in pipeline_parameters.keys():
+                sample_workflow=libyaml.generate_yaml(workflow_data,pipeline_parameters["trigger-experimental"],level,sample_workflow)
             else:
-                sample_workflow=libyaml.generate_yaml(workflow_data,"build-with-tar",level,sample_workflow)
+                sample_workflow=libyaml.generate_yaml(workflow_data,"build",level,sample_workflow)
             
             if sample_workflow:
                 for line in sample_workflow:

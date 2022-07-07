@@ -147,6 +147,13 @@ class libyaml:
                                 _line.append(self.create_space(level+4)+"requires:")
                                 for entry_lvl3 in input_json[key][entry][entry_lvl2]:
                                     _line.append(self.create_space(level+6)+"- "+entry_lvl3)
+                            elif entry_lvl2 in "filters":
+                                print("Skipping filters for now")
+                                #_line.append(self.create_space(level+4)+"filters:")
+                                #for entry_lvl3 in input_json[key][entry][entry_lvl2]:
+                                #    if type(input_json[key][entry][entry_lvl2][entry_lvl3]) == dict:
+                                #        _line.append(self.create_space(level+6)+"- "+entry_lvl3+":")
+
                             else:
                                 _line.append(self.create_space(level+2)+"- "+str(input_json[key][entry][entry_lvl2]))
                     else:
