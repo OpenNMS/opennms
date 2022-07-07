@@ -103,7 +103,7 @@ for e in main_yml_content:
             elif pipeline_parameters["trigger-debs"]:
                 sample_workflow=libyaml.generate_yaml(workflow_data,"debs",level,sample_workflow)
             elif "trigger-experimental" in pipeline_parameters.keys():
-                sample_workflow=libyaml.generate_yaml(workflow_data,pipeline_parameters["trigger-experimental"],level,sample_workflow)
+                sample_workflow=libyaml.generate_yaml(workflow_data,"build-with-tar",level,sample_workflow)
             else:
                 sample_workflow=libyaml.generate_yaml(workflow_data,"build",level,sample_workflow)
             

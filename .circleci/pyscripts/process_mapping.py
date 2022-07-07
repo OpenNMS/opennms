@@ -138,8 +138,8 @@ if "CIRCLE_BRANCH" in os.environ and os.environ["CIRCLE_BRANCH"] == "mem/jira/nm
     else:
         mappings["trigger-debs"]=False
 
-    if "exp:" in git_keywords:
-        mappings["trigger-experimental"]=git_keywords.split(":")[1]
+    if "experimentalPath" in git_keywords:
+        mappings["trigger-experimental"]=True
 
     
 with open(output_path, 'w') as fp:
