@@ -26,6 +26,9 @@ class libgit:
         last_commit=self.getLastCommit()
         keywords=re.findall("\#([\w]+)?(:[\w]+(-?[\w]+)+)?",last_commit)
         keywords_dict={}
+        #Exp: not a good idea
+        if len(keywords) >2:
+            keywords=keywords[0][0:2]
 
         for e in keywords:
             key,value=e
