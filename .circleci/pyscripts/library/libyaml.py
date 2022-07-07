@@ -123,7 +123,7 @@ class libyaml:
         tmp_line=" "*level
         return tmp_line
 
-    def generate_yaml(self,input_json,key,level=0,_line=[]):
+    def generate_yaml(self,input_json,key,level=0,_line=[],disable_filters=False):
         for entry in input_json[key]:
             if entry in ["extends"]:
                 for extension in input_json[key][entry]:
@@ -147,7 +147,7 @@ class libyaml:
                                 _line.append(self.create_space(level+4)+"requires:")
                                 for entry_lvl3 in input_json[key][entry][entry_lvl2]:
                                     _line.append(self.create_space(level+6)+"- "+entry_lvl3)
-                            elif entry_lvl2 in "filters":
+                            elif entry_lvl2 in "filters" and not disable_filters:
                                 _line.append(self.create_space(level+4)+"filters:")
                                 for entry_lvl3 in input_json[key][entry][entry_lvl2]:
                                     if type(input_json[key][entry][entry_lvl2][entry_lvl3]) == dict:
