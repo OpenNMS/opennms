@@ -1,4 +1,3 @@
-
 = Realtime Console Data
 
 The Realtime Console (RTC) calculates the availability for monitored services.
@@ -15,7 +14,7 @@ Data provided from the RTC is available to the REST API.
 | `/availability/nodes/\{nodeid}`                          | Get detailed availability for all services on a given node.
 |===
 
-IMPORTANT: The categories referenced above are RTC categories defined in `$OPENNMS_HOME/etc/categories.xml`, not surveillance categories assigned to nodes.
+IMPORTANT: The categories referenced above are RTC categories defined in `$OPENNMS_HOME/etc/categories.xml`, not tags assigned to nodes.
 
 == Example
 
