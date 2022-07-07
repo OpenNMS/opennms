@@ -3,13 +3,13 @@
 
 This report provides a summary of availability across one or more node tags.
 
-Each node tag includes a table of average, minimum, and maximum values for the following availability data for the specified node tag over the specified date range:
+For each node tag, the report includes a table of average, minimum, and maximum values for the following availability data over the specified date range:
 
 * Number of outages.
 * Mean Time To Repair ("MTTR") (in hours).
 * Length of time for each outage (in hours).
-* Percent outage (per unit in category).
-* Percent availability (per unit in category).
+* Percent outage (per unit in tag).
+* Percent availability (per unit in tag).
 
 This report has a pie chart showing percent available time to outage time.
 It then provides a stacked bar chart showing the available time and the outage time for each day in the specified date range.

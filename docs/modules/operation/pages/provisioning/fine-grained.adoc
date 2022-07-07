@@ -116,4 +116,4 @@ What happens is that the audit phase is run by Provisiond and it will be determi
 ${OPENNMS_HOME}/bin/provision.pl node delete customer1 1 node-a
 ${OPENNMS_HOME}/bin/provision.pl requisition import customer1
 ----
-This completes the life cycle of managing a node element, iteratively, in a import requisition.
+This completes the life cycle of managing a node element iteratively in a import requisition.

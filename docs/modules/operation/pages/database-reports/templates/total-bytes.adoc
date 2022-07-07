@@ -23,7 +23,7 @@ You can customize this report with a company logo (approximately 195px by 50px) 
 
 | Surveillance Category
 | Identify one or more node tags to filter nodes to include in the report.
-To select multiple tags use wildcards as described below.
+To select multiple tags, use wildcards as described below.
 If no tags match the entered string, the report will have no data.
 | Routers
 
