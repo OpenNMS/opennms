@@ -24,7 +24,7 @@ class libgit:
 
     def extractKeywordsFromLastCommit(self)->list:
         last_commit=self.getLastCommit()
-        keywords=re.findall("\#([\w]+)?(:[\w]+-?[\w]+)?",last_commit)
+        keywords=re.findall("\#([\w]+)?(:[\w]+(-?[\w]+)+)?",last_commit)
         keywords_dict={}
 
         for e in keywords:
