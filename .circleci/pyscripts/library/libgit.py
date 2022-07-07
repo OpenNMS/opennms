@@ -1,3 +1,4 @@
+from ast import keyword
 import subprocess
 import re
 
@@ -25,12 +26,16 @@ class libgit:
     def extractKeywordsFromLastCommit(self)->list:
         last_commit=self.getLastCommit()
         keywords=re.findall("\#([\w]+)?(:[\w]+(-?[\w]+)+)?",last_commit)
+        test_keywords=""
         keywords_dict={}
         #Exp: not a good idea
+        print(keywords,len(keywords[0]))
         if len(keywords[0]) >2:
-            keywords=keywords[0][0:2]
+            test_keywords=keywords[0][0:2]
+        else:
+            test_keywords=keywords
 
-        for e in keywords:
+        for e in test_keywords:
             key,value=e
             keywords_dict[key]=value.replace(":","") if value.strip() else True
  
