@@ -36,6 +36,7 @@ class libgit:
             test_keywords=keywords
 
         for e in test_keywords:
+            print(e)
             key,value=e
             keywords_dict[key]=value.replace(":","") if value.strip() else True
  
