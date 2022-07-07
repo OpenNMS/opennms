@@ -50,6 +50,8 @@
 
 <h1>Alarm Cleared or Not Found</h1>
 
+<h1>Alarm Cleared or Not Found</h1>
+
 <p>
   <%=einfe.getMessage()%>. The alarm has been cleared or has an invalid alarm ID.
   <br/>
