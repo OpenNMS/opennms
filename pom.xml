@@ -155,7 +155,7 @@
     <extension>
       <groupId>org.apache.maven.wagon</groupId>
       <artifactId>wagon-ssh-external</artifactId>
-      <version>2.6</version>
+      <version>3.5.2</version>
     </extension>
   </extensions>
   <pluginManagement>
