@@ -40,10 +40,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentSkipListMap;
@@ -162,7 +162,7 @@ abstract public class PollerConfigManager implements PollerConfig {
      * A mapping of the configured package to a list of IPs selected via filter
      * rules, so as to avoid repetitive database access.
      */
-    private AtomicReference<Map<Package, List<InetAddress>>> m_pkgIpMap = new AtomicReference<>();
+    private AtomicReference<Map<Package, Set<InetAddress>>> m_pkgIpMap = new AtomicReference<>();
     /**
      * A mapp of service names to service monitors. Constructed based on data in
      * the configuration file.
@@ -450,7 +450,7 @@ abstract public class PollerConfigManager implements PollerConfig {
         getReadLock().lock();
         
         try {
-            Map<Package, List<InetAddress>> pkgIpMap = new HashMap<>();
+            Map<Package, Set<InetAddress>> pkgIpMap = new HashMap<>();
             
             for(final Package pkg : packages()) {
         
@@ -458,7 +458,7 @@ abstract public class PollerConfigManager implements PollerConfig {
                 // database and populate the package, IP list map.
                 //
                 try {
-                    List<InetAddress> ipList = getIpList(pkg);
+                    Set<InetAddress> ipList = new HashSet<>(getIpList(pkg));
                     LOG.debug("createPackageIpMap: package {}: ipList size = {}", pkg.getName(), ipList.size());
         
                     if (ipList.size() > 0) {
@@ -522,7 +522,7 @@ abstract public class PollerConfigManager implements PollerConfig {
         final InetAddress ifaceAddr = addr(iface);
     
         // get list of IPs in this package
-        final List<InetAddress> ipList = m_pkgIpMap.get().get(pkg);
+        final Set<InetAddress> ipList = m_pkgIpMap.get().get(pkg);
         if (ipList != null && ipList.size() > 0) {
 			filterPassed = ipList.contains(ifaceAddr);
         }
