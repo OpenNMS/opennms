@@ -1,5 +1,5 @@
 {
-    "build-only":{
+    "build":{
         "build": {
             "filters":{
                 "branches":{
@@ -29,7 +29,7 @@
             "requires":["integration-test"]
         }
     },
-    "build": {
+    "build-deploy": {
         "extends": ["build"],
         "integration-test": {
             "requires":["build"],

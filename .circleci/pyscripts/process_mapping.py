@@ -113,7 +113,7 @@ if "CIRCLE_BRANCH" in os.environ and os.environ["CIRCLE_BRANCH"] == "mem/jira/nm
         #if circleci_configuration is the only entry, don't run a full build
         mappings["trigger-build"]=False
 
-    if "smoke" in git_keywords:   
+    if "smoke" in git_keywords or "Smoke_tests" in What_to_build:   
         mappings["trigger-smoke"]=True
     else:
         mappings["trigger-smoke"]=False
@@ -133,10 +133,10 @@ if "CIRCLE_BRANCH" in os.environ and os.environ["CIRCLE_BRANCH"] == "mem/jira/nm
     else:
         mappings["trigger-debs"]=False
 
-    if "integration" in git_keywords:   
-        mappings["trigger-debs"]=True
+    if "integration" in git_keywords or "Integration_tests" in What_to_build:   
+        mappings["trigger-integration"]=True
     else:
-        mappings["trigger-debs"]=False
+        mappings["trigger-integration"]=False
 
     if "experimentalPath" in git_keywords:
         mappings["trigger-experimental"]=True

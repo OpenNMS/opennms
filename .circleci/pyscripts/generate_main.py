@@ -105,9 +105,9 @@ for e in main_yml_content:
                 sample_workflow=libyaml.generate_yaml(workflow_data,"build-with-tar",level,sample_workflow,disable_filters=True)
             else:
                 if pipeline_parameters["trigger-build"]:
-                    sample_workflow=libyaml.generate_yaml(workflow_data,"build",level,sample_workflow)
+                    sample_workflow=libyaml.generate_yaml(workflow_data,"build-deploy",level,sample_workflow)
                 else:
-                    sample_workflow=libyaml.generate_yaml(workflow_data,"build-only",level,sample_workflow)
+                    sample_workflow=libyaml.generate_yaml(workflow_data,"build",level,sample_workflow)
             
             if sample_workflow:
                 for line in sample_workflow:
