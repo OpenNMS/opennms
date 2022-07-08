@@ -68,7 +68,7 @@ The dashboard should show outstanding notifications in the NOC to provide an ove
 .Information displayed in the Notifications component
 image::dashboard/04_dashboard-notifications.png[]
 
-1. Node: Label of the monitored node the notification is associated with.
+1. Node: Label of the node associated with the notification.
 2. Service: Name of the service associated with the notification.
 3. Message: Message associated with the notification.
 4. Sent Time: Time when the notification was sent.
@@ -87,7 +87,7 @@ To give an overview information about ongoing Outages in the network, the dashbo
 image::dashboard/05_dashboard-outages.png[]
 
 1. Node: Label of the monitored node with ongoing outages.
-2. Current Outages: Number of services on the node with outages and total number of monitored services, e.g. with the natural meaning of "3 of 3 services are affected."
+2. Current Outages: Number of services on the node with outages out of the total number of monitored services; for example, "3 of 3 services are affected".
 3. 24 Hour Availability: Availability of all services provided by the node calculated by the last 24 hours.
 
 [[ga-dashboard-resource-graph-viewer]]
