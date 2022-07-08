@@ -1263,6 +1263,21 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     }
 
     @Test
+    public void testFiveSwitchTopologyAD() {
+
+        FiveSwitchTopology topology = new FiveSwitchTopology();
+
+        BroadcastDomain domain = new BroadcastDomain();
+        Bridge.create(domain,topology.nodeAId);
+        Bridge.create(domain,topology.nodeDId);
+        setBridgeElements(domain,topology.elemlist);
+        DiscoveryBridgeTopology discoveryBridgeTopology= new DiscoveryBridgeTopology(domain);
+        discoveryBridgeTopology.addUpdatedBFT(topology.nodeAId, topology.bftA);
+        discoveryBridgeTopology.addUpdatedBFT(topology.nodeDId, topology.bftD);
+        discoveryBridgeTopology.calculate();
+    }
+
+    @Test
     public void testFiveSwitchTopologyBCADE() throws BridgeTopologyException {
 
         FiveSwitchTopology topology = new FiveSwitchTopology();

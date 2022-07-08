@@ -168,7 +168,8 @@ public class DiscoveryBridgeTopology {
             return;
         } 
         BridgeForwardingTable oldRootBft = bridgeFtMapCalcul.get(m_domain.getRootBridge().getNodeId());
-        BridgeSimpleConnection sp = BridgeSimpleConnection.createAndRun(oldRootBft, rootBft);
+        BridgeSimpleConnection sp = BridgeSimpleConnection.create(oldRootBft, rootBft);
+        sp.findSimpleConnection();
         rootBft.setRootPort(sp.getSecondBridgePort());
         down(oldRootBft,rootBft,sp,bridgeFtMapCalcul,0);
     }
@@ -296,11 +297,9 @@ public class DiscoveryBridgeTopology {
                           bridgeid, bridgeFTrootPort);
                 continue;
             }
-            BridgeSimpleConnection upsimpleconn;
-                    
-
+            BridgeSimpleConnection upsimpleconn = BridgeSimpleConnection.create(rootBft, bridgeFT);
             try {
-                  upsimpleconn= BridgeSimpleConnection.createAndRun(rootBft, bridgeFT);
+                  upsimpleconn.findSimpleConnection();
                   if (LOG.isDebugEnabled()) {
                            LOG.debug("calculate: level: 1, bridge:[{}] -> {}", 
                                     bridgeFT.getNodeId(),
@@ -375,8 +374,10 @@ public class DiscoveryBridgeTopology {
                 LOG.error("calculate: bridge:[{}],postprocessbridge. FT is null",postprocessbridgeid);
                 continue;
             }
+            BridgeSimpleConnection simpleConnection = BridgeSimpleConnection.create(rootBft, postprocessBridgeFT);
             try {
-                down(rootBft, postprocessBridgeFT, BridgeSimpleConnection.createAndRun(rootBft, postprocessBridgeFT), bridgeFtMapCalcul,
+                simpleConnection.findSimpleConnection();
+                down(rootBft, postprocessBridgeFT, simpleConnection, bridgeFtMapCalcul,
                      0);
             } catch (BridgeTopologyException e) {
                 LOG.warn("calculate: bridge:[{}], postprocessbridge. No topology found for single port node. {}, \n{}", postprocessbridgeid, e.getMessage(),e.printTopology());
@@ -430,10 +431,11 @@ public class DiscoveryBridgeTopology {
                 parsedBridgeFT = bridgeFtMapCalcul.get(parsedbridgeid);
             }
             
-            BridgeSimpleConnection sp;
+            BridgeSimpleConnection sp = BridgeSimpleConnection.create(parsedBridgeFT,
+                    postBridgeFT);
+
             try {
-                sp = BridgeSimpleConnection.createAndRun(parsedBridgeFT,
-                                                         postBridgeFT);
+                sp.findSimpleConnection();
             } catch (BridgeTopologyException e) {
                 LOG.warn("postprocess: bridge:[{}] <--> bridge:[{}] no topology found. {}, \n{}",
                          postbridgeid, parsedbridgeid, e.getMessage(),
@@ -462,8 +464,10 @@ public class DiscoveryBridgeTopology {
                 return;
             }
         }
+        BridgeSimpleConnection simpleConnection = BridgeSimpleConnection.create(rootBridgeFT, postBridgeFT);
+        simpleConnection.findSimpleConnection();
         try {
-            down(rootBridgeFT, postBridgeFT, BridgeSimpleConnection.createAndRun(rootBridgeFT, postBridgeFT), bridgeFtMapCalcul,
+            down(rootBridgeFT, postBridgeFT, simpleConnection, bridgeFtMapCalcul,
                  0);
             return;
         } catch (BridgeTopologyException e) {
@@ -528,8 +532,9 @@ public class DiscoveryBridgeTopology {
             checkforwarders.add(curBridgeFT);
             
             BridgeSimpleConnection simpleconn = 
-                    BridgeSimpleConnection.createAndRun(curBridgeFT,
+                    BridgeSimpleConnection.create(curBridgeFT,
                                        bridgeFT);
+            simpleconn.findSimpleConnection();
             if (LOG.isDebugEnabled()) {
                 LOG.debug("down: level: {}, bridge:[{}]. {}", 
                          level,
