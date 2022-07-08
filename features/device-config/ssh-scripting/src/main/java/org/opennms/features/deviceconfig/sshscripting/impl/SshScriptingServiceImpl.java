@@ -143,22 +143,20 @@ public class SshScriptingServiceImpl implements SshScriptingService {
      */
     private String getErrorDescription(Throwable t, SshInteraction sshInteraction, Statement prevStatement, Statement currentStatement) {
 
-        String errorDesc = t.getClass().getName() + ": " + t.getMessage();
-
         if (currentStatement == null) {
-            return errorDesc;
+            return t.getMessage();
         }
 
         String statementWithVars = sshInteraction.replaceVars(currentStatement.toString());
         if (prevStatement == null) {
-            return errorDesc + " - encountered during initial " + statementWithVars + "\"";
+            return t.getMessage() + " - encountered during initial " + statementWithVars + "\"";
         }
 
         String prevStatementWithVars = sshInteraction.replaceVars(prevStatement.toString());
         if (currentStatement.statementType == Statement.StatementType.await) {
-            return errorDesc + " - encountered while waiting for \"" + statementWithVars + "\" following execution of \"" + prevStatementWithVars + "\"";
+            return t.getMessage() + " - encountered while waiting for \"" + statementWithVars + "\" following execution of \"" + prevStatementWithVars + "\"";
         } else {
-            return errorDesc + " - encountered when sending input \"" + statementWithVars + "\" following successful \"" + prevStatementWithVars + "\"";
+            return t.getMessage() + " - encountered when sending input \"" + statementWithVars + "\" following successful \"" + prevStatementWithVars + "\"";
         }
     }
 
