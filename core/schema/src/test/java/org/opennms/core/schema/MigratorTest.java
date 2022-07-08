@@ -32,8 +32,10 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
 
 //This is test Migrator not directly doing operation on DB
+@EnableRuleMigrationSupport
 public class MigratorTest {
     private Migrator migrator;
 

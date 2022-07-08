@@ -35,6 +35,7 @@ import java.util.List;
 
 import org.junit.Assert;
 import junit.framework.AssertionFailedError;
+import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
 
 /**
  * <p>ThrowableAnticipator class.</p>
@@ -42,6 +43,7 @@ import junit.framework.AssertionFailedError;
  * @author ranger
  * @version $Id: $
  */
+@EnableRuleMigrationSupport
 public class ThrowableAnticipator extends Assert {
     /** Constant <code>IGNORE_MESSAGE="*** ThrowableAnticipator ignore Throwab"{trunked}</code> */
     public final static String IGNORE_MESSAGE =

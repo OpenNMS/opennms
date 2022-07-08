@@ -28,16 +28,18 @@
 
 package org.opennms.features.topology.link;
 
-import org.junit.Assert;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TopologyLinkBuilderTest {
 
     @Test
     public void verifyGetLink() {
-        Assert.assertEquals("/opennms/topology?provider=Enhanced+Linkd&szl=1", new TopologyLinkBuilder().getLink());
-        Assert.assertEquals("/opennms/topology?provider=Enhanced+Linkd&szl=1", new TopologyLinkBuilder().provider(null).focus((String[]) null).layout((String) null).getLink());
-        Assert.assertEquals(
+        assertEquals("/opennms/topology?provider=Enhanced+Linkd&szl=1", new TopologyLinkBuilder().getLink());
+        assertEquals("/opennms/topology?provider=Enhanced+Linkd&szl=1", new TopologyLinkBuilder().provider(null).focus((String[]) null).layout((String) null).getLink());
+        assertEquals(
                 "/opennms/topology?provider=Application&szl=10&focus-vertices=bsm%3A1%2Cbsm%3A2&layout=Circle+Layout",
                 new TopologyLinkBuilder().layout(Layout.CIRCLE).provider(TopologyProvider.APPLICATION).focus("bsm:1","bsm:2").szl(10).getLink());
     }

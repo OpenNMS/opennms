@@ -47,6 +47,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.curator.test.TestingServer;
 import org.apache.kafka.common.utils.SystemTime;
 import org.junit.After;
+import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
 import org.junit.rules.ExternalResource;
 import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
@@ -64,6 +65,7 @@ import scala.collection.JavaConverters;
  * 
  * @author Seth
  */
+@EnableRuleMigrationSupport
 public class JUnitKafkaServer extends ExternalResource {
     private static final Logger LOG = LoggerFactory.getLogger(JUnitKafkaServer.class);
 

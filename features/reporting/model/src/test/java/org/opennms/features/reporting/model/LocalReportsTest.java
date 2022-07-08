@@ -32,9 +32,11 @@ import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
 import org.junit.runners.Parameterized.Parameters;
 import org.opennms.core.test.xml.XmlTestNoCastor;
 
+@EnableRuleMigrationSupport
 public class LocalReportsTest extends XmlTestNoCastor<LocalReports> {
 
     public LocalReportsTest(final LocalReports sampleObject,
