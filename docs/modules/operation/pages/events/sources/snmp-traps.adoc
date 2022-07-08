@@ -228,20 +228,24 @@ This will match varbind 1 with any string beginning with "Error:".
 
 == Decode varbinds
 
-A lot of MIBs define specific variables to code the value of some OID.
+A lot of MIBs define specific variables to code the value of some OIDs.
 As an example, the SNMP agent returns a numerical value for the `ifAdminStatus` and `ifOperStatus`: 1 means Up and 2 means Down.
 
 Because OpenNMS does not have a MibParser, we usually put this map (between the numerical encoded value and its meaning) into the event description.
 
-Configuring the event properly now are able to decode the numerical value sent into trap varbinds to the corresponding string value into the <logmsg>.
+With a properly configured event, you can decode the numerical value sent into trap varbinds and the corresponding string value into the `logmsg`.
 
-Let consider a Cisco HSRP status changes trap (OID .1.3.6.1.4.1.9.9.106.2 generic 6 and specific 1), this trap correspond to uei.opennms.org/vendor/Cisco/traps/cHsrpStateChange event.
+For example, a Cisco HSRP status change trap (OID .1.3.6.1.4.1.9.9.106.2 generic 6 and specific 1), which corresponds to the `uei.opennms.org/vendor/Cisco/traps/cHsrpStateChange` event.
 
-The trap contains the following varbind:  cHsrpGrpStandbyState whose possible values are from 1 to 6 and whose meaning is:
+The trap contains the following varbind:  `cHsrpGrpStandbyState`, whose possible values are from 1 to 6:
+* initial(1)
+* learn(2)
+* listen(3)
+* speak(4)
+* standby(5)
+* active(6)
 
- initial(1) learn(2) listen(3) speak(4) standby(5) active(6).
-
-We want to display the literal meaning of the HSRP status inside the logmsg. Here is the original event definition:
+The following is the original event definition:
 
 [source,xml]
 ----
@@ -262,10 +266,7 @@ We want to display the literal meaning of the HSRP status inside the logmsg. Her
  </mask>
  <uei>uei.opennms.org/vendor/Cisco/traps/cHsrpStateChange</uei>
  <event-label>CISCO-HSRP-MIB defined trap event: cHsrpStateChange</event-label>
- <descr><p>A cHsrpStateChange notification is sent when a
- cHsrpGrpStandbyState transitions to either active or
- standby state, or leaves active or standby state. There
- will be only one notification issued when the state change
+ <descr><p>A cHsrpStateChange notification is sent when a cHsrpGrpStandbyState transitions to either active or standby state, or leaves active or standby state. There will be only one notification issued when the state change
  is from standby to active and vice versa.</p><table>
  <tr><td><b>
  cHsrpGrpStandbyState</b></td><td>%parm[#1]%
@@ -278,7 +279,7 @@ We want to display the literal meaning of the HSRP status inside the logmsg. Her
  </event>
 ----
 
-This is how we would change the event definition so that the status is decoded inside the logmsg:
+The following example shows how to change the event definition so that the HSRP status is decoded so the literal definition displays inside the logmsg:
 
 [source,xml]
 ----
@@ -299,10 +300,7 @@ This is how we would change the event definition so that the status is decoded i
  </mask>
  <uei>uei.opennms.org/vendor/Cisco/traps/cHsrpStateChange</uei>
  <event-label>CISCO-HSRP-MIB defined trap event: cHsrpStateChange</event-label>
- <descr><p>A cHsrpStateChange notification is sent when a
- cHsrpGrpStandbyState transitions to either active or
- standby state, or leaves active or standby state. There
- will be only one notification issued when the state change
+ <descr><p>A cHsrpStateChange notification is sent when a cHsrpGrpStandbyState transitions to either active or standby state, or leaves active or standby state. There will be only one notification issued when the state change
  is from standby to active and vice versa.</p><table>
  <tr><td><b>
  cHsrpGrpStandbyState</b></td><td>%parm[#1]%
@@ -331,7 +329,6 @@ If the value of the first OID in this trap is 6 the the log message will be:
 ----
 <p>Cisco Event: HSRP State Change to active.</p>
 ----
-
 
 == Trap value representation
 
