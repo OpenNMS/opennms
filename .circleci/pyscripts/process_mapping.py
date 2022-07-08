@@ -110,7 +110,7 @@ if "CIRCLE_BRANCH" in os.environ and os.environ["CIRCLE_BRANCH"] == "mem/jira/nm
     git_keywords=libgit.extractKeywordsFromLastCommit()
     print("Git Keywords:",git_keywords)
     if "circleci_configuration" in What_to_build and len(What_to_build) == 1 :
-        #if circleci_configuration is the only entry, don't run a full build
+        #if circleci_configuration is the only entry in the list we don't want to trigger a buildss.
         mappings["trigger-build"]=False
 
     if "smoke" in git_keywords or "Smoke_tests" in What_to_build:   
