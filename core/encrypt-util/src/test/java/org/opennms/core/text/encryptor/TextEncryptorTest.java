@@ -36,13 +36,14 @@ import java.io.File;
 
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
 import org.junit.rules.TemporaryFolder;
 import org.opennms.core.config.api.TextEncryptor;
 import org.opennms.features.scv.api.Credentials;
 import org.opennms.features.scv.api.SecureCredentialsVault;
 import org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault;
 
-
+@EnableRuleMigrationSupport
 public class TextEncryptorTest {
 
     @Rule
