@@ -28,6 +28,10 @@
 
 package org.opennms.netmgt.dao;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.opennms.core.utils.InetAddressUtils.addr;
@@ -39,6 +43,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.hibernate.criterion.Restrictions;
 import org.junit.Before;
@@ -258,6 +264,32 @@ public class OutageDaoIT implements InitializingBean {
         List<OutageSummary> outages = m_outageDao.getNodeOutageSummaries(0);
         System.err.println(outages);
         assertEquals(3, outages.size());
+    }
+
+    @Test
+    @Transactional
+    public void canGetCurrentOutagesForServices() {
+        final OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "node");
+        m_nodeDao.save(node);
+
+        final OnmsMonitoredService svc1 = getMonitoredService(getIpInterface("172.16.1.1", node), getServiceType("ICMP"));
+        final OnmsMonitoredService svc2 = getMonitoredService(getIpInterface("172.16.1.2", node), getServiceType("ICMP"));
+        final OnmsMonitoredService svc3 = getMonitoredService(getIpInterface("172.18.1.2", node), getServiceType("ICMP"));
+        m_monitoredServiceDao.saveOrUpdate(svc1);
+        m_monitoredServiceDao.saveOrUpdate(svc2);
+        m_monitoredServiceDao.saveOrUpdate(svc3);
+
+        // No outages, no results
+        assertThat(m_outageDao.currentOutagesByServiceId().entrySet(), empty());
+
+        OnmsOutage outage = new OnmsOutage();
+        outage.setIfLostService(new Date(0));
+        outage.setMonitoredService(svc1);
+        m_outageDao.save(outage);
+
+        Map<Integer, Set<OnmsOutage>>  outagesByService = m_outageDao.currentOutagesByServiceId();
+        assertThat(outagesByService.entrySet(), hasSize(1));
+        assertThat(outagesByService.get(svc1.getId()), contains(outage));
     }
 
     @Test
