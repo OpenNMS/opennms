@@ -40,6 +40,7 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpResult;
@@ -47,6 +48,7 @@ import org.opennms.netmgt.snmp.SnmpRowResult;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.TableTracker;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class TableTrackerProxyTest {
     private List<SnmpRowResult> rows = new ArrayList<>();
     private SnmpObjId table = SnmpObjId.get(".1.3.6.1.2.1");

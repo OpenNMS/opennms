@@ -38,6 +38,7 @@ import java.util.Collections;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.opennms.netmgt.snmp.GatheringTracker;
 import org.opennms.netmgt.snmp.SingleInstanceTracker;
 import org.opennms.netmgt.snmp.SnmpInstId;
@@ -45,6 +46,7 @@ import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpValue;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class SingleInstanceTrackerProxyTest {
     private GatheringTracker gatherer = new GatheringTracker();
     private SnmpObjId base = SnmpObjId.get(".1.3.6.1.2.1.1");
