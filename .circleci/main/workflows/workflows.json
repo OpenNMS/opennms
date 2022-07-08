@@ -30,13 +30,7 @@
         }
     },
     "build": {
-        "build": {
-            "filters":{
-                "branches":{
-                    "ignore":["/^from-foundation.*/"]
-                }
-            }
-        },
+        "extends": ["build"],
         "integration-test": {
             "requires":["build"],
             "filters":{
