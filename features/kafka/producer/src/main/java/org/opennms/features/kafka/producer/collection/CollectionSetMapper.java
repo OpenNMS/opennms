@@ -33,6 +33,7 @@ import java.net.UnknownHostException;
 import java.util.Objects;
 import java.util.Optional;
 
+import com.google.protobuf.DoubleValue;
 import org.opennms.core.utils.StringUtils;
 import org.opennms.features.kafka.producer.model.CollectionSetProtos;
 import org.opennms.features.kafka.producer.model.CollectionSetProtos.NumericAttribute.Type;
@@ -172,6 +173,7 @@ public class CollectionSetMapper {
                     attributeBuilder.setGroup(lastGroupName);
                     attributeBuilder.setName(attribute.getName());
                     attributeBuilder.setValue(attribute.getNumericValue().doubleValue());
+                    attributeBuilder.setMetricValue(DoubleValue.of(attribute.getNumericValue().doubleValue()));
                     attributeBuilder.setType((attribute.getType() == AttributeType.GAUGE) ? Type.GAUGE : Type.COUNTER);
                     collectionSetResourceBuilder.addNumeric(attributeBuilder);
                 }

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018-2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -766,6 +766,19 @@ public final class CollectionSetProtos {
      * <code>.NumericAttribute.Type type = 4;</code>
      */
     org.opennms.features.kafka.producer.model.CollectionSetProtos.NumericAttribute.Type getType();
+
+    /**
+     * <code>.google.protobuf.DoubleValue metric_value = 5;</code>
+     */
+    boolean hasMetricValue();
+    /**
+     * <code>.google.protobuf.DoubleValue metric_value = 5;</code>
+     */
+    com.google.protobuf.DoubleValue getMetricValue();
+    /**
+     * <code>.google.protobuf.DoubleValue metric_value = 5;</code>
+     */
+    com.google.protobuf.DoubleValueOrBuilder getMetricValueOrBuilder();
   }
   /**
    * Protobuf type {@code NumericAttribute}
@@ -831,6 +844,19 @@ public final class CollectionSetProtos {
               int rawValue = input.readEnum();
 
               type_ = rawValue;
+              break;
+            }
+            case 42: {
+              com.google.protobuf.DoubleValue.Builder subBuilder = null;
+              if (metricValue_ != null) {
+                subBuilder = metricValue_.toBuilder();
+              }
+              metricValue_ = input.readMessage(com.google.protobuf.DoubleValue.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(metricValue_);
+                metricValue_ = subBuilder.buildPartial();
+              }
+
               break;
             }
             default: {
@@ -1057,6 +1083,27 @@ public final class CollectionSetProtos {
       return result == null ? org.opennms.features.kafka.producer.model.CollectionSetProtos.NumericAttribute.Type.UNRECOGNIZED : result;
     }
 
+    public static final int METRIC_VALUE_FIELD_NUMBER = 5;
+    private com.google.protobuf.DoubleValue metricValue_;
+    /**
+     * <code>.google.protobuf.DoubleValue metric_value = 5;</code>
+     */
+    public boolean hasMetricValue() {
+      return metricValue_ != null;
+    }
+    /**
+     * <code>.google.protobuf.DoubleValue metric_value = 5;</code>
+     */
+    public com.google.protobuf.DoubleValue getMetricValue() {
+      return metricValue_ == null ? com.google.protobuf.DoubleValue.getDefaultInstance() : metricValue_;
+    }
+    /**
+     * <code>.google.protobuf.DoubleValue metric_value = 5;</code>
+     */
+    public com.google.protobuf.DoubleValueOrBuilder getMetricValueOrBuilder() {
+      return getMetricValue();
+    }
+
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -1083,6 +1130,9 @@ public final class CollectionSetProtos {
       if (type_ != org.opennms.features.kafka.producer.model.CollectionSetProtos.NumericAttribute.Type.GAUGE.getNumber()) {
         output.writeEnum(4, type_);
       }
+      if (metricValue_ != null) {
+        output.writeMessage(5, getMetricValue());
+      }
       unknownFields.writeTo(output);
     }
 
@@ -1105,6 +1155,10 @@ public final class CollectionSetProtos {
       if (type_ != org.opennms.features.kafka.producer.model.CollectionSetProtos.NumericAttribute.Type.GAUGE.getNumber()) {
         size += com.google.protobuf.CodedOutputStream
           .computeEnumSize(4, type_);
+      }
+      if (metricValue_ != null) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(5, getMetricValue());
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -1131,6 +1185,11 @@ public final class CollectionSetProtos {
           == java.lang.Double.doubleToLongBits(
               other.getValue()));
       result = result && type_ == other.type_;
+      result = result && (hasMetricValue() == other.hasMetricValue());
+      if (hasMetricValue()) {
+        result = result && getMetricValue()
+            .equals(other.getMetricValue());
+      }
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -1151,6 +1210,10 @@ public final class CollectionSetProtos {
           java.lang.Double.doubleToLongBits(getValue()));
       hash = (37 * hash) + TYPE_FIELD_NUMBER;
       hash = (53 * hash) + type_;
+      if (hasMetricValue()) {
+        hash = (37 * hash) + METRIC_VALUE_FIELD_NUMBER;
+        hash = (53 * hash) + getMetricValue().hashCode();
+      }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -1292,6 +1355,12 @@ public final class CollectionSetProtos {
 
         type_ = 0;
 
+        if (metricValueBuilder_ == null) {
+          metricValue_ = null;
+        } else {
+          metricValue_ = null;
+          metricValueBuilder_ = null;
+        }
         return this;
       }
 
@@ -1322,6 +1391,11 @@ public final class CollectionSetProtos {
         result.name_ = name_;
         result.value_ = value_;
         result.type_ = type_;
+        if (metricValueBuilder_ == null) {
+          result.metricValue_ = metricValue_;
+        } else {
+          result.metricValue_ = metricValueBuilder_.build();
+        }
         onBuilt();
         return result;
       }
@@ -1383,6 +1457,9 @@ public final class CollectionSetProtos {
         }
         if (other.type_ != 0) {
           setTypeValue(other.getTypeValue());
+        }
+        if (other.hasMetricValue()) {
+          mergeMetricValue(other.getMetricValue());
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -1620,6 +1697,123 @@ public final class CollectionSetProtos {
         type_ = 0;
         onChanged();
         return this;
+      }
+
+      private com.google.protobuf.DoubleValue metricValue_ = null;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          com.google.protobuf.DoubleValue, com.google.protobuf.DoubleValue.Builder, com.google.protobuf.DoubleValueOrBuilder> metricValueBuilder_;
+      /**
+       * <code>.google.protobuf.DoubleValue metric_value = 5;</code>
+       */
+      public boolean hasMetricValue() {
+        return metricValueBuilder_ != null || metricValue_ != null;
+      }
+      /**
+       * <code>.google.protobuf.DoubleValue metric_value = 5;</code>
+       */
+      public com.google.protobuf.DoubleValue getMetricValue() {
+        if (metricValueBuilder_ == null) {
+          return metricValue_ == null ? com.google.protobuf.DoubleValue.getDefaultInstance() : metricValue_;
+        } else {
+          return metricValueBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>.google.protobuf.DoubleValue metric_value = 5;</code>
+       */
+      public Builder setMetricValue(com.google.protobuf.DoubleValue value) {
+        if (metricValueBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          metricValue_ = value;
+          onChanged();
+        } else {
+          metricValueBuilder_.setMessage(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.google.protobuf.DoubleValue metric_value = 5;</code>
+       */
+      public Builder setMetricValue(
+          com.google.protobuf.DoubleValue.Builder builderForValue) {
+        if (metricValueBuilder_ == null) {
+          metricValue_ = builderForValue.build();
+          onChanged();
+        } else {
+          metricValueBuilder_.setMessage(builderForValue.build());
+        }
+
+        return this;
+      }
+      /**
+       * <code>.google.protobuf.DoubleValue metric_value = 5;</code>
+       */
+      public Builder mergeMetricValue(com.google.protobuf.DoubleValue value) {
+        if (metricValueBuilder_ == null) {
+          if (metricValue_ != null) {
+            metricValue_ =
+              com.google.protobuf.DoubleValue.newBuilder(metricValue_).mergeFrom(value).buildPartial();
+          } else {
+            metricValue_ = value;
+          }
+          onChanged();
+        } else {
+          metricValueBuilder_.mergeFrom(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.google.protobuf.DoubleValue metric_value = 5;</code>
+       */
+      public Builder clearMetricValue() {
+        if (metricValueBuilder_ == null) {
+          metricValue_ = null;
+          onChanged();
+        } else {
+          metricValue_ = null;
+          metricValueBuilder_ = null;
+        }
+
+        return this;
+      }
+      /**
+       * <code>.google.protobuf.DoubleValue metric_value = 5;</code>
+       */
+      public com.google.protobuf.DoubleValue.Builder getMetricValueBuilder() {
+        
+        onChanged();
+        return getMetricValueFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.google.protobuf.DoubleValue metric_value = 5;</code>
+       */
+      public com.google.protobuf.DoubleValueOrBuilder getMetricValueOrBuilder() {
+        if (metricValueBuilder_ != null) {
+          return metricValueBuilder_.getMessageOrBuilder();
+        } else {
+          return metricValue_ == null ?
+              com.google.protobuf.DoubleValue.getDefaultInstance() : metricValue_;
+        }
+      }
+      /**
+       * <code>.google.protobuf.DoubleValue metric_value = 5;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          com.google.protobuf.DoubleValue, com.google.protobuf.DoubleValue.Builder, com.google.protobuf.DoubleValueOrBuilder> 
+          getMetricValueFieldBuilder() {
+        if (metricValueBuilder_ == null) {
+          metricValueBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              com.google.protobuf.DoubleValue, com.google.protobuf.DoubleValue.Builder, com.google.protobuf.DoubleValueOrBuilder>(
+                  getMetricValue(),
+                  getParentForChildren(),
+                  isClean());
+          metricValue_ = null;
+        }
+        return metricValueBuilder_;
       }
       @java.lang.Override
       public final Builder setUnknownFields(
@@ -8473,33 +8667,35 @@ public final class CollectionSetProtos {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\023collectionset.proto\".\n\017StringAttribute" +
-      "\022\014\n\004name\030\001 \001(\t\022\r\n\005value\030\002 \001(\t\"\204\001\n\020Numeri" +
-      "cAttribute\022\r\n\005group\030\001 \001(\t\022\014\n\004name\030\002 \001(\t\022" +
-      "\r\n\005value\030\003 \001(\001\022$\n\004type\030\004 \001(\0162\026.NumericAt" +
-      "tribute.Type\"\036\n\004Type\022\t\n\005GAUGE\020\000\022\013\n\007COUNT" +
-      "ER\020\001\"v\n\021NodeLevelResource\022\017\n\007node_id\030\001 \001" +
-      "(\003\022\026\n\016foreign_source\030\002 \001(\t\022\022\n\nforeign_id" +
-      "\030\003 \001(\t\022\022\n\nnode_label\030\004 \001(\t\022\020\n\010location\030\005" +
-      " \001(\t\"^\n\026InterfaceLevelResource\022 \n\004node\030\001" +
-      " \001(\0132\022.NodeLevelResource\022\020\n\010instance\030\002 \001" +
-      "(\t\022\020\n\010if_index\030\003 \001(\005\"W\n\023GenericTypeResou" +
-      "rce\022 \n\004node\030\001 \001(\0132\022.NodeLevelResource\022\014\n" +
-      "\004type\030\002 \001(\t\022\020\n\010instance\030\003 \001(\t\":\n\024Respons" +
-      "eTimeResource\022\020\n\010instance\030\001 \001(\t\022\020\n\010locat" +
-      "ion\030\002 \001(\t\"\327\002\n\025CollectionSetResource\022\"\n\004n" +
-      "ode\030\001 \001(\0132\022.NodeLevelResourceH\000\022,\n\tinter" +
-      "face\030\002 \001(\0132\027.InterfaceLevelResourceH\000\022\'\n" +
-      "\007generic\030\003 \001(\0132\024.GenericTypeResourceH\000\022)" +
-      "\n\010response\030\004 \001(\0132\025.ResponseTimeResourceH" +
-      "\000\022\023\n\013resource_id\030\005 \001(\t\022\025\n\rresource_name\030" +
-      "\006 \001(\t\022\032\n\022resource_type_name\030\007 \001(\t\022 \n\006str" +
-      "ing\030\n \003(\0132\020.StringAttribute\022\"\n\007numeric\030\013" +
-      " \003(\0132\021.NumericAttributeB\n\n\010resource\"L\n\rC" +
-      "ollectionSet\022\021\n\ttimestamp\030\001 \001(\003\022(\n\010resou" +
-      "rce\030\002 \003(\0132\026.CollectionSetResourceB@\n)org" +
-      ".opennms.features.kafka.producer.modelB\023" +
-      "CollectionSetProtosb\006proto3"
+      "\n\023collectionset.proto\032\036google/protobuf/w" +
+      "rappers.proto\".\n\017StringAttribute\022\014\n\004name" +
+      "\030\001 \001(\t\022\r\n\005value\030\002 \001(\t\"\270\001\n\020NumericAttribu" +
+      "te\022\r\n\005group\030\001 \001(\t\022\014\n\004name\030\002 \001(\t\022\r\n\005value" +
+      "\030\003 \001(\001\022$\n\004type\030\004 \001(\0162\026.NumericAttribute." +
+      "Type\0222\n\014metric_value\030\005 \001(\0132\034.google.prot" +
+      "obuf.DoubleValue\"\036\n\004Type\022\t\n\005GAUGE\020\000\022\013\n\007C" +
+      "OUNTER\020\001\"v\n\021NodeLevelResource\022\017\n\007node_id" +
+      "\030\001 \001(\003\022\026\n\016foreign_source\030\002 \001(\t\022\022\n\nforeig" +
+      "n_id\030\003 \001(\t\022\022\n\nnode_label\030\004 \001(\t\022\020\n\010locati" +
+      "on\030\005 \001(\t\"^\n\026InterfaceLevelResource\022 \n\004no" +
+      "de\030\001 \001(\0132\022.NodeLevelResource\022\020\n\010instance" +
+      "\030\002 \001(\t\022\020\n\010if_index\030\003 \001(\005\"W\n\023GenericTypeR" +
+      "esource\022 \n\004node\030\001 \001(\0132\022.NodeLevelResourc" +
+      "e\022\014\n\004type\030\002 \001(\t\022\020\n\010instance\030\003 \001(\t\":\n\024Res" +
+      "ponseTimeResource\022\020\n\010instance\030\001 \001(\t\022\020\n\010l" +
+      "ocation\030\002 \001(\t\"\327\002\n\025CollectionSetResource\022" +
+      "\"\n\004node\030\001 \001(\0132\022.NodeLevelResourceH\000\022,\n\ti" +
+      "nterface\030\002 \001(\0132\027.InterfaceLevelResourceH" +
+      "\000\022\'\n\007generic\030\003 \001(\0132\024.GenericTypeResource" +
+      "H\000\022)\n\010response\030\004 \001(\0132\025.ResponseTimeResou" +
+      "rceH\000\022\023\n\013resource_id\030\005 \001(\t\022\025\n\rresource_n" +
+      "ame\030\006 \001(\t\022\032\n\022resource_type_name\030\007 \001(\t\022 \n" +
+      "\006string\030\n \003(\0132\020.StringAttribute\022\"\n\007numer" +
+      "ic\030\013 \003(\0132\021.NumericAttributeB\n\n\010resource\"" +
+      "L\n\rCollectionSet\022\021\n\ttimestamp\030\001 \001(\003\022(\n\010r" +
+      "esource\030\002 \003(\0132\026.CollectionSetResourceB@\n" +
+      ")org.opennms.features.kafka.producer.mod" +
+      "elB\023CollectionSetProtosb\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -8512,6 +8708,7 @@ public final class CollectionSetProtos {
     com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
+          com.google.protobuf.WrappersProto.getDescriptor(),
         }, assigner);
     internal_static_StringAttribute_descriptor =
       getDescriptor().getMessageTypes().get(0);
@@ -8524,7 +8721,7 @@ public final class CollectionSetProtos {
     internal_static_NumericAttribute_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_NumericAttribute_descriptor,
-        new java.lang.String[] { "Group", "Name", "Value", "Type", });
+        new java.lang.String[] { "Group", "Name", "Value", "Type", "MetricValue", });
     internal_static_NodeLevelResource_descriptor =
       getDescriptor().getMessageTypes().get(2);
     internal_static_NodeLevelResource_fieldAccessorTable = new
@@ -8561,6 +8758,7 @@ public final class CollectionSetProtos {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_CollectionSet_descriptor,
         new java.lang.String[] { "Timestamp", "Resource", });
+    com.google.protobuf.WrappersProto.getDescriptor();
   }
 
   // @@protoc_insertion_point(outer_class_scope)

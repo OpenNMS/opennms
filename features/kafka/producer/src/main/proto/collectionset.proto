@@ -2,6 +2,8 @@ syntax = "proto3";
 option java_package = "org.opennms.features.kafka.producer.model";
 option java_outer_classname = "CollectionSetProtos";
 
+import "google/protobuf/wrappers.proto";
+
 message StringAttribute {
   string name = 1;  
   string value = 2;
@@ -16,6 +18,7 @@ message NumericAttribute {
     COUNTER = 1;
   }
   Type type = 4; 
+  google.protobuf.DoubleValue metric_value = 5;
 }
 
 message NodeLevelResource {
