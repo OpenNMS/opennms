@@ -8,7 +8,7 @@
             }
         }
     },
-    "build-with-tar": {
+    "build-with-tarball": {
         "build-with-tar": {
             "filters":{
                 "branches":{
