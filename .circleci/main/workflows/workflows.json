@@ -297,7 +297,13 @@
         }
     },
     "integration-test":{
-        "extends": ["build"],
+        "build-with-tar": {
+            "filters":{
+                "branches":{
+                    "ignore":["/^from-foundation.*/"]
+                }
+            }
+         },
         "minion-image":{ 
             "requires":["build-with-tar"]
         },
