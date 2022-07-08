@@ -18,7 +18,6 @@ import {
   requisitionSubTypes,
   requisitionTypeList,
   RequisitionTypes,
-  requisitionDNSField,
   RequisitionPluginSubTypes,
   RequisitionHTTPTypes
 } from './copy/requisitionTypes'
@@ -233,6 +232,10 @@ const convertItemToURL = (localItem: LocalConfiguration) => {
   } else if(type === RequisitionTypes.VMWare) {
     host = localItem.host
 
+    if (localItem.foreignSource) {
+      host += `/${localItem.foreignSource}`
+    }
+
     // username/password if set in UI input field: translated to have/save them as query part of the URL
     const usernameQuery = localItem.username ? `${VMWareFields.Username}=${localItem.username}` : ''
     const passwordQuery = localItem.password ? `${VMWareFields.Password}=${localItem.password}` : ''
@@ -390,7 +393,7 @@ const convertURLToLocal = (urlIn: string) => {
       localConfig.path = urlPath
       break
     case RequisitionTypes.VMWare:
-      localConfig.host = findHost(url)
+      localConfig = findVMware(localConfig, urlIn)
       break
     case RequisitionTypes.RequisitionPlugin:
       localConfig.subType = findSubType(url)
@@ -514,7 +517,7 @@ const cronToEnglish = (cronFormatted: string) => {
  * @param item Advanced Option
  * @param fullItem Local Configuration Object
  * @returns Local Configuration Object with attached username/password and boolean
- * indiciating whether or not to filter this result from the list.
+ * indicating whether or not to filter this result from the list.
  */
 const filterForVMWareValues = (
   type: string,
@@ -543,16 +546,45 @@ const filterForVMWareValues = (
  * @returns Current Local Configuration with updated DNS Related fields.
  */
 const findDNS = (currentConfig: LocalSubConfiguration, urlIn: string) => {
+  return findDNSorVMware(currentConfig, urlIn, true)
+}
+
+/**
+ *
+ * @param currentConfig Current Local Configuration Object
+ * @param urlIn Full URL In
+ * @returns Current Local Configuration with updated VMware related fields.
+ */
+const findVMware = (currentConfig: LocalSubConfiguration, urlIn: string) => {
+  return findDNSorVMware(currentConfig, urlIn, false)
+}
+
+/**
+ *
+ * @param currentConfig Current Local Configuration Object
+ * @param urlIn Full URL In
+ * @param isDNS true if DNS configuration, false if VMware configuration
+ * @returns Current Local Configuration with updated DNS or VMware related fields.
+ */
+const findDNSorVMware = (currentConfig: LocalSubConfiguration, urlIn: string, isDNS: boolean) => {
   const localConfig = { ...currentConfig }
 
-  const urlPart = urlIn.split(SplitTypes.dns)[1].split('/')
+  const splitType = isDNS ? SplitTypes.dns : SplitTypes.vmware
+
+  const urlPart = urlIn.split(splitType)[1].split('/')
   localConfig.host = urlPart[0]
-  localConfig.zone = urlPart[1]
-  if (urlPart[2]) {
-    if (urlPart[2].includes('?')) {
-      localConfig.foreignSource = urlPart[2].split('?')[0]
+
+  if (isDNS) {
+    localConfig.zone = urlPart[1]
+  }
+
+  const urlIndex = isDNS ? 2 : 1
+
+  if (urlPart[urlIndex]) {
+    if (urlPart[urlIndex].includes('?')) {
+      localConfig.foreignSource = urlPart[urlIndex].split('?')[0]
     } else {
-      localConfig.foreignSource = urlPart[2]
+      localConfig.foreignSource = urlPart[urlIndex]
     }
   }
   return localConfig
@@ -633,7 +665,7 @@ const getHostHint = (type: string) => {
   let hintText = ''
   if (type === RequisitionTypes.DNS) {
     hintText = 'DNS resolver host to contact. Must allow IXFR or AXFR zone transfers.'
-  } else if (type === RequisitionTypes.HTTPS || type === RequisitionTypes.HTTP) {
+  } else if (type === RequisitionTypes.HTTPS || type === RequisitionTypes.HTTP || type === RequisitionTypes.VMWare) {
     hintText = 'Hostname or IP address'
   }
   return hintText
@@ -798,7 +830,11 @@ const validateLocalItem = (
     errors.type = validateType(localItem.type.name)
 
     if (RequsitionTypesUsingHost.includes(localItem.type.name)) {
-      errors.host = validateHost(localItem.host)
+      if (!localItem.host) {
+        errors.host = ErrorStrings.Required('Host')
+      } else {
+        errors.host = validateHost(localItem.host)
+      }
     }
     if (RequisitionHTTPTypes.includes(localItem.type.name) && localItem.urlPath) {
       errors.urlPath = validatePath(localItem.urlPath)
@@ -820,6 +856,13 @@ const validateLocalItem = (
       }
       if (localItem.password && !localItem.username) {
         errors.username = ErrorStrings.Required(VMWareFields.UpperUsername)
+      }
+
+      // Always validate Requisition Name / Foreign Source Name
+      if (!localItem.foreignSource) {
+        errors.foreignSource = ErrorStrings.Required(VMWareFields.RequisitionName)
+      } else {
+        errors.foreignSource = validateRequisitionNameField(localItem.foreignSource)
       }
     }
     if (!localItem.advancedCrontab) {

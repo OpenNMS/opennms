@@ -48,12 +48,14 @@ export const VMWareFields = {
   Username: 'username',
   Password: 'password',
   UpperUsername: 'Username',
-  UpperPassword: 'Password'
+  UpperPassword: 'Password',
+  RequisitionName: 'Requisition Name'
 }
 
 export const SplitTypes = {
   dns: 'dns://',
-  file: 'file://'
+  file: 'file://',
+  vmware: 'vmware://'
 }
 
 export const ErrorStrings = {
