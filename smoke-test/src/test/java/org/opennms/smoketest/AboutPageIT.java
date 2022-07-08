@@ -39,7 +39,6 @@ public class AboutPageIT extends OpenNMSSeleniumIT {
 
     @Before
     public void setUp() throws Exception {
-        
         driver.get(getBaseUrlInternal() + "opennms/about/index.jsp");
     }
 

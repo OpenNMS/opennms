@@ -295,5 +295,14 @@
                 "smoke-test-sentinel"
             ]
         }
+    },
+    "integration-test":{
+        "extends": ["build"],
+        "minion-image":{ 
+            "requires":["build-with-tar"]
+        },
+        "integration-test": {
+            "requires":["minion-image"]
+        }
     }
 }
