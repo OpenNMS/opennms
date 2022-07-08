@@ -465,8 +465,8 @@ public class DiscoveryBridgeTopology {
             }
         }
         BridgeSimpleConnection simpleConnection = BridgeSimpleConnection.create(rootBridgeFT, postBridgeFT);
-        simpleConnection.findSimpleConnection();
         try {
+            simpleConnection.findSimpleConnection();
             down(rootBridgeFT, postBridgeFT, simpleConnection, bridgeFtMapCalcul,
                  0);
             return;
