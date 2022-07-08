@@ -71,7 +71,7 @@ class libyaml:
         
     def tell_requirements(self,component):
         if "requires" not in self._finalList[component]:
-            return "OUCH"
+            return "No dependency"
         _output1=[]
         if self._finalList[component]['requires']:
             for _d in self._finalList[component]['requires']:
