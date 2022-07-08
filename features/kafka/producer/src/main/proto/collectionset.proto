@@ -18,6 +18,7 @@ message NumericAttribute {
     COUNTER = 1;
   }
   Type type = 4; 
+  // Copy of `value` that is ALWAYS serialized, even when zero
   google.protobuf.DoubleValue metric_value = 5;
 }
 
