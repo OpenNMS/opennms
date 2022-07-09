@@ -36,36 +36,6 @@ import org.slf4j.LoggerFactory;
 
 public class BridgeSimpleConnection implements Topology {
 
-    public static Set<String> getMacs(BridgeForwardingTable xBridge,
-            BridgeForwardingTable yBridge, BridgeSimpleConnection simple)
-            throws BridgeTopologyException {
-
-        if ( simple.getFirstPort() == null) {
-            throw new BridgeTopologyException("getMacs: not found simple connection ["
-                    + xBridge.getNodeId() + "]", simple);
-        }
-
-        if ( simple.getSecondPort() == null) {
-            throw new BridgeTopologyException("getMacs: not found simple connection ["
-                    + yBridge.getNodeId() + "]", simple);
-        }
-
-        if (xBridge.getNodeId().intValue() != simple.getFirstPort().getNodeId().intValue()) {
-            throw new BridgeTopologyException("getMacs: node mismatch ["
-                    + xBridge.getNodeId() + "] found " , simple.getFirstPort());
-        }
-
-        if (yBridge.getNodeId().intValue() != simple.getSecondPort().getNodeId().intValue()) {
-            throw new BridgeTopologyException("getMacs: node mismatch ["
-                    + yBridge.getNodeId() + "]", simple.getSecondPort());
-        }
-
-        Set<String> macsOnSegment = xBridge.getBridgePortWithMacs(simple.getFirstPort()).getMacs();
-        macsOnSegment.retainAll(yBridge.getBridgePortWithMacs(simple.getSecondPort()).getMacs());
-
-        return macsOnSegment;
-    }
-
     static final Logger LOG = LoggerFactory.getLogger(BridgeSimpleConnection.class);
 
     private final BridgeForwardingTable m_xBridge;

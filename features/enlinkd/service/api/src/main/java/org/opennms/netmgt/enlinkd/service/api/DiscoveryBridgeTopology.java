@@ -42,7 +42,37 @@ public class DiscoveryBridgeTopology {
     private final BroadcastDomain m_domain;
     private Set<Integer> m_failed;
     private Set<Integer> m_parsed;
-    
+
+    public static Set<String> getMacs(BridgeForwardingTable xBridge,
+                                      BridgeForwardingTable yBridge, BridgeSimpleConnection simple)
+            throws BridgeTopologyException {
+
+        if ( simple.getFirstPort() == null) {
+            throw new BridgeTopologyException("getMacs: not found simple connection ["
+                    + xBridge.getNodeId() + "]", simple);
+        }
+
+        if ( simple.getSecondPort() == null) {
+            throw new BridgeTopologyException("getMacs: not found simple connection ["
+                    + yBridge.getNodeId() + "]", simple);
+        }
+
+        if (xBridge.getNodeId().intValue() != simple.getFirstPort().getNodeId().intValue()) {
+            throw new BridgeTopologyException("getMacs: node mismatch ["
+                    + xBridge.getNodeId() + "] found " , simple.getFirstPort());
+        }
+
+        if (yBridge.getNodeId().intValue() != simple.getSecondPort().getNodeId().intValue()) {
+            throw new BridgeTopologyException("getMacs: node mismatch ["
+                    + yBridge.getNodeId() + "]", simple.getSecondPort());
+        }
+
+        Set<String> macsOnSegment = xBridge.getBridgePortWithMacs(simple.getFirstPort()).getMacs();
+        macsOnSegment.retainAll(yBridge.getBridgePortWithMacs(simple.getSecondPort()).getMacs());
+
+        return macsOnSegment;
+    }
+
     public BroadcastDomain getDomain() {
         return m_domain;
     }
@@ -513,7 +543,7 @@ public class DiscoveryBridgeTopology {
         BridgeSimpleConnection nextDownSP = null;
         boolean levelfound = false;
         
-        Set<String> maconupsegment = BridgeSimpleConnection.getMacs(bridgeUpFT, bridgeFT, upsimpleconn);
+        Set<String> maconupsegment = getMacs(bridgeUpFT, bridgeFT, upsimpleconn);
         
         for (Bridge curbridge : m_domain.getBridgeOnSharedSegment(upSegment)) {
             
@@ -597,7 +627,7 @@ public class DiscoveryBridgeTopology {
                 continue;
             }
             //here are all the simple connection in which the connection is the root port
-            maconupsegment.retainAll(BridgeSimpleConnection.getMacs(curBridgeFT, bridgeFT, simpleconn));
+            maconupsegment.retainAll(getMacs(curBridgeFT, bridgeFT, simpleconn));
         } // end of loop on up segment bridges
         
         if (nextDownBridge != null) {
