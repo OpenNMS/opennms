@@ -40,6 +40,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.ColumnTracker;
 import org.opennms.netmgt.snmp.GatheringTracker;
@@ -51,6 +52,7 @@ import org.opennms.netmgt.snmp.SnmpValue;
 
 import com.google.common.collect.Lists;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class AggregateTrackerProxyTest {
     private GatheringTracker gatherer = new GatheringTracker();
     private SnmpObjId[] baseOids = new SnmpObjId[] {
