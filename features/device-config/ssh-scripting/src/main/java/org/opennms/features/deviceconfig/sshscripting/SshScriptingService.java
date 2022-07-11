@@ -61,33 +61,46 @@ public interface SshScriptingService {
             Duration timeout
     );
 
+    String getScriptOutput();
+
     class Result {
         public final String message;
         public final Optional<String> stdout;
         public final Optional<String> stderr;
         public final boolean success;
 
-        private Result(final boolean success, final String message, final Optional<String> stdout, final Optional<String> stderr) {
+        public final String scriptOutput;
+
+        private Result(final boolean success, final String message, final Optional<String> stdout, final Optional<String> stderr, String scriptOutput) {
             this.success = success;
             this.message = message;
             this.stdout = stdout;
             this.stderr = stderr;
+            this.scriptOutput = scriptOutput;
+        }
+
+        public static Result success(final String message, final String stdout, final String stderr, String scriptOutput) {
+            return new Result(true, message, Optional.of(stdout), Optional.of(stderr), scriptOutput);
         }
 
         public static Result success(final String message, final String stdout, final String stderr) {
-            return new Result(true, message, Optional.of(stdout), Optional.of(stderr));
+            return new Result(true, message, Optional.of(stdout), Optional.of(stderr), "");
         }
 
         public static Result success(final String message) {
-            return new Result(true, message, Optional.empty(), Optional.empty());
+            return new Result(true, message, Optional.empty(), Optional.empty(), "");
+        }
+
+        public static Result failure(final String message, final String stdout, final String stderr, String scriptOutput) {
+            return new Result(false, message, Optional.of(stdout), Optional.of(stderr), scriptOutput);
         }
 
         public static Result failure(final String message, final String stdout, final String stderr) {
-            return new Result(false, message, Optional.of(stdout), Optional.of(stderr));
+            return new Result(false, message, Optional.of(stdout), Optional.of(stderr), "");
         }
 
         public static Result failure(final String message) {
-            return new Result(false, message, Optional.empty(), Optional.empty());
+            return new Result(false, message, Optional.empty(), Optional.empty(), "");
         }
 
         public boolean isSuccess() {
