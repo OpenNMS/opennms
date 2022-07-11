@@ -27,7 +27,9 @@
  *******************************************************************************/
 package org.opennms.features.scv.jceks;
 
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertFalse;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,27 +44,21 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
 
-
+import org.junit.Before;
 import org.junit.Rule;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-
+import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.opennms.features.scv.api.Credentials;
 import org.opennms.features.scv.api.SecureCredentialsVault;
 
 import com.google.common.collect.Sets;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
-
 public class JCEKSSecureCredentialsVaultTest {
 
     @Rule
     public TemporaryFolder tempFolder = new TemporaryFolder();
 
-    @BeforeAll
+    @Before
     public void setUp() {
         System.setProperty("karaf.etc", tempFolder.getRoot().getAbsolutePath());
     }

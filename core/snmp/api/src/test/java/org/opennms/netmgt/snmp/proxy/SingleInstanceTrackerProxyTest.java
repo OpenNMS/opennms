@@ -36,8 +36,8 @@ import static org.mockito.Mockito.mock;
 
 import java.util.Collections;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 import org.opennms.netmgt.snmp.GatheringTracker;
 import org.opennms.netmgt.snmp.SingleInstanceTracker;
 import org.opennms.netmgt.snmp.SnmpInstId;
@@ -51,7 +51,7 @@ public class SingleInstanceTrackerProxyTest {
     private SnmpInstId instance = new SnmpInstId(2);
     private SingleInstanceTracker tracker = new SingleInstanceTracker(base, instance, gatherer);
 
-    @BeforeAll
+    @Before
     public void setUp() {
         // Verify the generated request
         WalkRequest expectedRequest = new WalkRequest(base);

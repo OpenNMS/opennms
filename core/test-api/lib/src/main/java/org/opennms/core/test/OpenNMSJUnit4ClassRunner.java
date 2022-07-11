@@ -33,7 +33,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.TreeSet;
 
-import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
 import org.junit.runners.model.InitializationError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,7 +45,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  *
  * @author seth
  */
-@EnableRuleMigrationSupport
 public class OpenNMSJUnit4ClassRunner extends SpringJUnit4ClassRunner {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(OpenNMSJUnit4ClassRunner.class);

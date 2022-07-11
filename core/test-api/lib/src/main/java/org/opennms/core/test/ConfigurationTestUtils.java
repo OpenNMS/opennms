@@ -44,7 +44,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 
 import org.junit.Assert;
-import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ByteArrayResource;
@@ -58,7 +57,6 @@ import org.springframework.core.io.Resource;
  * @author ranger
  * @version $Id: $
  */
-@EnableRuleMigrationSupport
 public abstract class ConfigurationTestUtils extends Assert {
     private static final String POM_FILE = "pom.xml";
     // TODO: rename this constant
