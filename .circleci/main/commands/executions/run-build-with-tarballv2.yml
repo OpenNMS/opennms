@@ -1,5 +1,5 @@
 commands:
-  run-build-with-tarballv2:
+  run-build-with-tarball:
     description: "Run the main build with tarball"
     parameters:
       number-vcpu:

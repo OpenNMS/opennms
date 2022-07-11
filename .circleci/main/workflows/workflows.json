@@ -9,19 +9,19 @@
         }
     },
     "build-with-tarball": {
-        "build-with-tarballv2": {
+        "build-with-tarball": {
          },
         "minion-image":{ 
-            "requires":["build-with-tarballv2"]
+            "requires":["build-with-tarball"]
         },
         "integration-test": {
             "requires":["minion-image"]
         },
         "sentinel-deb-build": {
-            "requires":["build-with-tarballv2"]
+            "requires":["build-with-tarball"]
         },
         "minion-deb-build":{
-            "requires":["integration-tarballv2"]
+            "requires":["integration-tarball"]
         }
     },
     "build-deploy": {
