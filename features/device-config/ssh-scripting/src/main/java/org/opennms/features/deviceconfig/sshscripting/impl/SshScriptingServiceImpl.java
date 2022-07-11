@@ -37,6 +37,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.UnknownHostException;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
@@ -72,6 +73,8 @@ public class SshScriptingServiceImpl implements SshScriptingService {
 
     private InetAddress tftpServerIPv4Address;
     private InetAddress tftpServerIPv6Address;
+
+    private String scriptDebugOutput;
 
     public void setTftpServerIPv4Address(final String tftpServerIPv4Address) throws UnknownHostException {
         if (!Strings.isNullOrEmpty(tftpServerIPv4Address)) {
@@ -118,12 +121,14 @@ public class SshScriptingServiceImpl implements SshScriptingService {
 
                                     var stdout = sshInteraction.stdout.toString(StandardCharsets.UTF_8);
                                     var stderr = sshInteraction.stderr.toString(StandardCharsets.UTF_8);
+                                    var debugOutput = sshInteraction.getDebugOutput();
                                     LOG.error("ssh scripting exception - {} \n### script ###\n {} \n### stdout ###\n {} \n### stderr ###\n {}", errorDescription, script, stdout, stderr, e);
-                                    return Result.failure("ssh scripting exception - " + errorDescription, stdout, stderr);
+                                    return Result.failure("ssh scripting exception - " + errorDescription, stdout, stderr, debugOutput);
                                 }
+                                scriptDebugOutput = sshInteraction.getDebugOutput();
                                 prevStatement = statement;
                             }
-                            return Result.success("Script execution succeeded",  sshInteraction.stdout.toString(StandardCharsets.UTF_8),  sshInteraction.stderr.toString(StandardCharsets.UTF_8));
+                            return Result.success("Script execution succeeded",  sshInteraction.stdout.toString(StandardCharsets.UTF_8),  sshInteraction.stderr.toString(StandardCharsets.UTF_8), sshInteraction.getDebugOutput());
                         }
                     } catch (Exception e) {
                         LOG.error("error with ssh interactions", e);
@@ -138,23 +143,26 @@ public class SshScriptingServiceImpl implements SshScriptingService {
      */
     private String getErrorDescription(Throwable t, SshInteraction sshInteraction, Statement prevStatement, Statement currentStatement) {
 
-        String errorDesc = t.getClass().getName() + ": " + t.getMessage();
-
         if (currentStatement == null) {
-            return errorDesc;
+            return t.getMessage();
         }
 
         String statementWithVars = sshInteraction.replaceVars(currentStatement.toString());
         if (prevStatement == null) {
-            return errorDesc + " - encountered during initial " + statementWithVars + "\"";
+            return t.getMessage() + " - encountered during initial " + statementWithVars + "\"";
         }
 
         String prevStatementWithVars = sshInteraction.replaceVars(prevStatement.toString());
         if (currentStatement.statementType == Statement.StatementType.await) {
-            return errorDesc + " - encountered while waiting for \"" + statementWithVars + "\" following execution of \"" + prevStatementWithVars + "\"";
+            return t.getMessage() + " - encountered while waiting for \"" + statementWithVars + "\" following execution of \"" + prevStatementWithVars + "\"";
         } else {
-            return errorDesc + " - encountered when sending input \"" + statementWithVars + "\" following successful \"" + prevStatementWithVars + "\"";
+            return t.getMessage() + " - encountered when sending input \"" + statementWithVars + "\" following successful \"" + prevStatementWithVars + "\"";
         }
+    }
+
+    @Override
+    public String getScriptOutput() {
+        return scriptDebugOutput;
     }
 
     private static class SshInteractionImpl implements SshInteraction, AutoCloseable {
@@ -165,12 +173,15 @@ public class SshScriptingServiceImpl implements SshScriptingService {
 
         // stdout and stderr capture the complete output of the interaction
         private final ByteArrayOutputStream stdout, stderr;
+        private final ByteArrayOutputStream debugStdout, debugStderr;
         // awaitStdout receives the same bytes as stdout but is used to process await statements
         // -> successfully awaited parts are dropped
         // -> these parts are no more considered by following awaits
         private final ByteArrayOutputStream awaitStdout;
         // pipeToStdIn is an output stream that is used to feed bytes into stdin of the interaction
         private final PipedOutputStream pipeToStdin;
+
+        private final ByteArrayOutputStream debugOutput;
         private final Map<String, String> vars = new HashMap<>();
 
         private final Duration timeout;
@@ -268,14 +279,19 @@ public class SshScriptingServiceImpl implements SshScriptingService {
                     try {
                         stdout = new ByteArrayOutputStream();
                         stderr = new ByteArrayOutputStream();
+                        debugStdout = new ByteArrayOutputStream();
+                        debugStderr = new ByteArrayOutputStream();
                         awaitStdout = new ByteArrayOutputStream();
+                        debugOutput = new ByteArrayOutputStream();
 
-                        var teeStdout = new TeeOutputStream(stdout, awaitStdout);
+                        var debugTee = new TeeOutputStream(stdout, debugStdout);
+                        var teeStdout = new TeeOutputStream(debugTee, awaitStdout);
+                        var teeStderr = new TeeOutputStream(stderr, debugStderr);
                         var stdin = new PipedInputStream();
                         pipeToStdin = new PipedOutputStream(stdin);
                         channel.setIn(stdin);
                         channel.setOut(teeStdout);
-                        channel.setErr(stderr);
+                        channel.setErr(teeStderr);
                         channel.open().verify(Duration.between(Instant.now(), timeoutInstant));
                         this.vars.putAll(vars);
                         this.vars.put(SCRIPT_VAR_TFTP_SERVER_IP, InetAddressUtils.str(localAddress));
@@ -321,17 +337,27 @@ public class SshScriptingServiceImpl implements SshScriptingService {
             while (Instant.now().isBefore(timeoutInstant)) {
                 synchronized (awaitStdout) {
                     if (matchAndConsume(awaitStdout, search)) {
+                        debugOutput.write(debugStderr.toString().getBytes(StandardCharsets.UTF_8));
+                        debugOutput.write(debugStdout.toString().getBytes(StandardCharsets.UTF_8));
+                        debugStdout.reset();
+                        debugStderr.reset();
                         return;
                     }
                 }
                 Thread.sleep(1000);
             }
+            debugOutput.write(debugStderr.toString().getBytes(StandardCharsets.UTF_8));
+            debugOutput.write(debugStdout.toString().getBytes(StandardCharsets.UTF_8));
             throw new Exception("awaited output missing - expected: " + string);
         }
 
         @Override
         public String replaceVars(String string) {
             return StrSubstitutor.replace(string, vars);
+        }
+
+        String getDebugOutput() {
+            return debugOutput.toString(StandardCharsets.UTF_8);
         }
     }
 
