@@ -19,3 +19,10 @@ NO_PARAMETERS::
     No defined parameters can match (opposite of ANY_PARAMETERS) for the policy to apply.
 
 String values are assumed to be a substring match, unless the parameter is prefixed with `~` to indicate the policy should evaluate as a regular expression.
+
+== Policy Ordering
+
+The order of matching is non-trivial.
+For negative actions (for example, DO_NO_PERSIST), evaluation stops after the first match.
+For positive actions, evaluation will continue on to check subsequent policies in the order they are listed.
+After all policies are checked, if two or more policies match, the last matched action will take precedence.
