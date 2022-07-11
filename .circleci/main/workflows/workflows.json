@@ -9,19 +9,19 @@
         }
     },
     "build-with-tarball": {
-        "build-with-tar": {
+        "build-with-tarballv2": {
          },
         "minion-image":{ 
-            "requires":["build-with-tar"]
+            "requires":["build-with-tarballv2"]
         },
         "integration-test": {
             "requires":["minion-image"]
         },
         "sentinel-deb-build": {
-            "requires":["build-with-tar"]
+            "requires":["build-with-tarballv2"]
         },
         "minion-deb-build":{
-            "requires":["integration-test"]
+            "requires":["integration-tarballv2"]
         }
     },
     "build-deploy": {
@@ -192,6 +192,9 @@
         "minion-deb-build": {
             "requires":["integration-test"]
         }
+    },
+    "oci":{
+
     },
     "deploy": {
         "extends": ["build","smoke","rpms","debs"],
