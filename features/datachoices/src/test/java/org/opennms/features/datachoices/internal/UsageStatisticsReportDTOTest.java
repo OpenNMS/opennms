@@ -51,7 +51,7 @@ public class UsageStatisticsReportDTOTest {
         usageStatisticsReport.setNodesBySysOid(numberOfNodesBySysOid);
 
         String actualJson = usageStatisticsReport.toJson();
-        String expectedJson = "{\"alarms\":0,\"events\":0,\"installedFeatures\":null,\"ipInterfaces\":0,\"minions\":0,\"monitoredServices\":0,\"monitoringLocations\":0,\"nodes\":0,\"nodesBySysOid\":{\".1.2.3.4\":2,\".1.2.3.5\":6},\"osArch\":null,\"osName\":null,\"osVersion\":null,\"packageName\":\"opennms\",\"situations\":0,\"snmpInterfaces\":0,\"snmpInterfacesWithFlows\":0,\"systemId\":\"aae3fdeb-3014-47b4-bb13-c8aa503fccb7\",\"version\":\"10.5.7\"}";
+        String expectedJson="{\"alarms\":0,\"events\":0,\"importThreadPoolSize\":0,\"installedFeatures\":null,\"ipInterfaces\":0,\"minions\":0,\"monitoredServices\":0,\"monitoringLocations\":0,\"nodes\":0,\"nodesBySysOid\":{\".1.2.3.4\":2,\".1.2.3.5\":6},\"osArch\":null,\"osName\":null,\"osVersion\":null,\"packageName\":\"opennms\",\"requisitionSchemeCount\":null,\"rescanThreadPoolSize\":0,\"scanThreadPoolSize\":0,\"situations\":0,\"snmpInterfaces\":0,\"snmpInterfacesWithFlows\":0,\"systemId\":\"aae3fdeb-3014-47b4-bb13-c8aa503fccb7\",\"version\":\"10.5.7\",\"writeThreadPoolSize\":0}";
         assertEquals(expectedJson, actualJson);
     }
 }
