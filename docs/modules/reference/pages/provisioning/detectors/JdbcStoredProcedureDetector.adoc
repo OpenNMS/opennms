@@ -1,9 +1,10 @@
 
 = JDBC Stored Procedure Detector
 
-The JDBCStoredProcedureDetector connects to a JDBC-enabled database and tries to fetch information on its stored procedures.
-If the fetch is successful, it returns the `detected` value.
-If the fetch is not successful, it returns the `not detected` value.
+The JDBCStoredProcedureDetector connects to a JDBC-enabled database and checks the result of a stored procedure.
+The result of the stored procedure must be a Boolean value (representing true or false).
+If the result is true, it returns the `detected` value.
+If the result is false, it returns the `not detected` value.
 
 == Detector facts
 
@@ -36,7 +37,7 @@ The JDBCStoredProcedureDetector uses the xref:reference:provisioning/detectors.a
 
 | stored-procedure
 | Stored procedure to query.
-| Empty String object.
+| `isRunning`
 
 | url
 | JDBC URL to query.
@@ -52,6 +53,10 @@ Note: this URL can differ based on JDBC drivers, databases, and so on.
 | port
 | Port to query.
 | 3306
+
+| schema
+| Database schema where the stored procedure is located.
+| test
 |===
 
 == Database driver
