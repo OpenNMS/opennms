@@ -70,7 +70,6 @@ import org.custommonkey.xmlunit.NodeDetail;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.opennms.core.test.MockLogAppender;
@@ -83,7 +82,6 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLFilter;
 
-@EnableRuleMigrationSupport
 @RunWith(Parameterized.class)
 abstract public class XmlTest<T> {
     private static final Logger LOG = LoggerFactory.getLogger(XmlTest.class);

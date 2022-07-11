@@ -38,8 +38,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.ColumnTracker;
 import org.opennms.netmgt.snmp.GatheringTracker;
@@ -64,7 +64,7 @@ public class AggregateTrackerProxyTest {
     private AggregateTracker childAggregateTracker;
     private AggregateTracker parentAggregateTracker;
 
-    @BeforeAll
+    @Before
     public void setUp() {
         // Create a hierarchy of aggregated trackers
         columnTrackers = new ColumnTracker[] {

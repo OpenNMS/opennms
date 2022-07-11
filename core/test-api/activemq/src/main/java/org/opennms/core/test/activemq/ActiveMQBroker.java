@@ -36,12 +36,10 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 
 import org.apache.activemq.broker.BrokerService;
-import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
 import org.junit.rules.ExternalResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@EnableRuleMigrationSupport
 public class ActiveMQBroker extends ExternalResource {
     private static final Logger LOG = LoggerFactory.getLogger(ActiveMQBroker.class);
 
