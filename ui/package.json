@@ -60,7 +60,7 @@
     "vite-svg-loader": "^3.4.0",
     "vue": "^3.2.37",
     "vue-diff": "^1.2.4",
-    "vue-router": "4.0.16",
+    "vue-router": "4.1.2",
     "vue3-ace-editor": "^2.2.2",
     "vuex": "^4.0.2"
   },
