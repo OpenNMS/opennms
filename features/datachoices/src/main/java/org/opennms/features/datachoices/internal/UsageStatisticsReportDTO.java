@@ -67,6 +67,12 @@ public class UsageStatisticsReportDTO {
 
     private String m_installedFeatures;
 
+    private long m_importThreadPoolSize;
+    private long m_scanThreadPoolSize;
+    private long m_rescanThreadPoolSize;
+    private long m_writeThreadPoolSize;
+    private Map<String, Long> m_requisitionSchemeCount;
+
     public void setSystemId(String systemId) {
         m_systemId = systemId;
     }
@@ -209,6 +215,46 @@ public class UsageStatisticsReportDTO {
 
     public void setInstalledFeatures(String installedFeatures) {
         m_installedFeatures = installedFeatures;
+    }
+
+    public long getImportThreadPoolSize() {
+        return m_importThreadPoolSize;
+    }
+
+    public void setImportThreadPoolSize(long importThreadPoolSize) {
+        this.m_importThreadPoolSize = importThreadPoolSize;
+    }
+
+    public long getScanThreadPoolSize() {
+        return m_scanThreadPoolSize;
+    }
+
+    public void setScanThreadPoolSize(long scanThreadPoolSize) {
+        this.m_scanThreadPoolSize = scanThreadPoolSize;
+    }
+
+    public long getRescanThreadPoolSize() {
+        return m_rescanThreadPoolSize;
+    }
+
+    public void setRescanThreadPoolSize(long rescanThreadPoolSize) {
+        this.m_rescanThreadPoolSize = rescanThreadPoolSize;
+    }
+
+    public long getWriteThreadPoolSize() {
+        return m_writeThreadPoolSize;
+    }
+
+    public void setWriteThreadPoolSize(long writeThreadPoolSize) {
+        this.m_writeThreadPoolSize = writeThreadPoolSize;
+    }
+
+    public Map<String, Long> getRequisitionSchemeCount() {
+        return m_requisitionSchemeCount;
+    }
+
+    public void setRequisitionSchemeCount(Map<String, Long> requisitionSchemeCount) {
+        this.m_requisitionSchemeCount = requisitionSchemeCount;
     }
 
     public String toJson() {

@@ -50,6 +50,7 @@ import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.MonitoringSystemDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.ProvisiondConfigurationDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.slf4j.Logger;
@@ -85,6 +86,8 @@ public class UsageStatisticsReporter implements StateChangeHandler {
     private MonitoringSystemDao m_monitoringSystemDao;
 
     private FeaturesService m_featuresService;
+
+    private ProvisiondConfigurationDao m_provisiondConfigurationDao;
 
     private boolean m_useSystemProxy = true; // true == legacy behaviour
 
@@ -207,6 +210,9 @@ public class UsageStatisticsReporter implements StateChangeHandler {
             installedFeatures = "ERROR: Failed to enumerate the installed features: " + e.getMessage();
         }
         usageStatisticsReport.setInstalledFeatures(installedFeatures);
+
+        gatherProvisiondData(usageStatisticsReport);
+
         return usageStatisticsReport;
     }
 
@@ -260,5 +266,26 @@ public class UsageStatisticsReporter implements StateChangeHandler {
 
     public void setUseSystemProxy(boolean useSystemProxy){
         m_useSystemProxy = useSystemProxy;
+    }
+
+    public ProvisiondConfigurationDao getProvisiondConfigurationDao() {
+        return this.m_provisiondConfigurationDao;
+    }
+
+    public void setProvisiondConfigurationDao(ProvisiondConfigurationDao m_provisiondConfigurationDao) {
+        this.m_provisiondConfigurationDao = m_provisiondConfigurationDao;
+    }
+
+    private void gatherProvisiondData(final UsageStatisticsReportDTO usageStatisticsReport) {
+        try {
+            usageStatisticsReport.setImportThreadPoolSize(m_provisiondConfigurationDao.getImportThreads());
+            usageStatisticsReport.setRescanThreadPoolSize(m_provisiondConfigurationDao.getRescanThreads());
+            usageStatisticsReport.setScanThreadPoolSize(m_provisiondConfigurationDao.getScanThreads());
+            usageStatisticsReport.setWriteThreadPoolSize(m_provisiondConfigurationDao.getWriteThreads());
+            usageStatisticsReport.setRequisitionSchemeCount(m_provisiondConfigurationDao.getRequisitionSchemeCount());
+        } catch (IOException e) {
+            LOG.error("Error retrieving provisiond configuration", e);
+            return;
+        }
     }
 }
