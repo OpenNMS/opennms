@@ -2,3 +2,4 @@
   #jobs:build/build-ui#
   #jobs:build/build-docs#
   #jobs:build/build-with-tar#
+  #jobs:build/build-with-tarball#
