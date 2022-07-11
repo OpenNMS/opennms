@@ -3078,10 +3078,10 @@ vite-svg-loader@^3.4.0:
     "@vue/compiler-sfc" "^3.2.20"
     svgo "^2.7.0"
 
-vite@^2.9.12, vite@^2.9.13:
-  version "2.9.13"
-  resolved "https://registry.yarnpkg.com/vite/-/vite-2.9.13.tgz#859cb5d4c316c0d8c6ec9866045c0f7858ca6abc"
-  integrity sha512-AsOBAaT0AD7Mhe8DuK+/kE4aWYFMx/i0ZNi98hJclxb4e0OhQcZYUrvLjIaQ8e59Ui7txcvKMiJC1yftqpQoDw==
+"vite@^2.9.12 || ^3.0.0-0", vite@^2.9.13:
+  version "2.9.14"
+  resolved "https://registry.yarnpkg.com/vite/-/vite-2.9.14.tgz#c438324c6594afd1050df3777da981dee988bb1b"
+  integrity sha512-P/UCjSpSMcE54r4mPak55hWAZPlyfS369svib/gpmz8/01L822lMPOJ/RYW6tLCe1RPvMvOsJ17erf55bKp4Hw==
   dependencies:
     esbuild "^0.14.27"
     postcss "^8.4.13"
@@ -3090,10 +3090,10 @@ vite@^2.9.12, vite@^2.9.13:
   optionalDependencies:
     fsevents "~2.3.2"
 
-vitest@^0.16.0:
-  version "0.16.0"
-  resolved "https://registry.yarnpkg.com/vitest/-/vitest-0.16.0.tgz#6858a864b25850d28252bc480b0c89014ff48ce8"
-  integrity sha512-Ntp6jrM8wf2NMtamMBLkRBBdeqHkgAH/WMh5Xryts1j2ft2D8QZQbiSVFkSl4WmEQzcPP0YM069g/Ga1vtnEtg==
+vitest@^0.18.0:
+  version "0.18.0"
+  resolved "https://registry.yarnpkg.com/vitest/-/vitest-0.18.0.tgz#a9b59213ee6917e9da0797a2e1d7cb52b8f1b644"
+  integrity sha512-ryAtlh5Gvg3+aLNuOQ8YOHxgQCCu46jx40X5MBL0K0/ejB9i5zsr8fV8LTGXbXex80UMHlzceI9F+ouGaiR+mQ==
   dependencies:
     "@types/chai" "^4.3.1"
     "@types/chai-subset" "^1.3.3"
@@ -3103,7 +3103,7 @@ vitest@^0.16.0:
     local-pkg "^0.4.1"
     tinypool "^0.2.1"
     tinyspy "^0.3.3"
-    vite "^2.9.12"
+    vite "^2.9.12 || ^3.0.0-0"
 
 vue-demi@*:
   version "0.13.1"
