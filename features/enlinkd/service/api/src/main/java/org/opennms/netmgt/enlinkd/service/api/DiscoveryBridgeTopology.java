@@ -42,7 +42,37 @@ public class DiscoveryBridgeTopology {
     private final BroadcastDomain m_domain;
     private Set<Integer> m_failed;
     private Set<Integer> m_parsed;
-    
+
+    public static Set<String> getMacs(BridgeForwardingTable xBridge,
+                                      BridgeForwardingTable yBridge, BridgeSimpleConnection simple)
+            throws BridgeTopologyException {
+
+        if ( simple.getFirstPort() == null) {
+            throw new BridgeTopologyException("getMacs: not found simple connection ["
+                    + xBridge.getNodeId() + "]", simple);
+        }
+
+        if ( simple.getSecondPort() == null) {
+            throw new BridgeTopologyException("getMacs: not found simple connection ["
+                    + yBridge.getNodeId() + "]", simple);
+        }
+
+        if (xBridge.getNodeId().intValue() != simple.getFirstPort().getNodeId().intValue()) {
+            throw new BridgeTopologyException("getMacs: node mismatch ["
+                    + xBridge.getNodeId() + "] found " , simple.getFirstPort());
+        }
+
+        if (yBridge.getNodeId().intValue() != simple.getSecondPort().getNodeId().intValue()) {
+            throw new BridgeTopologyException("getMacs: node mismatch ["
+                    + yBridge.getNodeId() + "]", simple.getSecondPort());
+        }
+
+        Set<String> macsOnSegment = xBridge.getBridgePortWithMacs(simple.getFirstPort()).getMacs();
+        macsOnSegment.retainAll(yBridge.getBridgePortWithMacs(simple.getSecondPort()).getMacs());
+
+        return macsOnSegment;
+    }
+
     public BroadcastDomain getDomain() {
         return m_domain;
     }
@@ -168,7 +198,8 @@ public class DiscoveryBridgeTopology {
             return;
         } 
         BridgeForwardingTable oldRootBft = bridgeFtMapCalcul.get(m_domain.getRootBridge().getNodeId());
-        BridgeSimpleConnection sp = BridgeSimpleConnection.createAndRun(oldRootBft, rootBft);
+        BridgeSimpleConnection sp = BridgeSimpleConnection.create(oldRootBft, rootBft);
+        sp.findSimpleConnection();
         rootBft.setRootPort(sp.getSecondBridgePort());
         down(oldRootBft,rootBft,sp,bridgeFtMapCalcul,0);
     }
@@ -296,11 +327,9 @@ public class DiscoveryBridgeTopology {
                           bridgeid, bridgeFTrootPort);
                 continue;
             }
-            BridgeSimpleConnection upsimpleconn;
-                    
-
+            BridgeSimpleConnection upsimpleconn = BridgeSimpleConnection.create(rootBft, bridgeFT);
             try {
-                  upsimpleconn= BridgeSimpleConnection.createAndRun(rootBft, bridgeFT);
+                  upsimpleconn.findSimpleConnection();
                   if (LOG.isDebugEnabled()) {
                            LOG.debug("calculate: level: 1, bridge:[{}] -> {}", 
                                     bridgeFT.getNodeId(),
@@ -375,8 +404,10 @@ public class DiscoveryBridgeTopology {
                 LOG.error("calculate: bridge:[{}],postprocessbridge. FT is null",postprocessbridgeid);
                 continue;
             }
+            BridgeSimpleConnection simpleConnection = BridgeSimpleConnection.create(rootBft, postprocessBridgeFT);
             try {
-                down(rootBft, postprocessBridgeFT, BridgeSimpleConnection.createAndRun(rootBft, postprocessBridgeFT), bridgeFtMapCalcul,
+                simpleConnection.findSimpleConnection();
+                down(rootBft, postprocessBridgeFT, simpleConnection, bridgeFtMapCalcul,
                      0);
             } catch (BridgeTopologyException e) {
                 LOG.warn("calculate: bridge:[{}], postprocessbridge. No topology found for single port node. {}, \n{}", postprocessbridgeid, e.getMessage(),e.printTopology());
@@ -430,10 +461,11 @@ public class DiscoveryBridgeTopology {
                 parsedBridgeFT = bridgeFtMapCalcul.get(parsedbridgeid);
             }
             
-            BridgeSimpleConnection sp;
+            BridgeSimpleConnection sp = BridgeSimpleConnection.create(parsedBridgeFT,
+                    postBridgeFT);
+
             try {
-                sp = BridgeSimpleConnection.createAndRun(parsedBridgeFT,
-                                                         postBridgeFT);
+                sp.findSimpleConnection();
             } catch (BridgeTopologyException e) {
                 LOG.warn("postprocess: bridge:[{}] <--> bridge:[{}] no topology found. {}, \n{}",
                          postbridgeid, parsedbridgeid, e.getMessage(),
@@ -462,8 +494,10 @@ public class DiscoveryBridgeTopology {
                 return;
             }
         }
+        BridgeSimpleConnection simpleConnection = BridgeSimpleConnection.create(rootBridgeFT, postBridgeFT);
         try {
-            down(rootBridgeFT, postBridgeFT, BridgeSimpleConnection.createAndRun(rootBridgeFT, postBridgeFT), bridgeFtMapCalcul,
+            simpleConnection.findSimpleConnection();
+            down(rootBridgeFT, postBridgeFT, simpleConnection, bridgeFtMapCalcul,
                  0);
             return;
         } catch (BridgeTopologyException e) {
@@ -509,7 +543,7 @@ public class DiscoveryBridgeTopology {
         BridgeSimpleConnection nextDownSP = null;
         boolean levelfound = false;
         
-        Set<String> maconupsegment = BridgeSimpleConnection.getMacs(bridgeUpFT, bridgeFT, upsimpleconn);
+        Set<String> maconupsegment = getMacs(bridgeUpFT, bridgeFT, upsimpleconn);
         
         for (Bridge curbridge : m_domain.getBridgeOnSharedSegment(upSegment)) {
             
@@ -528,8 +562,9 @@ public class DiscoveryBridgeTopology {
             checkforwarders.add(curBridgeFT);
             
             BridgeSimpleConnection simpleconn = 
-                    BridgeSimpleConnection.createAndRun(curBridgeFT,
+                    BridgeSimpleConnection.create(curBridgeFT,
                                        bridgeFT);
+            simpleconn.findSimpleConnection();
             if (LOG.isDebugEnabled()) {
                 LOG.debug("down: level: {}, bridge:[{}]. {}", 
                          level,
@@ -592,7 +627,7 @@ public class DiscoveryBridgeTopology {
                 continue;
             }
             //here are all the simple connection in which the connection is the root port
-            maconupsegment.retainAll(BridgeSimpleConnection.getMacs(curBridgeFT, bridgeFT, simpleconn));
+            maconupsegment.retainAll(getMacs(curBridgeFT, bridgeFT, simpleconn));
         } // end of loop on up segment bridges
         
         if (nextDownBridge != null) {
