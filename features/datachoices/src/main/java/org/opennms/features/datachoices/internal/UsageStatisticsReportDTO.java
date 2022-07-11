@@ -67,6 +67,10 @@ public class UsageStatisticsReportDTO {
 
     private String m_installedFeatures;
 
+    private Integer m_availableProcessors;
+    private Long m_freePhysicalMemorySize;
+    private Long m_totalPhysicalMemorySize;
+
     public void setSystemId(String systemId) {
         m_systemId = systemId;
     }
@@ -209,6 +213,30 @@ public class UsageStatisticsReportDTO {
 
     public void setInstalledFeatures(String installedFeatures) {
         m_installedFeatures = installedFeatures;
+    }
+
+    public void setAvailableProcessors(Integer availableProcessors) {
+        this.m_availableProcessors = availableProcessors;
+    }
+
+    public Integer getAvailableProcessors() {
+        return this.m_availableProcessors;
+    }
+
+    public Long getFreePhysicalMemorySize() {
+        return this.m_freePhysicalMemorySize;
+    }
+
+    public void setFreePhysicalMemorySize(Long freePhysicalMemorySize) {
+        this.m_freePhysicalMemorySize = freePhysicalMemorySize;
+    }
+
+    public Long getTotalPhysicalMemorySize() {
+        return this.m_totalPhysicalMemorySize;
+    }
+
+    public void setTotalPhysicalMemorySize(long totalPhysicalMemorySize) {
+        this.m_totalPhysicalMemorySize = totalPhysicalMemorySize;
     }
 
     public String toJson() {

@@ -39,6 +39,9 @@ When enabled, the `Data Choices` module collects the following anonymous statist
 * OS Architecture
 * OS Name
 * OS Version
+* Number of Available Processors (CPU)
+* Amount of Free Physical Memory
+* Amount of Total Physical Memory
 * Number of alarms in the `alarms` table
 * Number of situations in the `alarms` table
 * Number of events in the `events` table
