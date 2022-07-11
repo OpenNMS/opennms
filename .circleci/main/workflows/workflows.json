@@ -21,7 +21,7 @@
             "requires":["build-with-tarball"]
         },
         "minion-deb-build":{
-            "requires":["integration-tarball"]
+            "requires":["integration-test"]
         }
     },
     "build-deploy": {
