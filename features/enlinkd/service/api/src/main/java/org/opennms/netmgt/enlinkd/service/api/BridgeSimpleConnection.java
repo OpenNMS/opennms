@@ -295,7 +295,7 @@ public class BridgeSimpleConnection implements Topology {
                     .getPorttomac().iterator().next().getPort();
 
             Set<String> commonSegmentMacAddress = m_xBridge.getBridgePortWithMacs(bridgeXElectedPort).getMacs();
-            NEXT:   for (BridgePortWithMacs yBridgeBridgePortWithMac: m_yBridge.getPorttomac()) {
+            NEXT:   for (BridgePortWithMacs yBridgeBridgePortWithMac : m_yBridge.getPorttomac()) {
                 for (String mac : yBridgeBridgePortWithMac.getMacs()) {
                     if (commonSegmentMacAddress.contains(mac)) {
                         continue NEXT;
