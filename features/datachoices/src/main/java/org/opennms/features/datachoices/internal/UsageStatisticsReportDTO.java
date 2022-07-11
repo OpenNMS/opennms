@@ -222,7 +222,7 @@ public class UsageStatisticsReportDTO {
     }
 
     public void setImportThreadPoolSize(long importThreadPoolSize) {
-        this.m_importThreadPoolSize = importThreadPoolSize;
+        m_importThreadPoolSize = importThreadPoolSize;
     }
 
     public long getScanThreadPoolSize() {
@@ -230,7 +230,7 @@ public class UsageStatisticsReportDTO {
     }
 
     public void setScanThreadPoolSize(long scanThreadPoolSize) {
-        this.m_scanThreadPoolSize = scanThreadPoolSize;
+        m_scanThreadPoolSize = scanThreadPoolSize;
     }
 
     public long getRescanThreadPoolSize() {
@@ -238,7 +238,7 @@ public class UsageStatisticsReportDTO {
     }
 
     public void setRescanThreadPoolSize(long rescanThreadPoolSize) {
-        this.m_rescanThreadPoolSize = rescanThreadPoolSize;
+        m_rescanThreadPoolSize = rescanThreadPoolSize;
     }
 
     public long getWriteThreadPoolSize() {
@@ -246,7 +246,7 @@ public class UsageStatisticsReportDTO {
     }
 
     public void setWriteThreadPoolSize(long writeThreadPoolSize) {
-        this.m_writeThreadPoolSize = writeThreadPoolSize;
+        m_writeThreadPoolSize = writeThreadPoolSize;
     }
 
     public Map<String, Long> getRequisitionSchemeCount() {
@@ -254,7 +254,7 @@ public class UsageStatisticsReportDTO {
     }
 
     public void setRequisitionSchemeCount(Map<String, Long> requisitionSchemeCount) {
-        this.m_requisitionSchemeCount = requisitionSchemeCount;
+        m_requisitionSchemeCount = requisitionSchemeCount;
     }
 
     public String toJson() {
