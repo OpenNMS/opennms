@@ -328,7 +328,7 @@ public class BridgeSimpleConnection implements Topology {
             BridgeForwardingTable bftB,
             BridgePort pba) {
 
-        for (String mac: bftA.getBftMacs()) {
+        for (String mac : bftA.getBftMacs()) {
             if (!bftB.getBftMacs().contains(mac) || pba.equals(bftB.getMactoport().get(mac))) {
                 continue;
             }
