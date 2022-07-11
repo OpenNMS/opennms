@@ -347,7 +347,7 @@ public class BridgeSimpleConnection implements Topology {
         commonLearnedMacs.retainAll(new HashSet<>(bftB.getBftMacs()));
         String[] array = commonLearnedMacs.toArray(new String[0]);
 
-        for (int i=0;i<array.length;i++) {
+        for (int i=0; i < array.length; i++) {
             BridgePort pab=bftA.getMactoport().get(array[i]);
             BridgePort pb1=bftB.getMactoport().get(array[i]);
             for (int j=i+1;j<array.length;j++) {
