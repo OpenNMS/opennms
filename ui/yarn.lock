@@ -2108,10 +2108,10 @@ hammerjs@^2.0.8:
   resolved "https://registry.yarnpkg.com/hammerjs/-/hammerjs-2.0.8.tgz#04ef77862cff2bb79d30f7692095930222bf60f1"
   integrity sha512-tSQXBXS/MWQOn/RKckawJ61vvsDpCom87JgxiYdGwHdOa0ht0vzUWDlfioofFCRU0L+6NGDt6XzbgoJvZkMeRQ==
 
-happy-dom@^5.3.4:
-  version "5.3.4"
-  resolved "https://registry.yarnpkg.com/happy-dom/-/happy-dom-5.3.4.tgz#5ce9d5ff2ac99edd5bc31ae09e56b8846e0d5832"
-  integrity sha512-EGVX/03ZQcWWqjorPHbUNuVM47bc56K5QtUZUAwEjc1D3e3BzrZO4TtBt+FrM0DfrirBc/Fbtz4FzpD1ohIcqQ==
+happy-dom@^6.0.3:
+  version "6.0.3"
+  resolved "https://registry.yarnpkg.com/happy-dom/-/happy-dom-6.0.3.tgz#ba1b35ae5466d4ac70bbfc3d9179ac4fbaa71ea4"
+  integrity sha512-1P1l2ynhs9lkO2M8X+fJzMbGUBzKZX8CSqjYrMw5LInqwdURvwj1veYD+br13jtNCwbjzZrYNuQXjj1vqENK4w==
   dependencies:
     css.escape "^1.5.1"
     he "^1.2.0"
