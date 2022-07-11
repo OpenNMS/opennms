@@ -221,7 +221,7 @@ public class BridgeSimpleConnection implements Topology {
         // condition 1 match: return
         if (m_xyPort != null && m_yxPort != null) {
             if (LOG.isDebugEnabled()) {
-               LOG.debug("findSimpleConnection: success on condition 1 {} -> {}", m_xyPort.printTopology(),m_yxPort.printTopology());
+               LOG.debug("findSimpleConnection: success on condition 1 {} -> {}", m_xyPort.printTopology(), m_yxPort.printTopology());
             }
             return;
         }
