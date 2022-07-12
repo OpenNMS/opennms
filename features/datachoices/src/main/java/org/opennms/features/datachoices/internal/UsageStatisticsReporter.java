@@ -278,11 +278,11 @@ public class UsageStatisticsReporter implements StateChangeHandler {
 
     private void gatherProvisiondData(final UsageStatisticsReportDTO usageStatisticsReport) {
         try {
-            usageStatisticsReport.setImportThreadPoolSize(m_provisiondConfigurationDao.getImportThreads());
-            usageStatisticsReport.setRescanThreadPoolSize(m_provisiondConfigurationDao.getRescanThreads());
-            usageStatisticsReport.setScanThreadPoolSize(m_provisiondConfigurationDao.getScanThreads());
-            usageStatisticsReport.setWriteThreadPoolSize(m_provisiondConfigurationDao.getWriteThreads());
-            usageStatisticsReport.setRequisitionSchemeCount(m_provisiondConfigurationDao.getRequisitionSchemeCount());
+            usageStatisticsReport.setProvisiondImportThreadPoolSize(m_provisiondConfigurationDao.getImportThreads());
+            usageStatisticsReport.setProvisiondRescanThreadPoolSize(m_provisiondConfigurationDao.getRescanThreads());
+            usageStatisticsReport.setProvisiondScanThreadPoolSize(m_provisiondConfigurationDao.getScanThreads());
+            usageStatisticsReport.setProvisiondWriteThreadPoolSize(m_provisiondConfigurationDao.getWriteThreads());
+            usageStatisticsReport.setProvisiondRequisitionSchemeCount(m_provisiondConfigurationDao.getRequisitionSchemeCount());
         } catch (IOException e) {
             LOG.error("Error retrieving provisiond configuration", e);
             return;

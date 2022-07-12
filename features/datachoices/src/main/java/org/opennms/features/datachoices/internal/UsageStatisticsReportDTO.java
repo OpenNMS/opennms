@@ -67,11 +67,11 @@ public class UsageStatisticsReportDTO {
 
     private String m_installedFeatures;
 
-    private long m_importThreadPoolSize;
-    private long m_scanThreadPoolSize;
-    private long m_rescanThreadPoolSize;
-    private long m_writeThreadPoolSize;
-    private Map<String, Long> m_requisitionSchemeCount;
+    private long m_provisiondImportThreadPoolSize;
+    private long m_provisiondScanThreadPoolSize;
+    private long m_provisiondRescanThreadPoolSize;
+    private long m_provisiondWriteThreadPoolSize;
+    private Map<String, Long> m_provisiondRequisitionSchemeCount;
 
     public void setSystemId(String systemId) {
         m_systemId = systemId;
@@ -217,44 +217,44 @@ public class UsageStatisticsReportDTO {
         m_installedFeatures = installedFeatures;
     }
 
-    public long getImportThreadPoolSize() {
-        return m_importThreadPoolSize;
+    public long getProvisiondImportThreadPoolSize() {
+        return m_provisiondImportThreadPoolSize;
     }
 
-    public void setImportThreadPoolSize(long importThreadPoolSize) {
-        m_importThreadPoolSize = importThreadPoolSize;
+    public void setProvisiondImportThreadPoolSize(long provisiondImportThreadPoolSize) {
+        m_provisiondImportThreadPoolSize = provisiondImportThreadPoolSize;
     }
 
-    public long getScanThreadPoolSize() {
-        return m_scanThreadPoolSize;
+    public long getProvisiondScanThreadPoolSize() {
+        return m_provisiondScanThreadPoolSize;
     }
 
-    public void setScanThreadPoolSize(long scanThreadPoolSize) {
-        m_scanThreadPoolSize = scanThreadPoolSize;
+    public void setProvisiondScanThreadPoolSize(long provisiondScanThreadPoolSize) {
+        m_provisiondScanThreadPoolSize = provisiondScanThreadPoolSize;
     }
 
-    public long getRescanThreadPoolSize() {
-        return m_rescanThreadPoolSize;
+    public long getProvisiondRescanThreadPoolSize() {
+        return m_provisiondRescanThreadPoolSize;
     }
 
-    public void setRescanThreadPoolSize(long rescanThreadPoolSize) {
-        m_rescanThreadPoolSize = rescanThreadPoolSize;
+    public void setProvisiondRescanThreadPoolSize(long provisiondRescanThreadPoolSize) {
+        m_provisiondRescanThreadPoolSize = provisiondRescanThreadPoolSize;
     }
 
-    public long getWriteThreadPoolSize() {
-        return m_writeThreadPoolSize;
+    public long getProvisiondWriteThreadPoolSize() {
+        return m_provisiondWriteThreadPoolSize;
     }
 
-    public void setWriteThreadPoolSize(long writeThreadPoolSize) {
-        m_writeThreadPoolSize = writeThreadPoolSize;
+    public void setProvisiondWriteThreadPoolSize(long provisiondWriteThreadPoolSize) {
+        m_provisiondWriteThreadPoolSize = provisiondWriteThreadPoolSize;
     }
 
-    public Map<String, Long> getRequisitionSchemeCount() {
-        return m_requisitionSchemeCount;
+    public Map<String, Long> getProvisiondRequisitionSchemeCount() {
+        return m_provisiondRequisitionSchemeCount;
     }
 
-    public void setRequisitionSchemeCount(Map<String, Long> requisitionSchemeCount) {
-        m_requisitionSchemeCount = requisitionSchemeCount;
+    public void setProvisiondRequisitionSchemeCount(Map<String, Long> provisiondRequisitionSchemeCount) {
+        m_provisiondRequisitionSchemeCount = provisiondRequisitionSchemeCount;
     }
 
     public String toJson() {

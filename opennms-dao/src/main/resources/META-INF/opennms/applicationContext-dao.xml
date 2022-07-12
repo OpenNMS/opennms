@@ -153,9 +153,6 @@
   <bean name="pathOutageManager" class="org.opennms.netmgt.dao.hibernate.PathOutageManagerDaoImpl"/>
   <onmsgi:service interface="org.opennms.netmgt.dao.api.PathOutageManager" ref="pathOutageManager" />
 
-  <bean id="provisiondConfigurationDao" class="org.opennms.netmgt.dao.jaxb.DefaultProvisiondConfigurationDao"/>
-  <onmsgi:service interface="org.opennms.netmgt.dao.api.ProvisiondConfigurationDao" ref="provisiondConfigurationDao"/>
-
   <!--
        This is required for the PathOutageManagerDaoImpl in order to get access to the underlying
        PollerConfiguration/PathOutageConfig and without adding additional dependencies to opennms-config or other modules.
