@@ -2,6 +2,77 @@
 
 = Changelog
 
+[[releasenotes-changelog-30.0.1]]
+
+==== Release 30.0.1
+
+Release 30.0.1 contains a number of bug fixes as well as a number of new features including support for encrypting credentials.
+
+The codename for Horizon 30.0.1 is https://wikipedia.org/wiki/$$Chinchilla$$[_Chinchilla_].
+
+===== Bug
+
+* Error responses are not handled correctly when handling ElasticSearch responses (Issue http://issues.opennms.org/browse/NMS-13785[NMS-13785])
+* Tag Netflow v9 packets as Ingress on the INPUT_SNMP ifindex and Egress on the OUTPUT_SNMP ifindex (Issue http://issues.opennms.org/browse/NMS-14279[NMS-14279])
+* MIB compiler creates datacollections that fail to validate (Issue http://issues.opennms.org/browse/NMS-14314[NMS-14314])
+* Bridge Topology Discovery Mismatch (Issue http://issues.opennms.org/browse/NMS-14322[NMS-14322])
+* Grafana Panel Internal Server Error when lasteventid is Null for an Alarm when Using HELM (Issue http://issues.opennms.org/browse/NMS-14331[NMS-14331])
+* Replace old logo references in some files/reports with the new logo (Issue http://issues.opennms.org/browse/NMS-14372[NMS-14372])
+* Topology UI Error when deleting a graphml (Issue http://issues.opennms.org/browse/NMS-14379[NMS-14379])
+* Link to SCV UI is missing from OG UI admin landing page (Issue http://issues.opennms.org/browse/NMS-14393[NMS-14393])
+* runas=root entry in opennms.conf gets duplicated (Issue http://issues.opennms.org/browse/NMS-14396[NMS-14396])
+* Kafka Consumer stops commits when overloaded (Issue http://issues.opennms.org/browse/NMS-14415[NMS-14415])
+* Appliance: Minion fails to come up with 30.x and bleeding image (Issue http://issues.opennms.org/browse/NMS-14441[NMS-14441])
+* External Requisition UI: foreignSource not set for VMware requisition (Issue http://issues.opennms.org/browse/NMS-14478[NMS-14478])
+* Pollerd take a long time to start on systems with large inventories (Issue http://issues.opennms.org/browse/NMS-14524[NMS-14524])
+
+===== New Feature
+
+* Encrypt SNMP Credentials (Issue http://issues.opennms.org/browse/NMS-14215[NMS-14215])
+* Encrypt Postgres credentials (Issue http://issues.opennms.org/browse/NMS-14216[NMS-14216])
+
+===== Story
+
+* SNMP MIB imports to handle OPAQUE data type implementation (Issue http://issues.opennms.org/browse/NMS-14018[NMS-14018])
+* Support for SSH Key Authentication (Issue http://issues.opennms.org/browse/NMS-14119[NMS-14119])
+* Add KPIs to datachoices telemetry for Provisiond config items (Issue http://issues.opennms.org/browse/NMS-14233[NMS-14233])
+* DCB: UI : Configs without service name shouldn't have option for Backup (Issue http://issues.opennms.org/browse/NMS-14300[NMS-14300])
+* DCB:  Script files are not shown in File Editor UI (Issue http://issues.opennms.org/browse/NMS-14411[NMS-14411])
+* Add support for replaying packet captures to telemetryd (Issue http://issues.opennms.org/browse/NMS-14465[NMS-14465])
+* Prefer ingressPhysicalInterface over INPUT_SNMP when processing flows (Issue http://issues.opennms.org/browse/NMS-14467[NMS-14467])
+* Add KPI for list of enabled service daemons to datachoices telemetry (Issue http://issues.opennms.org/browse/NMS-14489[NMS-14489])
+
+===== Task
+
+* Test DCB UI (Issue http://issues.opennms.org/browse/NMS-14265[NMS-14265])
+* Update documentation for changes to types of configs  (Issue http://issues.opennms.org/browse/NMS-14311[NMS-14311])
+* Add terms to glossary (Issue http://issues.opennms.org/browse/NMS-14347[NMS-14347])
+* Add terms to glossary #2 (Issue http://issues.opennms.org/browse/NMS-14348[NMS-14348])
+* Add terms to glossary #3 (Issue http://issues.opennms.org/browse/NMS-14349[NMS-14349])
+* Add terms to glossary #4 (Issue http://issues.opennms.org/browse/NMS-14350[NMS-14350])
+* Add terms to glossary #5 (Issue http://issues.opennms.org/browse/NMS-14351[NMS-14351])
+
+===== Enhancement
+
+* event nodeCategoryMembershipChanged should be more verbose (Issue http://issues.opennms.org/browse/NMS-10634[NMS-10634])
+* Guide to monitor essential Microsoft Active Directory Services (Issue http://issues.opennms.org/browse/NMS-11793[NMS-11793])
+* There should be documentation for the reports (Issue http://issues.opennms.org/browse/NMS-11810[NMS-11810])
+* Wild cards for flow classifiations are not explained (Issue http://issues.opennms.org/browse/NMS-12421[NMS-12421])
+* Create JdbcDetector documentation (Issue http://issues.opennms.org/browse/NMS-13427[NMS-13427])
+* Authentication related WEB-INF files should also exist in etc-pristine (Issue http://issues.opennms.org/browse/NMS-13834[NMS-13834])
+* Negate search terms in alarms advanced search  (Issue http://issues.opennms.org/browse/NMS-14043[NMS-14043])
+* Support writing to multiple TSDB in parallel (Issue http://issues.opennms.org/browse/NMS-14197[NMS-14197])
+* Enlinkd Topology Map Layers Documentation (Issue http://issues.opennms.org/browse/NMS-14325[NMS-14325])
+* Karaf scv-list command to see what entries exist (Issue http://issues.opennms.org/browse/NMS-14385[NMS-14385])
+* upgrade JNA to 5 (Issue http://issues.opennms.org/browse/NMS-14417[NMS-14417])
+* Add script to manipulate flows (Issue http://issues.opennms.org/browse/NMS-14468[NMS-14468])
+
+===== Upgrade
+
+* Update all Vue UI packages to latest (Issue http://issues.opennms.org/browse/NMS-14460[NMS-14460])
+
+
+
 [[releasenotes-changelog-30.0.0]]
 
 == Release 30.0.0

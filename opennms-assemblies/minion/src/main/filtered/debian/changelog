@@ -1,3 +1,13 @@
+opennms-minion (30.0.1-1) stable; urgency=low
+
+  * New minor release. a number of bug fixes as well as a number of new features 
+    including support for encrypting credentials.
+
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/30.0.1/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 12 Jul 2022 11:55:00 -0400
+
 opennms-minion (30.0.0-1) stable; urgency=low
 
   * New major release. It contains a number of new features, most notably a
