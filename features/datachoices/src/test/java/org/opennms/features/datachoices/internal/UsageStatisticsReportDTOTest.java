@@ -61,9 +61,13 @@ public class UsageStatisticsReportDTOTest {
         services.put("Telemetryd", false);
         usageStatisticsReport.setServices(services);
 
+        usageStatisticsReport.setRoleCount(1);
+        usageStatisticsReport.setNotificationEnablementStatus(null);
+        usageStatisticsReport.setDestinationPathCount(-1);
+
         String actualJson = usageStatisticsReport.toJson();
         System.err.println(actualJson);
-        String expectedJson = "{\"alarms\":0,\"events\":0,\"installedFeatures\":null,\"ipInterfaces\":0,\"minions\":0,\"monitoredServices\":0,\"monitoringLocations\":0,\"nodes\":0,\"nodesBySysOid\":{\".1.2.3.4\":2,\".1.2.3.5\":6},\"osArch\":null,\"osName\":null,\"osVersion\":null,\"packageName\":\"opennms\",\"provisiondImportThreadPoolSize\":0,\"provisiondRequisitionSchemeCount\":{\"file\":4,\"vmware\":3},\"provisiondRescanThreadPoolSize\":0,\"provisiondScanThreadPoolSize\":0,\"provisiondWriteThreadPoolSize\":0,\"services\":{\"Provisiond\":true,\"Telemetryd\":false},\"situations\":0,\"snmpInterfaces\":0,\"snmpInterfacesWithFlows\":0,\"systemId\":\"aae3fdeb-3014-47b4-bb13-c8aa503fccb7\",\"version\":\"10.5.7\"}";
+        String expectedJson = "{\"alarms\":0,\"destinationPathCount\":-1,\"events\":0,\"installedFeatures\":null,\"ipInterfaces\":0,\"minions\":0,\"monitoredServices\":0,\"monitoringLocations\":0,\"nodes\":0,\"nodesBySysOid\":{\".1.2.3.4\":2,\".1.2.3.5\":6},\"notificationEnablementStatus\":null,\"osArch\":null,\"osName\":null,\"osVersion\":null,\"packageName\":\"opennms\",\"provisiondImportThreadPoolSize\":0,\"provisiondRequisitionSchemeCount\":{\"file\":4,\"vmware\":3},\"provisiondRescanThreadPoolSize\":0,\"provisiondScanThreadPoolSize\":0,\"provisiondWriteThreadPoolSize\":0,\"roleCount\":1,\"services\":{\"Provisiond\":true,\"Telemetryd\":false},\"situations\":0,\"snmpInterfaces\":0,\"snmpInterfacesWithFlows\":0,\"systemId\":\"aae3fdeb-3014-47b4-bb13-c8aa503fccb7\",\"version\":\"10.5.7\"}";
         assertEquals(expectedJson, actualJson);
     }
 }
