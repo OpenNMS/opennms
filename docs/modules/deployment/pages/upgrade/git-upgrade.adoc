@@ -14,11 +14,11 @@ If files have been modified, follow the instructions in xref:deployment:upgrade/
 
 == Switch to pristine branch
 
-Run this code to switch to your repository's `master` branch:
+Run this code to switch to your repository's `main` branch:
 
 [source, console]
 ----
-git checkout master
+git checkout main
 ----
 
 This reverts your `etc` directory to its pristine condition in preparation for the upgrade.
@@ -27,11 +27,11 @@ This reverts your `etc` directory to its pristine condition in preparation for t
 
 Upgrade your {page-component-title} installation as usual (see xref:deployment:upgrade/basic.adoc[Basic Upgrade Steps]).
 
-After upgrading, run the `git status` command to see any changes to the default configuration files from your repository's `master` branch.
+After upgrading, run the `git status` command to see any changes to the default configuration files from your repository's `main` branch.
 If any files were removed during the upgrade, run the `git rm <filename>` command.
 This removes the files from your repository.
 
-Make sure your repository's `master` branch is aligned with the version of {page-component-title} that you upgraded to by adding and committing the changes:
+Make sure your repository's `main` branch is aligned with the version of {page-component-title} that you upgraded to by adding and committing the changes:
 
 [source, console]
 ----
@@ -41,27 +41,27 @@ git commit -m 'Upgraded to OpenNMS x.x.x.'
 
 Replace the `x.x.x` in the last line with your current {page-component-title} version.
 
-When your `master` branch has been brought up to date, you can switch back to your modified branch:
+When your `main` branch has been brought up to date, you can switch back to your modified branch:
 
 [source, console]
 ----
 git checkout local-modifications
 ----
 
-== Apply changes from `master` branch
+== Apply changes from `main` branch
 
-Update your modified branch by merging your `master` branch into your current working branch (in this example, `local-modifications`):
+Update your modified branch by merging your `main` branch into your current working branch (in this example, `local-modifications`):
 
 [source, console]
 ----
-git merge master
+git merge main
 ----
 
 If Git finds a conflict, the `merge` command generates an error message:
 
 [source, console]
 ----
-git merge master
+git merge main
 Removing CHANGELOG
 Removing map.disable
 Auto-merging surveillance-views.xml
