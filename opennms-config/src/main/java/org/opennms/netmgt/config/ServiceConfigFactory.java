@@ -114,7 +114,7 @@ public final class ServiceConfigFactory implements org.opennms.netmgt.config.api
     public Map<String, Boolean> getServiceNameMap() {
         return m_config.getServices().stream()
                 .collect(Collectors.toMap(
-                        s -> s.getClassName(),
+                        s -> s.getName().replace("OpenNMS:Name=", ""),
                         s -> s.isEnabled()
                         ));
     }
