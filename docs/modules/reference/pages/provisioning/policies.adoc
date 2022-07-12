@@ -9,20 +9,22 @@ For information on how to extend the functionality of these policies, see the xr
 
 == Common policy parameters
 
-The matchBehavior action is a boolean control that determines how the optional parameters will be evaluated.
+The matchBehavior action is a Boolean control that determines how optional parameters will be evaluated.
 
 ALL_PARAMETERS::
-    All defined parameters must match (AND Boolean logic) for the policy to apply.
+    The policy applies when all defined parameters match (Boolean AND logic).
 ANY_PARAMETERS::
-    Any defined parameters can match (OR Boolean logic) for the policy to apply.
+    The policy applies when at least one set of defined parameters matches (Boolean OR logic).
 NO_PARAMETERS::
-    No defined parameters can match (opposite of ANY_PARAMETERS) for the policy to apply.
+    The policy applies when no defined parameters match (opposite of ANY_PARAMETERS).
 
 String values are assumed to be a substring match, unless the parameter is prefixed with `~` to indicate the policy should evaluate as a regular expression.
 
-== Policy Ordering
+== Policy ordering
 
-The order of matching is non-trivial.
-For negative actions (for example, DO_NO_PERSIST), evaluation stops after the first match.
-For positive actions, evaluation will continue on to check subsequent policies in the order they are listed.
-After all policies are checked, if two or more policies match, the last matched action will take precedence.
+The order in which parameters are matched is important.
+For negative checks (for example, DO_NOT_PERSIST), evaluation stops after the first match found.
+For positive checks, evaluation will check all policies in listed order.
+After all policies are checked the system determines if a match was found.
+If a match is found, the action is run.
+If multiple matches are found, they are run in reverse chronological order. 
