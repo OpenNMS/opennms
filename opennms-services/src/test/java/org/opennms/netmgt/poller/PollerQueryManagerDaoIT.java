@@ -29,7 +29,6 @@
 package org.opennms.netmgt.poller;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -42,12 +41,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Properties;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.db.DataSourceFactory;
@@ -57,8 +53,8 @@ import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.Querier;
-import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.eventd.AbstractEventUtil;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -140,6 +136,9 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
 	private LocationAwarePollerClient m_locationAwarePollerClient;
 
 	private LocationAwarePingClient m_locationAwarePingClient;
+
+	@Autowired
+	private OutageDao m_outageDao;
 
 	@Override
 	public void setTemporaryDatabase(MockDatabase database) {
@@ -231,6 +230,7 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
 		m_poller.setLocationAwarePollerClient(m_locationAwarePollerClient);
 		m_poller.setServiceMonitorAdaptor((svc, parameters, status) -> status);
 		m_poller.setPersisterFactory(new MockPersisterFactory());
+		m_poller.setOutageDao(m_outageDao);
 	}
 
 	@After
