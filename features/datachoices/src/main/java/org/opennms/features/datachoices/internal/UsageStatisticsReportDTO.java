@@ -67,6 +67,8 @@ public class UsageStatisticsReportDTO {
 
     private String m_installedFeatures;
 
+    private Map<String, Boolean> m_services;
+
     public void setSystemId(String systemId) {
         m_systemId = systemId;
     }
@@ -209,6 +211,14 @@ public class UsageStatisticsReportDTO {
 
     public void setInstalledFeatures(String installedFeatures) {
         m_installedFeatures = installedFeatures;
+    }
+
+    public Map<String, Boolean> getServices() {
+        return m_services;
+    }
+
+    public void setServices(Map<String, Boolean> services) {
+        m_services = services;
     }
 
     public String toJson() {
