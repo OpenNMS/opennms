@@ -47,12 +47,9 @@ When enabled, the `Data Choices` module collects the following anonymous statist
 * Number of nodes, grouped by System OID
 * Number of locations
 * Number of Minions
-<<<<<<< HEAD
 * Number of Provisiond requisitions by scheme
 * Provisiond thread pool sizes
-=======
 * List of enabled/disabled services
->>>>>>> origin/release-30.x
 * List of installed features in Karaf
 
 [[ga-admin-user-setup]]
