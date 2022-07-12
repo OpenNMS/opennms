@@ -43,6 +43,7 @@ import org.apache.karaf.features.FeaturesService;
 import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.core.web.HttpClientWrapper;
 import org.opennms.features.datachoices.internal.StateManager.StateChangeHandler;
+import org.opennms.netmgt.config.ServiceConfigFactory;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
@@ -88,6 +89,8 @@ public class UsageStatisticsReporter implements StateChangeHandler {
     private FeaturesService m_featuresService;
 
     private ProvisiondConfigurationDao m_provisiondConfigurationDao;
+
+    private ServiceConfigFactory m_serviceConfigurationFactory;
 
     private boolean m_useSystemProxy = true; // true == legacy behaviour
 
@@ -210,8 +213,8 @@ public class UsageStatisticsReporter implements StateChangeHandler {
             installedFeatures = "ERROR: Failed to enumerate the installed features: " + e.getMessage();
         }
         usageStatisticsReport.setInstalledFeatures(installedFeatures);
-
         gatherProvisiondData(usageStatisticsReport);
+        usageStatisticsReport.setServices(m_serviceConfigurationFactory.getServiceNameMap());
 
         return usageStatisticsReport;
     }
@@ -287,5 +290,13 @@ public class UsageStatisticsReporter implements StateChangeHandler {
             LOG.error("Error retrieving provisiond configuration", e);
             return;
         }
+    }
+
+    public ServiceConfigFactory getServiceConfigurationFactory() {
+        return m_serviceConfigurationFactory;
+    }
+
+    public void setServiceConfigurationFactory(ServiceConfigFactory serviceConfigurationFactory) {
+        this.m_serviceConfigurationFactory = serviceConfigurationFactory;
     }
 }

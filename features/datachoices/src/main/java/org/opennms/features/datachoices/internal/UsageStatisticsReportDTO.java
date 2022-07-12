@@ -72,6 +72,7 @@ public class UsageStatisticsReportDTO {
     private long m_provisiondRescanThreadPoolSize;
     private long m_provisiondWriteThreadPoolSize;
     private Map<String, Long> m_provisiondRequisitionSchemeCount;
+    private Map<String, Boolean> m_services;
 
     public void setSystemId(String systemId) {
         m_systemId = systemId;
@@ -255,6 +256,14 @@ public class UsageStatisticsReportDTO {
 
     public void setProvisiondRequisitionSchemeCount(Map<String, Long> provisiondRequisitionSchemeCount) {
         m_provisiondRequisitionSchemeCount = provisiondRequisitionSchemeCount;
+    }
+
+    public Map<String, Boolean> getServices() {
+        return m_services;
+    }
+
+    public void setServices(Map<String, Boolean> services) {
+        m_services = services;
     }
 
     public String toJson() {

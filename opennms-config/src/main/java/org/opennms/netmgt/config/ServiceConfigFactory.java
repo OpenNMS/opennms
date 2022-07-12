@@ -31,7 +31,10 @@ package org.opennms.netmgt.config;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.opennms.core.utils.ConfigFileConstants;
 import org.slf4j.Logger;
@@ -106,5 +109,13 @@ public final class ServiceConfigFactory implements org.opennms.netmgt.config.api
                 services.add(s);
         }
         return services.toArray(new Service[services.size()]);
+    }
+
+    public Map<String, Boolean> getServiceNameMap() {
+        return m_config.getServices().stream()
+                .collect(Collectors.toMap(
+                        s -> s.getClassName(),
+                        s -> s.isEnabled()
+                        ));
     }
 }
