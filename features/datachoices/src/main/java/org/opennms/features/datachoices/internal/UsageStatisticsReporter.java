@@ -272,11 +272,11 @@ public class UsageStatisticsReporter implements StateChangeHandler {
     }
 
     public ProvisiondConfigurationDao getProvisiondConfigurationDao() {
-        return this.m_provisiondConfigurationDao;
+        return m_provisiondConfigurationDao;
     }
 
-    public void setProvisiondConfigurationDao(ProvisiondConfigurationDao m_provisiondConfigurationDao) {
-        this.m_provisiondConfigurationDao = m_provisiondConfigurationDao;
+    public void setProvisiondConfigurationDao(ProvisiondConfigurationDao provisiondConfigurationDao) {
+        m_provisiondConfigurationDao = provisiondConfigurationDao;
     }
 
     private void gatherProvisiondData(final UsageStatisticsReportDTO usageStatisticsReport) {
@@ -288,7 +288,6 @@ public class UsageStatisticsReporter implements StateChangeHandler {
             usageStatisticsReport.setProvisiondRequisitionSchemeCount(m_provisiondConfigurationDao.getRequisitionSchemeCount());
         } catch (IOException e) {
             LOG.error("Error retrieving provisiond configuration", e);
-            return;
         }
     }
 
@@ -297,6 +296,6 @@ public class UsageStatisticsReporter implements StateChangeHandler {
     }
 
     public void setServiceConfigurationFactory(ServiceConfigFactory serviceConfigurationFactory) {
-        this.m_serviceConfigurationFactory = serviceConfigurationFactory;
+        m_serviceConfigurationFactory = serviceConfigurationFactory;
     }
 }
