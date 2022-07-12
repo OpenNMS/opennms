@@ -3,11 +3,11 @@
 
 {page-component-title} can monitor the status of an SNMP interface that is not directly monitored by a <<service-assurance/introduction.adoc#ga-service-assurance, Service Assurance>> monitor.
 
-IMPORTANT: This feature is not related to SNMP Polling and Collecting.
+IMPORTANT: This feature is not related to SNMP polling and collecting.
 This optional feature is used to generate events when device interfaces have a change in their `ifAdminStatus` or `ifOperStatus` states.
-If you are interested in collecting performance data from SNMP interfaces, please see the xref:operation:performance-data-collection/introduction.adoc[Performance Management] section.
+If you want to collect performance data from SNMP interfaces, please see the xref:operation:performance-data-collection/introduction.adoc[Performance Management] section.
 
-The SNMP interface poller is a separate service that uses a node interface, typically a management interface, to get administration and operational status for other interfaces present on the device.
+The SNMP interface poller is a separate service that uses a node interface, typically a management interface, to get administration and operational status for other interfaces on the device.
 On a configurable time interval, a SNMP GET request is made for two specific objects in an `ifEntry` of the `ifTable` defined in the `IF-MIB`.
 See <<snmp-int-poll-oid, OID information>> at the end of this document for details.
 
@@ -39,7 +39,7 @@ In the event that this configuration option is used and `ifOperStatus` transitio
 
 == Configuration and use
 
-=== Enabling the service
+=== Enable the service
 
 By default the SNMP interface poller daemon is not enabled.
 To enable it, change the value of the `enabled` attribute of the `service` element that contains a `name` element with the following text: `OpenNMS:Name=SnmpPoller`.
@@ -58,7 +58,7 @@ To enable it, change the value of the `enabled` attribute of the `service` eleme
 
 You must restart {page-component-title} to apply this change.
 
-=== Configuring the service
+=== Configure the service
 
 The configuration file is `$\{OPENNMS_HOME}/etc/snmp-interface-poller-configuration.xml`.
 The default version of this file follows:
@@ -88,7 +88,7 @@ Configuration options available:
 
 snmp-interface-poller-configuration::
 Top-level element for the snmp-interface-poller-configuration.xml configuration file.
-The available attributes are:
+The available attributes are the following:
 +
 [options="header, autowidth"]
 [cols="2,3"]
@@ -107,9 +107,9 @@ The available attributes are:
 Almost always "SNMP".
 
 | useCriteriaFilters
-a| Flag that indicates if interfaces that do not match the criteria attribute of an interface element in an otherwise matching package should be polled with default settings or not.
+a| Flag that indicates if interfaces that do not match the criteria attribute of an interface element in an otherwise matching package should be polled with default settings.
 
-* When "false" such an interface will be polled with default settings
+* When "false" such an interface will be polled with default settings.
 * When "true" that interface will not be polled.
 ** up-values: comma-separated list of valid integer values (1-7) to treat as equivalent to `up(1)` when sending status change events for an interface.
 Defaults to "1".
@@ -152,7 +152,7 @@ The available attributes are:
 
 | name
 | Name for this interface element.
-It is generally advisable to make the name representative of the criteria filter of the interface.
+We suggest that you make the name representative of the criteria filter of the interface.
 Required.
 
 | criteria
@@ -166,7 +166,7 @@ As noted above, if `useCriteriaFilters` is `true` on the top-level element, any 
 Overrides the global setting in the top-level element for interfaces that match this element's criteria filter.
 
 | user-defined
-| An unused boolean value reserved for use in the UI, should one ever exist for this service.
+| An unused Boolean value reserved for use in the UI, should one ever exist for this service.
 Defaults to `false`.
 
 | status
@@ -200,7 +200,7 @@ Example: `2,3,4,6,7`.
 Defaults to `2`.
 |===
 
-=== Configuring device interfaces to poll
+=== Configure device interfaces to poll
 
 Besides enabling the service and configuring packages and interfaces, you must add a policy that enables polling to the foreign source definition of the requisition(s) for the devices on which you want to use this feature.
 
@@ -218,7 +218,7 @@ If an SNMP interface does not match the criteria of any `interface` element in a
 [[snmp-int-poll-oid]]
 == SNMP OID information
 
-The SNMP objects retried by this service are:
+This service retries the following SNMP objects:
 
 .OID 1.3.6.1.2.1.2.2.1.7
 [source, mib]

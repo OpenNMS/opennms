@@ -48,7 +48,7 @@ The screen displays a list of events configured for notifications.
 . Click *Add New Event Notification*.
 . Choose an event on which you want to receive a notification and click *Next*.
 . Optionally build a rule to match a subset of IP addresses or services and click *Validate rule results*, then *Next* (or *Skip results validation*).
-. In the *Choose Path* screen, specify information to include in the notification, including destination path, subject (for an email message), text, etc.
+. In the *Choose Path* screen, specify information to include in the notification, including destination path, subject (for an email message), text, and so on.
 . Click *Finish*.
 
 NOTES: The event notification configuration is stored in the `notifications.xml` file.
