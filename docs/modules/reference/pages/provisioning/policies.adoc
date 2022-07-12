@@ -18,7 +18,8 @@ ANY_PARAMETERS::
 NO_PARAMETERS::
     The policy applies when no defined parameters match (opposite of ANY_PARAMETERS).
 
-String values are assumed to be a substring match, unless the parameter is prefixed with `~` to indicate the policy should evaluate as a regular expression.
+String parameters are set to search for a substring match by default.
+If you want the policy to evaluate a parameter against a regular expression, prefix the value with `~`.
 
 == Policy ordering
 
