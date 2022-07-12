@@ -1574,6 +1574,7 @@
         <feature>hibernate36</feature>
         <feature>javax.servlet</feature>
         <feature>quartz</feature>
+        <feature>opennms-dao</feature>
         <bundle>mvn:org.opennms.features/datachoices/${project.version}</bundle>
         <bundle>wrap:mvn:org.freemarker/freemarker/${freemarkerVersion}</bundle>
         <bundle>mvn:org.apache.karaf.shell/org.apache.karaf.shell.console/${karafVersion}</bundle>
