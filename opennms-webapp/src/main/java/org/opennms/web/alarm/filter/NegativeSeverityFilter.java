@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -37,6 +37,7 @@ import org.opennms.web.filter.SQLType;
  * this value instead of only filtering IN this value.
  */
 public class NegativeSeverityFilter extends NotEqualsFilter<OnmsSeverity> {
+    /** Constant <code>TYPE="severitynot"</code> */
     public static final String TYPE = "severitynot";
 
     public NegativeSeverityFilter(final OnmsSeverity severity) {

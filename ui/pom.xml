@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>30.0.0</version>
+    <version>30.0.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
@@ -64,7 +64,7 @@
             <phase>generate-resources</phase>
             <configuration>
               <skip>${skipNodeJSBuild}</skip>
-              <nodeVersion>${nodeNewUIVersion}</nodeVersion>
+              <nodeVersion>${nodeVersion}</nodeVersion>
               <yarnVersion>${yarnVersion}</yarnVersion>
             </configuration>
           </execution>

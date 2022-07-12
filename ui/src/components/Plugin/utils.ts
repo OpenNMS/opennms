@@ -51,4 +51,12 @@ const addStylesheet = (url: string) => {
   head.prepend(link)
 }
 
-export { externalComponent, addStylesheet }
+const getJSPath = (baseUrl: string, extensionId: string, rootPath: string, fileName: string) => {
+  return `${baseUrl}/plugins/ui-extension/module/${extensionId}?path=${rootPath}/${fileName}`
+}
+
+const getCSSPath = (baseUrl: string, extensionId: string) => {
+  return `${baseUrl}/plugins/ui-extension/css/${extensionId}`
+}
+
+export { externalComponent, addStylesheet, getJSPath, getCSSPath }

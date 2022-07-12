@@ -51,10 +51,12 @@ import org.apache.sshd.client.ClientBuilder;
 import org.apache.sshd.client.SshClient;
 import org.apache.sshd.client.channel.ClientChannel;
 import org.apache.sshd.client.session.ClientSession;
-import org.apache.sshd.common.config.keys.KeyUtils;
 import org.apache.sshd.common.NamedFactory;
+import org.apache.sshd.common.NamedResource;
+import org.apache.sshd.common.config.keys.KeyUtils;
 import org.apache.sshd.common.kex.BuiltinDHFactories;
 import org.apache.sshd.common.signature.BuiltinSignatures;
+import org.apache.sshd.common.util.security.SecurityUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.deviceconfig.sshscripting.SshScriptingService;
 import org.slf4j.Logger;
@@ -92,8 +94,10 @@ public class SshScriptingServiceImpl implements SshScriptingService {
             String script,
             String user,
             String password,
+            final String authKey,
             final SocketAddress target,
             final String hostKeyFingerprint,
+            final String shell,
             Map<String, String> vars,
             Duration timeout
     ) {
@@ -101,7 +105,7 @@ public class SshScriptingServiceImpl implements SshScriptingService {
                 errorLines -> Result.failure(errorLines.stream().collect(Collectors.joining("\n", "unrecognized statements:\n", ""))),
                 statements -> {
                     try {
-                        try (var sshInteraction = new SshInteractionImpl(user, password, target, hostKeyFingerprint, vars, timeout, tftpServerIPv4Address, tftpServerIPv6Address)) {
+                        try (var sshInteraction = new SshInteractionImpl(user, password, authKey, target, hostKeyFingerprint, shell, vars, timeout, tftpServerIPv4Address, tftpServerIPv6Address)) {
                             LOG.debug("ssh connection successful, executing script: {}", script);
                             Statement prevStatement = null;
                             for (var statement : statements) {
@@ -175,8 +179,10 @@ public class SshScriptingServiceImpl implements SshScriptingService {
         private SshInteractionImpl(
                 String user,
                 String password,
+                final String authKey,
                 final SocketAddress target,
                 final String hostKeyFingerprint,
+                final String shell,
                 Map<String, String> vars,
                 Duration timeout,
                 InetAddress tftpServerIPv4Address,
@@ -186,7 +192,7 @@ public class SshScriptingServiceImpl implements SshScriptingService {
             sshClient = SshClient.setUpDefaultClient();
 
             sshClient.setServerKeyVerifier((clientSession, socketAddress, publicKey) -> {
-                if (hostKeyFingerprint == null) {
+                if (Strings.isNullOrEmpty(hostKeyFingerprint)) {
                     // If there is no host key specified, we accept all host keys as a graceful default.
                     // Opt-in on security is not optimal but convenient.
                     return true;
@@ -236,10 +242,28 @@ public class SshScriptingServiceImpl implements SshScriptingService {
                 }
 
                 try {
-                    session.addPasswordIdentity(password);
+                    if (password != null) {
+                        session.addPasswordIdentity(password);
+                    }
+
+                    if (!Strings.isNullOrEmpty(authKey)) {
+                        try {
+                            SecurityUtils.getKeyPairResourceParser()
+                                         .loadKeyPairs(this.session,
+                                                       NamedResource.ofName("auth-key"),
+                                                       null,
+                                                       authKey)
+                                         .forEach(session::addPublicKeyIdentity);
+                        } catch (final Exception e) {
+                            LOG.error("Invalid ssh private key", e);
+                        }
+                    }
+
                     session.auth().verify(Duration.between(Instant.now(), timeoutInstant));
 
-                    channel = session.createShellChannel();
+                    channel = Strings.isNullOrEmpty(shell)
+                              ? session.createShellChannel()
+                              : session.createExecChannel(shell);
 
                     try {
                         stdout = new ByteArrayOutputStream();

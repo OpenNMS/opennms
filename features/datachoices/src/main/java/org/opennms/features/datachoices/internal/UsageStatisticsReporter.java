@@ -43,6 +43,7 @@ import org.apache.karaf.features.FeaturesService;
 import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.core.web.HttpClientWrapper;
 import org.opennms.features.datachoices.internal.StateManager.StateChangeHandler;
+import org.opennms.netmgt.config.ServiceConfigFactory;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
@@ -50,6 +51,7 @@ import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.MonitoringSystemDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.ProvisiondConfigurationDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.slf4j.Logger;
@@ -85,6 +87,10 @@ public class UsageStatisticsReporter implements StateChangeHandler {
     private MonitoringSystemDao m_monitoringSystemDao;
 
     private FeaturesService m_featuresService;
+
+    private ProvisiondConfigurationDao m_provisiondConfigurationDao;
+
+    private ServiceConfigFactory m_serviceConfigurationFactory;
 
     private boolean m_useSystemProxy = true; // true == legacy behaviour
 
@@ -207,6 +213,9 @@ public class UsageStatisticsReporter implements StateChangeHandler {
             installedFeatures = "ERROR: Failed to enumerate the installed features: " + e.getMessage();
         }
         usageStatisticsReport.setInstalledFeatures(installedFeatures);
+        gatherProvisiondData(usageStatisticsReport);
+        usageStatisticsReport.setServices(m_serviceConfigurationFactory.getServiceNameMap());
+
         return usageStatisticsReport;
     }
 
@@ -260,5 +269,33 @@ public class UsageStatisticsReporter implements StateChangeHandler {
 
     public void setUseSystemProxy(boolean useSystemProxy){
         m_useSystemProxy = useSystemProxy;
+    }
+
+    public ProvisiondConfigurationDao getProvisiondConfigurationDao() {
+        return m_provisiondConfigurationDao;
+    }
+
+    public void setProvisiondConfigurationDao(ProvisiondConfigurationDao provisiondConfigurationDao) {
+        m_provisiondConfigurationDao = provisiondConfigurationDao;
+    }
+
+    private void gatherProvisiondData(final UsageStatisticsReportDTO usageStatisticsReport) {
+        try {
+            usageStatisticsReport.setProvisiondImportThreadPoolSize(m_provisiondConfigurationDao.getImportThreads());
+            usageStatisticsReport.setProvisiondRescanThreadPoolSize(m_provisiondConfigurationDao.getRescanThreads());
+            usageStatisticsReport.setProvisiondScanThreadPoolSize(m_provisiondConfigurationDao.getScanThreads());
+            usageStatisticsReport.setProvisiondWriteThreadPoolSize(m_provisiondConfigurationDao.getWriteThreads());
+            usageStatisticsReport.setProvisiondRequisitionSchemeCount(m_provisiondConfigurationDao.getRequisitionSchemeCount());
+        } catch (IOException e) {
+            LOG.error("Error retrieving provisiond configuration", e);
+        }
+    }
+
+    public ServiceConfigFactory getServiceConfigurationFactory() {
+        return m_serviceConfigurationFactory;
+    }
+
+    public void setServiceConfigurationFactory(ServiceConfigFactory serviceConfigurationFactory) {
+        m_serviceConfigurationFactory = serviceConfigurationFactory;
     }
 }

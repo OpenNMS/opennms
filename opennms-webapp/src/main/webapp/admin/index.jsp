@@ -153,6 +153,7 @@
             <li><a href="javascript:deletePost()">Delete Nodes</a></li>
             <li><a href="ui/index.html/#/configuration">Configure External Requisitions</a></li>
             <li><a href="admin/geoservice/index.jsp">Configure Geocoder Service</a></li>
+            <li><a href="/opennms/ui/index.html#/scv">Secure Credentials Vault</a></li>
         </ul>
       </div> <!-- card-body -->
     </div> <!-- panel -->
@@ -300,6 +301,8 @@
         <p><b>Delete Nodes</b>: Permanently delete nodes from the database.
         </p>
 
+          <p><b>Secure Credentials Vault</b>: Encrypt credentials the OpenNMS system uses.
+          </p>
 
         <p><b>Manually Send an Event</b>: Allows you to build a specific event and send it to the system.</p>
 

@@ -67,6 +67,13 @@ public class UsageStatisticsReportDTO {
 
     private String m_installedFeatures;
 
+    private long m_provisiondImportThreadPoolSize;
+    private long m_provisiondScanThreadPoolSize;
+    private long m_provisiondRescanThreadPoolSize;
+    private long m_provisiondWriteThreadPoolSize;
+    private Map<String, Long> m_provisiondRequisitionSchemeCount;
+    private Map<String, Boolean> m_services;
+
     public void setSystemId(String systemId) {
         m_systemId = systemId;
     }
@@ -209,6 +216,54 @@ public class UsageStatisticsReportDTO {
 
     public void setInstalledFeatures(String installedFeatures) {
         m_installedFeatures = installedFeatures;
+    }
+
+    public long getProvisiondImportThreadPoolSize() {
+        return m_provisiondImportThreadPoolSize;
+    }
+
+    public void setProvisiondImportThreadPoolSize(long provisiondImportThreadPoolSize) {
+        m_provisiondImportThreadPoolSize = provisiondImportThreadPoolSize;
+    }
+
+    public long getProvisiondScanThreadPoolSize() {
+        return m_provisiondScanThreadPoolSize;
+    }
+
+    public void setProvisiondScanThreadPoolSize(long provisiondScanThreadPoolSize) {
+        m_provisiondScanThreadPoolSize = provisiondScanThreadPoolSize;
+    }
+
+    public long getProvisiondRescanThreadPoolSize() {
+        return m_provisiondRescanThreadPoolSize;
+    }
+
+    public void setProvisiondRescanThreadPoolSize(long provisiondRescanThreadPoolSize) {
+        m_provisiondRescanThreadPoolSize = provisiondRescanThreadPoolSize;
+    }
+
+    public long getProvisiondWriteThreadPoolSize() {
+        return m_provisiondWriteThreadPoolSize;
+    }
+
+    public void setProvisiondWriteThreadPoolSize(long provisiondWriteThreadPoolSize) {
+        m_provisiondWriteThreadPoolSize = provisiondWriteThreadPoolSize;
+    }
+
+    public Map<String, Long> getProvisiondRequisitionSchemeCount() {
+        return m_provisiondRequisitionSchemeCount;
+    }
+
+    public void setProvisiondRequisitionSchemeCount(Map<String, Long> provisiondRequisitionSchemeCount) {
+        m_provisiondRequisitionSchemeCount = provisiondRequisitionSchemeCount;
+    }
+
+    public Map<String, Boolean> getServices() {
+        return m_services;
+    }
+
+    public void setServices(Map<String, Boolean> services) {
+        m_services = services;
     }
 
     public String toJson() {

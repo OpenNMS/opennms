@@ -1,0 +1,40 @@
+[[total-bytes-report]]
+= Total Bytes Transferred by Interface Report
+Total bytes transferred by interface.
+
+This report provides the total number of bytes transferred by each interface whose category matches the specified category during the specified time period.
+For each interface, the report provides:
+
+* Bytes received
+* Bytes transmitted
+* Total Bytes in and out
+
+You can customize this report with a company logo (approximately 195px by 50px) in the header and footer.
+
+== Parameters
+
+[options="header, autowidth"]
+[cols="1,2,3"]
+
+|===
+| Field
+| Description
+| Default
+
+| Surveillance Category
+| Identify one or more surveillance categories to filter nodes to include in the report.
+To select multiple categories use wildcards as described below.
+If no categories match the entered string, the report will have no data.
+| Routers
+
+| Start Date
+| The starting date for the data contained in this report.
+| 7 days before today
+
+| End Date
+| The end date for the data contained in this report.
+If the end date is later than the start date, the report will have no data.
+| Today
+|===
+
+include::standard-text-fields.adoc[]

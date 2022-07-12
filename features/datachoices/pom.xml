@@ -5,7 +5,7 @@
     <parent>
         <artifactId>org.opennms.features</artifactId>
         <groupId>org.opennms</groupId>
-        <version>30.0.0</version>
+        <version>30.0.1-SNAPSHOT</version>
     </parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>datachoices</artifactId>
@@ -44,7 +44,7 @@
         </dependency>
         <dependency>
             <groupId>org.opennms</groupId>
-            <artifactId>opennms-dao-api</artifactId>
+            <artifactId>opennms-dao</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>

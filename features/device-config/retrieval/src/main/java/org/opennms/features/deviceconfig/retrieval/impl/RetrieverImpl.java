@@ -88,8 +88,10 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
             String script,
             String user,
             String password,
+            final String authKey,
             final SocketAddress target,
             final String hostKeyFingerprint,
+            final String shell,
             String configType,
             Map<String, String> vars,
             Duration timeout
@@ -118,7 +120,7 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
             var tftpFileReceiver = new TftpFileReceiverImpl(
                     target,
                     filenameSuffix,
-                    () -> sshScriptingService.execute(script, user, password, target, hostKeyFingerprint, vs, Duration.between(Instant.now(), timeoutInstant).minusSeconds(1))
+                    () -> sshScriptingService.execute(script, user, password, authKey, target, hostKeyFingerprint, shell, vs, Duration.between(Instant.now(), timeoutInstant).minusSeconds(1))
             );
 
             try {

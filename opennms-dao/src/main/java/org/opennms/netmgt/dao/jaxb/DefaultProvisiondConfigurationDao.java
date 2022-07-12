@@ -39,8 +39,12 @@ import org.opennms.netmgt.events.api.EventForwarder;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * Default implementation of <code>AckdConfiguration</code> containing utility methods for manipulating
@@ -182,5 +186,20 @@ public class DefaultProvisiondConfigurationDao extends AbstractCmJaxbConfigDao<P
     @Override
     public String getConfigName() {
         return CONFIG_NAME;
+    }
+
+    @Override
+    public Map<String, Long> getRequisitionSchemeCount() throws IOException {
+        return getDefs().stream()
+                .filter(r -> r.getImportUrlResource().isPresent())
+                .map(r -> {
+                    try {
+                        return new URL(r.getImportUrlResource().get());
+                    } catch (MalformedURLException e) {
+                        return null;
+                    }
+                })
+                .filter(r -> r != null)
+                .collect(Collectors.groupingBy(r -> r.getProtocol(), Collectors.counting()));
     }
 }

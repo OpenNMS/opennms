@@ -31,9 +31,10 @@ package org.opennms.netmgt.poller;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
@@ -456,7 +457,7 @@ public class Poller extends AbstractServiceDaemon {
                         @Override
                         protected void doInTransactionWithoutResult(TransactionStatus arg0) {
                             final OnmsMonitoredService service = m_monitoredServiceDao.get(nodeId, InetAddressUtils.addr(ipAddr), svcName);
-                            if (scheduleService(service)) {
+                            if (scheduleService(service, service.getCurrentOutages())) {
                                 svcNode.recalculateStatus();
                                 svcNode.processStatusChange(new Date());
                             } else {
@@ -481,17 +482,17 @@ public class Poller extends AbstractServiceDaemon {
             @Override
             public Integer doInTransaction(TransactionStatus arg0) {
                 final List<OnmsMonitoredService> services =  m_monitoredServiceDao.findMatching(criteria);
+                final Map<Integer, Set<OnmsOutage>> outagesByServiceId = m_outageDao.currentOutagesByServiceId();
                 for (OnmsMonitoredService service : services) {
-                    scheduleService(service);
+                    scheduleService(service, outagesByServiceId.getOrDefault(service.getId(), Collections.emptySet()));
                 }
                 return services.size();
             }
         });
     }
 
-    private boolean scheduleService(OnmsMonitoredService service) {
+    private boolean scheduleService(OnmsMonitoredService service, Set<OnmsOutage> outages) {
         final OnmsIpInterface iface = service.getIpInterface();
-        final Set<OnmsOutage> outages = service.getCurrentOutages();
         final OnmsOutage outage = (outages == null || outages.size() < 1 ? null : outages.iterator().next());
         final OnmsEvent event = (outage == null ? null : outage.getServiceLostEvent());
         final String ipAddr = InetAddressUtils.str(iface.getIpAddress());
@@ -556,7 +557,10 @@ public class Poller extends AbstractServiceDaemon {
     }
 
     private Package findPackageForService(String ipAddr, String serviceName) {
-        this.m_pollerConfig.rebuildPackageIpListMap();
+        if (m_initialized) {
+            // Only rebuild the map when services are scheduled after the initial initialization
+            m_pollerConfig.rebuildPackageIpListMap();
+        }
         return this.m_pollerConfig.findPackageForService(ipAddr, serviceName);
     }
 

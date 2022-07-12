@@ -204,7 +204,7 @@
     <servlet-class>org.opennms.web.availability.AvailabilityServlet</servlet-class>
     <init-param>
       <param-name>report.logo</param-name>
-      <param-value>/images/logo.gif</param-value>
+      <param-value>/images/opennms-logo-light.svg</param-value>
     </init-param>
     <init-param>
       <param-name>xslt.filename</param-name>

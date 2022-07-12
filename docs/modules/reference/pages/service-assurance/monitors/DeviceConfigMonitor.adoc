@@ -34,17 +34,20 @@ Don't include `.dcb` extension when specifying the file name in metadata.
 | username
 | Username for SSH login. 
 Overwrite in metadata as `dcb:username`.
+Note that you can use xref:operation:meta-data.adoc#ga-metadata-scv[Secure Credentials Vault (SCV) metadata].
 | admin
 
 | password
 | Password for SSH login. 
 Overwrite in metadata as `dcb:password`.
+Note that you can use Secure Credentials Vault (SCV) metadata.
 | admin
 
 3+| *Optional*
 
 | config-type
 | If device has multiple configurations, specify the config-type with each service.
+The config-type and service name suffix should match (kebab-case for service name, camelCase for config-type).
 Overwrite in metadata as `dcb:config-type`.
 | default
 
@@ -77,7 +80,18 @@ Example: `P20Y2M25D` means 20 years, 2 months, and 25 days.
   If this is specified, the provided fingerprint will be used to verify the host key of the remote host.
   The key must be encoded as `HASH:BASE64`.
   One can use `ssh-keygen -l -f <(ssh-keyscan $TARGET)` to find the fingerprints of a remote system.
+  If this is not specified, the host key of the remote host is not checked.
 | _unchecked_
+
+| auth-key
+| SSH Private key used to authenticate.
+  This must be specified in PEM format.
+  If unspecified, key authentication is not used.
+| _unused_
+
+| shell
+| If specified, this command is executed on the remote host instead of a login shell.
+| _Default login shell_
 
 |===
 

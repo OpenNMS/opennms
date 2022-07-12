@@ -31,6 +31,10 @@
     <reference id="featuresService" interface="org.apache.karaf.features.FeaturesService"/>
     <reference id="configurationManagerService" interface="org.opennms.features.config.service.api.ConfigurationManagerService" availability="mandatory"/>
 
+    <reference id="provisiondConfigDao" interface="org.opennms.netmgt.dao.api.ProvisiondConfigurationDao" availability="mandatory"/>
+
+    <bean id="serviceConfigurationFactory" class="org.opennms.netmgt.config.ServiceConfigFactory" />
+
     <!-- The state manager will manually pull properties from the configuration file -->
     <bean id="stateManager" class="org.opennms.features.datachoices.internal.StateManager">
         <argument ref="configurationManagerService" />
@@ -50,6 +54,8 @@
         <property name="monitoringLocationDao" ref="monitoringLocationDao"/>
         <property name="monitoringSystemDao" ref="monitoringSystemDao"/>
         <property name="featuresService" ref="featuresService"/>
+        <property name="provisiondConfigurationDao" ref="provisiondConfigDao"/>
+        <property name="serviceConfigurationFactory" ref="serviceConfigurationFactory"/>
     </bean>
 
     <bean id="dataChoiceRestService" class="org.opennms.features.datachoices.web.internal.DataChoiceRestServiceImpl">

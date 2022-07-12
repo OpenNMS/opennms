@@ -6,83 +6,211 @@
 ActiveMQ:: Java-based open-source message broker supported by the Apache community.
 (See xref:deployment:core/setup-message-broker.adoc#setup-message-broker[Set Up Message Broker].)
 
-ALEC:: The Architecture for Learning Enabled Correlation (ALEC) is an OpenNMS framework that uses artificial intelligence and machine learning to provide alarm triage.
+xref:operation:alarms/introduction.adoc[Alarms]:: Indicators for problems occurring on entities that {page-component-title} monitors.
+
+https://docs.opennms.com/alec/latest/[Architecture for Learning Enabled Correlation (ALEC)]:: An OpenNMS framework that uses artificial intelligence and machine learning to provide alarm triage.
 ALEC groups related alarms so you can better manage the more complex situations they might represent.
 
-Application Perspective Monitoring (APM):: A method that uses the Minion infrastructure to monitor a service’s availability from different perspectives to help identify if nodes are down for everyone or if an outage affects only certain sites. When a service is not responsive an outage will be generated with the corresponding perspective that sees the outage.
-(See xref:operation:application-perspective-monitoring/introduction.adoc#application-perspective[Application Perspective Monitoring].)
+xref:operation:application-perspective-monitoring/introduction.adoc[Application Perspective Monitoring (APM)]:: A method that uses the Minion infrastructure to monitor a service’s availability from different perspectives to help identify if nodes are down for everyone or if an outage affects only certain sites.
+When a service is not responsive an outage will be generated with the corresponding perspective that sees the outage.
 
-Cassandra:: Open-source distributed/scale-out NoSQL database designed to hold large amounts of structured or unstructured data across many servers.
-(See xref:deployment:time-series-storage/newts/introduction.adoc#ga-opennms-operation-newts[Newts].)
+Asset data:: A set of optional fields, similar to metadata, that can be associated with a node to provide additional information. 
+Examples include physical location and hardware specifications.
 
-Discovery:: A process that uses ICMP to find network devices and services in your network and then automatically adds them to monitoring.
-(See xref:operation:provisioning/introduction.adoc#discovery-auto[Provisioning].)
+Auto-discovered nodes:: Nodes that are automatically added to {page-component-title} through routine or one-time discovery.
+(See xref:operation:provisioning/auto-discovery.adoc[Auto-Discovery].)
+
+Availability:: The percentage of time a node has been detected as being accessible.
+{page-component-title} typically shows availability statistics for the past 24 hours.
+This is calculated by subtracting the amount of outage time for a node, interface, or service during the time period.
+
+Azure:: Microsoft Azure is a cloud hosting platform that allows users to host a variety of services.
+
+Bean Scripting Framework (BSF):: A framework that allows scripting to be used in Java code via a set of Java classes.
+The {page-component-title} xref:reference:provisioning/detectors/BsfDetector.adoc[BSF Detector] runs arbitrary BSF scripts to determine the existence of a service, and the xref:reference:service-assurance/monitors/BSFMonitor.adoc[BSF Monitor] uses scripts to determine the status of a service.
+
+xref:operation:bsm/introduction.adoc[Business Service Monitoring (BSM)]:: A {page-component-title} feature that lets you monitor and generate alerts for issues affecting complex business services spanning multiple nodes.
+
+Cassandra:: An open-source distributed/scale-out NoSQL database designed to hold large amounts of structured or unstructured data across many servers.
+The optional xref:deployment:time-series-storage/newts/introduction.adoc[Newts] storage strategy requires a Cassandra instance as back-end storage.
+
+Categories:: User-defined groups of entities on {page-component-title}-monitored networks.
+They let you define a matrix for aggregating monitoring results.
+(See xref:operation:admin/webui/surveillance-view.adoc[Surveillance View].)
+
+CircleCI:: A continuous integration and delivery platform that hosts OpenNMS's CI/CD environment.
+It integrates with and monitors OpenNMS GitHub repositories, and automatically launches and tests a new build when a commit is detected.
+
+xref:reference:daemons/introduction.adoc[Daemon]:: A {page-component-title} sub-service that performs a specific set of tasks.
+
+Direct-discovered nodes:: Nodes that are added to {page-component-title} manually through a requisition.
+(See xref:operation:provisioning/directed-discovery.adoc[Directed Discovery].)
+
+Discourse:: An open-source forum platform that hosts https://opennms.discourse.group/[OpenNMS's community forums].
+There, users can find knowledge base articles, support, announcements, and general discussion about all things OpenNMS.
+
+xref:operation:provisioning/introduction.adoc#discovery-auto[Discovery]:: A process that uses ICMP to find network devices and services in your network and then automatically adds them to monitoring.
+
+https://docs.docker.com/[Docker]:: An open-source container virtualization service that lets you deploy application-level services without worrying about operating system maintenance.
+{page-component-title} components may optionally be deployed as Docker containers.
 
 Dominion:: The service on an OpenNMS core that controls the operation of Minions.
-(See xref:reference:configuration/minion-confd/minion-confd.adoc#dominion [Configuring Minion via Confd].)
+(See xref:reference:configuration/minion-confd/minion-confd.adoc#dominion[Configuring Minion via Confd].)
 
-Elasticsearch:: Elasticsearch is a search engine based on the Lucene library. OpenNMS persists/forwards certain data to Elasticsearch to store flow records and warehouse events and alarm history for long-term storage of this data.
+Drools:: A system to manage business rules that supports the Java Rules Engine API standard.
+It helps provide a more robust infrastructure for workflow and problem state management in the {page-component-title} Alarmd daemon.
+(See xref:operation:alarms/alarmd.adoc[Alarmd daemon].)
+
+Elasticsearch:: A NoSQL database with an integrated search engine based on the Lucene library.
+(See https://azure.microsoft.com/en-us/overview/nosql-database/[What is NoSQL?])
+{page-component-title} persists/forwards certain data to Elasticsearch to store flow records and warehouse events and alarm history for long-term storage of this data.
 (See xref:operation:elasticsearch/introduction.adoc#elasticsearch[Elasticsearch Integration].)
 
-Helm:: Helm is an an OpenNMS application for creating flexible dashboards to display and customize fault management and performance management data from Horizon and Meridian.
-Helm works with the Grafana analytics program to customize the data you can view.
+xref:operation:events/anatomy-events.adoc[Events]:: Structured historical records of activities in {page-component-title} and the nodes, interfaces, and services it manages.
 
-Horizon:: Open-source solution from OpenNMS that helps users visualize and monitor everything on their local and remote networks.
-Free, community-driven project includes the latest technology and features delivered through a rapid release cycle.
+xref:operation:flows/introduction.adoc[Flows]:: Summaries of network traffic sent by network devices.
 
-IFTTT:: If This Then That (https://ifttt.com/[IFTTT]) service integrates apps, devices, and services. Horizon and Meridian can integrate with IFTTT to trigger actions on other services based on customized alarms.
-(See xref:operation:alarms/ifttt-integration.adoc#ifttt[IFTTT Integration].)
+Foreign source:: A data source hosted outside of your local network.
+To customize monitoring of nodes in a foreign source, you can set a foreign source definition with your desired detectors and policies.
+(See xref:operation:provisioning/getting-started.adoc#foreign-source-definition[Foreign Source Definition].)
 
-JRobin:: JRobin is a clone of RRDTool (see below) written in Java.
+Geolocation:: The actual physical location of a node monitored by {page-component-title}.
+Nodes can be manually assigned a location, or the location can be automatically determined using the xref:reference:provisioning/adapters/geoip.adoc[GeoIP Provisioning Adapter].
+
+https://grafana.com/[Grafana]:: An open-source analysis and visualization web application.
+It connects to data sources and generates dashboards with charts, graphs, and alerts.
+https://docs.opennms.com/helm/latest[OpenNMS HELM] is a Grafana plugin that lets users create customized dashboards with data from {page-component-title}.
+
+https://docs.opennms.com/helm/latest[HELM]:: An OpenNMS application for creating flexible dashboards to display and customize fault, flow, and performance data from {page-component-title}.
+HELM works with the Grafana analytics program to customize the data you can view.
+Not to be confused with the https://helm.sh/[Kubernetes Helm] package manager.
+
+https://www.opennms.com/horizon/[Horizon]:: An open-source solution from The OpenNMS Group that helps users visualize and monitor everything on their local and remote networks.
+The free, community-driven project includes the latest technology and features and is delivered through a rapid release cycle.
+
+https://ifttt.com/[IFTTT]:: If This Then That is an automation and workflow service that integrates apps, devices, and services.
+{page-component-title} can integrate with IFTTT to trigger actions on other services based on customized alarms.
+(See xref:operation:alarms/ifttt-integration.adoc[IFTTT Integration].)
+
+Instance:: (1) A single, unique occurrence of an element, document, or running program.
+(2) Used in data collection for storing tabular data as separate data points.
+(3) Used to refer to the {page-component-title} Core in the OpenNMS Appliance Service UI.
+
+Java Management Extensions (JMX):: A set of tools for managing and monitoring services, resources, and service-oriented networks.
+{page-component-title} uses it to collect long-term performance data for Java applications.
+(See xref:operation:admin/webui/jmx-config-generator/introduction.adoc[JMX Configuration Generator].)
+
+Jira:: A project management platform that The OpenNMS Group uses to track software issues, feature requests, and IT requests for its projects (including {page-component-title}).
+(See https://issues.opennms.com[OpenNMS Jira].)
+
+JRobin:: A clone of RRDTool (see below) written in Java.
 Default time series database for new {page-component-title} instances.
 
-Kafka:: Clusterable, open-source message broker designed for high-throughput/low-latency event streaming originally developed at LinkedIn, now supported by the Apache community.
-(See xref:deployment:core/setup-message-broker.adoc#setup-message-broker[Set Up Message Broker].)
+Kafka:: Clusterable, open-source message broker designed for high-throughput/low-latency event streaming.
+Originally developed at LinkedIn, it is now supported by the Apache community.
+(See xref:deployment:core/setup-message-broker.adoc[Set Up Message Broker].)
 
-KSC Reports:: Key SNMP customized (KSC) reports provide a way to generate prefabricated graphical views of collected data. They let you display data from different devices and sources (SNMP, ICMP, HTTP) on one page.
-(See xref:operation:admin/webui/opsboard/dashlet/ksc.adoc#ksc[KSC Reports].)
+Kibana:: A component of the Elastic Stack (comprised of Elasticsearch, Logstash, and Kibana).
+It provides visualization capabilities for data indexed in an Elasticsearch cluster.
 
-Meridian:: Subscription-based, optimized, and stable version of the OpenNMS Horizon platform.
-Annual release with monthly security patches that includes only the most stable and secure Horizon features.
+xref:operation:admin/webui/opsboard/dashlet/ksc.adoc#ksc[KSC reports]:: Key SNMP customized (KSC) reports provide a way to generate prefabricated graphical views of collected data.
+They let you display data from different devices and sources (SNMP, ICMP, HTTP) on one page.
+
+https://kubernetes.io/[Kubernetes]:: An open-source container orchestration system for automating software deployments, scaling, and management.
+Originally designed by Google, the Cloud Native Computing Foundation now maintains it.
+
+Location:: Also referred to as "monitoring location" or "Minion location".
+Nodes assigned to a monitoring location will be monitored by Minions assigned to the same location.
+This is distinct from geolocation, which is the actual physical location of the node.
+
+Management Information Base (MIB):: A hardware or software vendor file that describes SNMP objects their products provide.
+The MIB files can be processed to convert the definition into data collection and event objects for {page-component-title} to work with.
+Many of the major vendor MIB definitions are included out of the box.
+
+https://www.opennms.com/meridian/[Meridian]:: A subscription-based, optimized, and stable version of the OpenNMS Horizon platform that includes only the most stable and secure Horizon features.
+It is distributed via annual release with monthly security patches.
 
 Message broker:: When using Minions and Sentinels, a message broker is required for communication between servers.
 {page-component-title} has an embedded ActiveMQ server available for smaller deployments.
 You can swap the broker with a dedicated ActiveMQ, gRPC, or Kafaka cluster to provide scalability and load balancing.
 
-Minion:: Instance of the Karaf OSGi service that enables OpenNMS to monitor devices and services in locations that OpenNMS cannot reach.
+xref:development:minion/introduction.adoc#minion[Minion]:: A distributed component that enables OpenNMS to monitor devices and services in locations that OpenNMS cannot reach.
 Minions communicate with these remote devices while OpenNMS performs coordination and task delegation.
-(See xref:development:minion/introduction.adoc#minion[Minion].)
 
-Nephron:: OpenNMS component that enables horizontal scaling of flow processing.
+Nephron:: An OpenNMS component that enables horizontal scaling of flow processing.
 Not required for flow processing, but can improve performance for deployments with a very high volume of flow documents.
 
-Newts:: Newts (New-Fangled Time Series Datastore) is an OpenNMS time series data store based on Apache Cassandra.
+Network Operating Center (NOC):: One or more locations where a network is monitored and controlled.
+(See https://en.wikipedia.org/wiki/Network_operations_center[Network Operations Center].)
+
+xref:deployment:time-series-storage/newts/introduction.adoc#ga-opennms-operation-newts[New-Fangled Time Series Datastore (Newts)]:: An OpenNMS time series datastore based on Apache Cassandra.
 Use it as an alternative persistence strategy instead of JRobin or RRDtool.
-(See xref:deployment:time-series-storage/newts/introduction.adoc#ga-opennms-operation-newts[Newts].)
 
+Northbounder:: An interface responsible for conveying details of {page-component-title}-generated alarms to a higher-level component.
 
-Operator board:: Customizable dashboard to visualize monitoring information. (See xref:operation:admin/webui/opsboard/introduction.adoc#ops-board[Operator Board].)
+xref:operation:notifications/introduction.adoc[Notifications]:: Messages delivered to a set of recipients.
+{page-component-title} notifications inform users about events in their monitored networks without forcing them to log in and look at the UI.
+
+Observability:: The ability to measure the internal state of a system by examining its output.
+If the system's state can be estimated using only its output, it is considered "observable".
+
+xref:operation:admin/webui/opsboard/introduction.adoc[Operator board]:: Customizable dashboard to visualize monitoring information.
+
+Outage:: Also known as _downtime_, this is a period of time that a service is unavailable or offline.
+It can be caused by systems or communications failures, or planned as part of routine maintenance.
+
+Passive discovery:: The process by which a `newSuspect` event is detected by the {page-component-title} Provisiond service and converted into a new node.
+Users can configure the Trapd and Syslogd daemons to generate this event when {page-component-title} receives messages from nodes that do not exist in the database.
+(See xref:operation:provisioning/directed-discovery.adoc#requisition-new-suspect[Add nodes via newSuspect events].)
 
 PostgreSQL:: Commonly used open-source relational database known for its stability.
 PostgreSQL scales up but not out.
 (See xref:deployment:core/getting-started.adoc#setup-postgresql[Set up PostgreSQL].)
 
-PRIS:: PRovisioning Integration Server, an optional service to gather node inventory information from an external source.
-Use to generate requisition XML files for creating/updating/removing nodes for monitoring.
+PRovisioning Integration Server (PRIS):: An optional service to gather node inventory information from an external source.
+Use to generate requisition XML files for creating, updating, or removing nodes for monitoring.
 
-Provisioning:: The process of getting your devices, applications, and services into monitoring.
-(See xref:operation:provisioning/introduction.adoc#discovery-auto[Provisioning].)
+xref:operation:provisioning/introduction.adoc[Provisioning]:: The process of getting your devices, applications, and services into a monitoring system.
 
-Remote Method Invocation (RMI):: Java API that lets one Java Virtual Machine (JVM) running object to invoke methods on an object running in another JVM. RMI integration lets you access Horizon/Meridian through jconsole or remote manage them.
-(See xref:operation:admin/rmi.adoc#rmi[Enabling RMI].)
+Remote Method Invocation (RMI):: Java API that lets one Java Virtual Machine (JVM) running object invoke methods on an object running in another JVM.
+RMI integration lets you access a remote Horizon and/or Meridian instance for monitoring and management.
+(See xref:operation:admin/rmi.adoc[Enabling RMI].)
 
-Round Robin Database (RRD):: Special type of database designed for collection, visualization, and analysis of time-series data.
+Requisitions:: Sets of nodes to import into {page-component-title} for monitoring and management.
+You can build requisitions iteratively and import them at a later date.
+(See xref:operation:provisioning/getting-started.adoc#requisition-create[Create a Requisition].)
+
+Resource:: Any hardware or software that {page-component-title} can access.
+
+Round Robin Database (RRD):: A database designed for collection, visualization, and analysis of time-series data.
 Data is maintained as a fixed-size circular-buffer that overwrites the oldest data with new data.
 
-Sentinel:: Karaf container that provides scalability for data processing, including flows, SNMP traps, syslog messages, and streaming telemetry in OpenNMS.
-It also supports thresholding for streaming telemetry if you are using OpenNMS Newts.
-(See xref:deployment:sentinel/introduction.adoc#sentinel[Sentinel].)
+Sample:: A small set of data collected from a {page-component-title}-monitored source.
+
+xref:deployment:sentinel/introduction.adoc[Sentinel]:: Karaf container that provides scalability for data processing of flow data.
+It also supports thresholding for streaming telemetry if you are using the xref:deployment:time-series-storage/newts/introduction.adoc[Newts] time-series strategy.
+
+Simple Mail Transfer Protocol (SMTP):: An internet standard protocol.
+{page-component-title} monitors SMTP availability on network nodes to ensure that email messages can be sent and received.
+(See xref:reference:service-assurance/monitors/MailTransportMonitor.adoc[MailTransportMonitor].)
+
+Simple Network Management Protocol (SNMP):: An internet standard protocol used to collect, organize, and modify information about managed devices on an IP network.
+(See xref:operation:provisioning/getting-started.adoc#provision-snmp-configuration[Configure SNMP for Provisioning].)
+
+Snaps:: Self-contained software packages that run in a sandbox and have mediated access to host systems.
+Our Appliance Service uses snaps to distribute operating system packages and Minion service updates.
+
+Telemetry:: The process of automatically recording and transmitting data from an external source to a system in a different location for monitoring or analysis.
+The xref:operation:telemetryd/introduction.adoc[Telemetry daemon] in {page-component-title} accepts data sent from nodes in one of the supported protocol formats.
 
 Time series, time-series database (TSDB):: Time series is a sequence of data points that occur in successive order over a period of time.
 A time series database (TSDB) is designed to store and serve time series data.
-(See xref:deployment:time-series-storage/timeseries/time-series-storage.adoc#time-series[Time Series Storage] and https://en.wikipedia.org/wiki/Time_series_database[time series database].)
+(See xref:deployment:time-series-storage/timeseries/time-series-storage.adoc[Time Series Storage] and https://en.wikipedia.org/wiki/Time_series_database[Time Series Database].)
+
+xref:operation:topology/introduction.adoc[Topology]:: A description of a network's elements (devices, services) and the connections among them.
+
+xref:operation:events/sources/snmp-traps.adoc[Traps]:: Event triggers generated by SNMP-capable devices on the network and sent to the {page-component-title} Trapd service daemon.
+
+Unique Event Identifier (UEI):: A string that uniquely identifies an event's type.
+UEIs must begin with the string `uei.`.
+(See xref:operation:notifications/concepts.adoc#events-and-ueis[Events and UEIs].)

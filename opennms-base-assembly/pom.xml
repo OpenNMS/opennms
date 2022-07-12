@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>30.0.0</version>
+    <version>30.0.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-base-assembly</artifactId>
@@ -105,6 +105,29 @@
               </artifactItems>
             </configuration>
           </execution>
+
+          <execution>
+            <id>copy-scv-cli</id>
+            <phase>process-resources</phase>
+            <goals><goal>copy</goal></goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.opennms.features.scv</groupId>
+                  <artifactId>org.opennms.features.scv.cli</artifactId>
+                  <type>jar</type>
+                  <classifier>jar-with-dependencies</classifier>
+                  <destFileName>org.opennms.features.scv.cli.jar</destFileName>
+                  <outputDirectory>${project.build.directory}/scvcli</outputDirectory>
+                </artifactItem>
+              </artifactItems>
+
+              <stripVersion>true</stripVersion>
+              <stripClassifier>true</stripClassifier>
+
+            </configuration>
+          </execution>
+
         </executions>
       </plugin>
       <plugin>
@@ -755,6 +778,12 @@
       <artifactId>org.opennms.features.reporting.jasper-reports</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.scv</groupId>
+      <artifactId>org.opennms.features.scv.cli</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.springframework-security</artifactId>
     </dependency>
@@ -1060,6 +1089,12 @@
       <artifactId>org.opennms.features.scv.jceks-impl</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.encrypt-util</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
     <!-- dependency for ReST Elasticsearch integration -->
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
