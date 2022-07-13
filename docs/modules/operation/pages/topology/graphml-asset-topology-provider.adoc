@@ -1,4 +1,3 @@
-
 [[asset-topology]]
 = Asset Topology Provider
 
@@ -76,7 +75,7 @@ Keys beginning with `asset-`  come from the corresponding asset table entry for 
 | asset-vendor | asset-modelnumber | asset-description | asset-operatingsystem | asset-country
 |===
 
-This lets you generate arbitrary topologies, including physical fields (room, rack) and logical fields (asset node categories).
+This lets you generate arbitrary topologies, including physical fields (room, rack) and logical fields (asset node tags).
 Note that you should not put any spaces in the comma-separated `assetLayers` list.
 If the `assetLayers` property is defined as empty, then a single graph layer is generated containing all OpenNMS nodes.
 
@@ -105,7 +104,7 @@ Thus, the following configuration means include only nodes with region north or 
 filter=asset-region=north,south;asset-building=!23
 ----
 The filters treat comma-separated key values as an OR search.
-Thus we can select based on multiple separate node categories.
+Thus we can select based on multiple separate node tags.
 
 The following configuration means show routers and servers on all buildings except building 23.
 
@@ -180,7 +179,7 @@ The following table describes the individual definition parameters:
 [options="header"]
 [cols="1,3"]
 |===
-| Parameter           | Description
+| Parameter          | Description
 | providerId         | The unique name of the provider - used as a handle to install and remove the topology.
 | label              | The name that shows up on the topology menu (must be unique).
 | assetLayers        | List of asset layers (in order). See xref:asset-layers[asset-layers].

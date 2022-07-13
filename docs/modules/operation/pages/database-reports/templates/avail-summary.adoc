@@ -1,18 +1,18 @@
 [[avail-summary-report]]
 = Availability Summary Report (Default Configuration for Past 7 Days)
 
-This report provides a summary of availability across one or more surveillance categories.
+This report provides a summary of availability across one or more node tags.
 
-Each surveillance category includes a table of average, minimum, and maximum values for the following availability data for the specified surveillance category over the specified date range:
+For each node tag, the report includes a table of average, minimum, and maximum values for the following availability data over the specified date range:
 
-* Number of outages
-* Mean Time To Repair ("MTTR") (in hours)
-* Length of time for each outage (in hours)
-* Percent outage (per unit in category)
-* Percent availability (per unit in category)
+* Number of outages.
+* Mean Time To Repair ("MTTR") (in hours).
+* Length of time for each outage (in hours).
+* Percent outage (per unit in tag).
+* Percent availability (per unit in tag).
 
 This report has a pie chart showing percent available time to outage time.
-It then provides a stacked bar chart showing the available time and the outage time for each day in the specified date range. 
+It then provides a stacked bar chart showing the available time and the outage time for each day in the specified date range.
 The report then lists the top 25 nodes based on downtime and their respective and downtime percentages.
 
 You can customize the report with a company logo (approximately 195px by 50px) in the header and footer.
@@ -28,9 +28,9 @@ You can customize the report with a company logo (approximately 195px by 50px) i
 | Default
 
 | Surveillance Category
-| Identify one or more surveillance categories to include in the report.
-To select multiple categories use wildcards as described below.
-If no categories match the entered string, the report will have no data.
+| Identify one or more node tags to include in the report.
+To select multiple tags use wildcards as described below.
+If no tags match the entered string, the report will have no data.
 | %
 
 | Time Range in Days
