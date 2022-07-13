@@ -259,20 +259,19 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
     /** {@inheritDoc} */
     @Override
     public Response deleteDeviceConfig(long id) {
-       return sessionUtils.withTransaction(() -> {
+       sessionUtils.withTransaction(() -> {
             try {
                 final DeviceConfig dc = deviceConfigDao.get(id);
-                System.out.println("Device Condig id" + dc.getId());
                 if (dc == null) {
                     LOG.debug("could not find device config data for id: {}", id);
-                    return Response.noContent().build();
+                } else {
+                    deviceConfigDao.delete(dc);
                 }
-                deviceConfigDao.delete(dc);
             } catch (Exception e) {
                 LOG.error("Exception while deleting device config, provided id is not valid {}", e);
             }
-           return Response.noContent().build();
        });
+        return Response.noContent().build();
     }
 
     /** {@inheritDoc} */

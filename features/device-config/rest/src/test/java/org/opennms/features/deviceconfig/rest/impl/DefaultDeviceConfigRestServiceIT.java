@@ -290,5 +290,17 @@ public class DefaultDeviceConfigRestServiceIT {
         lstOfIds = Arrays.asList(new Long []{});
         response = deviceConfigRestService.deleteDeviceConfigs(lstOfIds);
         Assert.assertEquals(400, response.getStatus());
+
+        response = deviceConfigRestService.deleteDeviceConfig(53);
+        Assert.assertEquals(204, response.getStatus());
+    }
+
+    @Test
+    public void testDeleteDeviceConfig() throws IOException {
+        Response response = deviceConfigRestService.deleteDeviceConfig(53);
+        Assert.assertEquals(204, response.getStatus());
+
+        response = deviceConfigRestService.deleteDeviceConfig(1000);
+        Assert.assertEquals(204, response.getStatus());
     }
 }
