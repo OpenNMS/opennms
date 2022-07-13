@@ -4,13 +4,13 @@
 
 [[releasenotes-changelog-30.0.1]]
 
-==== Release 30.0.1
+== Release 30.0.1
 
 Release 30.0.1 contains a number of bug fixes as well as a number of new features including support for encrypting credentials.
 
 The codename for Horizon 30.0.1 is https://wikipedia.org/wiki/$$Chinchilla$$[_Chinchilla_].
 
-===== Bug
+=== Bug
 
 * Error responses are not handled correctly when handling ElasticSearch responses (Issue http://issues.opennms.org/browse/NMS-13785[NMS-13785])
 * Tag Netflow v9 packets as Ingress on the INPUT_SNMP ifindex and Egress on the OUTPUT_SNMP ifindex (Issue http://issues.opennms.org/browse/NMS-14279[NMS-14279])
@@ -26,12 +26,12 @@ The codename for Horizon 30.0.1 is https://wikipedia.org/wiki/$$Chinchilla$$[_Ch
 * External Requisition UI: foreignSource not set for VMware requisition (Issue http://issues.opennms.org/browse/NMS-14478[NMS-14478])
 * Pollerd take a long time to start on systems with large inventories (Issue http://issues.opennms.org/browse/NMS-14524[NMS-14524])
 
-===== New Feature
+=== New Feature
 
 * Encrypt SNMP Credentials (Issue http://issues.opennms.org/browse/NMS-14215[NMS-14215])
 * Encrypt Postgres credentials (Issue http://issues.opennms.org/browse/NMS-14216[NMS-14216])
 
-===== Story
+=== Story
 
 * SNMP MIB imports to handle OPAQUE data type implementation (Issue http://issues.opennms.org/browse/NMS-14018[NMS-14018])
 * Support for SSH Key Authentication (Issue http://issues.opennms.org/browse/NMS-14119[NMS-14119])
@@ -42,7 +42,7 @@ The codename for Horizon 30.0.1 is https://wikipedia.org/wiki/$$Chinchilla$$[_Ch
 * Prefer ingressPhysicalInterface over INPUT_SNMP when processing flows (Issue http://issues.opennms.org/browse/NMS-14467[NMS-14467])
 * Add KPI for list of enabled service daemons to datachoices telemetry (Issue http://issues.opennms.org/browse/NMS-14489[NMS-14489])
 
-===== Task
+=== Task
 
 * Test DCB UI (Issue http://issues.opennms.org/browse/NMS-14265[NMS-14265])
 * Update documentation for changes to types of configs  (Issue http://issues.opennms.org/browse/NMS-14311[NMS-14311])
@@ -52,7 +52,7 @@ The codename for Horizon 30.0.1 is https://wikipedia.org/wiki/$$Chinchilla$$[_Ch
 * Add terms to glossary #4 (Issue http://issues.opennms.org/browse/NMS-14350[NMS-14350])
 * Add terms to glossary #5 (Issue http://issues.opennms.org/browse/NMS-14351[NMS-14351])
 
-===== Enhancement
+=== Enhancement
 
 * event nodeCategoryMembershipChanged should be more verbose (Issue http://issues.opennms.org/browse/NMS-10634[NMS-10634])
 * Guide to monitor essential Microsoft Active Directory Services (Issue http://issues.opennms.org/browse/NMS-11793[NMS-11793])
@@ -67,7 +67,7 @@ The codename for Horizon 30.0.1 is https://wikipedia.org/wiki/$$Chinchilla$$[_Ch
 * upgrade JNA to 5 (Issue http://issues.opennms.org/browse/NMS-14417[NMS-14417])
 * Add script to manipulate flows (Issue http://issues.opennms.org/browse/NMS-14468[NMS-14468])
 
-===== Upgrade
+=== Upgrade
 
 * Update all Vue UI packages to latest (Issue http://issues.opennms.org/browse/NMS-14460[NMS-14460])
 
