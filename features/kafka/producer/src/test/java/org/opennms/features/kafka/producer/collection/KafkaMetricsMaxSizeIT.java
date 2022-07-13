@@ -91,7 +91,7 @@ public class KafkaMetricsMaxSizeIT {
     @Test
     public void testHandlingMaxSizeWithMultipleResources() {
         // Mock max size to be 120 bytes ( At least minimum of one resource size)
-        Mockito.when(kafkaPersister.checkForMaxSize(MockitoHamcrest.intThat(Matchers.greaterThan(120)))).thenReturn(true);
+        Mockito.when(kafkaPersister.checkForMaxSize(MockitoHamcrest.intThat(Matchers.greaterThan(140)))).thenReturn(true);
         CollectionSetProtos.CollectionSet.Builder builder = CollectionSetProtos.CollectionSet.newBuilder();
         builder.setTimestamp(System.currentTimeMillis());
         CollectionSetProtos.NodeLevelResource nodeLevelResource = CollectionSetProtos.NodeLevelResource.newBuilder().setNodeId(5).setNodeLabel("kafka-test")
