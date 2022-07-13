@@ -166,6 +166,7 @@ You can access these details using the `hardware` replacement token, which takes
 `%hardware[<token>]%`::
     The hardware field <token>'s value.
 
+[[parameter-tokens]]
 === Parameter tokens
 Many events carry additional information in *parameters* (see <<events/anatomy-events.adoc#ga-events-anatomy-of-an-event, Anatomy of an Event>>).
 These parameters may start life as SNMP trap *variable bindings*, or *varbinds* for short.

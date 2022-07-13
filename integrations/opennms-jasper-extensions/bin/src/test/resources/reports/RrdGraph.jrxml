@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 5.6.1.final using JasperReports Library version 5.6.1  -->
+<!-- 2015-08-27T11:46:10 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="RrdGraph" pageWidth="700" pageHeight="842" columnWidth="620" leftMargin="40" rightMargin="40" topMargin="50" bottomMargin="50" isSummaryNewPage="true" uuid="313b2133-fac3-4f5e-b2c4-84308db72cd2">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+	<style name="Sans_Normal" isDefault="true" fontName="SansSerif" fontSize="12" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+	<style name="Sans_Bold" fontName="SansSerif" fontSize="12" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+	<style name="Sans_Italic" fontName="SansSerif" fontSize="12" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false"/>
+	<parameter name="MEASUREMENT_URL" class="java.lang.String"/>
+	<parameter name="startDate" class="java.util.Date"/>
+	<parameter name="endDate" class="java.util.Date"/>
+	<queryString language="measurement">
+		<![CDATA[<query-request step="3600" start="$P{startDate}" end="$P{endDate}">
+  <source aggregation="AVERAGE" label="SshLatency" attribute="ssh" transient="false" resourceId="node[46].responseTime[172.20.1.38]"/>
+  <source aggregation="AVERAGE" label="HttpLatency" attribute="http-8980" transient="false" resourceId="node[13].interfaceSnmp[en0-005e60e77189]"/>
+</query-request>]]>
+	</queryString>
+	<field name="timestamp" class="java.util.Date">
+		<fieldDescription><![CDATA[Timestamp]]></fieldDescription>
+	</field>
+	<field name="HttpLatency" class="java.lang.Double">
+		<fieldDescription><![CDATA[HttpLatency]]></fieldDescription>
+	</field>
+	<field name="SshLatency" class="java.lang.Double">
+		<fieldDescription><![CDATA[SshLatency]]></fieldDescription>
+	</field>
+	<variable name="Hour" class="java.lang.Integer">
+		<variableExpression><![CDATA[Integer.valueOf($F{timestamp}.getHours())]]></variableExpression>
+	</variable>
+	<variable name="HttpAverage" class="java.lang.Double" resetType="Group" resetGroup="HourGroup" calculation="Average">
+		<variableExpression><![CDATA[$F{HttpLatency}]]></variableExpression>
+	</variable>
+	<variable name="SshAverage" class="java.lang.Double" resetType="Group" resetGroup="HourGroup" calculation="Average">
+		<variableExpression><![CDATA[$F{SshLatency}]]></variableExpression>
+	</variable>
+	<filterExpression><![CDATA[!$F{HttpLatency}.isNaN() && !$F{SshLatency}.isNaN()]]></filterExpression>
+	<group name="HourGroup" minHeightToStartNewPage="60">
+		<groupExpression><![CDATA[$V{Hour}]]></groupExpression>
+		<groupHeader>
+			<band height="20">
+				<textField evaluationTime="Group" evaluationGroup="HourGroup" bookmarkLevel="1">
+					<reportElement style="Sans_Bold" mode="Opaque" x="0" y="5" width="515" height="15" backcolor="#C0C0C0" uuid="22edb19a-234c-41a0-8a13-c50ceb3337f9"/>
+					<box leftPadding="10">
+						<bottomPen lineWidth="1.0"/>
+					</box>
+					<textFieldExpression><![CDATA["  " + String.valueOf($V{Hour})]]></textFieldExpression>
+					<anchorNameExpression><![CDATA[String.valueOf($V{Hour})]]></anchorNameExpression>
+				</textField>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="21">
+				<staticText>
+					<reportElement style="Sans_Bold" x="55" y="1" width="60" height="15" uuid="6d754d83-3afa-413b-a00e-3bb35e6e3759"/>
+					<textElement textAlignment="Right"/>
+					<text><![CDATA[Average :]]></text>
+				</staticText>
+				<textField pattern="###0.00">
+					<reportElement style="Sans_Bold" x="205" y="1" width="145" height="15" uuid="46ea02f0-bf67-4bef-b712-6dcd3f0ab28a"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression><![CDATA[$V{HttpAverage}]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.00">
+					<reportElement style="Sans_Bold" x="355" y="1" width="160" height="15" uuid="061c2d41-cb46-4c03-bea5-336bc62b24f9"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression><![CDATA[$V{SshAverage}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupFooter>
+	</group>
+	<title>
+		<band height="62">
+			<line>
+				<reportElement x="0" y="0" width="515" height="1" uuid="27b90486-a730-46e3-b5fb-7abc7a1cd119"/>
+			</line>
+			<textField isBlankWhenNull="true" bookmarkLevel="1">
+				<reportElement style="Sans_Normal" x="0" y="10" width="515" height="30" uuid="09b3f611-77ec-493b-9373-a75373f7e74b"/>
+				<textElement textAlignment="Center">
+					<font size="22"/>
+				</textElement>
+				<textFieldExpression><![CDATA["ReportTitle"]]></textFieldExpression>
+				<anchorNameExpression><![CDATA["Title"]]></anchorNameExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="Sans_Normal" x="0" y="40" width="515" height="20" uuid="e5d2d372-abb7-481f-b041-20dd8b828e22"/>
+				<textElement textAlignment="Center">
+					<font size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA["DataFile"]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="23">
+			<staticText>
+				<reportElement style="Sans_Bold" mode="Opaque" x="0" y="5" width="55" height="15" forecolor="#FFFFFF" backcolor="#333333" uuid="246ac446-9aac-46c8-be5c-53f447ebde65"/>
+				<textElement textAlignment="Center"/>
+				<text><![CDATA[Hour]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Sans_Bold" mode="Opaque" x="55" y="5" width="155" height="15" forecolor="#FFFFFF" backcolor="#333333" uuid="2f3d5e28-d4f9-44bc-b674-5dba89ec6055"/>
+				<textElement textAlignment="Center"/>
+				<text><![CDATA[Timestamp]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Sans_Bold" mode="Opaque" x="205" y="5" width="155" height="15" forecolor="#FFFFFF" backcolor="#333333" uuid="755ff67e-4fbe-4810-9983-746183d97275"/>
+				<text><![CDATA[HTTP]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Sans_Bold" mode="Opaque" x="355" y="5" width="160" height="15" forecolor="#FFFFFF" backcolor="#333333" uuid="adb435e0-4623-4437-98b3-5ad800b95f82"/>
+				<text><![CDATA[SSH]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="15">
+			<textField bookmarkLevel="2">
+				<reportElement x="0" y="0" width="50" height="15" uuid="e4525581-90cb-4d25-9a3f-ddea8ed47052"/>
+				<box leftPadding="10" rightPadding="10">
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$V{Hour}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="50" y="0" width="150" height="15" uuid="27635eab-59fa-4897-93c5-f37103eb6f7a"/>
+				<box leftPadding="10" rightPadding="10">
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textFieldExpression><![CDATA[$F{timestamp}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="###0.00">
+				<reportElement positionType="Float" x="200" y="0" width="150" height="15" uuid="39db5fe8-d911-486c-bf93-a0f8fc246ea0"/>
+				<box leftPadding="10" rightPadding="10">
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{HttpLatency}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="###0.00">
+				<reportElement positionType="Float" x="350" y="0" width="165" height="15" uuid="2ed50088-6209-4ce2-887b-9c55b47ecea5"/>
+				<box leftPadding="10" rightPadding="10">
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{SshLatency}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="40">
+			<line>
+				<reportElement x="0" y="10" width="515" height="1" uuid="830a0103-8aee-481e-acc5-a72dad6a4941"/>
+			</line>
+			<textField>
+				<reportElement x="200" y="20" width="80" height="15" uuid="d96389fb-4188-4364-9efc-511ba57fd963"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA["Page " + String.valueOf($V{PAGE_NUMBER}) + " of"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="280" y="20" width="75" height="15" uuid="0c307a29-3304-4c29-ba32-9405cbbe3f64"/>
+				<textFieldExpression><![CDATA[" " + String.valueOf($V{PAGE_NUMBER})]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<lastPageFooter>
+		<band height="73">
+			<textField bookmarkLevel="1">
+				<reportElement x="0" y="10" width="515" height="15" uuid="93781451-30a6-4695-b55d-e814bd1ec1d7"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA["There were " +
+					String.valueOf($V{REPORT_COUNT}) +
+					" address records on this report."]]></textFieldExpression>
+				<anchorNameExpression><![CDATA["Summary"]]></anchorNameExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="30" width="515" height="1" uuid="f60a2f95-f69b-443e-8736-467e782966c0"/>
+			</line>
+			<textField>
+				<reportElement x="200" y="40" width="80" height="15" uuid="fca687bf-bd70-43b3-b567-5778b624a24a"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA["Page " + String.valueOf($V{PAGE_NUMBER}) + " of"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="280" y="40" width="75" height="15" uuid="81a729f6-f1f3-492e-a55c-0380a96a8512"/>
+				<textFieldExpression><![CDATA[" " + String.valueOf($V{PAGE_NUMBER})]]></textFieldExpression>
+			</textField>
+		</band>
+	</lastPageFooter>
+	<summary>
+		<band height="336" splitType="Stretch">
+			<barChart>
+				<chart>
+					<reportElement key="barGraph" x="0" y="0" width="620" height="145" uuid="76923282-ce58-45ba-b206-c2974a10c86f"/>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<categoryDataset>
+					<dataset incrementType="Group" incrementGroup="HourGroup"/>
+					<categorySeries>
+						<seriesExpression><![CDATA["Http Latency"]]></seriesExpression>
+						<categoryExpression><![CDATA[$V{Hour}]]></categoryExpression>
+						<valueExpression><![CDATA[$V{HttpAverage}]]></valueExpression>
+					</categorySeries>
+					<categorySeries>
+						<seriesExpression><![CDATA["Ssh Latency"]]></seriesExpression>
+						<categoryExpression><![CDATA[$V{Hour}]]></categoryExpression>
+						<valueExpression><![CDATA[$V{SshAverage}]]></valueExpression>
+					</categorySeries>
+				</categoryDataset>
+				<barPlot>
+					<plot/>
+					<itemLabel color="#000000" backgroundColor="#FFFFFF"/>
+					<categoryAxisFormat>
+						<axisFormat/>
+					</categoryAxisFormat>
+					<valueAxisFormat>
+						<axisFormat/>
+					</valueAxisFormat>
+				</barPlot>
+			</barChart>
+			<xyLineChart>
+				<chart>
+					<reportElement x="5" y="190" width="615" height="144" uuid="f74b3899-0662-4614-b878-ad4e92763aed"/>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<xyDataset>
+					<dataset incrementType="Group" incrementGroup="HourGroup"/>
+					<xySeries>
+						<seriesExpression><![CDATA[$V{Hour}]]></seriesExpression>
+						<xValueExpression><![CDATA[$F{HttpLatency}]]></xValueExpression>
+						<yValueExpression><![CDATA[$V{Hour}]]></yValueExpression>
+					</xySeries>
+					<xySeries>
+						<seriesExpression><![CDATA[$V{Hour}]]></seriesExpression>
+						<xValueExpression><![CDATA[$F{SshLatency}]]></xValueExpression>
+						<yValueExpression><![CDATA[$V{Hour}]]></yValueExpression>
+					</xySeries>
+				</xyDataset>
+				<linePlot>
+					<plot/>
+					<categoryAxisFormat>
+						<axisFormat/>
+					</categoryAxisFormat>
+					<valueAxisFormat>
+						<axisFormat/>
+					</valueAxisFormat>
+				</linePlot>
+			</xyLineChart>
+		</band>
+	</summary>
+</jasperReport>

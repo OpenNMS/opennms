@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<nsclient-config port="1248" retry="1" timeout="3000">
+</nsclient-config>
+

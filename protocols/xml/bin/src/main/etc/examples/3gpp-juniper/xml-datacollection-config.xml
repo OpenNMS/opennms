@@ -1,0 +1,129 @@
+<xml-datacollection-config rrdRepository="${install.share.dir}/rrd/snmp/" xmlns="http://xmlns.opennms.org/xsd/config/xml-datacollection">
+
+    <!-- 
+    The following package will collect all available 3GPP Data from a network element.
+    It is important to provision the node and assign the NE ID to the foreign ID, to
+    simplify the configuration.
+
+    REMEMBER to change the username/password combination in the URL and verify the
+             target folder for the 3GPP Data. If you don't want to remove the file
+             after successfully processed, remove the final property in the URL.
+    -->
+    <xml-collection name="3GPP-Full-5min">
+        <rrd step="300">
+            <rra>RRA:AVERAGE:0.5:1:2016</rra>
+            <rra>RRA:AVERAGE:0.5:12:1488</rra>
+            <rra>RRA:AVERAGE:0.5:288:366</rra>
+            <rra>RRA:MAX:0.5:288:366</rra>
+            <rra>RRA:MIN:0.5:288:366</rra>
+        </rrd>
+        <xml-source url="sftp.3gpp://opennms:Op3nNMS@{ipaddr}/opt/hitachi/cnp/data/pm/reports/3gpp/5?step={step}&amp;neId={foreignId}&amp;deleteFile=true">
+            <!-- This is a simplified way to import a set of performance metrics that could be shared
+                 across many sources from different XML collections -->
+            <import-groups>xml-datacollection/3gpp.full.xml</import-groups>
+        </xml-source>
+    </xml-collection>
+    <xml-collection name="3GPP-Full-15min">
+        <rrd step="300">
+            <rra>RRA:AVERAGE:0.5:1:2016</rra>
+            <rra>RRA:AVERAGE:0.5:12:1488</rra>
+            <rra>RRA:AVERAGE:0.5:288:366</rra>
+            <rra>RRA:MAX:0.5:288:366</rra>
+            <rra>RRA:MIN:0.5:288:366</rra>
+        </rrd>
+        <xml-source url="sftp.3gpp://opennms:Op3nNMS@{ipaddr}/opt/hitachi/cnp/data/pm/reports/3gpp/15?step={step}&amp;neId={foreignId}&amp;deleteFile=true">
+            <!-- This is a simplified way to import a set of performance metrics that could be shared
+                 across many sources from different XML collections -->
+            <import-groups>xml-datacollection/3gpp.full.xml</import-groups>
+        </xml-source>
+    </xml-collection>
+
+    <!-- This is a standard sample configuration file to explain how to build the configuration.
+         In this particular case, the XML groups are defined directly inside the XML source.
+
+         The following configuration file is intended to parse the following XML:
+
+         <measCollecFile xmlns="http://www.3gpp.org/ftp/specs/archive/32_series/32.435#measCollec"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://www.3gpp.org/ftp/specs/archive/32_series/32.435#measCollec /usr/local/etc/pm/measCollec.xsd">
+           <fileHeader fileFormatVersion="32.435 V9.0" vendorName="Hitachi">
+             <fileSender/>
+             <measCollec beginTime="2011-10-25T00:30:00-05:00"/>
+           </fileHeader>
+           <measData>
+             <managedElement swVersion="VSE42.10.0.0-39" userLabel="ATCA01"/>
+             <measInfo measInfoId="ga|msg">
+               <granPeriod duration="PT900S" endTime="2011-10-25T05:45:00Z"/>
+               <measType p="1">VS.GTPP.CdrsXferSucc</measType>
+               <measType p="2">VS.GTPP.GtpMsgXferCgfSucc</measType>
+               <measType p="3">VS.GTPP.CdrsXferFail_FQAF</measType>
+               <measType p="4">VS.GTPP.CdrsXferFail_NRAV</measType>
+               <measType p="5">VS.GTPP.CdrsXferFail_RQNF</measType>
+               <measType p="6">VS.GTPP.CdrsXferFail_SYSF</measType>
+               <measType p="7">VS.GTPP.CdrsXferFail_VNSU</measType>
+               <measType p="8">VS.GTPP.GtpMsgXferCgfFail</measType>
+               <measType p="9">VS.GTPP.CgfDrtTimeouts</measType>
+               <measType p="10">VS.GTPP.CgfRedirectReq</measType>
+               <measValue measObjLdn="system|/=/v=1/sg-name=GA|">
+                 <r p="1">0</r>
+                 <r p="2">15</r>
+                 <r p="3">0</r>
+                 <r p="4">0</r>
+                 <r p="5">0</r>
+                 <r p="6">0</r>
+                 <r p="7">0</r>
+                 <r p="8">0</r>
+                 <r p="9">0</r>
+                 <r p="10">0</r>
+                 <suspect>false</suspect>
+               </measValue>
+             </measInfo>
+           </measData>
+           <fileFooter>
+             <measCollec endTime="2011-10-25T00:45:00-05:00"/>
+           </fileFooter>
+         </measCollecFile>
+
+        This particular example has only one element equivalent to an OpenNMS Resource, but there are more complex situations.
+    -->
+    <xml-collection name="3GPP-Sample">
+        <rrd step="300">
+            <rra>RRA:AVERAGE:0.5:1:2016</rra>
+            <rra>RRA:AVERAGE:0.5:12:1488</rra>
+            <rra>RRA:AVERAGE:0.5:288:366</rra>
+            <rra>RRA:MAX:0.5:288:366</rra>
+            <rra>RRA:MIN:0.5:288:366</rra>
+        </rrd>
+        <xml-source url="sftp.3gpp://opennms:Op3nNMS!@{ipaddr}/opt/3gpp/data/?step={step}&amp;neId={foreignId}">
+            <!-- The XMl Group Tag:
+                 * resource-type is the name of the resource type. It should exist on datacollection/3gpp.xml.
+                 * resource-xpath is the XPath from the top-level which define a resource in terms of OpenNMS.
+                 * key-xpath is the XPath to uniquely identify the resource. This should be a relative path from resource-xpath.
+                 * timestamp-xpath (optional) is the XPath to the date/time element to be used as a reference when updating RRDs.
+                 * timestamp-format (optional, only used if timestamp-xpath exists) defines the format (using JodaTime) to
+                   be used to parse the date/time data.
+            -->
+            <xml-group name="ga-msg" resource-type="gaMsg"
+                resource-xpath="/measCollecFile/measData/measInfo[@measInfoId='ga|msg']/measValue"
+                key-xpath="@measObjLdn"
+                timestamp-xpath="/measCollecFile/fileFooter/measCollec/@endTime"
+                timestamp-format="yyyy-MM-dd'T'HH:mm:ssZ">
+                <!-- The XML Object Tag:
+                     * xpath is the relative Xpath from resource-xpath to be used to retrieve variables.
+                     * type is how the performance metric will be persisted (gauge, counter, string).
+                     * name is how the performance metric will be identified inside RRDs and graph templates. 
+                -->
+                <xml-object name="VSCdrsXferSucc" type="GAUGE" xpath="r[@p=1]" /> <!-- VS.GTPP.CdrsXferSucc -->
+                <xml-object name="VSGtpMsgXferCgfSucc" type="GAUGE" xpath="r[@p=2]" /> <!-- VS.GTPP.GtpMsgXferCgfSucc -->
+                <xml-object name="VSCdrsXferFail_FQAF" type="GAUGE" xpath="r[@p=3]" /> <!-- VS.GTPP.CdrsXferFail_FQAF -->
+                <xml-object name="VSCdrsXferFail_NRAV" type="GAUGE" xpath="r[@p=4]" /> <!-- VS.GTPP.CdrsXferFail_NRAV -->
+                <xml-object name="VSCdrsXferFail_RQNF" type="GAUGE" xpath="r[@p=5]" /> <!-- VS.GTPP.CdrsXferFail_RQNF -->
+                <xml-object name="VSCdrsXferFail_SYSF" type="GAUGE" xpath="r[@p=6]" /> <!-- VS.GTPP.CdrsXferFail_SYSF -->
+                <xml-object name="VSCdrsXferFail_VNSU" type="GAUGE" xpath="r[@p=7]" /> <!-- VS.GTPP.CdrsXferFail_VNSU -->
+                <xml-object name="VSGtpMsgXferCgfFail" type="GAUGE" xpath="r[@p=8]" /> <!-- VS.GTPP.GtpMsgXferCgfFail -->
+                <xml-object name="VSCgfDrtTimeouts" type="GAUGE" xpath="r[@p=9]" /> <!-- VS.GTPP.CgfDrtTimeouts -->
+                <xml-object name="VSCgfRedirectReq" type="GAUGE" xpath="r[@p=10]" /> <!-- VS.GTPP.CgfRedirectReq -->
+            </xml-group>
+        </xml-source>
+    </xml-collection>
+</xml-datacollection-config>

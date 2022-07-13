@@ -1,0 +1,2 @@
+org.opennms.netmgt.poller.monitors.VmwareCimMonitor
+org.opennms.netmgt.poller.monitors.VmwareMonitor

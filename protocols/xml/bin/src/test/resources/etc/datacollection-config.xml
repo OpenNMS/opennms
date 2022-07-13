@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<datacollection-config rrdRepository="tmp/rrd/snmp/">
+    <snmp-collection name="default" snmpStorageFlag="select">
+        <rrd step="300">
+            <rra>RRA:AVERAGE:0.5:1:2016</rra>
+            <rra>RRA:AVERAGE:0.5:12:1488</rra>
+            <rra>RRA:AVERAGE:0.5:288:366</rra>
+            <rra>RRA:MAX:0.5:288:366</rra>
+            <rra>RRA:MIN:0.5:288:366</rra>
+        </rrd>
+        <include-collection dataCollectionGroup="XML"/>
+    </snmp-collection>
+</datacollection-config>

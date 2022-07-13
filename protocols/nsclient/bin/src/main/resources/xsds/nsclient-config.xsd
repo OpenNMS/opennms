@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://xmlns.opennms.org/xsd/config/nsclient"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:this="http://xmlns.opennms.org/xsd/config/nsclient"
+        xmlns:ns2="http://www.w3.org/1999/xhtml"
+        xmlns:ns="http://www.w3.org/2001/XMLSchema"
+		  xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty"
+		  elementFormDefault="qualified">
+  <annotation>
+    <documentation>XML Schema for the nsclient-config.xml configuration file.</documentation>
+  </annotation>
+
+  <element name="nsclient-config">
+    <annotation>
+      <documentation>Top-level element for the nsclient-config.xml configuration
+      file.</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:definition">
+          <annotation>
+            <documentation>Maps IP addresses to specific NSClient parmeters
+            (retries, timeouts...)</documentation>
+          </annotation>
+        </element>
+      </sequence>
+
+      <attribute name="port" type="int" use="optional">
+        <annotation>
+          <documentation>If set, overrides TCP port 1248 as the port where NSClient
+          requests are sent.</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="retry" type="int" use="optional">
+        <annotation>
+          <documentation>Default number of retries</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="timeout" type="int" use="optional">
+        <annotation>
+          <documentation>Default timeout (in milliseconds)</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="password" type="string" use="optional">
+        <annotation>
+          <documentation>Default password</documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+
+  <element name="range">
+    <annotation>
+      <documentation>IP Address Range</documentation>
+    </annotation>
+
+    <complexType>
+      <attribute name="begin" type="string" use="required">
+        <annotation>
+          <documentation>Starting IP address of the range.</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="end" type="string" use="required">
+        <annotation>
+          <documentation>Ending IP address of the range.</documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+
+  <element name="definition">
+    <annotation>
+      <documentation>Provides a mechanism for associating one or more specific
+      IP addresses and/or IP address ranges with a set of NSClient parms which
+      will be used in place of the default values during NSClient data
+      collection.</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:range">
+          <annotation>
+            <documentation>IP address range to which this definition
+            applies.</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="unbounded" minOccurs="0" name="specific"
+                 type="string">
+          <annotation>
+            <documentation>Specific IP address to which this definition
+            applies.</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:ip-match">
+          <annotation>
+            <documentation>Match Octets (as in IPLIKE)</documentation>
+          </annotation>
+        </element>
+      </sequence>
+
+      <attribute name="port" type="int" use="optional">
+        <annotation>
+          <documentation>If set, overrides TCP port 1248 as the port where NSClient
+          requests are sent.</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="retry" type="int" use="optional">
+        <annotation>
+          <documentation>number of retries</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="timeout" type="int" use="optional">
+        <annotation>
+          <documentation>timeout (in milliseconds)</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="password" type="string" use="optional">
+        <annotation>
+          <documentation>Password for this definition</documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+
+  <element name="ip-match">
+    <annotation>
+      <documentation>Octet Range</documentation>
+    </annotation>
+
+    <simpleType>
+      <restriction base="string">
+        <pattern value="([0-9]{1,3}((,|-)[0-9]{1,3})*|\*)\.([0-9]{1,3}((,|-)[0-9]{1,3})*|\*)\.([0-9]{1,3}((,|-)[0-9]{1,3})*|\*)\.([0-9]{1,3}((,|-)[0-9]{1,3})*|\*)"/>
+      </restriction>
+    </simpleType>
+  </element>
+</schema>

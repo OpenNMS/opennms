@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<xml-datacollection-config rrdRepository="target/snmp/" xmlns="http://xmlns.opennms.org/xsd/config/xml-datacollection">
+    <xml-collection name="Solaris">
+        <rrd step="900">
+            <rra>RRA:AVERAGE:0.5:1:8928</rra>
+            <rra>RRA:AVERAGE:0.5:12:8784</rra>
+            <rra>RRA:MIN:0.5:12:8784</rra>
+            <rra>RRA:MAX:0.5:12:8784</rra>
+        </rrd>
+        <xml-source url="http://{ipaddr}:10342/junit/solaris-zones.json">
+            <xml-group name="solaris-zone-stats" resource-type="solarisZoneStats"
+                resource-xpath="/zones/zone"
+                key-xpath="@name">
+                <xml-object name="nproc" type="GAUGE" xpath="parameter[@key='nproc']/@value" />
+                <xml-object name="nlwp" type="GAUGE" xpath="parameter[@key='nlwp']/@value" />
+                <xml-object name="pr_size" type="GAUGE" xpath="parameter[@key='pr_size']/@value" />
+                <xml-object name="pr_rssize" type="GAUGE" xpath="parameter[@key='pr_rssize']/@value" />
+                <xml-object name="pctmem" type="GAUGE" xpath="parameter[@key='pctmem']/@value" />
+                <xml-object name="pctcpu" type="GAUGE" xpath="parameter[@key='pctcpu']/@value" />
+            </xml-group>
+        </xml-source>
+    </xml-collection>
+ </xml-datacollection-config>

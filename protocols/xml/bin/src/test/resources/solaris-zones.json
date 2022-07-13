@@ -1,0 +1,43 @@
+{
+   "zones": {
+     "zone" : {
+       "id" : 0,
+       "name" : "global",
+       "timestamp" : 1299258742,
+       "parameter" : [
+         { "key" : "nproc", "value" : "245" },
+         { "key" : "nlwp", "value" : "1455" },
+         { "key" : "pr_size", "value" : "2646864" },
+         { "key" : "pr_rssize", "value" : "1851072" },
+         { "key" : "pctmem", "value" : "0.7" },
+         { "key" : "pctcpu", "value" : "0.24" }
+       ]
+     },
+     "zone" : {
+       "id" : 871,
+       "name" : "zone1",
+       "timestamp" : 1299258742,
+       "parameter" : [
+         { "key" : "nproc", "value" : "24" },
+         { "key" : "nlwp", "value" : "328" },
+         { "key" : "pr_size", "value" : "1671128" },
+         { "key" : "pr_rssize", "value" : "1193240" },
+         { "key" : "pctmem", "value" : "0.4" },
+         { "key" : "pctcpu", "value" : "0.07" }
+       ]
+     },
+     "zone" : {
+       "id" : 872,
+       "name" : "zone2",
+       "timestamp" : 1299258742,
+       "parameter" : [
+         { "key" : "nproc", "value" : "124" },
+         { "key" : "nlwp", "value" : "1328" },
+         { "key" : "pr_size", "value" : "1571128" },
+         { "key" : "pr_rssize", "value" : "193240" },
+         { "key" : "pctmem", "value" : "0.5" },
+         { "key" : "pctcpu", "value" : "0.06" }
+       ]
+     }
+   }
+}

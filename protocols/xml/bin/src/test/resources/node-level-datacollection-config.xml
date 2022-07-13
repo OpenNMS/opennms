@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<xml-datacollection-config rrdRepository="target/snmp/" xmlns="http://xmlns.opennms.org/xsd/config/xml-datacollection">
+    <xml-collection name="NodeLevel">
+        <rrd step="1">
+            <rra>RRA:AVERAGE:0.5:1:100</rra>
+        </rrd>
+        <xml-source url="http://{ipaddr}/node-level">
+            <xml-group name="node-level-stats" resource-type="node"
+                resource-xpath="/data">
+                <xml-object name="v1" type="GAUGE" xpath="parameter[@key='v1']/@value" />
+                <xml-object name="v2" type="GAUGE" xpath="parameter[@key='v2']/@value" />
+                <xml-object name="v3" type="GAUGE" xpath="parameter[@key='v3']/@value" />
+                <xml-object name="v4" type="GAUGE" xpath="parameter[@key='v4']" />
+                <xml-object name="v5" type="GAUGE" xpath="parameter[@key='v5']" />
+                <xml-object name="v6" type="COUNTER" xpath="parameter[@key='v6']" />
+            </xml-group>
+        </xml-source>
+    </xml-collection>
+ </xml-datacollection-config>

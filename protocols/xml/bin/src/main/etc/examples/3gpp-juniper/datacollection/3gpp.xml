@@ -1,0 +1,555 @@
+<?xml version="1.0"?>
+<datacollection-group name="3GPP">
+  <resourceType name="dnsDns" label="3GPP dns|dns" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="fxaSc" label="3GPP fxa|sc" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="fxaUpm" label="3GPP fxa|upm" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="gaMsg" label="3GPP ga|msg" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="gbBssgp" label="3GPP gb|bssgp" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="gbLlc" label="3GPP gb|llc" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="gbNs" label="3GPP gb|ns" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="gbSndcp" label="3GPP gb|sndcp" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="gprsMmAttach" label="3GPP gprsMm|attach" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="gprsMmAttachFail" label="3GPP gprsMm|attachFail" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="gprsMmDetach" label="3GPP gprsMm|detach" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="gprsMmGeneral" label="3GPP gprsMm|general" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="gprsMmIrau" label="3GPP gprsMm|irau" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="gprsMmIrauFail" label="3GPP gprsMm|irauFail" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="gprsMmMisc" label="3GPP gprsMm|misc" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="gprsMmProcedure" label="3GPP gprsMm|procedure" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="gprsMmRau" label="3GPP gprsMm|rau" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="gprsMmRauFail" label="3GPP gprsMm|rauFail" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="gprsMmSecurity" label="3GPP gprsMm|security" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="gprsMmSnr" label="3GPP gprsMm|snr" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="gprsSmDeactivation" label="3GPP gprsSm|deactivation" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="gprsSmGeneral" label="3GPP gprsSm|general" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="gprsSmIrau" label="3GPP gprsSm|irau" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="gprsSmIrauFail" label="3GPP gprsSm|irauFail" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="gprsSmModify" label="3GPP gprsSm|modify" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="gprsSmPriActGgsnFail" label="3GPP gprsSm|priActGgsnFail" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="gprsSmPrimaryAct" label="3GPP gprsSm|primaryAct" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="gprsSmPrimaryActFail" label="3GPP gprsSm|primaryActFail" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="gprsSmProcedure" label="3GPP gprsSm|procedure" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="gprsSmSecActGgsnFail" label="3GPP gprsSm|secActGgsnFail" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="gprsSmSecondaryAct" label="3GPP gprsSm|secondaryAct" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="gprsSmSecondaryActFail" label="3GPP gprsSm|secondaryActFail" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="gtpV1AccessFlex" label="3GPP gtpV1|accessFlex" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="gtpV1General" label="3GPP gtpV1|general" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="gtpV1Mobility" label="3GPP gtpV1|mobility" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="gtpV1Path" label="3GPP gtpV1|path" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="gtpV1Tunnel" label="3GPP gtpV1|tunnel" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="gtpV2General" label="3GPP gtpV2|general" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="gtpV2Mobility" label="3GPP gtpV2|mobility" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="gtpV2Path" label="3GPP gtpV2|path" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="gtpV2Tunnel" label="3GPP gtpV2|tunnel" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="iuM3ua" label="3GPP iu|m3ua" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="iuRanap" label="3GPP iu|ranap" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="iuSccp" label="3GPP iu|sccp" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="nodalS1" label="3GPP nodal|s1" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="nodalUpsm" label="3GPP nodal|upsm" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="s101General" label="3GPP s101|general" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="s101Msg" label="3GPP s101|msg" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="scLoadControl" label="3GPP sc|loadControl" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="scRim" label="3GPP sc|rim" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="scSms" label="3GPP sc|sms" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="scUePurge" label="3GPP sc|uePurge" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="sdGeneral" label="3GPP sd|general" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="sdRelay" label="3GPP sd|relay" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="sgsnAcctAbnormalClosure" label="3GPP sgsnAcct|abnormalClosure" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="sgsnAcctMcdr" label="3GPP sgsnAcct|mcdr" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="sgsnAcctScdr" label="3GPP sgsnAcct|scdr" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="sgsnAcctSmsCdr" label="3GPP sgsnAcct|smsCdr" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="ss7Bssap" label="3GPP ss7|bssap" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="ss7M3ua" label="3GPP ss7|m3ua" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="ss7Map" label="3GPP ss7|map" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="ss7Sccp" label="3GPP ss7|sccp" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="ss7Tcap" label="3GPP ss7|tcap" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="umtsHandoverSrns" label="3GPP umtsHandover|srns" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="umtsMmAttach" label="3GPP umtsMm|attach" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="umtsMmAttachFail" label="3GPP umtsMm|attachFail" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="umtsMmDetach" label="3GPP umtsMm|detach" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="umtsMmGeneral" label="3GPP umtsMm|general" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="umtsMmIrau" label="3GPP umtsMm|irau" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="umtsMmIrauFail" label="3GPP umtsMm|irauFail" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="umtsMmMisc" label="3GPP umtsMm|misc" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="umtsMmProcedure" label="3GPP umtsMm|procedure" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="umtsMmRau" label="3GPP umtsMm|rau" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="umtsMmRauFail" label="3GPP umtsMm|rauFail" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="umtsMmSecurity" label="3GPP umtsMm|security" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="umtsMmSnr" label="3GPP umtsMm|snr" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="umtsSmDeactivation" label="3GPP umtsSm|deactivation" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="umtsSmGeneral" label="3GPP umtsSm|general" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="umtsSmIrau" label="3GPP umtsSm|irau" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="umtsSmIrauFail" label="3GPP umtsSm|irauFail" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="umtsSmModify" label="3GPP umtsSm|modify" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="umtsSmPriActGgsnFail" label="3GPP umtsSm|priActGgsnFail" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="umtsSmPrimaryAct" label="3GPP umtsSm|primaryAct" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="umtsSmPrimaryActFail" label="3GPP umtsSm|primaryActFail" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="umtsSmProcedure" label="3GPP umtsSm|procedure" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="umtsSmSecActGgsnFail" label="3GPP umtsSm|secActGgsnFail" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="umtsSmSecondaryAct" label="3GPP umtsSm|secondaryAct" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="umtsSmSecondaryActFail" label="3GPP umtsSm|secondaryActFail" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="platformNetworkNetwork" label="3GPP platform-network|Network" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="platformNetworkRouting" label="3GPP platform-network|Routing" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="platformSystemFilesystem" label="3GPP platform-system|filesystem" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+  <resourceType name="platformSystemResource" label="3GPP platform-system|resource" resourceLabel="${label}" >
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+      <parameter key="match-expression" value="#suspect=='false'" />
+    </persistenceSelectorStrategy>
+    <storageStrategy class="org.opennms.protocols.xml.collector.XmlStorageStrategy"/>
+  </resourceType>
+</datacollection-group>

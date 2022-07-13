@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<dp:RootElement xmlns:dp="http://www.schdav.org/ns/dp" xmlns:ns2="http://www.namespace2.com" ReturnCode="0">
+  <dp:ChildElement>
+    <dp:StatList>
+      <dp:Stat Value="Thing" Name="ID"/>
+      <dp:Stat Value="13" Name="REQUESTS"/>
+      <dp:Stat Value="12" Name="RESPONSES"/>
+      <dp:Stat Value="1" Name="ERRORS"/>
+      <dp:Stat Value="2" Name="WARNINGS"/>
+      <dp:Stat Value="3" Name="HATS"/>
+      <dp:Stat Value="4" Name="PANTS"/>
+    </dp:StatList>
+  </dp:ChildElement>
+</dp:RootElement>

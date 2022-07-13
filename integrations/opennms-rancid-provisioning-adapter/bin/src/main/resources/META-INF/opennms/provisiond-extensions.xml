@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-4.2.xsd">
+
+  <bean name="rancidProvisioningAdapter" class="org.opennms.netmgt.provision.RancidProvisioningAdapter">
+    <property name="eventForwarder" ref="eventForwarder" />
+    <property name="nodeDao" ref="nodeDao" />
+    <property name="rwsConfig" ref="rwsConfig"/>
+    <property name="rancidAdapterConfig" ref="rancidAdapterConfig"/>
+    <property name="template" ref="transactionTemplate" />
+  </bean>
+
+  <bean id="rancidAdapterConfig-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="staticMethod"><value>org.opennms.netmgt.config.RancidAdapterConfigFactory.init</value></property>
+  </bean>
+  
+  <bean id="rancidAdapterConfig" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="rancidAdapterConfig-init">
+    <property name="staticMethod"><value>org.opennms.netmgt.config.RancidAdapterConfigFactory.getInstance</value></property>
+  </bean>
+  
+  <bean id="rancidEventListenerAdapter" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
+  	<property name="annotatedListener" ref="rancidProvisioningAdapter" />
+  	<property name="eventSubscriptionService" ref="eventSubscriptionService" />
+  </bean>
+ 
+</beans>

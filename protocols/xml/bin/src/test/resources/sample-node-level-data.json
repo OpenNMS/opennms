@@ -1,0 +1,1 @@
+{"jsonrpc": "2.0","result": [{"connectionLimitLowMarkPerc": 90, "totalNumberOfConnections": 10, "connectionLimit": 20, "connectionLimitLowMark": 30}], "id": 1}

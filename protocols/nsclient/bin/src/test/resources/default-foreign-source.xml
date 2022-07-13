@@ -1,0 +1,7 @@
+<foreign-source name="default" xmlns="http://xmlns.opennms.org/xsd/config/foreign-source">
+	<scan-interval>1d</scan-interval>
+	<detectors>
+		<detector name="NSClient" class="org.opennms.protocols.nsclient.detector.NsclientDetector" />
+		<detector name="NSClientpp" class="org.opennms.protocols.nsclient.detector.NsclientDetector" />
+	</detectors>
+</foreign-source>

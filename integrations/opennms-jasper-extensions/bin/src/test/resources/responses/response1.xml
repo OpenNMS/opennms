@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<query-response end="1439557163433" start="1439539163433" step="1234567">
+    <timestamps>1439544100000</timestamps>
+    <timestamps>1439544200000</timestamps>
+    <timestamps>1439544300000</timestamps>
+    <timestamps>1439544400000</timestamps>
+    <timestamps>1439544500000</timestamps>
+    <timestamps>1439544600000</timestamps>
+    <labels>IfHCInOctets</labels>
+    <labels>IfHCOutOctets</labels>
+    <columns>
+        <values>NaN</values>
+        <values>NaN</values>
+        <values>1.3</values>
+        <values>1.4</values>
+        <values>1.5</values>
+        <values>1.6</values>
+    </columns>
+    <columns>
+        <values>NaN</values>
+        <values>NaN</values>
+        <values>2.3</values>
+        <values>2.4</values>
+        <values>2.5</values>
+        <values>2.6</values>
+    </columns>
+</query-response>

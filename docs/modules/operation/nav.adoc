@@ -63,7 +63,6 @@
 * xref:events/anatomy-events.adoc[]
 ** xref:events/event-sources.adoc[]
 *** xref:events/sources/snmp-traps.adoc[]
-**** xref:events/sources/trap-config.adoc[]
 *** xref:events/sources/syslog.adoc[]
 *** xref:events/sources/rest.adoc[]
 *** xref:events/sources/xml-tcp.adoc[]

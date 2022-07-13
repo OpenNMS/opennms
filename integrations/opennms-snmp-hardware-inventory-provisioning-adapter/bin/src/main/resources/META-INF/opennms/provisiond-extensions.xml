@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-4.2.xsd">
+
+	<bean id="snmpHwInventoryAdapterConfigDao" class="org.opennms.netmgt.config.DefaultSnmpHwInventoryAdapterConfigDao">
+		<property name="configResource" value="file:${opennms.home}/etc/snmp-hardware-inventory-adapter-configuration.xml" />
+	</bean>
+
+	<bean name="snmpHardwareInventoryProvisioningAdapter" class="org.opennms.netmgt.provision.SnmpHardwareInventoryProvisioningAdapter">
+		<property name="eventForwarder" ref="eventForwarder" />
+		<property name="nodeDao" ref="nodeDao" />
+		<property name="hwEntityDao" ref="hwEntityDao" />
+		<property name="hwEntityAttributeTypeDao" ref="hwEntityAttributeTypeDao" />
+		<property name="snmpPeerFactory" ref="snmpPeerFactory" />
+		<property name="hwInventoryAdapterConfigDao" ref="snmpHwInventoryAdapterConfigDao" />
+		<property name="locationAwareSnmpClient" ref="locationAwareSnmpClient" />
+		<property name="template" ref="transactionTemplate" />
+	</bean>
+
+	<bean id="snmpHardwareInventoryEventListenerAdapter" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
+		<property name="annotatedListener" ref="snmpHardwareInventoryProvisioningAdapter" />
+		<property name="eventSubscriptionService" ref="eventSubscriptionService" />
+	</bean>
+
+</beans>

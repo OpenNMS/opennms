@@ -1,0 +1,130 @@
+<?xml version="1.0"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:ns="http://xmlns.opennms.org/xsd/config/vmware-datacollection"
+		  targetNamespace="http://xmlns.opennms.org/xsd/config/vmware-datacollection"
+		  elementFormDefault="qualified">
+
+	<annotation>
+		<documentation>
+			XML Schema for the vmware-datacollection configuration file
+		</documentation>
+	</annotation>
+
+  <element name="rrd">
+    <annotation>
+      <documentation>RRD parms</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="1" name="rra">
+          <annotation>
+            <documentation>Round Robin Archive definitions</documentation>
+          </annotation>
+
+          <simpleType>
+            <restriction base="string">
+              <pattern value="RRA:(AVERAGE|MIN|MAX|LAST):.*"/>
+            </restriction>
+          </simpleType>
+        </element>
+      </sequence>
+
+      <attribute name="step" type="int" use="required">
+        <annotation>
+          <documentation>step size for the RRD</documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+
+	<element name="vmware-datacollection-config">
+		<complexType>
+			<sequence>
+				<!-- Nsclient data collection element -->
+				<element ref="ns:vmware-collection" maxOccurs="unbounded"/>
+			</sequence>
+			<attribute name="rrdRepository" type="string" use="required"/>
+			<!-- full path to the RRD repository for collected Nsclient data -->
+		</complexType>
+	</element>
+	<element name="vmware-collection">
+		<annotation>
+			<documentation>A grouping of VMware related RRD parms and performance counter groups</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element ref="ns:rrd"/>
+				<element ref="ns:vmware-groups"/>
+			</sequence>
+			<attribute name="name" type="string" use="required"/>
+			<!-- collector name -->
+		</complexType>
+	</element>
+	<element name="vmware-groups">
+		<annotation>
+			<documentation>VMware object groups</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element ref="ns:vmware-group" maxOccurs="unbounded">
+					<annotation>
+						<documentation>
+							A VMware Object Group
+						</documentation>
+					</annotation>
+				</element>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="vmware-group">
+		<annotation>
+			<documentation>An VMware Object Group</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element ref="ns:attrib" minOccurs="0" maxOccurs="unbounded">
+					<annotation>
+						<documentation>
+							An VMware Object
+						</documentation>
+					</annotation>
+				</element>
+			</sequence>
+			<attribute name="name" type="string" use="required">
+				<annotation>
+					<documentation>
+						The name of this group, for user id purposes
+					</documentation>
+				</annotation>
+			</attribute>
+            <attribute name="resourceType" type="string" use="required">
+                <annotation>
+                    <documentation>
+                        Specifies the name of the resource type that pertains to the attributes
+                        in this group. For scalar attributes (those occurring once per node,
+                        such as available system memory) this should be "node".  For
+                        multi-instanced attributes, this should be the name of a custom
+                        resource type declared in datacollection-config.xml.
+                    </documentation>
+                </annotation>
+            </attribute>
+		</complexType>
+	</element>
+	<element name="attrib">
+		<annotation>
+			<documentation>An Attribute Object</documentation>
+		</annotation>
+		<complexType>
+			<attribute name="name" type="string" use="required"/>
+			<attribute name="alias" type="string" use="required"/>			
+			<attribute name="type" use="required">
+				<simpleType>
+					<restriction base="string">
+						<pattern value="([Cc](ounter|OUNTER)|[Gg](auge|AUGE)|[Ss](tring|TRING))"/>
+					</restriction>
+				</simpleType>
+			</attribute>
+		</complexType>
+	</element>
+</schema>

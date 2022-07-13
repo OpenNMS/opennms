@@ -1,9 +1,8 @@
 
-= Event Definitions and M I B (MIB) Files
+= Event Definitions and Management Information Base (MIB) Files
 
-M I B (MIB) files are ... 
+Management Information Base (MIB) files are ... 
 By default, {page-component-title} includes MIB files for X vendors.
-
 
 [[mib-create-def]]
 == Create event definitions from MIB files

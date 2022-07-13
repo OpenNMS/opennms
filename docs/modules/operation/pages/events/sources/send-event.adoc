@@ -1,6 +1,9 @@
 
 [[send-event]]
-= send-event.pl utility
+= Manually send events
+
+
+== send-event.pl utility
 
 The send-event.pl utility lets you create and send an event to trigger processes inside of {page-component-title}.
 It is most frequently used to reload daemon configuration without having to restart {page-component-title}.

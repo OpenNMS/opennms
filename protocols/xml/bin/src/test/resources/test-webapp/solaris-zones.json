@@ -1,0 +1,91 @@
+{
+   "zones": {
+     "zone" : {
+       "id" : 0,
+       "name" : "global",
+       "timestamp" : 1299258742,
+       "parameter" : {
+         "key" : "nproc",
+         "value" : "245",
+       },
+       "parameter" : {
+         "key" : "nlwp",
+         "value" : "1455",
+       },
+       "parameter" : {
+         "key" : "pr_size",
+         "value" : "2646864",
+       },
+       "parameter" : {
+         "key" : "pr_rssize",
+         "value" : "1851072",
+       },
+       "parameter" : {
+         "key" : "pctmem",
+         "value" : "0.7",
+       },
+       "parameter" : {
+         "key" : "pctcpu",
+         "value" : "0.24",
+       },
+     },
+     "zone" : {
+       "id" : 871,
+       "name" : "zone1",
+       "timestamp" : 1299258742,
+       "parameter" : {
+         "key" : "nproc",
+         "value" : "24",
+       },
+       "parameter" : {
+         "key" : "nlwp",
+         "value" : "328",
+       },
+       "parameter" : {
+         "key" : "pr_size",
+         "value" : "1671128",
+       },
+       "parameter" : {
+         "key" : "pr_rssize",
+         "value" : "1193240",
+       },
+       "parameter" : {
+         "key" : "pctmem",
+         "value" : "0.4",
+       },
+       "parameter" : {
+         "key" : "pctcpu",
+         "value" : "0.07",
+       },
+     },
+     "zone" : {
+       "id" : 871,
+       "name" : "zone2",
+       "timestamp" : 1299258742,
+       "parameter" : {
+         "key" : "nproc",
+         "value" : "24",
+       },
+       "parameter" : {
+         "key" : "nlwp",
+         "value" : "328",
+       },
+       "parameter" : {
+         "key" : "pr_size",
+         "value" : "1671128",
+       },
+       "parameter" : {
+         "key" : "pr_rssize",
+         "value" : "1193240",
+       },
+       "parameter" : {
+         "key" : "pctmem",
+         "value" : "0.4",
+       },
+       "parameter" : {
+         "key" : "pctcpu",
+         "value" : "0.07",
+       },
+     },
+   }
+}
