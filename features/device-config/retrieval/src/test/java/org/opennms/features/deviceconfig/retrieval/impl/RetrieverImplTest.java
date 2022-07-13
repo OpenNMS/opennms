@@ -136,7 +136,10 @@ public class RetrieverImplTest {
 
         var failure = either.getLeft();
 
-        assertThat(failure.message, containsString(RetrieverImpl.scriptingFailureMsg(new InetSocketAddress("host", 80), scriptingException.getMessage())));
+        // The script is wrapped in a future, so any exceptions will be wrapped in an ExecutionException.
+        // ExecutionExceptions preface the exception's msg with the original exception's full class name.
+        assertThat(failure.message, containsString(RetrieverImpl.scriptingFailureMsg(new InetSocketAddress("host", 80),
+                String.format("%s: %s", RuntimeException.class.getName(), scriptingException.getMessage()))));
 
         verify(tftpServer, times(1)).unregister(receiver);
     }
