@@ -1,31 +1,27 @@
-= Performance Data
+= SNMP Trap Performance Data
 
-This feature lets users persist performance data from SNMP traps in a time series database.
-OpenNMS already persists traps in an events form.
-Trap output is not the same as SNMP; it always embeds values into a string.
-Events support named regex extraction, a good starting point for persisting extracted parameters into time series.
+The `opennms-events-collector` feature lets you persist performance data from SNMP traps as time-series data.
+Unlike SNMP collection where you can define data types, SNMP traps always embed values as strings.
+The events collector can take the string values from event parameters and convert them into numeric values to persist over time.
 
 == How it works
-- The feature uses event matching with eventconf to check that the collection information exists.
-- It tries to look up parameters stated in the config against the event's parameters.
-- If `paramValue` exists in eventconf, OpenNMS converts the matching key into numeric values.
-- Based on the collection setting, it will persist data into `nodeSnmp`, `interfaceSnmp`, or `resource type`.
 
-== Install and configure event-sourced performance data collection
-. <<collection-config,Configure eventconf with collection>>.
-. <<snmp-graph, Create snmp-graph.properties>>.
-. <<resource-types, Create resource-types if you are using the generic type>>.
-. <<karaf-collector,Enable opennms-events-collector in Karaf>>.
+* The feature uses matching within the event definition to check that the collection information exists.
+* It tries to look up parameters stated in the config against the event's parameters.
+* If `paramValue` exists in the event definition, {page-component-title} converts the matching key into numeric values.
+* Based on the collection setting, it will persist data into the designated resource type.
 
-View result performance graph in menu:Reports[Reports > Resource Graphs].
+== Configuration and use
 
 [[collection-config]]
-=== Config eventconf with collection
+=== Configure event definition for collection
+
 This is an example of event collection config.
-Put the file in the etc/events directory and make sure it is registered in eventconf.xml.
+Put the file in the `$\{OPENNMS_HOME}/etc/events` directory and make sure it is registered in `eventconf.xml`.
 If your event will keep firing a lot and you only want the performance data without overwhelming the event table, consider setting `<logmsg dest="donotpersist"></logmsg>`.
 
-```
+[source, xml]
+----
 <events xmlns="http://xmlns.opennms.org/xsd/eventconf">
     <event>
         <mask>
@@ -57,8 +53,8 @@ If your event will keep firing a lot and you only want the performance data with
             </rrd>
             <collection name="TIME" type="counter"/>
             <collection name="STATUS" type="gauge">
-              <paramValue key="primary" value="1"/>
-              <paramValue key="secondary" value="2"/>
+                <paramValue key="primary" value="1"/>
+                <paramValue key="secondary" value="2"/>
             </collection>
         </collectionGroup>
         <collectionGroup name="eventTypeGroup" resourceType="eventType" instance="STATUS">
@@ -97,10 +93,14 @@ If your event will keep firing a lot and you only want the performance data with
         <severity>Normal</severity>
     </event>
 </events>
-```
+----
+
 The example trap for the first event will look like the following:
 
-`snmptrap -v1 -c public 127.0.0.1:10162 .1.3.6.1.4.1.22222.2.4.3.12.2.2 '127.0.0.1' 6 4 100 .1.3.6.1.4.1.22222.2.4.3.12.2.21 s "Time=200 Value=300 Status=secondary Tag=Text"`
+[source, console]
+----
+snmptrap -v1 -c public 127.0.0.1:10162 .1.3.6.1.4.1.22222.2.4.3.12.2.2 '127.0.0.1' 6 4 100 .1.3.6.1.4.1.22222.2.4.3.12.2.21 s "Time=200 Value=300 Status=secondary Tag=Text"
+----
 
 Make sure the name used in varbind (for example, "regex") matches the event's parameter name.
 The `Value` parameter must be numeric.
@@ -113,10 +113,11 @@ Make sure to quote the regex in CDATA.
 
 [[snmp-graph]]
 === Create snmp-graph.properties
-You need to create separate snmp-graph settings in the etc/snmp-graph.properties.d directory.
 
-Example:
-```
+You need to create separate snmp-graph settings file in the `$\{OPENNMS_HOME}/etc/snmp-graph.properties.d` directory.
+
+[source, properties]
+----
 reports=TIME, VALUE, STATUS, uei.opennms.org_traps_test_varbind
 
 report.TIME.name=TIME
@@ -162,24 +163,35 @@ report.uei.opennms.org_traps_test_varbind.command=--title="uei.opennms.org_traps
  AREA:octIn#73d216: \
  LINE1:octIn#4e9a06:"In " \
  GPRINT:octIn:AVERAGE:"Avg  \\: %8.2lf %s"
-```
+----
+
+You can view the resulting performance graphs in menu:Reports[Resource Graphs].
 
 [[resource-types]]
-=== Create resource-types if you are using generic type
-If your time series data type is not nodeSnmp/interfaceSnmp, you need to create a resource-type file in etc/resource-types.d.
-Make sure you match the name with evenconf's resourceType.
-There is also ${instance} variable available to provide a name to help indicate what an event binds to.
+=== Create resource-types (optional)
 
-Example:
-```
+If your time series data type is not `nodeSnmp` or `interfaceSnmp`, you need to create a resource-type file in `$\{OPENNMS_HOME}/etc/resource-types.d`.
+Make sure you match the name with the event definition's `resourceType`.
+There is also `$\{instance}` variable available that you can use to enrich the resource type's label.
+
+[source, xml]
+----
 <resource-types>
   <resourceType name="eventType" label="Event Application" resourceLabel="Instance ${instance}">
      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
   </resourceType>
 </resource-types>
-```
+----
 
 [[karaf-collector]]
-=== Enable opennms-events-collector in karaf
-ssh into karaf and run `feature:install opennms-events-collector`
+=== Enable opennms-events-collector in Karaf
+
+To load the events collector into your currently running {page-component-title} instance, run the following Karaf command.
+
+[source, karaf]
+----
+feature:install opennms-events-collector
+----
+
+To ensure that the feature continues to be installed on subsequent restarts, create or edit the `$\{OPENNMS_HOME}/etc/featuresBoot.d/events.boot` file to include `opennms-events-collector`.

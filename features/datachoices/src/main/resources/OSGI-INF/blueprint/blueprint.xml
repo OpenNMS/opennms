@@ -31,6 +31,28 @@
     <reference id="featuresService" interface="org.apache.karaf.features.FeaturesService"/>
     <reference id="configurationManagerService" interface="org.opennms.features.config.service.api.ConfigurationManagerService" availability="mandatory"/>
 
+    <reference id="provisiondConfigDao" interface="org.opennms.netmgt.dao.api.ProvisiondConfigurationDao" availability="mandatory"/>
+
+    <bean id="serviceConfigurationFactory" class="org.opennms.netmgt.config.ServiceConfigFactory" />
+
+    <bean id="destinationPathFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="staticMethod"><value>org.opennms.netmgt.config.DestinationPathFactory.init</value></property>
+    </bean>
+
+    <bean id="destinationPathFactory" class="org.opennms.netmgt.config.DestinationPathFactory" depends-on="destinationPathFactory-init" factory-method="getInstance"/>
+
+    <bean id="notifdConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="staticMethod"><value>org.opennms.netmgt.config.NotifdConfigFactory.init</value></property>
+    </bean>
+
+    <bean id="notifdConfigFactory" class="org.opennms.netmgt.config.NotifdConfigFactory" depends-on="notifdConfigFactory-init" factory-method="getInstance"/>
+
+    <bean id="groupFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="staticMethod"><value>org.opennms.netmgt.config.GroupFactory.init</value></property>
+    </bean>
+
+    <bean id="groupFactory" class="org.opennms.netmgt.config.GroupFactory" depends-on="groupFactory-init" factory-method="getInstance"/>
+
     <!-- The state manager will manually pull properties from the configuration file -->
     <bean id="stateManager" class="org.opennms.features.datachoices.internal.StateManager">
         <argument ref="configurationManagerService" />
@@ -50,6 +72,11 @@
         <property name="monitoringLocationDao" ref="monitoringLocationDao"/>
         <property name="monitoringSystemDao" ref="monitoringSystemDao"/>
         <property name="featuresService" ref="featuresService"/>
+        <property name="provisiondConfigurationDao" ref="provisiondConfigDao"/>
+        <property name="serviceConfigurationFactory" ref="serviceConfigurationFactory"/>
+        <property name="destinationPathFactory" ref="destinationPathFactory"/>
+        <property name="notifdConfigFactory" ref="notifdConfigFactory"/>
+        <property name="groupFactory" ref="groupFactory"/>
     </bean>
 
     <bean id="dataChoiceRestService" class="org.opennms.features.datachoices.web.internal.DataChoiceRestServiceImpl">

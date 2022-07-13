@@ -59,6 +59,9 @@ public class UsageStatisticsReportDTO {
     private int m_events;
     private int m_alarms;
     private long m_situations;
+    private int m_destinationPathCount;
+    private Boolean m_notificationEnablementStatus;
+    private int m_roleCount;
 
     private Map<String, Long> m_nodesBySysOid = Collections.emptyMap();
 
@@ -66,6 +69,16 @@ public class UsageStatisticsReportDTO {
     private long m_minions;
 
     private String m_installedFeatures;
+
+    private Integer m_availableProcessors;
+    private Long m_freePhysicalMemorySize;
+    private Long m_totalPhysicalMemorySize;
+    private long m_provisiondImportThreadPoolSize;
+    private long m_provisiondScanThreadPoolSize;
+    private long m_provisiondRescanThreadPoolSize;
+    private long m_provisiondWriteThreadPoolSize;
+    private Map<String, Long> m_provisiondRequisitionSchemeCount;
+    private Map<String, Boolean> m_services;
 
     public void setSystemId(String systemId) {
         m_systemId = systemId;
@@ -209,6 +222,102 @@ public class UsageStatisticsReportDTO {
 
     public void setInstalledFeatures(String installedFeatures) {
         m_installedFeatures = installedFeatures;
+    }
+
+    public void setAvailableProcessors(Integer availableProcessors) {
+        this.m_availableProcessors = availableProcessors;
+    }
+
+    public Integer getAvailableProcessors() {
+        return this.m_availableProcessors;
+    }
+
+    public Long getFreePhysicalMemorySize() {
+        return this.m_freePhysicalMemorySize;
+    }
+
+    public void setFreePhysicalMemorySize(Long freePhysicalMemorySize) {
+        this.m_freePhysicalMemorySize = freePhysicalMemorySize;
+    }
+
+    public Long getTotalPhysicalMemorySize() {
+        return this.m_totalPhysicalMemorySize;
+    }
+
+    public void setTotalPhysicalMemorySize(long totalPhysicalMemorySize) {
+        this.m_totalPhysicalMemorySize = totalPhysicalMemorySize;
+    }
+
+    public long getProvisiondImportThreadPoolSize() {
+        return m_provisiondImportThreadPoolSize;
+    }
+
+    public void setProvisiondImportThreadPoolSize(long provisiondImportThreadPoolSize) {
+        m_provisiondImportThreadPoolSize = provisiondImportThreadPoolSize;
+    }
+
+    public long getProvisiondScanThreadPoolSize() {
+        return m_provisiondScanThreadPoolSize;
+    }
+
+    public void setProvisiondScanThreadPoolSize(long provisiondScanThreadPoolSize) {
+        m_provisiondScanThreadPoolSize = provisiondScanThreadPoolSize;
+    }
+
+    public long getProvisiondRescanThreadPoolSize() {
+        return m_provisiondRescanThreadPoolSize;
+    }
+
+    public void setProvisiondRescanThreadPoolSize(long provisiondRescanThreadPoolSize) {
+        m_provisiondRescanThreadPoolSize = provisiondRescanThreadPoolSize;
+    }
+
+    public long getProvisiondWriteThreadPoolSize() {
+        return m_provisiondWriteThreadPoolSize;
+    }
+
+    public void setProvisiondWriteThreadPoolSize(long provisiondWriteThreadPoolSize) {
+        m_provisiondWriteThreadPoolSize = provisiondWriteThreadPoolSize;
+    }
+
+    public Map<String, Long> getProvisiondRequisitionSchemeCount() {
+        return m_provisiondRequisitionSchemeCount;
+    }
+
+    public void setProvisiondRequisitionSchemeCount(Map<String, Long> provisiondRequisitionSchemeCount) {
+        m_provisiondRequisitionSchemeCount = provisiondRequisitionSchemeCount;
+    }
+
+    public Map<String, Boolean> getServices() {
+        return m_services;
+    }
+
+    public void setServices(Map<String, Boolean> services) {
+        m_services = services;
+    }
+
+    public int getDestinationPathCount() {
+        return m_destinationPathCount;
+    }
+
+    public void setDestinationPathCount(int m_destinationPathCount) {
+        this.m_destinationPathCount = m_destinationPathCount;
+    }
+
+    public Boolean isNotificationEnablementStatus() {
+        return m_notificationEnablementStatus;
+    }
+
+    public void setNotificationEnablementStatus(Boolean m_notificationEnablementStatus) {
+        this.m_notificationEnablementStatus = m_notificationEnablementStatus;
+    }
+
+    public int getRoleCount() {
+        return m_roleCount;
+    }
+
+    public void setRoleCount(int m_roleCount) {
+        this.m_roleCount = m_roleCount;
     }
 
     public String toJson() {

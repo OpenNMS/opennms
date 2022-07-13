@@ -53,6 +53,7 @@
 ** xref:performance-data-collection/resource-types.adoc[]
 *** xref:performance-data-collection/snmp-index.adoc[]
 ** xref:performance-data-collection/collectors.adoc[]
+** xref:events/perf-data.adoc[]
 ** xref:performance-data-collection/snmp-property-extenders/property-extenders.adoc[]
 *** xref:performance-data-collection/snmp-property-extenders/cisco-cbqos.adoc[]
 *** xref:performance-data-collection/snmp-property-extenders/enum-lookup.adoc[]
@@ -89,6 +90,7 @@
 ** xref:alarms/alarm-notes.adoc[]
 ** xref:alarms/alarm-sound-flash.adoc[]
 ** xref:alarms/history.adoc[]
+** xref:alarms/alarm-advanced-search.adoc[]
 ** xref:alarms/ifttt-integration.adoc[]
 
 * xref:notifications/introduction.adoc[]
@@ -223,4 +225,3 @@
 ** xref:admin/logging/log-file-viewer.adoc[]
 ** xref:admin/housekeeping/introduction.adoc[]
 ** xref:admin/scv-configuration.adoc[]
-

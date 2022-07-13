@@ -1,4 +1,3 @@
-
 = Dashboard
 
 In Network Operations Centers (NOCs) an overview of issues in the network is important and often presented as dashboards.
@@ -50,12 +49,12 @@ The following information are shown in:
 .Information displayed in the alarms component
 image::dashboard/03_dashboard-alarms.png[]
 
-1. Node: Node label of the node the alarm is associated
-2. Severity: Severity of the alarm
-3. UEI: Shows the UEI of the alarm
-4. Count: Number of alarms deduplicated by the reduction key of the alarm
-5. Last Time: Time for the last occurrence of the alarm
-6. Log Msg: The log message from the event which is the source for this alarm. It is specified in the event configuration file in `<logmsg />`
+1. Node: Node label of the node associated with the alarm.
+2. Severity: Severity of the alarm.
+3. UEI: Shows the UEI of the alarm.
+4. Count: Number of alarms deduplicated by the reduction key of the alarm.
+5. Last Time: Time of the most recent alarm.
+6. Log Msg: The log message from the event definition.
 
 The Alarms component shows the most recent alarms and lets the user scroll through the last 100 alarms.
 
@@ -69,14 +68,14 @@ The dashboard should show outstanding notifications in the NOC to provide an ove
 .Information displayed in the Notifications component
 image::dashboard/04_dashboard-notifications.png[]
 
-1. Node: Label of the monitored node the notification is associated with
-2. Service: Name of the service the notification is associated with
-3. Message: Message of the notification
-4. Sent Time: Time when the notification was sent
-5. Responder: User name who acknowledged the notification
-6. Response Time: Time when the user acknowledged the notification
+1. Node: Label of the node associated with the notification.
+2. Service: Name of the service associated with the notification.
+3. Message: Message associated with the notification.
+4. Sent Time: Time when the notification was sent.
+5. Responder: User name who acknowledged the notification.
+6. Response Time: Time when the user acknowledged the notification.
 
-The Notifications component shows the most recent unacknowledged notifications and lets the user scroll through the last 100 Notifications.
+The Notifications component shows the most recent unacknowledged notifications and lets the user scroll through the last 100 notifications.
 
 [[ga-dashboard-node-status]]
 === Node Status
@@ -88,13 +87,13 @@ To give an overview information about ongoing Outages in the network, the dashbo
 image::dashboard/05_dashboard-outages.png[]
 
 1. Node: Label of the monitored node with ongoing outages.
-2. Current Outages: Number of services on the node with outages and total number of monitored services, e.g. with the natural meaning of "3 of 3 services are affected".
+2. Current Outages: Number of services on the node with outages out of the total number of monitored services; for example, "3 of 3 services are affected".
 3. 24 Hour Availability: Availability of all services provided by the node calculated by the last 24 hours.
 
 [[ga-dashboard-resource-graph-viewer]]
 === Resource Graph Viewer
 
-The Resource Graph Viewer lets you navigate to time series data reports to give a quick entry point to diagnose performance issues. 
+The Resource Graph Viewer lets you navigate to time series data reports to give a quick entry point to diagnose performance issues.
 This viewer filters nodes based on the Surveillance View context and shows one graph report at a time.
 It lets you navigate sequentially through resource graphs provided by nodes filtered by the Surveillance View context and selection and shows one graph report at a time.
 
@@ -198,10 +197,10 @@ Edit the `$\{OPENNMS_HOME}/etc/surveillance-view.xml` file to add a definition f
 </surveillance-view-configuration>
 ----
 
-This configuration and proper assignment of node categories will produce a default dashboard for all users, other than `drv4doe`.
+This configuration and proper assignment of node tags will produce a default dashboard for all users, other than `drv4doe`.
 
 TIP: You can hide the upper navigation on any page by specifying `?quiet=true;` adding it to the end of the {page-component-title} URL.
-     This is very handy when using the dashboard on a large monitor or tv screen for office wide viewing.
+     This is useful when viewing the dashboard on a large monitor or TV screen for office-wide viewing.
 
 However, when logging in as `drv4doe`, the user is taking directly to the dashboard page and is presented with a dashboard based on the custom Surveillance View definition.
 
@@ -311,7 +310,7 @@ Restart {page-component-title} and you should bring up a dashboard at `\http://h
 
 WARNING: There's no way to switch dashboards without closing the browser (or deleting the JSESSIONID session cookie).
 
-WARNING: If you accidentally click a link that requires full user privileges (e.g. Node List), you'll be given a login form.
-         Once you get to the login form, there's no going back to the dashboard without restarting the browser.
+WARNING: If you accidentally click a link that requires full user privileges (for example, Node List), you'll be given a login form.
+         Once you receive the login form, you cannot return to the dashboard without restarting the browser.
          If this problem bothers you, you can set `ROLE_USER` in addition to `ROLE_DASHBOARD` in your `userAttribute` property.
-         However this will give full user access to anonymous browsers.
+         However, setting this role will give full user access to anonymous browsers.

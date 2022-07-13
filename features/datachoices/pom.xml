@@ -44,7 +44,7 @@
         </dependency>
         <dependency>
             <groupId>org.opennms</groupId>
-            <artifactId>opennms-dao-api</artifactId>
+            <artifactId>opennms-dao</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>

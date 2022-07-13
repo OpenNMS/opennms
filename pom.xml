@@ -156,7 +156,7 @@
     <extension>
       <groupId>org.apache.maven.wagon</groupId>
       <artifactId>wagon-ssh-external</artifactId>
-      <version>2.6</version>
+      <version>3.5.2</version>
     </extension>
   </extensions>
   <pluginManagement>
@@ -1742,7 +1742,7 @@
     <jldapVersion>4.3</jldapVersion>
     <jmhVersion>1.33</jmhVersion>
     <jmxremote.optional.version>1.0_01-ea</jmxremote.optional.version>
-    <jnaVersion>5.11.0</jnaVersion>
+    <jnaVersion>5.12.1</jnaVersion>
     <jodaTimeVersion>2.1</jodaTimeVersion>
     <jqwikVersion>1.6.5</jqwikVersion>
     <jrrdVersion>1.1.0</jrrdVersion>
