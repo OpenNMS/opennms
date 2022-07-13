@@ -126,11 +126,20 @@ public interface DeviceConfigRestService {
         @QueryParam("configType") @DefaultValue("") String configType);
 
     /**
-     * Delete a single or multiple device config.
-     * @param ids comma separated string of ids
+     * Delete multiple device config.
+     * @param ids comma separated list of ids (Long)
      */
     @DELETE
-    Response deleteDeviceConfigs(@QueryParam("id") List<String> ids);
+    Response deleteDeviceConfigs(@QueryParam("id") List<Long> ids);
+
+    /**
+     * Delete a single device config.
+     * @param id
+     */
+    @DELETE
+    @Path("{id : \\d+}")
+    Response deleteDeviceConfig(@PathParam("id") long id);
+
 
     /**
      * Download configurations for the given id or comma-separated list of ids.

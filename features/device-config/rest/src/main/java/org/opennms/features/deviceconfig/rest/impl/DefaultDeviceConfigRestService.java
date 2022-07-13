@@ -28,32 +28,9 @@
 
 package org.opennms.features.deviceconfig.rest.impl;
 
-import static org.opennms.features.deviceconfig.service.DeviceConfigService.DEVICE_CONFIG_PREFIX;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.concurrent.ExecutionException;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import javax.xml.bind.DatatypeConverter;
-
+import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
+import net.redhogs.cronparser.CronExpressionDescriptor;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -82,16 +59,35 @@ import org.quartz.TriggerBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import javax.xml.bind.DatatypeConverter;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
-import net.redhogs.cronparser.CronExpressionDescriptor;
+import static org.opennms.features.deviceconfig.service.DeviceConfigService.DEVICE_CONFIG_PREFIX;
 
 public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultDeviceConfigRestService.class);
     public static final String DEFAULT_ENCODING = StandardCharsets.UTF_8.name();
     public static final String BINARY_ENCODING = "binary";
-    private static final Pattern deletePattern = Pattern.compile("\\d+");
     private final SessionUtils sessionUtils;
 
     private static final Map<String,String> ORDERBY_QUERY_PROPERTY_MAP = Map.of(
@@ -240,25 +236,14 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
 
     /** {@inheritDoc} */
     @Override
-    public Response deleteDeviceConfigs(List<String> ids) {
+    public Response deleteDeviceConfigs(List<Long> ids) {
         if (CollectionUtils.isEmpty(ids)) {
             LOG.debug("Bad request : empty or null DeviceConfig Id");
             return Response.status(Status.BAD_REQUEST).entity("Invalid 'id' parameter").build();
         }
-        boolean result =  ids.stream().allMatch(id -> deletePattern.matcher(id).matches());
-
-        if (!result) {
-            LOG.debug("Bad request : invalid id parameter '{}' ", ids);
-            return Response.status(Status.BAD_REQUEST).entity("Invalid 'id' parameter").build();
-        }
-
-        List<Long> lstOfId = ids.stream().filter(s -> !Strings.isNullOrEmpty(s.trim()))
-                .map(Long::parseLong)
-                .collect(Collectors.toList());
-
         sessionUtils.withTransaction(() -> {
             try {
-                final List<DeviceConfig> deviceConfigList = lstOfId.stream()
+                final List<DeviceConfig> deviceConfigList = ids.stream()
                         .map(deviceConfigDao::get)
                         .map(DeviceConfig.class::cast)
                         .collect(Collectors.toList());
@@ -269,6 +254,25 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
         });
 
         return Response.noContent().build();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Response deleteDeviceConfig(long id) {
+       return sessionUtils.withTransaction(() -> {
+            try {
+                final DeviceConfig dc = deviceConfigDao.get(id);
+                System.out.println("Device Condig id" + dc.getId());
+                if (dc == null) {
+                    LOG.debug("could not find device config data for id: {}", id);
+                    return Response.noContent().build();
+                }
+                deviceConfigDao.delete(dc);
+            } catch (Exception e) {
+                LOG.error("Exception while deleting device config, provided id is not valid {}", e);
+            }
+           return Response.noContent().build();
+       });
     }
 
     /** {@inheritDoc} */

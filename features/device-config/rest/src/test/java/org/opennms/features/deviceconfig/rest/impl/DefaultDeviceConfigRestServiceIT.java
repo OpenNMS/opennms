@@ -28,37 +28,15 @@
 
 package org.opennms.features.deviceconfig.rest.impl;
 
-import static java.util.stream.Collectors.toList;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.everyItem;
-import static org.hamcrest.Matchers.hasProperty;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfig;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigStatus;
@@ -79,6 +57,23 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionOperations;
 
 import javax.ws.rs.core.Response;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.IntStream;
+
+import static java.util.stream.Collectors.toList;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.everyItem;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -284,22 +279,16 @@ public class DefaultDeviceConfigRestServiceIT {
     }
 
     @Test
-    public void testDeleteDeviceConfigService() throws IOException {
+    public void testDeleteDeviceConfigs() throws IOException {
 
         //passing valid ids
-        List<String> lstOfIds = Arrays.asList(new String []{"50","51"});
+        List<Long> lstOfIds = Arrays.asList(new Long []{50L,51L});
         Response response = deviceConfigRestService.deleteDeviceConfigs(lstOfIds);
         Assert.assertEquals(204, response.getStatus());
 
-        //passing invalid ids
-        lstOfIds = Arrays.asList(new String []{"id1","id2"});
-        response = deviceConfigRestService.deleteDeviceConfigs(lstOfIds);
-        Assert.assertEquals("Invalid 'id' parameter", response.getEntity());
-
         //passing empty or blank value of ids
-        lstOfIds = Arrays.asList(new String []{" "});
+        lstOfIds = Arrays.asList(new Long []{});
         response = deviceConfigRestService.deleteDeviceConfigs(lstOfIds);
         Assert.assertEquals(400, response.getStatus());
     }
-
 }
