@@ -1,4 +1,3 @@
-
 [[upgrade]]
 = Upgrade {page-component-title}
 
@@ -34,6 +33,7 @@ endif::[]
 * <<events-table,Assess the events table size>>.
 This is especially important if you have a particularly large network with lots of events.
 * xref:deployment:upgrade/diff.adoc#run_diff[Identify any configuration files] you have changed to determine what needs to be migrated as part of an upgrade.
+** You can also xref:deployment:upgrade/git-diff.adoc[manage configuration changes using Git].
 
 [[events-table]]
 == Assess Events Table size
