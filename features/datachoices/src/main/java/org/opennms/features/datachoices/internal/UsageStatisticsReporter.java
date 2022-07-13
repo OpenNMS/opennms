@@ -43,7 +43,10 @@ import org.apache.karaf.features.FeaturesService;
 import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.core.web.HttpClientWrapper;
 import org.opennms.features.datachoices.internal.StateManager.StateChangeHandler;
+import org.opennms.netmgt.config.GroupFactory;
+import org.opennms.netmgt.config.NotifdConfigFactory;
 import org.opennms.netmgt.config.ServiceConfigFactory;
+import org.opennms.netmgt.config.DestinationPathFactory;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
@@ -91,6 +94,12 @@ public class UsageStatisticsReporter implements StateChangeHandler {
     private ProvisiondConfigurationDao m_provisiondConfigurationDao;
 
     private ServiceConfigFactory m_serviceConfigurationFactory;
+
+    private DestinationPathFactory m_destinationPathFactory;
+
+    private NotifdConfigFactory m_notifdConfigFactory;
+
+    private GroupFactory m_groupFactory;
 
     private boolean m_useSystemProxy = true; // true == legacy behaviour
 
@@ -216,6 +225,10 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         gatherProvisiondData(usageStatisticsReport);
         usageStatisticsReport.setServices(m_serviceConfigurationFactory.getServiceNameMap());
 
+        usageStatisticsReport.setDestinationPathCount(getDestinationPathCount());
+        usageStatisticsReport.setNotificationEnablementStatus(getNotificationEnablementStatus());
+        usageStatisticsReport.setRoleCount(m_groupFactory.getRoles().size());
+
         return usageStatisticsReport;
     }
 
@@ -297,5 +310,42 @@ public class UsageStatisticsReporter implements StateChangeHandler {
 
     public void setServiceConfigurationFactory(ServiceConfigFactory serviceConfigurationFactory) {
         m_serviceConfigurationFactory = serviceConfigurationFactory;
+    }
+
+    public void setDestinationPathFactory(DestinationPathFactory destinationPathFactory){
+        m_destinationPathFactory = destinationPathFactory;
+    }
+
+    public void setNotifdConfigFactory(NotifdConfigFactory notifdConfigFactory) {
+        this.m_notifdConfigFactory = notifdConfigFactory;
+    }
+
+    public void setGroupFactory(GroupFactory groupFactory) {
+        this.m_groupFactory = groupFactory;
+    }
+
+    private int getDestinationPathCount(){
+        try {
+            return m_destinationPathFactory.getPaths().size();
+
+        } catch (IOException e) {
+            return -1;
+        }
+    }
+
+    private Boolean getNotificationEnablementStatus(){
+        try {
+            final String bool = m_notifdConfigFactory.getNotificationStatus();
+            switch (bool){
+                case "on":
+                    return true;
+                case "off":
+                    return false;
+                default:
+                    return null;
+            }
+        } catch (IOException e) {
+            return null;
+        }
     }
 }
