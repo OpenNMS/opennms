@@ -114,7 +114,7 @@ for e in main_yml_content:
                     print("build-deploy:",libyaml.tell_extended_requirements('build-deploy'))
                     sample_workflow=libyaml.generate_yaml(workflow_data,"build-deploy",level,sample_workflow)
                 else:
-                    print("empty:",libyaml.tell_extended_requirements('empty'))
+                    print("empty:",libyaml.tell_requirements('empty'))
                     sample_workflow=libyaml.generate_yaml(workflow_data,"empty",level,sample_workflow)
                     #sample_workflow=libyaml.generate_yaml(workflow_data,"build",level,sample_workflow)
             
