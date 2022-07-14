@@ -98,17 +98,23 @@ for e in main_yml_content:
             level+=2
 
             if pipeline_parameters["trigger-rpms"]:
+                print("rpms:",libyaml.tell_extended_requirements('rpms'))
                 sample_workflow=libyaml.generate_yaml(workflow_data,"rpms",level,sample_workflow,disable_filters=True)
             elif pipeline_parameters["trigger-integration"]:
+                print("integration-test:",libyaml.tell_extended_requirements('integration-test'))
                 sample_workflow=libyaml.generate_yaml(workflow_data,"integration-test",level,sample_workflow,disable_filters=True)
             elif pipeline_parameters["trigger-debs"]:
+                print("debs:",libyaml.tell_extended_requirements('debs'))
                 sample_workflow=libyaml.generate_yaml(workflow_data,"debs",level,sample_workflow,disable_filters=True)
             elif pipeline_parameters["trigger-experimental"]:
+                print("build-with-tarball:",libyaml.tell_extended_requirements('build-with-tarball'))
                 sample_workflow=libyaml.generate_yaml(workflow_data,"build-with-tarball",level,sample_workflow,disable_filters=True)
             else:
                 if pipeline_parameters["trigger-build"]:
+                    print("build-deploy:",libyaml.tell_extended_requirements('build-deploy'))
                     sample_workflow=libyaml.generate_yaml(workflow_data,"build-deploy",level,sample_workflow)
                 else:
+                    print("empty:",libyaml.tell_extended_requirements('empty'))
                     sample_workflow=libyaml.generate_yaml(workflow_data,"empty",level,sample_workflow)
                     #sample_workflow=libyaml.generate_yaml(workflow_data,"build",level,sample_workflow)
             
