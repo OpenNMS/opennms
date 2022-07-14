@@ -70,6 +70,10 @@ class libprocess:
         print("Time Finnished:",result["Time Finnished"])
         print("Time Taken:",result["Time Finnished"])
         print("Return Code:",result["Return Code"])
+
+        if "stdout" in result["Output"] and "stderr" in result["Output"]:
+            return 
+
         if os.path.exists(result["Output"]):
             with open(result["Output"],"r") as f:
                 _output=f.readlines()
