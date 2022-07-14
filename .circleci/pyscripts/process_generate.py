@@ -3,6 +3,7 @@ import os
 import re
 import json
 from library import libgit
+from library import libfile
 
 output_path = os.environ.get('OUTPUT_PATH')
 head = os.environ.get('CIRCLE_SHA1')
@@ -10,6 +11,7 @@ base_revision = os.environ.get('BASE_REVISION')
 
 libgit = libgit.libgit("stdout")
 
+libfile = libfile.libfile()
 #os.chdir(os.environ.get("CIRCLE_WORKING_DIRECTORY"))
 
 libgit.switchBranch(base_revision)
@@ -118,6 +120,4 @@ if "experimentalPath" in git_keywords:
 else:
     mappings["trigger-experimental"]=False
 
-
-with open(output_path, 'w') as fp:
-fp.write(json.dumps(mappings))
+libfile.write_file(output_path,json.dumps(mappings))
