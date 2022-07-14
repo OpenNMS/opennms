@@ -41,7 +41,8 @@ class libgit:
         return keywords_dict
 
     def switchBranch(self,branch=""):
-        os.chdir("opennms")
+        if os.path.exists("opennms"):
+            os.chdir("opennms")
         if not branch:
             cmd=['git','branch']
         else:
