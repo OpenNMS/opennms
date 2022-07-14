@@ -8,6 +8,8 @@ base_revision = os.environ.get('BASE_REVISION')
 
 libgit = libgit.libgit("stdout")
 
+os.chdir(os.environ.get("CIRCLE_WORKING_DIRECTORY"))
+
 libgit.switchBranch(base_revision)
 libgit.switchBranch(head)
 
