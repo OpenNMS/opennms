@@ -30,11 +30,9 @@
     <reference id="monitoringSystemDao" interface="org.opennms.netmgt.dao.api.MonitoringSystemDao" availability="mandatory"/>
     <reference id="featuresService" interface="org.apache.karaf.features.FeaturesService"/>
     <reference id="configurationManagerService" interface="org.opennms.features.config.service.api.ConfigurationManagerService" availability="mandatory"/>
-
     <reference id="provisiondConfigDao" interface="org.opennms.netmgt.dao.api.ProvisiondConfigurationDao" availability="mandatory"/>
-    
     <reference id="deployedForeignSourceRepository" interface="org.opennms.netmgt.provision.persist.ForeignSourceRepository" filter="(type=deployed)"/>
-
+    <reference id="businessServiceEdgeDao" interface="org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeDao" />
 
     <bean id="serviceConfigurationFactory" class="org.opennms.netmgt.config.ServiceConfigFactory" />
 
@@ -76,6 +74,7 @@
         <property name="monitoringSystemDao" ref="monitoringSystemDao"/>
         <property name="featuresService" ref="featuresService"/>
         <property name="provisiondConfigurationDao" ref="provisiondConfigDao"/>
+        <property name="businessServiceEdgeDao" ref="businessServiceEdgeDao"/>
         <property name="serviceConfigurationFactory" ref="serviceConfigurationFactory"/>
         <property name="destinationPathFactory" ref="destinationPathFactory"/>
         <property name="notifdConfigFactory" ref="notifdConfigFactory"/>

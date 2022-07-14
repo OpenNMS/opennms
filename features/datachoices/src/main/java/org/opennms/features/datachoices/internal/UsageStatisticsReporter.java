@@ -60,6 +60,7 @@ import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -104,6 +105,8 @@ public class UsageStatisticsReporter implements StateChangeHandler {
     private MonitoringLocationDao m_monitoringLocationDao;
 
     private MonitoringSystemDao m_monitoringSystemDao;
+
+    private BusinessServiceEdgeDao m_businessServiceEdgeDao;
 
     private FeaturesService m_featuresService;
 
@@ -249,6 +252,7 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         usageStatisticsReport.setOnCallRoleCount(m_groupFactory.getRoles().size());
         usageStatisticsReport.setRequisitionCount(getDeployedRequisitionCount());
         usageStatisticsReport.setRequisitionWithChangedFSCount(getDeployedRequisitionWithModifiedFSCount());
+        usageStatisticsReport.setBusinessEdges(m_businessServiceEdgeDao.countAll());
 
         return usageStatisticsReport;
     }
@@ -336,6 +340,10 @@ public class UsageStatisticsReporter implements StateChangeHandler {
 
     public void setMonitoringSystemDao(MonitoringSystemDao monitoringSystemDao) {
         m_monitoringSystemDao = monitoringSystemDao;
+    }
+
+    public void setBusinessServiceEdgeDao(BusinessServiceEdgeDao businessServiceDao) {
+        m_businessServiceEdgeDao = businessServiceDao;
     }
 
     public void setFeaturesService(FeaturesService featuresService) {
