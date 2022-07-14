@@ -1,6 +1,6 @@
 commands:
-  run-build:
-    description: "Run the main build"
+  run-empty:
+    description: "Run a simple ls command"
     parameters:
       number-vcpu:
         default: 8
