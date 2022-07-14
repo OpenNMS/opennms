@@ -70,8 +70,8 @@ class libyaml:
                 self._finalList[k]["requires"]=_requires
         
     def tell_requirements(self,component):
-        if "requires" not in self._finalList[component]:
-            return "No dependency"
+        if not self._finalList or ("requires" not in self._finalList[component]):
+            return ""
         _output1=[]
         if self._finalList[component]['requires']:
             for _d in self._finalList[component]['requires']:
@@ -80,7 +80,7 @@ class libyaml:
 
             
     def tell_extended_requirements(self,component):
-        if "requires" not in self._finalList[component]:
+        if not self._finalList or  "requires" not in self._finalList[component]:
             return
         _output1=[]
         if not self._finalList[component]['requires']:
