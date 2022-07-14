@@ -14,15 +14,26 @@ To change this setting, edit `$\{OPENNMS_HOME}/etc/log4j2.xml` and locate the fo
 Changes to `log42.xml` will take effect within 60 seconds with no extra action needed.
 At level `DEBUG`, Eventd will log a verbose description of every event it handles to `$\{OPENNMS_HOME}/logs/eventd.log`.
 On busy systems, this setting may create so much noise as to be impractical.
-In these cases, you can get terse event summaries by setting Eventd 
-to log at level `INFO` and setting `logEventSummaries="yes"` in `$\{OPENNMS_HOME}/etc/eventd-configuration.xml`.
+In these cases, you can get terse event summaries by setting Eventd to log at level `INFO` and setting `logEventSummaries="yes"` in `$\{OPENNMS_HOME}/etc/eventd-configuration.xml`.
 
 [[send-event]]
-== send-event.pl utility
+== Manually send events
 
-The send-event.pl utility lets you create and send an event to trigger processes inside of {page-component-title}.
-It is most frequently used to reload daemon configuration without having to restart {page-component-title}.
-You can also use the send-event.pl utility as an automation tool to trigger events as part of continuous integration scripts or other automated processes.
+You can manually create and send an event to trigger processes inside of {page-component-title}, through the UI or using the <<event-utility, send-event.pl utility>>.
+Most often, you would do this to reload daemon configuration without having to restart {page-component-title}.
+
+[[send-event-ui]]
+To manually send an event in the UI, follow these steps:
+
+. In {page-component-title} click the gears icon and select *Event Management>Manually Send an Event*.
+. Select the event from the *Event* list.
+. Specify additional information, including the UUID, Node ID, parameters, severity, and so on and click *Send Event*.
+. Choose *Status>Events* to view the event.
+
+[[event-utility]]
+=== send-event.pl utility
+
+In addition to manually adding events, you can also use the send-event.pl utility as an automation tool to trigger events as part of continuous integration scripts or other automated processes.
 
 For example:
 
@@ -33,7 +44,7 @@ For example:
 
 Format: `$\{OPENNMS_HOME}/bin/send-event.pl <uei> [host:port] [options]`
 
-The `host:port` defines the hostname and port to send the event; by default the local host.
+The `host:port` defines the hostname and port to send the event; by default, the local host.
 
 Find UEIs and their associated parameters in the `$\{OPENNMS_HOME}/etc/eventd-configuration.xml` file.
 See also xref:events/event-configuration.adoc#ga-events-event-configuration[Event Configuration].
@@ -42,7 +53,6 @@ See also xref:events/event-configuration.adoc#ga-events-event-configuration[Even
 [options="header"]
 [cols="1,3"]
 |===
-
 | Name/Alias
 | Description
 
@@ -79,7 +89,7 @@ You can also define your own UEIs.
 For example, `-p 'url \http://www.opennms.com/'`
 
 | -s (--service)
-| Name of the associated service
+| Name of the associated service.
 
 | -x (--severity)
 | Severity of the event: +
@@ -99,7 +109,6 @@ For example, `-p 'url \http://www.opennms.com/'`
 
 | -V (--version)
 | Print version and exit successfully.
-
 |===
 
 Note that parameter descriptions use the percentage sign (%) as a delimiter to mark a replacement variable.
