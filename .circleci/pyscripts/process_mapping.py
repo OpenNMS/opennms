@@ -24,11 +24,17 @@ base_revision = os.environ.get('BASE_REVISION')
 checkout(base_revision)  # Checkout base revision to make sure it is available for comparison
 checkout(head)  # return to head commit
 
+print("base_revision",base_revision)
+print("head",head)
+
 base = subprocess.run(
     ['git', 'merge-base', base_revision, head],
     check=True,
     capture_output=True
 ).stdout.decode('utf-8').strip()
+
+print("base",base)
+
 
 if head == base:
     try:
