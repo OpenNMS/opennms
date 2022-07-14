@@ -78,6 +78,6 @@ class libgit:
     def commonAncestor(self,base_revision,head):
         cmd=['git', 'merge-base', base_revision, head]
         print(cmd)
-        output = self.libprocess.runProcess(cmd,working_directory=os.getcwd(),redirectSTDERR=True,redirectSTDOUT=True,outputFile="self.log_fullpath")
+        output = self.libprocess.runProcess(cmd,working_directory=os.getcwd(),redirectSTDERR=True,redirectSTDOUT=True,outputFile="stdout")
         print(output)
         return output["Output"]["stdout"].decode('utf-8').strip()
