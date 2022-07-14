@@ -80,6 +80,7 @@ mappings = dict(mappings)
 
 #Not a great idea, but we will use it for testing
 if "CIRCLE_BRANCH" in os.environ and os.environ["CIRCLE_BRANCH"] == "mem/jira/nms-14459":
+    libgit=libgit.libgit("/tmp/libgit_log.txt")
     # If *IT.java files have changed -> enable integration builds
     # If *Test.java files have changed -> enable smoke builds
     # if Dockerfiles (under opennms-container) have changed enable docker builds
