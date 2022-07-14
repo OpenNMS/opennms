@@ -1,5 +1,5 @@
 [[poller-config]]
-= Poller configuration
+= Poller Configuration
 
 OpenNMS backs up device configuration through the xref:reference:service-assurance/monitors/DeviceConfigMonitor.adoc[Device Config Monitor].
 
@@ -83,6 +83,18 @@ config:property-set tftpServerIPv6Address ::1
 config:update
 ----
 
+== SSH Session I/O Collection
+
+By default, the ssh scripting service collects all ssh session output for debugging purposes and saves it in the poller's status. 
+To disable this, you can configure the scripting service on both Horizon and Minion as below:
+
+.Configure SSH Session I/O Collection
+[source, karaf]
+----
+config:edit org.opennms.features.deviceconfig.sshscripting
+config:property-set disableIOCollection true
+config:update
+----
 
 == (optional) Enable push-based configuration upload
 

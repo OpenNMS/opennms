@@ -74,6 +74,8 @@ public class SshScriptingServiceImpl implements SshScriptingService {
     private InetAddress tftpServerIPv4Address;
     private InetAddress tftpServerIPv6Address;
 
+    boolean disableIOCollection;
+
     private String scriptDebugOutput;
 
     public void setTftpServerIPv4Address(final String tftpServerIPv4Address) throws UnknownHostException {
@@ -92,6 +94,10 @@ public class SshScriptingServiceImpl implements SshScriptingService {
         }
     }
 
+    public void setDisableIOCollection(final String value) {
+        this.disableIOCollection = Boolean.parseBoolean(value);
+    }
+
     @Override
     public Result execute(
             String script,
@@ -108,7 +114,7 @@ public class SshScriptingServiceImpl implements SshScriptingService {
                 errorLines -> Result.failure(errorLines.stream().collect(Collectors.joining("\n", "unrecognized statements:\n", ""))),
                 statements -> {
                     try {
-                        try (var sshInteraction = new SshInteractionImpl(user, password, authKey, target, hostKeyFingerprint, shell, vars, timeout, tftpServerIPv4Address, tftpServerIPv6Address)) {
+                        try (var sshInteraction = new SshInteractionImpl(user, password, authKey, target, hostKeyFingerprint, shell, vars, timeout, tftpServerIPv4Address, tftpServerIPv6Address, disableIOCollection)) {
                             LOG.debug("ssh connection successful, executing script: {}", script);
                             Statement prevStatement = null;
                             for (var statement : statements) {
@@ -187,6 +193,8 @@ public class SshScriptingServiceImpl implements SshScriptingService {
         private final Duration timeout;
         private final Instant timeoutInstant;
 
+        private final boolean disableIOCollection;
+
         private SshInteractionImpl(
                 String user,
                 String password,
@@ -197,8 +205,10 @@ public class SshScriptingServiceImpl implements SshScriptingService {
                 Map<String, String> vars,
                 Duration timeout,
                 InetAddress tftpServerIPv4Address,
-                InetAddress tftpServerIPv6Address
+                InetAddress tftpServerIPv6Address,
+                boolean disableIOCollection
         ) throws Exception {
+            this.disableIOCollection = disableIOCollection;
             timeoutInstant = Instant.now().plus(timeout);
             sshClient = SshClient.setUpDefaultClient();
 
@@ -337,8 +347,10 @@ public class SshScriptingServiceImpl implements SshScriptingService {
             while (Instant.now().isBefore(timeoutInstant)) {
                 synchronized (awaitStdout) {
                     if (matchAndConsume(awaitStdout, search)) {
-                        debugOutput.write(debugStderr.toString().getBytes(StandardCharsets.UTF_8));
-                        debugOutput.write(debugStdout.toString().getBytes(StandardCharsets.UTF_8));
+                        if (!disableIOCollection) {
+                            debugOutput.write(debugStderr.toString().getBytes(StandardCharsets.UTF_8));
+                            debugOutput.write(debugStdout.toString().getBytes(StandardCharsets.UTF_8));
+                        }
                         debugStdout.reset();
                         debugStderr.reset();
                         return;
@@ -346,8 +358,10 @@ public class SshScriptingServiceImpl implements SshScriptingService {
                 }
                 Thread.sleep(1000);
             }
-            debugOutput.write(debugStderr.toString().getBytes(StandardCharsets.UTF_8));
-            debugOutput.write(debugStdout.toString().getBytes(StandardCharsets.UTF_8));
+            if (!disableIOCollection) {
+                debugOutput.write(debugStderr.toString().getBytes(StandardCharsets.UTF_8));
+                debugOutput.write(debugStdout.toString().getBytes(StandardCharsets.UTF_8));
+            }
             throw new Exception("awaited output missing - expected: " + string);
         }
 
@@ -357,7 +371,12 @@ public class SshScriptingServiceImpl implements SshScriptingService {
         }
 
         String getDebugOutput() {
-            return debugOutput.toString(StandardCharsets.UTF_8);
+            if (disableIOCollection) {
+                return "Script IO collection is disabled";
+            }
+            else {
+                return debugOutput.toString(StandardCharsets.UTF_8);
+            }
         }
     }
 
