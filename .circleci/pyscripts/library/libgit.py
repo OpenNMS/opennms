@@ -16,11 +16,11 @@ class libgit:
         return subprocess.run(['git','rev-parse',revision],check=True,capture_output=True).stdout.decode('utf-8').strip()
 
     def getChangedFilesInCommits(self,baseCommit,Commit)->list:
-        return subprocess.run(
-            ['git', 'diff', '--name-only', baseCommit, Commit],
-            check=True,
-            capture_output=True
-            ).stdout.decode('utf-8').splitlines()
+        print("=","Running","getChangedFilesInCommits","=")
+        output=self.libprocess.runProcess(['git', 'diff', '--name-only', baseCommit, Commit],working_directory=os.getcwd(),redirectSTDERR=True,redirectSTDOUT=True,outputFile=self.log_fullpath)
+        self.libprocess.printSummary(output)
+        print("=","Stopping","switchBranch","=")
+        return output["Output"]["stdout"].splitlines()
 
     def getChangedFilesOnFileSystem(self)->list:
         return subprocess.run(
@@ -54,7 +54,6 @@ class libgit:
         print("=","Stopping","switchBranch","=")
         return output
 
-
     def getSourceCode(self,repository="",branch=""):
         cmd=['git','clone']
         if repository:
@@ -73,14 +72,19 @@ class libgit:
     def updateSourceCode(self):
         """ Run's a simple git pull command in the current directory """
         cmd=['git','pull']
+
         print("=","Running","updateSourceCode","=")
         output=self.libprocess.runProcess(cmd,working_directory=os.getcwd(),redirectSTDERR=True,redirectSTDOUT=True,outputFile=self.log_fullpath)
         self.libprocess.printSummary(output)
         print("=","Stopping","updateSourceCode","=")
+
         return output
 
     def commonAncestor(self,base_revision,head):
         cmd=['git', 'merge-base', base_revision, head]
-        print(cmd)
+
+        print("=","Running","commonAncestor","=")
         output = self.libprocess.runProcess(cmd,working_directory=os.getcwd(),redirectSTDERR=True,redirectSTDOUT=True,outputFile="stdout")
+        self.libprocess.printSummary(output)
+        print("=","Stopping","commonAncestor","=")
         return output["Output"]["stdout"].strip()

@@ -15,7 +15,6 @@ libgit.switchBranch(head)
 
 base= libgit.commonAncestor(base_revision, head)
 
-# Why do I need to do this??????
 print("output_path",output_path)
 print("head",head)
 print("base_revision",base_revision)
@@ -28,3 +27,5 @@ if head == base:
         base = '4b825dc642cb6eb9a060e54bf8d69288fbee4904'
 
 print("base",base)
+
+print(libgit.getChangedFilesInCommits(base,head))
