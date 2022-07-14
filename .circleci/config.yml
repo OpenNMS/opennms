@@ -184,6 +184,9 @@ jobs:
           name: Generate Main YAML file
           command: python3 .circleci/pyscripts/generate_main.py 
       - run:
+          name: Process Generate (Exp)
+          command: python3 .circleci/pyscripts/process_generate.py 
+      - run:
           name: check for empty trigger config
           command: |
             if [ "$(grep -c trigger-coverage /tmp/pipeline-parameters.json)" -eq 0 ]; then
