@@ -11,11 +11,11 @@ libgit = libgit.libgit("stdout")
 #libgit.switchBranch(base_revision)
 #libgit.switchBranch(head)
 
-base= libgit.commonAncestor(base_revision, head)
+#base= libgit.commonAncestor(base_revision, head)
 
 # Why do I need to do this??????
 print("output_path",output_path)
 print("head",head)
 print("base_revision",base_revision)
 print("base_revision",base_revision)
-print("base",base)
+#print("base",base)
