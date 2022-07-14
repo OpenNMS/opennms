@@ -155,7 +155,7 @@
     <extension>
       <groupId>org.apache.maven.wagon</groupId>
       <artifactId>wagon-ssh-external</artifactId>
-      <version>2.6</version>
+      <version>3.5.2</version>
     </extension>
   </extensions>
   <pluginManagement>
@@ -1542,7 +1542,7 @@
 
     <!--
       This is on by default now that root is not required for pinging.
-      If you have issues with this, see https://wiki.opennms.org/wiki/ICMP for enabling non-root ping.
+      If you have issues with this, see https://docs.opennms.com/ for enabling non-root ping.
       However, we need to set the default in a profile (NMS-8838).
     <runPingTests>true</runPingTests> -->
 
@@ -1724,7 +1724,7 @@
     <hikaricpVersion>2.5.1</hikaricpVersion>
     <httpcoreVersion>4.4.15</httpcoreVersion>
     <httpclientVersion>4.5.13</httpclientVersion>
-    <httpasyncclientVersion>4.1.3</httpasyncclientVersion>
+    <httpasyncclientVersion>4.1.5</httpasyncclientVersion>
     <ipaddressVersion>5.3.3</ipaddressVersion>
     <jacksonVersion>1.9.13-atlassian-6</jacksonVersion>
     <jackson2Version>2.10.5</jackson2Version>
@@ -1747,7 +1747,7 @@
     <jldapVersion>4.3</jldapVersion>
     <jmhVersion>1.33</jmhVersion>
     <jmxremote.optional.version>1.0_01-ea</jmxremote.optional.version>
-    <jnaVersion>5.11.0</jnaVersion>
+    <jnaVersion>5.12.1</jnaVersion>
     <jodaTimeVersion>2.1</jodaTimeVersion>
     <jqwikVersion>1.6.5</jqwikVersion>
     <jrrdVersion>1.1.0</jrrdVersion>
@@ -1767,7 +1767,7 @@
     <log4j2Version>2.17.2</log4j2Version>
     <logbackClassicVersion>1.2.11</logbackClassicVersion>
     <mapstructVersion>1.4.1.Final</mapstructVersion>
-    <minaVersion>2.1.5</minaVersion>
+    <minaVersion>2.1.6</minaVersion>
     <mockitoVersion>3.4.6</mockitoVersion>
     <netty3Version>3.10.6.Final</netty3Version>
     <netty4Version>4.1.78.Final</netty4Version>

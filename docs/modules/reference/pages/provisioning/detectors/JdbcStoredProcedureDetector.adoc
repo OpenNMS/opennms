@@ -1,0 +1,81 @@
+
+= JDBC Stored Procedure Detector
+
+The JDBCStoredProcedureDetector connects to a JDBC-enabled database and checks the result of a stored procedure.
+The result of the stored procedure must be a Boolean value (representing true or false).
+If the result is true, it returns the `detected` value.
+If the result is false, it returns the `not detected` value.
+
+== Detector facts
+
+[options="autowidth"]
+|===
+| Implementation | `org.opennms.netmgt.provision.detector.jdbc.JdbcStoredProcedureDetector`
+|===
+
+== Configuration and use
+
+The JDBCStoredProcedureDetector uses the xref:reference:provisioning/detectors.adoc#ref-detector-provisioning-common-parameters[common configuration parameters].
+
+.Parameters for the JDBCStoredProcedureDetector
+[options="header, autowidth"]
+[cols="1,4,1"]
+|===
+| Parameter
+| Description
+| Default value
+
+3+| *Required*
+
+| dbDriver
+| Database driver class name.
+| org.postgresql.Driver
+
+| password
+| JDBC password.
+| Empty String object.
+
+| stored-procedure
+| Stored procedure to query.
+| `isRunning`
+
+| url
+| JDBC URL to query.
+Note: this URL can differ based on JDBC drivers, databases, and so on.
+| `jdbc:postgresql://localhost/opennms`
+
+| user
+| JDBC username.
+| postgres
+
+3+| *Optional*
+
+| port
+| Port to query.
+| 3306
+
+| schema
+| Database schema where the stored procedure is located.
+| test
+|===
+
+== Database driver
+The JDBCStoredProcedureDetector requires a JDBC driver to communicate with any database.
+Since {page-component-title} uses a PostgreSQL database, the PostgreSQL JDBC driver is included out of the box.
+For all other database systems, you must provide a compatible JDBC driver as a `.jar` file.
+To provide a JDBC driver, place the driver-jar in your `$\{OPENNMS_HOME}/lib` folder.
+
+== Examples
+
+[source,xml]
+----
+<detector name="MySQL-JDBC" class="org.opennms.netmgt.provision.detector.jdbc.JdbcStoredProcedureDetector">
+    <parameter key="password" value="borkborkbork"/>
+    <parameter key="user" value="opennms"/>
+    <parameter key="dbDriver" value="com.mysql.jdbc.Driver"/>
+    <parameter key="url" value="jdbc:mysql://OPENNMS_JDBC_HOSTNAME:3306/test"/>
+    <parameter key="timeout" value="5000"/>
+</detector>
+----
+
+This example assumes you have loaded the MySQL driver file (see xref:deployment:minion/installing-jdbc-driver.adoc[Install JDBC Driver]).

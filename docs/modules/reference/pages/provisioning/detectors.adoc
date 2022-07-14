@@ -1,9 +1,47 @@
+
 [[ref-detectors]]
 = Detectors
 
 This section describes all available built-in xref:operation:provisioning/introduction.adoc[provisioning] detectors.
 You can configure them to allow complex detection to meet the needs of your environment.
 For information on how to extend the functionality of these detectors, see the xref:development:development.adoc#development[Development section] to contribute to the project.
+
+[[ref-detector-provisioning-common-parameters]]
+== Common configuration parameters
+
+Application- or device-specific detectors are based on a generic API that provides common configuration parameters.
+These minimum configuration parameters are available in all detectors and describe the behavior for timeouts, retries, and so on.
+
+.Optional common configuration parameters
+[options="header"]
+[cols="1,3,2"]
+|===
+| Parameter
+| Description
+| Default value
+
+| ipMatch
+| IP address to match.
+Use filters to match single addresses or address ranges.
+Substrings are matched by default (see note below this table for information on regular expression matching).
+|
+
+| retries
+| Number of times detector should try to connect to database.
+|
+
+| serviceName
+| A custom service name to identify the service.
+|
+
+| timeout
+| Response time limit (in milliseconds).
+| 2000
+|===
+
+NOTE: If there is a `~` at the beginning of a parameter's value, the rest of the string will be handled as a regular expression pattern match.
+Otherwise, it will be processed as a substring match.
+The regular expression match is anchored at the beginning and end of the line, so you will likely need to put a `.*` on both sides of your pattern unless you are going to match on the entire line.
 
 [[ref-detector-provisioning-meta-data]]
 == Metadata DSL

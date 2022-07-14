@@ -1,11 +1,10 @@
-
 [[upgrade]]
 = Upgrade {page-component-title}
 
-This section outlines the steps to follow to upgrade to a newer version of {page-component-title}.
-You may need to complete additional steps to upgrade in a more complex setup (running more than one OpenNMS instance, database migration requirements, age of current version, and so on).
+This section outlines the basic steps that you should follow to upgrade to a newer version of {page-component-title}.
+You may need to complete additional steps to upgrade in a more complex setup (for example, if you run more than one OpenNMS instance, have more complex database migration requirements, and/or depending on the age of current version).
 
-A basic upgrade of one instance can take about an hour.
+A basic upgrade of one {page-component-title} instance can take about an hour.
 This time varies, and will be longer depending on how customized and complex your setup is.
 
 [[byb_upgrade]]
@@ -14,32 +13,34 @@ This time varies, and will be longer depending on how customized and complex you
 There are a number of tasks you should complete before starting an upgrade:
 
 ifeval::["{page-component-title}" == "Meridian"]
-* Check the https://meridian.opennms.com/[release notes] for breaking changes in each release between your current version and the version you want to upgrade to.
+* Check the https://meridian.opennms.com/[{page-component-title} release notes] for breaking changes in each release between your current version and the version you want to upgrade to.
 Address any issues that might affect you.
 endif::[]
 
 ifeval::["{page-component-title}" == "Horizon"]
-* Check the https://vault.opennms.com/docs/opennms/releases/index.html[release notes] for breaking changes in each release between your current version and the version you want to upgrade to.
+* Check the https://vault.opennms.com/docs/opennms/releases/index.html[{page-component-title} release notes] for breaking changes in each release between your current version and the version you want to upgrade to.
 Address any issues that might affect you.
 +
-NOTE: Release notes for versions 28 and later are not available at the vault docs link (above) at this time.
+NOTE: Currently, release notes for versions 28 and later are not available at the vault docs link (above).
 Please check the branches on https://github.com/OpenNMS/opennms/releases[GitHub] for those release notes.
 endif::[]
 
-* Stop OpenNMS and PostgreSQL services.
+* Stop the OpenNMS and PostgreSQL services.
 * xref:operation:admin/housekeeping/introduction.adoc#prune-events[Prune unneeded events].
 * Back up your database. (same day/state)
 * Back up RRD files. (same day/state)
 * Back up the `$\{OPENNMS_HOME}/etc` directory. (same day/state)
 * <<events-table,Assess the events table size>>.
-Especially important if you have a particularly large network with lots of events.
-* xref:deployment:upgrade/diff.adoc#run_diff[Identify the configuration files] you have changed to determine what you need to migrate as part of an upgrade.
+This is especially important if you have a particularly large network with lots of events.
+* xref:deployment:upgrade/diff.adoc#run_diff[Identify any configuration files] you have changed to determine what needs to be migrated as part of an upgrade.
+** You can also xref:deployment:upgrade/git-diff.adoc[manage configuration changes using Git].
 
 [[events-table]]
-== Assess Events Table Size
+== Assess Events Table size
+
 If, after xref:operation:admin/housekeeping/introduction.adoc#prune-events[pruning unneeded events], you still have a large number of events, you may need to increase the amount of memory passed to the OpenNMS install tool.
-For example, if you have 250k events, you will need almost 600MB of heap.
-When you upgrade and have the available memory, choose a large value to pass to the install, as in the following:
+For example, if you have 250,000 events, you will need almost 600MB of heap.
+When you upgrade and have the available memory, choose a large value to pass to the install:
 
 [source, console]
 ----

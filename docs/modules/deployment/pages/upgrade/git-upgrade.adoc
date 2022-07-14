@@ -1,0 +1,86 @@
+[[git-upgrade]]
+= Upgrade {page-component-title} with Git
+
+This content was originally written on the OpenNMS Discourse forum (see https://opennms.discourse.group/t/managing-configuration-changes-with-git/2327[Managing Configuration Changes with Git]).
+Follow the directions here to upgrade with Git if you xref:deployment:upgrade/git-diff.adoc#git-diff[use Git to manage configuration changes].
+The steps below assume you have already set up your xref:deployment:upgrade/git-diff.adoc[configuration folders as a Git repository].
+
+IMPORTANT: Remember to stop {page-component-title} before beginning an upgrade.
+
+== Commit configuration changes
+
+Run the `git status` command to check if changes to the `etc` directory have been committed.
+If files have been modified, follow the instructions in xref:deployment:upgrade/git-diff.adoc#make-changes[Make changes] to commit them.
+
+== Switch to pristine branch
+
+Run this code to switch to your repository's `main` branch:
+
+[source, console]
+----
+git checkout main
+----
+
+This reverts your `etc` directory to its pristine condition in preparation for the upgrade.
+
+== Upgrade {page-component-title}
+
+Upgrade your {page-component-title} installation as usual (see xref:deployment:upgrade/basic.adoc[Basic Upgrade Steps]).
+
+After upgrading, run the `git status` command to see any changes to the default configuration files from your repository's `main` branch.
+If any files were removed during the upgrade, run the `git rm <filename>` command.
+This removes the files from your repository.
+
+Make sure your repository's `main` branch is aligned with the version of {page-component-title} that you upgraded to by adding and committing the changes:
+
+[source, console]
+----
+git add .
+git commit -m 'Upgraded to OpenNMS x.x.x.'
+----
+
+Replace the `x.x.x` in the last line with your current {page-component-title} version.
+
+When your `main` branch has been brought up to date, you can switch back to your modified branch:
+
+[source, console]
+----
+git checkout local-modifications
+----
+
+== Apply changes from `main` branch
+
+Update your modified branch by merging your `main` branch into your current working branch (in this example, `local-modifications`):
+
+[source, console]
+----
+git merge main
+----
+
+If Git finds a conflict, the `merge` command generates an error message:
+
+[source, console]
+----
+git merge main
+Removing CHANGELOG
+Removing map.disable
+Auto-merging surveillance-views.xml
+CONFLICT (content): Merge conflict in surveillance-views.xml
+Automatic merge failed; fix conflicts and then commit the result.
+----
+
+Run `git status` to check which files have conflicts:
+
+[source, console]
+----
+git status
+# Unmerged paths:
+#   (use "git reset HEAD <file>..." to unstage)
+#   (use "git add <file>..." to mark resolution)
+#
+#	both modified:      surveillance-views.xml
+----
+
+For more information on managing conflicts, see https://opennms.discourse.group/t/managing-configuration-changes-with-git/2327#apply-changes-from-master-14[Managing Configuration Changes with Git].
+
+When you are finished modifying your configuration files, you can start {page-component-title}.
