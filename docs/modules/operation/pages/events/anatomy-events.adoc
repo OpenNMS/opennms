@@ -9,15 +9,15 @@ IMPORTANT: Whenever something in {page-component-title} appears to work by magic
 [[ga-events-anatomy-of-an-event]]
 == Anatomy of an Event
 
-Events are structured historical records of things that happen in {page-component-title} and the nodes, interfaces, and services it manages.
-Every event has a number of fixed *fields* and zero or more *parameters*.
+Events are structured historical records of things that happen in {page-component-title} and the nodes, interfaces, and services it monitors.
+Every event has a number of fixed fields and zero or more parameters.
 
 .Mandatory Fields
 UEI (Unique Event Identifier)::
-    A string uniquely identifying the event's type.
+    A string that uniquely identifies the event's type.
     UEIs are typically formatted in the style of a URI, but the only requirement is that they start with the string `uei.`.
 Event Label::
-    A short, static label summarizing the gist of all instances of this event.
+    A short, static label that summarizes the gist of all instances of this event.
 Description::
     A long-form description of all instances of this event.
 Log Message::
@@ -32,7 +32,7 @@ Event ID::
 Operator Instruction::
     A set of instructions for an operator to respond appropriately to an event of this type.
 Alarm Data::
-    If this field is provided for an event, {page-component-title} will create, update, or clear *alarms* for events of that type according to the alarm-data specifics.
+    If this field is provided for an event, {page-component-title} will create, update, or clear alarms for events of that type according to the alarm-data specifics.
 
 
 
