@@ -173,16 +173,13 @@ jobs:
       - cached-checkout
       # copied from https://circleci.com/developer/orbs/orb/circleci/path-filtering
       # we do it ourselves because otherwise we have to do a full un-cached checkout every time
-      - run:
-          name: process mapping
-          environment:
-            BASE_REVISION: << parameters.base-revision >>
-            MAPPING: << parameters.mapping >>
-            OUTPUT_PATH: /tmp/pipeline-parameters.json
-          command: python3 .circleci/pyscripts/process_mapping.py     
-      - run:
-          name: Generate Main YAML file
-          command: python3 .circleci/pyscripts/generate_main.py 
+      #- run:
+      #    name: process mapping
+      #    environment:
+      #      BASE_REVISION: << parameters.base-revision >>
+      #      MAPPING: << parameters.mapping >>
+      #      OUTPUT_PATH: /tmp/pipeline-parameters.json
+      #    command: python3 .circleci/pyscripts/process_mapping.py     
       - run:
           name: Process Generate (Exp)
           environment:
@@ -190,6 +187,9 @@ jobs:
             MAPPING: << parameters.mapping >>
             OUTPUT_PATH: /tmp/pipeline-parameters.json
           command: python3 .circleci/pyscripts/process_generate.py 
+      - run:
+          name: Generate Main YAML file
+          command: python3 .circleci/pyscripts/generate_main.py 
       - run:
           name: check for empty trigger config
           command: |
