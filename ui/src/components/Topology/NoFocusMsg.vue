@@ -19,10 +19,9 @@
         @click="useDefaultFocus"
         primary
         class="btn"
-        :disabled="!defaultObjects"
+        :disabled="!defaultObjects.length"
       >
-        <span v-if="defaultObjects">Use Default Focus</span>
-        <span v-else>No Nodes Available</span>
+        <span>{{ defaultObjects.length ? 'Use Default Focus' : 'No Nodes Available' }}</span>
       </FeatherButton>
     </div>
   </div>
@@ -33,18 +32,12 @@
   lang="ts"
 >
 import { FeatherButton } from '@featherds/button'
-import { PropType } from 'vue'
 import { useStore } from 'vuex'
+import { useTopologyFocus } from './topology.composables'
 
 const store = useStore()
-const defaultObjects = computed<Node>(() => store.state.topologyModule.defaultObjects)
-
-defineProps({
-  useDefaultFocus: {
-    required: true,
-    type: Function as PropType<(payload: MouseEvent) => void>
-  }
-})
+const { useDefaultFocus } = useTopologyFocus()
+const defaultObjects = computed<Node[]>(() => store.state.topologyModule.defaultObjects)
 </script>
 
 <style

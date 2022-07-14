@@ -70,10 +70,7 @@
       {{vertices[targetNodeId].tooltip}}
     </div>
   </div>
-  <NoFocusMsg
-    :useDefaultFocus="useDefaultFocus"
-    v-if="focusObjects.length === 0"
-  />
+  <NoFocusMsg v-if="!focusObjects.length" />
   <TopologyModal
     :nodeId="contextNode.id"
     v-if="contextNode && contextNode.id"
@@ -105,10 +102,9 @@ import ContextMenu from './ContextMenu.vue'
 import NoFocusMsg from './NoFocusMsg.vue'
 import { onClickOutside } from '@vueuse/core'
 import { SimulationNodeDatum } from 'd3'
-import { ContextMenuType } from './topology.constants'
+import { ContextMenuType, ViewType } from './topology.constants'
 import TopologyModal from './TopologyModal.vue'
 import ICON_PATHS from './icons/iconPaths'
-import { useTopologyFocus } from './topology.composables'
 
 interface d3Node extends Required<SimulationNodeDatum> {
   id: string
@@ -122,13 +118,12 @@ defineProps({
 })
 
 const store = useStore()
-const { useDefaultFocus } = useTopologyFocus()
 const zoomLevel = ref(1)
 const graph = ref<Instance>()
 const selectedNodes = ref<string[]>([]) // string ids
 const selectedNodeObjects = ref<Node[]>([]) // full nodes
 const tooltip = ref<HTMLDivElement>()
-const displayTooltip = ref(false)
+const showTooltip = ref(false)
 const cancelTooltipDebounce = ref(false)
 const targetNodeId = ref('')
 const d3Nodes = ref<d3Node[]>([])
@@ -142,8 +137,32 @@ const groupClick = ref(false)
 
 const getD3NodeCoords = () => d3Nodes.value.filter((d3Node) => d3Node.id === targetNodeId.value).map((d3Node) => ({ x: d3Node.x, y: d3Node.y }))[0]
 
+
+const displayContextMenu = (x: number, y: number) => {
+  menuXPos.value = x
+  menuYPos.value = y
+  showContextMenu.value = true
+}
 const closeContextMenu = () => showContextMenu.value = false
 onClickOutside(contextMenu, () => closeContextMenu())
+
+
+const displayTooltip = (show = false) => {
+  if (!show) { // hide
+    cancelTooltipDebounce.value = true
+    showTooltip.value= false
+  } else { // show
+    cancelTooltipDebounce.value = false
+
+    const tooltip = useDebounceFn(() => {
+      if (!cancelTooltipDebounce.value) {
+        showTooltip.value = true
+      }
+    }, 1000)
+
+    tooltip()
+  }
+}
 
 const vertices = computed<Nodes>(() => store.state.topologyModule.vertices)
 const edges = computed<Edges>(() => store.state.topologyModule.edges)
@@ -156,7 +175,7 @@ const selectedView = computed<string>(() => store.state.topologyModule.selectedV
 const tooltipPos = computed(() => {
   const defaultPos = { left: '-9999px', top: '-99999px' }
 
-  if (!graph.value || !tooltip.value || !targetNodeId.value || !displayTooltip.value) return defaultPos
+  if (!graph.value || !tooltip.value || !targetNodeId.value || !showTooltip.value) return defaultPos
 
   // attempt to get the node position from the layout. If layout is d3, use the function
   const nodePos = layout.value.nodes ? layout.value.nodes[targetNodeId.value] : getD3NodeCoords()
@@ -176,7 +195,7 @@ const tooltipPos = computed(() => {
   let pos = defaultPos
 
   switch(selectedView.value) {
-    case 'circle':
+    case ViewType.circle:
       additionalOffset = {
         ...additionalOffset,
         domPointXAjustment: 4 // adjustment needed to horizontally centered tooltip relatively to node icon
@@ -199,7 +218,7 @@ const tooltipPos = computed(() => {
       }
 
       break
-    case 'd3':
+    case ViewType.d3:
       pos = {
         left: `${Number(domPoint.x).toFixed(0)}px`,
         top: `${Number(domPoint.y).toFixed(0)}px`
@@ -217,9 +236,7 @@ const eventHandlers: EventHandlers = {
   'view:contextmenu': ({ event }: ViewEvent<any>) => {
     event.preventDefault()
     contextMenuType.value = ContextMenuType.background
-    menuXPos.value = event.x
-    menuYPos.value = event.y
-    showContextMenu.value = true
+    displayContextMenu(event.x, event.y)
   },
   // on right clicking node
   'node:contextmenu': ({ node, event }: NodeEvent<any>) => {
@@ -236,35 +253,23 @@ const eventHandlers: EventHandlers = {
 
     contextMenuType.value = ContextMenuType.node
     contextNode.value = vertices.value[node]
-    menuXPos.value = event.x
-    menuYPos.value = event.y
-    showContextMenu.value = true
+    displayContextMenu(event.x, event.y)
   },
   // on hover, display tooltip
   'node:pointerover': ({ node }: NodeEvent<any>) => {
-    cancelTooltipDebounce.value = false
     targetNodeId.value = node
-
-    const showTooltip = useDebounceFn(() => {
-      if (!cancelTooltipDebounce.value) {
-        displayTooltip.value = true
-      }
-    }, 1000)
-
-    showTooltip()
+    displayTooltip(true)
   },
   'node:pointerout': () => {
-    cancelTooltipDebounce.value = true
-    displayTooltip.value = false
+    displayTooltip(false)
   },
   'node:dragstart': () => {
     d3ForceEnabled.value = false // to keep other nodes in place when one is dragged
-    cancelTooltipDebounce.value = true
-    displayTooltip.value = false
+    displayTooltip(false)
   },
   'node:dragend': (node) => {
     // get node's position for tooltip
-    if(selectedView.value === 'd3') {
+    if(selectedView.value === ViewType.d3) {
       const nodeId = Object.keys(node)[0]
       const {x: nodeX, y: nodeY} = Object.values(node)[0]
       d3Nodes.value.map(d3Node => {
@@ -276,14 +281,7 @@ const eventHandlers: EventHandlers = {
       })
     }
 
-    // show tooltip
-    cancelTooltipDebounce.value = false
-    const showTooltip = useDebounceFn(() => {
-      if (!cancelTooltipDebounce.value) {
-        displayTooltip.value = true
-      }
-    }, 1000)
-    showTooltip()
+    displayTooltip(true)
   }
 }
 
@@ -332,7 +330,7 @@ watch(layout, async (layout) => {
 
 watch(namespace, async () => {
   // to have d3Nodes with coordinates for tooltip positioning
-  d3ForceEnabled.value = store.state.topologyModule.selectedView === 'd3'
+  d3ForceEnabled.value = store.state.topologyModule.selectedView === ViewType.d3
 
   trigger.value = false
   await nextTick()
@@ -350,12 +348,12 @@ const setColor = (item: Node | Edge) => {
 const configs = reactive(
   defineConfigs({
     view: {
-      layoutHandler: store.state.topologyModule.selectedView === 'd3' ? forceLayout : new SimpleLayout()
+      layoutHandler: store.state.topologyModule.selectedView === ViewType.d3 ? forceLayout : new SimpleLayout()
     },
     node: {
       selectable: true,
       normal: {
-        type: 'circle',
+        type: ViewType.circle,
         color: node => setColor(node)
       }
     },
@@ -367,7 +365,7 @@ const configs = reactive(
   })
 )
 
-onMounted(() => useDefaultFocus())
+// onMounted(() => useDefaultFocus())
 </script>
 
 <style

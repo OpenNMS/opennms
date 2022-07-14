@@ -1,76 +1,114 @@
 <template>
   <FeatherDropdown>
     <template v-slot:trigger>
-      <FeatherButton primary link href="#" menu-trigger>View</FeatherButton>
+      <FeatherButton
+        primary
+        link
+        href="#"
+        menu-trigger
+        >View</FeatherButton
+      >
     </template>
-
     <!-- Views -->
-    <FeatherDropdownItem>
-      <FeatherCheckbox @update:modelValue="selectView('map')" v-model="views['map']">Map Layout</FeatherCheckbox>
-    </FeatherDropdownItem>
-
-    <FeatherDropdownItem>
-      <FeatherCheckbox @update:modelValue="selectView('d3')" v-model="views['d3']">D3 Layout</FeatherCheckbox>
-    </FeatherDropdownItem>
-
-    <FeatherDropdownItem>
+    <!--
+      Requires custom CSS for FeatherCheckbox to behave as radio
+        - add 'disabled' attribute to checkbox element: true when checked, hence preventing it from being deselected
+        - set disabled checkbox element to 'feather-primary' color (see style section at bottom)
+      i.e. FeatherRadioGroup/FeatherRadio is not working well with FeatherDropdown (@0.10.12)
+    -->
+    <FeatherDropdownItem
+      v-for="({type, label}) in Views"
+      :key="type"
+      class="view-select-layout-dropdown-item"
+    >
       <FeatherCheckbox
-        @update:modelValue="selectView('circle')"
-        v-model="views['circle']"
-      >Circle Layout</FeatherCheckbox>
+        @update:modelValue="selectView(type)"
+        v-model="views[type]"
+        :disabled="views[type]"
+        >{{label}}</FeatherCheckbox
+      >
     </FeatherDropdownItem>
-
-    <div v-if="isTopologyView">
+    <!-- Displays -->
+    <div v-if="isTopologyView && graphs.length">
       <hr />
-
-      <!-- Displays -->
-      <FeatherDropdownItem>
+      <FeatherDropdownItem
+        v-for="({id = '', label}) in graphs"
+        :key="id"
+        class="view-select-display-dropdown-item"
+      >
         <FeatherCheckbox
-          @update:modelValue="selectDisplay('linkd')"
-          v-model="displays['linkd']"
-        >Enhanced Linkd</FeatherCheckbox>
-      </FeatherDropdownItem>
-
-      <FeatherDropdownItem v-if="hasPowerGridGraphs">
-        <FeatherCheckbox
-          @update:modelValue="selectDisplay(PowerGrid)"
-          v-model="displays[PowerGrid]"
-        >PowerGrid</FeatherCheckbox>
+          @update:modelValue="selectDisplay(id)"
+          v-model="displays[DisplayType[id]]"
+          :disabled="displays[DisplayType[id]]"
+          >{{label}}</FeatherCheckbox
+        >
       </FeatherDropdownItem>
     </div>
   </FeatherDropdown>
 </template>
 
-<script setup lang="ts">
+<script
+  setup
+  lang="ts"
+>
 import { useStore } from 'vuex'
 import { FeatherButton } from '@featherds/button'
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 import { FeatherCheckbox } from '@featherds/checkbox'
-import { PowerGrid } from './topology.constants'
+import { Views, ViewType, DisplayType } from './topology.constants'
+import { TopologyGraphList } from '@/types/topology'
 
 const store = useStore()
 
-const views = ref<Record<string, boolean>>({ map: true }) //default view
-const displays = ref<Record<string, boolean>>({ linkd: true }) //default display
+const views = computed<Record<string, boolean>>(() => ({[store.state.topologyModule.selectedView]: true}))
+const displays = computed<Record<string, boolean>>(() => ({[store.state.topologyModule.selectedDisplay]: true}))
 
-const hasPowerGridGraphs = computed<boolean>(() => store.getters['topologyModule/hasPowerGridGraphs'])
 const isTopologyView = computed<boolean>(() => store.state.topologyModule.isTopologyView)
 
+const graphs = computed<TopologyGraphList[]>(() => store.getters['topologyModule/getGraphs'])
+
 const selectView = (view: string) => {
-  views.value = {} // reset
-  views.value[view] = true // set selected
   store.dispatch('topologyModule/setSelectedView', view) // save to state
 }
 
 const selectDisplay = (display: string) => {
-  displays.value = {} // reset
-  displays.value[display] = true // set selected
-  store.dispatch('topologyModule/setSelectedDisplay', display) // save to state
+  store.dispatch('topologyModule/setSelectedDisplay', DisplayType[display]) // save to state
 }
+
+onMounted(() => {
+  selectView(ViewType.map) // set default layout
+})
 </script>
 
-<style scoped lang="scss">
+<style
+  scoped
+  lang="scss"
+>
 .view-select {
   width: 15rem;
 }
 </style>
+<style lang="scss">
+@import "@featherds/dropdown/scss/mixins";
+@import "@featherds/styles/themes/variables";
+
+body > .feather-menu-dropdown > .feather-dropdown {
+  @include dropdown-menu-height(8); // to have the view dropdown list of 8 items
+  // custom CSS for FeatherCheckbox to behave as radio; the disabled checked item (checkbox and label) have same color than the other checkable items
+  .view-select-layout-dropdown-item,
+  .view-select-display-dropdown-item {
+    .layout-container {
+      .feather-checkbox[aria-disabled="true"] {
+        > .checkbox > .box {
+          border-color: var(--feather-primary);
+          background-color: var(--feather-primary);
+        }
+        > label {
+          color: var(--feather-primary-text-on-surface);
+        }
+      }
+    }
+  }
+}
+</style>
+

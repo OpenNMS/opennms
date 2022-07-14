@@ -63,6 +63,7 @@ import { useStore } from 'vuex'
 import { Splitpanes, Pane } from 'splitpanes'
 import 'splitpanes/dist/splitpanes.css'
 import LeafletMap from '../components/Map/LeafletMap.vue'
+import { ViewType, DisplayType } from '@/components/Topology/topology.constants'
 import Topology from './Topology.vue'
 import GridTabs from '@/components/Map/GridTabs.vue'
 import { debounce } from 'lodash'
@@ -111,7 +112,11 @@ onMounted(async () => {
 })
 
 onActivated(() => store.dispatch('appModule/setNavRailOpen', false))
-onDeactivated(() => store.dispatch('appModule/setNavRailOpen', true))
+onDeactivated(() => {
+  store.dispatch('appModule/setNavRailOpen', true)
+  store.dispatch('topologyModule/setSelectedView', ViewType.map) // default layout
+  store.dispatch('topologyModule/setSelectedDisplay', DisplayType.nodes) // default graph
+})
 </script>
 
 <style
