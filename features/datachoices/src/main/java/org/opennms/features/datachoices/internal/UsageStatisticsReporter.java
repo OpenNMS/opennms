@@ -242,7 +242,7 @@ public class UsageStatisticsReporter implements StateChangeHandler {
 
         usageStatisticsReport.setDestinationPathCount(getDestinationPathCount());
         usageStatisticsReport.setNotificationEnablementStatus(getNotificationEnablementStatus());
-        usageStatisticsReport.setRoleCount(m_groupFactory.getRoles().size());
+        usageStatisticsReport.setOnCallRoleCount(m_groupFactory.getRoles().size());
 
         return usageStatisticsReport;
     }

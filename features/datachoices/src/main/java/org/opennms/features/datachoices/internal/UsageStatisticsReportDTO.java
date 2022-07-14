@@ -61,7 +61,7 @@ public class UsageStatisticsReportDTO {
     private long m_situations;
     private int m_destinationPathCount;
     private Boolean m_notificationEnablementStatus;
-    private int m_roleCount;
+    private int m_onCallRoleCount;
 
     private Map<String, Long> m_nodesBySysOid = Collections.emptyMap();
 
@@ -312,12 +312,12 @@ public class UsageStatisticsReportDTO {
         this.m_notificationEnablementStatus = m_notificationEnablementStatus;
     }
 
-    public int getRoleCount() {
-        return m_roleCount;
+    public int getOnCallRoleCount() {
+        return m_onCallRoleCount;
     }
 
-    public void setRoleCount(int m_roleCount) {
-        this.m_roleCount = m_roleCount;
+    public void setOnCallRoleCount(int m_onCallRoleCount) {
+        this.m_onCallRoleCount = m_onCallRoleCount;
     }
 
     public String toJson() {
