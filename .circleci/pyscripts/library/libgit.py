@@ -11,6 +11,9 @@ class libgit:
 
     def getLastCommit(self)->str:
         return subprocess.run(['git','log','-1'],check=True,capture_output=True).stdout.decode('utf-8').strip()
+    
+    def getCommitSHA(self,revision):
+        return subprocess.run(['git','rev-parse',revision],check=True,capture_output=True).stdout.decode('utf-8').strip()
 
     def getChangedFilesInCommits(self,baseCommit,Commit)->list:
         return subprocess.run(
