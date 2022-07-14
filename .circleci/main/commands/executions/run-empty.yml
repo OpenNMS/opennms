@@ -1,0 +1,18 @@
+commands:
+  run-build:
+    description: "Run the main build"
+    parameters:
+      number-vcpu:
+        default: 8
+        type: integer
+      node-memory:
+        default: echo "NODE_OPTIONS Not Set"
+        type: string
+      vaadin-javamaxmem:
+        default: 1g
+        type: string
+    steps:
+      - run:
+          name: ls
+          command: |
+            ls

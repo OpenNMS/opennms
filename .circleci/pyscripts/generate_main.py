@@ -109,7 +109,8 @@ for e in main_yml_content:
                 if pipeline_parameters["trigger-build"]:
                     sample_workflow=libyaml.generate_yaml(workflow_data,"build-deploy",level,sample_workflow)
                 else:
-                    sample_workflow=libyaml.generate_yaml(workflow_data,"build",level,sample_workflow)
+                    sample_workflow=libyaml.generate_yaml(workflow_data,"empty",level,sample_workflow)
+                    #sample_workflow=libyaml.generate_yaml(workflow_data,"build",level,sample_workflow)
             
             if sample_workflow:
                 for line in sample_workflow:
