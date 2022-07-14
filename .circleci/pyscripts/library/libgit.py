@@ -79,4 +79,5 @@ class libgit:
         cmd=['git', 'merge-base', base_revision, head]
         print(cmd)
         output = self.libprocess.runProcess(cmd,working_directory=os.getcwd(),redirectSTDERR=True,redirectSTDOUT=True,outputFile="self.log_fullpath")
+        print(output)
         return output["Output"]["stdout"].decode('utf-8').strip()
