@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,6 +33,7 @@ import java.net.UnknownHostException;
 import java.util.Objects;
 import java.util.Optional;
 
+import com.google.protobuf.DoubleValue;
 import org.opennms.core.utils.StringUtils;
 import org.opennms.features.kafka.producer.model.CollectionSetProtos;
 import org.opennms.features.kafka.producer.model.CollectionSetProtos.NumericAttribute.Type;
@@ -172,6 +173,7 @@ public class CollectionSetMapper {
                     attributeBuilder.setGroup(lastGroupName);
                     attributeBuilder.setName(attribute.getName());
                     attributeBuilder.setValue(attribute.getNumericValue().doubleValue());
+                    attributeBuilder.setMetricValue(DoubleValue.of(attribute.getNumericValue().doubleValue()));
                     attributeBuilder.setType((attribute.getType() == AttributeType.GAUGE) ? Type.GAUGE : Type.COUNTER);
                     collectionSetResourceBuilder.addNumeric(attributeBuilder);
                 }
