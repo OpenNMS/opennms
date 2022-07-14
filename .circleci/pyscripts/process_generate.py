@@ -54,4 +54,33 @@ mappings = filter(check_mapping, mappings)
 mappings = map(convert_mapping, mappings)
 mappings = dict(mappings)
 
-print(mappings)
+print("Mappings:",mappings)
+
+# If *IT.java files have changed -> enable integration builds
+# If *Test.java files have changed -> enable smoke builds
+# if Dockerfiles (under opennms-container) have changed enable docker builds
+What_to_build=[]
+for change in changes:
+    if "IT.java" in change:
+        if "Integration_tests" not in What_to_build:
+            What_to_build.append("Integration_tests")
+    elif "Test.java" in change:
+        if "Smoke_tests" not in What_to_build:
+            What_to_build.append("Smoke_tests")
+    elif "opennms-container" in change:
+        if "horizon" in change:
+            if "OCI_horizon_image" not in What_to_build:
+                What_to_build.append("OCI_horizon_image")
+        elif "minion" in change:
+            if "OCI_minion_image" not in What_to_build:
+                What_to_build.append("OCI_minion_image")
+        elif "sentinel" in change:
+            if "OCI_sentinel_image" not in What_to_build:
+                What_to_build.append("OCI_sentinel_image")
+    elif ".circleci" in change:
+        if "circleci_configuration" not in What_to_build:
+            What_to_build.append("circleci_configuration")
+
+print("What we want to build:",What_to_build)
+git_keywords=libgit.extractKeywordsFromLastCommit()
+print("Git Keywords:",git_keywords)
