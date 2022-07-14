@@ -26,7 +26,7 @@ There are several ways to configure {page-component-title} to customize the even
 
 * Determine what problem you are trying to solve (for example, I want to know X about my Cisco router)
 * Manually send the corresponding event to the OpenNMS server and see how OpenNMS handles it (see xref:operation:events/sources/send-event.adoc[Manually send events])
-* Make changes to xref:operation:events/mib.adoc[MIB files])
+* Make changes to xref:operation:events/sources/mib.adoc[MIB files])
 * Configure the event to meet your requirements, if required
 ** <<trap-def-create, Create trap definitions>> to specify criteria for when OpenNMS creates an event
 ** <<varbind-filter,Filter on variable bindings>> for further granularity on the conditions for creating an event

@@ -1,0 +1,38 @@
+
+= Event Definitions and Management Information Base (MIB) Files
+
+Management Information Base (MIB) files are text files written in Abstact Syntax Notation.
+They describe Simple Network Management Protocol (SNMP) elements for specific devices.
+By default, {page-component-title} includes an extensive list of MIB definitions from a number of vendors.
+You will need to import MIB files for unformatted events as part of configuring SNMP traps.
+
+You can parse SNMP MIB definitions and create OpenNMS event definitions from any `TRAP-TYPE` and/or `NOTIFICATION-TYPE` macros they contain through the UI.
+
+Two command-line utilities, `mib2events` and `mib2opennms`, are also available to help make event definitions from MIB definitions.
+The UI editor does at least as good a job as `mib2events`.
+We do not recommend using using `mib2opennms`, as it produces more bus errors than event definitions.
+
+[[mib-import]]
+
+To import a MIB file and create event definitions, follow these steps:
+
+. Save the vendor MIB file to your local drive or USB stick.
+. In {page-component-title} click the gears icon and select *Additional Tools>SNMP MIB Compiler*.
+. Click *Upload MIB*.
+. Select the MIB file and click *Open*.
+. Right-click the file and choose *Compile MIB*.
+. If the log area displays an error (usually a missing dependency), you need to correct the error to compile the MIB file successfully.
+.. Determine the type of error (dependency, file syntax).
+.. Google the name of the missing content, save it as a text file, upload it, and compile again.
++
+AND/OR
++
+.. Right-click the file and choose *Edit MIB*.
+.. Edit the file to address the error, click *Save* and run the compile again.
+. Continue to edit the file until it compiles successfully.
+. Right-click on the MIB from which you want to generate an event and choose *Generate Events*.
+. If desired, modify the name of the UEI base with the vendor name for easier troubleshooting and click *Configure*.
++
+. Click *Save Events File* to save them to the event.conf file.
+
+If you were getting unformatted events, you will now get formatted ones.

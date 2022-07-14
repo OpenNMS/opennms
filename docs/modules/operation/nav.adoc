@@ -65,6 +65,7 @@
 *** xref:events/sources/snmp-traps.adoc[]
 *** xref:events/sources/syslog.adoc[]
 *** xref:events/sources/rest.adoc[]
+*** xref:events/sources/mib.adoc[MIB Files]
 *** xref:events/sources/xml-tcp.adoc[]
 *** xref:events/sources/eif-adapter.adoc[]
 *** xref:events/sources/tl1.adoc[]
