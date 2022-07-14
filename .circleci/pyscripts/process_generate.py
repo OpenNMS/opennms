@@ -81,6 +81,43 @@ for change in changes:
         if "circleci_configuration" not in What_to_build:
             What_to_build.append("circleci_configuration")
 
-print("What we want to build:",What_to_build)
+print("What we want to build:",What_to_build,len(What_to_build))
 git_keywords=libgit.extractKeywordsFromLastCommit()
 print("Git Keywords:",git_keywords)
+if "circleci_configuration" in What_to_build and len(What_to_build) == 1 :
+    #if circleci_configuration is the only entry in the list we don't want to trigger a buildss.
+    mappings["trigger-build"]=False
+
+if "smoke" in git_keywords or "Smoke_tests" in What_to_build:   
+    mappings["trigger-smoke"]=True
+else:
+    mappings["trigger-smoke"]=False
+
+if "docker" in git_keywords:   
+    mappings["trigger-docker"]=True
+else:
+    mappings["trigger-docker"]=False
+
+if "rpms" in git_keywords:   
+    mappings["trigger-rpms"]=True
+else:
+    mappings["trigger-rpms"]=False
+
+if "debs" in git_keywords:   
+    mappings["trigger-debs"]=True
+else:
+    mappings["trigger-debs"]=False
+
+if "integration" in git_keywords or "Integration_tests" in What_to_build:   
+    mappings["trigger-integration"]=True
+else:
+    mappings["trigger-integration"]=False
+
+if "experimentalPath" in git_keywords:
+    mappings["trigger-experimental"]=True
+else:
+    mappings["trigger-experimental"]=False
+
+
+with open(output_path, 'w') as fp:
+fp.write(json.dumps(mappings))
