@@ -28,4 +28,28 @@ if head == base:
 
 print("base",base)
 
-print(libgit.getChangedFilesInCommits(base,head))
+changes=libgit.getChangedFilesInCommits(base,head)
+
+mappings=[
+    m.split() for m in
+    os.environ.get('MAPPING').splitlines()
+]
+
+def check_mapping(m):
+    if 3 != len(m):
+        raise Exception("Invalid mapping")
+    path, param, value = m
+    regex = re.compile(r'^' + path + r'$')
+    for change in changes:
+        if regex.match(change):
+            return True
+    return False
+
+def convert_mapping(m):
+    return [m[1], json.loads(m[2])]
+
+mappings = filter(check_mapping, mappings)
+mappings = map(convert_mapping, mappings)
+mappings = dict(mappings)
+
+print(mappings)
