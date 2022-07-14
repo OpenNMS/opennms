@@ -39,6 +39,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import com.google.protobuf.DoubleValue;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -90,12 +91,17 @@ public class KafkaMetricsMaxSizeIT {
     @Test
     public void testHandlingMaxSizeWithMultipleResources() {
         // Mock max size to be 120 bytes ( At least minimum of one resource size)
-        Mockito.when(kafkaPersister.checkForMaxSize(MockitoHamcrest.intThat(Matchers.greaterThan(120)))).thenReturn(true);
+        Mockito.when(kafkaPersister.checkForMaxSize(MockitoHamcrest.intThat(Matchers.greaterThan(140)))).thenReturn(true);
         CollectionSetProtos.CollectionSet.Builder builder = CollectionSetProtos.CollectionSet.newBuilder();
         builder.setTimestamp(System.currentTimeMillis());
         CollectionSetProtos.NodeLevelResource nodeLevelResource = CollectionSetProtos.NodeLevelResource.newBuilder().setNodeId(5).setNodeLabel("kafka-test")
                 .setForeignId("fs").setForeignSource("fs").build();
-        CollectionSetProtos.NumericAttribute numericAttribute = CollectionSetProtos.NumericAttribute.newBuilder().setName("num-interfaces").setGroup("interfaces").setValue(5).setType(CollectionSetProtos.NumericAttribute.Type.GAUGE).build();
+        CollectionSetProtos.NumericAttribute numericAttribute = CollectionSetProtos.NumericAttribute.newBuilder()
+                .setName("num-interfaces")
+                .setGroup("interfaces")
+                .setValue(5)
+                .setMetricValue(DoubleValue.of(5))
+                .setType(CollectionSetProtos.NumericAttribute.Type.GAUGE).build();
         builder.addResource(CollectionSetProtos.CollectionSetResource.newBuilder()
                 .setNode(nodeLevelResource)
                 .addNumeric(numericAttribute)
@@ -129,6 +135,7 @@ public class KafkaMetricsMaxSizeIT {
             CollectionSetProtos.NumericAttribute attribute = CollectionSetProtos.NumericAttribute.newBuilder()
                     .setName("num-interfaces"+i).setGroup("interfaces"+i)
                     .setValue(5+i)
+                    .setMetricValue(DoubleValue.of(5+i))
                     .setType(CollectionSetProtos.NumericAttribute.Type.GAUGE).build();
             collectionSetBuilder.addNumeric(attribute);
         }

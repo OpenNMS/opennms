@@ -168,6 +168,10 @@ public class KafkaPersisterIT {
                     assertThat(resource.getResponse().getInstance(), equalTo(IP_ADDRESS));
                     assertThat(resource.getResponse().getLocation(), equalTo(LOCATION));
                     assertThat(resource.getNumeric(0).getValue(), equalTo(204.0));
+                    // Confirm that value is set (here to contrast testDefaultValues())
+                    assertThat(resource.getNumeric(0).getAllFields().keySet().stream().anyMatch(
+                            descriptor -> descriptor.getName().equals("value")), equalTo(Boolean.TRUE));
+                    assertThat(resource.getNumeric(0).getMetricValue().getValue(), equalTo(204.0));
                 }
         );
         Optional<CollectionSetProtos.CollectionSetResource> nodeLevelResource = resources.stream().filter(CollectionSetProtos.CollectionSetResource::hasNode).findFirst();
@@ -175,10 +179,37 @@ public class KafkaPersisterIT {
                     assertThat(resource.getNode().getNodeId(), equalTo(node.getId().longValue()));
                     assertThat(resource.getNumericList().size(), equalTo(2));
                     assertThat(resource.getNumeric(0).getValue(), isOneOf(105.0, 1050.0));
+                    assertThat(resource.getNumeric(0).getMetricValue().getValue(), isOneOf(105.0, 1050.0));
                     assertThat(resource.getResourceId(), Matchers.containsString(String.valueOf(node.getId())));
                 }
         );
 
+    }
+
+    @Test
+    public void testDefaultValues() {
+
+        LatencyCollectionResource latencyCollectionResource = new LatencyCollectionResource("ICMP", IP_ADDRESS, LOCATION);
+        LatencyCollectionAttributeType attributeType = new LatencyCollectionAttributeType("ICMP", "ICMP");
+        latencyCollectionResource.addAttribute(new LatencyCollectionAttribute(latencyCollectionResource, attributeType, "ICMP", 0.0));
+        CollectionSet responseTimeCollectionSet = new SingleResourceCollectionSet(latencyCollectionResource, new Date());
+        persister.visitCollectionSet(responseTimeCollectionSet);
+
+        await().atMost(1, TimeUnit.MINUTES).pollInterval(15, TimeUnit.SECONDS).until(() -> kafkaConsumer.getCollectionSetValues().size(), equalTo(1));
+        List<CollectionSetProtos.CollectionSetResource> resources = kafkaConsumer.getCollectionSetValues().stream().map(CollectionSetProtos.CollectionSet::getResourceList).flatMap(Collection::stream).collect(Collectors.toList());
+        Optional<CollectionSetProtos.CollectionSetResource> responseTimeResource = resources.stream().filter(CollectionSetProtos.CollectionSetResource::hasResponse).findFirst();
+        assertThat(responseTimeResource.isPresent(), equalTo(Boolean.TRUE));
+        responseTimeResource.ifPresent(resource -> {
+                    assertThat(resource.getResponse().getInstance(), equalTo(IP_ADDRESS));
+                    assertThat(resource.getResponse().getLocation(), equalTo(LOCATION));
+                    assertThat(resource.getNumeric(0).getValue(), equalTo(0.0));
+                    // Confirm that the value does not exist in the message, and we are getting a default value
+                    assertThat(resource.getNumeric(0).getAllFields().keySet().stream().anyMatch(
+                            descriptor -> descriptor.getName().equals("value")), equalTo(Boolean.FALSE));
+                    assertThat(resource.getNumeric(0).getMetricValue().getValue(), equalTo(0.0));
+                    assertThat(resource.getNumeric(0).hasMetricValue(), equalTo(Boolean.TRUE));
+                }
+        );
     }
 
     @After
