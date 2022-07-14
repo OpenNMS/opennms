@@ -50,7 +50,7 @@ class libgit:
 
         print("=","Running","switchBranch","=")
         output=self.libprocess.runProcess(cmd,working_directory=os.getcwd(),redirectSTDERR=True,redirectSTDOUT=True,outputFile=self.log_fullpath)
-        self.libprocess.printResultSummary(output)
+        self.libprocess.printSummary(output)
         print("=","Stopping","switchBranch","=")
         return output
 
