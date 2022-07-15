@@ -124,6 +124,5 @@ else:
 
 libfile.write_file(output_path,json.dumps(mappings))
 
-#TODO: Create the build-components.json file 
 libfile.write_file(path_to_build_components,json.dumps(mappings,indent=4))
 
