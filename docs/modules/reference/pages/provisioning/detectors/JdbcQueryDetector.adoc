@@ -1,10 +1,9 @@
 
 = JDBC Query Detector
 
-The JDBCQueryDetector connects to a JDBC-enabled database and checks the result of a user-specified SQL query.
-The result of the stored procedure must be a Boolean value (representing `true` or `false`).
-If the result is `true`, it returns the `detected` value.
-If the result is `false`, it returns the `not detected` value.
+The JDBCQueryDetector connects to a JDBC-enabled database and checks for any result from a user-specified SQL query.
+If the query returns a result, the detector returns the `detected` value.
+If the query does not return a result, the detector returns the `not detected` value.
 
 == Detector facts
 
@@ -35,8 +34,8 @@ The JDBCQueryDetector uses the xref:reference:provisioning/detectors.adoc#ref-de
 | JDBC password.
 | Empty String object.
 
-| query
-| The SQL query to be checked.
+| sqlQuery
+| The SQL query to check.
 | Empty String object.
 
 | url
@@ -70,6 +69,7 @@ To provide a JDBC driver, place the driver-jar in your `$\{OPENNMS_HOME}/lib` fo
     <parameter key="user" value="opennms"/>
     <parameter key="dbDriver" value="com.mysql.jdbc.Driver"/>
     <parameter key="url" value="jdbc:mysql://OPENNMS_JDBC_HOSTNAME:3306/test"/>
+    <parameter key="sqlQuery" value="select * from nodes;"/>
     <parameter key="timeout" value="5000"/>
 </detector>
 ----
