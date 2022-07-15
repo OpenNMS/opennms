@@ -1733,7 +1733,7 @@
     <httpasyncclientVersion>4.1.5</httpasyncclientVersion>
     <ipaddressVersion>5.3.3</ipaddressVersion>
     <jacksonVersion>1.9.13-atlassian-6</jacksonVersion>
-    <jackson2Version>2.12.5</jackson2Version>
+    <jackson2Version>2.12.6</jackson2Version>
     <snakeyamlVersion>1.29</snakeyamlVersion>
     <jacocoVersion>0.8.5</jacocoVersion>
     <jasperreportsVersion>6.3.0</jasperreportsVersion>
@@ -1768,8 +1768,8 @@
     <jsonlibBundleVersion>2.4_1</jsonlibBundleVersion>
     <junitVintageEngineVersion>5.6.2</junitVintageEngineVersion>
     <karafVersion>4.3.6</karafVersion>
-    <kafkaBundleVersion>3.0.0_1</kafkaBundleVersion>
-    <kafkaVersion>3.0.0</kafkaVersion>
+    <kafkaBundleVersion>3.2.0_1</kafkaBundleVersion>
+    <kafkaVersion>3.2.0</kafkaVersion>
     <liquibaseVersion>3.6.3</liquibaseVersion>
     <lmaxDisruptorVersion>3.3.2</lmaxDisruptorVersion>
     <log4j2Version>2.17.2</log4j2Version>
@@ -1803,7 +1803,7 @@
     <opencsvVersion>2.3</opencsvVersion>
     <opentracingVersion>0.31.0</opentracingVersion>
     <jeagertracingVersion>0.34.0</jeagertracingVersion>
-    <lz4JavaVersion>1.7.1</lz4JavaVersion>
+    <lz4JavaVersion>1.8.0</lz4JavaVersion>
     <quartzVersion>2.2.3</quartzVersion>
     <rancidApiVersion>2.0.0</rancidApiVersion>
     <rateLimitedLoggerVersion>2.0.1</rateLimitedLoggerVersion>
@@ -1816,7 +1816,7 @@
     <servletApiVersion>3.1.0</servletApiVersion>
     <slf4jVersion>1.7.36</slf4jVersion>
     <smackVersion>4.0.6</smackVersion>
-    <snappyJavaVersion>1.1.8.1</snappyJavaVersion>
+    <snappyJavaVersion>1.1.8.4</snappyJavaVersion>
     <snmp4jVersion>2.5.5</snmp4jVersion>
     <snmp4jagentVersion>2.5.3</snmp4jagentVersion>
     <sonarVersion>3.7.0.1746</sonarVersion>
@@ -1837,7 +1837,7 @@
     <wsmanVersion>1.2.3</wsmanVersion>
     <zookeeperVersion>3.4.7</zookeeperVersion>
     <zookeeper2Version>3.6.3</zookeeper2Version>
-    <zstdJniVersion>1.5.0-2</zstdJniVersion>
+    <zstdJniVersion>1.5.2-1</zstdJniVersion>
     <minaSshdVersion>2.8.0</minaSshdVersion>
 
     <springVersion>4.2.9.RELEASE_1</springVersion>
