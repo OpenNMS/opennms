@@ -14,7 +14,8 @@ jobs:
       - run:
           name: Rename Site zip file
           command: | 
-             mv ~/project/build/site.zip "~/project/build/site$(.circleci/scripts/pom2version.sh pom.xml).zip"
+             find . -name site.zip
+             mv ~/project/build/site.zip
       - store_artifacts:
-          path: ~/project/build/site*.zip
+          path: ~/project/build/site.zip
           #destination: site.zip
