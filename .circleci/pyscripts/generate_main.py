@@ -91,13 +91,14 @@ for e in main_yml_content:
             workflow_data=common_library.load_json(workflow_path)
             sample_workflow=[]
             level=0
-            sample_workflow.append(libyaml.create_space(level)+"workflows:")
+            if "workflows:" not in sample_workflow:
+                sample_workflow.append(libyaml.create_space(level)+"workflows:")
             level=level+2
 
             if not build_components["experimental"] and \
-               build_components["build"]["docs"] and \
-               build_components["build"]["ui"] and \
-               build_components["build"]["build"]:
+               (build_components["build"]["docs"] and build_components["build"]["ui"]) or \
+               (build_components["build"]["docs"] and build_components["build"]["build"]) or \
+               (build_components["build"]["ui"] and build_components["build"]["build"]):
                sample_workflow.append(libyaml.create_space(level)+"multibuild:")
             elif not build_components["experimental"] and \
                build_components["build"]["docs"] and \
@@ -114,6 +115,9 @@ for e in main_yml_content:
                not build_components["build"]["ui"] and \
                build_components["build"]["build"]:
                sample_workflow.append(libyaml.create_space(level)+"build:")
+            else:
+               sample_workflow.append(libyaml.create_space(level)+"experimental:")
+
 
             #if build_components["experimental"]:
             #    sample_workflow.append(libyaml.create_space(level)+"auto-exp-build:")
