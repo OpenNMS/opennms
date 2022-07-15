@@ -120,7 +120,6 @@ for e in main_yml_content:
                 else:
                     print("empty:",libyaml.tell_requirements('empty'))
                     sample_workflow=libyaml.generate_yaml(workflow_data,"empty",level,sample_workflow)
-                    #sample_workflow=libyaml.generate_yaml(workflow_data,"build",level,sample_workflow)
             
             if sample_workflow:
                 for line in sample_workflow:

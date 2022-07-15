@@ -88,42 +88,86 @@ for change in changes:
 
 print("What we want to build:",What_to_build,len(What_to_build))
 git_keywords=libgit.extractKeywordsFromLastCommit()
-build_mappings=copy.deepcopy(mappings)
+
+#Do we need this here?
+build_mappings={
+    "docs": False,
+    "build": {
+      "docs": False,
+      "ui": False,
+      "coverage": False,
+    },
+    "publish": {
+     "packages" : False #// debian, rpm, docker(oci)
+    },
+    "tests" : {
+      "smoke": False,
+      "integration": False
+    },
+    "oci-images": {
+     "minion": False,
+     "horizon": False,
+     "sentinel": False
+    },
+    "debian-packages": {
+     "minion": False,
+     "horizon": False,
+     "sentinel": False
+    },
+    "rpm-packages": {
+      "minion": False,
+      "horizon": False,
+      "sentinel": False
+     }
+}
+
 print("Git Keywords:",git_keywords)
 if "circleci_configuration" in What_to_build and len(What_to_build) == 1 :
     #if circleci_configuration is the only entry in the list we don't want to trigger a buildss.
     mappings["trigger-build"]=False
-    build_mappings["trigger-build"]=False
+    build_mappings["build"]["build"]=False
 
 if "smoke" in git_keywords or "Smoke_tests" in What_to_build:   
-    build_mappings["trigger-smoke"]=True
+    build_mappings["tests"]["smoke"]=True
 else:
-    build_mappings["trigger-smoke"]=False
+    build_mappings["tests"]["smoke"]=False
 
 if "docker" in git_keywords:   
-    build_mappings["trigger-docker"]=True
+    build_mappings["oci-images"]["minion"]=True
+    build_mappings["oci-images"]["horizon"]=True
+    build_mappings["oci-images"]["sentinel"]=True
 else:
-    build_mappings["trigger-docker"]=False
+    build_mappings["oci-images"]["minion"]=False
+    build_mappings["oci-images"]["horizon"]=False
+    build_mappings["oci-images"]["sentinel"]=False
 
 if "rpms" in git_keywords:   
-    build_mappings["trigger-rpms"]=True
+    build_mappings["rpm-packages"]["minion"]=True
+    build_mappings["rpm-packages"]["horizon"]=True
+    build_mappings["rpm-packages"]["sentinel"]=True
 else:
-    build_mappings["trigger-rpms"]=False
-
+    build_mappings["rpm-packages"]["minion"]=False
+    build_mappings["rpm-packages"]["horizon"]=False
+    build_mappings["rpm-packages"]["sentinel"]=False
+    
 if "debs" in git_keywords:   
-    build_mappings["trigger-debs"]=True
+    build_mappings["debian-packages"]["minion"]=True
+    build_mappings["debian-packages"]["horizon"]=True
+    build_mappings["debian-packages"]["sentinel"]=True    
 else:
-    build_mappings["trigger-debs"]=False
+    build_mappings["debian-packages"]["minion"]=False
+    build_mappings["debian-packages"]["horizon"]=False
+    build_mappings["debian-packages"]["sentinel"]=False    
 
 if "integration" in git_keywords or "Integration_tests" in What_to_build:   
-    build_mappings["trigger-integration"]=True
+    build_mappings["tests"]["integration"]=True
 else:
-    build_mappings["trigger-integration"]=False
+    build_mappings["tests"]["integration"]=False
 
 if "experimentalPath" in git_keywords:
-    build_mappings["trigger-experimental"]=True
+    build_mappings["experimental"]=True
 else:
-    build_mappings["trigger-experimental"]=False
+    build_mappings["experimental"]=False
 
 libfile.write_file(output_path,json.dumps(mappings))
 
