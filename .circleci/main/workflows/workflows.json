@@ -17,7 +17,7 @@
             }
         }
     },
-    "build-with-tarball": {
+    "experimental": {
         "build-with-tarball": {
          },
         "minion-image":{ 

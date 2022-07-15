@@ -106,19 +106,19 @@ for e in main_yml_content:
             level+=2
 
             if build_components["rpm-packages"]["minion"] or build_components["rpm-packages"]["horizon"] or build_components["rpm-packages"]["sentinel"]:
-                print("rpms:",libyaml.tell_extended_requirements('rpms'))
+                print("rpm-packages > all:",libyaml.tell_extended_requirements('rpms'))
                 sample_workflow=libyaml.generate_yaml(workflow_data,"rpms",level,sample_workflow,disable_filters=True)
             elif build_components["tests"]["integration"]:
-                print("integration-test:",libyaml.tell_extended_requirements('integration-test'))
+                print("tests > integration:",libyaml.tell_extended_requirements('integration-test'))
                 sample_workflow=libyaml.generate_yaml(workflow_data,"integration-test",level,sample_workflow,disable_filters=True)
             elif build_components["debian-packages"]["minion"] or build_components["debian-packages"]["horizon"] or build_components["debian-packages"]["sentinel"]:
-                print("debs:",libyaml.tell_extended_requirements('debs'))
+                print("debian-packages > all:",libyaml.tell_extended_requirements('debs'))
                 sample_workflow=libyaml.generate_yaml(workflow_data,"debs",level,sample_workflow,disable_filters=True)
             elif build_components["experimental"]:
-                print("build-with-tarball:",libyaml.tell_extended_requirements('build-with-tarball'))
-                sample_workflow=libyaml.generate_yaml(workflow_data,"build-with-tarball",level,sample_workflow,disable_filters=True)
+                print("experimental:",libyaml.tell_extended_requirements('experimental'))
+                sample_workflow=libyaml.generate_yaml(workflow_data,"experimental",level,sample_workflow,disable_filters=True)
             elif build_components["build"]["build"]:
-                print("build-deploy:",libyaml.tell_extended_requirements('build-deploy'))
+                print("build> build:",libyaml.tell_extended_requirements('build-deploy'))
                 sample_workflow=libyaml.generate_yaml(workflow_data,"build-deploy",level,sample_workflow)
             elif build_components["build"]["docs"]:
                 print("build> docs :",libyaml.tell_extended_requirements('docs'))

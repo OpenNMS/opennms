@@ -17,5 +17,5 @@ jobs:
              export OPENNMS_VERSION="$(.circleci/scripts/pom2version.sh pom.xml)"
              mv ./build/site.zip "./build/site-$OPENNMS_VERSION.zip"
       - store_artifacts:
-          path: ~/project/build/
+          path: ~/project/build/*.zip
           #destination: site.zip
