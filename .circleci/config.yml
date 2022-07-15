@@ -203,6 +203,9 @@ jobs:
           path: /tmp/pipeline-parameters.json
           destination: pipeline-parameters.json
       - store_artifacts:
+          path: /tmp/build-components.json
+          destination: build-components.json
+      - store_artifacts:
           path: /tmp/.circleci/main.yml
           destination: /tmp/.circleci/main-v1.yml
       - continuation/continue:

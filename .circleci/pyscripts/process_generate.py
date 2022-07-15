@@ -5,6 +5,8 @@ import json
 from library import libgit
 from library import libfile
 
+path_to_build_components=os.path.join("/tmp","build-components.json")
+
 output_path = os.environ.get('OUTPUT_PATH')
 head = os.environ.get('CIRCLE_SHA1')
 base_revision = os.environ.get('BASE_REVISION')
@@ -121,3 +123,7 @@ else:
     mappings["trigger-experimental"]=False
 
 libfile.write_file(output_path,json.dumps(mappings))
+
+#TODO: Create the build-components.json file 
+libfile.write_file(path_to_build_components,json.dumps(mappings))
+

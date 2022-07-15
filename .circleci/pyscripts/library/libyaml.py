@@ -1,17 +1,14 @@
 import re,glob
+from library import libfile
 
 class libyaml:
     def __init__(self) -> None:
         self._finalList={}
         self.job_list={}
         self.job_positions=[]
+        self.libfile=libfile.libfile()
 
         self.step_regx="^(?!#)\s+\-.*:" #match all lines but ignore the ones starting with #
-
-    def read_file(self,input):
-        with open(input,"r") as f:
-            content=f.readlines()
-        return content
 
     def find_dep(self,key,job_list):
         _requires=[]
@@ -46,7 +43,7 @@ class libyaml:
         for file in files:
             job_list={}
             job_positions=[]
-            _content=self.read_file(file)
+            _content=self.libfile.read_file(file)
             for line in _content:
                 if re.match(self.step_regx,line):
                     if "equal" not in line:

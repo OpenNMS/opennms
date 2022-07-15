@@ -8,9 +8,8 @@ import shutil
 import re
 import tempfile
 from library import common
-from library import libgit as lg
+#from library import libgit as lg
 from library import libyaml
-
 
 common_library=common.common()
 
@@ -30,6 +29,11 @@ path_to_parameters_yml=os.path.join(path_to_main_folder,"parameters.yml")
 
 path_to_pipeline_parameters=os.path.join("/tmp","pipeline-parameters.json")
 pipeline_parameters=common_library.load_json(path_to_pipeline_parameters)
+
+
+#New Idea:
+path_to_build_components=os.path.join("/tmp","build-components.json")
+build_components=common_library.load_json(path_to_pipeline_parameters)
 
 #if os.path.exists(path_to_pipeline_parameters):
 #    pipeline_parameters=common_library.load_json(path_to_pipeline_parameters)
