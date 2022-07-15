@@ -481,6 +481,80 @@ commands:
               docker image load -i "$FILE"
             done
 
+  save-artifacts:
+    description: Save Artifacts and Store Artifact Metadata
+    parameters:
+      path:
+        type: string
+      location:
+        type: string
+    steps:
+      - store_artifacts:
+          when: always
+          path: "<< parameters.path >>/"
+          destination: "<< parameters.location >>"
+      - run:
+          name: "enumerate artifacts in << parameters.location >>"
+          command: |
+            mkdir -p ~/.artifacts
+            chmod 777 ~/.artifacts
+            if [ ! -d << parameters.path >> ] || [ "$(find << parameters.path >> -type f | wc -l)" -eq 0 ]; then
+              echo "warning: no files found in <<parameters.path >>"
+              exit 0
+            fi
+            if [ -e ~/.artifacts/<< parameters.location >>.txt ]; then
+              echo "artifact file ~/.artifacts/<< parameters.location >>.txt already exists -- location must be unique"
+              exit 1
+            fi
+            curl \
+              -sS \
+              -L \
+              -H "Accept: application/json" \
+              -H "Content-Type: application/json" \
+              -H "Circle-Token: ${CIRCLE_API_TOKEN}" \
+              -X GET \
+              "https://circleci.com/api/v2/project/gh/OpenNMS/jicmp/${CIRCLE_BUILD_NUM}/artifacts" \
+            | grep -o 'https://[^"]*' \
+            | grep "/<< parameters.location >>/" \
+            > ~/.artifacts/<< parameters.location >>.txt
+            cat ~/.artifacts/<< parameters.location >>.txt
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - .artifacts/<< parameters.location >>.txt
+
+  # always use attach_workspace to root=~ first
+  fetch-artifacts:
+    description: Download Artifacts from a Previous Job
+    parameters:
+      path:
+        type: string
+      location:
+        type: string
+    steps:
+      - run:
+          name: "download artifacts for << parameters.location >> to << parameters.path >>"
+          command: |
+            mkdir -p << parameters.path >> ~/.artifacts
+            chmod 777 << parameters.path >> ~/.artifacts
+            cd << parameters.path >>
+            if [ -e ~/.artifacts/<< parameters.location >>.txt ]; then
+              while read URL; do
+                echo "- $URL"
+                curl \
+                  -sS \
+                  -L \
+                  -O \
+                  -H "Circle-Token: ${CIRCLE_API_TOKEN}" \
+                  "${URL}"
+              done \
+                < ~/.artifacts/<< parameters.location >>.txt
+            else
+              echo "artifact file ~/.artifacts/<< parameters.location >>.txt does not exist"
+              exit 1
+            fi
+            cd -
+
 workflows:
   weekly-coverage:
     <<: *defaults
