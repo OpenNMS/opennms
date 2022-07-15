@@ -203,7 +203,13 @@
         }
     },
     "docs":{
-     
+        "build-docs":{
+            "filters":{
+                "branches":{
+                    "ignore":["/^from-foundation.*/"]
+                }
+            }
+        }
     },
     "deploy": {
         "extends": ["build","smoke","rpms","debs"],
