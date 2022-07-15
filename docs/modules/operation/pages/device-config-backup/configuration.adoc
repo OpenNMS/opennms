@@ -1,5 +1,5 @@
 [[poller-config]]
-= Poller configuration
+= Poller Configuration
 
 OpenNMS backs up device configuration through the xref:reference:service-assurance/monitors/DeviceConfigMonitor.adoc[Device Config Monitor].
 
@@ -83,6 +83,18 @@ config:property-set tftpServerIPv6Address ::1
 config:update
 ----
 
+== SSH session I/O collection
+
+By default, the SSH scripting service collects all SSH session output for debugging and stores it in the poller's status. 
+To disable this behavior, configure the scripting service on both {page-component-title} and all Minions as below:
+
+.Configure SSH session I/O collection
+[source, karaf]
+----
+config:edit org.opennms.features.deviceconfig.sshscripting
+config:property-set disableIOCollection true
+config:update
+----
 
 == (optional) Enable push-based configuration upload
 
@@ -234,4 +246,5 @@ OPTIONS
                 Whether to persist config or not
 ----
 
-NOTE: Above karaf commands won't persist config by default, use -p option to persist config in {page-component-title} Database.
+NOTE: The previous Karaf commands will not persist configuration by default.
+Use the -p option to persist configuration in the {page-component-title} database.
