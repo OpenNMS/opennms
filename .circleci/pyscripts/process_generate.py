@@ -2,6 +2,7 @@
 import os
 import re
 import json
+import copy
 from library import libgit
 from library import libfile
 
@@ -87,7 +88,7 @@ for change in changes:
 
 print("What we want to build:",What_to_build,len(What_to_build))
 git_keywords=libgit.extractKeywordsFromLastCommit()
-build_mappings=mappings
+build_mappings=copy.deepcopy(mappings)
 print("Git Keywords:",git_keywords)
 if "circleci_configuration" in What_to_build and len(What_to_build) == 1 :
     #if circleci_configuration is the only entry in the list we don't want to trigger a buildss.
