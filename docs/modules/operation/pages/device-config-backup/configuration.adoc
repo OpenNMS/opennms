@@ -83,12 +83,12 @@ config:property-set tftpServerIPv6Address ::1
 config:update
 ----
 
-== SSH Session I/O Collection
+== SSH session I/O collection
 
-By default, the ssh scripting service collects all ssh session output for debugging purposes and saves it in the poller's status. 
-To disable this, you can configure the scripting service on both Horizon and Minion as below:
+By default, the SSH scripting service collects all SSH session output for debugging and saves it in the poller's status. 
+To disable this behavior, configure the scripting service on both {page-component-title} and Minion as below:
 
-.Configure SSH Session I/O Collection
+.Configure SSH session I/O collection
 [source, karaf]
 ----
 config:edit org.opennms.features.deviceconfig.sshscripting
@@ -246,4 +246,5 @@ OPTIONS
                 Whether to persist config or not
 ----
 
-NOTE: Above karaf commands won't persist config by default, use -p option to persist config in {page-component-title} Database.
+NOTE: The previous Karaf commands will not persist configuration by default.
+Use the -p option to persist configuration in the {page-component-title} database.
