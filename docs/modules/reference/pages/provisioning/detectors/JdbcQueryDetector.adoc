@@ -1,22 +1,22 @@
 
-= JDBC Detector
+= JDBC Query Detector
 
-The JDBCDetector connects to a JDBC-enabled database and tries to fetch its catalog.
-If the fetch is successful, it returns the `detected` value.
-If it is not successful, it returns the `not detected` value.
+The JDBCQueryDetector connects to a JDBC-enabled database and checks for any result from a user-specified SQL query.
+If the query returns a result, the detector returns the `detected` value.
+If the query does not return a result, the detector returns the `not detected` value.
 
 == Detector facts
 
 [options="autowidth"]
 |===
-| Implementation | `org.opennms.netmgt.provision.detector.jdbc.JdbcDetector`
+| Implementation | `org.opennms.netmgt.provision.detector.jdbc.JdbcQueryDetector`
 |===
 
 == Configuration and use
 
-The JDBCDetector uses the xref:reference:provisioning/detectors.adoc#ref-detector-provisioning-common-parameters[common configuration parameters].
+The JDBCQueryDetector uses the xref:reference:provisioning/detectors.adoc#ref-detector-provisioning-common-parameters[common configuration parameters].
 
-.Parameters for the JDBCDetector
+.Parameters for the JDBCQueryDetector
 [options="header, autowidth"]
 [cols="1,4,1"]
 |===
@@ -32,6 +32,10 @@ The JDBCDetector uses the xref:reference:provisioning/detectors.adoc#ref-detecto
 
 | password
 | JDBC password.
+| Empty String object.
+
+| sqlQuery
+| The SQL query to check.
 | Empty String object.
 
 | url
@@ -51,7 +55,7 @@ Note: this URL can differ based on JDBC drivers, databases, and so on.
 |===
 
 == Database driver
-The JDBCDetector requires a JDBC driver to communicate with any database.
+The JDBCQueryDetector requires a JDBC driver to communicate with any database.
 {page-component-title} uses a PostgreSQL database, so the PostgreSQL JDBC driver is included out of the box.
 For all other database systems, you must provide a compatible JDBC driver as a `.jar` file.
 To provide a JDBC driver, place the driver-jar in your `$\{OPENNMS_HOME}/lib` folder.
@@ -60,11 +64,12 @@ To provide a JDBC driver, place the driver-jar in your `$\{OPENNMS_HOME}/lib` fo
 
 [source,xml]
 ----
-<detector name="MySQL-JDBC" class="org.opennms.netmgt.provision.detector.jdbc.JdbcDetector">
+<detector name="MySQL-JDBC" class="org.opennms.netmgt.provision.detector.jdbc.JdbcQueryDetector">
     <parameter key="password" value="borkborkbork"/>
     <parameter key="user" value="opennms"/>
     <parameter key="dbDriver" value="com.mysql.jdbc.Driver"/>
     <parameter key="url" value="jdbc:mysql://OPENNMS_JDBC_HOSTNAME:3306/test"/>
+    <parameter key="sqlQuery" value="select * from nodes;"/>
     <parameter key="timeout" value="5000"/>
 </detector>
 ----
