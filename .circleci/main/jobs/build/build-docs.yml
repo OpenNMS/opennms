@@ -9,8 +9,10 @@ jobs:
             NODE_PATH="$(npm -g root)" antora --generator @antora/xref-validator antora-playbook-local.yml
       - run:
           name: Build docs with Antora
-          command: |
+          command: | 
              DOCSEARCH_ENABLED=true DOCSEARCH_ENGINE=lunr NODE_PATH="$(npm -g root)" antora --generator antora-site-generator-lunr --stacktrace generate antora-playbook-local.yml
+             mv ~/project/build/site.zip "~/project/build/site-$(.circleci/scripts/pom2version.sh pom.xml).zip"
       - store_artifacts:
-          path: ~/project/build/site.zip
-          destination: site.zip
+          path: ~/project/build/*.zip
+          #name: Document
+          #destination: site.zip

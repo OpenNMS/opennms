@@ -119,8 +119,10 @@ for e in main_yml_content:
                     sample_workflow=libyaml.generate_yaml(workflow_data,"build-deploy",level,sample_workflow)
                 elif build_components["build"]["docs"]:
                     print("build> docs :",libyaml.tell_extended_requirements('docs'))
+                    sample_workflow=libyaml.generate_yaml(workflow_data,"docs",level,sample_workflow)
                 elif build_components["build"]["ui"]:
                     print("build> ui :",libyaml.tell_extended_requirements('ui'))
+                    sample_workflow=libyaml.generate_yaml(workflow_data,"ui",level,sample_workflow)
                 elif build_components["build"]["coverage"]:
                     print("build> coverage :",libyaml.tell_extended_requirements('coverage'))
                 else:
