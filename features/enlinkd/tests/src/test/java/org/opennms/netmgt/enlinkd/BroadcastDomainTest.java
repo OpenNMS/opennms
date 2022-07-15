@@ -52,6 +52,7 @@ import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry;
 import org.opennms.netmgt.enlinkd.service.api.BridgePort;
 import org.opennms.netmgt.enlinkd.service.api.BridgePortWithMacs;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyException;
+import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.BroadcastDomain;
 import org.opennms.netmgt.enlinkd.service.api.DiscoveryBridgeTopology;
 import org.opennms.netmgt.enlinkd.service.api.SharedSegment;
@@ -60,7 +61,21 @@ import org.opennms.netmgt.model.OnmsNode;
 import com.google.common.collect.Sets;
 
 public class BroadcastDomainTest extends EnLinkdTestHelper {
-            
+
+    public static String printTopology(Set<BridgeForwardingTableEntry> bft) {
+        StringBuilder strbfr = new StringBuilder();
+        boolean rn = false;
+        for (BridgeForwardingTableEntry bftentry: bft) {
+            if (rn) {
+                strbfr.append("\n");
+            } else {
+                rn = true;
+            }
+            strbfr.append(bftentry.printTopology());
+        }
+        return strbfr.toString();
+    }
+
     @Before
     public void setUp() throws Exception {
         Properties p = new Properties();
@@ -73,7 +88,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         OneBridgeOnePortOneMacTopology topology = new OneBridgeOnePortOneMacTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.nodeAId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeAId);
         setBridgeElements(domain,topology.elemlist);
         
         DiscoveryBridgeTopology ndbt= new DiscoveryBridgeTopology(domain);
@@ -92,7 +107,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         OneBridgeMoreMacOnePortTopology topology = new OneBridgeMoreMacOnePortTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.nodeAId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeAId);
         setBridgeElements(domain,topology.elemlist);
 
         DiscoveryBridgeTopology ndbt= new DiscoveryBridgeTopology(domain);
@@ -118,7 +133,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         OneBridgeCompleteTopology topology = new OneBridgeCompleteTopology();        
         
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.nodeAId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeAId);
         setBridgeElements(domain,topology.elemlist);
         
         DiscoveryBridgeTopology ndbt= new DiscoveryBridgeTopology(domain);
@@ -136,8 +151,8 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         TwoConnectedBridgeTopology topology = new TwoConnectedBridgeTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.nodeAId);
-        Bridge.create(domain,topology.nodeBId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeAId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeBId);
         setBridgeElements(domain,topology.elemlist);
         
         DiscoveryBridgeTopology ndbt= new DiscoveryBridgeTopology(domain);
@@ -149,7 +164,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         assertEquals(topology.nodeAId.intValue(), domain.getRootBridge().getNodeId().intValue());
         topology.check(ndbt.getDomain(),false);
         
-        BroadcastDomain.hierarchySetUp(domain,domain.getBridge(topology.nodeBId));
+        BridgeTopologyService.hierarchySetUp(domain,domain.getBridge(topology.nodeBId));
         assertEquals(topology.nodeBId.intValue(), domain.getRootBridge().getNodeId().intValue());
         topology.check(ndbt.getDomain(),true);
         
@@ -160,8 +175,8 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         TwoMergeBridgeTopology topology = new TwoMergeBridgeTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.nodeAId);
-        Bridge.create(domain,topology.nodeBId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeAId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeBId);
         setBridgeElements(domain,topology.elemlist);
 
         DiscoveryBridgeTopology ndbt= new DiscoveryBridgeTopology(domain);
@@ -213,8 +228,8 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
 
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,nodeAId);
-        Bridge.create(domain,nodeBId);
+        DiscoveryBridgeTopology.create(domain,nodeAId);
+        DiscoveryBridgeTopology.create(domain,nodeBId);
         setBridgeElements(domain,elemlist);
         
         DiscoveryBridgeTopology ndbt= new DiscoveryBridgeTopology(domain);
@@ -273,8 +288,8 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
 
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,nodeAId);
-        Bridge.create(domain,nodeBId);
+        DiscoveryBridgeTopology.create(domain,nodeAId);
+        DiscoveryBridgeTopology.create(domain,nodeBId);
         setBridgeElements(domain,elemlist);
         
         DiscoveryBridgeTopology ndbt= new DiscoveryBridgeTopology(domain);
@@ -339,8 +354,8 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
 
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,nodeAId);
-        Bridge.create(domain,nodeBId);
+        DiscoveryBridgeTopology.create(domain,nodeAId);
+        DiscoveryBridgeTopology.create(domain,nodeBId);
         setBridgeElements(domain,elemlist);
         
         DiscoveryBridgeTopology ndbt= new DiscoveryBridgeTopology(domain);
@@ -378,8 +393,8 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         TwoMergeBridgeTopology topology = new TwoMergeBridgeTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.nodeAId);
-        Bridge.create(domain,topology.nodeBId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeAId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeBId);
         setBridgeElements(domain,topology.elemlist);
         
         DiscoveryBridgeTopology ndbt= new DiscoveryBridgeTopology(domain);
@@ -397,8 +412,8 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         TwoBridgeWithBackbonePortsTopology topology = new TwoBridgeWithBackbonePortsTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.nodeAId);
-        Bridge.create(domain,topology.nodeBId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeAId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeBId);
         setBridgeElements(domain,topology.elemlist);
         
         DiscoveryBridgeTopology ndbt= new DiscoveryBridgeTopology(domain);
@@ -416,8 +431,8 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         TwoBridgeWithBackbonePortsTopology topology = new TwoBridgeWithBackbonePortsTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.nodeAId);
-        Bridge.create(domain,topology.nodeBId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeAId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeBId);
         setBridgeElements(domain,topology.elemlist);
         
         DiscoveryBridgeTopology ndbt= new DiscoveryBridgeTopology(domain);
@@ -426,7 +441,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         ndbt.addUpdatedBFT((topology.nodeBId),topology.bftB);
         ndbt.calculate();
 
-        BroadcastDomain.clearTopologyForBridge(domain,topology.nodeBId);
+        BridgeTopologyService.clearTopologyForBridge(domain,topology.nodeBId);
         assertEquals(topology.nodeAId.intValue(), domain.getRootBridge().getNodeId().intValue());
         assertEquals(2, domain.getSharedSegments().size());
         assertEquals(5, domain.getMacsOnSegments().size());
@@ -462,8 +477,8 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         TwoBridgeWithBackbonePortsTopology topology = new TwoBridgeWithBackbonePortsTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.nodeAId);
-        Bridge.create(domain,topology.nodeBId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeAId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeBId);
         setBridgeElements(domain,topology.elemlist);
         
         DiscoveryBridgeTopology ndbt= new DiscoveryBridgeTopology(domain);
@@ -472,7 +487,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         ndbt.addUpdatedBFT((topology.nodeBId),topology.bftB);
         ndbt.calculate();
                 
-        BroadcastDomain.clearTopologyForBridge(domain,topology.nodeAId);
+        BridgeTopologyService.clearTopologyForBridge(domain,topology.nodeAId);
         assertEquals(5, domain.getMacsOnSegments().size());
         assertEquals(topology.nodeBId.intValue(), domain.getRootBridge().getNodeId().intValue());
         assertEquals(2, domain.getSharedSegments().size());
@@ -508,8 +523,8 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         TwoBridgeWithBackbonePortsTopologyWithBridgeinBft topology = new TwoBridgeWithBackbonePortsTopologyWithBridgeinBft();
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.nodeAId);
-        Bridge.create(domain,topology.nodeBId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeAId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeBId);
         setBridgeElements(domain,topology.elemlist);
         
         DiscoveryBridgeTopology ndbt= new DiscoveryBridgeTopology(domain);
@@ -528,8 +543,8 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         TwoNodeTopology topology = new TwoNodeTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.nodeAId);
-        Bridge.create(domain,topology.nodeBId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeAId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeBId);
         setBridgeElements(domain,topology.elemlist);
 
         DiscoveryBridgeTopology ndbt= new DiscoveryBridgeTopology(domain);
@@ -549,7 +564,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         TwoNodeTopology topology = new TwoNodeTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.nodeBId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeBId);
         setBridgeElements(domain,topology.elemlist);
         
         DiscoveryBridgeTopology ndbt= new DiscoveryBridgeTopology(domain);
@@ -557,12 +572,12 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         ndbt.addUpdatedBFT((topology.nodeBId),topology.bftB);
         ndbt.calculate();
 
-        System.err.println(BridgeForwardingTableEntry.printTopology(BroadcastDomain.calculateBFT(domain,domain.getRootBridge())));
+        System.err.println(printTopology(DiscoveryBridgeTopology.calculateBFT(domain,domain.getRootBridge())));
 
         List<SharedSegment> shsegs = ndbt.getDomain().getSharedSegments();
         assertEquals(3, shsegs.size());
         
-        Bridge.create(domain,topology.nodeAId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeAId);
         setBridgeElements(domain,topology.elemlist);
 
         ndbt.addUpdatedBFT((topology.nodeAId),topology.bftA);
@@ -571,7 +586,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         topology.check2nodeTopology(ndbt.getDomain(),true);
         assertEquals(topology.nodeBId, domain.getRootBridge().getNodeId());
 
-        System.err.println(BridgeForwardingTableEntry.printTopology(BroadcastDomain.calculateBFT(domain,domain.getBridge(topology.nodeAId))));
+        System.err.println(printTopology(DiscoveryBridgeTopology.calculateBFT(domain,domain.getBridge(topology.nodeAId))));
     }
 
     @Test 
@@ -580,7 +595,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         TwoNodeTopology topology = new TwoNodeTopology();
         
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.nodeAId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeAId);
         setBridgeElements(domain,topology.elemlist);
         
         DiscoveryBridgeTopology ndbt= new DiscoveryBridgeTopology(domain);
@@ -591,7 +606,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         List<SharedSegment> shsegs = ndbt.getDomain().getSharedSegments();
         assertEquals(3, shsegs.size());
         
-        Bridge.create(domain,topology.nodeBId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeBId);
         setBridgeElements(domain,topology.elemlist);
 
         ndbt.addUpdatedBFT((topology.nodeBId),topology.bftB);
@@ -600,8 +615,8 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         topology.check2nodeTopology(ndbt.getDomain(),false);
         assertEquals(topology.nodeAId, domain.getRootBridge().getNodeId());
         
-        System.err.println(BridgeForwardingTableEntry.printTopology(BroadcastDomain.calculateBFT(domain, domain.getRootBridge())));
-        System.err.println(BridgeForwardingTableEntry.printTopology(BroadcastDomain.calculateBFT(domain,domain.getBridge(topology.nodeBId))));
+        System.err.println(printTopology(DiscoveryBridgeTopology.calculateBFT(domain, domain.getRootBridge())));
+        System.err.println(printTopology(DiscoveryBridgeTopology.calculateBFT(domain,domain.getBridge(topology.nodeBId))));
 
     }
 
@@ -610,8 +625,8 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         ABCTopology topology = new ABCTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.nodeAId);
-        Bridge.create(domain,topology.nodeBId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeAId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeBId);
         setBridgeElements(domain,topology.elemlist);
         
         DiscoveryBridgeTopology ndbt= new DiscoveryBridgeTopology(domain);
@@ -629,8 +644,8 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         ABCTopology topology = new ABCTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.nodeBId);
-        Bridge.create(domain,topology.nodeAId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeBId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeAId);
         setBridgeElements(domain,topology.elemlist);
 
         DiscoveryBridgeTopology ndbt= new DiscoveryBridgeTopology(domain);
@@ -648,8 +663,8 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         ABCTopology topology = new ABCTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.nodeAId);
-        Bridge.create(domain,topology.nodeCId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeAId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeCId);
         setBridgeElements(domain,topology.elemlist);
 
         DiscoveryBridgeTopology ndbt= new DiscoveryBridgeTopology(domain);
@@ -667,8 +682,8 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         ABCTopology topology = new ABCTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.nodeCId);
-        Bridge.create(domain,topology.nodeAId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeCId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeAId);
         setBridgeElements(domain,topology.elemlist);
         
         DiscoveryBridgeTopology ndbt= new DiscoveryBridgeTopology(domain);
@@ -685,8 +700,8 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         ABCTopology topology = new ABCTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.nodeBId);
-        Bridge.create(domain,topology.nodeCId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeBId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeCId);
         setBridgeElements(domain,topology.elemlist);
         
         DiscoveryBridgeTopology ndbt= new DiscoveryBridgeTopology(domain);
@@ -703,8 +718,8 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         ABCTopology topology = new ABCTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.nodeCId);
-        Bridge.create(domain,topology.nodeBId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeCId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeBId);
         setBridgeElements(domain,topology.elemlist);
         
         DiscoveryBridgeTopology ndbt= new DiscoveryBridgeTopology(domain);
@@ -721,18 +736,18 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         ABCTopology topology = new ABCTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.nodeAId);
-        Bridge.create(domain,topology.nodeBId);
-        Bridge.create(domain,topology.nodeCId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeAId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeBId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeCId);
         setBridgeElements(domain,topology.elemlist);
 
-        Bridge elected = BroadcastDomain.electRootBridge(domain);
+        Bridge elected = DiscoveryBridgeTopology.electRootBridge(domain);
         assertNull(elected);
 
         //B root
         domain.getBridge(topology.nodeAId).setDesignated(topology.macB);
         domain.getBridge(topology.nodeCId).setDesignated(topology.macB);
-        elected = BroadcastDomain.electRootBridge(domain);
+        elected = DiscoveryBridgeTopology.electRootBridge(domain);
         assert elected != null;
         assertEquals(topology.nodeBId.intValue(), elected.getNodeId().intValue());
 
@@ -740,7 +755,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         domain.getBridge(topology.nodeAId).setDesignated(null);
         domain.getBridge(topology.nodeBId).setDesignated(topology.macA);
         domain.getBridge(topology.nodeCId).setDesignated(topology.macB);
-        elected = BroadcastDomain.electRootBridge(domain);
+        elected = DiscoveryBridgeTopology.electRootBridge(domain);
         assert elected != null;
         assertEquals(topology.nodeAId.intValue(), elected.getNodeId().intValue());
 
@@ -748,7 +763,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         domain.getBridge(topology.nodeAId).setDesignated(topology.macB);
         domain.getBridge(topology.nodeBId).setDesignated(topology.macC);
         domain.getBridge(topology.nodeCId).setDesignated(null);
-        elected = BroadcastDomain.electRootBridge(domain);
+        elected = DiscoveryBridgeTopology.electRootBridge(domain);
         assert elected != null;
         assertEquals(topology.nodeCId.intValue(), elected.getNodeId().intValue());
 
@@ -756,7 +771,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         domain.getBridge(topology.nodeAId).setDesignated(null);
         domain.getBridge(topology.nodeBId).setDesignated(topology.macC);
         domain.getBridge(topology.nodeCId).setDesignated(null);
-        elected = BroadcastDomain.electRootBridge(domain);
+        elected = DiscoveryBridgeTopology.electRootBridge(domain);
         assert elected != null;
         assertEquals(topology.nodeCId.intValue(), elected.getNodeId().intValue());
         
@@ -764,7 +779,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         domain.getBridge(topology.nodeAId).setDesignated(null);
         domain.getBridge(topology.nodeBId).setDesignated("dddddddddddd");
         domain.getBridge(topology.nodeCId).setDesignated(null);
-        elected = BroadcastDomain.electRootBridge(domain);
+        elected = DiscoveryBridgeTopology.electRootBridge(domain);
         assert elected != null;
         assertEquals(topology.nodeBId.intValue(), elected.getNodeId().intValue());
 
@@ -772,7 +787,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         domain.getBridge(topology.nodeAId).setDesignated(null);
         domain.getBridge(topology.nodeBId).setDesignated(null);
         domain.getBridge(topology.nodeCId).setDesignated(topology.macA);
-        elected = BroadcastDomain.electRootBridge(domain);
+        elected = DiscoveryBridgeTopology.electRootBridge(domain);
         assert elected != null;
         assertEquals(topology.nodeAId.intValue(), elected.getNodeId().intValue());
 
@@ -781,7 +796,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         domain.getBridge(topology.nodeBId).setDesignated(null);
         domain.getBridge(topology.nodeCId).setDesignated(topology.macA);
         try {
-            BroadcastDomain.electRootBridge(domain);
+            DiscoveryBridgeTopology.electRootBridge(domain);
         } catch (BridgeTopologyException e) {
             assertEquals("getUpperBridge, too many iterations", e.getMessage());
         }
@@ -790,7 +805,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         domain.getBridge(topology.nodeAId).setDesignated(null);
         domain.getBridge(topology.nodeBId).setDesignated(null);
         domain.getBridge(topology.nodeCId).setDesignated(null);
-        assertNull(BroadcastDomain.electRootBridge(domain));
+        assertNull(DiscoveryBridgeTopology.electRootBridge(domain));
 
     }
     
@@ -800,9 +815,9 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         ABCTopology topology = new ABCTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.nodeAId);
-        Bridge.create(domain,topology.nodeBId);
-        Bridge.create(domain,topology.nodeCId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeAId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeBId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeCId);
         setBridgeElements(domain,topology.elemlist);
         
         DiscoveryBridgeTopology ndbt= new DiscoveryBridgeTopology(domain);
@@ -821,7 +836,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         ABCTopology topology = new ABCTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.nodeAId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeAId);
         setBridgeElements(domain,topology.elemlist);
 
         DiscoveryBridgeTopology ndbt= new DiscoveryBridgeTopology(domain);
@@ -829,8 +844,8 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         ndbt.addUpdatedBFT((topology.nodeAId),topology.bftA);
         ndbt.calculate();
 
-        Bridge.create(domain,topology.nodeBId);
-        Bridge.create(domain,topology.nodeCId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeBId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeCId);
         setBridgeElements(domain,topology.elemlist);
 
         ndbt.addUpdatedBFT((topology.nodeBId),topology.bftB);
@@ -845,8 +860,8 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         ABCTopology topology = new ABCTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.nodeAId);
-        Bridge.create(domain,topology.nodeCId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeAId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeCId);
         setBridgeElements(domain,topology.elemlist);
 
         DiscoveryBridgeTopology ndbt= new DiscoveryBridgeTopology(domain);
@@ -857,7 +872,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
 
         topology.checkAC(ndbt.getDomain());
 
-        Bridge.create(domain,topology.nodeBId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeBId);
         setBridgeElements(domain,topology.elemlist);
 
         ndbt.addUpdatedBFT((topology.nodeBId),topology.bftB);
@@ -872,8 +887,8 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         ABCTopology topology = new ABCTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.nodeBId);
-        Bridge.create(domain,topology.nodeAId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeBId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeAId);
         setBridgeElements(domain,topology.elemlist);
         
         DiscoveryBridgeTopology ndbt= new DiscoveryBridgeTopology(domain);
@@ -884,7 +899,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
 
         topology.checkAB(ndbt.getDomain());
 
-        Bridge.create(domain,topology.nodeCId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeCId);
         setBridgeElements(domain,topology.elemlist);
 
         ndbt.addUpdatedBFT((topology.nodeCId),topology.bftC);
@@ -899,7 +914,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         ABCTopology topology = new ABCTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.nodeBId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeBId);
         setBridgeElements(domain,topology.elemlist);
         
         DiscoveryBridgeTopology ndbt= new DiscoveryBridgeTopology(domain);
@@ -907,14 +922,14 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         ndbt.addUpdatedBFT((topology.nodeBId),topology.bftB);
         ndbt.calculate();
 
-        Bridge.create(domain,topology.nodeCId);
-        Bridge.create(domain,topology.nodeAId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeCId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeAId);
         setBridgeElements(domain,topology.elemlist);
 
         ndbt.addUpdatedBFT((topology.nodeCId),topology.bftC);
         ndbt.addUpdatedBFT((topology.nodeAId),topology.bftA);
         ndbt.calculate();
-        BroadcastDomain.hierarchySetUp(domain,domain.getBridge(topology.nodeAId));
+        BridgeTopologyService.hierarchySetUp(domain,domain.getBridge(topology.nodeAId));
         topology.check(ndbt.getDomain());
     }
 
@@ -923,7 +938,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         ABCTopology topology = new ABCTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.nodeCId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeCId);
         setBridgeElements(domain,topology.elemlist);
         
         DiscoveryBridgeTopology ndbt= new DiscoveryBridgeTopology(domain);
@@ -931,14 +946,14 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         ndbt.addUpdatedBFT((topology.nodeCId),topology.bftC);
         ndbt.calculate();
 
-        Bridge.create(domain,topology.nodeAId);
-        Bridge.create(domain,topology.nodeBId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeAId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeBId);
         setBridgeElements(domain,topology.elemlist);
 
         ndbt.addUpdatedBFT((topology.nodeAId),topology.bftA);
         ndbt.addUpdatedBFT((topology.nodeBId),topology.bftB);
         ndbt.calculate();
-        BroadcastDomain.hierarchySetUp(domain,domain.getBridge(topology.nodeAId));
+        BridgeTopologyService.hierarchySetUp(domain,domain.getBridge(topology.nodeAId));
 
         topology.check(ndbt.getDomain());
     }
@@ -948,8 +963,8 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         ABCTopology topology = new ABCTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.nodeCId);
-        Bridge.create(domain,topology.nodeBId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeCId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeBId);
         setBridgeElements(domain,topology.elemlist);
 
         DiscoveryBridgeTopology ndbt= new DiscoveryBridgeTopology(domain);
@@ -959,13 +974,13 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         ndbt.calculate();
         topology.checkBC(ndbt.getDomain());
 
-        Bridge.create(domain,topology.nodeAId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeAId);
         setBridgeElements(domain,topology.elemlist);
 
         ndbt.addUpdatedBFT((topology.nodeAId),topology.bftA);
         ndbt.calculate();
 
-        BroadcastDomain.hierarchySetUp(domain,domain.getBridge(topology.nodeAId));
+        BridgeTopologyService.hierarchySetUp(domain,domain.getBridge(topology.nodeAId));
         topology.check(ndbt.getDomain());
 
     }
@@ -975,8 +990,8 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         DEFGHILTopology topology = new DEFGHILTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.nodeDId);
-        Bridge.create(domain,topology.nodeEId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeDId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeEId);
         setBridgeElements(domain,topology.elemlist);
 
         DiscoveryBridgeTopology ndbt= new DiscoveryBridgeTopology(domain);
@@ -993,8 +1008,8 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         DEFGHILTopology topology = new DEFGHILTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.nodeDId);
-        Bridge.create(domain,topology.nodeFId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeDId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeFId);
         setBridgeElements(domain,topology.elemlist);
 
         DiscoveryBridgeTopology ndbt= new DiscoveryBridgeTopology(domain);
@@ -1011,8 +1026,8 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         DEFGHILTopology topology = new DEFGHILTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.nodeEId);
-        Bridge.create(domain,topology.nodeFId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeEId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeFId);
         setBridgeElements(domain,topology.elemlist);
 
         DiscoveryBridgeTopology ndbt= new DiscoveryBridgeTopology(domain);
@@ -1029,8 +1044,8 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         DEFGHILTopology topology = new DEFGHILTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.nodeDId);
-        Bridge.create(domain,topology.nodeGId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeDId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeGId);
         setBridgeElements(domain,topology.elemlist);
 
         DiscoveryBridgeTopology ndbt= new DiscoveryBridgeTopology(domain);
@@ -1048,9 +1063,9 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         DEFGHILTopology topology = new DEFGHILTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.nodeDId);
-        Bridge.create(domain,topology.nodeEId);
-        Bridge.create(domain,topology.nodeFId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeDId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeEId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeFId);
         setBridgeElements(domain,topology.elemlist);
 
         DiscoveryBridgeTopology ndbt= new DiscoveryBridgeTopology(domain);
@@ -1069,8 +1084,8 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         DEFGHILTopology topology = new DEFGHILTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.nodeDId);
-        Bridge.create(domain,topology.nodeFId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeDId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeFId);
         setBridgeElements(domain,topology.elemlist);
 
         DiscoveryBridgeTopology ndbt= new DiscoveryBridgeTopology(domain);
@@ -1081,7 +1096,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         
         topology.checkDF(ndbt.getDomain());
         
-        Bridge.create(domain,topology.nodeEId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeEId);
         setBridgeElements(domain,topology.elemlist);
 
         ndbt.addUpdatedBFT((topology.nodeEId),topology.bftE);
@@ -1096,10 +1111,10 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         DEFGHILTopology topology = new DEFGHILTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.nodeDId);
-        Bridge.create(domain,topology.nodeEId);
-        Bridge.create(domain,topology.nodeFId);
-        Bridge.create(domain,topology.nodeGId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeDId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeEId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeFId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeGId);
         setBridgeElements(domain,topology.elemlist);
 
         DiscoveryBridgeTopology ndbt= new DiscoveryBridgeTopology(domain);
@@ -1119,11 +1134,11 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         DEFGHILTopology topology = new DEFGHILTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.nodeDId);
-        Bridge.create(domain,topology.nodeEId);
-        Bridge.create(domain,topology.nodeFId);
-        Bridge.create(domain,topology.nodeGId);
-        Bridge.create(domain,topology.nodeIId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeDId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeEId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeFId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeGId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeIId);
         setBridgeElements(domain,topology.elemlist);
 
         DiscoveryBridgeTopology ndbt= new DiscoveryBridgeTopology(domain);
@@ -1139,7 +1154,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         ndbt.addUpdatedBFT((topology.nodeIId),topology.bftI);
         ndbt.calculate();
         
-        for (BridgeForwardingTableEntry bftentry: BroadcastDomain.calculateBFT(domain, domain.getBridge(topology.nodeIId))) {
+        for (BridgeForwardingTableEntry bftentry: DiscoveryBridgeTopology.calculateBFT(domain, domain.getBridge(topology.nodeIId))) {
             assertEquals(topology.nodeIId.intValue(), bftentry.getNodeId().intValue());
             if (bftentry.getMacAddress().equals(topology.mac1)) {
                 assertEquals(topology.portII.intValue(), bftentry.getBridgePort().intValue());
@@ -1162,7 +1177,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
             }
         }
 
-        for (BridgeForwardingTableEntry bftentry: BroadcastDomain.calculateBFT(domain, domain.getBridge(topology.nodeGId))) {
+        for (BridgeForwardingTableEntry bftentry: DiscoveryBridgeTopology.calculateBFT(domain, domain.getBridge(topology.nodeGId))) {
             assertEquals(topology.nodeGId.intValue(), bftentry.getNodeId().intValue());
             if (bftentry.getMacAddress().equals(topology.mac1)) {
                 assertEquals(topology.portGD.intValue(), bftentry.getBridgePort().intValue());
@@ -1193,13 +1208,13 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         DEFGHILTopology topology = new DEFGHILTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.nodeDId);
-        Bridge.create(domain,topology.nodeEId);
-        Bridge.create(domain,topology.nodeFId);
-        Bridge.create(domain,topology.nodeGId);
-        Bridge.create(domain,topology.nodeHId);
-        Bridge.create(domain,topology.nodeIId);
-        Bridge.create(domain,topology.nodeLId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeDId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeEId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeFId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeGId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeHId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeIId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeLId);
         setBridgeElements(domain,topology.elemlist);
 
         DiscoveryBridgeTopology ndbt= new DiscoveryBridgeTopology(domain);
@@ -1222,13 +1237,13 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         DEFGHILTopology topology = new DEFGHILTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.nodeDId);
-        Bridge.create(domain,topology.nodeEId);
-        Bridge.create(domain,topology.nodeFId);
-        Bridge.create(domain,topology.nodeGId);
-        Bridge.create(domain,topology.nodeHId);
-        Bridge.create(domain,topology.nodeIId);
-        Bridge.create(domain,topology.nodeLId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeDId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeEId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeFId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeGId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeHId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeIId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeLId);
         setBridgeElements(domain,topology.elemlist);
         
         DiscoveryBridgeTopology ndbt= new DiscoveryBridgeTopology(domain);
@@ -1244,7 +1259,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         
         topology.check(ndbt.getDomain());
         
-        BroadcastDomain.hierarchySetUp(domain,domain.getBridge(topology.nodeGId));
+        BridgeTopologyService.hierarchySetUp(domain,domain.getBridge(topology.nodeGId));
         assertEquals(topology.nodeGId, ndbt.getDomain().getRootBridge().getNodeId());
         assertTrue(ndbt.getDomain().getBridge(topology.nodeGId).isRootBridge());
         assertNull(ndbt.getDomain().getBridge(topology.nodeGId).getRootPort());
@@ -1268,8 +1283,8 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         FiveSwitchTopology topology = new FiveSwitchTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.nodeAId);
-        Bridge.create(domain,topology.nodeDId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeAId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeDId);
         setBridgeElements(domain,topology.elemlist);
         DiscoveryBridgeTopology discoveryBridgeTopology= new DiscoveryBridgeTopology(domain);
         discoveryBridgeTopology.addUpdatedBFT(topology.nodeAId, topology.bftA);
@@ -1283,11 +1298,11 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         FiveSwitchTopology topology = new FiveSwitchTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.nodeAId);
-        Bridge.create(domain,topology.nodeBId);
-        Bridge.create(domain,topology.nodeCId);
-        Bridge.create(domain,topology.nodeDId);
-        Bridge.create(domain,topology.nodeEId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeAId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeBId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeCId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeDId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeEId);
         setBridgeElements(domain,topology.elemlist);
         
         DiscoveryBridgeTopology ndbtB= new DiscoveryBridgeTopology(domain);
@@ -1341,11 +1356,11 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         FiveSwitchTopology topology = new FiveSwitchTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.nodeAId);
-        Bridge.create(domain,topology.nodeBId);
-        Bridge.create(domain,topology.nodeCId);
-        Bridge.create(domain,topology.nodeDId);
-        Bridge.create(domain,topology.nodeEId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeAId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeBId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeCId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeDId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeEId);
         setBridgeElements(domain,topology.elemlist);
         
         DiscoveryBridgeTopology ndbtB= new DiscoveryBridgeTopology(domain);
@@ -1382,11 +1397,11 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         FiveSwitchTopology topology = new FiveSwitchTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.nodeAId);
-        Bridge.create(domain,topology.nodeBId);
-        Bridge.create(domain,topology.nodeCId);
-        Bridge.create(domain,topology.nodeDId);
-        Bridge.create(domain,topology.nodeEId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeAId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeBId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeCId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeDId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeEId);
         setBridgeElements(domain,topology.elemlist);
         
         DiscoveryBridgeTopology ndbtB= new DiscoveryBridgeTopology(domain);
@@ -1405,7 +1420,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         ndbtE.addUpdatedBFT((topology.nodeDId),topology.bftD);
         ndbtE.calculate();
         Bridge bridgeB = domain.getBridge(topology.nodeBId);
-        BroadcastDomain.hierarchySetUp(domain,bridgeB);
+        BridgeTopologyService.hierarchySetUp(domain,bridgeB);
         topology.check(domain);
     }
 
@@ -1415,11 +1430,11 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         FiveSwitchTopology topology = new FiveSwitchTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.nodeAId);
-        Bridge.create(domain,topology.nodeBId);
-        Bridge.create(domain,topology.nodeCId);
-        Bridge.create(domain,topology.nodeDId);
-        Bridge.create(domain,topology.nodeEId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeAId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeBId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeCId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeDId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeEId);
         setBridgeElements(domain,topology.elemlist);
 
         DiscoveryBridgeTopology ndbtE= new DiscoveryBridgeTopology(domain);
@@ -1443,7 +1458,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         ndbtA.calculate();
 
         Bridge bridgeB = domain.getBridge(topology.nodeBId);
-        BroadcastDomain.hierarchySetUp(domain,bridgeB);
+        BridgeTopologyService.hierarchySetUp(domain,bridgeB);
         topology.check(domain);
     }
 
@@ -1453,11 +1468,11 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         FiveSwitchTopology topology = new FiveSwitchTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.nodeAId);
-        Bridge.create(domain,topology.nodeBId);
-        Bridge.create(domain,topology.nodeCId);
-        Bridge.create(domain,topology.nodeDId);
-        Bridge.create(domain,topology.nodeEId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeAId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeBId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeCId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeDId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeEId);
         setBridgeElements(domain,topology.elemlist);
         
         DiscoveryBridgeTopology ndbtB= new DiscoveryBridgeTopology(domain);
@@ -1495,11 +1510,11 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         FiveSwitchTopology topology = new FiveSwitchTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.nodeAId);
-        Bridge.create(domain,topology.nodeBId);
-        Bridge.create(domain,topology.nodeCId);
-        Bridge.create(domain,topology.nodeDId);
-        Bridge.create(domain,topology.nodeEId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeAId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeBId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeCId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeDId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeEId);
         setBridgeElements(domain,topology.elemlist);
         
         DiscoveryBridgeTopology ndbtE= new DiscoveryBridgeTopology(domain);
@@ -1528,7 +1543,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         ndbtB.calculate();
 
         Bridge bridgeB = domain.getBridge(topology.nodeBId);
-        BroadcastDomain.hierarchySetUp(domain,bridgeB);
+        BridgeTopologyService.hierarchySetUp(domain,bridgeB);
         topology.check(domain);
 
     }
@@ -1539,11 +1554,11 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         FiveSwitchTopology topology = new FiveSwitchTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.nodeAId);
-        Bridge.create(domain,topology.nodeBId);
-        Bridge.create(domain,topology.nodeCId);
-        Bridge.create(domain,topology.nodeDId);
-        Bridge.create(domain,topology.nodeEId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeAId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeBId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeCId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeDId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeEId);
         setBridgeElements(domain,topology.elemlist);
         
         DiscoveryBridgeTopology ndbtB= new DiscoveryBridgeTopology(domain);
@@ -1591,11 +1606,11 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         FiveSwitchTopology topology = new FiveSwitchTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.nodeAId);
-        Bridge.create(domain,topology.nodeBId);
-        Bridge.create(domain,topology.nodeCId);
-        Bridge.create(domain,topology.nodeDId);
-        Bridge.create(domain,topology.nodeEId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeAId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeBId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeCId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeDId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeEId);
         setBridgeElements(domain,topology.elemlist);
         
         DiscoveryBridgeTopology ndbtB= new DiscoveryBridgeTopology(domain);
@@ -1654,11 +1669,11 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         FiveSwitchTopology topology = new FiveSwitchTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.nodeAId);
-        Bridge.create(domain,topology.nodeBId);
-        Bridge.create(domain,topology.nodeCId);
-        Bridge.create(domain,topology.nodeDId);
-        Bridge.create(domain,topology.nodeEId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeAId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeBId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeCId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeDId);
+        DiscoveryBridgeTopology.create(domain,topology.nodeEId);
         setBridgeElements(domain,topology.elemlist);
         
         DiscoveryBridgeTopology ndbtB= new DiscoveryBridgeTopology(domain);
@@ -1714,20 +1729,20 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         TwentyNodeTopology topology = new TwentyNodeTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.spiazzofasw01Id);
-        Bridge.create(domain,topology.spiasvigasw01Id);
-        Bridge.create(domain,topology.daremunalv01Id);
-        Bridge.create(domain,topology.villpizzasw01Id);
-        Bridge.create(domain,topology.rsaspiazzowl1Id);
-        Bridge.create(domain,topology.vigrenmualv01Id);
-        Bridge.create(domain,topology.vigrenmualv02Id);
-        Bridge.create(domain,topology.vigrenmuasw01Id);
-        Bridge.create(domain,topology.vrendmunalv02Id);
-        Bridge.create(domain,topology.daremunasw01Id);
-        Bridge.create(domain,topology.spiazzomepe01Id);
-        Bridge.create(domain,topology.comunespiazzowl1Id);
-        Bridge.create(domain,topology.vrendmunasw01Id);
-        Bridge.create(domain,topology.comunevillarendenawl1Id);
+        DiscoveryBridgeTopology.create(domain,topology.spiazzofasw01Id);
+        DiscoveryBridgeTopology.create(domain,topology.spiasvigasw01Id);
+        DiscoveryBridgeTopology.create(domain,topology.daremunalv01Id);
+        DiscoveryBridgeTopology.create(domain,topology.villpizzasw01Id);
+        DiscoveryBridgeTopology.create(domain,topology.rsaspiazzowl1Id);
+        DiscoveryBridgeTopology.create(domain,topology.vigrenmualv01Id);
+        DiscoveryBridgeTopology.create(domain,topology.vigrenmualv02Id);
+        DiscoveryBridgeTopology.create(domain,topology.vigrenmuasw01Id);
+        DiscoveryBridgeTopology.create(domain,topology.vrendmunalv02Id);
+        DiscoveryBridgeTopology.create(domain,topology.daremunasw01Id);
+        DiscoveryBridgeTopology.create(domain,topology.spiazzomepe01Id);
+        DiscoveryBridgeTopology.create(domain,topology.comunespiazzowl1Id);
+        DiscoveryBridgeTopology.create(domain,topology.vrendmunasw01Id);
+        DiscoveryBridgeTopology.create(domain,topology.comunevillarendenawl1Id);
         setBridgeElements(domain,topology.elemlist);
         
         DiscoveryBridgeTopology ndbtB= new DiscoveryBridgeTopology(domain);
@@ -1758,9 +1773,9 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         TwentyNodeTopology topology = new TwentyNodeTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.spiazzofasw01Id);
-        Bridge.create(domain,topology.comunespiazzowl1Id);
-        Bridge.create(domain,topology.spiazzomepe01Id);
+        DiscoveryBridgeTopology.create(domain,topology.spiazzofasw01Id);
+        DiscoveryBridgeTopology.create(domain,topology.comunespiazzowl1Id);
+        DiscoveryBridgeTopology.create(domain,topology.spiazzomepe01Id);
         setBridgeElements(domain,topology.elemlist);
         
         DiscoveryBridgeTopology ndbtB= new DiscoveryBridgeTopology(domain);
@@ -1780,8 +1795,8 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         TwentyNodeTopology topology = new TwentyNodeTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.spiasvigasw01Id);
-        Bridge.create(domain,topology.rsaspiazzowl1Id);
+        DiscoveryBridgeTopology.create(domain,topology.spiasvigasw01Id);
+        DiscoveryBridgeTopology.create(domain,topology.rsaspiazzowl1Id);
         setBridgeElements(domain,topology.elemlist);
         
         DiscoveryBridgeTopology ndbtB= new DiscoveryBridgeTopology(domain);
@@ -1801,9 +1816,9 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         TwentyNodeTopology topology = new TwentyNodeTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.vrendmunalv02Id);
-        Bridge.create(domain,topology.vrendmunasw01Id);
-        Bridge.create(domain,topology.comunevillarendenawl1Id);
+        DiscoveryBridgeTopology.create(domain,topology.vrendmunalv02Id);
+        DiscoveryBridgeTopology.create(domain,topology.vrendmunasw01Id);
+        DiscoveryBridgeTopology.create(domain,topology.comunevillarendenawl1Id);
         setBridgeElements(domain,topology.elemlist);
         
         DiscoveryBridgeTopology ndbtB= new DiscoveryBridgeTopology(domain);
@@ -1822,9 +1837,9 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     public void testTwentySwitchTopologyVigReMun() {
         TwentyNodeTopology topology = new TwentyNodeTopology();
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.vigrenmualv01Id);
-        Bridge.create(domain,topology.vigrenmualv02Id);
-        Bridge.create(domain,topology.vigrenmuasw01Id);
+        DiscoveryBridgeTopology.create(domain,topology.vigrenmualv01Id);
+        DiscoveryBridgeTopology.create(domain,topology.vigrenmualv02Id);
+        DiscoveryBridgeTopology.create(domain,topology.vigrenmuasw01Id);
         setBridgeElements(domain,topology.elemlist);
         
         DiscoveryBridgeTopology ndbtB= new DiscoveryBridgeTopology(domain);
@@ -1842,8 +1857,8 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         TwentyNodeTopology topology = new TwentyNodeTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.daremunalv01Id);
-        Bridge.create(domain,topology.daremunasw01Id);
+        DiscoveryBridgeTopology.create(domain,topology.daremunalv01Id);
+        DiscoveryBridgeTopology.create(domain,topology.daremunasw01Id);
         setBridgeElements(domain,topology.elemlist);
         
         DiscoveryBridgeTopology ndbtB= new DiscoveryBridgeTopology(domain);
@@ -1862,14 +1877,14 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         TwentyNodeTopology topology = new TwentyNodeTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.vrendmunalv02Id);
-        Bridge.create(domain,topology.vrendmunasw01Id);
-        Bridge.create(domain,topology.comunevillarendenawl1Id);
-        Bridge.create(domain,topology.vigrenmualv01Id);
-        Bridge.create(domain,topology.vigrenmualv02Id);
-        Bridge.create(domain,topology.vigrenmuasw01Id);
-        Bridge.create(domain,topology.daremunalv01Id);
-        Bridge.create(domain,topology.daremunasw01Id);
+        DiscoveryBridgeTopology.create(domain,topology.vrendmunalv02Id);
+        DiscoveryBridgeTopology.create(domain,topology.vrendmunasw01Id);
+        DiscoveryBridgeTopology.create(domain,topology.comunevillarendenawl1Id);
+        DiscoveryBridgeTopology.create(domain,topology.vigrenmualv01Id);
+        DiscoveryBridgeTopology.create(domain,topology.vigrenmualv02Id);
+        DiscoveryBridgeTopology.create(domain,topology.vigrenmuasw01Id);
+        DiscoveryBridgeTopology.create(domain,topology.daremunalv01Id);
+        DiscoveryBridgeTopology.create(domain,topology.daremunasw01Id);
         setBridgeElements(domain,topology.elemlist);
         
         DiscoveryBridgeTopology ndbtB= new DiscoveryBridgeTopology(domain);
@@ -1895,20 +1910,20 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         TwentyNodeTopology topology = new TwentyNodeTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.spiazzofasw01Id);
-        Bridge.create(domain,topology.spiasvigasw01Id);
-        Bridge.create(domain,topology.daremunalv01Id);
-        Bridge.create(domain,topology.villpizzasw01Id);
-        Bridge.create(domain,topology.rsaspiazzowl1Id);
-        Bridge.create(domain,topology.vigrenmualv01Id);
-        Bridge.create(domain,topology.vigrenmualv02Id);
-        Bridge.create(domain,topology.vigrenmuasw01Id);
-        Bridge.create(domain,topology.vrendmunalv02Id);
-        Bridge.create(domain,topology.daremunasw01Id);
-        Bridge.create(domain,topology.spiazzomepe01Id);
-        Bridge.create(domain,topology.comunespiazzowl1Id);
-        Bridge.create(domain,topology.vrendmunasw01Id);
-        Bridge.create(domain,topology.comunevillarendenawl1Id);
+        DiscoveryBridgeTopology.create(domain,topology.spiazzofasw01Id);
+        DiscoveryBridgeTopology.create(domain,topology.spiasvigasw01Id);
+        DiscoveryBridgeTopology.create(domain,topology.daremunalv01Id);
+        DiscoveryBridgeTopology.create(domain,topology.villpizzasw01Id);
+        DiscoveryBridgeTopology.create(domain,topology.rsaspiazzowl1Id);
+        DiscoveryBridgeTopology.create(domain,topology.vigrenmualv01Id);
+        DiscoveryBridgeTopology.create(domain,topology.vigrenmualv02Id);
+        DiscoveryBridgeTopology.create(domain,topology.vigrenmuasw01Id);
+        DiscoveryBridgeTopology.create(domain,topology.vrendmunalv02Id);
+        DiscoveryBridgeTopology.create(domain,topology.daremunasw01Id);
+        DiscoveryBridgeTopology.create(domain,topology.spiazzomepe01Id);
+        DiscoveryBridgeTopology.create(domain,topology.comunespiazzowl1Id);
+        DiscoveryBridgeTopology.create(domain,topology.vrendmunasw01Id);
+        DiscoveryBridgeTopology.create(domain,topology.comunevillarendenawl1Id);
         setBridgeElements(domain,topology.elemlist);
         
         DiscoveryBridgeTopology ndbtA= new DiscoveryBridgeTopology(domain);
@@ -1944,8 +1959,8 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         TwentyNodeTopology topology = new TwentyNodeTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.spiasvigasw01Id);
-        Bridge.create(domain,topology.villpizzasw01Id);
+        DiscoveryBridgeTopology.create(domain,topology.spiasvigasw01Id);
+        DiscoveryBridgeTopology.create(domain,topology.villpizzasw01Id);
         setBridgeElements(domain,topology.elemlist);
         
         DiscoveryBridgeTopology ndbtB= new DiscoveryBridgeTopology(domain);
@@ -1963,8 +1978,8 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         TwentyNodeTopology topology = new TwentyNodeTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.spiazzofasw01Id);
-        Bridge.create(domain,topology.villpizzasw01Id);
+        DiscoveryBridgeTopology.create(domain,topology.spiazzofasw01Id);
+        DiscoveryBridgeTopology.create(domain,topology.villpizzasw01Id);
         setBridgeElements(domain,topology.elemlist);
         
         DiscoveryBridgeTopology ndbtB= new DiscoveryBridgeTopology(domain);
@@ -1983,8 +1998,8 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         TwentyNodeTopology topology = new TwentyNodeTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.spiazzofasw01Id);
-        Bridge.create(domain,topology.comunespiazzowl1Id);
+        DiscoveryBridgeTopology.create(domain,topology.spiazzofasw01Id);
+        DiscoveryBridgeTopology.create(domain,topology.comunespiazzowl1Id);
         setBridgeElements(domain,topology.elemlist);
         
         DiscoveryBridgeTopology ndbtB= new DiscoveryBridgeTopology(domain);
@@ -2003,9 +2018,9 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         TwentyNodeTopology topology = new TwentyNodeTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.spiazzomepe01Id);
-        Bridge.create(domain,topology.spiazzofasw01Id);
-        Bridge.create(domain,topology.comunespiazzowl1Id);
+        DiscoveryBridgeTopology.create(domain,topology.spiazzomepe01Id);
+        DiscoveryBridgeTopology.create(domain,topology.spiazzofasw01Id);
+        DiscoveryBridgeTopology.create(domain,topology.comunespiazzowl1Id);
         setBridgeElements(domain,topology.elemlist);
         
         DiscoveryBridgeTopology ndbtB= new DiscoveryBridgeTopology(domain);
@@ -2025,10 +2040,10 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         TwentyNodeTopology topology = new TwentyNodeTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.spiazzomepe01Id);
-        Bridge.create(domain,topology.spiazzofasw01Id);
-        Bridge.create(domain,topology.comunespiazzowl1Id);
-        Bridge.create(domain,topology.spiasvigasw01Id);
+        DiscoveryBridgeTopology.create(domain,topology.spiazzomepe01Id);
+        DiscoveryBridgeTopology.create(domain,topology.spiazzofasw01Id);
+        DiscoveryBridgeTopology.create(domain,topology.comunespiazzowl1Id);
+        DiscoveryBridgeTopology.create(domain,topology.spiasvigasw01Id);
         
         setBridgeElements(domain,topology.elemlist);
         
@@ -2051,11 +2066,11 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         TwentyNodeTopology topology = new TwentyNodeTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.spiazzomepe01Id);
-        Bridge.create(domain,topology.spiazzofasw01Id);
-        Bridge.create(domain,topology.comunespiazzowl1Id);
-        Bridge.create(domain,topology.spiasvigasw01Id);
-        Bridge.create(domain,topology.rsaspiazzowl1Id);
+        DiscoveryBridgeTopology.create(domain,topology.spiazzomepe01Id);
+        DiscoveryBridgeTopology.create(domain,topology.spiazzofasw01Id);
+        DiscoveryBridgeTopology.create(domain,topology.comunespiazzowl1Id);
+        DiscoveryBridgeTopology.create(domain,topology.spiasvigasw01Id);
+        DiscoveryBridgeTopology.create(domain,topology.rsaspiazzowl1Id);
 
         setBridgeElements(domain,topology.elemlist);
         
@@ -2077,24 +2092,24 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         TwentyNodeTopology topology = new TwentyNodeTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.spiazzofasw01Id);
-        Bridge.create(domain,topology.spiasvigasw01Id);
-        Bridge.create(domain,topology.daremunalv01Id);
-        Bridge.create(domain,topology.villpizzasw01Id);
-        Bridge.create(domain,topology.rsaspiazzowl1Id);
-        Bridge.create(domain,topology.vigrenmualv01Id);
-        Bridge.create(domain,topology.vigrenmualv02Id);
-        Bridge.create(domain,topology.vigrenmuasw01Id);
-        Bridge.create(domain,topology.vrendmunalv02Id);
-        Bridge.create(domain,topology.daremunasw01Id);
-        Bridge.create(domain,topology.spiazzomepe01Id);
-        Bridge.create(domain,topology.comunespiazzowl1Id);
-        Bridge.create(domain,topology.vrendmunasw01Id);
-        Bridge.create(domain,topology.comunevillarendenawl1Id);
+        DiscoveryBridgeTopology.create(domain,topology.spiazzofasw01Id);
+        DiscoveryBridgeTopology.create(domain,topology.spiasvigasw01Id);
+        DiscoveryBridgeTopology.create(domain,topology.daremunalv01Id);
+        DiscoveryBridgeTopology.create(domain,topology.villpizzasw01Id);
+        DiscoveryBridgeTopology.create(domain,topology.rsaspiazzowl1Id);
+        DiscoveryBridgeTopology.create(domain,topology.vigrenmualv01Id);
+        DiscoveryBridgeTopology.create(domain,topology.vigrenmualv02Id);
+        DiscoveryBridgeTopology.create(domain,topology.vigrenmuasw01Id);
+        DiscoveryBridgeTopology.create(domain,topology.vrendmunalv02Id);
+        DiscoveryBridgeTopology.create(domain,topology.daremunasw01Id);
+        DiscoveryBridgeTopology.create(domain,topology.spiazzomepe01Id);
+        DiscoveryBridgeTopology.create(domain,topology.comunespiazzowl1Id);
+        DiscoveryBridgeTopology.create(domain,topology.vrendmunasw01Id);
+        DiscoveryBridgeTopology.create(domain,topology.comunevillarendenawl1Id);
         setBridgeElements(domain,topology.elemlist);
 
         BridgeForwardingTable bridgeFtpe = 
-                BridgeForwardingTable.create(domain.getBridge(topology.spiazzomepe01Id), topology.bftspiazzomepe01);
+                DiscoveryBridgeTopology.create(domain.getBridge(topology.spiazzomepe01Id), topology.bftspiazzomepe01);
         
         Map<String, Set<BridgePort>> duplicated = bridgeFtpe.getDuplicated();
         assertEquals(5, duplicated.size());
@@ -2110,57 +2125,57 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         assertEquals(2,duplicated.get(topology.macvrendmunasw01).size()); //port 5
         assertEquals(2,duplicated.get(topology.mac001906d5cf50).size());  //port 5
 
-        System.err.println(BridgeForwardingTableEntry.printTopology(bridgeFtpe.getEntries()));
+        System.err.println(printTopology(bridgeFtpe.getEntries()));
 
-        assertEquals(0,BridgeForwardingTable.
+        assertEquals(0, DiscoveryBridgeTopology.
                               create(domain.getBridge(topology.daremunasw01Id), topology.bftdaremunasw01).getDuplicated().
                               size());
 
-        assertEquals(0,BridgeForwardingTable.
+        assertEquals(0, DiscoveryBridgeTopology.
                               create(domain.getBridge(topology.vigrenmuasw01Id), topology.bftvigrenmuasw01).getDuplicated().
                               size());
 
-        assertEquals(0,BridgeForwardingTable.
+        assertEquals(0, DiscoveryBridgeTopology.
                             create(domain.getBridge(topology.vrendmunasw01Id), topology.bftvrendmunasw01).getDuplicated().
                             size());
 
-        assertEquals(0,BridgeForwardingTable.
+        assertEquals(0, DiscoveryBridgeTopology.
                           create(domain.getBridge(topology.spiazzofasw01Id), topology.bftspiazzofasw01).getDuplicated().
                           size());
                      
-        assertEquals(0,BridgeForwardingTable.
+        assertEquals(0, DiscoveryBridgeTopology.
                           create(domain.getBridge(topology.spiasvigasw01Id), topology.bftspiasvigasw01).getDuplicated().
                           size());
 
-        assertEquals(0,BridgeForwardingTable.
+        assertEquals(0, DiscoveryBridgeTopology.
                           create(domain.getBridge(topology.villpizzasw01Id), topology.bftvillpizzasw01).getDuplicated().
                           size());
         
-        assertEquals(0,BridgeForwardingTable.
+        assertEquals(0, DiscoveryBridgeTopology.
                           create(domain.getBridge(topology.daremunalv01Id), topology.bftdaremunalv01).getDuplicated().
                           size());
 
-        assertEquals(0,BridgeForwardingTable.
+        assertEquals(0, DiscoveryBridgeTopology.
                           create(domain.getBridge(topology.vigrenmualv01Id), topology.bftvigrenmualv01).getDuplicated().
                           size());
 
-        assertEquals(0,BridgeForwardingTable.
+        assertEquals(0, DiscoveryBridgeTopology.
                           create(domain.getBridge(topology.vigrenmualv02Id), topology.bftvigrenmualv02).getDuplicated().
                           size());
 
-        assertEquals(0,BridgeForwardingTable.
+        assertEquals(0, DiscoveryBridgeTopology.
                           create(domain.getBridge(topology.vrendmunalv02Id), topology.bftvrendmunalv02).getDuplicated().
                           size());
 
-        assertEquals(0,BridgeForwardingTable.
+        assertEquals(0, DiscoveryBridgeTopology.
                           create(domain.getBridge(topology.rsaspiazzowl1Id), topology.bftrsaspiazzowl1).getDuplicated().
                           size());
 
-        assertEquals(0,BridgeForwardingTable.
+        assertEquals(0, DiscoveryBridgeTopology.
                           create(domain.getBridge(topology.comunespiazzowl1Id), topology.bftcomunespiazzowl1).getDuplicated().
                           size());
 
-        assertEquals(0,BridgeForwardingTable.
+        assertEquals(0, DiscoveryBridgeTopology.
                           create(domain.getBridge(topology.comunevillarendenawl1Id), topology.bftcomunevillarendenawl1).getDuplicated().
                           size());
         
@@ -2170,8 +2185,8 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     public void testUnresolvableTopology() {
         TwoUnresolvableTopology topology = new TwoUnresolvableTopology();
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain, topology.nodeIdA);
-        Bridge.create(domain, topology.nodeIdB);
+        DiscoveryBridgeTopology.create(domain, topology.nodeIdA);
+        DiscoveryBridgeTopology.create(domain, topology.nodeIdB);
         setBridgeElements(domain, topology.elemlist);
         
         DiscoveryBridgeTopology ndbt = new DiscoveryBridgeTopology(domain);

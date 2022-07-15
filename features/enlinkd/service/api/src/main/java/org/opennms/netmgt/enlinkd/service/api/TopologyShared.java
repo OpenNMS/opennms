@@ -44,7 +44,7 @@ public class TopologyShared implements Topology {
         macPortsOnSegment.forEach(mp -> noPortMacs.removeAll(mp.getMacPortMap().keySet()));
         
         if (noPortMacs.size() >0) {
-            tps.setCloud(MacCloud.create(noPortMacs));
+            tps.setCloud(create(noPortMacs));
         }
         return tps;
     }
@@ -59,6 +59,14 @@ public class TopologyShared implements Topology {
     private final BridgePort designated;
     private final List<BridgePort> left;
     private final List<MacPort> right;
+
+    public static MacCloud create(Set<String> macs) {
+
+        if (macs != null && macs.size() > 0)
+            return new MacCloud(macs);
+        return null;
+
+    }
 
     public List<BridgePort> getBridgePorts() {
         return left;

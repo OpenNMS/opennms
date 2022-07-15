@@ -53,6 +53,9 @@ import org.slf4j.LoggerFactory;
 
 public class DiscoveryBridgeDomains extends Discovery {
 
+    public static final int DOMAIN_MATCH_MIN_SIZE = 20;
+    public static final float DOMAIN_MATCH_MIN_RATIO = 0.5f;
+
     public static DiscoveryBridgeDomains clone(DiscoveryBridgeDomains dbd) {
         return new DiscoveryBridgeDomains(dbd.getBridgeTopologyService());
     }
@@ -65,13 +68,22 @@ public class DiscoveryBridgeDomains extends Discovery {
         super();
         m_bridgeTopologyService = bridgeTopologyService;
     }
-            
+
+    public static boolean checkMacSets(Set<String> setA, Set<String> setB) {
+        Set<String>retainedSet = new HashSet<>(setB);
+        retainedSet.retainAll(setA);
+        // should contain at list 20 or 50% of the all size
+        return retainedSet.size() > DOMAIN_MATCH_MIN_SIZE
+                || retainedSet.size() > setA.size() * DOMAIN_MATCH_MIN_RATIO
+                || retainedSet.size() > setB.size() * DOMAIN_MATCH_MIN_RATIO;
+    }
+
     private BroadcastDomain find(Set<Integer> nodes, Set<String> setA) throws BridgeTopologyException {
         
         BroadcastDomain domain = null;
         
         for (BroadcastDomain curBDomain : m_bridgeTopologyService.findAll()) {
-            if (BroadcastDomain.checkMacSets(setA, curBDomain.getMacsOnSegments())) {
+            if (checkMacSets(setA, curBDomain.getMacsOnSegments())) {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("find: node:{}, domain:{}",
                              nodes, 
@@ -156,7 +168,7 @@ public class DiscoveryBridgeDomains extends Discovery {
                 if (parsed.contains(nodeidB)) {
                     continue;
                 }
-                if (BroadcastDomain.checkMacSets(nodeMacs.get(nodeidA),
+                if (checkMacSets(nodeMacs.get(nodeidA),
                                                  nodeMacs.get(nodeidB))) {
                     nodeondomainbft.get(nodeidA).put(nodeidB,
                                                      nodeBft.get(nodeidB));

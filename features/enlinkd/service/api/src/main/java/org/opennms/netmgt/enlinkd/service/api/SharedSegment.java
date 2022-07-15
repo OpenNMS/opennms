@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.enlinkd.service.api;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -38,20 +39,21 @@ import java.util.Set;
 import org.opennms.netmgt.enlinkd.model.BridgeBridgeLink;
 import org.opennms.netmgt.enlinkd.model.BridgeMacLink;
 import org.opennms.netmgt.enlinkd.model.BridgeMacLink.BridgeMacLinkType;
+import org.opennms.netmgt.model.OnmsNode;
 
 public class SharedSegment implements Topology{
     
     public static List<BridgeBridgeLink> getBridgeBridgeLinks(SharedSegment segment) throws BridgeTopologyException {
-        return BridgeForwardingTableEntry.create(segment.getDesignatedPort(), segment.getBridgePortsOnSegment());
+        return create(segment.getDesignatedPort(), segment.getBridgePortsOnSegment());
     }
 
     public static List<BridgeMacLink> getBridgeMacLinks(SharedSegment segment) throws BridgeTopologyException {
-        return BridgeForwardingTableEntry.create(segment.getDesignatedPort(), segment.getMacsOnSegment(), BridgeMacLinkType.BRIDGE_LINK);
+        return BridgeTopologyService.create(segment.getDesignatedPort(), segment.getMacsOnSegment(), BridgeMacLinkType.BRIDGE_LINK);
     }
     
     public static SharedSegment create(BridgeMacLink link) throws BridgeTopologyException {
         SharedSegment segment = new SharedSegment();
-        segment.getBridgePortsOnSegment().add(BridgePort.getFromBridgeMacLink(link));
+        segment.getBridgePortsOnSegment().add(getFromBridgeMacLink(link));
         segment.getMacsOnSegment().add(link.getMacAddress());
         segment.setDesignatedBridge(link.getNode().getId());
         segment.setCreateTime(link.getBridgeMacLinkCreateTime());
@@ -61,8 +63,8 @@ public class SharedSegment implements Topology{
 
     public static SharedSegment create(BridgeBridgeLink link) throws BridgeTopologyException {
         SharedSegment segment = new SharedSegment();
-        segment.getBridgePortsOnSegment().add(BridgePort.getFromBridgeBridgeLink(link));
-        segment.getBridgePortsOnSegment().add(BridgePort.getFromDesignatedBridgeBridgeLink(link));
+        segment.getBridgePortsOnSegment().add(getFromBridgeBridgeLink(link));
+        segment.getBridgePortsOnSegment().add(getFromDesignatedBridgeBridgeLink(link));
         segment.setDesignatedBridge(link.getDesignatedNode().getId());
         segment.setCreateTime(link.getBridgeBridgeLinkCreateTime());
         segment.setLastPollTime(link.getBridgeBridgeLinkLastPollTime());
@@ -147,6 +149,58 @@ public class SharedSegment implements Topology{
     private final Set<BridgePort> m_portsOnSegment = new HashSet<>();
     private Date m_createTime;
     private Date m_lastPollTime;
+
+    public static BridgePort getFromBridgeMacLink(BridgeMacLink link) {
+        BridgePort bp = new BridgePort();
+        bp.setNodeId(link.getNode().getId());
+        bp.setBridgePort(link.getBridgePort());
+        bp.setBridgePortIfIndex(link.getBridgePortIfIndex());
+        bp.setVlan(link.getVlan());
+        return bp;
+    }
+
+    public static BridgePort getFromBridgeBridgeLink(BridgeBridgeLink link) {
+        BridgePort bp = new BridgePort();
+        bp.setNodeId(link.getNode().getId());
+        bp.setBridgePort(link.getBridgePort());
+        bp.setBridgePortIfIndex(link.getBridgePortIfIndex());
+        bp.setVlan(link.getVlan());
+        return bp;
+    }
+
+    public static BridgePort getFromDesignatedBridgeBridgeLink(BridgeBridgeLink link) {
+        BridgePort bp = new BridgePort();
+        bp.setNodeId(link.getDesignatedNode().getId());
+        bp.setBridgePort(link.getDesignatedPort());
+        bp.setBridgePortIfIndex(link.getDesignatedPortIfIndex());
+        bp.setVlan(link.getDesignatedVlan());
+        return bp;
+    }
+
+    public static List<BridgeBridgeLink> create(BridgePort designatedPort, Set<BridgePort> ports) {
+        OnmsNode designatedNode = new OnmsNode();
+        designatedNode.setId(designatedPort.getNodeId());
+        List<BridgeBridgeLink> links = new ArrayList<>();
+        for (BridgePort port:ports) {
+            if (port.equals(designatedPort)) {
+                continue;
+            }
+            BridgeBridgeLink link = new BridgeBridgeLink();
+            OnmsNode node = new OnmsNode();
+            node.setId(port.getNodeId());
+            link.setNode(node);
+            link.setBridgePort(port.getBridgePort());
+            link.setBridgePortIfIndex(port.getBridgePortIfIndex());
+            link.setVlan(port.getVlan());
+            link.setDesignatedNode(designatedNode);
+            link.setDesignatedPort(designatedPort.getBridgePort());
+            link.setDesignatedPortIfIndex(designatedPort.getBridgePortIfIndex());
+            link.setDesignatedVlan(designatedPort.getVlan());
+            links.add(link);
+        }
+        return links;
+
+    }
 
     public Date getCreateTime() {
         return m_createTime;

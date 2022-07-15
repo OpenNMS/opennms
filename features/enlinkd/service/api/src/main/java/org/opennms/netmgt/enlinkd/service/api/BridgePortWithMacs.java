@@ -33,22 +33,10 @@ import java.util.Set;
 
 public class BridgePortWithMacs implements Topology {
 
-    public static BridgePortWithMacs create(BridgePort port, Set<String> macs) throws BridgeTopologyException {
-        if (port == null) {
-            throw new BridgeTopologyException("cannot create BridgePortWithMacs bridge port is null");
-        }
-        if (macs == null) {
-            throw new BridgeTopologyException("cannot create BridgePortWithMacs macs is null");
-        }
-        return new BridgePortWithMacs(port,macs);
-        
-    }
-
     private final BridgePort m_port;
     private final Set<String> m_macs;
-    
- 
-    private BridgePortWithMacs(BridgePort port, Set<String> macs) {
+
+    public BridgePortWithMacs(BridgePort port, Set<String> macs) {
         m_port=port;
         m_macs=macs;
     }
@@ -76,7 +64,6 @@ public class BridgePortWithMacs implements Topology {
 
     @Override
     public String printTopology() {
-
         return m_port.printTopology() +
                 " macs:" +
                 m_macs;
