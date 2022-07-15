@@ -34,7 +34,6 @@ pipeline_parameters=common_library.load_json(path_to_pipeline_parameters)
 #New Idea:
 path_to_build_components=os.path.join("/tmp","build-components.json")
 build_components=common_library.load_json(path_to_pipeline_parameters)
-print(build_components)
 
 #if os.path.exists(path_to_pipeline_parameters):
 #    pipeline_parameters=common_library.load_json(path_to_pipeline_parameters)
@@ -102,20 +101,20 @@ for e in main_yml_content:
             sample_workflow.append(libyaml.create_space(level)+"jobs:")
             level+=2
 
-            if pipeline_parameters["trigger-rpms"]:
+            if build_components["trigger-rpms"]:
                 print("rpms:",libyaml.tell_extended_requirements('rpms'))
                 sample_workflow=libyaml.generate_yaml(workflow_data,"rpms",level,sample_workflow,disable_filters=True)
-            elif pipeline_parameters["trigger-integration"]:
+            elif build_components["trigger-integration"]:
                 print("integration-test:",libyaml.tell_extended_requirements('integration-test'))
                 sample_workflow=libyaml.generate_yaml(workflow_data,"integration-test",level,sample_workflow,disable_filters=True)
-            elif pipeline_parameters["trigger-debs"]:
+            elif build_components["trigger-debs"]:
                 print("debs:",libyaml.tell_extended_requirements('debs'))
                 sample_workflow=libyaml.generate_yaml(workflow_data,"debs",level,sample_workflow,disable_filters=True)
-            elif pipeline_parameters["trigger-experimental"]:
+            elif build_components["trigger-experimental"]:
                 print("build-with-tarball:",libyaml.tell_extended_requirements('build-with-tarball'))
                 sample_workflow=libyaml.generate_yaml(workflow_data,"build-with-tarball",level,sample_workflow,disable_filters=True)
             else:
-                if pipeline_parameters["trigger-build"]:
+                if build_components["trigger-build"]:
                     print("build-deploy:",libyaml.tell_extended_requirements('build-deploy'))
                     sample_workflow=libyaml.generate_yaml(workflow_data,"build-deploy",level,sample_workflow)
                 else:
