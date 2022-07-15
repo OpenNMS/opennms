@@ -144,7 +144,8 @@ if "smoke" in git_keywords or "Smoke_tests" in What_to_build:
 else:
     build_mappings["tests"]["smoke"]=False
 
-if "docker" in git_keywords:   
+if "docker" in git_keywords:
+    build_mappings["build"]["build"]=True
     build_mappings["oci-images"]["minion"]=True
     build_mappings["oci-images"]["horizon"]=True
     build_mappings["oci-images"]["sentinel"]=True
@@ -153,7 +154,8 @@ else:
     build_mappings["oci-images"]["horizon"]=False
     build_mappings["oci-images"]["sentinel"]=False
 
-if "rpms" in git_keywords:   
+if "rpms" in git_keywords:
+    build_mappings["build"]["build"]=True
     build_mappings["rpm-packages"]["minion"]=True
     build_mappings["rpm-packages"]["horizon"]=True
     build_mappings["rpm-packages"]["sentinel"]=True
@@ -163,6 +165,7 @@ else:
     build_mappings["rpm-packages"]["sentinel"]=False
     
 if "debs" in git_keywords:   
+    build_mappings["build"]["build"]=True
     build_mappings["debian-packages"]["minion"]=True
     build_mappings["debian-packages"]["horizon"]=True
     build_mappings["debian-packages"]["sentinel"]=True    
@@ -172,6 +175,7 @@ else:
     build_mappings["debian-packages"]["sentinel"]=False    
 
 if "integration" in git_keywords or "Integration_tests" in What_to_build:   
+    build_mappings["build"]["build"]=True
     build_mappings["tests"]["integration"]=True
 else:
     build_mappings["tests"]["integration"]=False
