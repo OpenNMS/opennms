@@ -93,7 +93,7 @@ for e in main_yml_content:
             level=0
             sample_workflow.append(libyaml.create_space(level)+"workflows:")
             level=level+2
-            if build_components["trigger-experimental"]:
+            if build_components["experimental"]:
                 sample_workflow.append(libyaml.create_space(level)+"auto-exp-build:")
             else:
                 sample_workflow.append(libyaml.create_space(level)+"auto-build:")
@@ -101,22 +101,28 @@ for e in main_yml_content:
             sample_workflow.append(libyaml.create_space(level)+"jobs:")
             level+=2
 
-            if build_components["trigger-rpms"]:
+            if build_components["rpm-packages"]["minion"] or build_components["rpm-packages"]["horizon"] or build_components["rpm-packages"]["sentinel"]:
                 print("rpms:",libyaml.tell_extended_requirements('rpms'))
                 sample_workflow=libyaml.generate_yaml(workflow_data,"rpms",level,sample_workflow,disable_filters=True)
-            elif build_components["trigger-integration"]:
+            elif build_components["tests"]["integration"]:
                 print("integration-test:",libyaml.tell_extended_requirements('integration-test'))
                 sample_workflow=libyaml.generate_yaml(workflow_data,"integration-test",level,sample_workflow,disable_filters=True)
-            elif build_components["trigger-debs"]:
+            elif build_components["debian-packages"]["minion"] or build_components["debian-packages"]["horizon"] or build_components["debian-packages"]["sentinel"]:
                 print("debs:",libyaml.tell_extended_requirements('debs'))
                 sample_workflow=libyaml.generate_yaml(workflow_data,"debs",level,sample_workflow,disable_filters=True)
-            elif build_components["trigger-experimental"]:
+            elif build_components["experimental"]:
                 print("build-with-tarball:",libyaml.tell_extended_requirements('build-with-tarball'))
                 sample_workflow=libyaml.generate_yaml(workflow_data,"build-with-tarball",level,sample_workflow,disable_filters=True)
             else:
-                if build_components["trigger-build"]:
+                if build_components["build"]["build"]:
                     print("build-deploy:",libyaml.tell_extended_requirements('build-deploy'))
                     sample_workflow=libyaml.generate_yaml(workflow_data,"build-deploy",level,sample_workflow)
+                elif build_components["build"]["docs"]:
+                    print("build> docs :",libyaml.tell_extended_requirements('docs'))
+                elif build_components["build"]["ui"]:
+                    print("build> ui :",libyaml.tell_extended_requirements('ui'))
+                elif build_components["build"]["coverage"]:
+                    print("build> coverage :",libyaml.tell_extended_requirements('coverage'))
                 else:
                     print("empty:",libyaml.tell_requirements('empty'))
                     sample_workflow=libyaml.generate_yaml(workflow_data,"empty",level,sample_workflow)
