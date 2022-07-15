@@ -85,6 +85,15 @@ for change in changes:
     elif ".circleci" in change:
         if "circleci_configuration" not in What_to_build:
             What_to_build.append("circleci_configuration")
+    elif "doc" in change :
+        if "doc" not in What_to_build:
+            What_to_build.append("doc")
+    elif "ui" in change :
+        if "ui" not in What_to_build:
+            What_to_build.append("ui")
+    else:
+        if "build" not in What_to_build:
+            What_to_build.append("build")
 
 print("What we want to build:",What_to_build,len(What_to_build))
 git_keywords=libgit.extractKeywordsFromLastCommit()
