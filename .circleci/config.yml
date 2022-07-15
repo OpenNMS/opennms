@@ -654,7 +654,7 @@ workflows:
                 - /.*smoke.*/
       - integration-test:
           requires:
-            - build
+            - tarball-assembly
           filters:
             branches:
               ignore:
@@ -934,7 +934,7 @@ jobs:
             # install fake makensis to satisfy the assemble dependency
             sudo cp .circleci/scripts/makensis.py /usr/local/bin/makensis
             export MAVEN_OPTS="-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
-            export MAVEN_ARGS="install"
+            export MAVEN_ARGS="install org.opennms.maven.plugins:structure-maven-plugin:1.0:structure"
             case "${CIRCLE_BRANCH}" in
               "master"*|"release-"*|develop)
                 # release branches should enable extra "production" stuff like license indexing
@@ -966,10 +966,10 @@ jobs:
             cp opennms-doc/guide-all/target/*.tar.gz "./target/artifacts/opennms-${OPENNMS_VERSION}-docs.tar.gz"
             cp target/*-source.tar.gz ./target/artifacts/
           cp opennms-full-assembly/target/generated-sources/license/THIRD-PARTY.txt ./target/artifacts/ || :
-      - store_artifacts:
-          when: always
+          cp target/structure*.json ./target/artifacts/ || :
+      - save-artifacts:
           path: ~/project/target/artifacts
-          destination: artifacts
+          location: tarball-artifacts
       - store_artifacts:
           when: always
           path: ~/project/target/tarballs
@@ -1256,6 +1256,9 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
+      - fetch-artifacts:
+          path: target
+          location: tarball-artifacts
       - run-integration-tests:
           rerun-failtest-count: 1
   integration-test-with-coverage:
