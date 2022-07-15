@@ -27,7 +27,7 @@ For example:
 
 Format: `bin/send-event.pl <uei> [host:port] [options]`
 
-The `host:port` defines the hostname and port to send the event; by default, the local host.
+The `host:port` defines the hostname and port to send the event; by default, the hostname and port of the local host.
 
 Find UEIs and their associated parameters in the `$\{OPENNMS_HOME}/etc/eventd-configuration.xml` file.
 See also xref:events/event-configuration.adoc#ga-events-event-configuration[Event Configuration].
