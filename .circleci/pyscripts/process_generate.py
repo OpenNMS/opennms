@@ -66,7 +66,8 @@ print("Mappings:",mappings)
 # if Dockerfiles (under opennms-container) have changed enable docker builds
 What_to_build=[]
 for change in changes:
-    print("Changes",change)
+    if not change:
+        continue
     if "IT.java" in change:
         if "Integration_tests" not in What_to_build:
             What_to_build.append("Integration_tests")
