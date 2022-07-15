@@ -18,5 +18,5 @@ jobs:
              find . -name site.zip
              mv ./build/site.zip "./build/site-$OPENNMS_VERSION.zip"
       - store_artifacts:
-          path: ~/project/build/site.zip
+          path: ~/project/build/site*.zip
           #destination: site.zip
