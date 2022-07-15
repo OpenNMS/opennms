@@ -1,12 +1,13 @@
 
-= Event Definitions and Management Information Base (MIB) Files
+= SNMP MIB Compiler
 
 Management Information Base (MIB) files are text files written in Abstact Syntax Notation.
 They describe Simple Network Management Protocol (SNMP) elements for specific devices.
 By default, {page-component-title} includes an extensive list of MIB definitions from a number of vendors.
-You will need to import MIB files for unformatted events as part of configuring SNMP traps.
+You will only need to import MIB files for unformatted events as part of configuring SNMP traps and collection.
 
-You can parse SNMP MIB definitions and create OpenNMS event definitions from any `TRAP-TYPE` and/or `NOTIFICATION-TYPE` macros they contain through the UI.
+You can parse SNMP MIB definitions and create {page-component-title} event definitions from any `TRAP-TYPE` and/or `NOTIFICATION-TYPE` macros they contain through the UI.
+You can also generate data collection definitions from `OBJECT-TYPE` symbols defined in a MIB file.
 
 Two command-line utilities, `mib2events` and `mib2opennms`, are also available to help make event definitions from MIB definitions.
 The UI editor does at least as good a job as `mib2events`.
@@ -16,7 +17,8 @@ We do not recommend using using `mib2opennms`, as it produces more bus errors th
 
 To import a MIB file and create event definitions, follow these steps:
 
-. Save the vendor MIB file to your local drive or USB stick.
+. Save the vendor MIB file to a location available to your local workstation.
+The MIB file does not need to be accessible by the server.
 . In {page-component-title} click the gears icon and select *Additional Tools>SNMP MIB Compiler*.
 . Click *Upload MIB*.
 . Select the MIB file and click *Open*.
@@ -30,7 +32,7 @@ AND/OR
 .. Right-click the file and choose *Edit MIB*.
 .. Edit the file to address the error, click *Save* and run the compile again.
 . Continue to edit the file until it compiles successfully.
-. Right-click on the MIB from which you want to generate an event and choose *Generate Events*.
+. Right-click on the MIB from which you want to generate an event and choose *Generate Events* and/or *Generate Data Collection* as desired.
 . If desired, modify the name of the UEI base with the vendor name for easier troubleshooting and click *Configure*.
 +
 . Click *Save Events File* to save them to the event.conf file.

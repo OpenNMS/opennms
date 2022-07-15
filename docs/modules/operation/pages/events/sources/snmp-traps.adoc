@@ -2,33 +2,35 @@
 [[ga-events-sources-snmp-traps]]
 = SNMP Traps
 
-OpenNMS {page-component-title} can receive and process SNMP traps/informs from SNMP-capable devices out of the box.
+{page-component-title} can receive and process SNMP traps/informs from SNMP-capable devices out of the box.
 It receives SNMP traps via the xref:reference:daemons/daemon-config-files/trapd.adoc[trapd service daemon], which is enabled by default.
 
 IMPORTANT: Disabling trapd renders {page-component-title} incapable of receiving SNMP traps.
 
-{page-component-title} transforms these traps into events according to default preconfigured rules and those users create.
+{page-component-title} transforms these traps into events based on event definitions.
+{page-component-title} includes trap definitions from many major manufacturers by default, and you can create your own event definitions.
 
 == Before you begin
 There are a few tasks you must complete before OpenNMS can receive SNMP traps:
 
 . Configure the port on which OpenNMS can receive SNMP traps (see xref:deployment:core/getting-started.adoc#receive-snmp-traps[Receive SNMP Traps/Informs]).
+By default, {page-component-title} listens on a non-standard port for trap messages.
 . Ensure that SNMP-capable devices on your network are configured to send traps to {page-component-title}.
 
 [[trap-config]]
 == SNMP Trap Configuration: How To
 
-Configure SNMP traps to customize the types of trap information you receive and the conditions under which OpenNMS converts the trap into an event.
+Configure SNMP traps to customize the types of trap information you receive and the conditions under which {page-component-title} converts the trap into an event.
 For example, you may want to see an event only when a device is down, or when a combination of criteria are met (for example, OID X with "major" severity level, and status "indeterminate").
-OpenNMS transforms these traps into events only when the conditions you define are met.
+These traps are transformed into events only when the conditions you define are met.
 
 There are several ways to configure {page-component-title} to customize the events you receive and see:
 
 * Determine what problem you are trying to solve (for example, I want to know X about my Cisco router)
-* Manually send the corresponding event to the OpenNMS server and see how OpenNMS handles it (see xref:operation:events/sources/send-event.adoc[Manually send events])
+* Manually send the corresponding event to the {page-component-title} server and see how the event is handled (see xref:operation:events/sources/send-event.adoc[Manually send events])
 * Make changes to xref:operation:events/sources/mib.adoc[MIB files])
 * Configure the event to meet your requirements, if required
-** <<trap-def-create, Create trap definitions>> to specify criteria for when OpenNMS creates an event
+** <<trap-def-create, Create trap definitions>> to specify criteria for when {page-component-title} creates an event
 ** <<varbind-filter,Filter on variable bindings>> for further granularity on the conditions for creating an event
 
 [[trap-def-create]]
@@ -82,7 +84,7 @@ This block consists of <maskelement> tags, and the event will match only if all 
 </event>
 ----
 
-This event will match an SNMP trap whose enterprise OID (id) is equal to ".1.3.6.1.4.1.9.9.70.2", its generic trap value is enterprise specific (6), and the vendor trap value is 17.
+This event will match an SNMP trap whose enterprise OID (id) is equal to `.1.3.6.1.4.1.9.9.70.2`, its generic trap value is enterprise specific `6`, and the vendor trap value is `17`.
 
 //I cannot find a MIB for this, so may need to delete this text. This is an old device, but updating this example would probably be difficult.
 The MIB for the C3800 device shows that the generic value 6 and the specific value of 17 for ciscoC3800SysAggregateStatusChange are X and Y respectively.
@@ -123,20 +125,20 @@ For example, to match all Cisco events, you could use the following:
 </mask>
 ----
 
-Note: The order in which events are listed in the eventconf.xml file is extremely important.
+NOTE: The order in which events are listed in the eventconf.xml file is extremely important.
 The search will stop with the first event definition that matches the given event (see xref:operation:events/event-configuration.adoc[eventconf.xml]).
 
-Thus if the code with the wildcard was listed before the more specific ciscoC3800SysAggregateStatusChange event, the latter event would never be generated.
+Thus if the code with the wildcard was listed before the more specific `ciscoC3800SysAggregateStatusChange` event, the latter event would never be generated.
 
 Also note that the wildcard is simply a substring match.
-If a Cisco device generates an event with the enterprise OID of ".1.3.6.1.4.1.9" it would not match this event, as there is no trailing ".".
-If the trailing "." is left off, you must take care so that a trap with an OID of ".1.3.6.1.4.1.99" is listed before the ".1.3.6.1.4.1.9%" event or else it will match the more generic event.
+If a Cisco device generates an event with the enterprise OID of `.1.3.6.1.4.1.9` it would not match this event, as there is no trailing ".".
+If the trailing "." is left off, you must take care so that a trap with an OID of `.1.3.6.1.4.1.99` is listed before the `.1.3.6.1.4.1.9%` event or else it will match the more generic event.
 
 == Use the `parm` replacement token with trap events
 
 Some events, especially SNMP traps, have additional information sent with them called "variable bindings" or "varbinds" for short.
-In the <code>ciscoC3800SysAggregateStatusChange</code> event listed above, there are four of them.
-You can use the <code>parm</code> replacement token to access them.
+In the `ciscoC3800SysAggregateStatusChange` event listed above, there are four of them.
+You can use the `parm` replacement token to access them.
 Each parameter consists of a name and a value.
 
 For example, the `ciscoC3800SysAggregateStatusChange` event description lists out each of the parameters.
@@ -226,15 +228,15 @@ You can also do quick prefix matches with the '%' in a varbind value:
 
 This will match varbind 1 with any string beginning with "Error:".
 
-*REMINDER: The order in which events are listed is very important.*
-*Put the most specific events first.*
+REMINDER: The order in which events are listed is very important.
+Put the most specific events first.
 
 == Decode varbinds
 
 A lot of MIBs define specific variables to code the value of some OIDs.
 As an example, the SNMP agent returns a numerical value for the `ifAdminStatus` and `ifOperStatus`: 1 means Up and 2 means Down.
 
-Because OpenNMS does not have a MIB parser, we usually put this map (between the numerical encoded value and its meaning) into the event description.
+Because {page-component-title} does not have a MIB parser, we usually put this map (between the numerical encoded value and its meaning) into the event description.
 Use the `varbindsdecode` element to convert the event varbind value into a decoded string.
 
 With a properly configured event, you can decode the numerical value sent into trap varbinds and the corresponding string value into the `logmsg`.
@@ -335,10 +337,9 @@ If the value of the first OID in this trap is 6 the the log message will be the 
 <p>Cisco Event: HSRP State Change to active.</p>
 ----
 
-//I'm not sure where to put these two topics
 == Trap value representation
 
-When octet strings are translated into event parameters, OpenNMS first attempts to treat them as character encodings.
+When octet strings are translated into event parameters, {page-component-title} first attempts to treat them as character encodings.
 If all bytes in the string are valid UTF-8 or ISO-8859-1 characters, the string is stored as these characters.
 If this is not possible, the value is encoded as a Base64 string.
 
@@ -359,5 +360,4 @@ To configure {page-component-title} to honor `snmpTrapAddress` when present, set
 <1> Set the SNMP trap daemon listening port to 1162/udp
 <2> Don't create new nodes when receiving a SNMP Trap with an unknown source IP address
 <3> Try to use the identifier source IP address from the `snmpTrapAddress` varbind instead of the UDP source IP address.
-//
 
