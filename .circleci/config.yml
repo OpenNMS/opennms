@@ -199,7 +199,6 @@ jobs:
                 echo '{ "trigger-prebuild": false, "trigger-build": true }' > /tmp/pipeline-parameters.json
               fi
             fi
-            echo '{  }' > "/tmp/pipeline-parameters2.json" 
       - store_artifacts:
           path: /tmp/pipeline-parameters.json
           destination: pipeline-parameters.json
@@ -212,4 +211,4 @@ jobs:
       - continuation/continue:
           circleci_domain: circleci.com
           configuration_path: /tmp/.circleci/main.yml
-          parameters: /tmp/pipeline-parameters2.json
+          parameters: /tmp/pipeline-parameters.json
