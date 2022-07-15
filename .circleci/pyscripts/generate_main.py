@@ -93,14 +93,36 @@ for e in main_yml_content:
             level=0
             sample_workflow.append(libyaml.create_space(level)+"workflows:")
             level=level+2
-            if build_components["experimental"]:
-                sample_workflow.append(libyaml.create_space(level)+"auto-exp-build:")
-            elif build_components["build"]["docs"]:
-                sample_workflow.append(libyaml.create_space(level)+"doc:")
-            elif build_components["build"]["ui"]:
-                sample_workflow.append(libyaml.create_space(level)+"ui:")
-            else:
-                sample_workflow.append(libyaml.create_space(level)+"auto-build:")
+
+            if not build_components["experimental"] and \
+               build_components["build"]["docs"] and \
+               build_components["build"]["ui"] and \
+               build_components["build"]["build"]:
+               sample_workflow.append(libyaml.create_space(level)+"multibuild:")
+            elif not build_components["experimental"] and \
+               build_components["build"]["docs"] and \
+               not build_components["build"]["ui"] and \
+               not build_components["build"]["build"]:
+               sample_workflow.append(libyaml.create_space(level)+"docs:")
+            elif not build_components["experimental"] and \
+               not build_components["build"]["docs"] and \
+               build_components["build"]["ui"] and \
+               not build_components["build"]["build"]:
+               sample_workflow.append(libyaml.create_space(level)+"ui:")
+            elif not build_components["experimental"] and \
+               not build_components["build"]["docs"] and \
+               not build_components["build"]["ui"] and \
+               build_components["build"]["build"]:
+               sample_workflow.append(libyaml.create_space(level)+"build:")
+
+            #if build_components["experimental"]:
+            #    sample_workflow.append(libyaml.create_space(level)+"auto-exp-build:")
+            #elif build_components["build"]["docs"]:
+            #    sample_workflow.append(libyaml.create_space(level)+"doc:")
+            #elif build_components["build"]["ui"]:
+            #    sample_workflow.append(libyaml.create_space(level)+"ui:")
+            #else:
+            #    sample_workflow.append(libyaml.create_space(level)+"auto-build:")
             level+=2
             sample_workflow.append(libyaml.create_space(level)+"jobs:")
             level+=2
@@ -108,29 +130,30 @@ for e in main_yml_content:
             if build_components["rpm-packages"]["minion"] or build_components["rpm-packages"]["horizon"] or build_components["rpm-packages"]["sentinel"]:
                 print("rpm-packages > all:",libyaml.tell_extended_requirements('rpms'))
                 sample_workflow.extend(libyaml.generate_yaml(workflow_data,"rpms",level,sample_workflow,disable_filters=True))
-            elif build_components["tests"]["integration"]:
+            if build_components["tests"]["integration"]:
                 print("tests > integration:",libyaml.tell_extended_requirements('integration-test'))
                 sample_workflow.extend(libyaml.generate_yaml(workflow_data,"integration-test",level,sample_workflow,disable_filters=True))
-            elif build_components["debian-packages"]["minion"] or build_components["debian-packages"]["horizon"] or build_components["debian-packages"]["sentinel"]:
+            if build_components["debian-packages"]["minion"] or build_components["debian-packages"]["horizon"] or build_components["debian-packages"]["sentinel"]:
                 print("debian-packages > all:",libyaml.tell_extended_requirements('debs'))
                 sample_workflow.extend(libyaml.generate_yaml(workflow_data,"debs",level,sample_workflow,disable_filters=True))
-            elif build_components["experimental"]:
+            if build_components["experimental"]:
                 print("experimental:",libyaml.tell_extended_requirements('experimental'))
                 sample_workflow.extend(libyaml.generate_yaml(workflow_data,"experimental",level,sample_workflow,disable_filters=True))
-            elif build_components["build"]["build"]:
+            if build_components["build"]["build"]:
                 print("build> build:",libyaml.tell_extended_requirements('build-deploy'))
                 sample_workflow.extend(libyaml.generate_yaml(workflow_data,"build-deploy",level,sample_workflow))
-            elif build_components["build"]["docs"]:
+            if build_components["build"]["docs"]:
                 print("build> docs :",libyaml.tell_extended_requirements('docs'))
                 sample_workflow.extend(libyaml.generate_yaml(workflow_data,"docs",level,sample_workflow))
-            elif build_components["build"]["ui"]:
+            if build_components["build"]["ui"]:
                 print("build> ui :",libyaml.tell_extended_requirements('ui'))
                 sample_workflow.extend(libyaml.generate_yaml(workflow_data,"ui",level,sample_workflow))
-            elif build_components["build"]["coverage"]:
+            if build_components["build"]["coverage"]:
                 print("build> coverage : NOT IMPLEMENTED ",libyaml.tell_extended_requirements('coverage'))
-            else:
+            
+            if not build_components["build"]["build"] and not build_components["build"]["docs"] and not build_components["build"]["ui"] and not build_components["build"]["coverage"]:
                 print("empty:",libyaml.tell_requirements('empty'))
-                sample_workflow.extend(libyaml.generate_yaml(workflow_data,"empty",level,sample_workflow))
+                sample_workflow=libyaml.generate_yaml(workflow_data,"empty",level,sample_workflow)
         
             if sample_workflow:
                 for line in sample_workflow:
