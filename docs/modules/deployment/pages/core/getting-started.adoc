@@ -133,9 +133,9 @@ endif::[]
 ====
 
 [[receive-snmp-traps]]
-== Receive SNMP Traps/Informs
+== Receive SNMP traps/informs
 
-OpenNMS {page-component-title} core lets you receive and process SNMP Traps/Informs out of the box.
+OpenNMS {page-component-title} core lets you receive and process SNMP traps/informs out of the box.
 The OpenNMS {page-component-title} core services run as an unprivileged user and can't bind on port numbers < 1024 without escalated privileges.
 For this reason, the default port for the SNMP Trap/Inform listener is set to port number 10162/udp instead of the IANA registered port number 162/udp.
 The following example shows how to configure the local firewall daemon to forward port 162/udp to 10162/udp.

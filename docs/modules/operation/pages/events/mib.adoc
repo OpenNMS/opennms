@@ -9,8 +9,8 @@ You will only need to import MIB files for unformatted events as part of configu
 You can parse SNMP MIB definitions and create {page-component-title} event definitions from any `TRAP-TYPE` and/or `NOTIFICATION-TYPE` macros they contain through the UI.
 You can also generate data collection definitions from `OBJECT-TYPE` symbols defined in a MIB file.
 
-Two command-line utilities, `mib2events` and `mib2opennms`, are also available to help make event definitions from MIB definitions.
-The UI editor does at least as good a job as `mib2events`.
+Two command line utilities, `mib2events` and `mib2opennms`, are also available to help make event definitions from MIB definitions.
+Using the UI editor achieves similar results to using `mib2events`.
 We do not recommend using using `mib2opennms`, as it produces more bus errors than event definitions.
 
 [[mib-import]]
@@ -19,7 +19,7 @@ To import a MIB file and create event definitions, follow these steps:
 
 . Save the vendor MIB file to a location available to your local workstation.
 The MIB file does not need to be accessible by the server.
-. In {page-component-title} click the gears icon and select *Additional Tools>SNMP MIB Compiler*.
+. In {page-component-title}, click the gears icon and select *Additional Tools -> SNMP MIB Compiler*.
 . Click *Upload MIB*.
 . Select the MIB file and click *Open*.
 . Right-click the file and choose *Compile MIB*.
@@ -30,11 +30,10 @@ The MIB file does not need to be accessible by the server.
 AND/OR
 +
 .. Right-click the file and choose *Edit MIB*.
-.. Edit the file to address the error, click *Save* and run the compile again.
+.. Edit the file to address the error, click *Save*, and run the compile again.
 . Continue to edit the file until it compiles successfully.
-. Right-click on the MIB from which you want to generate an event and choose *Generate Events* and/or *Generate Data Collection* as desired.
+. Right-click on the MIB from which you want to generate an event and choose *Generate Events* or *Generate Data Collection*, as appropriate.
 . If desired, modify the name of the UEI base with the vendor name for easier troubleshooting and click *Configure*.
-+
-. Click *Save Events File* to save them to the event.conf file.
+. Click *Save Events File* to save them to the `event.conf` file.
 
 If you were getting unformatted events, you will now get formatted ones.

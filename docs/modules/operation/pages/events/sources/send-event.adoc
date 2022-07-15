@@ -1,17 +1,17 @@
 
 [[send-event]]
-= Manually send events
-You can manually create and send an event to trigger processes inside of {page-component-title}, through the UI or using the <<event-utility, send-event.pl utility>>.
-Most often, you would do this to reload daemon configuration without having to restart {page-component-title}.
+= Manually Send Events
+You can manually create and send an event to trigger processes inside of {page-component-title} through the UI or by using the <<event-utility, send-event.pl utility>>.
+Most often, you would do this to reload daemon configuration settings without having to restart {page-component-title}.
 
 [[send-event-ui]]
 
 To manually send an event in the UI, follow these steps:
 
-. In {page-component-title} click the gears icon and select *Event Management>Manually Send an Event*.
+. In {page-component-title}, click the gears icon and select *Event Management -> Manually Send an Event*.
 . Select the event from the *Event* list.
-. Specify additional information, including the UUID, Node ID, parameters, severity, and so on and click *Send Event*.
-. Choose *Status>Events* to view the event.
+. Specify additional information, including the UUID, node ID, parameters, severity, and so on, and click *Send Event*.
+. Choose *Status -> Events* to view the event.
 
 [[event-utility]]
 == send-event.pl utility
