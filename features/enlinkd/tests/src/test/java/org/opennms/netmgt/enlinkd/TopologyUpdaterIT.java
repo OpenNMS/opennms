@@ -124,7 +124,7 @@ public class TopologyUpdaterIT {
         Future<?> future1 = executorService.submit(discoveryRunnable);
 
         // Verify access to getTopology works, even if it is still discovering
-        Future<OnmsTopology> future2 = executorService.submit(() -> updater.getTopology());
+        Future<OnmsTopology> future2 = executorService.submit(updater::getTopology);
         OnmsTopology topology = future2.get(1, TimeUnit.SECONDS); // should not block and return immediately
         Assert.assertThat(topology, Matchers.is(Matchers.not(Matchers.nullValue())));
         Assert.assertThat(topology.getVertices(), Matchers.hasSize(0));
@@ -134,7 +134,7 @@ public class TopologyUpdaterIT {
         future1.get();
 
         // Verify updated value is now available
-        future2 = executorService.submit(() -> updater.getTopology());
+        future2 = executorService.submit(updater::getTopology);
         topology = future2.get(1, TimeUnit.SECONDS); // should not block and return immediately
         Assert.assertThat(topology, Matchers.is(Matchers.not(Matchers.nullValue())));
         Assert.assertThat(topology.getVertices(), Matchers.hasSize(2));
