@@ -203,9 +203,7 @@
         }
     },
     "docs":{
-        "docs":{
-
-        }
+     
     },
     "deploy": {
         "extends": ["build","smoke","rpms","debs"],
