@@ -252,7 +252,7 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         usageStatisticsReport.setOnCallRoleCount(m_groupFactory.getRoles().size());
         usageStatisticsReport.setRequisitionCount(getDeployedRequisitionCount());
         usageStatisticsReport.setRequisitionWithChangedFSCount(getDeployedRequisitionWithModifiedFSCount());
-        usageStatisticsReport.setBusinessEdges(m_businessServiceEdgeDao.countAll());
+        usageStatisticsReport.setBusinessEdgeCount(m_businessServiceEdgeDao.countAll());
 
         return usageStatisticsReport;
     }
