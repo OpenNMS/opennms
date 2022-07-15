@@ -119,15 +119,6 @@ for e in main_yml_content:
             else:
                sample_workflow.append(libyaml.create_space(level)+"experimental:")
 
-
-            #if build_components["experimental"]:
-            #    sample_workflow.append(libyaml.create_space(level)+"auto-exp-build:")
-            #elif build_components["build"]["docs"]:
-            #    sample_workflow.append(libyaml.create_space(level)+"doc:")
-            #elif build_components["build"]["ui"]:
-            #    sample_workflow.append(libyaml.create_space(level)+"ui:")
-            #else:
-            #    sample_workflow.append(libyaml.create_space(level)+"auto-build:")
             level+=2
             sample_workflow.append(libyaml.create_space(level)+"jobs:")
             level+=2
