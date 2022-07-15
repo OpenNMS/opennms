@@ -211,6 +211,15 @@
             }
         }
     },
+    "ui":{
+        "build-ui":{
+            "filters":{
+                "branches":{
+                    "ignore":["/^from-foundation.*/"]
+                }
+            }
+        }
+    },
     "deploy": {
         "extends": ["build","smoke","rpms","debs"],
         "minion-image-single-arch": {

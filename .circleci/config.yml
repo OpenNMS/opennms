@@ -208,7 +208,7 @@ jobs:
           destination: build-components.json
       - store_artifacts:
           path: /tmp/.circleci/main.yml
-          destination: /tmp/.circleci/main-v1.yml
+          destination: /tmp/.circleci/main.yml
       - continuation/continue:
           circleci_domain: circleci.com
           configuration_path: /tmp/.circleci/main.yml
