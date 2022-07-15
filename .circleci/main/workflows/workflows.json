@@ -137,7 +137,7 @@
         }
     },
     "rpms": {
-        "extends": ["build"],
+        "extends": ["build","integration-test"],
         "minion-rpm-build": {
             "requires":["build"],
             "filters":{
