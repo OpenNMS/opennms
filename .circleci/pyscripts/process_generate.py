@@ -102,7 +102,6 @@ git_keywords=libgit.extractKeywordsFromLastCommit()
 
 #Do we need this here?
 build_mappings={
-    "docs": False,
     "build": {
       "docs": False,
       "ui": False,
@@ -176,6 +175,16 @@ if "integration" in git_keywords or "Integration_tests" in What_to_build:
     build_mappings["tests"]["integration"]=True
 else:
     build_mappings["tests"]["integration"]=False
+
+if "doc" in git_keywords or "doc" in What_to_build:
+    build_mappings["build"]["docs"]=True
+else:
+    build_mappings["build"]["docs"]=False
+
+if "ui" in git_keywords or "ui" in What_to_build:
+    build_mappings["build"]["ui"]=True
+else:
+    build_mappings["build"]["ui"]=False
 
 if "experimentalPath" in git_keywords:
     build_mappings["experimental"]=True
