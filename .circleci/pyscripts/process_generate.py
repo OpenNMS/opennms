@@ -122,10 +122,12 @@ build_mappings={
 }
 
 print("Git Keywords:",git_keywords)
-if "circleci_configuration" in What_to_build and len(What_to_build) == 1 :
+if "circleci_configuration" in What_to_build and len(What_to_build) == 1:
     #if circleci_configuration is the only entry in the list we don't want to trigger a buildss.
     mappings["trigger-build"]=False
     build_mappings["build"]["build"]=False
+else:
+    build_mappings["build"]["build"]=True
 
 if "smoke" in git_keywords or "Smoke_tests" in What_to_build:   
     build_mappings["tests"]["smoke"]=True
