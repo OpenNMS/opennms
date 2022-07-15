@@ -43,6 +43,7 @@ import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
+import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
@@ -73,7 +74,7 @@ public class CollectionSetMapper {
         this.resourceDao = Objects.requireNonNull(resourceDao);
     }
 
-    public CollectionSetProtos.CollectionSet buildCollectionSetProtos(CollectionSet collectionSet) {
+    public CollectionSetProtos.CollectionSet buildCollectionSetProtos(CollectionSet collectionSet, ServiceParameters params) {
         CollectionSetProtos.CollectionSet.Builder builder = CollectionSetProtos.CollectionSet.newBuilder();
 
         collectionSet.visit(new CollectionSetVisitor() {
@@ -89,7 +90,10 @@ public class CollectionSetMapper {
             public void visitResource(CollectionResource resource) {
                 collectionSetResourceBuilder = CollectionSetProtos.CollectionSetResource.newBuilder();
                 long nodeId = 0;
-                if (resource.getResourceTypeName().equals(CollectionResource.RESOURCE_TYPE_NODE)) {
+                if (!resource.shouldPersist(params)) {
+                    // DO NOTHING, do not persist this resource
+                }
+                else if (resource.getResourceTypeName().equals(CollectionResource.RESOURCE_TYPE_NODE)) {
                     String nodeCriteria = getNodeCriteriaFromResource(resource);
                     CollectionSetProtos.NodeLevelResource.Builder nodeResourceBuilder = buildNodeLevelResourceForProto(
                             nodeCriteria);

@@ -40,6 +40,7 @@ import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.Persister;
+import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,20 +55,28 @@ public class KafkaPersister implements Persister {
 
     private CollectionSetMapper collectionSetMapper;
 
+    private final ServiceParameters m_params;
+
     private KafkaProducer<String, byte[]> producer;
     
     private String topicName = "metrics";
+
+    public KafkaPersister(ServiceParameters params) {
+        m_params = params;
+    }
 
     /** {@inheritDoc} */
     @Override
     public void visitCollectionSet(CollectionSet collectionSet) {
 
+
         CollectionSetProtos.CollectionSet collectionSetProto = collectionSetMapper
-                .buildCollectionSetProtos(collectionSet);
+                .buildCollectionSetProtos(collectionSet, m_params);
         bisectAndSendMessageToKafka(collectionSetProto);
     }
 
     void bisectAndSendMessageToKafka(CollectionSetProtos.CollectionSet collectionSetProto) {
+
         if (checkForMaxSize(collectionSetProto.toByteArray().length)) {
 
             if(collectionSetProto.getResourceCount() == 1) {

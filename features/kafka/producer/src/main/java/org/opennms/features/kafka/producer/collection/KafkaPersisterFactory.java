@@ -64,7 +64,7 @@ public class KafkaPersisterFactory implements PersisterFactory {
 
     @Override
     public Persister createPersister(ServiceParameters params, RrdRepository repository) {
-        KafkaPersister persister = new KafkaPersister();
+        KafkaPersister persister = new KafkaPersister(params);
         persister.setCollectionSetMapper(collectionSetMapper);
         persister.setProducer(producer);
         persister.setTopicName(topicName);
