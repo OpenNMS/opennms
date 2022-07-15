@@ -11,6 +11,7 @@ from library import common
 #from library import libgit as lg
 from library import libyaml
 
+
 common_library=common.common()
 
 working_directory=tempfile.TemporaryDirectory()
@@ -133,7 +134,13 @@ for e in main_yml_content:
 
             if build_components["rpm-packages"]["minion"] or build_components["rpm-packages"]["horizon"] or build_components["rpm-packages"]["sentinel"]:
                 print("rpm-packages > all:",libyaml.tell_extended_requirements('rpms'))
-                sample_workflow.extend(libyaml.generate_yaml(workflow_data,"rpms",level,sample_workflow,disable_filters=True))
+                if len(sample_workflow)>1:
+                    for e in libyaml.generate_yaml(workflow_data,"rpms",level,sample_workflow,disable_filters=True):
+                        print("rpms","Looking at",e)
+                        if e not in sample_workflow:
+                            sample_workflow.append(e)
+                else:
+                    sample_workflow=libyaml.generate_yaml(workflow_data,"rpms",level,sample_workflow,disable_filters=True)
             if build_components["tests"]["integration"]:
                 print("tests > integration:",libyaml.tell_extended_requirements('integration-test'))
                 sample_workflow.extend(libyaml.generate_yaml(workflow_data,"integration-test",level,sample_workflow,disable_filters=True))
@@ -148,7 +155,13 @@ for e in main_yml_content:
                 sample_workflow.extend(libyaml.generate_yaml(workflow_data,"build-deploy",level,sample_workflow))
             if build_components["build"]["docs"]:
                 print("build> docs :",libyaml.tell_extended_requirements('docs'))
-                sample_workflow.extend(libyaml.generate_yaml(workflow_data,"docs",level,sample_workflow))
+                if len(sample_workflow)>1:
+                    for e in libyaml.generate_yaml(workflow_data,"docs",level,sample_workflow):
+                        print("doc","Looking at",e)
+                        if e not in sample_workflow:
+                            sample_workflow.append(e)
+                else:
+                    sample_workflow=libyaml.generate_yaml(workflow_data,"docs",level,sample_workflow)
             if build_components["build"]["ui"]:
                 print("build> ui :",libyaml.tell_extended_requirements('ui'))
                 sample_workflow.extend(libyaml.generate_yaml(workflow_data,"ui",level,sample_workflow))
