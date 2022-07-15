@@ -110,6 +110,7 @@ workflows:
             .circleci/.*      trigger-build       true
             .circleci/main/jobs/build/build-docs.yml trigger-docs        true
             .circleci/main/jobs/build/build-ui.yml trigger-ui        true
+            antora-playbook-local.yml      trigger-docs        true
 
   automation:
     when:
