@@ -113,22 +113,21 @@ for e in main_yml_content:
             elif build_components["experimental"]:
                 print("build-with-tarball:",libyaml.tell_extended_requirements('build-with-tarball'))
                 sample_workflow=libyaml.generate_yaml(workflow_data,"build-with-tarball",level,sample_workflow,disable_filters=True)
+            elif build_components["build"]["build"]:
+                print("build-deploy:",libyaml.tell_extended_requirements('build-deploy'))
+                sample_workflow=libyaml.generate_yaml(workflow_data,"build-deploy",level,sample_workflow)
+            elif build_components["build"]["docs"]:
+                print("build> docs :",libyaml.tell_extended_requirements('docs'))
+                sample_workflow=libyaml.generate_yaml(workflow_data,"docs",level,sample_workflow)
+            elif build_components["build"]["ui"]:
+                print("build> ui :",libyaml.tell_extended_requirements('ui'))
+                sample_workflow=libyaml.generate_yaml(workflow_data,"ui",level,sample_workflow)
+            elif build_components["build"]["coverage"]:
+                print("build> coverage :",libyaml.tell_extended_requirements('coverage'))
             else:
-                if build_components["build"]["build"]:
-                    print("build-deploy:",libyaml.tell_extended_requirements('build-deploy'))
-                    sample_workflow=libyaml.generate_yaml(workflow_data,"build-deploy",level,sample_workflow)
-                elif build_components["build"]["docs"]:
-                    print("build> docs :",libyaml.tell_extended_requirements('docs'))
-                    sample_workflow=libyaml.generate_yaml(workflow_data,"docs",level,sample_workflow)
-                elif build_components["build"]["ui"]:
-                    print("build> ui :",libyaml.tell_extended_requirements('ui'))
-                    sample_workflow=libyaml.generate_yaml(workflow_data,"ui",level,sample_workflow)
-                elif build_components["build"]["coverage"]:
-                    print("build> coverage :",libyaml.tell_extended_requirements('coverage'))
-                else:
-                    print("empty:",libyaml.tell_requirements('empty'))
-                    sample_workflow=libyaml.generate_yaml(workflow_data,"empty",level,sample_workflow)
-            
+                print("empty:",libyaml.tell_requirements('empty'))
+                sample_workflow=libyaml.generate_yaml(workflow_data,"empty",level,sample_workflow)
+        
             if sample_workflow:
                 for line in sample_workflow:
                     if type(line)==list:
