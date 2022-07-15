@@ -32,17 +32,14 @@ import java.util.Objects;
 
 import org.opennms.netmgt.flows.elastic.Direction;
 
-public class ApplicationKey {
+public class IndexKey {
     public final int iface;
     public final Direction direction;
-    public final String application;
 
-    public ApplicationKey(final int iface,
-                          final Direction direction,
-                          final String application) {
+    public IndexKey(final int iface,
+                    final Direction direction) {
         this.iface = iface;
         this.direction = direction;
-        this.application = Objects.requireNonNull(application);
     }
 
     @Override
@@ -50,19 +47,25 @@ public class ApplicationKey {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof ApplicationKey)) {
+        if (!(o instanceof IndexKey)) {
             return false;
         }
-        final ApplicationKey that = (ApplicationKey) o;
+        final IndexKey that = (IndexKey) o;
         return Objects.equals(this.iface, that.iface) &&
-               Objects.equals(this.direction, that.direction) &&
-               Objects.equals(this.application, that.application);
+                Objects.equals(this.direction, that.direction);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(this.iface,
-                            this.direction,
-                            this.application);
+                this.direction);
+    }
+
+    @Override
+    public String toString() {
+        return "IndexKey{" +
+                "iface=" + iface +
+                ", direction=" + direction +
+                '}';
     }
 }

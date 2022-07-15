@@ -53,6 +53,8 @@ import com.google.common.collect.Lists;
  */
 public class DefaultClassificationEngine implements ClassificationEngine {
 
+    private List<ClassificationRulesReloadedListener> classificationRulesReloadedListeners = new ArrayList<>();
+
     private static Logger LOG = LoggerFactory.getLogger(DefaultClassificationEngine.class);
 
     private final AtomicReference<TreeAndInvalidRules> treeAndInvalidRules = new AtomicReference<>(new TreeAndInvalidRules(Tree.EMPTY, Collections.emptyList()));
@@ -118,6 +120,14 @@ public class DefaultClassificationEngine implements ClassificationEngine {
         }
 
         treeAndInvalidRules.set(new TreeAndInvalidRules(tree, invalid));
+
+        fireClassificationReloadedListeners();
+    }
+
+    private void fireClassificationReloadedListeners() {
+        for(final ClassificationRulesReloadedListener classificationRulesReloadedListener : this.classificationRulesReloadedListeners) {
+            classificationRulesReloadedListener.classificationRulesReloaded();
+        }
     }
 
     @Override
@@ -143,4 +153,11 @@ public class DefaultClassificationEngine implements ClassificationEngine {
         }
     }
 
+    public void addClassificationRulesReloadedListener(final ClassificationRulesReloadedListener classificationRulesReloadedListener) {
+        this.classificationRulesReloadedListeners.add(classificationRulesReloadedListener);
+    }
+
+    public void removeClassificationRulesReloadedListener(final ClassificationRulesReloadedListener classificationRulesReloadedListener) {
+        this.classificationRulesReloadedListeners.remove(classificationRulesReloadedListener);
+    }
 }

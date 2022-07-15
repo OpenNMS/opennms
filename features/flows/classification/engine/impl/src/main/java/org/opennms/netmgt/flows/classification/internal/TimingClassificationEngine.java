@@ -72,4 +72,12 @@ public class TimingClassificationEngine implements ClassificationEngine {
             return delegate.getInvalidRules();
         }
     }
+
+    public void addClassificationRulesReloadedListener(final ClassificationRulesReloadedListener classificationRulesReloadedListener) {
+        this.delegate.addClassificationRulesReloadedListener(classificationRulesReloadedListener);
+    }
+
+    public void removeClassificationRulesReloadedListener(final ClassificationRulesReloadedListener classificationRulesReloadedListener) {
+        this.delegate.removeClassificationRulesReloadedListener(classificationRulesReloadedListener);
+    }
 }

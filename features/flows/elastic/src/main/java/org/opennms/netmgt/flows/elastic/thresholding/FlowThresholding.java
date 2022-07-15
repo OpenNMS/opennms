@@ -32,6 +32,7 @@ import java.io.Closeable;
 import java.io.File;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -40,10 +41,12 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionAgentFactory;
@@ -57,6 +60,10 @@ import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.flows.api.ProcessingOptions;
+import org.opennms.netmgt.flows.classification.ClassificationEngine;
+import org.opennms.netmgt.flows.classification.ClassificationRuleProvider;
+import org.opennms.netmgt.flows.classification.FilterService;
+import org.opennms.netmgt.flows.classification.persistence.api.Rule;
 import org.opennms.netmgt.flows.elastic.Direction;
 import org.opennms.netmgt.flows.elastic.FlowDocument;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -73,9 +80,10 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-public class FlowThresholding implements Closeable {
+public class FlowThresholding implements Closeable, ClassificationEngine.ClassificationRulesReloadedListener {
     private static final Logger LOG = LoggerFactory.getLogger(FlowThresholding.class);
 
+    public static final String NAME = "flowThreshold";
     public static final String SERVICE_NAME = "Flow-Threshold";
     public static final String RESOURCE_TYPE_NAME = "flowApp";
     public static final String RESOURCE_GROUP = "application";
@@ -99,13 +107,24 @@ public class FlowThresholding implements Closeable {
 
     private Timer timer;
 
+    private FilterService filterService;
+
+    private ClassificationRuleProvider classificationRuleProvider;
+
+    private List<Rule> classificationRuleList;
+
+    private ClassificationEngine classificationEngine;
+
     public FlowThresholding(final ThresholdingService thresholdingService,
                             final CollectionAgentFactory collectionAgentFactory,
                             final PersisterFactory persisterFactory,
                             final IpInterfaceDao ipInterfaceDao,
                             final DistPollerDao distPollerDao,
                             final SnmpInterfaceDao snmpInterfaceDao,
-                            final FilterDao filterDao) {
+                            final FilterDao filterDao,
+                            final FilterService filterService,
+                            final ClassificationRuleProvider classificationRuleProvider,
+                            final ClassificationEngine classificationEngine) {
         this.thresholdingService = Objects.requireNonNull(thresholdingService);
         this.collectionAgentFactory = Objects.requireNonNull(collectionAgentFactory);
         this.persisterFactory = Objects.requireNonNull(persisterFactory);
@@ -113,6 +132,22 @@ public class FlowThresholding implements Closeable {
         this.ipInterfaceDao = Objects.requireNonNull(ipInterfaceDao);
         this.snmpInterfaceDao = Objects.requireNonNull(snmpInterfaceDao);
         this.filterDao = Objects.requireNonNull(filterDao);
+        this.filterService = Objects.requireNonNull(filterService);
+        this.classificationRuleProvider = Objects.requireNonNull(classificationRuleProvider);
+        this.classificationRuleList = this.classificationRuleProvider.getRules();
+        this.classificationEngine = Objects.requireNonNull(classificationEngine);
+        this.classificationEngine.addClassificationRulesReloadedListener(this);
+    }
+
+    @Override
+    public void classificationRulesReloaded() {
+        synchronized (this.classificationRuleList) {
+            this.classificationRuleList = this.classificationRuleProvider.getRules();
+            LOG.debug("Classification rules reloaded. Marking sessions as dirty.");
+            for (final Session session : getSessions()) {
+                session.dirty = true;
+            }
+        }
     }
 
     public long getStepSizeMs() {
@@ -150,7 +185,7 @@ public class FlowThresholding implements Closeable {
         this.idleTimeoutMs = idleTimeoutMs;
     }
 
-    private void runTimerTask() {
+    public void runTimerTask() {
         // Use one timestamp for the whole timer task run...
         final Date timerTaskDate = new Date();
 
@@ -170,70 +205,103 @@ public class FlowThresholding implements Closeable {
                 continue;
             }
 
+            if (session.dirty) {
+                final Set<String> applicationsToPersist;
+
+                synchronized (classificationRuleList) {
+                    applicationsToPersist = classificationRuleList.stream()
+                            .filter(r -> r.getExporterFilter() == null || filterService.matches(session.exporterIpAddress, r.getExporterFilter()))
+                            .map(r -> r.getName())
+                            .collect(Collectors.toUnmodifiableSet());
+                }
+
+                LOG.debug("Found {} matching applications in {} rules for exporter {}" , applicationsToPersist.size(), classificationRuleList.size(), session.exporterIpAddress);
+
+                synchronized (entry.getValue().applications) {
+                    for(final IndexKey indexKey : entry.getValue().applications.keySet()) {
+                        final int beforeAdd = entry.getValue().applications.get(indexKey).size();
+
+                        for (final String application : applicationsToPersist) {
+                            entry.getValue().applications.get(indexKey).computeIfAbsent(application, a -> new AtomicLong(0));
+                        }
+                        final int afterAddBeforePurge = entry.getValue().applications.get(indexKey).size();
+                        LOG.debug("Added {} applications for {}/{}/{}", afterAddBeforePurge - beforeAdd, session.exporterIpAddress, indexKey.iface, indexKey.direction);
+
+                        entry.getValue().applications.get(indexKey).entrySet().removeIf(e -> !applicationsToPersist.contains(e.getKey()));
+                        final int afterPurge = entry.getValue().applications.get(indexKey).size();
+                        LOG.debug("Removed {} applications for {}/{}/{}", afterAddBeforePurge - afterPurge, session.exporterIpAddress, indexKey.iface, indexKey.direction);
+                    }
+                }
+                session.dirty = false;
+            }
+
+
             final OnmsIpInterface iface = this.ipInterfaceDao.get(exporterKey.interfaceId);
             final NodeLevelResource nodeResource = new NodeLevelResource(iface.getNodeId());
 
-            for (final Map.Entry<ApplicationKey, AtomicLong> application : session.applications.entrySet()) {
-                try {
-                    final String ifName = getIfNameForNodeIdAndIfIndex(session.collectionAgent.getNodeId(), application.getKey().iface);
+            for (final Map.Entry<IndexKey, Map<String, AtomicLong>> indexEntry : session.applications.entrySet()) {
+                for(final Map.Entry<String, AtomicLong> applicationEntry : indexEntry.getValue().entrySet()) {
+                    try {
+                        final String ifName = getIfNameForNodeIdAndIfIndex(session.collectionAgent.getNodeId(), indexEntry.getKey().iface);
 
-                    final DeferredGenericTypeResource appResource = new DeferredGenericTypeResource(nodeResource,
-                                                                                                    RESOURCE_TYPE_NAME,
-                                                                                                    String.format("%s:%s",
-                                                                                                                  ifName,
-                                                                                                                  application.getKey().application));
+                        final DeferredGenericTypeResource appResource = new DeferredGenericTypeResource(nodeResource,
+                                RESOURCE_TYPE_NAME,
+                                String.format("%s:%s",
+                                        ifName,
+                                        applicationEntry.getKey()));
 
-                    final var collectionSet = new CollectionSetBuilder(session.collectionAgent)
-                            .withTimestamp(timerTaskDate)
-                            .withSequenceNumber(session.sequenceNumber.getAndIncrement())
-                            .withCounter(appResource,
-                                         RESOURCE_GROUP,
-                                         application.getKey().direction == Direction.INGRESS
-                                         ? "bytesIn"
-                                         : "bytesOut",
-                                         application.getValue().get())
-                            .withStringAttribute(appResource,
-                                                 RESOURCE_GROUP,
-                                                 "application",
-                                                 application.getKey().application)
-                            .withStringAttribute(appResource,
-                                                 RESOURCE_GROUP,
-                                                 "ifName",
-                                                 ifName)
-                            .build();
+                        final var collectionSet = new CollectionSetBuilder(session.collectionAgent)
+                                .withTimestamp(timerTaskDate)
+                                .withSequenceNumber(session.sequenceNumber.getAndIncrement())
+                                .withCounter(appResource,
+                                        RESOURCE_GROUP,
+                                        indexEntry.getKey().direction == Direction.INGRESS
+                                                ? "bytesIn"
+                                                : "bytesOut",
+                                        applicationEntry.getValue().get())
+                                .withStringAttribute(appResource,
+                                        RESOURCE_GROUP,
+                                        "application",
+                                        applicationEntry.getKey())
+                                .withStringAttribute(appResource,
+                                        RESOURCE_GROUP,
+                                        "ifName",
+                                        ifName)
+                                .build();
 
-                    if (session.thresholding) {
-                        LOG.trace("Checking thresholds for collection-set value={}, ifName={}, application={}, ds={}",
-                                application.getValue().get(),
-                                ifName,
-                                application.getKey().application,
-                                application.getKey().direction == Direction.INGRESS ? "bytesIn" : "bytesOut");
+                        if (session.thresholding) {
+                            LOG.trace("Checking thresholds for collection-set value={}, ifName={}, application={}, ds={}",
+                                    applicationEntry.getValue().get(),
+                                    ifName,
+                                    applicationEntry.getKey(),
+                                    indexEntry.getKey().direction == Direction.INGRESS ? "bytesIn" : "bytesOut");
 
-                        session.thresholdingSession.accept(collectionSet);
+                            session.thresholdingSession.accept(collectionSet);
+                        }
+
+                        if (session.dataCollection) {
+                            LOG.trace("Persisting data for collection-set value={}, ifName={}, application={}, ds={}",
+                                    applicationEntry.getValue().get(),
+                                    ifName,
+                                    applicationEntry.getKey(),
+                                    indexEntry.getKey().direction == Direction.INGRESS ? "bytesIn" : "bytesOut");
+
+                            final var repository = new RrdRepository();
+                            repository.setStep(session.packageDefinition.getRrd().getStep());
+                            repository.setHeartBeat(repository.getStep() * 2);
+                            repository.setRraList(session.packageDefinition.getRrd().getRras());
+                            repository.setRrdBaseDir(new File(session.packageDefinition.getRrd().getBaseDir()));
+
+                            collectionSet.visit(this.persisterFactory.createPersister(new ServiceParameters(Collections.emptyMap()),
+                                    repository,
+                                    false,
+                                    false,
+                                    true));
+
+                        }
+                    } catch (ThresholdInitializationException e) {
+                        LOG.warn("Error initializing thresholding session", e);
                     }
-
-                    if (session.dataCollection) {
-                        LOG.trace("Persisting data for collection-set value={}, ifName={}, application={}, ds={}",
-                                application.getValue().get(),
-                                ifName,
-                                application.getKey().application,
-                                application.getKey().direction == Direction.INGRESS ? "bytesIn" : "bytesOut");
-
-                        final var repository = new RrdRepository();
-                        repository.setStep(session.packageDefinition.getRrd().getStep());
-                        repository.setHeartBeat(repository.getStep() * 2);
-                        repository.setRraList(session.packageDefinition.getRrd().getRras());
-                        repository.setRrdBaseDir(new File(session.packageDefinition.getRrd().getBaseDir()));
-
-                        collectionSet.visit(this.persisterFactory.createPersister(new ServiceParameters(Collections.emptyMap()),
-                                                                                  repository,
-                                                                                  false,
-                                                                                  false,
-                                                                                  true));
-
-                    }
-                } catch (ThresholdInitializationException e) {
-                    LOG.warn("Error initializing thresholding session", e);
                 }
             }
         }
@@ -299,7 +367,8 @@ public class FlowThresholding implements Closeable {
                                        systemIdHash,
                                        options.applicationThresholding,
                                        options.applicationDataCollection,
-                                       packageDefinition);
+                                       packageDefinition,
+                                       collectionAgent.getHostAddress());
                 });
 
                 session.process(now, document);
@@ -307,12 +376,16 @@ public class FlowThresholding implements Closeable {
         }
     }
 
-    public Set<ExporterKey> getSessions() {
+    public Set<ExporterKey> getExporterKeys() {
         return Collections.unmodifiableSet(this.sessions.keySet());
     }
 
-    private static class Session {
-        public final Map<ApplicationKey, AtomicLong> applications = Maps.newConcurrentMap();
+    public Collection<Session> getSessions() {
+        return Collections.unmodifiableCollection(this.sessions.values());
+    }
+
+    public static class Session {
+        public final Map<IndexKey, Map<String, AtomicLong>> applications = Maps.newConcurrentMap();
 
         public final boolean thresholding;
         public final boolean dataCollection;
@@ -329,12 +402,17 @@ public class FlowThresholding implements Closeable {
 
         private final AtomicLong sequenceNumber;
 
+        private final String exporterIpAddress;
+
+        private boolean dirty = true;
+
         private Session(final ThresholdingSession thresholdingSession,
                         final CollectionAgent collectionAgent,
                         final long systemIdHash,
                         final boolean thresholding,
                         final boolean dataCollection,
-                        final PackageDefinition packageDefinition) {
+                        final PackageDefinition packageDefinition,
+                        final String exporterIpAddress) {
             this.sequenceNumber = new AtomicLong(systemIdHash | ThreadLocalRandom.current().nextInt());
 
             this.thresholdingSession = Objects.requireNonNull(thresholdingSession);
@@ -344,25 +422,26 @@ public class FlowThresholding implements Closeable {
             this.dataCollection = dataCollection;
 
             this.packageDefinition =  packageDefinition;
+            this.exporterIpAddress = exporterIpAddress;
         }
 
         public void process(final Instant now, final FlowDocument document) {
             if (document.getInputSnmp() != null &&
                 document.getInputSnmp() != 0 &&
                 (document.getDirection() == Direction.INGRESS || document.getDirection() == Direction.UNKNOWN)) {
-                final var applicationKey = new ApplicationKey(document.getInputSnmp(),
-                                                              Direction.INGRESS,
-                                                              document.getApplication());
-                this.applications.computeIfAbsent(applicationKey, k -> new AtomicLong(0)).addAndGet(document.getBytes());
+                final IndexKey indexKey = new IndexKey(document.getInputSnmp(), Direction.INGRESS);
+                synchronized (this.applications) {
+                    this.applications.computeIfAbsent(indexKey, k -> new TreeMap<>()).computeIfAbsent(document.getApplication(), a -> new AtomicLong(0)).addAndGet(document.getBytes());
+                }
             }
 
             if (document.getOutputSnmp() != null
                 && document.getOutputSnmp() != 0 &&
                 (document.getDirection() == Direction.EGRESS || document.getDirection() == Direction.UNKNOWN)) {
-                final var applicationKey = new ApplicationKey(document.getOutputSnmp(),
-                                                              Direction.EGRESS,
-                                                              document.getApplication());
-                this.applications.computeIfAbsent(applicationKey, k -> new AtomicLong(0)).addAndGet(document.getBytes());
+                final IndexKey indexKey = new IndexKey(document.getOutputSnmp(), Direction.EGRESS);
+                synchronized (this.applications) {
+                    this.applications.computeIfAbsent(indexKey, k -> new TreeMap<>()).computeIfAbsent(document.getApplication(), a -> new AtomicLong(0)).addAndGet(document.getBytes());
+                }
             }
 
             // Mark session as updated
@@ -380,12 +459,15 @@ public class FlowThresholding implements Closeable {
                     ", dataCollection=" + dataCollection +
                     ", lastUpdate=" + lastUpdate +
                     ", sequenceNumber=" + sequenceNumber +
+                    ", exporterIpAddress=" + exporterIpAddress +
+                    ", dirty=" + dirty +
                     '}';
         }
     }
 
     @Override
     public void close() {
+        this.classificationEngine.removeClassificationRulesReloadedListener(this);
         this.sessions.clear();
         this.timer.cancel();
     }

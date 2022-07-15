@@ -33,9 +33,17 @@ import java.util.List;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
 
 public interface ClassificationEngine {
+    interface ClassificationRulesReloadedListener {
+        void classificationRulesReloaded();
+    }
+
     String classify(ClassificationRequest classificationRequest);
 
     List<Rule> getInvalidRules();
 
     void reload() throws InterruptedException;
+
+    void addClassificationRulesReloadedListener(final ClassificationRulesReloadedListener classificationRulesReloadedListener);
+
+    void removeClassificationRulesReloadedListener(final ClassificationRulesReloadedListener classificationRulesReloadedListener);
 }
