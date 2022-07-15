@@ -4,7 +4,7 @@ use Cwd qw(abs_path);
 use File::Basename qw(dirname);
 use File::Spec;
 
-# include script functions
+# include script functions.
 use vars qw(
 	$PREFIX
 );
