@@ -5,13 +5,13 @@
     <reference id="deviceConfigDao" interface="org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao" availability="mandatory"/>
     <reference id="monitoredServiceDao" interface="org.opennms.netmgt.dao.api.MonitoredServiceDao" availability="mandatory"/>
     <reference id="deviceConfigService" interface="org.opennms.features.deviceconfig.service.DeviceConfigService" availability="mandatory"/>
-    <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils" availability="mandatory" />
+    <reference id="operations" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory" />
 
     <bean id="defaultDeviceConfigRestService"
           class="org.opennms.features.deviceconfig.rest.impl.DefaultDeviceConfigRestService">
         <argument ref="deviceConfigDao"/>
         <argument ref="deviceConfigService"/>
-        <argument ref="sessionUtils"/>
+        <argument ref="operations"/>
     </bean>
 
     <service interface="org.opennms.features.deviceconfig.rest.api.DeviceConfigRestService" ref="defaultDeviceConfigRestService">

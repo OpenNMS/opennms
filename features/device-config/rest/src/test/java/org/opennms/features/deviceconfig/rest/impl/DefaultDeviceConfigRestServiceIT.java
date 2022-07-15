@@ -46,7 +46,6 @@ import org.opennms.features.deviceconfig.rest.api.DeviceConfigDTO;
 import org.opennms.features.deviceconfig.rest.api.DeviceConfigRestService;
 import org.opennms.features.deviceconfig.service.DeviceConfigService;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -101,8 +100,6 @@ public class DefaultDeviceConfigRestServiceIT {
 
     private DeviceConfigService deviceConfigService;
 
-    private SessionUtils sessionUtils;
-
     private static final int INTERFACES = 2;
     private static final int VERSIONS = 35;
 
@@ -120,8 +117,7 @@ public class DefaultDeviceConfigRestServiceIT {
             return null;
         });
         deviceConfigService = Mockito.mock(DeviceConfigService.class);
-        sessionUtils = Mockito.mock(SessionUtils.class);
-        deviceConfigRestService = new DefaultDeviceConfigRestService(deviceConfigDao, deviceConfigService, sessionUtils);
+        deviceConfigRestService = new DefaultDeviceConfigRestService(deviceConfigDao, deviceConfigService, operations);
     }
 
     @After
@@ -280,27 +276,29 @@ public class DefaultDeviceConfigRestServiceIT {
 
     @Test
     public void testDeleteDeviceConfigs() throws IOException {
-
+        List<Long>  lstOfIds = new ArrayList<>();
+        for(DeviceConfig dc : (List<DeviceConfig>)deviceConfigDao.findAll()){
+            lstOfIds.add(dc.getId());
+        }
         //passing valid ids
-        List<Long> lstOfIds = Arrays.asList(new Long []{50L,51L});
-        Response response = deviceConfigRestService.deleteDeviceConfigs(lstOfIds);
+        Response response = deviceConfigRestService.deleteDeviceConfigs(lstOfIds.subList(1,2));
         Assert.assertEquals(204, response.getStatus());
 
         //passing empty or blank value of ids
-        lstOfIds = Arrays.asList(new Long []{});
-        response = deviceConfigRestService.deleteDeviceConfigs(lstOfIds);
+        response = deviceConfigRestService.deleteDeviceConfigs(new ArrayList<>());
         Assert.assertEquals(400, response.getStatus());
 
-        response = deviceConfigRestService.deleteDeviceConfig(53);
-        Assert.assertEquals(204, response.getStatus());
-    }
+        //passing empty or blank value of ids
+        response = deviceConfigRestService.deleteDeviceConfigs(Arrays.asList(new Long []{1000L}));
+        Assert.assertEquals(404, response.getStatus());
 
-    @Test
-    public void testDeleteDeviceConfig() throws IOException {
-        Response response = deviceConfigRestService.deleteDeviceConfig(53);
+        //deleting single valid id
+        response = deviceConfigRestService.deleteDeviceConfig(lstOfIds.get(0));
         Assert.assertEquals(204, response.getStatus());
 
+        //trying to delete single not valid id
         response = deviceConfigRestService.deleteDeviceConfig(1000);
-        Assert.assertEquals(204, response.getStatus());
+        Assert.assertEquals(404, response.getStatus());
+
     }
 }

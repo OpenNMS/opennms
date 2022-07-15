@@ -49,7 +49,6 @@ import org.opennms.features.deviceconfig.rest.api.DeviceConfigDTO;
 import org.opennms.features.deviceconfig.rest.api.DeviceConfigRestService;
 import org.opennms.features.deviceconfig.service.DeviceConfigConstants;
 import org.opennms.features.deviceconfig.service.DeviceConfigService;
-import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.web.utils.ResponseUtils;
@@ -58,6 +57,7 @@ import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.support.TransactionOperations;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
@@ -88,7 +88,8 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultDeviceConfigRestService.class);
     public static final String DEFAULT_ENCODING = StandardCharsets.UTF_8.name();
     public static final String BINARY_ENCODING = "binary";
-    private final SessionUtils sessionUtils;
+
+    private final TransactionOperations operations;
 
     private static final Map<String,String> ORDERBY_QUERY_PROPERTY_MAP = Map.of(
         "lastupdated", "lastUpdated",
@@ -115,10 +116,10 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
         }
     }
 
-    public DefaultDeviceConfigRestService(DeviceConfigDao deviceConfigDao, DeviceConfigService deviceConfigService, SessionUtils sessionUtils) {
+    public DefaultDeviceConfigRestService(DeviceConfigDao deviceConfigDao, DeviceConfigService deviceConfigService, TransactionOperations operations) {
         this.deviceConfigDao = deviceConfigDao;
         this.deviceConfigService = deviceConfigService;
-        this.sessionUtils =  Objects.requireNonNull(sessionUtils);
+        this.operations = Objects.requireNonNull(operations);
     }
 
     /** {@inheritDoc} */
@@ -241,37 +242,45 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
             LOG.debug("Bad request : empty or null DeviceConfig Id");
             return Response.status(Status.BAD_REQUEST).entity("Invalid 'id' parameter").build();
         }
-        sessionUtils.withTransaction(() -> {
+
+        return operations.execute(status -> {
             try {
-                final List<DeviceConfig> deviceConfigList = ids.stream()
-                        .map(deviceConfigDao::get)
-                        .map(DeviceConfig.class::cast)
-                        .collect(Collectors.toList());
+                final List<DeviceConfig> deviceConfigList = new ArrayList<>();
+                for(Long id : ids){
+                    final DeviceConfig dc = deviceConfigDao.get(id);
+                    if(dc == null){
+                        LOG.debug("could not find device config data for id: {}", id);
+                        return Response.status(Status.NOT_FOUND).entity("Invalid 'id' parameter").build();
+                    }
+                    deviceConfigList.add(dc);
+                }
                 deviceConfigDao.deleteDeviceConfigs(deviceConfigList);
+                return Response.noContent().build();
             } catch (Exception e) {
                 LOG.error("Exception while deleting device configs, one or more ids not valid {}", e);
+                return Response.noContent().build();
             }
         });
-
-        return Response.noContent().build();
     }
 
     /** {@inheritDoc} */
     @Override
     public Response deleteDeviceConfig(long id) {
-       sessionUtils.withTransaction(() -> {
+        return operations.execute(status -> {
             try {
                 final DeviceConfig dc = deviceConfigDao.get(id);
                 if (dc == null) {
                     LOG.debug("could not find device config data for id: {}", id);
+                    return Response.status(Status.NOT_FOUND).entity("Invalid 'id' parameter").build();
                 } else {
                     deviceConfigDao.delete(dc);
+                    return Response.noContent().build();
                 }
             } catch (Exception e) {
                 LOG.error("Exception while deleting device config, provided id is not valid {}", e);
+                return Response.noContent().build();
             }
-       });
-        return Response.noContent().build();
+        });
     }
 
     /** {@inheritDoc} */
