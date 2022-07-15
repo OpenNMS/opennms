@@ -87,42 +87,43 @@ for change in changes:
 
 print("What we want to build:",What_to_build,len(What_to_build))
 git_keywords=libgit.extractKeywordsFromLastCommit()
+build_mappings=mappings
 print("Git Keywords:",git_keywords)
 if "circleci_configuration" in What_to_build and len(What_to_build) == 1 :
     #if circleci_configuration is the only entry in the list we don't want to trigger a buildss.
     mappings["trigger-build"]=False
 
 if "smoke" in git_keywords or "Smoke_tests" in What_to_build:   
-    mappings["trigger-smoke"]=True
+    build_mappings["trigger-smoke"]=True
 else:
-    mappings["trigger-smoke"]=False
+    build_mappings["trigger-smoke"]=False
 
 if "docker" in git_keywords:   
-    mappings["trigger-docker"]=True
+    build_mappings["trigger-docker"]=True
 else:
-    mappings["trigger-docker"]=False
+    build_mappings["trigger-docker"]=False
 
 if "rpms" in git_keywords:   
-    mappings["trigger-rpms"]=True
+    build_mappings["trigger-rpms"]=True
 else:
-    mappings["trigger-rpms"]=False
+    build_mappings["trigger-rpms"]=False
 
 if "debs" in git_keywords:   
-    mappings["trigger-debs"]=True
+    build_mappings["trigger-debs"]=True
 else:
-    mappings["trigger-debs"]=False
+    build_mappings["trigger-debs"]=False
 
 if "integration" in git_keywords or "Integration_tests" in What_to_build:   
-    mappings["trigger-integration"]=True
+    build_mappings["trigger-integration"]=True
 else:
-    mappings["trigger-integration"]=False
+    build_mappings["trigger-integration"]=False
 
 if "experimentalPath" in git_keywords:
-    mappings["trigger-experimental"]=True
+    build_mappings["trigger-experimental"]=True
 else:
-    mappings["trigger-experimental"]=False
+    build_mappings["trigger-experimental"]=False
 
 libfile.write_file(output_path,json.dumps(mappings))
 
-libfile.write_file(path_to_build_components,json.dumps(mappings,indent=4))
+libfile.write_file(path_to_build_components,json.dumps(build_mappings,indent=4))
 
