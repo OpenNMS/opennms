@@ -93,7 +93,7 @@ for e in main_yml_content:
             level=0
             sample_workflow.append(libyaml.create_space(level)+"workflows:")
             level=level+2
-            if pipeline_parameters["trigger-experimental"]:
+            if build_components["trigger-experimental"]:
                 sample_workflow.append(libyaml.create_space(level)+"auto-exp-build:")
             else:
                 sample_workflow.append(libyaml.create_space(level)+"auto-build:")
