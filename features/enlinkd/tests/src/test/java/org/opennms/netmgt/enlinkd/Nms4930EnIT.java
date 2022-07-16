@@ -51,8 +51,8 @@ import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
 import org.opennms.netmgt.enlinkd.model.BridgeMacLink.BridgeMacLinkType;
 import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry;
 import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry.BridgeDot1qTpFdbStatus;
-import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.DiscoveryBridgeTopology;
+import org.opennms.netmgt.enlinkd.service.api.TopologyService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.nb.Nms4930NetworkBuilder;
 
@@ -405,7 +405,7 @@ String[] forwardersdlink2on10bbport= {"001195256302","f07d68a13d67","001517028e0
             }
             assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED,link.getBridgeDot1qTpFdbStatus());
             BridgeMacLink maclink =
-                    BridgeTopologyService.create(
+                    TopologyService.create(
                             DiscoveryBridgeTopology.getFromBridgeForwardingTableEntry(link),
                             link.getMacAddress(),
                             BridgeMacLinkType.BRIDGE_LINK);

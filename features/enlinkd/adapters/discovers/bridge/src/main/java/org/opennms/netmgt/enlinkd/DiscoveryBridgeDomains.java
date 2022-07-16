@@ -29,7 +29,6 @@
 package org.opennms.netmgt.enlinkd;
 
 import java.util.ArrayList;
-import java.util.ConcurrentModificationException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -202,18 +201,7 @@ public class DiscoveryBridgeDomains extends Discovery {
                         LOG.debug("run: calculate end"); 
                     
                         LOG.debug("run: save start");
-                        try {
-                            m_bridgeTopologyService.store(domain, now);
-                        } catch (BridgeTopologyException e) {
-                            LOG.error("run: saving topology failed: {}. {}", 
-                                      e.getMessage(),
-                                      e.printTopology());
-                        } catch (ConcurrentModificationException e) {
-                            LOG.error("run: bridge:[{}], saving topology failed: {}. {}",
-                                      nodebridgetopology,
-                                      e.getMessage(),
-                                      domain.printTopology());
-                        }
+                        m_bridgeTopologyService.store(domain, now);
                         LOG.debug("run: save end");
                     }
                     return "executed Task: " + nodebridgetopology.getInfo();

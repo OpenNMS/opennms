@@ -28,28 +28,11 @@
 
 package org.opennms.netmgt.enlinkd.service.api;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class TopologyShared implements Topology {
-    
-    public static TopologyShared   of(SharedSegment shs, List<MacPort> macPortsOnSegment) throws BridgeTopologyException {
-        TopologyShared tps = new TopologyShared(new ArrayList<>(shs.getBridgePortsOnSegment()),
-                                                macPortsOnSegment, shs.getDesignatedPort());
-        
 
-        final Set<String>  noPortMacs = new HashSet<>(shs.getMacsOnSegment());
-        macPortsOnSegment.forEach(mp -> noPortMacs.removeAll(mp.getMacPortMap().keySet()));
-        
-        if (noPortMacs.size() >0) {
-            tps.setCloud(create(noPortMacs));
-        }
-        return tps;
-    }
-
-    private TopologyShared(List<BridgePort> left, List<MacPort> right,BridgePort top ) {
+    public TopologyShared(List<BridgePort> left, List<MacPort> right,BridgePort top ) {
         this.designated = top;
         this.left = left;
         this.right = right;
@@ -59,14 +42,6 @@ public class TopologyShared implements Topology {
     private final BridgePort designated;
     private final List<BridgePort> left;
     private final List<MacPort> right;
-
-    public static MacCloud create(Set<String> macs) {
-
-        if (macs != null && macs.size() > 0)
-            return new MacCloud(macs);
-        return null;
-
-    }
 
     public List<BridgePort> getBridgePorts() {
         return left;

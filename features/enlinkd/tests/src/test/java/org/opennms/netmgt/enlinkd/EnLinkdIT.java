@@ -62,11 +62,11 @@ import org.opennms.netmgt.enlinkd.model.IpNetToMedia.IpNetToMediaType;
 import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry;
 import org.opennms.netmgt.enlinkd.service.api.BridgePort;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyException;
-import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.BroadcastDomain;
 import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.enlinkd.service.api.SharedSegment;
 import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry.BridgeDot1qTpFdbStatus;
+import org.opennms.netmgt.enlinkd.service.api.TopologyService;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsNode;
@@ -517,7 +517,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         BroadcastDomain nodeCbd = m_bridgeTopologyService.getBroadcastDomain(nodeC.getId());
         assertEquals(nodeAbd, nodeBbd);
         assertEquals(nodeAbd, nodeCbd);
-        BridgeTopologyService.hierarchySetUp(nodeAbd,nodeAbd.getBridge(nodeA.getId()));
+        TopologyService.hierarchySetUp(nodeAbd,nodeAbd.getBridge(nodeA.getId()));
 
         topology.checkwithshared(nodeAbd);
         assertEquals(0, nodeAbd.getForwarders(topology.nodeAId).size());
@@ -656,7 +656,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         assertNotNull(nodeAbd.getBridge(nodeA.getId()));
         assertNotNull(nodeAbd.getBridge(nodeB.getId()));
         assertNotNull(nodeAbd.getBridge(nodeC.getId()));
-        BridgeTopologyService.hierarchySetUp(nodeAbd,nodeAbd.getBridge(nodeA.getId()));
+        TopologyService.hierarchySetUp(nodeAbd,nodeAbd.getBridge(nodeA.getId()));
         assertNotNull(nodeAbd.getRootBridge());
         topology.check(nodeAbd);
         
@@ -757,7 +757,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         assertNotNull(nodeAbd.getBridge(nodeA.getId()));
         assertNotNull(nodeAbd.getBridge(nodeB.getId()));
         assertNotNull(nodeAbd.getBridge(nodeC.getId()));
-        BridgeTopologyService.hierarchySetUp(nodeAbd,nodeAbd.getBridge(nodeA.getId()));
+        TopologyService.hierarchySetUp(nodeAbd,nodeAbd.getBridge(nodeA.getId()));
         assertNotNull(nodeAbd.getRootBridge());
         topology.check(nodeAbd);
 
@@ -860,7 +860,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         assertNotNull(nodeAbd.getBridge(nodeA.getId()));
         assertNotNull(nodeAbd.getBridge(nodeB.getId()));
         assertNotNull(nodeAbd.getBridge(nodeC.getId()));
-        BridgeTopologyService.hierarchySetUp(nodeAbd,nodeAbd.getBridge(nodeA.getId()));
+        TopologyService.hierarchySetUp(nodeAbd,nodeAbd.getBridge(nodeA.getId()));
         assertNotNull(nodeAbd.getRootBridge());
         topology.check(nodeAbd);
 

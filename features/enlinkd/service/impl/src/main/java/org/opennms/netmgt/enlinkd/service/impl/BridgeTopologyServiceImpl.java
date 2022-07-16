@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.enlinkd.service.impl;
 
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -39,14 +38,12 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Collectors;
 
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.support.UpsertTemplate;
 import org.opennms.netmgt.enlinkd.model.BridgeBridgeLink;
 import org.opennms.netmgt.enlinkd.model.BridgeElement;
 import org.opennms.netmgt.enlinkd.model.BridgeMacLink;
 import org.opennms.netmgt.enlinkd.model.BridgeMacLink.BridgeMacLinkType;
 import org.opennms.netmgt.enlinkd.model.BridgeStpLink;
-import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
 import org.opennms.netmgt.enlinkd.persistence.api.BridgeBridgeLinkDao;
 import org.opennms.netmgt.enlinkd.persistence.api.BridgeElementDao;
 import org.opennms.netmgt.enlinkd.persistence.api.BridgeMacLinkDao;
@@ -55,12 +52,12 @@ import org.opennms.netmgt.enlinkd.persistence.api.IpNetToMediaDao;
 import org.opennms.netmgt.enlinkd.service.api.Bridge;
 import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry;
 import org.opennms.netmgt.enlinkd.service.api.BridgePort;
-import org.opennms.netmgt.enlinkd.service.api.BridgePortWithMacs;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyException;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.BroadcastDomain;
 import org.opennms.netmgt.enlinkd.service.api.MacPort;
 import org.opennms.netmgt.enlinkd.service.api.SharedSegment;
+import org.opennms.netmgt.enlinkd.service.api.TopologyService;
 import org.opennms.netmgt.enlinkd.service.api.TopologyShared;
 import org.opennms.netmgt.model.OnmsNode;
 import org.slf4j.Logger;
@@ -89,73 +86,6 @@ public class BridgeTopologyServiceImpl extends TopologyServiceImpl implements Br
     private final Set<Integer> m_bridgecollectionsscheduled = new HashSet<>();
     volatile Set<BroadcastDomain> m_domains;
 
-    public static List<BridgeMacLink> create(BridgePortWithMacs bft, BridgeMacLinkType type) {
-        return BridgeTopologyService.create(bft.getPort(), bft.getMacs(), type);
-    }
-
-    public static Set<String> getIdentifier(List<BridgeElement> elems) {
-        Set<String> identifiers = new HashSet<>();
-        for (BridgeElement element: elems) {
-            if (InetAddressUtils.isValidBridgeAddress(element.getBaseBridgeAddress())) {
-                identifiers.add(element.getBaseBridgeAddress());
-            }
-
-        }
-        return identifiers;
-    }
-
-    public static String getDesignated(List<BridgeElement> elems) {
-        for (BridgeElement element: elems) {
-            if (InetAddressUtils.
-                    isValidStpBridgeId(element.getStpDesignatedRoot())
-                    && !element.getBaseBridgeAddress().
-                    equals(InetAddressUtils.getBridgeAddressFromStpBridgeId(element.getStpDesignatedRoot()))) {
-                String designated=InetAddressUtils.
-                               getBridgeAddressFromStpBridgeId(element.getStpDesignatedRoot());
-                if (InetAddressUtils.isValidBridgeAddress(designated)) {
-                    return designated;
-                }
-            }
-        }
-        return null;
-    }
-
-    public static void createRootBridge(BroadcastDomain domain, Integer nodeid) {
-        Bridge bridge = new Bridge(nodeid);
-        bridge.setRootBridge();
-        domain.getBridges().add(bridge);
-    }
-
-    public static Bridge create(BroadcastDomain domain, Integer nodeid, Integer rootport) {
-        Bridge bridge = new Bridge(nodeid);
-        bridge.setRootPort(rootport);
-        domain.getBridges().add(bridge);
-        return bridge;
-    }
-
-    public static MacPort create(IpNetToMedia media) {
-
-        Set<InetAddress> ips = new HashSet<>();
-        ips.add(media.getNetAddress());
-
-        MacPort port = new MacPort();
-        port.setNodeId(media.getNodeId());
-        port.setIfIndex(media.getIfIndex());
-        port.setMacPortName(media.getPort());
-        port.getMacPortMap().put(media.getPhysAddress(), ips);
-        return port;
-    }
-
-    public static void merge(IpNetToMedia media, MacPort port) {
-
-        if (!port.getMacPortMap().containsKey(media.getPhysAddress())) {
-            Set<InetAddress> ips = new HashSet<>();
-            port.getMacPortMap().put(media.getPhysAddress(), ips);
-        }
-        port.getMacPortMap().get(media.getPhysAddress()).add(media.getNetAddress());
-    }
-
-
     public BridgeElementDao getBridgeElementDao() {
         return m_bridgeElementDao;
     }
@@ -181,16 +111,16 @@ public class BridgeTopologyServiceImpl extends TopologyServiceImpl implements Br
     }
     
     @Override
-    public void store(BroadcastDomain domain, Date now) throws BridgeTopologyException {
+    public void store(BroadcastDomain domain, Date now) {
         for (SharedSegment segment : domain.getSharedSegments()) {
             segment.getDesignatedPort();
         }
         for (SharedSegment segment : domain.getSharedSegments()) {
-            for (BridgeBridgeLink link : SharedSegment.getBridgeBridgeLinks(segment)) {
+            for (BridgeBridgeLink link : TopologyService.getBridgeBridgeLinks(segment)) {
                 link.setBridgeBridgeLinkLastPollTime(new Date());
                     saveBridgeBridgeLink(link);
             }
-            for (BridgeMacLink link : SharedSegment.getBridgeMacLinks(segment)) {
+            for (BridgeMacLink link : TopologyService.getBridgeMacLinks(segment)) {
                 link.setBridgeMacLinkLastPollTime(new Date());
                 saveBridgeMacLink(link);
             }
@@ -198,7 +128,7 @@ public class BridgeTopologyServiceImpl extends TopologyServiceImpl implements Br
         
         domain.getForwarding().stream().filter(forward -> forward.getMacs().size() > 0).
             forEach( forward -> {
-                for ( BridgeMacLink link : create(forward, BridgeMacLinkType.BRIDGE_FORWARDER)) {
+                for ( BridgeMacLink link : TopologyService.create(forward, BridgeMacLinkType.BRIDGE_FORWARDER)) {
                     link.setBridgeMacLinkLastPollTime(new Date());
                     saveBridgeMacLink(link);
                 }
@@ -297,15 +227,15 @@ public class BridgeTopologyServiceImpl extends TopologyServiceImpl implements Br
                 for (Bridge bridge : domain.getBridges()) {
                     bridge.clear();
                     List<BridgeElement> elems = m_bridgeElementDao.findByNodeId(bridge.getNodeId());
-                    bridge.getIdentifiers().addAll(getIdentifier(elems));
-                    bridge.setDesignated(getDesignated(elems));
+                    bridge.getIdentifiers().addAll(TopologyService.getIdentifier(elems));
+                    bridge.setDesignated(TopologyService.getDesignated(elems));
                 }
             }
         }
     }
 
     @Override
-    public void delete(int nodeid) throws BridgeTopologyException {
+    public void delete(int nodeid) {
         m_bridgeElementDao.deleteByNodeId(nodeid);
         m_bridgeElementDao.flush();
 
@@ -337,7 +267,7 @@ public class BridgeTopologyServiceImpl extends TopologyServiceImpl implements Br
     }
 
     @Override
-    public BroadcastDomain reconcile(BroadcastDomain domain,int nodeId) throws BridgeTopologyException {
+    public BroadcastDomain reconcile(BroadcastDomain domain,int nodeId) {
         
         Date now = new Date();
         if (domain == null || domain.isEmpty()) {
@@ -354,21 +284,21 @@ public class BridgeTopologyServiceImpl extends TopologyServiceImpl implements Br
         }
         
         LOG.info("reconcileTopologyForDeleteNode: node:[{}], start: save topology for domain",nodeId);
-        BridgeTopologyService.removeBridge(domain,nodeId);
+        TopologyService.removeBridge(domain,nodeId);
         store(domain,now);
         LOG.info("reconcileTopologyForDeleteNode: node:[{}], end: save topology for domain",nodeId);
         
         if (LOG.isDebugEnabled()) {
             LOG.debug("reconcileTopologyForDeleteNode: node:[{}], resulting domain: {}", nodeId, domain.printTopology());
         }
-        
+
+        if (domain.getRootBridge() == null) {
+            LOG.info("reconcileTopologyForDeleteNode: {}, domain without root",domain);
+        }
+
         if (domain.isEmpty()) {
             cleanBroadcastDomains();
             LOG.info("reconcileTopologyForDeleteNode: node:[{}], empty domain",nodeId);
-            return domain;
-        }
-        if (domain.getRootBridge() == null) {
-            throw new BridgeTopologyException("reconcileTopologyForDeleteNode: Domain without root", domain);
         }
         return domain;
     }
@@ -388,8 +318,8 @@ public class BridgeTopologyServiceImpl extends TopologyServiceImpl implements Br
             if (bridge.getNodeId().intValue() == nodeId.intValue()) {
                 bridge.clear();
                 List<BridgeElement> elems = m_bridgeElementDao.findByNodeId(nodeId);
-                bridge.getIdentifiers().addAll(getIdentifier(elems));
-                bridge.setDesignated(getDesignated(elems));
+                bridge.getIdentifiers().addAll(TopologyService.getIdentifier(elems));
+                bridge.setDesignated(TopologyService.getDesignated(elems));
                 break;
             }
         }
@@ -534,15 +464,15 @@ public class BridgeTopologyServiceImpl extends TopologyServiceImpl implements Br
 
         BBLDESI: for (BridgeBridgeLink link: m_bridgeBridgeLinkDao.findByDesignatedNodeId(nodeid)) {
             for (SharedSegment segment : segments) {
-                if (segment.containsPort(SharedSegment.getFromDesignatedBridgeBridgeLink(link))) {
-                    segment.getBridgePortsOnSegment().add(SharedSegment.getFromBridgeBridgeLink(link));
+                if (segment.containsPort(TopologyService.getFromDesignatedBridgeBridgeLink(link))) {
+                    segment.getBridgePortsOnSegment().add(TopologyService.getFromBridgeBridgeLink(link));
                     continue BBLDESI;
                 }
             }
             try {
-                segments.add(SharedSegment.create(link));
+                segments.add(TopologyService.create(link));
             } catch (BridgeTopologyException e) {
-                LOG.error("getBridgeNodeSharedSegments: cannot create shared segment {}", 
+                LOG.error("getBridgeNodeSharedSegments: cannot create shared segment {}",
                           e.getMessage(),
                           e);
                 return new ArrayList<>();
@@ -551,22 +481,22 @@ public class BridgeTopologyServiceImpl extends TopologyServiceImpl implements Br
 
         Set<BridgePort> designated = new HashSet<>();
         for (BridgeBridgeLink link : m_bridgeBridgeLinkDao.findByNodeId(nodeid)) {
-            designated.add(SharedSegment.getFromDesignatedBridgeBridgeLink(link));
+            designated.add(TopologyService.getFromDesignatedBridgeBridgeLink(link));
         }        
         
        for (BridgePort designatedport: designated) {
        BBL: for ( BridgeBridgeLink link : m_bridgeBridgeLinkDao.getByDesignatedNodeIdBridgePort(designatedport.getNodeId(), 
                                                                                              designatedport.getBridgePort())) {
            for (SharedSegment segment : segments) {
-               if (segment.containsPort(SharedSegment.getFromDesignatedBridgeBridgeLink(link))) {
-                   segment.getBridgePortsOnSegment().add(SharedSegment.getFromBridgeBridgeLink(link));
+               if (segment.containsPort(TopologyService.getFromDesignatedBridgeBridgeLink(link))) {
+                   segment.getBridgePortsOnSegment().add(TopologyService.getFromBridgeBridgeLink(link));
                    continue BBL;
                }
            }
            try {
-               segments.add(SharedSegment.create(link));
+               segments.add(TopologyService.create(link));
            } catch (BridgeTopologyException e) {
-               LOG.error("getBridgeSharedSegments: cannot create shared segment {}", 
+               LOG.error("getBridgeSharedSegments: cannot create shared segment {}",
                   e.getMessage(),
                   e);
                return new ArrayList<>();
@@ -580,13 +510,13 @@ public class BridgeTopologyServiceImpl extends TopologyServiceImpl implements Br
                 continue;
             }
             for (SharedSegment segment : segments) {
-                if (segment.containsPort(SharedSegment.getFromBridgeMacLink(link))) {
+                if (segment.containsPort(TopologyService.getFromBridgeMacLink(link))) {
                     segment.getMacsOnSegment().add(link.getMacAddress());
                     continue MACLINK;
                 }
             }
             try {
-                segments.add(SharedSegment.create(link));
+                segments.add(TopologyService.create(link));
             } catch (BridgeTopologyException e) {
                 LOG.error("getBridgeSharedSegments: cannot create shared segment {}", e.getMessage(),e);
                 return new ArrayList<>();
@@ -607,12 +537,12 @@ public class BridgeTopologyServiceImpl extends TopologyServiceImpl implements Br
         
         if (links.size() == 0 ) {
             LOG.info("getHostNodeSharedSegment: no segment found for mac:{}", mac);
-            return SharedSegment.create();
+            return TopologyService.create();
         }
 
         if (links.size() > 1 ) {
             LOG.error("getHostNodeSharedSegment: more then one segment for mac:{}", mac);
-            return SharedSegment.create();
+            return TopologyService.create();
         }
 
         BridgeMacLink link = links.iterator().next();
@@ -622,22 +552,22 @@ public class BridgeTopologyServiceImpl extends TopologyServiceImpl implements Br
         try {
             for (BridgeBridgeLink bblink: m_bridgeBridgeLinkDao.getByDesignatedNodeIdBridgePort(link.getNode().getId(), link.getBridgePort())) {
                 if (segment == null) {
-                        segment = SharedSegment.create(bblink);
+                        segment = TopologyService.create(bblink);
                 } else {
-                    segment.getBridgePortsOnSegment().add(SharedSegment.getFromBridgeBridgeLink(bblink));
+                    segment.getBridgePortsOnSegment().add(TopologyService.getFromBridgeBridgeLink(bblink));
                 }
             }
         
             for (BridgeMacLink maclink :m_bridgeMacLinkDao.findByNodeIdBridgePort(link.getNode().getId(), link.getBridgePort())) {
                 if (segment == null) {
-                    segment = SharedSegment.create(maclink);
+                    segment = TopologyService.create(maclink);
                 } else {
                     segment.getMacsOnSegment().add(maclink.getMacAddress());
                 }
             }
         } catch (Exception e) {
             LOG.error("getHostNodeSharedSegment: cannot create shared segment {} for mac {} ", e.getMessage(), mac,e);
-            return SharedSegment.create();
+            return TopologyService.create();
         }
  
         return segment;
@@ -654,10 +584,10 @@ public class BridgeTopologyServiceImpl extends TopologyServiceImpl implements Br
         //start bridge bridge link parsing
         for (BridgeBridgeLink link : m_bridgeBridgeLinkDao.findAll()) {
             boolean  segmentnotfound = true;
-            BridgePort bridgeport = SharedSegment.getFromBridgeBridgeLink(link);
+            BridgePort bridgeport = TopologyService.getFromBridgeBridgeLink(link);
             designatebridgemap.put(link.getNode().getId(), bridgeport);
             for (SharedSegment bblsegment : bblsegments) {
-                if (bblsegment.containsPort(SharedSegment.getFromDesignatedBridgeBridgeLink(link))) {
+                if (bblsegment.containsPort(TopologyService.getFromDesignatedBridgeBridgeLink(link))) {
                     bblsegment.getBridgePortsOnSegment().add(bridgeport);
                     segmentnotfound=false;
                     break;
@@ -665,7 +595,7 @@ public class BridgeTopologyServiceImpl extends TopologyServiceImpl implements Br
             }
             if (segmentnotfound)  {
                 try {
-                    bblsegments.add(SharedSegment.create(link));
+                    bblsegments.add(TopologyService.create(link));
                 } catch (BridgeTopologyException e) {
                     LOG.error("getAllPersisted: cannot create shared segment {}", e.getMessage(),e);
                     return domains;
@@ -727,19 +657,19 @@ BML:    for (BridgeMacLink link : m_bridgeMacLinkDao.findAll()) {
             }
             
             for (SharedSegment bblsegment: bblsegments) {
-                if (bblsegment.containsPort(SharedSegment.getFromBridgeMacLink(link))) {
+                if (bblsegment.containsPort(TopologyService.getFromBridgeMacLink(link))) {
                     bblsegment.getMacsOnSegment().add(link.getMacAddress());
                     continue BML;
                 }
             }
             for (SharedSegment bmlsegment: bmlsegments) {
-                if (bmlsegment.containsPort(SharedSegment.getFromBridgeMacLink(link))) {
+                if (bmlsegment.containsPort(TopologyService.getFromBridgeMacLink(link))) {
                     bmlsegment.getMacsOnSegment().add(link.getMacAddress());
                     continue BML;
                 }
             }
             try {
-                bmlsegments.add(SharedSegment.create(link));
+                bmlsegments.add(TopologyService.create(link));
             } catch (BridgeTopologyException e) {
                 LOG.error("getAllPersisted: cannot create shared segment {}", e.getMessage(), e);
                 return domains;
@@ -748,9 +678,9 @@ BML:    for (BridgeMacLink link : m_bridgeMacLinkDao.findAll()) {
                 
         for (Integer rootnode : rootnodetodomainnodemap.keySet()) {
             BroadcastDomain domain = new BroadcastDomain();
-            createRootBridge(domain,rootnode);
+            TopologyService.createRootBridge(domain,rootnode);
             for (Integer bridgenodeId: rootnodetodomainnodemap.get(rootnode)) {
-                create(domain,
+                TopologyService.create(domain,
                               bridgenodeId, 
                                                designatebridgemap.get(
                                                                       bridgenodeId).getBridgePort());
@@ -760,7 +690,7 @@ BML:    for (BridgeMacLink link : m_bridgeMacLinkDao.findAll()) {
         
         for (SharedSegment segment : bblsegments) {
             for (BroadcastDomain cdomain: domains) {
-                if (BridgeTopologyService.loadTopologyEntry(cdomain,segment)) {
+                if (TopologyService.loadTopologyEntry(cdomain,segment)) {
                     break;
                 }
             }
@@ -768,13 +698,13 @@ BML:    for (BridgeMacLink link : m_bridgeMacLinkDao.findAll()) {
 
 SEG:        for (SharedSegment segment : bmlsegments) {
             for (BroadcastDomain cdomain: domains) {
-                if (BridgeTopologyService.loadTopologyEntry(cdomain,segment)) {
+                if (TopologyService.loadTopologyEntry(cdomain,segment)) {
                     continue SEG;
                 }
             }
             BroadcastDomain domain = new BroadcastDomain();
-            createRootBridge(domain,segment.getDesignatedBridge());
-            BridgeTopologyService.loadTopologyEntry(domain, segment);
+            TopologyService.createRootBridge(domain,segment.getDesignatedBridge());
+            TopologyService.loadTopologyEntry(domain, segment);
             domains.add(domain);
         }
 
@@ -782,7 +712,7 @@ SEG:        for (SharedSegment segment : bmlsegments) {
             for (BroadcastDomain domain: domains) {
                 Bridge bridge = domain.getBridge(forwarder.getNode().getId());
                 if (bridge != null) {
-                    domain.addForwarding(SharedSegment.getFromBridgeMacLink(forwarder),forwarder.getMacAddress());
+                    domain.addForwarding(TopologyService.getFromBridgeMacLink(forwarder),forwarder.getMacAddress());
                     break;
                 }
             }
@@ -822,21 +752,31 @@ SEG:        for (SharedSegment segment : bmlsegments) {
         final Table<Integer, Integer, MacPort> nodeIfindexToMacPortTable = HashBasedTable.create();
         m_ipNetToMediaDao.
                 findAll().forEach(m -> {
+                    boolean merge = false;
+                    MacPort macport=new MacPort();
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("getMacPorts: parsing: {}",m);
                     }
                     if (m.getNode() != null ) {
                         if (nodeIfindexToMacPortTable.contains(m.getNode().getId(), m.getIfIndex())) {
-                            merge(m, nodeIfindexToMacPortTable.get(m.getNode().getId(), m.getIfIndex()));
+                            macport = nodeIfindexToMacPortTable.get(m.getNode().getId(), m.getIfIndex());
+                            merge=true;
                         } else {
-                            nodeIfindexToMacPortTable.put(m.getNode().getId(), m.getIfIndex(), create(m));
+                            nodeIfindexToMacPortTable.put(m.getNode().getId(), m.getIfIndex(), TopologyService.create(m));
                         }
                     } else {
                         if (macToMacPortMap.containsKey(m.getPhysAddress())) {
-                            merge(m, macToMacPortMap.get(m.getPhysAddress()));
+                            macport=macToMacPortMap.get(m.getPhysAddress());
+                            merge=true;
                         } else {
-                            macToMacPortMap.put(m.getPhysAddress(), create(m));
+                            macToMacPortMap.put(m.getPhysAddress(), TopologyService.create(m));
                         }
+                    }
+                    if (merge) {
+                        if (!macport.getMacPortMap().containsKey(m.getPhysAddress())) {
+                            macport.getMacPortMap().put(m.getPhysAddress(), new HashSet<>());
+                        }
+                        macport.getMacPortMap().get(m.getPhysAddress()).add(m.getNetAddress());
                     }
                 });
        List<MacPort> ports = new ArrayList<>(nodeIfindexToMacPortTable.values());
@@ -856,7 +796,7 @@ SEG:        for (SharedSegment segment : bmlsegments) {
                 }
                 dm.getSharedSegments().forEach(shs -> {
                     try {
-                        links.add(TopologyShared.of(shs, macPortMap.stream().filter(mp ->
+                        links.add(TopologyService.of(shs, macPortMap.stream().filter(mp ->
                                         shs.getMacsOnSegment().containsAll(mp.getMacPortMap().keySet())).
                                 collect(Collectors.toList())));
                     } catch (BridgeTopologyException e) {

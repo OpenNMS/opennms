@@ -130,7 +130,7 @@ public class DiscoveryBridgeTopology {
 
             BridgePortWithMacs bpwm = bridgeFt.getBridgePortWithMacs(bridgeport);
             if (bpwm == null ) {
-                bridgeFt.getPorttomac().add(BridgeTopologyService.create(bridgeport, new HashSet<>()));
+                bridgeFt.getPorttomac().add(TopologyService.create(bridgeport, new HashSet<>()));
             }
             bridgeFt.getBridgePortWithMacs(bridgeport).getMacs().add(link.getMacAddress());
 
@@ -239,12 +239,12 @@ public class DiscoveryBridgeTopology {
         List<BridgePortWithMacs> links = new ArrayList<>(domain.getForwarders(bridgeId));
 
         for (Integer bridgePort : bft.keySet()) {
-            BridgePortWithMacs link = BridgeTopologyService.create(portifindexmap.get(bridgePort), bft.get(bridgePort));
+            BridgePortWithMacs link = TopologyService.create(portifindexmap.get(bridgePort), bft.get(bridgePort));
             links.add(link);
         }
 
         Set<BridgeForwardingTableEntry> entries= new HashSet<>();
-        links.stream().filter( bfti -> bfti.getMacs().size() > 0).forEach( bfti -> entries.addAll(BridgeTopologyService.get(bfti)));
+        links.stream().filter( bfti -> bfti.getMacs().size() > 0).forEach( bfti -> entries.addAll(TopologyService.get(bfti)));
         return entries;
     }
 
@@ -483,7 +483,7 @@ public class DiscoveryBridgeTopology {
             rootBft.getBridge().setRootBridge();
             rootBft.getPorttomac().
                         forEach(ts -> 
-                            SharedSegment.createAndAddToBroadcastDomain(m_domain,ts));
+                            TopologyService.createAndAddToBroadcastDomain(m_domain,ts));
             LOG.debug("calculate: bridge:[{}] elected [root] is first:{}", 
                       rootBft.getNodeId(),
                  m_domain.getBridgeNodesOnDomain());
@@ -531,17 +531,12 @@ public class DiscoveryBridgeTopology {
                                 bridgeId);
                     continue;
                 }
-                
-                try {
-                    BridgeTopologyService.clearTopologyForBridge(m_domain,bridgeId);
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("calculate: bridge:[{}] cleaned ->\n{}", 
-                                  bridgeId,
-                                  m_domain.printTopology());
-                    }
-                } catch (BridgeTopologyException e) {
-                    LOG.warn("calculate: bridge:[{}], {}, \n{}", bridgeId, e.getMessage(),e.printTopology());
-                    m_failed.add(bridgeId);
+
+                TopologyService.clearTopologyForBridge(m_domain,bridgeId);
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("calculate: bridge:[{}] cleaned ->\n{}",
+                              bridgeId,
+                              m_domain.printTopology());
                 }
             }
             
@@ -592,17 +587,10 @@ public class DiscoveryBridgeTopology {
         }
         
         if (m_domain.getRootBridge() != null && !Objects.equals(m_domain.getRootBridge().getNodeId(), electedRoot.getNodeId())) {
-            try {
-                BridgeTopologyService.hierarchySetUp(m_domain,electedRoot);
-                LOG.debug("calculate: bridge:[{}] elected is new [root] ->\n{}",
-                          electedRoot.getNodeId(), 
-                          m_domain.printTopology());
-            } catch (BridgeTopologyException e) {
-                LOG.error("calculate: bridge:[{}], {}, \n{}", electedRoot.getNodeId(), e.getMessage(),e.printTopology());
-                m_failed.addAll(m_bridgeFtMapUpdate.keySet());
-                m_failed.add(electedRoot.getNodeId());
-                return;
-            }
+            TopologyService.hierarchySetUp(m_domain,electedRoot);
+            LOG.debug("calculate: bridge:[{}] elected is new [root] ->\n{}",
+                      electedRoot.getNodeId(),
+                      m_domain.printTopology());
         }
         
         Set<Integer> postprocessing = new HashSet<>();
@@ -927,7 +915,7 @@ public class DiscoveryBridgeTopology {
             return;
         }
         
-        SharedSegment.merge(m_domain, 
+        TopologyService.merge(m_domain,
                             upSegment, 
                             splitted,
                             maconupsegment,
