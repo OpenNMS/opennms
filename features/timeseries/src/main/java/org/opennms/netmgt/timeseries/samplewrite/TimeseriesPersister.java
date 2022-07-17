@@ -75,7 +75,7 @@ public class TimeseriesPersister extends AbstractPersister {
     private static final Logger LOG = LoggerFactory.getLogger(TimeseriesPersister.class);
 
     private final RrdRepository repository;
-    private final TimeseriesWriter writer;
+    private final TimeSeriesWriter writer;
     private final MetaTagDataLoader metaDataLoader;
     private final Cache<ResourcePath, Set<Tag>> configuredAdditionalMetaTagCache;
     private TimeseriesPersistOperationBuilder currentBuilder; // builds a group of attributes
@@ -83,7 +83,7 @@ public class TimeseriesPersister extends AbstractPersister {
     private Map<ResourcePath, Map<String, String>> resourceLevelStringAttributes;
     private final MetricRegistry metricRegistry;
 
-    protected TimeseriesPersister(ServiceParameters params, RrdRepository repository, TimeseriesWriter timeseriesWriter,
+    protected TimeseriesPersister(ServiceParameters params, RrdRepository repository, TimeSeriesWriter timeseriesWriter,
                                   MetaTagDataLoader metaDataLoader, Cache<ResourcePath, Set<Tag>> configuredAdditionalMetaTagCache,
                                   MetricRegistry metricRegistry) {
         super(params, repository);

@@ -52,13 +52,13 @@ import com.codahale.metrics.MetricRegistry;
  */
 public class TimeseriesPersisterFactory implements PersisterFactory {
 
-    private final TimeseriesWriter timeseriesWriter;
+    private final TimeSeriesWriter timeseriesWriter;
     private final MetaTagDataLoader metaTagDataLoader;
     private final Cache<ResourcePath, Set<Tag>> configuredAdditionalMetaTagCache;
     private final MetricRegistry registry;
 
     @Inject
-    public TimeseriesPersisterFactory(final TimeseriesWriter timeseriesWriter,
+    public TimeseriesPersisterFactory(final TimeSeriesWriter timeseriesWriter,
                                       final MetaTagDataLoader metaTagDataLoader,
                                       @Named("timeseriesPersisterMetaTagCache") final CacheConfig cacheConfig,
                                       @Named("timeseriesMetricRegistry") MetricRegistry registry) {
