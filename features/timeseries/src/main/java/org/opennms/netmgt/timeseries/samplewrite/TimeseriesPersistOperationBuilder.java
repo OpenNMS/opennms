@@ -69,7 +69,7 @@ import com.google.common.collect.Sets;
 public class TimeseriesPersistOperationBuilder implements PersistOperationBuilder {
     private static final Logger LOG = LoggerFactory.getLogger(TimeseriesPersistOperationBuilder.class);
 
-    private final TimeseriesWriter writer;
+    private final TimeSeriesWriter writer;
     private final RrdRepository rrepository;
     private final String groupName;
     private final ResourceIdentifier resource;
@@ -82,7 +82,7 @@ public class TimeseriesPersistOperationBuilder implements PersistOperationBuilde
 
     private TimeKeeper timeKeeper = new DefaultTimeKeeper();
 
-    public TimeseriesPersistOperationBuilder(TimeseriesWriter writer, RrdRepository repository,
+    public TimeseriesPersistOperationBuilder(TimeSeriesWriter writer, RrdRepository repository,
                                              ResourceIdentifier resource, String groupName,
                                              Set<Tag> configuredAdditionalMetaTags,
                                              final Map<ResourcePath, Map<String, String>> stringAttributesByPath,

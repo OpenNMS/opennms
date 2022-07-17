@@ -71,7 +71,7 @@ import com.swrve.ratelimitedlogger.RateLimitedLog;
  *
  * @author jwhite
  */
-public class TimeseriesWriter implements WorkHandler<SampleBatchEvent>, DisposableBean {
+public class TimeseriesWriter implements TimeSeriesWriter, WorkHandler<SampleBatchEvent>, DisposableBean {
 
     private static final Logger LOG = LoggerFactory.getLogger(TimeseriesWriter.class);
 
@@ -107,7 +107,8 @@ public class TimeseriesWriter implements WorkHandler<SampleBatchEvent>, Disposab
 
     @Inject
     public TimeseriesWriter(@Named("timeseries.ring_buffer_size") Integer ringBufferSize,
-                            @Named("timeseries.writer_threads") Integer numWriterThreads, @Named("timeseriesMetricRegistry") MetricRegistry registry) {
+                            @Named("timeseries.writer_threads") Integer numWriterThreads,
+                            @Named("timeseriesMetricRegistry") MetricRegistry registry) {
         Preconditions.checkArgument(ringBufferSize > 0, "ringBufferSize must be positive");
         Preconditions.checkArgument(DoubleMath.isMathematicalInteger(Math.log(ringBufferSize) / Math.log(2)), "ringBufferSize must be a power of two");
         Preconditions.checkArgument(numWriterThreads > 0, "numWriterThreads must be positive");
@@ -160,6 +161,7 @@ public class TimeseriesWriter implements WorkHandler<SampleBatchEvent>, Disposab
         }
     }
 
+    @Override
     public void insert(List<Sample> samples) {
 
         // Add the samples to the ring buffer
