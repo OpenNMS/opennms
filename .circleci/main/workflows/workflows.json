@@ -224,7 +224,10 @@
         "extends": ["build"],
         "minion-image":{
             "requires": ["build"]
-        } 
+        },
+        "horizon-image":{
+            "requires": ["horizon-deb-build"]
+        }
     },
     "deploy": {
         "extends": ["build","smoke","rpms","debs"],

@@ -37,11 +37,11 @@ jobs:
             cp -R /tmp/jvmprocmon ~/build-results/system-logs/ || :
       - setup_remote_docker:
           docker_layer_caching: true
-      - run:
-          name: Fetch DEB artifacts and build horizon container image
-          command: |
-            cd opennms-container/horizon
-            env DOCKER_ARCH="linux/amd64" ./build_container_image.sh
+      #- run:
+      #    name: Fetch DEB artifacts and build horizon container image
+      #    command: |
+      #      cd opennms-container/horizon
+      #      env DOCKER_ARCH="linux/amd64" ./build_container_image.sh
       - store_artifacts:
           when: always
           path: ~/build-results
@@ -49,12 +49,12 @@ jobs:
       - store_artifacts:
           path: ~/project/target/debs
           destination: debs
-      - store_artifacts:
-          path: ~/project/opennms-container/horizon/images/container.oci
-          destination: horizon.oci
+      #- store_artifacts:
+      #    path: ~/project/opennms-container/horizon/images/container.oci
+      #    destination: horizon.oci
       - cache-workflow-assets:
           cache_prefix: deb-horizon
           source_path: target/debs
-      - cache-oci:
-          key: horizon
-          path: opennms-container/horizon/images/
+      #- cache-oci:
+      #    key: horizon
+      #    path: opennms-container/horizon/images/

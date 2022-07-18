@@ -1,0 +1,22 @@
+jobs:
+  horizon-image:
+    machine:
+      image: debian-build-executor
+    resource_class: xlarge
+    steps:
+      - attach_workspace: 
+          at: ~/
+      - fetch-artifacts:
+          path: ~/project/target/debs
+          location: debs
+      - run:
+          name: Fetch DEB artifacts and build horizon container image
+          command: |
+            cd opennms-container/horizon
+            env DOCKER_ARCH="linux/amd64" ./build_container_image.sh
+      - store_artifacts:
+          path: ~/project/opennms-container/horizon/images/container.oci
+          destination: horizon.oci
+      - cache-oci:
+          key: horizon
+          path: opennms-container/horizon/images/
