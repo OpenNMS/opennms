@@ -13,7 +13,7 @@
         "integration": false
     },
     "oci-images": {
-        "minion": true,
+        "minion": false,
         "horizon": false,
         "sentinel": false
     },
