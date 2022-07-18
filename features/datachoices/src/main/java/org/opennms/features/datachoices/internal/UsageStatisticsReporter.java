@@ -29,6 +29,7 @@
 package org.opennms.features.datachoices.internal;
 
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Timer;
@@ -60,10 +61,23 @@ import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.management.AttributeNotFoundException;
+import javax.management.InstanceNotFoundException;
+import javax.management.MBeanException;
+import javax.management.MBeanServer;
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectName;
+import javax.management.ReflectionException;
+
 public class UsageStatisticsReporter implements StateChangeHandler {
     private static final Logger LOG = LoggerFactory.getLogger(UsageStatisticsReporter.class);
 
     public static final String USAGE_REPORT = "usage-report";
+    private static final String JMX_OBJ_OS = "java.lang:type=OperatingSystem";
+    private static final String JMX_ATTR_FREE_PHYSICAL_MEMORY_SIZE = "FreePhysicalMemorySize";
+    private static final String JMX_ATTR_TOTAL_PHYSICAL_MEMORY_SIZE = "TotalPhysicalMemorySize";
+    private static final String JMX_ATTR_AVAILABLE_PROCESSORS = "AvailableProcessors";
+    private static final MBeanServer M_BEAN_SERVER = ManagementFactory.getPlatformMBeanServer();
 
     private String m_url;
 
@@ -222,6 +236,7 @@ public class UsageStatisticsReporter implements StateChangeHandler {
             installedFeatures = "ERROR: Failed to enumerate the installed features: " + e.getMessage();
         }
         usageStatisticsReport.setInstalledFeatures(installedFeatures);
+        setJmxAttributes(usageStatisticsReport);
         gatherProvisiondData(usageStatisticsReport);
         usageStatisticsReport.setServices(m_serviceConfigurationFactory.getServiceNameMap());
 
@@ -230,6 +245,37 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         usageStatisticsReport.setOnCallRoleCount(m_groupFactory.getRoles().size());
 
         return usageStatisticsReport;
+    }
+    private void setJmxAttributes(UsageStatisticsReportDTO usageStatisticsReport) {
+        Object freePhysicalMemSizeObj = getJmxAttribute(JMX_OBJ_OS, JMX_ATTR_FREE_PHYSICAL_MEMORY_SIZE);
+        if (freePhysicalMemSizeObj != null) {
+            usageStatisticsReport.setFreePhysicalMemorySize((long) freePhysicalMemSizeObj);
+        }
+        Object totalPhysicalMemSizeObj = getJmxAttribute(JMX_OBJ_OS, JMX_ATTR_TOTAL_PHYSICAL_MEMORY_SIZE);
+        if (totalPhysicalMemSizeObj != null) {
+            usageStatisticsReport.setTotalPhysicalMemorySize((long) totalPhysicalMemSizeObj);
+        }
+        Object availableProcessorsObj = getJmxAttribute(JMX_OBJ_OS, JMX_ATTR_AVAILABLE_PROCESSORS);
+        if (availableProcessorsObj != null) {
+            usageStatisticsReport.setAvailableProcessors((int) availableProcessorsObj);
+        }
+    }
+
+    private Object getJmxAttribute(String objectName, String attributeName) {
+        ObjectName objNameActual;
+        try {
+            objNameActual = new ObjectName(objectName);
+        } catch (MalformedObjectNameException e) {
+            LOG.warn("Failed to query from object name " + objectName, e);
+            return null;
+        }
+        try {
+            return M_BEAN_SERVER.getAttribute(objNameActual, attributeName);
+        } catch (InstanceNotFoundException | AttributeNotFoundException
+                 | ReflectionException | MBeanException e) {
+            LOG.warn("Failed to query from attribute name " + attributeName + " on object " + objectName, e);
+            return null;
+        }
     }
 
     public void setUrl(String url) {
