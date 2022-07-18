@@ -1782,7 +1782,7 @@
     <powermockVersion>2.0.9</powermockVersion>
     <okhttpVersion>3.10.0</okhttpVersion>
     <okioVersion>1.14.0</okioVersion>
-    <opennmsApiVersion>0.6.0</opennmsApiVersion>
+    <opennmsApiVersion>1.0.1</opennmsApiVersion>
     <opennmsApiVersionOsgi>0.6.0</opennmsApiVersionOsgi>
     <osgiVersion>7.0.0</osgiVersion>
     <osgiAnnotationVersion>7.0.0</osgiAnnotationVersion>
