@@ -44,13 +44,14 @@ fi
 SUDO="$(command -v sudo 2>/dev/null || which sudo 2>/dev/null || :)"
 
 do_sudo() {
-  if [ -x "$SUDO" ]; then
+  if [ "$(id -u -n)" = "root" ]; then
+    # If we already are root, no need for sudo
+    "$@"
+  elif [ -x "$SUDO" ]; then
     "$SUDO" "$@"
   else
     # if no sudo, fall back to running as the current user
-    if [ "$(id -u -n)" != "root" ]; then
-      echo "WARNING: sudo was not located, but this script is not being run as root. This will probably fail."
-    fi
+    echo "WARNING: sudo was not located, but this script is not being run as root. This will probably fail."
     "$@"
   fi
 }
