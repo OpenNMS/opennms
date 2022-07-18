@@ -1792,7 +1792,7 @@
     <opentracingVersion>0.31.0</opentracingVersion>
     <jeagertracingVersion>0.34.0</jeagertracingVersion>
     <lz4JavaVersion>1.8.0</lz4JavaVersion>
-    <quartzVersion>2.2.3</quartzVersion>
+    <quartzVersion>2.3.2</quartzVersion>
     <rancidApiVersion>2.0.0</rancidApiVersion>
     <rateLimitedLoggerVersion>2.0.1</rateLimitedLoggerVersion>
     <resilience4jVersion>0.17.0</resilience4jVersion>
