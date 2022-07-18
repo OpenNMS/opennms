@@ -7,6 +7,7 @@ from library import libgit
 from library import libfile
 
 path_to_build_components=os.path.join("/tmp","build-triggers.json")
+path_to_build_trigger_override=os.path.join("~/project","build-triggers.override.json")
 
 output_path = os.environ.get('OUTPUT_PATH')
 head = os.environ.get('CIRCLE_SHA1')
@@ -101,35 +102,7 @@ print("What we want to build:",What_to_build,len(What_to_build))
 git_keywords=libgit.extractKeywordsFromLastCommit()
 
 #Do we need this here?
-build_mappings={
-    "build": {
-      "docs": False,
-      "ui": False,
-      "coverage": False,
-    },
-    "publish": {
-     "packages" : False #// debian, rpm, docker(oci)
-    },
-    "tests" : {
-      "smoke": False,
-      "integration": False
-    },
-    "oci-images": {
-     "minion": False,
-     "horizon": False,
-     "sentinel": False
-    },
-    "debian-packages": {
-     "minion": False,
-     "horizon": False,
-     "sentinel": False
-    },
-    "rpm-packages": {
-      "minion": False,
-      "horizon": False,
-      "sentinel": False
-     }
-}
+build_mappings=libfile.load_json(path_to_build_trigger_override)
 
 print("Git Keywords:",git_keywords)
 if "circleci_configuration" in What_to_build and len(What_to_build) == 1:

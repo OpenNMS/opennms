@@ -21,6 +21,11 @@ class libfile:
     def removefolder(self,path):
         return shutil.rmtree(path)
 
+    def load_json(self,path):
+        _tmp={}
+        with open(path,"r") as f:
+            _tmp=json.load(f)
+        return _tmp
 
     def find_files(self,start_path,pattern,output=[]):
         current_files=os.listdir(start_path)
