@@ -123,7 +123,9 @@ for e in main_yml_content:
             sample_workflow.append(libyaml.create_space(level)+"jobs:")
             level+=2
 
-            if build_components["rpm-packages"]["minion"] or build_components["rpm-packages"]["horizon"] or build_components["rpm-packages"]["sentinel"]:
+            if build_components["rpm-packages"]["minion"] or \
+               build_components["rpm-packages"]["horizon"] or \
+               build_components["rpm-packages"]["sentinel"]:
                 print("rpm-packages > all:",libyaml.tell_extended_requirements('rpms'))
                 workflow=libyaml.generate_yaml(workflow_data,"rpms",level,sample_workflow,disable_filters=True)
                 if len(sample_workflow)>1:
@@ -143,16 +145,32 @@ for e in main_yml_content:
                             sample_workflow.append(e)
                 else:
                     sample_workflow=workflow  
-            if build_components["debian-packages"]["minion"] or build_components["debian-packages"]["horizon"] or build_components["debian-packages"]["sentinel"]:
+            if build_components["debian-packages"]["minion"] or \
+               build_components["debian-packages"]["horizon"] or \
+               build_components["debian-packages"]["sentinel"]:
                 print("debian-packages > all:",libyaml.tell_extended_requirements('debs'))
                 workflow=libyaml.generate_yaml(workflow_data,"debs",level,sample_workflow,disable_filters=True)
                 if len(sample_workflow)>1:
                     for e in workflow:
-                        print("doc","Looking at",e)
+                        print("debian-packages","Looking at",e)
                         if e not in sample_workflow:
                             sample_workflow.append(e)
                 else:
-                    sample_workflow=workflow            
+                    sample_workflow=workflow          
+
+            if build_components["oci-images"]["minion"] or \
+               build_components["oci-images"]["horizon"] or \
+               build_components["oci-images"]["sentinel"]:
+                print("oci-images > all:",libyaml.tell_extended_requirements('debs'))
+                workflow=libyaml.generate_yaml(workflow_data,"oci",level,sample_workflow,disable_filters=True)
+                if len(sample_workflow)>1:
+                    for e in workflow:
+                        print("oci-images","Looking at",e)
+                        if e not in sample_workflow:
+                            sample_workflow.append(e)
+                else:
+                    sample_workflow=workflow   
+
             if build_components["experimental"]:
                 print("experimental:",libyaml.tell_extended_requirements('experimental'))
                 workflow=libyaml.generate_yaml(workflow_data,"experimental",level,sample_workflow,disable_filters=True)
