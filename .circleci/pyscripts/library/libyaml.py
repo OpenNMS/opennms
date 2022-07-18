@@ -145,7 +145,7 @@ class libyaml:
 
         if not [i for i in _line if "- "+key in i]: 
                 _line.append(self.create_space(level)+"- "+_name+":")
-                level+=2
+                #level+=2
 
         for entry in input_json[subkey][key]:
             if entry in "filters":
