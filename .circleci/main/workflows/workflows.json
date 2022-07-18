@@ -220,6 +220,10 @@
             }
         }
     },
+    "oci"{
+        "extends": ["build"],
+        "minion-image":{} 
+    },
     "deploy": {
         "extends": ["build","smoke","rpms","debs"],
         "minion-image-single-arch": {
