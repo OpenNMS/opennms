@@ -1,6 +1,6 @@
 {
     "build": {
-        "docs": true,
+        "docs": false,
         "ui": false,
         "coverage": false,
         "build": false
@@ -13,7 +13,7 @@
         "integration": false
     },
     "oci-images": {
-        "minion": false,
+        "minion": true,
         "horizon": false,
         "sentinel": false
     },
