@@ -32,6 +32,9 @@
     <reference id="configurationManagerService" interface="org.opennms.features.config.service.api.ConfigurationManagerService" availability="mandatory"/>
 
     <reference id="provisiondConfigDao" interface="org.opennms.netmgt.dao.api.ProvisiondConfigurationDao" availability="mandatory"/>
+    
+    <reference id="deployedForeignSourceRepository" interface="org.opennms.netmgt.provision.persist.ForeignSourceRepository" filter="(type=deployed)"/>
+
 
     <bean id="serviceConfigurationFactory" class="org.opennms.netmgt.config.ServiceConfigFactory" />
 
@@ -77,6 +80,7 @@
         <property name="destinationPathFactory" ref="destinationPathFactory"/>
         <property name="notifdConfigFactory" ref="notifdConfigFactory"/>
         <property name="groupFactory" ref="groupFactory"/>
+        <property name="deployedForeignSourceRepository" ref="deployedForeignSourceRepository"/>
     </bean>
 
     <bean id="dataChoiceRestService" class="org.opennms.features.datachoices.web.internal.DataChoiceRestServiceImpl">

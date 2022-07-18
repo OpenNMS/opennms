@@ -77,6 +77,8 @@ public class UsageStatisticsReportDTO {
     private long m_provisiondScanThreadPoolSize;
     private long m_provisiondRescanThreadPoolSize;
     private long m_provisiondWriteThreadPoolSize;
+    private long m_requisitionCount;
+    private long m_requisitionWithChangedFSCount;
     private Map<String, Long> m_provisiondRequisitionSchemeCount;
     private Map<String, Boolean> m_services;
 
@@ -318,6 +320,22 @@ public class UsageStatisticsReportDTO {
 
     public void setOnCallRoleCount(int m_onCallRoleCount) {
         this.m_onCallRoleCount = m_onCallRoleCount;
+    }
+
+    public void setRequisitionCount(long count) {
+        this.m_requisitionCount = count;
+    }
+
+    public long getRequisitionCount() {
+        return m_requisitionCount;
+    }
+
+    public void setRequisitionWithChangedFSCount(long count) {
+        this.m_requisitionWithChangedFSCount = count;
+    }
+
+    public long getRequisitionWithChangedFSCount() {
+        return m_requisitionWithChangedFSCount;
     }
 
     public String toJson() {
