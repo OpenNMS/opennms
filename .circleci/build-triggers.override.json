@@ -1,6 +1,6 @@
 {
     "build": {
-        "docs": false,
+        "docs": true,
         "ui": false,
         "coverage": false,
         "build": false
