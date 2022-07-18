@@ -143,20 +143,28 @@
       session.removeAttribute("SPRING_SECURITY_SAVED_REQUEST");
   }
 %>
+<script>
+  window.onload = function() {
+    var username = document.getElementById("loginForm:input_j_username");
+    var password = document.getElementById("loginForm:input_j_password");
 
+    username.value = '';
+    password.value = '';
+  }
+</script>
 <div class="login-page">
     <div class="card login-form rounded">
       <div style="padding-bottom: 36px; padding-top: 60px">
         <img src="images/opennms_horizon_title.svg" class="horizon" width="185px" />
       </div>
 
-      <form class="" name="loginForm" role="form" method="post" action="<c:url value='j_spring_security_check'/>">
+      <form class="" id="loginForm" name="loginForm" role="form" method="post" action="<c:url value='j_spring_security_check'/>" autocomplete="off">
         <div class="form-content">
           <div class="form-group">
             <input type="text" id="input_j_username" name="j_username"
             <%-- This is deprecated and requires a custom AuthenticationFailureHandler to function properly --%>
                    <c:if test="${not empty param.login_error}">value='<c:out value="${SPRING_SECURITY_LAST_USERNAME}"/>'</c:if>
-                   placeholder="Username" autofocus="autofocus" autocomplete="username" required />
+                   placeholder="Username" autofocus="autofocus" autocomplete="username" required/>
           </div>
 
           <div class="form-group">
