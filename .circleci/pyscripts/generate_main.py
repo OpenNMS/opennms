@@ -182,8 +182,8 @@ for e in main_yml_content:
                 else:
                     sample_workflow=workflow                
             if build_components["build"]["build"]:
-                print("build> build:",libyaml.tell_extended_requirements('build-deploy'))
-                workflow=libyaml.generate_yaml_v2(workflow_data,"build-deploy",level,sample_workflow)
+                print("build> build:",libyaml.tell_extended_requirements('build'))
+                workflow=libyaml.generate_yaml_v2(workflow_data,"build",level,sample_workflow)
                 if len(sample_workflow)>1:
                     for e in workflow:
                         print("doc","Looking at",e)
