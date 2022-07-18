@@ -220,7 +220,7 @@
             }
         }
     },
-    "oci"{
+    "oci":{
         "extends": ["build"],
         "minion-image":{} 
     },
