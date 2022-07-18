@@ -167,38 +167,6 @@ class libyaml:
             else:
                 _line.append(self.create_space(level+2)+"- "+str(input_json[subkey][key][entry]))
 
-            #if entry in ["extends"]:
-            #    for extension in input_json[subkey][key][entry]:
-            #        if not [i for i in _line if "- "+extension in i]: 
-            #            self.generate_yaml_v2(input_json,extension,level,_line)
-            #else:
-            #    if not [i for i in _line if "- "+entry in i]: 
-            #        if input_json[subkey][key][entry]:
-            #            _line.append(self.create_space(level)+"- "+entry+":")
-            #            for entry_lvl2 in input_json[subkey][key][entry]:
-            #                if entry_lvl2 in "variations":
-            #                    tmp_data=self.create_space(level+4)+"matrix:\n"
-            #                    tmp_data+=self.create_space(level+6)+"parameters:\n"
-            #                    tmp_data+=self.create_space(level+8)+"architecture:"+str(input_json[subkey][key][entry][entry_lvl2])
-            #                    _line.append(tmp_data)
-            #                elif entry_lvl2 in "context":
-            #                    _line.append(self.create_space(level+4)+"context:")
-            #                    for entry_lvl3 in input_json[subkey][key][entry][entry_lvl2]:
-            #                        _line.append(self.create_space(level+6)+"- "+entry_lvl3)
-            #                elif entry_lvl2 in "requires":
-            #                    _line.append(self.create_space(level+4)+"requires:")
-            #                    for entry_lvl3 in input_json[subkey][key][entry][entry_lvl2]:
-            #                        _line.append(self.create_space(level+6)+"- "+entry_lvl3)
-            #                else:
-            #                    print(entry_lvl2)
-            #                    #print(input_json[subkey])
-            #                    #print(input_json[subkey][key])
-            #                    #print(input_json[subkey][key][entry])
-            #                    #print(input_json[subkey][key][entry][entry_lvl2])
-            #                    #_line.append(self.create_space(level+2)+"- "+str(input_json[subkey][key][entry][entry_lvl2]))
-            #        else:
-            #            _line.append(self.create_space(level)+"- "+entry)
-
         return _line
 
 
