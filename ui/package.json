@@ -38,7 +38,7 @@
     "@featherds/tabs": "0.10.14",
     "@featherds/tooltip": "0.10.14",
     "@featherds/utils": "0.10.14",
-    "@vueuse/core": "^8.7.5",
+    "@vueuse/core": "^8.9.4",
     "axios": "^0.27.2",
     "chart.js": "^3.8.0",
     "chartjs-plugin-zoom": "^1.2.1",
