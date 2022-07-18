@@ -114,59 +114,59 @@ else:
 
 if "smoke" in git_keywords or "Smoke_tests" in What_to_build:   
     build_mappings["tests"]["smoke"]=True
-else:
-    build_mappings["tests"]["smoke"]=False
+#else:
+#    build_mappings["tests"]["smoke"]=False
 
 if "docker" in git_keywords:
     build_mappings["build"]["build"]=True
     build_mappings["oci-images"]["minion"]=True
     build_mappings["oci-images"]["horizon"]=True
     build_mappings["oci-images"]["sentinel"]=True
-else:
-    build_mappings["oci-images"]["minion"]=False
-    build_mappings["oci-images"]["horizon"]=False
-    build_mappings["oci-images"]["sentinel"]=False
+#else:
+#    build_mappings["oci-images"]["minion"]=False
+#    build_mappings["oci-images"]["horizon"]=False
+#    build_mappings["oci-images"]["sentinel"]=False
 
 if "rpms" in git_keywords:
     build_mappings["build"]["build"]=True
     build_mappings["rpm-packages"]["minion"]=True
     build_mappings["rpm-packages"]["horizon"]=True
     build_mappings["rpm-packages"]["sentinel"]=True
-else:
-    build_mappings["rpm-packages"]["minion"]=False
-    build_mappings["rpm-packages"]["horizon"]=False
-    build_mappings["rpm-packages"]["sentinel"]=False
+#else:
+#    build_mappings["rpm-packages"]["minion"]=False
+#    build_mappings["rpm-packages"]["horizon"]=False
+#    build_mappings["rpm-packages"]["sentinel"]=False
     
 if "debs" in git_keywords:   
     build_mappings["build"]["build"]=True
     build_mappings["debian-packages"]["minion"]=True
     build_mappings["debian-packages"]["horizon"]=True
     build_mappings["debian-packages"]["sentinel"]=True    
-else:
-    build_mappings["debian-packages"]["minion"]=False
-    build_mappings["debian-packages"]["horizon"]=False
-    build_mappings["debian-packages"]["sentinel"]=False    
+#else:
+#    build_mappings["debian-packages"]["minion"]=False
+#    build_mappings["debian-packages"]["horizon"]=False
+#    build_mappings["debian-packages"]["sentinel"]=False    
 
 if "integration" in git_keywords or "Integration_tests" in What_to_build:   
     build_mappings["build"]["build"]=True
     build_mappings["tests"]["integration"]=True
-else:
-    build_mappings["tests"]["integration"]=False
+#else:
+#    build_mappings["tests"]["integration"]=False
 
 if "doc" in git_keywords or "doc" in What_to_build:
     build_mappings["build"]["docs"]=True
-else:
-    build_mappings["build"]["docs"]=False
+#else:
+#    build_mappings["build"]["docs"]=False
 
 if "ui" in git_keywords or "ui" in What_to_build:
     build_mappings["build"]["ui"]=True
-else:
-    build_mappings["build"]["ui"]=False
+#else:
+#    build_mappings["build"]["ui"]=False
 
 if "experimentalPath" in git_keywords:
     build_mappings["experimental"]=True
-else:
-    build_mappings["experimental"]=False
+#else:
+#    build_mappings["experimental"]=False
 
 libfile.write_file(output_path,json.dumps(mappings))
 
