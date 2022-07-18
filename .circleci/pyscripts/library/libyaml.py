@@ -121,6 +121,8 @@ class libyaml:
         return tmp_line
 
     def generate_yaml(self,input_json,key,level=0,_line=[],disable_filters=False):
+        if key not in input_json:
+            print(input_json)
         for entry in input_json[key]:
             if entry in ["extends"]:
                 for extension in input_json[key][entry]:
