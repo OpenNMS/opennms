@@ -130,7 +130,7 @@ public class DiscoveryBridgeTopology {
 
             BridgePortWithMacs bpwm = bridgeFt.getBridgePortWithMacs(bridgeport);
             if (bpwm == null ) {
-                bridgeFt.getPorttomac().add(TopologyService.create(bridgeport, new HashSet<>()));
+                bridgeFt.getPorttomac().add(new BridgePortWithMacs(bridgeport, new HashSet<>()));
             }
             bridgeFt.getBridgePortWithMacs(bridgeport).getMacs().add(link.getMacAddress());
 
@@ -239,8 +239,7 @@ public class DiscoveryBridgeTopology {
         List<BridgePortWithMacs> links = new ArrayList<>(domain.getForwarders(bridgeId));
 
         for (Integer bridgePort : bft.keySet()) {
-            BridgePortWithMacs link = TopologyService.create(portifindexmap.get(bridgePort), bft.get(bridgePort));
-            links.add(link);
+            links.add(new BridgePortWithMacs(portifindexmap.get(bridgePort),bft.get(bridgePort)));
         }
 
         Set<BridgeForwardingTableEntry> entries= new HashSet<>();

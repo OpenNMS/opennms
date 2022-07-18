@@ -66,12 +66,7 @@ public class BroadcastDomain implements Topology {
                 return;
             }
         }
-        BridgePortWithMacs bpm;
-        try {
-            bpm = TopologyService.create(forwardport, new HashSet<>());
-        } catch (BridgeTopologyException e) {
-            return;
-        }
+        BridgePortWithMacs bpm = new BridgePortWithMacs(forwardport,new HashSet<>());
         bpm.getMacs().add(forwardmac);
         m_forwarding.add(bpm);
     }

@@ -67,17 +67,6 @@ public interface TopologyService {
         return maclink;
     }
 
-    static BridgePortWithMacs create(BridgePort port, Set<String> macs) throws BridgeTopologyException {
-        if (port == null) {
-            throw new BridgeTopologyException("cannot create BridgePortWithMacs bridge port is null");
-        }
-        if (macs == null) {
-            throw new BridgeTopologyException("cannot create BridgePortWithMacs macs is null");
-        }
-        return new BridgePortWithMacs(port,macs);
-
-    }
-
     static void hierarchySetUp(BroadcastDomain domain, Bridge root) {
         if (root==null || root.isRootBridge()) {
             return;
