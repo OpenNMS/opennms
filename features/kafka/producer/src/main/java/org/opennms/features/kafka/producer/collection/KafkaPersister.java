@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2022 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -28,6 +28,7 @@
 
 package org.opennms.features.kafka.producer.collection;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -65,6 +66,10 @@ public class KafkaPersister implements Persister {
         m_params = params;
     }
 
+    public KafkaPersister() {
+        m_params = new ServiceParameters(Collections.emptyMap());
+    }
+
     /** {@inheritDoc} */
     @Override
     public void visitCollectionSet(CollectionSet collectionSet) {
@@ -72,7 +77,9 @@ public class KafkaPersister implements Persister {
 
         CollectionSetProtos.CollectionSet collectionSetProto = collectionSetMapper
                 .buildCollectionSetProtos(collectionSet, m_params);
-        bisectAndSendMessageToKafka(collectionSetProto);
+        if (collectionSetProto != null) {
+            bisectAndSendMessageToKafka(collectionSetProto);
+        }
     }
 
     void bisectAndSendMessageToKafka(CollectionSetProtos.CollectionSet collectionSetProto) {
@@ -167,7 +174,10 @@ public class KafkaPersister implements Persister {
     }
     
     private void sendMessageToKafka( CollectionSetProtos.CollectionSet collectionSetProto) {
-
+        // If no resources should be persisted, do not send an empty CollectionSet
+        if (collectionSetProto.getResourceCount() == 0) {
+            return;
+        }
         // Derive key, it will be nodeId for all resources except for response time, it would be IpAddress
         final String key = deriveKeyFromCollectionSet(collectionSetProto);
         final ProducerRecord<String, byte[]> record = new ProducerRecord<>(topicName, key,
