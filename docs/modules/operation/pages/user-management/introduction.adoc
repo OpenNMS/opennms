@@ -34,14 +34,11 @@ NOTE: Admin users can enable or disable usage statistics collection at any time 
 When enabled, the `Data Choices` module collects the following anonymous statistics and publishes them on system startup and every 24 hours after:
 
 * System ID (a randomly generated universally unique identifier (UUID))
-* {page-component-title} release
-* {page-component-title} version
-* OS architecture
-* OS name
-* OS version
-* Number of available processors (CPU)
-* Amount of free physical memory
-* Amount of total physical memory
+* {page-component-title} Release
+* {page-component-title} Version
+* OS Architecture
+* OS Name
+* OS Version
 * Number of alarms in the `alarms` table
 * Number of situations in the `alarms` table
 * Number of events in the `events` table
