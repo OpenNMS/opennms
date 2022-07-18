@@ -98,7 +98,7 @@ public class NewPasswordActionServlet extends HttpServlet {
                 RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/account/selfService/passwordChanged.jsp");
                 dispatcher.forward(request, response);
             } else {
-                throw new ServletException("Error saving user " + user.getUserId()+":::Password complexity is not correct! Please use at least 12 characters, consisting of 1 special character, 1 upper case letter, 1 lower case letter and 1 number. Identical strings with more than 6 characters in a row are also not allowed.", e);
+                throw new ServletException("Error saving user " + user.getUserId()+":::Password complexity is not correct! Please use at least 12 characters, consisting of 1 special character, 1 upper case letter, 1 lower case letter and 1 number. Identical strings with more than 6 characters in a row are also not allowed.");
             }
         }
     }
