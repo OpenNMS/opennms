@@ -120,6 +120,88 @@ class libyaml:
         tmp_line=" "*level
         return tmp_line
 
+    def generate_yaml_v2(self,input_json,key,level=0,_line=[],disable_filters=False):
+        bundles=list(input_json["bundles"].keys())
+        experimental=list(input_json["experimental"].keys())
+        individual=list(input_json["individual"].keys())
+        subkey=""
+        if key in bundles:
+            print("generate_yaml_v2",key,"in bundles")
+            subkey="bundles"
+        elif key in experimental:
+            print("generate_yaml_v2",key,"in experimental")
+            subkey="experimental"
+        elif key in individual:
+            print("generate_yaml_v2",key,"in individual")
+            subkey="individual"
+
+        if not subkey:
+            return _line
+
+        if not [i for i in _line if "- "+key in i]: 
+                _line.append(self.create_space(level)+"- "+key+":")
+                level+=2
+
+        for entry in input_json[subkey][key]:
+            if entry in "filters":
+                if not disable_filters:
+                    _line.append(self.create_space(level+4)+"filters:")
+                    for entry_lvl2 in input_json[subkey][key][entry]:
+                        if type(input_json[subkey][key][entry][entry_lvl2]) == dict:
+                            _line.append(self.create_space(level+6)+""+entry_lvl2+":")
+                            for entry_lvl4 in input_json[subkey][key][entry][entry_lvl2]:
+                                _line.append(self.create_space(level+8)+""+entry_lvl4+":")
+                                for entry_lvl5 in input_json[subkey][key][entry][entry_lvl2][entry_lvl4]:
+                                    _line.append(self.create_space(level+10)+"- "+entry_lvl5)
+            elif entry in "requires":
+                _line.append(self.create_space(level+4)+"requires:")
+                for entry_lvl3 in input_json[subkey][key][entry]:
+                    _line.append(self.create_space(level+6)+"- "+entry_lvl3)
+            elif entry in "context":
+                _line.append(self.create_space(level+4)+"context:")
+                for entry_lvl3 in input_json[subkey][key][entry]:
+                    _line.append(self.create_space(level+6)+"- "+entry_lvl3)
+            elif entry in "extends":
+                for entry_lvl2 in input_json[subkey][key][entry]:
+                    self.generate_yaml_v2(input_json,entry_lvl2,level,_line)
+            else:
+                _line.append(self.create_space(level+2)+"- "+str(input_json[subkey][key][entry]))
+
+            #if entry in ["extends"]:
+            #    for extension in input_json[subkey][key][entry]:
+            #        if not [i for i in _line if "- "+extension in i]: 
+            #            self.generate_yaml_v2(input_json,extension,level,_line)
+            #else:
+            #    if not [i for i in _line if "- "+entry in i]: 
+            #        if input_json[subkey][key][entry]:
+            #            _line.append(self.create_space(level)+"- "+entry+":")
+            #            for entry_lvl2 in input_json[subkey][key][entry]:
+            #                if entry_lvl2 in "variations":
+            #                    tmp_data=self.create_space(level+4)+"matrix:\n"
+            #                    tmp_data+=self.create_space(level+6)+"parameters:\n"
+            #                    tmp_data+=self.create_space(level+8)+"architecture:"+str(input_json[subkey][key][entry][entry_lvl2])
+            #                    _line.append(tmp_data)
+            #                elif entry_lvl2 in "context":
+            #                    _line.append(self.create_space(level+4)+"context:")
+            #                    for entry_lvl3 in input_json[subkey][key][entry][entry_lvl2]:
+            #                        _line.append(self.create_space(level+6)+"- "+entry_lvl3)
+            #                elif entry_lvl2 in "requires":
+            #                    _line.append(self.create_space(level+4)+"requires:")
+            #                    for entry_lvl3 in input_json[subkey][key][entry][entry_lvl2]:
+            #                        _line.append(self.create_space(level+6)+"- "+entry_lvl3)
+            #                else:
+            #                    print(entry_lvl2)
+            #                    #print(input_json[subkey])
+            #                    #print(input_json[subkey][key])
+            #                    #print(input_json[subkey][key][entry])
+            #                    #print(input_json[subkey][key][entry][entry_lvl2])
+            #                    #_line.append(self.create_space(level+2)+"- "+str(input_json[subkey][key][entry][entry_lvl2]))
+            #        else:
+            #            _line.append(self.create_space(level)+"- "+entry)
+
+        return _line
+
+
     def generate_yaml(self,input_json,key,level=0,_line=[],disable_filters=False):
         if key not in input_json:
             print(input_json)

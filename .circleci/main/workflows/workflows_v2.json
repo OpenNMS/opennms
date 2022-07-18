@@ -1,0 +1,428 @@
+{
+    "bundles": {
+        "build-deploy": {
+            "extends": [
+                "build",
+                "integration-test",
+                "sentinel-deb-build",
+                "tarball-assembly",
+                "minion-deb-build"
+            ]
+        },
+        "smoke": {
+            "extends": [
+                "build",
+                "smoke-test-core",
+                "smoke-test-flaky",
+                "smoke-test-minion",
+                "smoke-test-sentinel"
+            ]
+        },
+        "rpms": {
+            "extends": [
+                "build",
+                "integration-test",
+                "minion-rpm-build",
+                "horizon-rpm-build",
+                "sentinel-rpm-build"
+            ]
+        },
+        "debs": {
+            "extends": [
+                "build",
+                "horizon-deb-build",
+                "sentinel-deb-build",
+                "minion-deb-build"
+            ]
+        },
+        "oci": {
+            "extends": [
+                "build",
+                "horizon-image",
+                "minion-image"
+            ]
+        },
+        "deploy": {
+            "extends": [
+                "build",
+                "smoke",
+                "rpms",
+                "debs",
+                "minion-image-single-arch",
+                "minion-image-multi-arch",
+                "horizon-image-single-arch",
+                "sentinel-publish-oci",
+                "sentinel-image-single-arch",
+                "create-merge-foundation-branch",
+                "merge-foundation-branch",
+                "create-merge-meridian-branch",
+                "horizon-publish-oci",
+                "merge-poweredby-branch",
+                "publish-cloudsmith"
+            ]
+        }
+    },
+    "experimental": {
+        "build-with-tarball": {},
+        "minion-image": {
+            "requires": [
+                "build-with-tarball"
+            ]
+        },
+        "integration-test": {
+            "requires": [
+                "minion-image"
+            ]
+        },
+        "sentinel-deb-build": {
+            "requires": [
+                "build-with-tarball"
+            ]
+        },
+        "minion-deb-build": {
+            "requires": [
+                "integration-test"
+            ]
+        }
+    },
+    "individual": {
+        "empty": {
+            "filters": {
+                "branches": {
+                    "ignore": [
+                        "/.*/"
+                    ]
+                }
+            }
+        },
+        "build": {
+            "filters": {
+                "branches": {
+                    "ignore": [
+                        "/^from-foundation.*/"
+                    ]
+                }
+            }
+        },
+        "docs": {
+            "filters": {
+                "branches": {
+                    "ignore": [
+                        "/^from-foundation.*/"
+                    ]
+                }
+            }
+        },
+        "ui": {
+            "filters": {
+                "branches": {
+                    "ignore": [
+                        "/^from-foundation.*/"
+                    ]
+                }
+            }
+        },
+        "integration-test": {
+            "extends": [
+                "build"
+            ],
+            "requires": [
+                "build"
+            ],
+            "filters": {
+                "branches": {
+                    "ignore": [
+                        "/^from-foundation.*/"
+                    ]
+                }
+            }
+        },
+        "minion-rpm-build": {
+            "requires": [
+                "build"
+            ],
+            "filters": {
+                "branches": {
+                    "only": [
+                        "develop",
+                        "/^master-.*/",
+                        "/^dependabot\/.*/",
+                        "/^features\/.+/",
+                        "/^foundation.*/",
+                        "/^release-.*/",
+                        "/.*rpm.*/",
+                        "/.*smoke.*/"
+                    ]
+                }
+            }
+        },
+        "horizon-rpm-build": {
+            "requires": [
+                "integration-test"
+            ],
+            "filters": {
+                "branches": {
+                    "only": [
+                        "develop",
+                        "/^master-.*/",
+                        "/^dependabot\/.*/",
+                        "/^features\/.+/",
+                        "/^foundation.*/",
+                        "/^release-.*/",
+                        "/.*rpm.*/",
+                        "/.*smoke.*/"
+                    ]
+                }
+            }
+        },
+        "sentinel-rpm-build": {
+            "requires": [
+                "integration-test"
+            ],
+            "filters": {
+                "branches": {
+                    "only": [
+                        "develop",
+                        "/^master-.*/",
+                        "/^dependabot\/.*/",
+                        "/^features\/.+/",
+                        "/^foundation.*/",
+                        "/^release-.*/",
+                        "/.*rpm.*/",
+                        "/.*smoke.*/"
+                    ]
+                }
+            }
+        },
+        "smoke-test-core": {
+            "requires": [
+                "tarball-assembly",
+                "horizon-deb-build",
+                "sentinel-deb-build"
+            ],
+            "filters": {
+                "branches": {
+                    "only": [
+                        "develop",
+                        "/^master-.*/",
+                        "/^dependabot.*/",
+                        "/^features\/.+/",
+                        "/^foundation.*/",
+                        "/^release-.*/",
+                        "/.*smoke.*/"
+                    ]
+                }
+            }
+        },
+        "smoke-test-flaky": {
+            "requires": [
+                "tarball-assembly",
+                "horizon-deb-build",
+                "sentinel-deb-build"
+            ],
+            "filters": {
+                "branches": {
+                    "only": [
+                        "develop",
+                        "/^master-.*/",
+                        "/^dependabot.*/",
+                        "/^features\/.+/",
+                        "/^foundation.*/",
+                        "/^release-.*/",
+                        "/.*smoke.*/"
+                    ]
+                }
+            }
+        },
+        "smoke-test-minion": {
+            "requires": [
+                "tarball-assembly",
+                "horizon-deb-build",
+                "sentinel-deb-build"
+            ],
+            "filters": {
+                "branches": {
+                    "only": [
+                        "develop",
+                        "/^master-.*/",
+                        "/^dependabot.*/",
+                        "/^features\/.+/",
+                        "/^foundation.*/",
+                        "/^release-.*/",
+                        "/.*smoke.*/"
+                    ]
+                }
+            }
+        },
+        "smoke-test-sentinel": {
+            "requires": [
+                "tarball-assembly",
+                "horizon-deb-build",
+                "sentinel-deb-build"
+            ],
+            "filters": {
+                "branches": {
+                    "only": [
+                        "develop",
+                        "/^master-.*/",
+                        "/^dependabot.*/",
+                        "/^features\/.+/",
+                        "/^foundation.*/",
+                        "/^release-.*/",
+                        "/.*smoke.*/"
+                    ]
+                }
+            }
+        },
+        "sentinel-deb-build": {
+            "requires": [
+                "build"
+            ]
+        },
+        "tarball-assembly": {
+            "requires": [
+                "build"
+            ]
+        },
+        "minion-deb-build": {
+            "requires": [
+                "integration-test"
+            ]
+        },
+        "horizon-deb-build": {
+            "requires": [
+                "build"
+            ]
+        },
+        "minion-image": {
+            "requires": [
+                "build"
+            ]
+        },
+        "horizon-image": {
+            "requires": [
+                "build",
+                "horizon-deb-build"
+            ]
+        },
+        "minion-image-single-arch": {
+            "requires": [
+                "horizon-rpm-build",
+                "minion-deb-build",
+                "sentinel-deb-build",
+                "integration-test",
+                "smoke-test-core",
+                "smoke-test-flaky",
+                "smoke-test-minion",
+                "smoke-test-sentinel"
+            ],
+            "variations": [
+                "linux/amd64",
+                "linux/arm64",
+                "linux/arm/v7"
+            ],
+            "context": [
+                "docker-content-trust",
+                "azure-sp-dct"
+            ]
+        },
+        "minion-image-multi-arch": {
+            "context": [
+                "docker-content-trust",
+                "azure-sp-dct"
+            ],
+            "requires": [
+                "minion-image-single-arch"
+            ]
+        },
+        "horizon-image-single-arch": {
+            "variations": [
+                "linux/amd64",
+                "linux/arm64"
+            ],
+            "requires": [
+                "horizon-deb-build"
+            ]
+        },
+        "sentinel-publish-oci": {
+            "requires": [
+                "horizon-deb-build",
+                "minion-deb-build",
+                "sentinel-deb-build",
+                "integration-test",
+                "smoke-test-core",
+                "smoke-test-flaky",
+                "smoke-test-minion",
+                "smoke-test-sentinel"
+            ]
+        },
+        "sentinel-image-single-arch": {
+            "requires": [
+                "sentinel-deb-build"
+            ]
+        },
+        "create-merge-foundation-branch": {
+            "requires": [
+                "horizon-rpm-build",
+                "minion-deb-build",
+                "sentinel-rpm-build",
+                "integration-test",
+                "smoke-test-core",
+                "smoke-test-flaky",
+                "smoke-test-minion",
+                "smoke-test-sentinel"
+            ]
+        },
+        "merge-foundation-branch": {
+            "requires": [
+                "tarball-assembly"
+            ]
+        },
+        "create-merge-meridian-branch": {
+            "requires": [
+                "horizon-rpm-build",
+                "minion-deb-build",
+                "sentinel-rpm-build",
+                "integration-test",
+                "smoke-test-core",
+                "smoke-test-flaky",
+                "smoke-test-minion",
+                "smoke-test-sentinel"
+            ]
+        },
+        "horizon-publish-oci": {
+            "requires": [
+                "horizon-rpm-build",
+                "minion-deb-build",
+                "sentinel-rpm-build",
+                "integration-test",
+                "smoke-test-core",
+                "smoke-test-flaky",
+                "smoke-test-minion",
+                "smoke-test-sentinel"
+            ]
+        },
+        "merge-poweredby-branch": {
+            "requires": [
+                "horizon-rpm-build",
+                "smoke-test-core",
+                "smoke-test-flaky",
+                "smoke-test-minion",
+                "smoke-test-sentinel",
+                "integration-test"
+            ]
+        },
+        "publish-cloudsmith": {
+            "requires": [
+                "horizon-rpm-build",
+                "minion-deb-build",
+                "sentinel-rpm-build",
+                "integration-test",
+                "smoke-test-core",
+                "smoke-test-flaky",
+                "smoke-test-minion",
+                "smoke-test-sentinel"
+            ]
+        }
+    }
+}
