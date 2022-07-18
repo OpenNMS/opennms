@@ -47,7 +47,7 @@
     if (document.goForm.pass1.value == document.goForm.pass2.value)
     {
       let newPassword=document.goForm.pass1.value
-      const passwordRegex= /((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%&.*+-]).{12})/;
+      const passwordRegex= /((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%&.*+-]).{12,128})/;
       const sameCharacterRegex= /(.)\1{5}/;
 
       if(newPassword.match(passwordRegex) && !newPassword.match(sameCharacterRegex) )
