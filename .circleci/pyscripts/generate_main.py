@@ -33,8 +33,7 @@ pipeline_parameters=common_library.load_json(path_to_pipeline_parameters)
 
 
 #New Idea:
-#path_to_build_components=os.path.join("/tmp","build-components.json")
-path_to_build_components=os.path.join("~/project","build-components.json")
+path_to_build_components=os.path.join("/tmp","build-triggers.json")
 build_components=common_library.load_json(path_to_build_components)
 
 #if os.path.exists(path_to_pipeline_parameters):
