@@ -165,6 +165,7 @@ if "ui" in git_keywords or "ui" in What_to_build:
 
 if "experimentalPath" in git_keywords:
     build_mappings["experimental"]=True
+    build_mappings["build"]["build"]=False
 #else:
 #    build_mappings["experimental"]=False
 

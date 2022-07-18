@@ -146,8 +146,8 @@ if "CIRCLE_BRANCH" in os.environ and os.environ["CIRCLE_BRANCH"] == "mem/jira/nm
 
     if "experimentalPath" in git_keywords:
         mappings["trigger-experimental"]=True
-    #else:
-    #    mappings["trigger-experimental"]=False
+    else:
+        mappings["trigger-experimental"]=False
 
     
 with open(output_path, 'w') as fp:
