@@ -137,9 +137,14 @@ class libyaml:
 
         if not subkey:
             return _line
+        
+        if "job" in input_json[subkey][key]:
+            _name=input_json[subkey][key]["job"]
+        else:
+            _name=key
 
         if not [i for i in _line if "- "+key in i]: 
-                _line.append(self.create_space(level)+"- "+key+":")
+                _line.append(self.create_space(level)+"- "+_name+":")
                 level+=2
 
         for entry in input_json[subkey][key]:
@@ -164,8 +169,8 @@ class libyaml:
             elif entry in "extends":
                 for entry_lvl2 in input_json[subkey][key][entry]:
                     self.generate_yaml_v2(input_json,entry_lvl2,level,_line)
-            else:
-                _line.append(self.create_space(level+2)+"- "+str(input_json[subkey][key][entry]))
+            #else:
+            #    _line.append(self.create_space(level+2)+"- "+str(input_json[subkey][key][entry]))
 
         return _line
 

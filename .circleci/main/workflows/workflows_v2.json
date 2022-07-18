@@ -104,7 +104,8 @@
                 }
             }
         },
-        "build-docs": {
+        "docs": {
+            "job": "build-docs",
             "filters": {
                 "branches": {
                     "ignore": [
