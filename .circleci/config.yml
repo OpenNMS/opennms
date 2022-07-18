@@ -182,7 +182,7 @@ jobs:
       #      OUTPUT_PATH: /tmp/pipeline-parameters.json
       #    command: python3 .circleci/pyscripts/process_mapping.py     
       - run:
-          name: Process Generate (Exp)
+          name: Process Generate
           environment:
             BASE_REVISION: << parameters.base-revision >>
             MAPPING: << parameters.mapping >>
@@ -208,7 +208,7 @@ jobs:
           destination: build-triggers.json
       - store_artifacts:
           path: /tmp/.circleci/main.yml
-          destination: /tmp/.circleci/main.yml
+          destination: main.yml
       - continuation/continue:
           circleci_domain: circleci.com
           configuration_path: /tmp/.circleci/main.yml
