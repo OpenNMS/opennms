@@ -222,7 +222,9 @@
     },
     "oci":{
         "extends": ["build"],
-        "minion-image":{} 
+        "minion-image":{
+            "requires": ["build"]
+        } 
     },
     "deploy": {
         "extends": ["build","smoke","rpms","debs"],
