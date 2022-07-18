@@ -999,17 +999,18 @@ if [ "$VERBOSE_GC" != "" ]; then
 	MANAGER_OPTIONS+=("-verbose:gc")
 fi
 
-SUDO="$(command -v sudo 2>/dev/null || which sudo 2>/dev/null || :)"
+RUNUSER="$(command -v runuser 2>/dev/null || which runuser 2>/dev/null || :)"
 myuser="$(id -u -n)"
 if [ "$myuser" != "$RUNAS" ]; then
-	if [ "$myuser" = "root" ] && [ -n "$SUDO" ] && [ -x "$SUDO" ]; then
+	if [ "$myuser" = "root" ] && [ -x "$RUNUSER" ]; then
 		echo "WARNING: relaunching as $RUNAS" >&2
-		_cmd=("$SUDO" "-u" "$RUNAS" "$0" "${INCOMING_ARGS[@]}");
+		_cmd=("$RUNUSER" "-u" "$RUNAS" "$0" "${INCOMING_ARGS[@]}");
 		exec "${_cmd[@]}"
 	fi
-	echo "ERROR: you must run this script as ${RUNAS}, not '${myuser}'." >&2
-	echo "       Create or edit ${OPENNMS_HOME}/etc/opennms.conf and set 'RUNAS=${myuser}'" >&2
-	echo "       if you wish for OpenNMS to run as ${myuser} instead." >&2
+	echo "ERROR: you should run this script as ${RUNAS}, not '${myuser}'." >&2
+    echo "       To correct this, try 'sudo -u $RUNAS $0 $@'" >&2
+	echo "       If you wish for OpenNMS to run as ${myuser} instead," >&2
+	echo "       create or edit ${OPENNMS_HOME}/etc/opennms.conf and set 'RUNAS=${myuser}'" >&2
 	echo "       If you have already edited opennms.conf, make sure that 'User=' is also set" >&2
 	echo "       in the OpenNMS systemd service." >&2
 	exit 4 # According to LSB: 4 - user had insufficient privileges
