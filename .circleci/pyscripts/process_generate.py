@@ -6,7 +6,7 @@ import copy
 from library import libgit
 from library import libfile
 
-path_to_build_components=os.path.join("/tmp","build-components.json")
+path_to_build_components=os.path.join("~/project","build-components.json")
 
 output_path = os.environ.get('OUTPUT_PATH')
 head = os.environ.get('CIRCLE_SHA1')

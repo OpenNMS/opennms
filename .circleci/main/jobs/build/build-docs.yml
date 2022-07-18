@@ -11,6 +11,10 @@ jobs:
           name: Build docs with Antora
           command: | 
              DOCSEARCH_ENABLED=true DOCSEARCH_ENGINE=lunr NODE_PATH="$(npm -g root)" antora --generator antora-site-generator-lunr --stacktrace generate antora-playbook-local.yml
+      - run:
+          name: check if ~/project/build-components.json exist
+          command: | 
+             ls -lh ~/project/build-components.json exist
       #- run:
       #    name: Rename Site zip file
       #    command: | 
