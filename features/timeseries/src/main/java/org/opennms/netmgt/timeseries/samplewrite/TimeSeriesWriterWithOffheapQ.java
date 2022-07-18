@@ -42,7 +42,6 @@ import java.util.function.Function;
 
 import javax.inject.Named;
 
-import org.opennms.core.ipc.sink.api.AsyncPolicy;
 import org.opennms.core.ipc.sink.api.WriteFailedException;
 import org.opennms.core.ipc.sink.offheap.QueueFileOffHeapDispatchQueue;
 import org.opennms.integration.api.v1.timeseries.Sample;
@@ -57,6 +56,8 @@ public class TimeSeriesWriterWithOffheapQ implements TimeSeriesWriter {
     private final QueueFileOffHeapDispatchQueue<List<Sample>> queue;
     private final TimeseriesStorageManager storage;
     private final List<Thread> workerPool = new ArrayList<>();
+
+    private boolean isActive = true;
 
     public TimeSeriesWriterWithOffheapQ(
             final TimeseriesStorageManager storage,
@@ -83,7 +84,7 @@ public class TimeSeriesWriterWithOffheapQ implements TimeSeriesWriter {
         this.storage = Objects.requireNonNull(storage);
 
         // Set up consumer side
-        for(int i = 0; i < numWriterThreads; i++) { //
+        for(int i = 0; i < numWriterThreads; i++) {
             Thread consumerThread = new Thread(this::work);
             this.workerPool.add(consumerThread);
             consumerThread.start();
@@ -116,61 +117,44 @@ public class TimeSeriesWriterWithOffheapQ implements TimeSeriesWriter {
         };
     }
 
-    private AsyncPolicy createAsyncPolicy() {
-        return new AsyncPolicy() {
-
-            @Override
-            public int getQueueSize() {
-                return 10000;
-            }
-
-            @Override
-            public int getNumThreads() {
-                return 20;
-            }
-
-            @Override
-            public boolean isBlockWhenFull() {
-                return false;
-            }
-        };
-    }
-
     @Override
     public void insert(List<Sample> samples) {
         LOG.info("Storing {} samples", samples.size());
-        String newId = UUID.randomUUID().toString(); // TODO: Patrick: not sure if we need that?
         try {
-            queue.enqueue(samples, newId);
+            queue.enqueue(samples, UUID.randomUUID().toString());
         } catch (WriteFailedException e) {
-            throw new RuntimeException(e); // TODO: Patrick
+            LOG.warn("Could not insert list of samples.", e);
         }
     }
 
     public void destroy() {
+        this.isActive = false;
         for(Thread thread : this.workerPool) {
             thread.interrupt();
         }
     }
 
-
-    private void work() {
-        List<Sample> samples;
-        while(true) {
-            try {
-                samples = this.queue.dequeue().getValue();
-            } catch (InterruptedException e) {
-                return; // we are done.
+        private void work() {
+            List<Sample> samples;
+            while (isActive) {
+                try {
+                    samples = this.queue.dequeue().getValue();
+                } catch (InterruptedException e) {
+                    return; // we are done.
+                }
+                sentToPlugin(samples);
             }
-            sentToPlugin(samples);
         }
-    }
 
-    private void sentToPlugin(final List<Sample> samples) {
-        try {
-            this.storage.get().store(samples);
-        } catch(Exception e) {
-            LOG.warn("Could not send sample to plugin", e);
+        private void sentToPlugin(final List<Sample> samples) {
+            while (isActive) {
+                try {
+                    this.storage.get().store(samples);
+                    return; // we are done.
+                } catch (Exception e) {
+                    long wait = 1000;
+                    LOG.warn("Could not send samples to plugin, will try again in {} ms.", wait, e);
+                }
+            }
         }
-    }
 }
