@@ -29,6 +29,7 @@
 package org.opennms.web.account.selfService;
 
 import java.io.IOException;
+import java.util.regex.Pattern;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -55,7 +56,8 @@ import org.opennms.web.api.Authentication;
  */
 public class NewPasswordActionServlet extends HttpServlet {
     private static final long serialVersionUID = 6803675433403988004L;
-
+    private final String passwordRegex = "((?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%&.*+-]).{12,128})";
+    private final String sameCharacterRegex = "(.)\\1{5}";
     /** {@inheritDoc} */
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -79,22 +81,39 @@ public class NewPasswordActionServlet extends HttpServlet {
             RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/account/selfService/newPassword.jsp?action=redo");
             dispatcher.forward(request, response);
         } else {
-            final Password pass = new Password();
-            pass.setEncryptedPassword(userFactory.encryptedPassword(newPassword, true));
-            pass.setSalt(true);
-            user.setPassword(pass);
+            if(this.validatePassword(newPassword)) {
+                final Password pass = new Password();
+                pass.setEncryptedPassword(userFactory.encryptedPassword(newPassword, true));
+                pass.setSalt(true);
+                user.setPassword(pass);
 
-            userSession.setAttribute("user.newPassword.jsp", user);
-            try {
-            	userFactory.saveUser(user.getUserId(), user);
-            }
-            catch (Throwable e) {
-            	throw new ServletException("Error saving user " + user.getUserId(), e);
-            }
+                userSession.setAttribute("user.newPassword.jsp", user);
+                try {
+                    userFactory.saveUser(user.getUserId(), user);
+                } catch (Throwable e) {
+                    throw new ServletException("Error saving user " + user.getUserId(), e);
+                }
 
-            // forward the request for proper display
-            RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/account/selfService/passwordChanged.jsp");
-            dispatcher.forward(request, response);
+                // forward the request for proper display
+                RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/account/selfService/passwordChanged.jsp");
+                dispatcher.forward(request, response);
+            } else {
+                throw new ServletException("Error saving user " + user.getUserId()+":::Password complexity is not correct! Please use at least 12 characters, consisting of 1 special character, 1 upper case letter, 1 lower case letter and 1 number. Identical strings with more than 6 characters in a row are also not allowed.");
+            }
+        }
+    }
+
+    private boolean validatePassword(final String password) {
+        boolean isPasswordComplexityValid = Pattern.compile(this.passwordRegex)
+                .matcher(password)
+                .matches();
+        boolean isPasswordWithSameCharacters = Pattern.compile(this.sameCharacterRegex)
+                .matcher(password)
+                .matches();
+        if(isPasswordComplexityValid && !isPasswordWithSameCharacters) {
+            return true;
+        } else {
+            return false;
         }
     }
 }

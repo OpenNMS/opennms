@@ -1004,7 +1004,7 @@ myuser="$(id -u -n)"
 if [ "$myuser" != "$RUNAS" ]; then
 	if [ "$myuser" = "root" ] && [ -x "$RUNUSER" ]; then
 		echo "WARNING: relaunching as $RUNAS" >&2
-		_cmd=("$RUNUSER" "-u" "$RUNAS" "$0" "${INCOMING_ARGS[@]}");
+		_cmd=("$RUNUSER" "-u" "$RUNAS" -- "$0" "${INCOMING_ARGS[@]}");
 		exec "${_cmd[@]}"
 	fi
 	echo "ERROR: you should run this script as ${RUNAS}, not '${myuser}'." >&2
