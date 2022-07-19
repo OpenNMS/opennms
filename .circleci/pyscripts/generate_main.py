@@ -147,6 +147,7 @@ for e in main_yml_content:
                     sample_workflow=workflow
 
             if build_components["tests"]["smoke"]:
+                build_components["build"]["build"]=True
                 print("tests > smoke:",libyaml.tell_extended_requirements('smoke'))
                 workflow=libyaml.generate_yaml_v2(workflow_data,"smoke",level,sample_workflow,disable_filters=True,bundle=True)
                 if len(sample_workflow)>1:
