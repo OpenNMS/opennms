@@ -12,6 +12,7 @@
         "smoke": {
             "extends": [
                 "build",
+                "horizon-deb-build",
                 "tarball-assembly",
                 "smoke-test-core",
                 "smoke-test-flaky",
