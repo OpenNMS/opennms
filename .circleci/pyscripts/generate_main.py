@@ -144,7 +144,20 @@ for e in main_yml_content:
                         if e not in sample_workflow:
                             sample_workflow.append(e)
                 else:
-                    sample_workflow=workflow  
+                    sample_workflow=workflow
+
+            if build_components["tests"]["smoke"]:
+                print("tests > integration:",libyaml.tell_extended_requirements('smoke'))
+                workflow=libyaml.generate_yaml_v2(workflow_data,"smoke",level,sample_workflow,disable_filters=True)
+                if len(sample_workflow)>1:
+                    for e in workflow:
+                        print("doc","Looking at",e)
+                        if e not in sample_workflow:
+                            sample_workflow.append(e)
+                else:
+                    sample_workflow=workflow
+
+
             if build_components["debian-packages"]["minion"] or \
                build_components["debian-packages"]["horizon"] or \
                build_components["debian-packages"]["sentinel"]:
