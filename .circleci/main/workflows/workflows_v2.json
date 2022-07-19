@@ -12,6 +12,7 @@
         "smoke": {
             "extends": [
                 "build",
+                "tarball-assembly",
                 "smoke-test-core",
                 "smoke-test-flaky",
                 "smoke-test-minion",
