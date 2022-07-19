@@ -1,15 +1,15 @@
 {
     "build": {
-        "docs": true,
-        "ui": true,
+        "docs": false,
+        "ui": false,
         "coverage": false,
-        "build": true
+        "build": false
     },
     "publish": {
         "packages": false
     },
     "tests": {
-        "smoke": false,
+        "smoke": true,
         "integration": false
     },
     "oci-images": {
