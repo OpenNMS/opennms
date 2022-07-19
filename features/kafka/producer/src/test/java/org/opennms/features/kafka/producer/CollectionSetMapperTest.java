@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2021-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,6 +33,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Collections;
 import java.util.Date;
 
 import org.hamcrest.Matchers;
@@ -44,6 +45,7 @@ import org.opennms.features.kafka.producer.model.CollectionSetProtos;
 import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionSet;
+import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
 import org.opennms.netmgt.collection.support.builder.InterfaceLevelResource;
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
@@ -57,6 +59,8 @@ public class CollectionSetMapperTest {
     @Test
     public void testCollectionSetForInterfaceResource() throws UnknownHostException {
 
+        ServiceParameters EMPTY_PARAMS = new ServiceParameters(Collections.emptyMap());
+
         CollectionSetMapper collectionSetMapper = new CollectionSetMapper(Mockito.mock(NodeDao.class), Mockito.mock(SessionUtils.class), Mockito.mock(ResourceDao.class));
 
         CollectionAgent agent = new MockCollectionAgent(1, "test", InetAddress.getLocalHost());
@@ -67,7 +71,7 @@ public class CollectionSetMapperTest {
         CollectionSet collectionSet = new CollectionSetBuilder(agent).withTimestamp(new Date(2))
                 .withNumericAttribute(interfaceLevelResource, "group1", "interface1", 105, AttributeType.GAUGE)
                 .withNumericAttribute(interfaceLevelResource, "group2", "interface2", 1050, AttributeType.GAUGE).build();
-        CollectionSetProtos.CollectionSet collectionSetProto = collectionSetMapper.buildCollectionSetProtos(collectionSet);
+        CollectionSetProtos.CollectionSet collectionSetProto = collectionSetMapper.buildCollectionSetProtos(collectionSet, EMPTY_PARAMS);
         assertThat(collectionSetProto.getResourceList(), Matchers.hasSize(0));
 
         // If Instance is Integer, it is mostly IfIndex.
@@ -75,7 +79,7 @@ public class CollectionSetMapperTest {
         collectionSet = new CollectionSetBuilder(agent).withTimestamp(new Date(2))
                 .withNumericAttribute(interfaceLevelResource, "group1", "interface1", 105, AttributeType.GAUGE)
                 .withNumericAttribute(interfaceLevelResource, "group2", "interface2", 1050, AttributeType.GAUGE).build();
-        collectionSetProto = collectionSetMapper.buildCollectionSetProtos(collectionSet);
+        collectionSetProto = collectionSetMapper.buildCollectionSetProtos(collectionSet, EMPTY_PARAMS);
         assertThat(collectionSetProto.getResourceList(), Matchers.hasSize(1));
         CollectionSetProtos.CollectionSetResource collectionSetResource = collectionSetProto.getResource(0);
         assertTrue(collectionSetResource.hasInterface());

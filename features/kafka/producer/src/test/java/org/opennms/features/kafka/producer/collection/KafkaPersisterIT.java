@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -212,10 +212,53 @@ public class KafkaPersisterIT {
         );
     }
 
+    @Test
+    public void testPersistenceOfResources() throws Exception {
+
+        // Normal CollectionSet with a persistable resource
+        OnmsNode node = databasePopulator.getNode5();
+        CollectionAgent agent = new MockCollectionAgent(node.getId(), "test", InetAddress.getLocalHost());
+        NodeLevelResource nodeResource = new NodeLevelResource(node.getId());
+
+        CollectionSet collectionSet = new CollectionSetBuilder(agent).withTimestamp(new Date(2))
+                .withNumericAttribute(nodeResource, "group2", "node5", 1050, AttributeType.GAUGE).build();
+
+
+        // CollectionSet that contains no persisting resources
+        LatencyCollectionResource mockEmptySet = new LatencyCollectionResourceMock("SMTP", IP_ADDRESS, LOCATION);
+        LatencyCollectionAttributeType attributeType = new LatencyCollectionAttributeType("SMTP", "SMTP");
+        mockEmptySet.addAttribute(new LatencyCollectionAttribute(mockEmptySet, attributeType, "SMTP", 9.9));
+
+        CollectionSet responseTimeCollectionSet = new SingleResourceCollectionSet(mockEmptySet, new Date());
+        persister.visitCollectionSet(collectionSet);
+        persister.visitCollectionSet(responseTimeCollectionSet);
+
+        // Make sure only one resource was persisted
+        await().atMost(1, TimeUnit.MINUTES).pollInterval(15, TimeUnit.SECONDS).until(() -> kafkaConsumer.getCollectionSetValues().size(), equalTo(1));
+        List<CollectionSetProtos.CollectionSetResource> resources = kafkaConsumer.getCollectionSetValues().stream().map(CollectionSetProtos.CollectionSet::getResourceList).flatMap(Collection::stream).collect(Collectors.toList());
+        Optional<CollectionSetProtos.CollectionSetResource> responseResource = resources.stream().findFirst();
+        assertThat(responseResource.isPresent(), equalTo(Boolean.TRUE));
+        responseResource.ifPresent(resource -> {
+                    assertThat(resource.getNumeric(0).getValue(), equalTo(1050.0)); // persisted resource
+                }
+        );
+    }
+
     @After
     public void destroy() {
         kafkaConsumer.shutdown();
         executor.shutdown();
     }
 
+    // Resource that should not be persisted
+    class LatencyCollectionResourceMock extends LatencyCollectionResource {
+        LatencyCollectionResourceMock(String serviceName, String ipAddress, String location) {
+            super(serviceName, ipAddress, location);
+        }
+
+        @Override
+        public boolean shouldPersist(ServiceParameters parameters) {
+            return false;
+        }
+    }
 }
