@@ -342,6 +342,7 @@
             <attrib name="AverageEnqueueTime" alias="AvgEnQTime" type="gauge"/>
             <attrib name="MaxEnqueueTime" alias="MaxtEnQTime" type="gauge"/>
             <attrib name="MinEnqueueTime" alias="MintEnQTime" type="gauge"/>
+            <attrib name="QueueSize" alias="DestQsize" type="gauge"/>
          </mbean>
          <mbean name="org.opennms.netmgt.flows.flowsPersisted" objectname="org.opennms.netmgt.flows:name=flowsPersisted">
             <attrib name="Count" alias="FlowPerst" type="counter"/>
