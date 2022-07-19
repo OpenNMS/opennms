@@ -122,7 +122,10 @@ class libyaml:
 
     def generate_yaml_v2(self,input_json,key,level=0,_line=[],disable_filters=False):
         bundles=list(input_json["bundles"].keys())
-        experimental=list(input_json["experimental"].keys())
+        if "experimental" in input_json:
+            experimental=list(input_json["experimental"].keys())
+        else:
+            experimental=[]
         individual=list(input_json["individual"].keys())
         subkey=""
         if key in bundles:
