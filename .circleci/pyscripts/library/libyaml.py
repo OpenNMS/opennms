@@ -174,7 +174,7 @@ class libyaml:
                     _line.append(self.create_space(level+6)+"- "+entry_lvl3)
             elif entry in "extends":
                 for entry_lvl2 in input_json[subkey][key][entry]:
-                    self.generate_yaml_v2(input_json,entry_lvl2,level,_line)
+                    self.generate_yaml_v2(input_json,entry_lvl2,level,_line,disable_filters=disable_filters)
             #else:
             #    _line.append(self.create_space(level+2)+"- "+str(input_json[subkey][key][entry]))
 
