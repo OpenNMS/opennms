@@ -31,7 +31,9 @@ package org.opennms.features.datachoices.internal;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.stream.Collectors;
@@ -40,6 +42,8 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.karaf.features.Dependency;
+import org.apache.karaf.features.Feature;
 import org.apache.karaf.features.FeaturesService;
 import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.core.web.HttpClientWrapper;
@@ -233,16 +237,8 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         // Node statistics
         usageStatisticsReport.setNodesBySysOid(m_nodeDao.getNumberOfNodesBySysOid());
         // Karaf features
-        String installedFeatures;
-        try {
-            installedFeatures = Arrays.stream(m_featuresService.listInstalledFeatures())
-                    .map(f -> f.getName() + "/" + f.getVersion())
-                    .sorted()
-                    .collect(Collectors.joining(","));
-        } catch (Exception e) {
-            installedFeatures = "ERROR: Failed to enumerate the installed features: " + e.getMessage();
-        }
-        usageStatisticsReport.setInstalledFeatures(installedFeatures);
+        usageStatisticsReport.setInstalledFeatures(getInstalledFeatures());
+        usageStatisticsReport.setInstalledOIAPlugins(getInstalledOIAPluginsByDependencyTree());
         setJmxAttributes(usageStatisticsReport);
         gatherProvisiondData(usageStatisticsReport);
         usageStatisticsReport.setServices(m_serviceConfigurationFactory.getServiceNameMap());
@@ -296,6 +292,85 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         ForeignSource defaultFS = m_deployedForeignSourceRepository.getDefaultForeignSource();
         return m_deployedForeignSourceRepository.getRequisitions().stream()
                 .filter(req -> !req.getForeignSource().equals(defaultFS.getName())).count();
+    }
+
+    private String getInstalledFeatures() {
+        String installedFeatures;
+        try {
+            installedFeatures = Arrays.stream(m_featuresService.listInstalledFeatures())
+                    .map(f -> f.getName() + "/" + f.getVersion())
+                    .sorted()
+                    .collect(Collectors.joining(","));
+        } catch (Exception e) {
+            installedFeatures = "ERROR: Failed to enumerate the installed features: " + e.getMessage();
+        }
+        return installedFeatures;
+    }
+
+    /**
+     *  This descends the dependency tree breadth-first to find all installed features that have a direct
+     *  or transitive dependence on the opennms-integration-api feature.
+     *
+     *  'opennms-api-layer' is the only core feature that is dependent on the opennms-integration-api.
+     *  Don't include that in the list of installed plugins.
+     */
+    private String getInstalledOIAPluginsByDependencyTree() {
+        List<Feature> featuresDependentOnOIA = new ArrayList<>();
+        try {
+            for (Feature feature : m_featuresService.listInstalledFeatures()) {
+                featuresDependentOnOIA = recurse(feature, featuresDependentOnOIA, List.of("opennms-api-layer"));
+            }
+        }
+        catch (Exception e) {
+            return "ERROR: Failed to enumerate the installed features: " + e.getMessage();
+        }
+        return featuresDependentOnOIA.stream()
+                    .map(f -> f.getName() + "/" + f.getVersion())
+                    .sorted()
+                    .collect(Collectors.joining(","));
+    }
+
+    private List<Feature> recurse(Feature feature, List<Feature> dependencies, List<String> featuresToIgnore) {
+        // should this feature be ignored?
+        if (featuresToIgnore.contains(feature.getName())) {
+            return dependencies;
+        }
+        // Is this feature already known to be dependent on OIA?
+        if (dependencies.contains(feature)) {
+            return dependencies;
+        }
+        // Is this feature directly dependent on OIA?
+        for (Dependency dep : feature.getDependencies()) {
+            if (dep.getName().equals("opennms-integration-api")) {
+                dependencies.add(feature);
+                return dependencies;
+            }
+        }
+        // Are any of this feature's dependencies already known to be dependent on OIA?
+        for (Dependency dep : feature.getDependencies()) {
+            if (dependencies.stream().map(d -> d.getName()).anyMatch(str -> str.equals(dep.getName()))) {
+                dependencies.add(feature);
+                return dependencies;
+            }
+        }
+        // Does this feature have a transitive dependency on OIA that we haven't mapped yet?
+        for (Dependency dep : feature.getDependencies()) {
+            try {
+                int numDependencies = dependencies.size();
+                Feature depFeature = m_featuresService.getFeature(dep.getName());
+                dependencies = recurse(depFeature, dependencies, featuresToIgnore);
+                // If we found any new dependencies within depFeature, then this feature
+                // is also dependent on OIA
+                if (numDependencies < dependencies.size()) {
+                    dependencies.add(feature);
+                    return dependencies;
+                }
+
+            }
+            catch (Exception e) {}
+        }
+        // This feature is not dependent on OIA
+        return dependencies;
     }
 
     public void setUrl(String url) {
