@@ -146,7 +146,7 @@ class libyaml:
         else:
             _name=key
 
-        if not [i for i in _line if "- "+key in i]: 
+        if not [i for i in _line if "- "+key in i] and not bundle: 
                 _line.append(self.create_space(level)+"- "+_name+":")
                 #level+=2
 
