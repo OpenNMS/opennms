@@ -182,7 +182,7 @@ if "experimentalPath" in git_keywords:
 #else:
 #    build_mappings["experimental"]=False
 
-###
+### We want to handle cases which has dependency on build step
 if build_mappings["tests"]["integration"]:
     build_mappings["build"]["build"]=True
 
