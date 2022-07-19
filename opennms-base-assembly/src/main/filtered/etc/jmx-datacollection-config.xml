@@ -560,6 +560,23 @@
             <attrib name="Count" alias="ALECtickCounter" type="counter"/>
          </mbean>
 
+         <mbean name="org.opennms.netmgt.eventd.process" resource-type="Eventlogs" objectname="org.opennms.netmgt.eventd:name=eventlogs.process*">
+            <attrib name="50thPercentile" alias="EventProcess50" type="gauge"/>
+            <attrib name="75thPercentile" alias="EventProcess75" type="gauge"/>
+            <attrib name="95thPercentile" alias="EventProcess95" type="gauge"/>
+            <attrib name="98thPercentile" alias="EventProcess98" type="gauge"/>
+            <attrib name="99thPercentile" alias="EventProcess99" type="gauge"/>
+            <attrib name="999thPercentile" alias="EventProcess999" type="gauge"/>
+            <attrib name="Count" alias="EventProcessCount" type="counter"/>
+            <attrib name="Mean" alias="EventProcessMean" type="gauge"/>
+            <attrib name="Max" alias="EventProcessMax" type="gauge"/>
+            <attrib name="Min" alias="EventProcessMin" type="gauge"/>
+            <attrib name="FifteenMinuteRate" alias="EventProcessRate15m" type="gauge"/>
+            <attrib name="FiveMinuteRate" alias="EventProcessRate5m" type="gauge"/>
+            <attrib name="OneMinuteRate" alias="EventProcessRate1m" type="gauge"/>
+            <attrib name="MeanRate" alias="EventProcessRate" type="gauge"/>
+         </mbean>
+
       </mbeans>
    </jmx-collection>
 </jmx-datacollection-config>
