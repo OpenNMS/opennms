@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -36,7 +36,9 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -45,6 +47,7 @@ import org.openqa.selenium.support.ui.Select;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class UserIT extends OpenNMSSeleniumIT {
     private static final Logger LOG = LoggerFactory.getLogger(UserIT.class);
 
@@ -141,21 +144,14 @@ public class UserIT extends OpenNMSSeleniumIT {
         }
     }
 
+    // "ZZ" so this test runs last, since we can't change the password back to "admin"
     @Test
-    public void testChangeAdminPassword() throws Exception {
+    public void testZZChangeAdminPassword() throws Exception {
 
         driver.get(getBaseUrlInternal() + "opennms/account/selfService/newPasswordEntry");
         enterText(By.cssSelector("input[type=password][name=oldpass]"), "admin");
-        enterText(By.cssSelector("input[type=password][name=pass1]"), "OpenNMS");
-        enterText(By.cssSelector("input[type=password][name=pass2]"), "OpenNMS");
-        driver.findElement(By.cssSelector("button[type=submit]")).click();
-        assertTrue(wait.until(pageContainsText("Password successfully changed")));
-
-        // Change password back to admin
-        driver.get(getBaseUrlInternal() + "opennms/account/selfService/newPasswordEntry");
-        enterText(By.cssSelector("input[type=password][name=oldpass]"), "OpenNMS");
-        enterText(By.cssSelector("input[type=password][name=pass1]"), "admin");
-        enterText(By.cssSelector("input[type=password][name=pass2]"), "admin");
+        enterText(By.cssSelector("input[type=password][name=pass1]"), "OpenNMS.!1");
+        enterText(By.cssSelector("input[type=password][name=pass2]"), "OpenNMS.!1");
         driver.findElement(By.cssSelector("button[type=submit]")).click();
         assertTrue(wait.until(pageContainsText("Password successfully changed")));
     }
