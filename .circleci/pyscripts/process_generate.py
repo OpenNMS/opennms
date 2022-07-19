@@ -182,6 +182,11 @@ if "experimentalPath" in git_keywords:
 #else:
 #    build_mappings["experimental"]=False
 
+###
+if build_mappings["tests"]["integration"]:
+    build_mappings["build"]["build"]=True
+
+
 libfile.write_file(output_path,json.dumps(mappings))
 
 libfile.write_file(path_to_build_components,json.dumps(build_mappings,indent=4))
