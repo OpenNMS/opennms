@@ -105,9 +105,6 @@
             }
         },
         "integration-test": {
-            "extends": [
-                "build"
-            ],
             "requires": [
                 "build"
             ],
