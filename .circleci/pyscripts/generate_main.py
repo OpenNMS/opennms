@@ -136,8 +136,9 @@ for e in main_yml_content:
                 else:
                     sample_workflow=workflow
             if build_components["tests"]["integration"]:
+                build_components["build"]["build"]=True
                 print("tests > integration:",libyaml.tell_extended_requirements('integration-test'))
-                workflow=libyaml.generate_yaml_v2(workflow_data,"integration-test",level,sample_workflow,disable_filters=True)
+                workflow=libyaml.generate_yaml_v2(workflow_data,"integration-test",level,sample_workflow,disable_filters=True,bundle=True)
                 if len(sample_workflow)>1:
                     for e in workflow:
                         print("integration","Looking at",e)
