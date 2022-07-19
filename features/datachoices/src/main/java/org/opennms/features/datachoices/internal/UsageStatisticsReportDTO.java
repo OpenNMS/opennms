@@ -69,6 +69,7 @@ public class UsageStatisticsReportDTO {
     private long m_minions;
 
     private String m_installedFeatures;
+    private String m_installedOIAPlugins;
 
     private Integer m_availableProcessors;
     private Long m_freePhysicalMemorySize;
@@ -224,6 +225,14 @@ public class UsageStatisticsReportDTO {
 
     public void setInstalledFeatures(String installedFeatures) {
         m_installedFeatures = installedFeatures;
+    }
+
+    public String getInstalledOIAPlugins() {
+        return m_installedOIAPlugins;
+    }
+
+    public void setInstalledOIAPlugins(String plugins) {
+        this.m_installedOIAPlugins = plugins;
     }
 
     public void setAvailableProcessors(Integer availableProcessors) {
