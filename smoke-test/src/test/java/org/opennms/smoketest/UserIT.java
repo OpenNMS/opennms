@@ -150,8 +150,8 @@ public class UserIT extends OpenNMSSeleniumIT {
 
         driver.get(getBaseUrlInternal() + "opennms/account/selfService/newPasswordEntry");
         enterText(By.cssSelector("input[type=password][name=oldpass]"), "admin");
-        enterText(By.cssSelector("input[type=password][name=pass1]"), "OpenNMS.!1");
-        enterText(By.cssSelector("input[type=password][name=pass2]"), "OpenNMS.!1");
+        enterText(By.cssSelector("input[type=password][name=pass1]"), "OpenNMS.!123");
+        enterText(By.cssSelector("input[type=password][name=pass2]"), "OpenNMS.!123");
         driver.findElement(By.cssSelector("button[type=submit]")).click();
         assertTrue(wait.until(pageContainsText("Password successfully changed")));
     }
