@@ -153,6 +153,7 @@ class libyaml:
         for entry in input_json[subkey][key]:
             if entry in "filters":
                 if not disable_filters:
+                    print("disable_filters",disable_filters)
                     _line.append(self.create_space(level+4)+"filters:")
                     for entry_lvl2 in input_json[subkey][key][entry]:
                         if type(input_json[subkey][key][entry][entry_lvl2]) == dict:
@@ -161,6 +162,8 @@ class libyaml:
                                 _line.append(self.create_space(level+8)+""+entry_lvl4+":")
                                 for entry_lvl5 in input_json[subkey][key][entry][entry_lvl2][entry_lvl4]:
                                     _line.append(self.create_space(level+10)+"- "+entry_lvl5)
+                else:
+                    print("Shouldn't get here, disable_filters",disable_filters)
             elif entry in "requires":
                 _line.append(self.create_space(level+4)+"requires:")
                 for entry_lvl3 in input_json[subkey][key][entry]:
