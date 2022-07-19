@@ -148,7 +148,7 @@ class libyaml:
 
         if not [i for i in _line if "- "+key in i] and not bundle: 
             print(key, disable_filters)
-            if "build" in key and \
+            if re.match("build",key) and \
                 disable_filters:
                 _line.append(self.create_space(level)+"- "+_name)
             else:
