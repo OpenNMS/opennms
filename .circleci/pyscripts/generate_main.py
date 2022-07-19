@@ -117,7 +117,7 @@ for e in main_yml_content:
                build_components["build"]["build"]:
                sample_workflow.append(libyaml.create_space(level)+"build:")
             else:
-               sample_workflow.append(libyaml.create_space(level)+"experimental:")
+               sample_workflow.append(libyaml.create_space(level)+"autobuild:")
 
             level+=2
             sample_workflow.append(libyaml.create_space(level)+"jobs:")

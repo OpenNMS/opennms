@@ -9,8 +9,8 @@
         "packages": false
     },
     "tests": {
-        "smoke": true,
-        "integration": false
+        "smoke": false,
+        "integration": true
     },
     "oci-images": {
         "minion": false,
