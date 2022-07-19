@@ -58,6 +58,8 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ProvisiondConfigurationDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.model.OnmsMonitoringSystem;
+import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
+import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -114,6 +116,8 @@ public class UsageStatisticsReporter implements StateChangeHandler {
     private NotifdConfigFactory m_notifdConfigFactory;
 
     private GroupFactory m_groupFactory;
+
+    private ForeignSourceRepository m_deployedForeignSourceRepository;
 
     private boolean m_useSystemProxy = true; // true == legacy behaviour
 
@@ -243,6 +247,8 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         usageStatisticsReport.setDestinationPathCount(getDestinationPathCount());
         usageStatisticsReport.setNotificationEnablementStatus(getNotificationEnablementStatus());
         usageStatisticsReport.setOnCallRoleCount(m_groupFactory.getRoles().size());
+        usageStatisticsReport.setRequisitionCount(getDeployedRequisitionCount());
+        usageStatisticsReport.setRequisitionWithChangedFSCount(getDeployedRequisitionWithModifiedFSCount());
 
         return usageStatisticsReport;
     }
@@ -276,6 +282,16 @@ public class UsageStatisticsReporter implements StateChangeHandler {
             LOG.warn("Failed to query from attribute name " + attributeName + " on object " + objectName, e);
             return null;
         }
+    }
+
+    private long getDeployedRequisitionCount() {
+        return m_deployedForeignSourceRepository.getRequisitions().size();
+    }
+
+    private long getDeployedRequisitionWithModifiedFSCount() {
+        ForeignSource defaultFS = m_deployedForeignSourceRepository.getDefaultForeignSource();
+        return m_deployedForeignSourceRepository.getRequisitions().stream()
+                .filter(req -> !req.getForeignSource().equals(defaultFS.getName())).count();
     }
 
     public void setUrl(String url) {
@@ -368,6 +384,14 @@ public class UsageStatisticsReporter implements StateChangeHandler {
 
     public void setGroupFactory(GroupFactory groupFactory) {
         this.m_groupFactory = groupFactory;
+    }
+
+    public void setDeployedForeignSourceRepository(ForeignSourceRepository fsRepo) {
+        this.m_deployedForeignSourceRepository = fsRepo;
+    }
+
+    public ForeignSourceRepository getDeployedForeignSourceRepository() {
+        return m_deployedForeignSourceRepository;
     }
 
     private int getDestinationPathCount(){
