@@ -75,10 +75,10 @@ for change in changes:
     if not change:
         continue
     if "IT.java" in change:
-        addTobuildList("Integration_tests")
-        addTobuildList("build")
-        #if "Integration_tests" not in What_to_build:
-        #    What_to_build.append("Integration_tests")
+        #addTobuildList("Integration_tests")
+        #addTobuildList("build")
+        if "Integration_tests" not in What_to_build:
+            What_to_build.append("Integration_tests")
     elif "Test.java" in change:
         addTobuildList("Smoke_tests")
         addTobuildList("build")
