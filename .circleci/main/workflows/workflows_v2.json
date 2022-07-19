@@ -62,29 +62,6 @@
             ]
         }
     },
-    "experimental": {
-        "build-with-tarball": {},
-        "minion-image": {
-            "requires": [
-                "build-with-tarball"
-            ]
-        },
-        "integration-test": {
-            "requires": [
-                "minion-image"
-            ]
-        },
-        "sentinel-deb-build": {
-            "requires": [
-                "build-with-tarball"
-            ]
-        },
-        "minion-deb-build": {
-            "requires": [
-                "integration-test"
-            ]
-        }
-    },
     "individual": {
         "empty": {
             "filters": {
