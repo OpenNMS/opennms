@@ -158,41 +158,41 @@ public class UserIT extends OpenNMSSeleniumIT {
 
     @Test
     public void testInvalidUserIds() {
-        testInvalidUserId("John<b>Doe</b>",true);
-        testInvalidUserId("Jane'Doe'",true);
-        testInvalidUserId("John&Doe",true);
-        testInvalidUserId("Jane\"\"Doe",true);
+        checkInvalidUserId("John<b>Doe</b>",true);
+        checkInvalidUserId("Jane'Doe'",true);
+        checkInvalidUserId("John&Doe",true);
+        checkInvalidUserId("Jane\"\"Doe",true);
     }
 
     @Test
     public void testValidUserIds() {
-        testInvalidUserId("John-Doe",false);
-        testInvalidUserId("Jane/Doe",false);
-        testInvalidUserId("John.Doe",false);
-        testInvalidUserId("Jane#Doe", false);
-        testInvalidUserId("John@Döe.com", false);
-        testInvalidUserId("JohnDoé", false);
+        checkInvalidUserId("John-Doe",false);
+        checkInvalidUserId("Jane/Doe",false);
+        checkInvalidUserId("John.Doe",false);
+        checkInvalidUserId("Jane#Doe", false);
+        checkInvalidUserId("John@Döe.com", false);
+        checkInvalidUserId("JohnDoé", false);
     }
 
     @Test
     public void testInvalidGroupIds() {
-        testInvalidGroupId("John<b>Doe</b>",true);
-        testInvalidGroupId("Jane'Doe'",true);
-        testInvalidGroupId("John&Doe",true);
-        testInvalidGroupId("Jane\"\"Doe",true);
+        checkInvalidGroupId("John<b>Doe</b>",true);
+        checkInvalidGroupId("Jane'Doe'",true);
+        checkInvalidGroupId("John&Doe",true);
+        checkInvalidGroupId("Jane\"\"Doe",true);
     }
 
     @Test
     public void testValidGroupIds() {
-        testInvalidGroupId("John-Doe",false);
-        testInvalidGroupId("Jane/Doe",false);
-        testInvalidGroupId("John.Doe",false);
-        testInvalidGroupId("Jane#Doe", false);
-        testInvalidGroupId("John@Döe.com", false);
-        testInvalidGroupId("JohnDoé", false);
+        checkInvalidGroupId("John-Doe",false);
+        checkInvalidGroupId("Jane/Doe",false);
+        checkInvalidGroupId("John.Doe",false);
+        checkInvalidGroupId("Jane#Doe", false);
+        checkInvalidGroupId("John@Döe.com", false);
+        checkInvalidGroupId("JohnDoé", false);
     }
 
-    public void testInvalidUserId(final String userId, final boolean mustFail) {
+    public void checkInvalidUserId(final String userId, final boolean mustFail) {
         adminPage();
         findElementByLink("Configure Users, Groups and On-Call Roles").click();
         findElementByLink("Configure Users").click();
@@ -216,7 +216,7 @@ public class UserIT extends OpenNMSSeleniumIT {
         }
     }
 
-    public void testInvalidGroupId(final String groupId, final boolean mustFail) {
+    public void checkInvalidGroupId(final String groupId, final boolean mustFail) {
         adminPage();
         findElementByLink("Configure Users, Groups and On-Call Roles").click();
         findElementByLink("Configure Groups").click();
