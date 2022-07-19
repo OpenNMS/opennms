@@ -13,6 +13,7 @@
             "extends": [
                 "build",
                 "horizon-deb-build",
+                "sentinel-deb-build",
                 "tarball-assembly",
                 "smoke-test-core",
                 "smoke-test-flaky",
