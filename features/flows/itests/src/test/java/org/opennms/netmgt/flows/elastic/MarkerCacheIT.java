@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.flows.elastic;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
@@ -36,14 +35,15 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
+
+import static org.opennms.integration.api.v1.flows.Flow.Direction;
+import static org.opennms.integration.api.v1.flows.Flow.NetflowVersion;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import javax.script.ScriptEngineManager;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -58,7 +58,6 @@ import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
-import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.flows.processing.enrichment.EnrichedFlow;
 import org.opennms.netmgt.flows.processing.enrichment.NodeInfo;
 import org.opennms.netmgt.flows.processing.impl.InterfaceMarkerImpl;
@@ -112,9 +111,9 @@ public class MarkerCacheIT {
         this.interfaceToNodeCache.dataSourceSync();
     }
 
-    private EnrichedFlow getMockFlow(final Flow.Direction direction) {
+    private EnrichedFlow getMockFlow(final Direction direction) {
         final EnrichedFlow flow = new EnrichedFlow();
-        flow.setNetflowVersion(Flow.NetflowVersion.V5);
+        flow.setNetflowVersion(NetflowVersion.V5);
         flow.setDirection(direction);
         flow.setIpProtocolVersion(4);
         flow.setSrcAddr("192.168.1.2");
@@ -140,7 +139,7 @@ public class MarkerCacheIT {
         Assert.assertThat(nodeDao.findAllHavingFlows(), is(empty()));
         Assert.assertThat(snmpInterfaceDao.findAllHavingFlows(1), is(empty()));
 
-        markerCache.mark(Lists.newArrayList(getMockFlow(Flow.Direction.INGRESS)));
+        markerCache.mark(Lists.newArrayList(getMockFlow(Direction.INGRESS)));
 
         Assert.assertThat(nodeDao.findAllHavingFlows(), contains(hasProperty("id", is(1))));
         Assert.assertThat(snmpInterfaceDao.findAllHavingFlows(1), contains(
@@ -158,7 +157,7 @@ public class MarkerCacheIT {
         Assert.assertThat(nodeDao.findAllHavingFlows(), is(empty()));
         Assert.assertThat(snmpInterfaceDao.findAllHavingFlows(1), is(empty()));
 
-        markerCache.mark(Lists.newArrayList(getMockFlow(Flow.Direction.EGRESS)));
+        markerCache.mark(Lists.newArrayList(getMockFlow(Direction.EGRESS)));
 
         assertEquals(0, snmpInterfaceDao.findAllHavingIngressFlows(2).size());
         assertEquals(0, snmpInterfaceDao.findAllHavingEgressFlows(2).size());
@@ -184,13 +183,13 @@ public class MarkerCacheIT {
         expectEgressInterfaces();
 
         // persist ingress flow
-        markerCache.mark(Lists.newArrayList(getMockFlow(Flow.Direction.INGRESS)));
+        markerCache.mark(Lists.newArrayList(getMockFlow(Direction.INGRESS)));
         expectAllInterfaces(ingress);
         expectIngressInterfaces(ingress);
         expectEgressInterfaces();
 
         // persist egress flow
-        markerCache.mark(Lists.newArrayList(getMockFlow(Flow.Direction.EGRESS)));
+        markerCache.mark(Lists.newArrayList(getMockFlow(Direction.EGRESS)));
         expectAllInterfaces(ingress, egress);
         expectEgressInterfaces(egress);
         expectIngressInterfaces(ingress);

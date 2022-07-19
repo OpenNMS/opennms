@@ -32,8 +32,9 @@ import java.time.Duration;
 import java.util.Collection;
 import java.util.Objects;
 
-import org.opennms.netmgt.flows.api.FlowException;
-import org.opennms.netmgt.flows.processing.enrichment.EnrichedFlow;
+import org.opennms.integration.api.v1.flows.Flow;
+import org.opennms.integration.api.v1.flows.FlowException;
+import org.opennms.integration.api.v1.flows.FlowRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,7 +63,7 @@ public class SwitchedFlowRepository implements FlowRepository {
     }
 
     @Override
-    public void persist(final Collection<EnrichedFlow> flows) throws FlowException {
+    public void persist(final Collection<? extends Flow> flows) throws FlowException {
         if (!this.enabled) {
             RATE_LIMITED_LOGGER.info("Flow persistence disabled for {}. Dropping {} flow documents.", this.delegate, flows.size());
             return;

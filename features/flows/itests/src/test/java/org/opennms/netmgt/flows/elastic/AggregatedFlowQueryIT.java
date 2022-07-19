@@ -36,12 +36,14 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
 
+import static org.opennms.integration.api.v1.flows.Flow.Direction;
+
 import java.net.MalformedURLException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -59,7 +61,6 @@ import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.hamcrest.collection.IsIterableContainingInOrder;
 import org.hamcrest.number.IsCloseTo;
-import org.joda.time.Instant;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -82,7 +83,7 @@ import org.opennms.netmgt.dao.mock.MockSessionUtils;
 import org.opennms.netmgt.flows.api.Conversation;
 import org.opennms.netmgt.flows.api.Directional;
 import org.opennms.netmgt.flows.api.Flow;
-import org.opennms.netmgt.flows.api.FlowException;
+import org.opennms.integration.api.v1.flows.FlowException;
 import org.opennms.netmgt.flows.api.FlowSource;
 import org.opennms.netmgt.flows.api.Host;
 import org.opennms.netmgt.flows.api.LimitedCardinalityField;
@@ -193,8 +194,8 @@ public class AggregatedFlowQueryIT {
     // align the shift to 10 millis because that makes testing the output by ES simpler (that is calculated for step=10)
     private static long OFFSET = (SHIFT / 10 + 1) * 10 + 60000;
 
-    private Date date(long millis) {
-        return new Date(OFFSET + millis);
+    private Instant date(long millis) {
+        return Instant.ofEpochMilli(OFFSET + millis);
     }
 
     @Test
@@ -387,16 +388,16 @@ public class AggregatedFlowQueryIT {
         final List<Flow> flows = new FlowBuilder()
                 .withSnmpInterfaceId(98)
                 // 192.168.1.100:43444 <-> 10.1.1.11:80 (110 bytes in [3,15])
-                .withDirection(Flow.Direction.INGRESS)
+                .withDirection(Direction.INGRESS)
                 .withTos(0)
                 .withFlow(date(3), date(15), "192.168.1.100", 43444, "10.1.1.11", 80, 10)
-                .withDirection(Flow.Direction.EGRESS)
+                .withDirection(Direction.EGRESS)
                 .withTos(4)
                 .withFlow(date(3), date(15), "10.1.1.11", 80, "192.168.1.100", 43444, 100)
-                .withDirection(Flow.Direction.INGRESS)
+                .withDirection(Direction.INGRESS)
                 .withTos(8)
                 .withFlow(date(20), date(45), "192.168.1.100", 43444, "10.1.1.11", 80, 10)
-                .withDirection(Flow.Direction.EGRESS)
+                .withDirection(Direction.EGRESS)
                 .withTos(12)
                 .withFlow(date(20), date(45), "10.1.1.11", 80, "192.168.1.100", 43444, 100)
                 .build();
@@ -721,8 +722,8 @@ public class AggregatedFlowQueryIT {
         //
         //   53.8461 + 21.2904 = 75.1365
         final double error = 1E-8;
-        var startHttps = date(13).getTime() / 10;
-        var endHttps = date(45).getTime() / 10;
+        var startHttps = date(13).toEpochMilli() / 10;
+        var endHttps = date(45).toEpochMilli() / 10;
         var expectedTimestamps = LongStream.range(startHttps, endHttps + 1).mapToObj(l -> Long.valueOf(l * 10)).toArray(l -> new Long[l]);
         assertThat(timestamps, contains(expectedTimestamps));
         assertThat(httpsIngressValues, containsDoubles(error, 75.136476426799, 81.63771712158808, 35.483870967741936,
@@ -779,28 +780,28 @@ public class AggregatedFlowQueryIT {
         final List<Flow> flows = new FlowBuilder()
                 .withSnmpInterfaceId(98)
                 // 192.168.1.100:43444 <-> 10.1.1.11:80 (110 bytes in [3,15])
-                .withDirection(Flow.Direction.INGRESS)
+                .withDirection(Direction.INGRESS)
                 .withFlow(date(3), date(15), "192.168.1.100", 43444, "10.1.1.11", 80, 10)
-                .withDirection(Flow.Direction.EGRESS)
+                .withDirection(Direction.EGRESS)
                 .withFlow(date(3), date(15), "10.1.1.11", 80, "192.168.1.100", 43444, 100)
                 // 192.168.1.100:43445 <-> 10.1.1.12:443 (1100 bytes in [13,26])
-                .withDirection(Flow.Direction.INGRESS)
+                .withDirection(Direction.INGRESS)
                 .withHostnames(null, "la.le.lu")
                 .withFlow(date(13), date(26), "192.168.1.100", 43445, "10.1.1.12", 443, 100)
-                .withDirection(Flow.Direction.EGRESS)
+                .withDirection(Direction.EGRESS)
                 .withHostnames("la.le.lu", null)
                 .withFlow(date(13), date(26), "10.1.1.12", 443, "192.168.1.100", 43445, 1000)
                 // 192.168.1.101:43442 <-> 10.1.1.12:443 (1210 bytes in [14, 45])
-                .withDirection(Flow.Direction.INGRESS)
+                .withDirection(Direction.INGRESS)
                 .withHostnames("ingress.only", "la.le.lu")
                 .withFlow(date(14), date(45), "192.168.1.101", 43442, "10.1.1.12", 443, 110)
-                .withDirection(Flow.Direction.EGRESS)
+                .withDirection(Direction.EGRESS)
                 .withHostnames("la.le.lu", null)
                 .withFlow(date(14), date(45), "10.1.1.12", 443, "192.168.1.101", 43442, 1100)
                 // 192.168.1.102:50000 <-> 10.1.1.13:50001 (200 bytes in [50, 52])
-                .withDirection(Flow.Direction.INGRESS)
+                .withDirection(Direction.INGRESS)
                 .withFlow(date(50), date(52), "192.168.1.102", 50000, "10.1.1.13", 50001, 200)
-                .withDirection(Flow.Direction.EGRESS)
+                .withDirection(Direction.EGRESS)
                 .withFlow(date(50), date(52), "10.1.1.13", 50001, "192.168.1.102", 50000, 100)
                 .build();
 
@@ -837,7 +838,7 @@ public class AggregatedFlowQueryIT {
                 .map( flow -> {
                     flow.setExporterNodeInfo(new NodeInfo() {
                         @Override
-                        public Integer getNodeId() {
+                        public int getNodeId() {
                             return 1;
                         }
 
@@ -875,7 +876,7 @@ public class AggregatedFlowQueryIT {
         TestStream.Builder<org.opennms.netmgt.flows.persistence.model.FlowDocument> flowStreamBuilder = TestStream.create(new FlowDocumentProtobufCoder());
         for (org.opennms.netmgt.flows.persistence.model.FlowDocument flow : flows) {
             flowStreamBuilder = flowStreamBuilder.addElements(TimestampedValue.of(flow,
-                    new Instant(flow.getLastSwitched().getValue() + timestampOffsetMillis)));
+                    new org.joda.time.Instant(flow.getLastSwitched().getValue() + timestampOffsetMillis)));
         }
         TestStream<org.opennms.netmgt.flows.persistence.model.FlowDocument> flowStream = flowStreamBuilder.advanceWatermarkToInfinity();
 

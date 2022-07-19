@@ -35,6 +35,10 @@ import java.util.Optional;
 import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.telemetry.protocols.netflow.transport.FlowMessage;
 
+import static org.opennms.integration.api.v1.flows.Flow.Direction;
+import static org.opennms.integration.api.v1.flows.Flow.NetflowVersion;
+import static org.opennms.integration.api.v1.flows.Flow.SamplingAlgorithm;
+
 import com.google.common.base.Strings;
 
 public class NetflowMessage implements Flow {
@@ -48,13 +52,13 @@ public class NetflowMessage implements Flow {
     }
 
     @Override
-    public long getReceivedAt() {
-        return this.receivedAt.toEpochMilli();
+    public Instant getReceivedAt() {
+        return this.receivedAt;
     }
 
     @Override
-    public long getTimestamp() {
-        return flowMessageProto.getTimestamp();
+    public Instant getTimestamp() {
+        return Instant.ofEpochMilli(flowMessageProto.getTimestamp());
     }
 
     @Override
@@ -117,13 +121,13 @@ public class NetflowMessage implements Flow {
     }
 
     @Override
-    public Long getDeltaSwitched() {
-        return flowMessageProto.hasDeltaSwitched() ? new Long(flowMessageProto.getDeltaSwitched().getValue()) : getFirstSwitched();
+    public Instant getDeltaSwitched() {
+        return flowMessageProto.hasDeltaSwitched() ? Instant.ofEpochMilli(flowMessageProto.getDeltaSwitched().getValue()) : getFirstSwitched();
     }
 
     @Override
-    public Long getFirstSwitched() {
-        return flowMessageProto.hasFirstSwitched() ? flowMessageProto.getFirstSwitched().getValue() : null;
+    public Instant getFirstSwitched() {
+        return flowMessageProto.hasFirstSwitched() ? Instant.ofEpochMilli(flowMessageProto.getFirstSwitched().getValue()) : null;
     }
 
     @Override
@@ -147,8 +151,8 @@ public class NetflowMessage implements Flow {
     }
 
     @Override
-    public Long getLastSwitched() {
-        return flowMessageProto.hasLastSwitched() ? flowMessageProto.getLastSwitched().getValue() : null;
+    public Instant getLastSwitched() {
+        return flowMessageProto.hasLastSwitched() ? Instant.ofEpochMilli(flowMessageProto.getLastSwitched().getValue()) : null;
     }
 
     @Override
@@ -184,14 +188,13 @@ public class NetflowMessage implements Flow {
 
     @Override
     public SamplingAlgorithm getSamplingAlgorithm() {
-
         switch (flowMessageProto.getSamplingAlgorithm()) {
             case SYSTEMATIC_COUNT_BASED_SAMPLING:
                 return SamplingAlgorithm.SystematicCountBasedSampling;
             case SYSTEMATIC_TIME_BASED_SAMPLING:
                 return SamplingAlgorithm.SystematicTimeBasedSampling;
             case RANDOM_N_OUT_OF_N_SAMPLING:
-                return SamplingAlgorithm.RandomNoutOfNSampling;
+                return SamplingAlgorithm.RandomNOutOfNSampling;
             case UNIFORM_PROBABILISTIC_SAMPLING:
                 return SamplingAlgorithm.UniformProbabilisticSampling;
             case PROPERTY_MATCH_FILTERING:

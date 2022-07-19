@@ -28,9 +28,7 @@
 
 package org.opennms.netmgt.flows.elastic;
 
-import org.opennms.netmgt.flows.api.FlowException;
-
-public class QueryException extends FlowException {
+public class QueryException extends Exception {
     public QueryException(String message) {
         super(message);
     }

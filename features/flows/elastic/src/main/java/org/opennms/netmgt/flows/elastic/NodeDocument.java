@@ -31,7 +31,7 @@ package org.opennms.netmgt.flows.elastic;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.opennms.netmgt.flows.processing.enrichment.NodeInfo;
+import org.opennms.integration.api.v1.flows.Flow.NodeInfo;
 
 import com.google.gson.annotations.SerializedName;
 

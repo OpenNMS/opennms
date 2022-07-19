@@ -28,16 +28,19 @@
 
 package org.opennms.netmgt.flows.processing.enrichment;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Optional;
 
 import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.flows.processing.ConversationKeyUtils;
 
-public class EnrichedFlow {
-    private long receivedAt;
-    private long timestamp;
+public class EnrichedFlow implements org.opennms.integration.api.v1.flows.Flow {
+
+    private Instant receivedAt;
+    private Instant timestamp;
     private Long bytes;
-    private Flow.Direction direction;
+    private Direction direction;
     private String dstAddr;
     private String dstAddrHostname;
     private Long dstAs;
@@ -45,19 +48,19 @@ public class EnrichedFlow {
     private Integer dstPort;
     private Integer engineId;
     private Integer engineType;
-    private Long deltaSwitched;
-    private Long firstSwitched;
+    private Instant deltaSwitched;
+    private Instant firstSwitched;
     private int flowRecords;
     private long flowSeqNum;
     private Integer inputSnmp;
     private Integer ipProtocolVersion;
-    private Long lastSwitched;
+    private Instant lastSwitched;
     private String nextHop;
     private String nextHopHostname;
     private Integer outputSnmp;
     private Long packets;
     private Integer protocol;
-    private Flow.SamplingAlgorithm samplingAlgorithm;
+    private SamplingAlgorithm samplingAlgorithm;
     private Double samplingInterval;
     private String srcAddr;
     private String srcAddrHostname;
@@ -68,9 +71,8 @@ public class EnrichedFlow {
     private Integer tos;
     private Integer dscp;
     private Integer ecn;
-    private Flow.NetflowVersion netflowVersion;
+    private NetflowVersion netflowVersion;
     private Integer vlan;
-    private String nodeIdentifier;
 
     private String application;
     private String host;
@@ -81,11 +83,12 @@ public class EnrichedFlow {
     private NodeInfo srcNodeInfo;
     private NodeInfo dstNodeInfo;
     private NodeInfo exporterNodeInfo;
-    private long clockCorrection;
+    private Duration clockCorrection;
 
     public EnrichedFlow() {
     }
 
+    @Override
     public String getApplication() {
         return application;
     }
@@ -94,6 +97,7 @@ public class EnrichedFlow {
         this.application = application;
     }
 
+    @Override
     public String getHost() {
         return host;
     }
@@ -102,6 +106,7 @@ public class EnrichedFlow {
         this.host = host;
     }
 
+    @Override
     public String getLocation() {
         return location;
     }
@@ -110,6 +115,7 @@ public class EnrichedFlow {
         this.location = location;
     }
 
+    @Override
     public Locality getSrcLocality() {
         return srcLocality;
     }
@@ -118,6 +124,7 @@ public class EnrichedFlow {
         this.srcLocality = srcLocality;
     }
 
+    @Override
     public Locality getDstLocality() {
         return dstLocality;
     }
@@ -126,6 +133,7 @@ public class EnrichedFlow {
         this.dstLocality = dstLocality;
     }
 
+    @Override
     public Locality getFlowLocality() {
         return flowLocality;
     }
@@ -134,6 +142,7 @@ public class EnrichedFlow {
         this.flowLocality = flowLocality;
     }
 
+    @Override
     public NodeInfo getSrcNodeInfo() {
         return srcNodeInfo;
     }
@@ -142,6 +151,7 @@ public class EnrichedFlow {
         this.srcNodeInfo = srcNodeInfo;
     }
 
+    @Override
     public NodeInfo getDstNodeInfo() {
         return dstNodeInfo;
     }
@@ -150,6 +160,7 @@ public class EnrichedFlow {
         this.dstNodeInfo = dstNodeInfo;
     }
 
+    @Override
     public NodeInfo getExporterNodeInfo() {
         return exporterNodeInfo;
     }
@@ -158,175 +169,202 @@ public class EnrichedFlow {
         this.exporterNodeInfo = exporterNodeInfo;
     }
 
-    public long getClockCorrection() {
+    @Override
+    public Duration getClockCorrection() {
         return this.clockCorrection;
     }
 
-    public void setClockCorrection(final long clockCorrection) {
+    public void setClockCorrection(final Duration clockCorrection) {
         this.clockCorrection = clockCorrection;
     }
 
-    public long getTimestamp() {
+    @Override
+    public Instant getTimestamp() {
         return this.timestamp;
     }
 
-    public Long getFirstSwitched() {
+    @Override
+    public Instant getFirstSwitched() {
         return this.firstSwitched;
     }
 
-    public Long getDeltaSwitched() {
+    @Override
+    public Instant getDeltaSwitched() {
         return this.deltaSwitched;
     }
 
-    public Long getLastSwitched() {
+    @Override
+    public Instant getLastSwitched() {
         return this.lastSwitched;
     }
 
-    public long getReceivedAt() {
+    @Override
+    public Instant getReceivedAt() {
         return this.receivedAt;
     }
 
-    public void setTimestamp(final Long timestamp) {
-        this.timestamp = timestamp;
-    }
-
+    @Override
     public Long getBytes() {
         return this.bytes;
     }
 
-    public Flow.Direction getDirection() {
+    @Override
+    public Direction getDirection() {
         return this.direction;
     }
 
+    @Override
     public String getDstAddr() {
         return this.dstAddr;
     }
 
+    @Override
     public Optional<String> getDstAddrHostname() {
         return Optional.ofNullable(this.dstAddrHostname);
     }
 
+    @Override
     public Long getDstAs() {
         return this.dstAs;
     }
 
+    @Override
     public Integer getDstMaskLen() {
         return this.dstMaskLen;
     }
 
+    @Override
     public Integer getDstPort() {
         return this.dstPort;
     }
 
+    @Override
     public Integer getEngineId() {
         return this.engineId;
     }
 
+    @Override
     public Integer getEngineType() {
         return this.engineType;
     }
 
-    public void setDeltaSwitched(final Long deltaSwitched) {
+    public void setDeltaSwitched(final Instant deltaSwitched) {
         this.deltaSwitched = deltaSwitched;
     }
 
-    public void setFirstSwitched(final Long firstSwitched) {
+    public void setFirstSwitched(final Instant firstSwitched) {
         this.firstSwitched = firstSwitched;
     }
 
+    @Override
     public int getFlowRecords() {
         return this.flowRecords;
     }
 
+    @Override
     public long getFlowSeqNum() {
         return this.flowSeqNum;
     }
 
+    @Override
     public Integer getInputSnmp() {
         return this.inputSnmp;
     }
 
+    @Override
     public Integer getIpProtocolVersion() {
         return this.ipProtocolVersion;
     }
 
-    public void setLastSwitched(final Long lastSwitched) {
+    public void setLastSwitched(final Instant lastSwitched) {
         this.lastSwitched = lastSwitched;
     }
 
+    @Override
     public String getNextHop() {
         return this.nextHop;
     }
 
+    @Override
     public Optional<String> getNextHopHostname() {
         return Optional.ofNullable(this.nextHopHostname);
     }
 
+    @Override
     public Integer getOutputSnmp() {
         return this.outputSnmp;
     }
 
+    @Override
     public Long getPackets() {
         return this.packets;
     }
 
+    @Override
     public Integer getProtocol() {
         return this.protocol;
     }
 
-    public Flow.SamplingAlgorithm getSamplingAlgorithm() {
+    @Override
+    public SamplingAlgorithm getSamplingAlgorithm() {
         return this.samplingAlgorithm;
     }
 
+    @Override
     public Double getSamplingInterval() {
         return this.samplingInterval;
     }
 
+    @Override
     public String getSrcAddr() {
         return this.srcAddr;
     }
 
+    @Override
     public Optional<String> getSrcAddrHostname() {
         return Optional.ofNullable(this.srcAddrHostname);
     }
 
+    @Override
     public Long getSrcAs() {
         return this.srcAs;
     }
 
+    @Override
     public Integer getSrcMaskLen() {
         return this.srcMaskLen;
     }
 
+    @Override
     public Integer getSrcPort() {
         return this.srcPort;
     }
 
+    @Override
     public Integer getTcpFlags() {
         return this.tcpFlags;
     }
 
+    @Override
     public Integer getTos() {
         return this.tos;
     }
 
-    public Flow.NetflowVersion getNetflowVersion() {
+    @Override
+    public NetflowVersion getNetflowVersion() {
         return this.netflowVersion;
     }
 
+    @Override
     public Integer getVlan() {
         return this.vlan;
     }
 
-    public String getNodeIdentifier() {
-        return this.nodeIdentifier;
-    }
-
-    public void setReceivedAt(final long receivedAt) {
+    public void setReceivedAt(final Instant receivedAt) {
         this.receivedAt = receivedAt;
     }
 
-    public void setTimestamp(final long timestamp) {
+    public void setTimestamp(final Instant timestamp) {
         this.timestamp = timestamp;
     }
 
@@ -334,7 +372,7 @@ public class EnrichedFlow {
         this.bytes = bytes;
     }
 
-    public void setDirection(final Flow.Direction direction) {
+    public void setDirection(final Direction direction) {
         this.direction = direction;
     }
 
@@ -402,7 +440,7 @@ public class EnrichedFlow {
         this.protocol = protocol;
     }
 
-    public void setSamplingAlgorithm(final Flow.SamplingAlgorithm samplingAlgorithm) {
+    public void setSamplingAlgorithm(final SamplingAlgorithm samplingAlgorithm) {
         this.samplingAlgorithm = samplingAlgorithm;
     }
 
@@ -438,6 +476,7 @@ public class EnrichedFlow {
         this.tos = tos;
     }
 
+    @Override
     public Integer getDscp() {
         return this.dscp;
     }
@@ -446,6 +485,7 @@ public class EnrichedFlow {
         this.dscp = dscp;
     }
 
+    @Override
     public Integer getEcn() {
         return this.ecn;
     }
@@ -454,7 +494,7 @@ public class EnrichedFlow {
         this.ecn = ecn;
     }
 
-    public void setNetflowVersion(final Flow.NetflowVersion netflowVersion) {
+    public void setNetflowVersion(final NetflowVersion netflowVersion) {
         this.netflowVersion = netflowVersion;
     }
 
@@ -462,20 +502,13 @@ public class EnrichedFlow {
         this.vlan = vlan;
     }
 
-    public void setNodeIdentifier(final String nodeIdentifier) {
-        this.nodeIdentifier = nodeIdentifier;
-    }
-
+    @Override
     public String getConvoKey() {
         return ConversationKeyUtils.getConvoKeyAsJsonString(this.getLocation(),
                                                             this.getProtocol(),
                                                             this.getSrcAddr(),
                                                             this.getDstAddr(),
                                                             this.getApplication());
-    }
-
-    public enum Locality {
-        PUBLIC, PRIVATE
     }
 
     public static EnrichedFlow from(final Flow flow) {
@@ -517,7 +550,6 @@ public class EnrichedFlow {
         enriched.setEcn(flow.getEcn());
         enriched.setNetflowVersion(flow.getNetflowVersion());
         enriched.setVlan(flow.getVlan());
-        enriched.setNodeIdentifier(flow.getNodeIdentifier());
 
         return enriched;
     }

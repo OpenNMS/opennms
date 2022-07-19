@@ -30,32 +30,35 @@ package org.opennms.netmgt.flows.processing.enrichment;
 
 import java.util.List;
 
-public class NodeInfo {
+public class NodeInfo implements org.opennms.integration.api.v1.flows.Flow.NodeInfo {
 
     // ID of the interface which was selected during IP to node lookup
-    private Integer interfaceId;
+    private int interfaceId;
 
-    private Integer nodeId;
+    private int nodeId;
     private String foreignId;
     private String foreignSource;
     private List<String> categories = List.of();
 
-    public Integer getInterfaceId() {
+    @Override
+    public int getInterfaceId() {
         return this.interfaceId;
     }
 
-    public void setInterfaceId(final Integer interfaceId) {
+    public void setInterfaceId(final int interfaceId) {
         this.interfaceId = interfaceId;
     }
 
-    public Integer getNodeId() {
+    @Override
+    public int getNodeId() {
         return this.nodeId;
     }
 
-    public void setNodeId(final Integer nodeId) {
+    public void setNodeId(final int nodeId) {
         this.nodeId = nodeId;
     }
 
+    @Override
     public String getForeignId() {
         return this.foreignId;
     }
@@ -64,6 +67,7 @@ public class NodeInfo {
         this.foreignId = foreignId;
     }
 
+    @Override
     public String getForeignSource() {
         return this.foreignSource;
     }
@@ -72,6 +76,7 @@ public class NodeInfo {
         this.foreignSource = foreignSource;
     }
 
+    @Override
     public List<String> getCategories() {
         return this.categories;
     }
