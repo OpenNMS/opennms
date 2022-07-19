@@ -62,20 +62,30 @@ mappings = dict(mappings)
 
 print("Mappings:",mappings)
 
+
 # If *IT.java files have changed -> enable integration builds
 # If *Test.java files have changed -> enable smoke builds
 # if Dockerfiles (under opennms-container) have changed enable docker builds
 What_to_build=[]
+def addTobuildList(item):
+    if item not in What_to_build:
+        What_to_build.append(item)
+
 for change in changes:
     if not change:
         continue
     if "IT.java" in change:
-        if "Integration_tests" not in What_to_build:
-            What_to_build.append("Integration_tests")
+        addTobuildList("Integration_tests")
+        addTobuildList("build")
+        #if "Integration_tests" not in What_to_build:
+        #    What_to_build.append("Integration_tests")
     elif "Test.java" in change:
-        if "Smoke_tests" not in What_to_build:
-            What_to_build.append("Smoke_tests")
+        addTobuildList("Smoke_tests")
+        addTobuildList("build")
+        #if "Smoke_tests" not in What_to_build:
+        #    What_to_build.append("Smoke_tests")
     elif "opennms-container" in change:
+        addTobuildList("build")
         if "horizon" in change:
             if "OCI_horizon_image" not in What_to_build:
                 What_to_build.append("OCI_horizon_image")
