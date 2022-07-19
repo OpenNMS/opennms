@@ -92,6 +92,7 @@
             }
         },
         "ui": {
+            "job": "build-ui",
             "filters": {
                 "branches": {
                     "ignore": [
