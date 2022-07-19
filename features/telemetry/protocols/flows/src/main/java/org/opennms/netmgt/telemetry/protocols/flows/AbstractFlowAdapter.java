@@ -38,7 +38,7 @@ import java.util.Objects;
 import org.opennms.core.mate.api.ContextKey;
 import org.opennms.netmgt.flows.api.DetailedFlowException;
 import org.opennms.netmgt.flows.api.Flow;
-import org.opennms.netmgt.flows.api.FlowException;
+import org.opennms.integration.api.v1.flows.FlowException;
 import org.opennms.netmgt.flows.api.FlowSource;
 import org.opennms.netmgt.flows.api.UnrecoverableFlowException;
 import org.opennms.netmgt.flows.processing.Pipeline;

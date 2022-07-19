@@ -33,7 +33,6 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.swrve.ratelimitedlogger.RateLimitedLog;
 import io.opentracing.Scope;
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
@@ -48,14 +47,13 @@ import org.opennms.features.jest.client.bulk.BulkRequest;
 import org.opennms.features.jest.client.bulk.BulkWrapper;
 import org.opennms.features.jest.client.index.IndexStrategy;
 import org.opennms.features.jest.client.template.IndexSettings;
-import org.opennms.netmgt.flows.api.FlowException;
-import org.opennms.netmgt.flows.processing.persisting.FlowRepository;
-import org.opennms.netmgt.flows.processing.enrichment.EnrichedFlow;
+import org.opennms.integration.api.v1.flows.Flow;
+import org.opennms.integration.api.v1.flows.FlowException;
+import org.opennms.integration.api.v1.flows.FlowRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.time.Duration;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.Collections;
@@ -189,7 +187,7 @@ public class ElasticFlowRepository implements FlowRepository {
     }
 
     @Override
-    public void persist(final Collection<EnrichedFlow> flows) throws FlowException {
+    public void persist(final Collection<? extends Flow> flows) throws FlowException {
         final FlowBulk flowBulk = this.flowBulks.computeIfAbsent(Thread.currentThread(), (thread) -> new FlowBulk());
         flowBulk.lock.lock();
         try {

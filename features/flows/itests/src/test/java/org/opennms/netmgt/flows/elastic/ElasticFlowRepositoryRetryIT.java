@@ -42,9 +42,9 @@ import org.opennms.features.jest.client.RestClientFactory;
 import org.opennms.features.jest.client.executors.DefaultRequestExecutor;
 import org.opennms.features.jest.client.index.IndexStrategy;
 import org.opennms.features.jest.client.template.IndexSettings;
-import org.opennms.netmgt.flows.api.FlowException;
+import org.opennms.integration.api.v1.flows.FlowException;
 import org.opennms.netmgt.flows.processing.enrichment.EnrichedFlow;
-import org.opennms.netmgt.flows.processing.persisting.FlowRepository;
+import org.opennms.integration.api.v1.flows.FlowRepository;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Throwables;

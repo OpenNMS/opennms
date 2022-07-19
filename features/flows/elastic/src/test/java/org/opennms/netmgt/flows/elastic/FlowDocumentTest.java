@@ -32,8 +32,12 @@ package org.opennms.netmgt.flows.elastic;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import static org.opennms.integration.api.v1.flows.Flow.NetflowVersion;
+import static org.opennms.integration.api.v1.flows.Flow.Direction;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -98,8 +102,8 @@ public class FlowDocumentTest {
 
     public static Flow getMockFlow() {
         final Flow flow = mock(Flow.class);
-        when(flow.getNetflowVersion()).thenReturn(Flow.NetflowVersion.V5);
-        when(flow.getDirection()).thenReturn(Flow.Direction.INGRESS);
+        when(flow.getNetflowVersion()).thenReturn(NetflowVersion.V5);
+        when(flow.getDirection()).thenReturn(Direction.INGRESS);
         when(flow.getIpProtocolVersion()).thenReturn(4);
         when(flow.getSrcAddr()).thenReturn("192.168.1.2");
         when(flow.getSrcAddrHostname()).thenReturn(Optional.empty());

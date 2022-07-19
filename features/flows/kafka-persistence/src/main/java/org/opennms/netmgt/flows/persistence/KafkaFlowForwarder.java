@@ -33,7 +33,6 @@ import java.time.Duration;
 import java.util.Collection;
 import java.util.Dictionary;
 import java.util.Enumeration;
-import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.function.Supplier;
@@ -43,9 +42,9 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.opennms.integration.api.v1.flows.Flow;
 import org.opennms.netmgt.flows.persistence.model.FlowDocument;
-import org.opennms.netmgt.flows.processing.enrichment.EnrichedFlow;
-import org.opennms.netmgt.flows.processing.persisting.FlowRepository;
+import org.opennms.integration.api.v1.flows.FlowRepository;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,7 +83,7 @@ public class KafkaFlowForwarder implements FlowRepository {
     }
 
     @Override
-    public void persist(Collection<EnrichedFlow> flows) {
+    public void persist(Collection<? extends Flow> flows) {
         for (final var enrichedFlow: flows) {
             this.forwarded.mark();
 

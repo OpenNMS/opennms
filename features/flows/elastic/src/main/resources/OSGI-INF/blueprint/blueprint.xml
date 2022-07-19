@@ -197,7 +197,7 @@
         <argument ref="initializingElasticFlowRepository" />
         <property name="disabled" value="${skipElasticsearchPersistence}" />
     </bean>
-    <service interface="org.opennms.netmgt.flows.processing.persisting.FlowRepository" ref="switchedElasticFlowRepository">
+    <service interface="org.opennms.integration.api.v1.flows.FlowRepository" ref="switchedElasticFlowRepository">
         <service-properties>
             <entry key="flows.repository.id" value="elastic" />
         </service-properties>

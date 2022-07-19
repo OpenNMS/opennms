@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.flows.processing.impl;
 
+import static org.opennms.integration.api.v1.flows.Flow.Direction;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -39,12 +41,10 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static org.opennms.netmgt.flows.api.Flow.Direction;
-
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
-import org.opennms.netmgt.flows.api.FlowException;
+import org.opennms.integration.api.v1.flows.FlowException;
 import org.opennms.netmgt.flows.processing.enrichment.EnrichedFlow;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
@@ -137,7 +137,6 @@ public class InterfaceMarkerImpl {
 
         for (final EnrichedFlow flow : flows) {
             if (flow.getExporterNodeInfo() == null) continue;
-            if (flow.getExporterNodeInfo().getNodeId() == null) continue;
 
             final Integer nodeId = flow.getExporterNodeInfo().getNodeId();
 

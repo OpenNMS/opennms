@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-import org.opennms.netmgt.flows.api.Flow;
+import org.opennms.integration.api.v1.flows.Flow;
 import org.opennms.netmgt.flows.processing.enrichment.EnrichedFlow;
 import org.opennms.netmgt.flows.processing.enrichment.NodeInfo;
 
@@ -45,15 +45,8 @@ import com.google.gson.annotations.SerializedName;
 public class FlowDocument {
     private static final int DOCUMENT_VERSION = 1;
 
-
-    public FlowDocument(EnrichedFlow flow) {
-        this.flow = flow;
-    }
-
     public FlowDocument() {
     }
-
-    private transient EnrichedFlow flow;
 
     /**
      * Flow timestamp in milliseconds.
@@ -347,14 +340,6 @@ public class FlowDocument {
     public void addHost(String host) {
         Objects.requireNonNull(host);
         hosts.add(host);
-    }
-
-    public EnrichedFlow getFlow() {
-        return flow;
-    }
-
-    public void setFlow(EnrichedFlow flow) {
-        this.flow = flow;
     }
 
     public long getTimestamp() {
@@ -743,9 +728,9 @@ public class FlowDocument {
         this.nodeSrc = nodeSrc;
     }
 
-    public static FlowDocument from(final EnrichedFlow flow) {
-        final FlowDocument doc = new FlowDocument(flow);
-        doc.setTimestamp(flow.getTimestamp());
+    public static FlowDocument from(final Flow flow) {
+        final FlowDocument doc = new FlowDocument();
+        doc.setTimestamp(flow.getTimestamp() != null ? flow.getTimestamp().toEpochMilli() : 0);
         doc.setBytes(flow.getBytes());
         doc.setDirection(Direction.from(flow.getDirection()));
         doc.setDstAddr(flow.getDstAddr());
@@ -755,12 +740,12 @@ public class FlowDocument {
         doc.setDstPort(flow.getDstPort());
         doc.setEngineId(flow.getEngineId());
         doc.setEngineType(flow.getEngineType());
-        doc.setFirstSwitched(flow.getFirstSwitched());
+        doc.setFirstSwitched(flow.getFirstSwitched() != null ? flow.getFirstSwitched().toEpochMilli() : 0);
         doc.setFlowRecords(flow.getFlowRecords());
         doc.setFlowSeqNum(flow.getFlowSeqNum());
         doc.setInputSnmp(flow.getInputSnmp());
         doc.setIpProtocolVersion(flow.getIpProtocolVersion());
-        doc.setLastSwitched(flow.getLastSwitched());
+        doc.setLastSwitched(flow.getLastSwitched() != null ? flow.getLastSwitched().toEpochMilli() : 0);
         doc.setNextHop(flow.getNextHop());
         flow.getNextHopHostname().ifPresent(doc::setNextHopHostname);
         doc.setOutputSnmp(flow.getOutputSnmp());
@@ -774,7 +759,7 @@ public class FlowDocument {
         doc.setSrcMaskLen(flow.getSrcMaskLen());
         doc.setSrcPort(flow.getSrcPort());
         doc.setTcpFlags(flow.getTcpFlags());
-        doc.setDeltaSwitched(flow.getDeltaSwitched());
+        doc.setDeltaSwitched(flow.getDeltaSwitched() != null ? flow.getDeltaSwitched().toEpochMilli() : 0);
         doc.setTos(flow.getTos());
         doc.setDscp(flow.getDscp());
         doc.setEcn(flow.getEcn());
@@ -790,11 +775,7 @@ public class FlowDocument {
         doc.setNodeSrc(NodeDocument.from(flow.getSrcNodeInfo()));
         doc.setNodeDst(NodeDocument.from(flow.getDstNodeInfo()));
         doc.setNodeExporter(NodeDocument.from(flow.getExporterNodeInfo()));
-        doc.setTimestamp(flow.getTimestamp());
-        doc.setFirstSwitched(flow.getFirstSwitched());
-        doc.setDeltaSwitched(flow.getDeltaSwitched());
-        doc.setLastSwitched(flow.getLastSwitched());
-        doc.setClockCorrection(flow.getClockCorrection());
+        doc.setClockCorrection(flow.getClockCorrection() != null ? flow.getClockCorrection().toMillis() : 0);
         doc.setConvoKey(flow.getConvoKey());
 
         return doc;

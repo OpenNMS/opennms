@@ -37,12 +37,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.opennms.features.jest.client.ConnectionPoolShutdownException;
 import org.opennms.features.jest.client.template.DefaultTemplateInitializer;
 import org.opennms.features.jest.client.template.IndexSettings;
-import org.opennms.netmgt.flows.api.Flow;
-import org.opennms.netmgt.flows.api.FlowException;
-import org.opennms.netmgt.flows.processing.enrichment.EnrichedFlow;
-import org.opennms.netmgt.flows.processing.persisting.FlowRepository;
-import org.opennms.netmgt.flows.api.FlowSource;
-import org.opennms.netmgt.flows.processing.ProcessingOptions;
+import org.opennms.integration.api.v1.flows.Flow;
+import org.opennms.integration.api.v1.flows.FlowException;
+import org.opennms.integration.api.v1.flows.FlowRepository;
 import org.opennms.netmgt.flows.api.UnrecoverableFlowException;
 import org.osgi.framework.BundleContext;
 
@@ -74,7 +71,7 @@ public class InitializingFlowRepository implements FlowRepository {
     }
 
     @Override
-    public void persist(final Collection<EnrichedFlow> flows) throws FlowException {
+    public void persist(final Collection<? extends Flow> flows) throws FlowException {
         try {
             ensureInitialized();
             delegate.persist(flows);
