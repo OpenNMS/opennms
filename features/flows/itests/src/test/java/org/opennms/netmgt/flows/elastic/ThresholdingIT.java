@@ -36,7 +36,6 @@ import static org.junit.Assert.assertTrue;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -71,7 +70,6 @@ import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.dao.mock.MockSessionUtils;
 import org.opennms.netmgt.dao.mock.MockSnmpInterfaceDao;
 import org.opennms.netmgt.events.api.EventConstants;
-import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.flows.api.FlowException;
@@ -348,7 +346,7 @@ public class ThresholdingIT {
     @Test
     public void testApplications() throws Exception {
         for(FlowThresholding.Session session : this.thresholding.getSessions()) {
-            for(Map.Entry<IndexKey, Map<String, AtomicLong>> entry : session.applications.entrySet()) {
+            for(Map.Entry<IndexKey, Map<String, AtomicLong>> entry : session.indexKeyMap.entrySet()) {
                 assertEquals(2, entry.getValue().size());
                 assertTrue(entry.getValue().containsKey("APP1"));
                 assertTrue(entry.getValue().containsKey("APP2"));
@@ -361,11 +359,11 @@ public class ThresholdingIT {
                 new RuleBuilder().withName("APP3").withDstPort("3").withPosition(1).build()
         );
 
-        this.thresholding.classificationRulesReloaded();
+        this.thresholding.classificationRulesReloaded(this.rules);
         this.thresholding.runTimerTask();
 
         for(FlowThresholding.Session session : this.thresholding.getSessions()) {
-            for(Map.Entry<IndexKey, Map<String, AtomicLong>> entry : session.applications.entrySet()) {
+            for(Map.Entry<IndexKey, Map<String, AtomicLong>> entry : session.indexKeyMap.entrySet()) {
                 assertEquals(3, entry.getValue().size());
                 assertTrue(entry.getValue().containsKey("APP1"));
                 assertTrue(entry.getValue().containsKey("APP2"));
@@ -377,11 +375,11 @@ public class ThresholdingIT {
                 new RuleBuilder().withName("APP1").withDstPort("1").withPosition(1).build()
         );
 
-        this.thresholding.classificationRulesReloaded();
+        this.thresholding.classificationRulesReloaded(this.rules);
         this.thresholding.runTimerTask();
 
         for(FlowThresholding.Session session : this.thresholding.getSessions()) {
-            for(Map.Entry<IndexKey, Map<String, AtomicLong>> entry : session.applications.entrySet()) {
+            for(Map.Entry<IndexKey, Map<String, AtomicLong>> entry : session.indexKeyMap.entrySet()) {
                 assertEquals(1, entry.getValue().size());
                 assertTrue(entry.getValue().containsKey("APP1"));
             }

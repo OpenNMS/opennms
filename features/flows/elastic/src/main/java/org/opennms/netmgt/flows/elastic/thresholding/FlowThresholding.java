@@ -41,11 +41,13 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.TreeMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.collection.api.CollectionAgent;
@@ -109,11 +111,11 @@ public class FlowThresholding implements Closeable, ClassificationEngine.Classif
 
     private FilterService filterService;
 
-    private ClassificationRuleProvider classificationRuleProvider;
+    private ClassificationEngine classificationEngine;
 
     private List<Rule> classificationRuleList;
 
-    private ClassificationEngine classificationEngine;
+    private ReentrantReadWriteLock classificationRuleListReadWriteLock = new ReentrantReadWriteLock();
 
     public FlowThresholding(final ThresholdingService thresholdingService,
                             final CollectionAgentFactory collectionAgentFactory,
@@ -133,20 +135,25 @@ public class FlowThresholding implements Closeable, ClassificationEngine.Classif
         this.snmpInterfaceDao = Objects.requireNonNull(snmpInterfaceDao);
         this.filterDao = Objects.requireNonNull(filterDao);
         this.filterService = Objects.requireNonNull(filterService);
-        this.classificationRuleProvider = Objects.requireNonNull(classificationRuleProvider);
-        this.classificationRuleList = this.classificationRuleProvider.getRules();
+        this.classificationRuleList = classificationRuleProvider.getRules();
         this.classificationEngine = Objects.requireNonNull(classificationEngine);
         this.classificationEngine.addClassificationRulesReloadedListener(this);
     }
 
     @Override
-    public void classificationRulesReloaded() {
-        synchronized (this.classificationRuleList) {
-            this.classificationRuleList = this.classificationRuleProvider.getRules();
-            LOG.debug("Classification rules reloaded. Marking sessions as dirty.");
-            for (final Session session : getSessions()) {
-                session.dirty = true;
-            }
+    public void classificationRulesReloaded(final List<Rule> classificationRuleList) {
+        final Lock writeLock = classificationRuleListReadWriteLock.writeLock();
+        writeLock.lock();
+        try {
+            this.classificationRuleList = classificationRuleList;
+        } finally {
+            writeLock.unlock();
+        }
+
+        LOG.debug("Classification rules reloaded. Marking sessions as dirty.");
+
+        for (final Session session : this.sessions.values()) {
+            session.updateApplicationList(getListOfApplicationsToPersist(session.exporterIpAddress));
         }
     }
 
@@ -200,47 +207,16 @@ public class FlowThresholding implements Closeable, ClassificationEngine.Classif
             LOG.debug("Processing session={} for exporterKey={}...", session, exporterKey);
 
             // Check whether session is idle and mark it for removal
-            if (session.lastUpdate.isBefore(Instant.now().minus(this.idleTimeoutMs, ChronoUnit.MILLIS))) {
+            if (session.lastUpdate != null && session.lastUpdate.isBefore(Instant.now().minus(this.idleTimeoutMs, ChronoUnit.MILLIS))) {
                 idleSessions.add(exporterKey);
                 continue;
             }
 
-            if (session.dirty) {
-                final Set<String> applicationsToPersist;
-
-                synchronized (classificationRuleList) {
-                    applicationsToPersist = classificationRuleList.stream()
-                            .filter(r -> r.getExporterFilter() == null || filterService.matches(session.exporterIpAddress, r.getExporterFilter()))
-                            .map(r -> r.getName())
-                            .collect(Collectors.toUnmodifiableSet());
-                }
-
-                LOG.debug("Found {} matching applications in {} rules for exporter {}" , applicationsToPersist.size(), classificationRuleList.size(), session.exporterIpAddress);
-
-                synchronized (entry.getValue().applications) {
-                    for(final IndexKey indexKey : entry.getValue().applications.keySet()) {
-                        final int beforeAdd = entry.getValue().applications.get(indexKey).size();
-
-                        for (final String application : applicationsToPersist) {
-                            entry.getValue().applications.get(indexKey).computeIfAbsent(application, a -> new AtomicLong(0));
-                        }
-                        final int afterAddBeforePurge = entry.getValue().applications.get(indexKey).size();
-                        LOG.debug("Added {} applications for {}/{}/{}", afterAddBeforePurge - beforeAdd, session.exporterIpAddress, indexKey.iface, indexKey.direction);
-
-                        entry.getValue().applications.get(indexKey).entrySet().removeIf(e -> !applicationsToPersist.contains(e.getKey()));
-                        final int afterPurge = entry.getValue().applications.get(indexKey).size();
-                        LOG.debug("Removed {} applications for {}/{}/{}", afterAddBeforePurge - afterPurge, session.exporterIpAddress, indexKey.iface, indexKey.direction);
-                    }
-                }
-                session.dirty = false;
-            }
-
-
             final OnmsIpInterface iface = this.ipInterfaceDao.get(exporterKey.interfaceId);
             final NodeLevelResource nodeResource = new NodeLevelResource(iface.getNodeId());
 
-            for (final Map.Entry<IndexKey, Map<String, AtomicLong>> indexEntry : session.applications.entrySet()) {
-                for(final Map.Entry<String, AtomicLong> applicationEntry : indexEntry.getValue().entrySet()) {
+            for (final Map.Entry<IndexKey, Map<String, AtomicLong>> indexEntry : session.indexKeyMap.entrySet()) {
+                for (final Map.Entry<String, AtomicLong> applicationEntry : indexEntry.getValue().entrySet()) {
                     try {
                         final String ifName = getIfNameForNodeIdAndIfIndex(session.collectionAgent.getNodeId(), indexEntry.getKey().iface);
 
@@ -313,6 +289,19 @@ public class FlowThresholding implements Closeable, ClassificationEngine.Classif
         }
     }
 
+    private Set<String> getListOfApplicationsToPersist(final String exporterIpAddress) {
+        final Lock readLock = classificationRuleListReadWriteLock.readLock();
+        readLock.lock();
+        try {
+            return classificationRuleList.stream()
+                    .filter(r -> r.getExporterFilter() == null || filterService.matches(exporterIpAddress, r.getExporterFilter()))
+                    .map(r -> r.getName())
+                    .collect(Collectors.toSet());
+        } finally {
+            readLock.unlock();
+        }
+    }
+
     private String getIfNameForNodeIdAndIfIndex(final int nodeId, final int ifIndex) {
         final OnmsSnmpInterface snmpInterface = snmpInterfaceDao.findByNodeIdAndIfIndex(nodeId, ifIndex);
 
@@ -346,9 +335,9 @@ public class FlowThresholding implements Closeable, ClassificationEngine.Classif
                     final ThresholdingSession thresholdingSession;
                     try {
                         thresholdingSession = FlowThresholding.this.thresholdingService.createSession(iface.getNodeId(),
-                                                                                                      collectionAgent.getHostAddress(),
-                                                                                                      SERVICE_NAME,
-                                                                                                      new ServiceParameters(Collections.emptyMap()));
+                                collectionAgent.getHostAddress(),
+                                SERVICE_NAME,
+                                new ServiceParameters(Collections.emptyMap()));
                     } catch (ThresholdInitializationException e) {
                         throw new RuntimeException("Error initializing thresholding session", e);
                     }
@@ -363,12 +352,13 @@ public class FlowThresholding implements Closeable, ClassificationEngine.Classif
                     }
 
                     return new Session(thresholdingSession,
-                                       collectionAgent,
-                                       systemIdHash,
-                                       options.applicationThresholding,
-                                       options.applicationDataCollection,
-                                       packageDefinition,
-                                       collectionAgent.getHostAddress());
+                            collectionAgent,
+                            systemIdHash,
+                            options.applicationThresholding,
+                            options.applicationDataCollection,
+                            packageDefinition,
+                            collectionAgent.getHostAddress(),
+                            getListOfApplicationsToPersist(collectionAgent.getHostAddress()));
                 });
 
                 session.process(now, document);
@@ -385,7 +375,9 @@ public class FlowThresholding implements Closeable, ClassificationEngine.Classif
     }
 
     public static class Session {
-        public final Map<IndexKey, Map<String, AtomicLong>> applications = Maps.newConcurrentMap();
+        private static final Logger LOG = LoggerFactory.getLogger(Session.class);
+
+        public final Map<IndexKey, Map<String, AtomicLong>> indexKeyMap = Maps.newConcurrentMap();
 
         public final boolean thresholding;
         public final boolean dataCollection;
@@ -404,7 +396,9 @@ public class FlowThresholding implements Closeable, ClassificationEngine.Classif
 
         private final String exporterIpAddress;
 
-        private boolean dirty = true;
+        private ReentrantReadWriteLock applicationsReadWriteLock = new ReentrantReadWriteLock();
+
+        private Set<String> applications;
 
         private Session(final ThresholdingSession thresholdingSession,
                         final CollectionAgent collectionAgent,
@@ -412,36 +406,73 @@ public class FlowThresholding implements Closeable, ClassificationEngine.Classif
                         final boolean thresholding,
                         final boolean dataCollection,
                         final PackageDefinition packageDefinition,
-                        final String exporterIpAddress) {
+                        final String exporterIpAddress,
+                        final Set<String> applicationsToPersist) {
             this.sequenceNumber = new AtomicLong(systemIdHash | ThreadLocalRandom.current().nextInt());
-
             this.thresholdingSession = Objects.requireNonNull(thresholdingSession);
             this.collectionAgent = Objects.requireNonNull(collectionAgent);
-
             this.thresholding = thresholding;
             this.dataCollection = dataCollection;
-
-            this.packageDefinition =  packageDefinition;
+            this.packageDefinition = packageDefinition;
             this.exporterIpAddress = exporterIpAddress;
+            updateApplicationList(applicationsToPersist);
+        }
+
+        public void updateApplicationList(final Set<String> applications) {
+            final Lock writeLock = applicationsReadWriteLock.writeLock();
+            writeLock.lock();
+
+            try {
+                this.applications = applications;
+
+                LOG.debug("Found {} matching applications for exporter {}", this.applications.size(), exporterIpAddress);
+
+                for (final IndexKey indexKey : indexKeyMap.keySet()) {
+                    final int beforeAdd = indexKeyMap.get(indexKey).size();
+
+                    for (final String application : this.applications) {
+                        indexKeyMap.get(indexKey).computeIfAbsent(application, a -> new AtomicLong(0));
+                    }
+
+                    final int afterAddBeforePurge = indexKeyMap.get(indexKey).size();
+                    LOG.debug("Added {} applications for {}/{}/{}", afterAddBeforePurge - beforeAdd, exporterIpAddress, indexKey.iface, indexKey.direction);
+
+                    indexKeyMap.get(indexKey).keySet().retainAll(applications);
+                    final int afterPurge = indexKeyMap.get(indexKey).size();
+                    LOG.debug("Removed {} applications for {}/{}/{}", afterAddBeforePurge - afterPurge, exporterIpAddress, indexKey.iface, indexKey.direction);
+                }
+            } finally {
+                writeLock.unlock();
+            }
+        }
+
+        private void addValue(final IndexKey indexKey, final String application, final long bytes) {
+            if (!indexKeyMap.containsKey(indexKey)) {
+                final Lock readLock = applicationsReadWriteLock.readLock();
+                readLock.lock();
+                try {
+                    indexKeyMap.put(indexKey, applications.stream().collect(Collectors.toConcurrentMap(Function.identity(), e -> new AtomicLong(0))));
+                } finally {
+                    readLock.unlock();
+                }
+            }
+
+            indexKeyMap.get(indexKey).get(application).addAndGet(bytes);
         }
 
         public void process(final Instant now, final FlowDocument document) {
             if (document.getInputSnmp() != null &&
-                document.getInputSnmp() != 0 &&
-                (document.getDirection() == Direction.INGRESS || document.getDirection() == Direction.UNKNOWN)) {
+                    document.getInputSnmp() != 0 &&
+                    (document.getDirection() == Direction.INGRESS || document.getDirection() == Direction.UNKNOWN)) {
                 final IndexKey indexKey = new IndexKey(document.getInputSnmp(), Direction.INGRESS);
-                synchronized (this.applications) {
-                    this.applications.computeIfAbsent(indexKey, k -> new TreeMap<>()).computeIfAbsent(document.getApplication(), a -> new AtomicLong(0)).addAndGet(document.getBytes());
-                }
+                addValue(indexKey, document.getApplication(), document.getBytes());
             }
 
             if (document.getOutputSnmp() != null
-                && document.getOutputSnmp() != 0 &&
-                (document.getDirection() == Direction.EGRESS || document.getDirection() == Direction.UNKNOWN)) {
+                    && document.getOutputSnmp() != 0 &&
+                    (document.getDirection() == Direction.EGRESS || document.getDirection() == Direction.UNKNOWN)) {
                 final IndexKey indexKey = new IndexKey(document.getOutputSnmp(), Direction.EGRESS);
-                synchronized (this.applications) {
-                    this.applications.computeIfAbsent(indexKey, k -> new TreeMap<>()).computeIfAbsent(document.getApplication(), a -> new AtomicLong(0)).addAndGet(document.getBytes());
-                }
+                addValue(indexKey, document.getApplication(), document.getBytes());
             }
 
             // Mark session as updated
@@ -460,7 +491,6 @@ public class FlowThresholding implements Closeable, ClassificationEngine.Classif
                     ", lastUpdate=" + lastUpdate +
                     ", sequenceNumber=" + sequenceNumber +
                     ", exporterIpAddress=" + exporterIpAddress +
-                    ", dirty=" + dirty +
                     '}';
         }
     }
@@ -468,7 +498,10 @@ public class FlowThresholding implements Closeable, ClassificationEngine.Classif
     @Override
     public void close() {
         this.classificationEngine.removeClassificationRulesReloadedListener(this);
+        if (timer != null) {
+            timer.cancel();
+            timer = null;
+        }
         this.sessions.clear();
-        this.timer.cancel();
     }
 }

@@ -121,12 +121,12 @@ public class DefaultClassificationEngine implements ClassificationEngine {
 
         treeAndInvalidRules.set(new TreeAndInvalidRules(tree, invalid));
 
-        fireClassificationReloadedListeners();
+        fireClassificationReloadedListeners(Collections.unmodifiableList(rules));
     }
 
-    private void fireClassificationReloadedListeners() {
+    private void fireClassificationReloadedListeners(final List<Rule> rules) {
         for(final ClassificationRulesReloadedListener classificationRulesReloadedListener : this.classificationRulesReloadedListeners) {
-            classificationRulesReloadedListener.classificationRulesReloaded();
+            classificationRulesReloadedListener.classificationRulesReloaded(rules);
         }
     }
 

@@ -34,7 +34,7 @@ import org.opennms.netmgt.flows.classification.persistence.api.Rule;
 
 public interface ClassificationEngine {
     interface ClassificationRulesReloadedListener {
-        void classificationRulesReloaded();
+        void classificationRulesReloaded(final List<Rule> rules);
     }
 
     String classify(ClassificationRequest classificationRequest);
