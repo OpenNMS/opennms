@@ -32,12 +32,14 @@ import com.google.common.base.Strings;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+
 import java.util.stream.Collectors;
 import org.hibernate.SQLQuery;
 import org.hibernate.transform.ResultTransformer;
@@ -51,6 +53,7 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataAccessException;
 
 public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long> implements DeviceConfigDao {
     private static final Map<String,String> ORDERBY_QUERY_PROPERTY_MAP = Map.of(
@@ -390,4 +393,9 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
         deviceConfig.setStatus(DeviceConfigStatus.NONE);
         saveOrUpdate(deviceConfig);
     }
+
+    public void deleteDeviceConfigs(Collection<DeviceConfig> entities) throws DataAccessException{
+        super.deleteAll(entities);
+    }
+
 }

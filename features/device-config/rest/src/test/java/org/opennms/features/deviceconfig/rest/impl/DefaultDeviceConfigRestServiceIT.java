@@ -28,29 +28,10 @@
 
 package org.opennms.features.deviceconfig.rest.impl;
 
-import static java.util.stream.Collectors.toList;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.everyItem;
-import static org.hamcrest.Matchers.hasProperty;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -75,6 +56,23 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionOperations;
 
 import javax.ws.rs.core.Response;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.IntStream;
+
+import static java.util.stream.Collectors.toList;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.everyItem;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -119,7 +117,7 @@ public class DefaultDeviceConfigRestServiceIT {
             return null;
         });
         deviceConfigService = Mockito.mock(DeviceConfigService.class);
-        deviceConfigRestService = new DefaultDeviceConfigRestService(deviceConfigDao, deviceConfigService);
+        deviceConfigRestService = new DefaultDeviceConfigRestService(deviceConfigDao, deviceConfigService, operations);
     }
 
     @After
@@ -261,6 +259,7 @@ public class DefaultDeviceConfigRestServiceIT {
     private static DeviceConfig createDeviceConfig(int version, OnmsIpInterface ipInterface1) {
         var dc = new DeviceConfig();
         dc.setConfig(new byte[version]);
+        dc.setId(Long.valueOf(version));
         dc.setCreatedTime(new Date(createdTime(version)));
         dc.setEncoding(DefaultDeviceConfigRestService.DEFAULT_ENCODING);
         dc.setIpInterface(ipInterface1);
@@ -273,5 +272,33 @@ public class DefaultDeviceConfigRestServiceIT {
 
     private static long createdTime(int num) {
         return num * 1000L * 60 * 60 * 24;
+    }
+
+    @Test
+    public void testDeleteDeviceConfigs() throws IOException {
+        List<Long>  lstOfIds = new ArrayList<>();
+        for(DeviceConfig dc : (List<DeviceConfig>)deviceConfigDao.findAll()){
+            lstOfIds.add(dc.getId());
+        }
+        //passing valid ids
+        Response response = deviceConfigRestService.deleteDeviceConfigs(lstOfIds.subList(1,2));
+        Assert.assertEquals(204, response.getStatus());
+
+        //passing empty or blank value of ids
+        response = deviceConfigRestService.deleteDeviceConfigs(new ArrayList<>());
+        Assert.assertEquals(400, response.getStatus());
+
+        //passing empty or blank value of ids
+        response = deviceConfigRestService.deleteDeviceConfigs(Arrays.asList(new Long []{1000L}));
+        Assert.assertEquals(404, response.getStatus());
+
+        //deleting single valid id
+        response = deviceConfigRestService.deleteDeviceConfig(lstOfIds.get(0));
+        Assert.assertEquals(204, response.getStatus());
+
+        //trying to delete single not valid id
+        response = deviceConfigRestService.deleteDeviceConfig(1000);
+        Assert.assertEquals(404, response.getStatus());
+
     }
 }
