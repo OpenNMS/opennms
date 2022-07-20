@@ -1,7 +1,7 @@
 {
     "build": {
         "docs": true,
-        "ui": true,
+        "ui": false,
         "coverage": false,
         "build": false
     },
@@ -9,8 +9,8 @@
         "packages": false
     },
     "tests": {
-        "smoke": true,
-        "integration": true
+        "smoke": false,
+        "integration": false
     },
     "oci-images": {
         "minion": false,
@@ -23,9 +23,9 @@
         "sentinel": false
     },
     "rpm-packages": {
-        "minion": false,
-        "horizon": false,
-        "sentinel": false
+        "minion": true,
+        "horizon": true,
+        "sentinel": true
     },
     "experimental": false
 }
