@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -27,6 +27,8 @@
  *******************************************************************************/
 
 package org.opennms.web.filter;
+
+import org.opennms.core.utils.StringUtils;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -55,10 +57,11 @@ public abstract class FilterUtil {
 
     public static String[] parse(String filterString) {
         String decodedString = URLDecoder.decode(filterString, StandardCharsets.UTF_8);
-        String[] filterParameter = (decodedString == null) ? null : Arrays.stream(decodedString.split("&amp;"))
-                .filter(fp -> fp.startsWith("filter="))
+        if (StringUtils.isEmpty(decodedString)) {
+            return null;
+        }
+        return Arrays.stream(decodedString.split("&amp;"))
                 .map(fp -> fp.replace("filter=", ""))
-                .toArray(String[]::new);
-        return filterParameter;
+                .distinct().toArray(String[]::new);
     }
 }
