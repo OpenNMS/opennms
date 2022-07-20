@@ -2,7 +2,6 @@
 import os
 import re
 import json
-import copy
 from library import libgit
 from library import libfile
 
@@ -16,6 +15,7 @@ base_revision = os.environ.get('BASE_REVISION')
 libgit = libgit.libgit("stdout")
 
 libfile = libfile.libfile()
+
 #os.chdir(os.environ.get("CIRCLE_WORKING_DIRECTORY"))
 
 libgit.switchBranch(base_revision)
@@ -111,7 +111,6 @@ for change in changes:
 print("What we want to build:",What_to_build,len(What_to_build))
 git_keywords=libgit.extractKeywordsFromLastCommit()
 
-#Do we need this here?
 build_mappings=libfile.load_json(path_to_build_trigger_override)
 
 print("Git Keywords:",git_keywords)
@@ -119,68 +118,45 @@ if "circleci_configuration" in What_to_build and len(What_to_build) == 1 and not
     #if circleci_configuration is the only entry in the list we don't want to trigger a buildss.
     mappings["trigger-build"]=False
     build_mappings["build"]["build"]=False
-#else:
-#    build_mappings["build"]["build"]=True
 
 if "smoke" in git_keywords or "Smoke_tests" in What_to_build:   
     build_mappings["tests"]["smoke"]=True
-#else:
-#    build_mappings["tests"]["smoke"]=False
 
-if "docker" in git_keywords:
+if "oci" in git_keywords:
     build_mappings["build"]["build"]=True
     build_mappings["oci-images"]["minion"]=True
     build_mappings["oci-images"]["horizon"]=True
     build_mappings["oci-images"]["sentinel"]=True
-#else:
-#    build_mappings["oci-images"]["minion"]=False
-#    build_mappings["oci-images"]["horizon"]=False
-#    build_mappings["oci-images"]["sentinel"]=False
 
 if "rpms" in git_keywords:
     build_mappings["build"]["build"]=True
     build_mappings["rpm-packages"]["minion"]=True
     build_mappings["rpm-packages"]["horizon"]=True
     build_mappings["rpm-packages"]["sentinel"]=True
-#else:
-#    build_mappings["rpm-packages"]["minion"]=False
-#    build_mappings["rpm-packages"]["horizon"]=False
-#    build_mappings["rpm-packages"]["sentinel"]=False
     
 if "debs" in git_keywords:   
     build_mappings["build"]["build"]=True
     build_mappings["debian-packages"]["minion"]=True
     build_mappings["debian-packages"]["horizon"]=True
     build_mappings["debian-packages"]["sentinel"]=True    
-#else:
-#    build_mappings["debian-packages"]["minion"]=False
-#    build_mappings["debian-packages"]["horizon"]=False
-#    build_mappings["debian-packages"]["sentinel"]=False    
 
 if "integration" in git_keywords or "Integration_tests" in What_to_build:   
     build_mappings["build"]["build"]=True
     build_mappings["tests"]["integration"]=True
-#else:
-#    build_mappings["tests"]["integration"]=False
 
 if "build" in What_to_build:
     build_mappings["build"]["build"]=True
 
 if "doc" in git_keywords or "docs" in git_keywords or "doc" in What_to_build:
     build_mappings["build"]["docs"]=True
-#else:
-#    build_mappings["build"]["docs"]=False
 
 if "ui" in git_keywords or "ui" in What_to_build:
     build_mappings["build"]["ui"]=True
-#else:
-#    build_mappings["build"]["ui"]=False
 
 if "experimentalPath" in git_keywords:
     build_mappings["experimental"]=True
     build_mappings["build"]["build"]=False
-#else:
-#    build_mappings["experimental"]=False
+
 
 ### We want to handle cases which has dependency on build step
 #if build_mappings["tests"]["integration"]:
