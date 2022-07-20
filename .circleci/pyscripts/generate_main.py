@@ -32,18 +32,8 @@ path_to_pipeline_parameters=os.path.join("/tmp","pipeline-parameters.json")
 pipeline_parameters=common_library.load_json(path_to_pipeline_parameters)
 
 
-#New Idea:
 path_to_build_components=os.path.join("/tmp","build-triggers.json")
 build_components=common_library.load_json(path_to_build_components)
-
-#if os.path.exists(path_to_pipeline_parameters):
-#    pipeline_parameters=common_library.load_json(path_to_pipeline_parameters)
-#    if not pipeline_parameters["trigger-build"] and \
-#       not pipeline_parameters["trigger-flaky-smoke"] and \
-#       not pipeline_parameters["trigger-coverage"] :
-#        print("We aren't building anything.. we really shouldn't generate the main yaml file")
-#    if pipeline_parameters["trigger-rpms"]:
-#        print("We want to build rpms build")
 
 
 alias_folder="aliases"
@@ -85,7 +75,6 @@ for e in main_yml_content:
     re_match=re.match(re_pattern,e)
     if re_match:
         if "#workflows#" in re_match.group():
-            #<<EXP Area>>#
             libyaml=libyaml_v2.libyaml_v2()
             workflow_path=os.path.join(".circleci","main","workflows","workflows_v2.json")
             workflow_data=common_library.load_json(workflow_path)
@@ -193,16 +182,17 @@ for e in main_yml_content:
                     sample_workflow=workflow   
 
             if build_components["experimental"]:
+                libyaml.clean()
                 print("experimental:",libyaml.tell_extended_requirements('experimental'))
                 #workflow=libyaml.generate_yaml_v2(workflow_data,"experimental",level,sample_workflow,disable_filters=True)
                 workflow=libyaml.generate_workflows(workflow_data,"experimental",level,sample_workflow,enable_filters=False)
-                #if len(sample_workflow)>1:
-                #    for e in workflow:
-                #        print("doc","Looking at",e)
-                #        if e not in sample_workflow:
-                #            sample_workflow.append(e)
-                #else:
-                #    sample_workflow=workflow                
+                if len(sample_workflow)>1:
+                    for e in workflow:
+                        print("doc","Looking at",e)
+                        if e not in sample_workflow:
+                            sample_workflow.append(e)
+                else:
+                    sample_workflow=workflow                
                 sample_workflow=workflow                
             if build_components["build"]["build"]:
                 print("build> build:",libyaml.tell_extended_requirements('build'))
@@ -241,7 +231,20 @@ for e in main_yml_content:
                     sample_workflow=workflow
             if build_components["build"]["coverage"]:
                 print("build> coverage : NOT IMPLEMENTED ",libyaml.tell_extended_requirements('coverage'))
-            
+        
+            if build_components["publish"]["packages"]:
+                libyaml.clean()
+                print("publish> packages :",libyaml.tell_extended_requirements('build-deploy'))
+                #workflow=libyaml.generate_yaml_v2(workflow_data,"ui",level,sample_workflow)
+                workflow=libyaml.generate_workflows(workflow_data,"build-deploy",level,sample_workflow)
+                if len(sample_workflow)>1:
+                    for e in workflow:
+                        print("packages","Looking at",e)
+                        if e not in sample_workflow:
+                            sample_workflow.append(e)
+                else:
+                    sample_workflow=workflow
+
             if not build_components["build"]["build"] and not build_components["build"]["docs"] and not build_components["build"]["ui"] and not build_components["build"]["coverage"]:
                 print("empty:",libyaml.tell_requirements('empty'))
                 #sample_workflow=libyaml.generate_yaml_v2(workflow_data,"empty",level,sample_workflow)
@@ -298,12 +301,5 @@ for folder in component_folders:
     shutil.rmtree(os.path.join("/tmp",".circleci","main",folder))
 
 working_directory.cleanup()
-
-
-
-##--> EXP AREA <--##
-#libgit=lg.libgit()
-#print(libgit.getLastCommit())
-#print(libgit.getChangedFilesInCommits("HEAD","HEAD~1"))
 
 
