@@ -203,7 +203,7 @@ class libyaml_v2:
                         output.append(self.create_space(level+4)+"filters:")  
                         for entry_lvl3 in working_data[item]:
                             if type(working_data[item][entry_lvl3]) == dict:
-                                output.append(self.create_space(level+6)+"- "+entry_lvl3+":")
+                                output.append(self.create_space(level+6)+""+entry_lvl3+":")
                                 for entry_lvl4 in working_data[item][entry_lvl3]:
                                     output.append(self.create_space(level+8)+""+entry_lvl4+":")
                                     for entry_lvl5 in working_data[item][entry_lvl3][entry_lvl4]:
