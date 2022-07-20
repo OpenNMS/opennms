@@ -219,14 +219,15 @@ for e in main_yml_content:
                 print("build> docs :",libyaml.tell_extended_requirements('docs'))
                 #workflow=libyaml.generate_yaml_v2(workflow_data,"docs",level,sample_workflow)
                 workflow=libyaml.generate_workflows(workflow_data,"docs",level,sample_workflow)
-                if len(sample_workflow)>1:
-                    for e in workflow:
-                        print("docs","Looking at",e)
-                        if e not in sample_workflow:
-                            sample_workflow.append(e)
-                else:
-                    sample_workflow=workflow
+                #if len(sample_workflow)>1:
+                #    for e in workflow:
+                #        print("docs","Looking at",e)
+                #        if e not in sample_workflow:
+                #            sample_workflow.append(e)
+                #else:
+                sample_workflow=workflow
             if build_components["build"]["ui"]:
+                libyaml.clean()
                 print("build> ui :",libyaml.tell_extended_requirements('ui'))
                 #workflow=libyaml.generate_yaml_v2(workflow_data,"ui",level,sample_workflow)
                 workflow=libyaml.generate_workflows(workflow_data,"ui",level,sample_workflow)
