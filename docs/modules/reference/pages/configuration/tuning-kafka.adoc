@@ -62,6 +62,6 @@ single-topic=false
 .Disable single topic on `$\{OPENNMS_HOME}/etc/opennms.properties.d/kafka.properties`
 [source, properties]
 ----
-`org.opennms.core.ipc.rpc.kafka.single-topic=false`
+org.opennms.core.ipc.rpc.kafka.single-topic=false
 ----
 Create this file if it does not already exist.
