@@ -23,9 +23,9 @@
         "sentinel": false
     },
     "rpm-packages": {
-        "minion": true,
-        "horizon": true,
-        "sentinel": true
+        "minion": false,
+        "horizon": false,
+        "sentinel": false
     },
     "experimental": false
 }
