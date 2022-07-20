@@ -3,7 +3,7 @@
 The configuration is shipped with some defaults, but depending on the size and network topology you might need to tune the Apache Kafka environment to meet certain needs.
 Set Apache Kafka options directly in the `org.opennms.core.ipc.rpc.kafka.cfg` and `org.opennms.core.ipc.sink.kafka.cfg` file.
 
-Alternatively, you can set Kafka producer/consumer options can be set by defining additional system properties prefixed with `org.opennms.core.ipc.rpc.kafka` and `org.opennms.core.ipc.sink.kafka`.
+Alternatively, you can set Kafka producer/consumer options by defining additional system properties prefixed with `org.opennms.core.ipc.rpc.kafka` and `org.opennms.core.ipc.sink.kafka`.
 
 Find available configuration parameters for Kafka here:
 
@@ -34,15 +34,16 @@ org.opennms.instance.id=MyNMS
 * For Kafka RPC, the number of partitions should always be greater than the number of Minions at a location.
 When there are multiple locations, the partition count should be greater than the max number of Minions at a location.
 
-* By default, Kafka RPC supports buffers greater than >1MB by splitting them into chunks of 900KB.
-Configure max buffer size (900KB, by default) by setting `org.opennms.core.ipc.rpc.kafka.max.buffer.size` to the desired size in bytes.
+* By default, Kafka RPC uses a buffer size of 900KB.
+When set to a larger size, they will be split into 900kb chunks.
+Configure max buffer size by setting `org.opennms.core.ipc.rpc.kafka.max.buffer.size` to the desired size in bytes.
 
-* Default time to live (time at which request will expire) is 20000 msec (20sec).
-To change it, configure the system property `org.opennms.core.ipc.rpc.kafka.ttl` in msec.
+* Default time to live (time at which request will expire) is 20000ms (20 seconds).
+To change it, configure the system property `org.opennms.core.ipc.rpc.kafka.ttl` in milliseconds.
 
 == Disable Single Topic for Kafka RPC
 
-By default OpenNMS uses single topic structure.
+By default {page-component-title} uses single topic structure.
 One request topic is created for each location and one response topic is created for all modules, regardless of location.
 
 Note that all Minions at any location must be running the same features in order to make use of single topic.
@@ -58,4 +59,9 @@ Disabling Single topic must be configured on both Minion and OpenNMS.
 single-topic=false
 ----
 
-On {page-component-title}, disable single topic by setting the `org.opennms.core.ipc.rpc.kafka.single-topic` system property to `false` with your Kafka settings in `$\{OPENNMS_HOME}/etc/opennms.properties.d/`.
+.Disable single topic on `$\{OPENNMS_HOME}/etc/opennms.properties.d/kafka.properties`
+[source, properties]
+----
+`org.opennms.core.ipc.rpc.kafka.single-topic=false`
+----
+Create this file if it does not already exist.
