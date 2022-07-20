@@ -248,7 +248,7 @@ for e in main_yml_content:
             if not build_components["build"]["build"] and not build_components["build"]["docs"] and not build_components["build"]["ui"] and not build_components["build"]["coverage"]:
                 print("empty:",libyaml.tell_extended_requirements('empty'))
                 #sample_workflow=libyaml.generate_yaml_v2(workflow_data,"empty",level,sample_workflow)
-                sample_workflow=libyaml.generate_workflows(workflow_data,"empty",level,sample_workflow)
+                sample_workflow=libyaml.generate_workflows(workflow_data,"empty",level,sample_workflow,enable_filters=True)
         
             if sample_workflow:
                 for line in sample_workflow:
