@@ -205,7 +205,7 @@ class libyaml_v2:
                             output.append(self.create_space(level+6)+"- "+entry_lvl3)
                     elif "extends" in item:
                         for entry_lvl2 in input_json[subkey][key][item]:
-                            self.generate_workflows(input_json,entry_lvl2,level,output,enable_filters,self.processedList)
+                            output=self.generate_workflows(input_json,entry_lvl2,level,output,enable_filters,self.processedList)
                     else:
                         print("NOT YET",item)
 
@@ -242,6 +242,7 @@ class libyaml_v2:
             if len(self.requirementsList)>0:
                 for req in self.requirementsList:
                     output=self.generate_workflows_single(input_json,req,level,output,enable_filters,self.processedList)
+                    self.processedList.append(req)
 
             #print("PROCESSING",key,self.requirementsList)
             self.processedList.append(key)
