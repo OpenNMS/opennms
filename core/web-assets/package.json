@@ -75,7 +75,7 @@
     },
     "dependencies": {
         "@babel/runtime-corejs3": "^7.16.5",
-        "angular": "~1.5.11",
+        "angular": "~1.8.3",
         "angular-animate": "~1.5.11",
         "angular-bootstrap-checkbox": "^0.5.0",
         "angular-bootstrap-confirm": "^2.5.1",
