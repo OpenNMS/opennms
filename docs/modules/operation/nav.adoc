@@ -83,7 +83,6 @@
 ** xref:events/event-configuration.adoc[]
 ** xref:events/event-translator.adoc[]
 ** xref:events/perf-data.adoc[]
-** xref:events/event-advanced-search.adoc[]
 
 * xref:alarms/introduction.adoc[]
 ** xref:alarms/alarmd.adoc[]
