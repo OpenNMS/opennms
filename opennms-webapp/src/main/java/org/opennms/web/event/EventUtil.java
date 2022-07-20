@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,12 +31,11 @@ package org.opennms.web.event;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.StringTokenizer;
 
 import javax.servlet.ServletContext;
 
 import org.opennms.core.utils.WebSecurityUtils;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.web.event.filter.AcknowledgedByFilter;
 import org.opennms.web.event.filter.AfterDateFilter;
 import org.opennms.web.event.filter.AlarmIDFilter;
@@ -50,11 +49,14 @@ import org.opennms.web.event.filter.InterfaceFilter;
 import org.opennms.web.event.filter.LocationFilter;
 import org.opennms.web.event.filter.LogMessageMatchesAnyFilter;
 import org.opennms.web.event.filter.NegativeAcknowledgedByFilter;
+import org.opennms.web.event.filter.NegativeEventTextFilter;
 import org.opennms.web.event.filter.NegativeExactUEIFilter;
+import org.opennms.web.event.filter.NegativeIPAddrLikeFilter;
 import org.opennms.web.event.filter.NegativeInterfaceFilter;
 import org.opennms.web.event.filter.NegativeLocationFilter;
 import org.opennms.web.event.filter.NegativeNodeFilter;
 import org.opennms.web.event.filter.NegativeNodeLocationFilter;
+import org.opennms.web.event.filter.NegativeNodeNameLikeFilter;
 import org.opennms.web.event.filter.NegativePartialUEIFilter;
 import org.opennms.web.event.filter.NegativeServiceFilter;
 import org.opennms.web.event.filter.NegativeSeverityFilter;
@@ -64,9 +66,13 @@ import org.opennms.web.event.filter.NodeLocationFilter;
 import org.opennms.web.event.filter.NodeNameLikeFilter;
 import org.opennms.web.event.filter.PartialUEIFilter;
 import org.opennms.web.event.filter.ServiceFilter;
+import org.opennms.web.event.filter.ServiceOrFilter;
 import org.opennms.web.event.filter.SeverityFilter;
+import org.opennms.web.event.filter.SeverityOrFilter;
 import org.opennms.web.event.filter.SystemIdFilter;
 import org.opennms.web.filter.Filter;
+import org.opennms.web.utils.filter.CheckboxFilterUtils;
+import org.opennms.web.utils.filter.FilterTokenizeUtils;
 
 /**
  * <p>Abstract EventUtil class.</p>
@@ -76,6 +82,15 @@ import org.opennms.web.filter.Filter;
  * @since 1.8.1
  */
 public abstract class EventUtil {
+
+    /** Constant <code>NEGATION_PREFIX_SYMBOL="!"</code> */
+    private static final String NEGATION_PREFIX_SYMBOL = "!";
+
+    /** Constant <code>ARRAY_DELIMITER=","</code> */
+    private static final String ARRAY_DELIMITER = ",";
+
+    /** Constant <code>ANY_OPTION="Any"</code> */
+    public static final String ANY_OPTION = "Any";
 
     /**
      * <p>getFilter</p>
@@ -90,26 +105,34 @@ public abstract class EventUtil {
 
         Filter filter = null;
 
-        StringTokenizer tokens = new StringTokenizer(filterString, "=");
-        String type;
-        String value;
-        try {
-            type = tokens.nextToken();
-            value = tokens.nextToken();
-        } catch (NoSuchElementException e) {
-            throw new IllegalArgumentException("Could not tokenize filter string: " + filterString);
-        }
+        String[] tokenizedFilterString = FilterTokenizeUtils.tokenizeFilterString(filterString);
+        String type = tokenizedFilterString[0];
+        String value = tokenizedFilterString[1];
 
         if (type.equals(SeverityFilter.TYPE)) {
-            filter = new SeverityFilter(WebSecurityUtils.safeParseInt(value));
+            String[] ids = value.split(ARRAY_DELIMITER);
+            OnmsSeverity[] severities = new OnmsSeverity[ids.length];
+            for (int index = 0; index < ids.length; index++) {
+                severities[index] = OnmsSeverity.get(WebSecurityUtils.safeParseInt(ids[index]));
+            }
+            filter = new SeverityOrFilter(severities);
         } else if (type.equals(NodeFilter.TYPE)) {
             filter = new NodeFilter(WebSecurityUtils.safeParseInt(value), servletContext);
         } else if (type.equals(NodeNameLikeFilter.TYPE)) {
-            filter = new NodeNameLikeFilter(value);
+            if (value.startsWith(NEGATION_PREFIX_SYMBOL)) {
+                filter = new NegativeNodeNameLikeFilter(value.substring(1));
+            } else {
+                filter = new NodeNameLikeFilter(value);
+            }
         } else if (type.equals(InterfaceFilter.TYPE)) {
             filter = new InterfaceFilter(value);
         } else if (type.equals(ServiceFilter.TYPE)) {
-            filter = new ServiceFilter(WebSecurityUtils.safeParseInt(value), servletContext);
+            String[] ids = value.split(ARRAY_DELIMITER);
+            Integer[] serviceIds = new Integer[ids.length];
+            for (int index = 0; index < ids.length; index++) {
+                serviceIds[index] = WebSecurityUtils.safeParseInt(ids[index]);
+            }
+            filter = new ServiceOrFilter(serviceIds, servletContext);
         } else if (type.equals(IfIndexFilter.TYPE)) {
             filter = new IfIndexFilter(WebSecurityUtils.safeParseInt(value));
         } else if (type.equals(PartialUEIFilter.TYPE)) {
@@ -134,12 +157,18 @@ public abstract class EventUtil {
             filter = new NegativeAcknowledgedByFilter(value);
         } else if (type.equals(EventIdFilter.TYPE)) {
             filter = new EventIdFilter(WebSecurityUtils.safeParseInt(value));
-        } else if (type.equals(EventIdFilter.TYPE)) {
-            filter = new EventIdFilter(WebSecurityUtils.safeParseInt(value));
         } else if (type.equals(IPAddrLikeFilter.TYPE)) {
-            filter = new IPAddrLikeFilter(value);
+            if (value.startsWith(NEGATION_PREFIX_SYMBOL)) {
+                filter = new NegativeIPAddrLikeFilter(value.substring(1));
+            } else {
+                filter = new IPAddrLikeFilter(value);
+            }
         } else if (type.equals(EventTextFilter.TYPE)) {
-            filter = new EventTextFilter(value);
+            if (value.startsWith(NEGATION_PREFIX_SYMBOL)) {
+                filter = new NegativeEventTextFilter(value.substring(1));
+            } else {
+                filter = new EventTextFilter(value);
+            }
         } else if (type.equals(LogMessageMatchesAnyFilter.TYPE)) {
             filter = new LogMessageMatchesAnyFilter(value);
         } else if (type.equals(BeforeDateFilter.TYPE)) {
@@ -151,13 +180,17 @@ public abstract class EventUtil {
         } else if (type.equals(LocationFilter.TYPE)) {
             filter = new LocationFilter(WebSecurityUtils.sanitizeString(value));
         } else if (type.equals(SystemIdFilter.TYPE)) {
-            filter = new SystemIdFilter(WebSecurityUtils.sanitizeString(value));
+            if (!value.equalsIgnoreCase(ANY_OPTION)) {
+                filter = new SystemIdFilter(WebSecurityUtils.sanitizeString(value));
+            }
         } else if (type.equals(NegativeLocationFilter.TYPE)) {
             filter = new NegativeLocationFilter(WebSecurityUtils.sanitizeString(value));
         } else if (type.equals(NegativeSystemIdFilter.TYPE)) {
             filter = new NegativeSystemIdFilter(WebSecurityUtils.sanitizeString(value));
         } else if (type.equals(NodeLocationFilter.TYPE)) {
-            filter = new NodeLocationFilter(WebSecurityUtils.sanitizeString(value));
+            if (!value.equalsIgnoreCase(ANY_OPTION)) {
+                filter = new NodeLocationFilter(WebSecurityUtils.sanitizeString(value));
+            }
         } else if (type.equals(NegativeNodeLocationFilter.TYPE)) {
             filter = new NegativeNodeLocationFilter(WebSecurityUtils.sanitizeString(value));
         }
@@ -249,6 +282,8 @@ public abstract class EventUtil {
     }
 
 	public static List<Filter> getFilterList(String[] filterStrings, ServletContext servletContext) {
+        filterStrings = CheckboxFilterUtils.handleCheckboxDuplication(filterStrings);
+
 		List<Filter> filterList = new ArrayList<>();
         if (filterStrings != null) {
             for (String filterString : filterStrings) {
