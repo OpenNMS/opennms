@@ -1,9 +1,9 @@
 {
     "build": {
         "docs": true,
-        "ui": false,
+        "ui": true,
         "coverage": false,
-        "build": false
+        "build": true
     },
     "publish": {
         "packages": false
