@@ -116,7 +116,6 @@ for e in main_yml_content:
                build_components["rpm-packages"]["horizon"] or \
                build_components["rpm-packages"]["sentinel"]:
                 print("rpm-packages > all:",libyaml.tell_extended_requirements('rpms'))
-                #workflow=libyaml.generate_yaml_v2(workflow_data,"rpms",level,sample_workflow,disable_filters=True)
                 workflow=libyaml.generate_workflows(workflow_data,"rpms",level,sample_workflow,enable_filters=False)
                 
                 if len(sample_workflow)>1:
@@ -130,7 +129,6 @@ for e in main_yml_content:
                 build_components["build"]["build"]=True
                 print("tests > integration:",libyaml.tell_extended_requirements('integration-test'))
                 
-                #workflow=libyaml.generate_yaml_v2(workflow_data,"integration-test",level,sample_workflow,disable_filters=True)
                 workflow=libyaml.generate_workflows(workflow_data,"integration-test",level,sample_workflow,enable_filters=False)
                 if len(sample_workflow)>1:
                     for e in workflow:
@@ -143,7 +141,6 @@ for e in main_yml_content:
             if build_components["tests"]["smoke"]:
                 build_components["build"]["build"]=True
                 print("tests > smoke:",libyaml.tell_extended_requirements('smoke'))
-                #workflow=libyaml.generate_yaml_v2(workflow_data,"smoke",level,sample_workflow,disable_filters=True,bundle=True)
                 workflow=libyaml.generate_workflows(workflow_data,"smoke",level,sample_workflow,enable_filters=False)
                 if len(sample_workflow)>1:
                     for e in workflow:
@@ -157,7 +154,6 @@ for e in main_yml_content:
                build_components["debian-packages"]["horizon"] or \
                build_components["debian-packages"]["sentinel"]:
                 print("debian-packages > all:",libyaml.tell_extended_requirements('debs'))
-                #workflow=libyaml.generate_yaml_v2(workflow_data,"debs",level,sample_workflow,disable_filters=True)
                 workflow=libyaml.generate_workflows(workflow_data,"debs",level,sample_workflow,enable_filters=False)
                 if len(sample_workflow)>1:
                     for e in workflow:
@@ -171,7 +167,6 @@ for e in main_yml_content:
                build_components["oci-images"]["horizon"] or \
                build_components["oci-images"]["sentinel"]:
                 print("oci-images > all:",libyaml.tell_extended_requirements('debs'))
-                #workflow=libyaml.generate_yaml_v2(workflow_data,"oci",level,sample_workflow,disable_filters=True)
                 workflow=libyaml.generate_workflows(workflow_data,"oci",level,sample_workflow,enable_filters=False)
                 if len(sample_workflow)>1:
                     for e in workflow:
@@ -184,7 +179,6 @@ for e in main_yml_content:
             if build_components["experimental"]:
                 libyaml.clean()
                 print("experimental:",libyaml.tell_extended_requirements('experimental'))
-                #workflow=libyaml.generate_yaml_v2(workflow_data,"experimental",level,sample_workflow,disable_filters=True)
                 workflow=libyaml.generate_workflows(workflow_data,"experimental",level,sample_workflow,enable_filters=False)
                 if len(sample_workflow)>1:
                     for e in workflow:
@@ -196,7 +190,6 @@ for e in main_yml_content:
                 sample_workflow=workflow                
             if build_components["build"]["build"]:
                 print("build> build:",libyaml.tell_extended_requirements('build'))
-                #workflow=libyaml.generate_yaml_v2(workflow_data,"build",level,sample_workflow)
                 workflow=libyaml.generate_workflows(workflow_data,"build",level,sample_workflow)
                 if len(sample_workflow)>1:
                     for e in workflow:
@@ -208,7 +201,6 @@ for e in main_yml_content:
             if build_components["build"]["docs"]:
                 libyaml.clean()
                 print("build> docs :",libyaml.tell_extended_requirements('docs'))
-                #workflow=libyaml.generate_yaml_v2(workflow_data,"docs",level,sample_workflow)
                 workflow=libyaml.generate_workflows(workflow_data,"docs",level,sample_workflow)
                 if len(sample_workflow)>1:
                     for e in workflow:
@@ -220,7 +212,6 @@ for e in main_yml_content:
             if build_components["build"]["ui"]:
                 libyaml.clean()
                 print("build> ui :",libyaml.tell_extended_requirements('ui'))
-                #workflow=libyaml.generate_yaml_v2(workflow_data,"ui",level,sample_workflow)
                 workflow=libyaml.generate_workflows(workflow_data,"ui",level,sample_workflow)
                 if len(sample_workflow)>1:
                     for e in workflow:
@@ -235,7 +226,6 @@ for e in main_yml_content:
             if build_components["publish"]["packages"]:
                 libyaml.clean()
                 print("publish> packages :",libyaml.tell_extended_requirements('build-deploy'))
-                #workflow=libyaml.generate_yaml_v2(workflow_data,"ui",level,sample_workflow)
                 workflow=libyaml.generate_workflows(workflow_data,"build-deploy",level,sample_workflow)
                 if len(sample_workflow)>1:
                     for e in workflow:
@@ -247,7 +237,6 @@ for e in main_yml_content:
 
             if not build_components["build"]["build"] and not build_components["build"]["docs"] and not build_components["build"]["ui"] and not build_components["build"]["coverage"]:
                 print("empty:",libyaml.tell_extended_requirements('empty'))
-                #sample_workflow=libyaml.generate_yaml_v2(workflow_data,"empty",level,sample_workflow)
                 sample_workflow=libyaml.generate_workflows(workflow_data,"empty",level,sample_workflow,enable_filters=True)
         
             if sample_workflow:
