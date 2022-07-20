@@ -63,6 +63,13 @@
                 "merge-poweredby-branch",
                 "publish-cloudsmith"
             ]
+        },
+        "weekly-coverage":{
+            "extends": [
+                "build",
+                "integration-test-with-coverage",
+                "code-coverage"
+        ]
         }
     },
     "individual": {
@@ -401,6 +408,16 @@
                 "smoke-test-flaky",
                 "smoke-test-minion",
                 "smoke-test-sentinel"
+            ]
+        },
+        "integration-test-with-coverage":{
+            "requires":[
+                "build"
+            ]
+        },
+        "code-coverage":{
+            "requires":[
+                "integration-test-with-coverage"
             ]
         }
     }

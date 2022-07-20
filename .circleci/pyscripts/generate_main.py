@@ -250,11 +250,11 @@ for e in main_yml_content:
                                 final_output+=entry_lvl2+"\n"
                     else:
                         final_output+=line+"\n"
-            #<<End of EXP Area>>#
             continue
+
         block_type,step=re_match.group().split(":")
-        #print("Processing",block_type,step)
         commands=keywords[block_type.replace("#","").strip()][re_match.group().strip()]["commands"]
+
         for command in commands:
             if type(command) == list:
                 for sub_command in command:
@@ -273,7 +273,6 @@ final_output+="\n"
 parameters_yml_content=common_library.read_file(path_to_parameters_yml)
 for e in parameters_yml_content:
     final_output+=e
-
 
 
 common_library.write_file(path_to_modified_main,final_output)

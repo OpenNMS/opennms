@@ -167,7 +167,6 @@ class libyaml_v2:
     def generate_workflows_single(self,input_json,key,level=0,output=[],enable_filters=False,processedList=[]):
         bundles=key in list(input_json["bundles"].keys())
         individual=key in list(input_json["individual"].keys())
-        #print("Bundle:",bundles,"| Individual:",individual)
 
         if bundles:
             subkey="bundles"
@@ -208,7 +207,15 @@ class libyaml_v2:
                                     output.append(self.create_space(level+8)+""+entry_lvl4+":")
                                     for entry_lvl5 in working_data[item][entry_lvl3][entry_lvl4]:
                                         output.append(self.create_space(level+10)+"- "+entry_lvl5)
-
+                    elif "variations" in item:
+                                tmp_data=self.create_space(level+4)+"matrix:\n"
+                                tmp_data+=self.create_space(level+6)+"parameters:\n"
+                                tmp_data+=self.create_space(level+8)+"architecture:"+str(working_data[item])
+                                output.append(tmp_data)
+                    elif "context" in item:
+                                output.append(self.create_space(level+4)+"context:")
+                                for entry_lvl3 in working_data[item]:
+                                    output.append(self.create_space(level+6)+"- "+entry_lvl3)
                     elif "extends" in item:
                         for entry_lvl2 in input_json[subkey][key][item]:
                             self.generate_workflows(input_json,entry_lvl2,level,output,enable_filters,self.processedList)
@@ -256,102 +263,3 @@ class libyaml_v2:
     def clean(self):
         self.requirementsList=[]
         self.processedList=[]
-
-
-    def generate_yaml_v2(self,input_json,key,level=0,_line=[],disable_filters=False):
-        bundles=list(input_json["bundles"].keys())
-        #experimental=list(input_json["experimental"].keys())
-        individual=list(input_json["individual"].keys())
-        subkey=""
-        if key in bundles:
-            print(" ","generate_yaml_v2",key,"in bundles")
-            subkey="bundles"
-        #elif key in experimental:
-        #    print(" ","generate_yaml_v2",key,"in experimental")
-        #    subkey="experimental"
-        elif key in individual:
-            print(" ","generate_yaml_v2",key,"in individual")
-            subkey="individual"
-
-        if not subkey:
-            return _line
-        
-        if "job" in input_json[subkey][key]:
-            _name=input_json[subkey][key]["job"]
-        else:
-            _name=key
-
-        if not [i for i in _line if "- "+key in i]: 
-                _line.append(self.create_space(level)+"- "+_name+":")
-                #level+=2
-
-        for entry in input_json[subkey][key]:
-            if entry in "filters":
-                if not disable_filters:
-                    _line.append(self.create_space(level+4)+"filters:")
-                    for entry_lvl2 in input_json[subkey][key][entry]:
-                        if type(input_json[subkey][key][entry][entry_lvl2]) == dict:
-                            _line.append(self.create_space(level+6)+""+entry_lvl2+":")
-                            for entry_lvl4 in input_json[subkey][key][entry][entry_lvl2]:
-                                _line.append(self.create_space(level+8)+""+entry_lvl4+":")
-                                for entry_lvl5 in input_json[subkey][key][entry][entry_lvl2][entry_lvl4]:
-                                    _line.append(self.create_space(level+10)+"- "+entry_lvl5)
-            elif entry in "requires":
-                _line.append(self.create_space(level+4)+"requires:")
-                for entry_lvl3 in input_json[subkey][key][entry]:
-                    _line.append(self.create_space(level+6)+"- "+entry_lvl3)
-            elif entry in "context":
-                _line.append(self.create_space(level+4)+"context:")
-                for entry_lvl3 in input_json[subkey][key][entry]:
-                    _line.append(self.create_space(level+6)+"- "+entry_lvl3)
-            elif entry in "extends":
-                for entry_lvl2 in input_json[subkey][key][entry]:
-                    self.generate_yaml_v2(input_json,entry_lvl2,level,_line)
-            #else:
-            #    _line.append(self.create_space(level+2)+"- "+str(input_json[subkey][key][entry]))
-
-        return _line
-
-
-    def generate_yaml(self,input_json,key,level=0,_line=[],disable_filters=False):
-        if key not in input_json:
-            print(input_json)
-        for entry in input_json[key]:
-            if entry in ["extends"]:
-                for extension in input_json[key][entry]:
-                    if not [i for i in _line if "- "+extension in i]: 
-                        self.generate_yaml(input_json,extension,level,_line)
-            else:
-                if not [i for i in _line if "- "+entry in i]: 
-                    if input_json[key][entry]:
-                        _line.append(self.create_space(level)+"- "+entry+":")
-                        for entry_lvl2 in input_json[key][entry]:
-                            if entry_lvl2 in "variations":
-                                tmp_data=self.create_space(level+4)+"matrix:\n"
-                                tmp_data+=self.create_space(level+6)+"parameters:\n"
-                                tmp_data+=self.create_space(level+8)+"architecture:"+str(input_json[key][entry][entry_lvl2])
-                                _line.append(tmp_data)
-                            elif entry_lvl2 in "context":
-                                _line.append(self.create_space(level+4)+"context:")
-                                for entry_lvl3 in input_json[key][entry][entry_lvl2]:
-                                    _line.append(self.create_space(level+6)+"- "+entry_lvl3)
-                            elif entry_lvl2 in "requires":
-                                _line.append(self.create_space(level+4)+"requires:")
-                                for entry_lvl3 in input_json[key][entry][entry_lvl2]:
-                                    _line.append(self.create_space(level+6)+"- "+entry_lvl3)
-                            elif entry_lvl2 in "filters":
-                                if not disable_filters:
-                                    _line.append(self.create_space(level+4)+"filters:")
-                                    for entry_lvl3 in input_json[key][entry][entry_lvl2]:
-                                        if type(input_json[key][entry][entry_lvl2][entry_lvl3]) == dict:
-                                            _line.append(self.create_space(level+6)+""+entry_lvl3+":")
-                                            for entry_lvl4 in input_json[key][entry][entry_lvl2][entry_lvl3]:
-                                                _line.append(self.create_space(level+8)+""+entry_lvl4+":")
-                                                for entry_lvl5 in input_json[key][entry][entry_lvl2][entry_lvl3][entry_lvl4]:
-                                                    _line.append(self.create_space(level+10)+"- "+entry_lvl5)
-                            else:
-                                _line.append(self.create_space(level+2)+"- "+str(input_json[key][entry][entry_lvl2]))
-                    else:
-                        _line.append(self.create_space(level)+"- "+entry)
-
-        return _line
