@@ -27,6 +27,6 @@
         "horizon": false,
         "sentinel": false
     },
-    "experimental": true
+    "experimental": false
 }
 
