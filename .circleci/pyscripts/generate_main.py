@@ -89,6 +89,7 @@ for e in main_yml_content:
             libyaml=libyaml_v2.libyaml_v2()
             workflow_path=os.path.join(".circleci","main","workflows","workflows_v2.json")
             workflow_data=common_library.load_json(workflow_path)
+            libyaml.json_setup(workflow_path)
             sample_workflow=[]
             level=0
             if "workflows:" not in sample_workflow:
