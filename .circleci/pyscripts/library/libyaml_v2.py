@@ -202,7 +202,13 @@ class libyaml_v2:
                     elif "filters" in item and enable_filters:
                         output.append(self.create_space(level+4)+"filters:")  
                         for entry_lvl3 in working_data[item]:
-                            output.append(self.create_space(level+6)+"- "+entry_lvl3)
+                            if type(working_data[item][entry_lvl3]) == dict:
+                                output.append(self.create_space(level+6)+"- "+entry_lvl3+":")
+                                for entry_lvl4 in working_data[item][entry_lvl3]:
+                                    output.append(self.create_space(level+8)+""+entry_lvl4+":")
+                                    for entry_lvl5 in working_data[item][entry_lvl3][entry_lvl4]:
+                                        output.append(self.create_space(level+10)+"- "+entry_lvl5)
+
                     elif "extends" in item:
                         for entry_lvl2 in input_json[subkey][key][item]:
                             self.generate_workflows(input_json,entry_lvl2,level,output,enable_filters,self.processedList)
