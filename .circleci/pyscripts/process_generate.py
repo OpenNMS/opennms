@@ -166,7 +166,7 @@ if "integration" in git_keywords or "Integration_tests" in What_to_build:
 if "build" in What_to_build:
     build_mappings["build"]["build"]=True
 
-if git_keywords in ["doc","docs"] or "doc" in What_to_build:
+if "doc" in git_keywords or "docs" in git_keywords or "doc" in What_to_build:
     build_mappings["build"]["docs"]=True
 #else:
 #    build_mappings["build"]["docs"]=False
@@ -183,8 +183,8 @@ if "experimentalPath" in git_keywords:
 #    build_mappings["experimental"]=False
 
 ### We want to handle cases which has dependency on build step
-if build_mappings["tests"]["integration"]:
-    build_mappings["build"]["build"]=True
+#if build_mappings["tests"]["integration"]:
+#    build_mappings["build"]["build"]=True
 
 
 libfile.write_file(output_path,json.dumps(mappings))
