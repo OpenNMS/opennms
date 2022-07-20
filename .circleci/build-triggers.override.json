@@ -10,7 +10,7 @@
     },
     "tests": {
         "smoke": false,
-        "integration": true
+        "integration": false
     },
     "oci-images": {
         "minion": false,
