@@ -9,7 +9,7 @@
         "packages": false
     },
     "tests": {
-        "smoke": false,
+        "smoke": true,
         "integration": true
     },
     "oci-images": {
@@ -27,5 +27,6 @@
         "horizon": false,
         "sentinel": false
     },
-    "experimental": false
+    "experimental": true
 }
+
