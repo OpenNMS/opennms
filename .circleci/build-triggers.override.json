@@ -10,10 +10,10 @@
     },
     "tests": {
         "smoke": true,
-        "integration": false
+        "integration": true
     },
     "oci-images": {
-        "minion": false,
+        "minion": true,
         "horizon": false,
         "sentinel": false
     },
