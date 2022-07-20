@@ -9,7 +9,7 @@
         "packages": false
     },
     "tests": {
-        "smoke": false,
+        "smoke": true,
         "integration": true
     },
     "oci-images": {
