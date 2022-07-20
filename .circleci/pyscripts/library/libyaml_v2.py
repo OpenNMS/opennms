@@ -187,7 +187,7 @@ class libyaml_v2:
                 del working_data["filters"]
 
         #if not [i for i in output if self.create_space(level-2)+"- "+key in i] :
-        if not [i for i in output if re.match("^"+self.create_space(level)+"- "+key,i)] :
+        if not [i for i in output if re.match("^"+self.create_space(level)+"- "+job_name,i)] :
             if working_data:
                 if len(working_data) == 1 and "extends" in working_data:
                     output.append(self.create_space(level)+"- "+job_name+"")
