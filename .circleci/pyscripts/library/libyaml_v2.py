@@ -219,8 +219,6 @@ class libyaml_v2:
         #print(input_json,key,level,output,enable_filters)
         #print(">>>>",key)
         build_dependencies=self.tell_extended_requirements(key,self.processedList)
-        print("\t","Dependencies",build_dependencies)
-        print("\t","processedList",self.processedList)
         self.requirementsList=build_dependencies
         if len(build_dependencies) > 1:
             for dependency in build_dependencies:
@@ -233,9 +231,6 @@ class libyaml_v2:
                         continue
                     #return self.generate_workflows(input_json,dependency,level,output,enable_filters,processedList)
                 output= self.generate_workflows_single(input_json,dependency,level,output,enable_filters,self.processedList)
-                print("\t","\t","EHHH",output)
-                print("\t","\t","EWWWW",self.processedList)
-                print("\t","\t","NOOP",self.requirementsList)
         else:
             output=self.generate_workflows_single(input_json,key,level,output,enable_filters,self.processedList)
 
@@ -243,9 +238,11 @@ class libyaml_v2:
                 for req in self.requirementsList:
                     output=self.generate_workflows_single(input_json,req,level,output,enable_filters,self.processedList)
                     self.processedList.append(req)
+            else:
+                self.processedList.append(key)
+
 
             #print("PROCESSING",key,self.requirementsList)
-            self.processedList.append(key)
         #print("<<<<")
         
         return output
