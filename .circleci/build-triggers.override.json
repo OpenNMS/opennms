@@ -18,14 +18,14 @@
         "sentinel": false
     },
     "debian-packages": {
-        "minion": false,
-        "horizon": false,
-        "sentinel": false
+        "minion": true,
+        "horizon": true,
+        "sentinel": true
     },
     "rpm-packages": {
-        "minion": false,
-        "horizon": false,
-        "sentinel": false
+        "minion": true,
+        "horizon": true,
+        "sentinel": true
     },
     "experimental": false
 }
