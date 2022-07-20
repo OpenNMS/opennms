@@ -11,6 +11,7 @@
   3. prefix your commit messages with the issue number, if possible
   4. once you've created this PR, please link to it in a comment in the JIRA issue
   Don't worry if this sounds like a lot, we can help you get things set up properly.
+* **If this code is likely to affect the UI, did you name your branch with `-smoke` in it to trigger smoke tests?**
 * If this is a new or updated feature, is there documentation for the new behavior?
 * If this is new code, are there unit and/or integration tests?
 * If this PR targets a `foundation-*` branch, does it try to avoid changing files in `$OPENNMS_HOME/etc/`?
