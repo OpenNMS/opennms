@@ -88,36 +88,29 @@ class libyaml_v2:
 
             
     def tell_extended_requirements_from_json(self,component,requirementsList=[],processedList=[]):
-        print("EXT:",self.processedList)
-        print("requirementsList:",self.requirementsList)
         for key in self._finalList:
             if key in "format":
                 continue
             for key_lvl2 in self._finalList[key]:
                 if re.match("^"+component+"$",key_lvl2):
-                    print(key,">><<",key_lvl2)
                     if "requires" in self._finalList[key][key_lvl2]:
                         for require in self._finalList[key][key_lvl2]["requires"]:
                             if require not in self.requirementsList:
                                 self.requirementsList.append(require)
                                 self.tell_extended_requirements_from_json(require,self.requirementsList,self.processedList)
-                            #if require not in processedList:
-                            #    processedList.append(require)
+
                     if "extends" in self._finalList[key][key_lvl2]:
                         for require in self._finalList[key][key_lvl2]["extends"]:
                             if require not in self.requirementsList:
                                 self.requirementsList.append(require)
-                            #if require not in processedList:
-                            #    processedList.append(require)
+
                             self.tell_extended_requirements_from_json(require,self.requirementsList,self.processedList)
                     self.processedList.append(key_lvl2)
         return self.requirementsList
 
 
     def tell_extended_requirements(self,component,processedList=[]):
-        print("tell_extended_requirements",component)
         if self._finalList["format"] == "json":
-            print("tell_extended_requirements is calling tell_extended_requirements_from_json")
             return self.tell_extended_requirements_from_json(component,self.processedList)
             
         if not self._finalList or  "requires" not in self._finalList[component]:
@@ -220,7 +213,7 @@ class libyaml_v2:
                         for entry_lvl2 in input_json[subkey][key][item]:
                             self.generate_workflows(input_json,entry_lvl2,level,output,enable_filters,self.processedList)
                     else:
-                        print("NOT YET",item)
+                        print("Found a item that is not yet implemented in generate_workflows_single function:",item)
 
             else:
                 output.append(self.create_space(level)+"- "+job_name)
@@ -229,20 +222,17 @@ class libyaml_v2:
             
     # Use tell_extended_requirements to figure out what we need to do :)
     def generate_workflows(self,input_json,key,level=0,output=[],enable_filters=False,processedList=[]):
-        #print(input_json,key,level,output,enable_filters)
-        #print(">>>>",key)
         build_dependencies=self.tell_extended_requirements(key,self.processedList)
         self.requirementsList=build_dependencies
         if len(build_dependencies) > 1:
             for dependency in build_dependencies:
-                print("Dependency:",dependency)
                 if dependency not in output:
                     if dependency not in processedList:
                         output= self.generate_workflows_single(input_json,dependency,level,output,enable_filters,self.processedList)
                         self.processedList.append(dependency)
                     else:
                         continue
-                    #return self.generate_workflows(input_json,dependency,level,output,enable_filters,processedList)
+
                 output= self.generate_workflows_single(input_json,dependency,level,output,enable_filters,self.processedList)
         else:
             output=self.generate_workflows_single(input_json,key,level,output,enable_filters,self.processedList)
@@ -253,10 +243,6 @@ class libyaml_v2:
                     self.processedList.append(req)
             else:
                 self.processedList.append(key)
-
-
-            #print("PROCESSING",key,self.requirementsList)
-        #print("<<<<")
         
         return output
 
