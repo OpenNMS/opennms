@@ -230,6 +230,7 @@ for e in main_yml_content:
                 print("build> ui :",libyaml.tell_extended_requirements('ui'))
                 #workflow=libyaml.generate_yaml_v2(workflow_data,"ui",level,sample_workflow)
                 workflow=libyaml.generate_workflows(workflow_data,"ui",level,sample_workflow)
+                print("UI:::",workflow)
                 if len(sample_workflow)>1:
                     for e in workflow:
                         print("ui","Looking at",e)
