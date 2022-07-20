@@ -166,7 +166,7 @@ if "integration" in git_keywords or "Integration_tests" in What_to_build:
 if "build" in What_to_build:
     build_mappings["build"]["build"]=True
 
-if "doc" in git_keywords or "doc" in What_to_build:
+if git_keywords in ["doc","docs"] or "doc" in What_to_build:
     build_mappings["build"]["docs"]=True
 #else:
 #    build_mappings["build"]["docs"]=False
