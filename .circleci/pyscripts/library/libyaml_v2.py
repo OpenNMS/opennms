@@ -250,6 +250,11 @@ class libyaml_v2:
         
         return output
 
+    def clean(self):
+        self.requirementsList=[]
+        self.processedList=[]
+
+
     def generate_yaml_v2(self,input_json,key,level=0,_line=[],disable_filters=False):
         bundles=list(input_json["bundles"].keys())
         #experimental=list(input_json["experimental"].keys())
