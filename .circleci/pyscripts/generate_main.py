@@ -164,7 +164,6 @@ for e in main_yml_content:
                 else:
                     sample_workflow=workflow
 
-
             if build_components["debian-packages"]["minion"] or \
                build_components["debian-packages"]["horizon"] or \
                build_components["debian-packages"]["sentinel"]:
@@ -211,7 +210,7 @@ for e in main_yml_content:
                 workflow=libyaml.generate_workflows(workflow_data,"build",level,sample_workflow)
                 if len(sample_workflow)>1:
                     for e in workflow:
-                        print("doc","Looking at",e)
+                        print("build","Looking at",e)
                         if e not in sample_workflow:
                             sample_workflow.append(e)
                 else:
@@ -220,20 +219,20 @@ for e in main_yml_content:
                 print("build> docs :",libyaml.tell_extended_requirements('docs'))
                 #workflow=libyaml.generate_yaml_v2(workflow_data,"docs",level,sample_workflow)
                 workflow=libyaml.generate_workflows(workflow_data,"docs",level,sample_workflow)
-                #if len(sample_workflow)>1:
-                #    for e in workflow:
-                #        print("doc","Looking at",e)
-                #        if e not in sample_workflow:
-                #            sample_workflow.append(e)
-                #else:
-                sample_workflow=workflow
+                if len(sample_workflow)>1:
+                    for e in workflow:
+                        print("docs","Looking at",e)
+                        if e not in sample_workflow:
+                            sample_workflow.append(e)
+                else:
+                    sample_workflow=workflow
             if build_components["build"]["ui"]:
                 print("build> ui :",libyaml.tell_extended_requirements('ui'))
                 #workflow=libyaml.generate_yaml_v2(workflow_data,"ui",level,sample_workflow)
                 workflow=libyaml.generate_workflows(workflow_data,"ui",level,sample_workflow)
                 if len(sample_workflow)>1:
                     for e in workflow:
-                        print("doc","Looking at",e)
+                        print("ui","Looking at",e)
                         if e not in sample_workflow:
                             sample_workflow.append(e)
                 else:
