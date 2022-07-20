@@ -128,7 +128,7 @@ for e in main_yml_content:
                build_components["rpm-packages"]["sentinel"]:
                 print("rpm-packages > all:",libyaml.tell_extended_requirements('rpms'))
                 #workflow=libyaml.generate_yaml_v2(workflow_data,"rpms",level,sample_workflow,disable_filters=True)
-                workflow=libyaml.generate_workflows(workflow_data,"rpms",level,sample_workflow,disable_filters=True)
+                workflow=libyaml.generate_workflows(workflow_data,"rpms",level,sample_workflow,enable_filters=False)
                 
                 if len(sample_workflow)>1:
                     for e in workflow:
@@ -142,7 +142,7 @@ for e in main_yml_content:
                 print("tests > integration:",libyaml.tell_extended_requirements('integration-test'))
                 
                 #workflow=libyaml.generate_yaml_v2(workflow_data,"integration-test",level,sample_workflow,disable_filters=True)
-                workflow=libyaml.generate_workflows(workflow_data,"integration-test",level,sample_workflow,disable_filters=True)
+                workflow=libyaml.generate_workflows(workflow_data,"integration-test",level,sample_workflow,enable_filters=False)
                 if len(sample_workflow)>1:
                     for e in workflow:
                         print("integration","Looking at",e)
@@ -170,7 +170,7 @@ for e in main_yml_content:
                build_components["debian-packages"]["sentinel"]:
                 print("debian-packages > all:",libyaml.tell_extended_requirements('debs'))
                 #workflow=libyaml.generate_yaml_v2(workflow_data,"debs",level,sample_workflow,disable_filters=True)
-                workflow=libyaml.generate_workflows(workflow_data,"debs",level,sample_workflow,disable_filters=True)
+                workflow=libyaml.generate_workflows(workflow_data,"debs",level,sample_workflow,enable_filters=False)
                 if len(sample_workflow)>1:
                     for e in workflow:
                         print("debian-packages","Looking at",e)
@@ -184,7 +184,7 @@ for e in main_yml_content:
                build_components["oci-images"]["sentinel"]:
                 print("oci-images > all:",libyaml.tell_extended_requirements('debs'))
                 #workflow=libyaml.generate_yaml_v2(workflow_data,"oci",level,sample_workflow,disable_filters=True)
-                workflow=libyaml.generate_workflows(workflow_data,"oci",level,sample_workflow,disable_filters=True)
+                workflow=libyaml.generate_workflows(workflow_data,"oci",level,sample_workflow,enable_filters=False)
                 if len(sample_workflow)>1:
                     for e in workflow:
                         print("oci-images","Looking at",e)
@@ -196,7 +196,7 @@ for e in main_yml_content:
             if build_components["experimental"]:
                 print("experimental:",libyaml.tell_extended_requirements('experimental'))
                 #workflow=libyaml.generate_yaml_v2(workflow_data,"experimental",level,sample_workflow,disable_filters=True)
-                workflow=libyaml.generate_workflows(workflow_data,"experimental",level,sample_workflow,disable_filters=True)
+                workflow=libyaml.generate_workflows(workflow_data,"experimental",level,sample_workflow,enable_filters=False)
                 #if len(sample_workflow)>1:
                 #    for e in workflow:
                 #        print("doc","Looking at",e)
