@@ -42,12 +42,14 @@ class libgit:
             if key in keywords_dict:
                 print("Processing:",value)
                 if type(keywords_dict[key]) == list:
+                    print("Current List:",keywords_dict[key])
                     keywords_dict[key].append(value.replace(":","") if value.strip() else True)
                 else:
                     print("Current Dictionary:",keywords_dict[key])
                     _current=keywords_dict[key]
                     keywords_dict[key]=[]
                     keywords_dict[key].append(_current)
+                    keywords_dict[key].append(value.replace(":","") if value.strip() else True)
             else:
                 keywords_dict[key]=value.replace(":","") if value.strip() else True
  
