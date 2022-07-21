@@ -1714,7 +1714,7 @@
     <gwtPluginVersion>${gwtVersion}</gwtPluginVersion>
     <h2databaseVersion>1.4.197</h2databaseVersion>
     <hibernateValidatorVersion>4.3.2.Final</hibernateValidatorVersion>
-    <hikaricpVersion>2.5.1</hikaricpVersion>
+    <hikaricpVersion>2.7.9</hikaricpVersion>
     <hllVersion>1.6.0</hllVersion>
     <httpcoreVersion>4.4.15</httpcoreVersion>
     <httpclientVersion>4.5.13</httpclientVersion>
