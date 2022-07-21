@@ -29,8 +29,10 @@
 package org.opennms.netmgt.enlinkd.service.api;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
@@ -41,6 +43,118 @@ public class BroadcastDomain implements Topology {
     private final Set<Bridge> m_bridges = new HashSet<>();
     private final List<SharedSegment> m_topology = new ArrayList<>();
     private final Set<BridgePortWithMacs> m_forwarding = new HashSet<>();
+
+    //   this=topSegment {tmac...} {(tbridge,tport)....}U{bridgeId, bridgeIdPortId}
+    //        |
+    //     bridge Id
+    //        |
+    //      shared {smac....} {(sbridge,sport).....}U{bridgeId,bridgePort)
+    //       | | |
+    //       A B C
+    //    move all the macs and port on shared
+    //  ------> topSegment {tmac...}U{smac....} {(tbridge,tport)}U{(sbridge,sport).....}
+    public void clearTopologyForBridge(Integer bridgeid) {
+        Bridge bridge = getBridge(bridgeid);
+        if (bridge == null) {
+            return;
+        }
+
+        if (bridge.isNewTopology()) {
+            return;
+        }
+
+        Set<Bridge> notnew = new HashSet<>();
+        for (Bridge cbridge: getBridges()) {
+            if (cbridge.isNewTopology()) {
+                continue;
+            }
+            notnew.add(cbridge);
+        }
+
+        if (notnew.size() == 1) {
+            clearTopology();
+            return;
+        }
+
+        SharedSegment topsegment = null;
+        if (bridge.isRootBridge()) {
+            for (SharedSegment segment: getSharedSegments(bridge.getNodeId())) {
+                Integer newRootId = null;
+                for (BridgePort port: segment.getBridgePortsOnSegment() ) {
+                    if (port == null
+                            || port.getNodeId() == null
+                            ||port.getBridgePort() == null) {
+                    continue;
+                    }
+                    if (segment.getDesignatedBridge() == null || port.getNodeId().intValue() != segment.getDesignatedBridge().intValue()) {
+                        newRootId = port.getNodeId();
+                    }
+                }
+                if (newRootId == null)
+                    continue;
+                Bridge newRootBridge = getBridge(newRootId);
+                if (newRootBridge == null)
+                    continue;
+                topsegment = getSharedSegment(newRootId,newRootBridge.getRootPort());
+                hierarchySetUp(newRootBridge);
+                break;
+            }
+        } else {
+            topsegment = getSharedSegment(bridge.getNodeId(), bridge.getRootPort());
+        }
+
+        if (topsegment == null ) {
+            return;
+        }
+
+        BridgePort toberemoved = topsegment.getBridgePort(bridge.getNodeId());
+        cleanForwarders(bridge.getNodeId());
+        bridge.setRootPort(null);
+        if (toberemoved == null) {
+            return;
+        } else {
+            topsegment.getBridgePortsOnSegment().remove(toberemoved);
+        }
+
+        List<SharedSegment> topology = new ArrayList<>();
+
+        for (SharedSegment segment: getSharedSegments()) {
+            if (segment.getBridgeIdsOnSegment().contains(bridge.getNodeId())) {
+                for (BridgePort port: segment.getBridgePortsOnSegment()) {
+                    if ( port.getNodeId().intValue() == bridge.getNodeId().intValue()) {
+                        continue;
+                    }
+                    topsegment.getBridgePortsOnSegment().add(port);
+                }
+                topsegment.getMacsOnSegment().addAll(segment.getMacsOnSegment());
+            } else {
+                topology.add(segment);
+            }
+        }
+
+        setTopology(topology);
+        //assigning again the forwarders to segment if is the case
+        Map<String, Set<BridgePort>> forwardermap = new HashMap<>();
+        for (BridgePortWithMacs forwarder: getForwarding()) {
+            for (String mac: forwarder.getMacs()) {
+                if (!forwardermap.containsKey(mac)) {
+                    forwardermap.put(mac, new HashSet<>());
+                }
+                forwardermap.get(mac).add(forwarder.getPort());
+            }
+        }
+
+        for (String mac: forwardermap.keySet()) {
+            SharedSegment first = getSharedSegment(forwardermap.get(mac).iterator().next());
+            if (first == null) {
+                continue;
+            }
+            if (forwardermap.get(mac).containsAll(first.getBridgePortsOnSegment())) {
+                first.getMacsOnSegment().add(mac);
+            }
+        }
+        cleanForwarders();
+    }
 
     public boolean loadTopologyEntry(SharedSegment segment) {
         for (BridgePort port: segment.getBridgePortsOnSegment()) {

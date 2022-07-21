@@ -520,7 +520,7 @@ public class DiscoveryBridgeTopology {
                     continue;
                 }
 
-                TopologyService.clearTopologyForBridge(m_domain,bridgeId);
+                m_domain.clearTopologyForBridge(bridgeId);
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("calculate: bridge:[{}] cleaned ->\n{}",
                               bridgeId,

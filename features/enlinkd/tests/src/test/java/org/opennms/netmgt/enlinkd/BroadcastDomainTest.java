@@ -55,7 +55,6 @@ import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyException;
 import org.opennms.netmgt.enlinkd.service.api.BroadcastDomain;
 import org.opennms.netmgt.enlinkd.service.api.DiscoveryBridgeTopology;
 import org.opennms.netmgt.enlinkd.service.api.SharedSegment;
-import org.opennms.netmgt.enlinkd.service.api.TopologyService;
 import org.opennms.netmgt.model.OnmsNode;
 
 import com.google.common.collect.Sets;
@@ -441,7 +440,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         ndbt.addUpdatedBFT((topology.nodeBId),topology.bftB);
         ndbt.calculate();
 
-        TopologyService.clearTopologyForBridge(domain,topology.nodeBId);
+        domain.clearTopologyForBridge(topology.nodeBId);
         assertEquals(topology.nodeAId.intValue(), domain.getRootBridge().getNodeId().intValue());
         assertEquals(2, domain.getSharedSegments().size());
         assertEquals(5, domain.getMacsOnSegments().size());
@@ -486,8 +485,8 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         ndbt.addUpdatedBFT((topology.nodeAId),topology.bftA);
         ndbt.addUpdatedBFT((topology.nodeBId),topology.bftB);
         ndbt.calculate();
-                
-        TopologyService.clearTopologyForBridge(domain,topology.nodeAId);
+
+        domain.clearTopologyForBridge(topology.nodeAId);
         assertEquals(5, domain.getMacsOnSegments().size());
         assertEquals(topology.nodeBId.intValue(), domain.getRootBridge().getNodeId().intValue());
         assertEquals(2, domain.getSharedSegments().size());

@@ -658,8 +658,10 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         nodeAbd.hierarchySetUp(nodeAbd.getBridge(nodeA.getId()));
         assertNotNull(nodeAbd.getRootBridge());
         topology.check(nodeAbd);
-        
+
+        System.err.println(nodeAbd.printTopology());
         m_linkd.deleteNode(nodeC.getId());
+        System.err.println(nodeAbd.printTopology());
         assertEquals(1, m_bridgeTopologyService.findAll().size());
         
         BroadcastDomain domain = m_bridgeTopologyService.findAll().iterator().next();
