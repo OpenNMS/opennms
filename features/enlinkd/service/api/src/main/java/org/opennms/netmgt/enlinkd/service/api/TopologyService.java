@@ -48,10 +48,6 @@ public interface TopologyService {
         return new TopologyConnection<>(left, right);
     }
 
-    static List<BridgeMacLink> create(BridgePortWithMacs bft, BridgeMacLink.BridgeMacLinkType type) {
-        return create(bft.getPort(), bft.getMacs(), type);
-    }
-
     static List<BridgeMacLink> create(BridgePort bp, Set<String> macs, BridgeMacLink.BridgeMacLinkType type) {
         final List<BridgeMacLink> maclinks = new ArrayList<>();
         macs.forEach(mac -> maclinks.add(create(bp, mac, type)));

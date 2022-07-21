@@ -127,7 +127,7 @@ public class BridgeTopologyServiceImpl extends TopologyServiceImpl implements Br
         
         domain.getForwarding().stream().filter(forward -> forward.getMacs().size() > 0).
             forEach( forward -> {
-                for ( BridgeMacLink link : TopologyService.create(forward, BridgeMacLinkType.BRIDGE_FORWARDER)) {
+                for ( BridgeMacLink link : forward.getBridgeMacLinks()) {
                     link.setBridgeMacLinkLastPollTime(new Date());
                     saveBridgeMacLink(link);
                 }

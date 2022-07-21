@@ -28,8 +28,11 @@
 
 package org.opennms.netmgt.enlinkd.service.api;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+
+import org.opennms.netmgt.enlinkd.model.BridgeMacLink;
 
 public class BridgePortWithMacs implements Topology {
 
@@ -47,6 +50,10 @@ public class BridgePortWithMacs implements Topology {
 
     public Set<String> getMacs() {
         return m_macs;
+    }
+
+    public List<BridgeMacLink> getBridgeMacLinks() {
+        return TopologyService.create(m_port, m_macs, BridgeMacLink.BridgeMacLinkType.BRIDGE_FORWARDER);
     }
 
     @Override
