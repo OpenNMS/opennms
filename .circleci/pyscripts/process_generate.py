@@ -124,8 +124,11 @@ if "smoke" in git_keywords or "Smoke_tests" in What_to_build:
     print(len(git_keywords))
     build_mappings["tests"]["smoke"]=True
 
-    for i,v in enumerate(git_keywords["smoke"]):
-        print(i,v)
+
+
+    if len(git_keywordsd):
+        for i,v in enumerate(git_keywords["smoke"]):
+            print(i,v)
 
     #if len(git_keywords)>1
     #    if ":" in git_keywords[1]:
