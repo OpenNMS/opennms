@@ -82,6 +82,8 @@ public class UsageStatisticsReportDTO {
     private Map<String, Long> m_provisiondRequisitionSchemeCount;
     private Map<String, Boolean> m_services;
 
+    private int m_businessEdgeCount;
+
     public void setSystemId(String systemId) {
         m_systemId = systemId;
     }
@@ -336,6 +338,14 @@ public class UsageStatisticsReportDTO {
 
     public long getRequisitionWithChangedFSCount() {
         return m_requisitionWithChangedFSCount;
+    }
+    
+    public void setBusinessEdgeCount(int edges) {
+        this.m_businessEdgeCount = edges;
+    }
+
+    public int getBusinessEdgeCount() {
+        return m_businessEdgeCount;
     }
 
     public String toJson() {
