@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2020-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -45,6 +45,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.resource.ResourceDTO;
 import org.opennms.smoketest.stacks.NetworkProtocol;
 import org.opennms.smoketest.stacks.OpenNMSStack;
@@ -166,6 +168,11 @@ public class BmpIT {
                 .contentType(ContentType.XML).post()
                 .then().assertThat()
                 .statusCode(201);
+
+        // Restarting collectd after we have added a node to the db
+        final EventBuilder builder = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, getClass().getSimpleName());
+                builder.setParam(EventConstants.PARM_DAEMON_NAME, "collectd");
+                stack.opennms().getRestClient().sendEvent(builder.getEvent());
 
         await().atMost(1, MINUTES).pollDelay(0, SECONDS).pollInterval(5, SECONDS)
                 .until(() -> {
