@@ -48,34 +48,6 @@ public interface TopologyService {
         return new TopologyConnection<>(left, right);
     }
 
-    static void removeBridge(BroadcastDomain domain, int bridgeId) {
-        Bridge bridge = null;
-        for (Bridge curbridge: domain.getBridges()) {
-            if (curbridge.getNodeId() == bridgeId) {
-                bridge=curbridge;
-                break;
-            }
-        }
-        // if not in domain: return
-        if (bridge==null)
-            return;
-        // if last bridge in domain: clear all and return
-        if (domain.getBridges().size() == 1) {
-            domain.getSharedSegments().clear();
-            domain.getBridges().clear();
-            return;
-        }
-
-        domain.clearTopologyForBridge(bridgeId);
-        Set<Bridge> bridges = new HashSet<>();
-        for (Bridge cur: domain.getBridges()) {
-            if (cur.getNodeId() == bridgeId)
-                continue;
-            bridges.add(cur);
-        }
-        domain.setBridges(bridges);
-    }
-
     static SharedSegment create(BridgeMacLink link) {
         SharedSegment segment = new SharedSegment();
         segment.getBridgePortsOnSegment().add(getFromBridgeMacLink(link));

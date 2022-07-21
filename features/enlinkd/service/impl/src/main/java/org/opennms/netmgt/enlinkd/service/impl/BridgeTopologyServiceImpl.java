@@ -283,7 +283,7 @@ public class BridgeTopologyServiceImpl extends TopologyServiceImpl implements Br
         }
         
         LOG.info("reconcileTopologyForDeleteNode: node:[{}], start: save topology for domain",nodeId);
-        TopologyService.removeBridge(domain,nodeId);
+        domain.removeBridge(nodeId);
         store(domain,now);
         LOG.info("reconcileTopologyForDeleteNode: node:[{}], end: save topology for domain",nodeId);
         

@@ -44,6 +44,29 @@ public class BroadcastDomain implements Topology {
     private final List<SharedSegment> m_topology = new ArrayList<>();
     private final Set<BridgePortWithMacs> m_forwarding = new HashSet<>();
 
+    public void removeBridge(int bridgeId) {
+        Bridge bridge = getBridge(bridgeId);
+        // if not in domain: return
+        if (bridge==null)
+            return;
+        // if last bridge in domain: clear all and return
+        if (getBridges().size() == 1) {
+            m_topology.clear();
+            m_bridges.clear();
+            return;
+        }
+
+        clearTopologyForBridge(bridgeId);
+        m_bridges.remove(bridge);
+        Set<Bridge> bridges = new HashSet<>();
+        for (Bridge cur: getBridges()) {
+            if (cur.getNodeId() == bridgeId)
+                continue;
+            bridges.add(cur);
+        }
+        setBridges(bridges);
+    }
+
     //   this=topSegment {tmac...} {(tbridge,tport)....}U{bridgeId, bridgeIdPortId}
     //        |
     //     bridge Id
