@@ -31,7 +31,6 @@ class libgit:
 
     def extractKeywordsFromLastCommit(self)->list:
         last_commit=self.getLastCommit()
-        # TODO: add ability to set True or False flags 
         keywords=re.findall("\#([\w]+)?(:[\w]+-?[\w]+)?",last_commit)
         keywords_dict={}
         print("Number of keywords detected:",len(keywords))
