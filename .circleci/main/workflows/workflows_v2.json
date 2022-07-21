@@ -18,7 +18,8 @@
                 "smoke-test-core",
                 "smoke-test-flaky",
                 "smoke-test-minion",
-                "smoke-test-sentinel"
+                "smoke-test-sentinel",
+                "horizon-image"
             ]
         },
         "rpms": {
