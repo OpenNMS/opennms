@@ -40,7 +40,7 @@ class libgit:
             if key in keywords_dict:
                 _current=keywords_dict[key]
                 keywords_dict[key]=[_current]
-                keywords_dict.append(value.replace(":","") if value.strip() else True)
+                keywords_dict[key].append(value.replace(":","") if value.strip() else True)
             else:
                 keywords_dict[key]=value.replace(":","") if value.strip() else True
  
