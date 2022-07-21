@@ -20,6 +20,6 @@ jobs:
           path: ~/project/build/site.zip
           destination: site.zip
       - store_artifacts:
-          path: "/tmp/site-${OPENNMS_VERSION}.zip"
-          destination: site-${OPENNMS_VERSION}.zip          
+          path: "/tmp/$(cd /tmp;ls site-*.zip)"
+          destination: $(cd /tmp;ls site-*.zip)          
     
