@@ -131,13 +131,6 @@ if "smoke" in git_keywords or "Smoke_tests" in What_to_build:
                     build_mappings["tests"]["smoke"]["override"]={}
                 build_mappings["tests"]["smoke"]["override"]=v
 
-    #if len(git_keywords)>1
-    #    if ":" in git_keywords[1]:
-    #        build_mappings["tests"]["smoke"]=True
-    #    else:
-    #        print("Not Sure what to do with",git_keywords)
-    #else:
-
 if "oci" in git_keywords:
     build_mappings["build"]["build"]=True
     build_mappings["oci-images"]["minion"]=True
