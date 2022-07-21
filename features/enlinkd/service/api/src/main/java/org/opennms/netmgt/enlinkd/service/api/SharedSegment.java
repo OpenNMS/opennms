@@ -116,7 +116,7 @@ public class SharedSegment implements Topology{
     }
 
     public List<BridgeMacLink> getBridgeMacLinks() {
-        return TopologyService.create(getDesignatedPort(), m_macsOnSegment, BridgeMacLink.BridgeMacLinkType.BRIDGE_LINK);
+        return BridgeTopologyService.create(getDesignatedPort(), m_macsOnSegment, BridgeMacLink.BridgeMacLinkType.BRIDGE_LINK);
     }
 
     public boolean containsPort(BridgePort port) {

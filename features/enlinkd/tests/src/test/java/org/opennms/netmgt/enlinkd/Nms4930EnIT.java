@@ -39,6 +39,7 @@ import static org.opennms.netmgt.nb.NmsNetworkBuilder.DLINK2_IP;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.DLINK2_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.DLINK2_SNMP_RESOURCE;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -51,8 +52,8 @@ import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
 import org.opennms.netmgt.enlinkd.model.BridgeMacLink.BridgeMacLinkType;
 import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry;
 import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry.BridgeDot1qTpFdbStatus;
+import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.DiscoveryBridgeTopology;
-import org.opennms.netmgt.enlinkd.service.api.TopologyService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.nb.Nms4930NetworkBuilder;
 
@@ -404,11 +405,13 @@ String[] forwardersdlink2on10bbport= {"001195256302","f07d68a13d67","001517028e0
                 continue;
             }
             assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED,link.getBridgeDot1qTpFdbStatus());
+            Set<String> macs=new HashSet<>();
+            macs.add(link.getMacAddress());
             BridgeMacLink maclink =
-                    TopologyService.create(
+                    BridgeTopologyService.create(
                             DiscoveryBridgeTopology.getFromBridgeForwardingTableEntry(link),
-                            link.getMacAddress(),
-                            BridgeMacLinkType.BRIDGE_LINK);
+                            macs,
+                            BridgeMacLinkType.BRIDGE_LINK).iterator().next();
             maclink.setBridgeMacLinkLastPollTime(maclink.getBridgeMacLinkCreateTime());
             m_bridgeMacLinkDao.save(maclink);
         }

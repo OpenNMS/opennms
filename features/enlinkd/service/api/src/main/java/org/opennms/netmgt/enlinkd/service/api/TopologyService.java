@@ -48,25 +48,6 @@ public interface TopologyService {
         return new TopologyConnection<>(left, right);
     }
 
-    static List<BridgeMacLink> create(BridgePort bp, Set<String> macs, BridgeMacLink.BridgeMacLinkType type) {
-        final List<BridgeMacLink> maclinks = new ArrayList<>();
-        macs.forEach(mac -> maclinks.add(create(bp, mac, type)));
-        return maclinks;
-    }
-
-    static BridgeMacLink create(BridgePort bp, String macAddress, BridgeMacLink.BridgeMacLinkType type) {
-        BridgeMacLink maclink = new BridgeMacLink();
-        OnmsNode node = new OnmsNode();
-        node.setId(bp.getNodeId());
-        maclink.setNode(node);
-        maclink.setBridgePort(bp.getBridgePort());
-        maclink.setBridgePortIfIndex(bp.getBridgePortIfIndex());
-        maclink.setMacAddress(macAddress);
-        maclink.setVlan(bp.getVlan());
-        maclink.setLinkType(type);
-        return maclink;
-    }
-
     static void hierarchySetUp(BroadcastDomain domain, Bridge root) {
         if (root==null || root.isRootBridge()) {
             return;
