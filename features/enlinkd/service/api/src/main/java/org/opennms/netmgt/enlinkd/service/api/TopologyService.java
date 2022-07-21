@@ -240,21 +240,6 @@ public interface TopologyService {
         domain.setBridges(bridges);
     }
 
-    static Set<BridgeForwardingTableEntry> get(BridgePortWithMacs bft) {
-        Set<BridgeForwardingTableEntry> bftentries = new HashSet<>();
-        bft.getMacs().forEach(mac -> {
-            BridgeForwardingTableEntry bftentry = new BridgeForwardingTableEntry();
-            bftentry.setNodeId(bft.getPort().getNodeId());
-            bftentry.setBridgePort(bft.getPort().getBridgePort());
-            bftentry.setBridgePortIfIndex(bft.getPort().getBridgePortIfIndex());
-            bftentry.setVlan(bft.getPort().getVlan());
-            bftentry.setMacAddress(mac);
-            bftentry.setBridgeDot1qTpFdbStatus(BridgeForwardingTableEntry.BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED);
-            bftentries.add(bftentry);
-        });
-        return bftentries;
-    }
-
     static List<BridgeBridgeLink> getBridgeBridgeLinks(SharedSegment segment) {
         return generate(segment.getDesignatedPort(), segment.getBridgePortsOnSegment());
     }

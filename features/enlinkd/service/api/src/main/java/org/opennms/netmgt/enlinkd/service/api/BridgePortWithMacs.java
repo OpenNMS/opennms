@@ -28,11 +28,13 @@
 
 package org.opennms.netmgt.enlinkd.service.api;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
 import org.opennms.netmgt.enlinkd.model.BridgeMacLink;
+import org.springframework.util.Assert;
 
 public class BridgePortWithMacs implements Topology {
 
@@ -40,6 +42,8 @@ public class BridgePortWithMacs implements Topology {
     private final Set<String> m_macs;
 
     public BridgePortWithMacs(BridgePort port, Set<String> macs) {
+        Assert.notNull(port);
+        Assert.notNull(macs);
         m_port=port;
         m_macs=macs;
     }
@@ -54,6 +58,22 @@ public class BridgePortWithMacs implements Topology {
 
     public List<BridgeMacLink> getBridgeMacLinks() {
         return BridgeTopologyService.create(m_port, m_macs, BridgeMacLink.BridgeMacLinkType.BRIDGE_FORWARDER);
+    }
+
+    public Set<BridgeForwardingTableEntry> getBridgeForwardingTableEntrySet() {
+        Set<BridgeForwardingTableEntry> bftentries = new HashSet<>();
+        m_macs.forEach(mac -> {
+            BridgeForwardingTableEntry bftentry = new BridgeForwardingTableEntry();
+            bftentry.setNodeId(m_port.getNodeId());
+            bftentry.setBridgePort(m_port.getBridgePort());
+            bftentry.setBridgePortIfIndex(m_port.getBridgePortIfIndex());
+            bftentry.setVlan(m_port.getVlan());
+            bftentry.setMacAddress(mac);
+            bftentry.setBridgeDot1qTpFdbStatus(BridgeForwardingTableEntry.BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED);
+            bftentries.add(bftentry);
+        });
+        return bftentries;
+
     }
 
     @Override
