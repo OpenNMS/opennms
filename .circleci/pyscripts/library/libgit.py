@@ -37,7 +37,12 @@ class libgit:
 
         for e in keywords:
             key,value=e
-            keywords_dict[key]=value.replace(":","") if value.strip() else True
+            if key in keywords_dict:
+                _current=keywords_dict[key]
+                keywords_dict[key]=[_current]
+                keywords_dict.append(value.replace(":","") if value.strip() else True)
+            else:
+                keywords_dict[key]=value.replace(":","") if value.strip() else True
  
         return keywords_dict
 
