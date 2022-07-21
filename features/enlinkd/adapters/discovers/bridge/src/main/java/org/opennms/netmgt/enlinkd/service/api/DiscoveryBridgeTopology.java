@@ -247,17 +247,6 @@ public class DiscoveryBridgeTopology {
         return entries;
     }
 
-    public static void addforwarders(BroadcastDomain domain, BridgeForwardingTable bridgeFT) {
-        Set<String> macs = new HashSet<>(domain.getMacsOnSegments());
-        domain.cleanForwarders(bridgeFT.getNodeId());
-        for (String forward:  bridgeFT.getMactoport().keySet()) {
-            if (macs.contains(forward)) {
-                continue;
-            }
-            domain.addForwarding(bridgeFT.getMactoport().get(forward), forward);
-        }
-    }
-
     public static Bridge electRootBridge(BroadcastDomain domain) throws BridgeTopologyException {
         if (domain.getBridges().size() == 1) {
             return domain.getBridges().iterator().next();
@@ -718,10 +707,10 @@ public class DiscoveryBridgeTopology {
 
         m_bridgeFtMapUpdate.values().stream().
             filter(ft -> m_parsed.contains(ft.getNodeId())).
-                forEach(ft -> addforwarders(m_domain, ft));
+                forEach(ft -> m_domain.addforwarders(ft));
         
         bridgeFtMapCalcul.values().
-            forEach(ft -> addforwarders(m_domain, ft));
+            forEach(ft -> m_domain.addforwarders(ft));
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("calculate: domain\n{}", 
@@ -920,7 +909,7 @@ public class DiscoveryBridgeTopology {
                             maconupsegment,
                             bridgeFT.getRootPort(),
                             getThroughSet(bridgeFT, parsed));
-        checkforwarders.forEach(ft -> addforwarders(m_domain, ft));
+        checkforwarders.forEach(ft -> m_domain.addforwarders(ft));
     }
     
 }

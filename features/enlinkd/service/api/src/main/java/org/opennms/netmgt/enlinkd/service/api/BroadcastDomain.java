@@ -41,6 +41,17 @@ public class BroadcastDomain implements Topology {
     private final List<SharedSegment> m_topology = new ArrayList<>();
     private final Set<BridgePortWithMacs> m_forwarding = new HashSet<>();
 
+    public void addforwarders(BridgeForwardingTable bridgeFT) {
+        Set<String> macs = new HashSet<>(getMacsOnSegments());
+        cleanForwarders(bridgeFT.getNodeId());
+        for (String forward:  bridgeFT.getMactoport().keySet()) {
+            if (macs.contains(forward)) {
+                continue;
+            }
+            addForwarding(bridgeFT.getMactoport().get(forward), forward);
+        }
+    }
+
     public void setBridges(Set<Bridge> bridges) {
         m_bridges.clear();
         m_bridges.addAll(bridges);
