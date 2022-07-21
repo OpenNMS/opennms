@@ -43,6 +43,7 @@ class libgit:
                 if type(keywords_dict[key]) == list:
                     keywords_dict[key].append(value.replace(":","") if value.strip() else True)
                 else:
+                    print("Current Dictionary:",keywords_dict[key])
                     _current=keywords_dict[key]
                     keywords_dict[key]=[]
                     keywords_dict[key].append(_current)
