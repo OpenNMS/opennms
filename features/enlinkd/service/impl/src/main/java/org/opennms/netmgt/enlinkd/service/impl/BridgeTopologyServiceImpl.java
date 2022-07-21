@@ -115,7 +115,7 @@ public class BridgeTopologyServiceImpl extends TopologyServiceImpl implements Br
             segment.getDesignatedPort();
         }
         for (SharedSegment segment : domain.getSharedSegments()) {
-            for (BridgeBridgeLink link : TopologyService.getBridgeBridgeLinks(segment)) {
+            for (BridgeBridgeLink link : segment.getBridgeBridgeLinks()) {
                 link.setBridgeBridgeLinkLastPollTime(new Date());
                     saveBridgeBridgeLink(link);
             }

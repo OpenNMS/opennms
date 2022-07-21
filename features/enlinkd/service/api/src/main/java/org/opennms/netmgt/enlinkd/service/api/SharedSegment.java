@@ -33,6 +33,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.opennms.netmgt.enlinkd.model.BridgeBridgeLink;
 import org.opennms.netmgt.enlinkd.model.BridgeMacLink;
 
 public class SharedSegment implements Topology{
@@ -117,6 +118,10 @@ public class SharedSegment implements Topology{
 
     public List<BridgeMacLink> getBridgeMacLinks() {
         return BridgeTopologyService.create(getDesignatedPort(), m_macsOnSegment, BridgeMacLink.BridgeMacLinkType.BRIDGE_LINK);
+    }
+
+    public List<BridgeBridgeLink> getBridgeBridgeLinks() {
+        return TopologyService.generate(getDesignatedPort(), m_portsOnSegment);
     }
 
     public boolean containsPort(BridgePort port) {

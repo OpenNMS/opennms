@@ -446,7 +446,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         assertEquals(2, domain.getSharedSegments().size());
         assertEquals(5, domain.getMacsOnSegments().size());
         for (SharedSegment segment: domain.getSharedSegments()) {
-        	assertEquals(0, TopologyService.getBridgeBridgeLinks(segment).size());
+        	assertEquals(0, segment.getBridgeBridgeLinks().size());
         	assertEquals(1, segment.getBridgeIdsOnSegment().size());
         	assertEquals(topology.nodeAId.intValue(), segment.getBridgeIdsOnSegment().iterator().next().intValue());
         	
@@ -492,7 +492,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         assertEquals(topology.nodeBId.intValue(), domain.getRootBridge().getNodeId().intValue());
         assertEquals(2, domain.getSharedSegments().size());
         for (SharedSegment segment: domain.getSharedSegments()) {
-        	assertEquals(0, TopologyService.getBridgeBridgeLinks(segment).size());
+        	assertEquals(0, segment.getBridgeBridgeLinks().size());
         	assertEquals(1, segment.getBridgeIdsOnSegment().size());
         	assertEquals(topology.nodeBId.intValue(), segment.getBridgeIdsOnSegment().iterator().next().intValue());
         	

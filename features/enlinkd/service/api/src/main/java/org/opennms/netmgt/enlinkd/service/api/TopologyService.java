@@ -240,10 +240,6 @@ public interface TopologyService {
         domain.setBridges(bridges);
     }
 
-    static List<BridgeBridgeLink> getBridgeBridgeLinks(SharedSegment segment) {
-        return generate(segment.getDesignatedPort(), segment.getBridgePortsOnSegment());
-    }
-
     static SharedSegment create(BridgeMacLink link) {
         SharedSegment segment = new SharedSegment();
         segment.getBridgePortsOnSegment().add(getFromBridgeMacLink(link));
