@@ -37,9 +37,51 @@ import java.util.Set;
 public class BroadcastDomain implements Topology {
 
 
+    public static final int maxlevel = 30;
     private final Set<Bridge> m_bridges = new HashSet<>();
     private final List<SharedSegment> m_topology = new ArrayList<>();
     private final Set<BridgePortWithMacs> m_forwarding = new HashSet<>();
+
+    public void hierarchySetUp(Bridge root) {
+        if (root==null || getBridge(root.getNodeId()) == null) {
+            return;
+        }
+        if (root.isRootBridge()) {
+            return;
+        }
+        root.setRootBridge();
+        if (getBridges().size() == 1) {
+            return;
+        }
+        for (SharedSegment segment : getSharedSegments(root.getNodeId())) {
+            segment.setDesignatedBridge(root.getNodeId());
+            hierarchySetUpGo(segment, root.getNodeId(), 0);
+        }
+    }
+
+    private void hierarchySetUpGo(SharedSegment segment, Integer rootid, int level) {
+        if (segment == null) {
+            return;
+        }
+        level++;
+        if (level == maxlevel) {
+            return;
+        }
+        for (Integer bridgeid: segment.getBridgeIdsOnSegment()) {
+            if (bridgeid.intValue() == rootid.intValue())
+                continue;
+            Bridge bridge = getBridge(bridgeid);
+            if (bridge == null)
+                return;
+            bridge.setRootPort(segment.getBridgePort(bridgeid).getBridgePort());
+            for (SharedSegment s2: getSharedSegments(bridgeid)) {
+                if (s2.getDesignatedBridge() != null && s2.getDesignatedBridge().intValue() == rootid.intValue())
+                    continue;
+                s2.setDesignatedBridge(bridgeid);
+                hierarchySetUpGo(s2,bridgeid,level);
+            }
+        }
+    }
 
     public void addforwarders(BridgeForwardingTable bridgeFT) {
         Set<String> macs = new HashSet<>(getMacsOnSegments());

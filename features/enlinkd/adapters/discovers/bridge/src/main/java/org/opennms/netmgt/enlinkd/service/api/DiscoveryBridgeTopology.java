@@ -265,7 +265,7 @@ public class DiscoveryBridgeTopology {
     }
 
     public static Bridge getUpperBridge(BroadcastDomain domain, Bridge electableroot, int level) throws BridgeTopologyException {
-        if (level == BridgeTopologyService.maxlevel) {
+        if (level == BroadcastDomain.maxlevel) {
             throw new BridgeTopologyException("getUpperBridge, too many iterations", electableroot);
         }
         for (Bridge electable: domain.getBridges()) {
@@ -277,7 +277,7 @@ public class DiscoveryBridgeTopology {
     }
 
     public static Map<Integer,Integer> getUpperForwardingBridgePorts(BroadcastDomain domain, Bridge bridge, Map<Integer,Integer> downports, int level) throws BridgeTopologyException {
-        if (level == BridgeTopologyService.maxlevel) {
+        if (level == BroadcastDomain.maxlevel) {
             throw new BridgeTopologyException("getUpperForwardingBridgePorts: too many iteration", bridge);
         }
 
@@ -300,7 +300,7 @@ public class DiscoveryBridgeTopology {
     }
 
     public static Integer getCalculateBFT(BroadcastDomain domain, SharedSegment segment, Bridge bridge, Map<Integer,Integer> bridgetobridgeport, Set<Integer> downBridgeIds, int level) throws BridgeTopologyException {
-        if (level == BridgeTopologyService.maxlevel) {
+        if (level == BroadcastDomain.maxlevel) {
             throw new BridgeTopologyException("getCalculateBFT: too many iteration", domain);
         }
 
@@ -575,7 +575,7 @@ public class DiscoveryBridgeTopology {
         }
         
         if (m_domain.getRootBridge() != null && !Objects.equals(m_domain.getRootBridge().getNodeId(), electedRoot.getNodeId())) {
-            TopologyService.hierarchySetUp(m_domain,electedRoot);
+            m_domain.hierarchySetUp(electedRoot);
             LOG.debug("calculate: bridge:[{}] elected is new [root] ->\n{}",
                       electedRoot.getNodeId(),
                       m_domain.printTopology());
@@ -707,10 +707,10 @@ public class DiscoveryBridgeTopology {
 
         m_bridgeFtMapUpdate.values().stream().
             filter(ft -> m_parsed.contains(ft.getNodeId())).
-                forEach(ft -> m_domain.addforwarders(ft));
+                forEach(m_domain::addforwarders);
         
         bridgeFtMapCalcul.values().
-            forEach(ft -> m_domain.addforwarders(ft));
+            forEach(m_domain::addforwarders);
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("calculate: domain\n{}", 
@@ -779,7 +779,7 @@ public class DiscoveryBridgeTopology {
     private void down(BridgeForwardingTable bridgeUpFT,  
             BridgeForwardingTable bridgeFT, BridgeSimpleConnection upsimpleconn, Map<Integer,BridgeForwardingTable> bridgeFtMapCalcul, Integer level) throws BridgeTopologyException {
 
-        if (++level == BridgeTopologyService.maxlevel) {
+        if (++level == BroadcastDomain.maxlevel) {
             throw new BridgeTopologyException(
                           "down: level: " + level +", bridge:["+bridgeFT.getNodeId()+"], too many iteration");
         }
@@ -909,7 +909,7 @@ public class DiscoveryBridgeTopology {
                             maconupsegment,
                             bridgeFT.getRootPort(),
                             getThroughSet(bridgeFT, parsed));
-        checkforwarders.forEach(ft -> m_domain.addforwarders(ft));
+        checkforwarders.forEach(m_domain::addforwarders);
     }
     
 }

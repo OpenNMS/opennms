@@ -48,46 +48,6 @@ public interface TopologyService {
         return new TopologyConnection<>(left, right);
     }
 
-    static void hierarchySetUp(BroadcastDomain domain, Bridge root) {
-        if (root==null || root.isRootBridge()) {
-            return;
-        }
-        root.setRootBridge();
-        if (domain.getBridges().size() == 1) {
-            return;
-        }
-        for (SharedSegment segment : domain.getSharedSegments(root.getNodeId())) {
-            segment.setDesignatedBridge(root.getNodeId());
-            tier(domain,segment, root.getNodeId(), 0);
-        }
-    }
-
-    int maxlevel = 30;
-
-    static void tier(BroadcastDomain domain, SharedSegment segment, Integer rootid, int level) {
-        if (segment == null) {
-            return;
-        }
-        level++;
-        if (level == BridgeTopologyService.maxlevel) {
-            return;
-        }
-        for (Integer bridgeid: segment.getBridgeIdsOnSegment()) {
-            if (bridgeid.intValue() == rootid.intValue())
-                continue;
-            Bridge bridge = domain.getBridge(bridgeid);
-            if (bridge == null)
-                return;
-            bridge.setRootPort(segment.getBridgePort(bridgeid).getBridgePort());
-            for (SharedSegment s2: domain.getSharedSegments(bridgeid)) {
-                if (s2.getDesignatedBridge() != null && s2.getDesignatedBridge().intValue() == rootid.intValue())
-                    continue;
-                s2.setDesignatedBridge(bridgeid);
-                tier(domain,s2,bridgeid,level);
-            }
-        }
-    }
-
     static boolean loadTopologyEntry(BroadcastDomain domain, SharedSegment segment) {
         for (BridgePort port: segment.getBridgePortsOnSegment()) {
             for ( Bridge bridge: domain.getBridges() ) {
@@ -152,7 +112,7 @@ public interface TopologyService {
                 if (newRootBridge == null)
                     continue;
                 topsegment = domain.getSharedSegment(newRootId,newRootBridge.getRootPort());
-                hierarchySetUp(domain,newRootBridge);
+                domain.hierarchySetUp(newRootBridge);
                 break;
             }
         } else {
