@@ -119,7 +119,7 @@ public class BridgeTopologyServiceImpl extends TopologyServiceImpl implements Br
                 link.setBridgeBridgeLinkLastPollTime(new Date());
                     saveBridgeBridgeLink(link);
             }
-            for (BridgeMacLink link : TopologyService.getBridgeMacLinks(segment)) {
+            for (BridgeMacLink link : segment.getBridgeMacLinks()) {
                 link.setBridgeMacLinkLastPollTime(new Date());
                 saveBridgeMacLink(link);
             }

@@ -30,7 +30,10 @@ package org.opennms.netmgt.enlinkd.service.api;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+
+import org.opennms.netmgt.enlinkd.model.BridgeMacLink;
 
 public class SharedSegment implements Topology{
 
@@ -111,7 +114,11 @@ public class SharedSegment implements Topology{
         }
         return null;        
     }
-    
+
+    public List<BridgeMacLink> getBridgeMacLinks() {
+        return TopologyService.create(getDesignatedPort(), m_macsOnSegment, BridgeMacLink.BridgeMacLinkType.BRIDGE_LINK);
+    }
+
     public boolean containsPort(BridgePort port) {
         return m_portsOnSegment.contains(port);
     }

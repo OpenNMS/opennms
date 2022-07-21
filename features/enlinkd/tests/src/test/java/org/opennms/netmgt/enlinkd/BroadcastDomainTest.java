@@ -452,16 +452,16 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         	
         	if (segment.containsMac(topology.macA11) && segment.containsMac(topology.macA12)) {
             	assertEquals(2, segment.getMacsOnSegment().size());
-            	assertEquals(2, TopologyService.getBridgeMacLinks(segment).size());
-        		for (BridgeMacLink link: TopologyService.getBridgeMacLinks(segment)) {
+            	assertEquals(2, segment.getBridgeMacLinks().size());
+        		for (BridgeMacLink link: segment.getBridgeMacLinks()) {
         			assertEquals(topology.portA1.intValue(), link.getBridgePort().intValue());
         		}
         	} else if (segment.containsMac(topology.macB21) 
         			&& segment.containsMac(topology.macB22) 
         			&& segment.containsMac(topology.macAB)){
             	assertEquals(3, segment.getMacsOnSegment().size());
-            	assertEquals(3, TopologyService.getBridgeMacLinks(segment).size());
-        		for (BridgeMacLink link: TopologyService.getBridgeMacLinks(segment)) {
+            	assertEquals(3, segment.getBridgeMacLinks().size());
+        		for (BridgeMacLink link: segment.getBridgeMacLinks()) {
         			assertEquals(topology.portAB.intValue(), link.getBridgePort().intValue());
         		}
         		
@@ -499,16 +499,16 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         	if (segment.containsMac(topology.macA11) && segment.containsMac(topology.macA12) 
         		&& segment.containsMac(topology.macAB)) {
             	assertEquals(3, segment.getMacsOnSegment().size());
-            	assertEquals(3, TopologyService.getBridgeMacLinks(segment).size());
-        		for (BridgeMacLink link: TopologyService.getBridgeMacLinks(segment)) {
+            	assertEquals(3, segment.getBridgeMacLinks().size());
+        		for (BridgeMacLink link: segment.getBridgeMacLinks()) {
         			assertEquals(topology.portBA.intValue(), link.getBridgePort().intValue());
         		}
         	} else if (segment.containsMac(topology.macB21) 
         			&& segment.containsMac(topology.macB22) 
         			){
             	assertEquals(2, segment.getMacsOnSegment().size());
-            	assertEquals(2, TopologyService.getBridgeMacLinks(segment).size());
-        		for (BridgeMacLink link: TopologyService.getBridgeMacLinks(segment)) {
+            	assertEquals(2, segment.getBridgeMacLinks().size());
+        		for (BridgeMacLink link: segment.getBridgeMacLinks()) {
         			assertEquals(topology.portB2.intValue(), link.getBridgePort().intValue());
         		}
         	} else {
