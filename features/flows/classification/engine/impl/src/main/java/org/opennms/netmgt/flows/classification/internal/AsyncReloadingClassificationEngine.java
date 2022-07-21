@@ -156,4 +156,12 @@ public class AsyncReloadingClassificationEngine implements ClassificationEngine 
                 break;
         }
     }
+
+    public void addClassificationRulesReloadedListener(final ClassificationRulesReloadedListener classificationRulesReloadedListener) {
+        this.delegate.addClassificationRulesReloadedListener(classificationRulesReloadedListener);
+    }
+
+    public void removeClassificationRulesReloadedListener(final ClassificationRulesReloadedListener classificationRulesReloadedListener) {
+        this.delegate.removeClassificationRulesReloadedListener(classificationRulesReloadedListener);
+    }
 }

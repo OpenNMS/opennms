@@ -228,6 +228,10 @@
     <reference id="persisterFactory" interface="org.opennms.netmgt.collection.api.PersisterFactory"/>
     <reference id="distPollerDao" interface="org.opennms.netmgt.dao.api.DistPollerDao"/>
     <reference id="filterDao" interface="org.opennms.netmgt.filter.api.FilterDao"/>
+    <reference id="asyncReloadingClassificationEngine" interface="org.opennms.netmgt.flows.classification.ClassificationEngine"/>
+
+    <reference id="cachingFilterService" interface="org.opennms.netmgt.flows.classification.FilterService" />
+    <reference id="classificationRuleProvider" interface="org.opennms.netmgt.flows.classification.ClassificationRuleProvider" />
 
     <!-- Thresholding -->
     <bean id="flowThresholding" class="org.opennms.netmgt.flows.elastic.thresholding.FlowThresholding" destroy-method="close">
@@ -238,6 +242,9 @@
         <argument ref="distPollerDao"/>
         <argument ref="snmpInterfaceDao"/>
         <argument ref="filterDao"/>
+        <argument ref="cachingFilterService"/>
+        <argument ref="classificationRuleProvider"/>
+        <argument ref="asyncReloadingClassificationEngine"/>
 
         <property name="stepSizeMs" value="${flowThreshold.stepSizeMs}"/>
         <property name="idleTimeoutMs" value="${flowThreshold.idleTimeoutMs}"/>
