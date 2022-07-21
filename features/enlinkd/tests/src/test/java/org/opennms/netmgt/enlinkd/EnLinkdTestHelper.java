@@ -1418,7 +1418,7 @@ public abstract class EnLinkdTestHelper {
             bftE.add(addBridgeForwardingTableEntry(nodeE, 23, 23, macsonEport23[0]));
         }
         
-        public void checkBC(BroadcastDomain domain) throws BridgeTopologyException {
+        public void checkBC(BroadcastDomain domain) {
             assertEquals(5, domain.getBridgeNodesOnDomain().size());
             assertEquals(nodeBId, domain.getRootBridge().getNodeId().intValue());
             assertEquals(6, domain.getSharedSegments().size());
@@ -1468,7 +1468,7 @@ public abstract class EnLinkdTestHelper {
             }
         }
                 
-        public void checkCcalcBC(SharedSegment segment) throws BridgeTopologyException {
+        public void checkCcalcBC(SharedSegment segment) {
             assertEquals(nodeCId, segment.getDesignatedBridge().intValue());
             assertEquals(1, segment.getBridgePortsOnSegment().size());
             switch (segment.getDesignatedPort().getBridgePort()) {
@@ -1492,7 +1492,7 @@ public abstract class EnLinkdTestHelper {
 
         }
 
-        public void checkBcalcBC(SharedSegment segment) throws BridgeTopologyException {
+        public void checkBcalcBC(SharedSegment segment) {
             assertEquals(nodeBId, segment.getDesignatedBridge().intValue());
             switch (segment.getDesignatedPort().getBridgePort()) {
             case 1:
@@ -1863,7 +1863,7 @@ public abstract class EnLinkdTestHelper {
             
         }
         
-        public void checkC(SharedSegment segment) throws BridgeTopologyException {
+        public void checkC(SharedSegment segment) {
             assertEquals(nodeCId, segment.getDesignatedBridge().intValue());
             assertEquals(1, segment.getBridgePortsOnSegment().size());
             switch (segment.getDesignatedPort().getBridgePort()) {
@@ -1886,7 +1886,7 @@ public abstract class EnLinkdTestHelper {
             }
 
         }
-        public void checkB(SharedSegment segment) throws BridgeTopologyException {
+        public void checkB(SharedSegment segment) {
             assertEquals(nodeBId, segment.getDesignatedBridge().intValue());
             switch (segment.getDesignatedPort().getBridgePort()) {
             case 1:
@@ -2055,7 +2055,7 @@ public abstract class EnLinkdTestHelper {
             bftC.add(addBridgeForwardingTableEntry(nodeC,portC, mac3));
         }
 
-        public void checkAC(BroadcastDomain domain) throws BridgeTopologyException {
+        public void checkAC(BroadcastDomain domain) {
             assertEquals(0, domain.getForwarders(nodeAId).size());
             assertEquals(0, domain.getForwarders(nodeCId).size());
             List<SharedSegment> shsegms = domain.getSharedSegments();        	
@@ -2104,7 +2104,7 @@ public abstract class EnLinkdTestHelper {
             }
         }
 
-        public void checkAB(BroadcastDomain domain) throws BridgeTopologyException {
+        public void checkAB(BroadcastDomain domain) {
             assertEquals(0, domain.getForwarders(nodeAId).size());
             assertEquals(0, domain.getForwarders(nodeBId).size());
             List<SharedSegment> shsegms = domain.getSharedSegments(); 
@@ -2161,7 +2161,7 @@ public abstract class EnLinkdTestHelper {
 
         }
 
-        public void checkBC(BroadcastDomain domain) throws BridgeTopologyException {
+        public void checkBC(BroadcastDomain domain) {
             assertEquals(0, domain.getForwarders(nodeCId).size());
             assertEquals(0, domain.getForwarders(nodeBId).size());
             List<SharedSegment> shsegms = domain.getSharedSegments();
@@ -2283,7 +2283,7 @@ public abstract class EnLinkdTestHelper {
             }
         }
         
-        public void checkwithshared(BroadcastDomain domain) throws BridgeTopologyException {
+        public void checkwithshared(BroadcastDomain domain) {
             assertEquals(0, domain.getForwarders(nodeAId).size());
             assertEquals(0, domain.getForwarders(nodeCId).size());
             assertEquals(1, domain.getForwarders(nodeBId).size());
@@ -2562,7 +2562,7 @@ public abstract class EnLinkdTestHelper {
             bftL.add(addBridgeForwardingTableEntry(nodeL,portLL, mac8));
           }
         
-        public void checkDE(BroadcastDomain domain) throws BridgeTopologyException {
+        public void checkDE(BroadcastDomain domain) {
             assertEquals(0, domain.getForwarders(nodeDId).size());
             assertEquals(0, domain.getForwarders(nodeEId).size());
             List<SharedSegment> shsegs = domain.getSharedSegments();
@@ -2628,7 +2628,7 @@ public abstract class EnLinkdTestHelper {
 
         }
 
-        public void checkDF(BroadcastDomain domain) throws BridgeTopologyException {
+        public void checkDF(BroadcastDomain domain) {
             assertEquals(0, domain.getForwarders(nodeDId).size());
             assertEquals(0, domain.getForwarders(nodeFId).size());
              List<SharedSegment> shsegs = domain.getSharedSegments();
@@ -2694,7 +2694,7 @@ public abstract class EnLinkdTestHelper {
 
         }
 
-        public void checkDG(BroadcastDomain domain) throws BridgeTopologyException  {
+        public void checkDG(BroadcastDomain domain) {
             assertEquals(0, domain.getForwarders(nodeDId).size());
             assertEquals(0, domain.getForwarders(nodeGId).size());
             List<SharedSegment> shsegs = domain.getSharedSegments();
@@ -2779,7 +2779,7 @@ public abstract class EnLinkdTestHelper {
 
         }
 
-        public void checkEF(BroadcastDomain domain) throws BridgeTopologyException {
+        public void checkEF(BroadcastDomain domain) {
             assertEquals(0, domain.getForwarders(nodeEId).size());
             assertEquals(0, domain.getForwarders(nodeFId).size());
             List<SharedSegment> shsegs = domain.getSharedSegments();
@@ -2856,7 +2856,7 @@ public abstract class EnLinkdTestHelper {
             }
         }
 
-        public void checkDEF(BroadcastDomain domain) throws BridgeTopologyException {
+        public void checkDEF(BroadcastDomain domain) {
             assertEquals(0, domain.getForwarders(nodeDId).size());
             assertEquals(0, domain.getForwarders(nodeEId).size());
             assertEquals(0, domain.getForwarders(nodeFId).size());
@@ -2942,7 +2942,7 @@ public abstract class EnLinkdTestHelper {
             }
         }
 
-        public void checkDEFG(BroadcastDomain domain) throws BridgeTopologyException {
+        public void checkDEFG(BroadcastDomain domain) {
             assertEquals(0, domain.getForwarders(nodeDId).size());
             assertEquals(0, domain.getForwarders(nodeEId).size());
             assertEquals(0, domain.getForwarders(nodeFId).size());
@@ -3322,7 +3322,7 @@ public abstract class EnLinkdTestHelper {
 
         }
         
-    public void check2nodeTopology(BroadcastDomain domain, boolean revertedbblink) throws BridgeTopologyException {
+    public void check2nodeTopology(BroadcastDomain domain, boolean revertedbblink) {
         Set<BridgePortWithMacs> forwardersA = domain.getForwarders(nodeAId);
         Set<BridgePortWithMacs> forwardersB = domain.getForwarders(nodeBId);
         assertEquals(1, forwardersA.size());

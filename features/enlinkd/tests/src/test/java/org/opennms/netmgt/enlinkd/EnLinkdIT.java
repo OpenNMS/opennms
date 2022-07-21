@@ -303,7 +303,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
     }
     
     @Test 
-    public void testLoadTopology() throws BridgeTopologyException {
+    public void testLoadTopology() {
         final OnmsMonitoringLocation location = new OnmsMonitoringLocation(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID);
         ABCTopology topology = new ABCTopology();
         OnmsNode lnodeA = topology.nodeA;
