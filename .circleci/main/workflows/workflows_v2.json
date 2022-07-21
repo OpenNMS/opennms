@@ -185,7 +185,8 @@
             "requires": [
                 "tarball-assembly",
                 "horizon-deb-build",
-                "sentinel-deb-build"
+                "sentinel-deb-build",
+                "horizon-image"
             ],
             "filters": {
                 "branches": {
@@ -205,7 +206,8 @@
             "requires": [
                 "tarball-assembly",
                 "horizon-deb-build",
-                "sentinel-deb-build"
+                "sentinel-deb-build",
+                "horizon-image"
             ],
             "filters": {
                 "branches": {
@@ -225,7 +227,8 @@
             "requires": [
                 "tarball-assembly",
                 "horizon-deb-build",
-                "sentinel-deb-build"
+                "sentinel-deb-build",
+                "horizon-image"
             ],
             "filters": {
                 "branches": {
@@ -245,7 +248,8 @@
             "requires": [
                 "tarball-assembly",
                 "horizon-deb-build",
-                "sentinel-deb-build"
+                "sentinel-deb-build",
+                "horizon-image"
             ],
             "filters": {
                 "branches": {
