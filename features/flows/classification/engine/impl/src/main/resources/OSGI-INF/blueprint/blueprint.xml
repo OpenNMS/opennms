@@ -37,6 +37,8 @@
         <argument ref="classificationRuleDao"/>
     </bean>
 
+    <service ref="classificationRuleProvider" interface="org.opennms.netmgt.flows.classification.ClassificationRuleProvider" />
+
     <!-- Filter Service -->
     <bean id="filterService" class="org.opennms.netmgt.flows.classification.internal.DefaultFilterService">
         <argument ref="filterDao" />
@@ -45,6 +47,8 @@
         <argument ref="filterService" />
         <argument ref="classificationFilterCacheConfig" />
     </bean>
+
+    <service ref="cachingFilterService" interface="org.opennms.netmgt.flows.classification.FilterService" />
 
     <!-- Classification Engine -->
     <bean id="defaultClassificationEngine" class="org.opennms.netmgt.flows.classification.internal.DefaultClassificationEngine">
@@ -59,6 +63,9 @@
     <bean id="asyncReloadingClassificationEngine" class="org.opennms.netmgt.flows.classification.internal.AsyncReloadingClassificationEngine">
         <argument ref="timingClassificationEngine" />
     </bean>
+
+    <service ref="asyncReloadingClassificationEngine" interface="org.opennms.netmgt.flows.classification.ClassificationEngine"/>
+
     <bean id="classificationEngineInitializer" class="org.opennms.netmgt.flows.classification.internal.ClassificationEngineInitializer">
         <argument ref="timingClassificationEngine"/>
         <argument ref="sessionUtils" />
@@ -66,6 +73,7 @@
 
     <!-- Metrics -->
     <bean id="classificationMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
+
     <bean id="classificationMetricRegistryJmxReporterBuilder" class="com.codahale.metrics.JmxReporter" factory-method="forRegistry">
         <argument ref="classificationMetricRegistry"/>
     </bean>

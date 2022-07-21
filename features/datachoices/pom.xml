@@ -92,6 +92,11 @@
             <artifactId>org.apache.karaf.features.core</artifactId>
             <version>${karafVersion}</version>
         </dependency>
+        <dependency>
+            <groupId>org.opennms.features.bsm</groupId>
+            <artifactId>org.opennms.features.bsm.persistence.api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <!-- Test Dependencies -->
         <dependency>
