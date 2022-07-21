@@ -15,6 +15,7 @@ jobs:
           name: Rename Site zip file
           command: | 
              export OPENNMS_VERSION="$(.circleci/scripts/pom2version.sh pom.xml)"
+             ls ~/project/build/
              cp ~/project/build/site.zip "~/project/build/site-$OPENNMS_VERSION.zip"
       - store_artifacts:
           path: ~/project/build/site.zip
