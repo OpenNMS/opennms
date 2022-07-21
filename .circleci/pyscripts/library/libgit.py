@@ -40,6 +40,7 @@ class libgit:
         for e in keywords:
             key,value=e
             if key in keywords_dict:
+                print("Processing:",value)
                 if type(keywords_dict[key]) == list:
                     keywords_dict[key].append(value.replace(":","") if value.strip() else True)
                 else:
