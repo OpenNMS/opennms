@@ -282,7 +282,7 @@ public interface TopologyService {
         return create(segment.getDesignatedPort(), segment.getMacsOnSegment(), BridgeMacLink.BridgeMacLinkType.BRIDGE_LINK);
     }
 
-    static SharedSegment create(BridgeMacLink link) throws BridgeTopologyException {
+    static SharedSegment create(BridgeMacLink link) {
         SharedSegment segment = new SharedSegment();
         segment.getBridgePortsOnSegment().add(getFromBridgeMacLink(link));
         segment.getMacsOnSegment().add(link.getMacAddress());
@@ -292,7 +292,7 @@ public interface TopologyService {
         return segment;
     }
 
-    static SharedSegment create(BridgeBridgeLink link) throws BridgeTopologyException {
+    static SharedSegment create(BridgeBridgeLink link) {
         SharedSegment segment = new SharedSegment();
         segment.getBridgePortsOnSegment().add(getFromBridgeBridgeLink(link));
         segment.getBridgePortsOnSegment().add(getFromDesignatedBridgeBridgeLink(link));
@@ -427,7 +427,7 @@ public interface TopologyService {
 
     }
 
-    static TopologyShared of(SharedSegment shs, List<MacPort> macPortsOnSegment) throws BridgeTopologyException {
+    static TopologyShared of(SharedSegment shs, List<MacPort> macPortsOnSegment) {
         TopologyShared tps = new TopologyShared(new ArrayList<>(shs.getBridgePortsOnSegment()),
                                                 macPortsOnSegment, shs.getDesignatedPort());
 

@@ -427,7 +427,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     }
 
     @Test
-    public void testCleanTopology() throws BridgeTopologyException {
+    public void testCleanTopology() {
         TwoBridgeWithBackbonePortsTopology topology = new TwoBridgeWithBackbonePortsTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
@@ -473,7 +473,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     }
     
     @Test 
-    public void testCleanTopologyRoot() throws BridgeTopologyException {
+    public void testCleanTopologyRoot() {
         TwoBridgeWithBackbonePortsTopology topology = new TwoBridgeWithBackbonePortsTopology();
 
         BroadcastDomain domain = new BroadcastDomain();

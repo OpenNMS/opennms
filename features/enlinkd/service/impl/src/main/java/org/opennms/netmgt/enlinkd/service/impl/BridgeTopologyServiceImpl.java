@@ -52,7 +52,6 @@ import org.opennms.netmgt.enlinkd.persistence.api.IpNetToMediaDao;
 import org.opennms.netmgt.enlinkd.service.api.Bridge;
 import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry;
 import org.opennms.netmgt.enlinkd.service.api.BridgePort;
-import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyException;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.BroadcastDomain;
 import org.opennms.netmgt.enlinkd.service.api.MacPort;
@@ -469,14 +468,7 @@ public class BridgeTopologyServiceImpl extends TopologyServiceImpl implements Br
                     continue BBLDESI;
                 }
             }
-            try {
-                segments.add(TopologyService.create(link));
-            } catch (BridgeTopologyException e) {
-                LOG.error("getBridgeNodeSharedSegments: cannot create shared segment {}",
-                          e.getMessage(),
-                          e);
-                return new ArrayList<>();
-            }
+            segments.add(TopologyService.create(link));
         }
 
         Set<BridgePort> designated = new HashSet<>();
@@ -493,15 +485,8 @@ public class BridgeTopologyServiceImpl extends TopologyServiceImpl implements Br
                    continue BBL;
                }
            }
-           try {
-               segments.add(TopologyService.create(link));
-           } catch (BridgeTopologyException e) {
-               LOG.error("getBridgeSharedSegments: cannot create shared segment {}",
-                  e.getMessage(),
-                  e);
-               return new ArrayList<>();
-           }
-           }
+           segments.add(TopologyService.create(link));
+       }
        }
 
         MACLINK:for (BridgeMacLink link : m_bridgeMacLinkDao.findByNodeId(nodeid)) {
@@ -515,12 +500,7 @@ public class BridgeTopologyServiceImpl extends TopologyServiceImpl implements Br
                     continue MACLINK;
                 }
             }
-            try {
-                segments.add(TopologyService.create(link));
-            } catch (BridgeTopologyException e) {
-                LOG.error("getBridgeSharedSegments: cannot create shared segment {}", e.getMessage(),e);
-                return new ArrayList<>();
-            }
+            segments.add(TopologyService.create(link));
         }
         return segments;
     }
@@ -594,12 +574,7 @@ public class BridgeTopologyServiceImpl extends TopologyServiceImpl implements Br
                 }
             }
             if (segmentnotfound)  {
-                try {
-                    bblsegments.add(TopologyService.create(link));
-                } catch (BridgeTopologyException e) {
-                    LOG.error("getAllPersisted: cannot create shared segment {}", e.getMessage(),e);
-                    return domains;
-                }
+                bblsegments.add(TopologyService.create(link));
             }
             // set up domains
             if (rootnodetodomainnodemap.containsKey(link.getDesignatedNode().getId())) {
@@ -668,13 +643,8 @@ BML:    for (BridgeMacLink link : m_bridgeMacLinkDao.findAll()) {
                     continue BML;
                 }
             }
-            try {
-                bmlsegments.add(TopologyService.create(link));
-            } catch (BridgeTopologyException e) {
-                LOG.error("getAllPersisted: cannot create shared segment {}", e.getMessage(), e);
-                return domains;
-            }
-        }
+            bmlsegments.add(TopologyService.create(link));
+    }
                 
         for (Integer rootnode : rootnodetodomainnodemap.keySet()) {
             BroadcastDomain domain = new BroadcastDomain();
@@ -794,15 +764,9 @@ SEG:        for (SharedSegment segment : bmlsegments) {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("match: \n{}", dm.printTopology());
                 }
-                dm.getSharedSegments().forEach(shs -> {
-                    try {
-                        links.add(TopologyService.of(shs, macPortMap.stream().filter(mp ->
-                                        shs.getMacsOnSegment().containsAll(mp.getMacPortMap().keySet())).
-                                collect(Collectors.toList())));
-                    } catch (BridgeTopologyException e) {
-                        LOG.error("{} Cannot add shared segment to topology: {}", e.getMessage(), e.printTopology(), e);
-                    }
-                });
+                dm.getSharedSegments().forEach(shs -> links.add(TopologyService.of(shs, macPortMap.stream().filter(mp ->
+                                shs.getMacsOnSegment().containsAll(mp.getMacPortMap().keySet())).
+                        collect(Collectors.toList()))));
             });
         }
         return links;
