@@ -11,11 +11,15 @@ jobs:
           name: Build docs with Antora
           command: | 
              DOCSEARCH_ENABLED=true DOCSEARCH_ENGINE=lunr NODE_PATH="$(npm -g root)" antora --generator antora-site-generator-lunr --stacktrace generate antora-playbook-local.yml
-      #- run:
-      #    name: Rename Site zip file
-      #    command: | 
-      #       export OPENNMS_VERSION="$(.circleci/scripts/pom2version.sh pom.xml)"
-      #       mv ~/project/build/site.zip "~/project/build/site-$OPENNMS_VERSION.zip"
+      - run:
+          name: Rename Site zip file
+          command: | 
+             export OPENNMS_VERSION="$(.circleci/scripts/pom2version.sh pom.xml)"
+             mv ~/project/build/site.zip "~/project/build/site-$OPENNMS_VERSION.zip"
       - store_artifacts:
           path: ~/project/build/site.zip
           destination: site.zip
+      - store_artifacts:
+          path: ~/project/build/site-${OPENNMS_VERSION}.zip
+          destination: site-${OPENNMS_VERSION}.zip          
+    
