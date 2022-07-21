@@ -48,18 +48,6 @@ public interface TopologyService {
         return new TopologyConnection<>(left, right);
     }
 
-    static boolean loadTopologyEntry(BroadcastDomain domain, SharedSegment segment) {
-        for (BridgePort port: segment.getBridgePortsOnSegment()) {
-            for ( Bridge bridge: domain.getBridges() ) {
-                if ( port.getNodeId().intValue() == bridge.getNodeId().intValue()) {
-                    domain.getSharedSegments().add(segment);
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
     //   this=topSegment {tmac...} {(tbridge,tport)....}U{bridgeId, bridgeIdPortId}
     //        |
     //     bridge Id

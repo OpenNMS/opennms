@@ -660,7 +660,7 @@ BML:    for (BridgeMacLink link : m_bridgeMacLinkDao.findAll()) {
         
         for (SharedSegment segment : bblsegments) {
             for (BroadcastDomain cdomain: domains) {
-                if (TopologyService.loadTopologyEntry(cdomain,segment)) {
+                if (cdomain.loadTopologyEntry(segment)) {
                     break;
                 }
             }
@@ -668,13 +668,13 @@ BML:    for (BridgeMacLink link : m_bridgeMacLinkDao.findAll()) {
 
 SEG:        for (SharedSegment segment : bmlsegments) {
             for (BroadcastDomain cdomain: domains) {
-                if (TopologyService.loadTopologyEntry(cdomain,segment)) {
+                if (cdomain.loadTopologyEntry(segment)) {
                     continue SEG;
                 }
             }
             BroadcastDomain domain = new BroadcastDomain();
             TopologyService.createRootBridge(domain,segment.getDesignatedBridge());
-            TopologyService.loadTopologyEntry(domain, segment);
+            domain.loadTopologyEntry(segment);
             domains.add(domain);
         }
 
