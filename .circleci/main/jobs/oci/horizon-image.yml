@@ -1,8 +1,9 @@
 jobs:
   horizon-image:
     machine:
-      image: debian-build-executor
-    resource_class: xlarge
+      image: ubuntu-2004:202010-01
+    environment:
+      DOCKER_CLI_EXPERIMENTAL: enabled
     steps:
       - attach_workspace: 
           at: ~/
