@@ -44,7 +44,7 @@ jobs:
       #      env DOCKER_ARCH="linux/amd64" ./build_container_image.sh
       - store_artifacts:
           when: always
-          path: ~/build-results
+          path: ~/build-results 
           destination: build-results
       - store_artifacts:
           path: ~/project/target/debs
@@ -55,6 +55,11 @@ jobs:
       - cache-workflow-assets:
           cache_prefix: deb-horizon
           source_path: target/debs
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - .artifacts
+
       #- cache-oci:
       #    key: horizon
       #    path: opennms-container/horizon/images/
