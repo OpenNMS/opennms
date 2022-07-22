@@ -173,6 +173,15 @@ jobs:
         type: string
     steps:
       - cached-checkout
+      - run:
+          name: Environment Test
+          command: |
+            echo "START"
+            echo << pipeline.parameters.trigger-coverage-api >>
+            echo << pipeline.parameters.trigger-prebuild >>
+            echo << pipeline.parameters.trigger-automation >>
+            echo << pipeline.parameters.trigger-flaky >>
+            echo "STOP"
       # copied from https://circleci.com/developer/orbs/orb/circleci/path-filtering
       # we do it ourselves because otherwise we have to do a full un-cached checkout every time
       #- run:
