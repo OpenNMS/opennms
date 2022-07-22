@@ -55,19 +55,6 @@ public interface TopologyService {
         return tps;
     }
 
-    static MacPort create(IpNetToMedia media) {
-
-        Set<InetAddress> ips = new HashSet<>();
-        ips.add(media.getNetAddress());
-
-        MacPort port = new MacPort();
-        port.setNodeId(media.getNodeId());
-        port.setIfIndex(media.getIfIndex());
-        port.setMacPortName(media.getPort());
-        port.getMacPortMap().put(media.getPhysAddress(), ips);
-        return port;
-    }
-
     boolean parseUpdates();
     void updatesAvailable();
     boolean hasUpdates();

@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.enlinkd.service.impl;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -45,6 +46,7 @@ import org.opennms.netmgt.enlinkd.model.BridgeElement;
 import org.opennms.netmgt.enlinkd.model.BridgeMacLink;
 import org.opennms.netmgt.enlinkd.model.BridgeMacLink.BridgeMacLinkType;
 import org.opennms.netmgt.enlinkd.model.BridgeStpLink;
+import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
 import org.opennms.netmgt.enlinkd.persistence.api.BridgeBridgeLinkDao;
 import org.opennms.netmgt.enlinkd.persistence.api.BridgeElementDao;
 import org.opennms.netmgt.enlinkd.persistence.api.BridgeMacLinkDao;
@@ -85,6 +87,19 @@ public class BridgeTopologyServiceImpl extends TopologyServiceImpl implements Br
     private final Map<Integer, Set<BridgeForwardingTableEntry>> m_nodetoBroadcastDomainMap = new HashMap<>();
     private final Set<Integer> m_bridgecollectionsscheduled = new HashSet<>();
     volatile Set<BroadcastDomain> m_domains;
+
+    private MacPort acreate(IpNetToMedia media) {
+
+        Set<InetAddress> ips = new HashSet<>();
+        ips.add(media.getNetAddress());
+
+        MacPort port = new MacPort();
+        port.setNodeId(media.getNodeId());
+        port.setIfIndex(media.getIfIndex());
+        port.setMacPortName(media.getPort());
+        port.getMacPortMap().put(media.getPhysAddress(), ips);
+        return port;
+    }
 
     @Override
     public String getBridgeDesignatedIdentifier(Bridge bridge) {
@@ -754,6 +769,12 @@ SEG:        for (SharedSegment segment : bmlsegments) {
                 findAll().forEach(m -> {
                     boolean merge = false;
                     MacPort macport=new MacPort();
+                    Set<InetAddress> ips = new HashSet<>();
+                    ips.add(m.getNetAddress());
+                    macport.setNodeId(m.getNodeId());
+                    macport.setIfIndex(m.getIfIndex());
+                    macport.setMacPortName(m.getPort());
+                    macport.getMacPortMap().put(m.getPhysAddress(), ips);
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("getMacPorts: parsing: {}",m);
                     }
@@ -762,14 +783,14 @@ SEG:        for (SharedSegment segment : bmlsegments) {
                             macport = nodeIfindexToMacPortTable.get(m.getNode().getId(), m.getIfIndex());
                             merge=true;
                         } else {
-                            nodeIfindexToMacPortTable.put(m.getNode().getId(), m.getIfIndex(), TopologyService.create(m));
+                            nodeIfindexToMacPortTable.put(m.getNode().getId(), m.getIfIndex(), macport);
                         }
                     } else {
                         if (macToMacPortMap.containsKey(m.getPhysAddress())) {
                             macport=macToMacPortMap.get(m.getPhysAddress());
                             merge=true;
                         } else {
-                            macToMacPortMap.put(m.getPhysAddress(), TopologyService.create(m));
+                            macToMacPortMap.put(m.getPhysAddress(), macport);
                         }
                     }
                     if (merge) {
