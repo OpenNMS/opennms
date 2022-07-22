@@ -55,13 +55,6 @@ public interface TopologyService {
         return tps;
     }
 
-    static Bridge create(BroadcastDomain domain, Integer nodeid, Integer rootport) {
-        Bridge bridge = new Bridge(nodeid);
-        bridge.setRootPort(rootport);
-        domain.getBridges().add(bridge);
-        return bridge;
-    }
-
     static MacPort create(IpNetToMedia media) {
 
         Set<InetAddress> ips = new HashSet<>();

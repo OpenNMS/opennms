@@ -678,10 +678,10 @@ BML:    for (BridgeMacLink link : m_bridgeMacLinkDao.findAll()) {
             Bridge bridge = new Bridge(rootNodeid);
             bridge.setRootBridge();
             domain.getBridges().add(bridge);
-            for (Integer bridgenodeId: rootnodetodomainnodemap.get(rootNodeid)) {
-                TopologyService.create(domain,
-                              bridgenodeId, designatebridgemap.get(
-                                                                      bridgenodeId).getBridgePort());
+            for (Integer nodeid: rootnodetodomainnodemap.get(rootNodeid)) {
+                Bridge newbridge = new Bridge(nodeid);
+                newbridge.setRootPort(designatebridgemap.get(nodeid).getBridgePort());
+                domain.getBridges().add(newbridge);
             }
             domains.add(domain);
         }
