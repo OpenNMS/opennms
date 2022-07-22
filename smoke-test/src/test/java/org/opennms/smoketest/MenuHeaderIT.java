@@ -133,7 +133,7 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         final String helpMenuName = "nav-help-top";
         clickMenuItemWithIcon(helpMenuName, "Help", "opennms/help/index.jsp");
         findElementByXpath("//div[@class='card-header']/span[text()='Documentation']");
-        clickMenuItemWithIcon(helpMenuName, "Support", "opennms/support/index.htm");
+        clickMenuItemWithIcon(helpMenuName, "Support", "opennms/support/index.jsp");
         findElementByXpath("//div[@class='card-header']/span[text()='Commercial Support']");
         clickMenuItemWithIcon(helpMenuName, "About", "opennms/about/index.jsp");
         findElementByXpath("//div[@class='card-header']/span[text()='Version Details']");

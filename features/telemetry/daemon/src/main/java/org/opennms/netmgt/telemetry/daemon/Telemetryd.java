@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,12 +30,17 @@ package org.opennms.netmgt.telemetry.daemon;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.core.ipc.sink.api.MessageConsumerManager;
 import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
 import org.opennms.netmgt.events.api.model.IEvent;
+import org.opennms.core.sysprops.SystemProperties;
+import org.opennms.netmgt.telemetry.api.receiver.GracefulShutdownListener;
 import org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry;
 import org.opennms.netmgt.daemon.DaemonTools;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
@@ -157,16 +162,33 @@ public class Telemetryd implements SpringServiceDaemon {
     public synchronized void destroy() {
         LOG.info("{} is stopping.", NAME);
 
+        List<Future<?>> stopFutures = new ArrayList<>();
+
         // Stop the listeners
         for (Listener listener : listeners) {
             try {
                 LOG.info("Stopping {} listener.", listener.getName());
                 listener.stop();
+                if (listener instanceof GracefulShutdownListener) {
+                    Future<?> future = ((GracefulShutdownListener) listener).getShutdownFuture();
+                    if (future == null) {
+                        LOG.warn("Shutdown future is missing for {}.", listener.getName());
+                    } else {
+                        stopFutures.add(future);
+                    }
+                }
             } catch (InterruptedException e) {
                 LOG.warn("Error while stopping listener.", e);
             }
         }
         listeners.clear();
+
+        // wait for 60s (overridable by property)
+        try {
+            this.waitForStop(stopFutures, SystemProperties.getInteger("org.opennms.features.telemetry.shutdownTimeout", 60));
+        } catch (ExecutionException | InterruptedException e) {
+            LOG.warn("Error while waiting stop future.", e);
+        }
 
         // Stop the dispatchers
         for (AsyncDispatcher<?> dispatcher : telemetryRegistry.getDispatchers()) {
@@ -193,6 +215,42 @@ public class Telemetryd implements SpringServiceDaemon {
         consumers.clear();
 
         LOG.info("{} is stopped.", NAME);
+    }
+
+    /**
+     * It will wait for the futures by maxTime (second)
+     * @param futures shutdown future
+     * @param maxTime
+     */
+    private void waitForStop(List<Future<?>> futures, int maxTime) throws ExecutionException, InterruptedException {
+        Objects.requireNonNull(futures);
+        Object lock = new Object();
+        synchronized (lock) {
+            int i = 0;
+            while (i < maxTime) {
+                boolean allDone = true;
+                for (Future<?> future : futures) {
+                    if (!future.isDone()) {
+                        allDone = false;
+                        break;
+                    }
+                }
+                if (allDone) {
+                    if (LOG.isInfoEnabled()) {
+                        StringBuilder builder = new StringBuilder();
+                        for (Future<?> future : futures) {
+                            builder.append(future.get());
+                            builder.append(" ");
+                        }
+                        LOG.info("Future done time: {}s output: {}", i, builder);
+                    }
+                    return;
+                }
+                lock.wait(1000L);
+                i++;
+            }
+            LOG.warn("Fail to wait for stop future. Futures: {} maxTime: {}", futures, maxTime);
+        }
     }
 
     @Override

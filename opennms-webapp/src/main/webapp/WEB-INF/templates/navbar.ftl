@@ -77,7 +77,7 @@
                         <i class="fa fa-fw fa-info-circle"></i>&nbsp; About
                     </a>
                     <#if isAdmin >
-                        <a class="dropdown-item" name="nav-admin-support" href="${baseHref}support/index.htm" title="Support">
+                        <a class="dropdown-item" name="nav-admin-support" href="${baseHref}support/index.jsp" title="Support">
                             <i class="fa fa-fw fa-life-ring"></i>&nbsp; Support
                         </a>
                     </#if>

@@ -543,6 +543,14 @@ if [ "%{enable_snapshots}" = 1 ]; then
 	OPTS_UPDATE_POLICY="-DupdatePolicy=always"
 fi
 
+OPTS_PRODUCTION=""
+
+case "${CIRCLE_BRANCH}" in
+	"master"*|"release-"*|develop)
+		OPTS_PRODUCTION="-Dbuild.type=production"
+	;;
+esac
+
 if [ "%{skip_compile}" = 1 ]; then
 	echo "=== SKIPPING COMPILE ==="
 	TOPDIR=`pwd`
@@ -550,6 +558,7 @@ if [ "%{skip_compile}" = 1 ]; then
 		$OPTS_SKIP_TESTS \
 		$OPTS_SETTINGS_XML \
 		$OPTS_ENABLE_SNAPSHOTS \
+		$OPTS_PRODUCTION \
 		-Dinstall.version="%{version}-%{release}" \
 		-Ddist.name="%{name}-%{version}-%{release}.%{_arch}" \
 		-Dopennms.home="%{instprefix}" \
@@ -561,6 +570,7 @@ else
 		$OPTS_SKIP_TESTS \
 		$OPTS_SETTINGS_XML \
 		$OPTS_ENABLE_SNAPSHOTS \
+		$OPTS_PRODUCTION \
 		-Daether.connector.basic.threads=1 \
 		-Daether.connector.resumeDownloads=false \
 		-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
@@ -588,6 +598,7 @@ echo "=== BUILDING ASSEMBLIES ==="
 	$OPTS_SKIP_TESTS \
 	$OPTS_SETTINGS_XML \
 	$OPTS_ENABLE_SNAPSHOTS \
+	$OPTS_PRODUCTION \
 	-Daether.connector.basic.threads=1 \
 	-Daether.connector.resumeDownloads=false \
 	-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
@@ -1090,11 +1101,10 @@ if [ ! -e "$ROOT_INST/etc/java.conf" ]; then
 fi
 
 echo ""
-echo " *** Installation complete.  You must still run the installer at"
+echo " *** Installation complete. You must still run the installer at"
 echo " *** \$OPENNMS_HOME/bin/install -dis to be sure your database is up"
-echo " *** to date before you start %{_descr}.  See the install guide at"
-echo " *** http://www.opennms.org/wiki/Installation:RPM and the"
-echo " *** release notes for details."
+echo " *** to date before you start OpenNMS. See the install guide and"
+echo " *** release notes for details at https://docs.opennms.com."
 echo ""
 
 %postun -p /bin/bash core

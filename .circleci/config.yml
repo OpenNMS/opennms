@@ -3,13 +3,13 @@ version: 2.1
 executors:
   centos-build-executor:
     docker:
-      - image: opennms/build-env:8u322b06-3.8.4-b8183
+      - image: opennms/build-env:8u322b06-3.8.4-b8247
   debian-build-executor:
     docker:
-      - image: opennms/build-env:debian-jdk8-b8175
+      - image: opennms/build-env:debian-jdk8-b8242
   docker-executor:
     docker:
-      - image: docker:20.10.1-git
+      - image: docker:20.10-git
   integration-test-executor:
     machine:
       image: ubuntu-2004:202010-01
@@ -49,6 +49,12 @@ defaults: &defaults
       description: the auto-merge target branch (escaped, no slashes)
       type: string
       default: foundation-2021
+
+parameters:
+  trigger-flaky:
+    description: whether to enable running flaky smoke tests
+    type: boolean
+    default: false
 
 docker_container_config: &docker_container_config
   executor: docker-executor
@@ -124,7 +130,7 @@ commands:
                 -Pbuild-bamboo \
                 -Prun-expensive-tasks \
                 -Psmoke \
-                --legacy-local-repository \
+                -Denable.license=true \
                 --batch-mode \
                 dependency:resolve-plugins \
                 de.qaware.maven:go-offline-maven-plugin:resolve-dependencies
@@ -275,11 +281,12 @@ commands:
             mvn clean -DskipTests=true
             << parameters.node-memory >>
             export MAVEN_OPTS="$MAVEN_OPTS -Xmx8g -XX:ReservedCodeCacheSize=1g"
-            MAVEN_TARGETS="install"
+            MAVEN_ARGS="install"
             case "${CIRCLE_BRANCH}" in
-              "master-"*|"release-"*|develop|jira/NMS-13820)
+              "master"*|"release-"*|develop)
+                # release branches get full javadoc
                 mkdir -p target/artifacts
-                MAVEN_TARGETS="$MAVEN_TARGETS javadoc:aggregate"
+                MAVEN_ARGS="-Dbuild.type=production $MAVEN_ARGS javadoc:aggregate"
                 ;;
             esac
             ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
@@ -289,9 +296,10 @@ commands:
               -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
               -DvaadinJavaMaxMemory=<< parameters.vaadin-javamaxmem >> \
               -DmaxCpus=<< parameters.number-vcpu >> \
+              -Prun-expensive-tasks \
               -Psmoke \
               --batch-mode \
-              $MAVEN_TARGETS
+              $MAVEN_ARGS
             if [ -d target/site/apidocs ]; then
               pushd target/site/apidocs
                 tar -czf "../../artifacts/opennms-${OPENNMS_VERSION}-javadoc.tar.gz" *
@@ -303,8 +311,8 @@ commands:
                 -Daether.connector.resumeDownloads=false \
                 -Daether.connector.basic.threads=1 \
                 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
-                -DskipPdfGeneration=false \
                 -P'!jdk7+' \
+                -Prun-expensive-tasks \
                 --batch-mode \
                 install
             popd
@@ -367,9 +375,9 @@ commands:
           when: always
           command: |
             mkdir -p ~/generated-tests
-            cp ./surefire_classname* ~/generated-tests/
-            cp ./failsafe_classname* ~/generated-tests/
-            cp /tmp/this_node* ~/generated-tests/
+            cp ./surefire_classname* ~/generated-tests/ || :
+            cp ./failsafe_classname* ~/generated-tests/ || :
+            cp /tmp/this_node* ~/generated-tests/       || :
       - when:
           condition: << parameters.run-code-coverage >>
           steps:
@@ -539,22 +547,31 @@ workflows:
             - build
           filters:
             branches:
-              ignore:
-                - /^merge-foundation.*/
+              only:
+                - /^foundation.*/
+                - /^release-.*/
+                - develop
+                - /.*smoke.*/
       - minion-rpm-build:
           requires:
             - build
           filters:
             branches:
-              ignore:
-                - /^merge-foundation.*/
+              only:
+                - /^foundation.*/
+                - /^release-.*/
+                - develop
+                - /.*smoke.*/
       - sentinel-rpm-build:
           requires:
             - build
           filters:
             branches:
-              ignore:
-                - /^merge-foundation.*/
+              only:
+                - /^foundation.*/
+                - /^release-.*/
+                - develop
+                - /.*smoke.*/
       - integration-test:
           requires:
             - build
@@ -626,23 +643,23 @@ workflows:
                 - /^features.*/
                 - /.*smoke.*/
                 - /^dependabot.*/
-      - smoke-test-minimal:
-          requires:
-            - tarball-assembly
-            - horizon-rpm-build
-            - tarball-assembly
-            - sentinel-rpm-build
-          filters:
-            branches:
-              ignore:
-                - develop
-                - /^master-.*/
-                - /^release-.*/
-                - /^foundation.*/
-                - /^merge-foundation.*/
-                - /^features.*/
-                - /.*smoke.*/
-                - /^dependabot.*/
+      #- smoke-test-minimal:
+      #    requires:
+      #      - tarball-assembly
+      #      - horizon-rpm-build
+      #      - minion-rpm-build
+      #      - sentinel-rpm-build
+      #    filters:
+      #      branches:
+      #        only:
+      #          - develop
+      #          - /^master-.*/
+      #          - /^release-.*/
+      #          - /^foundation.*/
+      #          - /^merge-foundation.*/
+      #          - /^features.*/
+      #          - /.*smoke.*/
+      #          - /^dependabot.*/
       - horizon-publish-oci:
           requires:
             - horizon-deb-build
@@ -652,7 +669,6 @@ workflows:
             - smoke-test-core
             - smoke-test-flaky
             - smoke-test-minion
-            - smoke-test-minimal
             - smoke-test-sentinel
           filters:
             branches:
@@ -669,7 +685,6 @@ workflows:
             - smoke-test-core
             - smoke-test-flaky
             - smoke-test-minion
-            - smoke-test-minimal
             - smoke-test-sentinel
           filters:
             branches:
@@ -729,7 +744,6 @@ workflows:
             - smoke-test-core
             - smoke-test-flaky
             - smoke-test-minion
-            - smoke-test-minimal
             - smoke-test-sentinel
           filters:
             branches:
@@ -753,7 +767,6 @@ workflows:
             - smoke-test-core
             - smoke-test-flaky
             - smoke-test-minion
-            - smoke-test-minimal
             - smoke-test-sentinel
           filters:
             branches:
@@ -767,7 +780,6 @@ workflows:
             - smoke-test-flaky
             - smoke-test-minion
             - smoke-test-sentinel
-            - smoke-test-minimal
             - integration-test
           filters:
             branches:
@@ -784,7 +796,6 @@ workflows:
             - smoke-test-core
             - smoke-test-flaky
             - smoke-test-minion
-            - smoke-test-minimal
             - smoke-test-sentinel
           filters:
             branches:
@@ -808,7 +819,7 @@ jobs:
     machine:
       image: ubuntu-2004:202010-01
       docker_layer_caching: true
-    resource_class: large
+    resource_class: xlarge
     environment:
       DOCKER_CLI_EXPERIMENTAL: enabled
     parameters:
@@ -836,8 +847,14 @@ jobs:
           command: |
             # install fake makensis to satisfy the assemble dependency
             sudo cp .circleci/scripts/makensis.py /usr/local/bin/makensis
-            export MAVEN_OPTS="-Xmx4g -Xms4g"
-            # general assembly
+            export MAVEN_OPTS="-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
+            export MAVEN_ARGS="install"
+            case "${CIRCLE_BRANCH}" in
+              "master"*|"release-"*|develop)
+                # release branches should enable extra "production" stuff like license indexing
+                MAVEN_ARGS="-Dbuild.type=production $MAVEN_ARGS"
+                ;;
+            esac
             ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
               -DupdatePolicy=never \
               -Daether.connector.resumeDownloads=false \
@@ -848,7 +865,8 @@ jobs:
               -Pbuild-bamboo \
               -Prun-expensive-tasks \
               -Dopennms.home=/opt/opennms \
-              install --batch-mode
+              --batch-mode \
+              $MAVEN_ARGS
       - run:
           name: Collect Artifacts
           command: |
@@ -861,6 +879,7 @@ jobs:
             cp ./opennms-assemblies/xsds/target/*-xsds.tar.gz "./target/artifacts/opennms-${OPENNMS_VERSION}-xsds.tar.gz"
             cp opennms-doc/guide-all/target/*.tar.gz "./target/artifacts/opennms-${OPENNMS_VERSION}-docs.tar.gz"
             cp target/*-source.tar.gz ./target/artifacts/
+            cp opennms-full-assembly/target/generated-sources/license/THIRD-PARTY.txt ./target/artifacts/ || :
       - run:
           name: Build Minion OCI
           command: |
@@ -928,7 +947,7 @@ jobs:
   horizon-rpm-build:
     executor: centos-build-executor
     # Larger memory footprint required to speed up builds using Takari smartbuilder
-    resource_class: large
+    resource_class: xlarge
     steps:
       - attach_workspace:
           at: ~/
@@ -940,6 +959,7 @@ jobs:
           command: |
             export NODE_OPTIONS=--max_old_space_size=1024
             export CCI_MAXCPU=4
+            export MAVEN_OPTS="-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
             .circleci/scripts/makerpm.sh tools/packages/opennms/opennms.spec
       - sign-packages/sign-rpms:
           skip_if_forked_pr: true
@@ -969,7 +989,7 @@ jobs:
     executor: centos-build-executor
     # Larger memory footprint required to speed up builds using Takari smartbuilder
     # Will need to increase resource class if horizon-rpm-build is under 15 min
-    resource_class: large
+    resource_class: xlarge
     steps:
       - attach_workspace:
           at: ~/
@@ -982,6 +1002,7 @@ jobs:
             export NODE_OPTIONS=--max_old_space_size=1024
             export CCI_MAXCPU=4
             export CCI_VAADINJAVAMAXMEM=768m
+            export MAVEN_OPTS="-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
             .circleci/scripts/makerpm.sh tools/packages/minion/minion.spec
       - sign-packages/sign-rpms:
           skip_if_forked_pr: true
@@ -998,7 +1019,7 @@ jobs:
     executor: centos-build-executor
     # Larger memory footprint required to speed up builds using Takari smartbuilder
     # Will need to increase resource class if horizon-rpm-build is under 19 min
-    resource_class: large
+    resource_class: xlarge
     steps:
       - attach_workspace:
           at: ~/
@@ -1011,6 +1032,7 @@ jobs:
             export NODE_OPTIONS=--max_old_space_size=1024
             export CCI_MAXCPU=4
             export CCI_VAADINJAVAMAXMEM=768m
+            export MAVEN_OPTS="-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
             .circleci/scripts/makerpm.sh tools/packages/sentinel/sentinel.spec
       - sign-packages/sign-rpms:
           skip_if_forked_pr: true
@@ -1055,6 +1077,7 @@ jobs:
           command: |
             export NODE_OPTIONS=--max_old_space_size=1024
             export CCI_MAXCPU=2
+            export MAVEN_OPTS="-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
             .circleci/scripts/makedeb.sh opennms
       - sign-packages/sign-debs:
           skip_if_forked_pr: true
@@ -1083,7 +1106,7 @@ jobs:
           source_path: target/debs
   minion-deb-build:
     executor: debian-build-executor
-    resource_class: large
+    resource_class: xlarge
     steps:
       - attach_workspace:
           at: ~/
@@ -1096,6 +1119,7 @@ jobs:
             export NODE_OPTIONS=--max_old_space_size=1024
             export CCI_MAXCPU=4
             export CCI_VAADINJAVAMAXMEM=768m
+            export MAVEN_OPTS="-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
             .circleci/scripts/makedeb.sh minion
       - sign-packages/sign-debs:
           skip_if_forked_pr: true
@@ -1110,7 +1134,7 @@ jobs:
           source_path: target/debs
   sentinel-deb-build:
     executor: debian-build-executor
-    resource_class: large
+    resource_class: xlarge
     steps:
       - attach_workspace:
           at: ~/
@@ -1123,6 +1147,7 @@ jobs:
             export NODE_OPTIONS=--max_old_space_size=1024
             export CCI_MAXCPU=4
             export CCI_VAADINJAVAMAXMEM=768m
+            export MAVEN_OPTS="$MAVEN_OPTS -Xmx8g -XX:ReservedCodeCacheSize=1g"
             .circleci/scripts/makedeb.sh sentinel
       - sign-packages/sign-debs:
           skip_if_forked_pr: true
@@ -1167,7 +1192,8 @@ jobs:
             ./publish.sh
   integration-test:
     executor: integration-test-executor
-    parallelism: 4
+    parallelism: 8
+    resource_class: xlarge
     steps:
       - attach_workspace:
           at: ~/
@@ -1175,7 +1201,8 @@ jobs:
           rerun-failtest-count: 1
   integration-test-with-coverage:
     executor: integration-test-executor
-    parallelism: 8
+    parallelism: 10
+    resource_class: xlarge
     steps:
       - attach_workspace:
           at: ~/
@@ -1211,10 +1238,20 @@ jobs:
     # medium class which has 2 vCPUs and 8 GB RAM
     #resource_class: large
     steps:
-      - attach_workspace:
-          at: ~/
-      - run-smoke-tests:
-          suite: core
+      - run:
+          name: "skip if flaky tests are enabled"
+          command: echo "trigger-flaky=<< pipeline.parameters.trigger-flaky >>"
+      - when:
+          condition:
+            not:
+              or:
+                - << pipeline.parameters.trigger-flaky >>
+                - matches: { pattern: "^.*flaky.*$", value: << pipeline.git.branch >> }
+          steps:
+            - attach_workspace:
+                at: ~/
+            - run-smoke-tests:
+                suite: core
   smoke-test-flaky:
     executor: smoke-test-executor
     parallelism: 5
@@ -1222,10 +1259,19 @@ jobs:
     # medium class which has 2 vCPUs and 8 GB RAM
     #resource_class: large
     steps:
-      - attach_workspace:
-          at: ~/
-      - run-smoke-tests:
-          suite: flaky
+      - run:
+          name: "run if flaky tests are enabled"
+          command: echo "trigger-flaky=<< pipeline.parameters.trigger-flaky >>"
+      - when:
+          condition:
+            or:
+              - << pipeline.parameters.trigger-flaky >>
+              - matches: { pattern: "^.*flaky.*$", value: << pipeline.git.branch >> }
+          steps:
+            - attach_workspace:
+                at: ~/
+            - run-smoke-tests:
+                suite: flaky
   smoke-test-minion:
     executor: smoke-test-executor
     parallelism: 4
@@ -1233,10 +1279,20 @@ jobs:
     # medium class which has 2 vCPUs and 8 GB RAM
     #resource_class: large
     steps:
-      - attach_workspace:
-          at: ~/
-      - run-smoke-tests:
-          suite: minion
+      - run:
+          name: "skip if flaky tests are enabled"
+          command: echo "trigger-flaky=<< pipeline.parameters.trigger-flaky >>"
+      - when:
+          condition:
+            not:
+              or:
+                - << pipeline.parameters.trigger-flaky >>
+                - matches: { pattern: "^.*flaky.*$", value: << pipeline.git.branch >> }
+          steps:
+            - attach_workspace:
+                at: ~/
+            - run-smoke-tests:
+                suite: minion
   smoke-test-sentinel:
     executor: smoke-test-executor
     parallelism: 5
@@ -1244,10 +1300,20 @@ jobs:
     # medium class which has 2 vCPUs and 8 GB RAM
     #resource_class: large
     steps:
-      - attach_workspace:
-          at: ~/
-      - run-smoke-tests:
-          suite: sentinel
+      - run:
+          name: "skip if flaky tests are enabled"
+          command: echo "trigger-flaky=<< pipeline.parameters.trigger-flaky >>"
+      - when:
+          condition:
+            not:
+              or:
+                - << pipeline.parameters.trigger-flaky >>
+                - matches: { pattern: "^.*flaky.*$", value: << pipeline.git.branch >> }
+          steps:
+            - attach_workspace:
+                at: ~/
+            - run-smoke-tests:
+                suite: sentinel
   smoke-test-minimal:
     executor: smoke-test-executor
     steps:

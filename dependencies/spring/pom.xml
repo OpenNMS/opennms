@@ -27,9 +27,15 @@
       <version>${springVersion}</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.servicemix.bundles</groupId>
-      <artifactId>org.apache.servicemix.bundles.spring-beans</artifactId>
-      <version>${springVersion}</version>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>org.opennms.dependencies.spring-beans-42-shaded</artifactId>
+      <version>${project.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.servicemix.bundles</groupId>
+          <artifactId>org.apache.servicemix.bundles.spring-beans</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.servicemix.bundles</groupId>
@@ -132,20 +138,9 @@
       <type>pom</type>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-core-asl</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-mapper-asl</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-jaxrs</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-xc</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jackson1-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
     <!-- Get the JMS spec (javax.jms.*) so that spring-jms can load in OSGi -->
     <dependency>

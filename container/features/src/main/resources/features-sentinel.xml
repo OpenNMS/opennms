@@ -207,6 +207,7 @@
     <!-- Newts -->
     <feature name="sentinel-newts" description="OpenNMS :: Sentinel :: Newts" version="${project.version}">
         <feature>sentinel-core</feature>
+        <feature>groovy</feature>
         <feature>guava</feature>
         <feature>opennms-measurements-api</feature>
         <feature>opennms-collection-api</feature>
@@ -221,9 +222,6 @@
         <bundle dependency="true">mvn:org.apache.commons/commons-pool2/2.4.2</bundle>
         <bundle dependency="true">mvn:redis.clients/jedis/2.8.1</bundle>
         <bundle dependency="true">mvn:args4j/args4j/${args4jVersion}</bundle>
-
-        <!-- Add Groovy Script Engine -->
-        <bundle dependency="true">mvn:org.codehaus.groovy/groovy-all/${groovyVersion}</bundle>
 
         <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.persistence.osgi/${project.version}</bundle>
         <bundle>mvn:org.opennms.features/org.opennms.features.newts/${project.version}</bundle>

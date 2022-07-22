@@ -99,7 +99,7 @@
 
           <div class="form-group">
             <label for="j_password" class="sr-only">Password</label>
-            <input type="password" class="form-control input-underline form-control-lg" id="input_j_password" name="j_password" placeholder="Password" autocomplete="current-password" required>
+            <input type="password" class="form-control input-underline form-control-lg" id="input_j_password" name="j_password" placeholder="Password" autocomplete="off" required>
           </div>
 
           <c:if test="${not empty param.session_expired}">

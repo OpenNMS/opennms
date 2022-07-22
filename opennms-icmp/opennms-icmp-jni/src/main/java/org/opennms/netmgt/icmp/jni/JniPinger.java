@@ -44,8 +44,8 @@ import org.opennms.netmgt.icmp.ParallelPingResponseCallback;
 import org.opennms.netmgt.icmp.PingResponseCallback;
 import org.opennms.netmgt.icmp.Pinger;
 import org.opennms.netmgt.icmp.SinglePingResponseCallback;
-import org.opennms.protocols.rt.IDBasedRequestLocator;
-import org.opennms.protocols.rt.RequestTracker;
+import org.opennms.core.tracker.IDBasedRequestLocator;
+import org.opennms.core.tracker.RequestTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -152,7 +152,7 @@ public class JniPinger implements Pinger {
             m_error = ioe;
             final String errorMessage = m_error.getMessage().toLowerCase();
             if (errorMessage.contains("permission denied") || errorMessage.contains("operation not permitted")) {
-                LOG.error("Permission error received while attempting to open ICMP socket. See https://wiki.opennms.org/wiki/ICMP for information on configuring ICMP for non-root.");
+                LOG.error("Permission error received while attempting to open ICMP socket. See https://docs.opennms.com/ for information on configuring ICMP for non-root.");
             }
             s_pingTracker = null;
             throw ioe;
