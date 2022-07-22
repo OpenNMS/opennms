@@ -44,7 +44,7 @@ jobs:
       #      env DOCKER_ARCH="linux/amd64" ./build_container_image.sh
       - store_artifacts:
           when: always
-          path: ~/build-results 
+          path: ~/build-results
           destination: build-results
       - store_artifacts:
           path: ~/project/target/debs
