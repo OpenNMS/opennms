@@ -221,8 +221,15 @@ for e in main_yml_content:
                 else:
                     sample_workflow=workflow
             if build_components["build"]["coverage"]:
-                print("build> coverage : NOT IMPLEMENTED ",libyaml.tell_extended_requirements('weekly-coverage'))
-        
+                print("build> coverage :",libyaml.tell_extended_requirements('weekly-coverage'))
+                workflow=libyaml.generate_workflows(workflow_data,"weekly-coverage",level,sample_workflow)
+                if len(sample_workflow)>1:
+                    for e in workflow:
+                        print("weekly-coverage","Looking at",e)
+                        if e not in sample_workflow:
+                            sample_workflow.append(e)
+                else:
+                    sample_workflow=workflow
             if build_components["publish"]["packages"]:
                 libyaml.clean()
                 print("publish> packages :",libyaml.tell_extended_requirements('build-deploy'))
