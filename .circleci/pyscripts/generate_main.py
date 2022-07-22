@@ -221,7 +221,7 @@ for e in main_yml_content:
                 else:
                     sample_workflow=workflow
             if build_components["build"]["coverage"]:
-                print("build> coverage : NOT IMPLEMENTED ",libyaml.tell_extended_requirements('coverage'))
+                print("build> coverage : NOT IMPLEMENTED ",libyaml.tell_extended_requirements('weekly-coverage'))
         
             if build_components["publish"]["packages"]:
                 libyaml.clean()
