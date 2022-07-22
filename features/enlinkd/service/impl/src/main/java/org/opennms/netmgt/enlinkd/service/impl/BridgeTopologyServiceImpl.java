@@ -38,6 +38,7 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Collectors;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.support.UpsertTemplate;
 import org.opennms.netmgt.enlinkd.model.BridgeBridgeLink;
 import org.opennms.netmgt.enlinkd.model.BridgeElement;
@@ -84,6 +85,34 @@ public class BridgeTopologyServiceImpl extends TopologyServiceImpl implements Br
     private final Map<Integer, Set<BridgeForwardingTableEntry>> m_nodetoBroadcastDomainMap = new HashMap<>();
     private final Set<Integer> m_bridgecollectionsscheduled = new HashSet<>();
     volatile Set<BroadcastDomain> m_domains;
+
+    @Override
+    public String getBridgeDesignatedIdentifier(Bridge bridge) {
+        for (BridgeElement element: m_bridgeElementDao.findByNodeId(bridge.getNodeId())) {
+            if (InetAddressUtils.
+                    isValidStpBridgeId(element.getStpDesignatedRoot())
+                    && !element.getBaseBridgeAddress().
+                    equals(InetAddressUtils.getBridgeAddressFromStpBridgeId(element.getStpDesignatedRoot()))) {
+                String designated=InetAddressUtils.
+                               getBridgeAddressFromStpBridgeId(element.getStpDesignatedRoot());
+                if (InetAddressUtils.isValidBridgeAddress(designated)) {
+                    return designated;
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public Set<String> getBridgeIdentifiers(Bridge bridge) {
+        Set<String> identifiers = new HashSet<>();
+        for (BridgeElement element: m_bridgeElementDao.findByNodeId(bridge.getNodeId())) {
+            if (InetAddressUtils.isValidBridgeAddress(element.getBaseBridgeAddress())) {
+                identifiers.add(element.getBaseBridgeAddress());
+            }
+        }
+        return identifiers;
+    }
 
     public BridgeElementDao getBridgeElementDao() {
         return m_bridgeElementDao;
@@ -225,9 +254,8 @@ public class BridgeTopologyServiceImpl extends TopologyServiceImpl implements Br
             for (BroadcastDomain domain : m_domains) {
                 for (Bridge bridge : domain.getBridges()) {
                     bridge.clear();
-                    List<BridgeElement> elems = m_bridgeElementDao.findByNodeId(bridge.getNodeId());
-                    bridge.getIdentifiers().addAll(TopologyService.getIdentifier(elems));
-                    bridge.setDesignated(TopologyService.getDesignated(elems));
+                    bridge.getIdentifiers().addAll(getBridgeIdentifiers(bridge));
+                    bridge.setDesignated(getBridgeDesignatedIdentifier(bridge));
                 }
             }
         }
@@ -316,9 +344,8 @@ public class BridgeTopologyServiceImpl extends TopologyServiceImpl implements Br
         for (Bridge bridge: domain.getBridges()) {
             if (bridge.getNodeId().intValue() == nodeId.intValue()) {
                 bridge.clear();
-                List<BridgeElement> elems = m_bridgeElementDao.findByNodeId(nodeId);
-                bridge.getIdentifiers().addAll(TopologyService.getIdentifier(elems));
-                bridge.setDesignated(TopologyService.getDesignated(elems));
+                bridge.getIdentifiers().addAll(getBridgeIdentifiers(bridge));
+                bridge.setDesignated(getBridgeDesignatedIdentifier(bridge));
                 break;
             }
         }

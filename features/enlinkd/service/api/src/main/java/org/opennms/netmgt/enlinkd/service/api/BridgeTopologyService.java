@@ -88,6 +88,9 @@ public interface BridgeTopologyService extends TopologyService {
         return bp;
     }
 
+    Set<String> getBridgeIdentifiers(Bridge bridge);
+
+    String getBridgeDesignatedIdentifier(Bridge bridge);
     // this indicates the total size of in memory bft
     boolean collectBft(int nodeid, int maxsize);
 

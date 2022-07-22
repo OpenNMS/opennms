@@ -34,8 +34,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.enlinkd.model.BridgeElement;
 import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
 
 public interface TopologyService {
@@ -55,33 +53,6 @@ public interface TopologyService {
             tps.setCloud(new MacCloud(noPortMacs));
         }
         return tps;
-    }
-
-    static Set<String> getIdentifier(List<BridgeElement> elems) {
-        Set<String> identifiers = new HashSet<>();
-        for (BridgeElement element: elems) {
-            if (InetAddressUtils.isValidBridgeAddress(element.getBaseBridgeAddress())) {
-                identifiers.add(element.getBaseBridgeAddress());
-            }
-
-        }
-        return identifiers;
-    }
-
-    static String getDesignated(List<BridgeElement> elems) {
-        for (BridgeElement element: elems) {
-            if (InetAddressUtils.
-                    isValidStpBridgeId(element.getStpDesignatedRoot())
-                    && !element.getBaseBridgeAddress().
-                    equals(InetAddressUtils.getBridgeAddressFromStpBridgeId(element.getStpDesignatedRoot()))) {
-                String designated=InetAddressUtils.
-                               getBridgeAddressFromStpBridgeId(element.getStpDesignatedRoot());
-                if (InetAddressUtils.isValidBridgeAddress(designated)) {
-                    return designated;
-                }
-            }
-        }
-        return null;
     }
 
     static void createRootBridge(BroadcastDomain domain, Integer nodeid) {
