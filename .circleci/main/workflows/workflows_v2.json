@@ -287,7 +287,8 @@
         },
         "minion-image": {
             "requires": [
-                "build"
+                "build",
+                "tarball-assembly"
             ]
         },
         "horizon-image": {

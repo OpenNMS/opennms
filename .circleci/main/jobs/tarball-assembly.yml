@@ -78,6 +78,9 @@ jobs:
           when: always
           path: ~/project/target/tarballs
           destination: tarballs
+      - save-artifacts:
+          path: ~/project/opennms-assemblies/minion/target/
+          location: miniontarget
       - store_artifacts:
           path: ~/project/opennms-container/minion/images/minion.oci
           destination: minion.oci
