@@ -1,0 +1,24 @@
+{
+    "records": [
+        {
+            "input": "foo",
+            "read": 10,
+            "write": 10
+        },
+        {
+            "input": "bar",
+            "read": 20,
+            "write": 20
+        },
+        {
+            "input": "blupp",
+            "read": 30,
+            "write": 30
+        },
+        {
+            "input": "bla",
+            "read": 40,
+            "write": 40
+        }
+    ]
+}
