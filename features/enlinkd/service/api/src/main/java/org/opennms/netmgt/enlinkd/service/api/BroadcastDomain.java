@@ -36,6 +36,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import org.springframework.util.Assert;
+
 public class BroadcastDomain implements Topology {
 
 
@@ -43,6 +45,76 @@ public class BroadcastDomain implements Topology {
     private final Set<Bridge> m_bridges = new HashSet<>();
     private final List<SharedSegment> m_topology = new ArrayList<>();
     private final Set<BridgePortWithMacs> m_forwarding = new HashSet<>();
+
+    public void add(BridgePortWithMacs bft) {
+        SharedSegment segment = new SharedSegment();
+        segment.getBridgePortsOnSegment().add(bft.getPort());
+        segment.getMacsOnSegment().addAll(bft.getMacs());
+        segment.setDesignatedBridge(bft.getPort().getNodeId());
+        m_topology.add(segment);
+        cleanForwarders(bft.getMacs());
+    }
+
+    public void merge(SharedSegment upsegment,
+                             Map<BridgePortWithMacs, Set<BridgePortWithMacs>> splitted,
+                             Set<String> macsonsegment,
+                             BridgePort rootport,
+                             Set<BridgePortWithMacs> throughset) {
+
+        Assert.notNull(upsegment);
+        if (!m_topology.contains(upsegment)) {
+            return;
+        }
+        splitted.keySet().forEach(designated -> {
+            Set<BridgePortWithMacs> ports = splitted.get(designated);
+            SharedSegment splitsegment = new SharedSegment();
+            splitsegment.getBridgePortsOnSegment().add(designated.getPort());
+            splitsegment.setDesignatedBridge(designated.getPort().getNodeId());
+            Set<String> macs = new HashSet<>(designated.getMacs());
+            ports.forEach(bft ->
+            {
+                macs.retainAll(bft.getMacs());
+                cleanForwarders(bft.getPort().getNodeId());
+                upsegment.getBridgePortsOnSegment().remove(bft.getPort());
+                splitsegment.getBridgePortsOnSegment().add(bft.getPort());
+            });
+            splitsegment.getMacsOnSegment().addAll(macs);
+            m_topology.add(splitsegment);
+            cleanForwarders(macs);
+        });
+
+        //Add macs from forwarders
+        Map<String, Integer> forfpmacs = new HashMap<>();
+        upsegment.getBridgePortsOnSegment().forEach(port ->
+        {
+            getForwarders(port.getNodeId()).stream().filter(forward -> forward.getPort().equals(port)).
+            forEach( forward ->
+                    forward.getMacs().forEach(mac -> {
+                        int itemsfound=1;
+                        if (forfpmacs.containsKey(mac)) {
+                            itemsfound = forfpmacs.get(mac);
+                            itemsfound++;
+                        }
+                        forfpmacs.put(mac, itemsfound);
+                    }));
+
+            Set<String> clearmacs = new HashSet<>();
+            forfpmacs.keySet().forEach(mac -> {
+                if (forfpmacs.get(mac) == upsegment.getBridgePortsOnSegment().size()) {
+                    upsegment.getMacsOnSegment().add(mac);
+                    clearmacs.add(mac);
+                }
+            });
+            cleanForwarders(clearmacs);
+
+        });
+
+        upsegment.getBridgePortsOnSegment().add(rootport);
+        upsegment.getMacsOnSegment().retainAll(macsonsegment);
+        cleanForwarders(upsegment.getMacsOnSegment());
+
+        throughset.forEach(this::add);
+    }
 
     public void removeBridge(int bridgeId) {
         Bridge bridge = getBridge(bridgeId);

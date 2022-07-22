@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.opennms.netmgt.enlinkd.model.BridgeBridgeLink;
 import org.opennms.netmgt.enlinkd.model.BridgeElement;
 import org.opennms.netmgt.enlinkd.model.BridgeMacLink;
 import org.opennms.netmgt.enlinkd.model.BridgeStpLink;
@@ -58,6 +59,54 @@ public interface BridgeTopologyService extends TopologyService {
         });
         return maclinks;
     }
+
+    static SharedSegment createSharedSegmentFromBridgeMacLink(BridgeMacLink link) {
+        SharedSegment segment = new SharedSegment();
+        segment.getBridgePortsOnSegment().add(getBridgePortFromBridgeMacLink(link));
+        segment.getMacsOnSegment().add(link.getMacAddress());
+        segment.setDesignatedBridge(link.getNode().getId());
+        segment.setCreateTime(link.getBridgeMacLinkCreateTime());
+        segment.setLastPollTime(link.getBridgeMacLinkLastPollTime());
+        return segment;
+    }
+
+    static SharedSegment createSharedSegmentFromBridgeBridgeLink(BridgeBridgeLink link) {
+        SharedSegment segment = new SharedSegment();
+        segment.getBridgePortsOnSegment().add(getBridgePortFromBridgeBridgeLink(link));
+        segment.getBridgePortsOnSegment().add(getBridgePortFromDesignatedBridgeBridgeLink(link));
+        segment.setDesignatedBridge(link.getDesignatedNode().getId());
+        segment.setCreateTime(link.getBridgeBridgeLinkCreateTime());
+        segment.setLastPollTime(link.getBridgeBridgeLinkLastPollTime());
+        return segment;
+    }
+
+    static BridgePort getBridgePortFromBridgeMacLink(BridgeMacLink link) {
+        BridgePort bp = new BridgePort();
+        bp.setNodeId(link.getNode().getId());
+        bp.setBridgePort(link.getBridgePort());
+        bp.setBridgePortIfIndex(link.getBridgePortIfIndex());
+        bp.setVlan(link.getVlan());
+        return bp;
+    }
+
+    static BridgePort getBridgePortFromBridgeBridgeLink(BridgeBridgeLink link) {
+        BridgePort bp = new BridgePort();
+        bp.setNodeId(link.getNode().getId());
+        bp.setBridgePort(link.getBridgePort());
+        bp.setBridgePortIfIndex(link.getBridgePortIfIndex());
+        bp.setVlan(link.getVlan());
+        return bp;
+    }
+
+    static BridgePort getBridgePortFromDesignatedBridgeBridgeLink(BridgeBridgeLink link) {
+        BridgePort bp = new BridgePort();
+        bp.setNodeId(link.getDesignatedNode().getId());
+        bp.setBridgePort(link.getDesignatedPort());
+        bp.setBridgePortIfIndex(link.getDesignatedPortIfIndex());
+        bp.setVlan(link.getDesignatedVlan());
+        return bp;
+    }
+
     // this indicates the total size of in memory bft
     boolean collectBft(int nodeid, int maxsize);
 

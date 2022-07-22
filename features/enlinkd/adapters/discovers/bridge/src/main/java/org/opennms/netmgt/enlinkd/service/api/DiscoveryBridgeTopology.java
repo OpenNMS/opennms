@@ -470,8 +470,7 @@ public class DiscoveryBridgeTopology {
         if (m_domain.getSharedSegments().isEmpty()) {
             rootBft.getBridge().setRootBridge();
             rootBft.getPorttomac().
-                        forEach(ts -> 
-                            TopologyService.createAndAddToBroadcastDomain(m_domain,ts));
+                        forEach(m_domain::add);
             LOG.debug("calculate: bridge:[{}] elected [root] is first:{}", 
                       rootBft.getNodeId(),
                  m_domain.getBridgeNodesOnDomain());
@@ -902,9 +901,8 @@ public class DiscoveryBridgeTopology {
             down(nextDownBridge, bridgeFT, nextDownSP,bridgeFtMapCalcul,level);
             return;
         }
-        
-        TopologyService.merge(m_domain,
-                            upSegment, 
+
+        m_domain.merge(     upSegment,
                             splitted,
                             maconupsegment,
                             bridgeFT.getRootPort(),
