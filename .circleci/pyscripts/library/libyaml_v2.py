@@ -178,7 +178,6 @@ class libyaml_v2:
             if "filters" in working_data:
                 del working_data["filters"]
 
-        #if not [i for i in output if self.create_space(level-2)+"- "+key in i] :
         if not [i for i in output if re.match("^"+self.create_space(level)+"- "+job_name,i)] :
             if working_data:
                 if len(working_data) == 1 and "extends" in working_data:
@@ -220,8 +219,7 @@ class libyaml_v2:
 
         return output
             
-    # Use tell_extended_requirements to figure out what we need to do :)
-    def generate_workflows(self,input_json,key,level=0,output=[],enable_filters=False,processedList=[]):
+    def generate_workflows(self,input_json,key,level=0,output=[],enable_filters=True,processedList=[]):
         build_dependencies=self.tell_extended_requirements(key,self.processedList)
         self.requirementsList=build_dependencies
         if len(build_dependencies) > 1:

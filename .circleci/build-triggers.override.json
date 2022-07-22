@@ -2,7 +2,7 @@
     "build": {
         "docs": false,
         "ui": false,
-        "coverage": false,
+        "coverage": true,
         "build": false
     },
     "publish": {
