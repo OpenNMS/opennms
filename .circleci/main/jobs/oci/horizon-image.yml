@@ -7,9 +7,9 @@ jobs:
     steps:
       - attach_workspace: 
           at: ~/
-      - restore_cache:
-          keys:
-            - deb-horizon
+      - fetch-artifacts:
+          path: ~/project/target/debs
+          location: debs
       - run:
           name: Fetch DEB artifacts and build horizon container image
           command: |
