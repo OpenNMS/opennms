@@ -673,13 +673,14 @@ BML:    for (BridgeMacLink link : m_bridgeMacLinkDao.findAll()) {
             bmlsegments.add(BridgeTopologyService.createSharedSegmentFromBridgeMacLink(link));
     }
                 
-        for (Integer rootnode : rootnodetodomainnodemap.keySet()) {
+        for (Integer rootNodeid : rootnodetodomainnodemap.keySet()) {
             BroadcastDomain domain = new BroadcastDomain();
-            TopologyService.createRootBridge(domain,rootnode);
-            for (Integer bridgenodeId: rootnodetodomainnodemap.get(rootnode)) {
+            Bridge bridge = new Bridge(rootNodeid);
+            bridge.setRootBridge();
+            domain.getBridges().add(bridge);
+            for (Integer bridgenodeId: rootnodetodomainnodemap.get(rootNodeid)) {
                 TopologyService.create(domain,
-                              bridgenodeId, 
-                                               designatebridgemap.get(
+                              bridgenodeId, designatebridgemap.get(
                                                                       bridgenodeId).getBridgePort());
             }
             domains.add(domain);
@@ -700,7 +701,9 @@ SEG:        for (SharedSegment segment : bmlsegments) {
                 }
             }
             BroadcastDomain domain = new BroadcastDomain();
-            TopologyService.createRootBridge(domain,segment.getDesignatedBridge());
+            Bridge bridge = new Bridge(segment.getDesignatedBridge());
+            bridge.setRootBridge();
+            domain.getBridges().add(bridge);
             domain.loadTopologyEntry(segment);
             domains.add(domain);
         }

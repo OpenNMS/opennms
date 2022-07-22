@@ -55,12 +55,6 @@ public interface TopologyService {
         return tps;
     }
 
-    static void createRootBridge(BroadcastDomain domain, Integer nodeid) {
-        Bridge bridge = new Bridge(nodeid);
-        bridge.setRootBridge();
-        domain.getBridges().add(bridge);
-    }
-
     static Bridge create(BroadcastDomain domain, Integer nodeid, Integer rootport) {
         Bridge bridge = new Bridge(nodeid);
         bridge.setRootPort(rootport);
