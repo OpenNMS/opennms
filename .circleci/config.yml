@@ -174,23 +174,14 @@ jobs:
     steps:
       - cached-checkout
       - run:
-          name: Environment Test
+          name: Detect Triggers
           command: |
             echo "START"
-            echo << pipeline.parameters.trigger-coverage-api >>
-            echo << pipeline.parameters.trigger-prebuild >>
-            echo << pipeline.parameters.trigger-automation >>
-            echo << pipeline.parameters.trigger-flaky >>
-            echo "STOP"
-      # copied from https://circleci.com/developer/orbs/orb/circleci/path-filtering
-      # we do it ourselves because otherwise we have to do a full un-cached checkout every time
-      #- run:
-      #    name: process mapping
-      #    environment:
-      #      BASE_REVISION: << parameters.base-revision >>
-      #      MAPPING: << parameters.mapping >>
-      #      OUTPUT_PATH: /tmp/pipeline-parameters.json
-      #    command: python3 .circleci/pyscripts/process_mapping.py     
+            echo Coverage API: << pipeline.parameters.trigger-coverage-api >>
+            echo Prebuild: << pipeline.parameters.trigger-prebuild >>
+            echo Automation: << pipeline.parameters.trigger-automation >>
+            echo Trigger Flaky Tests: << pipeline.parameters.trigger-flaky >>
+            echo "STOP"    
       - run:
           name: Process Generate
           environment:
