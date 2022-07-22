@@ -55,11 +55,6 @@ jobs:
       - cache-workflow-assets:
           cache_prefix: deb-horizon
           source_path: target/debs
-      - persist_to_workspace:
-          root: ~/
-          paths:
-            - .artifacts
-
       #- cache-oci:
       #    key: horizon
       #    path: opennms-container/horizon/images/

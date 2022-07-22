@@ -94,4 +94,3 @@ jobs:
           root: ~/
           paths:
             - project/opennms-assemblies/minion/target/org.opennms.assemblies.minion-*-minion.tar.gz
-            - ~/.artifacts
