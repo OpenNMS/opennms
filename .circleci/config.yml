@@ -237,50 +237,12 @@ jobs:
                 echo '{ "trigger-prebuild": false, "trigger-build": true }' > /tmp/pipeline-parameters.json
               fi
             fi
-      - run:
-          name: Create a build-triggers 3
-          command: |
-               echo '{
-                  "build": {
-                      "docs": false,
-                      "ui": false,
-                      "coverage": true,
-                      "build": false
-                  },
-                  "publish": {
-                      "packages": false
-                  },
-                  "tests": {
-                      "smoke": false,
-                      "integration": false
-                  },
-                  "oci-images": {
-                      "minion": false,
-                      "horizon": false,
-                      "sentinel": false
-                  },
-                  "debian-packages": {
-                      "minion": false,
-                      "horizon": false,
-                      "sentinel": false
-                  },
-                  "rpm-packages": {
-                      "minion": false,
-                      "horizon": false,
-                      "sentinel": false
-                  },
-                  "experimental": false
-               }' >/tmp/build-triggers3.json 
-
       - store_artifacts:
           path: /tmp/pipeline-parameters.json
           destination: pipeline-parameters.json
       - store_artifacts:
           path: /tmp/build-triggers.json
           destination: build-triggers.json
-      - store_artifacts:
-          path: /tmp/build-triggers3.json
-          destination: build-triggers3.json          
       - store_artifacts:
           path: /tmp/.circleci/main.yml
           destination: main.yml
