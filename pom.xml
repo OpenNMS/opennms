@@ -4068,7 +4068,7 @@
       <dependency>
         <groupId>com.opencsv</groupId>
         <artifactId>opencsv</artifactId>
-        <version>3.9</version>
+        <version>5.6</version>
       </dependency>
       <dependency>
         <groupId>net.sf.json-lib</groupId>
@@ -4665,7 +4665,7 @@
       <dependency>
         <groupId>com.rometools</groupId>
         <artifactId>rome</artifactId>
-        <version>1.7.2</version>
+        <version>1.18.0</version>
       </dependency>
       <dependency>
         <groupId>com.ximpleware</groupId>
