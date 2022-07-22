@@ -29,7 +29,6 @@
 package org.opennms.netmgt.enlinkd.service.api;
 
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -39,26 +38,8 @@ import org.opennms.netmgt.enlinkd.model.BridgeBridgeLink;
 import org.opennms.netmgt.enlinkd.model.BridgeElement;
 import org.opennms.netmgt.enlinkd.model.BridgeMacLink;
 import org.opennms.netmgt.enlinkd.model.BridgeStpLink;
-import org.opennms.netmgt.model.OnmsNode;
 
 public interface BridgeTopologyService extends TopologyService {
-
-    static List<BridgeMacLink> create(BridgePort bp, Set<String> macs, BridgeMacLink.BridgeMacLinkType type) {
-        final List<BridgeMacLink> maclinks = new ArrayList<>();
-        macs.forEach(mac -> {
-            BridgeMacLink maclink = new BridgeMacLink();
-            OnmsNode node = new OnmsNode();
-            node.setId(bp.getNodeId());
-            maclink.setNode(node);
-            maclink.setBridgePort(bp.getBridgePort());
-            maclink.setBridgePortIfIndex(bp.getBridgePortIfIndex());
-            maclink.setMacAddress(mac);
-            maclink.setVlan(bp.getVlan());
-            maclink.setLinkType(type);
-            maclinks.add(maclink);
-        });
-        return maclinks;
-    }
 
     static SharedSegment createSharedSegmentFromBridgeMacLink(BridgeMacLink link) {
         SharedSegment segment = new SharedSegment();

@@ -35,40 +35,12 @@ import java.util.List;
 import java.util.Set;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.enlinkd.model.BridgeBridgeLink;
 import org.opennms.netmgt.enlinkd.model.BridgeElement;
-import org.opennms.netmgt.enlinkd.model.BridgeMacLink;
 import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
-import org.opennms.netmgt.model.OnmsNode;
 
 public interface TopologyService {
     static <L, R> TopologyConnection<L, R>  of(L left, R right) {
         return new TopologyConnection<>(left, right);
-    }
-
-    static List<BridgeBridgeLink> generate(BridgePort designatedPort, Set<BridgePort> ports) {
-        OnmsNode designatedNode = new OnmsNode();
-        designatedNode.setId(designatedPort.getNodeId());
-        List<BridgeBridgeLink> links = new ArrayList<>();
-        for (BridgePort port:ports) {
-            if (port.equals(designatedPort)) {
-                continue;
-            }
-            BridgeBridgeLink link = new BridgeBridgeLink();
-            OnmsNode node = new OnmsNode();
-            node.setId(port.getNodeId());
-            link.setNode(node);
-            link.setBridgePort(port.getBridgePort());
-            link.setBridgePortIfIndex(port.getBridgePortIfIndex());
-            link.setVlan(port.getVlan());
-            link.setDesignatedNode(designatedNode);
-            link.setDesignatedPort(designatedPort.getBridgePort());
-            link.setDesignatedPortIfIndex(designatedPort.getBridgePortIfIndex());
-            link.setDesignatedVlan(designatedPort.getVlan());
-            links.add(link);
-        }
-        return links;
-
     }
 
     static TopologyShared of(SharedSegment shs, List<MacPort> macPortsOnSegment) {

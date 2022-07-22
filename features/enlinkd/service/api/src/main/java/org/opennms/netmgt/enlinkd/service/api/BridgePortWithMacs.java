@@ -28,12 +28,14 @@
 
 package org.opennms.netmgt.enlinkd.service.api;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
 import org.opennms.netmgt.enlinkd.model.BridgeMacLink;
+import org.opennms.netmgt.model.OnmsNode;
 import org.springframework.util.Assert;
 
 public class BridgePortWithMacs implements Topology {
@@ -57,7 +59,20 @@ public class BridgePortWithMacs implements Topology {
     }
 
     public List<BridgeMacLink> getBridgeMacLinks() {
-        return BridgeTopologyService.create(m_port, m_macs, BridgeMacLink.BridgeMacLinkType.BRIDGE_FORWARDER);
+        final List<BridgeMacLink> links = new ArrayList<>();
+        m_macs.forEach(mac -> {
+            BridgeMacLink maclink = new BridgeMacLink();
+            OnmsNode node = new OnmsNode();
+            node.setId(m_port.getNodeId());
+            maclink.setNode(node);
+            maclink.setBridgePort(m_port.getBridgePort());
+            maclink.setBridgePortIfIndex(m_port.getBridgePortIfIndex());
+            maclink.setMacAddress(mac);
+            maclink.setVlan(m_port.getVlan());
+            maclink.setLinkType(BridgeMacLink.BridgeMacLinkType.BRIDGE_FORWARDER);
+            links.add(maclink);
+        });
+        return links;
     }
 
     public Set<BridgeForwardingTableEntry> getBridgeForwardingTableEntrySet() {
