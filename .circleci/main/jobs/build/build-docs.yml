@@ -22,5 +22,5 @@ jobs:
           destination: site.zip
       - store_artifacts:
           path: ~/artifacts
-          #destination: ${cd /tmp;ls site-*.zip}
+          destination: /
     
