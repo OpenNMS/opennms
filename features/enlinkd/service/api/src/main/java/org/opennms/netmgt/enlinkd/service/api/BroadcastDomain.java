@@ -159,7 +159,7 @@ public class BroadcastDomain implements Topology {
         }
 
         Set<Bridge> notnew = new HashSet<>();
-        for (Bridge cbridge: getBridges()) {
+        for (Bridge cbridge : getBridges()) {
             if (cbridge.isNewTopology()) {
                 continue;
             }
