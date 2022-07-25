@@ -167,7 +167,7 @@
     "@featherds/styles" "^0.10.15"
     vue "^3.1.0-0"
 
-"@featherds/expansion@^0.10.15":
+"@featherds/expansion@0.10.15":
   version "0.10.15"
   resolved "https://registry.yarnpkg.com/@featherds/expansion/-/expansion-0.10.15.tgz#317334d033ccfc1eeda1cc451a617f3e616f4708"
   integrity sha512-nB6tyUbqDR155wykm/eQlnN0V4iUohGYFzw09Dg+FeK8ImpL+Q0aor5pKidqw+7lU86DpQZXh7TRV33KLvqJRQ==
@@ -226,7 +226,7 @@
     "@featherds/utils" "^0.10.15"
     vue "^3.1.0-0"
 
-"@featherds/menu@^0.10.15":
+"@featherds/menu@0.10.15", "@featherds/menu@^0.10.15":
   version "0.10.15"
   resolved "https://registry.yarnpkg.com/@featherds/menu/-/menu-0.10.15.tgz#fe491b90d00e10d04e3a2e3e8b2a0d6341cc9323"
   integrity sha512-F+UzDEOUyBogLdLBWR4gtnCw5tECahLbX/GodeTvHstrYmYXBqnq6VfF93R6ND6fs6p0w+Ixep12r5rWBikl+w==
@@ -278,7 +278,7 @@
     "@featherds/styles" "^0.10.15"
     vue "^3.1.0-0"
 
-"@featherds/radio@^0.10.15":
+"@featherds/radio@0.10.15", "@featherds/radio@^0.10.15":
   version "0.10.15"
   resolved "https://registry.yarnpkg.com/@featherds/radio/-/radio-0.10.15.tgz#de643058f7ff971ce8ba07bda8f445fadf8b1117"
   integrity sha512-aRurj3oS1z1LT7m3cq0ZyNCt/cX3uZaYWLWr46MT+NN7soxv7iOFfwHWcOYAt3BfyuGcdF4OipBFtt08c9HdtQ==
@@ -351,7 +351,7 @@
     "@featherds/styles" "^0.10.15"
     vue "^3.1.0-0"
 
-"@featherds/textarea@^0.10.15":
+"@featherds/textarea@0.10.15":
   version "0.10.15"
   resolved "https://registry.yarnpkg.com/@featherds/textarea/-/textarea-0.10.15.tgz#276b69618f4ca277fbe715d6c7bde27ffa05456a"
   integrity sha512-nQWvwzzkaIeMdblIpaHrwUHUfN2BIGKP4W93f1HIc74JQQ6juQS11ciVcabH5hJBh7tQJA+S6XsvVj76Y0Sm3Q==
@@ -1573,10 +1573,10 @@ date-fns-tz@^1.3.6:
   resolved "https://registry.yarnpkg.com/date-fns-tz/-/date-fns-tz-1.3.6.tgz#4195a58a2f86eda55ea69fb477f3ed8a6e2188ac"
   integrity sha512-C8q7mErvG4INw1ZwAFmPlGjEo5Sv4udjKVbTc03zpP9cu6cp5AemFzKhz0V68LGcWEtX5mJudzzg3G04emIxLA==
 
-date-fns@^2.17.0, date-fns@^2.28.0:
-  version "2.28.0"
-  resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-2.28.0.tgz#9570d656f5fc13143e50c975a3b6bbeb46cd08b2"
-  integrity sha512-8d35hViGYx/QH0icHYCeLmsLmMUheMmTyV9Fcm6gvNwdw31yXXH+O85sOBJ+OLnLQMKZowvpKb6FgMIQjcpvQw==
+date-fns@^2.17.0, date-fns@^2.29.1:
+  version "2.29.1"
+  resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-2.29.1.tgz#9667c2615525e552b5135a3116b95b1961456e60"
+  integrity sha512-dlLD5rKaKxpFdnjrs+5azHDFOPEu4ANy/LTh04A1DTzMM7qoajmKCBc8pkKRFT41CNzw+4gQh79X5C+Jq27HAw==
 
 debug@^4.1.1, debug@^4.3.2, debug@^4.3.4:
   version "4.3.4"
