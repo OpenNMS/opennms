@@ -83,14 +83,15 @@ import javax.sql.DataSource;
 public class UsageStatisticsReporter implements StateChangeHandler {
     private static final Logger LOG = LoggerFactory.getLogger(UsageStatisticsReporter.class);
 
-    public static final String OIA_FEATURE_NAME = "opennms-integration-api";
-    public static final String API_LAYER_FEATURE_NAME = "opennms-api-layer";
     public static final String USAGE_REPORT = "usage-report";
     private static final String JMX_OBJ_OS = "java.lang:type=OperatingSystem";
     private static final String JMX_ATTR_FREE_PHYSICAL_MEMORY_SIZE = "FreePhysicalMemorySize";
     private static final String JMX_ATTR_TOTAL_PHYSICAL_MEMORY_SIZE = "TotalPhysicalMemorySize";
     private static final String JMX_ATTR_AVAILABLE_PROCESSORS = "AvailableProcessors";
     private static final MBeanServer M_BEAN_SERVER = ManagementFactory.getPlatformMBeanServer();
+    private static final int MAX_DEP_RECURSION_DEPTH = 2;
+    private static final String OIA_FEATURE_NAME = "opennms-integration-api";
+    private static final String API_LAYER_FEATURE_NAME = "opennms-api-layer";
 
     private String m_url;
 
@@ -340,7 +341,7 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         List<Feature> featuresDependentOnOIA = new ArrayList<>();
         try {
             for (Feature feature : m_featuresService.listInstalledFeatures()) {
-                featuresDependentOnOIA = recurse(feature, featuresDependentOnOIA, List.of(API_LAYER_FEATURE_NAME));
+                featuresDependentOnOIA = recurse(feature, featuresDependentOnOIA, List.of(API_LAYER_FEATURE_NAME), 0);
             }
         }
         catch (Exception e) {
@@ -352,7 +353,7 @@ public class UsageStatisticsReporter implements StateChangeHandler {
                     .collect(Collectors.joining(","));
     }
 
-    private List<Feature> recurse(Feature feature, List<Feature> oiaDependentFeatures, List<String> featuresToIgnore) {
+    private List<Feature> recurse(Feature feature, List<Feature> oiaDependentFeatures, List<String> featuresToIgnore, int depth) {
         // should this feature be ignored?
         if (featuresToIgnore.contains(feature.getName())) {
             return oiaDependentFeatures;
@@ -368,6 +369,10 @@ public class UsageStatisticsReporter implements StateChangeHandler {
                 return oiaDependentFeatures;
             }
         }
+        // If this as deep as we should go, don't inspect children
+        if (depth >= MAX_DEP_RECURSION_DEPTH) {
+            return oiaDependentFeatures;
+        }
         // Are any of this feature's dependencies already known to be dependent on OIA?
         for (Dependency dep : feature.getDependencies()) {
             if (oiaDependentFeatures.stream().map(d -> d.getName()).anyMatch(str -> str.equals(dep.getName()))) {
@@ -382,7 +387,7 @@ public class UsageStatisticsReporter implements StateChangeHandler {
             try {
                 int numDependencies = oiaDependentFeatures.size();
                 Feature depFeature = m_featuresService.getFeature(dep.getName());
-                oiaDependentFeatures = recurse(depFeature, oiaDependentFeatures, featuresToIgnore);
+                oiaDependentFeatures = recurse(depFeature, oiaDependentFeatures, featuresToIgnore, depth++);
                 // If we found any new dependencies within depFeature, then this feature
                 // is also dependent on OIA
                 if (numDependencies < oiaDependentFeatures.size()) {
