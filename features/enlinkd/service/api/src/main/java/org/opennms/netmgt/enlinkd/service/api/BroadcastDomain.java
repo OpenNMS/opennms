@@ -173,7 +173,7 @@ public class BroadcastDomain implements Topology {
 
         SharedSegment topsegment = null;
         if (bridge.isRootBridge()) {
-            for (SharedSegment segment: getSharedSegments(bridge.getNodeId())) {
+            for (SharedSegment segment : getSharedSegments(bridge.getNodeId())) {
                 Integer newRootId = null;
                 for (BridgePort port: segment.getBridgePortsOnSegment() ) {
                     if (port == null
