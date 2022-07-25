@@ -48,7 +48,7 @@
         },
         "oci-minion":{
             "extends": [
-                "tarball-assembly"
+                "tarball-assembly-only"
             ]
         },
         "deploy": {
