@@ -309,7 +309,7 @@ public class BridgeTopologyServiceImpl extends TopologyServiceImpl implements Br
     }
 
     @Override
-    public BroadcastDomain reconcile(BroadcastDomain domain,int nodeId) {
+    public BroadcastDomain reconcile(BroadcastDomain domain, int nodeId) {
         
         Date now = new Date();
         if (domain == null || domain.isEmpty()) {
