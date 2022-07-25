@@ -113,10 +113,13 @@ git_keywords=libgit.extractKeywordsFromLastCommit()
 
 build_mappings=libfile.load_json(path_to_build_trigger_override)
 
-print(mappings)
 build_mappings["build"]["build"]=mappings["trigger-build"]
-build_mappings["build"]["docs"]=mappings["trigger-docs"]
-build_mappings["build"]["ui"]=mappings["trigger-ui"]
+if "trigger-docs" in mappings:
+    build_mappings["build"]["docs"]=mappings["trigger-docs"]
+
+if "trigger-ui" in mappings:
+    build_mappings["build"]["ui"]=mappings["trigger-ui"]
+
 build_mappings["build"]["coverage"]=mappings["trigger-coverage"]
 build_mappings["tests"]["smoke"]=mappings["trigger-flaky-smoke"]
 
