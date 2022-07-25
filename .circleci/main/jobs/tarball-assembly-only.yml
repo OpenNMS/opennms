@@ -8,7 +8,7 @@ jobs:
       DOCKER_CLI_EXPERIMENTAL: enabled
     parameters:
       number-vcpu:
-        default: 4
+        default: 6
         type: integer
       vaadin-javamaxmem:
         default: 1g
@@ -59,21 +59,8 @@ jobs:
           destination: artifacts
       - store_artifacts:
           when: always
-          path: ~/project/target/config-schema
-          destination: config-schema
-      - store_artifacts:
-          when: always
           path: ~/project/target/tarballs
           destination: tarballs
-      - save-artifacts:
-          path: ~/project/opennms-assemblies/minion/target/
-          location: miniontarget
-      - cache-workflow-assets:
-          cache_prefix: minion-config-schema
-          source_path: target/config-schema/
-      - cache-oci:
-          key: minion
-          path: opennms-container/minion/images/
       - persist_to_workspace:
           root: ~/
           paths:

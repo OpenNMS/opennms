@@ -298,13 +298,11 @@
         },
         "minion-image": {
             "requires": [
-                "build",
                 "tarball-assembly-only"
             ]
         },
         "horizon-image": {
             "requires": [
-                "build",
                 "horizon-deb-build"
             ]
         },
