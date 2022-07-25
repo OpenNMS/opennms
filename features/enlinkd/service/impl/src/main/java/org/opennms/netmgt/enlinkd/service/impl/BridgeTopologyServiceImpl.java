@@ -781,7 +781,7 @@ SEG:        for (SharedSegment segment : bmlsegments) {
                     if (m.getNode() != null ) {
                         if (nodeIfindexToMacPortTable.contains(m.getNode().getId(), m.getIfIndex())) {
                             macport = nodeIfindexToMacPortTable.get(m.getNode().getId(), m.getIfIndex());
-                            merge=true;
+                            merge = true;
                         } else {
                             nodeIfindexToMacPortTable.put(m.getNode().getId(), m.getIfIndex(), macport);
                         }
