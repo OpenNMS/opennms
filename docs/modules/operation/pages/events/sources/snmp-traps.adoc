@@ -18,7 +18,7 @@ By default, {page-component-title} listens on a non-standard port for trap messa
 . Ensure that SNMP-capable devices on your network are configured to send traps to {page-component-title}.
 
 [[trap-config]]
-== SNMP Trap Configuration: How To
+== SNMP trap configuration: how to
 
 Configure SNMP traps to customize the types of trap information you receive and the conditions under which {page-component-title} converts the trap into an event.
 For example, you may want to see an event only when a device is down, or when a combination of criteria are met (for example, OID X with "major" severity level, and status "indeterminate").
