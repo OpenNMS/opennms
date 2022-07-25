@@ -166,6 +166,7 @@ for e in main_yml_content:
             if build_components["oci-images"]["minion"] or \
                build_components["oci-images"]["horizon"] or \
                build_components["oci-images"]["sentinel"]:
+               libyaml.clean()
                 
                 if     build_components["oci-images"]["minion"] or \
                    not build_components["oci-images"]["horizon"] or \
