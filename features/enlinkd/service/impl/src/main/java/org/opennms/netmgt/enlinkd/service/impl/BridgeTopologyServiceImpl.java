@@ -103,7 +103,7 @@ public class BridgeTopologyServiceImpl extends TopologyServiceImpl implements Br
 
     @Override
     public String getBridgeDesignatedIdentifier(Bridge bridge) {
-        for (BridgeElement element: m_bridgeElementDao.findByNodeId(bridge.getNodeId())) {
+        for (BridgeElement element : m_bridgeElementDao.findByNodeId(bridge.getNodeId())) {
             if (InetAddressUtils.
                     isValidStpBridgeId(element.getStpDesignatedRoot())
                     && !element.getBaseBridgeAddress().
