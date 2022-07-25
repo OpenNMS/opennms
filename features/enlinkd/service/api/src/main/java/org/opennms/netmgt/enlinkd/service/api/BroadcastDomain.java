@@ -252,8 +252,8 @@ public class BroadcastDomain implements Topology {
     }
 
     public boolean loadTopologyEntry(SharedSegment segment) {
-        for (BridgePort port: segment.getBridgePortsOnSegment()) {
-            for ( Bridge bridge: getBridges() ) {
+        for (BridgePort port : segment.getBridgePortsOnSegment()) {
+            for ( Bridge bridge : getBridges() ) {
                 if ( port.getNodeId().intValue() == bridge.getNodeId().intValue()) {
                     getSharedSegments().add(segment);
                     return true;
