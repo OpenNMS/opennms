@@ -693,7 +693,7 @@ BML:    for (BridgeMacLink link : m_bridgeMacLinkDao.findAll()) {
             Bridge bridge = new Bridge(rootNodeid);
             bridge.setRootBridge();
             domain.getBridges().add(bridge);
-            for (Integer nodeid: rootnodetodomainnodemap.get(rootNodeid)) {
+            for (Integer nodeid : rootnodetodomainnodemap.get(rootNodeid)) {
                 Bridge newbridge = new Bridge(nodeid);
                 newbridge.setRootPort(designatebridgemap.get(nodeid).getBridgePort());
                 domain.getBridges().add(newbridge);
