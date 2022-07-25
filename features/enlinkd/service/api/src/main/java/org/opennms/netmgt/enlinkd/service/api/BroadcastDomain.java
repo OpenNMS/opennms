@@ -213,7 +213,7 @@ public class BroadcastDomain implements Topology {
 
         List<SharedSegment> topology = new ArrayList<>();
 
-        for (SharedSegment segment: getSharedSegments()) {
+        for (SharedSegment segment : getSharedSegments()) {
             if (segment.getBridgeIdsOnSegment().contains(bridge.getNodeId())) {
                 for (BridgePort port: segment.getBridgePortsOnSegment()) {
                     if ( port.getNodeId().intValue() == bridge.getNodeId().intValue()) {
