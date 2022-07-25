@@ -25,6 +25,7 @@ commands:
 jobs:
   #jobs:build/build.index#
   #jobs:tarball-assembly#
+  #jobs:tarball-assembly2#
   #jobs:rpms/rpms.index#
   #jobs:debian packages/deb.index#
   #jobs:oci/oci.index#
