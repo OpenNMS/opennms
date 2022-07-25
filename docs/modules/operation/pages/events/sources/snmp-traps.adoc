@@ -182,7 +182,7 @@ We rewrite our event as follows:
 </mask>
 ----
 
-In the example, adding a mask with a varbind tag will match on the same id, generic, and specific values, but also requires that the third parameter is equal to "3" (indicating a Cisco-determined trap severity of "major").
+In the example, adding a mask with a varbind tag will match on the same ID, generic, and specific values, but also requires that the third parameter is equal to "3" (indicating a Cisco-determined trap severity of "major").
 
 With a "status change" event, you may want to create separate events for each status value.
 To do this, copy the event definition once for each status value, add the varbind mask, and then change the uei, description, severity, and logmsg to match the event.
