@@ -5,7 +5,7 @@
                 "build",
                 "integration-test",
                 "sentinel-deb-build",
-                "tarball-assembly",
+                "tarball-assembly2",
                 "minion-deb-build"
             ]
         },
@@ -48,7 +48,7 @@
         },
         "oci-minion":{
             "extends": [
-                "minion-image"
+                "tarball-assembly"
             ]
         },
         "deploy": {
