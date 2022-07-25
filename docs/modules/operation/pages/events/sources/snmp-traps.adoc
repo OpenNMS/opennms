@@ -240,7 +240,7 @@ As an example, the SNMP agent returns a numerical value for the `ifAdminStatus` 
 Because {page-component-title} does not have a MIB parser, we usually put this map (between the numerical encoded value and its meaning) into the event description.
 Use the `varbindsdecode` element to convert the event varbind value into a decoded String.
 
-With a properly configured event, you can decode the numerical value sent into trap varbinds and the corresponding string value into the `logmsg`.
+With a properly configured event, you can decode the numerical value sent into trap varbinds and the corresponding String value into the `logmsg`.
 
 For example, a Cisco HSRP status change trap (OID .1.3.6.1.4.1.9.9.106.2 generic 6 and specific 1), which corresponds to the `uei.opennms.org/vendor/Cisco/traps/cHsrpStateChange` event.
 
