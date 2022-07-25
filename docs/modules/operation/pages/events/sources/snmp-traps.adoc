@@ -13,7 +13,7 @@ IMPORTANT: Disabling Trapd renders {page-component-title} incapable of receiving
 == Before you begin
 There are a few tasks you must complete before OpenNMS can receive SNMP traps:
 
-. Configure the port on which OpenNMS can receive SNMP traps (see xref:deployment:core/getting-started.adoc#receive-snmp-traps[Receive SNMP Traps/Informs]).
+. Configure the port on which OpenNMS can receive SNMP traps (see xref:deployment:core/getting-started.adoc#receive-snmp-traps[Receive SNMP traps/informs]).
 By default, {page-component-title} listens on a non-standard port for trap messages.
 . Ensure that SNMP-capable devices on your network are configured to send traps to {page-component-title}.
 
@@ -28,7 +28,7 @@ There are several ways to configure {page-component-title} to customize the even
 
 * Determine what problem you are trying to solve (for example, "I want to know X about my Cisco router").
 * Manually send the corresponding event to the {page-component-title} server and see how the event is handled (see xref:operation:events/sources/send-event.adoc[Manually send events]).
-* Make changes to the xref:operation:events/mib.adoc[SNMP MIB compiler]).
+* Make changes to the xref:operation:admin/webui/mib.adoc[SNMP MIB compiler]).
 * Configure the event to meet your requirements, if required.
 ** <<trap-def-create, Create trap definitions>> to specify criteria for when {page-component-title} creates an event.
 ** <<varbind-filter,Filter on variable bindings>> for further granularity on the conditions for creating an event.

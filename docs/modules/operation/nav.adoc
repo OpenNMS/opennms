@@ -73,7 +73,6 @@
 *** xref:events/sources/kafka.adoc[]
 ** xref:events/eventbus.adoc[]
 ** xref:events/event-configuration.adoc[]
-** xref:events/mib.adoc[]
 ** xref:events/event-translator.adoc[]
 
 * xref:alarms/introduction.adoc[]
@@ -193,6 +192,7 @@
 **** xref:admin/webui/opsboard/dashlet/url.adoc[]
 **** xref:admin/webui/opsboard/boosting-behavior.adoc[]
 ***** xref:admin/webui/opsboard/criteria-builder.adoc[]
+*** xref:admin/webui/mib.adoc[]
 *** xref:admin/webui/surveillance-view.adoc[]
 *** xref:admin/webui/trends.adoc[]
 *** xref:admin/webui/log-reader.adoc[]
