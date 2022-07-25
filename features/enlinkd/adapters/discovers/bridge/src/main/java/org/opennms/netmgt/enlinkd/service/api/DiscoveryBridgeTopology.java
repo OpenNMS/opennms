@@ -243,7 +243,7 @@ public class DiscoveryBridgeTopology {
         }
 
         Set<BridgeForwardingTableEntry> entries= new HashSet<>();
-        links.stream().filter( bfti -> bfti.getMacs().size() > 0).forEach( bfti -> entries.addAll(bfti.getBridgeForwardingTableEntrySet()));
+        links.stream().filter(bfti -> bfti.getMacs().size() > 0).forEach(bfti -> entries.addAll(bfti.getBridgeForwardingTableEntrySet()));
         return entries;
     }
 
