@@ -335,7 +335,7 @@ public class BridgeTopologyServiceImpl extends TopologyServiceImpl implements Br
         }
 
         if (domain.getRootBridge() == null) {
-            LOG.info("reconcileTopologyForDeleteNode: {}, domain without root",domain);
+            LOG.info("reconcileTopologyForDeleteNode: {}, domain without root", domain);
         }
 
         if (domain.isEmpty()) {
