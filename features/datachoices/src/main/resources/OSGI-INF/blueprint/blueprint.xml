@@ -59,6 +59,8 @@
         <argument ref="configurationManagerService" />
     </bean>
 
+    <bean id="dataSourceFactoryBean" class="org.opennms.core.db.DataSourceFactoryBean" />
+
 	<bean id="usageStatisticsReporter" class="org.opennms.features.datachoices.internal.UsageStatisticsReporter"
         init-method="init" destroy-method="destroy">
         <property name="url" value="${url}"/>
@@ -80,6 +82,7 @@
         <property name="notifdConfigFactory" ref="notifdConfigFactory"/>
         <property name="groupFactory" ref="groupFactory"/>
         <property name="deployedForeignSourceRepository" ref="deployedForeignSourceRepository"/>
+        <property name="dataSourceFactoryBean" ref="dataSourceFactoryBean"/>
     </bean>
 
     <bean id="dataChoiceRestService" class="org.opennms.features.datachoices.web.internal.DataChoiceRestServiceImpl">

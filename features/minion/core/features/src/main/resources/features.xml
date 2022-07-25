@@ -27,7 +27,7 @@
         <feature>geronimo-jms-api</feature>
 
         <!-- Needed by activemq-camel -->
-        <bundle>mvn:javax.annotation/javax.annotation-api/1.2</bundle>
+        <bundle>mvn:javax.annotation/javax.annotation-api/1.3.1</bundle>
         <feature>activemq-camel</feature>
 
         <!-- This is also defined in "sentinel-jms" -->
