@@ -8,6 +8,8 @@ from library import libfile
 path_to_build_components=os.path.join("/tmp","build-triggers.json")
 path_to_build_trigger_override=os.path.join(".circleci","build-triggers.override.json")
 
+path_to_pipeline_parameters=os.path.join("/tmp","pipeline-parameters.json")
+
 output_path = os.environ.get('OUTPUT_PATH')
 head = os.environ.get('CIRCLE_SHA1')
 base_revision = os.environ.get('BASE_REVISION')
@@ -112,6 +114,11 @@ print("What we want to build:",What_to_build,len(What_to_build))
 git_keywords=libgit.extractKeywordsFromLastCommit()
 
 build_mappings=libfile.load_json(path_to_build_trigger_override)
+pipeline_parameters=libfile.load_json(path_to_pipeline_parameters)
+build_mappings["build"]["build"]=pipeline_parameters["trigger-build"]
+build_mappings["tests"]["smoke"]=pipeline_parameters["trigger-flaky-smoke"]
+build_mappings["build"]["coverage"]=pipeline_parameters["trigger-coverage"]
+
 
 print("Git Keywords:",git_keywords)
 if "circleci_configuration" in What_to_build and len(What_to_build) == 1 and not build_mappings["build"]["build"]:
