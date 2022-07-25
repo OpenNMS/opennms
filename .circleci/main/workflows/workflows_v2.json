@@ -46,6 +46,11 @@
                 "minion-image"
             ]
         },
+        "oci-minion":{
+            "extends": [
+                "minion-image"
+            ]
+        },
         "deploy": {
             "extends": [
                 "build",

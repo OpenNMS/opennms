@@ -171,8 +171,8 @@ for e in main_yml_content:
                 if     build_components["oci-images"]["minion"] or \
                    not build_components["oci-images"]["horizon"] or \
                    not build_components["oci-images"]["sentinel"]:
-                   print("oci-images > minion:",libyaml.tell_extended_requirements('minion-image'))
-                   workflow=libyaml.generate_workflows(workflow_data,"minion-image",level,sample_workflow,enable_filters=False)
+                   print("oci-images > minion:",libyaml.tell_extended_requirements('oci-minion'))
+                   workflow=libyaml.generate_workflows(workflow_data,"oci-minion",level,sample_workflow,enable_filters=False)
                 elif not build_components["oci-images"]["minion"] or \
                          build_components["oci-images"]["horizon"] or \
                      not build_components["oci-images"]["sentinel"]:
