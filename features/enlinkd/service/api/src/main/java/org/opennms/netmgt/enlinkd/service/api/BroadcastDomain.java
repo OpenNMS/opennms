@@ -307,7 +307,7 @@ public class BroadcastDomain implements Topology {
     public void addforwarders(BridgeForwardingTable bridgeFT) {
         Set<String> macs = new HashSet<>(getMacsOnSegments());
         cleanForwarders(bridgeFT.getNodeId());
-        for (String forward:  bridgeFT.getMactoport().keySet()) {
+        for (String forward :  bridgeFT.getMactoport().keySet()) {
             if (macs.contains(forward)) {
                 continue;
             }
