@@ -788,7 +788,7 @@ SEG:        for (SharedSegment segment : bmlsegments) {
                     } else {
                         if (macToMacPortMap.containsKey(m.getPhysAddress())) {
                             macport=macToMacPortMap.get(m.getPhysAddress());
-                            merge=true;
+                            merge = true;
                         } else {
                             macToMacPortMap.put(m.getPhysAddress(), macport);
                         }
