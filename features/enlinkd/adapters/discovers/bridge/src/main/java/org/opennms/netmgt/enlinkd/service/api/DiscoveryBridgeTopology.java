@@ -96,7 +96,7 @@ public class DiscoveryBridgeTopology {
 
         for (BridgeForwardingTableEntry link: entries) {
             if (link.getNodeId().intValue() != bridge.getNodeId().intValue()) {
-                throw new BridgeTopologyException("create: bridge:["+ bridge.getNodeId()+ "] and forwarding table must have the same nodeid", link);
+                throw new BridgeTopologyException("create: bridge:[" + bridge.getNodeId() + "] and forwarding table must have the same nodeid", link);
             }
         }
         final BridgeForwardingTable bridgeFt = new BridgeForwardingTable(bridge,entries);
