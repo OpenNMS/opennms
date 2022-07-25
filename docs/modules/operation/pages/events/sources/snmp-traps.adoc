@@ -340,9 +340,9 @@ If the value of the first OID in this trap is 6 the the log message will be the 
 
 == Trap value representation
 
-When octet strings are translated into event parameters, {page-component-title} first attempts to treat them as character encodings.
-If all bytes in the string are valid UTF-8 or ISO-8859-1 characters, the string is stored as these characters.
-If this is not possible, the value is encoded as a Base64 string.
+When octet Strings are translated into event parameters, {page-component-title} first attempts to treat them as character encodings.
+If all bytes in the String are valid UTF-8 or ISO-8859-1 characters, the String is stored as these characters.
+If this is not possible, the value is encoded as a Base64 String.
 
 == Traps forwarded via proxy
 
