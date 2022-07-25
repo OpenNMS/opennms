@@ -36,14 +36,14 @@ When there are multiple locations, the partition count should be greater than th
 
 * By default, Kafka RPC uses a buffer size of 900KB.
 When set to a larger size, they will be split into 900kb chunks.
-Configure max buffer size by setting `org.opennms.core.ipc.rpc.kafka.max.buffer.size` to the desired size in bytes.
+Configure the maximum buffer size by setting `org.opennms.core.ipc.rpc.kafka.max.buffer.size` to the desired size in bytes.
 
 * Default time to live (time at which request will expire) is 20000ms (20 seconds).
 To change it, configure the system property `org.opennms.core.ipc.rpc.kafka.ttl` in milliseconds.
 
-== Disable Single Topic for Kafka RPC
+== Disable single topic for Kafka RPC
 
-By default {page-component-title} uses single topic structure.
+By default, {page-component-title} uses single topic structure.
 One request topic is created for each location and one response topic is created for all modules, regardless of location.
 
 Note that all Minions at any location must be running the same features in order to make use of single topic.
