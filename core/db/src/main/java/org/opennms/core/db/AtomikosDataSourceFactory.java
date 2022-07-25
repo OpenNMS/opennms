@@ -64,7 +64,7 @@ public class AtomikosDataSourceFactory extends AtomikosDataSourceBean implements
 	public AtomikosDataSourceFactory() {
 		super.setUniqueResourceName("opennms");
 		super.setXaDataSource(XADataSourceFactory.getInstance());
-		super.setPoolSize(20);
+		super.setPoolSize(30);
 
 		// Automatically rollback the connection on borrow to avoid a problem where
 		// Atomikos will reuse database connections that contain aborted transactions, 
