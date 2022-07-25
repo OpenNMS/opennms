@@ -17,7 +17,7 @@ docker-compose run horizon -i
 docker-compose up -d
 ----
 
-TIP: You can also use this command when you run upgrades.
+TIP: You can also use this command when you run upgrades. :)
      You must delete the file `etc/configured` file first.
      It works as a guard to prevent unnecessary database migration runs on startup.
      +
