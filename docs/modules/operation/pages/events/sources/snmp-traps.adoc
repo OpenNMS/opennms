@@ -3,7 +3,7 @@
 = SNMP Traps
 
 {page-component-title} can receive and process SNMP traps/informs from SNMP-capable devices out of the box.
-It receives SNMP traps via the xref:reference:daemons/daemon-config-files/trapd.adoc[trapd service daemon], which is enabled by default.
+It receives SNMP traps via the xref:reference:daemons/daemon-config-files/trapd.adoc[Trapd service daemon], which is enabled by default.
 
 IMPORTANT: Disabling trapd renders {page-component-title} incapable of receiving SNMP traps.
 
