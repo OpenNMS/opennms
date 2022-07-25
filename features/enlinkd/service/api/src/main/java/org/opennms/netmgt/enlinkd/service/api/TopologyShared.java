@@ -32,7 +32,7 @@ import java.util.List;
 
 public class TopologyShared implements Topology {
 
-    public TopologyShared(List<BridgePort> left, List<MacPort> right,BridgePort top ) {
+    public TopologyShared(List<BridgePort> left, List<MacPort> right,BridgePort top) {
         this.designated = top;
         this.left = left;
         this.right = right;
