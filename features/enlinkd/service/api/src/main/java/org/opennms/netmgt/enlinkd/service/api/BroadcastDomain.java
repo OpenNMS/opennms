@@ -264,7 +264,7 @@ public class BroadcastDomain implements Topology {
     }
 
     public void hierarchySetUp(Bridge root) {
-        if (root==null || getBridge(root.getNodeId()) == null) {
+        if (root == null || getBridge(root.getNodeId()) == null) {
             return;
         }
         if (root.isRootBridge()) {
