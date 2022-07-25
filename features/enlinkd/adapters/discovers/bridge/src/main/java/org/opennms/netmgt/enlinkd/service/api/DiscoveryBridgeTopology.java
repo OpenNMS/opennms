@@ -338,7 +338,7 @@ public class DiscoveryBridgeTopology {
             if (cbridge.getNodeId().intValue() == bridge.getNodeId().intValue())
                 continue;
             if (cbridge.getNodeId().intValue() == upBridgeId.intValue()) {
-                upBridge=cbridge;
+                upBridge = cbridge;
                 break;
             }
         }
