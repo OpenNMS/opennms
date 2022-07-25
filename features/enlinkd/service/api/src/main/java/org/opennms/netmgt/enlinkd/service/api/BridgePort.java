@@ -30,9 +30,6 @@ package org.opennms.netmgt.enlinkd.service.api;
 
 import java.util.Objects;
 
-import org.opennms.netmgt.enlinkd.model.BridgeBridgeLink;
-import org.opennms.netmgt.enlinkd.model.BridgeMacLink;
-
 public class BridgePort implements Topology {
 
     private Integer m_node;
@@ -43,42 +40,6 @@ public class BridgePort implements Topology {
     //      and of the domain must be moved there
     private Integer m_vlan;
 
-
-    public static BridgePort getFromBridgeForwardingTableEntry(BridgeForwardingTableEntry link) {
-        BridgePort bp = new BridgePort();
-        bp.setNodeId(link.getNodeId());
-        bp.setBridgePort(link.getBridgePort());
-        bp.setBridgePortIfIndex(link.getBridgePortIfIndex());
-        bp.setVlan(link.getVlan());
-        return bp;
-    }
-
-    public static BridgePort getFromBridgeMacLink(BridgeMacLink link) {
-        BridgePort bp = new BridgePort();
-        bp.setNodeId(link.getNode().getId());
-        bp.setBridgePort(link.getBridgePort());
-        bp.setBridgePortIfIndex(link.getBridgePortIfIndex());
-        bp.setVlan(link.getVlan());
-        return bp;
-    }
-
-    public static BridgePort getFromBridgeBridgeLink(BridgeBridgeLink link) {
-        BridgePort bp = new BridgePort();
-        bp.setNodeId(link.getNode().getId());
-        bp.setBridgePort(link.getBridgePort());
-        bp.setBridgePortIfIndex(link.getBridgePortIfIndex());
-        bp.setVlan(link.getVlan());
-        return bp;
-    }
-
-    public static BridgePort getFromDesignatedBridgeBridgeLink(BridgeBridgeLink link) {
-        BridgePort bp = new BridgePort();
-        bp.setNodeId(link.getDesignatedNode().getId());
-        bp.setBridgePort(link.getDesignatedPort());
-        bp.setBridgePortIfIndex(link.getDesignatedPortIfIndex());
-        bp.setVlan(link.getDesignatedVlan());
-        return bp;
-    }
 
     @Override
     public boolean equals(Object o) {

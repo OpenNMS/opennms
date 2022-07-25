@@ -28,18 +28,9 @@
 
 package org.opennms.netmgt.enlinkd.service.api;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
-
-import org.opennms.netmgt.enlinkd.model.BridgeBridgeLink;
-import org.opennms.netmgt.enlinkd.model.BridgeMacLink;
-import org.opennms.netmgt.enlinkd.model.BridgeMacLink.BridgeMacLinkType;
-import org.opennms.netmgt.model.OnmsNode;
 
 public class BridgeForwardingTableEntry implements Topology {
 
@@ -123,83 +114,6 @@ public class BridgeForwardingTableEntry implements Topology {
                                                            + code);
             }
         }
-    }
-
-    public static String printTopology(Set<BridgeForwardingTableEntry> bft) {
-        StringBuilder strbfr = new StringBuilder();
-        boolean rn = false;
-        for (BridgeForwardingTableEntry bftentry: bft) {
-            if (rn) {
-                strbfr.append("\n");
-            } else {
-                rn = true;
-            }
-            strbfr.append(bftentry.printTopology());
-        }
-        return strbfr.toString();
-    }
-
-    public static List<BridgeMacLink> create(BridgePortWithMacs bft, BridgeMacLinkType type) {
-        return create(bft.getPort(), bft.getMacs(), type);
-    }
-    
-    public static List<BridgeMacLink> create(BridgePort bp, Set<String> macs, BridgeMacLinkType type) {
-        List<BridgeMacLink> maclinks = new ArrayList<>();
-        macs.forEach(mac -> maclinks.add(create(bp, mac, type)));
-        return maclinks;
-    }
-
-    public static BridgeMacLink create(BridgePort bp, String macAddress, BridgeMacLinkType type) {
-        BridgeMacLink maclink = new BridgeMacLink();
-        OnmsNode node = new OnmsNode();
-        node.setId(bp.getNodeId());
-        maclink.setNode(node);
-        maclink.setBridgePort(bp.getBridgePort());
-        maclink.setBridgePortIfIndex(bp.getBridgePortIfIndex());
-        maclink.setMacAddress(macAddress);
-        maclink.setVlan(bp.getVlan());
-        maclink.setLinkType(type);
-        return maclink;
-    }
-    
-    public static List<BridgeBridgeLink> create(BridgePort designatedPort, Set<BridgePort> ports) {
-        OnmsNode designatedNode = new OnmsNode();
-        designatedNode.setId(designatedPort.getNodeId());
-        List<BridgeBridgeLink> links = new ArrayList<>();
-        for (BridgePort port:ports) {
-            if (port.equals(designatedPort)) {
-                continue;
-            }
-            BridgeBridgeLink link = new BridgeBridgeLink();
-            OnmsNode node = new OnmsNode();
-            node.setId(port.getNodeId());
-            link.setNode(node);
-            link.setBridgePort(port.getBridgePort());
-            link.setBridgePortIfIndex(port.getBridgePortIfIndex());
-            link.setVlan(port.getVlan());
-            link.setDesignatedNode(designatedNode);
-            link.setDesignatedPort(designatedPort.getBridgePort());
-            link.setDesignatedPortIfIndex(designatedPort.getBridgePortIfIndex());
-            link.setDesignatedVlan(designatedPort.getVlan());
-            links.add(link);
-        }
-        return links;
-    
-    }
-
-    public static Set<BridgeForwardingTableEntry> get(BridgePortWithMacs bft) {
-        Set<BridgeForwardingTableEntry> bftentries = new HashSet<>();
-        bft.getMacs().forEach(mac -> {
-            BridgeForwardingTableEntry bftentry = new BridgeForwardingTableEntry();
-            bftentry.setNodeId(bft.getPort().getNodeId());
-            bftentry.setBridgePort(bft.getPort().getBridgePort());
-            bftentry.setBridgePortIfIndex(bft.getPort().getBridgePortIfIndex());
-            bftentry.setVlan(bft.getPort().getVlan());
-            bftentry.setMacAddress(mac);
-            bftentry.setBridgeDot1qTpFdbStatus(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED);
-            bftentries.add(bftentry);
-        });
-        return bftentries;
     }
 
     @Override

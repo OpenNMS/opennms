@@ -302,7 +302,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
     }
     
     @Test 
-    public void testLoadTopology() throws BridgeTopologyException {
+    public void testLoadTopology() {
         final OnmsMonitoringLocation location = new OnmsMonitoringLocation(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID);
         ABCTopology topology = new ABCTopology();
         OnmsNode lnodeA = topology.nodeA;
@@ -516,7 +516,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         BroadcastDomain nodeCbd = m_bridgeTopologyService.getBroadcastDomain(nodeC.getId());
         assertEquals(nodeAbd, nodeBbd);
         assertEquals(nodeAbd, nodeCbd);
-        BroadcastDomain.hierarchySetUp(nodeAbd,nodeAbd.getBridge(nodeA.getId()));
+        nodeAbd.hierarchySetUp(nodeAbd.getBridge(nodeA.getId()));
 
         topology.checkwithshared(nodeAbd);
         assertEquals(0, nodeAbd.getForwarders(topology.nodeAId).size());
@@ -655,11 +655,13 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         assertNotNull(nodeAbd.getBridge(nodeA.getId()));
         assertNotNull(nodeAbd.getBridge(nodeB.getId()));
         assertNotNull(nodeAbd.getBridge(nodeC.getId()));
-        BroadcastDomain.hierarchySetUp(nodeAbd,nodeAbd.getBridge(nodeA.getId()));
+        nodeAbd.hierarchySetUp(nodeAbd.getBridge(nodeA.getId()));
         assertNotNull(nodeAbd.getRootBridge());
         topology.check(nodeAbd);
-        
+
+        System.err.println(nodeAbd.printTopology());
         m_linkd.deleteNode(nodeC.getId());
+        System.err.println(nodeAbd.printTopology());
         assertEquals(1, m_bridgeTopologyService.findAll().size());
         
         BroadcastDomain domain = m_bridgeTopologyService.findAll().iterator().next();
@@ -756,7 +758,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         assertNotNull(nodeAbd.getBridge(nodeA.getId()));
         assertNotNull(nodeAbd.getBridge(nodeB.getId()));
         assertNotNull(nodeAbd.getBridge(nodeC.getId()));
-        BroadcastDomain.hierarchySetUp(nodeAbd,nodeAbd.getBridge(nodeA.getId()));
+        nodeAbd.hierarchySetUp(nodeAbd.getBridge(nodeA.getId()));
         assertNotNull(nodeAbd.getRootBridge());
         topology.check(nodeAbd);
 
@@ -859,7 +861,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         assertNotNull(nodeAbd.getBridge(nodeA.getId()));
         assertNotNull(nodeAbd.getBridge(nodeB.getId()));
         assertNotNull(nodeAbd.getBridge(nodeC.getId()));
-        BroadcastDomain.hierarchySetUp(nodeAbd,nodeAbd.getBridge(nodeA.getId()));
+        nodeAbd.hierarchySetUp(nodeAbd.getBridge(nodeA.getId()));
         assertNotNull(nodeAbd.getRootBridge());
         topology.check(nodeAbd);
 

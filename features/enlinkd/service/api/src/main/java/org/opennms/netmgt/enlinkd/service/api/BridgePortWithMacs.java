@@ -28,27 +28,24 @@
 
 package org.opennms.netmgt.enlinkd.service.api;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-public class BridgePortWithMacs implements Topology {
+import org.opennms.netmgt.enlinkd.model.BridgeMacLink;
+import org.opennms.netmgt.model.OnmsNode;
+import org.springframework.util.Assert;
 
-    public static BridgePortWithMacs create(BridgePort port, Set<String> macs) throws BridgeTopologyException {
-        if (port == null) {
-            throw new BridgeTopologyException("cannot create BridgePortWithMacs bridge port is null");
-        }
-        if (macs == null) {
-            throw new BridgeTopologyException("cannot create BridgePortWithMacs macs is null");
-        }
-        return new BridgePortWithMacs(port,macs);
-        
-    }
+public class BridgePortWithMacs implements Topology {
 
     private final BridgePort m_port;
     private final Set<String> m_macs;
-    
- 
-    private BridgePortWithMacs(BridgePort port, Set<String> macs) {
+
+    public BridgePortWithMacs(BridgePort port, Set<String> macs) {
+        Assert.notNull(port);
+        Assert.notNull(macs);
         m_port=port;
         m_macs=macs;
     }
@@ -59,6 +56,39 @@ public class BridgePortWithMacs implements Topology {
 
     public Set<String> getMacs() {
         return m_macs;
+    }
+
+    public List<BridgeMacLink> getBridgeMacLinks() {
+        final List<BridgeMacLink> links = new ArrayList<>();
+        m_macs.forEach(mac -> {
+            BridgeMacLink maclink = new BridgeMacLink();
+            OnmsNode node = new OnmsNode();
+            node.setId(m_port.getNodeId());
+            maclink.setNode(node);
+            maclink.setBridgePort(m_port.getBridgePort());
+            maclink.setBridgePortIfIndex(m_port.getBridgePortIfIndex());
+            maclink.setMacAddress(mac);
+            maclink.setVlan(m_port.getVlan());
+            maclink.setLinkType(BridgeMacLink.BridgeMacLinkType.BRIDGE_FORWARDER);
+            links.add(maclink);
+        });
+        return links;
+    }
+
+    public Set<BridgeForwardingTableEntry> getBridgeForwardingTableEntrySet() {
+        Set<BridgeForwardingTableEntry> bftentries = new HashSet<>();
+        m_macs.forEach(mac -> {
+            BridgeForwardingTableEntry bftentry = new BridgeForwardingTableEntry();
+            bftentry.setNodeId(m_port.getNodeId());
+            bftentry.setBridgePort(m_port.getBridgePort());
+            bftentry.setBridgePortIfIndex(m_port.getBridgePortIfIndex());
+            bftentry.setVlan(m_port.getVlan());
+            bftentry.setMacAddress(mac);
+            bftentry.setBridgeDot1qTpFdbStatus(BridgeForwardingTableEntry.BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED);
+            bftentries.add(bftentry);
+        });
+        return bftentries;
+
     }
 
     @Override
@@ -76,7 +106,6 @@ public class BridgePortWithMacs implements Topology {
 
     @Override
     public String printTopology() {
-
         return m_port.printTopology() +
                 " macs:" +
                 m_macs;

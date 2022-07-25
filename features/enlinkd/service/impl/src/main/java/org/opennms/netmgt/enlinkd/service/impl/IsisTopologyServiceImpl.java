@@ -46,6 +46,7 @@ import org.opennms.netmgt.enlinkd.persistence.api.IsIsLinkDao;
 import org.opennms.netmgt.enlinkd.service.api.CompositeKey;
 import org.opennms.netmgt.enlinkd.service.api.IsisTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.TopologyConnection;
+import org.opennms.netmgt.enlinkd.service.api.TopologyService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -219,7 +220,7 @@ public class IsisTopologyServiceImpl extends TopologyServiceImpl implements Isis
             if (LOG.isDebugEnabled()) {
                 LOG.debug("getIsIsLinks: target: {}", targetLink);
             }
-            results.add(TopologyConnection.of(sourceLink, targetLink));
+            results.add(TopologyService.of(sourceLink, targetLink));
             parsed.add(sourceLink.getId());
             parsed.add(targetLink.getId());
         }

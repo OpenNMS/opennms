@@ -29,9 +29,9 @@
 package org.opennms.netmgt.enlinkd;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.DLINK1_IP;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.DLINK1_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.DLINK1_SNMP_RESOURCE;
@@ -47,11 +47,12 @@ import org.junit.Test;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.netmgt.enlinkd.model.BridgeMacLink;
-import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
 import org.opennms.netmgt.enlinkd.model.BridgeMacLink.BridgeMacLinkType;
+import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
 import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry;
-import org.opennms.netmgt.enlinkd.service.api.BridgePort;
 import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry.BridgeDot1qTpFdbStatus;
+import org.opennms.netmgt.enlinkd.service.api.BridgePort;
+import org.opennms.netmgt.enlinkd.service.api.DiscoveryBridgeTopology;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.nb.Nms4930NetworkBuilder;
 
@@ -403,11 +404,16 @@ String[] forwardersdlink2on10bbport= {"001195256302","f07d68a13d67","001517028e0
                 continue;
             }
             assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED,link.getBridgeDot1qTpFdbStatus());
-            BridgeMacLink maclink =
-                    BridgeForwardingTableEntry.create(
-                            BridgePort.getFromBridgeForwardingTableEntry(link),
-                            link.getMacAddress(),
-                            BridgeMacLinkType.BRIDGE_LINK);
+            BridgePort bp =  DiscoveryBridgeTopology.getFromBridgeForwardingTableEntry(link);
+            BridgeMacLink maclink = new BridgeMacLink();
+            OnmsNode node = new OnmsNode();
+            node.setId(bp.getNodeId());
+            maclink.setNode(node);
+            maclink.setBridgePort(bp.getBridgePort());
+            maclink.setBridgePortIfIndex(bp.getBridgePortIfIndex());
+            maclink.setMacAddress(link.getMacAddress());
+            maclink.setVlan(bp.getVlan());
+            maclink.setLinkType(BridgeMacLinkType.BRIDGE_LINK);
             maclink.setBridgeMacLinkLastPollTime(maclink.getBridgeMacLinkCreateTime());
             m_bridgeMacLinkDao.save(maclink);
         }

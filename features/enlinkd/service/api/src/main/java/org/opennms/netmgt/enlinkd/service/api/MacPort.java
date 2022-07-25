@@ -30,43 +30,19 @@ package org.opennms.netmgt.enlinkd.service.api;
 
 import java.net.InetAddress;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
 
 public class MacPort implements Topology {
-
-    public static MacPort create(IpNetToMedia media) {
-    
-        Set<InetAddress> ips = new HashSet<>();
-        ips.add(media.getNetAddress());
-        
-        MacPort port = new MacPort();
-        port.setNodeId(media.getNodeId());
-        port.setIfIndex(media.getIfIndex());
-        port.setMacPortName(media.getPort());
-        port.getMacPortMap().put(media.getPhysAddress(), ips);
-        return port;
-    }
-
-    public static void merge(IpNetToMedia media, MacPort port) {
-        
-        if (!port.getMacPortMap().containsKey(media.getPhysAddress())) {
-            Set<InetAddress> ips = new HashSet<>();
-            port.getMacPortMap().put(media.getPhysAddress(), ips);            
-        }
-        port.getMacPortMap().get(media.getPhysAddress()).add(media.getNetAddress());
-    }
 
     private Integer m_nodeId;
     private Integer m_macPortIfIndex;
     private String  m_macPortName;
     private final Map<String, Set<InetAddress>> m_macPortMap = new HashMap<>();
     
-    private MacPort() {
+    public MacPort() {
     }
         
     public String getPortMacInfo() {

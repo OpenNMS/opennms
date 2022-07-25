@@ -73,6 +73,286 @@ public class DiscoveryBridgeTopology {
         return macsOnSegment;
     }
 
+    public static Set<BridgePortWithMacs> getThroughSet(BridgeForwardingTable bridgeFt, Set<BridgePort> excluded) throws BridgeTopologyException {
+
+        for (BridgePort exclude: excluded) {
+            if (exclude.getNodeId().intValue() != bridgeFt.getNodeId().intValue()) {
+                throw new BridgeTopologyException("getThroughSet: node mismatch ["
+                        + bridgeFt.getNodeId() + "]", exclude);
+            }
+        }
+        Set<BridgePortWithMacs> throughSet = new HashSet<>();
+        bridgeFt.getPorttomac().stream().filter(ptm -> !excluded.contains(ptm.getPort())).forEach(throughSet::add);
+        return throughSet;
+    }
+
+    public static BridgeForwardingTable create(Bridge bridge, Set<BridgeForwardingTableEntry> entries) throws BridgeTopologyException {
+        if (bridge == null) {
+            throw new BridgeTopologyException("bridge must not be null");
+        }
+        if (entries == null) {
+            throw new BridgeTopologyException("bridge forwarding table must not be null");
+        }
+
+        for (BridgeForwardingTableEntry link: entries) {
+            if (link.getNodeId().intValue() != bridge.getNodeId().intValue()) {
+                throw new BridgeTopologyException("create: bridge:[" + bridge.getNodeId() + "] and forwarding table must have the same nodeid", link);
+            }
+        }
+        final BridgeForwardingTable bridgeFt = new BridgeForwardingTable(bridge,entries);
+
+        entries.stream().filter(link -> link.getBridgeDot1qTpFdbStatus()
+                                == BridgeForwardingTableEntry.BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_SELF).
+                                forEach(link -> {
+            bridgeFt.getIdentifiers().add(link.getMacAddress());
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("create: bridge:[{}] adding bid {}",
+                          bridge.getNodeId(),
+                          link.printTopology());
+            }
+        });
+
+        for (BridgeForwardingTableEntry link : entries) {
+            if (link.getBridgeDot1qTpFdbStatus()
+                                != BridgeForwardingTableEntry.BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED ) {
+                continue;
+            }
+            if (bridgeFt.getIdentifiers().contains(link.getMacAddress())) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("create: bridge:[{}] skip bid {}",
+                          bridge.getNodeId(),
+                          link.printTopology());
+                }
+                continue;
+            }
+
+            BridgePort bridgeport = getFromBridgeForwardingTableEntry(link);
+
+            BridgePortWithMacs bpwm = bridgeFt.getBridgePortWithMacs(bridgeport);
+            if (bpwm == null ) {
+                bridgeFt.getPorttomac().add(new BridgePortWithMacs(bridgeport, new HashSet<>()));
+            }
+            bridgeFt.getBridgePortWithMacs(bridgeport).getMacs().add(link.getMacAddress());
+
+            if (bridgeFt.getMactoport().containsKey(link.getMacAddress())) {
+                bridgeFt.getDuplicated().put(link.getMacAddress(), new HashSet<>());
+                bridgeFt.getDuplicated().get(link.getMacAddress()).add(bridgeport);
+
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("create: bridge:[{}] duplicated {}",
+                              bridge.getNodeId(),
+                              link.printTopology());
+                }
+                continue;
+            }
+
+            if (LOG.isDebugEnabled()) {
+                    LOG.debug("create: bridge:[{}] adding {}",
+                          bridge.getNodeId(),
+                          link.printTopology());
+            }
+            bridgeFt.getMactoport().put(link.getMacAddress(), bridgeport);
+        }
+
+        for (String mac : bridgeFt.getDuplicated().keySet()) {
+            BridgePort saved = bridgeFt.getMactoport().remove(mac);
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("create: bridge:[{}] remove duplicated [{}] from {}",
+                          bridge.getNodeId(),
+                          mac,
+                          saved.printTopology());
+            }
+
+            BridgePortWithMacs savedwithmacs = bridgeFt.getBridgePortWithMacs(saved);
+            savedwithmacs.getMacs().remove(mac);
+
+            for (BridgePort dupli: bridgeFt.getDuplicated().get(mac)) {
+                BridgePortWithMacs dupliwithmacs = bridgeFt.getBridgePortWithMacs(dupli);
+                dupliwithmacs.getMacs().remove(mac);
+            }
+            bridgeFt.getDuplicated().get(mac).add(saved);
+        }
+
+        return bridgeFt;
+    }
+
+    public static BridgePort getFromBridgeForwardingTableEntry(BridgeForwardingTableEntry link) {
+        BridgePort bp = new BridgePort();
+        bp.setNodeId(link.getNodeId());
+        bp.setBridgePort(link.getBridgePort());
+        bp.setBridgePortIfIndex(link.getBridgePortIfIndex());
+        bp.setVlan(link.getVlan());
+        return bp;
+    }
+
+    public static Bridge create(BroadcastDomain domain, Integer nodeid) {
+        Bridge bridge = new Bridge(nodeid);
+        domain.getBridges().add(bridge);
+        return bridge;
+    }
+
+    public static Set<BridgeForwardingTableEntry> calculateBFT(
+            BroadcastDomain domain, Bridge bridge)
+            throws BridgeTopologyException {
+
+        if ( domain == null ) {
+            throw new BridgeTopologyException("calculateBFT: domain cannot be null");
+        }
+
+        if ( bridge == null ) {
+            throw new BridgeTopologyException("calculateBFT: bridge cannot be null", domain);
+        }
+        Integer bridgeId = bridge.getNodeId();
+        if ( bridgeId == null ) {
+            throw new BridgeTopologyException("calculateBFT: bridge Id cannot be null", bridge);
+        }
+        Map<Integer, Set<String>> bft = new HashMap<>();
+        Map<Integer, BridgePort> portifindexmap = new HashMap<>();
+
+        Map<Integer,Integer> upperForwardingBridgePorts = getUpperForwardingBridgePorts(domain, bridge, new HashMap<>(),0);
+
+        Map<Integer,Integer> bridgeIdtobridgePortOnBridge = new HashMap<>();
+
+        for (Integer upperbridgeid: upperForwardingBridgePorts.keySet()) {
+            bridgeIdtobridgePortOnBridge.put(upperbridgeid, bridge.getRootPort());
+        }
+
+        //
+        for (SharedSegment segment : domain.getSharedSegments()) {
+
+           Integer bridgeport;
+
+            if (segment.getBridgeIdsOnSegment().contains(bridgeId)) {
+                BridgePort bport = segment.getBridgePort(bridgeId);
+                portifindexmap.put(bport.getBridgePort(), bport);
+                bridgeport = bport.getBridgePort();
+            } else {
+                bridgeport = getCalculateBFT(domain, segment, bridge, bridgeIdtobridgePortOnBridge, new HashSet<>(),0);
+            }
+
+            if (!bft.containsKey(bridgeport)) {
+                bft.put(bridgeport, new HashSet<>());
+            }
+            bft.get(bridgeport).addAll(segment.getMacsOnSegment());
+        }
+
+        List<BridgePortWithMacs> links = new ArrayList<>(domain.getForwarders(bridgeId));
+
+        for (Integer bridgePort : bft.keySet()) {
+            links.add(new BridgePortWithMacs(portifindexmap.get(bridgePort),bft.get(bridgePort)));
+        }
+
+        Set<BridgeForwardingTableEntry> entries= new HashSet<>();
+        links.stream().filter(bfti -> bfti.getMacs().size() > 0).forEach(bfti -> entries.addAll(bfti.getBridgeForwardingTableEntrySet()));
+        return entries;
+    }
+
+    public static Bridge electRootBridge(BroadcastDomain domain) throws BridgeTopologyException {
+        if (domain.getBridges().size() == 1) {
+            return domain.getBridges().iterator().next();
+        }
+        //well only one root bridge should be defined....
+        //otherwise we need to skip calculation
+        //so here is the place were we can
+        //manage multi stp domains...
+        //ignoring for the moment....
+        for (Bridge electable: domain.getBridges()) {
+            if (electable.getDesignated() != null) {
+                return getUpperBridge(domain,electable,0);
+            }
+        }
+        return null;
+    }
+
+    public static Bridge getUpperBridge(BroadcastDomain domain, Bridge electableroot, int level) throws BridgeTopologyException {
+        if (level == BroadcastDomain.maxlevel) {
+            throw new BridgeTopologyException("getUpperBridge, too many iterations", electableroot);
+        }
+        for (Bridge electable: domain.getBridges()) {
+            if (electable.getIdentifiers().contains(electableroot.getDesignated())) {
+                return getUpperBridge(domain,electable, ++level);
+            }
+        }
+        return electableroot;
+    }
+
+    public static Map<Integer,Integer> getUpperForwardingBridgePorts(BroadcastDomain domain, Bridge bridge, Map<Integer,Integer> downports, int level) throws BridgeTopologyException {
+        if (level == BroadcastDomain.maxlevel) {
+            throw new BridgeTopologyException("getUpperForwardingBridgePorts: too many iteration", bridge);
+        }
+
+        if (bridge.isRootBridge()) {
+            return downports;
+        }
+
+        SharedSegment upSegment = domain.getSharedSegment(bridge.getNodeId(), bridge.getRootPort());
+        if (upSegment == null) {
+            throw new BridgeTopologyException("getUpperForwardingBridgePorts: no up segment", bridge);
+        }
+
+        Bridge upBridge = domain.getBridge(upSegment.getDesignatedBridge());
+        if (upBridge == null) {
+            throw new BridgeTopologyException("getUpperForwardingBridgePorts: no designated bridge on segment", bridge);
+        }
+        BridgePort bp = upSegment.getBridgePort(upBridge.getNodeId());
+        downports.put(bp.getNodeId(),bp.getBridgePort());
+        return getUpperForwardingBridgePorts(domain, upBridge, downports, ++level);
+    }
+
+    public static Integer getCalculateBFT(BroadcastDomain domain, SharedSegment segment, Bridge bridge, Map<Integer,Integer> bridgetobridgeport, Set<Integer> downBridgeIds, int level) throws BridgeTopologyException {
+        if (level == BroadcastDomain.maxlevel) {
+            throw new BridgeTopologyException("getCalculateBFT: too many iteration", domain);
+        }
+
+        for (Integer bridgeIdOnsegment: segment.getBridgeIdsOnSegment()) {
+            if (bridgetobridgeport.containsKey(bridgeIdOnsegment)) {
+                Integer bridgeport = bridgetobridgeport.get(bridgeIdOnsegment);
+                for (Integer bridgeidonsegment: downBridgeIds) {
+                    bridgetobridgeport.put(bridgeidonsegment, bridgeport);
+                }
+
+                return bridgeport;
+            }
+        }
+        // if segment is on the bridge then...
+        Integer upBridgeId = segment.getDesignatedBridge();
+
+        if (upBridgeId.intValue() == bridge.getNodeId().intValue()) {
+            for (Integer bridgeidonsegment: downBridgeIds) {
+                bridgetobridgeport.put(bridgeidonsegment, segment.getDesignatedPort().getBridgePort());
+            }
+            return segment.getDesignatedPort().getBridgePort();
+        }
+        // if segment is a root segment add mac on port
+        if (upBridgeId.intValue() == domain.getRootBridge().getNodeId().intValue()) {
+            for (Integer bridgeidonsegment : downBridgeIds) {
+                bridgetobridgeport.put(bridgeidonsegment, bridge.getRootPort());
+            }
+            return bridge.getRootPort();
+        }
+
+        downBridgeIds.addAll(segment.getBridgeIdsOnSegment());
+
+        Bridge upBridge = null;
+        for (Bridge cbridge: domain.getBridges()) {
+            if (cbridge.getNodeId().intValue() == bridge.getNodeId().intValue())
+                continue;
+            if (cbridge.getNodeId().intValue() == upBridgeId.intValue()) {
+                upBridge = cbridge;
+                break;
+            }
+        }
+        if (upBridge == null) {
+            throw new BridgeTopologyException("getCalculateBFT: cannot find up bridge on domain", domain);
+        }
+        SharedSegment up = domain.getSharedSegment(upBridge.getNodeId(), upBridge.getRootPort());
+        if (up == null) {
+            throw new BridgeTopologyException("getCalculateBFT: cannot find up segment on domain", domain);
+        }
+
+        return getCalculateBFT(domain,up, bridge,bridgetobridgeport,downBridgeIds, ++level);
+    }
+
     public BroadcastDomain getDomain() {
         return m_domain;
     }
@@ -87,10 +367,10 @@ public class DiscoveryBridgeTopology {
 
     public void addUpdatedBFT(Integer bridgeid, Set<BridgeForwardingTableEntry> notYetParsedBFT) {
         if (m_domain.getBridge(bridgeid) == null) {
-            Bridge.create(m_domain, bridgeid);
+            create(m_domain, bridgeid);
         }
         try {
-            m_bridgeFtMapUpdate.put(bridgeid, BridgeForwardingTable.create(m_domain.getBridge(bridgeid), notYetParsedBFT));
+            m_bridgeFtMapUpdate.put(bridgeid, create(m_domain.getBridge(bridgeid), notYetParsedBFT));
         } catch (BridgeTopologyException e) {
             LOG.warn("calculate:  node[{}], {}, topology:\n{}", 
                       bridgeid,
@@ -164,7 +444,7 @@ public class DiscoveryBridgeTopology {
     }
 
     private Bridge electRootBridge() throws BridgeTopologyException {
-        Bridge electedRoot = BroadcastDomain.electRootBridge(m_domain);
+        Bridge electedRoot = electRootBridge(m_domain);
         Bridge rootBridge = m_domain.getRootBridge();
         
         if (electedRoot == null) {
@@ -190,8 +470,7 @@ public class DiscoveryBridgeTopology {
         if (m_domain.getSharedSegments().isEmpty()) {
             rootBft.getBridge().setRootBridge();
             rootBft.getPorttomac().
-                        forEach(ts -> 
-                            SharedSegment.createAndAddToBroadcastDomain(m_domain,ts));
+                        forEach(m_domain::add);
             LOG.debug("calculate: bridge:[{}] elected [root] is first:{}", 
                       rootBft.getNodeId(),
                  m_domain.getBridgeNodesOnDomain());
@@ -239,17 +518,12 @@ public class DiscoveryBridgeTopology {
                                 bridgeId);
                     continue;
                 }
-                
-                try {
-                    BroadcastDomain.clearTopologyForBridge(m_domain,bridgeId);
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("calculate: bridge:[{}] cleaned ->\n{}", 
-                                  bridgeId,
-                                  m_domain.printTopology());
-                    }
-                } catch (BridgeTopologyException e) {
-                    LOG.warn("calculate: bridge:[{}], {}, \n{}", bridgeId, e.getMessage(),e.printTopology());
-                    m_failed.add(bridgeId);
+
+                m_domain.clearTopologyForBridge(bridgeId);
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("calculate: bridge:[{}] cleaned ->\n{}",
+                              bridgeId,
+                              m_domain.printTopology());
                 }
             }
             
@@ -264,8 +538,8 @@ public class DiscoveryBridgeTopology {
                 }
                 try {
                     bridgeFtMapCalcul.put(bridge.getNodeId(),
-                                          BridgeForwardingTable.create(bridge,
-                                                                       BroadcastDomain.calculateBFT(m_domain,
+                                          create(bridge,
+                                                                       calculateBFT(m_domain,
                                                                                                     bridge)));
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("calculate: bft from domain\n{}", 
@@ -300,17 +574,10 @@ public class DiscoveryBridgeTopology {
         }
         
         if (m_domain.getRootBridge() != null && !Objects.equals(m_domain.getRootBridge().getNodeId(), electedRoot.getNodeId())) {
-            try {
-                BroadcastDomain.hierarchySetUp(m_domain,electedRoot);
-                LOG.debug("calculate: bridge:[{}] elected is new [root] ->\n{}",
-                          electedRoot.getNodeId(), 
-                          m_domain.printTopology());
-            } catch (BridgeTopologyException e) {
-                LOG.error("calculate: bridge:[{}], {}, \n{}", electedRoot.getNodeId(), e.getMessage(),e.printTopology());
-                m_failed.addAll(m_bridgeFtMapUpdate.keySet());
-                m_failed.add(electedRoot.getNodeId());
-                return;
-            }
+            m_domain.hierarchySetUp(electedRoot);
+            LOG.debug("calculate: bridge:[{}] elected is new [root] ->\n{}",
+                      electedRoot.getNodeId(),
+                      m_domain.printTopology());
         }
         
         Set<Integer> postprocessing = new HashSet<>();
@@ -439,10 +706,10 @@ public class DiscoveryBridgeTopology {
 
         m_bridgeFtMapUpdate.values().stream().
             filter(ft -> m_parsed.contains(ft.getNodeId())).
-                forEach(ft -> BroadcastDomain.addforwarders(m_domain, ft));
+                forEach(m_domain::addforwarders);
         
         bridgeFtMapCalcul.values().
-            forEach(ft -> BroadcastDomain.addforwarders(m_domain, ft));
+            forEach(m_domain::addforwarders);
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("calculate: domain\n{}", 
@@ -634,14 +901,13 @@ public class DiscoveryBridgeTopology {
             down(nextDownBridge, bridgeFT, nextDownSP,bridgeFtMapCalcul,level);
             return;
         }
-        
-        SharedSegment.merge(m_domain, 
-                            upSegment, 
+
+        m_domain.merge(     upSegment,
                             splitted,
                             maconupsegment,
                             bridgeFT.getRootPort(),
-                            BridgeForwardingTable.getThroughSet(bridgeFT, parsed));
-        checkforwarders.forEach(ft -> BroadcastDomain.addforwarders(m_domain, ft));
+                            getThroughSet(bridgeFT, parsed));
+        checkforwarders.forEach(m_domain::addforwarders);
     }
     
 }
