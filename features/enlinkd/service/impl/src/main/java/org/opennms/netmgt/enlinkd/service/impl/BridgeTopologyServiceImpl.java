@@ -121,7 +121,7 @@ public class BridgeTopologyServiceImpl extends TopologyServiceImpl implements Br
     @Override
     public Set<String> getBridgeIdentifiers(Bridge bridge) {
         Set<String> identifiers = new HashSet<>();
-        for (BridgeElement element: m_bridgeElementDao.findByNodeId(bridge.getNodeId())) {
+        for (BridgeElement element : m_bridgeElementDao.findByNodeId(bridge.getNodeId())) {
             if (InetAddressUtils.isValidBridgeAddress(element.getBaseBridgeAddress())) {
                 identifiers.add(element.getBaseBridgeAddress());
             }
