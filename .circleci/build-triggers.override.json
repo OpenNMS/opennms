@@ -6,14 +6,14 @@
         "build": false
     },
     "publish": {
-        "packages": true
+        "packages": false
     },
     "tests": {
         "smoke": false,
         "integration": false
     },
     "oci-images": {
-        "minion": false,
+        "minion": true,
         "horizon": false,
         "sentinel": false
     },
