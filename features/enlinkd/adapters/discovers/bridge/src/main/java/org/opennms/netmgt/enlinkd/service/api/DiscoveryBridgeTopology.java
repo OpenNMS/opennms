@@ -112,7 +112,7 @@ public class DiscoveryBridgeTopology {
             }
         });
 
-        for (BridgeForwardingTableEntry link: entries) {
+        for (BridgeForwardingTableEntry link : entries) {
             if (link.getBridgeDot1qTpFdbStatus()
                                 != BridgeForwardingTableEntry.BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED ) {
                 continue;
