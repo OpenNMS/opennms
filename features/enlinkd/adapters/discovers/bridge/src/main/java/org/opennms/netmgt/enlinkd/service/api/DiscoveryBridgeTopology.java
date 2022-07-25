@@ -154,7 +154,7 @@ public class DiscoveryBridgeTopology {
             bridgeFt.getMactoport().put(link.getMacAddress(), bridgeport);
         }
 
-        for (String mac: bridgeFt.getDuplicated().keySet()) {
+        for (String mac : bridgeFt.getDuplicated().keySet()) {
             BridgePort saved = bridgeFt.getMactoport().remove(mac);
             if (LOG.isDebugEnabled()) {
                 LOG.debug("create: bridge:[{}] remove duplicated [{}] from {}",
