@@ -228,15 +228,15 @@ jobs:
       - run:
           name: Generate Main YAML file
           command: python3 .circleci/pyscripts/generate_main.py 
-      - run:
-          name: check for empty trigger config
-          command: |
-            if [ "$(grep -c trigger-coverage /tmp/pipeline-parameters.json)" -eq 0 ]; then
-              if [ "$(grep -c trigger-prebuild /tmp/pipeline-parameters.json)" -eq 0 ]; then
-                # this can happen in the case of merges or other similar "empty" commits
-                echo '{ "trigger-prebuild": false, "trigger-build": true }' > /tmp/pipeline-parameters.json
-              fi
-            fi
+      #- run:
+      #    name: check for empty trigger config
+      #    command: |
+      #      if [ "$(grep -c trigger-coverage /tmp/pipeline-parameters.json)" -eq 0 ]; then
+      #        if [ "$(grep -c trigger-prebuild /tmp/pipeline-parameters.json)" -eq 0 ]; then
+      #          # this can happen in the case of merges or other similar "empty" commits
+      #          echo '{ "trigger-prebuild": false, "trigger-build": true }' > /tmp/pipeline-parameters.json
+      #        fi
+      #      fi
       - store_artifacts:
           path: /tmp/pipeline-parameters.json
           destination: pipeline-parameters.json

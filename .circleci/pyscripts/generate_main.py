@@ -166,8 +166,26 @@ for e in main_yml_content:
             if build_components["oci-images"]["minion"] or \
                build_components["oci-images"]["horizon"] or \
                build_components["oci-images"]["sentinel"]:
-                print("oci-images > all:",libyaml.tell_extended_requirements('debs'))
-                workflow=libyaml.generate_workflows(workflow_data,"oci",level,sample_workflow,enable_filters=False)
+                
+                if     build_components["oci-images"]["minion"] or \
+                   not build_components["oci-images"]["horizon"] or \
+                   not build_components["oci-images"]["sentinel"]:
+                   print("oci-images > minion:",libyaml.tell_extended_requirements('minion-image'))
+                   workflow=libyaml.generate_workflows(workflow_data,"minion-image",level,sample_workflow,enable_filters=False)
+                elif not build_components["oci-images"]["minion"] or \
+                         build_components["oci-images"]["horizon"] or \
+                     not build_components["oci-images"]["sentinel"]:
+                     print("oci-images > horizon:",libyaml.tell_extended_requirements('horizon-image'))
+                     workflow=libyaml.generate_workflows(workflow_data,"horizon-image",level,sample_workflow,enable_filters=False)
+                elif not build_components["oci-images"]["minion"] or \
+                     not build_components["oci-images"]["horizon"] or \
+                         build_components["oci-images"]["sentinel"]:
+                         print("oci-images > sentinel:",libyaml.tell_extended_requirements('sentinel-image'))
+                         workflow=libyaml.generate_workflows(workflow_data,"sentinel-image",level,sample_workflow,enable_filters=False)
+                else:
+                    print("oci-images > all:",libyaml.tell_extended_requirements('oci'))
+                    workflow=libyaml.generate_workflows(workflow_data,"oci",level,sample_workflow,enable_filters=False)
+
                 if len(sample_workflow)>1:
                     for e in workflow:
                         print("oci-images","Looking at",e)
