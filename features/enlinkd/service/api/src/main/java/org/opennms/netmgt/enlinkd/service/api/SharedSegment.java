@@ -147,7 +147,7 @@ public class SharedSegment implements Topology{
         BridgePort designatedPort = getDesignatedPort();
         OnmsNode designatedNode = new OnmsNode();
         designatedNode.setId(designatedPort.getNodeId());
-        for (BridgePort port:m_portsOnSegment) {
+        for (BridgePort port : m_portsOnSegment) {
             if (port.equals(designatedPort)) {
                 continue;
             }
