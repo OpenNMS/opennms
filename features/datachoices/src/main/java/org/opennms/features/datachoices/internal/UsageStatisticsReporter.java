@@ -386,10 +386,6 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         m_dataSourceFactoryBean = dataSourceFactoryBean;
     }
 
-    public DataSourceFactoryBean getDataSourceFactoryBean() {
-        return m_dataSourceFactoryBean;
-    }
-
     private void gatherProvisiondData(final UsageStatisticsReportDTO usageStatisticsReport) {
         try {
             usageStatisticsReport.setProvisiondImportThreadPoolSize(m_provisiondConfigurationDao.getImportThreads());
