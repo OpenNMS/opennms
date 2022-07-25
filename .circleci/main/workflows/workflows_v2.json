@@ -280,6 +280,11 @@
                 "build"
             ]
         },
+        "tarball-assembly2": {
+            "requires": [
+                "build"
+            ]
+        },
         "minion-deb-build": {
             "requires": [
                 "integration-test"
