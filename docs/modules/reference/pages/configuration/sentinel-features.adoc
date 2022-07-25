@@ -55,43 +55,12 @@ The chapter _Configure Flow Processing_ contains an example on how to automatica
 
 In some cases it might not be sufficient to auto-deploy/configure the container with a `features.xml` file.
 If more flexibility is required it is suggested to modify/copy `*.cfg` and `*.properties` files directly to the `$\{SENTINEL_HOME}/etc` directory.
-To automatically start features with the container, the file `$\{SENTINEL_HOME}/etc/org.apache.karaf.features.cfg` must be updated:
+To automatically start features with the container, create a file in `$\{SENTINEL_HOME}/etc/featuresBoot.d/` that contains the desired features:
 
-[source]
+[source, console]
 ----
-# ...
-featuresBoot = \
-      (aries-blueprint, \
-      deployer), \
-      instance/4.3.2, \
-      package/4.3.2, \
-      log/4.3.2, \
-      scv/{page-component-version}, \
-      ssh/4.3.2, \
-      framework/4.3.2, \
-      system/4.3.2, \
-      eventadmin/4.3.2, \
-      feature/4.3.2, \
-      shell/4.3.2, \
-      management/4.3.2, \
-      service/4.3.2, \
-      system/4.3.2, \
-      eventadmin/4.3.2, \
-      feature/4.3.2, \
-      shell/4.3.2, \
-      management/4.3.2, \
-      service/4.3.2, \
-      jaas/4.3.2, \
-      shell-compat/4.3.2, \
-      diagnostic/4.3.2, \
-      wrap, \
-      bundle/4.3.2, \
-      config/4.3.2, \
-      kar/4.3.2, \
-      sentinel-jms, \ <1>
-      sentinel-flows <2>
-
-# ....
+echo "sentinel-jms" | sudo tee -a \${SENTINEL_HOME}/etc/featuresBoot.d/features.boot <1>
+echo "sentinel-flows" | sudo tee -a \${SENTINEL_HOME}/etc/featuresBoot.d/sentinel-features.boot <2>
 ----
 <1> Install and Start JMS communication feature
 <2> Install and Start Sentinel Flows feature
