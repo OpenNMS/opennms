@@ -62,8 +62,8 @@ To automatically start features with the container, create a file in `$\{SENTINE
 echo "sentinel-jms" | sudo tee -a \${SENTINEL_HOME}/etc/featuresBoot.d/features.boot <1>
 echo "sentinel-flows" | sudo tee -a \${SENTINEL_HOME}/etc/featuresBoot.d/sentinel-features.boot <2>
 ----
-<1> Install and Start JMS communication feature
-<2> Install and Start Sentinel Flows feature
+<1> Install and start JMS communication feature.
+<2> Install and start Sentinel flows feature.
 
 == Auto configure flow processing for Sentinel
 
