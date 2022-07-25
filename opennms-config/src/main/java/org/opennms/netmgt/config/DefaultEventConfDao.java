@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -102,16 +102,17 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 
 	@Override
 	public List<Event> getEvents(final String uei) {
-		List<Event> events = m_events.forEachEvent(new ArrayList<Event>(), new EventCallback<List<Event>>() {
-
-			@Override
-			public List<Event> process(List<Event> accum, Event event) {
-				if (uei.equals(event.getUei())) {
-					accum.add(event);
-				}
-				return accum;
-			}
-		});
+		List<Event> events = m_events.forEachEvent(new ArrayList<>(), (EventCallback<List<Event>>) (accum, event) -> {
+					if (uei.equals(event.getUei())) {
+						accum.add(event);
+					}
+					return accum;
+				}).stream()
+				// remove duplicates:
+				// event definitions with priority > 0 are copied up the configuration tree.
+				// if they do not match we do not want to re-compare them when matching events to definitions.
+				.distinct()
+				.collect(Collectors.toList());
 
 		return events.isEmpty() ? null : events;
 	}
@@ -159,17 +160,14 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 	}
 
 	public List<Event> getAllEvents() {
-		return m_events.forEachEvent(new ArrayList<Event>(), new EventCallback<List<Event>>() {
-
-			@Override
-			public List<Event> process(List<Event> accum, Event event) {
-				accum.add(event);
-				return accum;
-			}
-            // remove duplicates:
-            // event definitions with priority > 0 are copied up the configuration tree.
-            // if they do not match we do not want to re-compare them when matching events to definitions.
-        }).stream().distinct().collect(Collectors.toList());
+		return m_events.forEachEvent(new ArrayList<>(), (EventCallback<List<Event>>) (accum, event) -> {
+					accum.add(event);
+					return accum;
+				}).stream()
+				// remove duplicates:
+				// event definitions with priority > 0 are copied up the configuration tree.
+				// if they do not match we do not want to re-compare them when matching events to definitions.
+				.distinct().collect(Collectors.toList());
 	}
 
 	@Override
