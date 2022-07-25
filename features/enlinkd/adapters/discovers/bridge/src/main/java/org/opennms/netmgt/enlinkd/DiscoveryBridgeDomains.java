@@ -69,7 +69,7 @@ public class DiscoveryBridgeDomains extends Discovery {
     }
 
     public static boolean checkMacSets(Set<String> setA, Set<String> setB) {
-        Set<String>retainedSet = new HashSet<>(setB);
+        Set<String> retainedSet = new HashSet<>(setB);
         retainedSet.retainAll(setA);
         // should contain at list 20 or 50% of the all size
         return retainedSet.size() > DOMAIN_MATCH_MIN_SIZE
