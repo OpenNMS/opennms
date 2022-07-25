@@ -37,7 +37,7 @@ There are several ways to configure {page-component-title} to customize the even
 === Create event definition for an SNMP trap
 {page-component-title} includes event definitions for traps from many vendors' equipment.
 Use the `mask` tag to match SNMP traps in `eventconf.xml`.
-See xref:operation:events/anatomy-events.adoc#ga-events-anatomy-of-an-event[Anatomy of an Event] for details on event structure.
+See xref:operation:events/anatomy-events.adoc#ga-events-anatomy-of-an-event[Anatomy of an event] for details on event structure.
 
 The following example shows a Cisco Systems event for their C3800 device.
 Parts of it look similar to internally generated events, with the main difference being the `mask` block.
