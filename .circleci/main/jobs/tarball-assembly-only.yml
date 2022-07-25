@@ -1,5 +1,5 @@
 jobs:
-  tarball-assembly2:
+  tarball-assembly-only:
     machine:
       image: ubuntu-2004:202010-01
       docker_layer_caching: true
@@ -65,6 +65,15 @@ jobs:
           when: always
           path: ~/project/target/tarballs
           destination: tarballs
+      - save-artifacts:
+          path: ~/project/opennms-assemblies/minion/target/
+          location: miniontarget
+      - cache-workflow-assets:
+          cache_prefix: minion-config-schema
+          source_path: target/config-schema/
+      - cache-oci:
+          key: minion
+          path: opennms-container/minion/images/
       - persist_to_workspace:
           root: ~/
           paths:
