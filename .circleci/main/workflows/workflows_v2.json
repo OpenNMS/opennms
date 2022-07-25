@@ -48,7 +48,8 @@
         },
         "oci-minion":{
             "extends": [
-                "tarball-assembly-only"
+                "tarball-assembly-only",
+                "minion-image"
             ]
         },
         "deploy": {
