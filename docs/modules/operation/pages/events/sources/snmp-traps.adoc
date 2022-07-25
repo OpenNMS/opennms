@@ -153,7 +153,7 @@ See xref:operation:/events/event-configuration.adoc#parameter-tokens[Parameter t
 Variable bindings (varbinds) are key-value pairs that provide alert data in SNMP traps.
 You can use varbinds as filters for further granularity on the conditions for creating an event through the `mask` block.
 
-Taking our `ciscoC3800SysAggregateStatusChange` example, what should its severity be?
+Using our previous `ciscoC3800SysAggregateStatusChange` example, what should its severity be?
 The event is generated whenever the status changes, but we don't know if the change is "bad" (from operational to non-operational) or "good" (the non-operational status is cleared).
 
 The parameters passed with the event contain that information, particularly parameter #3, the trap severity.
