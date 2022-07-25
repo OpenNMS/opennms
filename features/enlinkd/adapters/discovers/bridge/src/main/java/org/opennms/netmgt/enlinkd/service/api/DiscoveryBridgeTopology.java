@@ -345,7 +345,7 @@ public class DiscoveryBridgeTopology {
         if (upBridge == null) {
             throw new BridgeTopologyException("getCalculateBFT: cannot find up bridge on domain", domain);
         }
-        SharedSegment up = domain.getSharedSegment(upBridge.getNodeId(),upBridge.getRootPort());
+        SharedSegment up = domain.getSharedSegment(upBridge.getNodeId(), upBridge.getRootPort());
         if (up == null) {
             throw new BridgeTopologyException("getCalculateBFT: cannot find up segment on domain", domain);
         }
