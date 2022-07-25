@@ -295,7 +295,7 @@ public class BroadcastDomain implements Topology {
             if (bridge == null)
                 return;
             bridge.setRootPort(segment.getBridgePort(bridgeid).getBridgePort());
-            for (SharedSegment s2: getSharedSegments(bridgeid)) {
+            for (SharedSegment s2 : getSharedSegments(bridgeid)) {
                 if (s2.getDesignatedBridge() != null && s2.getDesignatedBridge().intValue() == rootid.intValue())
                     continue;
                 s2.setDesignatedBridge(bridgeid);
