@@ -216,7 +216,7 @@ Just specify the expression prefixed with a with a "~":
 </varbind>
 ----
 
-This will match a varbind 1 containing the word "Down" or "down" anywhere within its value.
+This will match a varbind 1 that contains the word "Down" or "down" anywhere within its value.
 You can also do quick prefix matches with the '%' in a varbind value:
 
 [source,xml]
