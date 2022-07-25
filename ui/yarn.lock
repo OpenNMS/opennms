@@ -167,7 +167,7 @@
     "@featherds/styles" "^0.10.15"
     vue "^3.1.0-0"
 
-"@featherds/expansion@^0.10.15":
+"@featherds/expansion@0.10.15":
   version "0.10.15"
   resolved "https://registry.yarnpkg.com/@featherds/expansion/-/expansion-0.10.15.tgz#317334d033ccfc1eeda1cc451a617f3e616f4708"
   integrity sha512-nB6tyUbqDR155wykm/eQlnN0V4iUohGYFzw09Dg+FeK8ImpL+Q0aor5pKidqw+7lU86DpQZXh7TRV33KLvqJRQ==
@@ -226,7 +226,7 @@
     "@featherds/utils" "^0.10.15"
     vue "^3.1.0-0"
 
-"@featherds/menu@^0.10.15":
+"@featherds/menu@0.10.15", "@featherds/menu@^0.10.15":
   version "0.10.15"
   resolved "https://registry.yarnpkg.com/@featherds/menu/-/menu-0.10.15.tgz#fe491b90d00e10d04e3a2e3e8b2a0d6341cc9323"
   integrity sha512-F+UzDEOUyBogLdLBWR4gtnCw5tECahLbX/GodeTvHstrYmYXBqnq6VfF93R6ND6fs6p0w+Ixep12r5rWBikl+w==
@@ -278,7 +278,7 @@
     "@featherds/styles" "^0.10.15"
     vue "^3.1.0-0"
 
-"@featherds/radio@^0.10.15":
+"@featherds/radio@0.10.15", "@featherds/radio@^0.10.15":
   version "0.10.15"
   resolved "https://registry.yarnpkg.com/@featherds/radio/-/radio-0.10.15.tgz#de643058f7ff971ce8ba07bda8f445fadf8b1117"
   integrity sha512-aRurj3oS1z1LT7m3cq0ZyNCt/cX3uZaYWLWr46MT+NN7soxv7iOFfwHWcOYAt3BfyuGcdF4OipBFtt08c9HdtQ==
@@ -351,7 +351,7 @@
     "@featherds/styles" "^0.10.15"
     vue "^3.1.0-0"
 
-"@featherds/textarea@^0.10.15":
+"@featherds/textarea@0.10.15":
   version "0.10.15"
   resolved "https://registry.yarnpkg.com/@featherds/textarea/-/textarea-0.10.15.tgz#276b69618f4ca277fbe715d6c7bde27ffa05456a"
   integrity sha512-nQWvwzzkaIeMdblIpaHrwUHUfN2BIGKP4W93f1HIc74JQQ6juQS11ciVcabH5hJBh7tQJA+S6XsvVj76Y0Sm3Q==
@@ -1814,10 +1814,10 @@ eslint-config-prettier@^8.5.0:
   resolved "https://registry.yarnpkg.com/eslint-config-prettier/-/eslint-config-prettier-8.5.0.tgz#5a81680ec934beca02c7b1a61cf8ca34b66feab1"
   integrity sha512-obmWKLUNCnhtQRKc+tmnYuQl0pFU1ibYJQ5BGhTVB08bHe9wC8qUeG7c08dj9XX+AuPj1YSGSQIHl1pnDHZR0Q==
 
-eslint-plugin-vue@^9.2.0:
-  version "9.2.0"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-vue/-/eslint-plugin-vue-9.2.0.tgz#b7ca02b2ce8218b7586346440fc61c2655db353a"
-  integrity sha512-W2hc+NUXoce8sZtWgZ45miQTy6jNyuSdub5aZ1IBune4JDeAyzucYX0TzkrQ1jMO52sNUDYlCIHDoaNePe0p5g==
+eslint-plugin-vue@^9.3.0:
+  version "9.3.0"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-vue/-/eslint-plugin-vue-9.3.0.tgz#c3f5ce515dae387e062428725c5cf96098d9da0b"
+  integrity sha512-iscKKkBZgm6fGZwFt6poRoWC0Wy2dQOlwUPW++CiPoQiw1enctV2Hj5DBzzjJZfyqs+FAXhgzL4q0Ww03AgSmQ==
   dependencies:
     eslint-utils "^3.0.0"
     natural-compare "^1.4.0"
