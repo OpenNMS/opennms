@@ -82,7 +82,7 @@ public class DiscoveryBridgeTopology {
             }
         }
         Set<BridgePortWithMacs> throughSet = new HashSet<>();
-        bridgeFt.getPorttomac().stream().filter(ptm ->!excluded.contains(ptm.getPort())).forEach(throughSet::add);
+        bridgeFt.getPorttomac().stream().filter(ptm -> !excluded.contains(ptm.getPort())).forEach(throughSet::add);
         return throughSet;
     }
 
