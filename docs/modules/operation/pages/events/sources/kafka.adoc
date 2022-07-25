@@ -42,7 +42,11 @@ Next, install the `opennms-kafka-consumer` feature from that same shell:
 feature:install opennms-kafka-consumer
 ----
 
-To ensure that the feature continues to be installed on subsequent restarts, add `opennms-kafka-consumer` to the `featuresBoot` property in the `$\{OPENNMS_HOME}/etc/org.apache.karaf.features.cfg`.
+To ensure that the feature continues to be installed on subsequent restarts, add `opennms-kafka-consumer` to a file in `featuresBoot.d`:
+[source, console]
+----
+echo "opennms-kafka-consumer" | sudo tee ${OPENNMS_HOME}/etc/featuresBoot.d/kafka-consumer.boot
+----
 
 == Configure Topic Name
 
