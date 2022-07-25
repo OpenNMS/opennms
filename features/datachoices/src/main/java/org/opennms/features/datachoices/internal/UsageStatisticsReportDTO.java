@@ -81,6 +81,8 @@ public class UsageStatisticsReportDTO {
     private long m_requisitionWithChangedFSCount;
     private Map<String, Long> m_provisiondRequisitionSchemeCount;
     private Map<String, Boolean> m_services;
+    private String m_databaseProductName;
+    private String m_databaseProductVersion;
 
     private int m_businessEdgeCount;
 
@@ -346,6 +348,22 @@ public class UsageStatisticsReportDTO {
 
     public int getBusinessEdgeCount() {
         return m_businessEdgeCount;
+    }
+
+    public String getDatabaseProductName() {
+        return m_databaseProductName;
+    }
+
+    public void setDatabaseProductName(String databaseProductName) {
+        this.m_databaseProductName = databaseProductName;
+    }
+
+    public String getDatabaseProductVersion() {
+        return m_databaseProductVersion;
+    }
+
+    public void setDatabaseProductVersion(String databaseProductVersion) {
+        this.m_databaseProductVersion = databaseProductVersion;
     }
 
     public String toJson() {

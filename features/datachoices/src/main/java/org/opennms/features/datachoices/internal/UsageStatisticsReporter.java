@@ -31,6 +31,8 @@ package org.opennms.features.datachoices.internal;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.nio.charset.StandardCharsets;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -41,6 +43,7 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.karaf.features.FeaturesService;
+import org.opennms.core.db.DataSourceFactoryBean;
 import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.core.web.HttpClientWrapper;
 import org.opennms.features.datachoices.internal.StateManager.StateChangeHandler;
@@ -71,6 +74,7 @@ import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 import javax.management.ReflectionException;
+import javax.sql.DataSource;
 
 public class UsageStatisticsReporter implements StateChangeHandler {
     private static final Logger LOG = LoggerFactory.getLogger(UsageStatisticsReporter.class);
@@ -119,8 +123,8 @@ public class UsageStatisticsReporter implements StateChangeHandler {
     private NotifdConfigFactory m_notifdConfigFactory;
 
     private GroupFactory m_groupFactory;
-
     private ForeignSourceRepository m_deployedForeignSourceRepository;
+    private DataSourceFactoryBean m_dataSourceFactoryBean;
 
     private boolean m_useSystemProxy = true; // true == legacy behaviour
 
@@ -254,6 +258,8 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         usageStatisticsReport.setRequisitionWithChangedFSCount(getDeployedRequisitionWithModifiedFSCount());
         usageStatisticsReport.setBusinessEdgeCount(m_businessServiceEdgeDao.countAll());
 
+        setDatasourceInfo(usageStatisticsReport);
+
         return usageStatisticsReport;
     }
     private void setJmxAttributes(UsageStatisticsReportDTO usageStatisticsReport) {
@@ -296,6 +302,20 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         ForeignSource defaultFS = m_deployedForeignSourceRepository.getDefaultForeignSource();
         return m_deployedForeignSourceRepository.getRequisitions().stream()
                 .filter(req -> !req.getForeignSource().equals(defaultFS.getName())).count();
+    }
+
+    private void setDatasourceInfo(UsageStatisticsReportDTO usageStatisticsReport) {
+        try {
+            DataSource datasource = m_dataSourceFactoryBean.getObject();
+            Connection connection = datasource.getConnection();
+            DatabaseMetaData metaData = connection.getMetaData();
+
+            usageStatisticsReport.setDatabaseProductName(metaData.getDatabaseProductName());
+            usageStatisticsReport.setDatabaseProductVersion(metaData.getDatabaseProductVersion());
+
+        } catch (Exception e) {
+            LOG.error("Error retrieving datasource information", e);
+        }
     }
 
     public void setUrl(String url) {
@@ -360,6 +380,10 @@ public class UsageStatisticsReporter implements StateChangeHandler {
 
     public void setProvisiondConfigurationDao(ProvisiondConfigurationDao provisiondConfigurationDao) {
         m_provisiondConfigurationDao = provisiondConfigurationDao;
+    }
+
+    public void setDataSourceFactoryBean(DataSourceFactoryBean dataSourceFactoryBean) {
+        m_dataSourceFactoryBean = dataSourceFactoryBean;
     }
 
     private void gatherProvisiondData(final UsageStatisticsReportDTO usageStatisticsReport) {
