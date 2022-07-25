@@ -129,7 +129,7 @@ For example, to match all Cisco events, you could use the following:
 NOTE: The order in which events are listed in the `eventconf.xml` file is extremely important.
 The search will stop with the first event definition that matches the given event (see xref:operation:events/event-configuration.adoc[eventconf.xml]).
 
-Thus if the code with the wildcard was listed before the more specific `ciscoC3800SysAggregateStatusChange` event, the latter event would never be generated.
+As such, if the code with the wildcard was listed before the more specific `ciscoC3800SysAggregateStatusChange` event, the latter event would never be generated.
 
 Also note that the wildcard is simply a substring match.
 If a Cisco device generates an event with the enterprise OID of `.1.3.6.1.4.1.9` it would not match this event, as there is no trailing ".".
