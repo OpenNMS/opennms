@@ -32,5 +32,5 @@ feature:install opennms-kafka-producer
 To ensure that the feature continues to be installed on subsequent restarts, add `opennms-kafka-producer` to a file in `featuresBoot.d`:
 [source, console]
 ----
-echo "opennms-kafka-producer" | sudo tee \${OPENNMS_HOME}/etc/featuresBoot.d/kafka-producer.boot
+echo "opennms-kafka-producer" | sudo tee ${OPENNMS_HOME}/etc/featuresBoot.d/kafka-producer.boot
 ----

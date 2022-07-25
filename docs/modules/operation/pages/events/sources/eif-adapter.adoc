@@ -30,7 +30,7 @@ opennms> config:update
 To ensure that the feature continues to be installed on subsequent restarts, add `eif-adapter` to a file in `featuresBoot.d`:
 [source, console]
 ----
-echo "eif-adapter" | sudo tee \${OPENNMS_HOME}/etc/featuresBoot.d/eif-adapter.boot
+echo "eif-adapter" | sudo tee ${OPENNMS_HOME}/etc/featuresBoot.d/eif-adapter.boot
 ----
 
 You can check the routes status with the `camel:*` commands and/or inspect the log with `log:tail` for any obvious errors.

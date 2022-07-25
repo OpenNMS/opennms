@@ -17,7 +17,7 @@ Enable situation feedback by installing the feature from the Karaf shell:
 To ensure that the feature continues to be installed on subsequent restarts, add `opennms-situation-feedback` to a file in `featuresBoot.d`:
 [source, console]
 ----
-echo "opennms-situation-feedback" | sudo tee \${OPENNMS_HOME}/etc/featuresBoot.d/opennms-situation-feedback.boot
+echo "opennms-situation-feedback" | sudo tee ${OPENNMS_HOME}/etc/featuresBoot.d/opennms-situation-feedback.boot
 ----
 
 === Requirements

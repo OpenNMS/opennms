@@ -54,13 +54,13 @@ The chapter _Configure Flow Processing_ contains an example on how to automatica
 == Auto Start
 
 In some cases it might not be sufficient to auto-deploy/configure the container with a `features.xml` file.
-If more flexibility is required it is suggested to modify/copy `*.cfg` and `*.properties` files directly to the `$\{SENTINEL_HOME}/etc` directory.
+If more flexibility is required it is suggested to modify/copy `\*.cfg` and `*.properties` files directly to the `$\{SENTINEL_HOME}/etc` directory.
 To automatically start features with the container, create a file in `$\{SENTINEL_HOME}/etc/featuresBoot.d/` that contains the desired features:
 
 [source, console]
 ----
 echo "sentinel-jms" | sudo tee -a \${SENTINEL_HOME}/etc/featuresBoot.d/features.boot <1>
-echo "sentinel-flows" | sudo tee -a \${SENTINEL_HOME}/etc/featuresBoot.d/sentinel-features.boot <2>
+echo "sentinel-flows" | sudo tee -a ${SENTINEL_HOME}/etc/featuresBoot.d/sentinel-features.boot <2>
 ----
 <1> Install and start JMS communication feature.
 <2> Install and start Sentinel flows feature.

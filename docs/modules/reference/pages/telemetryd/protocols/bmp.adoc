@@ -195,7 +195,7 @@ feature:install opennms-telemetry-bmp-stats
 To ensure that the feature continues to be installed on subsequent restarts, add `opennms-telemetry-bmp-stats` to a file in `featuresBoot.d`:
 [source, console]
 ----
-echo "opennms-telemetry-bmp-stats" | sudo tee \${OPENNMS_HOME}/etc/featuresBoot.d/telemetry-bmp.boot
+echo "opennms-telemetry-bmp-stats" | sudo tee ${OPENNMS_HOME}/etc/featuresBoot.d/telemetry-bmp.boot
 ----
 
 === Configuration BMP persistence for external sources
