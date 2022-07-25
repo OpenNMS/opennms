@@ -238,7 +238,7 @@ A lot of MIBs define specific variables to code the value of some OIDs.
 As an example, the SNMP agent returns a numerical value for the `ifAdminStatus` and `ifOperStatus`: 1 means Up and 2 means Down.
 
 Because {page-component-title} does not have a MIB parser, we usually put this map (between the numerical encoded value and its meaning) into the event description.
-Use the `varbindsdecode` element to convert the event varbind value into a decoded string.
+Use the `varbindsdecode` element to convert the event varbind value into a decoded String.
 
 With a properly configured event, you can decode the numerical value sent into trap varbinds and the corresponding string value into the `logmsg`.
 
