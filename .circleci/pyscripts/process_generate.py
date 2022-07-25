@@ -8,8 +8,6 @@ from library import libfile
 path_to_build_components=os.path.join("/tmp","build-triggers.json")
 path_to_build_trigger_override=os.path.join(".circleci","build-triggers.override.json")
 
-#path_to_pipeline_parameters=os.path.join("/tmp","pipeline-parameters.json")
-
 output_path = os.environ.get('OUTPUT_PATH')
 head = os.environ.get('CIRCLE_SHA1')
 base_revision = os.environ.get('BASE_REVISION')
@@ -115,10 +113,11 @@ git_keywords=libgit.extractKeywordsFromLastCommit()
 
 build_mappings=libfile.load_json(path_to_build_trigger_override)
 
-#pipeline_parameters=libfile.load_json(path_to_pipeline_parameters)
-#build_mappings["build"]["build"]=pipeline_parameters["trigger-build"]
-#build_mappings["tests"]["smoke"]=pipeline_parameters["trigger-flaky-smoke"]
-#build_mappings["build"]["coverage"]=pipeline_parameters["trigger-coverage"]
+build_mappings["build"]["build"]=mappings["trigger-build"]
+build_mappings["build"]["docs"]=mappings["trigger-docs"]
+build_mappings["build"]["ui"]=mappings["trigger-ui"]
+build_mappings["build"]["coverage"]=mappings["trigger-coverage"]
+build_mappings["tests"]["smoke"]=mappings["trigger-flaky-smoke"]
 
 
 print("Git Keywords:",git_keywords)

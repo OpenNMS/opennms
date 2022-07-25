@@ -216,7 +216,6 @@ jobs:
             echo Coverage API: << pipeline.parameters.trigger-coverage-api >>
             echo Prebuild: << pipeline.parameters.trigger-prebuild >>
             echo Automation: << pipeline.parameters.trigger-automation >>
-            echo Docs: << pipeline.parameters.trigger-docs >>
             echo Trigger Flaky Tests: << pipeline.parameters.trigger-flaky >>
             echo "STOP"    
       - run:
