@@ -325,7 +325,7 @@ public class DiscoveryBridgeTopology {
         }
         // if segment is a root segment add mac on port
         if (upBridgeId.intValue() == domain.getRootBridge().getNodeId().intValue()) {
-            for (Integer bridgeidonsegment: downBridgeIds) {
+            for (Integer bridgeidonsegment : downBridgeIds) {
                 bridgetobridgeport.put(bridgeidonsegment, bridge.getRootPort());
             }
             return bridge.getRootPort();
