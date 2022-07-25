@@ -1,5 +1,5 @@
 jobs:
-  tarball-assembly-only:
+  tarball-assembly2:
     machine:
       image: ubuntu-2004:202010-01
       docker_layer_caching: true
