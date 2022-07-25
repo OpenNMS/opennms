@@ -88,7 +88,7 @@
     "happy-dom": "^6.0.4",
     "prettier": "^2.7.1",
     "typescript": "^4.7.4",
-    "unplugin-auto-import": "^0.9.3",
+    "unplugin-auto-import": "^0.10.1",
     "vite": "^3.0.2",
     "vitest": "^0.18.1",
     "vue-eslint-parser": "^9.0.3",

@@ -167,7 +167,7 @@
     "@featherds/styles" "^0.10.15"
     vue "^3.1.0-0"
 
-"@featherds/expansion@^0.10.15":
+"@featherds/expansion@0.10.15":
   version "0.10.15"
   resolved "https://registry.yarnpkg.com/@featherds/expansion/-/expansion-0.10.15.tgz#317334d033ccfc1eeda1cc451a617f3e616f4708"
   integrity sha512-nB6tyUbqDR155wykm/eQlnN0V4iUohGYFzw09Dg+FeK8ImpL+Q0aor5pKidqw+7lU86DpQZXh7TRV33KLvqJRQ==
@@ -226,7 +226,7 @@
     "@featherds/utils" "^0.10.15"
     vue "^3.1.0-0"
 
-"@featherds/menu@^0.10.15":
+"@featherds/menu@0.10.15", "@featherds/menu@^0.10.15":
   version "0.10.15"
   resolved "https://registry.yarnpkg.com/@featherds/menu/-/menu-0.10.15.tgz#fe491b90d00e10d04e3a2e3e8b2a0d6341cc9323"
   integrity sha512-F+UzDEOUyBogLdLBWR4gtnCw5tECahLbX/GodeTvHstrYmYXBqnq6VfF93R6ND6fs6p0w+Ixep12r5rWBikl+w==
@@ -278,7 +278,7 @@
     "@featherds/styles" "^0.10.15"
     vue "^3.1.0-0"
 
-"@featherds/radio@^0.10.15":
+"@featherds/radio@0.10.15", "@featherds/radio@^0.10.15":
   version "0.10.15"
   resolved "https://registry.yarnpkg.com/@featherds/radio/-/radio-0.10.15.tgz#de643058f7ff971ce8ba07bda8f445fadf8b1117"
   integrity sha512-aRurj3oS1z1LT7m3cq0ZyNCt/cX3uZaYWLWr46MT+NN7soxv7iOFfwHWcOYAt3BfyuGcdF4OipBFtt08c9HdtQ==
@@ -351,7 +351,7 @@
     "@featherds/styles" "^0.10.15"
     vue "^3.1.0-0"
 
-"@featherds/textarea@^0.10.15":
+"@featherds/textarea@0.10.15":
   version "0.10.15"
   resolved "https://registry.yarnpkg.com/@featherds/textarea/-/textarea-0.10.15.tgz#276b69618f4ca277fbe715d6c7bde27ffa05456a"
   integrity sha512-nQWvwzzkaIeMdblIpaHrwUHUfN2BIGKP4W93f1HIc74JQQ6juQS11ciVcabH5hJBh7tQJA+S6XsvVj76Y0Sm3Q==
@@ -2456,12 +2456,20 @@ minimatch@^3.0.4, minimatch@^3.1.1, minimatch@^3.1.2:
   dependencies:
     brace-expansion "^1.1.7"
 
-mlly@^0.5.3, mlly@^0.5.4:
+mlly@^0.5.3:
   version "0.5.4"
   resolved "https://registry.yarnpkg.com/mlly/-/mlly-0.5.4.tgz#e7c68574c95a4b2ba25e76dfcd1b2a545335af70"
   integrity sha512-gFlsLWCjVwu/LM/ZfYUkmnbBoz7eyBIMUwVQYDqhd8IvtNFDeZ95uwAyxHE2Xx7tQwePQaCo4fECZ9MWFEUTgQ==
   dependencies:
     pathe "^0.3.1"
+    pkg-types "^0.3.3"
+
+mlly@^0.5.5:
+  version "0.5.5"
+  resolved "https://registry.yarnpkg.com/mlly/-/mlly-0.5.5.tgz#80643b3a96671a0d6f41411e3daf7e4e188544d5"
+  integrity sha512-2R4JT/SxRDPexomw4rmHYY/gWAGmL9Kkq1OR76Ua6w+P340a1aBDTWzKo2kAlxzrG82OdXs5VB9Lmcmyit0Obg==
+  dependencies:
+    pathe "^0.3.2"
     pkg-types "^0.3.3"
 
 ms@2.1.2:
@@ -3039,32 +3047,32 @@ typescript@^4.7.4:
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.7.4.tgz#1a88596d1cf47d59507a1bcdfb5b9dfe4d488235"
   integrity sha512-C0WQT0gezHuw6AdY1M2jxUO83Rjf0HP7Sk1DtXj6j1EwkQNZrHAg2XPWlq62oqEhYvONq5pkC2Y9oPljWToLmQ==
 
-unimport@^0.4.5:
-  version "0.4.5"
-  resolved "https://registry.yarnpkg.com/unimport/-/unimport-0.4.5.tgz#aa4c4aa2ef1027352f9ad79693f083929f18b660"
-  integrity sha512-DnmiSt/HQIfhdcxOy4CGqwZDBh3WHg33euX1ge4X8hvquKBmw2PFvhoAJaBKxscOz0oYosoPoPT4tkDZWHhV0Q==
+unimport@^0.6.3:
+  version "0.6.3"
+  resolved "https://registry.yarnpkg.com/unimport/-/unimport-0.6.3.tgz#04a5044bd3fc7545785a58fd6400e93184220393"
+  integrity sha512-+DVHqCoOoJcmYRLUrKbKDs/Iq/is6m0K7rTdFJAV7/MfyvWCKeSuSOrLeONgLBd6yC6iZFEzdc8di7S27PQyoA==
   dependencies:
     "@rollup/pluginutils" "^4.2.1"
     escape-string-regexp "^5.0.0"
     fast-glob "^3.2.11"
     local-pkg "^0.4.2"
     magic-string "^0.26.2"
-    mlly "^0.5.4"
+    mlly "^0.5.5"
     pathe "^0.3.2"
     scule "^0.2.1"
     strip-literal "^0.4.0"
     unplugin "^0.7.2"
 
-unplugin-auto-import@^0.9.3:
-  version "0.9.3"
-  resolved "https://registry.yarnpkg.com/unplugin-auto-import/-/unplugin-auto-import-0.9.3.tgz#bdcfe8f40cf74eece7bad2b37ad319ae4e019b97"
-  integrity sha512-S3fC/kp98v+HhELCCG4jm4fhd/BbXhhcmFxxQ/JHXefLPtz9WTCOsSq3pq7U4D94xJ0eyZOPo/56Y9iUf3kskw==
+unplugin-auto-import@^0.10.1:
+  version "0.10.1"
+  resolved "https://registry.yarnpkg.com/unplugin-auto-import/-/unplugin-auto-import-0.10.1.tgz#8f0e00ac02766d5f624a2c9b41a2d17d889a9f4d"
+  integrity sha512-aBvlCOvkgZRceYDEIEpduD86XYCS1wV4atNeUtAZsNK7FSKRb0Nu073SYYAeU46IitK3GPeGd5BETtqz6It5Ng==
   dependencies:
     "@antfu/utils" "^0.5.2"
     "@rollup/pluginutils" "^4.2.1"
     local-pkg "^0.4.2"
     magic-string "^0.26.2"
-    unimport "^0.4.5"
+    unimport "^0.6.3"
     unplugin "^0.7.2"
 
 unplugin@^0.7.2:
