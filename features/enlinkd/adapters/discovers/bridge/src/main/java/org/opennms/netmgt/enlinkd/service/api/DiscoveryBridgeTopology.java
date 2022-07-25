@@ -296,7 +296,7 @@ public class DiscoveryBridgeTopology {
         }
         BridgePort bp = upSegment.getBridgePort(upBridge.getNodeId());
         downports.put(bp.getNodeId(),bp.getBridgePort());
-        return getUpperForwardingBridgePorts(domain, upBridge, downports,++level);
+        return getUpperForwardingBridgePorts(domain, upBridge, downports, ++level);
     }
 
     public static Integer getCalculateBFT(BroadcastDomain domain, SharedSegment segment, Bridge bridge, Map<Integer,Integer> bridgetobridgeport, Set<Integer> downBridgeIds, int level) throws BridgeTopologyException {
