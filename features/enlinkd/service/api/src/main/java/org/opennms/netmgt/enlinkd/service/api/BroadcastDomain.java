@@ -288,7 +288,7 @@ public class BroadcastDomain implements Topology {
         if (level == maxlevel) {
             return;
         }
-        for (Integer bridgeid: segment.getBridgeIdsOnSegment()) {
+        for (Integer bridgeid : segment.getBridgeIdsOnSegment()) {
             if (bridgeid.intValue() == rootid.intValue())
                 continue;
             Bridge bridge = getBridge(bridgeid);
