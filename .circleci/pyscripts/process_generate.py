@@ -178,11 +178,6 @@ if "experimentalPath" in git_keywords:
     build_mappings["build"]["build"]=False
 
 
-### We want to handle cases which has dependency on build step
-#if build_mappings["tests"]["integration"]:
-#    build_mappings["build"]["build"]=True
-
-
 libfile.write_file(output_path,json.dumps(mappings))
 
 libfile.write_file(path_to_build_components,json.dumps(build_mappings,indent=4))
