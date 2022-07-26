@@ -56,8 +56,8 @@ import org.opennms.web.api.Authentication;
  */
 public class NewPasswordActionServlet extends HttpServlet {
     private static final long serialVersionUID = 6803675433403988004L;
-    private final String passwordRegex = "((?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%&.*+-]).{12,128})";
-    private final String sameCharacterRegex = "(.)\\1{5}";
+    public static final String passwordRegex = "((?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%&.*+-]).{12,128})";
+    public static final String sameCharacterRegex = "(.)\\1{5}";
     /** {@inheritDoc} */
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
