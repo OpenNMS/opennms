@@ -12,7 +12,7 @@ jobs:
           command: | 
              DOCSEARCH_ENABLED=true DOCSEARCH_ENGINE=lunr NODE_PATH="$(npm -g root)" antora --generator antora-site-generator-lunr --stacktrace generate antora-playbook-local.yml
       - run:
-          name: Rename Site zip file
+          name: Rename Site zip file to include the version
           command: | 
              export OPENNMS_VERSION="$(.circleci/scripts/pom2version.sh pom.xml)"
              mkdir ~/artifacts
