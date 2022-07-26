@@ -5,23 +5,21 @@
 {page-component-title} can receive and process SNMP traps/informs from SNMP-capable devices out of the box.
 It receives SNMP traps via the xref:reference:daemons/daemon-config-files/trapd.adoc[Trapd service daemon], which is enabled by default.
 
-IMPORTANT: Disabling Trapd renders {page-component-title} incapable of receiving SNMP traps.
-
 {page-component-title} transforms these traps into events based on event definitions.
 {page-component-title} includes trap definitions from many major manufacturers by default, and you can create your own event definitions.
 
 == Before you begin
-There are a few tasks you must complete before OpenNMS can receive SNMP traps:
+There are a few tasks you must complete before your server can receive SNMP traps:
 
-. Configure the port on which OpenNMS can receive SNMP traps (see xref:deployment:core/getting-started.adoc#receive-snmp-traps[Receive SNMP traps/informs]).
+. Configure the port on which to receive SNMP traps (see xref:deployment:core/getting-started.adoc#receive-snmp-traps[Receive SNMP traps/informs]).
 By default, {page-component-title} listens on a non-standard port for trap messages.
 . Ensure that SNMP-capable devices on your network are configured to send traps to {page-component-title}.
 
 [[trap-config]]
 == SNMP trap configuration: how to
 
-Configure SNMP traps to customize the types of trap information you receive and the conditions under which {page-component-title} converts the trap into an event.
-For example, you may want to see an event only when a device is down, or when a combination of criteria are met (for example, OID X with "major" severity level, and status "indeterminate").
+Configure SNMP traps to customize the types of information you receive and the conditions under which {page-component-title} converts the trap into an event.
+For example, you may want to see an event only when a device is down, or when a combination of criteria are met (for example, OID X with "major" severity level and status "indeterminate").
 These traps are transformed into events only when the conditions you define are met.
 
 There are several ways to configure {page-component-title} to customize the events you receive and see:
@@ -129,7 +127,7 @@ For example, to match all Cisco events, you could use the following:
 NOTE: The order in which events are listed in the `eventconf.xml` file is extremely important.
 The search will stop with the first event definition that matches the given event (see xref:operation:events/event-configuration.adoc[eventconf.xml]).
 
-As such, if the code with the wildcard was listed before the more specific `ciscoC3800SysAggregateStatusChange` event, the latter event would never be generated.
+As such, if the code with the wildcard is listed before the more specific `ciscoC3800SysAggregateStatusChange` event, the latter event will never be generated.
 
 Also note that the wildcard is simply a substring match.
 If a Cisco device generates an event with the enterprise OID of `.1.3.6.1.4.1.9` it would not match this event, as there is no trailing ".".
@@ -137,13 +135,13 @@ If the trailing "." is left off, you must take care so that a trap with an OID o
 
 == Use the `parm` replacement token with trap events
 
-Some events, especially SNMP traps, have additional information sent with them called "variable bindings" or "varbinds" for short.
+Some events, especially SNMP traps, have additional information sent with them called "variable bindings" (varbinds).
 In the `ciscoC3800SysAggregateStatusChange` event listed above, there are four of them.
 You can use the `parm` replacement token to access them.
 Each parameter consists of a name and a value.
 
 For example, the `ciscoC3800SysAggregateStatusChange` event description lists out each of the parameters.
-Thus the second paramater, the `sysName` is printed out using `%parm[#2]%`.
+Thus the second paramater, the `sysName`, is printed using `%parm[#2]%`.
 
 See xref:operation:/events/event-configuration.adoc#parameter-tokens[Parameter tokens] for more information.
 
@@ -203,7 +201,7 @@ You can also match more than one varbind and more than one value per varbind:
 </varbind>
 ----
 
-The above code snippet will match if the third parameter has a value of "2" or "3" AND the fourth parameter has a value of "2" or "3".
+The above code snippet will match if the third parameter has a value of "2" or "3" _and_ the fourth parameter has a value of "2" or "3".
 
 You can also use a regular expression match on the varbind value.
 Just specify the expression prefixed with a with a "~":
@@ -240,7 +238,7 @@ As an example, the SNMP agent returns a numerical value for the `ifAdminStatus` 
 Because {page-component-title} does not have a MIB parser, we usually put this map (between the numerical encoded value and its meaning) into the event description.
 Use the `varbindsdecode` element to convert the event varbind value into a decoded String.
 
-With a properly configured event, you can decode the numerical value sent into trap varbinds and the corresponding String value into the `logmsg`.
+With `varbindsdecode`, {page-component-title} decodes the numerical value sent into trap varbinds to the corresponding String values, which then can be substituted into the logmsg.
 
 For example, a Cisco HSRP status change trap (OID ``.1.3.6.1.4.1.9.9.106.2`, generic 6, and specific 1), which corresponds to the `uei.opennms.org/vendor/Cisco/traps/cHsrpStateChange` event.
 
