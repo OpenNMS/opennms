@@ -71,5 +71,5 @@ jobs:
       - persist_to_workspace:
           root: ~/
           paths:
-            - ~/.artifacts
+            - .artifacts
             - project/opennms-assemblies/minion/target/org.opennms.assemblies.minion-*-minion.tar.gz
