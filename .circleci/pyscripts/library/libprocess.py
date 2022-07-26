@@ -1,4 +1,3 @@
-#A0
 import subprocess
 import datetime
 import os

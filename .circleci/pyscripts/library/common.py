@@ -3,31 +3,19 @@ import os
 import json
 import shutil
 
-class common:
-    def read_file(self,path):
-        _tmp=""
-        with open(path,"r") as f:
-            _tmp=f.readlines()
-        return _tmp
-    
-    def write_file(self,path,content):
-        with open(path,"w") as f:
-            f.write(content)
-        
-    def load_json(self,path):
-        _tmp={}
-        with open(path,"r") as f:
-            _tmp=json.load(f)
-        return _tmp
+from library import libfile
 
-    def write_json(self,path,content):
-        with open(path,"r") as f:
-            json.dump(content,f)
+class common:
+    def __init__(self) -> None:
+        self._file_library=libfile.libfile()
+
+    def create_space(self,space):
+        return " "*space 
 
     def extract_keywords(self,path):
         re_pattern=re.compile("^.*#.*#")
         keywords={}
-        for line in self.read_file(path):
+        for line in self._file_library.read_file(path):
             re_match=re.match(re_pattern,line)
             if re_match:
                 block=re_match.group().split(":")[0].strip().replace("#","")
@@ -42,7 +30,7 @@ class common:
     def expand_index(self,index,path_to_main_folder,tmp_output=[]):
         folder=index.replace("#","").split(":")[0].strip()
         filepath=index.replace("#","").split(":")[1].strip()
-        file_content=self.read_file(os.path.join(path_to_main_folder,folder,filepath))
+        file_content=self._file_library.read_file(os.path.join(path_to_main_folder,folder,filepath))
         re_pattern=re.compile("^.*#.*#")
         for entry in file_content:
             tmp_match=re.match(re_pattern,entry)
@@ -60,18 +48,9 @@ class common:
     def expand_keyword(self,index,path_to_main_folder):
         folder=index.replace("#","").split(":")[0].strip()
         filepath=index.replace("#","").split(":")[1].strip()+".yml"
-        file_content=self.read_file(os.path.join(path_to_main_folder,folder,filepath))[1:]
+        file_content=self._file_library.read_file(os.path.join(path_to_main_folder,folder,filepath))[1:]
 
         shutil.move(os.path.join(path_to_main_folder,folder,filepath),os.path.join(path_to_main_folder,folder,filepath+"_DONE"))
 
         return file_content
-
-    def find_files(self,start_path,pattern,output=[]):
-        current_files=os.listdir(start_path)
-        for entry in current_files:
-            tmp_path=os.path.join(start_path,entry)
-            if os.path.isdir(tmp_path):
-                self.find_files(tmp_path,pattern,output)
-            elif pattern in entry:
-                output.append(tmp_path)
-        return output
+    

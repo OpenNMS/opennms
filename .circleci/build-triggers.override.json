@@ -27,6 +27,9 @@
         "horizon": false,
         "sentinel": false
     },
-    "experimental": false
+    "experimental": false,
+    "filters":{
+        "enabled": true
+    }
 }
 

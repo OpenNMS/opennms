@@ -77,6 +77,11 @@
                 "integration-test-with-coverage",
                 "code-coverage"
         ]
+        },
+        "experimental":{
+            "extends": [
+                "empty"
+        ] 
         }
     },
     "individual": {

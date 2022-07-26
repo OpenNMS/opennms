@@ -75,26 +75,16 @@ for change in changes:
     if not change:
         continue
     if "IT.java" in change:
-        #addTobuildList("Integration_tests")
-        #addTobuildList("build")
-        if "Integration_tests" not in What_to_build:
-            What_to_build.append("Integration_tests")
+        addTobuildList("Integration_tests")
     elif "Test.java" in change:
         addTobuildList("Smoke_tests")
-        addTobuildList("build")
-        #if "Smoke_tests" not in What_to_build:
-        #    What_to_build.append("Smoke_tests")
     elif "opennms-container" in change:
-        addTobuildList("build")
         if "horizon" in change:
-            if "OCI_horizon_image" not in What_to_build:
-                What_to_build.append("OCI_horizon_image")
+            addTobuildList("OCI_horizon_image")
         elif "minion" in change:
-            if "OCI_minion_image" not in What_to_build:
-                What_to_build.append("OCI_minion_image")
+            addTobuildList("OCI_minion_image")
         elif "sentinel" in change:
-            if "OCI_sentinel_image" not in What_to_build:
-                What_to_build.append("OCI_sentinel_image")
+            addTobuildList("OCI_sentinel_image")
     elif ".circleci" in change:
         if "circleci_configuration" not in What_to_build:
             What_to_build.append("circleci_configuration")
