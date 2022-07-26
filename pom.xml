@@ -1782,8 +1782,9 @@
     <powermockVersion>2.0.9</powermockVersion>
     <okhttpVersion>3.10.0</okhttpVersion>
     <okioVersion>1.14.0</okioVersion>
-    <opennmsApiVersion>1.0.1</opennmsApiVersion>
-    <opennmsApiVersionOsgi>1.0.1</opennmsApiVersionOsgi>
+    <opennmsApiVersion>1.0.2-SNAPSHOT</opennmsApiVersion>
+    <opennmsApiVersionOsgi>1.0.2.SNAPSHOT</opennmsApiVersionOsgi>
+    <cloudPluginVersion>1.0.0</cloudPluginVersion>
     <osgiVersion>7.0.0</osgiVersion>
     <osgiAnnotationVersion>7.0.0</osgiAnnotationVersion>
     <osgiCompendiumVersion>7.0.0</osgiCompendiumVersion>

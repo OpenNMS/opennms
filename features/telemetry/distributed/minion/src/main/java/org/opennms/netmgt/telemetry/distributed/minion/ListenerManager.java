@@ -43,6 +43,7 @@ import org.opennms.core.health.api.HealthCheck;
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
 import org.opennms.netmgt.dao.api.DistPollerDao;
+import org.opennms.netmgt.telemetry.api.TelemetryListenerManager;
 import org.opennms.netmgt.telemetry.api.TelemetryManager;
 import org.opennms.netmgt.telemetry.api.adapter.Adapter;
 import org.opennms.netmgt.telemetry.api.receiver.Listener;
@@ -66,7 +67,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author jwhite
  */
-public class ListenerManager implements ManagedServiceFactory, TelemetryManager {
+public class ListenerManager implements ManagedServiceFactory, TelemetryListenerManager {
     private static final Logger LOG = LoggerFactory.getLogger(ListenerManager.class);
 
     private MessageDispatcherFactory messageDispatcherFactory;
@@ -196,6 +197,11 @@ public class ListenerManager implements ManagedServiceFactory, TelemetryManager 
 
     public void setTelemetryRegistry(TelemetryRegistry telemetryRegistry) {
         this.telemetryRegistry = telemetryRegistry;
+    }
+
+    @Override
+    public TelemetryRegistry getTelemetryRegistry() {
+        return this.telemetryRegistry;
     }
 
     private void stopQueues(Set<String> queueNames) {

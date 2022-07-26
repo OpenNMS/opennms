@@ -34,6 +34,8 @@
                                 <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/minion</descriptor>
                                 <!-- Additional tools -->
                                 <descriptor>mvn:io.hawt/hawtio-karaf/${hawtio.version}/xml/features</descriptor>
+                                <!-- cloud plugin -->
+                                <descriptor>mvn:org.opennms.plugins.cloud/karaf-features/1.0.0-SNAPSHOT/xml</descriptor>
                             </descriptors>
                             <!-- To ensure that all JAR files for a feature
                                 are included in the repository tar.gz file, add the feature to this list. -->
@@ -75,6 +77,17 @@
                                 <feature>minion-plugin-sample</feature>
                                 <feature>opennms-deviceconfig-monitor</feature>
                                 <feature>opennms-deviceconfig-sink</feature>
+                                <!--feature>opennms-thresholding-api</feature>
+                                <feature>opennms-config-dao-api</feature>
+                                <feature>opennms-measurements-api</feature>
+                                <feature>opennms-alarm-api</feature>
+                                <feature>opennms-inmemory-ticketer</feature>
+                                <feature>opennms-topology-api</feature>
+                                <feature>org.opennms.features.enlinkd.service.api</feature>
+                                <feature>opennms-graph-api</feature>
+                                <feature>opennms-graph-provider-topology</feature>
+                                <feature>opennms-api-layer</feature-->
+                                <feature>opennms-cloud-plugin</feature>
                             </features>
                             <repository>${project.build.directory}/maven-repo</repository>
                         </configuration>
