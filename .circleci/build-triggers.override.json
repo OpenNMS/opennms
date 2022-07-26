@@ -13,8 +13,8 @@
         "integration": false
     },
     "oci-images": {
-        "minion": true,
-        "horizon": false,
+        "minion": false,
+        "horizon": true,
         "sentinel": false
     },
     "debian-packages": {
