@@ -48,6 +48,6 @@ public interface OspfLinkDao extends OnmsDao<OspfLink, Integer> {
 
     void deleteByNodeIdOlderThen(Integer nodeiId, Date now);
 
-    void deleteByNodeId(Integer nodeId);
+    public void deleteByNodeId(Integer nodeId);
 
 }

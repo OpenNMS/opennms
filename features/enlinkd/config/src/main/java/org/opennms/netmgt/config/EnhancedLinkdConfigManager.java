@@ -56,6 +56,8 @@ abstract public class EnhancedLinkdConfigManager implements EnhancedLinkdConfig 
     /**
      * <p>Constructor for LinkdConfigManager.</p>
      *
+     * @param stream a {@link java.io.InputStream} object.
+     * @throws java.io.IOException if any.
      */
     public EnhancedLinkdConfigManager() {
     }
@@ -72,7 +74,7 @@ abstract public class EnhancedLinkdConfigManager implements EnhancedLinkdConfig 
     /**
      * Return the linkd configuration object.
      *
-     * @return a {@link org.opennms.netmgt.config.enlinkd.EnlinkdConfiguration} object.
+     * @return a {@link org.opennms.netmgt.config.linkd.LinkdConfiguration} object.
      */
     public EnlinkdConfiguration getConfiguration() {
         getReadLock().lock();

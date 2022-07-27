@@ -29,18 +29,69 @@
 package org.opennms.netmgt.enlinkd.service.api;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.enlinkd.model.BridgeElement;
+
 public class Bridge implements Topology {
+
+    public static Set<String> getIdentifier(List<BridgeElement> elems) {
+        Set<String> identifiers = new HashSet<String>();
+        for (BridgeElement element: elems) {
+            if (InetAddressUtils.isValidBridgeAddress(element.getBaseBridgeAddress())) {
+                identifiers.add(element.getBaseBridgeAddress());
+            }
+
+        }
+        return identifiers;
+    }
+
+    public static String getDesignated(List<BridgeElement> elems) {
+        for (BridgeElement element: elems) {
+            if (InetAddressUtils.
+                    isValidStpBridgeId(element.getStpDesignatedRoot()) 
+                    && !element.getBaseBridgeAddress().
+                    equals(InetAddressUtils.getBridgeAddressFromStpBridgeId(element.getStpDesignatedRoot()))) {
+                String designated=InetAddressUtils.
+                               getBridgeAddressFromStpBridgeId(element.getStpDesignatedRoot());
+                if (InetAddressUtils.isValidBridgeAddress(designated)) {
+                    return designated;
+                }
+            }
+        }
+        return null;
+    }
+
+    public static Bridge create(BroadcastDomain domain, Integer nodeid) {
+        Bridge bridge = new Bridge(nodeid);
+        domain.getBridges().add(bridge);
+        return bridge;
+    }
+
+    public static Bridge createRootBridge(BroadcastDomain domain, Integer nodeid) {
+        Bridge bridge = new Bridge(nodeid);
+        bridge.setRootBridge();
+        domain.getBridges().add(bridge);
+        return bridge;
+    }
+    
+    public static Bridge create(BroadcastDomain domain, Integer nodeid, Integer rootport) {
+        Bridge bridge = new Bridge(nodeid);
+        bridge.setRootPort(rootport);
+        domain.getBridges().add(bridge);
+        return bridge;
+    }
 
     private final Integer m_nodeId;
     private Integer m_rootPort;
     private boolean m_isRootBridge;
-    private Set<String> m_identifiers = new HashSet<>();
+    private Set<String> m_identifiers = new HashSet<String>();
     private String m_designated;
 
-    public Bridge(Integer id) {
+    private Bridge(Integer id) {
         super();
         m_nodeId = id;
     }
@@ -88,7 +139,7 @@ public class Bridge implements Topology {
 
     @Override
     public String printTopology() {
-    	StringBuilder strbfr = new StringBuilder();
+    	StringBuffer strbfr = new StringBuffer();
         strbfr.append("bridge: nodeid[");
         strbfr.append(m_nodeId);
         strbfr.append("],");

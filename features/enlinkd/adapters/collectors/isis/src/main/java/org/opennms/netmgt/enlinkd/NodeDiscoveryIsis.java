@@ -62,6 +62,8 @@ public final class NodeDiscoveryIsis extends NodeCollector {
 	 * The collection does not occur until the
      * <code>run</code> method is invoked.
      * 
+	 * @param EnhancedLinkd linkd
+	 * @param LinkableNode node
 	 */
     public NodeDiscoveryIsis(
             final IsisTopologyService isisTopologyService,

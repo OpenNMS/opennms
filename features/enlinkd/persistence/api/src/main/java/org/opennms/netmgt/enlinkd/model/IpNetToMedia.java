@@ -76,13 +76,13 @@ public class IpNetToMedia implements Serializable {
 		IPNETTOMEDIA_TYPE_DYNAMIC(3),
 		IPNETTOMEDIA_TYPE_STATIC(4);
 		
-        private final int m_value;
+        private int m_value;
 
         IpNetToMediaType(int value) {
         	m_value=value;
         }
 
-        static final Map<Integer, String> s_typeMap = new HashMap<>();
+ 	    protected static final Map<Integer, String> s_typeMap = new HashMap<Integer, String>();
 
         static {
         	s_typeMap.put(1, "other" );
@@ -213,6 +213,11 @@ public class IpNetToMedia implements Serializable {
         return m_sourceNode;
     }
 
+    /**
+     * <p>setSourceNode</p>
+     *
+     * @param sourceNode a {@link org.opennms.netmgt.model.OnmsNode} object.
+     */
     public void setSourceNode(OnmsNode sourceNode) {
         m_sourceNode = sourceNode;
     }
@@ -222,6 +227,11 @@ public class IpNetToMedia implements Serializable {
         return m_sourceIfIndex;
     }
     
+    /**
+     * <p>setSourceIfIndex</p>
+     *
+     * @param ifIndex a {@link java.lang.Integer} object.
+     */
     public void setSourceIfIndex(Integer sourceIfIndex) {
         m_sourceIfIndex = sourceIfIndex;
     }
@@ -239,7 +249,7 @@ public class IpNetToMedia implements Serializable {
      * @return a {@link org.opennms.netmgt.model.OnmsNode} object.
      */
     @ManyToOne(optional=false, fetch=FetchType.LAZY)
-    @JoinColumn(name="nodeId")
+    @JoinColumn(name="nodeId", nullable=true)
     public OnmsNode getNode() {
         return m_node;
     }
@@ -247,13 +257,13 @@ public class IpNetToMedia implements Serializable {
     /**
      * <p>setNode</p>
      *
-     * @param node a {@link org.opennms.netmgt.model.OnmsNode} object.
+     * @param Node a {@link org.opennms.netmgt.model.OnmsNode} object.
      */
     public void setNode(OnmsNode node) {
         m_node = node;
     }
 
-    @Column(name="ifIndex")
+    @Column(name="ifIndex", nullable=true)
     public Integer getIfIndex() {
         return m_ifIndex;
     }
@@ -333,7 +343,7 @@ public class IpNetToMedia implements Serializable {
      */
     @Override
     public String toString() {
-        StringBuilder strb = new StringBuilder();
+        StringBuffer strb = new StringBuffer();
         strb.append("ipnettomedia: ");
         strb.append("nodeid:["); 
         if (getNode() != null) {

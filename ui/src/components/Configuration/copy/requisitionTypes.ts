@@ -48,19 +48,17 @@ export const VMWareFields = {
   Username: 'username',
   Password: 'password',
   UpperUsername: 'Username',
-  UpperPassword: 'Password',
-  RequisitionName: 'Requisition Name'
+  UpperPassword: 'Password'
 }
 
 export const SplitTypes = {
   dns: 'dns://',
-  file: 'file://',
-  vmware: 'vmware://'
+  file: 'file://'
 }
 
 export const ErrorStrings = {
   DuplicateName: 'Name must be unique.',
-  QuartzFormatSupportError: (numPart: number) => `Error: Expression has only ${numPart} part${numPart > 1 ? 's' : ''}. At least 6 parts are required.`,
+  QuartzFormatSupportError: 'Error: Expression has only 5 parts. At least 6 parts are required.',
   InvalidHostname: 'Invalid hostname',
   InvalidZoneName: 'Invalid zone name',
   InvalidRequisitionName: 'Invalid requisition name',

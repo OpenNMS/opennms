@@ -10,14 +10,6 @@
           }
         },
 </#if>
-<#-- If no SNMP interface is set, then constrain the documents to INGRESS/EGRESS -->
-<#if !snmpInterfaceId??>
-       {
-         "terms": {
-           "netflow.direction": ["ingress", "egress"]
-         }
-       },
-</#if>
 <#list filters as filter>${filter}<#sep>,</#list>
       ]
     }
@@ -36,11 +28,7 @@
       "aggs": {
         "direction": {
           "terms": {
-            <#if snmpInterfaceId??>
-              "script": "${onms.unknownDirectionScript(snmpInterfaceId)?json_string}",
-            <#else>
-              "field": "netflow.direction",
-            </#if>
+            "field": "netflow.direction",
             "size": 2
           },
           "aggs": {
@@ -57,7 +45,7 @@
                 "end": ${end?long?c}
               }
             },
-            <#-- netflow.ecn is a keyword -> max aggregation not possible; string comparison required-->
+            // netflow.ecn is a keyword -> max aggregation not possible; string comparison required
             "congestion_encountered": {
               "max": {
                 "script": "doc.containsKey('netflow.ecn') && doc['netflow.ecn'].size() > 0 ? (doc['netflow.ecn'].value == '3' ? true : false) : false"

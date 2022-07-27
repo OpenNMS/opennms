@@ -29,6 +29,7 @@
 package org.opennms.netmgt.flows.elastic;
 
 import com.codahale.metrics.MetricRegistry;
+import com.google.common.collect.Lists;
 import io.searchbox.client.JestClient;
 import io.searchbox.core.Search;
 import io.searchbox.core.SearchResult;
@@ -40,18 +41,25 @@ import org.opennms.features.jest.client.RestClientFactory;
 import org.opennms.features.jest.client.SearchResultUtils;
 import org.opennms.features.jest.client.index.IndexStrategy;
 import org.opennms.features.jest.client.template.IndexSettings;
+import org.opennms.netmgt.dao.mock.MockNodeDao;
+import org.opennms.netmgt.dao.mock.MockSessionUtils;
+import org.opennms.netmgt.dao.mock.MockSnmpInterfaceDao;
 import org.opennms.netmgt.flows.api.Flow;
-import org.opennms.netmgt.flows.processing.enrichment.EnrichedFlow;
-import org.opennms.netmgt.flows.processing.persisting.FlowRepository;
+import org.opennms.netmgt.flows.api.FlowRepository;
+import org.opennms.netmgt.flows.api.ProcessingOptions;
+import org.opennms.netmgt.flows.elastic.thresholding.FlowThresholding;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static com.jayway.awaitility.Awaitility.with;
 import static java.util.concurrent.TimeUnit.*;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class BulkingIT {
     private static Logger LOG = LoggerFactory.getLogger(BulkingIT.class);
@@ -62,26 +70,27 @@ public class BulkingIT {
             .withManualStartup()
     );
 
-    private List<EnrichedFlow> createMockedFlows(final int count) {
-        final List<EnrichedFlow> flows = new ArrayList<>(count);
+    private List<Flow> createMockedFlows(final int count) {
+        final List<Flow> flows = new ArrayList<>(count);
         for (int i = 0; i < count; i++) {
-            final EnrichedFlow flow = new EnrichedFlow();
-            flow.setNetflowVersion(Flow.NetflowVersion.V5);
-            flow.setIpProtocolVersion(4);
-            flow.setSrcAddr("192.168." + i / 256 + "." + i % 256);
-            flow.setDstAddr("192.168." + i / 256 + "." + i % 256);
-            flow.setSrcAddrHostname(null);
-            flow.setDstAddrHostname(null);
-            flow.setNextHopHostname(null);
-            flow.setVlan(null);
+            final Flow flow = mock(Flow.class);
+            when(flow.getNetflowVersion()).thenReturn(Flow.NetflowVersion.V5);
+            when(flow.getIpProtocolVersion()).thenReturn(4);
+            when(flow.getSrcAddr()).thenReturn("192.168." + i / 256 + "." + i % 256);
+            when(flow.getDstAddr()).thenReturn("192.168." + i / 256 + "." + i % 256);
+            when(flow.getSrcAddrHostname()).thenReturn(Optional.empty());
+            when(flow.getDstAddrHostname()).thenReturn(Optional.empty());
+            when(flow.getNextHopHostname()).thenReturn(Optional.empty());
+            when(flow.getVlan()).thenReturn(null);
             flows.add(flow);
         }
         return flows;
     }
 
-    private FlowRepository createFlowRepository(final JestClient jestClient, int bulkSize, int bulkFlushMs) {
+    private FlowRepository createFlowRepository(final JestClient jestClient, final DocumentEnricher documentEnricher, int bulkSize, int bulkFlushMs) {
         final ElasticFlowRepository elasticFlowRepository = new ElasticFlowRepository(new MetricRegistry(), jestClient,
-                IndexStrategy.MONTHLY, new MockIdentity(), new MockTracerRegistry(), new IndexSettings());
+                IndexStrategy.MONTHLY, documentEnricher, new MockSessionUtils(), new MockNodeDao(), new MockSnmpInterfaceDao(),
+                new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings(), mock(FlowThresholding.class));
         elasticFlowRepository.setBulkSize(bulkSize);
         elasticFlowRepository.setBulkFlushMs(bulkFlushMs);
         return new InitializingFlowRepository(elasticFlowRepository, jestClient);
@@ -97,12 +106,14 @@ public class BulkingIT {
         final RestClientFactory restClientFactory = new RestClientFactory(elasticSearchRule.getUrl());
 
         try (final JestClient jestClient = restClientFactory.createClient()) {
-            final FlowRepository flowRepository = createFlowRepository(jestClient, 1000, 5000);
+            final MockDocumentEnricherFactory mockDocumentEnricherFactory = new MockDocumentEnricherFactory();
+            final DocumentEnricher documentEnricher = mockDocumentEnricherFactory.getEnricher();
+            final FlowRepository flowRepository = createFlowRepository(jestClient, documentEnricher, 1000, 5000);
 
             final long[] persists = new long[2];
 
             // send full bulk in order to estimate last persist
-            flowRepository.persist(createMockedFlows(1000));
+            flowRepository.persist(Lists.newArrayList(createMockedFlows(1000)), FlowDocumentTest.getMockFlowSource(), ProcessingOptions.builder().build());
 
             with().pollInterval(25, MILLISECONDS).await().atMost(10, SECONDS).until(() -> {
                 final SearchResult searchResult = jestClient.execute(new Search.Builder("").addIndex("netflow-*").build());
@@ -113,9 +124,9 @@ public class BulkingIT {
             });
 
             // send small bulks
-            flowRepository.persist(createMockedFlows(30));
-            flowRepository.persist(createMockedFlows(30));
-            flowRepository.persist(createMockedFlows(30));
+            flowRepository.persist(Lists.newArrayList(createMockedFlows(30)), FlowDocumentTest.getMockFlowSource(), ProcessingOptions.builder().build());
+            flowRepository.persist(Lists.newArrayList(createMockedFlows(30)), FlowDocumentTest.getMockFlowSource(), ProcessingOptions.builder().build());
+            flowRepository.persist(Lists.newArrayList(createMockedFlows(30)), FlowDocumentTest.getMockFlowSource(), ProcessingOptions.builder().build());
 
             // these 90 flows should not be visible yet
             with().pollInterval(2, SECONDS).await().atMost(10, SECONDS).until(() -> {
@@ -152,8 +163,10 @@ public class BulkingIT {
         final RestClientFactory restClientFactory = new RestClientFactory(elasticSearchRule.getUrl());
 
         try (final JestClient jestClient = restClientFactory.createClient()) {
-            final FlowRepository flowRepository = createFlowRepository(jestClient, 1000, 300000);
-            flowRepository.persist(createMockedFlows(1000));
+            final MockDocumentEnricherFactory mockDocumentEnricherFactory = new MockDocumentEnricherFactory();
+            final DocumentEnricher documentEnricher = mockDocumentEnricherFactory.getEnricher();
+            final FlowRepository flowRepository = createFlowRepository(jestClient, documentEnricher, 1000, 300000);
+            flowRepository.persist(Lists.newArrayList(createMockedFlows(1000)), FlowDocumentTest.getMockFlowSource(), ProcessingOptions.builder().build());
 
             // these results should appear immediately since the bulk size of 1000 was reached
             with().pollInterval(250, MILLISECONDS).await().atMost(10, SECONDS).until(() -> {
@@ -177,9 +190,11 @@ public class BulkingIT {
         final RestClientFactory restClientFactory = new RestClientFactory(elasticSearchRule.getUrl());
 
         try (final JestClient jestClient = restClientFactory.createClient()) {
-            final FlowRepository flowRepository = createFlowRepository(jestClient, 1000, 300000);
+            final MockDocumentEnricherFactory mockDocumentEnricherFactory = new MockDocumentEnricherFactory();
+            final DocumentEnricher documentEnricher = mockDocumentEnricherFactory.getEnricher();
+            final FlowRepository flowRepository = createFlowRepository(jestClient, documentEnricher, 1000, 300000);
 
-            flowRepository.persist(createMockedFlows(1000));
+            flowRepository.persist(Lists.newArrayList(createMockedFlows(1000)), FlowDocumentTest.getMockFlowSource(), ProcessingOptions.builder().build());
 
             // these results should appear immediately since the bulk size of 1000 was reached
             with().pollInterval(250, MILLISECONDS).await().atMost(10, SECONDS).until(() -> {
@@ -188,7 +203,7 @@ public class BulkingIT {
                 return SearchResultUtils.getTotal(searchResult) == 1000L;
             });
 
-            flowRepository.persist(createMockedFlows(500));
+            flowRepository.persist(Lists.newArrayList(createMockedFlows(500)), FlowDocumentTest.getMockFlowSource(), ProcessingOptions.builder().build());
 
             // these results should not appear immediately since the bulk size is only 500
             with().pollInterval(250, MILLISECONDS).await().atMost(10, SECONDS).until(() -> {
@@ -197,7 +212,7 @@ public class BulkingIT {
                 return SearchResultUtils.getTotal(searchResult) == 1000L;
             });
 
-            flowRepository.persist(createMockedFlows(400));
+            flowRepository.persist(Lists.newArrayList(createMockedFlows(400)), FlowDocumentTest.getMockFlowSource(), ProcessingOptions.builder().build());
 
             // these results should not appear immediately since the bulk size is only 900
             with().pollInterval(250, MILLISECONDS).await().atMost(10, SECONDS).until(() -> {
@@ -206,7 +221,7 @@ public class BulkingIT {
                 return SearchResultUtils.getTotal(searchResult) == 1000L;
             });
 
-            flowRepository.persist(createMockedFlows(100));
+            flowRepository.persist(Lists.newArrayList(createMockedFlows(100)), FlowDocumentTest.getMockFlowSource(), ProcessingOptions.builder().build());
 
             // these results should now appear immediately since the bulk size of 1000 was reached
             with().pollInterval(250, MILLISECONDS).await().atMost(10, SECONDS).until(() -> {

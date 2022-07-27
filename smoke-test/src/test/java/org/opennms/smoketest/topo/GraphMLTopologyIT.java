@@ -37,7 +37,6 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertTrue;
 import static org.opennms.smoketest.TopologyIT.waitForTransition;
 
 import org.junit.After;
@@ -58,9 +57,6 @@ import org.opennms.smoketest.OpenNMSSeleniumIT;
 import org.opennms.smoketest.TopologyIT;
 import org.opennms.smoketest.graphml.GraphmlDocument;
 import org.opennms.smoketest.utils.RestClient;
-import org.openqa.selenium.ElementNotInteractableException;
-import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.TimeoutException;
 
 import com.google.common.collect.Lists;
 
@@ -98,9 +94,6 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
         topologyUIPage.open();
         // Select EnLinkd, otherwise the "GraphML Topology Provider (test-graph)" is always pre-selected due to history restoration
         topologyUIPage.selectTopologyProvider(TopologyProvider.ENLINKD);
-        // if Layers is opened then close to set initial condition
-        topologyUIPage.closeLayerSelectionComponent();
-        assertTrue(!topologyUIPage.isLayoutComponentVisible());
     }
 
     @After
@@ -141,7 +134,6 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
 
         // Switch Layer
         topologyUIPage.selectLayer("Markets");
-        assertTrue(topologyUIPage.isLayoutComponentVisible());
         assertEquals(0, topologyUIPage.getSzl());
         assertEquals(1, topologyUIPage.getFocusedVertices().size());
         assertEquals("North 4", topologyUIPage.getFocusedVertices().get(0).getLabel());
@@ -206,17 +198,13 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
         assertEquals(false, topologyUIPage.getSaveLayoutButton().isEnabled()); // it should be disabled after save
     }
 
+    @Test
     /**
      * This method tests whether the GraphMLTopologyProvider can work with categories - searching, collapsing and expanding
      */
-
-    @Test
     public void verifyCanFilterByCategory() throws IOException, InterruptedException {
         topologyUIPage.selectTopologyProvider(() -> LABEL);
-        topologyUIPage.defaultFocus();
-
         topologyUIPage.selectLayer("Markets");
-        assertTrue(topologyUIPage.isLayoutComponentVisible());
         topologyUIPage.setSzl(0);
         topologyUIPage.clearFocus();
 
@@ -326,7 +314,7 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
     /**
      * Creates and publishes a requisition with 2 dummy nodes with predefined parameters
      */
-    private void        createDummyNodes() throws IOException, InterruptedException {
+    private void createDummyNodes() throws IOException, InterruptedException {
 
         // First node has foreign ID "node1", label - "North 2" and category "Routers"
         // Second node has foreign ID "node2", label - "North 3" and categories "Routers" and "Servers"
@@ -385,30 +373,5 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
 
     private static TopologyIT.FocusedVertex focusVertex(TopologyIT.TopologyUIPage topologyUIPage, String namespace, String label) {
         return new TopologyIT.FocusedVertex(topologyUIPage, namespace, label);
-    }
-
-    @Test
-    public void testNMS14379() throws Exception {
-        importGraph();
-        topologyUIPage.open();
-        topologyUIPage.selectTopologyProvider(() -> LABEL);
-        topologyUIPage.defaultFocus();
-        topologyUIPage.findVertex("East Region").contextMenu().click("Navigate To", "Markets (East Region)");
-        frontPage();
-        deleteGraph();
-        topologyUIPage.open();
-        Thread.sleep(5000);
-        try {
-            // if dialog is not yet visible, try to interact with a node
-            topologyUIPage.findVertex("East 1").select();
-            topologyUIPage.findVertex("East 2").select();
-            topologyUIPage.findVertex("East 3").select();
-            topologyUIPage.findVertex("East 4").select();
-        } catch (NoSuchElementException | TimeoutException | ElementNotInteractableException e) {
-            // ignore if dialog is already visible
-        }
-        Thread.sleep(5000);
-        findElementByXpath("//div[text() = 'Clicking okay will switch to the default topology provider.']");
-        findElementByXpath("//span[@class='v-button-caption' and text() = 'ok']").click();
     }
 }

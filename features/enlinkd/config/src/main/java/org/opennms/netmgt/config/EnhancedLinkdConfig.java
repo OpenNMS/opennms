@@ -147,7 +147,7 @@ public interface EnhancedLinkdConfig {
     /**
      * <p>getConfiguration</p>
      *
-     * @return a {@link org.opennms.netmgt.config.enlinkd.EnlinkdConfiguration} object.
+     * @return a {@link org.opennms.netmgt.config.linkd.LinkdConfiguration} object.
      */
      EnlinkdConfiguration getConfiguration();    
         

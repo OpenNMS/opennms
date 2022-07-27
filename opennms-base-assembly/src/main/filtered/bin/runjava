@@ -53,17 +53,14 @@ if [ -e "${opennms_home}/bin/_lib.sh" ]; then
         __onms_read_conf "${opennms_home}/etc/opennms.conf"
     fi
 
-    RUNUSER="$(command -v runuser 2>/dev/null || which runuser 2>/dev/null || :)"
+    SUDO="$(command -v sudo 2>/dev/null || which sudo 2>/dev/null || :)"
     myuser="$(id -u -n)"
     if [ "$myuser" != "$RUNAS" ]; then
-        if [ "$myuser" = "root" ] && [ -x "$RUNUSER" ]; then
-            _cmd=("$RUNUSER" "-u" "$RUNAS" -- "$0" "${INCOMING_ARGS[@]}");
+        if [ "$myuser" = "root" ] && [ -n "$SUDO" ] && [ -x "$SUDO" ]; then
+            _cmd=("$SUDO" "-u" "$RUNAS" "$0" "${INCOMING_ARGS[@]}");
             exec "${_cmd[@]}"
         fi
-        echo "ERROR: you should run this script as ${RUNAS}, not '${myuser}'." >&2
-        echo "       To correct this, try 'sudo -u ${RUNAS} $0 $@'" >&2
-        echo "       If you wish for OpenNMS to run as ${myuser} instead," >&2
-        echo "       create or edit ${OPENNMS_HOME}/etc/opennms.conf and set 'RUNAS=${myuser}'." >&2
+        echo "ERROR: you must run this script as ${RUNAS}, not '${myuser}'." >&2
         exit 4 # According to LSB: 4 - user had insufficient privileges
     fi
 fi
@@ -304,6 +301,16 @@ checkJavaHome() {
     fi
 }
 
+get_real_path_if_possible() {
+    unresolved="$1"
+    readlink="$(command -v readlink 2>/dev/null)"
+    if [ -n "$readlink" ] && [ -n "$unresolved" ] && [ -x "$unresolved" ]; then
+        "$readlink" "$unresolved" || echo "$unresolved"
+    else
+        echo "$unresolved"
+    fi
+}
+
 
 #
 # Function: checkPath()
@@ -318,7 +325,7 @@ checkPath() {
 
     readlink="$(command -v readlink 2>/dev/null)"
     if [ -n "$readlink" ] && [ -n "$JP" ]; then
-        JP="$(readlink -f "$JP")"
+        JP="$(readlink "$JP")"
     fi
 
     if [ -n "$JP" ]; then

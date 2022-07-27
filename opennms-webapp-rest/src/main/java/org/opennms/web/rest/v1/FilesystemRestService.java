@@ -85,8 +85,7 @@ public class FilesystemRestService {
             "cfg",
             "drl",
             "groovy",
-            "bsh",
-            "dcb");
+            "bsh");
 
     private final java.nio.file.Path etcFolder = Paths.get(System.getProperty("opennms.home"), "etc");
     private final java.nio.file.Path etcPristineFolder = Paths.get(System.getProperty("opennms.home"), "share", "etc-pristine");

@@ -1,0 +1,32 @@
+
+= Business Service Hierarchy
+
+Business services can depend on each other, and together build a business service hierarchy.
+Visualize the hierarchy using the Topology User Interface with the *Business Services* view.
+The operational status of a business service is calculated by rolling up alarms from all subordinate services and edges.
+Ues a To define the class of alarms a reduction key is used and is represented as an edge of a business service.
+Giving more granularity than just Up or Down, the operational status uses the severities, i.e., Normal, Warning, Minor, Major, Critical.
+
+Based on the hierarchy, the operational status is calculated with map and reduce functions.
+A map function influences which severity from the edge is used as an input to the business service.
+A reduce function consolidates the severities from all edges of a business service and uses them as inputs and reduces them into a single severity, which is the operational status.
+
+The Topology User Interface lets users traverse business service hierarchies using the semantic zoom level (SZL).
+The semantic zoom level (SZL, pronounced as 'sizzle') defines how many neighbors are shown related to the elements which are in focus.
+The number can be interpreted as how many hops from the focus should be shown on the Topology User Interface.
+
+[[gu-bsm-hierarchy-image]]
+.Business Service Hierarchy components
+image::bsm/02_bsm-service-hierarchy.png[]
+
+(1) A top-level business service that depends on other business services, monitored services, and alarms (referenced by reduction key).
+
+(2) Business service as child and the operational status are used as input for the top-level business service.
+
+(3) IP service edge used as an input with auto-generated reduction keys for node down, interface down, and node lost service.
+
+(4) Reduction key edge used as an input to the top-level business service, which references just a node-lost service of a page sequence monitor for the user login.
+
+To add or remove an additional selected BS or edge to focus use, in the context menu Add To Focus or Remove From Focus.
+If you want to have a specific BS or edge as a single focus use Set as Focal Point.
+The eye icon highlights all elements in the Topology UI which are set to focus.

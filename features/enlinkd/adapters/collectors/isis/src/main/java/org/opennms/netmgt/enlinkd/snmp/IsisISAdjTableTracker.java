@@ -31,6 +31,7 @@ package org.opennms.netmgt.enlinkd.snmp;
 import org.opennms.netmgt.enlinkd.model.IsIsLink;
 import org.opennms.netmgt.enlinkd.model.IsIsLink.IsisISAdjNeighSysType;
 import org.opennms.netmgt.enlinkd.model.IsIsLink.IsisISAdjState;
+import org.opennms.netmgt.snmp.RowCallback;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpRowResult;
@@ -41,6 +42,8 @@ import org.slf4j.LoggerFactory;
 public class IsisISAdjTableTracker extends TableTracker {
 	private final static Logger LOG = LoggerFactory.getLogger(IsisISAdjTableTracker.class);
 
+    public static final SnmpObjId ISIS_IS_ADJ_TABLE = SnmpObjId.get(".1.3.6.1.2.1.138.1.6.1"); // start of table (GETNEXT)
+
     public final static SnmpObjId ISIS_IS_ADJ_STATE                = SnmpObjId.get(".1.3.6.1.2.1.138.1.6.1.1.2");
     public final static SnmpObjId ISIS_IS_ADJ_NBR_SNPAADDR         = SnmpObjId.get(".1.3.6.1.2.1.138.1.6.1.1.4");
     public final static SnmpObjId ISIS_IS_ADJ_NBR_SYSTYPE          = SnmpObjId.get(".1.3.6.1.2.1.138.1.6.1.1.5");
@@ -49,7 +52,7 @@ public class IsisISAdjTableTracker extends TableTracker {
 
     public static final SnmpObjId[] isisIsAdjtable_elemList = new SnmpObjId[] {
         
-        /*
+        /**
          * isisISAdjState OBJECT-TYPE
          * SYNTAX INTEGER
          *  {
@@ -67,7 +70,7 @@ public class IsisISAdjTableTracker extends TableTracker {
          */
         ISIS_IS_ADJ_STATE,
 
-        /*
+        /**
          *  isisISAdjNeighSNPAAddress OBJECT-TYPE
          *  SYNTAX IsisOSINSAddress
          *  MAX-ACCESS read-only
@@ -79,7 +82,7 @@ public class IsisISAdjTableTracker extends TableTracker {
          */
         ISIS_IS_ADJ_NBR_SNPAADDR,
         
-        /*
+        /**
          *  isisISAdjNeighSysType OBJECT-TYPE
          *          SYNTAX INTEGER
          *          {
@@ -97,7 +100,7 @@ public class IsisISAdjTableTracker extends TableTracker {
          */
         ISIS_IS_ADJ_NBR_SYSTYPE,
         
-        /*
+        /**
          *     isisISAdjNeighSysID OBJECT-TYPE
          *     SYNTAX IsisSystemID
          *     MAX-ACCESS read-only
@@ -110,7 +113,7 @@ public class IsisISAdjTableTracker extends TableTracker {
          */
          ISIS_IS_ADJ_NBR_SYSID,
         
-        /*
+        /**
          * isisISAdjNbrExtendedCircID OBJECT-TYPE
          * SYNTAX Unsigned32
          * MAX-ACCESS read-only
@@ -185,6 +188,11 @@ public class IsisISAdjTableTracker extends TableTracker {
         super(isisIsAdjtable_elemList);
     }
 
+    public IsisISAdjTableTracker(final RowCallback rowProcessor) {
+        super(rowProcessor,isisIsAdjtable_elemList);
+    }
+
+        
     /** {@inheritDoc} */
     @Override
     public SnmpRowResult createRowResult(final int columnCount, final SnmpInstId instance) {

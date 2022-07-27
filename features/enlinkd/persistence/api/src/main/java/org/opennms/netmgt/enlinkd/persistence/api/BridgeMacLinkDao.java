@@ -40,13 +40,13 @@ import org.opennms.netmgt.enlinkd.model.BridgeMacLink;
  */
 public interface BridgeMacLinkDao extends OnmsDao<BridgeMacLink, Integer> {
     
-    List<BridgeMacLink> findByNodeId(Integer id);
+    public List<BridgeMacLink> findByNodeId(Integer id);
 
-    BridgeMacLink getByNodeIdBridgePortMac(Integer id, Integer port, String mac);
+    public BridgeMacLink getByNodeIdBridgePortMac(Integer id, Integer port,String mac);
 
-    List<BridgeMacLink> findByNodeIdBridgePort(Integer id, Integer port);
+    public List<BridgeMacLink> findByNodeIdBridgePort(Integer id, Integer port);
 
-    List<BridgeMacLink> findByMacAddress(String mac);
+    public List<BridgeMacLink> findByMacAddress(String mac);
 
     void deleteByNodeIdOlderThen(Integer nodeiId, Date now);
 

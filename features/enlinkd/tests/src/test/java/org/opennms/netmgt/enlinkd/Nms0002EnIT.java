@@ -30,7 +30,6 @@ package org.opennms.netmgt.enlinkd;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.RDeEssnBrue_IP;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.RDeEssnBrue_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.RDeEssnBrue_SNMP_RESOURCE;
@@ -99,10 +98,10 @@ public class Nms0002EnIT extends EnLinkdBuilderITCase {
         m_linkdConfig.getConfiguration().setUseIsisDiscovery(false);
 
         assertTrue(m_linkdConfig.useLldpDiscovery());
-        assertFalse(m_linkdConfig.useCdpDiscovery());
-        assertFalse(m_linkdConfig.useOspfDiscovery());
-        assertFalse(m_linkdConfig.useBridgeDiscovery());
-        assertFalse(m_linkdConfig.useIsisDiscovery());
+        assertTrue(!m_linkdConfig.useCdpDiscovery());
+        assertTrue(!m_linkdConfig.useOspfDiscovery());
+        assertTrue(!m_linkdConfig.useBridgeDiscovery());
+        assertTrue(!m_linkdConfig.useIsisDiscovery());
 
         final OnmsNode routerJuniper = m_nodeDao.findByForeignId("linkd", Rluck001_NAME);
         final OnmsNode switchCisco = m_nodeDao.findByForeignId("linkd", Sluck001_NAME);
@@ -240,10 +239,10 @@ public class Nms0002EnIT extends EnLinkdBuilderITCase {
         m_linkdConfig.getConfiguration().setUseIsisDiscovery(false);
 
         assertTrue(m_linkdConfig.useLldpDiscovery());
-        assertFalse(m_linkdConfig.useCdpDiscovery());
-        assertFalse(m_linkdConfig.useOspfDiscovery());
-        assertFalse(m_linkdConfig.useBridgeDiscovery());
-        assertFalse(m_linkdConfig.useIsisDiscovery());
+        assertTrue(!m_linkdConfig.useCdpDiscovery());
+        assertTrue(!m_linkdConfig.useOspfDiscovery());
+        assertTrue(!m_linkdConfig.useBridgeDiscovery());
+        assertTrue(!m_linkdConfig.useIsisDiscovery());
 
         final OnmsNode routerCisco = m_nodeDao.findByForeignId("linkd", RDeEssnBrue_NAME);
         final OnmsNode swicthAlu081 = m_nodeDao.findByForeignId("linkd", SDeEssnBrue081_NAME);

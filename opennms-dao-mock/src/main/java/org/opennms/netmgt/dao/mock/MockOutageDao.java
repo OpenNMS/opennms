@@ -31,8 +31,6 @@ package org.opennms.netmgt.dao.mock;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.opennms.netmgt.dao.api.OutageDao;
@@ -77,11 +75,6 @@ public class MockOutageDao extends AbstractMockDao<OnmsOutage, Integer> implemen
 
     @Override
     public Collection<OnmsOutage> currentOutages() {
-        throw new UnsupportedOperationException("Not yet implemented!");
-    }
-
-    @Override
-    public Map<Integer, Set<OnmsOutage>> currentOutagesByServiceId() {
         throw new UnsupportedOperationException("Not yet implemented!");
     }
 

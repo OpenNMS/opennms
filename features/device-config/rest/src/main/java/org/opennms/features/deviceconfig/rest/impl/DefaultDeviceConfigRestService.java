@@ -28,10 +28,32 @@
 
 package org.opennms.features.deviceconfig.rest.impl;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
-import net.redhogs.cronparser.CronExpressionDescriptor;
-import org.apache.commons.collections.CollectionUtils;
+import static org.opennms.features.deviceconfig.service.DeviceConfigService.DEVICE_CONFIG_PREFIX;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import javax.xml.bind.DatatypeConverter;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opennms.core.criteria.Criteria;
@@ -57,47 +79,22 @@ import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.support.TransactionOperations;
 
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import javax.xml.bind.DatatypeConverter;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.concurrent.ExecutionException;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
+import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 
-import static org.opennms.features.deviceconfig.service.DeviceConfigService.DEVICE_CONFIG_PREFIX;
+import net.redhogs.cronparser.CronExpressionDescriptor;
 
 public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultDeviceConfigRestService.class);
     public static final String DEFAULT_ENCODING = StandardCharsets.UTF_8.name();
     public static final String BINARY_ENCODING = "binary";
 
-    private final TransactionOperations operations;
-
     private static final Map<String,String> ORDERBY_QUERY_PROPERTY_MAP = Map.of(
         "lastupdated", "lastUpdated",
         "devicename", "ipInterface.node.label",
         "lastbackup", "createdTime",
-        "ipaddress", "ipInterface.ipAddr",
-        "location", "ipInterface.node.location.locationName",
-        "status", "status"
+        "ipaddress", "ipInterface.ipAddr"
     );
 
     private final DeviceConfigDao deviceConfigDao;
@@ -116,10 +113,9 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
         }
     }
 
-    public DefaultDeviceConfigRestService(DeviceConfigDao deviceConfigDao, DeviceConfigService deviceConfigService, TransactionOperations operations) {
+    public DefaultDeviceConfigRestService(DeviceConfigDao deviceConfigDao, DeviceConfigService deviceConfigService) {
         this.deviceConfigDao = deviceConfigDao;
         this.deviceConfigService = deviceConfigService;
-        this.operations = Objects.requireNonNull(operations);
     }
 
     /** {@inheritDoc} */
@@ -237,50 +233,9 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
 
     /** {@inheritDoc} */
     @Override
-    public Response deleteDeviceConfigs(List<Long> ids) {
-        if (CollectionUtils.isEmpty(ids)) {
-            LOG.debug("Bad request : empty or null DeviceConfig Id");
-            return Response.status(Status.BAD_REQUEST).entity("Invalid 'id' parameter").build();
-        }
-
-        return operations.execute(status -> {
-            try {
-                final List<DeviceConfig> deviceConfigList = new ArrayList<>();
-                for(Long id : ids){
-                    final DeviceConfig dc = deviceConfigDao.get(id);
-                    if(dc == null){
-                        LOG.debug("could not find device config data for id: {}", id);
-                        return Response.status(Status.NOT_FOUND).entity("Invalid 'id' parameter").build();
-                    }
-                    deviceConfigList.add(dc);
-                }
-                deviceConfigDao.deleteDeviceConfigs(deviceConfigList);
-                return Response.noContent().build();
-            } catch (Exception e) {
-                LOG.error("Exception while deleting device configs, one or more ids not valid {}", e);
-                return Response.noContent().build();
-            }
-        });
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Response deleteDeviceConfig(long id) {
-        return operations.execute(status -> {
-            try {
-                final DeviceConfig dc = deviceConfigDao.get(id);
-                if (dc == null) {
-                    LOG.debug("could not find device config data for id: {}", id);
-                    return Response.status(Status.NOT_FOUND).entity("Invalid 'id' parameter").build();
-                } else {
-                    deviceConfigDao.delete(dc);
-                    return Response.noContent().build();
-                }
-            } catch (Exception e) {
-                LOG.error("Exception while deleting device config, provided id is not valid {}", e);
-                return Response.noContent().build();
-            }
-        });
+    public void deleteDeviceConfig(long id) {
+        throw new UnsupportedOperationException("Delete device config not yet supported.");
+        // deviceConfigDao.delete(id);
     }
 
     /** {@inheritDoc} */
@@ -417,23 +372,16 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
         if (backupRequestDtoList == null || backupRequestDtoList.isEmpty()) {
             final var message = "Cannot trigger config backup on empty request list";
             LOG.error(message);
-            return Response.status(Status.BAD_REQUEST).entity(message).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(message).build();
         }
         List<BackupResponseDTO> backupResponses = new ArrayList<>();
 
         for (var requestDto : backupRequestDtoList) {
             try {
-                DeviceConfigService.DeviceConfigBackupResponse response = null;
                 if (requestDto.getBlocking()) {
-                    response = deviceConfigService.triggerConfigBackup(requestDto.getIpAddress(), requestDto.getLocation(), requestDto.getServiceName(), true).get();
+                    deviceConfigService.triggerConfigBackup(requestDto.getIpAddress(), requestDto.getLocation(), requestDto.getServiceName(), true).get();
                 } else {
                     deviceConfigService.triggerConfigBackup(requestDto.getIpAddress(), requestDto.getLocation(), requestDto.getServiceName(), true);
-                }
-                // if the blocking request returned a failure, handle it
-                if (response != null && !Strings.isNullOrEmpty(response.getErrorMessage())) {
-                    LOG.error("Unable to trigger config backup for {} at location {} with configType {}",
-                            requestDto.getIpAddress(), requestDto.getLocation(), requestDto.getServiceName());
-                    backupResponses.add(new BackupResponseDTO(Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getErrorMessage(), requestDto));
                 }
             } catch (IllegalArgumentException e) {
                 LOG.error("Unable to trigger config backup for {} at location {} with configType {}",
@@ -551,7 +499,7 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
         dto.setConfig(config);
         dto.setFailureReason(queryResult.getFailureReason());
 
-        DeviceConfigStatus backupStatus = queryResult.getStatusOrDefault();
+        DeviceConfigStatus backupStatus = DeviceConfig.determineBackupStatus(queryResult.getLastUpdated(), queryResult.getLastSucceeded());
         dto.setIsSuccessfulBackup(backupStatus.equals(DeviceConfigStatus.SUCCESS));
         dto.setBackupStatus(backupStatus.name().toLowerCase(Locale.ROOT));
 
@@ -587,7 +535,7 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
         dto.setConfig(config);
         dto.setFailureReason(deviceConfig.getFailureReason());
 
-        DeviceConfigStatus backupStatus = deviceConfig.getStatusOrDefault();
+        DeviceConfigStatus backupStatus = DeviceConfig.determineBackupStatus(deviceConfig);
         dto.setIsSuccessfulBackup(backupStatus.equals(DeviceConfigStatus.SUCCESS));
         dto.setBackupStatus(backupStatus.name().toLowerCase(Locale.ROOT));
 
@@ -640,7 +588,7 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
      * binary encoding.
      * @param encoding
      * @param configBytes
-     * @return a {@link Pair} object with the actual encoding used
+     * @return a {@link org.apache.commons.lang3.tuple.Pair} object with the actual encoding used
      * and the text representation of the config.
      */
     private static Pair<String,String> configToText(String encoding, byte[] configBytes) {

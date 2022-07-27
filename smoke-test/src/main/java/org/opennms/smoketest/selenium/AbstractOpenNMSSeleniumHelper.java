@@ -540,7 +540,7 @@ public abstract class AbstractOpenNMSSeleniumHelper {
 
     protected void supportPage() {
         LOG.debug("navigating to the support page");
-        getDriver().get(getBaseUrlInternal() + "opennms/support/index.jsp");
+        getDriver().get(getBaseUrlInternal() + "opennms/support/index.htm");
     }
 
     protected void goBack() {
@@ -1070,11 +1070,11 @@ public abstract class AbstractOpenNMSSeleniumHelper {
         }
     }
 
-    public static Integer doRequest(final HttpRequestBase request) throws ClientProtocolException, IOException, InterruptedException {
+    protected Integer doRequest(final HttpRequestBase request) throws ClientProtocolException, IOException, InterruptedException {
         return getRequest(request).getStatus();
     }
 
-    protected static ResponseData getRequest(final HttpRequestBase request) throws ClientProtocolException, IOException, InterruptedException {
+    protected ResponseData getRequest(final HttpRequestBase request) throws ClientProtocolException, IOException, InterruptedException {
         final CountDownLatch waitForCompletion = new CountDownLatch(1);
 
         final URI uri = request.getURI();

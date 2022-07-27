@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://xmlns.opennms.org/xsd/config/xmp"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ns2="http://www.w3.org/1999/xhtml"
+        xmlns:ns="http://www.w3.org/2001/XMLSchema"
+		  xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty"
+		  elementFormDefault="qualified">
+  <annotation>
+    <documentation>XML Schema for the xmp-config.xml configuration file.
+    Version: $Id: xmp-config.xsd 21 2008-07-22 20:21:56Z rdk $</documentation>
+  </annotation>
+
+  <element name="xmp-config">
+    <annotation>
+      <documentation>Top-level element for the xmp-config.xml configuration
+      file.</documentation>
+    </annotation>
+
+    <complexType>
+      <attribute name="port" use="optional">
+        <annotation>
+          <documentation>If set, overrides TCP port 5270 as the port
+        where XMP documents (queries) are sent.</documentation>
+        </annotation>
+
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+            <maxInclusive value="65535"/>
+          </restriction>
+        </simpleType>      
+      </attribute>
+
+      <attribute name="retry" type="int" use="optional">
+        <annotation>
+          <documentation>Default number of retries</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="timeout" type="int" use="optional">
+        <annotation>
+          <documentation>Default timeout (in milliseconds)</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="authenUser" type="string" use="optional">
+        <annotation>
+          <documentation>Default XMP user/profile</documentation>
+        </annotation>
+      </attribute>
+
+    </complexType>
+  </element>
+
+</schema>

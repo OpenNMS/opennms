@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016-2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -73,8 +73,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author seth
  */
-// @Category(MinionTests.class)
-@org.junit.experimental.categories.Category(org.opennms.smoketest.junit.FlakyTests.class)
+@Category(MinionTests.class)
 public class TrapIT {
     private static final Logger LOG = LoggerFactory.getLogger(TrapIT.class);
 

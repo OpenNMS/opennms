@@ -60,9 +60,9 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.integration.api.v1.timeseries.Aggregation;
 import org.opennms.integration.api.v1.timeseries.IntrinsicTagNames;
 import org.opennms.integration.api.v1.timeseries.Metric;
+import org.opennms.integration.api.v1.timeseries.Sample;
 import org.opennms.integration.api.v1.timeseries.StorageException;
 import org.opennms.integration.api.v1.timeseries.Tag;
-import org.opennms.integration.api.v1.timeseries.TimeSeriesData;
 import org.opennms.integration.api.v1.timeseries.TimeSeriesFetchRequest;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTag;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTagMatcher;
@@ -240,20 +240,20 @@ public class TimeseriesRoundtripIT {
     }
 
     private void testForNumericAttribute(String resourceId, String name, Double expectedValue) throws StorageException {
-        TimeSeriesData data = retrieveSamples(resourceId, name);
-        assertEquals(1, data.getDataPoints().size());
-        assertEquals(expectedValue, data.getDataPoints().get(0).getValue());
+        List<Sample> sample = retrieveSamples(resourceId, name);
+        assertEquals(1, sample.size());
+        assertEquals(expectedValue, sample.get(0).getValue());
 
     }
 
     private void testForMetaTag(String resourceId, String name, String tagKey, String tagValue) throws StorageException {
-        TimeSeriesData data = retrieveSamples(resourceId, name) ;
-        assertEquals(1, data.getDataPoints().size());
+        List<Sample> sample = retrieveSamples(resourceId, name) ;
+        assertEquals(1, sample.size());
         Tag tag = new ImmutableTag(tagKey, tagValue);
-        assertEquals(tag, data.getMetric().getFirstTagByKey(tagKey));
+        assertEquals(tag, sample.get(0).getMetric().getFirstTagByKey(tagKey));
     }
 
-    private TimeSeriesData retrieveSamples(final String resourceId, final String name) throws StorageException {
+    private List<Sample> retrieveSamples(final String resourceId, final String name) throws StorageException {
         List<Metric> metrics = timeseriesStorageManager.get().findMetrics(Arrays.asList(
                 ImmutableTagMatcher.builder().key(IntrinsicTagNames.resourceId).value(resourceId).build(),
                 ImmutableTagMatcher.builder().key(IntrinsicTagNames.name).value(name).build()));
@@ -266,7 +266,7 @@ public class TimeseriesRoundtripIT {
                 .step(Duration.ofSeconds(1))
                 .metric(metrics.get(0)).build();
 
-        return timeseriesStorageManager.get().getTimeSeriesData(request);
+        return timeseriesStorageManager.get().getTimeseries(request);
     }
 
     private void testForStringAttributeAtResourceLevel(String resourcePath, String attributeName, String expectedValue) throws StorageException {

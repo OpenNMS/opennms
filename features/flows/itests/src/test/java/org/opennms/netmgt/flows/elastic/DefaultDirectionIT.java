@@ -33,6 +33,10 @@ import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.util.Optional;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -45,9 +49,13 @@ import org.opennms.features.jest.client.RestClientFactory;
 import org.opennms.features.jest.client.SearchResultUtils;
 import org.opennms.features.jest.client.index.IndexStrategy;
 import org.opennms.features.jest.client.template.IndexSettings;
+import org.opennms.netmgt.dao.mock.MockNodeDao;
+import org.opennms.netmgt.dao.mock.MockSessionUtils;
+import org.opennms.netmgt.dao.mock.MockSnmpInterfaceDao;
 import org.opennms.netmgt.flows.api.Flow;
-import org.opennms.netmgt.flows.processing.enrichment.EnrichedFlow;
-import org.opennms.netmgt.flows.processing.persisting.FlowRepository;
+import org.opennms.netmgt.flows.api.FlowRepository;
+import org.opennms.netmgt.flows.api.ProcessingOptions;
+import org.opennms.netmgt.flows.elastic.thresholding.FlowThresholding;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,16 +75,16 @@ public class DefaultDirectionIT {
             .withManualStartup()
     );
 
-    private EnrichedFlow getMockFlowWithoutDirection() {
-        final EnrichedFlow flow = new EnrichedFlow();
-        flow.setNetflowVersion(Flow.NetflowVersion.V5);
-        flow.setIpProtocolVersion(4);
-        flow.setSrcAddr("192.168.1.2");
-        flow.setDstAddr("192.168.2.2");
-        flow.setSrcAddrHostname(null);
-        flow.setDstAddrHostname(null);
-        flow.setNextHopHostname(null);
-        flow.setVlan(null);
+    private Flow getMockFlowWithoutDirection() {
+        final Flow flow = mock(Flow.class);
+        when(flow.getNetflowVersion()).thenReturn(Flow.NetflowVersion.V5);
+        when(flow.getIpProtocolVersion()).thenReturn(4);
+        when(flow.getSrcAddr()).thenReturn("192.168.1.2");
+        when(flow.getDstAddr()).thenReturn("192.168.2.2");
+        when(flow.getSrcAddrHostname()).thenReturn(Optional.empty());
+        when(flow.getDstAddrHostname()).thenReturn(Optional.empty());
+        when(flow.getNextHopHostname()).thenReturn(Optional.empty());
+        when(flow.getVlan()).thenReturn(null);
         return flow;
     }
 
@@ -88,11 +96,15 @@ public class DefaultDirectionIT {
         final RestClientFactory restClientFactory = new RestClientFactory(elasticSearchRule.getUrl());
 
         try (final JestClient jestClient = restClientFactory.createClient()) {
+            final MockDocumentEnricherFactory mockDocumentEnricherFactory = new MockDocumentEnricherFactory();
+            final DocumentEnricher documentEnricher = mockDocumentEnricherFactory.getEnricher();
             final FlowRepository elasticFlowRepository = new InitializingFlowRepository(
-                    new ElasticFlowRepository(new MetricRegistry(), jestClient, IndexStrategy.MONTHLY,
-                            new MockIdentity(), new MockTracerRegistry(), new IndexSettings()), jestClient);
+                    new ElasticFlowRepository(new MetricRegistry(), jestClient, IndexStrategy.MONTHLY, documentEnricher,
+                            new MockSessionUtils(), new MockNodeDao(), new MockSnmpInterfaceDao(),
+                            new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings(), mock(FlowThresholding.class)), jestClient);
             // persist data
-            elasticFlowRepository.persist(Lists.newArrayList(getMockFlowWithoutDirection()));
+            elasticFlowRepository.persist(Lists.newArrayList(getMockFlowWithoutDirection()),
+                                          FlowDocumentTest.getMockFlowSource(), ProcessingOptions.builder().build());
 
             // wait for entries to show up
             with().pollInterval(5, SECONDS).await().atMost(1, MINUTES).until(() -> {
@@ -111,7 +123,7 @@ public class DefaultDirectionIT {
             final JSONObject sourceJsonObject = (JSONObject) ((JSONObject) hitsJsonArray.get(0)).get("_source");
 
             LOG.info("Direction value is: " + sourceJsonObject.get("netflow.direction"));
-            assertEquals("unknown", sourceJsonObject.get("netflow.direction"));
+            assertEquals("ingress", sourceJsonObject.get("netflow.direction"));
         }
 
         // stop ES

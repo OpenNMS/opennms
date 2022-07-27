@@ -31,7 +31,6 @@ package org.opennms.netmgt.enlinkd;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.FROH_IP;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.FROH_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.FROH_SNMP_RESOURCE;
@@ -66,7 +65,7 @@ public class Nms0001EnIT extends EnLinkdBuilderITCase {
             @JUnitSnmpAgent(host = OEDIPUS_IP, port = 161, resource = OEDIPUS_SNMP_RESOURCE),
             @JUnitSnmpAgent(host = SIEGFRIE_IP, port = 161, resource = SIEGFRIE_SNMP_RESOURCE)
     })
-    public void testIsIsLinks() {
+    public void testIsIsLinks() throws Exception {
         
         m_nodeDao.save(builder.getFroh());
         m_nodeDao.save(builder.getOedipus());
@@ -79,10 +78,10 @@ public class Nms0001EnIT extends EnLinkdBuilderITCase {
         m_linkdConfig.getConfiguration().setUseCdpDiscovery(false);
         
         assertTrue(m_linkdConfig.useIsisDiscovery());
-        assertFalse(m_linkdConfig.useBridgeDiscovery());
-        assertFalse(m_linkdConfig.useOspfDiscovery());
-        assertFalse(m_linkdConfig.useLldpDiscovery());
-        assertFalse(m_linkdConfig.useCdpDiscovery());
+        assertTrue(!m_linkdConfig.useBridgeDiscovery());
+        assertTrue(!m_linkdConfig.useOspfDiscovery());
+        assertTrue(!m_linkdConfig.useLldpDiscovery());
+        assertTrue(!m_linkdConfig.useCdpDiscovery());
         
         final OnmsNode froh = m_nodeDao.findByForeignId("linkd", FROH_NAME);
         final OnmsNode oedipus = m_nodeDao.findByForeignId("linkd", OEDIPUS_NAME);
@@ -99,15 +98,15 @@ public class Nms0001EnIT extends EnLinkdBuilderITCase {
         assertTrue(m_linkd.runSingleSnmpCollection(siegfrie.getId()));
         assertEquals(6, m_isisLinkDao.countAll());
 
-        Map<Integer,IsIsElement> elementmap = new HashMap<>();
+        Map<Integer,IsIsElement> elementmap = new HashMap<Integer, IsIsElement>();
         for (IsIsElement node: m_isisElementDao.findAll()) {
         	assertNotNull(node);
-        	System.err.println(node);
+        	System.err.println(node.toString());
         	elementmap.put(node.getNode().getId(), node);
         }
 
         List<IsIsLink> isislinks = m_isisLinkDao.findAll();
-        Set<Integer> parsed = new HashSet<>();
+        Set<Integer> parsed = new HashSet<Integer>();
         int count = 0;
         for (IsIsLink sourceLink : isislinks) {
             if (parsed.contains(sourceLink.getId())) { 
@@ -128,7 +127,7 @@ public class Nms0001EnIT extends EnLinkdBuilderITCase {
                 if (sourceLink.getIsisISAdjIndex().intValue() == 
                         link.getIsisISAdjIndex().intValue()  ) {
                     targetLink=link;
-                    System.err.println(sourceLink + "<-\n->" + targetLink);
+                    System.err.println(sourceLink.toString() + "<-\n->" + targetLink.toString());
                     count++;
                     break;
                 }

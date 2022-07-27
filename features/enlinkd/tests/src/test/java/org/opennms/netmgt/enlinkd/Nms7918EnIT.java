@@ -32,8 +32,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.fail;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.ASW01_IP;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.ASW01_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.ASW01_SNMP_RESOURCE;
@@ -54,9 +52,9 @@ import static org.opennms.netmgt.nb.NmsNetworkBuilder.STCASW01_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.STCASW01_SNMP_RESOURCE;
 
 import java.net.InetAddress;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.Objects;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -85,66 +83,66 @@ import org.opennms.netmgt.topologies.service.impl.OnmsTopologyLogger;
  */
 public class Nms7918EnIT extends EnLinkdBuilderITCase {
 
-    private static final String pe01macaddress = "001319bdb440";
+    private static String pe01macaddress = "001319bdb440";
     //mac address found on asw01 port 1
-    private static final String[] asw01port1 = {
+    private static String[] asw01port1 = {
         "00131971d480", pe01macaddress , "000c295cde87", "000c29f49b80", "000a5e540ee6"
         };
 
-    private static final String samasw01mac ="0012cf3f4ee0";
+    private static String samasw01mac ="0012cf3f4ee0";
     // mac address found on asw01 port 2
-    private static final String[] asw01port2forwarders = {
+    private static String[] asw01port2forwarders = {
         "0012cf68f800", samasw01mac
     };
 
     // mac address found on asw01 port 3
-    private static final String ospess01mac ="001763010d4f";
-    private static final String[] asw01port3 = {
+    private static String ospess01mac ="001763010d4f"; 
+    private static String[] asw01port3 = {
         ospess01mac
     };
 
     // mac address found on asw01 port 4
-    private static final String[] asw01port4 = {
+    private static String[] asw01port4 = {
         "4c5e0c891d93", "000c42f213af", "000c427bfee3", "00176301050f"
     };
 
     // mac addresses found  on stc port 11 and not on asw e sam
-    private static final String[] stcport11forwarders = {
+    private static String[] stcport11forwarders = {
         "0003ea017579"  
     };
     
     // mac address found on sam port 23
-    private static final String[] samport23 = {
+    private static String[] samport23 = {
         "0025454ac907"
     };    
     // mac address found on stc port 19
-    private static final String[] stcport19 = {
+    private static String[] stcport19 = {
         "4c00822458d2"
     };
     // mac address found on stc port 24
-    private static final String[] stcport24 = {
+    private static String[] stcport24 = {
     	"000e83f6120a"
     };            
     
-    private static final String stcasw01mac = "00e0b1bd2652";
+    private static String stcasw01mac = "00e0b1bd2652";
     // mac address found on asw01 port 2 and sam port 3
     
-    private static final String[] samasw01shared = {
+    private static String[] samasw01shared = {
         "00e0b1bd265e", stcasw01mac, "001d71d5e4e7"
     };
     // mac address found on asw01 port 2 and stc port 11
-    private static final String[] stcasw01shared = {
+    private static String[] stcasw01shared = {
         "001763010792"
     };
-    private static final String asw01mac01 = "00e0b1bd2f5c";
-    private static final String asw01mac02 = "00e0b1bd2f5f";
+    private static String asw01mac01 = "00e0b1bd2f5c";
+    private static String asw01mac02 = "00e0b1bd2f5f";
     // mac address found on sam port 3 and stc port 11 but not on asw01 port 2
-    private static final String[] stcsamshared = {
+    private static String[] stcsamshared = {
         asw01mac01, asw01mac02
     };
-    private static final String ospedalewl01mac = "d4ca6ded84d6";
+    private static String ospedalewl01mac = "d4ca6ded84d6";
     // mac address found on asw01 port 2 and sam port 3 and stc port 11
-    private static final String[] shared = {
+    private static String[] shared = {
         "000c42f5d30a", "001d454777dc", "d4ca6ded84ce", "0022557fd894", 
         "0021a4357254", "d4ca6dedd059", "c4641393f352", "d4ca6d954b3b", 
         "d4ca6d88234f", "0012cf68f80f", ospedalewl01mac, "000c42ef1df6", 
@@ -156,7 +154,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
     Nms7918NetworkBuilder builder = new Nms7918NetworkBuilder();
     
     @Before
-    public void setUpNetwork4930() {
+    public void setUpNetwork4930() throws Exception {
     	builder.setNodeDao(m_nodeDao);
         builder.buildNetwork7918();
     }
@@ -165,7 +163,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=OSPWL01_IP, port=161, resource= OSPWL01_SNMP_RESOURCE)
     })
-    public void testNms7918OSPWL01Collection() {
+    public void testNms7918OSPWL01Collection() throws Exception {
         final OnmsNode ospwl01 = m_nodeDao.findByForeignId("linkd", OSPWL01_NAME);
         final OnmsNode pe01 = m_nodeDao.findByForeignId("linkd", PE01_NAME);
         m_linkdConfig.getConfiguration().setUseBridgeDiscovery(true);
@@ -174,11 +172,11 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         m_linkdConfig.getConfiguration().setUseLldpDiscovery(false);
         m_linkdConfig.getConfiguration().setUseIsisDiscovery(false);
 
-        assertFalse(m_linkdConfig.useLldpDiscovery());
-        assertFalse(m_linkdConfig.useCdpDiscovery());
-        assertFalse(m_linkdConfig.useOspfDiscovery());
+        assertTrue(!m_linkdConfig.useLldpDiscovery());
+        assertTrue(!m_linkdConfig.useCdpDiscovery());
+        assertTrue(!m_linkdConfig.useOspfDiscovery());
         assertTrue(m_linkdConfig.useBridgeDiscovery());
-        assertFalse(m_linkdConfig.useIsisDiscovery());
+        assertTrue(!m_linkdConfig.useIsisDiscovery());
         
         assertTrue(m_linkd.scheduleNodeCollection(ospwl01.getId()));
 
@@ -190,7 +188,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         assertEquals(0,m_bridgeBridgeLinkDao.countAll());
         assertEquals(0,m_bridgeMacLinkDao.countAll());
         assertEquals(1,m_ipNetToMediaDao.countAll());
-        m_ipNetToMediaDao.findAll().forEach(ntm -> System.err.println(ntm.toString()));
+        m_ipNetToMediaDao.findAll().stream().forEach(ntm -> System.err.println(ntm.toString()));
         
         System.err.println("-----------------------");
         IpNetToMedia inmpe01 = m_ipNetToMediaDao.findByNetAddress(InetAddressUtils.addr(PE01_IP)).iterator().next();
@@ -207,7 +205,8 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             assertEquals(1, mp.getMacPortMap().size());
             Set<InetAddress> ips = mp.getMacPortMap().get(pe01macaddress);
             assertEquals(1, ips.size());
-            assertTrue(ips.contains(InetAddressUtils.addr(PE01_IP)));
+            ips.contains(InetAddressUtils.addr(PE01_IP));
+            ips.contains(InetAddressUtils.addr("10.27.19.1"));
             assertEquals(pe01.getId() ,mp.getNodeId());
             assertEquals(-1,mp.getIfIndex().intValue());
             assertNull(mp.getMacPortName());
@@ -222,7 +221,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=OSPESS01_IP, port=161, resource= OSPESS01_SNMP_RESOURCE)
     })
-    public void testNms7918OSPESS01Collection() {
+    public void testNms7918OSPESS01Collection() throws Exception {
         final OnmsNode ospess01 = m_nodeDao.findByForeignId("linkd", OSPESS01_NAME);
         final OnmsNode pe01 = m_nodeDao.findByForeignId("linkd", PE01_NAME);
         m_linkdConfig.getConfiguration().setUseBridgeDiscovery(true);
@@ -231,11 +230,11 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         m_linkdConfig.getConfiguration().setUseLldpDiscovery(false);
         m_linkdConfig.getConfiguration().setUseIsisDiscovery(false);
 
-        assertFalse(m_linkdConfig.useLldpDiscovery());
-        assertFalse(m_linkdConfig.useCdpDiscovery());
-        assertFalse(m_linkdConfig.useOspfDiscovery());
+        assertTrue(!m_linkdConfig.useLldpDiscovery());
+        assertTrue(!m_linkdConfig.useCdpDiscovery());
+        assertTrue(!m_linkdConfig.useOspfDiscovery());
         assertTrue(m_linkdConfig.useBridgeDiscovery());
-        assertFalse(m_linkdConfig.useIsisDiscovery());
+        assertTrue(!m_linkdConfig.useIsisDiscovery());
         
         assertTrue(m_linkd.scheduleNodeCollection(ospess01.getId()));
 
@@ -247,7 +246,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         assertEquals(0,m_bridgeBridgeLinkDao.countAll());
         assertEquals(0,m_bridgeMacLinkDao.countAll());
         assertEquals(5,m_ipNetToMediaDao.countAll());
-        m_ipNetToMediaDao.findAll().forEach(ntm -> System.err.println(ntm.toString()));
+        m_ipNetToMediaDao.findAll().stream().forEach(ntm -> System.err.println(ntm.toString()));
         
         System.err.println("-----------------------");
         IpNetToMedia inmpe01 = m_ipNetToMediaDao.findByNetAddress(InetAddressUtils.addr(PE01_IP)).iterator().next();
@@ -278,8 +277,8 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             assertEquals(1, mp.getMacPortMap().size());
             Set<InetAddress> ips = mp.getMacPortMap().get(pe01macaddress);
             assertEquals(2, ips.size());
-            assertTrue(ips.contains(InetAddressUtils.addr(PE01_IP)));
-            assertTrue(ips.contains(InetAddressUtils.addr("10.27.19.1")));
+            ips.contains(InetAddressUtils.addr(PE01_IP));
+            ips.contains(InetAddressUtils.addr("10.27.19.1"));
             assertEquals(pe01.getId() ,mp.getNodeId());
             assertEquals(-1,mp.getIfIndex().intValue());
             assertNull(mp.getMacPortName());
@@ -295,7 +294,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=PE01_IP, port=161, resource=PE01_SNMP_RESOURCE)
     })
-    public void testNms7918PE01Collection() {
+    public void testNms7918PE01Collection() throws Exception {
         final OnmsNode pe01 = m_nodeDao.findByForeignId("linkd", PE01_NAME);
         final OnmsNode asw01 = m_nodeDao.findByForeignId("linkd", ASW01_NAME);
         final OnmsNode ospess01 = m_nodeDao.findByForeignId("linkd", OSPESS01_NAME);
@@ -308,11 +307,11 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         m_linkdConfig.getConfiguration().setUseLldpDiscovery(false);
         m_linkdConfig.getConfiguration().setUseIsisDiscovery(false);
 
-        assertFalse(m_linkdConfig.useLldpDiscovery());
-        assertFalse(m_linkdConfig.useCdpDiscovery());
-        assertFalse(m_linkdConfig.useOspfDiscovery());
+        assertTrue(!m_linkdConfig.useLldpDiscovery());
+        assertTrue(!m_linkdConfig.useCdpDiscovery());
+        assertTrue(!m_linkdConfig.useOspfDiscovery());
         assertTrue(m_linkdConfig.useBridgeDiscovery());
-        assertFalse(m_linkdConfig.useIsisDiscovery());
+        assertTrue(!m_linkdConfig.useIsisDiscovery());
         
         assertTrue(m_linkd.scheduleNodeCollection(pe01.getId()));
 
@@ -324,7 +323,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         assertEquals(0,m_bridgeBridgeLinkDao.countAll());
         assertEquals(0,m_bridgeMacLinkDao.countAll());
         assertEquals(113,m_ipNetToMediaDao.countAll());
-        m_ipNetToMediaDao.findAll().forEach(ntm -> System.err.println(ntm.toString()));
+        m_ipNetToMediaDao.findAll().stream().forEach(ntm -> System.err.println(ntm.toString()));
         
         assertNull(m_linkd.getBridgeTopologyService().useBridgeTopologyUpdateBFT(pe01.getId()));
               
@@ -335,8 +334,8 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             assertEquals(1, mp.getMacPortMap().size());
             Set<InetAddress> ips = mp.getMacPortMap().get(pe01macaddress);
             assertEquals(45, ips.size());
-            assertTrue(ips.contains(InetAddressUtils.addr(PE01_IP)));
-            assertTrue(ips.contains(InetAddressUtils.addr("10.27.19.1")));
+            ips.contains(InetAddressUtils.addr(PE01_IP));
+            ips.contains(InetAddressUtils.addr("10.27.19.1"));
             assertEquals(pe01.getId() ,mp.getNodeId());
             assertEquals(-1,mp.getIfIndex().intValue());
             assertNull(mp.getMacPortName());
@@ -350,7 +349,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             assertEquals(1, mp.getMacPortMap().size());
             Set<InetAddress> ips = mp.getMacPortMap().get(asw01mac01);
             assertEquals(1, ips.size());
-            assertTrue(ips.contains(InetAddressUtils.addr(ASW01_IP)));
+            ips.contains(InetAddressUtils.addr(ASW01_IP));
             assertEquals(asw01.getId() ,mp.getNodeId());
             assertEquals(-1,mp.getIfIndex().intValue());
             assertNull(mp.getMacPortName());
@@ -364,7 +363,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             assertEquals(1, mp.getMacPortMap().size());
             Set<InetAddress> ips = mp.getMacPortMap().get(ospess01mac);
             assertEquals(5, ips.size());
-            assertTrue(ips.contains(InetAddressUtils.addr(OSPESS01_IP)));
+            ips.contains(InetAddressUtils.addr(OSPESS01_IP));
             assertEquals(ospess01.getId() ,mp.getNodeId());
             assertEquals(-1,mp.getIfIndex().intValue());
             assertNull(mp.getMacPortName());
@@ -378,7 +377,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             assertEquals(1, mp.getMacPortMap().size());
             Set<InetAddress> ips = mp.getMacPortMap().get(ospedalewl01mac);
             assertEquals(1, ips.size());
-            assertTrue(ips.contains(InetAddressUtils.addr(OSPWL01_IP)));
+            ips.contains(InetAddressUtils.addr(OSPWL01_IP));
             assertEquals(ospwl01.getId() ,mp.getNodeId());
             assertEquals(-1,mp.getIfIndex().intValue());
             assertNull(mp.getMacPortName());
@@ -392,7 +391,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             assertEquals(1, mp.getMacPortMap().size());
             Set<InetAddress> ips = mp.getMacPortMap().get(samasw01mac);
             assertEquals(2, ips.size());
-            assertTrue(ips.contains(InetAddressUtils.addr(SAMASW01_IP)));
+            ips.contains(InetAddressUtils.addr(SAMASW01_IP));
             assertEquals(samasw01.getId() ,mp.getNodeId());
             assertEquals(-1,mp.getIfIndex().intValue());
             assertNull(mp.getMacPortName());
@@ -406,7 +405,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             assertEquals(1, mp.getMacPortMap().size());
             Set<InetAddress> ips = mp.getMacPortMap().get(stcasw01mac);
             assertEquals(1, ips.size());
-            assertTrue(ips.contains(InetAddressUtils.addr(STCASW01_IP)));
+            ips.contains(InetAddressUtils.addr(STCASW01_IP));
             assertEquals(stcasw01.getId() ,mp.getNodeId());
             assertEquals(-1,mp.getIfIndex().intValue());
             assertNull(mp.getMacPortName());
@@ -422,7 +421,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=STCASW01_IP, port=161, resource=STCASW01_SNMP_RESOURCE)
     })
-    public void testNms7918STCASW01BftCollection() {
+    public void testNms7918STCASW01BftCollection() throws Exception {
         final OnmsNode stcasw01 = m_nodeDao.findByForeignId("linkd", STCASW01_NAME);
         m_linkdConfig.getConfiguration().setUseBridgeDiscovery(true);
         m_linkdConfig.getConfiguration().setUseCdpDiscovery(false);
@@ -430,11 +429,11 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         m_linkdConfig.getConfiguration().setUseLldpDiscovery(false);
         m_linkdConfig.getConfiguration().setUseIsisDiscovery(false);
 
-        assertFalse(m_linkdConfig.useLldpDiscovery());
-        assertFalse(m_linkdConfig.useCdpDiscovery());
-        assertFalse(m_linkdConfig.useOspfDiscovery());
+        assertTrue(!m_linkdConfig.useLldpDiscovery());
+        assertTrue(!m_linkdConfig.useCdpDiscovery());
+        assertTrue(!m_linkdConfig.useOspfDiscovery());
         assertTrue(m_linkdConfig.useBridgeDiscovery());
-        assertFalse(m_linkdConfig.useIsisDiscovery());
+        assertTrue(!m_linkdConfig.useIsisDiscovery());
 
         assertTrue(m_linkd.scheduleNodeCollection(stcasw01.getId()));
 
@@ -471,14 +470,14 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         m_linkdConfig.getConfiguration().setUseLldpDiscovery(false);
         m_linkdConfig.getConfiguration().setUseIsisDiscovery(false);
 
-        assertFalse(m_linkdConfig.useLldpDiscovery());
-        assertFalse(m_linkdConfig.useCdpDiscovery());
-        assertFalse(m_linkdConfig.useOspfDiscovery());
+        assertTrue(!m_linkdConfig.useLldpDiscovery());
+        assertTrue(!m_linkdConfig.useCdpDiscovery());
+        assertTrue(!m_linkdConfig.useOspfDiscovery());
         assertTrue(m_linkdConfig.useBridgeDiscovery());
-        assertFalse(m_linkdConfig.useIsisDiscovery());
+        assertTrue(!m_linkdConfig.useIsisDiscovery());
 
         assertTrue(m_linkd.scheduleNodeCollection(stcasw01.getId()));
-        assertFalse(m_linkd.scheduleNodeCollection(stcasw01.getId()));
+        assertTrue(!m_linkd.scheduleNodeCollection(stcasw01.getId()));
 
         assertEquals(0,m_bridgeBridgeLinkDao.countAll());
         assertEquals(0,m_bridgeMacLinkDao.countAll());
@@ -528,7 +527,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=SAMASW01_IP, port=161, resource=SAMASW01_SNMP_RESOURCE)
     })
-    public void testNms7918SAMASW01BftCollection() {
+    public void testNms7918SAMASW01BftCollection() throws Exception {
         final OnmsNode samasw01 = m_nodeDao.findByForeignId("linkd", SAMASW01_NAME);
         m_linkdConfig.getConfiguration().setUseBridgeDiscovery(true);
         m_linkdConfig.getConfiguration().setUseCdpDiscovery(false);
@@ -536,11 +535,11 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         m_linkdConfig.getConfiguration().setUseLldpDiscovery(false);
         m_linkdConfig.getConfiguration().setUseIsisDiscovery(false);
 
-        assertFalse(m_linkdConfig.useLldpDiscovery());
-        assertFalse(m_linkdConfig.useCdpDiscovery());
-        assertFalse(m_linkdConfig.useOspfDiscovery());
+        assertTrue(!m_linkdConfig.useLldpDiscovery());
+        assertTrue(!m_linkdConfig.useCdpDiscovery());
+        assertTrue(!m_linkdConfig.useOspfDiscovery());
         assertTrue(m_linkdConfig.useBridgeDiscovery());
-        assertFalse(m_linkdConfig.useIsisDiscovery());
+        assertTrue(!m_linkdConfig.useIsisDiscovery());
 
         assertTrue(m_linkd.scheduleNodeCollection(samasw01.getId()));
 
@@ -577,14 +576,14 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         m_linkdConfig.getConfiguration().setUseLldpDiscovery(false);
         m_linkdConfig.getConfiguration().setUseIsisDiscovery(false);
 
-        assertFalse(m_linkdConfig.useLldpDiscovery());
-        assertFalse(m_linkdConfig.useCdpDiscovery());
-        assertFalse(m_linkdConfig.useOspfDiscovery());
+        assertTrue(!m_linkdConfig.useLldpDiscovery());
+        assertTrue(!m_linkdConfig.useCdpDiscovery());
+        assertTrue(!m_linkdConfig.useOspfDiscovery());
         assertTrue(m_linkdConfig.useBridgeDiscovery());
-        assertFalse(m_linkdConfig.useIsisDiscovery());
+        assertTrue(!m_linkdConfig.useIsisDiscovery());
 
         assertTrue(m_linkd.scheduleNodeCollection(samasw01.getId()));
-        assertFalse(m_linkd.scheduleNodeCollection(samasw01.getId()));
+        assertTrue(!m_linkd.scheduleNodeCollection(samasw01.getId()));
 
         assertEquals(0,m_bridgeBridgeLinkDao.countAll());
         assertEquals(0,m_bridgeMacLinkDao.countAll());
@@ -634,7 +633,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=ASW01_IP, port=161, resource=ASW01_SNMP_RESOURCE)
     })
-    public void testNms7918ASW01BftCollection() {
+    public void testNms7918ASW01BftCollection() throws Exception {
         final OnmsNode asw01 = m_nodeDao.findByForeignId("linkd", ASW01_NAME);
         m_linkdConfig.getConfiguration().setUseBridgeDiscovery(true);
         m_linkdConfig.getConfiguration().setUseCdpDiscovery(false);
@@ -642,11 +641,11 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         m_linkdConfig.getConfiguration().setUseLldpDiscovery(false);
         m_linkdConfig.getConfiguration().setUseIsisDiscovery(false);
 
-        assertFalse(m_linkdConfig.useLldpDiscovery());
-        assertFalse(m_linkdConfig.useCdpDiscovery());
-        assertFalse(m_linkdConfig.useOspfDiscovery());
+        assertTrue(!m_linkdConfig.useLldpDiscovery());
+        assertTrue(!m_linkdConfig.useCdpDiscovery());
+        assertTrue(!m_linkdConfig.useOspfDiscovery());
         assertTrue(m_linkdConfig.useBridgeDiscovery());
-        assertFalse(m_linkdConfig.useIsisDiscovery());
+        assertTrue(!m_linkdConfig.useIsisDiscovery());
 
         assertTrue(m_linkd.scheduleNodeCollection(asw01.getId()));
 
@@ -659,7 +658,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
 
         Set<BridgeForwardingTableEntry> links  = m_linkd.getBridgeTopologyService().useBridgeTopologyUpdateBFT(asw01.getId());
         
-        assertEquals(40, links.size());
+        assertEquals(40, links.size());;
         for (BridgeForwardingTableEntry link: links) {
             System.err.println(link.printTopology());
         }
@@ -684,14 +683,14 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         m_linkdConfig.getConfiguration().setUseLldpDiscovery(false);
         m_linkdConfig.getConfiguration().setUseIsisDiscovery(false);
 
-        assertFalse(m_linkdConfig.useLldpDiscovery());
-        assertFalse(m_linkdConfig.useCdpDiscovery());
-        assertFalse(m_linkdConfig.useOspfDiscovery());
+        assertTrue(!m_linkdConfig.useLldpDiscovery());
+        assertTrue(!m_linkdConfig.useCdpDiscovery());
+        assertTrue(!m_linkdConfig.useOspfDiscovery());
         assertTrue(m_linkdConfig.useBridgeDiscovery());
-        assertFalse(m_linkdConfig.useIsisDiscovery());
+        assertTrue(!m_linkdConfig.useIsisDiscovery());
 
         assertTrue(m_linkd.scheduleNodeCollection(asw01.getId()));
-        assertFalse(m_linkd.scheduleNodeCollection(asw01.getId()));
+        assertTrue(!m_linkd.scheduleNodeCollection(asw01.getId()));
 
         assertEquals(0,m_bridgeBridgeLinkDao.countAll());
         assertEquals(0,m_bridgeMacLinkDao.countAll());
@@ -743,7 +742,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             @JUnitSnmpAgent(host=SAMASW01_IP, port=161, resource=SAMASW01_SNMP_RESOURCE),
             @JUnitSnmpAgent(host=STCASW01_IP, port=161, resource=STCASW01_SNMP_RESOURCE)
     })
-    public void testNms7918() {
+    public void testNms7918() throws Exception {
         final OnmsNode stcasw01 = m_nodeDao.findByForeignId("linkd", STCASW01_NAME);
         final OnmsNode samasw01 = m_nodeDao.findByForeignId("linkd", SAMASW01_NAME);
         final OnmsNode asw01 = m_nodeDao.findByForeignId("linkd", ASW01_NAME);
@@ -753,11 +752,11 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         m_linkdConfig.getConfiguration().setUseLldpDiscovery(false);
         m_linkdConfig.getConfiguration().setUseIsisDiscovery(false);
         m_linkdConfig.getConfiguration().setMaxBft(3);
-        assertFalse(m_linkdConfig.useLldpDiscovery());
-        assertFalse(m_linkdConfig.useCdpDiscovery());
-        assertFalse(m_linkdConfig.useOspfDiscovery());
+        assertTrue(!m_linkdConfig.useLldpDiscovery());
+        assertTrue(!m_linkdConfig.useCdpDiscovery());
+        assertTrue(!m_linkdConfig.useOspfDiscovery());
         assertTrue(m_linkdConfig.useBridgeDiscovery());
-        assertFalse(m_linkdConfig.useIsisDiscovery());
+        assertTrue(!m_linkdConfig.useIsisDiscovery());
 
         assertTrue(m_linkd.scheduleNodeCollection(asw01.getId()));
         assertTrue(m_linkd.scheduleNodeCollection(samasw01.getId()));
@@ -779,7 +778,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         assertEquals(0,m_bridgeBridgeLinkDao.countAll());
         assertEquals(0,m_bridgeMacLinkDao.countAll());
         assertEquals(1,m_bridgeTopologyService.getMacPorts().size());
-        m_ipNetToMediaDao.findAll().forEach(ntm -> System.err.println(ntm.toString()));
+        m_ipNetToMediaDao.findAll().stream().forEach(ntm -> System.err.println(ntm.toString()));
         
         m_linkd.runDiscoveryBridgeDomains();
         assertEquals(2,m_ipNetToMediaDao.countAll());
@@ -840,7 +839,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             @JUnitSnmpAgent(host=SAMASW01_IP, port=161, resource=SAMASW01_SNMP_RESOURCE),
             @JUnitSnmpAgent(host=STCASW01_IP, port=161, resource=STCASW01_SNMP_RESOURCE)
     })
-    public void testNms7918TwoSteps() {
+    public void testNms7918TwoSteps() throws Exception {
         final OnmsNode stcasw01 = m_nodeDao.findByForeignId("linkd", STCASW01_NAME);
         final OnmsNode samasw01 = m_nodeDao.findByForeignId("linkd", SAMASW01_NAME);
         final OnmsNode asw01 = m_nodeDao.findByForeignId("linkd", ASW01_NAME);
@@ -851,11 +850,11 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         m_linkdConfig.getConfiguration().setUseIsisDiscovery(false);
         m_linkdConfig.getConfiguration().setMaxBft(2);
 
-        assertFalse(m_linkdConfig.useLldpDiscovery());
-        assertFalse(m_linkdConfig.useCdpDiscovery());
-        assertFalse(m_linkdConfig.useOspfDiscovery());
+        assertTrue(!m_linkdConfig.useLldpDiscovery());
+        assertTrue(!m_linkdConfig.useCdpDiscovery());
+        assertTrue(!m_linkdConfig.useOspfDiscovery());
         assertTrue(m_linkdConfig.useBridgeDiscovery());
-        assertFalse(m_linkdConfig.useIsisDiscovery());
+        assertTrue(!m_linkdConfig.useIsisDiscovery());
 
         assertTrue(m_linkd.scheduleNodeCollection(asw01.getId()));
         assertTrue(m_linkd.scheduleNodeCollection(samasw01.getId()));
@@ -911,7 +910,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             @JUnitSnmpAgent(host=SAMASW01_IP, port=161, resource=SAMASW01_SNMP_RESOURCE),
             @JUnitSnmpAgent(host=STCASW01_IP, port=161, resource=STCASW01_SNMP_RESOURCE)
     })
-    public void testNms7918ThreeSteps() {
+    public void testNms7918ThreeSteps() throws Exception {
         final OnmsNode stcasw01 = m_nodeDao.findByForeignId("linkd", STCASW01_NAME);
         final OnmsNode samasw01 = m_nodeDao.findByForeignId("linkd", SAMASW01_NAME);
         final OnmsNode asw01 = m_nodeDao.findByForeignId("linkd", ASW01_NAME);
@@ -920,11 +919,11 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         m_linkdConfig.getConfiguration().setUseOspfDiscovery(false);
         m_linkdConfig.getConfiguration().setUseLldpDiscovery(false);
         m_linkdConfig.getConfiguration().setUseIsisDiscovery(false);
-        assertFalse(m_linkdConfig.useLldpDiscovery());
-        assertFalse(m_linkdConfig.useCdpDiscovery());
-        assertFalse(m_linkdConfig.useOspfDiscovery());
+        assertTrue(!m_linkdConfig.useLldpDiscovery());
+        assertTrue(!m_linkdConfig.useCdpDiscovery());
+        assertTrue(!m_linkdConfig.useOspfDiscovery());
         assertTrue(m_linkdConfig.useBridgeDiscovery());
-        assertFalse(m_linkdConfig.useIsisDiscovery());
+        assertTrue(!m_linkdConfig.useIsisDiscovery());
 
         assertTrue(m_linkd.scheduleNodeCollection(asw01.getId()));
         assertTrue(m_linkd.scheduleNodeCollection(samasw01.getId()));
@@ -997,7 +996,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             @JUnitSnmpAgent(host=SAMASW01_IP, port=161, resource=SAMASW01_SNMP_RESOURCE),
             @JUnitSnmpAgent(host=STCASW01_IP, port=161, resource=STCASW01_SNMP_RESOURCE)
     })
-    public void testTopology() {
+    public void testTopology() throws Exception {
         //Default configuration we support 5 protocols,
         // BRIDGE, CDP, ISIS, LLDP, OSPF
         assertTrue(m_linkdConfig.useLldpDiscovery());
@@ -1021,12 +1020,12 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         m_linkdConfig.getConfiguration().setUseLldpDiscovery(false);
         m_linkdConfig.getConfiguration().setUseIsisDiscovery(false);
         m_linkdConfig.getConfiguration().setMaxBft(6);
-
-        assertFalse(m_linkdConfig.useLldpDiscovery());
-        assertFalse(m_linkdConfig.useCdpDiscovery());
-        assertFalse(m_linkdConfig.useOspfDiscovery());
+        
+        assertTrue(!m_linkdConfig.useLldpDiscovery());
+        assertTrue(!m_linkdConfig.useCdpDiscovery());
+        assertTrue(!m_linkdConfig.useOspfDiscovery());
         assertTrue(m_linkdConfig.useBridgeDiscovery());
-        assertFalse(m_linkdConfig.useIsisDiscovery());
+        assertTrue(!m_linkdConfig.useIsisDiscovery());
 
         //Updated configuration will lead to support only BRIDGE updates,
         m_linkd.reload();
@@ -1034,10 +1033,10 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         assertTrue(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.NODES));
         assertTrue(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.BRIDGE));
         assertTrue(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.USERDEFINED));
-        assertFalse(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.CDP));
-        assertFalse(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.ISIS));
-        assertFalse(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.LLDP));
-        assertFalse(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.OSPF));
+        assertTrue(!getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.CDP));
+        assertTrue(!getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.ISIS));
+        assertTrue(!getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.LLDP));
+        assertTrue(!getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.OSPF));
         
         final OnmsNode pe01 = m_nodeDao.findByForeignId("linkd", PE01_NAME);
         final OnmsNode asw01 = m_nodeDao.findByForeignId("linkd", ASW01_NAME);
@@ -1067,7 +1066,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         assertTrue(m_linkd.runSingleSnmpCollection(stcasw01.getId()));
         
         assertEquals(5,m_bridgeElementDao.countAll());
-        m_bridgeElementDao.findAll().forEach(System.err::println);
+        m_bridgeElementDao.findAll().stream().forEach(e -> System.err.println(e));
         assertEquals(0,m_bridgeStpLinkDao.countAll());
         assertEquals(0,m_bridgeBridgeLinkDao.countAll());
         assertEquals(0,m_bridgeMacLinkDao.countAll());
@@ -1083,11 +1082,13 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         BridgeOnmsTopologyUpdater topologyUpdater = m_linkd.getBridgeTopologyUpdater();
         assertNotNull(topologyUpdater);
         OnmsTopology topology = topologyUpdater.buildTopology();
-        topology.getVertices().forEach(v -> System.err.println(v.getId()));
-        topology.getEdges().forEach(e -> System.err.println(e.getId()));
+        topology.getVertices().stream().forEach(v -> System.err.println(v.getId()));
+        topology.getEdges().stream().forEach(e -> System.err.println(e.getId()));
         assertEquals(14, topology.getVertices().size());
         assertEquals(13, topology.getEdges().size());
         
+        Set<String> protocols= new HashSet<>();
+        protocols.add(ProtocolSupported.BRIDGE.name());
         OnmsTopologyLogger tl = createAndSubscribe(
                   ProtocolSupported.BRIDGE.name());
         assertEquals("BRIDGE:Consumer:Logger", tl.getName());
@@ -1118,7 +1119,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
                     assertTrue(vertex.getId().contains("m:"));
                 } else {
                     nodes++;
-                    assertEquals(vertex.getId(), vertex.getNodeid().toString());
+                    assertTrue(vertex.getId().equals(vertex.getNodeid().toString()));
                 }
                 vertices++;
             } else if (m.getMessagebody() instanceof OnmsTopologyEdge ) {
@@ -1128,7 +1129,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
                 assertNotNull(edge.getTarget().getVertex());
                 edges++;
             } else {
-                fail();
+                assertTrue(false);
             }
         }
         assertEquals(27, tl.getQueue().size());        
@@ -1471,7 +1472,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
                 assertEquals(3, bblink.getBridgePort().intValue());
                 assertEquals(3, bblink.getBridgePortIfIndex().intValue());
             } else {
-                fail();
+                assertTrue(false);
             }
         }
         int count=0;
@@ -1580,10 +1581,10 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             for (BridgeMacLink link: links) {
                 assertEquals(mac, link.getMacAddress());
                 assertEquals(BridgeMacLinkType.BRIDGE_FORWARDER, link.getLinkType());
-                if (Objects.equals(link.getNode().getId(), samasw01.getId())) {
+                if (link.getNode().getId() == samasw01.getId()) {
                     assertEquals(3, link.getBridgePort().intValue());
                     assertEquals(3, link.getBridgePortIfIndex().intValue());
-                } else if (Objects.equals(link.getNode().getId(), asw01.getId())) {
+                } else if (link.getNode().getId() == asw01.getId()) {
                     assertEquals(2, link.getBridgePort().intValue());
                     assertEquals(1002, link.getBridgePortIfIndex().intValue());                    
                 } else {
@@ -1600,10 +1601,10 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             for (BridgeMacLink link: links) {
                 assertEquals(mac, link.getMacAddress());
                 assertEquals(BridgeMacLinkType.BRIDGE_FORWARDER, link.getLinkType());
-                if (Objects.equals(link.getNode().getId(), stcasw01.getId())) {
+                if (link.getNode().getId() == stcasw01.getId()) {
                     assertEquals(11, link.getBridgePort().intValue());
                     assertEquals(1011, link.getBridgePortIfIndex().intValue());
-                } else if (Objects.equals(link.getNode().getId(), asw01.getId())) {
+                } else if (link.getNode().getId() == asw01.getId()) {
                     assertEquals(2, link.getBridgePort().intValue());
                     assertEquals(1002, link.getBridgePortIfIndex().intValue());                                        
                 } else {
@@ -1620,10 +1621,10 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             for (BridgeMacLink link: links) {
                 assertEquals(mac, link.getMacAddress());
                 assertEquals(BridgeMacLinkType.BRIDGE_FORWARDER, link.getLinkType());
-                if (Objects.equals(link.getNode().getId(), stcasw01.getId())) {
+                if (link.getNode().getId() == stcasw01.getId()) {
                     assertEquals(11, link.getBridgePort().intValue());
                     assertEquals(1011, link.getBridgePortIfIndex().intValue());                    
-                } else if (Objects.equals(link.getNode().getId(), samasw01.getId())) {
+                } else if (link.getNode().getId() == samasw01.getId()) {
                     assertEquals(3, link.getBridgePort().intValue());
                     assertEquals(3, link.getBridgePortIfIndex().intValue());                    
                 } else {

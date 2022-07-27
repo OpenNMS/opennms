@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016-2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -201,7 +201,7 @@ public class CamelRpcClientFactory implements RpcClientFactory {
                             }
                         });
                         return null;
-                    }, execTimeoutMs, TimeUnit.MILLISECONDS);
+                    }, execTimeoutMs, TimeUnit.MILLISECONDS, true);
                 } catch (Exception e) {
                     try (MDCCloseable mdc = Logging.withContextMapCloseable(clientContextMap)) {
                         // Wrap ProducerTemplate exceptions with a RequestRejectedException
@@ -271,7 +271,7 @@ public class CamelRpcClientFactory implements RpcClientFactory {
 
     public void start() {
         executor = Executors.newCachedThreadPool(threadFactory);
-        timeLimiter = SimpleTimeLimiter.create(executor);
+        timeLimiter = new SimpleTimeLimiter(executor);
 
         tracerRegistry.init(SystemInfoUtils.getInstanceId());
         tracer = tracerRegistry.getTracer();

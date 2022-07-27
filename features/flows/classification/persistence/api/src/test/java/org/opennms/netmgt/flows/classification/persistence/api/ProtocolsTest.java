@@ -63,7 +63,7 @@ public class ProtocolsTest {
 
     @Test(expected=IllegalArgumentException.class)
     public void verifyNullStringLookupFails() {
-        Protocols.getProtocol((String) null);
+        Protocols.getProtocol(null);
     }
 
 }

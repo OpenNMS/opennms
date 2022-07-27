@@ -43,12 +43,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.opennms.integration.api.v1.timeseries.IntrinsicTagNames;
-import org.opennms.integration.api.v1.timeseries.MetaTagNames;
 import org.opennms.integration.api.v1.timeseries.Metric;
 import org.opennms.integration.api.v1.timeseries.Sample;
 import org.opennms.integration.api.v1.timeseries.StorageException;
 import org.opennms.integration.api.v1.timeseries.TagMatcher;
-import org.opennms.integration.api.v1.timeseries.TimeSeriesData;
 import org.opennms.integration.api.v1.timeseries.TimeSeriesFetchRequest;
 import org.opennms.integration.api.v1.timeseries.TimeSeriesStorage;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableMetric;
@@ -193,7 +191,7 @@ public class TimeseriesWriterTest {
                 .builder()
                 .intrinsicTag(IntrinsicTagNames.resourceId, "a/b")
                 .intrinsicTag(IntrinsicTagNames.name, "c")
-                .intrinsicTag(MetaTagNames.mtype, Metric.Mtype.counter.name());
+                .intrinsicTag(IntrinsicTagNames.mtype, Metric.Mtype.counter.name());
     }
 
     private static class MockTimeSeriesStorage implements TimeSeriesStorage {
@@ -209,13 +207,7 @@ public class TimeseriesWriterTest {
         }
 
         @Override
-        @Deprecated
         public List<Sample> getTimeseries(TimeSeriesFetchRequest request) throws StorageException {
-            return null;
-        }
-
-        @Override
-        public TimeSeriesData getTimeSeriesData(TimeSeriesFetchRequest request) {
             return null;
         }
 

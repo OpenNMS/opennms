@@ -31,8 +31,6 @@ package org.opennms.netmgt.dao.api;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.opennms.netmgt.model.HeatMapElement;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -61,11 +59,6 @@ public interface OutageDao extends LegacyOnmsDao<OnmsOutage, Integer> {
      * @return a {@link java.util.Collection} object.
      */
     Collection<OnmsOutage> currentOutages();
-
-    /**
-     * Open outages grouped by {@link OnmsMonitoredService} id.
-     */
-    Map<Integer, Set<OnmsOutage>> currentOutagesByServiceId();
 
     /**
      * Return the current open outage for the service or if the service

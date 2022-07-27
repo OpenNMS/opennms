@@ -107,19 +107,12 @@
       <groupId>org.apache.servicemix.bundles</groupId>
       <artifactId>org.apache.servicemix.bundles.aspectj</artifactId>
       <version>${aspectjVersion}_1</version>
-      <exclusions>
-        <exclusion>
-          <groupId>javax.annotation</groupId>
-          <artifactId>jsr250-api</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <!-- replaces jsr250-api -->
-    <dependency>
-      <groupId>javax.annotation</groupId>
-      <artifactId>javax.annotation-api</artifactId>
     </dependency>
     <!-- Spring Dependencies -->
+    <dependency>
+      <groupId>javax.annotation</groupId>
+      <artifactId>jsr250-api</artifactId>
+    </dependency>
     <dependency>
       <!-- Needed for spring-context-support -->
       <groupId>commons-collections</groupId>

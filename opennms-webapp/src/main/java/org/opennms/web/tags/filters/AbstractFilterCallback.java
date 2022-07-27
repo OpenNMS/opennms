@@ -38,8 +38,6 @@ import javax.servlet.ServletContext;
 import java.net.URLDecoder;
 import java.util.List;
 
-import static org.opennms.web.filter.FilterUtil.getFilterParameters;
-
 public abstract class AbstractFilterCallback implements FilterCallback {
     private final ServletContext servletContext;
 
@@ -73,7 +71,7 @@ public abstract class AbstractFilterCallback implements FilterCallback {
      */
     @Override
     public List<Filter> parse(String filterString) {
-        String[] filterParameter = getFilterParameters(filterString);
+        String[] filterParameter = filterString.split("&amp;");
         for (int i=0; i< filterParameter.length; i++) {
             if (filterParameter[i].startsWith("filter=")) {
                 filterParameter[i] = filterParameter[i].replaceFirst("filter=", "");

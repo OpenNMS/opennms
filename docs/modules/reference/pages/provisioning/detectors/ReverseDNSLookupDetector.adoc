@@ -1,6 +1,7 @@
+
 = Reverse DNS Lookup Detector
 
-The ReverseDNSLookupDetector tries to detect if a given IP address can be found in PTR records.
+This detector tries to detect if a given IP address can be found in PTR records.
 
 == Detector facts
 
@@ -11,8 +12,11 @@ The ReverseDNSLookupDetector tries to detect if a given IP address can be found 
 
 == Configuration and use
 
-The ReverseDNSLookupDetector does not take any parameters.
+.Parameters for the reverse DNS lookup detector
+|===
+| The reverse DNS Lookup detector does not take any parameters.
+|===
 
 == Examples
 
-Use the ReverseDNSLookupDetector in <<operation:provisioning/auto-discovery.adoc#ga-provisioning-auto-discovery-detectors, auto discovery with detectors>> to discover IP addresses that only resolve FQDN.
+Use the Reverse DNS Lookup detector in <<operation:provisioning/auto-discovery.adoc#ga-provisioning-auto-discovery-detectors, auto discovery with detectors>> to discover IP addresses that only resolve FQDN.

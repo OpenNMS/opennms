@@ -38,6 +38,9 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import net.sf.json.JSON;
+import net.sf.json.JSONObject;
+import net.sf.json.JSONSerializer;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.jxpath.JXPathContext;
 import org.apache.commons.jxpath.JXPathException;
@@ -57,10 +60,6 @@ import org.opennms.protocols.xml.config.XmlObject;
 import org.opennms.protocols.xml.config.XmlSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import net.sf.json.JSON;
-import net.sf.json.JSONObject;
-import net.sf.json.JSONSerializer;
 
 /**
  * The Abstract Class JSON Collection Handler.
@@ -96,7 +95,7 @@ public abstract class AbstractJsonCollectionHandler extends AbstractXmlCollectio
                 LOG.debug("fillCollectionSet: processing resource {}", collectionResource);
                 for (XmlObject object : group.getXmlObjects()) {
                     try {
-                        final Object obj = object.map((String) relativeContext.getValue(object.getXpath(), String.class));
+                        Object obj = relativeContext.getValue(object.getXpath());
                         if (obj != null) {
                             builder.withAttribute(collectionResource, group.getName(), object.getName(), obj.toString(), object.getDataType());
                         }

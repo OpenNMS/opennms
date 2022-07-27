@@ -1,6 +1,6 @@
-= ActiveMQ Detector
+= ActiveMQDetector
 
-The ActiveMQDetector finds and assigns services based on the existence of ActiveMQ broker services.
+Use this detector to find and assign services based on ActiveMQ.
 
 == Detector facts
 
@@ -11,32 +11,32 @@ The ActiveMQDetector finds and assigns services based on the existence of Active
 
 == Configuration and use
 
-.Parameters for the ActiveMQDetector
+.Parameters for the ActiveMQ service detector
 [options="header, autowidth"]
 [cols="1,1,4"]
 |===
 | Parameter
 | Description
-| Default value
+| Default
 
 3+| *Required*
 
 | broker-url
-| URL used to connect to ActiveMQ broker.
+| The URL used to connect to the ActiveMQ broker.
 | vm://localhost?create=false
 
 3+| *Optional*
 
 | user
-| Authentication username for connecting to broker.
+| The authentication username for connecting to the broker.
 | none
 
 | password
-| Password for connecting to broker.
+| The password for connecting to the broker.
 | none
 
 | use-nodelabel
-| If `true`, modify broker URL to use node label instead of IP address in broker URL.
+| If true, modify the broker URL to use the node label instead of the IP address in the broker URL.
 | false
 |===
 

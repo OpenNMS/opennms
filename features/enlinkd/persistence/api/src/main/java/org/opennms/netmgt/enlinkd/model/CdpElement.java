@@ -82,13 +82,13 @@ public final class CdpElement implements Serializable {
          */
         serialNumber(1), macAddress(2),other(3);
 
-        private final int m_type;
+        private int m_type;
 
         CdpGlobalDeviceIdFormat(int type) {
             m_type = type;
         }
 
-        protected static final Map<Integer, String> s_typeMap = new HashMap<>();
+        protected static final Map<Integer, String> s_typeMap = new HashMap<Integer, String>();
 
         static {
             s_typeMap.put(1, "serialNumber");
@@ -173,7 +173,7 @@ public final class CdpElement implements Serializable {
 		return m_cdpGlobalDeviceId;
 	}
 
-    @Column(name="cdpGlobalDeviceIdFormat")
+    @Column(name="cdpGlobalDeviceIdFormat" , nullable = true)
     @Type(type="org.opennms.netmgt.enlinkd.model.CdpGlobalDeviceIdFormatUserType")
     public CdpGlobalDeviceIdFormat getCdpGlobalDeviceIdFormat() {
         return m_cdpGlobalDeviceIdFormat;
@@ -237,13 +237,15 @@ public final class CdpElement implements Serializable {
 	 * @return a {@link java.lang.String} object.
 	 */
 	public String toString() {
-        return "cdpelement: nodeid:[" +
-                getNode().getId() +
-                "], Global Device Id:[" +
-                getCdpGlobalDeviceId() +
-                "], Global Run:[" +
-                TruthValue.getTypeString(getCdpGlobalRun().getValue()) +
-                "]";
+            StringBuffer strb = new StringBuffer();
+            strb.append("cdpelement: nodeid:[");
+            strb.append(getNode().getId());
+            strb.append("], Global Device Id:[");
+            strb.append(getCdpGlobalDeviceId());
+            strb.append("], Global Run:[");
+            strb.append(TruthValue.getTypeString(getCdpGlobalRun().getValue()));
+            strb.append("]");
+            return strb.toString();
         }
 
 	public void merge(CdpElement element) {

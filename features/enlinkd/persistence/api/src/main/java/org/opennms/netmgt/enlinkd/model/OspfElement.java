@@ -68,13 +68,13 @@ public final class OspfElement implements Serializable {
          */
          TRUE(1),FALSE(2);
          
- 		private final int m_type;
+ 		private int m_type;
 
  		TruthValue(int type) {
  			m_type=type;
  		}
  		
- 	    protected static final Map<Integer, String> s_typeMap = new HashMap<>();
+ 	    protected static final Map<Integer, String> s_typeMap = new HashMap<Integer, String>();
 
          static {
          	s_typeMap.put(1, "true" );
@@ -116,13 +116,13 @@ public final class OspfElement implements Serializable {
          */
          enabled(1),disabled(2);
          
- 		private final int m_type;
+ 		private int m_type;
 
  		Status(int type) {
  			m_type=type;
  		}
  		
- 	    protected static final Map<Integer, String> s_typeMap = new HashMap<>();
+ 	    protected static final Map<Integer, String> s_typeMap = new HashMap<Integer, String>();
 
          static {
          	s_typeMap.put(1, "enabled" );
@@ -295,23 +295,25 @@ public final class OspfElement implements Serializable {
 	 * @return a {@link java.lang.String} object.
 	 */
 	public String toString() {
-		return "ospfelement: nodeid:[" +
-				getNode().getId() +
-				"]: version:[" +
-				getOspfVersionNumber() +
-				"]: status:[" +
-				Status.getTypeString(getOspfAdminStat().getValue()) +
-				"]: id/mask/ifindex:[" +
-				str(getOspfRouterId()) +
-				"/" +
-				str(getOspfRouterIdNetmask()) +
-				"/" +
-				getOspfRouterIdIfindex() +
-				"]: Border Router Status:[" +
-				TruthValue.getTypeString(getOspfBdrRtrStatus().getValue()) +
-				"]: AS Border Router Status:[" +
-				TruthValue.getTypeString(getOspfASBdrRtrStatus().getValue()) +
-				"]";
+	        StringBuffer strb = new StringBuffer();
+	        strb.append("ospfelement: nodeid:[");
+	        strb.append(getNode().getId());
+                strb.append("]: version:[");
+                strb.append(getOspfVersionNumber());
+                strb.append("]: status:[");
+                strb.append(Status.getTypeString(getOspfAdminStat().getValue()));
+                strb.append("]: id/mask/ifindex:[");
+                strb.append(str(getOspfRouterId()));
+                strb.append("/");
+                strb.append(str(getOspfRouterIdNetmask()));
+                strb.append("/");
+                strb.append(getOspfRouterIdIfindex());
+                strb.append("]: Border Router Status:[");
+                strb.append(TruthValue.getTypeString(getOspfBdrRtrStatus().getValue()));
+                strb.append("]: AS Border Router Status:[");
+                strb.append(TruthValue.getTypeString(getOspfASBdrRtrStatus().getValue()));
+	        strb.append("]");
+	        return strb.toString();
 	    }
 
 	public void merge(OspfElement element) {

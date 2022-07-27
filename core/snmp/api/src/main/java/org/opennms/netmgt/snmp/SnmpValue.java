@@ -86,8 +86,4 @@ public interface SnmpValue {
     byte[] getBytes();
 
     SnmpObjId toSnmpObjId();
-    
-    default boolean isDouble() {return false;}
-    
-    default Double toDouble() {return null;}
 }

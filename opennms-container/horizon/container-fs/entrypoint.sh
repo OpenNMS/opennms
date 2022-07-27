@@ -29,9 +29,7 @@ MYUSER="$(getent passwd "${MYID}" | cut -d: -f1)"
 export RUNAS="${MYUSER}"
 
 if [ "$MYID" -eq 0 ]; then
-  if ! grep -Fxq "RUNAS=${MYUSER}" "${OPENNMS_HOME}/etc/opennms.conf"; then
-      echo "RUNAS=${MYUSER}" >> "${OPENNMS_HOME}/etc/opennms.conf"
-  fi
+  echo "RUNAS=${MYUSER}" >> "${OPENNMS_HOME}/etc/opennms.conf"
   chown "$MYUSER" "${OPENNMS_HOME}/etc/opennms.conf"
 fi
 

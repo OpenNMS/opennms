@@ -17,7 +17,7 @@
           <FeatherButton
             data-test="view-history-btn"
             @click="onViewHistory"
-            :disabled="!singleConfigSelected"
+            :disabled="(!all && selectedDeviceConfigIds.length !== 1) || (all && deviceConfigBackups.length !== 1)"
             text
           >
             <template v-slot:icon>
@@ -29,7 +29,7 @@
           <FeatherButton
             data-test="download-btn"
             @click="onDownload"
-            :disabled="noConfigsSelected"
+            :disabled="(selectedDeviceConfigIds.length === 0 && !all) || (all && !deviceConfigBackups.length)"
             text
           >
             <template v-slot:icon>
@@ -41,7 +41,7 @@
           <FeatherButton
             data-test="backup-now-btn"
             @click="onBackupNow"
-            :disabled="noConfigsSelected || singleConfigSelectedHasNoServiceName"
+            :disabled="(selectedDeviceConfigIds.length === 0 && !all) || (all && !deviceConfigBackups.length)"
             text
           >
             <template v-slot:icon>
@@ -53,7 +53,7 @@
           <FeatherButton
             data-test="compare-btn"
             @click="onCompare"
-            :disabled="!singleConfigSelected"
+            :disabled="(!all && selectedDeviceConfigIds.length !== 1) || (all && deviceConfigBackups.length !== 1)"
             text
           >
             <template v-slot:icon>
@@ -272,19 +272,13 @@ const selectedDeviceConfigIds = computed<number[]>(() => {
     .map((id) => parseInt(id))
 })
 
-const numberOfSelectedDevices = computed<number>(() => {
+const numberOfSelectedDevices = computed(() => {
   if (all.value) {
     return totalCountOfDeviceConfigBackups.value
   }
 
   return selectedDeviceConfigIds.value.length
 })
-
-// for enabling / disabling table buttons (history, backup, d/l, compare...)
-const noConfigsSelected = computed<boolean>(() => (selectedDeviceConfigIds.value.length === 0 && !all.value) || (all.value && !deviceConfigBackups.value.length))
-const singleConfigSelected = computed<boolean>(() => (!all.value && selectedDeviceConfigIds.value.length === 1) || (all.value && deviceConfigBackups.value.length === 1))
-const singleConfigSelectedHasNoServiceName = computed<boolean>(() => singleConfigSelected.value && !getDeviceConfigBackupById(selectedDeviceConfigIds.value[0]).serviceName)
-const getDeviceConfigBackupById = (id: number) => deviceConfigBackups.value.filter((backup) => backup.id === id)[0]
 
 const sortByColumnHandler = (sortObj: FeatherSortObject) => {
   for (const key in sortStates) {

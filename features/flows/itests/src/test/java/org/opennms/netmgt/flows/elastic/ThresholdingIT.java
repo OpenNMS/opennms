@@ -32,24 +32,26 @@ import static com.jayway.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
+import org.opennms.core.cache.CacheConfigBuilder;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.core.test.elastic.ElasticSearchRule;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.features.jest.client.RestClientFactory;
+import org.opennms.features.jest.client.index.IndexStrategy;
+import org.opennms.features.jest.client.template.IndexSettings;
 import org.opennms.netmgt.collectd.DefaultResourceTypeMapper;
 import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.collection.core.DefaultCollectionAgentFactory;
@@ -58,20 +60,21 @@ import org.opennms.netmgt.config.dao.thresholding.api.OverrideableThresholdingDa
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
+import org.opennms.netmgt.dao.mock.MockNodeDao;
+import org.opennms.netmgt.dao.mock.MockSessionUtils;
+import org.opennms.netmgt.dao.mock.MockSnmpInterfaceDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.flows.api.Flow;
-import org.opennms.netmgt.flows.processing.enrichment.EnrichedFlow;
-import org.opennms.netmgt.flows.processing.enrichment.NodeInfo;
+import org.opennms.netmgt.flows.api.FlowException;
+import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.flows.api.FlowSource;
+import org.opennms.netmgt.flows.api.ProcessingOptions;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
-import org.opennms.netmgt.flows.classification.ClassificationRuleProvider;
 import org.opennms.netmgt.flows.classification.FilterService;
-import org.opennms.netmgt.flows.classification.exception.InvalidFilterException;
 import org.opennms.netmgt.flows.classification.internal.DefaultClassificationEngine;
 import org.opennms.netmgt.flows.classification.persistence.api.RuleBuilder;
-import org.opennms.netmgt.flows.processing.ProcessingOptions;
-import org.opennms.netmgt.flows.processing.impl.FlowThresholdingImpl;
+import org.opennms.netmgt.flows.elastic.thresholding.FlowThresholding;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.threshd.api.ThresholdingService;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -79,8 +82,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.support.TransactionTemplate;
-import com.google.common.collect.Lists;
 
+import com.codahale.metrics.MetricRegistry;
+import com.google.common.collect.ImmutableList;
+
+import io.searchbox.client.JestClient;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -103,6 +109,9 @@ import com.google.common.collect.Lists;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase()
 public class ThresholdingIT {
+    @Rule
+    public final ElasticSearchRule elasticSearchRule = new ElasticSearchRule();
+
     @Autowired
     private ThresholdingService thresholdingService;
 
@@ -130,33 +139,56 @@ public class ThresholdingIT {
     @Autowired
     private PersisterFactory persisterFactory;
 
-    private List<org.opennms.netmgt.flows.classification.persistence.api.Rule> rules;
-
     @Autowired
     private FilterDao filterDao;
 
-    private FlowThresholdingImpl thresholding;
+    private JestClient restClient;
+    private FlowThresholding thresholding;
+    private FlowRepository flowRepository;
 
     @Before
     public void before() throws Exception {
-        this.rules = Lists.newArrayList(
-                new RuleBuilder().withName("APP1").withDstPort("1").withPosition(1).build(),
-                new RuleBuilder().withName("APP2").withDstPort("2").withPosition(1).build()
-        );
-
         this.applicationContext.getAutowireCapableBeanFactory().createBean(DefaultResourceTypeMapper.class);
 
         BeanUtils.assertAutowiring(this);
 
         this.databasePopulator.populateDatabase();
+        this.interfaceToNodeCache.dataSourceSync();
+
+        final RestClientFactory restClientFactory = new RestClientFactory(this.elasticSearchRule.getUrl());
+        this.restClient = restClientFactory.createClient();
 
         this.thresholdingDao.overrideConfig(getClass().getResourceAsStream("/thresholds.xml"));
         this.threshdDao.overrideConfig(getClass().getResourceAsStream("/threshd-configuration.xml"));
 
         this.threshdDao.rebuildPackageIpListMap();
 
-        final ClassificationRuleProvider classificationRuleProvider = () -> rules;
-        final ClassificationEngine classificationEngine = new DefaultClassificationEngine(classificationRuleProvider, FilterService.NOOP);
+        final var metricRegistry = new MetricRegistry();
+        final var sessionUtils = new MockSessionUtils();
+
+        final ClassificationEngine classificationEngine = new DefaultClassificationEngine(() -> ImmutableList.<org.opennms.netmgt.flows.classification.persistence.api.Rule>builder()
+                                                                                                             .add(new RuleBuilder().withName("APP1").withDstPort("1").withPosition(1).build())
+                                                                                                             .add(new RuleBuilder().withName("APP2").withDstPort("2").withPosition(1).build())
+                                                                                                             .build(), FilterService.NOOP);
+
+        final var documentEnricher = new DocumentEnricher(metricRegistry,
+                                                          this.databasePopulator.getNodeDao(),
+                                                          this.databasePopulator.getIpInterfaceDao(),
+                                                          this.interfaceToNodeCache,
+                                                          sessionUtils,
+                                                          classificationEngine,
+                                                          new CacheConfigBuilder()
+                                                                  .withName("flows.node")
+                                                                  .withMaximumSize(1000)
+                                                                  .withExpireAfterWrite(300)
+                                                                  .build(), 0);
+
+        final var nodeDao = new MockNodeDao();
+        final var snmpInterfaceDao = new MockSnmpInterfaceDao();
+        final var identity = new MockIdentity();
+        final var tracerRegistry = new MockTracerRegistry();
+        final var enrichedFlowForwarder = new MockDocumentForwarder();
+        final var indexSettings = new IndexSettings();
 
         final var collectionAgentFactory = new DefaultCollectionAgentFactory();
         collectionAgentFactory.setNodeDao(this.databasePopulator.getNodeDao());
@@ -165,29 +197,31 @@ public class ThresholdingIT {
 
         this.thresholdingService.getThresholdingSetPersister().reinitializeThresholdingSets();
 
-        final FilterService filterService = new FilterService() {
-            @Override
-            public void validate(String filterExpression) throws InvalidFilterException {
-            }
-
-            @Override
-            public boolean matches(String address, String filterExpression) {
-                return true;
-            }
-        };
-
-        this.thresholding = new FlowThresholdingImpl(this.thresholdingService,
+        this.thresholding = new FlowThresholding(this.thresholdingService,
                                                  collectionAgentFactory,
                                                  this.persisterFactory,
                                                  this.databasePopulator.getIpInterfaceDao(),
                                                  this.databasePopulator.getDistPollerDao(),
                                                  this.databasePopulator.getSnmpInterfaceDao(),
-                                                 Mockito.mock(FilterDao.class),
-                                                 filterService,
-                                                 classificationRuleProvider,
-                                                 classificationEngine);
+                                                 this.filterDao);
 
         this.thresholding.setStepSizeMs(1000);
+
+        final var elasticFlowRepository = new ElasticFlowRepository(
+                metricRegistry,
+                this.restClient,
+                IndexStrategy.MONTHLY,
+                documentEnricher,
+                sessionUtils,
+                nodeDao,
+                snmpInterfaceDao,
+                identity,
+                tracerRegistry,
+                enrichedFlowForwarder,
+                indexSettings,
+                this.thresholding);
+
+        this.flowRepository = new InitializingFlowRepository(elasticFlowRepository, this.restClient);
     }
 
     @After
@@ -195,35 +229,32 @@ public class ThresholdingIT {
         this.thresholding.close();
         this.thresholding = null;
 
+        this.flowRepository = null;
+
+        this.restClient.close();
+
         this.databasePopulator.resetDatabase();
     }
 
-    private List<EnrichedFlow> createMockedFlows(final int count) {
+    private List<Flow> createMockedFlows(final int count) {
         final var now = System.currentTimeMillis();
 
-        final List<EnrichedFlow> flows = new ArrayList<>(count);
+        final List<Flow> flows = new ArrayList<>(count);
         for (int i = 0; i < count; i++) {
-            final EnrichedFlow flow = new EnrichedFlow();
-            flow.setTimestamp(now + i * 1000L);
-            flow.setIpProtocolVersion(4);
-            flow.setInputSnmp(1);
-            flow.setOutputSnmp(2);
-            flow.setSrcAddr(String.format("192.168.%d.%d", i % 256, 255 - (i % 256)));
-            flow.setDstAddr(String.format("192.168.%d.%d", 255 - (i % 256), i % 256));
-            flow.setSrcPort(1);
-            flow.setDstPort(2);
-            flow.setProtocol(6);
-            flow.setBytes(1024L * (count - i));
-            flow.setDirection(Flow.Direction.INGRESS);
+            final FlowDocument flowDocument = new FlowDocument();
+            flowDocument.setTimestamp(now + i * 1000L);
+            flowDocument.setIpProtocolVersion(4);
+            flowDocument.setInputSnmp(1);
+            flowDocument.setOutputSnmp(2);
+            flowDocument.setSrcAddr(String.format("192.168.%d.%d", i % 256, 255 - (i % 256)));
+            flowDocument.setDstAddr(String.format("192.168.%d.%d", 255 - (i % 256), i % 256));
+            flowDocument.setSrcPort(1);
+            flowDocument.setDstPort(2);
+            flowDocument.setProtocol(6);
+            flowDocument.setBytes(1024L * (count - i));
+            flowDocument.setDirection(Direction.INGRESS);
 
-            flow.setApplication("APP2");
-            flow.setExporterNodeInfo(new NodeInfo() {{
-                this.setNodeId(databasePopulator.getNode1().getId());
-                this.setForeignSource(databasePopulator.getNode1().getForeignSource());
-                this.setForeignId(databasePopulator.getNode1().getForeignId());
-                this.setInterfaceId(databasePopulator.getNode1().getPrimaryInterface().getId());
-            }});
-
+            final TestFlow flow = new TestFlow(flowDocument);
             flows.add(flow);
         }
         return flows;
@@ -235,12 +266,12 @@ public class ThresholdingIT {
         eventAnticipator.anticipateEvent(new EventBuilder(EventConstants.HIGH_THRESHOLD_EVENT_UEI, "Test")
                                                  .setNodeid(this.databasePopulator.getNode1().getId())
                                                  .setInterface(addr("192.168.1.1"))
-                                                 .setService(FlowThresholdingImpl.SERVICE_NAME)
+                                                 .setService(FlowThresholding.SERVICE_NAME)
                                                  .getEvent());
         eventAnticipator.anticipateEvent(new EventBuilder(EventConstants.HIGH_THRESHOLD_REARM_EVENT_UEI, "Test")
                                                  .setNodeid(this.databasePopulator.getNode1().getId())
                                                  .setInterface(addr("192.168.1.1"))
-                                                 .setService(FlowThresholdingImpl.SERVICE_NAME)
+                                                 .setService(FlowThresholding.SERVICE_NAME)
                                                  .getEvent());
 
         final var source = new FlowSource(this.databasePopulator.getNode1().getLocation().getLocationName(),
@@ -252,11 +283,11 @@ public class ThresholdingIT {
         // Sending just one flow, so that counters are initialized before starting the run
         this.transactionTemplate.execute((tx) -> {
             try {
-                this.thresholding.threshold(createMockedFlows(1),
+                this.flowRepository.persist(createMockedFlows(1), source,
                                             ProcessingOptions.builder()
                                                              .setApplicationThresholding(true)
                                                              .build());
-            } catch (Exception e) {
+            } catch (FlowException e) {
                 throw new RuntimeException(e);
             }
             return null;
@@ -272,11 +303,11 @@ public class ThresholdingIT {
         // Now, send the all the flows for triggering the threshold
         this.transactionTemplate.execute((tx) -> {
             try {
-                this.thresholding.threshold(createMockedFlows(1000),
+                this.flowRepository.persist(createMockedFlows(1000), source,
                                             ProcessingOptions.builder()
                                                              .setApplicationThresholding(true)
                                                              .build());
-            } catch (Exception e) {
+            } catch (FlowException e) {
                 throw new RuntimeException(e);
             }
             return null;
@@ -285,49 +316,6 @@ public class ThresholdingIT {
         await().atMost(60, TimeUnit.SECONDS).until(eventAnticipator::getAnticipatedEvents, hasSize(0));
 
         eventAnticipator.verifyAnticipated();
-    }
-
-    @Test
-    public void testApplications() throws Exception {
-        for(FlowThresholdingImpl.Session session : this.thresholding.getSessions()) {
-            for(Map.Entry<FlowThresholdingImpl.IndexKey, Map<String, AtomicLong>> entry : session.indexKeyMap.entrySet()) {
-                assertEquals(2, entry.getValue().size());
-                assertTrue(entry.getValue().containsKey("APP1"));
-                assertTrue(entry.getValue().containsKey("APP2"));
-            }
-        }
-
-        this.rules = Lists.newArrayList(
-                new RuleBuilder().withName("APP1").withDstPort("1").withPosition(1).build(),
-                new RuleBuilder().withName("APP2").withDstPort("2").withPosition(1).build(),
-                new RuleBuilder().withName("APP3").withDstPort("3").withPosition(1).build()
-        );
-
-        this.thresholding.classificationRulesReloaded(this.rules);
-        this.thresholding.runTimerTask();
-
-        for(FlowThresholdingImpl.Session session : this.thresholding.getSessions()) {
-            for(Map.Entry<FlowThresholdingImpl.IndexKey, Map<String, AtomicLong>> entry : session.indexKeyMap.entrySet()) {
-                assertEquals(3, entry.getValue().size());
-                assertTrue(entry.getValue().containsKey("APP1"));
-                assertTrue(entry.getValue().containsKey("APP2"));
-                assertTrue(entry.getValue().containsKey("APP3"));
-            }
-        }
-
-        this.rules = Lists.newArrayList(
-                new RuleBuilder().withName("APP1").withDstPort("1").withPosition(1).build()
-        );
-
-        this.thresholding.classificationRulesReloaded(this.rules);
-        this.thresholding.runTimerTask();
-
-        for(FlowThresholdingImpl.Session session : this.thresholding.getSessions()) {
-            for(Map.Entry<FlowThresholdingImpl.IndexKey, Map<String, AtomicLong>> entry : session.indexKeyMap.entrySet()) {
-                assertEquals(1, entry.getValue().size());
-                assertTrue(entry.getValue().containsKey("APP1"));
-            }
-        }
     }
 
     @Test
@@ -340,18 +328,18 @@ public class ThresholdingIT {
 
         this.transactionTemplate.execute((tx) -> {
             try {
-                this.thresholding.threshold(createMockedFlows(1),
+                this.flowRepository.persist(createMockedFlows(1), source,
                                             ProcessingOptions.builder()
                                                              .setApplicationThresholding(true)
                                                              .build());
-            } catch (Exception e) {
+            } catch (FlowException e) {
                 throw new RuntimeException(e);
             }
             return null;
         });
 
-        assertThat(this.thresholding.getExporterKeys(), hasSize(1));
+        assertThat(this.thresholding.getSessions(), hasSize(1));
 
-        await().atMost(60, TimeUnit.SECONDS).until(this.thresholding::getExporterKeys, hasSize(0));
+        await().atMost(60, TimeUnit.SECONDS).until(this.thresholding::getSessions, hasSize(0));
     }
 }

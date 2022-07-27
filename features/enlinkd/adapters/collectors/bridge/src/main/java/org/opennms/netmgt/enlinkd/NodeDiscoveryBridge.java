@@ -71,6 +71,7 @@ import org.slf4j.LoggerFactory;
 public final class NodeDiscoveryBridge extends NodeCollector {
     private static final Logger LOG = LoggerFactory.getLogger(NodeDiscoveryBridge.class);
 
+    // public final static String CISCO_ENTERPRISE_OID = ".1.3.6.1.4.1.9";
 
     private final BridgeTopologyService m_bridgeTopologyService;
     private final int m_maxSize;
@@ -79,6 +80,10 @@ public final class NodeDiscoveryBridge extends NodeCollector {
      * Constructs a new SNMP collector for Bridge Node Discovery. The
      * collection does not occur until the <code>run</code> method is invoked.
      * 
+     * @param EnhancedLinkd
+     *            linkd
+     * @param LinkableNode
+     *            node
      */
     public NodeDiscoveryBridge(
             final BridgeTopologyService bridgeTopologyService,
@@ -98,7 +103,7 @@ public final class NodeDiscoveryBridge extends NodeCollector {
         SnmpAgentConfig peer = getSnmpAgentConfig();
         String community = peer.getReadCommunity();
         Map<Integer, String> vlanmap = (m_disableBridgeVlanDiscovery) ? new HashMap<>() : getVtpVlanMap(peer);
-        Map<Integer,SnmpAgentConfig> vlanSnmpAgentConfigMap = new HashMap<>();
+        Map<Integer,SnmpAgentConfig> vlanSnmpAgentConfigMap = new HashMap<Integer, SnmpAgentConfig>();
         for (Integer vlanId: vlanmap.keySet()) {
             LOG.debug("run: node [{}], support cisco vtp: setting peer community for vlan: {}, vlanname: {}",
            		 getNodeId(),vlanId,vlanmap.get(vlanId));
@@ -117,8 +122,8 @@ public final class NodeDiscoveryBridge extends NodeCollector {
         	vlanmap.put(null, null);
         }
         
-        List<BridgeForwardingTableEntry> bft = new ArrayList<>();
-        Map<Integer, Integer> bridgeifindex = new HashMap<>();
+        List<BridgeForwardingTableEntry> bft = new ArrayList<BridgeForwardingTableEntry>();
+        Map<Integer, Integer> bridgeifindex = new HashMap<Integer, Integer>();
 
         for (Entry<Integer, SnmpAgentConfig> entry : vlanSnmpAgentConfigMap.entrySet()) {
             Map<Integer,Integer> vlanbridgetoifindex = walkDot1dBasePortTable(entry.getValue());
@@ -225,7 +230,7 @@ public final class NodeDiscoveryBridge extends NodeCollector {
 
     private Map<Integer, String> getVtpVlanMap(SnmpAgentConfig peer) {
 
-        final Map<Integer, String> vlanmap = new HashMap<>();
+        final Map<Integer, String> vlanmap = new HashMap<Integer, String>();
         final CiscoVtpTracker vtpStatus = new CiscoVtpTracker();
         
         try {
@@ -276,7 +281,7 @@ public final class NodeDiscoveryBridge extends NodeCollector {
     }
 
     private Map<Integer, Integer> walkDot1dBasePortTable(SnmpAgentConfig peer) {
-        final Map<Integer, Integer> bridgetoifindex = new HashMap<>();
+        final Map<Integer, Integer> bridgetoifindex = new HashMap<Integer, Integer>();
         Dot1dBasePortTableTracker dot1dBasePortTableTracker = new Dot1dBasePortTableTracker() {
                 @Override
                 public void processDot1dBasePortRow(final Dot1dBasePortRow row) {
@@ -371,7 +376,7 @@ public final class NodeDiscoveryBridge extends NodeCollector {
     }
 
     private void fixCiscoBridgeMibPort(Integer bridgeport,Map<Integer,Integer> bridgeifindex) {
-        List<Integer> sortedPort = new ArrayList<>(bridgeifindex.keySet());
+        List<Integer> sortedPort = new ArrayList<Integer>(bridgeifindex.keySet());
         Collections.sort(sortedPort);
         Integer beforePort=null;
         Integer afterPort=null;

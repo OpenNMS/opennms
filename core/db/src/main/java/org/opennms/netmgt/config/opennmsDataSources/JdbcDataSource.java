@@ -29,19 +29,12 @@
 package org.opennms.netmgt.config.opennmsDataSources;
 
 
-import java.nio.file.Paths;
 import java.util.Objects;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import org.opennms.core.mate.api.Interpolator;
-import org.opennms.core.mate.api.SecureCredentialsVaultScope;
-import org.opennms.features.scv.api.SecureCredentialsVault;
-import org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault;
 
 /**
  * Top-level element for the opennms-database.xml configuration
@@ -52,10 +45,8 @@ import org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault;
 @XmlRootElement(name = "jdbc-data-source")
 @XmlAccessorType(XmlAccessType.NONE)
 public class JdbcDataSource implements java.io.Serializable {
-    private static final long serialVersionUID = -1120653287571635877L;
 
-    private static final String KEYSTORE_PASSWORD = System.getProperty("org.opennms.features.scv.jceks.key", "QqSezYvBtk2gzrdpggMHvt5fJGWCdkRw");
-    private static final String KEYSTORE_FILENAME = Paths.get(System.getProperty("opennms.home"), "etc", "scv.jce").toString();
+    private static final long serialVersionUID = -1120653287571635877L;
 
     @XmlAttribute(name = "name", required = true)
     private String name;
@@ -73,10 +64,10 @@ public class JdbcDataSource implements java.io.Serializable {
     private String className;
 
     @XmlAttribute(name = "user-name")
-    private String rawUserName;
+    private String userName;
 
     @XmlAttribute(name = "password")
-    private String rawPassword;
+    private String password;
 
     @XmlElement(name = "param")
     private java.util.List<org.opennms.netmgt.config.opennmsDataSources.Param> paramList;
@@ -136,8 +127,8 @@ public class JdbcDataSource implements java.io.Serializable {
                 && Objects.equals(temp.schemaName, schemaName)
                 && Objects.equals(temp.url, url)
                 && Objects.equals(temp.className, className)
-                && Objects.equals(temp.rawUserName, rawUserName)
-                && Objects.equals(temp.rawPassword, rawPassword)
+                && Objects.equals(temp.userName, userName)
+                && Objects.equals(temp.password, password)
                 && Objects.equals(temp.paramList, paramList);
             return equals;
         }
@@ -227,8 +218,8 @@ public class JdbcDataSource implements java.io.Serializable {
      * 
      * @return the value of field 'Password'.
      */
-    public String getRawPassword() {
-        return this.rawPassword;
+    public String getPassword() {
+        return this.password;
     }
 
     /**
@@ -254,8 +245,8 @@ public class JdbcDataSource implements java.io.Serializable {
      * 
      * @return the value of field 'UserName'.
      */
-    public String getRawUserName() {
-        return this.rawUserName;
+    public String getUserName() {
+        return this.userName;
     }
 
     /**
@@ -270,8 +261,8 @@ public class JdbcDataSource implements java.io.Serializable {
             schemaName, 
             url, 
             className, 
-            rawUserName,
-            rawPassword,
+            userName, 
+            password, 
             paramList);
         return hash;
     }
@@ -396,12 +387,12 @@ public class JdbcDataSource implements java.io.Serializable {
     }
 
     /**
-     * Sets the value of field 'rawPassword'.
+     * Sets the value of field 'password'.
      * 
-     * @param rawPassword the value of field 'rawPassword'.
+     * @param password the value of field 'password'.
      */
-    public void setPassword(final String rawPassword) {
-        this.rawPassword = rawPassword;
+    public void setPassword(final String password) {
+        this.password = password;
     }
 
     /**
@@ -423,29 +414,12 @@ public class JdbcDataSource implements java.io.Serializable {
     }
 
     /**
-     * Sets the value of field 'rawUserName'.
+     * Sets the value of field 'userName'.
      * 
-     * @param rawUserName the value of field 'rawUserName'.
+     * @param userName the value of field 'userName'.
      */
-    public void setUserName(final String rawUserName) {
-        this.rawUserName = rawUserName;
+    public void setUserName(final String userName) {
+        this.userName = userName;
     }
 
-    public String interpolateAttribute(final String value) {
-        return interpolateAttribute(value, KEYSTORE_FILENAME, KEYSTORE_PASSWORD);
-    }
-
-    public String interpolateAttribute(final String value, final String keystoreFile, final String password) {
-        final SecureCredentialsVault secureCredentialsVault = new JCEKSSecureCredentialsVault(keystoreFile, password);
-        final Interpolator.Result result = Interpolator.interpolate(value, new SecureCredentialsVaultScope(secureCredentialsVault));
-        return result.output;
-    }
-
-    public String getUserName() {
-        return interpolateAttribute(getRawUserName());
-    }
-
-    public String getPassword() {
-        return interpolateAttribute(getRawPassword());
-    }
 }

@@ -27,6 +27,10 @@
   </build>
   <dependencies>
     <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.daemon</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.enlinkd</groupId>
       <artifactId>org.opennms.features.enlinkd.service.api</artifactId>
     </dependency>
@@ -34,6 +38,13 @@
       <groupId>org.opennms.features.enlinkd</groupId>
       <artifactId>org.opennms.features.enlinkd.adapters.common</artifactId>
       <version>${project.version}</version>
+    </dependency>
+
+    <!-- Test Dependencies -->
+  <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>

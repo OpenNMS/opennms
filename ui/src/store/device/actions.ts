@@ -33,9 +33,7 @@ const getHistoryByIpInterface = async (context: ContextWithState) => {
 
 const getAndMergeDeviceConfigBackups = async (context: ContextWithState) => {
   const deviceConfigBackups = await API.getDeviceConfigBackups(context.state.deviceConfigBackupQueryParams)
-  if (deviceConfigBackups && deviceConfigBackups.data) {
-    context.commit('MERGE_DEVICE_CONFIG_BACKUPS', deviceConfigBackups.data)
-  }
+  context.commit('MERGE_DEVICE_CONFIG_BACKUPS', deviceConfigBackups)
 }
 
 const downloadByConfig = async (context: VuexContext, config: DeviceConfigBackup | DeviceConfigBackup[]) => {

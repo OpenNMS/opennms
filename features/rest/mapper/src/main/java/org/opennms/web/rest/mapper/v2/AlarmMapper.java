@@ -144,10 +144,7 @@ public abstract class AlarmMapper {
 
     @AfterMapping
     protected void mapEventLabel(@MappingTarget AlarmSummaryDTO summaryDTO) {
-        //there are cases when lasteventid in alarms is null, making api/v2/alarms throw a null pointer exception
-        if(summaryDTO.getUei() != null) {
-            summaryDTO.setLabel(eventConfDao.getEventLabel(summaryDTO.getUei()));
-        }
+        summaryDTO.setLabel(eventConfDao.getEventLabel(summaryDTO.getUei()));
     }
 
     public void setEventConfDao(EventConfDao eventConfDao) {

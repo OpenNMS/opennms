@@ -98,23 +98,23 @@ public class OspfLink implements Serializable {
 	}
 
     @Type(type="org.opennms.netmgt.model.InetAddressUserType")
-    @Column(name="ospfIpAddr")
+    @Column(name="ospfIpAddr",nullable=true)
 	public InetAddress getOspfIpAddr() {
 		return m_ospfIpAddr;
 	}
     
     @Type(type="org.opennms.netmgt.model.InetAddressUserType")
-    @Column(name="ospfIpMask")
+    @Column(name="ospfIpMask",nullable=true)
 	public InetAddress getOspfIpMask() {
 		return m_ospfIpMask;
 	}
 
-    @Column(name="ospfAddressLessIndex")
+    @Column(name="ospfAddressLessIndex",nullable=true)
 	public Integer getOspfAddressLessIndex() {
 		return m_ospfAddressLessIndex;
 	}
 
-    @Column(name="ospfIfIndex")
+    @Column(name="ospfIfIndex",nullable=true)
 	public Integer getOspfIfIndex() {
 		return m_ospfIfIndex;
 	}
@@ -191,23 +191,25 @@ public class OspfLink implements Serializable {
 	 * @return a {@link java.lang.String} object.
 	 */
 	public String toString() {
-		return "ospflink: nodeid:[" +
-				getNode().getId() +
-				"]: id/mask/ifindex/addressless:[" +
-				str(getOspfIpAddr()) +
-				"/" +
-				str(getOspfIpMask()) +
-				"/" +
-				getOspfIfIndex() +
-				"/" +
-				getOspfAddressLessIndex() +
-				"]: rem router id/ip/addressless:[" +
-				str(getOspfRemRouterId()) +
-				"/" +
-				str(getOspfRemIpAddr()) +
-				"/" +
-				getOspfRemAddressLessIndex() +
-				"]";
+            StringBuffer strb = new StringBuffer();
+            strb.append("ospflink: nodeid:[");
+            strb.append(getNode().getId());
+            strb.append("]: id/mask/ifindex/addressless:[");
+            strb.append(str(getOspfIpAddr()));
+            strb.append("/");
+            strb.append(str(getOspfIpMask()));
+            strb.append("/");
+            strb.append(getOspfIfIndex());
+            strb.append("/");
+            strb.append(getOspfAddressLessIndex());
+            strb.append("]: rem router id/ip/addressless:[");
+            strb.append(str(getOspfRemRouterId()));
+            strb.append("/");
+            strb.append(str(getOspfRemIpAddr()));
+            strb.append("/");
+            strb.append(getOspfRemAddressLessIndex());
+            strb.append("]");
+            return strb.toString();
         }
 
 	

@@ -42,9 +42,9 @@ import org.opennms.netmgt.config.EnhancedLinkdConfig;
 import org.opennms.netmgt.config.datacollection.SnmpCollection;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.enlinkd.api.ReloadableTopologyDaemon;
-import org.opennms.netmgt.enlinkd.common.Discovery;
 import org.opennms.netmgt.enlinkd.common.NodeCollector;
 import org.opennms.netmgt.enlinkd.common.TopologyUpdater;
+import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyException;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.CdpTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.IpNetToMediaTopologyService;
@@ -62,10 +62,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * <p>
- * EnhancedLinkd class.
+ * Linkd class.
  * </p>
- *
- * @author antonio
+ * 
  * @author ranger
  * @version $Id: $
  */
@@ -103,7 +102,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
     /**
      * Map that contains Nodeid and List of NodeCollector.
      */
-    private final Map<Integer, List<NodeCollector>> m_nodes = new HashMap<>();
+    private Map<Integer, List<NodeCollector>> m_nodes = new HashMap<Integer, List<NodeCollector>>();
 
     @Autowired
     private LocationAwareSnmpClient m_locationAwareSnmpClient;
@@ -225,6 +224,8 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
      * This method schedules a {@link SnmpCollection} for node for each
      * package. Also schedule discovery link on package when not still
      * activated.
+     * 
+     * @param node
      */
     private List<NodeCollector> scheduleCollectionForNode(final Node node) {
 
@@ -478,6 +479,10 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
         }
     }
 
+    public DiscoveryBridgeDomains getDiscoveryBridgeDomains() {
+        return m_discoveryBridgeDomains;
+    }
+    
     void wakeUpNodeCollection(int nodeid) {
 
         if (!m_nodes.containsKey(nodeid)) {
@@ -486,10 +491,10 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
             scheduleNodeCollection(nodeid);
             return;
         } 
-        m_nodes.get(nodeid).forEach(Discovery::wakeUp);
+        m_nodes.get(nodeid).stream().forEach(collection -> collection.wakeUp());
     }
 
-    public void addNode() {
+    public void addNode(int intValue) {
         m_queryMgr.updatesAvailable();
     }
 
@@ -498,7 +503,11 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
                         nodeid);
         unscheduleNodeCollection(nodeid);
 
-        m_bridgeTopologyService.delete(nodeid);
+        try {
+            m_bridgeTopologyService.delete(nodeid);
+        } catch (BridgeTopologyException e) {
+            LOG.error("deleteNode: {}", e.getMessage());
+        }
         m_cdpTopologyService.delete(nodeid);
         m_isisTopologyService.delete(nodeid);
         m_lldpTopologyService.delete(nodeid);
@@ -512,8 +521,9 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
     void unscheduleNodeCollection(int nodeid) {
         synchronized (m_nodes) {
             if (m_nodes.containsKey(nodeid)) {
-                m_nodes.remove(nodeid).
-                forEach(Discovery::unschedule);
+                m_nodes.remove(nodeid).stream().
+                forEach(coll -> 
+                    coll.unschedule());
             }        
         }
     }
@@ -531,7 +541,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
                         nodeid);   
         synchronized (m_nodes) {
                if (m_nodes.containsKey(nodeid)) {
-                   m_nodes.get(nodeid).forEach(Discovery::suspend);
+                   m_nodes.get(nodeid).stream().forEach(coll -> coll.suspend());
                } 
         }
     }
@@ -540,29 +550,70 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
         return m_queryMgr;
     }
 
+    /**
+     * <p>
+     * setQueryManager
+     * </p>
+     * 
+     * @param queryMgr
+     *            a {@link org.opennms.features.NodeTopologyService.persistence.api.linkd.EnhancedLinkdService} object.
+     */
     public void setQueryManager(NodeTopologyService queryMgr) {
         m_queryMgr = queryMgr;
     }
 
+    /**
+     * <p>
+     * getScheduler
+     * </p>
+     * 
+     * @return a {@link org.opennms.netmgt.enlinkd.scheduler.Scheduler} object.
+     */
     public LegacyScheduler getScheduler() {
         return m_scheduler;
     }
 
+    /**
+     * <p>
+     * setScheduler
+     * </p>
+     * 
+     * @param scheduler
+     *            a {@link org.opennms.netmgt.enlinkd.scheduler.Scheduler}
+     *            object.
+     */
     public void setScheduler(LegacyScheduler scheduler) {
         m_scheduler = scheduler;
     }
 
+    /**
+     * <p>
+     * getLinkdConfig
+     * </p>
+     * 
+     * @return a {@link org.opennms.netmgt.config.LinkdConfig} object.
+     */
     public EnhancedLinkdConfig getLinkdConfig() {
         return m_linkdConfig;
     }
 
+    /**
+     * <p>
+     * setLinkdConfig
+     * </p>
+     * 
+     * @param config
+     *            a {@link org.opennms.netmgt.config.LinkdConfig} object.
+     */
     public void setLinkdConfig(final EnhancedLinkdConfig config) {
         m_linkdConfig = config;
     }
     public String getSource() {
         return "enlinkd";
     }
-
+    public LocationAwareSnmpClient getLocationAwareSnmpClient() {
+        return m_locationAwareSnmpClient;
+    }        
     public BridgeTopologyService getBridgeTopologyService() {
         return m_bridgeTopologyService;
     }
@@ -708,15 +759,15 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
         }
 
         synchronized (m_nodes) {
-            final Set<Node> nodes = new HashSet<>();
+            final Set<Node> nodes = new HashSet<Node>();
             for (List<NodeCollector> list: m_nodes.values()) {
-                list.forEach(coll -> {
+                list.stream().forEach(coll -> {
                     coll.unschedule(); 
                     nodes.add(coll.getNode());
                 });
             }
             m_nodes.clear();
-            nodes.
+            nodes.stream().
                 forEach(node -> m_nodes.put(node.getNodeId(), scheduleCollectionForNode(node)));
         }
     }

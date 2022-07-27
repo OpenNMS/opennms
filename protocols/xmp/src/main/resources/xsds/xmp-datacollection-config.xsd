@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://xmlns.opennms.org/xsd/config/xmp-datacollection"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ns2="http://www.w3.org/1999/xhtml"
+        xmlns:ns="http://www.w3.org/2001/XMLSchema"
+        xmlns:dc="http://xmlns.opennms.org/xsd/config/xmp-datacollection"
+		  xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty"
+		  elementFormDefault="qualified">
+
+  <annotation>
+    <documentation>XML Schema for the xmp-datacollection-config.xml
+    configuration file. Version: $Id: xmp-datacollection-config.xsd 21 2008-07-22 20:21:56Z rdk $</documentation>
+  </annotation>
+
+  <element name="rrd">
+    <annotation>
+      <documentation>RRD parms</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="1" name="rra">
+          <annotation>
+            <documentation>Round Robin Archive definitions</documentation>
+          </annotation>
+
+          <simpleType>
+            <restriction base="string">
+              <pattern value="RRA:(AVERAGE|MIN|MAX|LAST):.*"/>
+            </restriction>
+          </simpleType>
+        </element>
+      </sequence>
+
+      <attribute name="step" type="int" use="required">
+        <annotation>
+          <documentation>step size for the RRD</documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+
+  <element name="xmp-datacollection-config">
+    <annotation>
+      <documentation>Top-level element for the xmp-datacollection-config.xml
+      configuration file.</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="1" ref="dc:xmp-collection">
+          <annotation>
+            <documentation>XMP data collection element</documentation>
+          </annotation>
+        </element>
+      </sequence>
+
+      <attribute name="rrdRepository" type="string" use="required">
+        <annotation>
+          <documentation>full path to the RRD repository for collected XMP
+          data</documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+
+  <element name="xmp-collection">
+    <annotation>
+      <documentation>a grouping of XMP related RRD parms, MIB object groups
+      and sysoid based system definitions.</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="1" minOccurs="1" ref="dc:rrd">
+          <annotation>
+            <documentation>RRD parms</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="1" minOccurs="1" ref="dc:groups">
+          <annotation>
+            <documentation>MIB object groups</documentation>
+          </annotation>
+        </element>
+      </sequence>
+
+      <attribute name="name" type="string" use="required">
+        <annotation>
+          <documentation>collectoion name</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="xmpStorageFlag" use="required">
+        <annotation>
+          <documentation>indicates if collected XMP data is to be stored for
+          "all" interfaces or only for the "primary" interface.
+          Currently ignored. </documentation>
+        </annotation>
+
+        <simpleType>
+          <restriction base="string">
+            <pattern value="(all|primary|select)"/>
+          </restriction>
+        </simpleType>
+      </attribute>
+    </complexType>
+  </element>
+
+  <!-- <element name="rrd">
+    <annotation>
+      <documentation>RRD parms</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="1" name="rra">
+          <annotation>
+            <documentation>Round Robin Archive definitions</documentation>
+          </annotation>
+
+          <simpleType>
+            <restriction base="string">
+              <pattern value="RRA:(AVERAGE|MIN|MAX|LAST):.*"/>
+            </restriction>
+          </simpleType>
+        </element>
+      </sequence>
+
+      <attribute name="step" type="int" use="required">
+        <annotation>
+          <documentation>step size for the RRD</documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element> -->
+
+  <element name="groups">
+    <annotation>
+      <documentation>MIB object groups</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="1" ref="dc:group">
+          <annotation>
+            <documentation>a MIB object group</documentation>
+          </annotation>
+        </element>
+      </sequence>
+    </complexType>
+  </element>
+
+  <element name="group">
+    <annotation>
+      <documentation>a MIB object group</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="0" ref="dc:mibObj">
+          <annotation>
+            <documentation>a MIB object</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="unbounded" minOccurs="0" name="includeGroup"
+                 type="string">
+          <annotation>
+            <documentation>sub group</documentation>
+          </annotation>
+        </element>
+      </sequence>
+
+      <attribute name="name" type="string" use="required">
+        <annotation>
+          <documentation>group name</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="resourceType" type="string" use="required">
+        <annotation>
+          <documentation>Name of resource or null if scalars.
+          Resource type matches declaration in
+          datacollection-config.xml for presentation in Web UI and in
+          RRD storage.  Each table, that is collected, should
+          generally be given their own resource type.  MIB2 tables,
+          however, need not be given a separate resourceType as they
+          are handled out-of-box by ONMS.</documentation>
+        </annotation>
+      </attribute>
+
+    </complexType>
+  </element>
+
+  <element name="mibObj">
+    <annotation>
+      <documentation>a MIB object</documentation>
+    </annotation>
+
+    <complexType>
+
+      <attribute name="mib" type="string" use="required">
+        <annotation>
+          <documentation>MIB name</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="table" type="string" use="required">
+        <annotation>
+         <documentation>MIB table name or empty string if scalar</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="var" type="string" use="required">
+        <annotation>
+          <documentation>Variable name</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="instance" type="string" use="required">
+        <annotation>
+          <documentation>Instance identifier or empty string.  If not
+          empty, this string will be used for table queries.</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="alias" type="string" use="optional">
+        <annotation>
+          <documentation>a human readable name for the object (such as
+          "ifOctetsIn"). NOTE: This value is used as the RRD file name and
+          data source name. RRD only supports data source names up to 19 chars
+          in length. If the XMP data collector encounters an alias which
+          exceeds 19 characters it will be truncated.</documentation>
+        </annotation>
+      </attribute>
+
+    </complexType>
+  </element>
+</schema>

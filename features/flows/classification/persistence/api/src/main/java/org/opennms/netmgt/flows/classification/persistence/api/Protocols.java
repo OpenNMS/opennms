@@ -205,18 +205,13 @@ public final class Protocols {
     }
 
     public static Protocol getProtocol(String keyword) {
-        if (Strings.isNullOrEmpty(keyword)) {
+        if (keyword == null || "".equals(keyword)) {
             throw new IllegalArgumentException("Cannot determine protocol for empty or null keyword");
         }
-
         return keywordProtocolMap.get(keyword.toUpperCase());
     }
 
-    public static Protocol getProtocol(Integer decimal) {
-        if (decimal == null) {
-            return null;
-        }
-
+    public static Protocol getProtocol(int decimal) {
         return decimalProtocolMap.get(decimal);
     }
 

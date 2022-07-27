@@ -17,10 +17,10 @@
         title="Map"
       />
       <FeatherRailItem
-        :class="{ selected: isSelected('/configuration') }"
+        :class="{ selected: isSelected('/configuration'), 'title-multiline-custom': navRailOpen }"
         href="#/configuration"
         :icon="LoggerConfigs"
-        title="External Requisitions"
+        title="External Requisitions and Thread Pools"
       />
       <FeatherRailItem
         :class="{ selected: isSelected('/file-editor') }"
@@ -67,7 +67,7 @@
       <FeatherRailItem
         v-for="plugin of plugins"
         :key="plugin.extensionId"
-        :class="{ selected: isSelected(`/plugins/${plugin.extensionId}/${plugin.resourceRootPath}/${plugin.moduleFileName}`, true) }"
+        :class="{ selected: isSelected(`/plugins/${plugin.extensionId}/${plugin.resourceRootPath}/${plugin.moduleFileName}`) }"
         :href="`#/plugins/${plugin.extensionId}/${plugin.resourceRootPath}/${plugin.moduleFileName}`"
         :title="plugin.menuEntry"
         :icon="UpdateUtilities"
@@ -103,10 +103,7 @@ const { adminRole, filesystemEditorRole, dcbRole } = useRole()
 const plugins = computed<Plugin[]>(() => store.state.pluginModule.plugins)
 const navRailOpen = computed(() => store.state.appModule.navRailOpen)
 const onNavRailClick = () => store.dispatch('appModule/setNavRailOpen', !navRailOpen.value)
-const isSelected = (path: string, useInclude?: boolean): boolean => {
-  if (useInclude) return route.fullPath.includes(path)
-  return path === route.fullPath
-}
+const isSelected = (path: string) => path === route.fullPath
 </script>
 
 <style lang="scss">
@@ -116,5 +113,13 @@ const isSelected = (path: string, useInclude?: boolean): boolean => {
   .nav-header {
     display: none !important;
   }
+
+  .title-multiline-custom {
+    white-space: pre-wrap;
+    height: auto !important;
+    padding-top: var($spacing-xs) !important;
+    padding-bottom: var($spacing-xs) !important;
+  }
 }
 </style>
+

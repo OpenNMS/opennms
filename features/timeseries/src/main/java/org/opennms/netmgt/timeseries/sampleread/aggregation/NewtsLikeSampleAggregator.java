@@ -30,7 +30,7 @@
 package org.opennms.netmgt.timeseries.sampleread.aggregation;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static org.opennms.netmgt.timeseries.sampleread.aggregation.NewtsConverterUtils.toTimeSeriesDataPoint;
+import static org.opennms.netmgt.timeseries.sampleread.aggregation.NewtsConverterUtils.toTimeseriesSample;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -38,10 +38,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.StringJoiner;
 
-import org.opennms.integration.api.v1.timeseries.DataPoint;
 import org.opennms.integration.api.v1.timeseries.Metric;
-import org.opennms.integration.api.v1.timeseries.TimeSeriesData;
-import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTimeSeriesData;
 import org.opennms.netmgt.measurements.model.Source;
 import org.opennms.netmgt.timeseries.sampleread.LateAggregationParams;
 import org.opennms.newts.aggregate.ResultProcessor;
@@ -109,19 +106,17 @@ public class NewtsLikeSampleAggregator {
         return new NewtsLikeSampleAggregatorBuilder();
     }
 
-    public TimeSeriesData process(Iterator<Results.Row<Sample>> samples) {
+    public List<org.opennms.integration.api.v1.timeseries.Sample> process(Iterator<Results.Row<Sample>> samples) {
         checkNotNull(samples, "samples argument");
 
         Results<Measurement> measurements = new ResultProcessor(resource, start, end, resultDescriptor, resolution).process(samples);
-        List<DataPoint> aggregatedDataPoints = new ArrayList<>();
+        List<org.opennms.integration.api.v1.timeseries.Sample> aggregatedSamples = new ArrayList<>();
 
         for (Results.Row<Measurement> row : measurements) {
-            aggregatedDataPoints.add(toTimeSeriesDataPoint(row));
+            aggregatedSamples.add(toTimeseriesSample(row, metric));
         }
 
-        return ImmutableTimeSeriesData.builder()
-                .metric(metric)
-                .dataPoints(aggregatedDataPoints).build();
+        return aggregatedSamples;
     }
 
     public static class NewtsLikeSampleAggregatorBuilder {

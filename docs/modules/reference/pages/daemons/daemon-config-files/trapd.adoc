@@ -2,8 +2,6 @@
 [[ref-daemon-config-files-trapd]]
 = Trapd
 
-Handles processing of xref:operation:events/sources/snmp-traps.adoc[SNMP traps] into events.
-
 .Trapd configuration file overview
 [options="header"]
 [cols="2,3,1,1"]
@@ -23,17 +21,4 @@ Handles processing of xref:operation:events/sources/snmp-traps.adoc[SNMP traps] 
 Files in this folder must be specified as an include directive in `eventconf.xml`.
 | yes
 | no
-|===
-
-.Trapd log file overview
-[options="header"]
-[cols="2,3"]
-
-|===
-| File
-| Description
-
-| trapd.log
-| Logs relating to Trapd server events.
-
 |===

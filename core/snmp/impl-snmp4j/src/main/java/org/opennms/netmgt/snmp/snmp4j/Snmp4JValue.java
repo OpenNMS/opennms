@@ -50,19 +50,12 @@ import org.snmp4j.smi.Variable;
 
 public class Snmp4JValue extends AbstractSnmpValue {
     private final Variable m_value;
-
+    
     public Snmp4JValue(final Variable value) {
         if (value == null) {
             throw new NullPointerException("value attribute cannot be null");
         }
-        
-        switch (value.getSyntax()) {
-            case SMIConstants.SYNTAX_OPAQUE:
-                m_value = new OpaqueExt(((Opaque)value).getValue());
-                break;
-            default:
-                m_value = value;
-        }
+        m_value = value;
     }
     
     Snmp4JValue(final int syntax, final byte[] initialBytes) {
@@ -105,7 +98,7 @@ public class Snmp4JValue extends AbstractSnmpValue {
             break;
         }
         case SMIConstants.SYNTAX_OPAQUE: {
-            m_value = new OpaqueExt(bytes);
+            m_value = new Opaque(bytes);
             break;
         }
         case SMIConstants.EXCEPTION_END_OF_MIB_VIEW: {
@@ -179,31 +172,9 @@ public class Snmp4JValue extends AbstractSnmpValue {
         case SMIConstants.SYNTAX_TIMETICKS:
         case SMIConstants.SYNTAX_UNSIGNED_INTEGER32:
             return true;
-        case SMIConstants.SYNTAX_OPAQUE: 
-            // can be "native" Long, "native" Double or converted string
-            return ((OpaqueExt)m_value).getDouble() != null;
         default:
             return false;
         }
-    }
-
-    @Override
-    public Double toDouble() {
-        if (m_value.getSyntax() == SMIConstants.SYNTAX_OPAQUE) {
-            return ((OpaqueExt)m_value).getDouble();
-        }
-        return null;
-    }
-
-    @Override
-    public boolean isDouble() {
-        if (m_value.getSyntax() == SMIConstants.SYNTAX_OPAQUE) {
-            OpaqueExt opaqueExt = (OpaqueExt)m_value;
-            return opaqueExt.getValueType() == OpaqueValueType.DOUBLE ||
-                    opaqueExt.getValueType() == OpaqueValueType.STRING
-                    && opaqueExt.getDouble() != null;
-        }
-        return false;
     }
     
     @Override
@@ -217,8 +188,6 @@ public class Snmp4JValue extends AbstractSnmpValue {
         case SMIConstants.SYNTAX_TIMETICKS:
         case SMIConstants.SYNTAX_UNSIGNED_INTEGER32:
             return (int)((UnsignedInteger32)m_value).getValue();
-        case SMIConstants.SYNTAX_OPAQUE:
-            return ((OpaqueExt)m_value).getLong().intValue();
         default:
             return Integer.parseInt(m_value.toString());
         }
@@ -237,8 +206,6 @@ public class Snmp4JValue extends AbstractSnmpValue {
             return ((UnsignedInteger32)m_value).getValue();
         case SMIConstants.SYNTAX_OCTET_STRING:
             return (convertStringToLong());
-        case SMIConstants.SYNTAX_OPAQUE:
-            return ((OpaqueExt)m_value).getLong();
         default:
             return Long.parseLong(m_value.toString());
         }
@@ -259,8 +226,6 @@ public class Snmp4JValue extends AbstractSnmpValue {
             return toStringDottingCntrlChars(((OctetString)m_value).getValue());
         case SMIConstants.SYNTAX_NULL:
         	return "";
-        case SMIConstants.SYNTAX_OPAQUE:
-            return ((OpaqueExt)m_value).toString();
         default :
             return m_value.toString();
         }
@@ -315,8 +280,6 @@ public class Snmp4JValue extends AbstractSnmpValue {
         case SMIConstants.SYNTAX_TIMETICKS:
         case SMIConstants.SYNTAX_UNSIGNED_INTEGER32:
             return BigInteger.valueOf(((UnsignedInteger32)m_value).getValue());
-        case SMIConstants.SYNTAX_OPAQUE:
-            return BigInteger.valueOf(((OpaqueExt)m_value).getLong());
         default:
             return new BigInteger(m_value.toString());
         }
@@ -346,10 +309,6 @@ public class Snmp4JValue extends AbstractSnmpValue {
             return allBytesDisplayable(getBytes());
         }
         
-        if (getType() == SnmpValue.SNMP_OPAQUE) {
-            return ((OpaqueExt)m_value).isPrintable();
-        }
-        
         return false;
     }
 
@@ -368,8 +327,6 @@ public class Snmp4JValue extends AbstractSnmpValue {
         case SnmpValue.SNMP_NO_SUCH_INSTANCE:
         case SnmpValue.SNMP_NO_SUCH_OBJECT:
             return true;
-        case SMIConstants.SYNTAX_OPAQUE:
-            return ((OpaqueExt)m_value).getValueType() == OpaqueValueType.ERROR;
         default:
             return false;
         }

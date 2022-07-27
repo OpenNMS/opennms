@@ -40,6 +40,7 @@ import static org.mockito.Mockito.when;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -53,12 +54,12 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.opennms.integration.api.v1.timeseries.Aggregation;
 import org.opennms.integration.api.v1.timeseries.IntrinsicTagNames;
+import org.opennms.integration.api.v1.timeseries.Sample;
 import org.opennms.integration.api.v1.timeseries.StorageException;
 import org.opennms.integration.api.v1.timeseries.TimeSeriesFetchRequest;
 import org.opennms.integration.api.v1.timeseries.TimeSeriesStorage;
-import org.opennms.integration.api.v1.timeseries.immutables.ImmutableDataPoint;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableMetric;
-import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTimeSeriesData;
+import org.opennms.integration.api.v1.timeseries.immutables.ImmutableSample;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTimeSeriesFetchRequest;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.measurements.api.FetchResults;
@@ -272,23 +273,26 @@ public class TimeseriesFetchStrategyTest {
         Set<OnmsAttribute> attributes = resource.getAttributes();
         attributes.add(new RrdGraphAttribute(attr, "", newtsResourceId));
 
+        List<Sample> results = new ArrayList<>();
+
         Resource res = new Resource(newtsResourceId);
         Row<Measurement> row = new Row<Measurement>(Timestamp.fromEpochSeconds(0), res);
         Measurement measurement = new Measurement(Timestamp.fromEpochSeconds(0), res, label, 0.0d);
         row.addElement(measurement);
 
-        String name = ds != null ? ds : attr;
 
-        ImmutableTimeSeriesData.ImmutableTimeSeriesDataBuilder data = ImmutableTimeSeriesData.builder();
+        String name = ds != null ? ds : attr;
         ImmutableMetric metric = ImmutableMetric.builder()
                 .intrinsicTag(IntrinsicTagNames.resourceId, newtsResourceId)
                 .intrinsicTag(IntrinsicTagNames.name, name)
                 .build();
-        data.metric(metric);
-        data.dataPoint(ImmutableDataPoint.builder()
+        Sample sample = ImmutableSample.builder()
+                .metric(metric)
                 .time(Instant.ofEpochMilli(START_TIME))
                 .value(33.0)
-                .build());
+                .build();
+
+        results.add(sample);
 
         TimeSeriesFetchRequest request = ImmutableTimeSeriesFetchRequest.builder()
                 .metric(metric)
@@ -299,7 +303,7 @@ public class TimeseriesFetchStrategyTest {
                 .build();
 
         if (expect) {
-            when(timeSeriesStorage.getTimeSeriesData(request)).thenReturn(data.build());
+            when(timeSeriesStorage.getTimeseries(request)).thenReturn(results);
         }
 
         final Source source = new Source();

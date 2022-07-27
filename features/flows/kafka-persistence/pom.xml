@@ -84,7 +84,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features.flows</groupId>
-      <artifactId>org.opennms.features.flows.processing</artifactId>
+      <artifactId>org.opennms.features.flows.api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

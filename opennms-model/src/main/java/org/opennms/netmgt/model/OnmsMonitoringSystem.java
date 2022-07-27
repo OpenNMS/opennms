@@ -92,7 +92,6 @@ public class OnmsMonitoringSystem implements Serializable {
 
     public static final String TYPE_OPENNMS = "OpenNMS";
     public static final String TYPE_MINION = "Minion";
-    public static final String TYPE_SENTINEL = "Sentinel";
 
     @XmlID
     @XmlAttribute(name="id")

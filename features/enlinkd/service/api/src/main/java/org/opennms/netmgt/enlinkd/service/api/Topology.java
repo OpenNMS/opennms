@@ -45,7 +45,7 @@ public interface Topology {
 
     String printTopology();
     
-    static String getPortTextString(SnmpInterfaceTopologyEntity snmpiface) {
+    public static String getPortTextString(SnmpInterfaceTopologyEntity snmpiface) {
         final StringBuilder port = new StringBuilder();
         port.append(snmpiface.getIfName());
         if (!"".equals(snmpiface.getIfAlias()) ) {
@@ -65,7 +65,7 @@ public interface Topology {
         return port.toString();
     }
 
-    static String getPortTextString(String label, Integer ifindex, String address, SnmpInterfaceTopologyEntity snmpiface) {
+    public static String getPortTextString(String label, Integer ifindex, String address, SnmpInterfaceTopologyEntity snmpiface) {
         if (snmpiface == null) {
             return getPortTextString(label, ifindex, address);
         }
@@ -81,7 +81,7 @@ public interface Topology {
         return tooltipText.toString();        
     }
     
-    static String getPortTextString(String label, Integer ifindex, String address) {
+    public static String getPortTextString(String label, Integer ifindex, String address ) {
         final StringBuilder tooltipText = new StringBuilder();
         tooltipText.append(label);
         tooltipText.append(" ");
@@ -98,67 +98,78 @@ public interface Topology {
         return tooltipText.toString();
     }
 
-    static String getSharedSegmentId(TopologyShared designated) {
-        return "s:" +
-                Topology.getId(designated);
+    public static String getSharedSegmentId(BridgePort bp) {
+        StringBuffer id = new StringBuffer();
+        id.append("s:");
+        id.append(Topology.getId(bp));
+        return id.toString();
     }
 
-    static String getMacsCloudId(TopologyShared designated) {
-        return "m:" +
-                Topology.getId(designated);
+    public static String getSharedSegmentId(TopologyShared designated) {
+        StringBuffer id = new StringBuffer();
+        id.append("s:");
+        id.append(Topology.getId(designated));
+        return id.toString();
+    }
+
+    public static String getMacsCloudId(TopologyShared designated) {
+        StringBuffer id = new StringBuffer();
+        id.append("m:");
+        id.append(Topology.getId(designated));
+        return id.toString();
     }
     
-    static String getMacsIpLabel() {
+    public static String getMacsIpLabel() {
         return "Macs/ip addresses on Segment without node";
     }
 
-    static String getSharedSegmentLabel() {
+    public static String getSharedSegmentLabel() {
         return "Segment";
     }
     
-    static String getAddress(InetAddress address) {
+    public static String getAddress(InetAddress address) {
         return InetAddressUtils.str(address);
     }
     
-    static String getAddress(IpInterfaceTopologyEntity ip) {
+    public static String getAddress(IpInterfaceTopologyEntity ip) {
         if (ip == null) {
             return null;
         }
         return getAddress(ip.getIpAddress());
     }
-    static String getAddress(MacPort port) {
+    public static String getAddress(MacPort port ) {
         return port.getPortMacInfo();
     }
-    static String getAddress(MacCloud cloud) {
+    public static String getAddress(MacCloud cloud ) {
         return cloud.getMacsInfo();
     }
     
-    static String getAddress(BridgePort bp) {
+    public static String getAddress(BridgePort bp) {
         return String.format("bridge port %d vlan %d",bp.getBridgePort(),bp.getVlan());
     }
     
-    static String getAddress(CdpLinkTopologyEntity cdplink) {
+    public static String getAddress(CdpLinkTopologyEntity cdplink) {
         return cdplink.getCdpCacheAddress();
     }
 
-    static String getRemoteAddress(LldpLinkTopologyEntity lldplink) {
+    public static String getRemoteAddress(LldpLinkTopologyEntity lldplink) {
         return String.format("%s type %s", lldplink.getLldpRemPortId(),lldplink.getLldpRemPortIdSubType().name());
     }
 
-    static String getRemoteAddress(OspfLinkTopologyEntity ospflink) {
+    public static String getRemoteAddress(OspfLinkTopologyEntity ospflink) {
         return InetAddressUtils.str(ospflink.getOspfRemIpAddr());
     }
 
-    static String getAddress(OspfLinkTopologyEntity ospflink) {
+    public static String getAddress(OspfLinkTopologyEntity ospflink) {
         return String.format("%s mask %s", InetAddressUtils.str(ospflink.getOspfIpAddr()), InetAddressUtils.str(ospflink.getOspfIpMask()));
     }
 
-    static String getRemoteAddress(IsIsLinkTopologyEntity isislink) {
+    public static String getRemoteAddress(IsIsLinkTopologyEntity isislink) {
         return isislink.getIsisISAdjNeighSNPAAddress();
     }
 
-    static String getAddress(MacCloud cloud, List<MacPort> ports) {
-        StringBuilder ip = new StringBuilder();
+    public static String getAddress(MacCloud cloud, List<MacPort> ports) {
+        StringBuffer ip = new StringBuffer();
         if (cloud!= null) {
             ip.append(cloud.getMacsInfo());
         }
@@ -168,20 +179,37 @@ public interface Topology {
         return ip.toString();
     }
 
-    static String getMacsCloudIpTextString(TopologyShared shared, List<MacPort> ports) {
-        return "shared addresses: " +
-                "(" +
-                getAddress(shared.getCloud(), ports) +
-                ")" +
-                "(" +
-                getNodeStatus(OnmsNode.NodeType.UNKNOWN) +
-                "/" +
-                "Not an OpenNMS Node" +
-                ")";
+    public static String getMacsIpTextString(MacCloud cloud, List<MacPort> ports) {
+        final StringBuilder tooltipText = new StringBuilder();
+        tooltipText.append("shared addresses: ");
+        tooltipText.append("(");
+        tooltipText.append(getAddress(cloud, ports));
+        tooltipText.append(")");
+        tooltipText.append("(");
+        tooltipText.append(getNodeStatus(OnmsNode.NodeType.UNKNOWN));
+        tooltipText.append("/");
+        tooltipText.append("Not an OpenNMS Node");
+        tooltipText.append(")");        
+        return tooltipText.toString();
     
     }
 
-    static String getNodeTextString(NodeTopologyEntity node, IpInterfaceTopologyEntity primary) {
+    public static String getMacsCloudIpTextString(TopologyShared shared, List<MacPort> ports) {
+        final StringBuilder tooltipText = new StringBuilder();
+        tooltipText.append("shared addresses: ");
+        tooltipText.append("(");
+        tooltipText.append(getAddress(shared.getCloud(), ports));
+        tooltipText.append(")");
+        tooltipText.append("(");
+        tooltipText.append(getNodeStatus(OnmsNode.NodeType.UNKNOWN));
+        tooltipText.append("/");
+        tooltipText.append("Not an OpenNMS Node");
+        tooltipText.append(")");        
+        return tooltipText.toString();
+    
+    }
+
+    public static String getNodeTextString(NodeTopologyEntity node, IpInterfaceTopologyEntity primary) {
         final StringBuilder tooltipText = new StringBuilder();
         tooltipText.append(node.getLabel());
         tooltipText.append(": ");
@@ -206,12 +234,17 @@ public interface Topology {
     
     }
 
-    static String getSharedSegmentTextString(TopologyShared segment) {
+    public static String getSharedSegmentTextString(BridgePort bp) {
+        return String.format("'Shared Segment': %s" ,
+                bp.printTopology());
+    }
+
+    public static String getSharedSegmentTextString(TopologyShared segment) {
         return String.format("'Shared Segment': %s" ,
                 segment.getUpPort().printTopology());
     }
 
-    static String getIsManaged(boolean isManaged) {
+    public static String getIsManaged(boolean isManaged) {
         if (isManaged) {
             return "Managed";
         }
@@ -219,14 +252,14 @@ public interface Topology {
 
     }
 
-    static String getDefaultIconKey() {
+    public static String getDefaultIconKey() {
         return "linkd.system";        
     }
 
-    static String getCloudIconKey() {
+    public static String getCloudIconKey() {
         return "cloud";
     }
-    static String getIconKey(NodeTopologyEntity node) {
+    public static String getIconKey(NodeTopologyEntity node) {
         if (node.getSysObjectId() == null) {
             return "linkd.system";
         }
@@ -236,7 +269,7 @@ public interface Topology {
         return "linkd.system.snmp." + node.getSysObjectId();
         
     }
-    static String getNodeStatus(OnmsNode.NodeType nodeType) {
+    public static String getNodeStatus(OnmsNode.NodeType nodeType) {
         if (nodeType == null) {
             return "undefined";
         }
@@ -259,39 +292,41 @@ public interface Topology {
         return status;
     }
 
-    static String getDefaultEdgeId(int sourceId, int targetId) {
+    public static String getDefaultEdgeId(int sourceId,int targetId) {
         return Math.min(sourceId, targetId) + "|" + Math.max(sourceId, targetId);
     }  
-    static String getId(TopologyShared segment) {
+    public static String getId(TopologyShared segment) {
         return  getId(segment.getUpPort());
     }
     
-    static String getId(MacCloud macCloud) {
+    public static String getId(MacCloud macCloud) {
         return macCloud.getMacs().toString();
     }
-    static String getId(MacPort macPort) {
+    public static String getId(MacPort macPort) {
         if (macPort.getNodeId() == null) {
             return macPort.getMacPortMap().keySet().toString();
         }
         return Integer.toString(macPort.getNodeId());
     }
-    static String getId(BridgePort bp) {
+    public static String getId(BridgePort bp) {
         return bp.getNodeId()+":"+bp.getBridgePort();
     }
-    static String getEdgeId(BridgePort bp, MacPort macport) {
+    public static String getEdgeId(BridgePort bp, MacPort macport ) {
             return getId(bp)+"|"+getId(macport);
     }
-
-    static String getEdgeId(BridgePort sourcebp, BridgePort targetbp) {
-        if (sourcebp.getNodeId() < targetbp.getNodeId()) {
+    public static String getEdgeId(BridgePort bp, MacCloud macport ) {
+        return getId(bp)+"|"+getId(macport);
+    }
+    public static String getEdgeId(BridgePort sourcebp, BridgePort targetbp ) {
+        if (sourcebp.getNodeId().intValue() < targetbp.getNodeId().intValue()) {
             return getId(sourcebp)+"|"+getId(targetbp);
         }
         return getId(targetbp)+"|"+getId(sourcebp);
     }
-    static String getEdgeId(String id, MacPort macport) {
+    public static String getEdgeId(String id, MacPort macport) {
         return id + "|" + getId(macport);
     }
-    static String getEdgeId(String id, BridgePort bp) {
+    public static String getEdgeId(String id, BridgePort bp) {
         return id + "|" + bp.getNodeId() + ":" + bp.getBridgePort();
     }
     static String getDefaultEdgeId(String id1, String id2) {

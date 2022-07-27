@@ -135,14 +135,10 @@ public class WebMonitor extends AbstractServiceMonitor {
             }
 
             LOG.debug("getMethod parameters: {}", getMethod);
-            final long start = System.currentTimeMillis();
             CloseableHttpResponse response = clientWrapper.execute(getMethod);
-            final long end = System.currentTimeMillis();
             int statusCode = response.getStatusLine().getStatusCode();
             String statusText = response.getStatusLine().getReasonPhrase();
             String expectedText = ParameterMap.getKeyedString(map,"response-text",null);
-
-            final double responseTime = (end - start);
 
             LOG.debug("returned results are:");
 
@@ -150,7 +146,7 @@ public class WebMonitor extends AbstractServiceMonitor {
                 pollStatus = PollStatus.unavailable(statusText);
             }
             else {
-                pollStatus = PollStatus.available(responseTime);
+                pollStatus = PollStatus.available();
             }
 
             if (expectedText!=null){
@@ -160,11 +156,11 @@ public class WebMonitor extends AbstractServiceMonitor {
                         pollStatus = PollStatus.unavailable("Regex Failed");
                     }
                     else 
-                        pollStatus = PollStatus.available(responseTime);
+                        pollStatus = PollStatus.available();
                 }
                 else {
                     if(expectedText.equals(responseText))
-                        pollStatus = PollStatus.available(responseTime);
+                        pollStatus = PollStatus.available();
                     else
                         pollStatus = PollStatus.unavailable("Did not find expected Text");
                 }

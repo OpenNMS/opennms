@@ -30,7 +30,6 @@ package org.opennms.netmgt.enlinkd;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.DELHI_IP;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.DELHI_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.DELHI_SYSOID;
@@ -80,16 +79,16 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
 	Nms17216NetworkBuilder builder = new Nms17216NetworkBuilder();
 
     @Test
-    public void testGetSnmpNodeList() {
+    public void testGetSnmpNodeList() throws Exception {
         m_nodeDao.save(builder10205a.getMumbai());
         m_nodeDao.save(builder10205a.getDelhi());
         m_nodeDao.save(builder.getSwitch1());
 
         m_nodeDao.flush();
 
-        final int mumbai = m_nodeDao.findByForeignId("linkd", MUMBAI_NAME).getId();
-        final int delhi = m_nodeDao.findByForeignId("linkd", DELHI_NAME).getId();
-        final int switch1 = m_nodeDao.findByForeignId("linkd", SWITCH1_NAME).getId();
+        final int mumbai = m_nodeDao.findByForeignId("linkd", MUMBAI_NAME).getId().intValue();
+        final int delhi = m_nodeDao.findByForeignId("linkd", DELHI_NAME).getId().intValue();
+        final int switch1 = m_nodeDao.findByForeignId("linkd", SWITCH1_NAME).getId().intValue();
         
 
         List<Node> linkablenodes = m_linkd.getQueryManager().findAllSnmpNode();
@@ -107,7 +106,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         		assertEquals(InetAddressUtils.addr(SWITCH1_IP), linkablenode.getSnmpPrimaryIpAddr());
         		assertEquals(SWITCH1_SYSOID,linkablenode.getSysoid());
         	} else {
-                fail();
+        		assertTrue(false);
         	}
         }
 
@@ -124,7 +123,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         OneBridgeCompleteTopology topology = new OneBridgeCompleteTopology();
         m_nodeDao.save(topology.nodeA);
         
-        m_linkd.getBridgeTopologyService().store(topology.nodeAId, new ArrayList<>(topology.bftA));
+        m_linkd.getBridgeTopologyService().store(topology.nodeAId, new ArrayList<BridgeForwardingTableEntry>(topology.bftA));
         
         Set<BridgeForwardingTableEntry> links = m_linkd.getBridgeTopologyService().useBridgeTopologyUpdateBFT(topology.nodeAId);
         assertEquals(topology.bftA.size(), links.size());
@@ -302,7 +301,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
     }
     
     @Test 
-    public void testLoadTopology() {
+    public void testLoadTopology() throws BridgeTopologyException {
         final OnmsMonitoringLocation location = new OnmsMonitoringLocation(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID);
         ABCTopology topology = new ABCTopology();
         OnmsNode lnodeA = topology.nodeA;
@@ -510,13 +509,13 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         
         assertEquals(3, m_bridgeTopologyService.findAll().size());
 
-        BroadcastDomain nodeAbd = m_bridgeTopologyService.getBroadcastDomain(nodeA.getId());
+        BroadcastDomain nodeAbd = m_bridgeTopologyService.getBroadcastDomain(nodeA.getId().intValue());
         assertNotNull(nodeAbd);
-        BroadcastDomain nodeBbd = m_bridgeTopologyService.getBroadcastDomain(nodeB.getId());
-        BroadcastDomain nodeCbd = m_bridgeTopologyService.getBroadcastDomain(nodeC.getId());
+        BroadcastDomain nodeBbd = m_bridgeTopologyService.getBroadcastDomain(nodeB.getId().intValue());
+        BroadcastDomain nodeCbd = m_bridgeTopologyService.getBroadcastDomain(nodeC.getId().intValue());
         assertEquals(nodeAbd, nodeBbd);
         assertEquals(nodeAbd, nodeCbd);
-        nodeAbd.hierarchySetUp(nodeAbd.getBridge(nodeA.getId()));
+        BroadcastDomain.hierarchySetUp(nodeAbd,nodeAbd.getBridge(nodeA.getId()));
 
         topology.checkwithshared(nodeAbd);
         assertEquals(0, nodeAbd.getForwarders(topology.nodeAId).size());
@@ -532,9 +531,9 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         List<SharedSegment> nodeBSegments = m_bridgeTopologyService.getSharedSegments(nodeB.getId());
         assertEquals(3, nodeBSegments.size());
 
-        BroadcastDomain nodeDbd = m_bridgeTopologyService.getBroadcastDomain(nodeD.getId());
+        BroadcastDomain nodeDbd = m_bridgeTopologyService.getBroadcastDomain(nodeD.getId().intValue());
         assertNotNull(nodeDbd);
-        BroadcastDomain nodeEbd = m_bridgeTopologyService.getBroadcastDomain(nodeE.getId());
+        BroadcastDomain nodeEbd = m_bridgeTopologyService.getBroadcastDomain(nodeE.getId().intValue());
         assertEquals(nodeDbd, nodeEbd);
         
         assertEquals(2, nodeDbd.getBridges().size());
@@ -548,7 +547,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         assertEquals(54,deSegment.getBridgePort(nodeE.getId()).getBridgePort().intValue());
         assertTrue(deSegment.containsMac(topology.shar));
 
-        BroadcastDomain nodeKbd = m_bridgeTopologyService.getBroadcastDomain(nodeK.getId());
+        BroadcastDomain nodeKbd = m_bridgeTopologyService.getBroadcastDomain(nodeK.getId().intValue());
         assertNotNull(nodeKbd);
         assertEquals(1, nodeKbd.getBridges().size());
         assertEquals(1, nodeKbd.getSharedSegments().size());
@@ -642,12 +641,12 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         m_bridgeTopologyService.load();
 
         assertEquals(1, m_bridgeTopologyService.findAll().size());
-        BroadcastDomain nodeAbd = m_bridgeTopologyService.getBroadcastDomain(nodeA.getId());
+        BroadcastDomain nodeAbd = m_bridgeTopologyService.getBroadcastDomain(nodeA.getId().intValue());
         assertNotNull(nodeAbd);
-        BroadcastDomain nodeBbd = m_bridgeTopologyService.getBroadcastDomain(nodeB.getId());
+        BroadcastDomain nodeBbd = m_bridgeTopologyService.getBroadcastDomain(nodeB.getId().intValue());
         assertNotNull(nodeBbd);
         assertEquals(nodeAbd, nodeBbd);
-        BroadcastDomain nodeCbd = m_bridgeTopologyService.getBroadcastDomain(nodeC.getId());
+        BroadcastDomain nodeCbd = m_bridgeTopologyService.getBroadcastDomain(nodeC.getId().intValue());
         assertNotNull(nodeCbd);
         assertEquals(nodeAbd, nodeCbd);
         assertNotNull(nodeAbd.getRootBridge());
@@ -655,13 +654,11 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         assertNotNull(nodeAbd.getBridge(nodeA.getId()));
         assertNotNull(nodeAbd.getBridge(nodeB.getId()));
         assertNotNull(nodeAbd.getBridge(nodeC.getId()));
-        nodeAbd.hierarchySetUp(nodeAbd.getBridge(nodeA.getId()));
+        BroadcastDomain.hierarchySetUp(nodeAbd,nodeAbd.getBridge(nodeA.getId()));
         assertNotNull(nodeAbd.getRootBridge());
         topology.check(nodeAbd);
-
-        System.err.println(nodeAbd.printTopology());
+        
         m_linkd.deleteNode(nodeC.getId());
-        System.err.println(nodeAbd.printTopology());
         assertEquals(1, m_bridgeTopologyService.findAll().size());
         
         BroadcastDomain domain = m_bridgeTopologyService.findAll().iterator().next();
@@ -747,10 +744,10 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         m_bridgeTopologyService.load();
 
         assertEquals(1, m_bridgeTopologyService.findAll().size());
-        BroadcastDomain nodeAbd = m_bridgeTopologyService.getBroadcastDomain(nodeA.getId());
+        BroadcastDomain nodeAbd = m_bridgeTopologyService.getBroadcastDomain(nodeA.getId().intValue());
         assertNotNull(nodeAbd);
-        BroadcastDomain nodeBbd = m_bridgeTopologyService.getBroadcastDomain(nodeB.getId());
-        BroadcastDomain nodeCbd = m_bridgeTopologyService.getBroadcastDomain(nodeC.getId());
+        BroadcastDomain nodeBbd = m_bridgeTopologyService.getBroadcastDomain(nodeB.getId().intValue());
+        BroadcastDomain nodeCbd = m_bridgeTopologyService.getBroadcastDomain(nodeC.getId().intValue());
         assertEquals(nodeAbd, nodeBbd);
         assertEquals(nodeAbd, nodeCbd);
         assertNotNull(nodeAbd.getRootBridge());
@@ -758,7 +755,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         assertNotNull(nodeAbd.getBridge(nodeA.getId()));
         assertNotNull(nodeAbd.getBridge(nodeB.getId()));
         assertNotNull(nodeAbd.getBridge(nodeC.getId()));
-        nodeAbd.hierarchySetUp(nodeAbd.getBridge(nodeA.getId()));
+        BroadcastDomain.hierarchySetUp(nodeAbd,nodeAbd.getBridge(nodeA.getId()));
         assertNotNull(nodeAbd.getRootBridge());
         topology.check(nodeAbd);
 
@@ -850,10 +847,10 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         m_bridgeTopologyService.load();
 
         assertEquals(1,m_bridgeTopologyService.findAll().size());
-        BroadcastDomain nodeAbd = m_bridgeTopologyService.getBroadcastDomain(nodeA.getId());
+        BroadcastDomain nodeAbd = m_bridgeTopologyService.getBroadcastDomain(nodeA.getId().intValue());
         assertNotNull(nodeAbd);
-        BroadcastDomain nodeBbd = m_bridgeTopologyService.getBroadcastDomain(nodeB.getId());
-        BroadcastDomain nodeCbd = m_bridgeTopologyService.getBroadcastDomain(nodeC.getId());
+        BroadcastDomain nodeBbd = m_bridgeTopologyService.getBroadcastDomain(nodeB.getId().intValue());
+        BroadcastDomain nodeCbd = m_bridgeTopologyService.getBroadcastDomain(nodeC.getId().intValue());
         assertEquals(nodeAbd, nodeBbd);
         assertEquals(nodeAbd, nodeCbd);
         assertNotNull(nodeAbd.getRootBridge());
@@ -861,7 +858,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         assertNotNull(nodeAbd.getBridge(nodeA.getId()));
         assertNotNull(nodeAbd.getBridge(nodeB.getId()));
         assertNotNull(nodeAbd.getBridge(nodeC.getId()));
-        nodeAbd.hierarchySetUp(nodeAbd.getBridge(nodeA.getId()));
+        BroadcastDomain.hierarchySetUp(nodeAbd,nodeAbd.getBridge(nodeA.getId()));
         assertNotNull(nodeAbd.getRootBridge());
         topology.check(nodeAbd);
 
@@ -876,7 +873,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
     }
     
     @Test
-    public void checkBridgeTopologyService() {
+    public void checkBridgeTopologyService() throws BridgeTopologyException {
         
         NetworkBuilder nb = new NetworkBuilder();
         nb.addNode("pe01").
@@ -1124,23 +1121,25 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         assertEquals(0, emptysegment.getMacsOnSegment().size());
         
         //This code is inherited from EnlinkElementFactory
-        Map<String, List<OnmsIpInterface>> mactoIpNodeMap = new HashMap<>();
-        m_ipInterfaceDao.findByNodeId(ess01.getId()).forEach(ip -> m_ipNetToMediaDao.findByNetAddress(ip.getIpAddress()).forEach(ipnettomedia -> {
-            if (!mactoIpNodeMap.containsKey(ipnettomedia.getPhysAddress()))
-                mactoIpNodeMap.put(ipnettomedia.getPhysAddress(),
-                        new ArrayList<>());
-            mactoIpNodeMap.get(ipnettomedia.getPhysAddress()).add(ip);
-        }));
+        Map<String, List<OnmsIpInterface>> mactoIpNodeMap = new HashMap<String, List<OnmsIpInterface>>();
+        m_ipInterfaceDao.findByNodeId(ess01.getId()).stream().forEach( ip -> {
+            m_ipNetToMediaDao.findByNetAddress(ip.getIpAddress()).stream().forEach( ipnettomedia -> {
+                if (!mactoIpNodeMap.containsKey(ipnettomedia.getPhysAddress()))
+                    mactoIpNodeMap.put(ipnettomedia.getPhysAddress(),
+                                   new ArrayList<OnmsIpInterface>());
+                mactoIpNodeMap.get(ipnettomedia.getPhysAddress()).add(ip);
+            });
+        });
         
         assertEquals(1, mactoIpNodeMap.size());
         assertEquals(mac0, mactoIpNodeMap.keySet().iterator().next());
-        Set<String> ipsonmap = new HashSet<>();
-        mactoIpNodeMap.get(mac0).forEach(onmsip -> ipsonmap.add(str(onmsip.getIpAddress())));
+        Set<String> ipsonmap = new HashSet<String>();
+        mactoIpNodeMap.get(mac0).stream().forEach(onmsip -> ipsonmap.add(str(onmsip.getIpAddress())));
         assertEquals(2, ipsonmap.size());
         assertTrue(ipsonmap.contains("10.25.39.34"));
         assertTrue(ipsonmap.contains("10.25.139.61"));   
         
-        Set<Integer> nodelinks = new HashSet<>();
+        Set<Integer> nodelinks = new HashSet<Integer>();
         for (String mac : mactoIpNodeMap.keySet()) {
             SharedSegment segment = m_bridgeTopologyService.getSharedSegment(mac);
             if (segment.isEmpty()) {

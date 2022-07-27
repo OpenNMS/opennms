@@ -174,15 +174,17 @@ public final class LldpElement implements Serializable {
 	 * @return a {@link java.lang.String} object.
 	 */
 	public String toString() {
-        return "lldpelement: nodeid:[" +
-                (getNode() == null ? null : getNode().getId()) +
-                "], chassis type/id:[" +
-                LldpChassisIdSubType.getTypeString(getLldpChassisIdSubType().getValue()) +
-                "/" +
-                getLldpChassisId() +
-                "], sysname: " +
-                getLldpSysname() +
-                "]";
+            StringBuffer strb = new StringBuffer();
+            strb.append("lldpelement: nodeid:["); 
+            strb.append(getNode() == null ? null : getNode().getId());
+            strb.append("], chassis type/id:[");
+            strb.append(LldpChassisIdSubType.getTypeString(getLldpChassisIdSubType().getValue()));
+            strb.append("/");
+            strb.append(getLldpChassisId());
+            strb.append("], sysname: ");
+            strb.append(getLldpSysname());
+            strb.append("]");
+            return strb.toString();
 	}
 	public void merge(LldpElement element) {
 		if (element == null)

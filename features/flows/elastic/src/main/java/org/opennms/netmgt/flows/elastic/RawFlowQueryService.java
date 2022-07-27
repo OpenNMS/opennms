@@ -54,7 +54,6 @@ import org.opennms.netmgt.flows.api.LimitedCardinalityField;
 import org.opennms.netmgt.flows.api.TrafficSummary;
 import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
-import org.opennms.netmgt.flows.processing.ConversationKeyUtils;
 
 import com.google.common.collect.ImmutableTable;
 import com.google.common.collect.Table;

@@ -315,7 +315,10 @@ public interface PollerConfig extends PathOutageConfig {
             }
 
             if (!this.isInterfaceInPackage(ipAddr, pkg)) {
-                continue;
+                this.rebuildPackageIpListMap();
+                if (!this.isInterfaceInPackage(ipAddr, pkg)) {
+                    continue;
+                }
             }
 
             lastPkg = pkg;

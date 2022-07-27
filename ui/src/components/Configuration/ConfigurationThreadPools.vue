@@ -107,9 +107,7 @@ const threadPoolsErrors = ref<Record<string, boolean>>({})
 const threadPoolsActive = ref(false)
 const loading = ref(false)
 
-const getUpperBound = (key: string) => ['importThreads', 'writeThreads'].includes(key) ? 100 : 2000
-const upperBoundErrorMessage = (upperBound: number) => `Thread pool values have to be between 1 and ${upperBound}.`
-const snackbarErrorMessage = 'Thread pool values are outside of supported range.'
+const errorDefaultMessage = 'Thread pool values have to be between 1 and 2000.'
 
 const threadPoolData = computed(() => {
   const localThreads: Record<string, string> = {}
@@ -146,7 +144,7 @@ const updateThreadpools = async () => {
   // Validate Threadpool Data
   threadPoolKeys.forEach((key) => {
     const val = parseInt(currentThreadpoolState?.[key])
-    if (val < 1 || val > getUpperBound(key)) {
+    if (val < 1 || val > 2000) {
       threadPoolsErrors.value[key] = true
     }
   })
@@ -205,7 +203,7 @@ const updateThreadpools = async () => {
     }
   } else {
     showSnackBar({
-      msg: snackbarErrorMessage,
+      msg: errorDefaultMessage,
       error: true
     })
   }
@@ -227,7 +225,7 @@ const enterCheck = (key: { key: string }) => {
  * Determine is error is set for a key, and if so, return generic error message.
  */
 const getError = (key: string) => {
-  return threadPoolsErrors.value[key] ? upperBoundErrorMessage(getUpperBound(key)) : ''
+  return threadPoolsErrors.value[key] ? errorDefaultMessage : ''
 }
 </script>
 

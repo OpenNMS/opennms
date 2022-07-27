@@ -3,8 +3,12 @@
 </template>
 
 <script setup lang="ts">
-import { addStylesheet, getCSSPath, getJSPath } from '@/components/Plugin/utils'
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import * as Vue from 'vue/dist/vue.esm-bundler'
+import { addStylesheet } from '@/components/Plugin/utils'
 import Container from '@/components/Plugin/Container.vue'
+window.Vue = Vue
 
 const baseUrl = import.meta.env.VITE_BASE_REST_URL
 const externalJsUrl = ref<string>('')
@@ -25,8 +29,8 @@ const props = defineProps({
 })
 
 const addResources = () => {
-  externalJsUrl.value = getJSPath(baseUrl, props.extensionId, props.resourceRootPath, props.moduleFileName)
-  const externalCssUrl = getCSSPath(baseUrl, props.extensionId)
+  externalJsUrl.value = `${baseUrl}/plugins/ui-extension/module/${props.extensionId}?path=${props.resourceRootPath}/${props.moduleFileName}`
+  const externalCssUrl = `${baseUrl}/plugins/ui-extension/css/${props.extensionId}`
   addStylesheet(externalCssUrl)
 }
 

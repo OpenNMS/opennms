@@ -31,7 +31,6 @@
                                 <descriptor>mvn:org.opennms.newts/newts-karaf/${newtsVersion}/xml/features</descriptor>
                                 <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/features</descriptor>
                                 <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/spring-legacy</descriptor>
-                                <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/karaf-extensions</repository>
                                 <!-- Add Sentinel features -->
                                 <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/sentinel</descriptor>
                                 <!-- Additional tools -->
@@ -87,7 +86,6 @@
                                 <feature>sentinel-plugin-sample</feature>
 
                                 <!-- Other features -->
-                                <feature>cassandra-driver/${cassandraVersion}</feature>
                                 <feature>hawtio</feature>
                             </features>
                             <repository>${project.build.directory}/maven-repo</repository>
@@ -176,20 +174,6 @@
             <groupId>org.opennms.karaf</groupId>
             <artifactId>opennms</artifactId>
             <version>${project.version}</version>
-            <classifier>karaf-extensions</classifier>
-            <type>xml</type>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.karaf</groupId>
-            <artifactId>opennms</artifactId>
-            <version>${project.version}</version>
-            <classifier>sentinel</classifier>
-            <type>xml</type>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.karaf</groupId>
-            <artifactId>opennms</artifactId>
-            <version>${project.version}</version>
             <classifier>spring-legacy</classifier>
             <type>xml</type>
         </dependency>
@@ -244,6 +228,11 @@
         <dependency>
             <groupId>org.opennms.protocols</groupId>
             <artifactId>org.opennms.protocols.radius</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.protocols</groupId>
+            <artifactId>org.opennms.protocols.xmp</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -337,11 +326,6 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.opennms.features.flows</groupId>
-            <artifactId>org.opennms.features.flows.processing</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.opennms.features.flows.classification</groupId>
             <artifactId>org.opennms.features.flows.classification.shell</artifactId>
             <version>${project.version}</version>
@@ -359,7 +343,6 @@
         <dependency>
             <groupId>org.opennms.features.poller</groupId>
             <artifactId>org.opennms.features.poller.client-rpc</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opennms.features.poller.monitors</groupId>

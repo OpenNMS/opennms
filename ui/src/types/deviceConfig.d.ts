@@ -34,8 +34,7 @@ export interface DeviceConfigQueryParams extends QueryParameters {
   configType?: string
   createdAfter?: number
   createdBefore?: number
-  location?: string
   status?: status
 }
 
-export type status = 'NONE' | 'SUCCESS' | 'FAILED'
+export type status = 'none' | 'success' | 'failed'

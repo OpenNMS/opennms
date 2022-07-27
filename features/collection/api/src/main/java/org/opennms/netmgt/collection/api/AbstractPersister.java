@@ -30,6 +30,12 @@ package org.opennms.netmgt.collection.api;
 
 import java.util.LinkedList;
 
+import org.opennms.netmgt.collection.api.AttributeGroup;
+import org.opennms.netmgt.collection.api.AttributeType;
+import org.opennms.netmgt.collection.api.CollectionAttribute;
+import org.opennms.netmgt.collection.api.CollectionResource;
+import org.opennms.netmgt.collection.api.Persister;
+import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.support.AbstractCollectionSetVisitor;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.ResourceTypeUtils;
@@ -49,7 +55,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractPersister extends AbstractCollectionSetVisitor implements Persister {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AbstractPersister.class);
+    protected static final Logger LOG = LoggerFactory.getLogger(AbstractPersister.class);
 
     private boolean m_ignorePersist = false;
     private ServiceParameters m_params;

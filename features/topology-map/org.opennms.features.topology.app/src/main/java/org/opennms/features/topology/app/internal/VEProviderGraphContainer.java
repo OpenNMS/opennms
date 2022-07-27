@@ -242,16 +242,12 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     @Override
     public void redoLayout() {
         s_log.debug("redoLayout()");
-        try {
-            long graphHashOld = hash(m_graph);
-            getGraph();
-            long graphHashNew = hash(m_graph);
-            if(m_layoutAlgorithm != null  && graphHashOld != graphHashNew) {
-                m_layoutAlgorithm.updateLayout(m_graph);
-                fireGraphChanged();
-            }
-        } catch (Exception e) {
-            s_log.debug("Error updating UI elements: {}", e.getMessage());
+        long graphHashOld = hash(m_graph);
+        getGraph();
+        long graphHashNew = hash(m_graph);
+        if(m_layoutAlgorithm != null  && graphHashOld != graphHashNew) {
+            m_layoutAlgorithm.updateLayout(m_graph);
+            fireGraphChanged();
         }
     }
 

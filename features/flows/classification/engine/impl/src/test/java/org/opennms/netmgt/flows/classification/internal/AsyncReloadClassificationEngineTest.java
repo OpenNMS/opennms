@@ -32,7 +32,6 @@ import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -53,8 +52,6 @@ public class AsyncReloadClassificationEngineTest {
         var completed = new AtomicBoolean(false);
 
         ClassificationEngine ce = new ClassificationEngine() {
-            private List<ClassificationRulesReloadedListener> classificationRulesReloadedListeners = new ArrayList<>();
-
             @Override
             public String classify(ClassificationRequest classificationRequest) {
                 return null;
@@ -75,14 +72,6 @@ public class AsyncReloadClassificationEngineTest {
                     interrupted.incrementAndGet();
                     throw e;
                 }
-            }
-
-            public void addClassificationRulesReloadedListener(final ClassificationRulesReloadedListener classificationRulesReloadedListener) {
-                this.classificationRulesReloadedListeners.add(classificationRulesReloadedListener);
-            }
-
-            public void removeClassificationRulesReloadedListener(final ClassificationRulesReloadedListener classificationRulesReloadedListener) {
-                this.classificationRulesReloadedListeners.remove(classificationRulesReloadedListener);
             }
         };
 

@@ -29,14 +29,19 @@
 package org.opennms.netmgt.enlinkd.service.api;
 
 public class TopologyConnection <L,R> {
+    
+    public static <L, R> TopologyConnection<L, R>   of(L left, R right) {
+        return new TopologyConnection<L,R>(left, right);
+    }
 
-    public TopologyConnection(L left, R right) {
+
+    private TopologyConnection(L left, R right) {
         this.left = left;
         this.right = right;
     }
 
-    private final R right;
-    private final L left;
+    private R right;
+    private L left;
 
     public L getLeft() {
         return left;

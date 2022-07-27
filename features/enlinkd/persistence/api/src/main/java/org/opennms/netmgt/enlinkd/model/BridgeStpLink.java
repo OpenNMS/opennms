@@ -71,13 +71,13 @@ public class BridgeStpLink implements Serializable {
     	DOT1D_STP_PORT_STATUS_FORWARDING(5),
     	DOT1D_STP_PORT_STATUS_BROKEN(6);
 
-		private final int m_type;
+		private int m_type;
 
 		BridgeDot1dStpPortState(int type) {
 			m_type = type;
 		}
 		
-        private static final Map<Integer, String> s_stpPortStatusMap = new HashMap<>();
+        private static final Map<Integer, String> s_stpPortStatusMap = new HashMap<Integer, String>();
         
         static {
             s_stpPortStatusMap.put(1, "disabled" );
@@ -120,13 +120,13 @@ public class BridgeStpLink implements Serializable {
 		DOT1D_STP_PORT_ENABLED(1),
 		DOT1D_STP_PORT_DISABLED(2);
 		
-		private final int m_type;
+		private int m_type;
 
 		BridgeDot1dStpPortEnable(int type) {
 			m_type = type;
 		}
 		
-        private static final Map<Integer, String> s_stpPortenableMap = new HashMap<>();
+        private static final Map<Integer, String> s_stpPortenableMap = new HashMap<Integer, String>();
         
         static {
             s_stpPortenableMap.put(1, "enabled" );
@@ -257,7 +257,7 @@ public class BridgeStpLink implements Serializable {
 		m_stpPortPathCost = stpPortPathCost;
 	}
 
-    @Column(name="stpPortIfIndex")
+    @Column(name="stpPortIfIndex", nullable = true)
 	public Integer getStpPortIfIndex() {
 		return m_stpPortIfIndex;
 	}
@@ -268,7 +268,7 @@ public class BridgeStpLink implements Serializable {
 	}
 
 
-    @Column(name = "stpPortIfName", length = 32)
+    @Column(name = "stpPortIfName", length = 32, nullable = true)
 	public String getStpPortIfName() {
 		return m_stpPortIfName;
 	}
@@ -278,7 +278,7 @@ public class BridgeStpLink implements Serializable {
 		m_stpPortIfName = bridgePortIfName;
 	}
 
-	@Column(name="vlan")
+	@Column(name="vlan", nullable = true)
 	public Integer getVlan() {
 		return m_vlan;
 	}
@@ -315,7 +315,7 @@ public class BridgeStpLink implements Serializable {
 		m_designatedCost = designatedCost;
 	}	
 
-    @Column(name="designatedBridge",length=16)
+    @Column(name="designatedBridge",length=16, nullable=true)
 	public String getDesignatedBridge() {
 		return m_designatedBridge;
 	}

@@ -355,5 +355,4 @@ public class DaoWebEventRepository implements WebEventRepository, InitializingBe
             m_eventDao.update(event);
         }
     }
-
 }

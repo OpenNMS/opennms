@@ -66,12 +66,12 @@ public class IsIsLink implements Serializable {
         initializing(2),
         up(3),
         failed(4);
-        private final int m_value;
+        private int m_value;
 
         IsisISAdjState(int value) {
         	m_value=value;
         }
- 	    protected static final Map<Integer, String> s_typeMap = new HashMap<>();
+ 	    protected static final Map<Integer, String> s_typeMap = new HashMap<Integer, String>();
 
         static {
         	s_typeMap.put(1, "down" );
@@ -109,12 +109,12 @@ public class IsIsLink implements Serializable {
         l2IntermediateSystem(2),
         l1L2IntermediateSystem(3),
         unknown(4);
-        private final int m_value;
+        private int m_value;
 
         IsisISAdjNeighSysType(int value) {
         	m_value=value;
         }
- 	    protected static final Map<Integer, String> s_typeMap = new HashMap<>();
+ 	    protected static final Map<Integer, String> s_typeMap = new HashMap<Integer, String>();
 
         static {
         	s_typeMap.put(1, "l1_IntermediateSystem" );
@@ -210,7 +210,7 @@ public class IsIsLink implements Serializable {
 		m_isisISAdjIndex = isisISAdjIndex;
 	}
 
-    @Column(name="isisCircIfIndex")
+    @Column(name="isisCircIfIndex", nullable = true)
 	public Integer getIsisCircIfIndex() {
 		return m_isisCircIfIndex;
 	}
@@ -219,7 +219,7 @@ public class IsIsLink implements Serializable {
 		m_isisCircIfIndex = isisIfCircIndex;
 	}
 
-    @Column(name="isisCircAdminState")
+    @Column(name="isisCircAdminState", nullable = true)
     @Type(type="org.opennms.netmgt.enlinkd.model.IsIsAdminStateUserType")
 	public IsisAdminState getIsisCircAdminState() {
 		return m_isisCircAdminState;
@@ -327,21 +327,23 @@ public class IsIsLink implements Serializable {
 	 * @return a {@link java.lang.String} object.
 	 */
 	public String toString() {
+            StringBuffer strb = new StringBuffer();
+                strb.append("isislink: nodeid:["); 
+                strb.append(getNode().getId());
+                strb.append("]. circIndex:[ ");
+                strb.append(getIsisCircIndex());
+                strb.append("], ifindex:[");
+                strb.append(getIsisCircIfIndex());
+                strb.append("], AdminState:[");
+                strb.append(IsisAdminState.getTypeString(getIsisCircAdminState().getValue()));
+                strb.append("], ISAdjNeighSysID:[");
+                strb.append(getIsisISAdjNeighSysID());
+                strb.append("], ISAdjNeighSNPAAddress:[");
+                strb.append(getIsisISAdjNeighSNPAAddress());
+                strb.append("], ISAdjState:[");
+                strb.append(IsisISAdjState.getTypeString(getIsisISAdjState().getValue()));
+                strb.append("]");
 
-		return "isislink: nodeid:[" +
-				getNode().getId() +
-				"]. circIndex:[ " +
-				getIsisCircIndex() +
-				"], ifindex:[" +
-				getIsisCircIfIndex() +
-				"], AdminState:[" +
-				IsisAdminState.getTypeString(getIsisCircAdminState().getValue()) +
-				"], ISAdjNeighSysID:[" +
-				getIsisISAdjNeighSysID() +
-				"], ISAdjNeighSNPAAddress:[" +
-				getIsisISAdjNeighSNPAAddress() +
-				"], ISAdjState:[" +
-				IsisISAdjState.getTypeString(getIsisISAdjState().getValue()) +
-				"]";
+            return strb.toString();
         }
 }

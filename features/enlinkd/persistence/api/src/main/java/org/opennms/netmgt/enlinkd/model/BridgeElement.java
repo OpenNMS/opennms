@@ -67,25 +67,25 @@ public class BridgeElement implements Serializable {
 		DOT1D_STP_PROTOCOL_SPECIFICATION_IEEE8021D(3),
 		DOT1D_STP_PROTOCOL_SPECIFICATION_IEEE8021M(4),
 		DOT1D_STP_PROTOCOL_SPECIFICATION_IEEE8021AQ(5);
-		private final int m_type;
+		private int m_type;
 
 		BridgeDot1dStpProtocolSpecification(int type) {
 			m_type = type;
 		}
 		
-	    protected static final Map<Integer, String> TYPE_MAP = new HashMap<>();
+	    protected static final Map<Integer, String> s_typeMap = new HashMap<Integer, String>();
 
         static {
-        	TYPE_MAP.put(1, "unknown" );
-        	TYPE_MAP.put(2, "decLb100" );
-        	TYPE_MAP.put(3, "ieee802.1d" );
-        	TYPE_MAP.put(4, "ieee802.1m" );
-        	TYPE_MAP.put(5, "ieee802.1aq" );
+        	s_typeMap.put(1, "unknown" );
+        	s_typeMap.put(2, "decLb100" );
+        	s_typeMap.put(3, "ieee802.1d" );
+        	s_typeMap.put(4, "ieee802.1m" );
+        	s_typeMap.put(5, "ieee802.1aq" );
         }
         
         public static String getTypeString(Integer code) {
-            if (TYPE_MAP.containsKey(code))
-                    return TYPE_MAP.get( code);
+            if (s_typeMap.containsKey(code))
+                    return s_typeMap.get( code);
             return "other-vendor-specific";
         }
 
@@ -96,7 +96,7 @@ public class BridgeElement implements Serializable {
         public static BridgeDot1dStpProtocolSpecification get(Integer code) {
             if (code == null )
                 throw new IllegalArgumentException("Cannot create Dot1dStpProtocolSpecification from null code");
-            if (code <= 0 )
+            if (code.intValue() <= 0 ) 
                 throw new IllegalArgumentException("Cannot create Dot1dStpProtocolSpecification from" + code +" code");
             switch (code) {
             case 1: 	return DOT1D_STP_PROTOCOL_SPECIFICATION_UNKNOWN;
@@ -118,13 +118,13 @@ public class BridgeElement implements Serializable {
 		DOT1DBASETYPE_SOURCEROUTE_ONLY(3),
 		DOT1DBASETYPE_SRT(4);
 		
-		private final int m_type;
+		private int m_type;
 
 		BridgeDot1dBaseType(int type) {
 			m_type=type;
 		}
 		
-	    protected static final Map<Integer, String> s_typeMap = new HashMap<>();
+	    protected static final Map<Integer, String> s_typeMap = new HashMap<Integer, String>();
 
         static {
         	s_typeMap.put(1, "unknown" );
@@ -238,7 +238,7 @@ public class BridgeElement implements Serializable {
 	}
 
 
-    @Column(name="vlan")
+    @Column(name="vlan", nullable = true)
 	public Integer getVlan() {
 		return m_vlan;
 	}
@@ -249,7 +249,7 @@ public class BridgeElement implements Serializable {
 	}
 
 
-    @Column(name="vlanname",length=64)
+    @Column(name="vlanname",length=64, nullable=true)
 	public String getVlanname() {
 		return m_vlanname;
 	}
@@ -260,7 +260,7 @@ public class BridgeElement implements Serializable {
 	}
 
 
-    @Column(name="stpProtocolSpecification")
+    @Column(name="stpProtocolSpecification", nullable = true)
     @Type(type="org.opennms.netmgt.enlinkd.model.BridgeDot1dStpProtocolSpecificationUserType")
 	public BridgeDot1dStpProtocolSpecification getStpProtocolSpecification() {
 		return m_stpProtocolSpecification;
@@ -271,7 +271,7 @@ public class BridgeElement implements Serializable {
 	}
 
 
-    @Column(name="stpPriority")
+    @Column(name="stpPriority", nullable = true)
 	public Integer getStpPriority() {
 		return m_stpPriority;
 	}
@@ -282,7 +282,7 @@ public class BridgeElement implements Serializable {
 	}
 
 
-    @Column(name="stpDesignatedRoot",length=16)
+    @Column(name="stpDesignatedRoot",length=16, nullable = true)
 	public String getStpDesignatedRoot() {
 		return m_stpDesignatedRoot;
 	}
@@ -293,7 +293,7 @@ public class BridgeElement implements Serializable {
 	}
 
 
-    @Column(name="stpRootCost")
+    @Column(name="stpRootCost", nullable = true)
 	public Integer getStpRootCost() {
 		return m_stpRootCost;
 	}
@@ -304,7 +304,7 @@ public class BridgeElement implements Serializable {
 	}
 
 
-    @Column(name="stpRootPort")
+    @Column(name="stpRootPort", nullable = true)
 	public Integer getStpRootPort() {
 		return m_stpRootPort;
 	}

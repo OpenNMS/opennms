@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -104,7 +104,6 @@
 				<% } %>
 			</select>
 		</div>
-
 		<div class="form-group col-sm-6">
 			<label for="systemId">System-ID</label>
 			<select class="form-control custom-select" name="systemId">
@@ -119,27 +118,26 @@
 	</div>
 
 	<div class="row">
-        <div class="form-group col-sm-6">
-            <label for="severity">Severity</label>
-            <% for (OnmsSeverity severity : OnmsSeverity.values()) { %>
-                <div>
-                    <label>
-                        <input type="checkbox" name="severity-<%=severity.getId()%>" value="1" /> <%=severity.getLabel()%>
-                    </label>
-                </div>
-            <% } %>
-        </div>
-
-        <div class="form-group col-sm-6">
-            <label for="service">Service</label>
-            <% for (String name : serviceNameSet) { %>
-                <div>
-                    <label>
-                        <input type="checkbox" name="service-<%=serviceNameMap.get(name)%>" value="1" /> <%=name%>
-                    </label>
-                </div>
-            <% } %>
-        </div>
+	<div class="form-group col-sm-6">
+		<label for="severity">Severity</label>
+		<select class="form-control custom-select" name="severity">
+			<option selected="selected">Any</option>
+			<% for (OnmsSeverity severity : OnmsSeverity.values() ) { %>
+			<option value="<%= severity.getId() %>">
+				<%= severity.getLabel() %>
+			</option>
+			<% } %>
+		</select>
+	</div>
+	<div class="form-group col-sm-6">
+		<label for="service">Service</label>
+		<select class="form-control custom-select" name="service">
+			<option selected>Any</option>
+			<% for (String name : serviceNameSet) { %>
+				<option value="<%=serviceNameMap.get(name)%>"><%=name%></option>
+			<% } %>
+		</select>
+	</div>
 	</div>
 
 	<div class="row">

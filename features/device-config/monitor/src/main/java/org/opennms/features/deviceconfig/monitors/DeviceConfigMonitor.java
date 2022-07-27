@@ -32,14 +32,10 @@ import static java.util.stream.Collectors.toMap;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.StringReader;
 import java.net.InetSocketAddress;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.KeyFactory;
-import java.security.spec.EncodedKeySpec;
-import java.security.spec.X509EncodedKeySpec;
 import java.time.Duration;
 import java.util.Date;
 import java.util.HashMap;
@@ -76,12 +72,10 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
     public static final String SSH_PORT = "ssh-port";
     public static final String SSH_TIMEOUT = "ssh-timeout";
     public static final String PASSWORD = "password";
-    public static final String AUTH_KEY = "auth-key";
     public static final String HOST_KEY = "host-key";
     public static final String LAST_RETRIEVAL = "lastRetrieval";
     public static final String SCRIPT_FILE = "script-file";
     private static final String SCRIPT_ERROR = "script-error";
-    public static final String SHELL = "shell";
 
     private static final Duration DEFAULT_DURATION = Duration.ofMinutes(1); // 60sec
     private static final int DEFAULT_SSH_PORT = 22;
@@ -169,47 +163,43 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
         String script = getObjectAsStringFromParams(parameters, SCRIPT);
         String user = getObjectAsStringFromParams(parameters, USERNAME);
         String password = getObjectAsStringFromParams(parameters, PASSWORD);
-        String authKey = getObjectAsStringFromParams(parameters, AUTH_KEY);
         Integer port = getKeyedInteger(parameters, SSH_PORT, DEFAULT_SSH_PORT);
         String configType = getKeyedString(parameters, DeviceConfigConstants.CONFIG_TYPE, ConfigType.Default);
         Long timeout = getKeyedLong(parameters, SSH_TIMEOUT, DEFAULT_DURATION.toMillis());
         String hostKeyFingerprint = getKeyedString(parameters, HOST_KEY, null);
         var stringParameters = parameters.entrySet().stream().collect(toMap(Map.Entry::getKey, e -> String.valueOf(e.getValue())));
-        String shell = getKeyedString(parameters, SHELL, null);
-
         final var target = new InetSocketAddress(svc.getAddress(), port);
-
         var future = retriever.retrieveConfig(
                 Retriever.Protocol.TFTP,
                 script,
                 user,
                 password,
-                authKey,
                 target,
                 hostKeyFingerprint,
-                shell,
                 configType,
                 stringParameters,
-                Duration.ofMillis(timeout).minusSeconds(1)
+                Duration.ofMillis(timeout)
         ).thenApply(either ->
                 either.fold(
                         failure -> {
-                            LOG.error("Device config retrieval could not be triggered - target: {}; script: {};  message: {} \nstdout: {}\nstderr: {}", target, script, failure.message, failure.stdout, failure.stderr);
-                            final var pollStatus = PollStatus.unavailable(failure.message);
-                            pollStatus.setDeviceConfig(new DeviceConfig(failure.scriptOutput));
+                            var reason = "Device config retrieval could not be triggered - target: " + target + ";  message: " + failure.message
+                                         + "\nstdout: " + failure.stdout
+                                         + "\nstderr: " + failure.stderr;
+                            LOG.error(reason);
+                            final var pollStatus = PollStatus.unavailable(reason);
+                            pollStatus.setDeviceConfig(new DeviceConfig());
                             return pollStatus;
                         },
                         success -> {
                             LOG.debug("Retrieved device configuration - target: " + target);
                             var pollStatus = PollStatus.up();
-                            pollStatus.setDeviceConfig(new DeviceConfig(success.config, success.filename, success.scriptOutput));
+                            pollStatus.setDeviceConfig(new DeviceConfig(success.config, success.filename));
                             return pollStatus;
                         }
                 )
         );
 
         try {
-            LOG.debug("Starting retrieval, waiting at most {} milliseconds", timeout);
             return future.toCompletableFuture().get(timeout, TimeUnit.MILLISECONDS);
         } catch (Exception e) {
             LOG.error("Device config retrieval failed - target: " + target, e);
@@ -247,7 +237,7 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
     private String getObjectAsStringFromParams(Map<String, Object> params, String key) {
         Object obj = params.get(key);
         if (obj == null) {
-            return null;
+            throw new IllegalArgumentException(key + " doesn't exist");
         }
         if (obj instanceof String) {
             return (String) obj;

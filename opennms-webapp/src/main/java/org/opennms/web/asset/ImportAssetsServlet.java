@@ -57,7 +57,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.opencsv.CSVReader;
-import com.opencsv.exceptions.CsvValidationException;
 
 /**
  * <p>ImportAssetsServlet class.</p>
@@ -293,7 +292,7 @@ public class ImportAssetsServlet extends HttpServlet {
                     errors.add("Ignoring malformed import for entry " + count + ", node id not a number.");
                 }
             }
-        } catch (IOException|CsvValidationException e) {
+        } catch (IOException e) {
             logger.error("An error occurred reading the CSV input. Message:'{}'", e.getMessage());
             throw new AssetException("An error occurred reading the CSV input.", e);
         } finally {

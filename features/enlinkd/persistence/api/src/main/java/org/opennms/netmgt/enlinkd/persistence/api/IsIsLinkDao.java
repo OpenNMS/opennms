@@ -52,6 +52,6 @@ public interface IsIsLinkDao extends OnmsDao<IsIsLink, Integer> {
 
     void deleteByNodeIdOlderThen(Integer nodeiId, Date now);
     
-    void deleteByNodeId(Integer nodeId);
+    public void deleteByNodeId(Integer nodeId);
 
 }

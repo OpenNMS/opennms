@@ -20,10 +20,8 @@ See the xref:operation:admin/daemon-config-files.adoc[system administration] sec
 | Actiond
 | Generates Java actions based on events received.
 
-
-| Alarmd
+| xref:daemons/daemon-config-files/alarmd.adoc[Alarmd]
 | Alarm daemon handles the alarm workflows.
-
 
 | AsteriskGateway
 | Communicates with an Asterisk server for VOIP notification.
@@ -31,13 +29,13 @@ See the xref:operation:admin/daemon-config-files.adoc[system administration] sec
 | Bsmd
 | Business Service Monitoring
 
-| Collectd
-| Collects data from nodes to persist performance metrics over time.
+| xref:daemons/daemon-config-files/collectd.adoc[Collectd]
+| Collect daemon is responsible for collecting data from nodes.
 
 | Correlator
 | Associate multiple, related events.
 
-| Discovery
+| xref:daemons/daemon-config-files/discovery.adoc[Discovery]
 | The Discovery daemon provides network discovery functions to scan once or regularly for nodes that should be added into the OpenNMS database.
 
 | EnhancedLinkd
@@ -46,29 +44,28 @@ See the xref:operation:admin/daemon-config-files.adoc[system administration] sec
 | EventTranslator
 | The Event Translator (ET) can transform and enhance the data from OpenNMS events that other daemons generate.
 
-| Eventd
+| xref:daemons/daemon-config-files/eventd.adoc[Eventd]
 | Receives and writes event information.
 
 | JettyServer
 | The Jetty server provides the {page-component-title} web user interface.
 
-| Karaf
-| The Karaf runtime is the framework that maintains all the other daemons running within the {page-component-title} system.
-
 | KarafStartupMonitor
-| Used in startup script to detect if Karaf started properly.
+|
 
-| Notifd
+| Manager
+|
+
+| xref:daemons/daemon-config-files/notifd.adoc[Notifd]
 | Notification daemon can send notifications to other systems based on event UEIs.
 
 | PassiveStatusd
-| The Passive Status Keeper provides a mechanism to generate service outages based on events.
-This can be helpful for devices that cannot be directly polled to check service state.
+|
 
 | PerspectivePoller
-| Handles Application Perspective Monitoring availability calculations.
+|
 
-| Pollerd
+| xref:daemons/daemon-config-files/pollerd.adoc[Pollerd]
 | Poller daemon is responsible for the service availability monitoring.
 
 | Provisiond
@@ -86,25 +83,29 @@ This can be helpful for devices that cannot be directly polled to check service 
 | Scriptd
 | Scriptd allows the user to configure Bean Shell script to run in response to events.
 
-| SnmpPoller
-| Checks SNMP interface admin status. Separate from Pollerd's SnmpMonitor.
+| xref:daemons/daemon-config-files/snmp-interface-poller.adoc[SnmpPoller]
+| Checks SNMP interface admin status.
+Separate from Pollerd's SnmpMonitor.
 
 | Statsd
-| Generates statistical reports from node data.
+|
 
-| Syslogd
+| xref:daemons/daemon-config-files/syslogd.adoc[Syslogd]
 | A syslog daemon that allows retrieval and parsing of syslog messages to generate events.
 
-| Telemetryd
+| xref:daemons/daemon-config-files/telemetryd.adoc[Telemetryd]
 | The Telemetry daemon collects sensor data sent from nodes to {page-component-title}.
 
-| Ticketer
+| TestLoadLibraries
+|
+
+| xref:operation:ticketing/introduction.adoc[Ticketer]
 | The ticketing integration lets Horizon create trouble tickets in external systems.
 
-| Tl1d
+| xref:operation:events/sources/tl1.adoc[Tl1d]
 | Enables reception of TL1 autonomous messages.
 
-| Trapd
+| xref:daemons/daemon-config-files/trapd.adoc[Trapd]
 | Trap daemon provides an SNMP server that accepts SNMP traps that can be converted to events.
 
 | Vacuumd

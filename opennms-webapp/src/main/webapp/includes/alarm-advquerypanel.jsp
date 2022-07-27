@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -86,28 +86,30 @@
 		<input class="form-control" type="text" name="nodenamelike" />
 	</div>
 
-    <div class="form-group col-sm-6">
-        <label for="severity">Severity</label>
-        <% for (OnmsSeverity severity : OnmsSeverity.values()) { %>
-            <div>
-                <label>
-                    <input type="checkbox" name="severity-<%=severity.getId()%>" value="1" /> <%=severity.getLabel()%>
-                </label>
-            </div>
-        <% } %>
-    </div>
+	<div class="form-group col-sm-6">
+		<label for="severity">Severity</label>
+		<select class="form-control custom-select" name="severity">
+			<option selected="selected"><%=AlarmUtil.ANY_SEVERITIES_OPTION%></option>
 
-    <!-- Use clear:left to make sure that this column breaks onto a new row -->
-    <div class="form-group col-sm-6">
-        <label for="service">Service</label>
-        <% for (String name : serviceNameSet) { %>
-            <div>
-                <label>
-                    <input type="checkbox" name="service-<%=serviceNameMap.get(name)%>" value="1" /> <%=name%>
-                </label>
-            </div>
-        <% } %>
-    </div>
+			<% for (OnmsSeverity severity : OnmsSeverity.values()) { %>
+			<option value="<%=severity.getId()%>">
+				<%=severity.getLabel()%>
+			</option>
+			<% } %>
+		</select>
+	</div>
+
+	<!-- Use clear:left to make sure that this column breaks onto a new row -->
+	<div class="form-group col-sm-6" style="clear: left;">
+		<label for="service">Service</label>
+		<select class="form-control custom-select" name="service">
+			<option selected><%=AlarmUtil.ANY_SERVICES_OPTION%></option>
+
+			<% for (String name : serviceNameSet) { %>
+			<option value="<%=serviceNameMap.get(name)%>"><%=name%></option>
+			<% } %>
+		</select>
+	</div>
 
 	<div class="form-group col-sm-6">
 		<label for="sortby">Sort By</label>
@@ -156,16 +158,13 @@
 			<option value="<%=category%>"><%=category%></option>
 			<% } %>
 		</select>
-
-        <label for="nestedCategoryNot">Exclude:</label>
-        <input type="checkbox" name="nestedCategoryNot" />
 	</div>
 
 	<div class="col-sm-6 my-2">
 		<label data-toggle="collapse" data-target="#collapseAlarmsFirstAfter" aria-expanded="false" aria-controls="collapseAlarmsFirstAfter">
-			<input type="checkbox" name="useafterfirsteventtime" value="1" /> Filter for Alarms after First Event:
+			<input type="checkbox" name="useafterfirsteventtime" value="1" /> Filter for Alarm's First Event After:
 		</label>
-		<!--
+		<!-- 
 		<input type="date" name="beforedate"/>
 		<input type="time" name="beforetime"/>
 		-->
@@ -210,9 +209,9 @@
 
 	<div class="col-sm-6 my-2">
 		<label data-toggle="collapse" data-target="#collapseAlarmsFirstBefore" aria-expanded="false" aria-controls="collapseAlarmsFirstBefore">
-			<input type="checkbox" name="usebeforefirsteventtime" value="1" /> Filter for Alarms before First Event:
+			<input type="checkbox" name="usebeforefirsteventtime" value="1" /> Filter for Alarm's First Event Before:
 		</label>
-		<!--
+		<!-- 
 		<input type="date" name="beforedate"/>
 		<input type="time" name="beforetime"/>
 		-->
@@ -257,9 +256,9 @@
 
 	<div class="col-sm-6 my-2">
 		<label data-toggle="collapse" data-target="#collapseAlarmsLastAfter" aria-expanded="false" aria-controls="collapseAlarmsLastAfter">
-			<input type="checkbox" name="useafterlasteventtime"	value="1" /> Filter for Alarms after Last Event:
+			<input type="checkbox" name="useafterlasteventtime"	value="1" /> Filter for Alarm's Last Event After:
 		</label>
-		<!--
+		<!-- 
 		<input type="date" name="beforedate"/>
 		<input type="time" name="beforetime"/>
 		-->
@@ -304,7 +303,7 @@
 
 	<div class="col-sm-6 my-2">
 		<label data-toggle="collapse" data-target="#collapseAlarmsLasttBefore" aria-expanded="false" aria-controls="collapseAlarmsLasttBefore">
-			<input type="checkbox" name="usebeforelasteventtime" value="1" /> Filter for Alarms before Last Event:
+			<input type="checkbox" name="usebeforelasteventtime" value="1" /> Filter for Alarm Last Event Before:
 		</label>
 		<!-- 
 		<input type="date" name="beforedate"/>

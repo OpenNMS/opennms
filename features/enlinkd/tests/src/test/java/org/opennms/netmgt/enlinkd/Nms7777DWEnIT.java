@@ -29,7 +29,6 @@
 package org.opennms.netmgt.enlinkd;
 
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertEquals;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.DW_IP;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.DW_NAME;
@@ -50,7 +49,7 @@ public class Nms7777DWEnIT extends EnLinkdBuilderITCase {
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=DW_IP, port=161, resource=DW_SNMP_RESOURCE)
     })
-    public void testLldpNoLinks() {
+    public void testLldpNoLinks() throws Exception {
         
         m_nodeDao.save(builder.getDragonWaveRouter());
         m_nodeDao.flush();
@@ -59,12 +58,12 @@ public class Nms7777DWEnIT extends EnLinkdBuilderITCase {
         m_linkdConfig.getConfiguration().setUseOspfDiscovery(false);
         m_linkdConfig.getConfiguration().setUseIsisDiscovery(false);
         m_linkdConfig.getConfiguration().setUseCdpDiscovery(false);
-
-        assertFalse(m_linkdConfig.useIsisDiscovery());
-        assertFalse(m_linkdConfig.useBridgeDiscovery());
-        assertFalse(m_linkdConfig.useOspfDiscovery());
+        
+        assertTrue(!m_linkdConfig.useIsisDiscovery());
+        assertTrue(!m_linkdConfig.useBridgeDiscovery());
+        assertTrue(!m_linkdConfig.useOspfDiscovery());
         assertTrue(m_linkdConfig.useLldpDiscovery());
-        assertFalse(m_linkdConfig.useCdpDiscovery());
+        assertTrue(!m_linkdConfig.useCdpDiscovery());
         
         final OnmsNode dw = m_nodeDao.findByForeignId("linkd", DW_NAME);
         

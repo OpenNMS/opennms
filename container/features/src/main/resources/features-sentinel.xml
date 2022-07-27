@@ -6,7 +6,6 @@
         xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.4.0 http://karaf.apache.org/xmlns/features/v1.4.0"
 >
     <!-- OpenNMS Features -->
-    <repository>mvn:${project.groupId}/${project.artifactId}/${project.version}/xml/core</repository>
     <repository>mvn:${project.groupId}/${project.artifactId}/${project.version}/xml/features</repository>
 
     <!-- Newts Features -->
@@ -72,7 +71,6 @@
 
         <!-- Useful Commands -->
         <bundle>mvn:org.opennms.core/org.opennms.core.commands/${project.version}</bundle>
-        <bundle>mvn:org.opennms.core/org.opennms.core.lib/${project.version}</bundle>
 
         <!-- SystemProperties -->
         <bundle>mvn:org.opennms.core/org.opennms.core.sysprops/${project.version}</bundle>
@@ -124,7 +122,6 @@
     </feature>
 
     <feature name="sentinel-flows" description="OpenNMS :: Sentinel :: Flows" version="${project.version}">
-        <feature version="${guavaOsgiVersion}" prerequisite="true">guava</feature>
         <feature>sentinel-telemetry</feature>
         <feature>opennms-jest</feature>
         <feature>opennms-telemetry-collection</feature>
@@ -138,8 +135,8 @@
         <bundle>mvn:org.opennms.features.flows.classification.engine/org.opennms.features.flows.classification.engine.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.flows.classification.engine/org.opennms.features.flows.classification.engine.impl/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.flows/org.opennms.features.flows.elastic/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.flows/org.opennms.features.flows.processing/${project.version}</bundle>
         <bundle>wrap:mvn:org.freemarker/freemarker/${freemarkerVersion}</bundle>
+        <bundle>mvn:com.google.guava/guava/${guavaVersion}</bundle>
         <bundle>mvn:org.mongodb/bson/${bsonVersion}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.cache/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.netflow/org.opennms.features.telemetry.protocols.netflow.transport/${project.version}</bundle>
@@ -207,18 +204,50 @@
         <bundle>mvn:org.opennms.features.distributed/coordination-shell/${project.version}</bundle>
     </feature>
 
+    <feature name="zookeeper-dependencies" version="${zookeeperVersion}" description="ZooKeeper Dependencies">
+        <bundle dependency="true">mvn:org.apache.zookeeper/zookeeper/${zookeeperVersion}</bundle>
+        <bundle dependency="true">mvn:com.google.guava/guava/16.0.1</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/2.10.0</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/2.10.0</bundle>
+        <bundle dependency="true">mvn:org.apache.curator/curator-client/2.9.1</bundle>
+        <bundle dependency="true">mvn:org.apache.curator/curator-framework/2.9.1</bundle>
+        <bundle dependency="true">mvn:org.apache.curator/curator-recipes/2.9.1</bundle>
+    </feature>
+
     <!-- Newts -->
     <feature name="sentinel-newts" description="OpenNMS :: Sentinel :: Newts" version="${project.version}">
-        <feature version="${guavaOsgiVersion}" prerequisite="true">guava</feature>
-        <feature version="${cassandraVersion}" prerequisite="true">cassandra-driver</feature>
         <feature>sentinel-core</feature>
-        <feature>opennms-newts</feature>
+        <feature>groovy</feature>
+        <feature>guava</feature>
+        <feature>opennms-measurements-api</feature>
+        <feature>opennms-collection-api</feature>
+        <feature>opennms-dao-api</feature>
+        <feature>newts-cassandra</feature>
+        <feature>newts-cassandra-search</feature>
+        <feature>fst</feature>
+
+        <bundle dependency="true">wrap:mvn:com.googlecode.concurrent-trees/concurrent-trees/${concurrentTreesVersion}</bundle>
+        <bundle dependency="true">mvn:com.lmax/disruptor/${lmaxDisruptorVersion}</bundle>
+        <bundle dependency="true">wrap:mvn:com.swrve/rate-limited-logger/${rateLimitedLoggerVersion}</bundle>
+        <bundle dependency="true">mvn:org.apache.commons/commons-pool2/2.4.2</bundle>
+        <bundle dependency="true">mvn:redis.clients/jedis/2.8.1</bundle>
+        <bundle dependency="true">mvn:args4j/args4j/${args4jVersion}</bundle>
+
+        <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.persistence.osgi/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features/org.opennms.features.newts/${project.version}</bundle>
+    </feature>
+    
+    <feature name="fst" description="FST" version="${project.version}">
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/2.6.6</bundle>
+        <bundle dependency="true">mvn:org.javassist/javassist/3.19.0-GA</bundle>
+        <bundle dependency="true">mvn:org.objenesis/objenesis/2.4</bundle>
+        <bundle dependency="true">mvn:de.ruedigermoeller/fst/${fstVersion}</bundle>
     </feature>
 
     <feature name="sentinel-kvstore-api"
              description="OpenNMS :: Features :: Distributed :: Key Value Store :: API"
              version="${project.version}">
-        <feature version="${guavaOsgiVersion}" prerequisite="true">guava</feature>
+        <bundle dependency="true">mvn:com.google.guava/guava/${guavaVersion}</bundle>
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.api/${project.version}</bundle>
     </feature>
 
@@ -237,7 +266,7 @@
     
     <feature name="sentinel-newts-cassandra"
              description="OpenNMS :: Features :: Distributed :: Cassandra :: Newts Impl." version="${project.version}">
-        <feature version="${cassandraVersion}" prerequisite="true">cassandra-driver</feature>
+        <feature>cassandra-driver</feature>
         <feature>sentinel-newts</feature>
         <feature>sentinel-distributed-cassandra-api</feature>
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.cassandra.newts-impl/${project.version}</bundle>
@@ -284,7 +313,6 @@
 
     <feature name="sentinel-thresholding-service" description="OpenNMS :: Thresholding :: Impl"
              version="${project.version}">
-        <feature version="${guavaOsgiVersion}" prerequisite="true">guava</feature>
         <feature>opennms-thresholding-api</feature>
         <feature>sentinel-events-forwarder</feature>
         <feature>opennms-measurements-api</feature>
@@ -310,6 +338,18 @@
 
     <feature name="sentinel-timeseries-api" description="Sentinel :: Timeseries Storage API" version="${project.version}">
         <feature>sentinel-persistence</feature>
-        <feature>opennms-timeseries-api</feature>
+        <feature>opennms-health</feature>
+        <feature>opennms-measurements-api</feature>
+        <feature>opennms-collection-api</feature>
+        <feature>opennms-core-ipc-rpc-api</feature>
+        <feature version="${opennmsApiVersion}">opennms-integration-api</feature>
+        <feature>newts-api</feature>
+
+        <bundle dependency="true">mvn:com.lmax/disruptor/${lmaxDisruptorVersion}</bundle>
+        <bundle dependency="true">wrap:mvn:net.agkn/hll/${hllVersion}</bundle>
+        <bundle>mvn:org.opennms.core/org.opennms.core.cache/${project.version}</bundle>
+
+        <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.persistence.osgi/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features/org.opennms.features.timeseries/${project.version}</bundle>
     </feature>
 </features>

@@ -29,7 +29,6 @@
 package org.opennms.netmgt.enlinkd;
 
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -50,13 +49,13 @@ import static org.opennms.netmgt.nb.NmsNetworkBuilder.CISCO_WS_C2948_GLOBAL_DEVI
 
 public class Nms7467EnIT extends EnLinkdBuilderITCase {
 
-	private final Nms7467NetworkBuilder builder = new Nms7467NetworkBuilder();
+	private Nms7467NetworkBuilder builder = new Nms7467NetworkBuilder();
 
     @Test
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=CISCO_WS_C2948_IP, port=161, resource=CISCO_WS_C2948_SNMP_RESOURCE)
     })
-    public void testCisco01Links() {
+    public void testCisco01Links() throws Exception {
         
         m_nodeDao.save(builder.getCiscoWsC2948());
         m_nodeDao.flush();
@@ -65,11 +64,11 @@ public class Nms7467EnIT extends EnLinkdBuilderITCase {
         m_linkdConfig.getConfiguration().setUseOspfDiscovery(false);
         m_linkdConfig.getConfiguration().setUseIsisDiscovery(false);
         m_linkdConfig.getConfiguration().setUseLldpDiscovery(false);
-
-        assertFalse(m_linkdConfig.useIsisDiscovery());
-        assertFalse(m_linkdConfig.useBridgeDiscovery());
-        assertFalse(m_linkdConfig.useOspfDiscovery());
-        assertFalse(m_linkdConfig.useLldpDiscovery());
+        
+        assertTrue(!m_linkdConfig.useIsisDiscovery());
+        assertTrue(!m_linkdConfig.useBridgeDiscovery());
+        assertTrue(!m_linkdConfig.useOspfDiscovery());
+        assertTrue(!m_linkdConfig.useLldpDiscovery());
         assertTrue(m_linkdConfig.useCdpDiscovery());
         
         final OnmsNode cisco01 = m_nodeDao.findByForeignId("linkd", CISCO_WS_C2948_NAME);

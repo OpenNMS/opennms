@@ -14,7 +14,6 @@
     -->
 
     <!-- OpenNMS Features -->
-    <repository>mvn:${project.groupId}/${project.artifactId}/${project.version}/xml/core</repository>
     <repository>mvn:${project.groupId}/${project.artifactId}/${project.version}/xml/features</repository>
 
     <!-- ActiveMQ service features -->

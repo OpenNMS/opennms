@@ -30,15 +30,17 @@ package org.opennms.netmgt.telemetry.protocols.netflow.adapter.ipfix;
 
 import java.util.Objects;
 
-import org.opennms.netmgt.flows.processing.Pipeline;
+import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.telemetry.api.adapter.Adapter;
 import org.opennms.netmgt.telemetry.api.adapter.AdapterFactory;
 import org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry;
 import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
 
+import com.codahale.metrics.MetricRegistry;
+
 public class IpfixAdapterFactory implements AdapterFactory {
     private TelemetryRegistry telemetryRegistry;
-    private Pipeline pipeline;
+    private FlowRepository flowRepository;
 
     @Override
     public Class<? extends Adapter> getBeanClass() {
@@ -48,18 +50,18 @@ public class IpfixAdapterFactory implements AdapterFactory {
     @Override
     public Adapter createBean(final AdapterDefinition adapterConfig) {
         Objects.requireNonNull(this.telemetryRegistry);
-        Objects.requireNonNull(this.pipeline);
+        Objects.requireNonNull(this.flowRepository);
 
         return new IpfixAdapter(adapterConfig,
                                 this.telemetryRegistry.getMetricRegistry(),
-                                this.pipeline);
+                                this.flowRepository);
     }
 
     public void setTelemetryRegistry(TelemetryRegistry telemetryRegistry) {
         this.telemetryRegistry = telemetryRegistry;
     }
 
-    public void setPipeline(Pipeline pipeline) {
-        this.pipeline = pipeline;
+    public void setFlowRepository(FlowRepository flowRepository) {
+        this.flowRepository = flowRepository;
     }
 }

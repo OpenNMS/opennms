@@ -7,7 +7,7 @@
         <FeatherButton
           class="button"
           primary
-          @click="newDefinition"
+          @click="props.newDefinition"
           >Add External Requisition</FeatherButton
         >
       </div>
@@ -25,11 +25,8 @@ import { FeatherButton } from '@featherds/button'
 /**
  * Props
  */
-defineProps({
-  newDefinition: { 
-    type: Function as PropType<(payload: MouseEvent) => void>,
-    required: true
-  }
+const props = defineProps({
+  newDefinition: { type: Function as PropType<(payload: MouseEvent) => void> }
 })
 </script>
 

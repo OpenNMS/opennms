@@ -44,17 +44,23 @@ import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
  */
 public interface IpNetToMediaDao extends OnmsDao<IpNetToMedia, Integer> {
     
-    List<IpNetToMedia> findBySourceNodeId(Integer id);
+    public List<IpNetToMedia> findBySourceNodeId(Integer id);
 
-    List<IpNetToMedia> findByPhysAddress(String physAddress);
+    public List<IpNetToMedia> findByPhysAddress(String physAddress);
 
-    List<IpNetToMedia> findByNetAddress(InetAddress netAddress);
+    public List<IpNetToMedia> findByNetAddress(InetAddress netAddress);
 
-    IpNetToMedia getByNetAndPhysAddress(InetAddress netAddress, String physAddress);
+    public IpNetToMedia getByNetAndPhysAddress(InetAddress netAddress, String physAddress);
 
     void deleteBySourceNodeIdOlderThen(Integer nodeiId, Date now);
     
-    void deleteBySourceNodeId(Integer nodeId);
+    public void deleteBySourceNodeId(Integer nodeId);
 
+    /**
+     * Finds all {@link IpNetToMedia} instances that have a physical address that is equal to the mac address
+     * of a {@code BridgeMacLink} of the addressed {@code node}.
+     * @param nodeId
+     * @return
+     */
     List<IpNetToMedia> findByMacLinksOfNode(Integer nodeId);
 }

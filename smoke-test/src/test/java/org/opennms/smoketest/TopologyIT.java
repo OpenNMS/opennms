@@ -596,14 +596,13 @@ public class TopologyIT extends OpenNMSSeleniumIT {
             }
         }
 
-        public void selectLayer(String layerName) {
+            public void selectLayer(String layerName) {
             Objects.requireNonNull(layerName, "The layer name cannot be null");
             try {
-                testCase.setImplicitWait(IMPLICIT_WAIT_SECONDS, TimeUnit.SECONDS);
+                testCase.setImplicitWait(2*IMPLICIT_WAIT_SECONDS, TimeUnit.SECONDS);
                 openLayerSelectionComponent();
                 WebElement layerElement = testCase.findElementById("layerComponent").findElement(By.xpath("//div[text() = '" + layerName + "']"));
                 layerElement.click();
-                LOG.debug("selectLayer: clicked {}", layerName);
                 waitForTransition(testCase);
             } finally {
                 testCase.setImplicitWait();
@@ -632,14 +631,8 @@ public class TopologyIT extends OpenNMSSeleniumIT {
             return new Breadcrumbs(testCase);
         }
 
-        public void openLayerSelectionComponent() {
+        private void openLayerSelectionComponent() {
             if (!isLayoutComponentVisible()) {
-                testCase.findElementById("layerToggleButton").click();
-            }
-        }
-
-        public void closeLayerSelectionComponent() {
-            if (isLayoutComponentVisible()) {
                 testCase.findElementById("layerToggleButton").click();
             }
         }
@@ -649,10 +642,9 @@ public class TopologyIT extends OpenNMSSeleniumIT {
          *
          * @return true if the layerToggleButton has been pressed already and the layers are visible, otherwise false
          */
-        public boolean isLayoutComponentVisible() {
+        private boolean isLayoutComponentVisible() {
             WebElement layerToggleButton = testCase.findElementById("layerToggleButton");
-            LOG.debug("isLayoutComponentVisible: class: {}", layerToggleButton.getAttribute("class"));
-            return layerToggleButton.getAttribute("class").contains("expanded");
+            return layerToggleButton.getCssValue("class").contains("expanded");
         }
 
         private WebElement getMenubarElement(String itemName) {

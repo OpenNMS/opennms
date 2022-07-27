@@ -149,7 +149,7 @@ public abstract class EnLinkdBuilderITCase extends EnLinkdTestHelper implements 
     protected OnmsTopologyDao m_topologyDao;
 
     @Override
-    public void afterPropertiesSet() {
+    public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
     }
 
@@ -171,7 +171,7 @@ public abstract class EnLinkdBuilderITCase extends EnLinkdTestHelper implements 
     }
 
     @After
-    public void tearDown() {
+    public void tearDown() throws Exception {
         for (final IpNetToMedia at: m_ipNetToMediaDao.findAll())
             m_ipNetToMediaDao.delete(at);
         m_ipNetToMediaDao.flush();

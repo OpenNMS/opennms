@@ -29,6 +29,7 @@
 package org.opennms.netmgt.enlinkd.service.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.opennms.core.criteria.Alias;
@@ -50,13 +51,13 @@ public class NodeTopologyServiceImpl extends TopologyServiceImpl implements Node
     private NodeDao m_nodeDao;
     @Override
     public List<Node> findAllSnmpNode() {
-        final List<Node> nodes = new ArrayList<>();
+        final List<Node> nodes = new ArrayList<Node>();
         
         final Criteria criteria = new Criteria(OnmsNode.class);
-        criteria.setAliases(List.of(new Alias(
-                "ipInterfaces",
-                "iface",
-                JoinType.LEFT_JOIN)));
+        criteria.setAliases(Arrays.asList(new Alias[] { new Alias(
+                                                                  "ipInterfaces",
+                                                                  "iface",
+                                                                  JoinType.LEFT_JOIN) }));
         criteria.addRestriction(new EqRestriction("type", NodeType.ACTIVE));
         criteria.addRestriction(new EqRestriction("iface.snmpPrimary",
                                                   PrimaryType.PRIMARY.getCharCode()));
@@ -72,10 +73,10 @@ public class NodeTopologyServiceImpl extends TopologyServiceImpl implements Node
     @Override
     public Node getSnmpNode(final int nodeid) {
         final Criteria criteria = new Criteria(OnmsNode.class);
-        criteria.setAliases(List.of(new Alias(
-                "ipInterfaces",
-                "iface",
-                JoinType.LEFT_JOIN)));
+        criteria.setAliases(Arrays.asList(new Alias[] { new Alias(
+                                                                  "ipInterfaces",
+                                                                  "iface",
+                                                                  JoinType.LEFT_JOIN) }));
         criteria.addRestriction(new EqRestriction("type", NodeType.ACTIVE));
         criteria.addRestriction(new EqRestriction("iface.snmpPrimary",
                                                   PrimaryType.PRIMARY.getCharCode()));

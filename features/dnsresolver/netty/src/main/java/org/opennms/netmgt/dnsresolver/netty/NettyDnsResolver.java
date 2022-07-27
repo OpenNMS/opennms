@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -58,8 +58,11 @@ import com.google.common.net.HostAndPort;
 
 import io.github.resilience4j.bulkhead.Bulkhead;
 import io.github.resilience4j.bulkhead.BulkheadConfig;
+import io.github.resilience4j.bulkhead.BulkheadFullException;
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
+import io.netty.resolver.dns.DefaultDnsCache;
+import io.netty.resolver.dns.DnsCache;
 import io.netty.resolver.dns.DnsNameResolverTimeoutException;
 import io.netty.resolver.dns.DnsServerAddressStreamProvider;
 import io.netty.resolver.dns.DnsServerAddressStreamProviders;
@@ -361,7 +364,7 @@ public class NettyDnsResolver implements DnsResolver {
                     final HostAndPort hp = HostAndPort.fromString(s.trim())
                             .withDefaultPort(53)
                             .requireBracketsForIPv6();
-                    return SocketUtils.socketAddress(hp.getHost(), hp.getPort());
+                    return SocketUtils.socketAddress(hp.getHostText(), hp.getPort());
                 })
                 .collect(Collectors.toList());
     }

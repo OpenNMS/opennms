@@ -36,22 +36,16 @@ public enum Direction {
     @SerializedName("ingress")
     INGRESS,
     @SerializedName("egress")
-    EGRESS,
-    @SerializedName("unknown")
-    UNKNOWN;
+    EGRESS;
 
     public static Direction from(Flow.Direction direction) {
-        if (direction == null) {
-            return UNKNOWN;
-        }
+        if (direction == null) return INGRESS;
 
         switch (direction) {
             case INGRESS:
                 return INGRESS;
             case EGRESS:
                 return EGRESS;
-            case UNKNOWN:
-                return UNKNOWN;
             default:
                 throw new IllegalArgumentException("Unknown direction: " + direction.name());
         }

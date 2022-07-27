@@ -38,9 +38,9 @@ import org.opennms.netmgt.enlinkd.model.CdpElement;
  */
 public interface CdpElementDao extends OnmsDao<CdpElement, Integer> {
     
-    CdpElement findByNodeId(Integer id);
+    public CdpElement findByNodeId(Integer id);
 
-    CdpElement findByGlobalDeviceId(String deviceId);
+    public CdpElement findByGlobalDeviceId(String deviceId);
 
     /**
      * Returns all CdpElements that have a globalDeviceId that matches a cacheDeviceId of a CdpLink related to the given
@@ -48,5 +48,5 @@ public interface CdpElementDao extends OnmsDao<CdpElement, Integer> {
      */
     List<CdpElement> findByCacheDeviceIdOfCdpLinksOfNode(int nodeId);
 
-    void deleteByNodeId(Integer nodeId);
+    public void deleteByNodeId(Integer nodeId);
 }

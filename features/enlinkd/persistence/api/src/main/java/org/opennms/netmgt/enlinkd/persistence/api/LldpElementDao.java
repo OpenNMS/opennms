@@ -39,9 +39,9 @@ import org.opennms.netmgt.enlinkd.model.LldpElement;
  */
 public interface LldpElementDao extends OnmsDao<LldpElement, Integer> {
 
-    LldpElement findByNodeId(Integer id);
+    public LldpElement findByNodeId(Integer id);
 
-    List<LldpElement> findByChassisId(String chassisId, LldpChassisIdSubType type);
+    public List<LldpElement> findByChassisId(String chassisId, LldpChassisIdSubType type);
 
     /**
      * Returns all LldpElements that have a chassisId/chassisIdSubType that match the corresponding fields of a
@@ -50,8 +50,8 @@ public interface LldpElementDao extends OnmsDao<LldpElement, Integer> {
      */
     List<LldpElement> findByChassisOfLldpLinksOfNode(int nodeId);
 
-    LldpElement findBySysname(String sysname);
+    public LldpElement findBySysname(String sysname);
 
-    void deleteByNodeId(Integer nodeid);
+    public void deleteByNodeId(Integer nodeid);
     
 }

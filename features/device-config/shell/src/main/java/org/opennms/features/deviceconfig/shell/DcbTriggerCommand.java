@@ -28,7 +28,6 @@
 
 package org.opennms.features.deviceconfig.shell;
 
-import com.google.common.base.Strings;
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Argument;
 import org.apache.karaf.shell.api.action.Command;
@@ -36,7 +35,6 @@ import org.apache.karaf.shell.api.action.Option;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.features.deviceconfig.service.DeviceConfigService;
-import org.opennms.features.deviceconfig.service.DeviceConfigService.DeviceConfigBackupResponse;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -64,9 +62,6 @@ public class DcbTriggerCommand implements Action {
     @Option(name = "-p", aliases = "--persist", description = "Whether to persist config or not")
     boolean persist = false;
 
-    @Option(name = "-v", aliases = "--verbose", description = "See script output line-by-line", required = false, multiValued = false)
-    boolean verbose = false;
-
     @Override
     public Object execute() throws Exception {
         try {
@@ -75,30 +70,21 @@ public class DcbTriggerCommand implements Action {
             System.out.printf("Not a valid host %s \n", host);
             return null;
         }
-        CompletableFuture<DeviceConfigBackupResponse> future = deviceConfigService.triggerConfigBackup(host, location, service, persist);
+        CompletableFuture<Boolean> future = deviceConfigService.triggerConfigBackup(host, location, service, persist);
         while (true) {
             try {
                 try {
-                    var response = future.get(1, TimeUnit.SECONDS);
-                    if (Strings.isNullOrEmpty(response.getErrorMessage())) {
-                        System.out.printf("\nTriggered config backup for %s at location %s", host, location);
-                        if (persist) {
-                            System.out.println(" and persisted");
-                        }
-                        else {
-                            System.out.println();
-                        }
-                    } else {
-                        System.err.println("Failed to trigger device config backup: " + response.getErrorMessage());
+                    future.get(1, TimeUnit.SECONDS);
+                    System.out.printf("Triggered config backup for %s at location %s", host, location);
+                    if (persist) {
+                        System.out.println(" and persisted");
                     }
-                    if (verbose && !Strings.isNullOrEmpty(response.getScriptOutput())) {
-                        System.out.printf("---SSH script output---\n%s\n----------end----------\n", response.getScriptOutput());
-                    }
-                    break;
                 } catch (InterruptedException e) {
                     System.out.println("Interrupted.");
-                    break;
+                } catch (ExecutionException e) {
+                    System.out.println("Failed to trigger device config backup: " + e.getMessage());
                 }
+                break;
             } catch (TimeoutException e) {
                 // pass
             }
