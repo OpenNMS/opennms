@@ -58,7 +58,4 @@ jobs:
       #- cache-oci:
       #    key: horizon
       #    path: opennms-container/horizon/images/
-      - persist_to_workspace:
-          root: ~/
-          paths:
-            - .artifacts
+
