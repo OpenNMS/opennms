@@ -1,16 +1,14 @@
 
 [[install-jdbc-driver]]
-= Install JDBC driver
+= Install JDBC Driver on Minion
 
-To detect/poll/collect any JDBC service, you must install the corresponding JDBC driver in Minion.
-The following shows how to install JDBC driver.
+To detect, poll, or collect any JDBC service, you must install the corresponding JDBC driver.
 
 We reference the `repository directory` relative to the Minion home directory.
-Depending on your operating system, the home directory is `/usr/share/minion` for Debian/Ubuntu or `/opt/minion` for CentOS/RHEL.
+Depending on your operating system, the home directory is `/usr/share/minion` for Debian and Ubuntu, or `/opt/minion` for CentOS and RHEL.
 
-. Download the JDBC driver JAR from a repository, for example a public link:https://mvnrepository.com/artifact/mysql/mysql-connector-java/8.0.22[Maven Repository].
-. Install the JAR file in the repository directory following the Maven repository pattern.
-
+. Download the JDBC driver JAR from a repository (for example, a public https://mvnrepository.com/artifact/mysql/mysql-connector-java/8.0.22[Maven repository]).
+. Install the JAR file in the repository directory, following the Maven repository pattern.
 +
 For MySQL 8.0.22, the path would be `repositories/default/mysql/mysql-connector-java/8.0.22/mysql-connector-java-8.0.22.jar`.
 
@@ -37,12 +35,12 @@ sudo vi deploy/jdbc-mysql.xml
 </features>
 -----
 
-<1> The version should match your {page-component-title} Core version.
-<2> The bundle is named `mysql-bundle` and we set the version number to `8.0.22`.
-<3> Bundle to download version `8.0.22` with Maven from official repositories.
+. The version should match your {page-component-title} Core version.
+. The bundle is named `mysql-bundle`, and the version number is set to `8.0.22`.
+. Bundle to download version `8.0.22` with Maven from official repositories.
 
 As soon you write the file, Karaf picks up the feature and tries to install it.
-Troubleshoot the feature installation in the `data/log/karaf.log`.
+You can troubleshoot the installation using `data/log/karaf.log`.
 
 .Connect to the Karaf shell
 [source,console]
@@ -50,7 +48,7 @@ Troubleshoot the feature installation in the `data/log/karaf.log`.
 ssh -p 8201 admin@localhost
 ----
 
-.Verify installation and start-up of the feature
+.Verify feature installation and start-up
 [source, karaf]
 ----
 feature:list | grep mysql
