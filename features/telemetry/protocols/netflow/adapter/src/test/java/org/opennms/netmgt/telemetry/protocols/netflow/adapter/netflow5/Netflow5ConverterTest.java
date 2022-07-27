@@ -34,7 +34,6 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.slice;
-import static org.opennms.netmgt.telemetry.protocols.netflow.adapter.Utils.buildAndSerialize;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -49,22 +48,17 @@ import java.util.Optional;
 import org.hamcrest.MatcherAssert;
 import org.junit.Test;
 import org.opennms.netmgt.flows.api.Flow;
-import org.opennms.netmgt.telemetry.protocols.netflow.adapter.common.NetflowConverter;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.IllegalFlowException;
+import org.opennms.netmgt.telemetry.protocols.netflow.adapter.common.NetflowMessage;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.InvalidPacketException;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.Protocol;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow5.proto.Header;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow5.proto.Packet;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.Netflow5MessageBuilder;
 import org.opennms.netmgt.telemetry.protocols.netflow.transport.FlowMessage;
-
-import com.google.protobuf.InvalidProtocolBufferException;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
 public class Netflow5ConverterTest {
-
-    private NetflowConverter nf5Converter = new NetflowConverter();
 
     @Test
     public void canParseNetflow5Flows() {
@@ -125,16 +119,8 @@ public class Netflow5ConverterTest {
                 header = new Header(slice(buffer, Header.SIZE));
                 final Packet packet = new Packet(header, buffer);
                 packet.getRecords().forEach(rec -> {
-
-                    final FlowMessage flowMessage;
-                    try {
-                        flowMessage = buildAndSerialize(Protocol.NETFLOW5, rec).build();
-                    } catch (IllegalFlowException e) {
-                        throw new RuntimeException(e);
-                    }
-
-                    flows.addAll(nf5Converter.convert(flowMessage, Instant.now()));
-
+                    final FlowMessage flowMessage = new Netflow5MessageBuilder().buildMessage(rec, (address) -> Optional.empty()).build();
+                    flows.add(new NetflowMessage(flowMessage, Instant.now()));
                 });
             } catch (InvalidPacketException e) {
                 throw new RuntimeException(e);

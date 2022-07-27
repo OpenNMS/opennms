@@ -1,0 +1,22 @@
+[[ref-daemon-config-files-karaf]]
+= Karaf
+
+The core runtime module that manages all other daemon services.
+
+.Karaf log file overview
+[options="header"]
+[cols="2,3"]
+
+|===
+| File
+| Description
+
+| karaf.log
+| Logs relating to the Karaf runtime.
+
+| ipc.log
+| Logs relating to the IPC communication for the message broker.
+
+| manager.log
+| Logs relating to manager server events.
+|===

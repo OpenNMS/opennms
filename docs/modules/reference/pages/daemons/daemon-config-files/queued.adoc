@@ -1,0 +1,15 @@
+[[ref-daemon-config-files-queued]]
+= Queued
+Handles scheduling tasks to run in the future.
+.Queued log file overview
+[options="header"]
+[cols="2,3"]
+
+|===
+| File
+| Description
+
+| queued.log
+| Logs relating to Queued server events.
+
+|===

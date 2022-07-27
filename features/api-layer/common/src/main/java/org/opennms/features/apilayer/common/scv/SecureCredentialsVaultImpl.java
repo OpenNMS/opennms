@@ -40,7 +40,7 @@ import org.opennms.integration.api.v1.scv.immutables.ImmutableCredentials;
 /** Exposes SecureCredentialsVault via Integration API */
 public class SecureCredentialsVaultImpl implements SecureCredentialsVault {
 
-    static final String OIA_PREFIX = "_OIA_"; //prefix to prevent plugin access system keys
+    static final String OIA_PREFIX = "_oia_"; //prefix to prevent plugin access system keys, must be lower key.
 
     private final org.opennms.features.scv.api.SecureCredentialsVault delegate;
 
@@ -61,7 +61,7 @@ public class SecureCredentialsVaultImpl implements SecureCredentialsVault {
     @Override
     public Credentials getCredentials(String alias) {
         Objects.requireNonNull(alias);
-        return Optional.ofNullable(delegate.getCredentials(OIA_PREFIX + alias))
+        return Optional.ofNullable(delegate.getCredentials(OIA_PREFIX + alias.toLowerCase()))
                 .map(c -> new ImmutableCredentials(c.getUsername(), c.getPassword(), c.getAttributes()))
                 .orElse(null);
     }
@@ -70,7 +70,7 @@ public class SecureCredentialsVaultImpl implements SecureCredentialsVault {
     public void setCredentials(String alias, Credentials credentials) {
         Objects.requireNonNull(alias);
         Objects.requireNonNull(credentials);
-        this.delegate.setCredentials(OIA_PREFIX + alias, new org.opennms.features.scv.api.Credentials(
+        this.delegate.setCredentials(OIA_PREFIX + alias.toLowerCase(), new org.opennms.features.scv.api.Credentials(
                 credentials.getUsername(),
                 credentials.getPassword(),
                 credentials.getAttributes())

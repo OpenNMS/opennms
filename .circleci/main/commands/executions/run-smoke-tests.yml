@@ -1,0 +1,70 @@
+commands:
+  run-smoke-tests:
+    description: "Run the smoke tests"
+    parameters:
+      suite:
+        default: core
+        type: string
+    steps:
+      - run:
+          name: Enable swap
+          command: |
+            sudo fallocate -l 8G /swapfile
+            sudo chmod 600 /swapfile
+            sudo mkswap /swapfile
+            sudo swapon /swapfile
+            sudo sysctl vm.swappiness=5
+            cat /proc/sys/vm/swappiness
+      - load-oci:
+          key: horizon
+      - load-oci:
+          key: minion
+      - load-oci:
+          key: sentinel
+      - run:
+          name: Monitor JVM processes
+          background: true
+          command: |
+            .circleci/scripts/jvmprocmon-start.sh
+      - run:
+          name: Monitor memory usage
+          background: true
+          command: |
+            free -m -c 500 -s 30
+      - run:
+          name: Smoke Tests
+          no_output_timeout: 30m
+          command: |
+            .circleci/scripts/smoke.sh << parameters.suite >>
+      - run:
+          name: Gather system logs
+          when: always
+          command: |
+            mkdir -p ~/test-results/system-logs
+            (dmesg || :) > ~/test-results/system-logs/dmesg 2>&1
+            (ps auxf || :) > ~/test-results/system-logs/ps 2>&1
+            (free -m || :) > ~/test-results/system-logs/free 2>&1
+            (docker stats --no-stream || :) > ~/test-results/system-logs/docker_stats 2>&1
+            cp -R /tmp/jvmprocmon ~/test-results/system-logs/ || :
+            ls -alh ~/project/smoke-test/ || :
+      - run:
+          name: Gather test artifacts
+          when: always
+          command: |
+            mkdir -p ~/test-results/junit
+            find . -type f -regex ".*/target/surefire-reports/.*xml" -exec cp {} ~/test-results/junit/ \;
+            find . -type f -regex ".*/target/failsafe-reports/.*xml" -exec cp {} ~/test-results/junit/ \;
+            mkdir -p ~/test-artifacts/recordings
+            cp -R ~/project/smoke-test/target/*.flv ~/test-artifacts/recordings || true
+            cp -R ~/project/smoke-test/target/screenshots ~/test-artifacts/ || true
+            cp -R ~/project/smoke-test/target/logs ~/test-artifacts/ || true
+      - store_test_results:
+          path: ~/test-results
+      - store_artifacts:
+          when: always
+          path: ~/test-results
+          destination: test-results
+      - store_artifacts:
+          when: always
+          path: ~/test-artifacts
+          destination: test-artifacts

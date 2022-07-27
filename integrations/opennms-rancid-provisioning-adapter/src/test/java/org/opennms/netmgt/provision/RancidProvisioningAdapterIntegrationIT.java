@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -107,10 +107,6 @@ public class RancidProvisioningAdapterIntegrationIT implements InitializingBean 
         m_populator.populateDatabase();
     }
     
-    /**
-     * TODO: This test needs to be updated so that it properly connects to the JUnitHttpServer
-     * for simulated RANCID REST operations.
-     */
     @Test
     @Transactional
     @JUnitHttpServer(port=7081,basicAuth=true)
@@ -120,48 +116,5 @@ public class RancidProvisioningAdapterIntegrationIT implements InitializingBean 
         assertTrue(nodes.size() > 0);
         
         m_adapter.addNode(nodes.get(0).getId());
-    }
-    
-    /**
-     * TODO: This test needs to be updated so that it properly connects to the JUnitHttpServer
-     * for simulated RANCID REST operations.
-     */
-    @Test
-    @Transactional
-    @JUnitHttpServer(port=7081,basicAuth=true)
-    @Ignore
-    public void testAddSameOperationTwice() throws InterruptedException {
-        // AdapterOperationChecker verifyOperations = new AdapterOperationChecker(2);
-        // m_adapter.getOperationQueue().addListener(verifyOperations);
-        OnmsNode node = m_nodeDao.get(NODE_ID);
-        assertNotNull(node);
-        int firstNodeId = node.getId();
-
-        m_adapter.addNode(firstNodeId);
-        m_adapter.addNode(firstNodeId); // should get deduplicated
-        m_adapter.updateNode(firstNodeId);
-
-        // assertTrue(verifyOperations.enqueueLatch.await(4, TimeUnit.SECONDS));
-        // assertTrue(verifyOperations.dequeueLatch.await(4, TimeUnit.SECONDS));
-        // assertTrue(verifyOperations.executeLatch.await(4, TimeUnit.SECONDS));
-        assertEquals(0, m_adapter.getOperationQueue().getOperationQueueForNode(firstNodeId).size());
-    }
-
-    @Test
-    @Transactional
-    public void testUpdateNode() {
-        // TODO: Add some tests
-    }
-
-    @Test
-    @Transactional
-    public void testDeleteNode() {
-        // TODO: Add some tests
-    }
-
-    @Test
-    @Transactional
-    public void testNodeConfigChanged() {
-        // TODO: Add some tests
     }
 }

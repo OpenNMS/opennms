@@ -56,3 +56,47 @@ To persist only raw flows or only aggregated flows in Elasticsearch, you must se
 In the UI, use the Nodes page to determine flows performance for specific devices.
 (Choose *Info>Nodes* to view nodes.)
 The flows indicator icon shows flows data for each device, with SNMP details and flows direction.
+
+== Replay flows from a packet capture
+
+To help debug flow processing, use the following Karaf shell commands to replay flows from a packet capture:
+
+List the available listeners and parsers:
+[source, karaf]
+----
+opennms:telemetry-listeners
+----
+
+Replay the packet capture (.pcap) to the target parser from the output above:
+[source, karaf]
+----
+opennms:telemetry-replay-pcap <listener> <parser> <path-to-pcap-file>
+----
+
+Here's an example that replays a .pcap with Netflow 9 flows to the Netflow 9 parser:
+[source, karaf]
+----
+admin@opennms()> opennms:telemetry-listeners 
+Name = Multi-UDP-9999
+Description = UDP *:9999
+Properties:
+  Max Packet Size = 8096
+  Port = 9999
+Parsers:
+  - Multi-UDP-9999.Netflow-5-Parser
+  - Multi-UDP-9999.Netflow-9-Parser
+  - Multi-UDP-9999.IPFIX-TCP-Parser
+  - Multi-UDP-9999.SFlow-Parser
+admin@opennms()> opennms:telemetry-replay-pcap Multi-UDP-9999 Multi-UDP-9999.Netflow-9-Parser /tmp/flows.pcap
+Processing packets from '/tmp/flows.pcap'.
+Processing packet #100.
+Processing packet #200.
+Processing packet #300.
+Processing packet #400
+Processing packet #500.
+Done processing 515 packets.
+admin@opennms()> 
+----
+
+Flows will be ingested using the same ingest and processing pipeline as they would if received directly from the devices.
+Nodes with interfaces that match the IP addresses in the .pcap must exist in order to associate the results with a node.

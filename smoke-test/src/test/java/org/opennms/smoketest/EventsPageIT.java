@@ -59,9 +59,8 @@ public class EventsPageIT extends OpenNMSSeleniumIT {
         findElementByName("eventtext");
         findElementByName("iplike");
         findElementByName("nodenamelike");
-        findElementByName("severity");
+        findElementByName("severity-1");
         findElementByName("exactuei");
-        findElementByName("service");
         findElementByName("usebeforetime");
     }
 

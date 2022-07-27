@@ -646,7 +646,6 @@ public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration
         config.addMonitor("NSClient", "org.opennms.protocols.nsclient.monitor.NsclientMonitor");
         config.addMonitor("NSClientpp", "org.opennms.protocols.nsclient.monitor.NsclientMonitor");
         config.addMonitor("RadiusAuth", "org.opennms.protocols.radius.monitor.RadiusAuthMonitor");
-        config.addMonitor("XMP", "org.opennms.protocols.xmp.monitor.XmpMonitor");
 
         return config;
     }

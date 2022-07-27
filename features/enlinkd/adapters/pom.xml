@@ -13,6 +13,7 @@
   <modules>
     <module>common</module>
     <module>collectors</module>
+    <module>discovers</module>
     <module>updaters</module>
   </modules>
 </project>

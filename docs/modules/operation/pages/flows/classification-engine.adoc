@@ -2,10 +2,12 @@
 [[ga-flow-support-classification-engine]]
 = Flows Classification
 
-For improved flows management, OpenNMS uses a classification engine that applies user- and/or pre-defined rules to filter and classify flows. (Predefined rules are inspired by the https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml[IANA Service Name and Transport Protocol Port Number Registry].)
+For improved flows management, OpenNMS uses a classification engine that applies user- and/or pre-defined rules to filter and classify flows.
+(Pre-defined rules are inspired by the https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml[IANA Service Name and Transport Protocol Port Number Registry].)
 
-Group flows by a combination of parameters: source/destination port, source/destination address, IP protocol, and exporter filter, and view classifications by group on the home page.
-Use classification to help you determine how the flows associated with a particular appliance, service, and so on affect your network (for example, all YouTube traffic or all flows to port 80 marked as `http`).
+You can group flows by a combination of parameters: source/destination port, source/destination address, IP protocol, and exporter filter.
+Once set up, you can view classification groups on the home page.
+Use classification to help you determine how the flows associated with a particular appliance, service, or other component affect your network (for example, all YouTube traffic or all flows to port 80 marked as `http`).
 
 To classify a flow, you must define a rule.
 A rule includes at least a name for the classified flows and additional parameters that must match for successful classification.
@@ -90,6 +92,7 @@ Assume that you define the following rules:
 |===
 
 == Create a flows classification rule
+
 A flows classification rule must include at least a name and one definition for source/destination port, source/destination address, IP protocol, or exporter filter.
 
 By default, rules that a user creates appear in the "user-defined rules" group.
@@ -97,16 +100,14 @@ You can <<rule-groups, create other groups>> as needed and assign rules to those
 
 . Click the gears icon, and click *Manage Flow Classification*.
 . In the *User-defined Rules* tab, click the plus sign.
-. In the *Application Name* field, type a name for the rule.
+. Type a name for the rule in the *Application Name* field.
 . Specify a value in at least one of the following fields:
 +
-
 [cols="1,3"]
 |===
-
 | Source IP Address
 | The source IP address of the flow to match.
-May contain wildcards.
+May include wildcard characters (for example, asterisks (*)) to define a dynamic range of IP addresses that can be matched.
 
 | Source Port
 | The source port of the flow to match.
@@ -114,7 +115,7 @@ May be a range or list of ports; for example, 80,8080,8980, or 8000-9000.
 
 | Destination IP Address
 | The destination IP address of the flow to match.
-May contain wildcards.
+May include wildcard characters (for example, asterisks (*)) to define a dynamic range of IP addresses that can be matched.
 
 | Destination Port
 | The destination port of the flow to match.
@@ -131,20 +132,22 @@ This parameter supports all capabilities of the {page-component-title} xref:refe
 . Mark the rule as omnidirectional to evaluate it with interchanged endpoint addresses and ports.
 +
 This classifies related traffic that matches the classification in the same way.
+
 . Click *Create*.
 
-Note that when you have more than one user-defined rule, in the *Position* field, specify the order you want the classification engine to evaluate the rule within its group.
-Lower numbers are evaluated first (0>1>2).
+Note that when you have more than one user-defined rule, in the *Position* field, you can specify the order you want the classification engine to evaluate the rule within its group.
+Lower numbers are evaluated first (0 > 1 > 2).
 By default, the *Position* field increments the number with each new rule.
 (The classification engine would evaluate the rules based on the order in which you create them.)
 See <<evaluation-order, order of evaluation>>.
 
 [[rule-groups]]
 == Rule groups
+
 Each rule is associated with a rule group.
 The default user groups are "user-defined rules" and "pre-defined rules".
 You can add, edit, and delete groups.
-Note that the "pre-defined" group is read only and you cannot edit or delete it or its rules.
+Note that you cannot edit or delete the "pre-defined" group or its rules.
 
 To add a rule group, follow these steps:
 
@@ -153,7 +156,8 @@ To add a rule group, follow these steps:
 . In the *Position* field, choose a number for the order you want the group to be evaluated.
 +
 Evaluation order goes from lowest number to highest (0>1>2).
-. Type a name and description for the group in the appropriate fields and click *Create*.
+
+. Type a name and description in the appropriate fields and click *Create*.
 
 If you originally created a rule in the user-defined rules group, you can edit that rule to assign it to a different group.
 
@@ -172,7 +176,8 @@ image::flows/test-classification.png[classify,300]
 
 [[evaluation-order]]
 == Order of evaluation
-Rules and groups have a position.
+
+Rules and groups each have a position in the order of evaluation.
 The classification engine evaluates lower positions first.
 The position of a rules group is more important than the rule's position within its group.
 The pre-defined group is always evaluated last.

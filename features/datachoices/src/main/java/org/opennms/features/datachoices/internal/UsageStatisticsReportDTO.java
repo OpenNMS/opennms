@@ -54,11 +54,38 @@ public class UsageStatisticsReportDTO {
     private int m_nodes;
     private int m_ipInterfaces;
     private int m_snmpInterfaces;
+    private long m_snmpInterfacesWithFlows;
     private int m_monitoredServices;
     private int m_events;
     private int m_alarms;
+    private long m_situations;
+    private int m_destinationPathCount;
+    private Boolean m_notificationEnablementStatus;
+    private int m_onCallRoleCount;
 
     private Map<String, Long> m_nodesBySysOid = Collections.emptyMap();
+
+    private long m_monitoringLocations;
+    private long m_minions;
+
+    private String m_installedFeatures;
+    private String m_installedOIAPlugins;
+
+    private Integer m_availableProcessors;
+    private Long m_freePhysicalMemorySize;
+    private Long m_totalPhysicalMemorySize;
+    private long m_provisiondImportThreadPoolSize;
+    private long m_provisiondScanThreadPoolSize;
+    private long m_provisiondRescanThreadPoolSize;
+    private long m_provisiondWriteThreadPoolSize;
+    private long m_requisitionCount;
+    private long m_requisitionWithChangedFSCount;
+    private Map<String, Long> m_provisiondRequisitionSchemeCount;
+    private Map<String, Boolean> m_services;
+    private String m_databaseProductName;
+    private String m_databaseProductVersion;
+
+    private int m_businessEdgeCount;
 
     public void setSystemId(String systemId) {
         m_systemId = systemId;
@@ -132,6 +159,14 @@ public class UsageStatisticsReportDTO {
         return m_snmpInterfaces;
     }
 
+    public void setSnmpInterfacesWithFlows(long snmpInterfacesWithFlows) {
+        m_snmpInterfacesWithFlows = snmpInterfacesWithFlows;
+    }
+
+    public long getSnmpInterfacesWithFlows() {
+        return m_snmpInterfacesWithFlows;
+    }
+
     public void setMonitoredServices(int monitoredServices) {
         m_monitoredServices = monitoredServices;
     }
@@ -156,12 +191,188 @@ public class UsageStatisticsReportDTO {
         return m_alarms;
     }
 
+    public long getSituations() {
+        return m_situations;
+    }
+
+    public void setSituations(long situations) {
+        m_situations = situations;
+    }
+
     public void setNodesBySysOid(Map<String, Long> nodesBySysOid) {
         m_nodesBySysOid = nodesBySysOid;
     }
 
     public Map<String, Long> getNodesBySysOid() {
         return m_nodesBySysOid;
+    }
+
+    public long getMonitoringLocations() {
+        return m_monitoringLocations;
+    }
+
+    public void setMonitoringLocations(long monitoringLocations) {
+        m_monitoringLocations = monitoringLocations;
+    }
+
+    public long getMinions() {
+        return m_minions;
+    }
+
+    public void setMinions(long minions) {
+        this.m_minions = minions;
+    }
+
+    public String getInstalledFeatures() {
+        return m_installedFeatures;
+    }
+
+    public void setInstalledFeatures(String installedFeatures) {
+        m_installedFeatures = installedFeatures;
+    }
+
+    public String getInstalledOIAPlugins() {
+        return m_installedOIAPlugins;
+    }
+
+    public void setInstalledOIAPlugins(String plugins) {
+        this.m_installedOIAPlugins = plugins;
+    }
+
+    public void setAvailableProcessors(Integer availableProcessors) {
+        this.m_availableProcessors = availableProcessors;
+    }
+
+    public Integer getAvailableProcessors() {
+        return this.m_availableProcessors;
+    }
+
+    public Long getFreePhysicalMemorySize() {
+        return this.m_freePhysicalMemorySize;
+    }
+
+    public void setFreePhysicalMemorySize(Long freePhysicalMemorySize) {
+        this.m_freePhysicalMemorySize = freePhysicalMemorySize;
+    }
+
+    public Long getTotalPhysicalMemorySize() {
+        return this.m_totalPhysicalMemorySize;
+    }
+
+    public void setTotalPhysicalMemorySize(long totalPhysicalMemorySize) {
+        this.m_totalPhysicalMemorySize = totalPhysicalMemorySize;
+    }
+
+    public long getProvisiondImportThreadPoolSize() {
+        return m_provisiondImportThreadPoolSize;
+    }
+
+    public void setProvisiondImportThreadPoolSize(long provisiondImportThreadPoolSize) {
+        m_provisiondImportThreadPoolSize = provisiondImportThreadPoolSize;
+    }
+
+    public long getProvisiondScanThreadPoolSize() {
+        return m_provisiondScanThreadPoolSize;
+    }
+
+    public void setProvisiondScanThreadPoolSize(long provisiondScanThreadPoolSize) {
+        m_provisiondScanThreadPoolSize = provisiondScanThreadPoolSize;
+    }
+
+    public long getProvisiondRescanThreadPoolSize() {
+        return m_provisiondRescanThreadPoolSize;
+    }
+
+    public void setProvisiondRescanThreadPoolSize(long provisiondRescanThreadPoolSize) {
+        m_provisiondRescanThreadPoolSize = provisiondRescanThreadPoolSize;
+    }
+
+    public long getProvisiondWriteThreadPoolSize() {
+        return m_provisiondWriteThreadPoolSize;
+    }
+
+    public void setProvisiondWriteThreadPoolSize(long provisiondWriteThreadPoolSize) {
+        m_provisiondWriteThreadPoolSize = provisiondWriteThreadPoolSize;
+    }
+
+    public Map<String, Long> getProvisiondRequisitionSchemeCount() {
+        return m_provisiondRequisitionSchemeCount;
+    }
+
+    public void setProvisiondRequisitionSchemeCount(Map<String, Long> provisiondRequisitionSchemeCount) {
+        m_provisiondRequisitionSchemeCount = provisiondRequisitionSchemeCount;
+    }
+
+    public Map<String, Boolean> getServices() {
+        return m_services;
+    }
+
+    public void setServices(Map<String, Boolean> services) {
+        m_services = services;
+    }
+
+    public int getDestinationPathCount() {
+        return m_destinationPathCount;
+    }
+
+    public void setDestinationPathCount(int m_destinationPathCount) {
+        this.m_destinationPathCount = m_destinationPathCount;
+    }
+
+    public Boolean isNotificationEnablementStatus() {
+        return m_notificationEnablementStatus;
+    }
+
+    public void setNotificationEnablementStatus(Boolean m_notificationEnablementStatus) {
+        this.m_notificationEnablementStatus = m_notificationEnablementStatus;
+    }
+
+    public int getOnCallRoleCount() {
+        return m_onCallRoleCount;
+    }
+
+    public void setOnCallRoleCount(int m_onCallRoleCount) {
+        this.m_onCallRoleCount = m_onCallRoleCount;
+    }
+
+    public void setRequisitionCount(long count) {
+        this.m_requisitionCount = count;
+    }
+
+    public long getRequisitionCount() {
+        return m_requisitionCount;
+    }
+
+    public void setRequisitionWithChangedFSCount(long count) {
+        this.m_requisitionWithChangedFSCount = count;
+    }
+
+    public long getRequisitionWithChangedFSCount() {
+        return m_requisitionWithChangedFSCount;
+    }
+    
+    public void setBusinessEdgeCount(int edges) {
+        this.m_businessEdgeCount = edges;
+    }
+
+    public int getBusinessEdgeCount() {
+        return m_businessEdgeCount;
+    }
+
+    public String getDatabaseProductName() {
+        return m_databaseProductName;
+    }
+
+    public void setDatabaseProductName(String databaseProductName) {
+        this.m_databaseProductName = databaseProductName;
+    }
+
+    public String getDatabaseProductVersion() {
+        return m_databaseProductVersion;
+    }
+
+    public void setDatabaseProductVersion(String databaseProductVersion) {
+        this.m_databaseProductVersion = databaseProductVersion;
     }
 
     public String toJson() {

@@ -51,13 +51,13 @@ public final class IsisSysObjectGroupTracker extends AggregateTracker {
     public final static String ISIS_SYS_ADMIN_STATE_OID = ".1.3.6.1.2.1.138.1.1.1.8";
     
     
-    public static NamedSnmpVar[] ms_elemList = null;
+    public static NamedSnmpVar[] ms_elemList;
     
     static {
         ms_elemList = new NamedSnmpVar[2];
         int ndx = 0;
 
-        /**
+        /*
          *   isisSysID OBJECT-TYPE
          *      SYNTAX IsisSystemID
          *        MAX-ACCESS read-create
@@ -78,7 +78,7 @@ public final class IsisSysObjectGroupTracker extends AggregateTracker {
          */
         ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING,ISIS_SYS_ID_ALIAS,ISIS_SYS_ID_OID);
         
-        /**
+        /*
          * isisSysAdminState OBJECT-TYPE
          *        SYNTAX IsisAdminState
          *        MAX-ACCESS read-create
@@ -93,12 +93,10 @@ public final class IsisSysObjectGroupTracker extends AggregateTracker {
          *        DEFVAL { off }
          *    ::= { isisSysObject 8 } 
          */
-        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,ISIS_SYS_ADMIN_STATE_ALIAS,ISIS_SYS_ADMIN_STATE_OID);
+        ms_elemList[ndx] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,ISIS_SYS_ADMIN_STATE_ALIAS,ISIS_SYS_ADMIN_STATE_OID);
     }
-    
-    public static final String ISIS_SYS_OBJ_OID = ".1.3.6.1.2.1.138.1.1.1";
 
-    private SnmpStore m_store;
+    private final SnmpStore m_store;
     
     public IsisSysObjectGroupTracker() {
         super(NamedSnmpVar.getTrackersFor(ms_elemList));

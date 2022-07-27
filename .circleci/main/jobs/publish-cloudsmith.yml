@@ -1,0 +1,26 @@
+jobs:
+  publish-cloudsmith:
+    executor: cloudsmith/default
+    resource_class: small
+    steps:
+      - checkout
+      - cloudsmith/ensure-api-key
+      - cloudsmith/install-cli
+      - restore-workflow-assets:
+          cache_prefix: deb-horizon
+      - restore-workflow-assets:
+          cache_prefix: deb-minion
+      - restore-workflow-assets:
+          cache_prefix: deb-sentinel
+      - restore-workflow-assets:
+          cache_prefix: rpm-horizon
+      - restore-workflow-assets:
+          cache_prefix: rpm-minion
+      - restore-workflow-assets:
+          cache_prefix: rpm-sentinel
+      - restore-workflow-assets:
+          cache_prefix: minion-config-schema
+      - run:
+          name: Publish Packages
+          command: |
+            .circleci/scripts/publish-cloudsmith.sh

@@ -143,7 +143,7 @@ public class EnlinkdConfiguration implements java.io.Serializable {
     }
 
     public Long getInitialSleepTime() {
-        return m_initialSleepTime == null? 60000l : m_initialSleepTime;
+        return m_initialSleepTime == null? 60000L : m_initialSleepTime;
     }
 
     public void setInitialSleepTime(final Long initialSleepTime) {
@@ -151,7 +151,7 @@ public class EnlinkdConfiguration implements java.io.Serializable {
     }
 
     public Long getRescanInterval() {
-        return m_rescanInterval == null? 86400000l : m_rescanInterval;
+        return m_rescanInterval == null? 86400000L : m_rescanInterval;
     }
 
     public void setRescanInterval(final Long rescanInterval) {
@@ -159,7 +159,7 @@ public class EnlinkdConfiguration implements java.io.Serializable {
     }
 
     public Long getBridgeTopologyInterval() {
-        return m_bridgeTopologyInterval == null? 300000l : m_bridgeTopologyInterval;
+        return m_bridgeTopologyInterval == null? 300000L : m_bridgeTopologyInterval;
     }
 
     public void setBridgeTopologyInterval(Long bridgeTopologyInterval) {
@@ -167,7 +167,7 @@ public class EnlinkdConfiguration implements java.io.Serializable {
     }
 
     public Long getTopologyInterval() {
-        return m_topologyInterval == null? 30000l : m_topologyInterval;
+        return m_topologyInterval == null? 30000L : m_topologyInterval;
     }
 
     public void setTopologyInterval(Long topologyInterval) {
@@ -240,21 +240,20 @@ public class EnlinkdConfiguration implements java.io.Serializable {
 
     @Override
     public int hashCode() {
-        int hash = Objects.hash(
-            m_threads, 
-            m_initialSleepTime, 
-            m_rescanInterval, 
+        return Objects.hash(
+            m_threads,
+            m_initialSleepTime,
+            m_rescanInterval,
             m_bridgeTopologyInterval,
             m_topologyInterval,
-            m_maxBft, 
+            m_maxBft,
             m_discoveryBridgeThreads,
-            m_useCdpDiscovery, 
-            m_useBridgeDiscovery, 
-            m_useLldpDiscovery, 
-            m_useOspfDiscovery, 
+            m_useCdpDiscovery,
+            m_useBridgeDiscovery,
+            m_useLldpDiscovery,
+            m_useOspfDiscovery,
             m_useIsisDiscovery,
             m_disableBridgeVlanDiscovery);
-        return hash;
     }
 
     @Override

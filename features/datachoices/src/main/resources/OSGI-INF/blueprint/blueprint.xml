@@ -26,12 +26,40 @@
     <reference id="monitoredServiceDao" interface="org.opennms.netmgt.dao.api.MonitoredServiceDao" availability="mandatory"/>
     <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory"/>
     <reference id="snmpInterfaceDao" interface="org.opennms.netmgt.dao.api.SnmpInterfaceDao" availability="mandatory"/>
+    <reference id="monitoringLocationDao" interface="org.opennms.netmgt.dao.api.MonitoringLocationDao" availability="mandatory"/>
+    <reference id="monitoringSystemDao" interface="org.opennms.netmgt.dao.api.MonitoringSystemDao" availability="mandatory"/>
+    <reference id="featuresService" interface="org.apache.karaf.features.FeaturesService"/>
     <reference id="configurationManagerService" interface="org.opennms.features.config.service.api.ConfigurationManagerService" availability="mandatory"/>
+    <reference id="provisiondConfigDao" interface="org.opennms.netmgt.dao.api.ProvisiondConfigurationDao" availability="mandatory"/>
+    <reference id="deployedForeignSourceRepository" interface="org.opennms.netmgt.provision.persist.ForeignSourceRepository" filter="(type=deployed)"/>
+    <reference id="businessServiceEdgeDao" interface="org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeDao" />
+
+    <bean id="serviceConfigurationFactory" class="org.opennms.netmgt.config.ServiceConfigFactory" />
+
+    <bean id="destinationPathFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="staticMethod"><value>org.opennms.netmgt.config.DestinationPathFactory.init</value></property>
+    </bean>
+
+    <bean id="destinationPathFactory" class="org.opennms.netmgt.config.DestinationPathFactory" depends-on="destinationPathFactory-init" factory-method="getInstance"/>
+
+    <bean id="notifdConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="staticMethod"><value>org.opennms.netmgt.config.NotifdConfigFactory.init</value></property>
+    </bean>
+
+    <bean id="notifdConfigFactory" class="org.opennms.netmgt.config.NotifdConfigFactory" depends-on="notifdConfigFactory-init" factory-method="getInstance"/>
+
+    <bean id="groupFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="staticMethod"><value>org.opennms.netmgt.config.GroupFactory.init</value></property>
+    </bean>
+
+    <bean id="groupFactory" class="org.opennms.netmgt.config.GroupFactory" depends-on="groupFactory-init" factory-method="getInstance"/>
 
     <!-- The state manager will manually pull properties from the configuration file -->
     <bean id="stateManager" class="org.opennms.features.datachoices.internal.StateManager">
         <argument ref="configurationManagerService" />
     </bean>
+
+    <bean id="dataSourceFactoryBean" class="org.opennms.core.db.DataSourceFactoryBean" />
 
 	<bean id="usageStatisticsReporter" class="org.opennms.features.datachoices.internal.UsageStatisticsReporter"
         init-method="init" destroy-method="destroy">
@@ -44,6 +72,17 @@
         <property name="monitoredServiceDao" ref="monitoredServiceDao"/>
         <property name="nodeDao" ref="nodeDao"/>
         <property name="snmpInterfaceDao" ref="snmpInterfaceDao"/>
+        <property name="monitoringLocationDao" ref="monitoringLocationDao"/>
+        <property name="monitoringSystemDao" ref="monitoringSystemDao"/>
+        <property name="featuresService" ref="featuresService"/>
+        <property name="provisiondConfigurationDao" ref="provisiondConfigDao"/>
+        <property name="businessServiceEdgeDao" ref="businessServiceEdgeDao"/>
+        <property name="serviceConfigurationFactory" ref="serviceConfigurationFactory"/>
+        <property name="destinationPathFactory" ref="destinationPathFactory"/>
+        <property name="notifdConfigFactory" ref="notifdConfigFactory"/>
+        <property name="groupFactory" ref="groupFactory"/>
+        <property name="deployedForeignSourceRepository" ref="deployedForeignSourceRepository"/>
+        <property name="dataSourceFactoryBean" ref="dataSourceFactoryBean"/>
     </bean>
 
     <bean id="dataChoiceRestService" class="org.opennms.features.datachoices.web.internal.DataChoiceRestServiceImpl">

@@ -41,7 +41,7 @@ Proper SNMP configuration lets {page-component-title} understand network/node to
 image::provisioning/SNMP_Config.png[]
 
 This screen sets up SNMP within {page-component-title} for agents listening on IP addresses 10.1.1.1 through 10.254.254.254.
-These settings are optimized into the `snmp-configuration.xml` file.
+These settings are optimized into the `snmp-config.xml` file.
 
 For an example of the resulting XML configuration, see link:#SNMP-community-xml[Configure SNMP community names].
 

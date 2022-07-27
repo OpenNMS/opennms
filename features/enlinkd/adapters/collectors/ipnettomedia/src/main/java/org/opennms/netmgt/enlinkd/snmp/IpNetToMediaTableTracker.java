@@ -35,7 +35,6 @@ import java.net.InetAddress;
 
 import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
 import org.opennms.netmgt.enlinkd.model.IpNetToMedia.IpNetToMediaType;
-import org.opennms.netmgt.snmp.RowCallback;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpRowResult;
@@ -56,7 +55,6 @@ import org.slf4j.LoggerFactory;
  * form more information.</P>
  *
  * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio</A>
- * @see IpNetToMediaTable
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213</A>
  * @version $Id: $
  */
@@ -84,18 +82,18 @@ public class IpNetToMediaTableTracker extends TableTracker
 	 */
 	public static SnmpObjId[] ms_elemList = new SnmpObjId[] {
 		IPNETTOMEDIA_TABLE_IFINDEX,
-		/**
+		/*
          * The media-dependent `physical' address. 
          */
 		IPNETTOMEDIA_TABLE_PHYSADDR,
 
-		/**
+		/*
          * The IpAddress corresponding to the media-
          * dependent `physical' address.
          */
 		IPNETTOMEDIA_TABLE_NETADDR,
         
-		/**
+		/*
 		 * ipNetToMediaType OBJECT-TYPE
      	 * SYNTAX      INTEGER {
          *       other(1),        -- none of the following
@@ -128,12 +126,6 @@ public class IpNetToMediaTableTracker extends TableTracker
 			super(columnCount, instance);
 		}
 		
-		/**
-		 * <p>getIpNetToMediaPhysAddress</p>
-		 *
-		 * @return a {@link java.lang.String} object.
-		 * @see {@link org.opennms.netmgt.provision.service.snmp.IfTableEntry#getPhysAddr()}
-		 */
 		public String getIpNetToMediaPhysAddress(){
 		    SnmpValue mac = getValue(IPNETTOMEDIA_TABLE_PHYSADDR);
 		    if ( mac == null ) {
@@ -142,8 +134,7 @@ public class IpNetToMediaTableTracker extends TableTracker
 		    // Try to fetch the physical address value as a hex string.
 	            String hexString = mac.toHexString();
 	            LOG.debug("getIpNetToMediaPhysAddress: checking as hexString {}", hexString);
-	            if (hexString != null && 
-	                    isValidBridgeAddress(hexString)) {
+	            if (isValidBridgeAddress(hexString)) {
 	                // If the hex string is 12 characters long, than the agent is kinda weird and
 	                // is returning the value as a raw binary value that is 6 bytes in length.
 	                // But that's OK, as long as we can convert it into a string, that's fine. 
@@ -223,11 +214,6 @@ public class IpNetToMediaTableTracker extends TableTracker
 	public IpNetToMediaTableTracker( )
 	{
 		super(ms_elemList);
-	}
-
-
-	public IpNetToMediaTableTracker(RowCallback rowProcessor) {
-		super(rowProcessor, ms_elemList);
 	}
 
     /** {@inheritDoc} */

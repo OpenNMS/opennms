@@ -1,0 +1,14 @@
+jobs:
+  horizon-image-single-arch:
+    parameters:
+      architecture:
+        type: string
+    machine:
+      image: ubuntu-2004:202010-01
+    environment:
+      DOCKER_CLI_EXPERIMENTAL: enabled
+    steps:
+      - build-image-single-arch:
+          architecture: << parameters.architecture >>
+          cache_prefix: deb-horizon
+          container_name: horizon

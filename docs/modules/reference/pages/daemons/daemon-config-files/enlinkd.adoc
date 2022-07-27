@@ -1,0 +1,16 @@
+[[ref-daemon-config-files-enlinkd]]
+= Enlinkd
+
+Collects xref:operation:topology/enlinkd/introduction.adoc[topology information] via SNMP to determine neighboring nodes.
+
+.Enlinkd log file overview
+[options="header"]
+[cols="2,3"]
+
+|===
+| File
+| Description
+
+| enlinkd.log
+| Logs relating to Enlinkd server events.
+|===

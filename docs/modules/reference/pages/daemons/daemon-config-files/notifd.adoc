@@ -1,6 +1,8 @@
 [[ref-daemon-config-files-notifd]]
 = Notifd
 
+Generates xref:operation:notifications/introduction.adoc[notifications] to system operators for desired events.
+
 .Notifd configuration file overview
 [options="header"]
 [cols="2,3,1,1"]
@@ -44,4 +46,17 @@
 | Configuration to send notification mails via specific mail servers.
 | no
 | no
+|===
+
+.Notifd log file overview
+[options="header"]
+[cols="2,3"]
+
+|===
+| File
+| Description
+
+| notifd.log
+| Information about the notifications that were or were not sent.
+
 |===

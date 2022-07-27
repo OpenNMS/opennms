@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 
 import org.opennms.core.criteria.Alias;
 import org.opennms.core.criteria.CriteriaBuilder;
-import org.opennms.core.rpc.utils.mate.EntityScopeProvider;
+import org.opennms.core.mate.api.EntityScopeProvider;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.search.api.SearchContext;

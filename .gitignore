@@ -37,6 +37,9 @@ ui/package-lock.json
 ui/devConfig.ts
 .circleci/main.yml
 
+# jansi downloads a native lib on osx sometimes
+/maven/**/*.jnilib
+
 # Ignore Visual Studio Code
 .factorypath
 # Ignore Docker/OCI temporary files
@@ -56,3 +59,6 @@ __pycache__
 
 # Ignore jenv local version files
 .java-version
+
+# Ignore secure vault
+opennms-base-assembly/src/main/filtered/etc/scv.jce

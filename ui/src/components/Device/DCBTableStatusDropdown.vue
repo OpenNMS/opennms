@@ -11,8 +11,8 @@
       :key="option"
       @click="filterByStatus(option)"
     >
-      <div class="option" :class="option">
-      {{ option === 'none' ? 'No Backup' : option }}
+      <div class="option" :class="option.toLowerCase()">
+      {{ option === 'NONE' ? 'No Backup' : option.toLowerCase() }}
       </div>
     </FeatherDropdownItem>
   </FeatherDropdown>

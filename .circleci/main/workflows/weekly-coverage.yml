@@ -1,0 +1,12 @@
+workflows:
+  weekly-coverage:
+    when:
+      equal: [ true, << pipeline.parameters.trigger-coverage >> ]
+    jobs:
+      - build
+      - integration-test-with-coverage:
+          requires:
+            - build
+      - code-coverage:
+          requires:
+            - integration-test-with-coverage

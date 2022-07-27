@@ -40,11 +40,6 @@
 			<parameter key="thresholding-enabled" value="true"/>
 		</service>
 
-		<service name="XMP" interval="300000" user-defined="false" status="on">
-			<parameter key="collection" value="default"/>
-			<parameter key="thresholding-enabled" value="true"/>
-		</service>
-		
 		<service name="OpenNMS-JVM" interval="300000" user-defined="false" status="on">
 			<parameter key="port" value="18980"/>
 			<parameter key="retry" value="2"/>
@@ -107,8 +102,5 @@
 	<collector service="HttpDocCount" class-name="org.opennms.netmgt.collectd.HttpCollector" />
 	<collector service="WMI"          class-name="org.opennms.netmgt.collectd.WmiCollector"/>
 	<collector service="OpenNMS-JVM"  class-name="org.opennms.netmgt.collectd.Jsr160Collector"/>
-
-	<!-- these are distributed separately -->
-	<collector service="XMP"          class-name="org.opennms.netmgt.protocols.xmp.collector.XmpCollector"/>
 </collectd-configuration>
 

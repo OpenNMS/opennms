@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -687,25 +687,6 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
         sendRequest(DELETE, "/nodes/1/hardwareInventory/9", 204);
         sendRequest(GET, "/nodes/1/hardwareInventory/9", 404);
-    }
-
-    @Test
-    @JUnitTemporaryDatabase
-    @Ignore
-    public void testMetricsResource() throws Exception {
-        createIpInterface();
-        System.err.println("testMetricsResource(): createIpInterface()");
-        String url = "/nodes/1/metrics";
-        System.err.println("sendRequest('GET', '"+url+"', 200);");
-        String xml = sendRequest(GET, url, 200);
-        System.err.println(xml);
-        assertTrue(xml.contains("<name>ICMP</name>"));
-        url += "/ICMP";
-        sendPut(url, "status=A", 204);
-        xml = sendRequest(GET, url, 200);
-        assertTrue(xml.contains("status=\"A\""));
-        sendRequest(DELETE, url, 204);
-        sendRequest(GET, url, 404);
     }
 
     @Override

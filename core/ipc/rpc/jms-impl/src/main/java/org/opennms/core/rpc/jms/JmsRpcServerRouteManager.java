@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,7 +29,9 @@
 package org.opennms.core.rpc.jms;
 
 import org.apache.camel.CamelContext;
+import org.apache.camel.Converter;
 import org.apache.camel.ExchangePattern;
+import org.apache.camel.TypeConverters;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jms.JmsEndpoint;
 import org.opennms.core.camel.JmsQueueNameFactory;
@@ -52,11 +54,23 @@ public class JmsRpcServerRouteManager extends CamelRpcServerRouteManager {
     public JmsRpcServerRouteManager(CamelContext context, MinionIdentity identity, TracerRegistry tracerRegistry) {
         super(context, identity);
         this.tracerRegistry = tracerRegistry;
+        context.getTypeConverterRegistry().addTypeConverters(new BooleanTypeConverters());
     }
 
     @Override
     public RouteBuilder getRouteBuilder(CamelContext context, MinionIdentity identity, RpcModule<RpcRequest,RpcResponse> module) {
         return new DynamicRpcRouteBuilder(context, identity, module, tracerRegistry);
+    }
+
+    public static final class BooleanTypeConverters implements TypeConverters {
+        @Converter
+        public String toString(final boolean data) {
+            return Boolean.toString(data);
+        }
+        @Converter
+        public boolean toBoolean(final String data) {
+            return Boolean.valueOf(data);
+        }
     }
 
     private static final class DynamicRpcRouteBuilder extends RouteBuilder {
@@ -73,6 +87,7 @@ public class JmsRpcServerRouteManager extends CamelRpcServerRouteManager {
             this.queueNameFactory = new JmsQueueNameFactory(CamelRpcConstants.JMS_QUEUE_PREFIX,
                     module.getId(), identity.getLocation());
             this.tracerRegistry = tracerRegistry;
+            context.getTypeConverterRegistry().addTypeConverters(new BooleanTypeConverters());
         }
 
         public String getQueueName() {
@@ -93,6 +108,7 @@ public class JmsRpcServerRouteManager extends CamelRpcServerRouteManager {
                     .process(new CamelRpcServerProcessor(module, tracerRegistry))
                     .routeId(getRouteId(module));
         }
+
     }
 
     static String getJmsSelector(String systemId) {

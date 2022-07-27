@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2014-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -42,11 +42,7 @@ import org.opennms.api.integration.ticketing.Ticket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * This test assumes that you have a localhost OTRS service available so it is 
- * marked as @Ignore by default.
- */
-@Ignore
+@Ignore("requires a real OTRS server for testing")
 public class Otrs31TicketerPluginTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(Otrs31TicketerPluginTest.class);

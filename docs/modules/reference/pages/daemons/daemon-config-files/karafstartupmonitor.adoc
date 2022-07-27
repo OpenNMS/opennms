@@ -1,0 +1,17 @@
+[[ref-daemon-config-files-karafstartupmonitor]]
+= KarafStartupMonitor
+
+Tracks issues with starting the core xref:reference:daemons/daemon-config-files/karaf.adoc[Karaf] runtime.
+
+.KarafStartupMonitor log file overview
+[options="header"]
+[cols="2,3"]
+
+|===
+| File
+| Description
+
+| karafStartupMonitor.log
+| Logs relating to karafStartupMonitor server events.
+
+|===

@@ -29,7 +29,6 @@
 package org.opennms.features.deviceconfig.service.impl;
 
 import static org.opennms.netmgt.poller.support.AbstractServiceMonitor.getKeyedString;
-import static org.opennms.features.deviceconfig.service.DeviceConfigService.DEVICE_CONFIG_PREFIX;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -38,6 +37,7 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -87,7 +87,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     private PollerConfig pollerConfig;
 
     @Override
-    public CompletableFuture<Boolean> triggerConfigBackup(String ipAddress, String location, String service, boolean persist) throws IOException {
+    public CompletableFuture<DeviceConfigBackupResponse> triggerConfigBackup(String ipAddress, String location, String service, boolean persist) throws IOException {
         try {
             InetAddress.getByName(ipAddress);
         } catch (UnknownHostException e) {
@@ -97,12 +97,8 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
 
         return pollDeviceConfig(ipAddress, location, service, persist)
                 .thenApply(response -> {
-                    if (response.getPollStatus().isAvailable()) {
-                        return true;
-                    } else {
-                        throw new RuntimeException("Requesting backup failed: " + response.getPollStatus().getReason());
-                    }
-                }).whenComplete((Boolean, throwable) -> {
+                    return new DeviceConfigBackupResponse(response.getPollStatus().getReason(), response.getPollStatus().getDeviceConfig().getScriptOutput());
+                }).whenComplete((response, throwable) -> {
                     if (throwable != null) {
                         LOG.error("Error while getting device config for IpAddress {} at location {}", ipAddress, location, throwable);
                     }

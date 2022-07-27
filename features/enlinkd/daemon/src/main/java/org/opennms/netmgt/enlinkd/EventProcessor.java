@@ -39,7 +39,6 @@ import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.events.api.model.IEvent;
 import org.opennms.netmgt.events.api.model.IParm;
 import org.opennms.netmgt.model.events.EventUtils;
-import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 
 /**
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
@@ -62,24 +61,14 @@ public final class EventProcessor {
         return m_linkd;
     }
 
-    /**
-     * Handle a Node Deleted Event
-     * 
-     * @param event
-     */
     @EventHandler(uei=EventConstants.NODE_ADDED_EVENT_UEI)
     public void handleNodeAdded(IEvent event) throws InsufficientInformationException {
 
         EventUtils.checkNodeId(event);
 
-        m_linkd.addNode(event.getNodeid().intValue());
+        m_linkd.addNode();
     }
 
-    /**
-     * Handle a Node Deleted Event
-     * 
-     * @param event
-     */
     @EventHandler(uei=EventConstants.NODE_DELETED_EVENT_UEI)
     public void handleNodeDeleted(IEvent event) throws InsufficientInformationException {
 
@@ -88,11 +77,6 @@ public final class EventProcessor {
         m_linkd.deleteNode(event.getNodeid().intValue());
     }
 
-    /**
-     * Handle a Node Gained Service Event if service is SNMP
-     * 
-     * @param event
-     */
     @EventHandler(uei=EventConstants.NODE_GAINED_SERVICE_EVENT_UEI)
     public void handleNodeGainedService(IEvent event) throws InsufficientInformationException {
 
@@ -103,11 +87,6 @@ public final class EventProcessor {
         	m_linkd.scheduleNodeCollection(event.getNodeid().intValue());
     }
 
-    /**
-     * Handle a Node Lost Service Event when service lost is SNMP
-     * 
-     * @param event
-     */
     @EventHandler(uei=EventConstants.NODE_LOST_SERVICE_EVENT_UEI)
     public void handleNodeLostService(IEvent event) throws InsufficientInformationException {
 
@@ -118,11 +97,6 @@ public final class EventProcessor {
         	m_linkd.suspendNodeCollection(event.getNodeid().intValue());
     }
 
-    /**
-     * Handle a Node Regained Service Event where service is SNMP
-     * 
-     * @param event
-     */
     @EventHandler(uei=EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI)
     public void handleRegainedService(IEvent event) throws InsufficientInformationException {
 
@@ -140,7 +114,7 @@ public final class EventProcessor {
      */
     @EventHandler(uei = EventConstants.FORCE_RESCAN_EVENT_UEI)
     public void handleForceRescan(IEvent e) {
-    	m_linkd.rescheduleNodeCollection(new Long(e.getNodeid()).intValue());
+    	m_linkd.rescheduleNodeCollection(e.getNodeid().intValue());
     }
     
 

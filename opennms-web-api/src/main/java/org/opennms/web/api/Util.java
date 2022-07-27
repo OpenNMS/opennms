@@ -471,7 +471,7 @@ public abstract class Util extends Object {
             buffer.deleteCharAt(0);
         }
 
-        return WebSecurityUtils.sanitizeString(buffer.toString());
+        return buffer.toString();
     }
 
     public static enum IgnoreType {

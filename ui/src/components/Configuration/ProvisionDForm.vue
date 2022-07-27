@@ -71,6 +71,8 @@
         @update:modelValue="(val) => updateFormValue('zone', val)"
         hint="DNS zone to use as basis for this definition"
       />
+    </div>
+    <div v-if="[RequisitionTypes.DNS].includes(config.type.name) || [RequisitionTypes.VMWare].includes(config.type.name)">
       <FeatherInput
         label="Requisition Name"
         class="side-input mb-m"

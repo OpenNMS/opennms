@@ -33,9 +33,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-import org.opennms.netmgt.flows.api.EnrichedFlow;
 import org.opennms.netmgt.flows.api.Flow;
-import org.opennms.netmgt.flows.api.NodeInfo;
+import org.opennms.netmgt.flows.processing.enrichment.EnrichedFlow;
+import org.opennms.netmgt.flows.processing.enrichment.NodeInfo;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -46,14 +46,14 @@ public class FlowDocument {
     private static final int DOCUMENT_VERSION = 1;
 
 
-    public FlowDocument(Flow flow) {
+    public FlowDocument(EnrichedFlow flow) {
         this.flow = flow;
     }
 
     public FlowDocument() {
     }
 
-    private transient Flow flow;
+    private transient EnrichedFlow flow;
 
     /**
      * Flow timestamp in milliseconds.
@@ -349,11 +349,11 @@ public class FlowDocument {
         hosts.add(host);
     }
 
-    public Flow getFlow() {
+    public EnrichedFlow getFlow() {
         return flow;
     }
 
-    public void setFlow(Flow flow) {
+    public void setFlow(EnrichedFlow flow) {
         this.flow = flow;
     }
 
@@ -684,13 +684,6 @@ public class FlowDocument {
     }
 
     public void setTos(final Integer tos) {
-        if (tos != null) {
-            setDscp((tos & 0b11111100) >> 2);
-            setEcn(tos & 0b00000011);
-        } else {
-            setDscp(null);
-            setEcn(null);
-        }
         this.tos = tos;
     }
 
@@ -750,7 +743,7 @@ public class FlowDocument {
         this.nodeSrc = nodeSrc;
     }
 
-    public static FlowDocument from(final Flow flow) {
+    public static FlowDocument from(final EnrichedFlow flow) {
         final FlowDocument doc = new FlowDocument(flow);
         doc.setTimestamp(flow.getTimestamp());
         doc.setBytes(flow.getBytes());
@@ -783,65 +776,27 @@ public class FlowDocument {
         doc.setTcpFlags(flow.getTcpFlags());
         doc.setDeltaSwitched(flow.getDeltaSwitched());
         doc.setTos(flow.getTos());
+        doc.setDscp(flow.getDscp());
+        doc.setEcn(flow.getEcn());
         doc.setNetflowVersion(NetflowVersion.from(flow.getNetflowVersion()));
         doc.setVlan(flow.getVlan() != null ? Integer.toUnsignedString(flow.getVlan()) : null);
 
+        doc.setApplication(flow.getApplication());
+        doc.setHost(flow.getHost());
+        doc.setLocation(flow.getLocation());
+        doc.setSrcLocality(Locality.from(flow.getSrcLocality()));
+        doc.setDstLocality(Locality.from(flow.getDstLocality()));
+        doc.setFlowLocality(Locality.from(flow.getFlowLocality()));
+        doc.setNodeSrc(NodeDocument.from(flow.getSrcNodeInfo()));
+        doc.setNodeDst(NodeDocument.from(flow.getDstNodeInfo()));
+        doc.setNodeExporter(NodeDocument.from(flow.getExporterNodeInfo()));
+        doc.setTimestamp(flow.getTimestamp());
+        doc.setFirstSwitched(flow.getFirstSwitched());
+        doc.setDeltaSwitched(flow.getDeltaSwitched());
+        doc.setLastSwitched(flow.getLastSwitched());
+        doc.setClockCorrection(flow.getClockCorrection());
+        doc.setConvoKey(flow.getConvoKey());
+
         return doc;
     }
-
-    public static EnrichedFlow buildEnrichedFlow(FlowDocument flowDocument) {
-
-        EnrichedFlow enrichedFlow = new EnrichedFlow(flowDocument.getFlow());
-        enrichedFlow.setApplication(flowDocument.getApplication());
-        enrichedFlow.setHost(flowDocument.getHost());
-        enrichedFlow.setLocation(flowDocument.getLocation());
-        enrichedFlow.setDstLocality(matchLocality(flowDocument.getDstLocality()));
-        enrichedFlow.setSrcLocality(matchLocality(flowDocument.getSrcLocality()));
-        enrichedFlow.setFlowLocality(matchLocality(flowDocument.getFlowLocality()));
-        enrichedFlow.setSrcNodeInfo(buildNodeInfo(flowDocument.getNodeSrc()));
-        enrichedFlow.setDstNodeInfo(buildNodeInfo(flowDocument.getNodeDst()));
-        enrichedFlow.setExporterNodeInfo(buildNodeInfo(flowDocument.getNodeExporter()));
-        enrichedFlow.setClockCorrection(flowDocument.getClockCorrection());
-        return enrichedFlow;
-
-    }
-
-    private static EnrichedFlow.Locality matchLocality(Locality locality) {
-        switch (locality) {
-            case PUBLIC:
-                return EnrichedFlow.Locality.PUBLIC;
-            case PRIVATE:
-                return EnrichedFlow.Locality.PRIVATE;
-        }
-        return EnrichedFlow.Locality.PUBLIC;
-    }
-
-
-    private static NodeInfo buildNodeInfo(NodeDocument nodeDocument) {
-        if (nodeDocument == null) {
-            return null;
-        }
-        return new NodeInfo() {
-            @Override
-            public Integer getNodeId() {
-                return nodeDocument.getNodeId();
-            }
-
-            @Override
-            public String getForeignId() {
-                return nodeDocument.getForeignId();
-            }
-
-            @Override
-            public String getForeignSource() {
-                return nodeDocument.getForeignSource();
-            }
-
-            @Override
-            public List<String> getCategories() {
-                return nodeDocument.getCategories();
-            }
-        };
-    }
-
 }

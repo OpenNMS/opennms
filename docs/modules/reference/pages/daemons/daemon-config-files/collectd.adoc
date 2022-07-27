@@ -1,6 +1,8 @@
 [[ref-daemon-config-files-collectd]]
 = Collectd
 
+Collects xref:operation:performance-data-collection/introduction.adoc[performance management] data to persist node metric data.
+
 .Collectd configuration file overview
 [options="header"]
 [cols="2,3,1,1"]
@@ -102,4 +104,19 @@ Attributes are extracted from the HTTP responses using a regular expression.
 | no
 | yes
 
+|===
+
+.Collectd log file overview
+[options="header"]
+[cols="2,3"]
+
+|===
+| File
+| Description
+
+| collectd.log
+| Logs relating to collector server events.
+
+| instrumentation.log
+| Collection statistics used to populate the xref:operation:admin/webui/log-reader.adoc[Instrumentation Log Reader] in the web UI admin section.
 |===

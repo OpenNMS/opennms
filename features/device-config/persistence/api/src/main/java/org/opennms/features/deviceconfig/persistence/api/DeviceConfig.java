@@ -202,6 +202,10 @@ public class DeviceConfig implements Serializable {
 
     public void setStatus(DeviceConfigStatus status) { this.status = status; }
 
+    public DeviceConfigStatus getStatusOrDefault() {
+        return this.status != null ? this.status : DeviceConfigStatus.NONE;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -226,26 +230,5 @@ public class DeviceConfig implements Serializable {
         int result = Objects.hash(ipInterface, serviceName, encoding, configType, fileName, failureReason, createdTime, lastUpdated, lastFailed, lastSucceeded, status);
         result = 31 * result + Arrays.hashCode(config);
         return result;
-    }
-
-    public static DeviceConfigStatus determineBackupStatus(DeviceConfig dc) {
-        return determineBackupStatus(dc.getLastUpdated(), dc.getLastSucceeded());
-    }
-
-    public static DeviceConfigStatus determineBackupStatus(Date lastUpdated, Date lastSucceeded) {
-        // backup never attempted
-        if (lastUpdated == null) {
-            return DeviceConfigStatus.NONE;
-        }
-
-        // most recent backup attempt was successful
-        if (lastSucceeded != null &&
-            lastSucceeded.getTime() >= lastUpdated.getTime()) {
-            return DeviceConfigStatus.SUCCESS;
-        }
-
-        // backup attempted but either never succeeded or else latest attempt failed
-        // NOTE: DeviceConfig.lastFailed should be non-null and >= lastUpdated if we get here
-        return DeviceConfigStatus.FAILED;
     }
 }

@@ -64,6 +64,13 @@ install: build
 	rsync -avr --exclude=examples debian/temp/etc/ debian/opennms-common/var/lib/opennms/etc-pristine/
 	chmod -R go-w debian/opennms-common/var/lib/opennms/etc-pristine/
 
+	mkdir -p debian/opennms-common/var/lib/opennms/web-inf-pristine/spring-security.d/
+	rsync -avr --exclude=examples debian/temp/jetty-webapps/opennms/WEB-INF/spring-security.d/ debian/opennms-common/var/lib/opennms/web-inf-pristine/spring-security.d/
+	cp debian/temp/jetty-webapps/opennms/WEB-INF/applicationContext-spring-security.xml debian/opennms-common/var/lib/opennms/web-inf-pristine/applicationContext-spring-security.xml
+	cp debian/temp/jetty-webapps/opennms/WEB-INF/web.xml debian/opennms-common/var/lib/opennms/web-inf-pristine/web.xml
+	cp debian/temp/etc/examples/jetty.xml debian/opennms-common/var/lib/opennms/web-inf-pristine/jetty.xml
+	chmod -R go-w debian/opennms-common/var/lib/opennms/web-inf-pristine/
+	
 	##
 	## Setup the alarm northbounders
 	##
@@ -108,11 +115,11 @@ install: build
 	##
 	## Setup the protocol packages
 	##
-	install -d -m 755 debian/opennms-plugin-protocol-{cifs,nsclient,radius,xmp}/usr/share/java/opennms
-	install -d -m 755 debian/opennms-plugin-protocol-{cifs,nsclient,radius,xmp}/usr/share/opennms/contrib
-	install -d -m 755 debian/opennms-plugin-protocol-{cifs,nsclient,radius,xmp}/etc/opennms
-	install -d -m 755 debian/opennms-plugin-protocol-{cifs,nsclient,radius,xmp}/var/lib/opennms/etc-pristine
-	install -d -m 755 debian/opennms-plugin-protocol-{cifs,nsclient,radius,xmp}/var/lib/opennms/xsds
+	install -d -m 755 debian/opennms-plugin-protocol-{cifs,nsclient,radius}/usr/share/java/opennms
+	install -d -m 755 debian/opennms-plugin-protocol-{cifs,nsclient,radius}/usr/share/opennms/contrib
+	install -d -m 755 debian/opennms-plugin-protocol-{cifs,nsclient,radius}/etc/opennms
+	install -d -m 755 debian/opennms-plugin-protocol-{cifs,nsclient,radius}/var/lib/opennms/etc-pristine
+	install -d -m 755 debian/opennms-plugin-protocol-{cifs,nsclient,radius}/var/lib/opennms/xsds
 	
 	# Setup Juniper TCA collector
 	install -d -m 755 debian/opennms-plugin-collector-juniper-tca/usr/share/java/opennms
@@ -148,14 +155,6 @@ install: build
 	mv debian/temp/lib/vtd-xml-*.jar                                                           debian/opennms-plugin-collector-vtdxml-handler/usr/share/java/opennms/
 	mv debian/temp/lib/opennms-vtdxml-collector-handler-*.jar                                  debian/opennms-plugin-collector-vtdxml-handler/usr/share/java/opennms/
 	sed -e 's,@PACKAGE@,opennms-plugin-collector-vtdxml-handler,g' debian/package-permissions.sh > debian/opennms-plugin-collector-vtdxml-handler.postinst
-	
-	# XMP
-	mv debian/temp/lib/xmp-*.jar                                                               debian/opennms-plugin-protocol-xmp/usr/share/java/opennms/
-	mv debian/temp/lib/org.opennms.protocols.xmp-*.jar                                         debian/opennms-plugin-protocol-xmp/usr/share/java/opennms/
-	mv debian/temp/etc/xmp*-config.xml                                                         debian/opennms-plugin-protocol-xmp/etc/opennms/
-	mv debian/temp/share/xsds/xmp*.xsd                                                         debian/opennms-plugin-protocol-xmp/var/lib/opennms/xsds/
-	mv debian/opennms-common/var/lib/opennms/etc-pristine/xmp*-config.xml                      debian/opennms-plugin-protocol-xmp/var/lib/opennms/etc-pristine/
-	sed -e 's,@PACKAGE@,opennms-plugin-protocol-xmp,g' debian/package-permissions.sh > debian/opennms-plugin-protocol-xmp.postinst
 	
 	# Juniper TCA
 	install -d -m 755 debian/opennms-plugin-collector-juniper-tca/var/lib/opennms/etc-pristine/{datacollection,snmp-graph.properties.d}

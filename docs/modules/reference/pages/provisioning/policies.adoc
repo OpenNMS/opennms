@@ -9,7 +9,23 @@ For information on how to extend the functionality of these policies, see the xr
 
 == Common policy parameters
 
-The matchBehavior action is a boolean control that determines how the optional parameters will be evaluated.
-Setting this parameter’s value to `ALL_PARAMETERS` causes Provisiond to evaluate each optional parameter with boolean AND logic and the value `ANY_PARAMETERS` causes OR logic to be applied.
+The matchBehavior action is a Boolean control that determines how optional parameters will be evaluated.
 
-String values are assumed to be a substring match, unless the parameter is prefixed with `~` to indicate the policy should evaluate as a regular expression.
+ALL_PARAMETERS::
+    The policy applies when all defined parameters match (Boolean AND logic).
+ANY_PARAMETERS::
+    The policy applies when at least one set of defined parameters matches (Boolean OR logic).
+NO_PARAMETERS::
+    The policy applies when no defined parameters match (opposite of ANY_PARAMETERS).
+
+String parameters are set to search for a substring match by default.
+If you want the policy to evaluate a parameter against a regular expression, prefix the value with `~`.
+
+== Policy ordering
+
+The order in which parameters are matched is important.
+For negative checks (for example, DO_NOT_PERSIST), evaluation stops after the first match found.
+For positive checks, evaluation will check all policies in listed order.
+After all policies are checked the system determines if a match was found.
+If a match is found, the action is run.
+If multiple matches are found, they are run in reverse chronological order. 

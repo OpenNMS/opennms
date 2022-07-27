@@ -28,29 +28,21 @@
 
 package org.opennms.netmgt.flows.elastic;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasSize;
+
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.test.xml.JsonTest;
-import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
-import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.flows.api.Flow;
-import org.opennms.netmgt.flows.api.FlowSource;
-import org.opennms.netmgt.model.OnmsCategory;
-import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.flows.processing.enrichment.EnrichedFlow;
+import org.opennms.netmgt.flows.processing.enrichment.NodeInfo;
 
-import com.google.common.collect.Sets;
 import com.google.common.io.Resources;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -63,32 +55,41 @@ public class FlowDocumentTest {
             .setDateFormat(AbstractJestClient.ELASTIC_SEARCH_DATE_FORMAT)
             .create();
 
-    private DocumentEnricher enricher;
-
-    @Before
-    public void setUp() throws InterruptedException {
-        final MockDocumentEnricherFactory factory = new MockDocumentEnricherFactory();
-        enricher = factory.getEnricher();
-
-        final NodeDao nodeDao = factory.getNodeDao();
-        final InterfaceToNodeCache interfaceToNodeCache = factory.getInterfaceToNodeCache();
-        interfaceToNodeCache.setNodeId("SomeLocation", InetAddressUtils.addr("192.168.1.2"), 1);
-        interfaceToNodeCache.setNodeId("SomeLocation", InetAddressUtils.addr("192.168.2.2"), 2);
-        interfaceToNodeCache.setNodeId("SomeLocation", InetAddressUtils.addr("192.168.1.1"), 3);
-
-        nodeDao.save(createOnmsNode(1, "SomeRequisition"));
-        nodeDao.save(createOnmsNode(2, "SomeRequisition"));
-        nodeDao.save(createOnmsNode(3, "SomeRequisition"));
-    }
-
     @Test
     public void verifyEffectiveDocument() throws IOException {
-        // Enrich
-        final List<FlowDocument> documents = enricher.enrich(Collections.singletonList(getMockFlow()), getMockFlowSource());
+        final var flow = EnrichedFlow.from(getMockFlow());
+        flow.setLocation("SomeLocation");
+        flow.setHost("192.168.1.1");
+        flow.setFlowLocality(EnrichedFlow.Locality.PRIVATE);
+        flow.setSrcLocality(EnrichedFlow.Locality.PRIVATE);
+        flow.setDstLocality(EnrichedFlow.Locality.PRIVATE);
+
+        flow.setSrcNodeInfo(new NodeInfo() {{
+            this.setNodeId(1);
+            this.setInterfaceId(0);
+            this.setForeignSource("SomeRequisition");
+            this.setForeignId("1");
+            this.setCategories(List.of("SomeCategory"));
+        }});
+        flow.setDstNodeInfo(new NodeInfo() {{
+            this.setNodeId(2);
+            this.setInterfaceId(0);
+            this.setForeignSource("SomeRequisition");
+            this.setForeignId("2");
+            this.setCategories(List.of("SomeCategory"));
+        }});
+        flow.setExporterNodeInfo(new NodeInfo() {{
+            this.setNodeId(3);
+            this.setInterfaceId(0);
+            this.setForeignSource("SomeRequisition");
+            this.setForeignId("3");
+            this.setCategories(List.of("SomeCategory"));
+        }});
+
+        final FlowDocument document = FlowDocument.from(flow);
 
         // Serialize
-        assertThat(documents, hasSize(1));
-        final String actualJson = gson.toJson(documents.get(0));
+        final String actualJson = gson.toJson(document);
 
         // Verify
         final String expectedJson = Resources.toString(Resources.getResource("flow-document-netflow5.json"), StandardCharsets.UTF_8);
@@ -107,24 +108,5 @@ public class FlowDocumentTest {
         when(flow.getNextHopHostname()).thenReturn(Optional.empty());
         when(flow.getVlan()).thenReturn(null);
         return flow;
-    }
-
-    public static FlowSource getMockFlowSource() {
-        final FlowSource flowSource = mock(FlowSource.class);
-        when(flowSource.getLocation()).thenReturn("SomeLocation");
-        when(flowSource.getSourceAddress()).thenReturn("192.168.1.1");
-        return flowSource;
-    }
-
-    private static OnmsNode createOnmsNode(int nodeId, String foreignSource) {
-        final OnmsNode node = new OnmsNode();
-        node.setId(nodeId);
-        node.setForeignSource(foreignSource);
-        node.setForeignId(nodeId + "");
-
-        final OnmsCategory category = new OnmsCategory();
-        category.setName("SomeCategory");
-        node.setCategories(Sets.newHashSet(category));
-        return node;
     }
 }

@@ -31,6 +31,8 @@ package org.opennms.netmgt.flows.elastic;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
 
+import java.util.Optional;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.flows.api.Flow;

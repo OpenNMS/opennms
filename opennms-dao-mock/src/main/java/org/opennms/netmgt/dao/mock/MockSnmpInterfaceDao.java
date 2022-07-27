@@ -153,4 +153,9 @@ public class MockSnmpInterfaceDao extends AbstractMockDao<OnmsSnmpInterface, Int
     public List<OnmsSnmpInterface> findAllHavingEgressFlows(final Integer nodeId) {
         return Collections.emptyList();
     }
+
+    @Override
+    public long getNumInterfacesWithFlows() {
+        return 0;
+    }
 }

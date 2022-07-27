@@ -31,8 +31,6 @@ package org.opennms.features.deviceconfig.rest.api;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigStatus;
 import org.opennms.features.deviceconfig.rest.BackupRequestDTO;
 
-import java.util.List;
-import java.util.Set;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
@@ -44,6 +42,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.List;
+import java.util.Set;
 
 @Path("/device-config")
 public interface DeviceConfigRestService {
@@ -71,7 +71,7 @@ public interface DeviceConfigRestService {
      * @param createdAfter If set, only return items with saved backup after this date in epoch millis
      * @param createdBefore If set, only return items with saved backup before this date in epoch millis
      * @return Json response containing a list of device configs in the
-     *      shape of {@link org.opennms.features.deviceconfig.rest.api.DeviceConfigDTO }
+     *      shape of {@link DeviceConfigDTO }
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -126,12 +126,20 @@ public interface DeviceConfigRestService {
         @QueryParam("configType") @DefaultValue("") String configType);
 
     /**
+     * Delete multiple device config.
+     * @param ids comma separated list of ids (Long)
+     */
+    @DELETE
+    Response deleteDeviceConfigs(@QueryParam("id") List<Long> ids);
+
+    /**
      * Delete a single device config.
      * @param id
      */
     @DELETE
     @Path("{id : \\d+}")
-    void deleteDeviceConfig(@PathParam("id") long id);
+    Response deleteDeviceConfig(@PathParam("id") long id);
+
 
     /**
      * Download configurations for the given id or comma-separated list of ids.

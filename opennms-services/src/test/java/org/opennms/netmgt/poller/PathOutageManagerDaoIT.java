@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2014-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -233,7 +233,7 @@ public class PathOutageManagerDaoIT implements TemporaryDatabaseAware<MockDataba
 	 * Use this method to compare the speed of Hibernate to JDBC
 	 * @throws UnknownHostException 
 	 **/
-	@Ignore
+	@Ignore("manual test for benchmarking")
 	@Test
 	public void testMethod500Times() throws SQLException, UnknownHostException {
 		for (int i = 0; i < 500; i++) {

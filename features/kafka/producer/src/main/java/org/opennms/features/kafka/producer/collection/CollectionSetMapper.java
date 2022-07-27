@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,6 +33,7 @@ import java.net.UnknownHostException;
 import java.util.Objects;
 import java.util.Optional;
 
+import com.google.protobuf.DoubleValue;
 import org.opennms.core.utils.StringUtils;
 import org.opennms.features.kafka.producer.model.CollectionSetProtos;
 import org.opennms.features.kafka.producer.model.CollectionSetProtos.NumericAttribute.Type;
@@ -42,6 +43,7 @@ import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
+import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
@@ -72,7 +74,7 @@ public class CollectionSetMapper {
         this.resourceDao = Objects.requireNonNull(resourceDao);
     }
 
-    public CollectionSetProtos.CollectionSet buildCollectionSetProtos(CollectionSet collectionSet) {
+    public CollectionSetProtos.CollectionSet buildCollectionSetProtos(CollectionSet collectionSet, ServiceParameters params) {
         CollectionSetProtos.CollectionSet.Builder builder = CollectionSetProtos.CollectionSet.newBuilder();
 
         collectionSet.visit(new CollectionSetVisitor() {
@@ -88,7 +90,10 @@ public class CollectionSetMapper {
             public void visitResource(CollectionResource resource) {
                 collectionSetResourceBuilder = CollectionSetProtos.CollectionSetResource.newBuilder();
                 long nodeId = 0;
-                if (resource.getResourceTypeName().equals(CollectionResource.RESOURCE_TYPE_NODE)) {
+                if (!resource.shouldPersist(params)) {
+                    // DO NOTHING, do not persist this resource
+                }
+                else if (resource.getResourceTypeName().equals(CollectionResource.RESOURCE_TYPE_NODE)) {
                     String nodeCriteria = getNodeCriteriaFromResource(resource);
                     CollectionSetProtos.NodeLevelResource.Builder nodeResourceBuilder = buildNodeLevelResourceForProto(
                             nodeCriteria);
@@ -172,6 +177,7 @@ public class CollectionSetMapper {
                     attributeBuilder.setGroup(lastGroupName);
                     attributeBuilder.setName(attribute.getName());
                     attributeBuilder.setValue(attribute.getNumericValue().doubleValue());
+                    attributeBuilder.setMetricValue(DoubleValue.of(attribute.getNumericValue().doubleValue()));
                     attributeBuilder.setType((attribute.getType() == AttributeType.GAUGE) ? Type.GAUGE : Type.COUNTER);
                     collectionSetResourceBuilder.addNumeric(attributeBuilder);
                 }

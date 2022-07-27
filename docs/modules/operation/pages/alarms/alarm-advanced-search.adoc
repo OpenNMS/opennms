@@ -1,0 +1,57 @@
+
+[[ga-advanced-alarm-search]]
+= Advanced Alarm Search
+
+Often users wish to query the alarm list with more customizations to narrow down the search.
+The {page-component-title} alarm list page has a button to filter your searches based on different criteria.
+
+Choose from the following search criteria:
+
+* Alarm Text Contains
+** Performs a substring filter on both the log message and the description.
+** To negate this search, prefix the input text with `!`.
+This returns results that do not contain the provided input text.
+
+* TCP/IP Address Like
+** Performs an `IPLIKE` on the provided IP Address to filter the results.
+** To negate this search, prefix the input text with `!`.
+This returns results that do not satisfy the `IPLIKE` function.
+
+* Node Label Contains
+** Performs a substring filter on the node label.
+** To negate this search, prefix the input text with `!`.
+This returns results that do not contain the provided input text.
+
+* Severity
+** Filter the alarms list based on the alarm severity.
+** This is a multi-select checkbox.
+Select the severities you wish to filter by.
+By default they are unselected, which returns all alarms.
+Selecting one or multiple severities restricts your search results to those selected.
+
+* Service
+** Filter the alarms list based on the alarm service.
+** This is a multi-select checkbox.
+Select the services you wish to filter by.
+By default they are unselected, which returns all alarms.
+Selecting one or multiple services restricts your search results to those selected.
+
+* Alarm type
+** Select this dropdown to include only alarms, only situations, or both.
+
+* Category
+** Filter the alarms list based on the nodes category.
+** To negate this search, toggle the *Negate Category* checkbox.
+This returns results that do not match the set category.
+
+* Filter for Alarms After First Event
+** Select the timestamp to show alarms after the time of the alarm's first event.
+
+* Filter for Alarms Before First Event
+** Select the timestamp to show the alarms before the time of the alarm's first event.
+
+* Filter for Alarms After Last Event
+** Select the timestamp to show the alarms after the time of the alarm's last event.
+
+* Filter for Alarms Before Last Event
+** Select the timestamp to show the alarms before the time of the alarm's last event.
