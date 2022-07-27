@@ -30,8 +30,8 @@ See the table below for available options.
 
  feature:install jira-troubleticketer
 
-The plugin should be ready to use.
-Log in to the Karaf shell and run `opennms:jira-verify` to check your configuration.
+. You should create/change the file jira.properties under your etc folder.
+Please fill the following properties with regards to the description down below:
 
 .jira.properties Options
 [options="header"]
@@ -47,7 +47,7 @@ Log in to the Karaf shell and run `opennms:jira-verify` to check your configurat
 | Username
 
 | jira.password
-| Password
+| Authentication token from Jira Cloud user security settings
 
 | jira.project
 | The key of the project to use.
@@ -82,6 +82,10 @@ Default value is `300000` (5 minutes).
 NOTE: The transition names for `resolve` and `reopen` are typically found on buttons when looking at the ticket in Jira.
 
 NOTE: Use either the `opennms:jira-list-issue-types` Karaf Command or https://confluence.atlassian.com/display/JIRA050/Finding+the+Id+for+Issue+Types[Atlassian's knowledgebase] to determine the appropriate issue type ID.
+
+The plugin should be ready to use.
+Log in to the Karaf shell and run `opennms:jira-verify` to check your configuration.
+
 
 == Jira commands
 
