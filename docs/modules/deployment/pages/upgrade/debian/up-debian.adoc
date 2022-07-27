@@ -62,7 +62,7 @@ apt-get install java-11-openjdk java-11-openjdk-devel
 ${OPENNMS_HOME}/bin/runjava -s
 ----
 
-. Check for configuration file changes, and update accordingly using the files you backed up in xref:deployment:upgrade/diff.adoc#run_diff[idenfity changed configuration files].
+. Check for configuration file changes, and update accordingly using the files you backed up in xref:deployment:upgrade/diff.adoc#run_diff[identify changed configuration files].
 +
 NOTE: Debian prompts you to keep or overwrite your files during the `apt upgrade` process.
 Inspect these files manually and reconcile any differences.
@@ -76,7 +76,7 @@ ${OPENNMS_HOME}/bin/install -dis
 ----
 +
 The upgrade may take some time.
-An `Updgrade completed successfully!` message confirms that the upgrade has completed.
+An `Upgrade completed successfully!` message confirms that the upgrade has completed.
 If you do not get this message, check the output of the install command for any errors.
 
 . Clear the Karaf cache:
