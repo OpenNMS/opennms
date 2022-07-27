@@ -1785,7 +1785,7 @@
     <opennmsApiVersion>0.6.0</opennmsApiVersion>
     <opennmsApiVersionOsgi>0.6.0</opennmsApiVersionOsgi>
     <osgiVersion>7.0.0</osgiVersion>
-    <osgiAnnotationVersion>7.0.0</osgiAnnotationVersion>
+    <osgiAnnotationVersion>8.1.0</osgiAnnotationVersion>
     <osgiCompendiumVersion>7.0.0</osgiCompendiumVersion>
     <osgiEnterpriseVersion>7.0.0</osgiEnterpriseVersion>
     <owaspEncoderVersion>1.2.1</owaspEncoderVersion>
