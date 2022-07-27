@@ -7,10 +7,10 @@ To detect, poll, or collect any JDBC service, you must install the corresponding
 We reference the `repository directory` relative to the Minion home directory.
 Depending on your operating system, the home directory is `/usr/share/minion` for Debian and Ubuntu, or `/opt/minion` for CentOS and RHEL.
 
-. Download the JDBC driver JAR from a repository (for example, a public https://mvnrepository.com/artifact/mysql/mysql-connector-java/8.0.22[Maven repository]).
+. Download the JDBC driver JAR from a repository (for example, a public https://mvnrepository.com/artifact/mysql/mysql-connector-java/8.0.30[Maven repository]).
 . Install the JAR file in the repository directory, following the Maven repository pattern.
 +
-For MySQL 8.0.22, the path would be `repositories/default/mysql/mysql-connector-java/8.0.22/mysql-connector-java-8.0.22.jar`.
+For MySQL 8.0.30, the path would be `repositories/default/mysql/mysql-connector-java/8.0.30/mysql-connector-java-8.0.30.jar`.
 
 . Create a Karaf feature for the MySQL JDBC driver.
 
@@ -36,11 +36,11 @@ sudo vi deploy/jdbc-mysql.xml
 -----
 
 . The version should match your {page-component-title} Core version.
-. The bundle is named `mysql-bundle`, and the version number is set to `8.0.22`.
-. Bundle to download version `8.0.22` with Maven from official repositories.
+. The bundle is named `mysql-bundle`, and the version number is set to `8.0.30`.
+. Bundle to download version `8.0.30` with Maven from official repositories.
 
 As soon you write the file, Karaf picks up the feature and tries to install it.
-You can troubleshoot the installation using `data/log/karaf.log`.
+You can troubleshoot the installation using `$\{MINION_HOME}/data/log/karaf.log`.
 
 .Connect to the Karaf shell
 [source,console]

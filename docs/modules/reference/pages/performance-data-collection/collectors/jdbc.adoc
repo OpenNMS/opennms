@@ -67,7 +67,7 @@ Instead, you must use the service parameters to set the JDBC connection settings
 
 Understanding xref:operation:performance-data-collection/resource-types.adoc#resource-types[resource types] helps when editing collector-specific configuration files.
 
-JDBC collections are defined in `etc/jdbc-datacollection-config.xml`.
+JDBC collections are defined in `$\{OPENNMS_HOME}/etc/jdbc-datacollection-config.xml`.
 
 This snippet provides a sample collection definition named `opennms-stats`:
 
@@ -94,7 +94,7 @@ This snippet provides a sample collection definition named `opennms-stats`:
 </jdbc-collection>
 ----
 
-Once the definition is added to `etc/jdbc-datacollection-config.xml`, you can test it using the `collect` command in the Karaf Shell:
+Once the definition is added to `$\{OPENNMS_HOME}/etc/jdbc-datacollection-config.xml`, you can test it using the `collect` command in the Karaf Shell:
 
 [source, console]
 ----
