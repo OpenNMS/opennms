@@ -29,7 +29,6 @@
 package org.opennms.web.tags.filters;
 
 
-import org.opennms.core.utils.StringUtils;
 import org.opennms.netmgt.model.OnmsFilterFavorite;
 import org.opennms.web.filter.Filter;
 import org.opennms.web.filter.FilterUtil;
@@ -38,6 +37,8 @@ import org.opennms.web.filter.QueryParameters;
 import javax.servlet.ServletContext;
 import java.net.URLDecoder;
 import java.util.List;
+
+import static org.opennms.web.filter.FilterUtil.getFilterParameters;
 
 public abstract class AbstractFilterCallback implements FilterCallback {
     private final ServletContext servletContext;
@@ -72,8 +73,7 @@ public abstract class AbstractFilterCallback implements FilterCallback {
      */
     @Override
     public List<Filter> parse(String filterString) {
-        String[] filterParameter = (StringUtils.isEmpty(filterString))
-                ? new String[0] : filterString.split("&amp;");
+        String[] filterParameter = getFilterParameters(filterString);
         for (int i=0; i< filterParameter.length; i++) {
             if (filterParameter[i].startsWith("filter=")) {
                 filterParameter[i] = filterParameter[i].replaceFirst("filter=", "");

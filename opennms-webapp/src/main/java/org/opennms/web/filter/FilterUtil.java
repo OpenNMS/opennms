@@ -57,11 +57,19 @@ public abstract class FilterUtil {
 
     public static String[] parse(String filterString) {
         String decodedString = URLDecoder.decode(filterString, StandardCharsets.UTF_8);
-        if (StringUtils.isEmpty(decodedString)) {
-            return null;
-        }
-        return Arrays.stream(decodedString.split("&amp;"))
+
+        return Arrays.stream(getFilterParameters(decodedString))
                 .map(fp -> fp.replace("filter=", ""))
                 .distinct().toArray(String[]::new);
+    }
+
+    public static String[] getFilterParameters(String filterString) {
+        if (StringUtils.isEmpty(filterString)) {
+            return new String[0];
+        }
+        if (filterString.contains("&amp;")) {
+            return filterString.split("&amp;");
+        }
+        return filterString.split("&");
     }
 }
