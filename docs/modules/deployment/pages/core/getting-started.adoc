@@ -133,7 +133,7 @@ include::docker/initialize.adoc[]
 endif::[]
 ====
 
-== Receive SNMP Traps/Informs
+== Receive SNMP traps/informs
 
 OpenNMS {page-component-title} Core lets you receive and process SNMP traps/informs out of the box.
 The OpenNMS {page-component-title} Core services run as an unprivileged user and can't bind on port numbers below 1024 without escalated privileges.
