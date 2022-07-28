@@ -14,6 +14,7 @@
 
     <properties>
         <license.skipAddThirdParty>true</license.skipAddThirdParty>
+        <enforcer-skip-banned-dependencies>true</enforcer-skip-banned-dependencies>
     </properties>
 
     <build>
@@ -102,14 +103,6 @@
                         <bundle>mvn:org.ops4j.pax.logging/pax-logging-api/${paxLoggingVersion}</bundle>
                         <bundle>mvn:org.ops4j.pax.logging/pax-logging-log4j2/${paxLoggingVersion}</bundle>
                         <bundle>mvn:org.ops4j.pax.logging/pax-logging-logback/${paxLoggingVersion}</bundle>
-
-                        <!-- override for security (see org.apache.karaf.features.xml) -->
-                        <bundle>mvn:org.opennms.dependencies/org.opennms.dependencies.spring-beans-31-shaded/${project.version}</bundle>
-                        <bundle>mvn:org.opennms.dependencies/org.opennms.dependencies.spring-beans-32-shaded/${project.version}</bundle>
-                        <bundle>mvn:org.opennms.dependencies/org.opennms.dependencies.spring-beans-40-shaded/${project.version}</bundle>
-                        <bundle>mvn:org.opennms.dependencies/org.opennms.dependencies.spring-beans-41-shaded/${project.version}</bundle>
-                        <bundle>mvn:org.opennms.dependencies/org.opennms.dependencies.spring-beans-42-shaded/${project.version}</bundle>
-                        <bundle>mvn:org.opennms.dependencies/org.opennms.dependencies.spring-beans-43-shaded/${project.version}</bundle>
 
                         <bundle>mvn:org.apache.felix/org.apache.felix.http.bridge/${felixBridgeVersion}</bundle>
                     </installedBundles>
@@ -220,9 +213,26 @@
         </dependency>
         <dependency>
             <groupId>org.opennms.dependencies</groupId>
-            <artifactId>spring-beans-shaded-dependencies</artifactId>
+            <artifactId>spring-dependencies</artifactId>
             <version>${project.version}</version>
             <type>pom</type>
         </dependency>
+        <dependency>
+            <groupId>org.opennms.container</groupId>
+            <artifactId>spring-31-dependencies</artifactId>
+            <version>${project.version}</version>
+            <type>pom</type>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
+
+    <repositories>
+        <repository>
+            <id>opennms-repo</id>
+            <url>https://maven.opennms.org/content/groups/opennms.org-release/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
 </project>
