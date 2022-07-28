@@ -25,8 +25,8 @@
       <artifactId>vavr</artifactId>
     </dependency>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>junit-dependencies</artifactId>
     </dependency>
     <dependency>
       <groupId>org.hamcrest</groupId>

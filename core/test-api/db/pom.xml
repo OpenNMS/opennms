@@ -81,8 +81,8 @@
     </dependency>
     -->
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>junit-dependencies</artifactId>
       <scope>compile</scope>
     </dependency>
     <!-- test dependencies -->

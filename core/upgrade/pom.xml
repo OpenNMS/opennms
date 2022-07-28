@@ -71,8 +71,8 @@
     </dependency>
     <!-- Test dependencies -->
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>junit-dependencies</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

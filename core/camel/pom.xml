@@ -51,6 +51,10 @@
       <type>pom</type>
     </dependency>
     <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>junit-dependencies</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.osgi</groupId>
       <artifactId>osgi.core</artifactId>
       <scope>provided</scope>
@@ -58,10 +62,6 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
     </dependency>
   </dependencies>
 </project>

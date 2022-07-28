@@ -75,8 +75,8 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>junit-dependencies</artifactId>
     </dependency>
   </dependencies>
 </project>

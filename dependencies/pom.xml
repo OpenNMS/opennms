@@ -40,6 +40,7 @@
     <module>jrrd</module>
     <module>jrrd2</module>
     <module>jstl</module>
+    <module>junit</module>
     <module>liquibase</module>
     <module>mina</module>
     <module>netty</module>

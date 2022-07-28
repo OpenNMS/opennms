@@ -12,8 +12,8 @@
   <name>OpenNMS :: Core :: Criteria Tools</name>
   <dependencies>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>junit-dependencies</artifactId>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
