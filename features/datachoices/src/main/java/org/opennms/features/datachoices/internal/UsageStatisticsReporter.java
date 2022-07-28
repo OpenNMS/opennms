@@ -85,9 +85,17 @@ public class UsageStatisticsReporter implements StateChangeHandler {
 
     public static final String USAGE_REPORT = "usage-report";
     private static final String JMX_OBJ_OS = "java.lang:type=OperatingSystem";
+    private static final String JMX_OBJ_OPENNMS_POLLERD = "OpenNMS:Name=Pollerd";
+    private static final String JMX_OBJ_OPENNMS_EVENTLOGS_PROCESS = "org.opennms.netmgt.eventd:name=eventlogs.process";
+    private static final String JMX_OBJ_OPENNMS_FLOWS_PERSISTED = "org.opennms.netmgt.flows:name=flowsPersisted";
+    private static final String JMX_OBJ_OPENNMS_REPO_SAMPLE_INSERTED = "org.opennms.newts:name=repository.samples-inserted";
+    private static final String JMX_OBJ_OPENNMS_QUEUED = "OpenNMS:Name=Queued";
     private static final String JMX_ATTR_FREE_PHYSICAL_MEMORY_SIZE = "FreePhysicalMemorySize";
     private static final String JMX_ATTR_TOTAL_PHYSICAL_MEMORY_SIZE = "TotalPhysicalMemorySize";
     private static final String JMX_ATTR_AVAILABLE_PROCESSORS = "AvailableProcessors";
+    private static final String JMX_ATTR_TASKS_COMPLETED = "TasksCompleted";
+    private static final String JMX_ATTR_COUNT = "Count";
+    private static final String JMX_ATTR_UPDATES_COMPLETED = "UpdatesCompleted";
     private static final MBeanServer M_BEAN_SERVER = ManagementFactory.getPlatformMBeanServer();
     private static final int MAX_DEP_RECURSION_DEPTH = 2;
     private static final String OIA_FEATURE_NAME = "opennms-integration-api";
@@ -262,6 +270,11 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         return usageStatisticsReport;
     }
     private void setJmxAttributes(UsageStatisticsReportDTO usageStatisticsReport) {
+        setSystemJmxAttributes(usageStatisticsReport);
+        setOpenNmsJmxAttributes(usageStatisticsReport);
+    }
+
+    private void setSystemJmxAttributes(UsageStatisticsReportDTO usageStatisticsReport) {
         Object freePhysicalMemSizeObj = getJmxAttribute(JMX_OBJ_OS, JMX_ATTR_FREE_PHYSICAL_MEMORY_SIZE);
         if (freePhysicalMemSizeObj != null) {
             usageStatisticsReport.setFreePhysicalMemorySize((long) freePhysicalMemSizeObj);
@@ -273,6 +286,29 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         Object availableProcessorsObj = getJmxAttribute(JMX_OBJ_OS, JMX_ATTR_AVAILABLE_PROCESSORS);
         if (availableProcessorsObj != null) {
             usageStatisticsReport.setAvailableProcessors((int) availableProcessorsObj);
+        }
+    }
+
+    private void setOpenNmsJmxAttributes(UsageStatisticsReportDTO usageStatisticsReport) {
+        Object pollerTasksCompletedObj = getJmxAttribute(JMX_OBJ_OPENNMS_POLLERD, JMX_ATTR_TASKS_COMPLETED);
+        if (pollerTasksCompletedObj != null) {
+            usageStatisticsReport.setPollsCompleted((long) pollerTasksCompletedObj);
+        }
+        Object eventLogsProcessedObj = getJmxAttribute(JMX_OBJ_OPENNMS_EVENTLOGS_PROCESS, JMX_ATTR_COUNT);
+        if (eventLogsProcessedObj != null) {
+            usageStatisticsReport.setEventLogsProcessed((long) eventLogsProcessedObj);
+        }
+        Object coreFlowsPersistedObj = getJmxAttribute(JMX_OBJ_OPENNMS_FLOWS_PERSISTED, JMX_ATTR_COUNT);
+        if (coreFlowsPersistedObj != null) {
+            usageStatisticsReport.setCoreFlowsPersisted((long) coreFlowsPersistedObj);
+        }
+        Object coreNewtsSamplesInsertedObj = getJmxAttribute(JMX_OBJ_OPENNMS_REPO_SAMPLE_INSERTED, JMX_ATTR_COUNT);
+        if (coreNewtsSamplesInsertedObj != null) {
+            usageStatisticsReport.setCoreNewtsSamplesInserted((long) coreNewtsSamplesInsertedObj);
+        }
+        Object coreQueuedUpdatesCompletedObj = getJmxAttribute(JMX_OBJ_OPENNMS_QUEUED, JMX_ATTR_UPDATES_COMPLETED);
+        if (coreQueuedUpdatesCompletedObj != null) {
+            usageStatisticsReport.setCoreQueuedUpdatesCompleted((long) coreQueuedUpdatesCompletedObj);
         }
     }
 
