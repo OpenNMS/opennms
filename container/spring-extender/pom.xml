@@ -56,19 +56,7 @@
                 </exclusion>
                 <exclusion>
                     <groupId>org.apache.servicemix.bundles</groupId>
-                    <artifactId>org.apache.servicemix.bundles.spring-beans</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.servicemix.bundles</groupId>
-                    <artifactId>org.apache.servicemix.bundles.spring-context</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.servicemix.bundles</groupId>
-                    <artifactId>org.apache.servicemix.bundles.spring-core</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.servicemix.bundles</groupId>
-                    <artifactId>org.apache.servicemix.bundles.spring-expression</artifactId>
+                    <artifactId>org.apache.servicemix.bundles.spring-*</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -79,15 +67,7 @@
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.servicemix.bundles</groupId>
-                    <artifactId>org.apache.servicemix.bundles.spring-beans</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.servicemix.bundles</groupId>
-                    <artifactId>org.apache.servicemix.bundles.spring-context</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.servicemix.bundles</groupId>
-                    <artifactId>org.apache.servicemix.bundles.spring-core</artifactId>
+                    <artifactId>org.apache.servicemix.bundles.spring-*</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
