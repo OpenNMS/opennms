@@ -19,7 +19,9 @@
                 "smoke-test-flaky",
                 "smoke-test-minion",
                 "smoke-test-sentinel",
-                "horizon-image"
+                "horizon-image",
+                "sentinel-image",
+                "minion-image"
             ]
         },
         "rpms": {
@@ -198,7 +200,9 @@
                 "tarball-assembly",
                 "horizon-deb-build",
                 "sentinel-deb-build",
-                "horizon-image"
+                "horizon-image",
+                "sentinel-image",
+                "minion-image"
             ],
             "filters": {
                 "branches": {
@@ -219,7 +223,9 @@
                 "tarball-assembly",
                 "horizon-deb-build",
                 "sentinel-deb-build",
-                "horizon-image"
+                "horizon-image",
+                "minion-image",
+                "sentinel-image"
             ],
             "filters": {
                 "branches": {
@@ -240,7 +246,9 @@
                 "tarball-assembly",
                 "horizon-deb-build",
                 "sentinel-deb-build",
-                "horizon-image"
+                "horizon-image",
+                "minion-image",
+                "sentinel-image"
             ],
             "filters": {
                 "branches": {
@@ -261,7 +269,9 @@
                 "tarball-assembly",
                 "horizon-deb-build",
                 "sentinel-deb-build",
-                "horizon-image"
+                "horizon-image",
+                "minion-image",
+                "sentinel-image"
             ],
             "filters": {
                 "branches": {
@@ -326,7 +336,10 @@
                 "smoke-test-core",
                 "smoke-test-flaky",
                 "smoke-test-minion",
-                "smoke-test-sentinel"
+                "smoke-test-sentinel",
+                "horizon-image",
+                "minion-image",
+                "sentinel-image"
             ],
             "variations": [
                 "linux/amd64",
@@ -353,11 +366,13 @@
                 "linux/arm64"
             ],
             "requires": [
-                "horizon-deb-build"
+                "horizon-deb-build",
+                "horizon-image"
             ]
         },
         "sentinel-publish-oci": {
             "requires": [
+                "horizon-image",
                 "horizon-deb-build",
                 "minion-deb-build",
                 "sentinel-deb-build",

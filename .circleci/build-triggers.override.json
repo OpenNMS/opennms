@@ -6,7 +6,7 @@
         "build": false
     },
     "publish": {
-        "packages": false
+        "packages": true
     },
     "tests": {
         "smoke": false,
@@ -15,7 +15,7 @@
     "oci-images": {
         "minion": false,
         "horizon": false,
-        "sentinel": true
+        "sentinel": false
     },
     "debian-packages": {
         "minion": false,
