@@ -18,14 +18,17 @@ To install the `opennms-plugin-ticketer-jira` package, use one of the following 
 ** `apt-get install opennms-plugin-ticketer-jira`
 ****
 
-. Once the package has been installed, set the ticketer plugin property in `$OPENNMS_HOME/etc/opennms.properties.d/ticketer.properties` to enable the plugin:
+. Once the package has been installed, set the ticketer plugin property in `$\{OPENNMS_HOME}/etc/opennms.properties.d/ticketer.properties` to enable the plugin:
 
- opennms.ticketer.plugin=org.opennms.netmgt.ticketd.OSGiBasedTicketerPlugin
+[source, properties]
+----
+opennms.ticketer.plugin=org.opennms.netmgt.ticketd.OSGiBasedTicketerPlugin
+----
 
 +
 If the ticketer properties file does not exist, create it manually.
 
-. Configure the plugin by enabling and disabling options in `$OPENNMS_HOME/etc/jira.properties`.
+. Configure the plugin by enabling and disabling options in `$\{OPENNMS_HOME}/etc/jira.properties`.
 +
 [options="header"]
 [cols="1,3"]
@@ -100,7 +103,7 @@ Include `--help` after a command to see that command's documentation.
 Besides the common fields (creator, create date, description, and subject), you also may also need to set custom fields.
 The Jira ticketing plugin provides the opportunity to define those in the {page-component-title} ticket attributes, which can be overwritten with https://www.drools.org/[Drools] rules.
 
-To enable the Drools ticketing integration, set the ticketer service layer property in `$OPENNMS_HOME/etc/opennms.properties.d/ticketer.properties`:
+To enable the Drools ticketing integration, set the ticketer service layer property in `$\{OPENNMS_HOME}/etc/opennms.properties.d/ticketer.properties`:
 
 [source, properties]
 ----
@@ -109,14 +112,14 @@ opennms.ticketer.servicelayer=org.opennms.netmgt.ticketd.DroolsTicketerServiceLa
 
 If the ticketer properties file does not exist, create it manually.
 
-In addition, the Drools ticketer rules property in `$OPENNMS_HOME/etc/drools-ticketer.properties` must point to a `drools-ticketer-rules.drl` file:
+In addition, the Drools ticketer rules property in `$\{OPENNMS_HOME}/etc/drools-ticketer.properties` must point to a `drools-ticketer-rules.drl` file:
 
 [source, properties]
 ----
 drools-ticketer.rules-file=$OPENNMS_HOME/etc/drools-ticketer-rules.drl
 ----
 
-Finally, you must place a Drools rule file named `drools-ticketer-rules.drl` in the `$OPENNMS_HOME/etc` directory.
+Finally, you must place a Drools rule file named `drools-ticketer-rules.drl` in the `$\{OPENNMS_HOME}/etc` directory.
 
 TIP: There is an example file at `$\{OPENNMS_HOME}\etc\examples` that you can use as a template.
 
