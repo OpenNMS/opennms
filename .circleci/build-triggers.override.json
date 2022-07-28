@@ -14,8 +14,8 @@
     },
     "oci-images": {
         "minion": false,
-        "horizon": true,
-        "sentinel": false
+        "horizon": false,
+        "sentinel": true
     },
     "debian-packages": {
         "minion": false,
