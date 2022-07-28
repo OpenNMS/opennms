@@ -61,6 +61,7 @@
                 "smoke",
                 "rpms",
                 "debs",
+                "oci",
                 "minion-image-single-arch",
                 "minion-image-multi-arch",
                 "horizon-image-single-arch",
