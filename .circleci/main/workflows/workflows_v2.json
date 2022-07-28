@@ -43,7 +43,8 @@
             "extends": [
                 "build",
                 "horizon-image",
-                "minion-image"
+                "minion-image",
+                "sentinel-image"
             ]
         },
         "oci-minion":{
@@ -309,6 +310,11 @@
         "horizon-image": {
             "requires": [
                 "horizon-deb-build"
+            ]
+        },
+        "sentinel-image":{
+            "requires": [
+                "sentinel-deb-build"
             ]
         },
         "minion-image-single-arch": {
