@@ -5,7 +5,6 @@
                 "build",
                 "integration-test",
                 "sentinel-deb-build",
-                "tarball-assembly",
                 "minion-deb-build",
                 "oci"
             ]
