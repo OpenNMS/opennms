@@ -42,6 +42,9 @@ jobs:
       #    command: |
       #      cd opennms-container/horizon
       #      env DOCKER_ARCH="linux/amd64" ./build_container_image.sh
+      - save-artifacts:
+          path: ~/project/target/debs
+          location: horizondebs      
       - store_artifacts:
           when: always
           path: ~/build-results

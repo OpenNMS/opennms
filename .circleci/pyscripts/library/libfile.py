@@ -28,6 +28,10 @@ class libfile:
             _tmp=json.load(f)
         return _tmp
 
+    def save_json(self,path,content):
+        with open(path,"w") as f:
+            json.dump(content,f,indent=4)
+
     def find_files(self,start_path,pattern,output=[]):
         current_files=os.listdir(start_path)
         for entry in current_files:
