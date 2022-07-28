@@ -6,7 +6,8 @@
                 "integration-test",
                 "sentinel-deb-build",
                 "tarball-assembly",
-                "minion-deb-build"
+                "minion-deb-build",
+                "oci"
             ]
         },
         "smoke": {
