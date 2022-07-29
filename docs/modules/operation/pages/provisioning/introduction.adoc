@@ -2,7 +2,7 @@
 [[ga-provisioning-introduction]]
 = Provisioning
 
-Provisioning is a mechanism that imports node and service definitions either from an external source such as DNS or HTTP or via the {page-component-title} web UI.
+Provisioning is a process that imports node and service definitions either from an external source such as DNS or HTTP or via the {page-component-title} web UI.
 The Provisiond daemon maintains your managed entity inventory through policy-based provisioning.
 
 Provisiond comes with a RESTful Web Service API for easy integration with external systems such as a configuration management database (CMDB) or external inventory systems.
@@ -26,7 +26,7 @@ Regardless of the method, provisioning is an iterative process: you will need to
 
 {page-component-title} uses an ICMP ping sweep to find IP addresses on the network and provision node entities.
 Use <<provisioning/auto-discovery.adoc#ga-provisioning-auto-discovery-detectors, auto discovery with detectors>> in addition to the ICMP IP address ping to specify services that you need to detect.
-Use xref:reference:provisioning/handlers/introduction.adoc#import-handlers[import handlers] to further control provisioning.
+Use xref:reference:provisioning/handlers/introduction.adoc#import-handlers[import handlers] to provision nodes from other sources, including sources that may not be in XML format.
 
 Automatically discovered entities are analyzed, persisted to the relational data store, and managed based on the policies defined in the <<provisioning/getting-started.adoc#foreign-source-definition, default foreign source definition>>:
 
