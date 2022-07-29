@@ -14,7 +14,7 @@
                 "build",
                 "horizon-deb-build",
                 "sentinel-deb-build",
-                "tarball-assembly",
+                "tarball-assembly-only",
                 "smoke-test-core",
                 "smoke-test-minion",
                 "smoke-test-sentinel",
@@ -197,7 +197,7 @@
         },
         "smoke-test-core": {
             "requires": [
-                "tarball-assembly",
+                "tarball-assembly-only",
                 "horizon-deb-build",
                 "sentinel-deb-build",
                 "horizon-image",
@@ -221,7 +221,7 @@
         "smoke-test-flaky": {
             "job":"smoke-test-flaky",
             "requires": [
-                "tarball-assembly",
+                "tarball-assembly-only",
                 "horizon-deb-build",
                 "sentinel-deb-build",
                 "horizon-image",
@@ -244,7 +244,7 @@
         },
         "smoke-test-minion": {
             "requires": [
-                "tarball-assembly",
+                "tarball-assembly-only",
                 "horizon-deb-build",
                 "sentinel-deb-build",
                 "horizon-image",
@@ -267,7 +267,7 @@
         },
         "smoke-test-sentinel": {
             "requires": [
-                "tarball-assembly",
+                "tarball-assembly-only",
                 "horizon-deb-build",
                 "sentinel-deb-build",
                 "horizon-image",
