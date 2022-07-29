@@ -31,7 +31,7 @@
     },
     "experimental": false,
     "filters":{
-        "enabled": true
+        "enabled": false
     }
 }
 
