@@ -135,6 +135,7 @@ if "smoke" in git_keywords or "Smoke_tests" in What_to_build:
     print("len:",str(len(git_keywords)))
     if len(git_keywords)>=1:
         for v in git_keywords["smoke"]:
+            print("Key",v)
             if v in ["flaky"]:
                 build_mappings["tests"]["smoke-flaky"]=True
             else:
