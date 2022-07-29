@@ -219,6 +219,7 @@
             }
         },
         "smoke-test-flaky": {
+            "job":"smoke-test-flaky",
             "requires": [
                 "tarball-assembly",
                 "horizon-deb-build",
