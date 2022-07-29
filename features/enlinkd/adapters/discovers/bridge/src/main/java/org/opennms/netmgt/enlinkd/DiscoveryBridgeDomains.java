@@ -41,7 +41,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import org.opennms.netmgt.enlinkd.common.Discovery;
+import org.opennms.netmgt.enlinkd.common.Schedulable;
 import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyException;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
@@ -50,7 +50,7 @@ import org.opennms.netmgt.enlinkd.service.api.DiscoveryBridgeTopology;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DiscoveryBridgeDomains extends Discovery {
+public class DiscoveryBridgeDomains extends Schedulable {
 
     public static final int DOMAIN_MATCH_MIN_SIZE = 20;
     public static final float DOMAIN_MATCH_MIN_RATIO = 0.5f;
@@ -120,7 +120,7 @@ public class DiscoveryBridgeDomains extends Discovery {
     }
     
     @Override
-    public void runDiscovery() {
+    public void runSchedulable() {
         LOG.info("run: calculate topology on broadcast domains. Start");
         
         Map<Integer, Map<Integer, Set<BridgeForwardingTableEntry>>> nodeondomainbft 

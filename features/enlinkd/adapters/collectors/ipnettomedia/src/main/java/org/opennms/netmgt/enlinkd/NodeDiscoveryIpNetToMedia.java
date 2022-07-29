@@ -65,9 +65,8 @@ public final class NodeDiscoveryIpNetToMedia extends NodeCollector {
 	public NodeDiscoveryIpNetToMedia(
 	            final IpNetToMediaTopologyService ipNetToMediaTopologyService,
 	            final LocationAwareSnmpClient locationAwareSnmpClient,
-	            final long interval,final long initial,
 	            final Node node) {
-	        super(locationAwareSnmpClient, interval, initial,node);
+	        super(locationAwareSnmpClient, node);
     	m_ipNetToMediaTopologyService = ipNetToMediaTopologyService;
     }
 

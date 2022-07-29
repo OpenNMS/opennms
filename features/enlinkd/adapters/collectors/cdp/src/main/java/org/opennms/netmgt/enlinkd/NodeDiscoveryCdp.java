@@ -67,9 +67,8 @@ public final class NodeDiscoveryCdp extends NodeCollector {
     public NodeDiscoveryCdp(
             final CdpTopologyService cdpTopologyService,
             final LocationAwareSnmpClient locationAwareSnmpClient,
-            final long interval,final long initial,
             final Node node) {
-        super(locationAwareSnmpClient, interval, initial,node);
+        super(locationAwareSnmpClient, node);
     	m_cdpTopologyService = cdpTopologyService;
     }
 
