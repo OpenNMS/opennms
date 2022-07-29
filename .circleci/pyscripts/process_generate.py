@@ -131,13 +131,11 @@ if "circleci_configuration" in What_to_build and len(What_to_build) == 1 and not
 
 
 if "smoke" in git_keywords or "Smoke_tests" in What_to_build:   
-    print("Keywords::",str(git_keywords))
-    print("len:",str(len(git_keywords)))
     if "flaky" in str(git_keywords):
-        print("Found Flaky")
         build_mappings["tests"]["smoke-flaky"]=True
     else:
         build_mappings["tests"]["smoke"]=True
+    build_mappings["tests"]["filters"]=False
 
 if "oci" in git_keywords:
     build_mappings["build"]["build"]=True
