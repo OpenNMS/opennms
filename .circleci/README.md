@@ -13,28 +13,38 @@ Dynamic configuration allows us to do some logic at the beginning of a build
 to determine what parts of the pipeline to trigger.
 
 There is a small `circleci.yml` file that uses CircleCI's "continuation"
-support along with a python script to check which parts of the codebase
+support along with a python scripts to check which parts of the codebase
 have been modified, and then sets parameters to be used in a sub-workflow.
 (See the `trigger-path-filtering` portions of `config.yml` for an idea of
 what it's doing.)
 
+The "main" config file is generated dynamically based on the parameters set and 
+user provided properties. For backward compatibility we hae kept the workflows logics
+(such as filters) similar to before.
+
 Each of the workflows in the "main" config then uses a `when:` field
 referencing various `trigger-*` parameters to enable or disable them.
 
-## Config Packing
+## Modifying build paths
 
-This feature was originally designed for writing CircleCI orbs, self-contained
-sets of macros and commands for reuse in CircleCI configs.  It allows you to
-make a directory full of YAML files and it packs them up into a single
-monolithic YAML file.
+The user has ability to modify the build path using two options
+1. using git commit:
+* When check in a change you can use hash-tag along with a keyword to enable build paths
+| Keyword | Description |
+| #smoke  | Enable smoke tests |
+| #smoke-flaky | Enable flaky smoke tests|
+| #integration | Enable integration tests|
+| #rpm    | Enable rpm jobs |
+| #deb    | Enable debian package jobs |
+| #oci    | Enable oci jobs |
+| #doc    | Enable doc job  |
+| #ui     | Enable ui job |
+* The script attempts to detect and enable corresponding jobs if incoming changes contains:
+** "IT.java" or "Test.java" files
+** Any changes to "doc" or "ui" 
+** Any changes to "opennms-container"
 
-For details on the mechanics of config packing, see
-[the CircleCI docs](https://circleci.com/docs/2.0/local-cli/#packing-a-config).
-
-The initial implementation just chops the `parameters` and `executors`
-sections out of the main config to make it easier to manage merge
-conflicts. In the future, ideally, we'd refactor much more of the config
-to be easier to edit in pieces.
+2. using `build-triggers.override.json` file by setting build components to true.
 
 # Smoke Tests
 
