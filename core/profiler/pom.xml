@@ -58,6 +58,7 @@
             <groupId>org.opennms.dependencies</groupId>
             <artifactId>junit-dependencies</artifactId>
             <scope>test</scope>
+            <type>pom</type>
         </dependency>
     </dependencies>
 </project>
