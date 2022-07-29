@@ -135,7 +135,7 @@ if "smoke" in git_keywords or "Smoke_tests" in What_to_build:
         build_mappings["tests"]["smoke-flaky"]=True
     else:
         build_mappings["tests"]["smoke"]=True
-    build_mappings["tests"]["filters"]=False
+    build_mappings["filters"]["enabled"]=False
 
 if "oci" in git_keywords:
     build_mappings["build"]["build"]=True
