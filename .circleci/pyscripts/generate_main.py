@@ -128,10 +128,6 @@ for e in main_yml_content:
             circleCI.set_Workflow(path_to_workflow_json)
             workflow_path=[]
 
-            #Lambda function to append to the workflow path
-            #append_to_sample_workflow=lambda e : workflow_path.extend(e) if len(workflow_path)>1 else e
-
-
             level = 0
             if "workflows:" not in workflow_path:
                 workflow_path.append(
@@ -192,6 +188,12 @@ for e in main_yml_content:
                 print("tests > smoke:", circleCI.get_Workflow_dependency('smoke'))
                 workflow = circleCI.get_Workflow_yaml(
                     "smoke", level,enable_filters=filters_enabled)
+                workflow_path=append_to_sample_workflow(workflow_path,workflow)
+
+            if build_components["tests"]["smoke-flaky"]:
+                print("tests > smoke-flaky:", circleCI.get_Workflow_dependency('smoke-test-flaky'))
+                workflow = circleCI.get_Workflow_yaml(
+                    "smoke-test-flaky", level,enable_filters=filters_enabled)
                 workflow_path=append_to_sample_workflow(workflow_path,workflow)
 
             if build_components["debian-packages"]["minion"] or \
@@ -266,11 +268,18 @@ for e in main_yml_content:
                     "weekly-coverage", level,enable_filters=filters_enabled)
                 workflow_path=append_to_sample_workflow(workflow_path,workflow)
 
-            if build_components["publish"]["packages"]:
-                print("publish> packages :",
+            if build_components["build"]["deploy"]:
+                print("build> deploy :",
                       circleCI.get_Workflow_dependency('build-deploy'))
                 workflow = circleCI.get_Workflow_yaml(
                     "build-deploy", level,enable_filters=filters_enabled)
+                workflow_path=append_to_sample_workflow(workflow_path,workflow)
+
+            if build_components["publish"]["packages"]:
+                print("publish> packages :",
+                      circleCI.get_Workflow_dependency('build-publish'))
+                workflow = circleCI.get_Workflow_yaml(
+                    "build-publish", level,enable_filters=filters_enabled)
                 workflow_path=append_to_sample_workflow(workflow_path,workflow)
 
             if not build_components["build"]["build"] and \

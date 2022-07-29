@@ -161,13 +161,15 @@ jobs:
                       "docs": false,
                       "ui": false,
                       "coverage": true,
-                      "build": false
+                      "build": false,
+                      "deplpy": false
                   },
                   "publish": {
                       "packages": false
                   },
                   "tests": {
                       "smoke": false,
+                      "smoke-flaky": false,
                       "integration": false
                   },
                   "oci-images": {

@@ -11,6 +11,7 @@ path_to_build_trigger_override=os.path.join(".circleci","build-triggers.override
 output_path = os.environ.get('OUTPUT_PATH')
 head = os.environ.get('CIRCLE_SHA1')
 base_revision = os.environ.get('BASE_REVISION')
+branch_name=os.environ.get('CIRCLE_BRANCH')
 
 libgit = libgit.libgit("stdout")
 
@@ -23,6 +24,7 @@ libgit.switchBranch(head)
 
 base= libgit.commonAncestor(base_revision, head)
 
+print("branch_name",branch_name)
 print("output_path",output_path)
 print("head",head)
 print("base_revision",base_revision)
@@ -113,6 +115,12 @@ if "trigger-ui" in mappings:
 build_mappings["build"]["coverage"]=mappings["trigger-coverage"]
 build_mappings["tests"]["smoke"]=mappings["trigger-flaky-smoke"]
 
+if re.match(".*smoke.*",branch_name):
+    build_mappings["tests"]["smoke"]=True
+
+if re.match(".*flaky.*",branch_name):
+    build_mappings["tests"]["smoke-flaky"]=True
+
 
 print("Git Keywords:",git_keywords)
 if "circleci_configuration" in What_to_build and len(What_to_build) == 1 and not build_mappings["build"]["build"]:
@@ -120,17 +128,18 @@ if "circleci_configuration" in What_to_build and len(What_to_build) == 1 and not
     mappings["trigger-build"]=False
     build_mappings["build"]["build"]=False
 
+
+
 if "smoke" in git_keywords or "Smoke_tests" in What_to_build:   
     print(git_keywords)
     print(len(git_keywords))
-    build_mappings["tests"]["smoke"]=True
     if len(git_keywords)>1:
         for i,v in enumerate(git_keywords["smoke"]):
             print(i,v)
-            if v in ["flaky","core","minion"]:
-                if "override" not in build_mappings["tests"]["smoke"]:
-                    build_mappings["tests"]["smoke"]["override"]={}
-                build_mappings["tests"]["smoke"]["override"]=v
+            if v in ["flaky"]:
+                build_mappings["tests"]["smoke-flaky"]=True
+            else:
+                build_mappings["tests"]["smoke"]=True
 
 if "oci" in git_keywords:
     build_mappings["build"]["build"]=True

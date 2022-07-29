@@ -3,14 +3,16 @@
         "docs": false,
         "ui": false,
         "coverage": false,
-        "build": false
+        "build": false,
+        "deploy": false
     },
     "publish": {
-        "packages": true
+        "packages": false
     },
     "tests": {
-        "smoke": false,
-        "integration": false
+        "smoke": true,
+        "smoke-flaky": false,
+        "integration": false 
     },
     "oci-images": {
         "minion": false,

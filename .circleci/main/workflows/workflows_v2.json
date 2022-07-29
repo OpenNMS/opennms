@@ -16,7 +16,6 @@
                 "sentinel-deb-build",
                 "tarball-assembly",
                 "smoke-test-core",
-                "smoke-test-flaky",
                 "smoke-test-minion",
                 "smoke-test-sentinel",
                 "horizon-image",
@@ -55,7 +54,7 @@
                 "minion-image"
             ]
         },
-        "deploy": {
+        "build-publish": {
             "extends": [
                 "build",
                 "smoke",
