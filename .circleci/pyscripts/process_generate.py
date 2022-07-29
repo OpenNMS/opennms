@@ -113,7 +113,9 @@ if "trigger-ui" in mappings:
     build_mappings["build"]["ui"]=mappings["trigger-ui"]
 
 build_mappings["build"]["coverage"]=mappings["trigger-coverage"]
-build_mappings["tests"]["smoke-flaky"]=mappings["trigger-flaky-smoke"]
+
+if mappings["trigger-flaky-smoke"]: 
+    build_mappings["tests"]["smoke-flaky"]=mappings["trigger-flaky-smoke"]
 
 if re.match(".*smoke.*",branch_name):
     build_mappings["tests"]["smoke"]=True
