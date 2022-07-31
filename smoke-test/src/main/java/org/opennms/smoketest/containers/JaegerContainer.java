@@ -50,6 +50,7 @@ public class JaegerContainer extends GenericContainer<JaegerContainer> implement
     public static final String ALIAS = "jaeger";
     public static final int WEB_PORT = 16686;
     public static final int THRIFT_HTTP_PORT = 14268;
+    public static final int GRPC_HTTP_PORT = 14268;
     public static final String IMAGE = "jaegertracing/all-in-one:1.39";
     private static final Logger LOG = LoggerFactory.getLogger(JaegerContainer.class);
 
@@ -71,6 +72,14 @@ public class JaegerContainer extends GenericContainer<JaegerContainer> implement
      */
     public static String getThriftHttpURL() {
         return String.format("http://%s:%d/api/traces", ALIAS, THRIFT_HTTP_PORT);
+    }
+
+    /**
+     * Gets the gRPC HTTP URL.
+     * @return String suitable to pass to OpenTelemetry otel.exporter.jaeger.endpoint
+     */
+    public static String getGrpcHttpURL() {
+        return String.format("http://%s:%d/", ALIAS, GRPC_HTTP_PORT);
     }
 
     @Override

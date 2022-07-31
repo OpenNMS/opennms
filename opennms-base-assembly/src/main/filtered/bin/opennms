@@ -796,6 +796,12 @@ if [[ "$JAVA_HEAP_SIZE" =~ ^[0-9]+$ ]]; then
    MANAGER_OPTIONS+=("-Xmx${JAVA_HEAP_SIZE}")
 fi
 
+# OpenTelemetry defaults for auto-configuration.
+# https://github.com/open-telemetry/opentelemetry-java/tree/main/sdk-extensions/autoconfigure
+[ -z "$OTEL_SERVICE_NAME" ] && export OTEL_SERVICE_NAME="${install.package.description}"
+[ -z "$OTEL_METRICS_EXPORTER" ] && export OTEL_METRICS_EXPORTER=none
+[ -z "$OTEL_LOGS_EXPORTER" ] && export OTEL_LOGS_EXPORTER=none
+
 # https://pyroscope.io/docs/java-tracing/#running-as-otel-java-instrumentation-extension
 if [ -n "$PYROSCOPE_AGENT_ENABLED" ] && [ "$PYROSCOPE_AGENT_ENABLED" -gt 0 ]; then
 	export PYROSCOPE_APPLICATION_NAME="${PYROSCOPE_APPLICATION_NAME:=OpenNMS}"
