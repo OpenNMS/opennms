@@ -796,6 +796,12 @@ if [ -n "$JAVA_HEAP_SIZE" ] && [ "$JAVA_HEAP_SIZE" -gt 0 ]; then
 	MANAGER_OPTIONS+=("-Xmx${JAVA_HEAP_SIZE}m")
 fi
 
+# OpenTelemetry defaults for auto-configuration.
+# https://github.com/open-telemetry/opentelemetry-java/tree/main/sdk-extensions/autoconfigure
+export OTEL_SERVICE_NAME="${install.package.description}"
+export OTEL_METRICS_EXPORTER=none
+export OTEL_LOGS_EXPORTER=none
+
 JAVA_VERSION="$("$OPENNMS_HOME/bin/runjava" -p -f 2> /dev/null)"
 JAVA_SHORT_VERSION="$(echo "$JAVA_VERSION" | cut -d. -f1)"
 if [ -z "$JAVA_SHORT_VERSION" ]; then

@@ -1793,8 +1793,8 @@
     <owaspHtmlSanitizerVersion>20170515.1</owaspHtmlSanitizerVersion>
     <osgiJaxRsVersion>1.1.0.ONMS</osgiJaxRsVersion>
     <opencsvVersion>2.3</opencsvVersion>
+    <opentelemetryVersion>1.16.0</opentelemetryVersion>
     <opentracingVersion>0.33.0</opentracingVersion>
-    <jeagertracingVersion>0.34.0</jeagertracingVersion>
     <lz4JavaVersion>1.8.0</lz4JavaVersion>
     <quartzVersion>2.3.2</quartzVersion>
     <rancidApiVersion>2.0.0</rancidApiVersion>
@@ -5123,6 +5123,28 @@
         <groupId>org.apache.sshd</groupId>
         <artifactId>sshd-core</artifactId>
         <version>${minaSshdVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.opentelemetry</groupId>
+        <artifactId>opentelemetry-bom</artifactId>
+        <version>${opentelemetryVersion}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>io.opentelemetry</groupId>
+        <artifactId>opentelemetry-sdk-extension-autoconfigure</artifactId> <!-- not included in opentelemetry-bom -->
+        <version>${opentelemetryVersion}-alpha</version>
+      </dependency>
+      <dependency>
+        <groupId>io.opentelemetry</groupId>
+        <artifactId>opentelemetry-semconv</artifactId> <!-- not included in opentelemetry-bom -->
+        <version>${opentelemetryVersion}-alpha</version>
+      </dependency>
+      <dependency>
+        <groupId>io.opentelemetry</groupId>
+        <artifactId>opentelemetry-opentracing-shim</artifactId> <!-- not included in opentelemetry-bom -->
+        <version>${opentelemetryVersion}-alpha</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
