@@ -1014,6 +1014,11 @@
       <artifactId>postgresql</artifactId>
     </dependency>
     <dependency>
+      <groupId>io.opentelemetry.javaagent</groupId>
+      <artifactId>opentelemetry-javaagent</artifactId>
+      <version>${opentelemetryVersion}</version>
+    </dependency>
+    <dependency>
       <groupId>axis</groupId>
       <artifactId>axis</artifactId>
       <exclusions>
