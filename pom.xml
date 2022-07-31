@@ -1781,8 +1781,8 @@
     <protobuf2Version>2.6.1</protobuf2Version>
     <postgresqlVersion>42.4.1</postgresqlVersion>
     <powermockVersion>2.0.9</powermockVersion>
-    <okhttpVersion>3.10.0</okhttpVersion>
-    <okioVersion>1.14.0</okioVersion>
+    <okhttpVersion>4.9.3</okhttpVersion>
+    <okioVersion>2.8.0</okioVersion>
     <opennmsApiVersion>1.1.0-SNAPSHOT</opennmsApiVersion>
     <opennmsApiVersionOsgi>1.0.1</opennmsApiVersionOsgi>
     <osgiVersion>7.0.0</osgiVersion>
