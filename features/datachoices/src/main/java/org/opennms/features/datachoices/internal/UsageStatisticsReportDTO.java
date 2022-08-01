@@ -87,6 +87,12 @@ public class UsageStatisticsReportDTO {
 
     private int m_businessEdgeCount;
 
+    private long m_pollsCompleted;
+    private long m_eventLogsProcessed;
+    private long m_coreFlowsPersisted;
+    private long m_coreNewtsSamplesInserted;
+    private long m_coreQueuedUpdatesCompleted;
+
     public void setSystemId(String systemId) {
         m_systemId = systemId;
     }
@@ -373,6 +379,45 @@ public class UsageStatisticsReportDTO {
 
     public void setDatabaseProductVersion(String databaseProductVersion) {
         this.m_databaseProductVersion = databaseProductVersion;
+    }
+
+    public long getPollsCompleted() {
+        return m_pollsCompleted;
+    }
+
+    public void setPollsCompleted(long pollsCompleted) {
+        this.m_pollsCompleted = pollsCompleted;
+    }
+    public long getEventLogsProcessed() {
+        return m_eventLogsProcessed;
+    }
+
+    public void setEventLogsProcessed(long eventLogsProcessed) {
+        this.m_eventLogsProcessed = eventLogsProcessed;
+    }
+
+    public long getCoreFlowsPersisted() {
+        return m_coreFlowsPersisted;
+    }
+
+    public void setCoreFlowsPersisted(long coreFlowsPersisted) {
+        this.m_coreFlowsPersisted = coreFlowsPersisted;
+    }
+
+    public long getCoreNewtsSamplesInserted() {
+        return m_coreNewtsSamplesInserted;
+    }
+
+    public void setCoreNewtsSamplesInserted(long coreNewtsSamplesInserted) {
+        this.m_coreNewtsSamplesInserted = coreNewtsSamplesInserted;
+    }
+
+    public long getCoreQueuedUpdatesCompleted() {
+        return m_coreQueuedUpdatesCompleted;
+    }
+
+    public void setCoreQueuedUpdatesCompleted(long coreQueuedUpdatesCompleted) {
+        this.m_coreQueuedUpdatesCompleted = coreQueuedUpdatesCompleted;
     }
 
     public String toJson() {

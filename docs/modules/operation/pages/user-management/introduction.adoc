@@ -57,8 +57,13 @@ When enabled, the `Data Choices` module collects the following anonymous statist
 * Global notification enablement status
 * Destination path count
 * On-call role count
-* RDBMS Name
+* Relational Database Management System (RDBMS) Name
 * RDBMS Version
+* Pollerd Tasks Completed
+* Event Logs Processed Count
+* Core Flows Persisted Count
+* Core Newts Samples Inserted Count
+* Core Queued Updates Completed
 
 [[ga-admin-user-setup]]
 === Admin User Setup

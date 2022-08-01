@@ -172,6 +172,9 @@ Use to generate requisition XML files for creating, updating, or removing nodes 
 
 xref:operation:provisioning/introduction.adoc[Provisioning]:: The process of getting your devices, applications, and services into a monitoring system.
 
+Relational Database Management System (RDBMS):: A relational database management system (RDBMS or just RDB) is a common type of database that stores data in tables, with relationships between tables to structure data.
+Example of such database: PostgreSQL.
+
 Remote Method Invocation (RMI):: Java API that lets one Java Virtual Machine (JVM) running object invoke methods on an object running in another JVM.
 RMI integration lets you access a remote Horizon and/or Meridian instance for monitoring and management.
 (See xref:operation:admin/rmi.adoc[Enabling RMI].)
