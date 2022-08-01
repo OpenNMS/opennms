@@ -28,10 +28,11 @@
 
 package org.opennms.netmgt.enlinkd.common;
 
+import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class Executable implements Runnable {
+public abstract class Executable implements ReadyRunnable {
 
     private static final Logger LOG = LoggerFactory.getLogger(Executable.class);
 

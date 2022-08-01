@@ -568,9 +568,8 @@ public final class NodeDiscoveryBridge extends NodeCollector {
         return "NodeDiscoveryBridge";
     }
 
-//  FIXME
-//    @Override
-//    public boolean isReady() {
-//        return m_bridgeTopologyService.collectBft(getNodeId(),m_maxSize);
-//    }
+    @Override
+    public boolean isReady() {
+        return m_bridgeTopologyService.collectBft(getNodeId(),m_maxSize);
+    }
 }

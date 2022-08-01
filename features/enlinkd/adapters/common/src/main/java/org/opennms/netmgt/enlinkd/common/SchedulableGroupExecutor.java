@@ -46,7 +46,12 @@ public class SchedulableGroupExecutor {
         priorityJobScheduler.execute(() -> {
             while (true) {
                 try {
-                        priorityJobPoolExecutor.execute(priorityQueue.take());
+                    Executable executable = priorityQueue.take();
+                    if (executable.isReady()) {
+                        priorityJobPoolExecutor.execute(executable);
+                    } else {
+                        scheduleExecutable(executable);
+                    }
                 } catch (InterruptedException e) {
                     // exception needs special handling
                     break;

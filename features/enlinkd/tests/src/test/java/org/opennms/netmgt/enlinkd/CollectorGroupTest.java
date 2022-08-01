@@ -90,6 +90,11 @@ public class CollectorGroupTest {
             result = 31 * result + (m_name != null ? m_name.hashCode() : 0);
             return result;
         }
+
+        @Override
+        public boolean isReady() {
+            return true;
+        }
     }
 
     @Test

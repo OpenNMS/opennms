@@ -144,7 +144,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
         //
         try {
             LOG.info("init: Creating EnhancedLinkd scheduler");
-            m_scheduler = new LegacyScheduler("EnhancedLinkd", m_linkdConfig.getDiscoveryBridgeThreads());
+            m_scheduler = new LegacyScheduler("EnhancedLinkd", m_linkdConfig.getDiscoveryBridgeThreads()+2);
         } catch (RuntimeException e) {
             LOG.error("init: Failed to create EnhancedLinkd scheduler", e);
             throw e;

@@ -144,4 +144,9 @@ public abstract class NodeCollector extends Executable {
     public int hashCode() {
         return Objects.hash(m_node,getName());
     }
+
+    @Override
+    public boolean isReady() {
+        return true;
+    }
 }
