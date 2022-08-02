@@ -15,7 +15,7 @@ Provisiond receives requests to add managed entities (nodes, IP interfaces, SNMP
 
 * xref:provisioning/auto-discovery.adoc[Automatic discovery] (typically via the Discovery daemon).
 * xref:provisioning/directed-discovery.adoc[Directed discovery] using an import requisition (typically via the Provisioning UI).
-* xref:development:rest/nodes.adoc[Node asset import] through the RestAPI or the https://docs.opennms.com/pris/1.2.0/index.html[provisioning integration server] (PRIS).
+* xref:development:rest/nodes.adoc[Node asset import] through the REST API or the https://docs.opennms.com/pris/1.2.0/index.html[provisioning integration server] (PRIS).
 
 {page-component-title} lets you control Provisiond behavior by creating provisioning policies that include scanning frequency, IP ranges, and which services to detect.
 
@@ -48,7 +48,7 @@ No discovery process is used for finding more interfaces or services.
 IMPORTANT: An import requisition is an XML definition of node entities to be provisioned from an external source into {page-component-title}.
 See the https://xmlns.opennms.org/xsd/config/model-import[requisition schema] (XSD) for more information.
 
-=== Understanding the process
+=== The process
 
 Directed discovery involves three phases:
 
