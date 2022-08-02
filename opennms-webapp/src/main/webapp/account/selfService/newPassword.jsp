@@ -47,8 +47,8 @@
     if (document.goForm.pass1.value == document.goForm.pass2.value)
     {
       let newPassword=document.goForm.pass1.value
-      const passwordRegex= <%= NewPasswordActionServlet.passwordRegex%>;
-      const sameCharacterRegex= <%= NewPasswordActionServlet.sameCharacterRegex%>;
+      const passwordRegex= <%= NewPasswordActionServlet.PASSWORD_REGEX%>;
+      const sameCharacterRegex= <%= NewPasswordActionServlet.SAME_CHARACTER_REGEX%>;
 
       if(newPassword.match(passwordRegex) && !newPassword.match(sameCharacterRegex) )
       {
