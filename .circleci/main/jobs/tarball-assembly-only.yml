@@ -56,7 +56,7 @@ jobs:
             mkdir -p minion-target
             tar czf minion-target/minion-target.tar.gz opennms-assemblies/minion/target/
       - save-artifacts:
-          path: ~/project/minion-target/minion-target.tar.gz
+          path: ~/project/minion-target
           location: miniontarget
       - store_artifacts:
           when: always
