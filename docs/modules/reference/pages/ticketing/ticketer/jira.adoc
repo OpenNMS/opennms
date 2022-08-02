@@ -62,13 +62,13 @@ The transition name is typically found on a button when looking at the ticket in
 The transition name is typically found on a button when looking at the ticket in Jira.
 
 | jira.status.open
-| A comma-separated list of Jira status names under which a ticket should be considered 'Open.'
+| A comma-separated list of Jira status names that classify a ticket as "Open."
 
 | jira.status.closed
-| A comma-separated list of Jira status names under which a ticket should be considered 'Closed.'
+| A comma-separated list of Jira status names that classify a ticket as "Closed."
 
 | jira.status.cancelled
-| A comma-separated list of Jira status names under which a ticket should be considered 'Canceled.'
+| A comma-separated list of Jira status names that classify a ticket as "Canceled."
 
 | jira.cache.reloadTime
 | The amount of time, in milliseconds, it takes to reload the fields cache.
@@ -99,7 +99,7 @@ Include `--help` after a command to see that command's documentation.
 
 == Custom fields
 
-Besides the common fields (creator, create date, description, and subject), you also may also need to set custom fields.
+Besides the common fields (creator, create date, description, and subject), you also may need to set custom fields.
 The Jira ticketing plugin provides the opportunity to define those in the {page-component-title} ticket attributes, which can be overwritten with https://www.drools.org/[Drools] rules.
 
 To enable the Drools ticketing integration, set the ticketer service layer property in `$\{OPENNMS_HOME}/etc/opennms.properties.d/ticketer.properties`:
@@ -146,7 +146,7 @@ By default, only custom fields are shown.
 You can show all fields by appending the `-s` option to the command.
 
 You may also need to set default values (for example, the component, reporter, or assignee).
-The project key and issue types can also be redefined in the `jira.properties` file.
+You can also redefine the project key and issue types in the `jira.properties` file.
 
 The {page-component-title} ticketer attribute model only lets you set a String value.
 The Jira model, however, is slightly different, and each {page-component-title} attribute value must be converted to a Jira field type.
@@ -163,10 +163,10 @@ This table describes valid values for {page-component-title} attributes:
 | Any String.
 
 | date
-| Any date in the _YYYY-MM-DD_ format.
+| Any date in YYYY-MM-DD format.
 
 | datetime
-| Any date-time value in the ISO 8601 format (_YYYY-MM-DDThh:mm:ss.sTZD_).
+| Any date-time value in the ISO 8601 format (YYYY-MM-DDThh:mm:ss.sTZD).
 
 | group
 | A group's name.
