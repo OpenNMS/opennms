@@ -272,13 +272,6 @@ custom checkbox                customfield_10100    true       array <6>
 custom datepicker              customfield_10101    true       date
 ----
 
-. Defined components are `core`, `service`, and `web`.
-. Defined versions are `1.0.0` and `1.0.1`.
-. Defined issue types are `Bug` and `Task`.
-. Defined priorities are `Major` and `Minor`.
-. Defined projects are `NMS` and `HZN`.
-. Defined options are `yes`, `no`, and `sometimes`.
-
 The following snippet shows how to set the custom fields in your Drools script:
 
 [source, drools]
