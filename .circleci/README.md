@@ -23,29 +23,28 @@ referencing various `trigger-*` parameters to enable or disable them.
 
 The user has ability to modify the build path by
 1. using git commit:
-* You can use the following keywords to enable build path(s)
+    * You can use the following keywords to enable build path(s)
 
-| Keyword       | Description |
-| ------------- | ------------- |
-| #smoke        | Enable smoke tests |
-| #smoke-flaky  | Enable flaky smoke tests|
-| #integration  | Enable integration tests|
-| #rpm          | Enable rpm jobs |
-| #deb          | Enable debian package jobs |
-| #oci          | Enable oci jobs |
-| #doc          | Enable doc job  |
-| #ui           | Enable ui job |
+      | Keyword       | Description |
+      | ------------- | ------------- |
+      | #smoke        | Enable smoke tests |
+      | #smoke-flaky  | Enable flaky smoke tests|
+      | #integration  | Enable integration tests|
+      | #rpm          | Enable rpm jobs |
+      | #deb          | Enable debian package jobs |
+      | #oci          | Enable oci jobs |
+      | #doc          | Enable doc job  |
+      | #ui           | Enable ui job |
 
-**Note:** These keywords are hardcoded in `process_generate.py` file located under `pyscripts` folder.
-
-* The script attempts to detect and enable corresponding jobs if incoming changes contains:
-** Changes to "IT.java" or "Test.java" files
-** Changes to "docs" or "ui" 
-** Changes to "opennms-container"
+    * `process_generate.py` script attempts to detect and enable corresponding jobs automatically if incoming changes contains changes to:
+      * "IT.java" or "Test.java" files
+      * "docs" or "ui" folder
+      * "opennms-container" folder
 
 2. using `build-triggers.override.json` file
-* You can enable the jobs you want to run by setting them to True
-**Note:** When you enable a job, its dependencies will be enabled.
+    * You can enable the jobs you want to run by setting them to True
+    
+    **Note:** When you enable a job(or workflow), we will enable their dependencies automatically.
 
 ## Understanding the workflows and expanding them
 Workflows information is stored in `workflows_v2.json` file located under `main/workflows` folder.
@@ -54,13 +53,16 @@ This file is broken down into `bundles` and `individual` sections.
 * `individual` section allows for defining a job and it's dependencies and filters
 
 The names of `bundle` or `individual` are used in the `generate_main.py` file located under `pyscripts` folder.
+
 **Note:** There is a close relationship between properties defined in `build-triggers.override.json` and the logic used in `generate_main.py`.
+
+## Expanding the list of keywords detected
+The keywords used in detecting which workflow to run from a git commit message is defined in `process_generate.py` file located under `pyscripts` folder.
 
 
 # Smoke Tests
-See Readme file under smoke-test folder[^2].
+See Readme file under smoke-test folder.
 
 # Footnotes
 
 [^1]: [Dynamic Configuration](https://circleci.com/docs/2.0/dynamic-config/)
-[^2]: [smoke-test Readme file](../smoke-test/README.md)
