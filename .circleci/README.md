@@ -30,15 +30,18 @@ referencing various `trigger-*` parameters to enable or disable them.
 The user has ability to modify the build path using two options
 1. using git commit:
 * When check in a change you can use hash-tag along with a keyword to enable build paths
-| Keyword | Description |
-| #smoke  | Enable smoke tests |
-| #smoke-flaky | Enable flaky smoke tests|
-| #integration | Enable integration tests|
-| #rpm    | Enable rpm jobs |
-| #deb    | Enable debian package jobs |
-| #oci    | Enable oci jobs |
-| #doc    | Enable doc job  |
-| #ui     | Enable ui job |
+
+| Keyword       | Description |
+| ------------- | ------------- |
+| #smoke        | Enable smoke tests |
+| #smoke-flaky  | Enable flaky smoke tests|
+| #integration  | Enable integration tests|
+| #rpm          | Enable rpm jobs |
+| #deb          | Enable debian package jobs |
+| #oci          | Enable oci jobs |
+| #doc          | Enable doc job  |
+| #ui           | Enable ui job |
+
 * The script attempts to detect and enable corresponding jobs if incoming changes contains:
 ** "IT.java" or "Test.java" files
 ** Any changes to "doc" or "ui" 
