@@ -25,11 +25,11 @@ user provided properties. For backward compatibility we hae kept the workflows l
 Each of the workflows in the "main" config then uses a `when:` field
 referencing various `trigger-*` parameters to enable or disable them.
 
-## Modifying build paths
+## Build paths
 
-The user has ability to modify the build path using two options
+The user has ability to modify the build path by
 1. using git commit:
-* When check in a change you can use hash-tag along with a keyword to enable build paths
+* You can use the following keywords to enable build path(s)
 
 | Keyword       | Description |
 | ------------- | ------------- |
@@ -43,11 +43,13 @@ The user has ability to modify the build path using two options
 | #ui           | Enable ui job |
 
 * The script attempts to detect and enable corresponding jobs if incoming changes contains:
-** "IT.java" or "Test.java" files
-** Any changes to "doc" or "ui" 
-** Any changes to "opennms-container"
+** Changes to "IT.java" or "Test.java" files
+** Changes to "doc" or "ui" 
+** Changes to "opennms-container"
 
-2. using `build-triggers.override.json` file by setting build components to true.
+2. using `build-triggers.override.json` file
+* You can enable the jobs you want to run by setting them to True
+**Note:** When you enable a job, its dependencies will be enabled.
 
 # Smoke Tests
 
