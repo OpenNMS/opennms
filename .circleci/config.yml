@@ -154,7 +154,7 @@ jobs:
     steps:
       - cached-checkout
       - run:
-          name: Create a build-triggers
+          name: Creating build-trigger file
           command: |
                echo '{
                   "build": {
