@@ -268,9 +268,9 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         usageStatisticsReport.setRequisitionCount(getDeployedRequisitionCount());
         usageStatisticsReport.setRequisitionWithChangedFSCount(getDeployedRequisitionWithModifiedFSCount());
         usageStatisticsReport.setBusinessEdgeCount(m_businessServiceEdgeDao.countAll());
-        usageStatisticsReport.setSinkStrategy(SinkStrategy.getSinkStrategy().getDescr());
-        usageStatisticsReport.setRpcStrategy(RpcStrategy.getRpcStrategy().getDescr());
-        usageStatisticsReport.setTssStrategies(TimeSeries.getTimeseriesStrategy().getDescr());
+        usageStatisticsReport.setSinkStrategy(SinkStrategy.getSinkStrategy().getName());
+        usageStatisticsReport.setRpcStrategy(RpcStrategy.getRpcStrategy().getName());
+        usageStatisticsReport.setTssStrategies(TimeSeries.getTimeseriesStrategy().getName());
         usageStatisticsReport.setTssPlugins(getTssPlugins());
 
         setDatasourceInfo(usageStatisticsReport);
