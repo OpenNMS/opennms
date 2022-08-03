@@ -1,6 +1,6 @@
 
 [[ga-events-event-configuration]]
-= Event Configuration
+= Event Daemon Configuration
 
 The back-end configuration surrounding events is broken into two areas: the configuration of Eventd itself, and the configuration of events definitions known to {page-component-title}.
 

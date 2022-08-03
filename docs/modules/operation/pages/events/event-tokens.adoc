@@ -45,7 +45,7 @@ $uei%::
     The requisition ID for the node given in `%nodeid` if available.
 %ifindex%::
     The interface's SNMP ifIndex.
-%interfaceresolv%::
+%interfaceresolve%::
     Does a reverse lookup on the `%interface%` and returns its name, if available.
 %service%::
     The service associated with the event, if any.
