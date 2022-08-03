@@ -152,8 +152,14 @@ public class TimeSeriesWriterWithOffheapQ implements TimeSeriesWriter {
                     this.storage.get().store(samples);
                     return; // we are done.
                 } catch (Exception e) {
-                    long wait = 1000;
-                    LOG.warn("Could not send samples to plugin, will try again in {} ms.", wait, e);
+                    long wait = 1000; // TODO: Patrick make wait duration increasing
+                    LOG.warn("Could not send samples to plugin, will try again in {} ms.", wait, e); // TODO: Patrick rate limit logging
+                    try {
+                        Thread.sleep(wait);
+                    } catch (InterruptedException ex) {
+                        LOG.warn("Could not send samples to plugin, got InterruptedException.", e);
+                        return;
+                    }
                 }
             }
         }
