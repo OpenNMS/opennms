@@ -17,7 +17,8 @@ jobs:
       - run:
           name: Extract miniontarget
           command: |
-            cd ~/project/opennms-assemblies/minion/target/
+            mv ~/project/opennms-assemblies/minion/target/minion-target.tar.gz ~/project/
+            cd ~/project/
             tar -xvzf minion-target.tar.gz
       - run:
           name: Build Minion OCI
