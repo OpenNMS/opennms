@@ -19,7 +19,7 @@ Any modifications to this account can impact the server's ability to update avai
 
 | categories.xml
 | Defines categories for grouping availability data and which nodes apply to the categories.
-These are independent of surveillance categories, and can use surveillance categories to define the filter rules.
+These are independent of node tags, and can use node tags to define the filter rules.
 | no
 | yes
 

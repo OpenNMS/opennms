@@ -2,11 +2,11 @@
 [[ga-events-event-configuration]]
 = Event Configuration
 
-The back-end configuration surrounding events is broken into two areas: the configuration of`Eventd itself, and the configuration of events definitions known to {page-component-title}.
+The back-end configuration surrounding events is broken into two areas: the configuration of Eventd itself, and the configuration of events definitions known to {page-component-title}.
 
 == The eventd-configuration.xml file
 
-The overall behavior of Event` is configured in the file `$\{OPENNMS_HOME}/etc/eventd-configuration.xml`.
+The overall behavior of Eventd is configured in the file `$\{OPENNMS_HOME}/etc/eventd-configuration.xml`.
 This file does not need to be changed in most installations.
 The configurable items include:
 
@@ -76,6 +76,7 @@ See <<events/event-definition.adoc, Anatomy of an Event>> for a discussion of th
 When setting event severities, it's important to consider each event in the context of your infrastructure as a whole.
 Events whose severity is critical at the zoomed-in level of a single device may not merit a `Critical` severity in the zoomed-out view of your entire enterprise.
 Since an event with `Critical` severity can never have its alarms escalated, this severity level should usually be reserved for events that unequivocally indicate a truly critical impact to the business.
+Rock legend Nigel Tufnel offered https://www.youtube.com/watch?v=4xgx4k83zzc[some wisdom] on the subject.
 
 === The structure of the `eventconf.xml` tributary files
 The ordering of event definitions is very important, as an incoming event is matched against them in order.

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2021-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -36,11 +36,13 @@ import io.opentracing.Tracer;
 import org.apache.camel.AsyncCallback;
 import org.apache.camel.AsyncProcessor;
 import org.apache.camel.CamelContext;
+import org.apache.camel.Converter;
 import org.apache.camel.Endpoint;
 import org.apache.camel.EndpointInject;
 import org.apache.camel.Exchange;
 import org.apache.camel.ExchangePattern;
 import org.apache.camel.ProducerTemplate;
+import org.apache.camel.TypeConverters;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jms.JmsEndpoint;
 import org.opennms.core.ipc.twin.api.TwinStrategy;
@@ -90,6 +92,7 @@ public class JmsTwinPublisher extends AbstractTwinPublisher implements AsyncProc
                             TracerRegistry tracerRegistry, MetricRegistry metricRegistry) {
         super(twinSubscriber, tracerRegistry, metricRegistry);
         this.rpcCamelContext = camelContext;
+        camelContext.getTypeConverterRegistry().addTypeConverters(new BooleanTypeConverters());
     }
 
     @Override
@@ -148,13 +151,25 @@ public class JmsTwinPublisher extends AbstractTwinPublisher implements AsyncProc
         throw new UnsupportedOperationException("This processor must be invoked using the async interface.");
     }
 
-    private class RpcRouteBuilder extends RouteBuilder {
+    public static final class BooleanTypeConverters implements TypeConverters {
+        @Converter
+        public String toString(final boolean data) {
+            return Boolean.toString(data);
+        }
+        @Converter
+        public boolean toBoolean(final String data) {
+            return Boolean.valueOf(data);
+        }
+    }
+
+    private static class RpcRouteBuilder extends RouteBuilder {
 
         private final AsyncProcessor asyncProcessor;
 
         private RpcRouteBuilder(AsyncProcessor asyncProcessor, CamelContext camelContext) {
             super(camelContext);
             this.asyncProcessor = asyncProcessor;
+            camelContext.getTypeConverterRegistry().addTypeConverters(new BooleanTypeConverters());
         }
 
         @Override

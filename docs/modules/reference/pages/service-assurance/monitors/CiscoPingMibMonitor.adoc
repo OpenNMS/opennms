@@ -1,4 +1,3 @@
-
 = CiscoPingMibMonitor
 
 This monitor creates conceptual rows (entries) in the ciscoPingTable on Cisco IOS devices that support the http://www.circitor.fr/Mibs/Html/C/CISCO-PING-MIB.php[CISCO-PING-MIB].
@@ -142,13 +141,13 @@ This monitor implements the <<reference:service-assurance/introduction.adoc#ref-
 == Example: Ping the same non-routable address from all routers of customer Foo
 
 A service provider's client, Foo Corporation, has network service at multiple locations.
-At each Foo location, a point-of-sale system is statically configured at IPv4 address 192.168.255.1.
+At each Foo location, a point-of-sale system is statically configured at IPv4 address `192.168.255.1`.
 Foo wants to be notified any time a point-of-sale system becomes unreachable.
 Using an {page-component-title} remote location monitor is not feasible.
 
 All of Foo Corporation's CPE routers must be Cisco IOS devices to achieve full coverage in this scenario.
 
-One approach to this requirement is to configure all of Foo Corporation's premise routers to be in the surveillance categories Customer_Foo, CPE, and Routers, and to use a filter to create a poller package that applies only to those routers.
+One approach to this requirement is to configure all of Foo Corporation's premise routers to be in the node tags Customer_Foo, CPE, and Routers, and to use a filter to create a poller package that applies only to those routers.
 
 We will use the special value `$\{ipaddr}` for the `proxy-ip-addr` parameter so that the remote pings will be provisioned on each Foo CPE router.
 Since we want each Foo CPE router to ping the same IP address, 192.168.255.1, we statically list that value for the `target-ip-addr` address.
@@ -190,7 +189,7 @@ A service provider's client, Bar Limited, has network service at multiple locati
 While {page-component-title}'s service assurance is generally sufficient, Bar also wants to be notified any time a premise router at one of their locations is unreachable from the perspective of an IOS device in Bar's main data center.
 Some or all of the Bar Limited CPE routers may be non-Cisco devices in this scenario.
 
-To meet this requirement, our approach is to configure Bar Limited's premise routers to be in the surveillance categories Customer_Bar, CPE, and Routers, and to use a filter to create a poller package that applies only to those routers.
+To meet this requirement, our approach is to configure Bar Limited's premise routers to be in the node tags Customer_Bar, CPE, and Routers, and to use a filter to create a poller package that applies only to those routers.
 
 In this case, we use the special value `$\{ipaddr}` not in the `proxy-ip-addr` parameter but in the `target-ip-addr` parameter so that the remote pings will be performed for each Bar CPE router.
 Since we want the same IOS device 20.11.5.11 to ping the CPE routers, we statically list that value for the `proxy-ip-addr` address.

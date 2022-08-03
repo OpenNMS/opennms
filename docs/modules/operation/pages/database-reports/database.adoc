@@ -1,4 +1,3 @@
-
 = Database Reports
 
 Reporting on information from the {page-component-title} monitoring system is important for strategical or operational decisions.
@@ -34,19 +33,17 @@ For more details on how JasperReports works, please refer to the Jaspersoft Stud
 
 OpenNMS provides the following sample report templates, located in `$\{OPENNMS_HOME}/etc/report-templates`, which you can customize to suit your needs:
 
-
 [options="header, autowidth"]
 |===
 | Report Name            | Category     | Description
 
 |  xref:operation:database-reports/templates/avail-summary.adoc[Availability Summary]
 | Status
-|Summary of statistics on outages and availability for user-specified surveillance category during a user-specified number of days.
-
+| Summary of statistics on outages and availability for a user-specified node tag during a user-specified number of days.
 
 | xref:operation:database-reports/templates/availability.adoc[Availability by Node]
 | Status
-| List of availability statistics for each node in user-specified surveillance category during a user-specified number of days.
+| List of availability statistics for each node in a user-specified node tag during a user-specified number of days.
 
 | xref:operation:database-reports/templates/calendar.adoc[Default Calendar]
 | Status
@@ -77,7 +74,7 @@ This is not a JasperReport.
 
 | xref:operation:database-reports/templates/maintenance-strategy.adoc[Maintenance Contracts Strategy]
 | Asset Management
-| Provides an overview of assets, showing how many within each age group have an active contract, no contract, or an expired contract. 
+| Provides an overview of assets, showing how many within each age group have an active contract, no contract, or an expired contract.
 It also shows how many will expire in the next 12 months.
 
 | xref:operation:database-reports/templates/morning.adoc[Early Morning Report]
@@ -86,7 +83,7 @@ It also shows how many will expire in the next 12 months.
 
 | xref:operation:database-reports/templates/response-summary.adoc[Response Time Summary]
 | Status
-| Summary of response times across surveillance category.
+| Summary of response times for nodes with a given tag.
 
 | xref:operation:database-reports/templates/response-time.adoc[Response Time by Node]
 | Status
@@ -107,7 +104,6 @@ It also shows how many will expire in the next 12 months.
 | xref:operation:database-reports/templates/traffic-rates.adoc[Average and Peak Traffic Rates for Nodes by Interface]
 | Usage
 | Average and peak traffic rates for nodes by interface.
-
 |===
 
 [[ga-database-report-add-custom-report]]
@@ -202,8 +198,7 @@ NOTE: If the `Read Fields` functionality is not available, use the `Data preview
 == Accessing performance data
 
 To access performance data within reports, we created a custom Measurement Datasource that lets you query the Measurements API and process the returned data in your reports.
-Please refer to the 
-xref:development:rest/measurements.adoc[Measurements API documentation] on how to use the Measurements API.
+Refer to the xref:development:rest/measurements.adoc[Measurements API documentation] on how to use the Measurements API.
 
 NOTE:  When using the Measurements Datasource within a report, an HTTP connection to the Measurements API is established only if the report is not running within {page-component-title}; for example, when used with Jaspersoft Studio.
 
@@ -232,7 +227,6 @@ The Measurement Datasource supports the following fields:
 | Description
 | Type
 
-
 | label
 | Each source defined as `transient=false` can be used as a field.
 The name of the field is the label; for example, `IfInOctets`.
@@ -253,7 +247,6 @@ The name of the field is the label; for example, `IfInOctets`.
 | end
 | The end timestamp in milliseconds of the response. Returns the same value for all rows.
 | java.lang.Long
-
 |===
 
 For more details about the response, see the link:http://docs.opennms.org/opennms/branches/develop/guide-development/guide-development.html#_measurements_api[official Measurement API documentation].
@@ -324,9 +317,9 @@ For more details, see <<ga-database-reports-interface-descriptor, Interface desc
 === Node source descriptor use
 
 A node is addressed by a node source descriptor.
-The node source descriptor references the node either via the foreign source and foreign id or by the node id.
+The node source descriptor references the node either via the foreign source and foreign ID or by the node ID.
 
-If `storeByForeignSource` is enabled, it is only possible to address the node via foreign source and foreign id.
+If `storeByForeignSource` is enabled, it is only possible to address the node via foreign source and foreign ID.
 
 To make report creation easier, there is a helper method to create the node source descriptor.
 
@@ -346,7 +339,7 @@ The following example shows the use of that helper.
 <source aggregation="AVERAGE" label="IfOutOctets" attribute="ifHCOutOctets" transient="false" resourceId="$P{nodeResourceDescriptor}.interfaceSnmp[en0-005e607e9e00]"/>
 </query-request>]]>
 ------
-Depending on the input parameters, you get either a node resource descriptor or a foreign source/foreign id resource descriptor.
+Depending on the input parameters, you get either a node resource descriptor or a foreign source/foreign ID resource descriptor.
 
 [[ga-database-reports-interface-descriptor]]
 === Interface descriptor use
@@ -387,5 +380,3 @@ An SSL-secured connection can be established even if `org.opennms.netmgt.jasper.
 == Limitations
 
 Only a JDBC Datasource to the {page-component-title} database connection can be passed to a report, or no datasource at all.
-One does not have to use the data source, though.
-
