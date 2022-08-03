@@ -19,7 +19,7 @@
   </description>
 
   <properties>
-    <spring31Version>3.1.4.RELEASE</spring31Version>
+    <spring31Version>5.2.22.RELEASE</spring31Version>
     <patchedSpring31Version>${spring31Version}.ONMS.1</patchedSpring31Version>
     <enforcer-skip-banned-dependencies>true</enforcer-skip-banned-dependencies>
   </properties>
