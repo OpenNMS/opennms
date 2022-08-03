@@ -31,8 +31,8 @@ org.opennms.instance.id=MyNMS
 
 == Tips for Kafka
 
-* For Kafka RPC, the number of partitions should always be greater than the number of Minions at a location.
-When there are multiple locations, the partition count should be greater than the max number of Minions at a location.
+* For Kafka RPC, the number of partitions must be greater than or equal to the number of Minions at a location, and should be a multiple of the number of Minions at a location.
+When there are multiple locations, the partition count for RPC topics should be based on a multiple of the maximum number of Minions at the associated location.
 
 * By default, Kafka RPC uses a buffer size of 900KB.
 When set to a larger size, they will be split into 900kb chunks.
