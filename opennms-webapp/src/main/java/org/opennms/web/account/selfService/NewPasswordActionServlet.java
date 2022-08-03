@@ -104,10 +104,10 @@ public class NewPasswordActionServlet extends HttpServlet {
     }
 
     private boolean validatePassword(final String password) {
-        boolean isPasswordComplexityValid = Pattern.compile(this.passwordRegex)
+        boolean isPasswordComplexityValid = Pattern.compile(this.PASSWORD_REGEX)
                 .matcher(password)
                 .matches();
-        boolean isPasswordWithSameCharacters = Pattern.compile(this.sameCharacterRegex)
+        boolean isPasswordWithSameCharacters = Pattern.compile(this.SAME_CHARACTER_REGEX)
                 .matcher(password)
                 .matches();
         if(isPasswordComplexityValid && !isPasswordWithSameCharacters) {
