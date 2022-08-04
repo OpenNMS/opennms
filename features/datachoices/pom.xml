@@ -97,21 +97,6 @@
             <artifactId>org.opennms.features.bsm.persistence.api</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.opennms.core.ipc.sink</groupId>
-            <artifactId>org.opennms.core.ipc.sink.common</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.core.ipc.rpc</groupId>
-            <artifactId>org.opennms.core.ipc.rpc.common</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.features</groupId>
-            <artifactId>org.opennms.features.timeseries</artifactId>
-            <version>${project.version}</version>
-        </dependency>
 
         <!-- Test Dependencies -->
         <dependency>
