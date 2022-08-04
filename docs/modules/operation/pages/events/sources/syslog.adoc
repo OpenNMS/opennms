@@ -2,7 +2,7 @@
 [[ga-events-sources-syslog]]
 = Syslog Messages
 
-Syslog messages sent over the network to {page-component-title} can be transformed into events according to preconfigured rules.
+Syslog messages sent over the network to {page-component-title} can be transformed into events according to pre-configured rules.
 
 IMPORTANT: The syslogd service daemon, which enables {page-component-title} to receive syslog messages over the network, must be enabled for this functionality to work.
 This service daemon is disabled by default.
