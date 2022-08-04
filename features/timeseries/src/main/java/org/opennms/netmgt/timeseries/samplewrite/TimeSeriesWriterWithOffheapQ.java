@@ -37,6 +37,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -53,43 +54,57 @@ public class TimeSeriesWriterWithOffheapQ implements TimeSeriesWriter {
 
     private static final Logger LOG = LoggerFactory.getLogger(TimeSeriesWriterWithOffheapQ.class);
 
-    private final QueueFileOffHeapDispatchQueue<List<Sample>> queue;
+    private final ArrayList<QueueFileOffHeapDispatchQueue<List<Sample>>> queues;
     private final TimeseriesStorageManager storage;
     private final List<Thread> workerPool = new ArrayList<>();
 
     private boolean isActive = true;
 
+    // TODO Patrick: replace witgh proper hashing function
+    private final Random random = new Random(42);
+
     public TimeSeriesWriterWithOffheapQ(
             final TimeseriesStorageManager storage,
             @Named("timeseries.ring_buffer_size") final Integer ringBufferSize,
             @Named("timeseries.writer_threads") final Integer numWriterThreads) {
-        // TODO: Patrick: we should probaply get the QueueFileOffHeapDispatchQueueFactory injected and create the queue via the factory
-
-
-        // for testing: TODO: Patrick remove later
-        int batchSize = 2;
-        int inMemoryQueueSize = batchSize * 2;
-        try {
-            String basePath = System.getProperty("karaf.data", "/tmp");
-            queue = new QueueFileOffHeapDispatchQueue<>(createSerializer(), createDeSerializer(),
-                    "org.opennms.features.timeseries",
-                    Paths.get(basePath),
-                    inMemoryQueueSize,
-                    batchSize,
-            Long.MAX_VALUE);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
         this.storage = Objects.requireNonNull(storage);
 
-        // Set up consumer side
+        // config: TODO: Patrick externalize
+        final int queueAmount = 4;
+        final int batchSize = 64; // for writing to disk
+
+        // Set up Q's
+        queues = new ArrayList<>(queueAmount);
+        for (int queueIndex = 0; queueIndex < queueAmount; queueIndex++) {
+            queues.add(queueIndex, createQueue(queueIndex, batchSize, ringBufferSize));
+            setupConsumerThreads(queueIndex, numWriterThreads);
+        }
+    }
+
+    private void setupConsumerThreads(int queueIndex, int numWriterThreads) {
         for(int i = 0; i < numWriterThreads; i++) {
-            Thread consumerThread = new Thread(this::work);
+            Thread consumerThread = new Thread(() -> this.work(queueIndex));
             this.workerPool.add(consumerThread);
             consumerThread.start();
         }
+    }
 
+    private QueueFileOffHeapDispatchQueue<List<Sample>> createQueue(
+            final int queueIndex,
+            final int batchSize,
+            final int inMemoryQueueSize
+            ) {
+        try {
+            String basePath = System.getProperty("karaf.data", "/tmp");
+            return new QueueFileOffHeapDispatchQueue<>(createSerializer(), createDeSerializer(),
+                    "org.opennms.features.timeseries-" + queueIndex,
+                    Paths.get(basePath),
+                    inMemoryQueueSize,
+                    batchSize,
+                    Long.MAX_VALUE);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private <T> Function<byte[], T> createDeSerializer() {
@@ -121,7 +136,7 @@ public class TimeSeriesWriterWithOffheapQ implements TimeSeriesWriter {
     public void insert(List<Sample> samples) {
         LOG.info("Storing {} samples", samples.size());
         try {
-            queue.enqueue(samples, UUID.randomUUID().toString());
+            queues.get(random.nextInt(queues.size())).enqueue(samples, UUID.randomUUID().toString());
         } catch (WriteFailedException e) {
             LOG.warn("Could not insert list of samples.", e);
         }
@@ -134,33 +149,33 @@ public class TimeSeriesWriterWithOffheapQ implements TimeSeriesWriter {
         }
     }
 
-        private void work() {
-            List<Sample> samples;
-            while (isActive) {
-                try {
-                    samples = this.queue.dequeue().getValue();
-                } catch (InterruptedException e) {
-                    return; // we are done.
-                }
-                sentToPlugin(samples);
+    private void work(int queueIndex) {
+        List<Sample> samples;
+        while (isActive) {
+            try {
+                samples = this.queues.get(queueIndex).dequeue().getValue();
+            } catch (InterruptedException e) {
+                return; // we are done.
             }
+            sentToPlugin(samples);
         }
+    }
 
-        private void sentToPlugin(final List<Sample> samples) {
-            while (isActive) {
+    private void sentToPlugin(final List<Sample> samples) {
+        while (isActive) {
+            try {
+                this.storage.get().store(samples);
+                return; // we are done.
+            } catch (Exception e) {
+                long wait = 1000; // TODO: Patrick make wait duration increasing
+                LOG.warn("Could not send samples to plugin, will try again in {} ms.", wait, e); // TODO: Patrick rate limit logging
                 try {
-                    this.storage.get().store(samples);
-                    return; // we are done.
-                } catch (Exception e) {
-                    long wait = 1000; // TODO: Patrick make wait duration increasing
-                    LOG.warn("Could not send samples to plugin, will try again in {} ms.", wait, e); // TODO: Patrick rate limit logging
-                    try {
-                        Thread.sleep(wait);
-                    } catch (InterruptedException ex) {
-                        LOG.warn("Could not send samples to plugin, got InterruptedException.", e);
-                        return;
-                    }
+                    Thread.sleep(wait);
+                } catch (InterruptedException ex) {
+                    LOG.warn("Could not send samples to plugin, got InterruptedException.", e);
+                    return;
                 }
             }
         }
+    }
 }
