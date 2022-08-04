@@ -35,9 +35,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.Random;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -54,14 +54,11 @@ public class TimeSeriesWriterWithOffheapQ implements TimeSeriesWriter {
 
     private static final Logger LOG = LoggerFactory.getLogger(TimeSeriesWriterWithOffheapQ.class);
 
-    private final ArrayList<QueueFileOffHeapDispatchQueue<List<Sample>>> queues;
+    private final ArrayList<QueueFileOffHeapDispatchQueue<Sample>> queues;
     private final TimeseriesStorageManager storage;
     private final List<Thread> workerPool = new ArrayList<>();
 
     private boolean isActive = true;
-
-    // TODO Patrick: replace witgh proper hashing function
-    private final Random random = new Random(42);
 
     public TimeSeriesWriterWithOffheapQ(
             final TimeseriesStorageManager storage,
@@ -89,7 +86,7 @@ public class TimeSeriesWriterWithOffheapQ implements TimeSeriesWriter {
         }
     }
 
-    private QueueFileOffHeapDispatchQueue<List<Sample>> createQueue(
+    private QueueFileOffHeapDispatchQueue<Sample> createQueue(
             final int queueIndex,
             final int batchSize,
             final int inMemoryQueueSize
@@ -135,11 +132,19 @@ public class TimeSeriesWriterWithOffheapQ implements TimeSeriesWriter {
     @Override
     public void insert(List<Sample> samples) {
         LOG.info("Storing {} samples", samples.size());
-        try {
-            queues.get(random.nextInt(queues.size())).enqueue(samples, UUID.randomUUID().toString());
-        } catch (WriteFailedException e) {
-            LOG.warn("Could not insert list of samples.", e);
+
+        for(Sample sample: samples) {
+            try {
+                int index = toQueueIndex(sample);
+                queues.get(index).enqueue(sample, UUID.randomUUID().toString());
+            } catch (WriteFailedException e) {
+                LOG.warn("Could not insert list of samples.", e);
+            }
         }
+    }
+
+    private int toQueueIndex(final Sample sample) {
+        return Math.abs(sample.getMetric().getKey().hashCode()) % this.queues.size();
     }
 
     public void destroy() {
@@ -150,21 +155,22 @@ public class TimeSeriesWriterWithOffheapQ implements TimeSeriesWriter {
     }
 
     private void work(int queueIndex) {
-        List<Sample> samples;
+        Sample sample;
         while (isActive) {
             try {
-                samples = this.queues.get(queueIndex).dequeue().getValue();
+                sample = this.queues.get(queueIndex).dequeue().getValue();
             } catch (InterruptedException e) {
                 return; // we are done.
             }
-            sentToPlugin(samples);
+            sentToPlugin(sample);
         }
     }
 
-    private void sentToPlugin(final List<Sample> samples) {
+    private void sentToPlugin(final Sample sample) {
         while (isActive) {
             try {
-                this.storage.get().store(samples);
+                // TODO: Patrick change contract to allow sending one sample?
+                this.storage.get().store(Collections.singletonList(sample));
                 return; // we are done.
             } catch (Exception e) {
                 long wait = 1000; // TODO: Patrick make wait duration increasing
