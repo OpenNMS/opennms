@@ -26,13 +26,14 @@ There are several ways to configure {page-component-title} to customize the even
 
 * Determine what problem you are trying to solve (for example, "I want to know X about my Cisco router").
 * Manually send the corresponding event to the {page-component-title} server and see how the event is handled (see xref:operation:events/event-debugging.adoc#send-event[Manually send events]).
-* Make changes to the xref:operation:admin/webui/mib.adoc[SNMP MIB compiler]).
+* Make changes to the xref:operation:admin/webui/mib.adoc[SNMP MIB compiler].
 * Configure the event to meet your requirements, if required.
 ** <<trap-def-create, Create trap definitions>> to specify criteria for when {page-component-title} creates an event.
 ** <<varbind-filter,Filter on variable bindings>> for further granularity on the conditions for creating an event.
 
 [[trap-def-create]]
 === Create event definition for an SNMP trap
+
 {page-component-title} includes event definitions for traps from many vendors' equipment.
 Use the `mask` tag to match SNMP traps in `eventconf.xml`.
 See xref:operation:events/event-definition.adoc#ga-events-anatomy-of-an-event[Anatomy of an event] for details on event structure.

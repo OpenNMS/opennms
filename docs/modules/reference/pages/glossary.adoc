@@ -63,8 +63,7 @@ It helps provide a more robust infrastructure for workflow and problem state man
 
 Elasticsearch:: A NoSQL database with an integrated search engine based on the Lucene library.
 (See https://azure.microsoft.com/en-us/overview/nosql-database/[What is NoSQL?])
-{page-component-title} persists/forwards certain data to Elasticsearch to store flow records and warehouse events and alarm history for long-term storage of this data.
-(See xref:operation:elasticsearch/introduction.adoc#elasticsearch[Elasticsearch Integration].)
+{page-component-title} persists/forwards certain data to Elasticsearch to store flow records and warehouse events and alarm history for long-term storage of this data (see xref:operation:elasticsearch/introduction.adoc#elasticsearch[Elasticsearch Integration]).
 
 xref:operation:events/introduction.adoc[Events]:: Structured historical records of activities in {page-component-title} and the nodes, interfaces, and services it manages.
 

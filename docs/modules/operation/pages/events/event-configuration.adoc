@@ -39,7 +39,6 @@ logEventSummaries::
     Whether to log a simple (terse) summary of every event at level `INFO`.
     Useful when troubleshooting event processing on busy systems where `DEBUG` logging is not practical.
 
-
 The set of known events is configured in `$\{OPENNMS_HOME}/etc/eventconf.xml`.
 This file opens with a `<global>` element, whose `<security>` child element defines which event fields may not be overridden in the body of an event submitted via any Eventd listener.
 This mechanism stops a malicious actor from, for instance, sending an event whose `operator-action` field amounts to a phishing attack.
@@ -79,9 +78,9 @@ Events whose severity is critical at the zoomed-in level of a single device may 
 Since an event with `Critical` severity can never have its alarms escalated, you should usually reserve this highest severity level for events that unequivocally indicate a truly critical impact to the business.
 Rock legend Nigel Tufnel offered https://www.youtube.com/watch?v=4xgx4k83zzc[some wisdom] on the subject.
 
-=== The structure of the `eventconf.xml` tributary files
+=== Structure of the `eventconf.xml` tributary files
 The order of event definitions is very important, as an incoming event is matched against them in order.
-It is possible and often useful to have several event definitions that could match variant forms of a given event; for example, based on the values of SNMP trap variable bindings.
+It is possible, and often useful, to have several event definitions that could match variant forms of a given event; for example, based on the values of SNMP trap variable bindings.
 
 The tributary files included via the `<event-file>` tag have been broken up by vendor.
 When {page-component-title} starts, each tributary file is loaded in order.
@@ -94,7 +93,7 @@ When slotting your own event definitions, take care not to place them below thes
 * To save memory and shorten startup times, you may wish to remove event definition files that you know you do not need.
 * If you need to customize some events in one of the default tributary files, you may wish to make a copy of the file containing only the customized events, and slot the copy above the original; this practice will make it easier to maintain your customizations in case the default file changes in a future release of {page-component-title}.
 
-==== Reloading the Event configuration
+==== Reloading the event configuration
 
 After making manual changes to `$\{OPENNMS_HOME}/etc/eventconf.xml` or any of its tributary files, you must restart the Eventd daemon.
 You can trigger a reload of the daemon in the Karaf shell or by issuing the following command on the {page-component-title} server:
