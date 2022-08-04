@@ -108,7 +108,7 @@
             <attrib name="LoadedClassCount" alias="LoadedClasses" type="gauge"/>
             <attrib name="UnloadedClassCount" alias="UnloadedClass" type="gauge"/>
          </mbean>
-         <mbean name="JVM MemoryPool:Eden Space" objectname="java.lang:type=MemoryPool,name=Eden Space">
+         <mbean name="JVM MemoryPool:Eden Space" objectname="java.lang:type=MemoryPool,name=G1 Eden Space">
             <attrib name="CollectionUsageThreshold" alias="EdenCollUseThrsh" type="gauge"/>
             <attrib name="CollectionUsageThresholdCount" alias="EdenCollUseThrshCnt" type="gauge"/>
             <comp-attrib name="Usage" alias="EdenUsage" type="Composite">
@@ -124,7 +124,7 @@
                <comp-member name="committed" alias="EdenPeakUsgCmmttd" type="gauge"/>
             </comp-attrib>
          </mbean>
-         <mbean name="JVM MemoryPool:Survivor Space" objectname="java.lang:type=MemoryPool,name=Survivor Space">
+         <mbean name="JVM MemoryPool:Survivor Space" objectname="java.lang:type=MemoryPool,name=G1 Survivor Space">
             <attrib name="CollectionUsageThreshold" alias="SurvCollUseThresh" type="gauge"/>
             <attrib name="CollectionUsageThresholdCount" alias="SurvCollUseThrshCnt" type="gauge"/>
             <comp-attrib name="Usage" alias="SurvUsage" type="Composite">
@@ -140,7 +140,7 @@
                <comp-member name="committed" alias="SurvPeakUsgCmmttd" type="gauge"/>
             </comp-attrib>
          </mbean>
-         <mbean name="JVM MemoryPool:Perm Gen" objectname="java.lang:type=MemoryPool,name=Perm Gen">
+         <mbean name="JVM MemoryPool:Perm Gen" objectname="java.lang:type=MemoryPool,name=G1 Perm Gen">
             <attrib name="CollectionUsageThreshold" alias="PermCollUseThresh" type="gauge"/>
             <attrib name="CollectionUsageThresholdCount" alias="PermCollUseThrshCnt" type="gauge"/>
             <comp-attrib name="Usage" alias="PermUsage" type="Composite">
@@ -150,7 +150,7 @@
                <comp-member name="committed" alias="PermUsgCmmttd" type="gauge"/>
             </comp-attrib>
          </mbean>
-         <mbean name="JVM MemoryPool:Old Gen" objectname="java.lang:type=MemoryPool,name=Old Gen">
+         <mbean name="JVM MemoryPool:Old Gen" objectname="java.lang:type=MemoryPool,name=G1 Old Gen">
             <attrib name="CollectionUsageThreshold" alias="OGenCollUseThresh" type="gauge"/>
             <attrib name="CollectionUsageThresholdCount" alias="OGenCollUseThrshCnt" type="gauge"/>
             <comp-attrib name="Usage" alias="OGenUsage" type="Composite">
