@@ -20,7 +20,8 @@
                 "smoke-test-sentinel",
                 "horizon-image",
                 "sentinel-image",
-                "minion-image"
+                "minion-image",
+                "integration-test"
             ]
         },
         "rpms": {
