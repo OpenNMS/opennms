@@ -182,6 +182,7 @@
             <artifactId>spring-dependencies</artifactId>
             <version>${project.version}</version>
             <type>pom</type>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.opennms.container</groupId>
