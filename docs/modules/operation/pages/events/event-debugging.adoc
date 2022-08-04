@@ -47,7 +47,7 @@ Format: `$\{OPENNMS_HOME}/bin/send-event.pl <uei> [host:port] [options]`
 The `host:port` defines the hostname and port to send the event; by default, the local host.
 
 Find UEIs and their associated parameters in the `$\{OPENNMS_HOME}/etc/eventd-configuration.xml` file.
-See also xref:events/event-configuration.adoc#ga-events-event-configuration[Event Configuration].
+See also xref:events/event-configuration.adoc#ga-events-event-configuration[Event Daemon Configuration].
 
 .`send-event.pl` parameters
 [options="header"]
@@ -120,7 +120,7 @@ For example:
 
 ==== Example
 
-Send an event to reload the configuration of Eventd.
+Send an event to reload the Eventd configuration.
 
 [source, console]
 ----
