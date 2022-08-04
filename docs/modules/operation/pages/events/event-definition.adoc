@@ -7,9 +7,9 @@
 
 There are two ways to associate an existing node to a given event prior sending it to the event bus:
 
-* Set the `nodeId` field of event to the database ID of the desired node.
+* Set the event's `nodeId` field to the database ID of the desired node.
 * For requisitioned nodes, set the `_foreignSource` and `_foreignId` as parameters to the event.
-Then, any incoming event without a `nodeId` and these two parameters will trigger a lookup on the database.
+Then, any incoming event without a `nodeId` and these two parameters will trigger a database lookup.
 If a node is found, the `nodeId` attribute will be dynamically set on the event, regardless of which method has been used to send it to the event bus.
 
 
@@ -27,21 +27,21 @@ Event Label::
     A short, static label that summarizes the gist of all instances of this event.
 Description::
     A long-form description of all instances of this event.
-    HTML formatting can be used to format the body of the event text.
+    You can use HTML formatting to format the body of the event text.
 Log Message::
     A long-form log message describing this event, optionally including expansions of fields and parameters so that the value is tailored to the event at hand.
-    The possible options for this setting are:
+    The possible options for this setting are the following:
     logndisplay:::
         Both log the event in the database and display it in the Web UI.
     logonly:::
         Log the event in the database, but do not display it.
     suppress:::
-        Neither log the event in the database or display it.
+        Neither log the event in the database nor display it.
     donotpersist:::
-        Do not log the event in the database, but still send it to daemons that are listening for this type of event, such as being used to generate notifications.
+        Do not log the event in the database, but still send it to daemons that are listening for this type of event, such as those being used to generate notifications.
         Note that eventd and alarmd don't process this type of events.
     discardtraps:::
-        This only applies to traps coming in via trapd.
+        This applies only to traps coming in via trapd.
         This will cause trapd to discard the trap without creating an event.
         Other daemons that are listening for this type of event will not receive this event.
 Severity::

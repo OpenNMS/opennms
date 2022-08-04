@@ -8,7 +8,7 @@ Not all events will have values for all tokens, and some refer specifically to i
 
 Note that parameter descriptions use the percentage sign `%` as a delimiter to mark a replacement variable.
 If a literal % sign appears in your description, you must escape it with a %.
-For example:
+For example,
 
 `'testUrl \https://www.opennms.org/ReportSection?filter=FOO_BAR_BAZ%%20eq%%20%%27101%%27'`
 
@@ -28,7 +28,7 @@ $uei%::
     The time of the event formatted using DateFormat.SHORT for a completely numeric date/time.
 %dpname%::
     Formerly used for the ID of the Minion that the event was received on.
-    This placeholder is deprecated and will be resolved to an empty string.
+    This placeholder is deprecated and resolves to an empty string.
 %nodeid%::
     The numeric node ID of the device that caused the event, if any.
 %nodelabel%::
@@ -40,9 +40,9 @@ $uei%::
 %interface%::
     The IP interface associated with the event, if any.
 %foreignsource%::
-    The requisition name for the node given in `%nodeid` if available.
+    The requisition name for the node given in `%nodeid`, if available.
 %foreignid%::
-    The requisition ID for the node given in `%nodeid` if available.
+    The requisition ID for the node given in `%nodeid`, if available.
 %ifindex%::
     The interface's SNMP ifIndex.
 %interfaceresolve%::
@@ -74,14 +74,14 @@ $uei%::
 %operinstruct%::
     The operator instructions for the event.
 %mouseovertext%::
-    The mouse over text for the event.
+    The mouse-over text for the event.
 %tticketid%::
     The trouble ticket ID associated with the event, if available.
 %primaryinterface%::
 The primary interface IP address for the node given in `%nodeid%`, if available.
 
-CAUTION: The use of multiple Minions in one location can break the alarm life-cycle for a some {page-component-title} features.
-To avoid this problem, the `%dpname%` value can always be replaced by an empty string by setting `org.opennms.netmgt.eventd.cleardpname=true` in `$\{OPENNMS_HOME}/etc/opennms.properties.d/events.properties`.
+CAUTION: The use of multiple Minions in one location can break the alarm life cycle for a some {page-component-title} features.
+To avoid this problem, replace the `%dpname%` with an empty string by setting `org.opennms.netmgt.eventd.cleardpname=true` in `$\{OPENNMS_HOME}/etc/opennms.properties.d/events.properties`.
 
 == Asset tokens
 A node may have additional asset records stored for it.
@@ -111,8 +111,8 @@ You can access event parameters using the `parm` replacement token, which takes 
 %parm[<name>]%::
     Return the value of the parameter named `<name>` if it exists.
 %parm[##]%::
-    Will return the total number of parameters as an integer.
+    Return the total number of parameters as an integer.
 %parm[#<num>]%::
-    Will return the value of parameter number `<num>` (one-indexed).
+    Return the value of parameter number `<num>` (one-indexed).
 %parm[name-#<num>]%::
-    Will return the name of parameter number `<num>` (one-indexed).
+    Return the name of parameter number `<num>` (one-indexed).

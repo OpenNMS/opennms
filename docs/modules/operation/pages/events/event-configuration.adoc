@@ -79,8 +79,8 @@ Since an event with `Critical` severity can never have its alarms escalated, you
 Rock legend Nigel Tufnel offered https://www.youtube.com/watch?v=4xgx4k83zzc[some wisdom] on the subject.
 
 === The structure of the `eventconf.xml` tributary files
-The ordering of event definitions is very important, as an incoming event is matched against them in order.
-It is possible and often useful to have several event definitions which could match variant forms of a given event, for example based on the values of SNMP trap variable bindings.
+The order of event definitions is very important, as an incoming event is matched against them in order.
+It is possible and often useful to have several event definitions that could match variant forms of a given event; for example, based on the values of SNMP trap variable bindings.
 
 The tributary files included via the `<event-file>` tag have been broken up by vendor.
 When {page-component-title} starts, each tributary file is loaded in order.
@@ -95,7 +95,7 @@ When slotting your own event definitions, take care not to place them below thes
 
 ==== Reloading the Event configuration
 
-After making manual changes to `$\{OPENNMS_HOME}/etc/eventconf.xml` or any of its tributary files, the Eventd daemon must be restarted.
+After making manual changes to `$\{OPENNMS_HOME}/etc/eventconf.xml` or any of its tributary files, you must restart the Eventd daemon.
 You can trigger a reload of the daemon in the Karaf shell or by issuing the following command on the {page-component-title} server:
 
 [source, console]
