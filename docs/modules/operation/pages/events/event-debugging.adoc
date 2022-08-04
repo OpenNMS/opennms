@@ -112,13 +112,13 @@ For example, `-p 'url \http://www.opennms.com/'`
 |===
 
 Note that parameter descriptions use the percentage sign (%) as a delimiter to mark a replacement variable.
-(See xref:events/event-configuration.adoc#replacement-tokens[Replacement tokens].)
+(See xref:events/event-tokens.adoc#replacement-tokens[Replacement tokens].)
 If a literal % sign appears in your description, you must escape it with a %.
 For example:
 
 `'testUrl \https://www.opennms.org/ReportSection?filter=FOO_BAR_BAZ%%20eq%%20%%27101%%27'`
 
-==== Example
+=== Example
 
 Send an event to reload the Eventd configuration.
 

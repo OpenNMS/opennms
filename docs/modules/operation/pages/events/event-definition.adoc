@@ -47,7 +47,7 @@ Log Message::
 Severity::
     A severity for this event type.
     Possible values range from `Cleared` to `Critical`.
-    Refer to our <<events/events-configuration.adoc#severities, notes on severities>> for tips on how to best set the event levels.
+    Refer to our <<events/event-configuration.adoc#severities, notes on severities>> for tips on how to best set the event levels.
 Event ID::
     A numeric identifier used to look up a specific event in the {page-component-title} system.
 
