@@ -133,6 +133,7 @@ include::docker/initialize.adoc[]
 endif::[]
 ====
 
+[[receive-snmp-traps]]
 == Receive SNMP traps/informs
 
 {page-component-title} core lets you receive and process SNMP traps/informs out of the box.
