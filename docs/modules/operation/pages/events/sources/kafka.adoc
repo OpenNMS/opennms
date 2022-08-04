@@ -6,7 +6,7 @@
 You can also create events by routing them to a specific topic on Kafka.
 The Kafka Consumer feature allows events to be consumed from a specific topic on Kafka.
 
-Create events in protobuf format link:https://developers.google.com/protocol-buffers/[Google Protocol Buffers (GPB)].
+Create events in protobuf format: link:https://developers.google.com/protocol-buffers/[Google Protocol Buffers (GPB)].
 See `kafka-consumer-events.proto` for the model definitions.
 
 The Kafka Consumer by default consumes events from the topic configured and forwards them to eventd.

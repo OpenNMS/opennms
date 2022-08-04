@@ -57,20 +57,20 @@ Arrange the patterns in the file from most specific to least specific, since the
 | String containing only valid hostname characters or IP address characters (IPv4 or IPv6).
 
 | INT
-| Positive integer.
+| Positive integer
 
 | IPADDRESS
 | String containing only valid IP address characters (IPv4 or IPv6).
 
 | MONTH
-| Three-character English month abbreviation.
+| Three-character English month abbreviation
 
 | NOSPACE
 | String that contains no whitespace.
 
 | STRING
 | String.
-Because this matches any character, it must be followed by a delimiter in the pattern string.
+Because this matches any character, it must be followed by a delimiter in the pattern String.
 
 | WHITESPACE
 | String that contains only whitespace (spaces and or tabs).
@@ -95,16 +95,16 @@ Because this matches any character, it must be followed by a delimiter in the pa
 | Two-digit hour of day (0–23)
 
 | message
-| Remaining string message
+| Remaining String message
 
 | messageId
 | String message ID
 
 | minute
-| Two-digit minute (0–59).
+| Two-digit minute (0–59)
 
 | month
-| Two-digit month (1–12).
+| Two-digit month (1–12)
 
 | parm*
 | String generic parameter where the parameter's key is the identifier following "parm" in the semantic token (for example, parmComponentId maps to a string parameter with key "ComponentId").
@@ -119,7 +119,7 @@ Because this matches any character, it must be followed by a delimiter in the pa
 | Two-digit second (0–59)
 
 | secondFraction
-| One- to six-digit fractional second value as a string
+| One- to six-digit fractional second value as a String
 
 | timezone
 | String timezone value

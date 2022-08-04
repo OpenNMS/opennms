@@ -28,7 +28,7 @@ $uei%::
     The time of the event formatted using DateFormat.SHORT for a completely numeric date/time.
 %dpname%::
     Formerly used for the ID of the Minion that the event was received on.
-    This placeholder is deprecated and resolves to an empty string.
+    This placeholder is deprecated and resolves to an empty String.
 %nodeid%::
     The numeric node ID of the device that caused the event, if any.
 %nodelabel%::
@@ -66,7 +66,7 @@ $uei%::
 %specific%::
     The specific trap-type number for the event.
 %community%::
-    The community string for the trap.
+    The community String for the trap.
 %version%::
     The SNMP version of the trap.
 %snmp%::
@@ -81,9 +81,10 @@ $uei%::
 The primary interface IP address for the node given in `%nodeid%`, if available.
 
 CAUTION: The use of multiple Minions in one location can break the alarm life cycle for a some {page-component-title} features.
-To avoid this problem, replace the `%dpname%` with an empty string by setting `org.opennms.netmgt.eventd.cleardpname=true` in `$\{OPENNMS_HOME}/etc/opennms.properties.d/events.properties`.
+To avoid this problem, replace the `%dpname%` with an empty String by setting `org.opennms.netmgt.eventd.cleardpname=true` in `$\{OPENNMS_HOME}/etc/opennms.properties.d/events.properties`.
 
 == Asset tokens
+
 A node may have additional asset records stored for it.
 You can access these records using the `asset` replacement token, which takes the form:
 
@@ -91,6 +92,7 @@ You can access these records using the `asset` replacement token, which takes th
     The value of the asset field named `token`, or "Unknown" if it does not exist.
 
 == Hardware tokens
+
 A node may have additional hardware details stored for it.
 You can access these details using the `hardware` replacement token, which takes the form:
 
@@ -98,6 +100,7 @@ You can access these details using the `hardware` replacement token, which takes
     The value of the `token` field from the node's hardware inventory.
 
 == Parameter tokens
+
 Many events carry additional information in their parameters (see <<events/event-definition.adoc#ga-events-anatomy-of-an-event, Anatomy of an event>>).
 These parameters may start life as SNMP trap variable bindings (varbinds).
 You can access event parameters using the `parm` replacement token, which takes several forms:
