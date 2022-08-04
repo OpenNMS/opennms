@@ -5,7 +5,7 @@
 
 == Associate an event to a specific node
 
-There are two ways to associate an existing node to a given event prior sending it to the event bus:
+There are two ways to associate an existing node to a given event prior to sending it to the event bus:
 
 * Set the event's `nodeId` field to the database ID of the desired node.
 * For requisitioned nodes, set the `_foreignSource` and `_foreignId` as parameters to the event.
