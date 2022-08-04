@@ -2,13 +2,13 @@
 [[ga-events-event-configuration]]
 = Event Daemon Configuration
 
-The back-end configuration surrounding events is broken into two areas: the configuration of Eventd itself, and the configuration of events definitions known to {page-component-title}.
+The back-end configuration surrounding events is split into two areas: the configuration of Eventd itself, and the configuration of events definitions known to {page-component-title}.
 
 == The eventd-configuration.xml file
 
-The overall behavior of Eventd is configured in the file `$\{OPENNMS_HOME}/etc/eventd-configuration.xml`.
+The overall behavior of Eventd is configured in the `$\{OPENNMS_HOME}/etc/eventd-configuration.xml` file.
 This file does not need to be changed in most installations.
-The configurable items include:
+The configurable items include the following:
 
 TCPAddress::
     The IP address to which the Eventd XML/TCP listener will bind.
@@ -75,7 +75,7 @@ See <<events/event-definition.adoc, Anatomy of an Event>> for a discussion of th
 === A word about severities
 When setting event severities, it's important to consider each event in the context of your infrastructure as a whole.
 Events whose severity is critical at the zoomed-in level of a single device may not merit a `Critical` severity in the zoomed-out view of your entire enterprise.
-Since an event with `Critical` severity can never have its alarms escalated, this severity level should usually be reserved for events that unequivocally indicate a truly critical impact to the business.
+Since an event with `Critical` severity can never have its alarms escalated, you should usually reserve this highest severity level for events that unequivocally indicate a truly critical impact to the business.
 Rock legend Nigel Tufnel offered https://www.youtube.com/watch?v=4xgx4k83zzc[some wisdom] on the subject.
 
 === The structure of the `eventconf.xml` tributary files

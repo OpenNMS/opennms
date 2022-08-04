@@ -36,9 +36,9 @@ To customize the set of patterns, you can put a new set of patterns into  `$\{OP
 
 The patterns are defined in grok-style statements where each token is defined by a `%{PATTERN:semantic}` clause.
 Whitespace in the pattern will match 0...n whitespace characters, and character literals in the pattern will match the corresponding characters.
-The `%` character literal must be escaped by using a backslash, i.e., `\%`.
+The `%` character literal must be escaped by using a backslash; for example, `\%`.
 
-NOTE: The RadixTreeSyslogParser's grok implementation only supports a limited number of pattern types.
+NOTE: The RadixTreeSyslogParser's grok implementation supports only a limited number of pattern types.
 However, these patterns should be sufficient to parse any syslog message format.
 
 Arrange the patterns in the file from most specific to least specific, since the first pattern to successfully match the syslog message will be used to construct the {page-component-title} event.
@@ -56,13 +56,13 @@ Arrange the patterns in the file from most specific to least specific, since the
 | String containing only valid hostname characters or IP address characters (IPv4 or IPv6).
 
 | INT
-| Positive integer
+| Positive integer.
 
 | IPADDRESS
 | String containing only valid IP address characters (IPv4 or IPv6).
 
 | MONTH
-| 3-character English month abbreviation
+| Three-character English month abbreviation.
 
 | NOSPACE
 | String that contains no whitespace.
@@ -82,7 +82,7 @@ Because this matches any character, it must be followed by a delimiter in the pa
 | Description
 
 | day
-| 2-digit day of month (1-31)
+| Two-digit day of month (1–31)
 
 | facilityPriority
 | Facility-priority integer
@@ -91,7 +91,7 @@ Because this matches any character, it must be followed by a delimiter in the pa
 | String hostname (unqualified or FQDN), IPv4 address, or IPv6 address
 
 | hour
-| 2-digit hour of day (0-23)
+| Two-digit hour of day (0–23)
 
 | message
 | Remaining string message
@@ -100,10 +100,10 @@ Because this matches any character, it must be followed by a delimiter in the pa
 | String message ID
 
 | minute
-| 2-digit minute (0-59)
+| Two-digit minute (0–59).
 
 | month
-| 2-digit month (1-12)
+| Two-digit month (1–12).
 
 | parm*
 | String generic parameter where the parameter's key is the identifier following "parm" in the semantic token (for example, parmComponentId maps to a string parameter with key "ComponentId").
@@ -115,10 +115,10 @@ Because this matches any character, it must be followed by a delimiter in the pa
 | String process name
 
 | second
-| 2-digit second (0-59)
+| Two-digit second (0–59)
 
 | secondFraction
-| 1- to 6-digit fractional second value as a string
+| One- to six-digit fractional second value as a string
 
 | timezone
 | String timezone value
@@ -127,5 +127,5 @@ Because this matches any character, it must be followed by a delimiter in the pa
 | Version
 
 | year
-| 4-digit year
+| Four-digit year
 |===
