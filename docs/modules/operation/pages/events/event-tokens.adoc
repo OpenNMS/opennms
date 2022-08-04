@@ -95,10 +95,10 @@ A node may have additional hardware details stored for it.
 You can access these details using the `hardware` replacement token, which takes the form:
 
 %hardware[<token>]%::
-    The hardware field `token`'s value.
+    The value of the `token` field from the node's hardware inventory.
 
 == Parameter tokens
-Many events carry additional information in their parameters (see <<events/introduction.adoc#events, Anatomy of an event>>).
+Many events carry additional information in their parameters (see <<events/event-definition.adoc#ga-events-anatomy-of-an-event, Anatomy of an event>>).
 These parameters may start life as SNMP trap variable bindings (varbinds).
 You can access event parameters using the `parm` replacement token, which takes several forms:
 

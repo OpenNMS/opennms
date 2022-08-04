@@ -4,7 +4,7 @@ The Event Translator can transform and enhance the data from {page-component-tit
 This feature enables better integration with external systems, based on data from sources internal and external to {page-component-title}.
 
 When an event is published on the event bus for which the event translator has configuration, the translator clones the event and changes the new event's attributes (fields and parameters) as defined in the translator configuration.
-These transformations can come from the result of SQL queries, regular expression matches, and string literals that are then assigned to attributes of the new event.
+These transformations can come from as a result of SQL queries, regular expression matches, and string literals that are then assigned to attributes of the new event.
 
 The `$\{OPENNMS_HOME}/etc/translator-configuration.xml` file contains elements and attributes that create and/or change the fields or parameters of one event and publish a new event with these changes.
 

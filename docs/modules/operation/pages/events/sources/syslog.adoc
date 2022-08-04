@@ -12,6 +12,7 @@ This service daemon is disabled by default.
 Different parsers can be used to convert the syslog message fields into {page-component-title} event fields.
 
 [options="header, %autowidth"]
+[cols="3,3"]
 |===
 | Parser
 | Description

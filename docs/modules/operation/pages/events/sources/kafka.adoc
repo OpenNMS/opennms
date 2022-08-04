@@ -18,7 +18,7 @@ The Kafka Consumer is disabled by default and can be enabled as follows.
 First, log in to the Karaf shell of your {page-component-title} instance and configure the Kafka client settings to point to your Kafka broker.
 See link:https://kafka.apache.org/27/documentation.html#consumerconfigs[Consumer Configs] for a complete list of available options.
 
-.Configure features and kafka client via Karaf shell
+.Configure features and Kafka client via Karaf shell
 [source, console]
 ----
 ssh -p 8101 admin@localhost
@@ -48,7 +48,7 @@ To ensure that the feature continues to be installed on subsequent restarts, add
 echo "opennms-kafka-consumer" | sudo tee ${OPENNMS_HOME}/etc/featuresBoot.d/kafka-consumer.boot
 ----
 
-== Configure Topic Name
+== Configure topic name
 
 .Karaf login, configuration of events topic
 [source, console]

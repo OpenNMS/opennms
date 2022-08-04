@@ -70,8 +70,9 @@ Consider the following event definition:
 ----
 
 Every event definition has this same basic structure.
-See <<events/event-definition.adoc, Anatomy of an Event>> for a discussion of the structural elements.
+See <<events/event-definition.adoc#ga-events-anatomy-of-an-event, Anatomy of an Event>> for a discussion of the structural elements.
 
+[[severities]]
 === A word about severities
 When setting event severities, it's important to consider each event in the context of your infrastructure as a whole.
 Events whose severity is critical at the zoomed-in level of a single device may not merit a `Critical` severity in the zoomed-out view of your entire enterprise.
