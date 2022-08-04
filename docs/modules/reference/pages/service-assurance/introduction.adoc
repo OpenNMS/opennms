@@ -6,6 +6,16 @@ You can configure them to allow complex monitoring to meet the needs of your env
 
 For information on how to extend the functionality of these monitors, see the xref:development:development.adoc#development[Development section] to contribute to the project.
 
+[[ref-service-assurance-monitors-name-definition]]
+== Name definitions
+
+Service names are subject to certain definitions:
+
+* Maximal length of 256 characters
+* Alphapbetic characters +[Aa-Zz]+
+* Numerals +[0-9]+
+* Special characters +[_-:. ]+
+
 [[ref-service-assurance-monitors-common-parameters]]
 == Common configuration parameters
 
