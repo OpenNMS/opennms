@@ -103,7 +103,7 @@ Notable additions include:
 * Operation documentation updates relating to SNMP property extenders, performance data and collection, thresholding, the log file viewer, SCV, and the new UI preview.
 * Documentation improvements regarding "housekeeping" and other administrative tasks, alarms, Business Service Monitoring, Passive Status Monitoring, and more.
 
-== Important Internal Changes
+== Important internal changes
 
 * Kafka components have been updated to version 3.0.0
 * Our embedded Karaf has been updated to version 4.3.6
