@@ -65,7 +65,7 @@ WHERE node.nodeLabel='DEMO-10'
 The value returned is then substituted for the existing nodeid into a new event cloned from the original event.
 
 [[ga-event-translator-psk]]
-=== Example 2: create a PassiveStatusKeeper update event
+=== Example 2: Create a PassiveStatusKeeper update event
 
 The xref:reference:service-assurance/monitors/PassiveStatusMonitor.adoc#ref-passivestatuskeeper[PassiveStatusKeeper] feature provides a way to track service outages for synthetic nodes that are not directly pollable.
 This example uses a trap from an Adtran TA 4303 to create a new passive status event.
@@ -125,7 +125,7 @@ If more than one passive service is assigned to the same interface, this field i
 <7> Must be either "Up" or "Down" and is case sensitive.
 
 
-=== Example 3: include multiple category names in an event
+=== Example 3: Include multiple category names in an event
 
 If a SQL statement you want to read data with returns multiple rows, the event translator will give you only one result row for a new parameter.
 A workaround is to create an aggregate function in PostgreSQL that accumulates the output to one single row.
