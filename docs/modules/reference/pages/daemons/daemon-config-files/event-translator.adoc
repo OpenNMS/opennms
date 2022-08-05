@@ -16,7 +16,13 @@ For more information, see xref:operation:events/event-translator.adoc[Event Tran
 | Restart Required
 
 | translator-configuration.xml
-| 
+| Configure event translator behavior.
+For example, associate an event with a different node.
+| no
+| yes
+
+| Translator.default.events.xml
+| Default events to pass through the translator for enrichment.
 | no
 | yes
 
@@ -30,7 +36,7 @@ For more information, see xref:operation:events/event-translator.adoc[Event Tran
 | File
 | Description
 
-| eventd.log
+| translator.log
 | Logs relating to event translator events.
 
 |===
