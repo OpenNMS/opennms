@@ -37,10 +37,10 @@ In addition to manually adding events, you can also use the send-event.pl utilit
 
 For example:
 
-* create a new suspect event every time you add a new resource
-* clear out alarms
-* open a ticket in your integrated ticketing system
-* order new ink cartridges when your printer is out of toner
+* Create a new suspect event every time you add a new resource.
+* Clear out alarms.
+* Open a ticket in your integrated ticketing system.
+* Send a notification reminder to order new ink cartridges when your printer is out of toner.
 
 Format: `$\{OPENNMS_HOME}/bin/send-event.pl <uei> [host:port] [options]`
 

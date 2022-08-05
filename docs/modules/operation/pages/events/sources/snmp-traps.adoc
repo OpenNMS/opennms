@@ -85,12 +85,7 @@ This block consists of <maskelement> tags, and the event will match only if all 
 
 This event will match an SNMP trap where the enterprise OID (id) is equal to `.1.3.6.1.4.1.9.9.70.2`, the generic trap value is equal to `6` (enterprise-specific), and the vendor trap value is equal to `17`.
 
-//I cannot find a MIB for this, so may need to delete this text. This is an old device, but updating this example would probably be difficult.
-The MIB for the C3800 device shows that the generic value 6 and the specific value of 17 for ciscoC3800SysAggregateStatusChange are X and Y respectively.
-So the event ...
-//
-
-Possible <mename> values include the following:
+Possible `<mename>` values include the following:
 
 * uei
 * source
@@ -109,8 +104,7 @@ Refer to the associated MIB for details.)
 ** egpNeighborloss (Agent cannot communicate with its EGP (Exterior Gateway Protocol) peer.)
 * community (community string in an SNMP trap)
 
-Note that the following elements are deprecated: `forward` and `filters`.
-
+Note that the following elements `forward` and `filters` are deprecated.
 
 You can use the `%` symbol as a wildcard in the mask values.
 For example, to match all Cisco events, you could use the following:
@@ -143,7 +137,7 @@ Each parameter consists of a name and a value.
 For example, the `ciscoC3800SysAggregateStatusChange` event description lists out each of the parameters.
 Thus the second parameter, the `sysName`, is printed using `%parm[#2]%`.
 
-See xref:operation:/events/event-configuration.adoc#parameter-tokens[Parameter tokens] for more information.
+See xref:operation:/events/event-tokens.adoc#parameter-tokens[Parameter tokens] for more information.
 
 [[varbind-filter]]
 == Filter on varbinds
