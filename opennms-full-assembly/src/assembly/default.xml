@@ -3,16 +3,11 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd"
 >
-  <id>full</id>
+  <id>default</id>
   <includeBaseDirectory>false</includeBaseDirectory>
   <fileSets>
     <fileSet>
       <directory>${project.build.directory}/${project.artifactId}-${project.version}-core</directory>
-      <filtered>false</filtered>
-      <outputDirectory></outputDirectory>
-    </fileSet>
-    <fileSet>
-      <directory>${project.build.directory}/${project.artifactId}-${project.version}-optional</directory>
       <filtered>false</filtered>
       <outputDirectory></outputDirectory>
     </fileSet>
