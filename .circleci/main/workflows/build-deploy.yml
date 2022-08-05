@@ -14,6 +14,9 @@ workflows:
       - tarball-assembly-only:
           requires:
             - build
+      - minion-image:
+          requires:
+            - tarball-assembly-only         
       - minion-image-single-arch:
           matrix:
             parameters:
@@ -215,6 +218,9 @@ workflows:
 #                - /^foundation.*/
 #                - /^release-.*/
 #                - /.*smoke.*/
+      - horizon-image:
+          requires:
+            - horizon-deb-build
       - horizon-publish-oci:
           requires:
             - horizon-deb-build
@@ -285,6 +291,9 @@ workflows:
             branches:
               ignore:
                 - /^merge-foundation.*/
+      - sentinel-image:
+          requires:
+            - sentinel-deb-build                
       - sentinel-image-single-arch:
           requires:
             - sentinel-deb-build
