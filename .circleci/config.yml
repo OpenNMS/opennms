@@ -156,7 +156,7 @@ jobs:
       - run:
           name: Creating build-trigger file
           command: |
-               cp .circleci/build-triggers.override.json /tmp/build-triggers.json
+               cp .circleci/example-build-triggers.override.json /tmp/build-triggers.json
                sed -i 's/"coverage": false/"coverage": true/g' /tmp/build-triggers.json
       - store_artifacts:
           path: /tmp/build-triggers.json

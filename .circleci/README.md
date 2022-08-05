@@ -42,7 +42,8 @@ The user has ability to modify the build path by
       * "opennms-container" folder
 
 2. using `build-triggers.override.json` file
-    * You can enable the jobs you want to run by setting them to True
+    * rename `example-build-triggers.override.json` to `build-triggers.override.json`
+    * Modify `build-triggers.override.json` and enable the jobs you want to run by setting them to True
     
     **Note:** When you enable a job(or workflow), we will enable their dependencies automatically.
 
@@ -54,7 +55,7 @@ This file is broken down into `bundles` and `individual` sections.
 
 The names of `bundle` or `individual` are used in the `generate_main.py` file located under `pyscripts` folder.
 
-**Note:** There is a close relationship between properties defined in `build-triggers.override.json` and the logic used in `generate_main.py`.
+**Note:** There is a close relationship between properties defined in `example-build-triggers.override.json` and the logic used in `generate_main.py`.
 
 ## Expanding the list of keywords detected
 The keywords used in detecting which workflow to run from a git commit message is defined in `process_generate.py` file located under `pyscripts` folder.
