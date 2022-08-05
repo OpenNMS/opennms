@@ -2,10 +2,10 @@
 [[ga-events-sources-syslog]]
 = Syslog Messages
 
-Syslog messages sent over the network to {page-component-title} can be transformed into events according to pre-configured rules.
+Syslog messages sent over the network to {page-component-title} can be transformed into events according to preconfigured rules.
 
 IMPORTANT: The syslogd service daemon, which enables {page-component-title} to receive syslog messages over the network, must be enabled for this functionality to work.
-This service daemon is disabled by default.
+This daemon is disabled by default.
 
 == Parsers
 
@@ -37,7 +37,7 @@ To customize the set of patterns, you can put a new set of patterns into  `$\{OP
 
 The patterns are defined in grok-style statements where each token is defined by a `%{PATTERN:semantic}` clause.
 Whitespace in the pattern will match 0...n whitespace characters, and character literals in the pattern will match the corresponding characters.
-The `%` character literal must be escaped by using a backslash; for example, `\%`.
+The `%` character literal must be escaped by using a backslash (for example, `\%`).
 
 NOTE: The RadixTreeSyslogParser's grok implementation supports only a limited number of pattern types.
 However, these patterns should be sufficient to parse any syslog message format.
@@ -107,7 +107,7 @@ Because this matches any character, it must be followed by a delimiter in the pa
 | Two-digit month (1–12)
 
 | parm*
-| String generic parameter where the parameter's key is the identifier following "parm" in the semantic token (for example, parmComponentId maps to a string parameter with key "ComponentId").
+| Generic String parameter where the parameter's key is the identifier following "parm" in the semantic token (for example, parmComponentId maps to a string parameter with key "ComponentId").
 
 | processId
 | String process ID

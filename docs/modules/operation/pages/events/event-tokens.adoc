@@ -25,7 +25,7 @@ $uei%::
 %time%::
     The time of the event.
 %shorttime%::
-    The time of the event formatted using DateFormat.SHORT for a completely numeric date/time.
+    The time of the event formatted using `DateFormat.SHORT` for a completely numeric date/time.
 %dpname%::
     Formerly used for the ID of the Minion that the event was received on.
     This placeholder is deprecated and resolves to an empty String.
@@ -80,7 +80,7 @@ $uei%::
 %primaryinterface%::
 The primary interface IP address for the node given in `%nodeid%`, if available.
 
-CAUTION: The use of multiple Minions in one location can break the alarm life cycle for a some {page-component-title} features.
+CAUTION: The use of multiple Minions in one location can break the alarm life cycle for some {page-component-title} features.
 To avoid this problem, replace the `%dpname%` with an empty String by setting `org.opennms.netmgt.eventd.cleardpname=true` in `$\{OPENNMS_HOME}/etc/opennms.properties.d/events.properties`.
 
 == Asset tokens

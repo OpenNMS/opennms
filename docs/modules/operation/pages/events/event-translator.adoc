@@ -124,10 +124,9 @@ You can use this new parameter in the event and notifications as `%parm[portdesc
 If more than one passive service is assigned to the same interface, this field is used to trigger outages on a specific service.
 <7> Must be either "Up" or "Down" and is case sensitive.
 
-
 === Example 3: Include multiple category names in an event
 
-If a SQL statement you want to read data with returns multiple rows, the event translator will give you only one result row for a new parameter.
+If an SQL statement you want to read data with returns multiple rows, the event translator will give you only one result row for a new parameter.
 A workaround is to create an aggregate function in PostgreSQL that accumulates the output to one single row.
 A use case would be to include multiple categories' names into a nodeCategoryMembershipChanged event.
 
