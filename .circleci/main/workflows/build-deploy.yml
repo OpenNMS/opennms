@@ -11,7 +11,7 @@ workflows:
             branches:
               ignore:
                 - /^from-foundation.*/
-      - tarball-assembly:
+      - tarball-assembly-only:
           requires:
             - build
       - minion-image-single-arch:
@@ -125,7 +125,7 @@ workflows:
                 - /^merge-foundation.*/
       - smoke-test-core:
           requires:
-            - tarball-assembly
+            - tarball-assembly-only
             - horizon-deb-build
             - sentinel-deb-build
           filters:
@@ -140,7 +140,7 @@ workflows:
                 - /.*smoke.*/
       - smoke-test-flaky:
           requires:
-            - tarball-assembly
+            - tarball-assembly-only
             - horizon-deb-build
             - sentinel-deb-build
           filters:
@@ -155,7 +155,7 @@ workflows:
                 - /.*smoke.*/
       - smoke-test-minion:
           requires:
-            - tarball-assembly
+            - tarball-assembly-only
             - horizon-deb-build
             - sentinel-deb-build
           filters:
@@ -170,7 +170,7 @@ workflows:
                 - /.*smoke.*/
       - smoke-test-sentinel:
           requires:
-            - tarball-assembly
+            - tarball-assembly-only
             - horizon-deb-build
             - sentinel-deb-build
           filters:
@@ -185,7 +185,7 @@ workflows:
                 - /.*smoke.*/
 #      - smoke-test-minimal:
 #          requires:
-#            - tarball-assembly
+#            - tarball-assembly-only
 #            - horizon-deb-build
 #            - sentinel-deb-build
 #          filters:
@@ -301,7 +301,7 @@ workflows:
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
           requires:
-            - tarball-assembly
+            - tarball-assembly-only
           filters:
             branches:
               only: merge-foundation/<< pipeline.parameters.previous_branch_label >>-to-<< pipeline.parameters.main_branch_label >>
