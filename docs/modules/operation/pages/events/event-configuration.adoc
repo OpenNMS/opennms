@@ -92,8 +92,10 @@ The tributary files listed at the end of `eventconf.xml` contain catch-all event
 When slotting your own event definitions, take care not to place them below these catch-all files; otherwise your definitions will be effectively unreachable.
 
 === A Few Tips
-* To save memory and shorten startup times, you may wish to remove event definition files that you know you do not need.
-* If you need to customize some events in one of the default tributary files, you may wish to make a copy of the file containing only the customized events, and slot the copy above the original; this practice will make it easier to maintain your customizations in case the default file changes in a future release of {page-component-title}.
+
+* To save memory and shorten startup times, you may want to remove event definition files that you know you do not need.
+* If you need to customize some events in one of the default tributary files, you may want to make a copy of the file containing only the customized events and load the copy above the original in `eventconf.xml`.
+This practice will make it easier to maintain your customizations in case the default file changes in a future release of {page-component-title}.
 
 ==== Reloading the event configuration
 
