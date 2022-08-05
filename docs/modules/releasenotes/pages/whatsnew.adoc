@@ -39,7 +39,7 @@ The new default behavior is to always schedule collection as a predictable inter
 
 You can change to the previous behavior by creating a property file in `$OPENNMS_HOME/etc/opennms.properties.d/` with the contents: `org.opennms.netmgt.collectd.strictInterval=false`.
 
-== New Features and Improvements
+== New features and improvements
 
 === New UI (Early Access)
 
