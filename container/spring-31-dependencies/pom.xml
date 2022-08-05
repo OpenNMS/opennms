@@ -32,7 +32,11 @@
       <version>${patchedSpring31Version}</version>
       <exclusions>
         <exclusion>
-          <groupId>*</groupId>
+          <groupId>org.opennms.spring.org.springframework</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
           <artifactId>*</artifactId>
         </exclusion>
       </exclusions>
@@ -43,7 +47,7 @@
       <version>${spring31Version}</version>
       <exclusions>
         <exclusion>
-          <groupId>*</groupId>
+          <groupId>org.springframework</groupId>
           <artifactId>*</artifactId>
         </exclusion>
       </exclusions>
@@ -54,7 +58,7 @@
       <version>${spring31Version}</version>
       <exclusions>
         <exclusion>
-          <groupId>*</groupId>
+          <groupId>org.springframework</groupId>
           <artifactId>*</artifactId>
         </exclusion>
       </exclusions>
@@ -65,7 +69,11 @@
       <version>${patchedSpring31Version}</version>
       <exclusions>
         <exclusion>
-          <groupId>*</groupId>
+          <groupId>org.opennms.spring.org.springframework</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
           <artifactId>*</artifactId>
         </exclusion>
       </exclusions>
@@ -76,7 +84,7 @@
       <version>${spring31Version}</version>
       <exclusions>
         <exclusion>
-          <groupId>*</groupId>
+          <groupId>org.springframework</groupId>
           <artifactId>*</artifactId>
         </exclusion>
       </exclusions>
@@ -87,7 +95,7 @@
       <version>${spring31Version}</version>
       <exclusions>
         <exclusion>
-          <groupId>*</groupId>
+          <groupId>org.springframework</groupId>
           <artifactId>*</artifactId>
         </exclusion>
       </exclusions>
@@ -98,8 +106,8 @@
       <version>${spring31Version}</version>
       <exclusions>
         <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -109,7 +117,11 @@
       <version>${patchedSpring31Version}</version>
       <exclusions>
         <exclusion>
-          <groupId>*</groupId>
+          <groupId>org.opennms.spring.org.springframework</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
           <artifactId>*</artifactId>
         </exclusion>
       </exclusions>
@@ -120,7 +132,7 @@
       <version>${spring31Version}</version>
       <exclusions>
         <exclusion>
-          <groupId>*</groupId>
+          <groupId>org.springframework</groupId>
           <artifactId>*</artifactId>
         </exclusion>
       </exclusions>
@@ -131,7 +143,7 @@
       <version>${spring31Version}</version>
       <exclusions>
         <exclusion>
-          <groupId>*</groupId>
+          <groupId>org.springframework</groupId>
           <artifactId>*</artifactId>
         </exclusion>
       </exclusions>
@@ -142,7 +154,11 @@
       <version>${spring31Version}</version>
       <exclusions>
         <exclusion>
-          <groupId>*</groupId>
+          <groupId>aopalliance</groupId>
+          <artifactId>aopalliance</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
           <artifactId>*</artifactId>
         </exclusion>
       </exclusions>
@@ -153,7 +169,7 @@
       <version>${spring31Version}</version>
       <exclusions>
         <exclusion>
-          <groupId>*</groupId>
+          <groupId>org.springframework</groupId>
           <artifactId>*</artifactId>
         </exclusion>
       </exclusions>
@@ -164,7 +180,11 @@
       <version>${spring31Version}</version>
       <exclusions>
         <exclusion>
-          <groupId>*</groupId>
+          <groupId>commons-lang</groupId>
+          <artifactId>commons-lang</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
           <artifactId>*</artifactId>
         </exclusion>
       </exclusions>
@@ -175,7 +195,7 @@
       <version>${spring31Version}</version>
       <exclusions>
         <exclusion>
-          <groupId>*</groupId>
+          <groupId>org.springframework</groupId>
           <artifactId>*</artifactId>
         </exclusion>
       </exclusions>
@@ -186,7 +206,11 @@
       <version>${spring31Version}</version>
       <exclusions>
         <exclusion>
-          <groupId>*</groupId>
+          <groupId>aopalliance</groupId>
+          <artifactId>aopalliance</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
           <artifactId>*</artifactId>
         </exclusion>
       </exclusions>
@@ -197,7 +221,11 @@
       <version>${patchedSpring31Version}</version>
       <exclusions>
         <exclusion>
-          <groupId>*</groupId>
+          <groupId>org.opennms.spring.org.springframework</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
           <artifactId>*</artifactId>
         </exclusion>
       </exclusions>

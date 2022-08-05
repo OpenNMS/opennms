@@ -301,7 +301,7 @@ commands:
               -Prun-expensive-tasks \
               -Psmoke \
               --batch-mode \
-              $MAVEN_ARGS
+              $MAVEN_ARGS || exit 1
             if [ -d target/site/apidocs ]; then
               pushd target/site/apidocs
                 tar -czf "../../artifacts/opennms-${OPENNMS_VERSION}-javadoc.tar.gz" *
