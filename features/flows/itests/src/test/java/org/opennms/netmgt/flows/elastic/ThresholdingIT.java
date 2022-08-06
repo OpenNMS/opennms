@@ -35,6 +35,8 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -60,7 +62,7 @@ import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.filter.api.FilterDao;
-import org.opennms.netmgt.flows.api.Flow;
+import org.opennms.integration.api.v1.flows.Flow;
 import org.opennms.netmgt.flows.processing.enrichment.EnrichedFlow;
 import org.opennms.netmgt.flows.processing.enrichment.NodeInfo;
 import org.opennms.netmgt.flows.api.FlowSource;
@@ -199,12 +201,12 @@ public class ThresholdingIT {
     }
 
     private List<EnrichedFlow> createMockedFlows(final int count) {
-        final var now = System.currentTimeMillis();
+        final var now = Instant.now();
 
         final List<EnrichedFlow> flows = new ArrayList<>(count);
         for (int i = 0; i < count; i++) {
             final EnrichedFlow flow = new EnrichedFlow();
-            flow.setTimestamp(now + i * 1000L);
+            flow.setTimestamp(now.plus(i * 1000L, ChronoUnit.MILLIS));
             flow.setIpProtocolVersion(4);
             flow.setInputSnmp(1);
             flow.setOutputSnmp(2);

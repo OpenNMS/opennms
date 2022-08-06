@@ -28,10 +28,12 @@
 
 package org.opennms.netmgt.flows.processing;
 
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+
+import static org.opennms.integration.api.v1.flows.Flow.Direction;
 
 import org.opennms.netmgt.flows.api.Flow;
 
@@ -43,7 +45,7 @@ public class FlowBuilder {
     private Integer inputSnmpInterfaceId;
     private Integer outputSnmpInterfaceId;
     private String application = null;
-    private Flow.Direction direction = Flow.Direction.INGRESS;
+    private Direction direction = Direction.INGRESS;
     private String srcHostname = null;
     private String dstHostname = null;
     private Integer tos = null;
@@ -68,7 +70,7 @@ public class FlowBuilder {
         return this;
     }
 
-    public FlowBuilder withDirection(Flow.Direction direction) {
+    public FlowBuilder withDirection(Direction direction) {
         this.direction = Objects.requireNonNull(direction);
         return this;
     }
@@ -84,20 +86,16 @@ public class FlowBuilder {
         return this;
     }
 
-    public FlowBuilder withFlow(Date date, String sourceIp, int sourcePort, String destIp, int destPort, long numBytes) {
-        return withFlow(date, date, date, sourceIp, sourcePort, destIp, destPort, numBytes);
-    }
-
-    public FlowBuilder withFlow(Date firstSwitched, Date lastSwitched, String sourceIp, int sourcePort, String destIp, int destPort, long numBytes) {
+    public FlowBuilder withFlow(Instant firstSwitched, Instant lastSwitched, String sourceIp, int sourcePort, String destIp, int destPort, long numBytes) {
         return withFlow(firstSwitched, firstSwitched, lastSwitched, sourceIp, sourcePort, destIp, destPort, numBytes);
     }
 
-    public FlowBuilder withFlow(Date firstSwitched, Date deltaSwitched, Date lastSwitched, String sourceIp, int sourcePort, String destIp, int destPort, long numBytes) {
+    public FlowBuilder withFlow(Instant firstSwitched, Instant deltaSwitched, Instant lastSwitched, String sourceIp, int sourcePort, String destIp, int destPort, long numBytes) {
         final TestFlow flow = new TestFlow();
-        flow.setTimestamp(lastSwitched.getTime());
-        flow.setFirstSwitched(firstSwitched.getTime());
-        flow.setDeltaSwitched(deltaSwitched.getTime());
-        flow.setLastSwitched(lastSwitched.getTime());
+        flow.setTimestamp(lastSwitched);
+        flow.setFirstSwitched(firstSwitched);
+        flow.setDeltaSwitched(deltaSwitched);
+        flow.setLastSwitched(lastSwitched);
         flow.setSrcAddr(sourceIp);
         flow.setSrcPort(sourcePort);
         if (this.srcHostname != null) {
@@ -110,11 +108,11 @@ public class FlowBuilder {
         };
         flow.setBytes(numBytes);
         flow.setProtocol(6); // TCP
-        if (direction == Flow.Direction.INGRESS) {
+        if (direction == Direction.INGRESS) {
             flow.setInputSnmp(snmpInterfaceId);
-        } else if (direction == Flow.Direction.EGRESS) {
+        } else if (direction == Direction.EGRESS) {
             flow.setOutputSnmp(snmpInterfaceId);
-        } else if (direction == Flow.Direction.UNKNOWN) {
+        } else if (direction == Direction.UNKNOWN) {
             flow.setInputSnmp(inputSnmpInterfaceId);
             flow.setOutputSnmp(outputSnmpInterfaceId);
         }

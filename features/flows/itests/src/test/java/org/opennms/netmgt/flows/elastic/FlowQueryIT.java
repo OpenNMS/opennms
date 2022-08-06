@@ -40,12 +40,14 @@ import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.mock;
 
+import static org.opennms.integration.api.v1.flows.Flow.Direction;
+
 import java.net.MalformedURLException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -82,7 +84,6 @@ import org.opennms.netmgt.dao.mock.MockSessionUtils;
 import org.opennms.netmgt.flows.api.Conversation;
 import org.opennms.netmgt.flows.api.Directional;
 import org.opennms.netmgt.flows.api.Flow;
-import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.api.FlowSource;
 import org.opennms.netmgt.flows.api.Host;
 import org.opennms.netmgt.flows.api.LimitedCardinalityField;
@@ -627,22 +628,22 @@ public class FlowQueryIT {
     public void hasCorrectOrdering() throws Exception {
         this.loadFlows(new FlowBuilder()
                 .withSnmpInterfaceId(98)
-                .withDirection(Flow.Direction.INGRESS)
+                .withDirection(Direction.INGRESS)
 
                 // More documents - less data
-                .withFlow(new Date(0), new Date(10), "192.168.0.1", 1234, "192.168.1.1", 1234, 100)
-                .withFlow(new Date(0), new Date(10), "192.168.0.1", 1234, "192.168.1.1", 1234, 100)
-                .withFlow(new Date(0), new Date(10), "192.168.0.1", 1234, "192.168.1.1", 1234, 100)
-                .withFlow(new Date(0), new Date(10), "192.168.0.1", 1234, "192.168.1.1", 1234, 100)
-                .withFlow(new Date(0), new Date(10), "192.168.0.1", 1234, "192.168.1.1", 1234, 100)
+                .withFlow(Instant.ofEpochMilli(0), Instant.ofEpochMilli(10), "192.168.0.1", 1234, "192.168.1.1", 1234, 100)
+                .withFlow(Instant.ofEpochMilli(0), Instant.ofEpochMilli(10), "192.168.0.1", 1234, "192.168.1.1", 1234, 100)
+                .withFlow(Instant.ofEpochMilli(0), Instant.ofEpochMilli(10), "192.168.0.1", 1234, "192.168.1.1", 1234, 100)
+                .withFlow(Instant.ofEpochMilli(0), Instant.ofEpochMilli(10), "192.168.0.1", 1234, "192.168.1.1", 1234, 100)
+                .withFlow(Instant.ofEpochMilli(0), Instant.ofEpochMilli(10), "192.168.0.1", 1234, "192.168.1.1", 1234, 100)
 
 
-                .withFlow(new Date(0), new Date(10), "192.168.0.2", 1234, "192.168.1.2", 1234, 1000)
-                .withFlow(new Date(0), new Date(10), "192.168.0.2", 1234, "192.168.1.2", 1234, 1000)
-                .withFlow(new Date(0), new Date(10), "192.168.0.2", 1234, "192.168.1.2", 1234, 1000)
+                .withFlow(Instant.ofEpochMilli(0), Instant.ofEpochMilli(10), "192.168.0.2", 1234, "192.168.1.2", 1234, 1000)
+                .withFlow(Instant.ofEpochMilli(0), Instant.ofEpochMilli(10), "192.168.0.2", 1234, "192.168.1.2", 1234, 1000)
+                .withFlow(Instant.ofEpochMilli(0), Instant.ofEpochMilli(10), "192.168.0.2", 1234, "192.168.1.2", 1234, 1000)
 
                 // Less documents - more data
-                .withFlow(new Date(0), new Date(10), "192.168.0.3", 1234, "192.168.1.3", 1234, 10000)
+                .withFlow(Instant.ofEpochMilli(0), Instant.ofEpochMilli(10), "192.168.0.3", 1234, "192.168.1.3", 1234, 10000)
 
                 .build());
 
@@ -720,12 +721,12 @@ public class FlowQueryIT {
 
             @Override
             public Predicate<Flow> visit(TimeRangeFilter timeRangeFilter) {
-                return fd -> fd.getLastSwitched() >= timeRangeFilter.getStart() && fd.getDeltaSwitched() <= timeRangeFilter.getEnd();
+                return fd -> fd.getLastSwitched().toEpochMilli() >= timeRangeFilter.getStart() && fd.getDeltaSwitched().toEpochMilli() <= timeRangeFilter.getEnd();
             }
 
             @Override
             public Predicate<Flow> visit(SnmpInterfaceIdFilter snmpInterfaceIdFilter) {
-                return fd -> snmpInterfaceIdFilter.getSnmpInterfaceId() == (fd.getDirection() == Flow.Direction.INGRESS ? fd.getInputSnmp() : fd.getOutputSnmp());
+                return fd -> snmpInterfaceIdFilter.getSnmpInterfaceId() == (fd.getDirection() == Direction.INGRESS ? fd.getInputSnmp() : fd.getOutputSnmp());
             }
 
             @Override
@@ -917,16 +918,16 @@ public class FlowQueryIT {
         return TrafficSummary
                 .from(key)
                 .withBytes(
-                        fd.getDirection() == Flow.Direction.INGRESS ? fd.getBytes() : 0,
-                        fd.getDirection() == Flow.Direction.EGRESS ? fd.getBytes() : 0)
+                        fd.getDirection() == Direction.INGRESS ? fd.getBytes() : 0,
+                        fd.getDirection() == Direction.EGRESS ? fd.getBytes() : 0)
                 .withCongestionEncountered(fd.getTos() != null && fd.getTos() % 4 == 3)
                 .withNonEcnCapableTransport(fd.getTos() != null && fd.getTos() % 4 == 0)
                 .build();
     }
 
     private static <K> Pair<Directional<K>, Map<Long, Double>> flowDoc2Pair(Flow fd, long step, K key) {
-        long firstSwitched = fd.getFirstSwitched();
-        long lastSwitched = fd.getLastSwitched();
+        long firstSwitched = fd.getFirstSwitched().toEpochMilli();
+        long lastSwitched = fd.getLastSwitched().toEpochMilli();
         long duration = lastSwitched - firstSwitched;
         double bytes = fd.getBytes();
         long firstIndex = firstSwitched / step;
@@ -938,7 +939,7 @@ public class FlowQueryIT {
             double value = bytes * (to - from) / duration;
             res.put(idx * step, value);
         }
-        return Pair.of(new Directional(key, fd.getDirection() == Flow.Direction.INGRESS), res);
+        return Pair.of(new Directional(key, fd.getDirection() == Direction.INGRESS), res);
     }
 
     private static <K> TrafficSummary<K> mergeTrafficSummaries(TrafficSummary<K> t1, TrafficSummary<K> t2) {
@@ -1046,45 +1047,45 @@ public class FlowQueryIT {
         FlowBuilder flowBuilder = new FlowBuilder()
                 .withSnmpInterfaceId(98)
                 // 192.168.1.100:43444 <-> 10.1.1.11:80 (110 bytes in [3,15])
-                .withDirection(Flow.Direction.INGRESS)
+                .withDirection(Direction.INGRESS)
                 .withTos(4 + 64)
-                .withFlow(new Date(3), new Date(15), "192.168.1.100", 43444, "10.1.1.11", 80, 10)
-                .withDirection(Flow.Direction.EGRESS)
+                .withFlow(Instant.ofEpochMilli(3), Instant.ofEpochMilli(15), "192.168.1.100", 43444, "10.1.1.11", 80, 10)
+                .withDirection(Direction.EGRESS)
                 .withTos(8 + 128)
-                .withFlow(new Date(3), new Date(15), "10.1.1.11", 80, "192.168.1.100", 43444, 100);
+                .withFlow(Instant.ofEpochMilli(3), Instant.ofEpochMilli(15), "10.1.1.11", 80, "192.168.1.100", 43444, 100);
                 // 192.168.1.100:43445 <-> 10.1.1.12:443 (1100 bytes in [13,26])
                 if (!useUnknownDirection) {
-                    flowBuilder.withDirection(Flow.Direction.INGRESS);
+                    flowBuilder.withDirection(Direction.INGRESS);
                 } else {
-                    flowBuilder.withDirection(Flow.Direction.UNKNOWN)
+                    flowBuilder.withDirection(Direction.UNKNOWN)
                             .withInputSnmpInterfaceId(98)
                             .withOutputSnmpInterfaceId(100);
                 }
                 flowBuilder.withHostnames(null, "la.le.lu")
                 .withTos(16 + 64)
-                .withFlow(new Date(13), new Date(26), "192.168.1.100", 43445, "10.1.1.12", 443, 100);
+                .withFlow(Instant.ofEpochMilli(13), Instant.ofEpochMilli(26), "192.168.1.100", 43445, "10.1.1.12", 443, 100);
                 if (!useUnknownDirection) {
-                    flowBuilder.withDirection(Flow.Direction.EGRESS);
+                    flowBuilder.withDirection(Direction.EGRESS);
                 } else {
-                    flowBuilder.withDirection(Flow.Direction.UNKNOWN)
+                    flowBuilder.withDirection(Direction.UNKNOWN)
                             .withInputSnmpInterfaceId(100)
                             .withOutputSnmpInterfaceId(98);
                 }
                 flowBuilder.withHostnames("la.le.lu", null)
                 .withTos(32 + 128)
-                .withFlow(new Date(13), new Date(26), "10.1.1.12", 443, "192.168.1.100", 43445, 1000)
+                .withFlow(Instant.ofEpochMilli(13), Instant.ofEpochMilli(26), "10.1.1.12", 443, "192.168.1.100", 43445, 1000)
                 // 192.168.1.101:43442 <-> 10.1.1.12:443 (1210 bytes in [14, 45])
-                .withDirection(Flow.Direction.INGRESS)
+                .withDirection(Direction.INGRESS)
                 .withHostnames("ingress.only", "la.le.lu")
-                .withFlow(new Date(14), new Date(45), "192.168.1.101", 43442, "10.1.1.12", 443, 110)
-                .withDirection(Flow.Direction.EGRESS)
+                .withFlow(Instant.ofEpochMilli(14), Instant.ofEpochMilli(45), "192.168.1.101", 43442, "10.1.1.12", 443, 110)
+                .withDirection(Direction.EGRESS)
                 .withHostnames("la.le.lu", null)
-                .withFlow(new Date(14), new Date(45), "10.1.1.12", 443, "192.168.1.101", 43442, 1100)
+                .withFlow(Instant.ofEpochMilli(14), Instant.ofEpochMilli(45), "10.1.1.12", 443, "192.168.1.101", 43442, 1100)
                 // 192.168.1.102:50000 <-> 10.1.1.13:50001 (200 bytes in [50, 52])
-                .withDirection(Flow.Direction.INGRESS)
-                .withFlow(new Date(50), new Date(52), "192.168.1.102", 50000, "10.1.1.13", 50001, 200)
-                .withDirection(Flow.Direction.EGRESS)
-                .withFlow(new Date(50), new Date(52), "10.1.1.13", 50001, "192.168.1.102", 50000, 100);
+                .withDirection(Direction.INGRESS)
+                .withFlow(Instant.ofEpochMilli(50), Instant.ofEpochMilli(52), "192.168.1.102", 50000, "10.1.1.13", 50001, 200)
+                .withDirection(Direction.EGRESS)
+                .withFlow(Instant.ofEpochMilli(50), Instant.ofEpochMilli(52), "10.1.1.13", 50001, "192.168.1.102", 50000, 100);
         return flowBuilder.build();
     }
 

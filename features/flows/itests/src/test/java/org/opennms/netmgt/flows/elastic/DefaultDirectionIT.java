@@ -45,9 +45,9 @@ import org.opennms.features.jest.client.RestClientFactory;
 import org.opennms.features.jest.client.SearchResultUtils;
 import org.opennms.features.jest.client.index.IndexStrategy;
 import org.opennms.features.jest.client.template.IndexSettings;
-import org.opennms.netmgt.flows.api.Flow;
+import org.opennms.integration.api.v1.flows.Flow;
 import org.opennms.netmgt.flows.processing.enrichment.EnrichedFlow;
-import org.opennms.netmgt.flows.processing.persisting.FlowRepository;
+import org.opennms.integration.api.v1.flows.FlowRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

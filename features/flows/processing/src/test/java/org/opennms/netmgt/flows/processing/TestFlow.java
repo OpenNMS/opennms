@@ -28,15 +28,20 @@
 
 package org.opennms.netmgt.flows.processing;
 
+import java.time.Instant;
 import java.util.Optional;
+
+import static org.opennms.integration.api.v1.flows.Flow.Direction;
+import static org.opennms.integration.api.v1.flows.Flow.NetflowVersion;
+import static org.opennms.integration.api.v1.flows.Flow.SamplingAlgorithm;
 
 import org.opennms.netmgt.flows.api.Flow;
 
 public class TestFlow implements Flow {
-    private long receivedAt;
-    private long timestamp;
+    private Instant receivedAt;
+    private Instant timestamp;
     private Long bytes;
-    private Flow.Direction direction;
+    private Direction direction;
     private String dstAddr;
     private String dstAddrHostname;
     private Long dstAs;
@@ -44,19 +49,19 @@ public class TestFlow implements Flow {
     private Integer dstPort;
     private Integer engineId;
     private Integer engineType;
-    private Long deltaSwitched;
-    private Long firstSwitched;
+    private Instant deltaSwitched;
+    private Instant firstSwitched;
     private int flowRecords;
     private long flowSeqNum;
     private Integer inputSnmp;
     private Integer ipProtocolVersion;
-    private Long lastSwitched;
+    private Instant lastSwitched;
     private String nextHop;
     private String nextHopHostname;
     private Integer outputSnmp;
     private Long packets;
     private Integer protocol;
-    private Flow.SamplingAlgorithm samplingAlgorithm;
+    private SamplingAlgorithm samplingAlgorithm;
     private Double samplingInterval;
     private String srcAddr;
     private String srcAddrHostname;
@@ -65,26 +70,26 @@ public class TestFlow implements Flow {
     private Integer srcPort;
     private Integer tcpFlags;
     private Integer tos;
-    private Flow.NetflowVersion netflowVersion;
+    private NetflowVersion netflowVersion;
     private Integer vlan;
     private String nodeIdentifier;
 
 
     @Override
-    public long getReceivedAt() {
+    public Instant getReceivedAt() {
         return this.receivedAt;
     }
 
-    public void setReceivedAt(final long receivedAt) {
+    public void setReceivedAt(final Instant receivedAt) {
         this.receivedAt = receivedAt;
     }
 
     @Override
-    public long getTimestamp() {
+    public Instant getTimestamp() {
         return this.timestamp;
     }
 
-    public void setTimestamp(final long timestamp) {
+    public void setTimestamp(final Instant timestamp) {
         this.timestamp = timestamp;
     }
 
@@ -170,20 +175,20 @@ public class TestFlow implements Flow {
     }
 
     @Override
-    public Long getDeltaSwitched() {
+    public Instant getDeltaSwitched() {
         return this.deltaSwitched;
     }
 
-    public void setDeltaSwitched(final Long deltaSwitched) {
+    public void setDeltaSwitched(final Instant deltaSwitched) {
         this.deltaSwitched = deltaSwitched;
     }
 
     @Override
-    public Long getFirstSwitched() {
+    public Instant getFirstSwitched() {
         return this.firstSwitched;
     }
 
-    public void setFirstSwitched(final Long firstSwitched) {
+    public void setFirstSwitched(final Instant firstSwitched) {
         this.firstSwitched = firstSwitched;
     }
 
@@ -224,11 +229,11 @@ public class TestFlow implements Flow {
     }
 
     @Override
-    public Long getLastSwitched() {
+    public Instant getLastSwitched() {
         return this.lastSwitched;
     }
 
-    public void setLastSwitched(final Long lastSwitched) {
+    public void setLastSwitched(final Instant lastSwitched) {
         this.lastSwitched = lastSwitched;
     }
 

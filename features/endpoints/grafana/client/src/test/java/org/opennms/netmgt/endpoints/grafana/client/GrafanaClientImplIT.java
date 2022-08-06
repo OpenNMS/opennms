@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -55,6 +55,21 @@ public class GrafanaClientImplIT {
 
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(WireMockConfiguration.wireMockConfig().dynamicPort());
+
+    @Test
+    public void grafana8DashboardResponse() throws Exception {
+        stubFor(get(urlEqualTo("/api/dashboards/uid/T2Ra73RVk"))
+                .willReturn(aResponse()
+                        .withHeader("Content-Type", "application/json")
+                        .withBodyFile("dashboard8.json")));
+
+        GrafanaServerConfiguration config = new GrafanaServerConfiguration(wireMockRule.baseUrl(), "xxxx", 5, 5);
+        GrafanaClientImpl client = new GrafanaClientImpl(config);
+        Dashboard dashboard = client.getDashboardByUid("T2Ra73RVk");
+
+        assertThat(dashboard.getMeta().getSlug(), equalTo("test"));
+        assertThat(dashboard.getPanels().get(0).getDatasource(), equalTo("ecy5MqR4z"));
+    }
 
     @Test
     public void canGetDashboardAndRenderPng() throws IOException, ExecutionException, InterruptedException {

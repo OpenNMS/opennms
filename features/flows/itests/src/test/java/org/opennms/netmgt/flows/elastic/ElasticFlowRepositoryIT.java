@@ -38,7 +38,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.opennms.features.jest.client.index.IndexStrategy;
 import org.opennms.features.jest.client.template.IndexSettings;
-import org.opennms.netmgt.flows.api.FlowException;
+import org.opennms.integration.api.v1.flows.FlowException;
 import org.opennms.netmgt.flows.processing.enrichment.EnrichedFlow;
 
 import com.codahale.metrics.MetricRegistry;

@@ -127,7 +127,7 @@
     <service ref="pipeline" interface="org.opennms.netmgt.flows.processing.Pipeline" />
 
     <!-- Bind flow repositories to the pipeline -->
-    <reference-list id="repositories" interface="org.opennms.netmgt.flows.processing.persisting.FlowRepository" availability="optional">
+    <reference-list id="repositories" interface="org.opennms.integration.api.v1.flows.FlowRepository" availability="optional">
         <reference-listener ref="pipeline" bind-method="onBind" unbind-method="onUnbind" />
     </reference-list>
 </blueprint>

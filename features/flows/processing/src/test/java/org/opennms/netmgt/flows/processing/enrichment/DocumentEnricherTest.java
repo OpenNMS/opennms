@@ -31,6 +31,10 @@ package org.opennms.netmgt.flows.processing.enrichment;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import static org.opennms.integration.api.v1.flows.Flow.Direction;
+
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -97,14 +101,14 @@ public class DocumentEnricherTest {
     }
 
     private static Flow createFlowDocument(String sourceIp, String destIp, final long timeOffset) {
-        final var now = System.currentTimeMillis();
+        final var now = Instant.now();
 
         final Flow flow = mock(Flow.class);
-        when(flow.getReceivedAt()).thenReturn(now + timeOffset);
+        when(flow.getReceivedAt()).thenReturn(now.plus(timeOffset, ChronoUnit.MILLIS));
         when(flow.getTimestamp()).thenReturn(now);
-        when(flow.getFirstSwitched()).thenReturn(now - 20_000L);
-        when(flow.getDeltaSwitched()).thenReturn(now - 10_000L);
-        when(flow.getLastSwitched()).thenReturn(now - 5_000L);
+        when(flow.getFirstSwitched()).thenReturn(now.minus(20_000L, ChronoUnit.MILLIS));
+        when(flow.getDeltaSwitched()).thenReturn(now.minus(10_000L, ChronoUnit.MILLIS));
+        when(flow.getLastSwitched()).thenReturn(now.minus(5_000L, ChronoUnit.MILLIS));
         when(flow.getSrcAddr()).thenReturn(sourceIp);
         when(flow.getSrcPort()).thenReturn(510);
         when(flow.getDstAddr()).thenReturn(destIp);
@@ -162,7 +166,7 @@ public class DocumentEnricherTest {
         d1.setDstAddr("2.2.2.2");
         d1.setDstPort(2);
         d1.setProtocol(6);
-        d1.setDirection(Flow.Direction.INGRESS);
+        d1.setDirection(Direction.INGRESS);
 
         final ClassificationRequest c1 = enricher.createClassificationRequest(d1);
         Assert.assertEquals(IpAddr.of("1.1.1.1"), c1.getSrcAddress());
@@ -176,7 +180,7 @@ public class DocumentEnricherTest {
         d2.setDstAddr("2.2.2.2");
         d2.setDstPort(2);
         d2.setProtocol(6);
-        d2.setDirection(Flow.Direction.EGRESS);
+        d2.setDirection(Direction.EGRESS);
 
         // check that fields stay as theay are even when EGRESS is used
         final ClassificationRequest c2 = enricher.createClassificationRequest(d2);
@@ -220,14 +224,14 @@ public class DocumentEnricherTest {
                       .where(EnrichedFlow::getDeltaSwitched, Matchers.is(flow1.getDeltaSwitched()))
                       .where(EnrichedFlow::getLastSwitched, Matchers.is(flow1.getLastSwitched())),
                 IsPojo.pojo(EnrichedFlow.class)
-                      .where(EnrichedFlow::getTimestamp, Matchers.is(flow2.getTimestamp() - 3600_000L))
-                      .where(EnrichedFlow::getFirstSwitched, Matchers.is(flow2.getFirstSwitched() - 3600_000L))
-                      .where(EnrichedFlow::getDeltaSwitched, Matchers.is(flow2.getDeltaSwitched() - 3600_000L))
-                      .where(EnrichedFlow::getLastSwitched, Matchers.is(flow2.getLastSwitched() - 3600_000L)),
+                      .where(EnrichedFlow::getTimestamp, Matchers.is(flow2.getTimestamp().minus( 3600_000L, ChronoUnit.MILLIS)))
+                      .where(EnrichedFlow::getFirstSwitched, Matchers.is(flow2.getFirstSwitched().minus(3600_000L, ChronoUnit.MILLIS)))
+                      .where(EnrichedFlow::getDeltaSwitched, Matchers.is(flow2.getDeltaSwitched().minus(3600_000L, ChronoUnit.MILLIS)))
+                      .where(EnrichedFlow::getLastSwitched, Matchers.is(flow2.getLastSwitched().minus(3600_000L, ChronoUnit.MILLIS))),
                 IsPojo.pojo(EnrichedFlow.class)
-                      .where(EnrichedFlow::getTimestamp, Matchers.is(flow3.getTimestamp() + 3600_000L))
-                      .where(EnrichedFlow::getFirstSwitched, Matchers.is(flow3.getFirstSwitched() + 3600_000L))
-                      .where(EnrichedFlow::getDeltaSwitched, Matchers.is(flow3.getDeltaSwitched() + 3600_000L))
-                      .where(EnrichedFlow::getLastSwitched, Matchers.is(flow3.getLastSwitched() + 3600_000L))));
+                      .where(EnrichedFlow::getTimestamp, Matchers.is(flow3.getTimestamp().plus(3600_000L, ChronoUnit.MILLIS)))
+                      .where(EnrichedFlow::getFirstSwitched, Matchers.is(flow3.getFirstSwitched().plus(3600_000L, ChronoUnit.MILLIS)))
+                      .where(EnrichedFlow::getDeltaSwitched, Matchers.is(flow3.getDeltaSwitched().plus(3600_000L, ChronoUnit.MILLIS)))
+                      .where(EnrichedFlow::getLastSwitched, Matchers.is(flow3.getLastSwitched().plus(3600_000L, ChronoUnit.MILLIS)))));
     }
 }

@@ -62,7 +62,7 @@
     <property name="enabled" value="$[enableForwarding]" />
   </bean>
 
-  <service interface="org.opennms.netmgt.flows.processing.persisting.FlowRepository" ref="switchedKafkaFlowForwarder">
+  <service interface="org.opennms.integration.api.v1.flows.FlowRepository" ref="switchedKafkaFlowForwarder">
     <service-properties>
       <entry key="flows.repository.id" value="kafka" />
     </service-properties>

@@ -39,8 +39,10 @@ import static org.opennms.netmgt.flows.persistence.model.SamplingAlgorithm.UNASS
 import static org.opennms.netmgt.flows.persistence.model.SamplingAlgorithm.UNIFORM_PROBABILISTIC_SAMPLING;
 import static org.opennms.netmgt.flows.persistence.model.SamplingAlgorithm.UNRECOGNIZED;
 
+import java.time.Instant;
 import java.util.Optional;
 
+import org.opennms.integration.api.v1.flows.Flow;
 import org.opennms.netmgt.flows.persistence.model.Direction;
 import org.opennms.netmgt.flows.persistence.model.FlowDocument;
 import org.opennms.netmgt.flows.persistence.model.Locality;
@@ -56,9 +58,9 @@ import com.google.protobuf.UInt64Value;
 
 public class FlowDocumentBuilder {
 
-    public static FlowDocument buildFlowDocument(EnrichedFlow enrichedFlow) {
+    public static FlowDocument buildFlowDocument(final Flow enrichedFlow) {
         FlowDocument.Builder builder = FlowDocument.newBuilder();
-        builder.setTimestamp(enrichedFlow.getTimestamp());
+        builder.setTimestamp(enrichedFlow.getTimestamp() != null ? enrichedFlow.getTimestamp().toEpochMilli() : 0);
         builder.setDirection(fromDirection(enrichedFlow.getDirection()));
         getUInt64Value(enrichedFlow.getDstAs()).ifPresent(builder::setDstAs);
         getString(enrichedFlow.getDstAddr()).ifPresent(builder::setDstAddress);
@@ -104,7 +106,7 @@ public class FlowDocumentBuilder {
         buildNodeInfo(enrichedFlow.getSrcNodeInfo()).ifPresent(builder::setSrcNode);
         buildNodeInfo(enrichedFlow.getExporterNodeInfo()).ifPresent(builder::setExporterNode);
         buildNodeInfo(enrichedFlow.getDstNodeInfo()).ifPresent(builder::setDestNode);
-        builder.setClockCorrection(enrichedFlow.getClockCorrection());
+        builder.setClockCorrection(enrichedFlow.getClockCorrection() != null ? enrichedFlow.getClockCorrection().toMillis() : 0);
 
         return builder.build();
     }
@@ -112,6 +114,13 @@ public class FlowDocumentBuilder {
     private static Optional<UInt64Value> getUInt64Value(Long value) {
         if (value != null) {
             return Optional.of(UInt64Value.newBuilder().setValue(value).build());
+        }
+        return Optional.empty();
+    }
+
+    private static Optional<UInt64Value> getUInt64Value(final Instant value) {
+        if (value != null) {
+            return Optional.of(UInt64Value.newBuilder().setValue(value.toEpochMilli()).build());
         }
         return Optional.empty();
     }
@@ -138,7 +147,7 @@ public class FlowDocumentBuilder {
     }
 
 
-    private static Direction fromDirection(org.opennms.netmgt.flows.api.Flow.Direction direction) {
+    private static Direction fromDirection(Flow.Direction direction) {
         switch (direction) {
             case EGRESS:
                 return Direction.EGRESS;
@@ -165,7 +174,7 @@ public class FlowDocumentBuilder {
     }
 
 
-    private static SamplingAlgorithm fromSamplingAlgorithm(org.opennms.netmgt.flows.api.Flow.SamplingAlgorithm samplingAlgorithm) {
+    private static SamplingAlgorithm fromSamplingAlgorithm(Flow.SamplingAlgorithm samplingAlgorithm) {
         if (samplingAlgorithm == null) {
             return UNASSIGNED;
         }
@@ -174,7 +183,7 @@ public class FlowDocumentBuilder {
                 return SYSTEMATIC_COUNT_BASED_SAMPLING;
             case SystematicTimeBasedSampling:
                 return SYSTEMATIC_TIME_BASED_SAMPLING;
-            case RandomNoutOfNSampling:
+            case RandomNOutOfNSampling:
                 return RANDOM_N_OUT_OF_N_SAMPLING;
             case UniformProbabilisticSampling:
                 return UNIFORM_PROBABILISTIC_SAMPLING;
@@ -190,7 +199,7 @@ public class FlowDocumentBuilder {
         return UNRECOGNIZED;
     }
 
-    private static NetflowVersion fromNetflowVersion(org.opennms.netmgt.flows.api.Flow.NetflowVersion netflowVersion) {
+    private static NetflowVersion fromNetflowVersion(Flow.NetflowVersion netflowVersion) {
         if (netflowVersion == null) {
             return null;
         }
@@ -207,7 +216,7 @@ public class FlowDocumentBuilder {
         return NetflowVersion.UNRECOGNIZED;
     }
 
-    private static Optional<NodeInfo> buildNodeInfo(org.opennms.netmgt.flows.processing.enrichment.NodeInfo nodeInfo) {
+    private static Optional<NodeInfo> buildNodeInfo(Flow.NodeInfo nodeInfo) {
         if (nodeInfo != null) {
             NodeInfo.Builder builder = NodeInfo.newBuilder();
             builder.setNodeId(nodeInfo.getNodeId());
