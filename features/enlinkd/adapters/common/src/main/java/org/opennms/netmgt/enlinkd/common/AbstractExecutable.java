@@ -51,6 +51,10 @@ public abstract class AbstractExecutable implements PriorityReadyRunnable {
     public AbstractExecutable() {
     }
 
+    public AbstractExecutable(int priority) {
+        m_priority=priority;
+    }
+
     public abstract String getName();
     public abstract void runExecutable();
     

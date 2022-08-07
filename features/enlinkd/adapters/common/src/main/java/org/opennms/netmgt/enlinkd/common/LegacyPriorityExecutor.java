@@ -59,11 +59,16 @@ public class LegacyPriorityExecutor implements PausableFiber {
                 Comparator.comparing(PriorityReadyRunnable::getPriority));
     }
 
+    public int getPriorityQueueSize() {
+        synchronized (priorityQueue) {
+            return priorityQueue.size();
+        }
+    }
+
     public void addPriorityReadyRunnable(PriorityReadyRunnable job) {
         synchronized (priorityQueue) {
-            LOG.debug("addPriorityReadyRunnable: Adding {} with priotity {}", job, job.getPriority());
             priorityQueue.add(job);
-            LOG.info("addPriorityReadyRunnable: total excutable in queue {}", priorityQueue.size());
+            LOG.info("addPriorityReadyRunnable: Added {}, total in queue: {}", job.getInfo(), priorityQueue.size());
         }
     }
 
@@ -94,7 +99,7 @@ public class LegacyPriorityExecutor implements PausableFiber {
             LOG.info("run: Priority Executor {} running", m_parent);
 
             while (true) {
-                if (m_status != RUNNING && m_status != PAUSED && m_status != PAUSE_PENDING && m_status != RESUME_PENDING) {
+                if (m_status == STOP_PENDING) {
                     LOG.debug("run: status = {}, time to exit", m_status);
                     break;
                 }
@@ -104,7 +109,9 @@ public class LegacyPriorityExecutor implements PausableFiber {
                     }
                     m_status = PAUSED;
                     try {
-                        wait();
+                        synchronized (this) {
+                            wait();
+                        }
                     } catch (InterruptedException ex) {
                         // exit
                         break;
@@ -146,13 +153,13 @@ public class LegacyPriorityExecutor implements PausableFiber {
             return;
         }
         m_status=STOP_PENDING;
-        m_worker.shutdown();
         priorityJobPoolExecutor.shutdown();
+        m_worker.shutdown();
     }
 
     @Override
-    public int getStatus() {
-        if (m_worker.isTerminated()) {
+    public synchronized int getStatus() {
+        if (m_worker.isShutdown()) {
             m_status=STOPPED;
         }
         return m_status;

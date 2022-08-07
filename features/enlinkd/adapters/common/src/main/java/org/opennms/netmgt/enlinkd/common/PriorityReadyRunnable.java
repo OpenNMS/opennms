@@ -33,4 +33,5 @@ import org.opennms.netmgt.scheduler.ReadyRunnable;
 public interface PriorityReadyRunnable extends ReadyRunnable {
     void setPriority(Integer priority);
     Integer getPriority();
+    String getInfo();
 }

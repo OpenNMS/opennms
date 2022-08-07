@@ -35,8 +35,11 @@ import static org.junit.Assert.assertTrue;
 import java.util.Objects;
 import java.util.Properties;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.fiber.Fiber;
+import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.enlinkd.common.AbstractExecutable;
 import org.opennms.netmgt.enlinkd.common.LegacyPriorityExecutor;
@@ -57,6 +60,11 @@ public class CollectorGroupTest {
         private final String m_name;
         public ExecutableTest(String name) {
             super();
+            m_name=name;
+        }
+
+        public ExecutableTest(String name, int priority) {
+            super(priority);
             m_name=name;
         }
 
@@ -129,28 +137,62 @@ public class CollectorGroupTest {
     }
 
     @Test
+    public void testPauseAndResume() throws InterruptedException {
+        LegacyPriorityExecutor executor = new LegacyPriorityExecutor("CollectorGroupTest", 1, 5);
+        executor.addPriorityReadyRunnable(new ExecutableTest("A",10) );
+        executor.addPriorityReadyRunnable(new ExecutableTest("B",10) );
+        executor.addPriorityReadyRunnable(new ExecutableTest("C",20) );
+        executor.addPriorityReadyRunnable(new ExecutableTest("D",20) );
+        executor.addPriorityReadyRunnable(new ExecutableTest("E",20) );
+        executor.addPriorityReadyRunnable(new ExecutableTest("F",30) );
+        executor.addPriorityReadyRunnable(new ExecutableTest("G",30) );
+        executor.addPriorityReadyRunnable(new ExecutableTest("H",30) );
+        executor.addPriorityReadyRunnable(new ExecutableTest("I",40) );
+        executor.addPriorityReadyRunnable(new ExecutableTest("L",40) );
+
+        executor.start();
+        Thread.sleep(5);
+        executor.pause();
+        assertEquals(PausableFiber.PAUSE_PENDING, executor.getStatus());
+        Thread.sleep(1000);
+        assertEquals(PausableFiber.PAUSED, executor.getStatus());
+        executor.resume();
+        assertEquals(PausableFiber.RESUME_PENDING, executor.getStatus());
+        Thread.sleep(1000);
+        assertEquals(PausableFiber.RUNNING, executor.getStatus());
+
+    }
+
+    @Test
     public void testSchedule() throws InterruptedException {
-        LegacyScheduler scheduler = new LegacyScheduler("CollectorGroupTest", 1);
-        LegacyPriorityExecutor executor= new LegacyPriorityExecutor("CollectorGroupTest",2,100);
-        SchedulableNodeCollectorGroup collectorGroupA = new SchedulableNodeCollectorGroup(1500,1000,executor,0,"collectorGroupA");
-        ExecutableTest discoveryTestAA = new ExecutableTest("testAA");
-        collectorGroupA.add(discoveryTestAA);
-        ExecutableTest discoveryTestAB = new ExecutableTest("testAB");
-        collectorGroupA.add(discoveryTestAB);
+        LegacyScheduler scheduler = new LegacyScheduler("CollectorGroupTest", 2);
+        LegacyPriorityExecutor executor= new LegacyPriorityExecutor("CollectorGroupTest",5,100);
+        SchedulableNodeCollectorGroup collectorGroupA = new SchedulableNodeCollectorGroup(1500,1000,executor,10,"collectorGroupA");
+        collectorGroupA.add(new ExecutableTest("testA1"));
+        collectorGroupA.add(new ExecutableTest("testA2"));
+        collectorGroupA.add(new ExecutableTest("testA3"));
+        collectorGroupA.add(new ExecutableTest("testA4"));
+        collectorGroupA.add(new ExecutableTest("testA5"));
         collectorGroupA.setScheduler(scheduler);
         collectorGroupA.schedule();
 
-        SchedulableNodeCollectorGroup collectorGroupB = new SchedulableNodeCollectorGroup(1500,1000,executor,0,"collectorGroupB");
-        ExecutableTest discoveryTestB = new ExecutableTest("testB");
-        collectorGroupB.add(discoveryTestB);
+        SchedulableNodeCollectorGroup collectorGroupB = new SchedulableNodeCollectorGroup(1500,1000,executor,5,"collectorGroupB");
+        collectorGroupB.add(new ExecutableTest("testB1"));
+        collectorGroupB.add(new ExecutableTest("testB2"));
+        collectorGroupB.add(new ExecutableTest("testB3"));
+        collectorGroupB.add(new ExecutableTest("testB4"));
+        collectorGroupB.add(new ExecutableTest("testB5"));
+        collectorGroupB.add(new ExecutableTest("testB6"));
+        collectorGroupB.add(new ExecutableTest("testB7"));
         collectorGroupB.setScheduler(scheduler);
         collectorGroupB.schedule();
 
-        executor.start();
         scheduler.start();
+        executor.start();
         Thread.sleep(4000);
         scheduler.stop();
         executor.stop();
+        assertEquals(Fiber.STOPPED,executor.getStatus());
     }
 
 
