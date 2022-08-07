@@ -45,7 +45,7 @@ import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
  * creating and collection occurs in the main run method of the instance. This
  * allows the collection to occur in a thread if necessary.
  */
-public abstract class NodeCollector extends Executable {
+public abstract class NodeCollector extends AbstractExecutable {
     /**
      * The node ID of the system used to collect the SNMP information
      */

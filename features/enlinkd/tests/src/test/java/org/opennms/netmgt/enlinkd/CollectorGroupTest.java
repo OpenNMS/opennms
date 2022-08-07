@@ -30,6 +30,7 @@ package org.opennms.netmgt.enlinkd;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Objects;
 import java.util.Properties;
@@ -37,16 +38,12 @@ import java.util.Properties;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
-import org.opennms.netmgt.enlinkd.common.SchedulableGroupExecutor;
+import org.opennms.netmgt.enlinkd.common.AbstractExecutable;
+import org.opennms.netmgt.enlinkd.common.LegacyPriorityExecutor;
 import org.opennms.netmgt.enlinkd.common.SchedulableNodeCollectorGroup;
-import org.opennms.netmgt.enlinkd.common.Executable;
 import org.opennms.netmgt.scheduler.LegacyScheduler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class CollectorGroupTest {
-
-    private final static Logger LOG = LoggerFactory.getLogger(CollectorGroupTest.class);
 
     @Before
     public void setUp() throws Exception {
@@ -55,10 +52,10 @@ public class CollectorGroupTest {
         MockLogAppender.setupLogging(p);
     }
 
-    public static class DiscoveryTest extends Executable {
+    public static class ExecutableTest extends AbstractExecutable {
 
         private final String m_name;
-        public DiscoveryTest(String name) {
+        public ExecutableTest(String name) {
             super();
             m_name=name;
         }
@@ -79,7 +76,7 @@ public class CollectorGroupTest {
             if (o == null || getClass() != o.getClass()) return false;
             if (!super.equals(o)) return false;
 
-            DiscoveryTest that = (DiscoveryTest) o;
+            ExecutableTest that = (ExecutableTest) o;
 
             return Objects.equals(m_name, that.m_name);
         }
@@ -99,50 +96,61 @@ public class CollectorGroupTest {
 
     @Test
     public void testAddAndRemove() {
-        SchedulableGroupExecutor executor= new SchedulableGroupExecutor(5,100);
-        SchedulableNodeCollectorGroup collectorGroup = new SchedulableNodeCollectorGroup(1000,1000,executor,0,"collectorGroupA");
+        LegacyPriorityExecutor executor= new LegacyPriorityExecutor("CollectorGroupTest",5,100);
+        SchedulableNodeCollectorGroup collectorGroup = new SchedulableNodeCollectorGroup(1000,1000,executor,7,"collectorGroupA");
         assertEquals(0,collectorGroup.getExecutables().size());
-        assertEquals(0,collectorGroup.getPriority());
-        DiscoveryTest discoveryTestA = new DiscoveryTest("testA");
+        assertEquals(7,collectorGroup.getPriority().intValue());
+        ExecutableTest discoveryTestA = new ExecutableTest("testA");
+        assertNull(discoveryTestA.getPriority());
         collectorGroup.add(discoveryTestA);
+        assertEquals(7, discoveryTestA.getPriority().intValue());
         assertEquals(1,collectorGroup.getExecutables().size());
-        assertEquals(collectorGroup,discoveryTestA.getCollectorGroup());
-        assertEquals(0,discoveryTestA.getPriority());
-        DiscoveryTest discoveryTestB = new DiscoveryTest("testB");
+        ExecutableTest discoveryTestB = new ExecutableTest("testB");
+        assertNull(discoveryTestB.getPriority());
         collectorGroup.add(discoveryTestB);
+        assertEquals(7,discoveryTestA.getPriority().intValue());
         assertEquals(2,collectorGroup.getExecutables().size());
-        assertEquals(collectorGroup,discoveryTestB.getCollectorGroup());
 
         collectorGroup.remove(discoveryTestA);
         assertEquals(1,collectorGroup.getExecutables().size());
-        assertNull(discoveryTestA.getCollectorGroup());
         assertEquals("testB", collectorGroup.getExecutables().iterator().next().getName());
         collectorGroup.remove(discoveryTestB);
-        assertNull(discoveryTestB.getCollectorGroup());
         assertEquals(0,collectorGroup.getExecutables().size());
+        assertNull(discoveryTestA.getPriority());
+        assertNull(discoveryTestB.getPriority());
+    }
+
+    @Test
+    public void testRun() {
+        ExecutableTest discoveryTestA = new ExecutableTest("testA");
+        discoveryTestA.setPriority(9);
+        assertTrue(discoveryTestA.isReady());
+        discoveryTestA.run();
     }
 
     @Test
     public void testSchedule() throws InterruptedException {
         LegacyScheduler scheduler = new LegacyScheduler("CollectorGroupTest", 1);
-        SchedulableGroupExecutor executor= new SchedulableGroupExecutor(2,100);
+        LegacyPriorityExecutor executor= new LegacyPriorityExecutor("CollectorGroupTest",2,100);
         SchedulableNodeCollectorGroup collectorGroupA = new SchedulableNodeCollectorGroup(1500,1000,executor,0,"collectorGroupA");
-        DiscoveryTest discoveryTestAA = new DiscoveryTest("testAA");
+        ExecutableTest discoveryTestAA = new ExecutableTest("testAA");
         collectorGroupA.add(discoveryTestAA);
-        DiscoveryTest discoveryTestAB = new DiscoveryTest("testAB");
+        ExecutableTest discoveryTestAB = new ExecutableTest("testAB");
         collectorGroupA.add(discoveryTestAB);
         collectorGroupA.setScheduler(scheduler);
         collectorGroupA.schedule();
 
         SchedulableNodeCollectorGroup collectorGroupB = new SchedulableNodeCollectorGroup(1500,1000,executor,0,"collectorGroupB");
-        DiscoveryTest discoveryTestB = new DiscoveryTest("testB");
+        ExecutableTest discoveryTestB = new ExecutableTest("testB");
         collectorGroupB.add(discoveryTestB);
         collectorGroupB.setScheduler(scheduler);
         collectorGroupB.schedule();
 
+        executor.start();
         scheduler.start();
         Thread.sleep(4000);
         scheduler.stop();
+        executor.stop();
     }
 
 

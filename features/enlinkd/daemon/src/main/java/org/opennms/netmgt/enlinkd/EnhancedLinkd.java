@@ -36,9 +36,9 @@ import org.opennms.netmgt.config.EnhancedLinkdConfig;
 import org.opennms.netmgt.config.datacollection.SnmpCollection;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.enlinkd.api.ReloadableTopologyDaemon;
-import org.opennms.netmgt.enlinkd.common.Executable;
+import org.opennms.netmgt.enlinkd.common.AbstractExecutable;
 import org.opennms.netmgt.enlinkd.common.NodeCollector;
-import org.opennms.netmgt.enlinkd.common.SchedulableGroupExecutor;
+import org.opennms.netmgt.enlinkd.common.LegacyPriorityExecutor;
 import org.opennms.netmgt.enlinkd.common.SchedulableNodeCollectorGroup;
 import org.opennms.netmgt.enlinkd.common.TopologyUpdater;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
@@ -81,7 +81,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
     /**
      * executor for Collection Groups
      */
-    private SchedulableGroupExecutor m_executor;
+    private LegacyPriorityExecutor m_executor;
 
     /**
      * The DB connection read and write handler
@@ -140,8 +140,6 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
     protected void onInit() {
         BeanUtils.assertAutowiring(this);
 
-        // Create Legacy Scheduler only one thread
-        //
         try {
             LOG.info("init: Creating EnhancedLinkd scheduler");
             m_scheduler = new LegacyScheduler("EnhancedLinkd", m_linkdConfig.getDiscoveryBridgeThreads()+2);
@@ -150,11 +148,9 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
             throw e;
         }
 
-        // Create thread Executor
-        //
         try {
             LOG.info("init: Creating EnhancedLinkd executor");
-            m_executor = new SchedulableGroupExecutor(m_linkdConfig.getThreads(),100);
+            m_executor = new LegacyPriorityExecutor("EnhancedLinkd", m_linkdConfig.getThreads(),100);
         } catch (RuntimeException e) {
             LOG.error("init: Failed to create EnhancedLinkd scheduler", e);
             throw e;
@@ -298,6 +294,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
 
         // start the scheduler
         //
+        m_executor.start();
         m_scheduler.start();
 
     }
@@ -467,7 +464,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
             scheduleNodeCollection(nodeid);
             return;
         } 
-        m_defaultSchedulableGroup.get(nodeid).forEach(Executable::wakeUp);
+        m_defaultSchedulableGroup.get(nodeid).forEach(AbstractExecutable::wakeUp);
     }
 
     public void addNode() {
@@ -507,7 +504,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
     void suspendNodeCollection(int nodeid) {
         LOG.info("suspendNodeCollection: suspend collection LinkableNode for node {}",
                         nodeid);   
-        m_defaultSchedulableGroup.get(nodeid).forEach(Executable::suspend);
+        m_defaultSchedulableGroup.get(nodeid).forEach(AbstractExecutable::suspend);
     }
 
     public NodeTopologyService getQueryManager() {

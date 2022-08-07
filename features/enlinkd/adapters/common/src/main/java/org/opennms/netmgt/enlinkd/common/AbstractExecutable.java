@@ -32,27 +32,23 @@ import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class Executable implements ReadyRunnable {
+public abstract class AbstractExecutable implements PriorityReadyRunnable {
 
-    private static final Logger LOG = LoggerFactory.getLogger(Executable.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractExecutable.class);
 
     private boolean m_suspend = false;
 
-    private SchedulableExecutableGroup m_collectorGroup;
+    private Integer m_priority = null;
 
-    public SchedulableExecutableGroup getCollectorGroup() {
-        return m_collectorGroup;
+    public Integer getPriority() {
+          return m_priority;
     }
 
-    public void setCollectorGroup(SchedulableExecutableGroup collectorGroup) {
-        m_collectorGroup = collectorGroup;
+    public void setPriority(Integer priority) {
+        m_priority=priority;
     }
 
-    public int getPriority() {
-          return m_collectorGroup.getPriority();
-    }
-
-    public Executable() {
+    public AbstractExecutable() {
     }
 
     public abstract String getName();
@@ -99,7 +95,7 @@ public abstract class Executable implements ReadyRunnable {
      * @return a {@link java.lang.String} object.
      */
     public String getInfo() {
-        return  getName() + ": Scheduled in Collector Group: " + m_collectorGroup.getInfo();
+        return  getName() + ": Priority: " + m_priority;
     }
 
 }

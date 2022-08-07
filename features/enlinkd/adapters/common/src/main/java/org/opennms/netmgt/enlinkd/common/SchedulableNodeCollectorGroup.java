@@ -43,7 +43,7 @@ public class SchedulableNodeCollectorGroup extends SchedulableExecutableGroup {
      * @param priority the priority for executables
      * @param name a unique name that identifies this group
      */
-    public SchedulableNodeCollectorGroup(long interval, long initial, SchedulableGroupExecutor executor, int priority, String name) {
+    public SchedulableNodeCollectorGroup(long interval, long initial, LegacyPriorityExecutor executor, int priority, String name) {
         super(interval,initial,executor,priority,name);
     }
 
@@ -57,7 +57,7 @@ public class SchedulableNodeCollectorGroup extends SchedulableExecutableGroup {
 
     public Set<NodeCollector> get(int nodeid) {
         Set<NodeCollector> nodeCollectors = new HashSet<>();
-        for (Executable executable: getExecutables()) {
+        for (AbstractExecutable executable: getExecutables()) {
             if (executable instanceof NodeCollector) {
                 NodeCollector nodeCollector = (NodeCollector) executable;
                 if (nodeCollector.getNodeId() == nodeid) {
@@ -69,7 +69,7 @@ public class SchedulableNodeCollectorGroup extends SchedulableExecutableGroup {
     }
 
     public boolean hasCollectionFor(int nodeid) {
-        for (Executable executable: getExecutables()) {
+        for (AbstractExecutable executable: getExecutables()) {
             if (executable instanceof NodeCollector) {
                 NodeCollector nodeCollector = (NodeCollector) executable;
                 if (nodeCollector.getNodeId() == nodeid) {

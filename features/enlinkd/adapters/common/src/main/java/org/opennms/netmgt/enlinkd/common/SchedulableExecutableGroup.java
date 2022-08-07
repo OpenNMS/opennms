@@ -38,18 +38,18 @@ import org.springframework.util.Assert;
 public class SchedulableExecutableGroup extends Schedulable {
     private static final Logger LOG = LoggerFactory.getLogger(SchedulableExecutableGroup.class);
 
-    private final Set<Executable> m_executables = new HashSet<>();
+    private final Set<AbstractExecutable> m_executables = new HashSet<>();
 
     /**
      *  The Executor Group
      *  this will execute discovery
      */
-    private final SchedulableGroupExecutor m_executor;
+    private final LegacyPriorityExecutor m_executor;
 
     /**
      * priority for executing runnables
      */
-    private final int m_priority;
+    private final Integer m_priority;
 
     /**
      * name under which are executed runnables
@@ -66,7 +66,7 @@ public class SchedulableExecutableGroup extends Schedulable {
      * @param priority the priority for executables
      * @param name a unique name that identifies this group
      */
-    public SchedulableExecutableGroup(long interval, long initial, SchedulableGroupExecutor executor, int priority, String name) {
+    public SchedulableExecutableGroup(long interval, long initial, LegacyPriorityExecutor executor, int priority, String name) {
         super(interval,initial);
         Assert.notNull(executor);
         Assert.notNull(name);
@@ -79,25 +79,27 @@ public class SchedulableExecutableGroup extends Schedulable {
         return m_name;
     }
 
-    public int getPriority() {
+    public Integer getPriority() {
         return m_priority;
     }
-    public Set<Executable> getExecutables() {
+    public Set<AbstractExecutable> getExecutables() {
         return m_executables;
     }
 
-    public void add(Executable discovery) {
+    public void add(AbstractExecutable discovery) {
         synchronized (m_executables) {
             if (m_executables.add(discovery)) {
-                discovery.setCollectorGroup(this);
+                discovery.setPriority(m_priority);
+                LOG.info("add: {}", discovery.getInfo());
             }
         }
     }
 
-    public void remove(Executable discovery) {
+    public void remove(AbstractExecutable discovery) {
         synchronized (m_executables) {
             if (m_executables.remove(discovery)) {
-                discovery.setCollectorGroup(null);
+                LOG.info("remove: {}", discovery.getInfo());
+                discovery.setPriority(null);
             }
         }
     }
@@ -110,8 +112,8 @@ public class SchedulableExecutableGroup extends Schedulable {
 
     @Override
     public void runSchedulable() {
-        LOG.info("runSchedulable: {}", m_name);
-        m_executables.forEach(m_executor::scheduleExecutable);
+        LOG.info("run: {}", m_name);
+        m_executables.forEach(m_executor::addPriorityReadyRunnable);
     }
 
 }
