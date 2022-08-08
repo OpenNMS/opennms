@@ -375,9 +375,11 @@ public class UsageStatisticsReporter implements StateChangeHandler {
      */
     private String getInstalledOIAPluginsByDependencyTree() {
         List<Feature> featuresDependentOnOIA = new ArrayList<>();
+        List<String> featuresToIgnore = new ArrayList<>();
+        featuresToIgnore.add(API_LAYER_FEATURE_NAME);
         try {
             for (Feature feature : m_featuresService.listInstalledFeatures()) {
-                featuresDependentOnOIA = recurse(feature, featuresDependentOnOIA, List.of(API_LAYER_FEATURE_NAME), 0);
+                featuresDependentOnOIA = recurse(feature, featuresDependentOnOIA, featuresToIgnore, 0);
             }
         }
         catch (Exception e) {
