@@ -37,7 +37,8 @@ include::../time-sync.adoc[]
 [[setup-postgresql]]
 == Set up PostgreSQL
 
-TIP: PostgreSQL 14 uses https://www.postgresql.org/docs/14/auth-password.html[password authentication] method `scram-sha-256` by default. If you use older versions of PostgreSQL you should change the method in *postgresql.conf* and in *pg_hba.conf* before continuing with <<install-core-instance,Install the core instance>>.
+TIP: PostgreSQL 14 uses https://www.postgresql.org/docs/14/auth-password.html[password authentication] method `scram-sha-256` by default.
+If you use older versions of PostgreSQL, you should change the method in postgresql.conf and in pg_hba.conf before continuing with <<install-core-instance,Install the core instance>>.
 
 [{tabs}]
 ====
