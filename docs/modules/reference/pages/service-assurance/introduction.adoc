@@ -11,7 +11,7 @@ For information on how to extend the functionality of these monitors, see the xr
 
 Service names are subject to certain definitions:
 
-* Maximal length of 256 characters
+* Maximum length of 256 characters
 * Alphapbetic characters +[Aa-Zz]+
 * Numerals +[0-9]+
 * Special characters +[_-:. ]+
