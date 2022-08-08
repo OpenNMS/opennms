@@ -5,6 +5,8 @@
 The Passive Status Keeper daemon provides a mechanism to generate service outages based on events.
 This can be helpful for checking the service state of devices that cannot be directly polled.
 
+This daemon does not have any configuration options, and is enabled by default.
+
 .PassiveStatusd log file overview
 [options="header"]
 [cols="2,3"]
