@@ -200,7 +200,7 @@ workflows:
                 - /^foundation.*/
                 - /^release-.*/
                 - /.*smoke.*/
-#      - smoke-test-minimal:
+#      - smoke-test-minimal: 
 #          requires:
 #            - tarball-assembly-only
 #            - horizon-deb-build
