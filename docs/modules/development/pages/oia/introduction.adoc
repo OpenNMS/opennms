@@ -1,5 +1,5 @@
 
-= Plugin Development with OpenNMS Plugin API
+= Plugin Development with the OpenNMS Plugin API
 
 The OpenNMS Plugin API (formerly OIA) implements a software development kit that provides a stable base to build plugins to extend the configuration of {page-component-title}, consume its outputs, and add new functionality.
 
@@ -44,7 +44,7 @@ API users can take advantage of the following features and interfaces:
 
 See the interfaces defined in the `api` module for a complete list.
 
-== Build a new project with OpenNMS Plugin API
+== Build a new project with the OpenNMS Plugin API
 
 The Plugin API provides a Maven archetype to help bootstrap plugin creation.
 
@@ -76,4 +76,4 @@ pom.xml  <5>
 
 === Build and deploy plugin
 
-The README file should contain all steps required for building and deploying the plugin.
+The README file should contain all steps required to build and deploy the plugin.
