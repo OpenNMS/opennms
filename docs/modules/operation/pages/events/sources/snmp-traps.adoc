@@ -3,7 +3,7 @@
 = SNMP Traps
 
 {page-component-title} can receive and process SNMP traps/informs from SNMP-capable devices out of the box.
-It receives SNMP traps via the xref:reference:daemons/daemon-config-files/trapd.adoc[Trapd service daemon], which is enabled by default.
+It receives SNMP traps via the xref:reference:daemons/daemon-config-files/trapd.adoc[trapd service daemon], which is enabled by default.
 
 {page-component-title} transforms these traps into events based on event definitions.
 {page-component-title} includes trap definitions from many major manufacturers by default, and you can create your own event definitions.
@@ -16,26 +16,27 @@ By default, {page-component-title} listens on a non-standard port for trap messa
 . Ensure that SNMP-capable devices on your network are configured to send traps to {page-component-title}.
 
 [[trap-config]]
-== SNMP trap configuration: how to
+== SNMP trap definition
 
-Configure SNMP traps to customize the types of information you receive and the conditions under which {page-component-title} converts the trap into an event.
+You can configure SNMP traps to customize the types of information you receive and the conditions under which {page-component-title} converts traps into an event.
 For example, you may want to see an event only when a device is down, or when a combination of criteria are met (for example, OID X with "major" severity level and status "indeterminate").
 These traps are transformed into events only when the conditions you define are met.
 
 There are several ways to configure {page-component-title} to customize the events you receive and see:
 
 * Determine what problem you are trying to solve (for example, "I want to know X about my Cisco router").
-* Manually send the corresponding event to the {page-component-title} server and see how the event is handled (see xref:operation:events/sources/send-event.adoc[Manually send events]).
-* Make changes to the xref:operation:admin/webui/mib.adoc[SNMP MIB compiler]).
+* Manually send the corresponding event to the {page-component-title} server and see how the event is handled (see xref:operation:events/event-debugging.adoc#send-event[Manually send events]).
+* Import event definitions with the xref:operation:admin/webui/mib.adoc[SNMP MIB compiler].
 * Configure the event to meet your requirements, if required.
 ** <<trap-def-create, Create trap definitions>> to specify criteria for when {page-component-title} creates an event.
-** <<varbind-filter,Filter on variable bindings>> for further granularity on the conditions for creating an event.
+** <<varbind-filter, Filter on variable bindings>> for further granularity on the conditions for creating an event.
 
 [[trap-def-create]]
 === Create event definition for an SNMP trap
+
 {page-component-title} includes event definitions for traps from many vendors' equipment.
 Use the `mask` tag to match SNMP traps in `eventconf.xml`.
-See xref:operation:events/anatomy-events.adoc#ga-events-anatomy-of-an-event[Anatomy of an event] for details on event structure.
+See xref:operation:events/event-definition.adoc#ga-events-anatomy-of-an-event[Anatomy of an event] for details on event structure.
 
 The following example shows a Cisco Systems event for their C3800 device.
 Parts of it look similar to internally generated events, with the main difference being the `mask` block.
@@ -84,12 +85,7 @@ This block consists of <maskelement> tags, and the event will match only if all 
 
 This event will match an SNMP trap where the enterprise OID (id) is equal to `.1.3.6.1.4.1.9.9.70.2`, the generic trap value is equal to `6` (enterprise-specific), and the vendor trap value is equal to `17`.
 
-//I cannot find a MIB for this, so may need to delete this text. This is an old device, but updating this example would probably be difficult.
-The MIB for the C3800 device shows that the generic value 6 and the specific value of 17 for ciscoC3800SysAggregateStatusChange are X and Y respectively.
-So the event ...
-//
-
-Possible <mename> values include the following:
+Possible `<mename>` values include the following:
 
 * uei
 * source
@@ -108,8 +104,7 @@ Refer to the associated MIB for details.)
 ** egpNeighborloss (Agent cannot communicate with its EGP (Exterior Gateway Protocol) peer.)
 * community (community string in an SNMP trap)
 
-Note that the following elements are deprecated: `forward` and `filters`.
-
+Note that the following elements `forward` and `filters` are deprecated.
 
 You can use the `%` symbol as a wildcard in the mask values.
 For example, to match all Cisco events, you could use the following:
@@ -124,13 +119,12 @@ For example, to match all Cisco events, you could use the following:
 </mask>
 ----
 
-NOTE: The order in which events are listed in the `eventconf.xml` file is extremely important.
+The order in which events are listed in the `eventconf.xml` file is extremely important.
 The search will stop with the first event definition that matches the given event (see xref:operation:events/event-configuration.adoc[eventconf.xml]).
-
 As such, if the code with the wildcard is listed before the more specific `ciscoC3800SysAggregateStatusChange` event, the latter event will never be generated.
 
 Also note that the wildcard is simply a substring match.
-If a Cisco device generates an event with the enterprise OID of `.1.3.6.1.4.1.9` it would not match this event, as there is no trailing ".".
+If a device generates an event with the enterprise OID of `.1.3.6.1.4.1.9` it would not match this event, as there is no trailing ".".
 If the trailing "." is left off, you must take care so that a trap with an OID of `.1.3.6.1.4.1.99` is listed before the `.1.3.6.1.4.1.9%` event or else it will match the more generic event.
 
 == Use the `parm` replacement token with trap events
@@ -141,9 +135,9 @@ You can use the `parm` replacement token to access them.
 Each parameter consists of a name and a value.
 
 For example, the `ciscoC3800SysAggregateStatusChange` event description lists out each of the parameters.
-Thus the second paramater, the `sysName`, is printed using `%parm[#2]%`.
+Thus the second parameter, the `sysName`, is printed using `%parm[#2]%`.
 
-See xref:operation:/events/event-configuration.adoc#parameter-tokens[Parameter tokens] for more information.
+See xref:operation:/events/event-tokens.adoc#parameter-tokens[Parameter tokens] for more information.
 
 [[varbind-filter]]
 == Filter on varbinds
@@ -356,7 +350,6 @@ To configure {page-component-title} to honor `snmpTrapAddress` when present, set
                      new-suspect-on-trap="false"<2>
                      use-address-from-varbind="true" /><3>
 ----
-<1> Set the SNMP trap daemon listening port to 1162/udp.
+<1> Set the SNMP trap daemon listening port to `1162/udp`.
 <2> Don't create new nodes when receiving an SNMP trap with an unknown source IP address.
 <3> Try to use the identifier source IP address from the `snmpTrapAddress` varbind instead of the UDP source IP address.
-

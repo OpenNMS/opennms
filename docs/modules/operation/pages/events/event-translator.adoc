@@ -4,16 +4,16 @@ The Event Translator can transform and enhance the data from {page-component-tit
 This feature enables better integration with external systems, based on data from sources internal and external to {page-component-title}.
 
 When an event is published on the event bus for which the event translator has configuration, the translator clones the event and changes the new event's attributes (fields and parameters) as defined in the translator configuration.
-These transformations can come from the result of SQL queries, regular expression matches, and string literals that are then assigned to attributes of the new event.
+These transformations can come as a result of SQL queries, regular expression matches, and string literals that are then assigned to attributes of the new event.
 
 The `$\{OPENNMS_HOME}/etc/translator-configuration.xml` file contains elements and attributes that create and/or change the fields or parameters of one event and publish a new event with these changes.
 
 == Examples
 
-=== Example 1: associate traps with a node other than the SNMP manager
+=== Example 1: Associate traps with a node other than the SNMP manager
 
 The following example associates an event with a different node.
-The typical case for this would be an SNMP manager that proxies informational messages from non-SNMP entities to OpenNMS via an SNMP trap.
+The typical case for this would be an SNMP manager that proxies informational messages from non-SNMP entities to {page-component-title} via an SNMP trap.
 This lets you associate the traps with a node other than the SNMP manager (typically a passive node), making correlation much easier.
 
 .`$\{OPENNMS_HOME}/etc/translator-configuration.xml`
@@ -65,7 +65,7 @@ WHERE node.nodeLabel='DEMO-10'
 The value returned is then substituted for the existing nodeid into a new event cloned from the original event.
 
 [[ga-event-translator-psk]]
-=== Example 2: create a PassiveStatusKeeper update event
+=== Example 2: Create a PassiveStatusKeeper update event
 
 The xref:reference:service-assurance/monitors/PassiveStatusMonitor.adoc#ref-passivestatuskeeper[PassiveStatusKeeper] feature provides a way to track service outages for synthetic nodes that are not directly pollable.
 This example uses a trap from an Adtran TA 4303 to create a new passive status event.
@@ -124,10 +124,9 @@ You can use this new parameter in the event and notifications as `%parm[portdesc
 If more than one passive service is assigned to the same interface, this field is used to trigger outages on a specific service.
 <7> Must be either "Up" or "Down" and is case sensitive.
 
+=== Example 3: Include multiple category names in an event
 
-=== Example 3: include multiple category names in an event
-
-If a SQL statement you want to read data with returns multiple rows, the event translator will give you only one result row for a new parameter.
+If an SQL statement you want to read data with returns multiple rows, the event translator will give you only one result row for a new parameter.
 A workaround is to create an aggregate function in PostgreSQL that accumulates the output to one single row.
 A use case would be to include multiple categories' names into a nodeCategoryMembershipChanged event.
 
