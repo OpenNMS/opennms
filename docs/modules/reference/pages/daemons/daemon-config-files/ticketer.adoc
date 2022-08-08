@@ -7,12 +7,10 @@ Creates xref:operation:ticketing/introduction.adoc[tickets] in external systems 
 .Ticketer log file overview
 [options="header"]
 [cols="2,3"]
-
 |===
 | File
 | Description
 
 | trouble-ticketer.log
 | Logs relating to Ticketer server events.
-
 |===
