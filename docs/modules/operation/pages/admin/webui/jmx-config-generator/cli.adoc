@@ -45,7 +45,7 @@ This file can be invoked by:
 [source, console]
 [subs="verbatim,attributes"]
 ----
-java -jar target/jmxconfiggenerator-{page-component-version}-onejar.jar
+java -jar target/jmxconfiggenerator-{full-display-version}-onejar.jar
 ----
 
 == Use
