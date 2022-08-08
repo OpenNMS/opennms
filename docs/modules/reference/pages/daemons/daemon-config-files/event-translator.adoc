@@ -20,12 +20,6 @@ For more information, see xref:operation:events/event-translator.adoc[Event Tran
 For example, associate an event with a different node.
 | no
 | yes
-
-| Translator.default.events.xml
-| Default events to pass through the translator for enrichment.
-| no
-| yes
-
 |===
 
 .Event translator log file overview
