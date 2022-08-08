@@ -51,7 +51,7 @@ Group:         Applications/System
 BuildArch:     noarch
 
 Source:        %{_name}-source-%{version}-%{releasenumber}.tar.gz
-URL:           http://www.opennms.org/wiki/Sentinel
+URL:           https://docs.opennms.com/horizon/latest/deployment/sentinel/introduction.html
 BuildRoot:     %{_tmppath}/%{name}-%{version}-root
 
 BuildRequires:	%{_java}
@@ -76,7 +76,7 @@ OpenNMS Sentinel is a container for running a subset of OpenNMS
 services in a standalone container, suitable for horizontally
 scaling some subsystems, like flow telemetry processing.
 
-http://www.opennms.org/wiki/Sentinel
+https://docs.opennms.com/horizon/latest/deployment/sentinel/introduction.html
 
 %{extrainfo}
 %{extrainfo2}
