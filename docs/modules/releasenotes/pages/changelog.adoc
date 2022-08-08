@@ -1,12 +1,11 @@
-[[release-30-changelog]]
 
+[[release-30-changelog]]
 = Changelog
 
 [[releasenotes-changelog-30.0.1]]
-
 == Release 30.0.1
 
-Release 30.0.1 contains a number of bug fixes as well as a number of new features including support for encrypting credentials.
+Release 30.0.1 contains a number of bug fixes as well as new features, including support for encrypting credentials.
 
 The codename for Horizon 30.0.1 is https://wikipedia.org/wiki/$$Chinchilla$$[_Chinchilla_].
 
@@ -26,7 +25,7 @@ The codename for Horizon 30.0.1 is https://wikipedia.org/wiki/$$Chinchilla$$[_Ch
 * External Requisition UI: foreignSource not set for VMware requisition (Issue http://issues.opennms.org/browse/NMS-14478[NMS-14478])
 * Pollerd take a long time to start on systems with large inventories (Issue http://issues.opennms.org/browse/NMS-14524[NMS-14524])
 
-=== New Feature
+=== New feature
 
 * Encrypt SNMP Credentials (Issue http://issues.opennms.org/browse/NMS-14215[NMS-14215])
 * Encrypt Postgres credentials (Issue http://issues.opennms.org/browse/NMS-14216[NMS-14216])
@@ -71,16 +70,13 @@ The codename for Horizon 30.0.1 is https://wikipedia.org/wiki/$$Chinchilla$$[_Ch
 
 * Update all Vue UI packages to latest (Issue http://issues.opennms.org/browse/NMS-14460[NMS-14460])
 
-
-
 [[releasenotes-changelog-30.0.0]]
-
 == Release 30.0.0
 
 Release 30.0.0 is the first in the Horizon 30 series, introducing a number of new features,
 most notably a preview of a new web UI, and the ability to back up infrastructure device
 configs.
- 
+
 The codename for Horizon 30.0.0 is https://wikipedia.org/wiki/$$Nutria$$[_Nutria_].
 
 === Epic
@@ -95,8 +91,8 @@ The codename for Horizon 30.0.0 is https://wikipedia.org/wiki/$$Nutria$$[_Nutria
 * Minion /etc/sysconfig/minion file refers to Sentinel (Issue http://issues.opennms.org/browse/NMS-13659[NMS-13659])
 * Install script fails when using Azure PostgreSQL Services (Issue http://issues.opennms.org/browse/NMS-13715[NMS-13715])
 * Synchronization violated for InterfaceToNodeCacheDaoImpl (Issue http://issues.opennms.org/browse/NMS-13782[NMS-13782])
-* OIA event configuration extensions do not work reliably (Issue http://issues.opennms.org/browse/NMS-13787[NMS-13787])
-* Revisit smoke test for OIA plugins (Issue http://issues.opennms.org/browse/NMS-13872[NMS-13872])
+* OpenNMS Plugin API event configuration extensions do not work reliably (Issue http://issues.opennms.org/browse/NMS-13787[NMS-13787])
+* Revisit smoke test for OpenNMS Plugin API plugins (Issue http://issues.opennms.org/browse/NMS-13872[NMS-13872])
 * TIMETETRA LLDP supported device does not persist all remote links  (Issue http://issues.opennms.org/browse/NMS-13923[NMS-13923])
 * End to End Poller test with Sample device (Issue http://issues.opennms.org/browse/NMS-13925[NMS-13925])
 * [Web] - WebServer Fingerprinting (Issue http://issues.opennms.org/browse/NMS-13987[NMS-13987])
@@ -161,9 +157,9 @@ The codename for Horizon 30.0.0 is https://wikipedia.org/wiki/$$Nutria$$[_Nutria
 * Flow Thresholds: Graph Templates (Issue http://issues.opennms.org/browse/NMS-13710[NMS-13710])
 * Flow Thresholds: Housekeeping (Issue http://issues.opennms.org/browse/NMS-13711[NMS-13711])
 * Flow Thresholds: Allow to enable/disable thresholding/data collection (Issue http://issues.opennms.org/browse/NMS-13712[NMS-13712])
-* Add OIA plugin support for Minion (Issue http://issues.opennms.org/browse/NMS-13739[NMS-13739])
-* Allow collectors exposed via OIA to be scheduled via collectd (Issue http://issues.opennms.org/browse/NMS-13743[NMS-13743])
-* Add OIA plugin support for Sentinel (Issue http://issues.opennms.org/browse/NMS-13751[NMS-13751])
+* Add OpenNMS Plugin API plugin support for Minion (Issue http://issues.opennms.org/browse/NMS-13739[NMS-13739])
+* Allow collectors exposed via OpenNMS Plugin API to be scheduled via collectd (Issue http://issues.opennms.org/browse/NMS-13743[NMS-13743])
+* Add OpenNMS Plugin API plugin support for Sentinel (Issue http://issues.opennms.org/browse/NMS-13751[NMS-13751])
 * Flow Threshold: Create session by Interface Id (Issue http://issues.opennms.org/browse/NMS-13771[NMS-13771])
 * Web-based file editor for $OPENNMS_HOME/etc/ (Issue http://issues.opennms.org/browse/NMS-13772[NMS-13772])
 * Flow Thresholds: Compute sequence numbers to support distributed flow thresholding (Issue http://issues.opennms.org/browse/NMS-13790[NMS-13790])
@@ -282,14 +278,14 @@ The codename for Horizon 30.0.0 is https://wikipedia.org/wiki/$$Nutria$$[_Nutria
 * Update existing documentation related to provisiond xml file (Issue http://issues.opennms.org/browse/NMS-14051[NMS-14051])
 * Update inline help text for new provisiond UI (Issue http://issues.opennms.org/browse/NMS-14062[NMS-14062])
 * Document HTTP and HTTPS handlers (Issue http://issues.opennms.org/browse/NMS-14066[NMS-14066])
-* Documentation for OIA changes (Issue http://issues.opennms.org/browse/NMS-14154[NMS-14154])
+* Documentation for OpenNMS Plugin API changes (Issue http://issues.opennms.org/browse/NMS-14154[NMS-14154])
 * Document multi constraint parameter feature addition (Issue http://issues.opennms.org/browse/NMS-14238[NMS-14238])
 * Implement "latest" tag with documentation (Issue http://issues.opennms.org/browse/NMS-14253[NMS-14253])
 * TEST: Provisioning config UI / thread pool sizes (Issue http://issues.opennms.org/browse/NMS-14263[NMS-14263])
 * Test provisioning config UI / external requisitions (Issue http://issues.opennms.org/browse/NMS-14264[NMS-14264])
 * Test web UI file editor (Issue http://issues.opennms.org/browse/NMS-14267[NMS-14267])
 * Test flow thresholding (Issue http://issues.opennms.org/browse/NMS-14268[NMS-14268])
-* Circle ci caching OIA issue (Issue http://issues.opennms.org/browse/NMS-14291[NMS-14291])
+* CircleCI caching OpenNMS Plugin API issue (Issue http://issues.opennms.org/browse/NMS-14291[NMS-14291])
 * Latest DCB UX Updates (Issue http://issues.opennms.org/browse/NMS-14304[NMS-14304])
 * Fix UI yarn.lock conflicts with latest updates (Issue http://issues.opennms.org/browse/NMS-14308[NMS-14308])
 * Fix Feather Dialog issue on 0.10.10 (Issue http://issues.opennms.org/browse/NMS-14316[NMS-14316])
