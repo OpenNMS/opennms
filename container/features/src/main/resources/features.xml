@@ -1164,6 +1164,7 @@
         <feature>quartz</feature>
         <feature>opennms-core-tracing</feature>
         <feature>opennms-distributed-core-api</feature>
+        <feature>opennms-integration-api</feature>
         <feature>opennms-telemetry-collection</feature>
         <feature>opennms-dnsresolver-api</feature>
         <feature>opennms-kafka</feature>
