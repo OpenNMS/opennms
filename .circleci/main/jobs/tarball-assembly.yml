@@ -42,7 +42,7 @@ jobs:
               -Prun-expensive-tasks \
               -Dopennms.home=/opt/opennms \
               --batch-mode \
-              $MAVEN_ARGS
+              $MAVEN_ARGS || exit 1
       - run:
           name: Build Minion OCI
           command: |

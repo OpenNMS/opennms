@@ -49,7 +49,7 @@ commands:
               -Prun-expensive-tasks \
               -Psmoke \
               --batch-mode \
-              $MAVEN_ARGS
+              $MAVEN_ARGS || exit 1
       - run:
           name: Check if we have generated apidocs
           command: |      
