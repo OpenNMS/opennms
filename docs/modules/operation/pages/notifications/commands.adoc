@@ -1,13 +1,13 @@
 = Notification Commands
 
-A Notification Command is a named, reusable execution profile for a Java class or external program command used to convey notices to targets.
-There are a number of default commands included, and you can create custom commands to send notifications to a platform of your choice.
+A notification command is a named, reusable execution profile for a Java class or external program command used to convey notices to targets.
+{page-component-title} includes several default notification commands, and you can create custom commands to send notifications to a platform of your choice.
 
-== Notification commands included by default
+== Default notification commands
 
 callHomePhone, callMobilePhone, and callWorkPhone::
 Ring one of the phone numbers configured in the user's contact information.
-All three are implemented using the in-process Asterisk notification strategy, and differ only in which contact field is used.
+All three commands are implemented using the in-process Asterisk notification strategy, and differ only in which contact field the command uses.
 
 ircCat::
 Conveys a notice to an instance of the IRCcat Internet Relay Chat bot.
@@ -15,12 +15,12 @@ Implemented by the in-process IRCcat notification strategy.
 
 javaEmail and javaPagerEmail::
 By far the most commonly used commands, these deliver a notice to a user's `email` or `pagerEmail` contact field value.
-By configuring a user's `pagerEmail` contact field value to target an email-to-SMS gateway, SMS notifications are trivially easy to configure.
-Both are implemented using the in-process JavaMail notification strategy.
+By configuring a user's `pagerEmail` contact field value to target an email-to-SMS gateway, you can easily configure SMS notifications.
+Both commands use the in-process JavaMail notification strategy for implementation.
 
 microblogDM, microblogReply, and microblogUpdate::
 Sends a notice to a user as a direct message, at a user via an at-reply, or to everybody as an update via a microblog service with a Twitter v1-compatible API.
-Each command is implemented with a separate, in-process notification strategy.
+A separate, in-process notification strategy implements each command.
 
 numericPage and textPage::
 Sends a notice to a user's numeric or alphanumeric pager.
@@ -32,15 +32,15 @@ Implemented with the in-process XMPP notification strategy.
 
 == Custom notification commands
 
-Notification commands are customizable and extensible by editing the `$\{OPENNMS_HOME}/etc/notificationCommands.xml` file.
+Edit the `$\{OPENNMS_HOME}/etc/notificationCommands.xml` file to customize and extend notification commands.
 
-IMPORTANT: Use external binary notification commands sparingly as they spawn process additional threads on your core {page-component-title} system.
+IMPORTANT: Use external binary notification commands sparingly as they spawn additional process threads on your core {page-component-title} system.
 
 === Custom command configuration
 
-The `streamed` attribute dictates whether the the substitution text and/or switch text will be placed in the command line, or simply be placed in the input stream when the command start running.
+The `streamed` attribute dictates whether the the substitution text and/or switch text will be placed in the command line or in the input stream when the command starts to run.
 
-.Placing boilerplate arguments
+.Place boilerplate arguments
 [source, xml]
 ----
    <argument streamed="false">
@@ -48,7 +48,7 @@ The `streamed` attribute dictates whether the the substitution text and/or switc
    </argument>
 ----
 
-.Placing dynamic values
+.Place dynamic values
 [source, xml]
 ----
    <argument streamed="false">
@@ -73,7 +73,7 @@ and not:
 
 === Valid switches from the NotificationManager class
 
-The NotificationManager class defines some special switches, providing data for the class / command that executes.
+The NotificationManager class defines some special switches, providing data for the class or command that executes.
 
 [options="header, autowidth"]
 [cols="3,1,2"]
@@ -82,77 +82,84 @@ The NotificationManager class defines some special switches, providing data for 
 | Switch Name
 | Source
 
-| PARAM_TYPE
-| -t
-| binary y/n
-
 | PARAM_DESTINATION
 | -d
-| from notification definition
-
-| PARAM_TEXT_MSG
-| -tm
-| from notification definition
-
-| PARAM_NUM_MSG
-| -nm
-| from notification definition
-
-| PARAM_RESPONSE
-| -r
-|
-
-| PARAM_NODE
-| -nodeid
-| from original event
-
-| PARAM_INTERFACE
-| -interface
-| from original event
-
-| PARAM_SERVICE
-| -service
-| from original event
-
-| PARAM_SUBJECT
-| -subject
-| from notification definition
+| From notification definition
 
 | PARAM_EMAIL
 | -email
-| from user profile
-
-| PARAM_PAGER_EMAIL
-| -pemail
-| from user profile
-
-| PARAM_XMPP_ADDRESS
-| -xmpp
-| from user profile
-
-| PARAM_TEXT_PAGER_PIN
-| -tp
-| from user profile
-
-| PARAM_NUM_PAGER_PIN
-| -np
-| from user profile
-
-| PARAM_WORK_PHONE
-| -wphone
-| from user profile
+| From user profile
 
 | PARAM_HOME_PHONE
 | -hphone
-| from user profile
+| From user profile
+
+| PARAM_INTERFACE
+| -interface
+| From original event
+
+| PARAM_MICROBLOG_USERNAME
+| -ublog
 
 | PARAM_MOBILE_PHONE
 | -mphone
-| from user profile
+| From user profile
+
+| PARAM_NODE
+| -nodeid
+| From original event
+
+| PARAM_NUM_MSG
+| -nm
+| From notification definition
+
+| PARAM_NUM_PAGER_PIN
+| -np
+| From user profile
+
+| PARAM_PAGER_EMAIL
+| -pemail
+| From user profile
+
+| PARAM_RESPONSE
+| -r
+| From notification definition
+
+| PARAM_SERVICE
+| -service
+| From original event
+
+| PARAM_SUBJECT
+| -subject
+| From notification definition
+
+| PARAM_TEXT_MSG
+| -tm
+| From notification definition
+
+| PARAM_TEXT_PAGER_PIN
+| -tp
+| From user profile
 
 | PARAM_TUI_PIN
 | -tuipin
-| from user profile
+
+| PARAM_TYPE
+| -t
+| Binary y/n
+
+| PARAM_TUI_PIN
+| -tuipin
+| From user profile
+
+| PARAM_WORK_PHONE
+| -wphone
+| From user profile
+
+| PARAM_XMPP_ADDRESS
+| -xmpp
+| From user profile
+
 |===
 
 === Extended dynamic values
@@ -227,7 +234,8 @@ You will see in the `notificationCommands.xml` file:
     </command>
 ----
 
-Any or none of these parameters and switches can be defined, however, if you define it as a parameter in the notification, you must define it as a switch in the notification command.
+You can define any or none of these parameters and switches.
+However, if you define it as a parameter in the notification, you must define it as a switch in the notification command.
 The defaults are:
 
 [source, properties]
@@ -243,4 +251,4 @@ trapSpecific="1" (any valid trapSpecific ID)
 trapVarbind="OpenNMS Trap Notification" (any string or one or more valid %<event field>% such as "%eventUEI%" in the string)
 ----
 
-The one allowed trap varbind will be sent with the object id of `.1.3.6.1.4.1.5813.20.1` and the object type of `DisplayString`.
+The one allowed trap varbind will be sent with the object ID `.1.3.6.1.4.1.5813.20.1` and the object type `DisplayString`.
