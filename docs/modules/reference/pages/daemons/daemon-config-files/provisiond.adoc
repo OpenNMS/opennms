@@ -2,7 +2,7 @@
 [[ref-daemon-config-files-provisiond]]
 = Provisiond
 
-Handles scanning of requisition data to be xref:operation:provisioning/introduction.adoc[Provisioned] into monitored nodes.
+Handles scanning of requisition data to xref:operation:provisioning/introduction.adoc[provision] into monitored nodes.
 
 .Provisiond log file overview
 [options="header"]

@@ -6,7 +6,7 @@ Calculates the availability percentages displayed on the {page-component-title} 
 This daemon checks the database and updates availability data by sending REST calls to the server.
 
 IMPORTANT: {page-component-title} comes with a local `rtc` user account.
-This account is used by rtcd for sending updates, and is only granted access rights for updating RTC data.
+This account is used by rtcd to send updates, and is granted access rights only for updating RTC data.
 Any modifications to this account can impact the server's ability to update availability data.
 
 .Rtcd configuration file overview
