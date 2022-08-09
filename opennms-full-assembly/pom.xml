@@ -12,8 +12,8 @@
   <name>OpenNMS Full Assembly</name>
   <properties>
     <build.profile>default</build.profile>
-    <build.type>default</build.type>
-    <build.format>tar.gz</build.format>
+    <build.assembly.type>default</build.assembly.type>
+    <build.assembly.format>tar.gz</build.assembly.format>
   </properties>
   <profiles>
     <profile>
@@ -25,8 +25,8 @@
         </property>
       </activation>
       <properties>
-        <build.type>full</build.type>
-        <build.format>tar.gz</build.format>
+        <build.assembly.type>full</build.assembly.type>
+        <build.assembly.format>tar.gz</build.assembly.format>
       </properties>
     </profile>
     <profile>
@@ -38,8 +38,8 @@
         </property>
       </activation>
       <properties>
-        <build.type>default</build.type>
-        <build.format>dir</build.format>
+        <build.assembly.type>default</build.assembly.type>
+        <build.assembly.format>dir</build.assembly.format>
       </properties>
     </profile>
     <profile>
@@ -51,8 +51,8 @@
         </property>
       </activation>
       <properties>
-        <build.type>full</build.type>
-        <build.format>dir</build.format>
+        <build.assembly.type>full</build.assembly.type>
+        <build.assembly.format>dir</build.assembly.format>
       </properties>
     </profile>
   </profiles>
@@ -605,10 +605,10 @@
             </goals>
             <configuration>
               <descriptors>
-                <descriptor>src/assembly/${build.type}.xml</descriptor>
+                <descriptor>src/assembly/${build.assembly.type}.xml</descriptor>
               </descriptors>
               <formats>
-                <format>${build.format}</format>
+                <format>${build.assembly.format}</format>
               </formats>
               <appendAssemblyId>false</appendAssemblyId>
               <overrideUid>0</overrideUid>
@@ -663,8 +663,8 @@
             <configuration>
               <tasks>
                 <echo>* profile:    ${build.profile}</echo>
-                <echo>* format:     ${build.format}</echo>
-                <echo>* descriptor: src/assembly/${build.type}.xml</echo>
+                <echo>* format:     ${build.assembly.format}</echo>
+                <echo>* descriptor: src/assembly/${build.assembly.type}.xml</echo>
               </tasks>
             </configuration>
           </execution>
