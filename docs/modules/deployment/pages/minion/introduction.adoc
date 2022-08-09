@@ -6,6 +6,8 @@ Minions communicate with these remote devices while OpenNMS performs coordinatio
 
 Minions can operate behind a firewall and network address translation (NAT) as long as they can communicate with OpenNMS via an ActiveMQ or Apache Kafka message broker.
 
+`CAP_NET_RAW` and `CAP_NET_BIND_SERVICE` capabilities are assigned out of the box, allowing you to bind Minions to privileged ports (less than `1024`).
+
 Use Minions to monitor devices and services in hard-to-reach, remote network locations.
 Minions provide the following benefits:
 
