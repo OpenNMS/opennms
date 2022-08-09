@@ -11,7 +11,7 @@ Release 30.0.2 contains quite a few bug fixes as well as number of small feature
 We have made a number of improvements to the documentation, including reworking the section on events and adding information on configuring SNMP traps and varbinds.
 
 OpenNMS has extended the anonymous metrics we optionally collect to help us improve the project, such as CPU and memory sizing of the platform, and statistics like number of events and flows.
-Visit `Admin -> Data Choices` or edit `$OPENNMS_HOME/etc/org.opennms.features.datachoices.cfg` to see what is included and to change your opt-in settings.
+Click the gears icon and choose `Additional Tools -> Data Choices` or edit `$OPENNMS_HOME/etc/org.opennms.features.datachoices.cfg` to see what is included and to change your opt-in settings.
 Note that we continue to anonymize the data for internal use only to inform project direction.
 We do not share it with third parties.
 
