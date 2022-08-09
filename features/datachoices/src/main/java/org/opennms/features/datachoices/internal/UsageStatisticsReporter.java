@@ -49,6 +49,7 @@ import org.apache.karaf.features.Feature;
 import org.apache.karaf.features.FeaturesService;
 import org.opennms.core.db.DataSourceFactoryBean;
 import org.opennms.core.utils.SystemInfoUtils;
+import org.opennms.core.utils.TimeSeries;
 import org.opennms.core.web.HttpClientWrapper;
 import org.opennms.features.datachoices.internal.StateManager.StateChangeHandler;
 import org.opennms.netmgt.config.GroupFactory;
@@ -68,6 +69,8 @@ import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeDao;
+import org.opennms.core.ipc.sink.common.SinkStrategy;
+import org.opennms.core.rpc.common.RpcStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -140,7 +143,6 @@ public class UsageStatisticsReporter implements StateChangeHandler {
     private GroupFactory m_groupFactory;
     private ForeignSourceRepository m_deployedForeignSourceRepository;
     private DataSourceFactoryBean m_dataSourceFactoryBean;
-
     private boolean m_useSystemProxy = true; // true == legacy behaviour
 
     public synchronized void init() {
@@ -264,6 +266,9 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         usageStatisticsReport.setRequisitionCount(getDeployedRequisitionCount());
         usageStatisticsReport.setRequisitionWithChangedFSCount(getDeployedRequisitionWithModifiedFSCount());
         usageStatisticsReport.setBusinessEdgeCount(m_businessServiceEdgeDao.countAll());
+        usageStatisticsReport.setSinkStrategy(SinkStrategy.getSinkStrategy().getName());
+        usageStatisticsReport.setRpcStrategy(RpcStrategy.getRpcStrategy().getName());
+        usageStatisticsReport.setTssStrategies(TimeSeries.getTimeseriesStrategy().getName());
 
         setDatasourceInfo(usageStatisticsReport);
 
