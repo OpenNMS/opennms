@@ -124,6 +124,6 @@ include::message-broker/grpc.adoc[]
 == Check Minion in the core web UI
 
 . Log in to the web UI as an administrative user.
-. Click the menu:Gears Icon[Distributed Monitoring > Manage Minions].
+. Click the menu:gears icon[Distributed Monitoring > Manage Minions].
 
 After a few minutes your Minion should be provisioned automatically and the status should be "up".
