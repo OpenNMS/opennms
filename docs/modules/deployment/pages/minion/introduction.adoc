@@ -1,10 +1,10 @@
 
 = Minion
 
-A Minion is an instance of the Karaf OSGi service that enables OpenNMS to monitor devices and services in locations that OpenNMS cannot reach.
+A Minion is an instance of the Karaf OSGi service that enables {page-component-title} to monitor devices and services in locations that  {page-component-title} cannot reach.
 Minions communicate with these remote devices while OpenNMS performs coordination and task delegation.
 
-Minions can operate behind a firewall and network address translation (NAT) as long as they can communicate with OpenNMS via an ActiveMQ or Apache Kafka message broker.
+Minions can operate behind a firewall and network address translation (NAT) as long as they can communicate with  {page-component-title} via an ActiveMQ or Apache Kafka message broker.
 
 `CAP_NET_RAW` and `CAP_NET_BIND_SERVICE` capabilities are assigned out of the box, allowing you to bind Minions to privileged ports (less than `1024`).
 
@@ -18,9 +18,9 @@ Minions provide the following benefits:
 == How it works
 
 A Minion monitors all the managed nodes and IP services in the same location (for example, Pittsboro office, building-3).
-The Minion communicates with the message broker, which in turn communicates with the OpenNMS instance.
+The Minion communicates with the message broker, which in turn communicates with the core instance.
 
-._Nodes_ with _Minions_ in _locations_
+.Nodes with Minions in locations
 image::deployment/minion/location.png[]
 
 By default, every node provisioned in {page-component-title} is created in the default location.
