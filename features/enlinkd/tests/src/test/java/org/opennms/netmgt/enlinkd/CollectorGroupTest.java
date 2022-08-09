@@ -75,7 +75,13 @@ public class CollectorGroupTest {
 
         @Override
         public void runExecutable() {
-            System.out.println(m_name);
+            System.out.println("Started: " + m_name);
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            System.out.println("Ended: " + m_name);
         }
 
         @Override
@@ -138,7 +144,7 @@ public class CollectorGroupTest {
 
     @Test
     public void testPauseAndResume() throws InterruptedException {
-        LegacyPriorityExecutor executor = new LegacyPriorityExecutor("CollectorGroupTest", 1, 5);
+        LegacyPriorityExecutor executor = new LegacyPriorityExecutor("CollectorGroupTest", 2, 5);
         executor.addPriorityReadyRunnable(new ExecutableTest("A",10) );
         executor.addPriorityReadyRunnable(new ExecutableTest("B",10) );
         executor.addPriorityReadyRunnable(new ExecutableTest("C",20) );
@@ -158,7 +164,7 @@ public class CollectorGroupTest {
         assertEquals(PausableFiber.PAUSED, executor.getStatus());
         executor.resume();
         assertEquals(PausableFiber.RESUME_PENDING, executor.getStatus());
-        Thread.sleep(1000);
+        Thread.sleep(5);
         assertEquals(PausableFiber.RUNNING, executor.getStatus());
 
     }
