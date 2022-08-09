@@ -50,9 +50,10 @@ The Plugin API provides a Maven archetype to help bootstrap plugin creation.
 
 Create a new plugin project using the following Maven command:
 
-```
+[source, console]
+----
 mvn archetype:generate -B -DarchetypeGroupId=org.opennms.integration.api -DarchetypeArtifactId=example-kar-plugin -DarchetypeVersion=1.0.0 -DgroupId=com.company -DartifactId=myplugin -Dversion=0.1.0-SNAPSHOT -Dpackage=com.company.myplugin -DpluginId=myplugin -DpluginName="My Plugin"
-```
+----
 
 NOTE: You can replace `myplugin` (name), `com.company.myplugin` (package name), and the version with your own values.
 The generated plugin adds some Java files and feature definitions.
