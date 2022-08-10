@@ -4,7 +4,7 @@
 * xref:quick-start/introduction.adoc[]
 ** xref:quick-start/users.adoc[]
 
-* xref:beyond-quick-start/introduction.adoc[]
+* xref:deep-dive/introduction.adoc[]
 
 ** xref:user-management/introduction.adoc[]
 *** xref:user-management/user-config.adoc[]
