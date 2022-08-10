@@ -1,3 +1,4 @@
+
 = Notification Commands
 
 A notification command is a named, reusable execution profile for a Java class or external program command used to convey notices to targets.
@@ -147,7 +148,7 @@ The NotificationManager class defines some special switches, providing data for 
 
 | PARAM_TYPE
 | -t
-| Binary y/n
+| Binary yes or no
 
 | PARAM_TUI_PIN
 | -tuipin
@@ -160,7 +161,6 @@ The NotificationManager class defines some special switches, providing data for 
 | PARAM_XMPP_ADDRESS
 | -xmpp
 | From user profile
-
 |===
 
 === Extended dynamic values
@@ -236,8 +236,8 @@ You will see these in the `notificationCommands.xml` file:
 ----
 
 You can define any or none of these parameters and switches.
-However, if you define it as a parameter in the notification, you must define it as a switch in the notification command.
-The defaults are the following:
+However, if you define a parameter in the notification, you must also define a corresponding switch in the notification command.
+The defaults are as follows:
 
 [source, properties]
 ----

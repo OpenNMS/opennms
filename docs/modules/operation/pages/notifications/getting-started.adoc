@@ -22,14 +22,14 @@ This configuration file change happens immediately with no need to restart or se
 
 == Configure destination paths
 
-A destination path specifies the "who" (recipient), "when" (interval), and "how" (method) of the notification.
+A destination path specifies the "who" (recipient), "when" (interval), and "how" (method) of a notification.
 It also specifies targets for escalation.
 
 Configuring destination paths separately from individual events lets you use the same information for multiple notifications, minimizing duplication and encouraging reuse.
 
 . Log in to the web UI as a user with administrator privileges.
 . Click the gear icon in the top right, and choose menu:Event Management[Configure Notifications > Configure Destination Paths].
-. Click *New Path*, fill in the desired information and click *Finish*.
+. Click *New Path*, fill in the desired information, and click *Finish*.
 .. To edit a destination path, select it from the list in the *Destinations Path* screen, and click *Edit*.
 
 NOTE: Destination paths configuration is stored in the `destinationPaths.xml` file.
@@ -41,24 +41,23 @@ An event notification ties any  {page-component-title} event with a destination 
 
 . Log in to the web UI as a user with administrator privileges.
 . Click the gears icon in the top right, and choose menu:Event Management[Configure Notifications>Configure Event Notifications].
-
 +
 The screen displays a list of events configured for notifications.
 
 . Click *Add New Event Notification*.
 . Choose an event on which you want to receive a notification and click *Next*.
-. Optionally build a rule to match a subset of IP addresses or services and click *Validate rule results*, then *Next* (or *Skip results validation*).
+. (Optional) Build a rule to match a subset of IP addresses or services and click *Validate rule results*, then *Next* (or *Skip results validation*).
 . In the *Choose Path* screen, specify information to include in the notification, including destination path, subject (for an email message), text, and so on.
 . Click *Finish*.
 
-NOTES: The event notification configuration is stored in the `notifications.xml` file.
-Changes to this file are picked up on the fly with no need to restart or send an event.
+NOTE: The event notification configuration is stored in the `notifications.xml` file.
+Changes to this configuration file happen immediately with no need to restart or send an event.
 
 The filter rule configured in `notifications.xml` (for example, `<rule>IPADDR != '0.0.0.0'</rule>`) is not strict by default.
 That means if there is any event that is not associated with any node or interface, it would not validate the rule and by default notification would be saved.
-A strict rule (for example, `<rule strict="true">IPADDR != '0.0.0.0'</rule>`) will always be evaluated and if there is no node or interface associated with the event, the notification would not be saved.
+A strict rule (for example, `<rule strict="true">IPADDR != '0.0.0.0'</rule>`) will always be evaluated, and if there is no node or interface associated with the event, the notification would not be saved.
 
-By default, {page-component-title} runss the destination path of all notifications matching the event's UEI.
+By default, {page-component-title} runs the destination path of all notifications matching the event's UEI.
 You can configure {page-component-title} to run only the destination path of the first matching notification by editing the `notifd-configuration.xml` file and setting `match-all="false"` in the top-level `notifd-configuration` element.
 This configuration file change happens immediately with no need to restart or send an event.
 
