@@ -1,12 +1,11 @@
-[[release-30-changelog]]
 
+[[release-30-changelog]]
 = Changelog
 
 [[releasenotes-changelog-30.0.1]]
-
 == Release 30.0.1
 
-Release 30.0.1 contains a number of bug fixes as well as a number of new features including support for encrypting credentials.
+Release 30.0.1 contains a number of bug fixes as well as new features, including support for encrypting credentials.
 
 The codename for Horizon 30.0.1 is https://wikipedia.org/wiki/$$Chinchilla$$[_Chinchilla_].
 
@@ -26,7 +25,7 @@ The codename for Horizon 30.0.1 is https://wikipedia.org/wiki/$$Chinchilla$$[_Ch
 * External Requisition UI: foreignSource not set for VMware requisition (Issue http://issues.opennms.org/browse/NMS-14478[NMS-14478])
 * Pollerd take a long time to start on systems with large inventories (Issue http://issues.opennms.org/browse/NMS-14524[NMS-14524])
 
-=== New Feature
+=== New feature
 
 * Encrypt SNMP Credentials (Issue http://issues.opennms.org/browse/NMS-14215[NMS-14215])
 * Encrypt Postgres credentials (Issue http://issues.opennms.org/browse/NMS-14216[NMS-14216])
@@ -71,16 +70,13 @@ The codename for Horizon 30.0.1 is https://wikipedia.org/wiki/$$Chinchilla$$[_Ch
 
 * Update all Vue UI packages to latest (Issue http://issues.opennms.org/browse/NMS-14460[NMS-14460])
 
-
-
 [[releasenotes-changelog-30.0.0]]
-
 == Release 30.0.0
 
 Release 30.0.0 is the first in the Horizon 30 series, introducing a number of new features,
 most notably a preview of a new web UI, and the ability to back up infrastructure device
 configs.
- 
+
 The codename for Horizon 30.0.0 is https://wikipedia.org/wiki/$$Nutria$$[_Nutria_].
 
 === Epic
@@ -289,7 +285,7 @@ The codename for Horizon 30.0.0 is https://wikipedia.org/wiki/$$Nutria$$[_Nutria
 * Test provisioning config UI / external requisitions (Issue http://issues.opennms.org/browse/NMS-14264[NMS-14264])
 * Test web UI file editor (Issue http://issues.opennms.org/browse/NMS-14267[NMS-14267])
 * Test flow thresholding (Issue http://issues.opennms.org/browse/NMS-14268[NMS-14268])
-* Circle ci caching OIA issue (Issue http://issues.opennms.org/browse/NMS-14291[NMS-14291])
+* CircleCI caching OIA issue (Issue http://issues.opennms.org/browse/NMS-14291[NMS-14291])
 * Latest DCB UX Updates (Issue http://issues.opennms.org/browse/NMS-14304[NMS-14304])
 * Fix UI yarn.lock conflicts with latest updates (Issue http://issues.opennms.org/browse/NMS-14308[NMS-14308])
 * Fix Feather Dialog issue on 0.10.10 (Issue http://issues.opennms.org/browse/NMS-14316[NMS-14316])

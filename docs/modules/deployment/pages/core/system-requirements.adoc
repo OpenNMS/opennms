@@ -1,5 +1,6 @@
+
 [[system-requirements-core]]
-= Minimum system requirements
+= Minimum System Requirements
 
 [options="header, autowidth"]
 |===
@@ -40,7 +41,7 @@ endif::[]
 |===
 | Component               | Version Compatibility
 | OpenNMS Helm            | {compatible-opennms-helm}
-| OpenNMS Integration API | {compatible-oia}
+| OpenNMS Plugin API      | {compatible-oia}
 | Cassandra               | {compatible-cassandra}
 | Elasticsearch           | {compatible-elasticsearch}
 | Java Development Kit    | {compatible-javajdk}
