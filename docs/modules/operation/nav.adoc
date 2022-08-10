@@ -1,13 +1,18 @@
 .Operation
 * xref:overview/overview.adoc[]
 
-* xref:user-management/introduction.adoc[]
-** xref:user-management/user-config.adoc[]
-** xref:user-management/security-roles.adoc[]
-** xref:user-management/user-groups.adoc[]
-** xref:user-management/user-oncall.adoc[]
-** xref:user-management/user-maintenance.adoc[]
-** xref:user-management/pre-authentication.adoc[]
+* xref:quick-start/introduction.adoc[]
+** xref:quick-start/users.adoc[]
+
+* xref:beyond-quick-start/introduction.adoc[]
+
+** xref:user-management/introduction.adoc[]
+*** xref:user-management/user-config.adoc[]
+*** xref:user-management/security-roles.adoc[]
+*** xref:user-management/user-groups.adoc[]
+*** xref:user-management/user-oncall.adoc[]
+*** xref:user-management/user-maintenance.adoc[]
+*** xref:user-management/pre-authentication.adoc[]
 
 * xref:provisioning/introduction.adoc[]
 ** xref:provisioning/getting-started.adoc[]
