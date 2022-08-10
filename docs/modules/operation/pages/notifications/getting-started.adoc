@@ -54,7 +54,7 @@ The screen displays a list of events configured for notifications.
 NOTES: The event notification configuration is stored in the `notifications.xml` file.
 Changes to this file are picked up on the fly with no need to restart or send an event.
 
-The filter rule configured in notifications.xml (for example, `<rule>IPADDR != '0.0.0.0'</rule>`) is not strict by default.
+The filter rule configured in `notifications.xml` (for example, `<rule>IPADDR != '0.0.0.0'</rule>`) is not strict by default.
 That means if there is any event that is not associated with any node or interface, it would not validate the rule and by default notification would be saved.
 A strict rule (for example, `<rule strict="true">IPADDR != '0.0.0.0'</rule>`) will always be evaluated and if there is no node or interface associated with the event, the notification would not be saved.
 
@@ -64,7 +64,7 @@ This configuration file change happens immediately with no need to restart or se
 
 == Configure path outages
 
-Configuring a path outage lets you suppress notifications for nodes that appear to be down due to a failure in the network path between the nodes and  {page-component-title}.
+Configuring a path outage lets you suppress notifications for nodes that appear to be down due to a failure in the network path between the nodes and {page-component-title}.
 For example, if a WAN link fails, all nodes at the remote site served by the WAN link will appear to be down.
 Since we will get a notification that the router on the far end of the WAN link is not responding, we don't need notifications for all the devices that sit behind that router.
 
