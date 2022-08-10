@@ -84,6 +84,9 @@ public class UsageStatisticsReportDTO {
     private Map<String, Boolean> m_services;
     private String m_databaseProductName;
     private String m_databaseProductVersion;
+    private String m_sinkStrategy;
+    private String m_rpcStrategy;
+    private String m_tssStrategies;
 
     private int m_businessEdgeCount;
 
@@ -418,6 +421,30 @@ public class UsageStatisticsReportDTO {
 
     public void setCoreQueuedUpdatesCompleted(long coreQueuedUpdatesCompleted) {
         this.m_coreQueuedUpdatesCompleted = coreQueuedUpdatesCompleted;
+    }
+
+    public void setSinkStrategy(String sinkStrategy) {
+        this.m_sinkStrategy = sinkStrategy;
+    }
+
+    public String getSinkStrategy() {
+        return m_sinkStrategy;
+    }
+
+    public void setRpcStrategy(String rpcStrategy) {
+        this.m_rpcStrategy = rpcStrategy;
+    }
+
+    public String getRpcStrategy() {
+        return m_rpcStrategy;
+    }
+
+    public void setTssStrategies(String tssStrategies) {
+        this.m_tssStrategies = tssStrategies;
+    }
+
+    public String getTssStrategies() {
+        return m_tssStrategies;
     }
 
     public String toJson() {
