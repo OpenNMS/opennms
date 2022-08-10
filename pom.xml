@@ -1659,7 +1659,7 @@
     <!-- dependency versions -->
     <args4jVersion>2.32</args4jVersion>
     <asmVersion>5.0.4</asmVersion>
-    <activemqVersion>5.14.5</activemqVersion>
+    <activemqVersion>5.16.5</activemqVersion>
     <atomikosVersion>3.9.2</atomikosVersion>
     <batikVersion>1.7</batikVersion>
     <bouncyCastleVersion>1.68</bouncyCastleVersion>
