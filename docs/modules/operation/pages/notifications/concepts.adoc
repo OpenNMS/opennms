@@ -111,3 +111,4 @@ If multiple commands are selected, they will execute simultaneously.
 Each step also has an auto-notify switch, which may be set to `off`, `on`, or `auto`.
 This switch specifies the logic used when deciding whether or not to send a notice for an auto-acknowledged notification to a target that was not on duty at the time the notification was first created.
 If `off`, notices will never be sent to such a target; if `on`, they will always be sent; if `auto`, the system employs heuristics aimed at "doing the right thing."
+
