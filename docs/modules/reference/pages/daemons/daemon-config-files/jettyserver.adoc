@@ -1,12 +1,12 @@
+
 [[ref-daemon-config-files-jettyserver]]
 = JettyServer
 
-Manages the web user interface service.
+Provides and manages the web user interface service.
 
 .JettyServer log file overview
 [options="header"]
 [cols="2,3"]
-
 |===
 | File
 | Description
