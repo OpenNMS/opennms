@@ -1,0 +1,48 @@
+<component
+    xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/component/1.1.2"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/component/1.1.2 http://maven.apache.org/xsd/component-1.1.2.xsd"
+>
+  <dependencySets>
+    <dependencySet>
+      <unpack>true</unpack>
+      <useProjectArtifact>false</useProjectArtifact>
+      <useStrictFiltering>true</useStrictFiltering>
+      <useTransitiveDependencies>false</useTransitiveDependencies>
+      <!-- Output to the root directory -->
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>org.opennms:opennms-base-assembly:tar.gz:daemon:${project.version}</include>
+      </includes>
+      <unpackOptions>
+        <includes>
+          <!-- contrib -->
+          <include>contrib/**/*</include>
+
+          <!-- northbounders -->
+          <include>lib/*alarm-northbounder-jms*</include>
+
+          <!-- protocols -->
+          <include>etc/nsclient-config.xml</include>
+
+          <!-- provisioning adapters -->
+          <include>lib/*rancid-provisioning-adapter*</include>
+          <include>etc/*snmp-asset-adapter*</include>
+          <include>lib/*snmp-asset-provisioning-adapter*</include>
+          <include>etc/*snmp-hardware-inventory-adapter*</include>
+          <!-- not included in base assembly tar -->
+          <!-- <include>lib/*snmp-hardware-inventory-provisioning-adapter*</include> -->
+          <include>etc/*wsman-asset-adapter*</include>
+          <!-- not included in base assembly tar -->
+          <!-- <include>lib/*wsman-asset-provisioning-adapter*</include> -->
+
+          <!-- ticketing plugins -->
+          <include>etc/*otrs*</include>
+          <include>lib/*otrs*</include>
+          <include>etc/rt.properties</include>
+          <include>lib/*integration-rt*</include>
+        </includes>
+      </unpackOptions>
+    </dependencySet>
+  </dependencySets>
+</component>

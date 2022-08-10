@@ -34,7 +34,7 @@ s|Event Field       s|Example Event JSON                                        
 | asset-room         | "asset-room": "F201"                                                                | string |
 | asset-floor        | "asset-floor": "Gnd"                                                                | string |
 | asset-rack         | "asset-rack": "2101"                                                                | string |
-| categories         | "categories": ""                                                                    | string | `categories` corresponds to the node categories table.
+| categories         | "categories": ""                                                                    | string | `categories` corresponds to the node tags table.
                                                                                                                       This is a comma-separated list of categories associated with this node ID.
                                                                                                                       This field is indexed, so separate values can be searched.
 | foreignid          | "foreignid": "1488375237814"                                                        | string | Foreign ID of the node associated with the event.

@@ -54,11 +54,18 @@ public class UsageStatisticsReportDTO {
     private int m_nodes;
     private int m_ipInterfaces;
     private int m_snmpInterfaces;
+    private long m_snmpInterfacesWithFlows;
     private int m_monitoredServices;
     private int m_events;
     private int m_alarms;
+    private long m_situations;
 
     private Map<String, Long> m_nodesBySysOid = Collections.emptyMap();
+
+    private long m_monitoringLocations;
+    private long m_minions;
+
+    private String m_installedFeatures;
 
     public void setSystemId(String systemId) {
         m_systemId = systemId;
@@ -132,6 +139,14 @@ public class UsageStatisticsReportDTO {
         return m_snmpInterfaces;
     }
 
+    public void setSnmpInterfacesWithFlows(long snmpInterfacesWithFlows) {
+        m_snmpInterfacesWithFlows = snmpInterfacesWithFlows;
+    }
+
+    public long getSnmpInterfacesWithFlows() {
+        return m_snmpInterfacesWithFlows;
+    }
+
     public void setMonitoredServices(int monitoredServices) {
         m_monitoredServices = monitoredServices;
     }
@@ -156,12 +171,44 @@ public class UsageStatisticsReportDTO {
         return m_alarms;
     }
 
+    public long getSituations() {
+        return m_situations;
+    }
+
+    public void setSituations(long situations) {
+        m_situations = situations;
+    }
+
     public void setNodesBySysOid(Map<String, Long> nodesBySysOid) {
         m_nodesBySysOid = nodesBySysOid;
     }
 
     public Map<String, Long> getNodesBySysOid() {
         return m_nodesBySysOid;
+    }
+
+    public long getMonitoringLocations() {
+        return m_monitoringLocations;
+    }
+
+    public void setMonitoringLocations(long monitoringLocations) {
+        m_monitoringLocations = monitoringLocations;
+    }
+
+    public long getMinions() {
+        return m_minions;
+    }
+
+    public void setMinions(long minions) {
+        this.m_minions = minions;
+    }
+
+    public String getInstalledFeatures() {
+        return m_installedFeatures;
+    }
+
+    public void setInstalledFeatures(String installedFeatures) {
+        m_installedFeatures = installedFeatures;
     }
 
     public String toJson() {

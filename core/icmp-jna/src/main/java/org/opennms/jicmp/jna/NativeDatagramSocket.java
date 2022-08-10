@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -36,6 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.sun.jna.LastErrorException;
+import com.sun.jna.Native;
 import com.sun.jna.Platform;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
@@ -134,7 +135,7 @@ public abstract class NativeDatagramSocket implements AutoCloseable {
         }
         final IntByReference dontfragment = new IntByReference(frag == true? 0 : 1);
         try {
-            setsockopt(socket, level, option_name, dontfragment.getPointer(), Pointer.SIZE);
+            setsockopt(socket, level, option_name, dontfragment.getPointer(), Native.POINTER_SIZE);
         } catch (final LastErrorException e) {
             throw new IOException("setsockopt: " + strerror(e.getErrorCode()));
         }

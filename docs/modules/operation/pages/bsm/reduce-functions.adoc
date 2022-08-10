@@ -3,13 +3,13 @@
 
 A reduce function aggregates the operational status for the business service.
 It uses the alarm severity from the edges as input.
-This operation can use the following reduce functions:
 
 .Status calculation reduce functions
 [options="header"]
-[cols="1,3"]
+[cols="1,3a"]
 |===
-| Name                      | Description
+| Name
+| Description
 
 | Highest Severity
 | Uses the value of the highest severity; ignores weight.
@@ -25,7 +25,7 @@ This means at least 2 of 4 alarms need to be raised to change the business servi
 | Exponential Propagation
 | This reduce function computes the sum of the given child severities based on a base number.
 For this computation, the severities are mapped to numbers: +
-asciimath:[WARNING=0, MINOR=1, MAJOR=2, CRITICAL=3]
+WARNING=0, MINOR=1, MAJOR=2, CRITICAL=3
 
 All other severities are ignored.
 

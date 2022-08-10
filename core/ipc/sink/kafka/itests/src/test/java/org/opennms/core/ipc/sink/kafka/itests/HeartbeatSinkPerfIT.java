@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -170,7 +170,7 @@ public class HeartbeatSinkPerfIT {
         await().atMost(60, TimeUnit.SECONDS).until(() -> Long.valueOf(receivedMeter.getCount()), greaterThan(100L)); 
     }
 
-    @Ignore
+    @Ignore("enable manually to test long running logging")
     public void longRun() throws Exception {
         // Here we enable console logging of the metrics we gather
         // To see these, you'll want to turn down the logging

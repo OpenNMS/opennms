@@ -370,10 +370,16 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
     public void testProducerSuppression() throws Exception {
         kafkaProducer.setSuppressIncrementalAlarms(true);
 
+        // Fire up the consumer
+        kafkaConsumer = startConsumer();
+
         // Send an alarm
         final OnmsAlarm alarm = nodeDownAlarmWithRelatedAlarm();
         alarmDao.save(alarm);
         kafkaProducer.handleNewOrUpdatedAlarm(alarm);
+
+        // Wait for callback to save incremental alarm metadata
+        Thread.sleep(10000);
 
         // Increment the alarm and re-send
         alarm.setCounter(2);
@@ -381,9 +387,6 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         alarm.getRelatedAlarms().iterator().next().setCounter(2);
         alarmDao.save(alarm);
         kafkaProducer.handleNewOrUpdatedAlarm(alarm);
-
-        // Fire up the consumer
-        kafkaConsumer = startConsumer();
 
         // One alarm should have been consumed
         await().atMost(1, TimeUnit.MINUTES).until(() -> !kafkaConsumer.getAlarms().isEmpty());
@@ -449,7 +452,7 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
 
 
     @Test
-    public void testNotDroppingOfMessagesWhenKafkaIsOffline() throws Exception {
+    public void testNotDroppingOfEventsWhenKafkaIsOffline() throws Exception {
 
         eventdIpcMgr.sendNow(MockEventUtil.createNodeDownEventBuilder("test", databasePopulator.getNode1()).getEvent());
         if (!kafkaProducer.getEventForwardedLatch().await(1, TimeUnit.MINUTES)) {
@@ -466,6 +469,27 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         await().atMost(1, TimeUnit.MINUTES).until(this::getUeisForConsumedEvents, hasItems(
                 EventConstants.NODE_DOWN_EVENT_UEI, EventConstants.NODE_UP_EVENT_UEI));
 
+    }
+
+    @Test
+    public void testNotDroppingOfAlarmsWhenKafkaIsOffline() throws Exception {
+        // Fire up the consumer
+        kafkaConsumer = startConsumer();
+
+        kafkaServer.stopKafkaServer();
+
+        // Send an alarm
+        final OnmsAlarm alarm = nodeDownAlarm();
+        alarmDao.save(alarm);
+        kafkaProducer.handleNewOrUpdatedAlarm(alarm);
+
+        Thread.sleep(10000);
+        assertEquals(0, kafkaConsumer.getAlarms().size());
+
+        kafkaServer.startKafkaServer();
+
+        // Verify alarm is received
+        await().pollDelay(5, TimeUnit.SECONDS).atMost(1, TimeUnit.MINUTES).until(() -> !kafkaConsumer.getAlarms().isEmpty());
     }
 
     private KafkaMessageConsumerRunner startConsumer() {

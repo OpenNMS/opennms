@@ -7,62 +7,99 @@ The `opennms:collect` Karaf Shell command can be used to trigger and perform a c
 The results of the collection (also referred to as the "collection set") will be displayed in the console after a successful collection.
 The resulting collection set will not be persisted, nor will any thresholding be applied.
 
-List all of the available collectors:
-
-[source]
+* List all of the available collectors.
++
+[source, karaf]
 ----
 opennms:list-collectors
 ----
 
-Invoke the `SnmpCollector` against interface `127.0.0.1` on `NODES:n1`.
-
-[source]
+* Invoke the `SnmpCollector` against interface `127.0.0.1` on node `n1` from the `NODES` requisition.
++
+[source, karaf]
 ----
 opennms:collect -n NODES:n1 org.opennms.netmgt.collectd.SnmpCollector 127.0.0.1
 ----
 
-Invoke the `SnmpCollector` against interface `127.0.0.1` on `NODES:n1` via the `MINION` location.
-
-[source]
+* Invoke the `SnmpCollector` against interface `127.0.0.1` on `NODES:n1` via the `MINION` location.
+Setting the location on the command line will override the location set on the node in the database.
++
+[source, karaf]
 ----
 opennms:collect -l MINION -n NODES:n1 org.opennms.netmgt.collectd.SnmpCollector 127.0.0.1
 ----
++
+NOTE: If you see errors caused by `RequestTimedOutException` when invoking a collector at a remote location, consider increasing the time to live.
+By default, `collectd` will use the service interval as the time to live.
 
-TIP: Setting the location on the command line will override the node's location.
-
-NOTE: If you see errors caused by `RequestTimedOutException`s when invoking a collector at a remote location, consider increasing the time to live.
-      By default, `collectd` will use the service interval as the time to live.
-
-Invoke the `JdbcCollector` against `127.0.0.1` while specifying some of the collector parameters.
-
-[source]
+* Invoke the `JdbcCollector` against `127.0.0.1` while specifying some of the collector parameters.
++
+[source, karaf]
 ----
 opennms:collect org.opennms.netmgt.collectd.JdbcCollector 127.0.0.1 collection=PostgreSQL driver=org.postgresql.Driver url=jdbc:postgresql://OPENNMS_JDBC_HOSTNAME/postgres user=postgres
 ----
-
++
 TIP: Some collectors, such as the `JdbcCollector`, can be invoked without specifying a node.
 
-Persist a collection :
-
-[source]
+* Persist a collection.
++
+`-p/--persist` option will persist the new collection set by introducing an extra datapoint in addition to data collected during the regular collection intervals.
++
+[source, karaf]
 ----
 opennms:collect -l MINION -n NODES=n1 -p org.opennms.netmgt.collectd.SnmpCollector 127.0.0.1
 ----
++
+NOTE: This option will only persist data to JRB/RRD files if there is an existing file for the defined metrics.
+The files should be created on the first successful collection during a regular collection interval.
 
-NOTE: `-p/--persist` option will persist collection set there by introducing an extra datapoint other than data collected during already configured collection interval.
+A complete list of options is available using the help command.
 
-A complete list of options is available using:
-
-[source]
+[source, karaf]
 ----
 opennms:collect --help
+DESCRIPTION
+        opennms:collect
+
+        Invokes a collector against a host at a specified location.
+
+SYNTAX
+        opennms:collect [options] collectorClass host [attributes]
+
+ARGUMENTS
+        collectorClass
+                Collector class
+                (required)
+        host
+                Hostname or IP Address of the system to poll
+                (required)
+        attributes
+                Collector specific attributes in key=value form
+
+OPTIONS
+        -l, --location
+                Location
+        -s, --system-id
+                System ID
+        -p, --persist
+                Persist collection
+        -n, --node
+                Node ID or FS:FID
+        -t, --ttl
+                Time to live in milliseconds
+        -x, --rra
+                Round Robin Archives, defaults to the pristine content on datacollection-config.xml
+                (multi-valued)
+        --help
+                Display this help message
 ----
 
 == Interpreting the output
 
 After a successful collection, the collection set will be displayed in the following format:
 
-```
+[source, karaf]
+----
 resource a
   group 1
     attribute
@@ -73,7 +110,7 @@ resource b
   group 1
     attribute
 ...
-```
+----
 
 The description of the resources, groups and attribute may differ between collectors.
 This output is independent of the persistence strategy that is being used.

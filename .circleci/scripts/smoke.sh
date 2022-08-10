@@ -44,14 +44,18 @@ while true; do
     break
   fi
   sleep 1
-done  
+done
 
 # Configure the heap for the Maven JVM - the tests themselves are forked out in separate JVMs
 # The heap size should be sufficient to buffer the output (stdout/stderr) from the test
 export MAVEN_OPTS="-Xmx1g -Xms1g"
 
+# shellcheck disable=SC3045
 # Set higher open files limit
 ulimit -n 65536
+
+# Clean up the workspace so there's less junk lying around
+./clean.pl
 
 cd ~/project/smoke-test
 if [ $SUITE = "minimal" ]; then

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -112,24 +112,6 @@ public class NotifdIT extends NotificationsITCase {
         
     }
 
-    // FIXME: latest notifd code seems to fail on this kind of notification
-    // Bug 1954
-    @Test
-    @Ignore
-    public void testNewSuspect() throws Exception {
-        
-        Date date = new Date();
-        
-        long finished = anticipateNotificationsForGroup("A new interface (10.1.1.1) has been discovered and is being queued for a services scan.", "A new interface (10.1.1.1) has been discovered and is being queued for a services scan.", "InitialGroup", date, 0);
-
-        EventBuilder e = MockEventUtil.createNewSuspectEventBuilder("test", EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI, "10.1.1.1");
-        e.setTime(date);
-        m_eventMgr.sendEventToListeners(e.getEvent());
-        
-        verifyAnticipated(finished, 1000);
-        
-    }
-    
     @Test
     public void testNotifdStatus() throws Exception {
         

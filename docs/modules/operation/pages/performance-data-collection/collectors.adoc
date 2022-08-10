@@ -8,4 +8,4 @@ Understanding xref:performance-data-collection/resource-types.adoc#resource-type
 
 == Supported collectors
 
-For information on supported collectors and how to configure them, see xref:reference:configuration/performance-data-collection/introduction.adoc[performance data collector reference section].
+For information on supported collectors and how to configure them, see xref:reference:performance-data-collection/introduction.adoc[performance data collector reference section].

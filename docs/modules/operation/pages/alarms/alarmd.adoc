@@ -3,7 +3,7 @@
 = Alarm Service Daemon
 
 Alarmd, the Alarm Service Daemon, processes events representing problems in the network.
-It either instantiates a new alarm for tracking a problem's state or reduces a reoccurring Event of an existing problem into the same Alarm.
+It either instantiates a new alarm for tracking a problem's state or reduces a recurring Event of an existing problem into the same Alarm.
 (Also known as alarm de-duplication.)
 
 https://www.drools.org/[Drools] in Alarmd provide a more robust infrastructure for the effective management of workflow and problem states in the network.

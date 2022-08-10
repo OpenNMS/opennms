@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -84,20 +84,6 @@ public class FtpMonitorTest {
         if (m_serverThread != null) {
             m_serverThread.join(1500);
         }
-    }
-
-    @Ignore
-    // Let's not depend on external systems if we don't have to
-    public void SKIPtestMonitorOnOpennmsOrgFtpSuccess() throws Exception {
-        PollStatus status = m_monitor.poll(new MockMonitoredService(1, "Node One", InetAddressUtils.addr("ftp.opennms.org"), "FTP"), new HashMap<String,Object>());
-        assertTrue("status should be available (Up), but is: " + status, status.isAvailable());
-    }
-
-    @Ignore
-    // Let's not depend on external systems if we don't have to
-    public void SKIPtestMonitorFailureOnRandomFtp() throws Exception {
-        PollStatus status = m_monitor.poll(new MockMonitoredService(1, "Node One", InetAddressUtils.addr("1.1.1.1"), "FTP"), new HashMap<String,Object>());
-        assertTrue("status should be unavailable (Down), but is: " + status, status.isUnavailable());
     }
 
     @Test

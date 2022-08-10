@@ -4,22 +4,17 @@
     xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd"
 >
   <id>full</id>
-  <formats>
-    <format>tar.gz</format>
-  </formats>
   <includeBaseDirectory>false</includeBaseDirectory>
-  <componentDescriptors>
-    <componentDescriptor>src/assembly/components/adapters.xml</componentDescriptor>
-    <componentDescriptor>src/assembly/components/base-assembly.xml</componentDescriptor>
-    <componentDescriptor>src/assembly/components/cifs.xml</componentDescriptor>
-    <componentDescriptor>src/assembly/components/juniper-tca.xml</componentDescriptor>
-    <componentDescriptor>src/assembly/components/nsclient.xml</componentDescriptor>
-    <componentDescriptor>src/assembly/components/osgi.xml</componentDescriptor>
-    <componentDescriptor>src/assembly/components/radius.xml</componentDescriptor>
-    <componentDescriptor>src/assembly/components/selenium-monitor.xml</componentDescriptor>
-    <componentDescriptor>src/assembly/components/vtdxml.xml</componentDescriptor>
-    <componentDescriptor>src/assembly/components/webapps.xml</componentDescriptor>
-    <componentDescriptor>src/assembly/components/xml.xml</componentDescriptor>
-    <componentDescriptor>src/assembly/components/xmp.xml</componentDescriptor>
-  </componentDescriptors>
+  <fileSets>
+    <fileSet>
+      <directory>${project.build.directory}/${project.artifactId}-${project.version}-core</directory>
+      <filtered>false</filtered>
+      <outputDirectory></outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>${project.build.directory}/${project.artifactId}-${project.version}-optional</directory>
+      <filtered>false</filtered>
+      <outputDirectory></outputDirectory>
+    </fileSet>
+  </fileSets>
 </assembly>

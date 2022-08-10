@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -75,7 +75,6 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 
-@org.junit.experimental.categories.Category(org.opennms.smoketest.junit.FlakyTests.class)
 public class GraphRestServiceIT extends OpenNMSSeleniumIT {
     private static final Logger LOG = LoggerFactory.getLogger(GraphRestServiceIT.class);
     private static final String CONTAINER_ID = "test";

@@ -1,0 +1,9 @@
+---
+"**/*.adoc":
+  - Bonrob2
+
+"opennms-doc/**/*":
+  - Bonrob2
+
+"docs/**/*":
+  - Bonrob2

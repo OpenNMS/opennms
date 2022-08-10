@@ -28,13 +28,23 @@
 
 package org.opennms.web.springframework.security;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.stream.Collectors;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.web.authentication.WebAuthenticationDetails;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedCredentialsNotFoundException;
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails;
 
 /**
  * <p>RequestAttributePreAuthenticationProcessingFilter class. This filter should be used
@@ -50,6 +60,7 @@ public class RequestHeaderPreAuthenticationProcessingFilter extends AbstractPreA
     private boolean m_enabled = false;
     private String m_userHeader = null;
     private String m_credentialsHeader = null;
+    private String m_authoritiesHeader = null;
     private boolean m_failOnError = false;
 
     public void afterPropertiesSet() {
@@ -65,6 +76,28 @@ public class RequestHeaderPreAuthenticationProcessingFilter extends AbstractPreA
         } else {
             LOG.info("Request header pre-authentication filter is disabled.");
         }
+        setAuthenticationDetailsSource(new AuthenticationDetailsSource());
+    }
+
+    private class AuthenticationDetailsSource extends WebAuthenticationDetailsSource  {
+        @Override
+        public WebAuthenticationDetails buildDetails(HttpServletRequest context) {
+            return new PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails(context, getGrantedAuthorities(context));
+        }
+    }
+
+    protected Collection<? extends GrantedAuthority> getGrantedAuthorities(HttpServletRequest context) {
+        String roles = "";
+        if (m_authoritiesHeader != null) {
+            roles = context.getHeader(m_authoritiesHeader);
+        }
+        if (StringUtils.isBlank(roles)) {
+            return Collections.emptyList();
+        }
+        return Arrays.stream(roles.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .map(SimpleGrantedAuthority::new).collect(Collectors.toList());
     }
 
     @Override
@@ -110,6 +143,14 @@ public class RequestHeaderPreAuthenticationProcessingFilter extends AbstractPreA
      */
     public void setCredentialsHeader(final String credentialsHeader) {
         m_credentialsHeader = credentialsHeader;
+    }
+
+    public String getAuthoritiesHeader() {
+        return m_authoritiesHeader;
+    }
+
+    public void setAuthoritiesHeader(String authoritiesHeader) {
+        m_authoritiesHeader = authoritiesHeader;
     }
 
     /**

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,13 +30,16 @@ package org.opennms.features.datachoices.internal;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.stream.Collectors;
 
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.karaf.features.FeaturesService;
 import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.core.web.HttpClientWrapper;
 import org.opennms.features.datachoices.internal.StateManager.StateChangeHandler;
@@ -44,8 +47,11 @@ import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
+import org.opennms.netmgt.dao.api.MonitoringSystemDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
+import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,6 +79,12 @@ public class UsageStatisticsReporter implements StateChangeHandler {
     private EventDao m_eventDao;
 
     private AlarmDao m_alarmDao;
+
+    private MonitoringLocationDao m_monitoringLocationDao;
+
+    private MonitoringSystemDao m_monitoringSystemDao;
+
+    private FeaturesService m_featuresService;
 
     private boolean m_useSystemProxy = true; // true == legacy behaviour
 
@@ -175,12 +187,26 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         usageStatisticsReport.setNodes(m_nodeDao.countAll());
         usageStatisticsReport.setIpInterfaces(m_ipInterfaceDao.countAll());
         usageStatisticsReport.setSnmpInterfaces(m_snmpInterfaceDao.countAll());
+        usageStatisticsReport.setSnmpInterfacesWithFlows(m_snmpInterfaceDao.getNumInterfacesWithFlows());
         usageStatisticsReport.setMonitoredServices(m_monitoredServiceDao.countAll());
         usageStatisticsReport.setEvents(m_eventDao.countAll());
         usageStatisticsReport.setAlarms(m_alarmDao.countAll());
+        usageStatisticsReport.setSituations(m_alarmDao.getNumSituations());
+        usageStatisticsReport.setMonitoringLocations(m_monitoringLocationDao.countAll());
+        usageStatisticsReport.setMinions(m_monitoringSystemDao.getNumMonitoringSystems(OnmsMonitoringSystem.TYPE_MINION));
         // Node statistics
         usageStatisticsReport.setNodesBySysOid(m_nodeDao.getNumberOfNodesBySysOid());
-
+        // Karaf features
+        String installedFeatures;
+        try {
+            installedFeatures = Arrays.stream(m_featuresService.listInstalledFeatures())
+                    .map(f -> f.getName() + "/" + f.getVersion())
+                    .sorted()
+                    .collect(Collectors.joining(","));
+        } catch (Exception e) {
+            installedFeatures = "ERROR: Failed to enumerate the installed features: " + e.getMessage();
+        }
+        usageStatisticsReport.setInstalledFeatures(installedFeatures);
         return usageStatisticsReport;
     }
 
@@ -218,6 +244,18 @@ public class UsageStatisticsReporter implements StateChangeHandler {
 
     public void setAlarmDao(AlarmDao alarmDao) {
         m_alarmDao = alarmDao;
+    }
+
+    public void setMonitoringLocationDao(MonitoringLocationDao monitoringLocationDao) {
+        m_monitoringLocationDao = monitoringLocationDao;
+    }
+
+    public void setMonitoringSystemDao(MonitoringSystemDao monitoringSystemDao) {
+        m_monitoringSystemDao = monitoringSystemDao;
+    }
+
+    public void setFeaturesService(FeaturesService featuresService) {
+        m_featuresService = featuresService;
     }
 
     public void setUseSystemProxy(boolean useSystemProxy){

@@ -1,6 +1,6 @@
-= WS-Man Detector
+= WS-Management Detector
 
-The WS-Management detector attempts to connect to the agent defined in `wsman-config.xml` and issues an identify command.
+The WSManDetector attempts to connect to the agent defined in `wsman-config.xml` and issues an identify command.
 If the identify command is successful, the service is marked as detected, and the product details returned by the command are optionally stored in the asset fields (see details below).
 
 == Detector facts
@@ -12,13 +12,13 @@ If the identify command is successful, the service is marked as detected, and th
 
 == Configuration and use
 
-.Optional parameters for the WS-Man detector
+.Optional parameters for the WSManDetector
 [options="header, autowidth"]
 [cols="1,4,1"]
 |===
 | Parameter
 | Description
-| Default
+| Default value
 
 | updateAssets
 | Stores the product vendor and product version in the `vendor` and `modelNumber` asset fields.
@@ -41,7 +41,7 @@ For example, a Windows Server 2008 machine returns:
 If these asset fields are being used for another purpose, disable this behavior by setting the `updateAssets` parameters to `false` in the detector configuration of the appropriate foreign source.
 
 NOTE: Some agents may respond to the identify command with generic identities, such as Openwsman 2.0.0.
-      Specify the `product-vendor` and `product-version` attributes in `wsman-config.xml` to overwrite these values.
+Specify the `product-vendor` and `product-version` attributes in `wsman-config.xml` to overwrite these values.
 
 Example detector configuration:
 

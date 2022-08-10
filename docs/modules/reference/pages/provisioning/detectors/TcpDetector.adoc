@@ -1,6 +1,6 @@
 = TCP Service Detector
 
-This detector lets you find TCP-based services for monitoring in your network.
+The TCPDetector lets you find TCP-based services for monitoring in your network.
 
 == Detector facts
 
@@ -11,13 +11,13 @@ This detector lets you find TCP-based services for monitoring in your network.
 
 == Configuration and use
 
-.Optional parameters for the TCP service detector
+.Optional parameters for the TCPDetector
 [options="header, autowidth"]
 [cols="1,3,1"]
 |===
 | Parameter
 | Description
-| Default
+| Default value
 
 | port
 | Port to query.
@@ -26,10 +26,9 @@ This detector lets you find TCP-based services for monitoring in your network.
 | banner
 | RegEx expression to match.
 | .*
-
 |===
 
-== Example Configuration
+== Example configuration
 
 [source,xml]
 ----

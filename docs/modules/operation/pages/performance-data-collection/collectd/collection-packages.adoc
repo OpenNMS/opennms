@@ -111,7 +111,7 @@ For a list of collector-specific parameters and their default values, refer to t
 | Service name
 
 | interval
-| Polling interval, in milliseconds (5 minutes by default).
+| Collection interval, in milliseconds (5 minutes by default).
 
 | user-defined
 | Set to `true` if user defined the collection source in the UI.

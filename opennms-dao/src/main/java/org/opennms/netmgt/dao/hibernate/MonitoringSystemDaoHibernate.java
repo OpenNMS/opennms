@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
+import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.MonitoringSystemDao;
 import org.opennms.netmgt.model.OnmsMonitoringSystem;
 
@@ -35,5 +36,12 @@ public class MonitoringSystemDaoHibernate extends AbstractDaoHibernate<OnmsMonit
 
     public MonitoringSystemDaoHibernate() {
         super(OnmsMonitoringSystem.class);
+    }
+
+    @Override
+    public long getNumMonitoringSystems(String type) {
+        CriteriaBuilder criteriaBuilder = new CriteriaBuilder(OnmsMonitoringSystem.class);
+        criteriaBuilder.eq("type", type);
+        return countMatching(criteriaBuilder.toCriteria());
     }
 }

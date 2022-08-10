@@ -2,11 +2,16 @@
 = Geocoder Service
 
 The Geocoder Service resolves geolocation information within {page-component-title}.
-{page-component-title} supports several geocoder services.
+{page-component-title} supports several external geocoder services.
 By default, geolocation resolution is disabled.
 
 When enabled, geolocation is performed based on the presence of address-related asset fields assigned to a node.
+The geocoder service will only run against nodes that are missing latitute and longitude fields but do have street address fields.
 See the xref:provisioning/directed-discovery.adoc[provisioning] documentation for steps to define asset fields on a requisition.
+
+Resolved coordinates are stored in the database as node asset fields, but the geocoder service does not update requisitions.
+An alternative to the geocoder service is the xref:reference:provisioning/adapters/geoip.adoc[GeoIP provisioning adapter].
+This adapter can look up coordinates based on IP address, and will update the node's requisition definition, bypassing the need for the geocoder service to determine location based on address.
 
 == Configuration
 

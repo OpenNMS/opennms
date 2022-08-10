@@ -30,6 +30,7 @@ package org.opennms.web.rest.v1;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -319,6 +320,9 @@ public class HardwareInventoryResource extends OnmsRestService {
                 HwEntityAttributeType t = m_hwEntityAttribTypeDao.findTypeByName(typeName);
                 if (t == null) {
                     t = a.getType();
+                    if(!isValidOid(t.getOid())){
+                        throw getException(Status.BAD_REQUEST, "OID {" +  t.getOid()  + "} provided in entity is not valid.");
+                    }
                     m_hwEntityAttribTypeDao.save(t);
                 }
                 typesMap.put(t.getName(), t);
@@ -328,6 +332,14 @@ public class HardwareInventoryResource extends OnmsRestService {
         for (OnmsHwEntity child : entity.getChildren()) {
             updateTypes(typesMap, child);
         }
+    }
+
+    /**
+     * @param oId
+     * @return boolean value
+     */
+    private boolean isValidOid(String oId){
+        return Pattern.compile("^[\\.0-9]*$").matcher(oId).matches();
     }
 
 }

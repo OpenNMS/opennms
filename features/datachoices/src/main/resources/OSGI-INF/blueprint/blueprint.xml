@@ -26,6 +26,9 @@
     <reference id="monitoredServiceDao" interface="org.opennms.netmgt.dao.api.MonitoredServiceDao" availability="mandatory"/>
     <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory"/>
     <reference id="snmpInterfaceDao" interface="org.opennms.netmgt.dao.api.SnmpInterfaceDao" availability="mandatory"/>
+    <reference id="monitoringLocationDao" interface="org.opennms.netmgt.dao.api.MonitoringLocationDao" availability="mandatory"/>
+    <reference id="monitoringSystemDao" interface="org.opennms.netmgt.dao.api.MonitoringSystemDao" availability="mandatory"/>
+    <reference id="featuresService" interface="org.apache.karaf.features.FeaturesService"/>
 
     <!-- The state manager will manually pull properties from the configuration file -->
     <bean id="stateManager" class="org.opennms.features.datachoices.internal.StateManager"/>
@@ -41,6 +44,9 @@
         <property name="monitoredServiceDao" ref="monitoredServiceDao"/>
         <property name="nodeDao" ref="nodeDao"/>
         <property name="snmpInterfaceDao" ref="snmpInterfaceDao"/>
+        <property name="monitoringLocationDao" ref="monitoringLocationDao"/>
+        <property name="monitoringSystemDao" ref="monitoringSystemDao"/>
+        <property name="featuresService" ref="featuresService"/>
     </bean>
 
     <bean id="dataChoiceRestService" class="org.opennms.features.datachoices.web.internal.DataChoiceRestServiceImpl">
