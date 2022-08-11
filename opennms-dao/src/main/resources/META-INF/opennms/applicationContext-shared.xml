@@ -276,9 +276,6 @@
     <bean id="alarmStatisticsService" class="org.opennms.netmgt.dao.stats.DefaultAlarmStatisticsService" />
     <onmsgi:service interface="org.opennms.netmgt.dao.api.AlarmStatisticsService" ref="alarmStatisticsService" />
 
-    <bean id="provisiondConfigDao" class="org.opennms.netmgt.dao.jaxb.DefaultProvisiondConfigurationDao"/>
-    <onmsgi:service interface="org.opennms.netmgt.dao.api.ProvisiondConfigurationDao" ref="provisiondConfigDao" />
-
     <bean id="alarmEntityNotifier" class="org.opennms.netmgt.dao.support.AlarmEntityNotifierImpl"/>
     <onmsgi:service interface="org.opennms.netmgt.dao.api.AlarmEntityNotifier" ref="alarmEntityNotifier" />
     <onmsgi:list id="alarmEntityListeners" interface="org.opennms.netmgt.dao.api.AlarmEntityListener">

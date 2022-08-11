@@ -29,10 +29,21 @@
 package org.opennms.features.config.rest.api;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import org.springframework.web.bind.annotation.PathVariable;
 
 @Path("/cm")
 @Produces("application/json")
@@ -119,4 +130,44 @@ public interface ConfigManagerRestService {
     @DELETE
     @Path("/{configName}/{configId}")
     Response deleteConfig(@PathParam("configName") String configName, @PathParam("configId") String configId);
+
+    /**
+     * Get config part specified by configName, configId and path to the part
+     *
+     * @param configName configuration name
+     * @param configId configuration id
+     * @param jsonPath path in JsonPath format
+     * @return requested part of configuration
+     */
+    @GET
+    @Path(value="/{configName}/{configId}/{jsonPath:\\$.*}")
+    Response getConfigPart(@PathVariable("configName") String configName, @PathVariable("configId") String configId,
+                           @PathVariable("jsonPath") String jsonPath);
+
+    /**
+     * Update config part specified by configName, configId and path to the part
+     *
+     * @param configName configuration name
+     * @param configId configuration id
+     * @param jsonPath path in JsonPath format
+     * @return empty response
+     */
+    @PUT
+    @Path(value="/{configName}/{configId}/{jsonPath:\\$.*}")
+    Response updateConfigPart(@PathVariable("configName") String configName, @PathVariable("configId") String configId,
+                              @PathVariable("jsonPath") String path, String jsonPath);
+
+    /**
+     * Delete config part specified by configName, configId and path to the part
+     *
+     * @param configName configuration name
+     * @param configId configuration id
+     * @param jsonPath path in JsonPath format
+     * @return empty response
+     */
+    @DELETE
+    @Path(value="/{configName}/{configId}/{jsonPath:\\$.*}")
+    Response deleteConfigPart(@PathVariable("configName") String configName, @PathVariable("configId") String configId,
+                              @PathVariable("jsonPath") String jsonPath);
+
 }

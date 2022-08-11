@@ -1764,6 +1764,7 @@
     <jschVersion>0.1.72</jschVersion>
     <jsonVersion>20171018</jsonVersion>
     <jsonPatchVersion>1.13</jsonPatchVersion>
+    <jsonPathVersion>2.7.0</jsonPathVersion>
     <jsoupVersion>1.7.2</jsoupVersion>
     <jsonlibVersion>2.4</jsonlibVersion>
     <jsonlibBundleVersion>2.4_1</jsonlibBundleVersion>
