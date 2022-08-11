@@ -59,17 +59,9 @@ public class LegacyPriorityExecutor implements PausableFiber {
                 Comparator.comparing(PriorityReadyRunnable::getPriority));
     }
 
-    public int getPriorityQueueSize() {
-        synchronized (priorityQueue) {
-            return priorityQueue.size();
-        }
-    }
-
-    public void addPriorityReadyRunnable(PriorityReadyRunnable job) {
-        synchronized (priorityQueue) {
-            priorityQueue.add(job);
-            LOG.info("addPriorityReadyRunnable: Added {}, total in queue: {}", job.getInfo(), priorityQueue.size());
-        }
+    public synchronized void addPriorityReadyRunnable(PriorityReadyRunnable job) {
+        priorityQueue.add(job);
+        LOG.info("addPriorityReadyRunnable: Added {}, total in queue: {}", job.getInfo(), priorityQueue.size());
     }
 
     @Override
@@ -91,7 +83,7 @@ public class LegacyPriorityExecutor implements PausableFiber {
     }
 
     @Override
-    public synchronized void start() {
+    public void start() {
         m_worker.execute(() -> {
             synchronized (this) {
                 m_status = RUNNING;
@@ -99,46 +91,40 @@ public class LegacyPriorityExecutor implements PausableFiber {
             LOG.info("run: Priority Executor {} running", m_parent);
 
             while (true) {
-                if (m_status == STOP_PENDING) {
-                    LOG.debug("run: status = {}, time to exit", m_status);
-                    break;
-                }
-                while (m_status == PAUSE_PENDING || m_status == PAUSED) {
-                    if (m_status == PAUSE_PENDING) {
-                        LOG.debug("run: pausing.");
-                    }
-                    m_status = PAUSED;
-                    try {
-                        synchronized (this) {
-                            wait();
+                try {
+                    LOG.debug("Taking");
+                    PriorityReadyRunnable executable = priorityQueue.take();
+                    LOG.debug("Taked: {}", executable.getInfo());
+                    while (m_status == PAUSE_PENDING || m_status == PAUSED) {
+                        if (m_status == PAUSE_PENDING) {
+                            LOG.info("run: pausing.");
                         }
-                    } catch (InterruptedException ex) {
-                        // exit
+                        m_status = PAUSED;
+                        synchronized (this) {
+                                wait();
+                        }
+                    }
+                    if (m_status == STOP_PENDING) {
+                        LOG.info("run: status = {}, time to exit", m_status);
                         break;
                     }
-                }
-
-                // if resume pending then change to running
-
-                if (m_status == RESUME_PENDING) {
-                    LOG.debug("run: resuming.");
-
-                    m_status = RUNNING;
-                }
-                try {
-                        PriorityReadyRunnable executable = priorityQueue.take();
-                        if (executable.isReady()) {
-                            priorityJobPoolExecutor.execute(executable);
-                        } else {
-                            executable.setPriority(executable.getPriority() + 1);
-                            addPriorityReadyRunnable(executable);
-                        }
+                    if (m_status == RESUME_PENDING) {
+                        LOG.info("run: resuming.");
+                        m_status = RUNNING;
+                    }
+                    if (executable.isReady()) {
+                        priorityJobPoolExecutor.execute(executable);
+                        LOG.debug("run: added to priority job executor thread pool: {}", executable.getInfo());
                         if (priorityJobPoolExecutor instanceof ThreadPoolExecutor) {
                             ThreadPoolExecutor e = (ThreadPoolExecutor) priorityJobPoolExecutor;
                             String ratio = String.format("%.3f",e.getTaskCount() > 0 ? BigDecimal.valueOf(e.getCompletedTaskCount()).divide(BigDecimal.valueOf(e.getTaskCount()), 2, RoundingMode.DOWN) : 0) ;
                             LOG.debug("thread pool statistics: activeCount={}, taskCount={}, completedTaskCount={}, completedRatio={}, poolSize={}",
                                     e.getActiveCount(), e.getTaskCount(), e.getCompletedTaskCount(), ratio, e.getPoolSize());
                         }
+                    } else {
+                        executable.setPriority(executable.getPriority() + 1);
+                        addPriorityReadyRunnable(executable);
+                    }
                 } catch (InterruptedException e) {
                     break;
                 }

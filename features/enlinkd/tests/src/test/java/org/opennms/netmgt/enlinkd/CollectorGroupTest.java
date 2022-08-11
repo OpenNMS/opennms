@@ -32,10 +32,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.fiber.Fiber;
@@ -45,8 +47,12 @@ import org.opennms.netmgt.enlinkd.common.AbstractExecutable;
 import org.opennms.netmgt.enlinkd.common.LegacyPriorityExecutor;
 import org.opennms.netmgt.enlinkd.common.SchedulableNodeCollectorGroup;
 import org.opennms.netmgt.scheduler.LegacyScheduler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CollectorGroupTest {
+
+    private static final Logger LOG = LoggerFactory.getLogger(CollectorGroupTest.class);
 
     @Before
     public void setUp() throws Exception {
@@ -75,13 +81,13 @@ public class CollectorGroupTest {
 
         @Override
         public void runExecutable() {
-            System.out.println("Started: " + m_name);
+            LOG.info("Started: {}", m_name);
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            System.out.println("Ended: " + m_name);
+            LOG.info("Ended: {}", m_name);
         }
 
         @Override
@@ -157,15 +163,16 @@ public class CollectorGroupTest {
         executor.addPriorityReadyRunnable(new ExecutableTest("L",40) );
 
         executor.start();
-        Thread.sleep(5);
+        Thread.sleep(2);
         executor.pause();
         assertEquals(PausableFiber.PAUSE_PENDING, executor.getStatus());
-        Thread.sleep(1000);
+        Thread.sleep(3000);
         assertEquals(PausableFiber.PAUSED, executor.getStatus());
         executor.resume();
         assertEquals(PausableFiber.RESUME_PENDING, executor.getStatus());
-        Thread.sleep(5);
+        Thread.sleep(200);
         assertEquals(PausableFiber.RUNNING, executor.getStatus());
+        Thread.sleep(5000);
 
     }
 
@@ -201,5 +208,47 @@ public class CollectorGroupTest {
         assertEquals(Fiber.STOPPED,executor.getStatus());
     }
 
+    @Test
+    public void testPriorityBlockingQueueOrder() {
+        PriorityBlockingQueue<Integer> queue = new PriorityBlockingQueue<>();
+        ArrayList<Integer> polledElements = new ArrayList<>();
 
+        queue.add(1);
+        queue.add(5);
+        queue.add(2);
+        queue.add(3);
+        queue.add(4);
+
+        queue.drainTo(polledElements);
+
+        assertEquals(polledElements.get(0).intValue(),1);
+        assertEquals(polledElements.get(1).intValue(),2);
+        assertEquals(polledElements.get(2).intValue(),3);
+        assertEquals(polledElements.get(3).intValue(),4);
+        assertEquals(polledElements.get(4).intValue(),5);
+    }
+
+    @Test
+    public void testPriorityBlockingQueueTake() throws InterruptedException {
+        PriorityBlockingQueue<Integer> queue = new PriorityBlockingQueue<>();
+
+        new Thread(() -> {
+            LOG.info("Polling...");
+            while(true) {
+            try {
+                LOG.info("Taking");
+                Integer poll = queue.take();
+                LOG.info("Taked: " + poll);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+
+            }            }
+        }).start();
+
+        Thread.sleep(TimeUnit.SECONDS.toMillis(5));
+        LOG.info("Adding to queue");
+        queue.add(1);
+        queue.add(2);
+        queue.add(3);
+    }
 }

@@ -306,6 +306,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
      */
     protected synchronized void onStop() {
               // Stop the scheduler
+        m_executor.stop();
         m_scheduler.stop();
         m_scheduler = null;
     }
@@ -317,6 +318,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
      */
     protected synchronized void onPause() {
         m_scheduler.pause();
+        m_executor.pause();
     }
 
     /**
@@ -325,6 +327,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
      * </p>
      */
     protected synchronized void onResume() {
+        m_executor.resume();
         m_scheduler.resume();
     }
 
