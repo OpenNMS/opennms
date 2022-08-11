@@ -156,17 +156,18 @@ if "trigger-docs" in mappings:
 if "trigger-ui" in mappings:
     build_mappings["build"]["ui"] = mappings["trigger-ui"]
 
-build_mappings["build"]["coverage"] = mappings["trigger-coverage"]
+if "trigger-coverage" in mappings:
+    build_mappings["build"]["coverage"] = mappings["trigger-coverage"]
 
 if mappings["trigger-flaky-smoke"]:
     build_mappings["tests"]["smoke-flaky"] = mappings["trigger-flaky-smoke"]
 
 if re.match(".*smoke.*", branch_name):
-    print("Detected smoke in the branch_name")
+    print("Detected smoke in the branch name")
     build_mappings["tests"]["smoke"] = True
 
 if re.match(".*flaky.*", branch_name):
-    print("Detected smoke in the flaky")
+    print("Detected smoke in the branch name")
     build_mappings["tests"]["smoke-flaky"] = True
 
 
