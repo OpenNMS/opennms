@@ -8,7 +8,7 @@ For additional information and procedures on user management, including user gro
 [[ga-data-choices]]
 == First-time login and data choices
 
-Access the {page-component-title} web application at \http://<ip-or-fqdn-of-your-server>:8980/opennms.
+Access the {page-component-title} web application at `\http://<ip-or-fqdn-of-your-server>:8980/opennms`.
 
 The default user login is `admin` with the password `admin`.
 
@@ -30,7 +30,7 @@ NOTE: Admin users can xref:admin/housekeeping/introduction.adoc#disable-data-col
 After logging in for the first time, make sure to change the default admin user password to a secure one:
 
 . Click the gear icon in the top right.
-. Choose *Configure OpenNMS -> Configure Users, Groups and On-Call roles* and select *Configure Users*.
+. Choose menu:OpenNMS System[Configure Users, Groups and On-Call roles > Configure Users].
 . Click *Modify* beside the admin user.
 . In the *User Password* area, click *Reset Password*, update the password and click *OK*.
 . Click *Finish* at the bottom of the Modify User screen to save changes.
