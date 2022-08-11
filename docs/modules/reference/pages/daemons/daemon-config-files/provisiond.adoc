@@ -22,10 +22,22 @@ ifeval::["{page-component-title}" == "Meridian"]
 | yes
 endif::[]
 
-| foreign-sources.xsd
-| Settings for provisioning foreign sources. +
-If these settings are modified using the UI, a `default-foreign-sources.xsd` file will be automatically created in the root directory.
+| default-foreign-source.xml
+| List of xref:reference:provisioning/detectors.adoc[detectors] and xref:reference:provisioning/policies.adoc[policies] to apply when scanning requisitioned nodes.
+Does not exist by default.
+Once these settings are modified using the UI, a `default-foreign-source.xml` file will be automatically created in `$\{OPENNMS_HOME}/etc`.
 | no
+| no
+
+| foreign-sources/*.xml
+| List of xref:reference:provisioning/detectors.adoc[detectors] and xref:reference:provisioning/policies.adoc[policies] to apply when scanning nodes in a requisition matching the filename.
+Does not exist by default.
+| yes
+| no
+
+| imports/*.xml
+| One file per requisition, containing the list of nodes to be imported for monitoring.
+| yes
 | no
 |===
 
