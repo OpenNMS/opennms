@@ -14,7 +14,6 @@ from library import cci
 def append_to_sample_workflow(workflow_path,entry):
     if len(workflow_path) > 1:
         for e in entry:
-            #if e not in workflow_path:
             workflow_path.append(e)
     else:
         workflow_path=entry

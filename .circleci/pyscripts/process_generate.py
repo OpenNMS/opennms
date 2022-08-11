@@ -17,7 +17,6 @@ libgit = libgit.libgit("stdout")
 
 libfile = libfile.libfile()
 
-# os.chdir(os.environ.get("CIRCLE_WORKING_DIRECTORY"))
 
 libgit.switchBranch(base_revision)
 libgit.switchBranch(head)
@@ -67,12 +66,7 @@ mappings = dict(mappings)
 
 print("Mappings:", mappings)
 
-
-# If *IT.java files have changed -> enable integration builds
-# If *Test.java files have changed -> enable smoke builds
-# if Dockerfiles (under opennms-container) have changed enable docker builds
 What_to_build = []
-
 
 def addTobuildList(item):
     if item not in What_to_build:
@@ -149,7 +143,6 @@ else:
         }
     }
 
-# build_mappings["build"]["build"]=mappings["trigger-build"]
 if "trigger-docs" in mappings:
     build_mappings["build"]["docs"] = mappings["trigger-docs"]
 
@@ -173,7 +166,7 @@ if re.match(".*flaky.*", branch_name):
 
 print("Git Keywords:", git_keywords)
 if "circleci_configuration" in What_to_build and len(What_to_build) == 1 and not build_mappings["build"]["build"]:
-    # if circleci_configuration is the only entry in the list we don't want to trigger a buildss.
+    # if circleci_configuration is the only entry in the list we don't want to trigger a build.
     mappings["trigger-build"] = False
     build_mappings["build"]["build"] = False
 
