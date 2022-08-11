@@ -162,9 +162,11 @@ if mappings["trigger-flaky-smoke"]:
     build_mappings["tests"]["smoke-flaky"] = mappings["trigger-flaky-smoke"]
 
 if re.match(".*smoke.*", branch_name):
+    print("Detected smoke in the branch_name")
     build_mappings["tests"]["smoke"] = True
 
 if re.match(".*flaky.*", branch_name):
+    print("Detected smoke in the flaky")
     build_mappings["tests"]["smoke-flaky"] = True
 
 
