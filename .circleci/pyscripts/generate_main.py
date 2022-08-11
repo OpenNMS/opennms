@@ -193,7 +193,7 @@ for e in main_yml_content:
             if build_components["tests"]["smoke-flaky"]:
                 print("tests > smoke-flaky:", circleCI.get_Workflow_dependency('smoke-test-flaky'))
                 workflow = circleCI.get_Workflow_yaml(
-                    "smoke-test-flaky", level,enable_filters=False)
+                    "smoke-test-flaky", level,enable_filters=filters_enabled)
                 workflow_path=append_to_sample_workflow(workflow_path,workflow)
 
             if build_components["debian-packages"]["minion"] or \
