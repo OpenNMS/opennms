@@ -28,7 +28,7 @@ Note that you must include the `-Djava.rmi.server.hostname=` option or {page-com
 Authentication is allowed only for users that are in the `admin` role (`ROLE_ADMIN`), or the `jmx` role (`ROLE_JMX`).
 To make a user an admin, add only the `ROLE_ADMIN` role to the user in `users.xml`.
 To add the `jmx` role to the user, add the `ROLE_JMX` role to the user in `users.xml`, and also the `ROLE_USER` role if it is required to provide access to the Web UI.
-(Also see <<user-management/security-roles.adoc#ga-role-user-management-roles, Assigning User Permissions>>.)
+(Also see <<deep-dive/user-management/security-roles.adoc#ga-role-user-management-roles, Assigning User Permissions>>.)
 
 Make sure `$\{OPENNMS_HOME}/etc/jmxremote.access` has the appropriate settings:
 

@@ -4,12 +4,12 @@
 
 Managing users involves the following tasks:
 
-* xref:quick-start/users.adoc#ga-data-choices[step 1: login and change admin password]
-* xref:quick-start/users.adoc#ga-admin-user-setup[admin user setup]
+* xref:quick-start/users.adoc#ga-data-choices[Step 1: login and change admin password]
+* xref:quick-start/users.adoc#ga-admin-user-setup[Admin user setup]
 * <<
-* <<user-management/user-config.adoc#ga-user-config, creating and configuring users>>
-* <<user-management/user-groups.adoc#ga-user-groups, creating and configuring groups>>
-* <<user-management/user-oncall.adoc#ga-on-call-role, configuring on-call roles>>
+* <<deep-dive/user-management/user-config.adoc#ga-user-config, Creating and configuring users>>
+* <<deep-dive/user-management/user-groups.adoc#ga-user-groups, Creating and configuring groups>>
+* <<deep-dive/user-management/user-oncall.adoc#ga-on-call-role, Configuring on-call roles>>
 
 [[ga-data-collection]]
 == Data collection

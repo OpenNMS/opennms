@@ -1,3 +1,4 @@
+
 = Device Configuration Backup
 
 OpenNMS lets you back up the configuration of devices like routers, firewalls, and switches, for better disaster recovery in case of network failure.
@@ -9,11 +10,11 @@ Through the UI, users can:
 * Trigger backups to occur when a device’s configuration changes, to ensure you always have a copy of the active device configuration.
 * View backup history, download configurations, search, and compare configurations for specific devices at different points in time.
 
-Only users with the xref:operation:user-management/security-roles.adoc#ga-role-user-management-roles[ROLE_DEVICE_CONFIG_BACKUP role] can perform and monitor device configuration backups.
+Only users with the xref:operation:deep-dive/user-management/security-roles.adoc#ga-role-user-management-roles[ROLE_DEVICE_CONFIG_BACKUP role] can perform and monitor device configuration backups.
 
 IMPORTANT: The devices whose configuration you want to back up must either be TFTP-enabled or support an SSH shell.
 
-== Before You Begin
+== Before you begin
 
 You must configure OpenNMS to perform configuration backups before you can xref:operation:device-config-backup/dcb.adoc#dcb-manage[view and manage] them in the {page-component-title} UI:
 
