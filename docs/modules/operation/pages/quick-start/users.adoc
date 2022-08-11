@@ -19,10 +19,10 @@ We do not share it with third parties.
 
 image::users/data-sources.png[prompt,300]
 
-Click *Show me what is being sent* to see what xref:deep-dive/user-management#ga-data-collection[information we collect].
+Click *Show me what is being sent* to see what xref:admin/housekeeping/introduction.adoc#ga-data-collection[information we collect].
 Statistics collection and publication happen only if an admin user opts in.
 
-NOTE: Admin users can xref:deep-dive/user-management/introduction.adoc#disable-data-collection[enable or disable usage statistics collection] at any time.
+NOTE: Admin users can xref:admin/housekeeping/introduction.adoc#disable-data-collection[enable or disable usage statistics collection] at any time.
 
 [[ga-admin-user-setup]]
 == Admin User Setup
@@ -35,10 +35,10 @@ After logging in for the first time, make sure to change the default admin user 
 . In the *User Password* area, click *Reset Password*, update the password and click *OK*.
 . Click *Finish* at the bottom of the Modify User screen to save changes.
 
-WARNING: Please note that angle brackets (<>), single (') and double quotation marks ("), and the ampersand symbol (&) are not allowed to be used in the user ID.
+WARNING: Note that you cannot use angle brackets (<>), single (') and double quotation marks ("), and the ampersand symbol (&) in the user ID.
 
-We recommend not using the default `admin` user, but instead xref:deep-dive/user-management/user-config.adoc#ga-user-config [create specific users] with the admin role and/or other permissions.
+We recommend that you do not use the default `admin` user, but instead xref:deep-dive/user-management/user-config.adoc#ga-user-config [create specific users] with the admin role and/or other permissions.
 This helps to keep track of who has performed tasks such as clearing alarms or creating notifications.
 
 WARNING: Do not delete the default `admin` and `rtc` users.
-         The `rtc` user is used for the communication of the Real-Time Console on the start page to calculate the node and service availability.
+The `rtc` user is used for the communication of the Real-Time Console on the start page to calculate the node and service availability.

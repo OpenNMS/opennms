@@ -1,10 +1,11 @@
+
 [[ga-role-user-management-roles]]
-= Assigning User Permissions
+= Assign User Permissions
 
 Create user permissions by assigning security roles.
 These roles regulate access to the web UI and the REST API to exchange monitoring and inventory information.
 ifndef::opennms-prime[]
-In a distributed installation the Minion instance requires the ROLE_MINION permission to interact with {page-component-title}.
+In a distributed installation, the Minion instance requires the ROLE_MINION permission to interact with {page-component-title}.
 endif::opennms-prime[]
 
 .Built-in security roles (those with an asterisk are the most commonly used)
@@ -67,7 +68,7 @@ endif::opennms-prime[]
 | Default permissions for a new user to interact with the web UI: can escalate and acknowledge alarms and notifications.
 |===
 
-== Assigning roles to users
+== Assign roles to users
 . Log in as a user with administrative permissions.
 . Click the gear icon in the top right.
 . Choose menu:Configure OpenNMS[Configure Users, Groups and On-Call Roles > Configure Users].
@@ -77,7 +78,7 @@ endif::opennms-prime[]
 . Click *Finish* to apply the changes.
 . Log out and log in to apply the new security role settings.
 
-== Creating custom security roles
+== Create custom security roles
 
 To create a custom security role you need to define the name and specify the security permissions.
 

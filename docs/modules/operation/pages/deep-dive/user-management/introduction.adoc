@@ -4,51 +4,8 @@
 
 Managing users involves the following tasks:
 
-* xref:quick-start/users.adoc#ga-data-choices[Step 1: login and change admin password]
+* xref:quick-start/users.adoc#ga-data-choices[Login and change the admin password]
 * xref:quick-start/users.adoc#ga-admin-user-setup[Admin user setup]
-* <<
-* <<deep-dive/user-management/user-config.adoc#ga-user-config, Creating and configuring users>>
-* <<deep-dive/user-management/user-groups.adoc#ga-user-groups, Creating and configuring groups>>
-* <<deep-dive/user-management/user-oncall.adoc#ga-on-call-role, Configuring on-call roles>>
-
-[[ga-data-collection]]
-== Data collection
-
-When enabled, the `Data Choices` module collects the following anonymous statistics and publishes them on system startup and every 24 hours after:
-
-* System ID (a randomly generated universally unique identifier (UUID))
-* {page-component-title} release
-* {page-component-title} version
-* OS architecture
-* OS name
-* OS version
-* Number of available processors (CPU)
-* Amount of free physical memory
-* Amount of total physical memory
-* Number of alarms in the `alarms` table
-* Number of situations in the `alarms` table
-* Number of events in the `events` table
-* Number of IP interfaces in the `ipinterface` table
-* Number of nodes in the `node` table
-* Number of nodes, grouped by System OID
-* Number of locations
-* Number of Minions
-* Number of Provisiond requisitions by scheme
-* Provisiond thread pool sizes
-* List of enabled/disabled services
-* List of installed features in Karaf
-* Global notification enablement status
-* Destination path count
-* On-call role count
-* Relational Database Management System (RDBMS) Name
-* RDBMS Version
-* Pollerd Tasks Completed
-* Event Logs Processed Count
-* Core Flows Persisted Count
-* Core Newts Samples Inserted Count
-* Core Queued Updates Completed
-
-[[disable-data-collection]]
-=== Disable usage statistics collection
-
-Admin users can enable or disable usage statistics collection at any time by logging into the UI, clicking the gear icon, selecting *Data Choices* in the *Additional Tools* area, and clicking *Opt-in* or *Opt-out*.
+* <<deep-dive/user-management/user-config.adoc#ga-user-config, Create and configure users>>
+* <<deep-dive/user-management/user-groups.adoc#ga-user-groups, Create and configure groups>>
+* <<deep-dive/user-management/user-oncall.adoc#ga-on-call-role, Configure on-call roles>>

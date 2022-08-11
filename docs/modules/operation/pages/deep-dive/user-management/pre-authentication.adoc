@@ -1,14 +1,16 @@
+
 [[ga-role-user-management-pre-authentication]]
 = Web UI Pre-Authentication
 
-It is possible to configure {page-component-title} to run behind a proxy that provides authentication, and then pass the pre-authenticated user to the {page-component-title}webapp using a header.
+You can configure {page-component-title} to run behind a proxy that provides authentication, and then pass the pre-authenticated user to the {page-component-title}webapp using a header.
 
-Define the pre-authentication configuration in `$OPENNMS_HOME/jetty-webapps/opennms/WEB-INF/spring-security.d/header-preauth.xml`. This file is automatically included in the Spring security context, but is not enabled by default.
+Define the pre-authentication configuration in `$OPENNMS_HOME/jetty-webapps/opennms/WEB-INF/spring-security.d/header-preauth.xml`.
+This file is automatically included in the Spring security context, but is not enabled by default.
 
 WARNING: Do not configure {page-component-title} this way unless you are certain the web UI is accessible only to the proxy and not to end users.
-	Otherwise, malicious attackers can craft queries that include the pre-authentication header and get full control of the web UI and REST APIs.
+Otherwise, malicious attackers can craft queries that include the pre-authentication header and get full control of the web UI and REST APIs.
 
-== Enabling pre-authentication
+== Enable pre-authentication
 
 Edit the `header-preauth.xml` file, and set the `enabled` property:
 
@@ -17,7 +19,7 @@ Edit the `header-preauth.xml` file, and set the `enabled` property:
 <beans:property name="enabled" value="true" />
 ----
 
-== Configuring pre-authentication
+== Configure pre-authentication
 
 You can also set the following properties to change the behavior of the pre-authentication plugin:
 
@@ -33,15 +35,17 @@ You can also set the following properties to change the behavior of the pre-auth
 | false
 
 | failOnError
-| If true, disallow login if the header is not set or the user does not exist. If false, fall through to other mechanisms (basic auth, form login, and so on.)
+| If true, disallow login if the header is not set or the user does not exist.
+If false, fall through to other mechanisms (basic auth, form login, and so on.)
 | false
 
 | userHeader
-| The HTTP header that will specify the user to authenticate as.
+| The HTTP header that specifies the user to authenticate as.
 | X-Remote-User
 
 | credentialsHeader
-| A comma-separated list of credentials to associate with the principal. If specified, the header must be set for authentication to be successful.
+| A comma-separated list of credentials to associate with the principal.
+If specified, the header must be set for authentication to be successful.
 | n/a
 
 | authoritiesHeader
@@ -49,9 +53,9 @@ You can also set the following properties to change the behavior of the pre-auth
 | n/a
 |====
 
-== Enabling pre-authorization
+== Enable pre-authorization
 
-Modify `jetty-webapps/opennms/WEB-INF/applicationContext-spring-security.xml`, and set:
+Modify `jetty-webapps/opennms/WEB-INF/applicationContext-spring-security.xml`, and set the following:
 
 [source,xml]
 ---
@@ -62,9 +66,10 @@ Modify `jetty-webapps/opennms/WEB-INF/applicationContext-spring-security.xml`, a
 </beans:bean>
 ---
 
+You can then test with the following:
 
-You can then try testing with:
-```
+----
 curl -H "X-Remote-User: myuser" -H "X-Remote-Role: ROLE_USER,ROLE_REST" http://localhost:8980/opennms/rest/whoami
-```
+----
+
 
