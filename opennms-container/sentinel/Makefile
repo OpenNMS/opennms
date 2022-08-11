@@ -87,9 +87,10 @@ build: test
 	  $(DOCKER_FLAGS) \
 	  .
 
-install: images/$(DOCKER_IMAGE_NAME)
+install: build images/$(DOCKER_IMAGE_NAME)
 	@echo "Load image ..."
-	@docker image load -i images/$(DOCKER_IMAGE_NAME)
+	@docker image load -i "images/$(DOCKER_IMAGE_NAME)"
+	@docker image tag "$(DOCKER_ORG)/$(DOCKER_PROJECT):$(VERSION)" "$(DOCKER_PROJECT):latest"
 
 uninstall:
 	@echo "Remove image ..."

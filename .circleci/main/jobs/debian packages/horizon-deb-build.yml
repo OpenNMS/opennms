@@ -35,11 +35,6 @@ jobs:
             (free -m || :) > ~/build-results/system-logs/free 2>&1
             (docker stats --no-stream || :) > ~/build-results/system-logs/docker_stats 2>&1
             cp -R /tmp/jvmprocmon ~/build-results/system-logs/ || :
-      - setup_remote_docker:
-          docker_layer_caching: true
-      - save-artifacts:
-          path: ~/project/target/debs
-          location: horizondebs      
       - store_artifacts:
           when: always
           path: ~/build-results

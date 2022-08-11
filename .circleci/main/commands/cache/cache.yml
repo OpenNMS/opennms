@@ -76,6 +76,7 @@ commands:
           name: Stowing Assets in << parameters.source_path >> to cache prefix << parameters.cache_prefix >>
           command: |
             TARGET_PATH="/tmp/<< parameters.cache_prefix >>"
+            mkdir -p "${TARGET_PATH}"
             rsync -ar "$(echo "<< parameters.source_path >>" | sed -e 's,/*$,,')/" "${TARGET_PATH}/"
             find "${TARGET_PATH}" -type d -print0 | xargs -0 chmod 775
             find "${TARGET_PATH}" ! -type d -print0 | xargs -0 chmod 664
@@ -103,8 +104,9 @@ commands:
                 name: Restoring assets to << parameters.target_path >> from cached prefix << parameters.cache_prefix >>
                 command: |
                   SOURCE_PATH="/tmp/<< parameters.cache_prefix >>"
-                  mkdir -p "<< parameters.target_path >>"
-                  rsync -ar "${SOURCE_PATH}/" "$(echo "<< parameters.target_path >>" | sed -e 's,/*$,,')/"
+                  TARGET_PATH="$(echo "<< parameters.target_path >>" | sed -e 's,/*$,,')"
+                  mkdir -p "${TARGET_PATH}"
+                  rsync -ar "${SOURCE_PATH}/" "${TARGET_PATH}/"
 
   save-artifacts:
     description: Save Artifacts and Store Artifact Metadata
