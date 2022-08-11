@@ -1,12 +1,92 @@
-[[release-30-changelog]]
 
+[[release-30-changelog]]
 = Changelog
 
-[[releasenotes-changelog-30.0.1]]
+[[releasenotes-changelog-30.0.2]]
 
+== Release 30.0.2
+
+Release 30.0.2 contains quite a few bug fixes as well as number of small features.
+
+We have made a number of improvements to the documentation, including reworking the section on events and adding information on configuring SNMP traps and varbinds.
+
+OpenNMS has extended the anonymous metrics we optionally collect to help us improve the project, such as CPU and memory sizing of the platform, and statistics like number of events and flows.
+Click the gears icon and choose `Additional Tools -> Data Choices` or edit `$OPENNMS_HOME/etc/org.opennms.features.datachoices.cfg` to see what is included and to change your opt-in settings.
+Note that we continue to anonymize the data for internal use only to inform project direction.
+We do not share it with third parties.
+
+The codename for Horizon 30.0.2 is https://wikipedia.org/wiki/$$Gopher$$[_Gopher_].
+
+=== Bug
+
+* Clearing an alarm brings alarm not found message (Issue http://issues.opennms.org/browse/NMS-12981[NMS-12981])
+* [Web] - Weak Password Policy (Issue http://issues.opennms.org/browse/NMS-13981[NMS-13981])
+* [Web] - Password field with autocomplete enabled on Login page (Issue http://issues.opennms.org/browse/NMS-13983[NMS-13983])
+* JVM MemoryPool data collection not working (Issue http://issues.opennms.org/browse/NMS-14041[NMS-14041])
+* Update guava dependency to 25.1 (Issue http://issues.opennms.org/browse/NMS-14209[NMS-14209])
+* Scripts invoke sudo even if running as root (Issue http://issues.opennms.org/browse/NMS-14410[NMS-14410])
+* Flow Thresholding: persist zero traffic rate (Issue http://issues.opennms.org/browse/NMS-14429[NMS-14429])
+* Documentation references invalid docker version for latest horizon version release (Issue http://issues.opennms.org/browse/NMS-14431[NMS-14431])
+* Kafka metrics producer considers zero values optional (Issue http://issues.opennms.org/browse/NMS-14469[NMS-14469])
+* Kafka metrics producer persists unpersisted collectionsets (Issue http://issues.opennms.org/browse/NMS-14470[NMS-14470])
+* New UI: Link to license points to gnu.org/licenses instead of a specific license (Issue http://issues.opennms.org/browse/NMS-14523[NMS-14523])
+* WebMonitor does not track the response time (Issue http://issues.opennms.org/browse/NMS-14535[NMS-14535])
+* Event / Alarms filtering no longer works (Issue http://issues.opennms.org/browse/NMS-14542[NMS-14542])
+* Grafana dashboard reports do not run (Issue http://issues.opennms.org/browse/NMS-14544[NMS-14544])
+* Clicking on the Count # in the Alarm does not bring up the associated Events (Issue http://issues.opennms.org/browse/NMS-14549[NMS-14549])
+* Mappings are not correctly handled in the JSON Collection Handler (Issue http://issues.opennms.org/browse/NMS-14559[NMS-14559])
+* Fix docs references to editing org.apache.karaf.features.cfg (Issue http://issues.opennms.org/browse/NMS-14566[NMS-14566])
+* Spring Framework CVE-2022-22950 Remediation (Issue http://issues.opennms.org/browse/NMS-14568[NMS-14568])
+
+=== Story
+
+* Please update the copyright year on the docs page! (Issue http://issues.opennms.org/browse/NMS-13911[NMS-13911])
+* DCB:  Add Rest End point for deletion of Device Configs (Issue http://issues.opennms.org/browse/NMS-14287[NMS-14287])
+* Add KPIs for CPU count and memory size to datachoices telemetry (Issue http://issues.opennms.org/browse/NMS-14482[NMS-14482])
+* Add KPIs for polls, metrics, events, and flows to datachoices telemetry (Issue http://issues.opennms.org/browse/NMS-14483[NMS-14483])
+* Add KPIs for business service count to datachoices telemetry (Issue http://issues.opennms.org/browse/NMS-14485[NMS-14485])
+* Add KPIs for count of total requisition and requisitions with custom FSD to datachoices telemetry (Issue http://issues.opennms.org/browse/NMS-14486[NMS-14486])
+* Add KPIs for notification entities to datachoices telemetry (Issue http://issues.opennms.org/browse/NMS-14488[NMS-14488])
+* Add KPIs for Sink, RPC, and Time-series strategies to datachoices telemetry (Issue http://issues.opennms.org/browse/NMS-14491[NMS-14491])
+* Add KPI item for RDBMS type and version to datachoices telemetry (Issue http://issues.opennms.org/browse/NMS-14492[NMS-14492])
+* Fix stock graphite-telemetry-interface.groovy script file (Issue http://issues.opennms.org/browse/NMS-14564[NMS-14564])
+
+=== Task
+
+* Update XSD URL (Issue http://issues.opennms.org/browse/NMS-14150[NMS-14150])
+* How to merge config on upgrade using Git (Issue http://issues.opennms.org/browse/NMS-14281[NMS-14281])
+* Document allowed characters in service-names (Issue http://issues.opennms.org/browse/NMS-14423[NMS-14423])
+* Add documentation to describe negate search terms in alarms advanced search  (Issue http://issues.opennms.org/browse/NMS-14437[NMS-14437])
+* JDBCQueryDetector documentation (Issue http://issues.opennms.org/browse/NMS-14453[NMS-14453])
+* JDBStoredProcedureDetector documentation (Issue http://issues.opennms.org/browse/NMS-14454[NMS-14454])
+* Release work (July 13) (Issue http://issues.opennms.org/browse/NMS-14458[NMS-14458])
+
+=== Enhancement
+
+* Update PG installation documentation to use SCRAM (Issue http://issues.opennms.org/browse/NMS-13057[NMS-13057])
+* Upgrade Kafka components to 3.2.0 (Issue http://issues.opennms.org/browse/NMS-13953[NMS-13953])
+* Debugging DCB scripts is a pain (Issue http://issues.opennms.org/browse/NMS-14120[NMS-14120])
+* Update Events Documentation (Issue http://issues.opennms.org/browse/NMS-14212[NMS-14212])
+* Migrate Trap configuration wiki to docs (Issue http://issues.opennms.org/browse/NMS-14323[NMS-14323])
+* Document SNMP oid varbind pattern matching and varbind expansion to create unique events (Issue http://issues.opennms.org/browse/NMS-14346[NMS-14346])
+* SNMP Interface Poller doc updates (Issue http://issues.opennms.org/browse/NMS-14412[NMS-14412])
+* Negate search terms in event advanced search  (Issue http://issues.opennms.org/browse/NMS-14476[NMS-14476])
+* Update documentation for policy matching (Issue http://issues.opennms.org/browse/NMS-14528[NMS-14528])
+* Add option to not store DCB script output (Issue http://issues.opennms.org/browse/NMS-14537[NMS-14537])
+* Add datacollection definition for Eventd processing times (Issue http://issues.opennms.org/browse/NMS-14554[NMS-14554])
+* Fix outdated MySQL / MariaDB JDBC collection config (Issue http://issues.opennms.org/browse/NMS-14571[NMS-14571])
+* simplify assembly tarballs (Issue http://issues.opennms.org/browse/NMS-14572[NMS-14572])
+
+=== Upgrade
+
+* Upgrade to Feather 0.10.15 (Issue http://issues.opennms.org/browse/NMS-14547[NMS-14547])
+
+
+
+[[releasenotes-changelog-30.0.1]]
 == Release 30.0.1
 
-Release 30.0.1 contains a number of bug fixes as well as a number of new features including support for encrypting credentials.
+Release 30.0.1 contains a number of bug fixes as well as new features, including support for encrypting credentials.
 
 The codename for Horizon 30.0.1 is https://wikipedia.org/wiki/$$Chinchilla$$[_Chinchilla_].
 
@@ -26,7 +106,7 @@ The codename for Horizon 30.0.1 is https://wikipedia.org/wiki/$$Chinchilla$$[_Ch
 * External Requisition UI: foreignSource not set for VMware requisition (Issue http://issues.opennms.org/browse/NMS-14478[NMS-14478])
 * Pollerd take a long time to start on systems with large inventories (Issue http://issues.opennms.org/browse/NMS-14524[NMS-14524])
 
-=== New Feature
+=== New feature
 
 * Encrypt SNMP Credentials (Issue http://issues.opennms.org/browse/NMS-14215[NMS-14215])
 * Encrypt Postgres credentials (Issue http://issues.opennms.org/browse/NMS-14216[NMS-14216])
@@ -71,16 +151,13 @@ The codename for Horizon 30.0.1 is https://wikipedia.org/wiki/$$Chinchilla$$[_Ch
 
 * Update all Vue UI packages to latest (Issue http://issues.opennms.org/browse/NMS-14460[NMS-14460])
 
-
-
 [[releasenotes-changelog-30.0.0]]
-
 == Release 30.0.0
 
 Release 30.0.0 is the first in the Horizon 30 series, introducing a number of new features,
 most notably a preview of a new web UI, and the ability to back up infrastructure device
 configs.
- 
+
 The codename for Horizon 30.0.0 is https://wikipedia.org/wiki/$$Nutria$$[_Nutria_].
 
 === Epic
@@ -289,7 +366,7 @@ The codename for Horizon 30.0.0 is https://wikipedia.org/wiki/$$Nutria$$[_Nutria
 * Test provisioning config UI / external requisitions (Issue http://issues.opennms.org/browse/NMS-14264[NMS-14264])
 * Test web UI file editor (Issue http://issues.opennms.org/browse/NMS-14267[NMS-14267])
 * Test flow thresholding (Issue http://issues.opennms.org/browse/NMS-14268[NMS-14268])
-* Circle ci caching OIA issue (Issue http://issues.opennms.org/browse/NMS-14291[NMS-14291])
+* CircleCI caching OIA issue (Issue http://issues.opennms.org/browse/NMS-14291[NMS-14291])
 * Latest DCB UX Updates (Issue http://issues.opennms.org/browse/NMS-14304[NMS-14304])
 * Fix UI yarn.lock conflicts with latest updates (Issue http://issues.opennms.org/browse/NMS-14308[NMS-14308])
 * Fix Feather Dialog issue on 0.10.10 (Issue http://issues.opennms.org/browse/NMS-14316[NMS-14316])
