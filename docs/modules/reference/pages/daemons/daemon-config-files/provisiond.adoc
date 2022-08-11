@@ -2,7 +2,32 @@
 [[ref-daemon-config-files-provisiond]]
 = Provisiond
 
-Handles scanning of requisition data to xref:operation:provisioning/introduction.adoc[provision] into monitored nodes.
+The provision daemon handles scanning of requisition data to xref:operation:provisioning/introduction.adoc[provision] into monitored nodes.
+
+It is recommended that you update configuration settings using the {page-component-title} UI.
+
+.Provisiond configuration file overview
+[options="header"]
+[cols="2,3,1,1"]
+|===
+| File
+| Description
+| Reload Event
+| Restart Required
+
+ifeval::["{page-component-title}" == "Meridian"]
+| provisiond-configuration.xml
+| This file sets requisition definitions for defined discovery of nodes and foreign sources.
+| yes
+| yes
+endif::[]
+
+| foreign-sources.xsd
+| Settings for provisioning foreign sources. +
+If these settings are modified using the UI, a `default-foreign-sources.xsd` file will be automatically created in the root directory.
+| no
+| no
+|===
 
 .Provisiond log file overview
 [options="header"]
