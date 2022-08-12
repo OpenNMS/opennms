@@ -45,7 +45,8 @@ NOTE: Back up `/opt/opennms/etc` before running the script.
 [[ga-data-collection]]
 == Data collection
 
-When enabled, the `Data Choices` module collects the following anonymous statistics and publishes them on system startup and every 24 hours after:
+When enabled, the `Data Choices` module collects the anonymous statistics.
+It publishes them on system startup and every 24 hours after:
 
 * System ID (a randomly generated, universally unique identifier (UUID))
 * {page-component-title} release

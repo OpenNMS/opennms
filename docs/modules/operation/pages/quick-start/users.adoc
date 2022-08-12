@@ -33,7 +33,7 @@ After logging in for the first time, make sure to change the default `admin` acc
 . Choose menu:OpenNMS System[Configure Users, Groups and On-Call Roles > Configure Users].
 . Click *Modify* beside the admin user.
 . In the *User Password* area, click *Reset Password*.
-Update the password and click *OK*.
+. Update the password and click *OK*.
 . Click *Finish* at the bottom of the *Modify User* screen to save changes.
 
 WARNING: You cannot use angle brackets (<>), single (') and double quotation marks ("), or the ampersand symbol (&) in the user ID.
