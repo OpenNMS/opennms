@@ -32,12 +32,16 @@ jobs:
                  BUILD_NUMBER="${CIRCLE_BUILD_NUM}" \
                  BUILD_URL="${CIRCLE_BUILD_URL}" \
                  BUILD_BRANCH="${CIRCLE_BRANCH}"
+            find . -name "minion-config-schema.yml"
             mkdir -p target/config-schema
-            
-      #- store_artifacts:
-      #    when: always
-      #    path: ~/project/target/config-schema
-      #    destination: config-schema
+            cp opennms-container/minion/minion-config-schema.yml "./target/config-schema/"
+      - cache-workflow-assets:
+          cache_prefix: minion-config-schema
+          source_path: target/config-schema/
+      - store_artifacts:
+          when: always
+          path: ~/project/target/config-schema
+          destination: config-schema
       - store_artifacts:
           path: ~/project/opennms-container/minion/images/minion.oci
           destination: minion.oci
