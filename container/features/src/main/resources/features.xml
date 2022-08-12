@@ -508,6 +508,7 @@
         <feature>rate-limited-logger</feature>
         <feature>opennms-core</feature>
         <feature>opennms-distributed-core-api</feature>
+        <feature>opennms-integration-api</feature>
         <feature>opennms-core-tracing</feature>
         <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
         <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.api/${project.version}</bundle>

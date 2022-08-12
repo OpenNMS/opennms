@@ -120,12 +120,12 @@ public class MatchingIpInterfacePolicy extends BasePolicy<OnmsIpInterface> imple
             return iface;
         case DISABLE_COLLECTION:
             LOG.debug("Disabled collection for {} according to policy", iface);
-            snmpiface.setCollectionEnabled(false);
+            snmpiface.setCollectionEnabled(false, OnmsSnmpInterface.CollectDefinitionSource.POLICY);
             iface.setSnmpInterface(snmpiface);
             return iface;
         case ENABLE_COLLECTION:
             LOG.debug("Enabled collection for {} according to policy", iface);
-            snmpiface.setCollectionEnabled(true);
+            snmpiface.setCollectionEnabled(true, OnmsSnmpInterface.CollectDefinitionSource.POLICY);
             iface.setSnmpInterface(snmpiface);
             return iface;
         default:

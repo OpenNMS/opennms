@@ -4,3 +4,6 @@
   #jobs:oci/minion-image-multi-arch#
   #jobs:oci/horizon-publish-oci#
   #jobs:oci/sentinel-publish-oci#
+  #jobs:oci/minion-image#
+  #jobs:oci/horizon-image#
+  #jobs:oci/sentinel-image#
