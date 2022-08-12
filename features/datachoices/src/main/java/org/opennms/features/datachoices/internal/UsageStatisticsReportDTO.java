@@ -51,6 +51,8 @@ public class UsageStatisticsReportDTO {
     private String m_version;
     private String m_packageName;
 
+    private int m_users;
+    private int m_groups;
     private int m_nodes;
     private int m_ipInterfaces;
     private int m_snmpInterfaces;
@@ -332,6 +334,14 @@ public class UsageStatisticsReportDTO {
     public void setNotificationEnablementStatus(Boolean m_notificationEnablementStatus) {
         this.m_notificationEnablementStatus = m_notificationEnablementStatus;
     }
+
+    public int getGroups() {return this.m_groups;}
+
+    public void setGroups(int m_groups) {this.m_groups = m_groups;}
+
+    public int getUsers() {return this.m_users;}
+
+    public void setUsers(int m_users) {this.m_users = m_users;}
 
     public int getOnCallRoleCount() {
         return m_onCallRoleCount;

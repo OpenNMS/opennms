@@ -51,10 +51,7 @@ import org.opennms.core.db.DataSourceFactoryBean;
 import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.core.web.HttpClientWrapper;
 import org.opennms.features.datachoices.internal.StateManager.StateChangeHandler;
-import org.opennms.netmgt.config.GroupFactory;
-import org.opennms.netmgt.config.NotifdConfigFactory;
-import org.opennms.netmgt.config.ServiceConfigFactory;
-import org.opennms.netmgt.config.DestinationPathFactory;
+import org.opennms.netmgt.config.*;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
@@ -138,7 +135,9 @@ public class UsageStatisticsReporter implements StateChangeHandler {
     private NotifdConfigFactory m_notifdConfigFactory;
 
     private GroupFactory m_groupFactory;
+
     private ForeignSourceRepository m_deployedForeignSourceRepository;
+
     private DataSourceFactoryBean m_dataSourceFactoryBean;
 
     private boolean m_useSystemProxy = true; // true == legacy behaviour
@@ -221,6 +220,16 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         thread.start();
     }
 
+    private int getUserCount() {
+        try {
+            UserFactory.init();
+            UserManager userFactory = UserFactory.getInstance();
+            return userFactory.getUsers().size();
+        }catch (Exception e) {
+            return 0;
+        }
+    }
+
     public UsageStatisticsReportDTO generateReport() {
         final SystemInfoUtils sysInfoUtils = new SystemInfoUtils();
         final UsageStatisticsReportDTO usageStatisticsReport = new UsageStatisticsReportDTO();
@@ -234,7 +243,7 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         // Operating System
         usageStatisticsReport.setOsName(System.getProperty("os.name"));
         usageStatisticsReport.setOsArch(System.getProperty("os.arch"));
-        usageStatisticsReport.setOsVersion(System.getProperty("os.version"));
+        usageStatisticsReport.setOsVersion(System.getProperty("os.aversion"));
         // OpenNMS version and flavor
         usageStatisticsReport.setVersion(sysInfoUtils.getVersion());
         usageStatisticsReport.setPackageName(sysInfoUtils.getPackageName());
@@ -246,6 +255,9 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         usageStatisticsReport.setMonitoredServices(m_monitoredServiceDao.countAll());
         usageStatisticsReport.setEvents(m_eventDao.countAll());
         usageStatisticsReport.setAlarms(m_alarmDao.countAll());
+
+        usageStatisticsReport.setGroups(this.getGroupCount());
+        usageStatisticsReport.setUsers(this.getUserCount());
         usageStatisticsReport.setSituations(m_alarmDao.getNumSituations());
         usageStatisticsReport.setMonitoringLocations(m_monitoringLocationDao.countAll());
         usageStatisticsReport.setMinions(m_monitoringSystemDao.getNumMonitoringSystems(OnmsMonitoringSystem.TYPE_MINION));
@@ -269,6 +281,17 @@ public class UsageStatisticsReporter implements StateChangeHandler {
 
         return usageStatisticsReport;
     }
+
+    private int getGroupCount() {
+        try{
+            GroupFactory.init();
+            GroupManager groupFactory = GroupFactory.getInstance();
+            return groupFactory.getGroups().size();
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
     private void setJmxAttributes(UsageStatisticsReportDTO usageStatisticsReport) {
         setSystemJmxAttributes(usageStatisticsReport);
         setOpenNmsJmxAttributes(usageStatisticsReport);
