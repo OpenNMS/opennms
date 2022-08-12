@@ -27,7 +27,7 @@ User maintenance describes additional tasks and information related to users.
 . Click the gear icon at the top-right of the screen.
 . Choose menu:Configure OpenNMS[Configure Users, Groups and On-Call Roles > Configure Users]  or *Configure Groups*.
 . Click the trash bin icon beside the user or group you want to delete.
-. Confirm delete request with *OK*.
+. Click *OK* to confirm deletion.
 
 IMPORTANT: When you delete a group no one receives a notification that the group has been deleted.
 Be aware that deleting a group or user also removes any schedules associated with that group or user, meaning they will not receive notifications specified as part of a schedule.

@@ -16,7 +16,7 @@ Organizing users into groups helps with notifications and lets you assign a set 
 WARNING: You cannot use angle brackets (<>), single (') and double quotation marks ("), or the ampersand symbol (&) in the group name.
 
 . Add users to the group by selecting them from the *Available Users* column and using the arrows to move them to the *Currently in Group* column.
-. (Optional) Assign categories of responsibility to the group, such as Routers, Switches, Servers, etc.
+. (Optional) Assign categories of responsibility to the group, such as Routers, Switches, Servers, and so on.
 . (Optional) Create a <<deep-dive/user-management/user-config.adoc#ga-user-schedule, duty schedule>>.
 . Click *Finish*.
 
