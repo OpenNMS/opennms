@@ -179,7 +179,7 @@
         },
         "sentinel-rpm-build": {
             "requires": [
-                "integration-test"
+                "build"
             ],
             "filters": {
                 "branches": {
@@ -199,8 +199,6 @@
         "smoke-test-core": {
             "requires": [
                 "tarball-assembly-only",
-                "horizon-deb-build",
-                "sentinel-deb-build",
                 "horizon-image",
                 "sentinel-image",
                 "minion-image"
@@ -223,8 +221,6 @@
             "job":"smoke-test-flaky",
             "requires": [
                 "tarball-assembly-only",
-                "horizon-deb-build",
-                "sentinel-deb-build",
                 "horizon-image",
                 "minion-image",
                 "sentinel-image"
@@ -246,8 +242,6 @@
         "smoke-test-minion": {
             "requires": [
                 "tarball-assembly-only",
-                "horizon-deb-build",
-                "sentinel-deb-build",
                 "horizon-image",
                 "minion-image",
                 "sentinel-image"
@@ -269,8 +263,6 @@
         "smoke-test-sentinel": {
             "requires": [
                 "tarball-assembly-only",
-                "horizon-deb-build",
-                "sentinel-deb-build",
                 "horizon-image",
                 "minion-image",
                 "sentinel-image"
@@ -331,17 +323,11 @@
         },
         "minion-image-single-arch": {
             "requires": [
-                "horizon-rpm-build",
-                "minion-deb-build",
-                "sentinel-deb-build",
-                "integration-test",
                 "smoke-test-core",
                 "smoke-test-flaky",
                 "smoke-test-minion",
                 "smoke-test-sentinel",
-                "horizon-image",
-                "minion-image",
-                "sentinel-image"
+                "tarball-assembly-only"
             ],
             "variations": [
                 "linux/amd64",
@@ -368,8 +354,11 @@
                 "linux/arm64"
             ],
             "requires": [
-                "horizon-deb-build",
-                "horizon-image"
+                "tarball-assembly-only",
+                "smoke-test-core",
+                "smoke-test-flaky",
+                "smoke-test-minion",
+                "smoke-test-sentinel"
             ]
         },
         "sentinel-publish-oci": {
@@ -388,7 +377,11 @@
         },
         "sentinel-image-single-arch": {
             "requires": [
-                "sentinel-deb-build"
+                "tarball-assembly-only",
+                "smoke-test-core",
+                "smoke-test-flaky",
+                "smoke-test-minion",
+                "smoke-test-sentinel"
             ]
         },
         "create-merge-foundation-branch": {
