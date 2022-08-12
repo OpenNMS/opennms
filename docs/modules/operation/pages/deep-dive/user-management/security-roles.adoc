@@ -80,16 +80,14 @@ endif::opennms-prime[]
 
 == Create custom security roles
 
-To create a custom security role, you need to define the name and specify the security permissions.
+To create a custom security role you need to define the name and specify the security permissions.
 
-* Create a file called `$OPENNMS_HOME/etc/security-roles.properties`.
-* Add a property called `roles`, and for its value, a comma-separated list of the custom security roles, for example:
+. Create a file called `$\{OPENNMS_HOME}/etc/security-roles.properties`.
+. Add a property called `roles`, and for its value, a comma-separated list of the custom security roles as in the following example:
 
-```
+[source, properties]
+----
 roles=operator,stage
-```
+----
 
-To define permissions associated with the custom security role, manually update the application context of the Spring security here:
-```
-/opt/opennms/jetty-webapps/opennms/WEB-INF/applicationContext-spring-security.xml
-```
+To define permissions associated with the custom security role, manually update the application context of the Spring security at `$\{OPENNMS_HOME}/jetty-webapps/opennms/WEB-INF/applicationContext-spring-security.xml`.

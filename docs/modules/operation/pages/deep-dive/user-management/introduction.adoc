@@ -1,12 +1,2 @@
 
-[[ga-users-intro]]
 = User Management
-
-Managing users involves the following tasks:
-
-* xref:quick-start/users.adoc#ga-data-choices[Log in and change the admin password]
-* xref:quick-start/users.adoc#ga-admin-user-setup[Admin user setup]
-* <<deep-dive/user-management/user-config.adoc#ga-user-config, Create and configure users>>
-* <<deep-dive/user-management/user-groups.adoc#ga-user-groups, Create and configure groups>>
-* <<deep-dive/user-management/user-oncall.adoc#ga-on-call-role, Configure on-call roles>>
-
