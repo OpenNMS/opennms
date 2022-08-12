@@ -1,5 +1,5 @@
 
-= Step 1: First Time Login
+= Step 1: First-Time Login
 
 This section describes the first-time login to OpenNMS {page-component-title}, how to change the `admin` account password, and how to create a user.
 
