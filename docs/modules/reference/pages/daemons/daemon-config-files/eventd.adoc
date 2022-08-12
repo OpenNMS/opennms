@@ -1,7 +1,7 @@
 [[ref-daemon-config-files-eventd]]
 = Eventd
 
-Core {page-component-title} process to handle generation of xref:operation:events/anatomy-events.adoc[events].
+Core {page-component-title} process to handle generation of xref:operation:events/introduction.adoc[events].
 
 .Eventd configuration file overview
 [options="header"]

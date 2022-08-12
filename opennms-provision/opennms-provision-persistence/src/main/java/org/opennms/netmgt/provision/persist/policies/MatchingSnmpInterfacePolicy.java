@@ -94,11 +94,11 @@ public class MatchingSnmpInterfacePolicy extends BasePolicy<OnmsSnmpInterface> i
             LOG.debug("NOT Persisting {} according to policy", iface);
             return null;
         case DISABLE_COLLECTION:
-            iface.setCollectionEnabled(false);
+            iface.setCollectionEnabled(false, OnmsSnmpInterface.CollectDefinitionSource.POLICY);
             LOG.debug("Disabled collection for {} according to policy", iface);
             return iface;
         case ENABLE_COLLECTION:
-            iface.setCollectionEnabled(true);
+            iface.setCollectionEnabled(true, OnmsSnmpInterface.CollectDefinitionSource.POLICY);
             LOG.debug("Enabled collection for {} according to policy", iface);
             return iface;
         case ENABLE_POLLING:
