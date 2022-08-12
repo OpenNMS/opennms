@@ -1,5 +1,5 @@
 
-= Step 1: Log In and Change `Admin` Password
+= Step 1: First Time Login
 
 This section describes the first-time login to OpenNMS {page-component-title}, how to change the `admin` account password, and how to create a user.
 
@@ -13,7 +13,6 @@ Access the {page-component-title} web application at `\http://<ip-or-fqdn-of-you
 The default user login is `admin` with the password `admin`.
 
 The first time you log in, we prompt for permission to allow the `Data Choices` module to collect and publish anonymous usage statistics to https://stats.opennms.org.
-
 The OpenNMS Group uses this anonymized information to help determine product usage and to improve the {page-component-title} software.
 We do not share it with third parties.
 
@@ -45,3 +44,4 @@ You should still change the password of the admin user to be more secure.
 WARNING: Do not delete the default `admin` and `rtc` user accounts.
 The `rtc` user account is used for the communication of the Real-Time Console on the start page to calculate the node and service availability.
 You should still change the password of the admin user to be more secure.
+

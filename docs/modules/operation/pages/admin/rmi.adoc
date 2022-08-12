@@ -23,13 +23,12 @@ ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -Djava.rmi.server.hostna
 
 This tells {page-component-title} to listen for RMI on port `18980`, and to listen on all interfaces.
 (Originally, RMI was used only for the legacy remote poller, so despite the property name mentioning the "opennms poller server" it applies to RMI as a whole.)
-Note that you must include the `-Djava.rmi.server.hostname=` option or {page-component-title} will accept connections on the RMI port but not be able to complete a valid connection.
+Note that you must include the `-Djava.rmi.server.hostname=` option, otherwise {page-component-title} will accept connections on the RMI port but not be able to complete a valid connection.
 
 Authentication is allowed only for users who are assigned the `admin` role (`ROLE_ADMIN`) or the `jmx` role (`ROLE_JMX`).
 To make a user an admin, add only the `ROLE_ADMIN` role to the user in `users.xml`.
 To add the `jmx` role to the user, add the `ROLE_JMX` role to the user in `users.xml`.
-If the `ROLE_USER` role is required to provide access to the web UI, add it to the user as well.
-(Also see <<deep-dive/user-management/security-roles.adoc#ga-role-user-management-roles, Assign User Permissions>>.)
+If the `ROLE_USER` role is required to provide access to the web UI, add it to the user as well (see <<deep-dive/user-management/security-roles.adoc#ga-role-user-management-roles, Assign User Permissions>>).
 
 Make sure `$\{OPENNMS_HOME}/etc/jmxremote.access` has the appropriate settings:
 

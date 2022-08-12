@@ -16,12 +16,12 @@ Organizing users into groups helps with notifications and lets you assign a set 
 WARNING: You cannot use angle brackets (<>), single (') and double quotation marks ("), or the ampersand symbol (&) in the group name.
 
 . Add users to the group by selecting them from the *Available Users* column and using the arrows to move them to the *Currently in Group* column.
-. (Optional) Assign categories of responsibility to the group, such as Routers, Switches, Servers, and so on.
+. (Optional) Assign categories of responsibility to the group (Routers, Switches, Servers, and so on).
 . (Optional) Create a <<deep-dive/user-management/user-config.adoc#ga-user-schedule, duty schedule>>.
 . Click *Finish*.
 
 NOTE: Users will receive notifications in the order in which they appear in the group.
 
-IMPORTANT: If you delete a user group, no one receives a notification that the group has been deleted.
+IMPORTANT: If you delete a group, no one receives a notification that it has been deleted.
 If the group is associated with a schedule, that schedule will no longer exist, and users associated with that group will no longer receive notifications previously specified in the schedule.
 

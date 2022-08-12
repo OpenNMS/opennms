@@ -50,7 +50,7 @@ If specified, the header must be set for authentication to be successful.
 
 | authoritiesHeader
 | The HTTP header that will contain a comma-separated list of authorities (roles) the user will have.
-|
+| _no default value_
 |====
 
 == Enable pre-authorization

@@ -28,11 +28,10 @@ WARNING: You cannot use angle brackets (<>), single (') and double quotation mar
 . (Optional) Add user information in the appropriate fields.
 . (Optional) Assign <<deep-dive/user-management/security-roles.adoc#ga-role-user-management-roles, user permissions>>.
 +
-NOTE: By default, a new user has the following permissions:
-     acknowledge and work with alarms and notifications.
-     They cannot access the *Configure OpenNMS* administration menu.
-     +
-     Add the `ROLE_ADMIN` role to create a user with administrative privileges.
+NOTE: By default, a new user has permissions to acknowledge and work with alarms and notifications.
+They cannot access the *Configure OpenNMS* administration menu.
++
+To create a user with administrative priviliges, add the `ROLE_ADMIN` role to their account. 
 
 . (Optional) Specify where to send messages to the user in the notification information area.
 . (Optional) <<ga-user-schedule, Set a schedule>> for when a user should receive notifications.
@@ -41,19 +40,19 @@ NOTE: By default, a new user has the following permissions:
 [[ga-user-schedule]]
 == Create user duty schedule
 
-A duty schedule specifies the days and times a user or group receives notifications, on a per-week basis.
+A duty schedule specifies the days and times a user or group of users receives notifications, on a per-week basis.
 This feature lets you customize a schedule based on your team's hours of operation.
 Schedules are additive: a user could have a regular work schedule, and a second schedule for days or weeks when they are on-call.
 
-If {page-component-title} needs to notify an individual user but that user is not on duty at the time, it never sends the notification to that user.
+If {page-component-title} needs to notify an individual user, but they are not on duty at the time the notification is generated, it never sends the notification to them.
 
 Notifications sent to users in groups are different, depending on the scenario:
 
 * For a group on duty at time of notification – all users also on duty receive the notification.
-* For a group on duty with no member users on duty – notification is queued and sent to the next user who comes on duty.
+* For a group on duty with no members on duty – notification is queued and sent to the next user who comes on duty.
 * For an off-duty group – notification is never sent.
 
-To add a duty schedule for a user or group, follow these steps:
+To add a duty schedule for a user or group of users, follow these steps:
 
 . Log in as a user with admin permissions.
 . Click the gear icon at the top-right of the screen.
