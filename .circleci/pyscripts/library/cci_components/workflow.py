@@ -136,7 +136,7 @@ class workflow:
                                     + options_entry
                                     + ":"
                                 )
-                                for options_subentry in tmp_output_elements[element][f][
+                                for options_subentry in tmp_output_elements[element][element_options][
                                     options_entry
                                 ]:
                                     tmp_output.append(
