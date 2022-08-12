@@ -47,7 +47,7 @@ NOTE: Back up `/opt/opennms/etc` before running the script.
 
 When enabled, the `Data Choices` module collects the following anonymous statistics and publishes them on system startup and every 24 hours after:
 
-* System ID (a randomly generated universally unique identifier (UUID))
+* System ID (a randomly generated, universally unique identifier (UUID))
 * {page-component-title} release
 * {page-component-title} version
 * OS architecture
@@ -64,7 +64,7 @@ When enabled, the `Data Choices` module collects the following anonymous statist
 * Number of nodes, grouped by System OID
 * Number of locations
 * Number of Minions
-* Number of Provisiond requisitions by scheme
+* Number of provisiond requisitions by scheme
 * Provisiond thread pool sizes
 * List of enabled/disabled services
 * List of installed features in Karaf

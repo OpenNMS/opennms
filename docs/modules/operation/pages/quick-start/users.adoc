@@ -44,4 +44,5 @@ You should still change the password of the admin user to be more secure.
 
 WARNING: Do not delete the default `admin` and `rtc` user accounts.
 The `rtc` user account is used for the communication of the Real-Time Console on the start page to calculate the node and service availability.
+You should still change the password of the admin user to be more secure.
 
