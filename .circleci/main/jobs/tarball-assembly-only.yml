@@ -67,12 +67,9 @@ jobs:
           path: ~/project/target/tarballs
           destination: tarballs
       #- store_artifacts:
-      #    when: always    
+      #    when: always
       #    path: ~/project/target/config-schema
       #    destination: config-schema
-      #- cache-workflow-assets:
-      #    cache_prefix: minion-config-schema
-      #    source_path: target/config-schema/
       - persist_to_workspace:
           root: ~/
           paths:
