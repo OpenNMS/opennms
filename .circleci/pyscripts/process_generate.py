@@ -1,4 +1,9 @@
 # /usr/bin/env python3
+
+"""
+This script helps with deciding on what we should build, by looking at the incoming changes 
+and the build-triggers override file (if available)
+"""
 import os
 import re
 import json
@@ -6,22 +11,25 @@ from library import libgit
 from library import libfile
 
 path_to_build_components = os.path.join("/tmp", "build-triggers.json")
-path_to_build_trigger_override = os.path.join(".circleci", "build-triggers.override.json")
+path_to_build_trigger_override = os.path.join(
+    ".circleci", "build-triggers.override.json"
+)
 
-output_path = os.environ.get('OUTPUT_PATH')
-head = os.environ.get('CIRCLE_SHA1')
-base_revision = os.environ.get('BASE_REVISION')
-branch_name = os.environ.get('CIRCLE_BRANCH')
+output_path = os.environ.get("OUTPUT_PATH")
+head = os.environ.get("CIRCLE_SHA1")
+base_revision = os.environ.get("BASE_REVISION")
+branch_name = os.environ.get("CIRCLE_BRANCH")
 
 libgit = libgit.libgit("stdout")
 
 libfile = libfile.libfile()
 
+# os.chdir(os.environ.get("CIRCLE_WORKING_DIRECTORY"))
 
-libgit.switchBranch(base_revision)
-libgit.switchBranch(head)
+libgit.switch_branch(base_revision)
+libgit.switch_branch(head)
 
-base = libgit.commonAncestor(base_revision, head)
+base = libgit.common_ancestor(base_revision, head)
 
 print("branch_name", branch_name)
 print("output_path", output_path)
@@ -31,33 +39,44 @@ print("base", base)
 
 if head == base:
     try:
-        base = libgit.getCommitSHA("HEAD~1")
+        # If building on the same branch as BASE_REVISION, we will get the
+        # current commit as merge base. In that case try to go back to the
+        # first parent, i.e. the last state of this branch before the
+        # merge, and use that as the base.
+        base = libgit.get_commit_sha("HEAD~1")
     except:
-        base = '4b825dc642cb6eb9a060e54bf8d69288fbee4904'
+        # This can fail if this is the first commit of the repo, so that
+        # HEAD~1 actually doesn't resolve. In this case we can compare
+        # against this magic SHA below, which is the empty tree. The diff
+        # to that is just the first commit as patch.
+        base = "4b825dc642cb6eb9a060e54bf8d69288fbee4904"
 
 print("base", base)
 
-changes = libgit.getChangedFilesInCommits(base, head)
+changes = libgit.get_changed_files_in_commits(base, head)
 
-mappings = [
-    m.split() for m in
-    os.environ.get('MAPPING').splitlines()
-]
+mappings = [m.split() for m in os.environ.get("MAPPING").splitlines()]
 
 
-def check_mapping(m):
-    if 3 != len(m):
-        raise Exception("Invalid mapping")
-    path, param, value = m
-    regex = re.compile(r'^' + path + r'$')
+def check_mapping(mapping):
+    """
+    Checks the validity of the mapping
+    """
+    if 3 != len(mapping):
+        raise Exception("Invalid mapping size. Current mapping:", mapping)
+    path, param, value = mapping
+    regex = re.compile(r"^" + path + r"$")
     for change in changes:
         if regex.match(change):
             return True
     return False
 
 
-def convert_mapping(m):
-    return [m[1], json.loads(m[2])]
+def convert_mapping(mapping_entry) -> list:
+    """
+    Converts mapping to a list
+    """
+    return [mapping_entry[1], json.loads(mapping_entry[2])]
 
 
 mappings = filter(check_mapping, mappings)
@@ -66,9 +85,17 @@ mappings = dict(mappings)
 
 print("Mappings:", mappings)
 
+
+# If *IT.java files have changed -> enable integration builds
+# If *Test.java files have changed -> enable smoke builds
+# if Dockerfiles (under opennms-container) have changed enable docker builds
 What_to_build = []
 
-def addTobuildList(item):
+
+def add_to_build_list(item):
+    """
+    Adds the item to What_to_build list
+    """
     if item not in What_to_build:
         What_to_build.append(item)
 
@@ -77,31 +104,27 @@ for change in changes:
     if not change:
         continue
     if "IT.java" in change:
-        addTobuildList("Integration_tests")
+        add_to_build_list("Integration_tests")
     elif "Test.java" in change:
-        addTobuildList("Smoke_tests")
+        add_to_build_list("Smoke_tests")
     elif "opennms-container" in change:
         if "horizon" in change:
-            addTobuildList("OCI_horizon_image")
+            add_to_build_list("OCI_horizon_image")
         elif "minion" in change:
-            addTobuildList("OCI_minion_image")
+            add_to_build_list("OCI_minion_image")
         elif "sentinel" in change:
-            addTobuildList("OCI_sentinel_image")
+            add_to_build_list("OCI_sentinel_image")
     elif ".circleci" in change:
-        if "circleci_configuration" not in What_to_build:
-            What_to_build.append("circleci_configuration")
+        add_to_build_list("circleci_configuration")
     elif "doc" in change:
-        if "doc" not in What_to_build:
-            What_to_build.append("doc")
+        add_to_build_list("doc")
     elif "ui" in change:
-        if "ui" not in What_to_build:
-            What_to_build.append("ui")
+        add_to_build_list("ui")
     else:
-        if "build" not in What_to_build:
-            What_to_build.append("build")
+        add_to_build_list("build")
 
 print("What we want to build:", What_to_build, len(What_to_build))
-git_keywords = libgit.extractKeywordsFromLastCommit()
+git_keywords = libgit.extract_keywords_from_last_commit()
 
 if os.path.exists(path_to_build_trigger_override):
     build_mappings = libfile.load_json(path_to_build_trigger_override)
@@ -112,35 +135,15 @@ else:
             "ui": False,
             "coverage": False,
             "build": False,
-            "deploy": False
+            "deploy": False,
         },
-        "publish": {
-            "packages": False
-        },
-        "tests": {
-            "smoke": False,
-            "smoke-flaky": False,
-            "integration": False
-        },
-        "oci-images": {
-            "minion": False,
-            "horizon": False,
-            "sentinel": False
-        },
-        "debian-packages": {
-            "minion": False,
-            "horizon": False,
-            "sentinel": False
-        },
-        "rpm-packages": {
-            "minion": False,
-            "horizon": False,
-            "sentinel": False
-        },
+        "publish": {"packages": False},
+        "tests": {"smoke": False, "smoke-flaky": False, "integration": False},
+        "oci-images": {"minion": False, "horizon": False, "sentinel": False},
+        "debian-packages": {"minion": False, "horizon": False, "sentinel": False},
+        "rpm-packages": {"minion": False, "horizon": False, "sentinel": False},
         "experimental": False,
-        "filters": {
-            "enabled": True
-        }
+        "filters": {"enabled": True},
     }
 
 if "trigger-docs" in mappings:
@@ -165,11 +168,14 @@ if re.match(".*flaky.*", branch_name):
 
 
 print("Git Keywords:", git_keywords)
-if "circleci_configuration" in What_to_build and len(What_to_build) == 1 and not build_mappings["build"]["build"]:
-    # if circleci_configuration is the only entry in the list we don't want to trigger a build.
+if (
+    "circleci_configuration" in What_to_build
+    and len(What_to_build) == 1
+    and not build_mappings["build"]["build"]
+):
+    # if circleci_configuration is the only entry in the list we don't want to trigger a buildss.
     mappings["trigger-build"] = False
     build_mappings["build"]["build"] = False
-
 
 if "smoke" in git_keywords or "Smoke_tests" in What_to_build:
     if "flaky" in str(git_keywords):
@@ -216,5 +222,4 @@ if "experimentalPath" in git_keywords:
 
 libfile.write_file(output_path, json.dumps(mappings))
 
-libfile.write_file(path_to_build_components,
-                   json.dumps(build_mappings, indent=4))
+libfile.write_file(path_to_build_components, json.dumps(build_mappings, indent=4))

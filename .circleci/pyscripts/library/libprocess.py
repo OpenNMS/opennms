@@ -3,14 +3,14 @@ import datetime
 import os
 
 class libprocess:
-    def saveFile(self,filename,data):
+    def saveFile(self, filename, data):
         if not data:
             return
         if os.path.exists(filename):
-            with open(filename,"a") as f:
+            with open(filename, "a", encoding="UTF-8") as f:
                 f.write("\n_____________\n")
 
-        with open(filename,"a") as f:
+        with open(filename, "a", encoding="UTF-8") as f:
             if type(data) == list:
                 f.writelines("\n".join(data))
             elif type(data) == subprocess.CompletedProcess:
@@ -21,7 +21,7 @@ class libprocess:
                 f.write(str(data.stdout.decode("utf-8"))+"\n")
             else:
                 f.write(data)
-                
+
     def runProcess(self,command,working_directory="",environment="",redirectSTDOUT=False,redirectSTDERR=False,outputFile=""):
         print("Command:"," ".join(command))
         if redirectSTDOUT:
@@ -55,20 +55,20 @@ class libprocess:
         else:
             self.saveFile(outputFile,_output)
             return_data={
-            "Time Started":_start.strftime("%Y/%m/%d %H:%M:%S.%f"),
-            "Time Finnished":_end.strftime("%Y/%m/%d %H:%M:%S.%f"),
-            "Time Taken":str(_end-_start),
-            "Output":outputFile,
-            "Return Code":_output.returncode
+            "Time Started": _start.strftime("%Y/%m/%d %H:%M:%S.%f"),
+            "Time Finnished": _end.strftime("%Y/%m/%d %H:%M:%S.%f"),
+            "Time Taken": str(_end-_start),
+            "Output": outputFile,
+            "Return Code": _output.returncode
         }
 
         return return_data
 
     def printSummary(self,result):
-        print("Time Taken:",result["Time Started"])
-        print("Time Finnished:",result["Time Finnished"])
-        print("Time Taken:",result["Time Finnished"])
-        print("Return Code:",result["Return Code"])
+        print("Time Taken:", result["Time Started"])
+        print("Time Finnished:", result["Time Finnished"])
+        print("Time Taken:", result["Time Finnished"])
+        print("Return Code:", result["Return Code"])
 
         if "stdout" in result["Output"] and "stderr" in result["Output"]:
             return 
@@ -83,12 +83,12 @@ class libprocess:
         stderr_lines=list(filter(None,[ l.strip() for l in _output[stderrPosition+1:stdoutPosition]]))
         stdout_lines=list(filter(None,[ l.strip() for l in _output[stdoutPosition+1:]]))
 
-        print(">>","Last",3,"lines:")
+        print(">>", "Last", 3, "lines:")
         if stdout_lines:
-            print(">","STDOUT>")
+            print(">", "STDOUT>")
             for l in stdout_lines[-3:]:
-                print(" "," ",l)
+                print(" ", " ", l)
         if stderr_lines:
-            print(">","STDERR>")
+            print(">", "STDERR>")
             for l in stderr_lines[-3:]:
-                print(" "," ",l)
+                print(" ", " ", l)
