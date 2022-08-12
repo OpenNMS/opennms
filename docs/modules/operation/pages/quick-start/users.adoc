@@ -3,7 +3,7 @@
 
 This section describes the first-time login to OpenNMS {page-component-title}, how to change the `admin` account password, and how to create a user.
 
-For additional information and procedures on user management, including user groups, user configuration, and security roles, see xref:deep-dive/user-management/introduction.adoc[User Management] in the Deep Dive section.
+For additional information and procedures on user management, including user groups, user configuration, and security roles, see xref:deep-dive/user-management/user-config.adoc[User Management] in the Deep Dive section.
 
 [[ga-data-choices]]
 == First-time login and data choices
@@ -45,4 +45,3 @@ You should still change the password of the admin user to be more secure.
 WARNING: Do not delete the default `admin` and `rtc` user accounts.
 The `rtc` user account is used for the communication of the Real-Time Console on the start page to calculate the node and service availability.
 You should still change the password of the admin user to be more secure.
-
