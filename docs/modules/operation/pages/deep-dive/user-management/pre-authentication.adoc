@@ -2,9 +2,9 @@
 [[ga-role-user-management-pre-authentication]]
 = Web UI Pre-Authentication
 
-You can configure {page-component-title} to run behind a proxy that provides authentication, and then pass the pre-authenticated user to the {page-component-title}webapp using a header.
+You can configure {page-component-title} to run behind a proxy that provides authentication, and then pass the pre-authenticated user to the {page-component-title} webapp using a header.
 
-Define the pre-authentication configuration in `$OPENNMS_HOME/jetty-webapps/opennms/WEB-INF/spring-security.d/header-preauth.xml`.
+Define the pre-authentication configuration in `$\{OPENNMS_HOME}/jetty-webapps/opennms/WEB-INF/spring-security.d/header-preauth.xml`.
 This file is automatically included in the Spring security context, but is not enabled by default.
 
 WARNING: Do not configure {page-component-title} this way unless you are certain the web UI is accessible only to the proxy and not to end users.
@@ -35,8 +35,8 @@ You can also set the following properties to change the behavior of the pre-auth
 | false
 
 | failOnError
-| If true, disallow login if the header is not set or the user does not exist.
-If false, fall through to other mechanisms (basic auth, form login, and so on.)
+| If `true`, disallow login if the header is not set or the user does not exist.
+If `false`, fall through to other mechanisms (basic auth, form login, and so on).
 | false
 
 | userHeader
@@ -55,19 +55,20 @@ If specified, the header must be set for authentication to be successful.
 
 == Enable pre-authorization
 
-Modify `jetty-webapps/opennms/WEB-INF/applicationContext-spring-security.xml`, and set the following:
+Modify `$\{OPENNMS-HOME}/jetty-webapps/opennms/WEB-INF/applicationContext-spring-security.xml`, and set the following:
 
 [source,xml]
----
+----
 <beans:bean id="preauthAuthProvider" class="org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider">
   <beans:property name="preAuthenticatedUserDetailsService">
     <beans:bean id="preAuthUserDetailsService" class="org.springframework.security.web.authentication.preauth.PreAuthenticatedGrantedAuthoritiesUserDetailsService"/>
   </beans:property>
 </beans:bean>
----
+----
 
-You can then test with the following:
+You can then use the following command to test:
 
+[source, console]
 ----
 curl -H "X-Remote-User: myuser" -H "X-Remote-Role: ROLE_USER,ROLE_REST" http://localhost:8980/opennms/rest/whoami
 ----

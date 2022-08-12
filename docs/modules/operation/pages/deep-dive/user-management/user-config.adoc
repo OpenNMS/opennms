@@ -2,35 +2,36 @@
 [[ga-user-config]]
 = User Creation and Configuration
 
-Only a user with admin privileges can create users and assign security roles to them.
-We recommend creating a new user with admin privileges instead of using the default `admin` (see <<quick-start/users.adoc#ga-admin-user-setup, admin user setup>>).
+Only a user with admin privileges can create users and assign security roles.
+We recommend creating a new user with admin privileges instead of using the default `admin` user profile (see <<quick-start/users.adoc#ga-admin-user-setup, Admin user setup>>).
 
-Ideally, each user account corresponds to a person, to help track who performs tasks in your {page-component-title} system.
+Ideally, each user account corresponds to a single person.
+This helps track who performs tasks in your {page-component-title} system.
 Assigning different <<deep-dive/user-management/security-roles.adoc#ga-role-user-management-roles, security roles>> to each user helps restrict what tasks the user can perform.
 
-In addition to local users, you can configure external authentication services including link:https://opennms.discourse.group/t/spring-security-and-ldap/1425[LDAP/LDAPS], link:https://opennms.discourse.group/t/spring-security-and-radius/1424[RADIUS], and link:https://opennms.discourse.group/t/single-sign-on-sso-using-spring-security-and-kerberos/[Single Sign On (SSO]).
+In addition to local users, you can configure external authentication services including link:https://opennms.discourse.group/t/spring-security-and-ldap/1425[LDAP/LDAPS], link:https://opennms.discourse.group/t/spring-security-and-radius/1424[RADIUS], and link:https://opennms.discourse.group/t/single-sign-on-sso-using-spring-security-and-kerberos/[Single Sign On (SSO)].
 Configuration specifics for these services are outside the scope of this documentation.
 
-WARNING: Do not delete the default `admin` and `rtc` users.
-         The `rtc` user is used for the communication of the Real-Time Console on the start page to calculate the node and service availability.
+WARNING: Do not delete the default `admin` and `rtc` user profiles.
+The `rtc` user profile is used for the communication of the Real-Time Console on the start page to calculate the node and service availability.
 
 [[ga-user-create]]
 == Create a user
 
-. Log in as a user with administrative permissions.
-. Click the gear icon in the top right.
-. Choose menu:Configure OpenNMS [Configure Users, Groups and On-Call roles > Configure Users].
-. Click *Add new user* and specify a user ID, password, password confirmation and click *OK*.
+. Log in as a user with admin permissions.
+. Click the gear icon at the top-right of the screen.
+. Choose menu:Configure OpenNMS[Configure Users, Groups and On-Call Roles > Configure Users].
+. Click *Add new user* and specify a user ID and password, confirm the password, and click *OK*.
 +
-WARNING: Note that you cannot use angle brackets (<>), single (') and double quotation marks ("), and the ampersand symbol (&) in the user ID.
+WARNING: You cannot use angle brackets (<>), single (') and double quotation marks ("), or the ampersand symbol (&) in a user ID.
 
-. (Optional) add user information in the appropriate fields.
-. (Optional) assign <<deep-dive/user-management/security-roles.adoc#ga-role-user-management-roles, user permissions>>.
+. (Optional) Add user information in the appropriate fields.
+. (Optional) Assign <<deep-dive/user-management/security-roles.adoc#ga-role-user-management-roles, user permissions>>.
 +
 NOTE: By default, a new user has the following permissions:
-     acknowledge and work with alarms and notifications and cannot access the *configure OpenNMS* administration menu.
+     acknowledge and work with alarms and notifications and cannot access the *Configure OpenNMS* administration menu.
      +
-     Add the ROLE_ADMIN role to create a user with administrative privileges.
+     Add the `ROLE_ADMIN` role to create a user with administrative privileges.
 
 . (Optional) Specify where to send messages to the user in the notification information area.
 . (Optional) <<ga-user-schedule, Set a schedule>> for when a user should receive notifications.
@@ -41,22 +42,23 @@ NOTE: By default, a new user has the following permissions:
 
 A duty schedule specifies the days and times a user (or group) receives notifications, on a per-week basis.
 This feature lets you customize a schedule based on your team's hours of operation.
-Schedules are additive: a user could have a regular work schedule, and a second schedule for days or weeks when they are on call.
+Schedules are additive: a user could have a regular work schedule, and a second schedule for days or weeks when they are on-call.
 
-If {page-component-title} needs to notify an individual user, but that user is not on duty at the time, it never sends the notification to that user.
+If {page-component-title} needs to notify an individual user but that user is not on duty at the time, it never sends the notification to that user.
 
 Notifications sent to users in groups are different, depending on the scenario:
 
-* For a group on duty at time of notification – all users also on duty receive notification
-* For a group on duty, no member users on duty – notification is queued and sent to the next user who comes on duty
-* For an off-duty group – notification is never sent
+* For a group on duty at time of notification – all users also on duty receive the notification.
+* For a group on duty with no member users on duty – notification is queued and sent to the next user who comes on duty.
+* For an off-duty group – notification is never sent.
 
 To add a duty schedule for a user or group, follow these steps:
 
-. Log in as a user with administrative permissions.
-. Click the gear icon in the top-right.
-. Choose *Configure OpenNMS > Configure Users, Groups and On-Call roles* and select *Configure Users* or *Configure Groups*.
+. Log in as a user with admin permissions.
+. Click the gear icon at the top-right of the screen.
+. Choose menu:Configure OpenNMS[Configure Users, Groups and On-Call Roles > Configure Users] or *Configure Groups*.
 . Choose the user or group you want to modify.
 . In the *Duty Schedule* area, choose the number of schedules you want to add from the list and click *Add Schedule*.
 . Specify the days and times during which you want the user or group to receive notifications.
 . Click *Finish*.
+

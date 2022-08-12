@@ -6,26 +6,26 @@ User maintenance describes additional tasks and information related to users.
 == Passwords
 
 === Set a new password for any user
-. Log in as a *User* with administrative permissions.
-. Click the gear icon in the top right.
-. Choose *Configure OpenNMS > Configure Users, Groups and On-Call roles > Configure Users*.
+. Log in as a user with admin permissions.
+. Click the gear icon at the top-right of the screen.
+. Choose menu:Configure OpenNMS[Configure Users, Groups and On-Call Roles > Configure Users].
 . Click the *Modify* icon next to an existing user and select *Reset Password*.
-. Type a new *Password*, *Confirm Password*, and click *OK*.
+. Type a new password, confirm the password, and click *OK*.
 . Click *Finish*.
 
 === Change your password
 
-. Log in with user name and old password.
+. Log in with user name and current password.
 . Choose *Change Password* from the list below your login name.
-. Specify your current password then set the new password and confirm it.
+. Specify your current password, then set and confirm the new password.
 . Click *Submit*.
 . Log out and log in with your new password.
 
 == Delete users and groups
 
-. Log in as a user with administrative permissions.
-. Click the gear icon in the top right.
-. Choose *Configure OpenNMS > Configure Users, Groups and On-Call roles* and select *Configure Users*  or *Configure Groups*.
+. Log in as a user with admin permissions.
+. Click the gear icon at the top-right of the screen.
+. Choose menu:Configure OpenNMS[Configure Users, Groups and On-Call Roles > Configure Users]  or *Configure Groups*.
 . Click the trash bin icon beside the user or group you want to delete.
 . Confirm delete request with *OK*.
 
@@ -35,3 +35,4 @@ Be aware that deleting a group or user also removes any schedules associated wit
 == Advanced configuration
 
 {page-component-title} persists the user, password, and other detail descriptions in the `users.xml` file.
+
