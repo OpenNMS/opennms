@@ -52,10 +52,7 @@ import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.core.utils.TimeSeries;
 import org.opennms.core.web.HttpClientWrapper;
 import org.opennms.features.datachoices.internal.StateManager.StateChangeHandler;
-import org.opennms.netmgt.config.GroupFactory;
-import org.opennms.netmgt.config.NotifdConfigFactory;
-import org.opennms.netmgt.config.ServiceConfigFactory;
-import org.opennms.netmgt.config.DestinationPathFactory;
+import org.opennms.netmgt.config.*;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
@@ -259,7 +256,8 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         setJmxAttributes(usageStatisticsReport);
         gatherProvisiondData(usageStatisticsReport);
         usageStatisticsReport.setServices(m_serviceConfigurationFactory.getServiceNameMap());
-
+        usageStatisticsReport.setGroups(this.getGroupCount());
+        usageStatisticsReport.setUsers(this.getUserCount());
         usageStatisticsReport.setDestinationPathCount(getDestinationPathCount());
         usageStatisticsReport.setNotificationEnablementStatus(getNotificationEnablementStatus());
         usageStatisticsReport.setOnCallRoleCount(m_groupFactory.getRoles().size());
@@ -357,7 +355,25 @@ public class UsageStatisticsReporter implements StateChangeHandler {
             LOG.error("Error retrieving datasource information", e);
         }
     }
-    
+    private int getUserCount() {
+        try {
+            UserFactory.init();
+            UserManager userFactory = UserFactory.getInstance();
+            return userFactory.getUsers().size();
+        }catch (Exception e) {
+            return 0;
+        }
+    }
+
+    private int getGroupCount() {
+        try{
+            GroupFactory.init();
+            GroupManager groupFactory = GroupFactory.getInstance();
+            return groupFactory.getGroups().size();
+        } catch (Exception e) {
+            return 0;
+        }
+    }
     private String getInstalledFeatures() {
         String installedFeatures;
         try {
