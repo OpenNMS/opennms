@@ -30,6 +30,7 @@ package org.opennms.netmgt.enlinkd.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.opennms.core.criteria.Alias;
 import org.opennms.core.criteria.Alias.JoinType;
@@ -41,6 +42,7 @@ import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.SnmpInterfaceTopologyEntity;
 import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
+import org.opennms.netmgt.enlinkd.service.api.SubNetwork;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.PrimaryType;
@@ -70,6 +72,12 @@ public class NodeTopologyServiceImpl extends TopologyServiceImpl implements Node
     }
 
     @Override
+    public Set<SubNetwork> findAllSubNetwork() {
+        return null;
+    }
+
+
+    @Override
     public Node getSnmpNode(final int nodeid) {
         final Criteria criteria = new Criteria(OnmsNode.class);
         criteria.setAliases(List.of(new Alias(
@@ -91,7 +99,12 @@ public class NodeTopologyServiceImpl extends TopologyServiceImpl implements Node
             return null;
         }
     }
-    
+
+    @Override
+    public Set<SubNetwork> getSubNetwork(int nodeid) {
+        return null;
+    }
+
     @Override
     public List<NodeTopologyEntity> findAllNode() {
         return getTopologyEntityCache().getNodeTopologyEntities();
