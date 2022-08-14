@@ -41,11 +41,11 @@ public class SubNetwork {
     private final InetAddress m_network;
     private final InetAddress m_netmask;
 
-    private final Set<IpInterfaceTopologyEntity> m_nodes = new HashSet<>();
+    private final Set<IpInterfaceTopologyEntity> m_ipInterfaces = new HashSet<>();
 
     public static SubNetwork createSubNetwork(IpInterfaceTopologyEntity ip) throws IllegalArgumentException {
         Assert.notNull(ip);
-        return new SubNetwork(ip.getIpAddress(),ip.getNetMask());
+        return createSubNetwork(ip.getIpAddress(),ip.getNetMask());
     }
 
     public static SubNetwork createSubNetwork(InetAddress ip, InetAddress mask) throws IllegalArgumentException {
@@ -71,6 +71,12 @@ public class SubNetwork {
         return m_network.getHostAddress()+"/"+InetAddressUtils.convertInetAddressMaskToCidr(m_netmask);
     }
 
+    public Set<Integer> getNodeIds() {
+        Set<Integer> set = new HashSet<>();
+        m_ipInterfaces.forEach(ip -> set.add(ip.getNodeId()));
+        return set;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -91,17 +97,25 @@ public class SubNetwork {
 
     public boolean add(IpInterfaceTopologyEntity ipInterfaceTopologyEntity) {
         if (isInRange(ipInterfaceTopologyEntity.getIpAddress())) {
-            return m_nodes.add(ipInterfaceTopologyEntity);
+            return m_ipInterfaces.add(ipInterfaceTopologyEntity);
         }
         return false;
     }
 
     public boolean remove(IpInterfaceTopologyEntity ipInterfaceTopologyEntity) {
-        return m_nodes.remove(ipInterfaceTopologyEntity);
+        return m_ipInterfaces.remove(ipInterfaceTopologyEntity);
     }
 
     public boolean isInRange(InetAddress ip) {
         return InetAddressUtils.inSameNetwork(ip,m_network,m_netmask);
     }
 
+    @Override
+    public String toString() {
+        return "SubNetwork{" +
+                getCidr() +
+                ", number of ipInterfaces:" + m_ipInterfaces.size() +
+                ", nodeIds: " + getNodeIds() +
+                '}';
+    }
 }

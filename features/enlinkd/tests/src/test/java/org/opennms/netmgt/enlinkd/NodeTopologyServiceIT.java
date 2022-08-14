@@ -74,10 +74,11 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
 
         final List<IpInterfaceTopologyEntity> ips = nodeTopologyService.findAllIp();
         ips.forEach(System.err::println);
-        assertThat(ips, hasSize(6));
+        assertThat(ips, hasSize(47));
 
         final Set<SubNetwork> subnets = nodeTopologyService.findAllSubNetwork();
         subnets.forEach(System.err::println);
+        assertThat(subnets, hasSize(21));
     }
 
 }
