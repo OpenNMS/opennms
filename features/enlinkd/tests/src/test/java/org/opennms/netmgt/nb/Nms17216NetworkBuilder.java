@@ -34,7 +34,7 @@ import org.opennms.netmgt.model.OnmsNode;
 
 /**
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:antonio@opennme.it">Antonio Russo</a>
+ * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  * @author <a href="mailto:alejandro@opennms.org">Alejandro Galue</a>
  */
 
