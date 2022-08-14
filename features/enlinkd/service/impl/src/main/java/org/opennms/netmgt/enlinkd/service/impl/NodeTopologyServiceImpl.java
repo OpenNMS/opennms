@@ -29,6 +29,7 @@
 package org.opennms.netmgt.enlinkd.service.impl;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -73,7 +74,19 @@ public class NodeTopologyServiceImpl extends TopologyServiceImpl implements Node
 
     @Override
     public Set<SubNetwork> findAllSubNetwork() {
-        return null;
+        final Set<SubNetwork> subnets = new HashSet<>();
+        findAllIp().stream().filter(ip -> ip.isManaged() && ip.getNetMask() != null).forEach(ip -> {
+            SubNetwork found = SubNetwork.createSubNetwork(ip);
+            for (SubNetwork s: subnets) {
+                if (s.isInRange(ip.getIpAddress())) {
+                    found=s;
+                    break;
+                }
+            }
+            found.add(ip);
+            subnets.add(found);
+        });
+        return subnets;
     }
 
 
@@ -102,7 +115,19 @@ public class NodeTopologyServiceImpl extends TopologyServiceImpl implements Node
 
     @Override
     public Set<SubNetwork> getSubNetwork(int nodeid) {
-        return null;
+        final Set<SubNetwork> subnets = new HashSet<>();
+        findAllIp().stream().filter(ip -> ip.getNodeId() == nodeid && ip.isManaged() && ip.getNetMask() != null).forEach(ip -> {
+            SubNetwork found = SubNetwork.createSubNetwork(ip);
+            for (SubNetwork s: subnets) {
+                if (s.isInRange(ip.getIpAddress())) {
+                    found=s;
+                    break;
+                }
+            }
+            found.add(ip);
+            subnets.add(found);
+        });
+        return subnets;
     }
 
     @Override

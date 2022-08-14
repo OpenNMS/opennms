@@ -30,13 +30,17 @@ package org.opennms.netmgt.enlinkd;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 import org.opennms.netmgt.enlinkd.model.IpInterfaceTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
+import org.opennms.netmgt.enlinkd.service.api.SubNetwork;
+import org.opennms.netmgt.nb.Nms0001NetworkBuilder;
 import org.opennms.netmgt.nb.Nms17216NetworkBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -60,4 +64,20 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
         
         assertThat(ips, hasSize(6));
     }
+
+    @Test
+    public void verifyFindSubnetworks() {
+        final Nms0001NetworkBuilder builder = new Nms0001NetworkBuilder();
+        m_nodeDao.save(builder.getFroh());
+        m_nodeDao.save(builder.getOedipus());
+        m_nodeDao.save(builder.getSiegFrie());
+
+        final List<IpInterfaceTopologyEntity> ips = nodeTopologyService.findAllIp();
+        ips.forEach(System.err::println);
+        assertThat(ips, hasSize(6));
+
+        final Set<SubNetwork> subnets = nodeTopologyService.findAllSubNetwork();
+        subnets.forEach(System.err::println);
+    }
+
 }

@@ -41,7 +41,12 @@ public class SubNetwork {
     private final InetAddress m_network;
     private final InetAddress m_netmask;
 
-    private final Set<Integer> m_nodes = new HashSet<>();
+    private final Set<IpInterfaceTopologyEntity> m_nodes = new HashSet<>();
+
+    public static SubNetwork createSubNetwork(IpInterfaceTopologyEntity ip) throws IllegalArgumentException {
+        Assert.notNull(ip);
+        return new SubNetwork(ip.getIpAddress(),ip.getNetMask());
+    }
 
     public static SubNetwork createSubNetwork(InetAddress ip, InetAddress mask) throws IllegalArgumentException {
         Assert.notNull(ip);
@@ -86,13 +91,13 @@ public class SubNetwork {
 
     public boolean add(IpInterfaceTopologyEntity ipInterfaceTopologyEntity) {
         if (isInRange(ipInterfaceTopologyEntity.getIpAddress())) {
-            return m_nodes.add(ipInterfaceTopologyEntity.getNodeId());
+            return m_nodes.add(ipInterfaceTopologyEntity);
         }
         return false;
     }
 
     public boolean remove(IpInterfaceTopologyEntity ipInterfaceTopologyEntity) {
-        return m_nodes.remove(ipInterfaceTopologyEntity.getNodeId());
+        return m_nodes.remove(ipInterfaceTopologyEntity);
     }
 
     public boolean isInRange(InetAddress ip) {
