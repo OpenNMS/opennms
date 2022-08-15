@@ -17,10 +17,16 @@ class cci:
         self._workflow = workflow.workflow()
 
     def set_Workflow(self, path) -> bool:
+        """
+        Loads the JSON file containing workflow information
+        """
         self._workflow_path = path
         return self._workflow.load(path)
 
     def get_Workflow_dependency(self, workflow) -> str:
+        """
+        This function finds the dependency of a workflow
+        """
         return self._workflow.get_dependency(workflow)
 
     def get_Workflow_yaml(

@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 
+"""
+Generates main.yml file from provided build triggers.
+"""
+
 import os
 import shutil
 import re
@@ -7,9 +11,7 @@ import json
 import tempfile
 from library import common
 from library import libfile
-
 from library import cci
-
 
 def append_to_sample_workflow(workflow_path, entry):
     if len(workflow_path) > 1:
@@ -105,7 +107,7 @@ if os.path.exists(os.path.join("/tmp", ".circleci")):
 # Read the @main.yml file
 with open(path_to_main_yml, "r", encoding="UTF-8") as file_handler:
     main_yml_content = file_handler.readlines()
-#main_yml_content = file_library.read_file(path_to_main_yml)
+# main_yml_content = file_library.read_file(path_to_main_yml)
 keywords = common_library.extract_keywords(path_to_main_yml)
 
 for keyword in keywords:

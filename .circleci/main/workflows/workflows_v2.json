@@ -49,7 +49,7 @@
                 "sentinel-image"
             ]
         },
-        "oci-minion":{
+        "oci-minion": {
             "extends": [
                 "tarball-assembly-only",
                 "minion-image"
@@ -75,17 +75,17 @@
                 "publish-cloudsmith"
             ]
         },
-        "weekly-coverage":{
+        "weekly-coverage": {
             "extends": [
                 "build",
                 "integration-test-with-coverage",
                 "code-coverage"
-        ]
+            ]
         },
-        "experimental":{
+        "experimental": {
             "extends": [
                 "empty"
-        ] 
+            ]
         }
     },
     "individual": {
@@ -218,7 +218,7 @@
             }
         },
         "smoke-test-flaky": {
-            "job":"smoke-test-flaky",
+            "job": "smoke-test-flaky",
             "requires": [
                 "tarball-assembly-only",
                 "horizon-image",
@@ -313,12 +313,14 @@
         },
         "horizon-image": {
             "requires": [
-                "horizon-deb-build"
+                "horizon-deb-build",
+                "tarball-assembly-only"
             ]
         },
-        "sentinel-image":{
+        "sentinel-image": {
             "requires": [
-                "sentinel-deb-build"
+                "sentinel-deb-build",
+                "tarball-assembly-only"
             ]
         },
         "minion-image-single-arch": {
@@ -448,13 +450,13 @@
                 "smoke-test-sentinel"
             ]
         },
-        "integration-test-with-coverage":{
-            "requires":[
+        "integration-test-with-coverage": {
+            "requires": [
                 "build"
             ]
         },
-        "code-coverage":{
-            "requires":[
+        "code-coverage": {
+            "requires": [
                 "integration-test-with-coverage"
             ]
         }
