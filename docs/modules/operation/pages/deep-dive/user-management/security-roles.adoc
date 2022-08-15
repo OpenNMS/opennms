@@ -1,10 +1,13 @@
-[[ga-role-user-management-roles]]
-= Assigning User Permissions
 
-Create user permissions by assigning security roles.
+[[ga-role-user-management-roles]]
+= Assign User Permissions
+
+Create user permission levels by assigning security roles.
 These roles regulate access to the web UI and the REST API to exchange monitoring and inventory information.
 ifndef::opennms-prime[]
-In a distributed installation the Minion instance requires the ROLE_MINION permission to interact with {page-component-title}.
+
+In a distributed installation, Minion instances require an account with the `ROLE_MINION` permission to interact with {page-component-title}.
+This can be one account for all Minions to share, or one account per Minion.
 endif::opennms-prime[]
 
 .Built-in security roles (those with an asterisk are the most commonly used)
@@ -67,28 +70,28 @@ endif::opennms-prime[]
 | Default permissions for a new user to interact with the web UI: can escalate and acknowledge alarms and notifications.
 |===
 
-== Assigning roles to users
-. Log in as a user with administrative permissions.
-. Click the gear icon in the top right.
+== Assign roles to users
+
+. Log in as a user with admin permissions.
+. Click the gear icon at the top-right of the screen.
 . Choose menu:Configure OpenNMS[Configure Users, Groups and On-Call Roles > Configure Users].
 . Click the modify icon next to the user you want to update.
 . Select the role from menu:Security Roles[Available Roles].
 . Click *Add* to assign the security role to the user.
 . Click *Finish* to apply the changes.
-. Log out and log in to apply the new security role settings.
+. Log out and log back in to apply the new security role settings.
 
-== Creating custom security roles
+== Create custom security roles
 
 To create a custom security role you need to define the name and specify the security permissions.
 
-* Create a file called `$OPENNMS_HOME/etc/security-roles.properties`.
-* Add a property called `roles`, and for its value, a comma-separated list of the custom security roles, for example:
+. Create a file called `$\{OPENNMS_HOME}/etc/security-roles.properties`.
+. Add a property called `roles`, and for its value, a comma-separated list of the custom security roles as in the following example:
 
-```
+[source, properties]
+----
 roles=operator,stage
-```
+----
 
-To define permissions associated with the custom security role, manually update the application context of the Spring security here:
-```
-/opt/opennms/jetty-webapps/opennms/WEB-INF/applicationContext-spring-security.xml
-```
+To define permissions associated with the custom security role, manually update the application context of the Spring security at `$\{OPENNMS_HOME}/jetty-webapps/opennms/WEB-INF/applicationContext-spring-security.xml`.
+
