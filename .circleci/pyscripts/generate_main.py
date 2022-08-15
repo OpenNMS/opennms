@@ -181,7 +181,7 @@ for e in main_yml_content:
                 print("tests > smoke:", circleCI.get_Workflow_dependency('smoke'))
                 workflow = circleCI.get_Workflow_yaml(
                     "smoke", level, enable_filters=filters_enabled)
-                workflow_path = append_to_sample_workflow(workflow_path, sworkflow)
+                workflow_path = append_to_sample_workflow(workflow_path, workflow)
 
             if build_components["tests"]["smoke-flaky"]:
                 print("tests > smoke-flaky:", circleCI.get_Workflow_dependency('smoke-test-flaky'))
@@ -235,7 +235,7 @@ for e in main_yml_content:
                 workflow = circleCI.get_Workflow_yaml(
                     "experimental", level, enable_filters=filters_enabled)
                 workflow_path = append_to_sample_workflow(workflow_path, workflow)
-                
+
             if build_components["build"]["build"]:
                 print("build> build:", circleCI.get_Workflow_dependency('build'))
                 workflow = circleCI.get_Workflow_yaml(
@@ -283,15 +283,15 @@ for e in main_yml_content:
                 workflow = circleCI.get_Workflow_yaml(
                     "empty", level, enable_filters=filters_enabled)
                 workflow_path = append_to_sample_workflow(workflow_path, workflow)
-                
+
             if workflow_path:
                 finaly_workflow_path = ["\n".join(workflow_path[:3])]
                 finaly_workflow_path.extend(combine_workflow_path(job_entry_spaces, workflow_path[3:]))
 
                 for line in finaly_workflow_path:
-                    if type(line) == list:
+                    if isinstance(line, list):
                         for entry_lvl2 in line:
-                            if type(entry_lvl2) == list:
+                            if isinstance(entry_lvl2, list):
                                 for entry_lvl3 in entry_lvl2:
                                     final_output += entry_lvl3+"\n"
                             else:
@@ -305,7 +305,7 @@ for e in main_yml_content:
             "#", "").strip()][re_match.group().strip()]["commands"]
 
         for command in commands:
-            if type(command) == list:
+            if isinstance(command, list):
                 for sub_command in command:
                     final_output += sub_command
             else:
