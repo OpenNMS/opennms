@@ -3,11 +3,13 @@
 import os
 import shutil
 import re
+import json
 import tempfile
 from library import common
 from library import libfile
 
 from library import cci
+
 
 def append_to_sample_workflow(workflow_path, entry):
     if len(workflow_path) > 1:
@@ -18,12 +20,13 @@ def append_to_sample_workflow(workflow_path, entry):
 
     return workflow_path
 
+
 def combine_workflow_path(job_entry_spaces, workflow_path):
     _entries = []
     combined_entries = []
     for index, element in enumerate(workflow_path):
         re_match = re.match("^"+(" "*job_entry_spaces)+"- ", element)
-        if  re_match:
+        if re_match:
             _entries.append(index)
 
     for index, position in enumerate(_entries):        
@@ -63,11 +66,15 @@ path_to_executors_yml = os.path.join(path_to_main_folder, "executors.yml")
 path_to_parameters_yml = os.path.join(path_to_main_folder, "parameters.yml")
 
 path_to_pipeline_parameters = os.path.join("/tmp", "pipeline-parameters.json")
-pipeline_parameters = file_library.load_json(path_to_pipeline_parameters)
+with open(path_to_pipeline_parameters, "r", encoding="UTF-8") as file_handler:
+    pipeline_parameters = json.load(file_handler)
+# pipeline_parameters = file_library.load_json(path_to_pipeline_parameters)
 
 
 path_to_build_components = os.path.join("/tmp", "build-triggers.json")
-build_components = file_library.load_json(path_to_build_components)
+with open(path_to_build_components, "r", encoding="UTF-8") as file_handler:
+    build_components = json.load(file_handler)
+# build_components = file_library.load_json(path_to_build_components)
 
 
 ALIAS_FOLDER = "aliases"
