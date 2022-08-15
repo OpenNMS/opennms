@@ -5,6 +5,19 @@ jobs:
     environment:
       DOCKER_CLI_EXPERIMENTAL: enabled
     steps:
-      - build-image-single-arch:
-          architecture: linux/amd64
-          container_name: sentinel
+      - attach_workspace:
+          at: ~/
+      - fetch-artifacts:
+          path: ~/project/target/debs
+          location: sentineldebs
+      - run:
+          name: Fetch DEB artifacts and build sentinel container image
+          command: |
+            cd opennms-container/sentinel
+            env DOCKER_ARCH="linux/amd64" ./build_container_image.sh
+      - store_artifacts:
+          path: ~/project/opennms-container/sentinel/images/container.oci
+          destination: sentinel.oci
+      - cache-oci:
+          key: sentinel
+          path: opennms-container/sentinel/images/
