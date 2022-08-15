@@ -13,6 +13,8 @@ jobs:
       - run:
           name: Fetch DEB artifacts and build sentinel container image
           command: |
+            echo "ls ../../opennms-assemblies/sentinel/target/org.opennms.assemblies.sentinel-*-sentinel.tar.gz"
+            ls ../../opennms-assemblies/sentinel/target/org.opennms.assemblies.sentinel-*-sentinel.tar.gz
             cd opennms-container/sentinel
 
             # Create always a downloadable single OCI artifact for AMD architecture.
