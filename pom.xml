@@ -1774,7 +1774,7 @@
     <pktsVersion>3.0.0</pktsVersion>
     <protobufVersion>3.16.1</protobufVersion>
     <protobuf2Version>2.6.1</protobuf2Version>
-    <postgresqlVersion>42.3.3</postgresqlVersion>
+    <postgresqlVersion>42.4.1</postgresqlVersion>
     <powermockVersion>2.0.9</powermockVersion>
     <okhttpVersion>3.10.0</okhttpVersion>
     <okioVersion>1.14.0</okioVersion>
