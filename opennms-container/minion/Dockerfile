@@ -30,11 +30,6 @@ RUN setcap cap_net_raw+ep ${JAVA_HOME}/bin/java && \
 RUN groupadd -g 10001 minion && \
     adduser -u 10001 -g 10001 -d /opt/minion -s /usr/bin/bash minion
 
-# Create SSH Key-Pair to use with the Karaf Shell
-RUN mkdir /opt/minion/.ssh && \
-    chmod 700 /opt/minion/.ssh && \
-    ssh-keygen -t rsa -f /opt/minion/.ssh/id_rsa -q -N ""
-
 ##
 # Install and setup OpenNMS Minion RPMS
 ##
@@ -77,12 +72,9 @@ RUN echo "installing packages for build ${REVISION} (${BUILD_DATE})"; \
     dnf clean all && \
     rm -rf /var/cache/yum && \
     sed -r -i '/RUNAS/s/.*/export RUNAS=${USER}/' /etc/sysconfig/minion && \
-    echo minion=$(cat /opt/minion/.ssh/id_rsa.pub | awk '{print $2}'),viewer > /opt/minion/etc/keys.properties && \
-    echo "_g_\\:admingroup = group,admin,manager,viewer,systembundles,ssh" >> /opt/minion/etc/keys.properties && \
     chown 10001:10001 -R /opt/minion && \
     chgrp -R 0 /opt/minion && \
-    chmod -R g=u /opt/minion && \
-    chmod 600 /opt/minion/.ssh/id_rsa
+    chmod -R g=u /opt/minion
 
 COPY ./assets/* /
 
