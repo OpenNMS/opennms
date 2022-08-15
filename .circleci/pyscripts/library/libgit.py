@@ -60,7 +60,7 @@ class libgit:
             key, value = e
             if key in keywords_dict:
                 print("Processing:", value)
-                if type(keywords_dict[key]) == list: #isinstance(keywords_dict[key],list)
+                if isinstance(keywords_dict[key], list):
                     print("Current List:", keywords_dict[key])
                     keywords_dict[key].append(
                         value.replace(":", "") if value.strip() else True

@@ -96,7 +96,9 @@ if os.path.exists(os.path.join("/tmp", ".circleci")):
 
 
 # Read the @main.yml file
-main_yml_content = file_library.read_file(path_to_main_yml)
+with open(path_to_main_yml, "r", encoding="UTF-8") as file_handler:
+    main_yml_content = file_handler.readlines()
+#main_yml_content = file_library.read_file(path_to_main_yml)
 keywords = common_library.extract_keywords(path_to_main_yml)
 
 for keyword in keywords:
@@ -314,17 +316,22 @@ for e in main_yml_content:
         final_output += e
 
 final_output += "\n"
-executors_yml_content = file_library.read_file(path_to_executors_yml)
+with open(path_to_executors_yml, "r", encoding="UTF-8") as file_handler:
+    executors_yml_content = file_handler.readlines()
+# executors_yml_content = file_library.read_file(path_to_executors_yml)
 for e in executors_yml_content:
     final_output += e
 
 final_output += "\n"
-parameters_yml_content = file_library.read_file(path_to_parameters_yml)
+with open(path_to_parameters_yml, "r", encoding="UTF-8") as file_handler:
+    parameters_yml_content = file_handler.readlines()
+# parameters_yml_content = file_library.read_file(path_to_parameters_yml)
 for e in parameters_yml_content:
     final_output += e
 
-
-file_library.write_file(path_to_modified_main, final_output)
+with open(path_to_modified_main, "w", encoding="UTF-8") as file_handler:
+    file_handler.write(final_output)
+# file_library.write_file(path_to_modified_main, final_output)
 
 
 os.remove(os.path.join(working_directory.name,

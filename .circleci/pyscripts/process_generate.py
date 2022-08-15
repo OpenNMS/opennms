@@ -127,7 +127,9 @@ print("What we want to build:", What_to_build, len(What_to_build))
 git_keywords = libgit.extract_keywords_from_last_commit()
 
 if os.path.exists(path_to_build_trigger_override):
-    build_mappings = libfile.load_json(path_to_build_trigger_override)
+    with open(path_to_build_trigger_override, "r", encoding="UTF-8") as file_handler:
+        build_mappings = json.load(file_handler)
+    # build_mappings = libfile.load_json(path_to_build_trigger_override)
 else:
     build_mappings = {
         "build": {
@@ -219,7 +221,12 @@ if "experimentalPath" in git_keywords:
     build_mappings["experimental"] = True
     build_mappings["build"]["build"] = False
 
+with open(output_path, "w", encoding="UTF-8") as file_handler:
+    file_handler.write(json.dumps(mappings))
 
-libfile.write_file(output_path, json.dumps(mappings))
+# libfile.write_file(output_path, json.dumps(mappings))
 
-libfile.write_file(path_to_build_components, json.dumps(build_mappings, indent=4))
+with open(path_to_build_components, "w", encoding="UTF-8") as file_handler:
+    file_handler.write(json.dumps(build_mappings, indent=4))
+
+# libfile.write_file(path_to_build_components, json.dumps(build_mappings, indent=4))
