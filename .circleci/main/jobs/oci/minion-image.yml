@@ -20,6 +20,7 @@ jobs:
             mv ~/project/opennms-assemblies/minion/target/minion-target.tar.gz ~/project/
             cd ~/project/
             tar -xvzf minion-target.tar.gz
+            mv ~/project/minion-target.tar.gz ~/project/opennms-assemblies/minion/target/
       - run:
           name: Build Minion OCI
           command: |
