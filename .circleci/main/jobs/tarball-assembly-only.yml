@@ -66,14 +66,12 @@ jobs:
           when: always
           path: ~/project/target/tarballs
           destination: tarballs
-      - store_artifacts:
-          when: always
-          path: ~/project/target/config-schema
-          destination: config-schema
+      #- store_artifacts:
+      #    when: always
+      #    path: ~/project/target/config-schema
+      #    destination: config-schema
       - persist_to_workspace:
           root: ~/
           paths:
             - .artifacts
-            - project/opennms-full-assembly/target/opennms-full-assembly-*-core.tar.gz
             - project/opennms-assemblies/minion/target/org.opennms.assemblies.minion-*-minion.tar.gz
-            - project/opennms-assemblies/sentinel/target/org.opennms.assemblies.sentinel-*-sentinel.tar.gz

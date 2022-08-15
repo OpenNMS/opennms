@@ -23,7 +23,7 @@ branch_name = os.environ.get("CIRCLE_BRANCH")
 
 libgit = libgit.libgit("stdout")
 
-libfile = libfile.libfile()
+# libfile = libfile.libfile()
 
 # os.chdir(os.environ.get("CIRCLE_WORKING_DIRECTORY"))
 
