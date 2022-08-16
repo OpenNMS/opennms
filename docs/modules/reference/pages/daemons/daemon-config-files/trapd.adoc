@@ -14,7 +14,7 @@ Handles processing of xref:operation:events/sources/snmp-traps.adoc[SNMP traps] 
 | Restart Required
 
 | trapd-configuration.xml
-| Configure generic behavior of Trapd; for example, port numbers with IP addresses to listen for traps.
+| Configure generic behavior of trapd (for example, port numbers with IP addresses to listen for traps).
 | yes
 | no
 
@@ -28,12 +28,10 @@ Files in this folder must be specified as an include directive in `eventconf.xml
 .Trapd log file overview
 [options="header"]
 [cols="2,3"]
-
 |===
 | File
 | Description
 
 | trapd.log
-| Logs relating to Trapd server events.
-
+| Logs relating to trapd server events.
 |===

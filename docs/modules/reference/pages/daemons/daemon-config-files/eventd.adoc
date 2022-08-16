@@ -1,7 +1,8 @@
+
 [[ref-daemon-config-files-eventd]]
 = Eventd
 
-Core {page-component-title} process to handle generation of xref:operation:events/introduction.adoc[events].
+Core {page-component-title} process that generates xref:operation:events/introduction.adoc[events].
 
 .Eventd configuration file overview
 [options="header"]
@@ -13,12 +14,12 @@ Core {page-component-title} process to handle generation of xref:operation:event
 | Restart Required
 
 | eventd-configuration.xml
-| Configure generic behavior of Eventd; for example, TCP and UDP port numbers with IP addresses to listen for events and socket timeouts.
+| Configure generic behavior of eventd (for example, TCP and UDP port numbers with IP addresses to listen for events and socket timeouts).
 | no
 | yes
 
 | eventconf.xml
-| Main configuration file for Eventd.
+| Main configuration file for eventd.
 | yes
 | no
 
@@ -31,12 +32,10 @@ Core {page-component-title} process to handle generation of xref:operation:event
 .Eventd log file overview
 [options="header"]
 [cols="2,3"]
-
 |===
 | File
 | Description
 
 | eventd.log
-| Logs relating to Eventd server events.
-
+| Logs relating to eventd server events.
 |===
