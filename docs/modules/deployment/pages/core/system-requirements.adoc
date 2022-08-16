@@ -34,7 +34,7 @@ endif::[]
 [[system-components-core]]
 == Compatibility
 
-{page-component-title} {page-component-version} is compatible with the following components:
+{page-component-title} {full-display-version} is compatible with the following components:
 
 [options="header, autowidth"]
 |===
