@@ -152,7 +152,6 @@ public abstract class AsyncBasicDetectorMinaImpl<Request, Response> extends Asyn
                     // Add filters to the session
                     if(isUseSSLFilter()) {
                         final SslFilter filter = new SslFilter(c);
-                        filter.setUseClientMode(true);
                         session.getFilterChain().addFirst("SSL", filter);
                     }
                     session.getFilterChain().addLast( "logger", getLoggingFilter() != null ? getLoggingFilter() : new SlightlyMoreVerboseLoggingFilter() );
