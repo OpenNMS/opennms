@@ -2,7 +2,6 @@
 Main class for representing CircleCI objects
 """
 from library.cci_components import workflow
-from library import libfile
 
 
 class cci:
@@ -10,10 +9,7 @@ class cci:
     _workflow_path = None
     _workflow = None
 
-    _file_library = None
-
     def __init__(self) -> None:
-        self._file_library = libfile.libfile()
         self._workflow = workflow.workflow()
 
     def set_Workflow(self, path) -> bool:

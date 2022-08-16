@@ -1,7 +1,6 @@
 import re
 import json
 
-from library import libfile
 from library import common
 
 
@@ -14,7 +13,6 @@ class workflow:
     _internal_workflow = {}
 
     def __init__(self) -> None:
-        self._file_library = libfile.libfile()
         self._common_library = common.common()
 
     def load(self, path) -> bool:

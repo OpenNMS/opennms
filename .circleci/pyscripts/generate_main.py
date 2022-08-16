@@ -10,7 +10,6 @@ import re
 import json
 import tempfile
 from library import common
-from library import libfile
 from library import cci
 
 def append_to_sample_workflow(workflow_path, entry):
@@ -45,7 +44,6 @@ def combine_workflow_path(job_entry_spaces, workflow_path):
 
 circleCI = cci.cci()
 
-file_library = libfile.libfile()
 common_library = common.common()
 
 working_directory = tempfile.TemporaryDirectory()
@@ -70,13 +68,13 @@ path_to_parameters_yml = os.path.join(path_to_main_folder, "parameters.yml")
 path_to_pipeline_parameters = os.path.join("/tmp", "pipeline-parameters.json")
 with open(path_to_pipeline_parameters, "r", encoding="UTF-8") as file_handler:
     pipeline_parameters = json.load(file_handler)
-# pipeline_parameters = file_library.load_json(path_to_pipeline_parameters)
+
 
 
 path_to_build_components = os.path.join("/tmp", "build-triggers.json")
 with open(path_to_build_components, "r", encoding="UTF-8") as file_handler:
     build_components = json.load(file_handler)
-# build_components = file_library.load_json(path_to_build_components)
+
 
 
 ALIAS_FOLDER = "aliases"
@@ -107,7 +105,7 @@ if os.path.exists(os.path.join("/tmp", ".circleci")):
 # Read the @main.yml file
 with open(path_to_main_yml, "r", encoding="UTF-8") as file_handler:
     main_yml_content = file_handler.readlines()
-# main_yml_content = file_library.read_file(path_to_main_yml)
+
 keywords = common_library.extract_keywords(path_to_main_yml)
 
 for keyword in keywords:
@@ -327,20 +325,19 @@ for e in main_yml_content:
 final_output += "\n"
 with open(path_to_executors_yml, "r", encoding="UTF-8") as file_handler:
     executors_yml_content = file_handler.readlines()
-# executors_yml_content = file_library.read_file(path_to_executors_yml)
+
 for e in executors_yml_content:
     final_output += e
 
 final_output += "\n"
 with open(path_to_parameters_yml, "r", encoding="UTF-8") as file_handler:
     parameters_yml_content = file_handler.readlines()
-# parameters_yml_content = file_library.read_file(path_to_parameters_yml)
+
 for e in parameters_yml_content:
     final_output += e
 
 with open(path_to_modified_main, "w", encoding="UTF-8") as file_handler:
     file_handler.write(final_output)
-# file_library.write_file(path_to_modified_main, final_output)
 
 
 os.remove(os.path.join(working_directory.name,

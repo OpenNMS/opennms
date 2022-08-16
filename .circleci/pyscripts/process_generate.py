@@ -9,7 +9,6 @@ import os
 import re
 import json
 from library import libgit
-from library import libfile
 
 path_to_build_components = os.path.join("/tmp", "build-triggers.json")
 path_to_build_trigger_override = os.path.join(
@@ -23,9 +22,6 @@ branch_name = os.environ.get("CIRCLE_BRANCH")
 
 libgit = libgit.libgit("stdout")
 
-# libfile = libfile.libfile()
-
-# os.chdir(os.environ.get("CIRCLE_WORKING_DIRECTORY"))
 
 libgit.switch_branch(base_revision)
 libgit.switch_branch(head)
@@ -130,7 +126,6 @@ git_keywords = libgit.extract_keywords_from_last_commit()
 if os.path.exists(path_to_build_trigger_override):
     with open(path_to_build_trigger_override, "r", encoding="UTF-8") as file_handler:
         build_mappings = json.load(file_handler)
-    # build_mappings = libfile.load_json(path_to_build_trigger_override)
 else:
     build_mappings = {
         "build": {
@@ -225,9 +220,5 @@ if "experimentalPath" in git_keywords:
 with open(output_path, "w", encoding="UTF-8") as file_handler:
     file_handler.write(json.dumps(mappings))
 
-# libfile.write_file(output_path, json.dumps(mappings))
-
 with open(path_to_build_components, "w", encoding="UTF-8") as file_handler:
     file_handler.write(json.dumps(build_mappings, indent=4))
-
-# libfile.write_file(path_to_build_components, json.dumps(build_mappings, indent=4))

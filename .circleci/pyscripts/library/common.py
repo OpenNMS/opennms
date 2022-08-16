@@ -2,7 +2,6 @@ import re
 import os
 import shutil
 
-from library import libfile
 
 
 class common:
@@ -10,7 +9,7 @@ class common:
     Helper class containing common functionalities
     """
     def __init__(self) -> None:
-        self._file_library = libfile.libfile()
+        pass
 
     def create_space(self, space):
         """
@@ -21,7 +20,9 @@ class common:
     def extract_keywords(self, path):
         re_pattern = re.compile("^.*#.*#")
         keywords = {}
-        for line in self._file_library.read_file(path):
+        with open(path, "r", encoding="UTF-8") as file_handler:
+            file_content = file_handler.readlines()
+        for line in file_content:
             re_match = re.match(re_pattern, line)
             if re_match:
                 block = re_match.group().split(":")[0].strip().replace("#", "")
@@ -38,9 +39,9 @@ class common:
         """
         folder = index.replace("#", "").split(":")[0].strip()
         filepath = index.replace("#", "").split(":")[1].strip()
-        file_content = self._file_library.read_file(
-            os.path.join(path_to_main_folder, folder, filepath)
-        )
+        with open(os.path.join(path_to_main_folder, folder, filepath), "r", encoding="UTF-8") as file_handler:
+            file_content = file_handler.readlines()
+
         re_pattern = re.compile("^.*#.*#")
         for entry in file_content:
             tmp_match = re.match(re_pattern, entry)
@@ -67,13 +68,12 @@ class common:
         """
         folder = index.replace("#", "").split(":")[0].strip()
         filepath = index.replace("#", "").split(":")[1].strip() + ".yml"
-        file_content = self._file_library.read_file(
-            os.path.join(path_to_main_folder, folder, filepath)
-        )[1:]
+        with open(os.path.join(path_to_main_folder, folder, filepath), "r", encoding="UTF-8") as file_handler:
+            file_content = file_handler.readlines()
 
         shutil.move(
             os.path.join(path_to_main_folder, folder, filepath),
             os.path.join(path_to_main_folder, folder, filepath + "_DONE"),
         )
 
-        return file_content
+        return file_content[1:]
