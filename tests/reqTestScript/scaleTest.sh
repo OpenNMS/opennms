@@ -157,7 +157,7 @@ shuAssertTimeoutEquals()
     shuAssertStringEquals "$timeout" "$expectedTimeout"
 }    
 
-addSampleNodesToRequistion()
+addSampleNodesToRequisition()
 {
     local foreignSource=$1
     local foreignIdPrefix=$2
@@ -190,7 +190,7 @@ addSampleNodesToRequistion()
     done
 
     synchRequisition ${BASE_URL} ${foreignSource} > /dev/null
-    shuAssert "1: Failure synching requistion" $?
+    shuAssert "1: Failure synching requisition" $?
 
     local -i end=$(date "+%s")
     local -i elapsed=end-start
@@ -214,18 +214,18 @@ TestRequisition26000Nodes()
 
     # Create requisition
     createEmptyRequisition ${BASE_URL} ${foreignSource}
-    shuAssert "1: Unexpected failure creating requistion" $?
+    shuAssert "1: Unexpected failure creating requisition" $?
 
     local -i batchNumber=1
     echo
 
     for batch in A B C D E F G H I J K L M N O P Q R S T U V W X Y Z; do
-	addSampleNodesToRequistion ${foreignSource} ${batch} 1000 10 ${batchNumber}
+	addSampleNodesToRequisition ${foreignSource} ${batch} 1000 10 ${batchNumber}
 	batchNumber=batchNumber+1
     done
 
 #    for batch in A B C; do
-#	addSampleNodesToRequistion ${foreignSource} ${batch} 1000 10 ${batchNumber}
+#	addSampleNodesToRequisition ${foreignSource} ${batch} 1000 10 ${batchNumber}
 #	batchNumber=batchNumber+1
 #    done
 

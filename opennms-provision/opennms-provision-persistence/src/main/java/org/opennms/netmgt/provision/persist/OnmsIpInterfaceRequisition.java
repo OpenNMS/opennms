@@ -58,7 +58,7 @@ public class OnmsIpInterfaceRequisition {
     public OnmsIpInterfaceRequisition(RequisitionInterface iface) {
         m_iface = iface;
         m_svcReqs = constructSvcReqs();
-        m_metaDataReqs = constructMetaDataRequistions();
+        m_metaDataReqs = constructMetaDataRequisitions();
     }
     
     RequisitionInterface getInterface() {
@@ -73,7 +73,7 @@ public class OnmsIpInterfaceRequisition {
         return reqs;
     }
 
-    private List<OnmsInterfaceMetaDataRequisition> constructMetaDataRequistions() {
+    private List<OnmsInterfaceMetaDataRequisition> constructMetaDataRequisitions() {
         return m_iface.getMetaData().stream()
                 .map(OnmsInterfaceMetaDataRequisition::new)
                 .collect(Collectors.toList());

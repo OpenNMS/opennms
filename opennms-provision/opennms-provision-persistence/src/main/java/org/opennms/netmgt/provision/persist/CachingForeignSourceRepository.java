@@ -417,7 +417,7 @@ public class CachingForeignSourceRepository extends AbstractForeignSourceReposit
         readLock();
         try {
             final Requisition requisition = getRequisitionMap().get(foreignSource);
-            return (requisition == null? null : requisition.getNodeRequistion(foreignId));
+            return (requisition == null? null : requisition.getNodeRequisition(foreignId));
         } finally {
             readUnlock();
         }

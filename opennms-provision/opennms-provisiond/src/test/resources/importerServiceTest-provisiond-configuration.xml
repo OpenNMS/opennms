@@ -3,7 +3,7 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
    
   foreign-source-dir="${install.dir}/etc/foreign-sources" 
-  requistion-dir="${install.dir}/etc/imports"
+  requisition-dir="${install.dir}/etc/imports"
    
   importThreads="8" scanThreads="10" rescanThreads="10" writeThreads="8" >
   

@@ -3,7 +3,7 @@
   "scanThreads": 10,
   "rescanThreads": 10,
   "writeThreads": 8,
-  "requistion-dir": "/opt/opennms/etc/imports",
+  "requisition-dir": "/opt/opennms/etc/imports",
   "foreign-source-dir": "/opt/opennms/etc/foreign-sources",
   "requisition-def": [
     {

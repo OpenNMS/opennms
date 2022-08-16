@@ -130,7 +130,7 @@ public abstract class AbstractForeignSourceRepository implements ForeignSourceRe
     @Override
     public OnmsNodeRequisition getNodeRequisition(String foreignSource, String foreignId) throws ForeignSourceRepositoryException {
         Requisition req = getRequisition(foreignSource);
-        return (req == null ? null : req.getNodeRequistion(foreignId));
+        return (req == null ? null : req.getNodeRequisition(foreignId));
     }
 
     @Override
