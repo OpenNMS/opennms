@@ -203,6 +203,6 @@ public class MeasurementsRestService {
     protected static WebApplicationException getException(final Status status, Throwable t, String msg, Object... params) throws WebApplicationException {
         if (params != null) msg = MessageFormatter.arrayFormat(msg, params).getMessage();
         LOG.error(msg, t);
-        return new WebApplicationException(Response.status(status).type(MediaType.TEXT_PLAIN).entity(msg).build());
+        return new WebApplicationException(t, Response.status(status).type(MediaType.TEXT_PLAIN).entity(msg).build());
     }
 }
