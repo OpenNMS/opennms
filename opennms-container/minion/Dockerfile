@@ -48,16 +48,6 @@ COPY --chown=10001:0 --from=minion-base /opt /opt
 COPY ./container-fs/confd/ /opt/minion/confd/
 RUN chmod +x /opt/minion/confd/scripts/*
 
-# Create SSH Key-Pair to use with the Karaf Shell
-# This is a workaround to be able to use our opennms:health-check which does not work with the karaf/bin/client command
-RUN mkdir /opt/minion/.ssh && \
-    ssh-keygen -t rsa -f /opt/minion/.ssh/id_rsa -q -N "" && \
-    chmod 700 /opt/minion/.ssh && \
-    chmod 600 /opt/minion/.ssh/id_rsa && \
-    chown 10001 /opt/minion/.ssh -R && \
-    echo minion=$(cat /opt/minion/.ssh/id_rsa.pub | awk '{print $2}'),viewer > /opt/minion/etc/keys.properties && \
-    echo "_g_\\:admingroup = group,admin,manager,viewer,systembundles,ssh" >> /opt/minion/etc/keys.properties
-
 # Arguments for labels should not invalidate caches
 ARG BUILD_DATE="1970-01-01T00:00:00+0000"
 ARG VERSION
