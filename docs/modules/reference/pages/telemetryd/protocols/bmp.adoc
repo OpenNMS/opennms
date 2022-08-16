@@ -11,7 +11,7 @@ image::bmp/bmp_integration_overview.png[width=70%]
 
 == BMP TCP Parser
 
-The BMP parser accepts BMP connections from router packets using a <<telemetryd/listeners/tcp.adoc#telemetryd-listener-tcp, TCP Listener>>.
+The BMP parser accepts BMP connections from router packets using a <<deep-dive/telemetryd/listeners/tcp.adoc#telemetryd-listener-tcp, TCP Listener>>.
 
 === Facts
 
@@ -65,7 +65,7 @@ If you do not specify the queue name, the fallback is the name of the parser.
 [[telemetryd-bmp-statistics-adapter]]
 == BMP telemetry adapter
 
-The BMP telemetry adapter handles BMP statistics received and parsed by the <<telemetryd-bmp-parser, BMP parser>>.
+The BMP telemetry adapter handles BMP statistics received and parsed by the <<deep-dive/telemetryd-bmp-parser, BMP parser>>.
 Statistics received from the router are associated as performance data with that router.
 The router must exist as a regular node in {page-component-title}.
 
@@ -98,7 +98,7 @@ If the parameter `metaDataNodeLookup` is not empty, it will be interpreted as a 
 == BMP Peer Status Adapter
 
 The BMP peer status adapter creates events for peer status changes.
-It handles BMP Peer Up and Down messages that the <<telemetryd-bmp-parser, BMP Parser>> receives and parses, and converts to {page-component-title} events.
+It handles BMP Peer Up and Down messages that the <<deep-dive/telemetryd-bmp-parser, BMP Parser>> receives and parses, and converts to {page-component-title} events.
 {page-component-title} associates the created events with the router sending the messages.
 This router must exist as regular node in {page-component-title}.
 
@@ -134,7 +134,7 @@ If the parameter `metaDataNodeLookup` is not empty, it will be interpreted as a 
 == OpenBMP integration adapter
 
 The OpenBMP integration adapter can integrate with an existing https://github.com/OpenBMP[OpenBMP] installation.
-It handles BMP messages the <<telemetryd-bmp-parser, BMP Parser>> receives and parses, and creates OpenBMP-compatible messages, which are then passed to the OpenBMP Kafka cluster.
+It handles BMP messages the <<deep-dive/telemetryd-bmp-parser, BMP Parser>> receives and parses, and creates OpenBMP-compatible messages, which are then passed to the OpenBMP Kafka cluster.
 
 This setup replaces the collector component of OpenBMP.
 
@@ -167,7 +167,7 @@ Enables all known Kafka settings, but with `kafka.` prefixed.
 == BMP persisting adapter
 
 The BMP Persisting adapter persists OpenBMP messages received without the need for any additional OpenBMP components.
-It handles BMP messages the <<telemetryd-bmp-parser, BMP Parser>> receives and parses, and creates OpenBMP-compatible messages, which are then
+It handles BMP messages the <<deep-dive/telemetryd-bmp-parser, BMP Parser>> receives and parses, and creates OpenBMP-compatible messages, which are then
 persisted in OpenNMS Postgres DB.
 
 === Facts
@@ -270,7 +270,7 @@ feature:install sentinel-jsonstore-postgres
 feature:install sentinel-telemetry-bmp-persist
 ----
 
-<1> Needs datasource configuration setup per xref:operation:flows/sentinel/sentinel.adoc#flows-scaling[Sentinel Flow Processing].
+<1> Needs datasource configuration setup per xref:operation:deep-dive/flows/sentinel/sentinel.adoc#flows-scaling[Sentinel Flow Processing].
 <2> Can alternatively be set to `sentinel-kafka` based on your selected message broker.
 Refer to xref:reference:configuration/sentinel-features.adoc#ga-kafka-configuration[Sentinel Kafka Configuration].
 

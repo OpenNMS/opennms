@@ -18,10 +18,10 @@ We do not share it with third parties.
 
 image::users/data-sources.png[prompt,300]
 
-Click *Show me what is being sent* to see what xref:admin/housekeeping/introduction.adoc#ga-data-collection[information we collect].
+Click *Show me what is being sent* to see what xref:deep-dive/admin/housekeeping/introduction.adoc#ga-data-collection[information we collect].
 Statistics collection and publication happen only if an admin user opts in.
 
-NOTE: Admin users can xref:admin/housekeeping/introduction.adoc#disable-data-collection[enable or disable usage statistics collection] at any time.
+NOTE: Admin users can xref:deep-dive/admin/housekeeping/introduction.adoc#disable-data-collection[enable or disable usage statistics collection] at any time.
 
 [[ga-admin-user-setup]]
 == Admin user setup

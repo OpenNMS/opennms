@@ -24,4 +24,4 @@ importer.adapter.dns.server=192.168.1.1 <1>
 ----
 <1> Replace with the IP address of your DNS server to receive dynamic DNS updates.
 
-NOTE: This DNS server setting may be shared with the xref:provisioning/adapters/rdns.adoc[reverse DNS adapter] if you have them both installed.
+NOTE: This DNS server setting may be shared with the xref:deep-dive/provisioning/adapters/rdns.adoc[reverse DNS adapter] if you have them both installed.

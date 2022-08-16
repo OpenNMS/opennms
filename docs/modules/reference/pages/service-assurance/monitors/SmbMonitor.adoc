@@ -13,7 +13,7 @@ For troubleshooting, refer to the use of the Microsoft Windows command line tool
 WARNING: Microsoft has deprecated the use of NetBIOS.
          Since Windows Server 2000, DNS is used as the default name resolution.
 
-TIP: If you want to monitor the status of a Windows file server, check out the <<service-assurance/monitors/JCifsMonitor.adoc#poller-jcifs-monitor,JCifsMonitor>>.
+TIP: If you want to monitor the status of a Windows file server, check out the <<deep-dive/service-assurance/monitors/JCifsMonitor.adoc#poller-jcifs-monitor,JCifsMonitor>>.
 
 == Monitor facts
 

@@ -8,7 +8,7 @@ Since this detector uses SNMP to accomplish its work, systems you use it against
 Most modern SNMP agents, including most distributions of the Net-SNMP agent and the SNMP service that ship with Microsoft Windows, support this MIB.
 Out-of-the-box support for HOST-RESOURCES-MIB among commercial Unix operating systems may vary.
 
-NOTE: This detector implements the configuration parameters inherited from the xref:provisioning/detectors/SnmpDetector.adoc[SNMP Detector].
+NOTE: This detector implements the configuration parameters inherited from the xref:deep-dive/provisioning/detectors/SnmpDetector.adoc[SNMP Detector].
 
 == Detector facts
 

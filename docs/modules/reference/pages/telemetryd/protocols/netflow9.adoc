@@ -7,7 +7,7 @@ See <<ga-flow-support, Flow Support>> for details on flow support in {page-compo
 [[telemetryd-netflow9-parser-udp]]
 == Netflow v9 UDP Parser
 
-The Netflow v9 UDP parser accepts packets received by a <<telemetryd/listeners/udp.adoc#telemetryd-listener-udp, UDP listener>> and must forward them to a <<telemetryd-netflow9-adapter, Netflow v9 adapter>>.
+The Netflow v9 UDP parser accepts packets received by a <<deep-dive/telemetryd/listeners/udp.adoc#telemetryd-listener-udp, UDP listener>> and must forward them to a <<deep-dive/telemetryd-netflow9-adapter, Netflow v9 adapter>>.
 
 The Netflow v9 UDP parser supports protocol detection.
 
@@ -72,7 +72,7 @@ The default is `3600` seconds, so every hour an event will be sent.
 [[telemetryd-netflow9-adapter]]
 == Netflow v9 Adapter
 
-The Netflow v9 adapter handles Netflow v9 payloads received and parsed by by the <<telemetryd-netflow9-parser-udp, Netflow v9 UDP Parser>>.
+The Netflow v9 adapter handles Netflow v9 payloads received and parsed by by the <<deep-dive/telemetryd-netflow9-parser-udp, Netflow v9 UDP Parser>>.
 Flows are decoded from the messages into the canonical flow format and are published to the flow repository.
 
 === Facts

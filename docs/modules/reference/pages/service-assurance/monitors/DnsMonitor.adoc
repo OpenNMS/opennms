@@ -36,7 +36,7 @@ Received 112 bytes from 8.8.8.8#53 in 41 ms
 ----
 
 TIP: This monitor is intended for testing the availability of a DNS service.
-To monitor the DNS resolution of some of your nodes from a client's perspective, use the <<service-assurance/monitors/DNSResolutionMonitor.adoc#poller-dns-resolution-monitor,DNSResolutionMonitor>>.
+To monitor the DNS resolution of some of your nodes from a client's perspective, use the <<deep-dive/service-assurance/monitors/DNSResolutionMonitor.adoc#poller-dns-resolution-monitor,DNSResolutionMonitor>>.
 
 == DnsMonitor versus DNSResolutionMonitor
 
@@ -45,7 +45,7 @@ Use this service to determine if the monitored node provides DNS resolution of r
 In {page-component-title}, the DNS server is the node and the DnsMonitor sends a lookup request for a given A record to the DNS server IP address.
 The service goes down if the DNS server doesn't have a valid A record in its zone database or has other issues resolving A records.
 
-The <<service-assurance/monitors/DNSResolutionMonitor.adoc#poller-dns-resolution-monitor, DNSResolutionMonitor>> measures the availability and record outages of hostname resolution from a client perspective.
+The <<deep-dive/service-assurance/monitors/DNSResolutionMonitor.adoc#poller-dns-resolution-monitor, DNSResolutionMonitor>> measures the availability and record outages of hostname resolution from a client perspective.
 Use this service to determine if the monitored node can be resolved by DNS hosted somewhere else in your network.
 
 == Monitor facts

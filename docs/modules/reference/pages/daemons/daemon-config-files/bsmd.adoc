@@ -1,7 +1,7 @@
 [[ref-daemon-config-files-bsmd]]
 = Bsmd
 
-Processes updates of xref:operation:bsm/introduction.adoc[business service monitoring] availability.
+Processes updates of xref:deep-dive/operation:bsm/introduction.adoc[business service monitoring] availability.
 
 .Bsmd log file overview
 [options="header"]
