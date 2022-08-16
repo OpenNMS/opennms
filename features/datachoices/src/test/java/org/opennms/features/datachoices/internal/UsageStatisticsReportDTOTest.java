@@ -64,7 +64,7 @@ public class UsageStatisticsReportDTOTest {
         usageStatisticsReport.setOnCallRoleCount(1);
         usageStatisticsReport.setNotificationEnablementStatus(null);
         usageStatisticsReport.setDestinationPathCount(-1);
-        usageStatisticsReport.setUsers(1);
+        usageStatisticsReport.setUsers(0);
         usageStatisticsReport.setGroups(0);
         String actualJson = usageStatisticsReport.toJson();
         System.err.println(actualJson);
