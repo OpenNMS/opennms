@@ -30,11 +30,6 @@ RUN setcap cap_net_raw+ep ${JAVA_HOME}/bin/java && \
 RUN groupadd -g 10001 sentinel && \
     adduser -u 10001 -g 10001 -d /opt/sentinel -s /usr/bin/bash sentinel
 
-# Create SSH Key-Pair to use with the Karaf Shell
-RUN mkdir /opt/sentinel/.ssh && \
-    chmod 700 /opt/sentinel/.ssh && \
-    ssh-keygen -t rsa -f /opt/sentinel/.ssh/id_rsa -q -N ""
-
 ##
 # Install and setup OpenNMS Sentinel RPMS
 ##
@@ -75,12 +70,9 @@ RUN echo "installing packages for build ${REVISION} (${BUILD_DATE})"; \
     dnf clean all && \
     rm -rf /var/cache/yum && \
     mkdir -p /opt/sentinel/data/{log,tmp} && \
-    echo sentinel=$(cat /opt/sentinel/.ssh/id_rsa.pub | awk '{print $2}'),viewer > /opt/sentinel/etc/keys.properties && \
-    echo "_g_\\:admingroup = group,admin,manager,viewer,systembundles,ssh" >> /opt/sentinel/etc/keys.properties && \
     chown 10001:10001 -R /opt/sentinel && \
     chgrp -R 0 /opt/sentinel && \
-    chmod -R g=u /opt/sentinel && \
-    chmod 600 /opt/sentinel/.ssh/id_rsa
+    chmod -R g=u /opt/sentinel
 
 COPY ./assets/* /
 
