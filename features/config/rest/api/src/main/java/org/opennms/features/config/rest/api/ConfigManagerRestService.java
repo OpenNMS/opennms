@@ -136,38 +136,38 @@ public interface ConfigManagerRestService {
      *
      * @param configName configuration name
      * @param configId configuration id
-     * @param jsonPath path in JsonPath format
+     * @param path path to the part
      * @return requested part of configuration
      */
     @GET
-    @Path(value="/{configName}/{configId}/{jsonPath:\\$.*}")
+    @Path(value="/{configName}/{configId}/{path:.*}")
     Response getConfigPart(@PathVariable("configName") String configName, @PathVariable("configId") String configId,
-                           @PathVariable("jsonPath") String jsonPath);
+                           @PathVariable("path") String path);
 
     /**
      * Update config part specified by configName, configId and path to the part
      *
      * @param configName configuration name
      * @param configId configuration id
-     * @param jsonPath path in JsonPath format
+     * @param path path to the part
      * @return empty response
      */
     @PUT
-    @Path(value="/{configName}/{configId}/{jsonPath:\\$.*}")
+    @Path(value="/{configName}/{configId}/{path:.+}")
     Response updateConfigPart(@PathVariable("configName") String configName, @PathVariable("configId") String configId,
-                              @PathVariable("jsonPath") String path, String jsonPath);
+                              @PathVariable("path") String path, String newContent);
 
     /**
      * Delete config part specified by configName, configId and path to the part
      *
      * @param configName configuration name
      * @param configId configuration id
-     * @param jsonPath path in JsonPath format
+     * @param path path to the part
      * @return empty response
      */
     @DELETE
-    @Path(value="/{configName}/{configId}/{jsonPath:\\$.*}")
+    @Path(value="/{configName}/{configId}/{path:.+}")
     Response deleteConfigPart(@PathVariable("configName") String configName, @PathVariable("configId") String configId,
-                              @PathVariable("jsonPath") String jsonPath);
+                              @PathVariable("path") String path);
 
 }

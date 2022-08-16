@@ -1809,13 +1809,15 @@
     </feature>
     <feature name="opennms-config-management" description="OpenNMS :: Features :: Config" version="${project.version}">
         <feature>jackson-yaml</feature>
+        <feature >jsonpath</feature>
         <bundle>mvn:org.opennms/opennms-web-api/${project.version}</bundle>
         <bundle>mvn:com.fasterxml.jackson.datatype/jackson-datatype-jsr310/${jackson2Version}</bundle>
         <bundle>mvn:org.apache.ws.xmlschema/xmlschema-core/${xmlschemaVersion}</bundle>
         <bundle>mvn:org.apache.ws.xmlschema/xmlschema-walker/${xmlschemaVersion}</bundle>
         <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jaxp-api-1.4/${servicemixSpecsVersion}</bundle>
         <bundle>mvn:org.opennms.features.config.rest/org.opennms.features.config.rest.api/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.config.rest/org.opennms.features.config.rest.impl/${project.version}</bundle>
+        <bundle start-level="85" dependency="true">mvn:com.jayway.jsonpath/json-path/${jsonPathVersion}</bundle>
+        <bundle start-level="90">mvn:org.opennms.features.config.rest/org.opennms.features.config.rest.impl/${project.version}</bundle>
     </feature>
     <feature name="opennms-config-management-osgi-del" description="OpenNMS :: Features :: Config :: Osgi :: Delegate" version="${project.version}">
         <bundle>mvn:org.opennms.features.config.osgi/org.opennms.features.config.osgi.del/${project.version}</bundle>

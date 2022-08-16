@@ -48,8 +48,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.jayway.jsonpath.JsonPath;
-
 import io.swagger.v3.oas.models.OpenAPI;
 
 /**
@@ -163,7 +161,7 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
             if (json.isEmpty()) {
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
-            return Response.ok(JsonPath.read(json.get(), path)).build();
+            return Response.ok(JsonPathHelper.get(json.get(), path)).build();
         } catch (Exception e) {
             LOG.error("configName: {}, configId: {}", configName, configId, e);
             return this.generateSimpleMessageResponse(Response.Status.BAD_REQUEST, e.getMessage());
@@ -171,16 +169,14 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
     }
 
     @Override
-    public Response updateConfigPart(String configName, String configId, String path, String jsonStr) {
+    public Response updateConfigPart(String configName, String configId, String path, String newPartContent) {
         try {
             Optional<String> json = configurationManagerService.getJSONStrConfiguration(configName, configId);
             if (json.isEmpty()) {
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
 
-            String newJson = JsonPath.parse(json.get()).set(path, jsonStr).jsonString();
-
-            //TODO:check that the path returns just one element
+            String newJson = JsonPathHelper.update(json.get(),path, newPartContent);
 
             configurationManagerService.updateConfiguration(configName, configId, new JsonAsString(newJson), true);
 
@@ -199,9 +195,7 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
 
-            String newJson = JsonPath.parse(json.get()).set(path, "").jsonString();
-
-            //TODO:check that the path returns just one element
+            String newJson = JsonPathHelper.delete(json.get(),path);
 
             configurationManagerService.updateConfiguration(configName, configId, new JsonAsString(newJson), true);
 
