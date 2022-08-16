@@ -6,8 +6,7 @@ The provision daemon scans nodes from requisition and import files, and from new
 The scanned nodes are then added to the database.
 Note that only nodes in the database are monitored by other daemons.
 
-NewSuspect events are triggered by Discover scans, and by trapd and syslogd if those daemons are configured to create the event.
-When configured properly, trapd and syslogd create a newSuspect event if an incoming message does not match any existing nodes.
+NewSuspect events are triggered by Discovery scans, and by trapd and syslogd if those daemons are configured to create the event.
 
 We recommend that you use the {page-component-title} UI to update configuration settings.
 
