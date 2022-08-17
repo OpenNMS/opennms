@@ -28,11 +28,6 @@ RUN setcap cap_net_raw+ep ${JAVA_HOME}/bin/java && \
 RUN groupadd -g 10001 sentinel && \
     adduser --uid 10001 --gid 10001 --home /usr/share/sentinel --shell /usr/bin/bash sentinel
 
-# Create SSH Key-Pair to use with the Karaf Shell
-RUN mkdir /usr/share/sentinel/.ssh && \
-    chmod 700 /usr/share/sentinel/.ssh && \
-    ssh-keygen -t rsa -f /usr/share/sentinel/.ssh/id_rsa -q -N ""
-
 ##
 # Install and setup OpenNMS Sentinel DEBS
 ##
@@ -86,12 +81,9 @@ RUN echo "installing packages for build ${REVISION} (${BUILD_DATE})"; \
     ln -s /usr/share/sentinel/deploy /var/lib/sentinel/deploy && \
     ln -s /usr/share/sentinel/etc /etc/sentinel && \
     mkdir -p /usr/share/sentinel/data/{log,tmp} && \
-    echo sentinel=$(cat /usr/share/sentinel/.ssh/id_rsa.pub | awk '{print $2}'),viewer > /usr/share/sentinel/etc/keys.properties && \
-    echo "_g_\\:admingroup = group,admin,manager,viewer,systembundles,ssh" >> /usr/share/sentinel/etc/keys.properties && \
     chown 10001:10001 -R /usr/share/sentinel /var/lib/sentinel && \
     chgrp -R 0 /usr/share/sentinel && \
     chmod -R g=u /usr/share/sentinel && \
-    chmod 600 /usr/share/sentinel/.ssh/id_rsa && \
     ln -s /usr/share/sentinel /opt/sentinel
 
 COPY ./assets/* /
