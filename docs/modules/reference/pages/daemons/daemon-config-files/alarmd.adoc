@@ -1,7 +1,9 @@
+
 [[ref-daemon-config-files-alarmd]]
 = Alarmd
 
-Manages xref:operation:alarms/introduction.adoc[alarm] state based on generated events.
+The alarm daemon handles alarm workflows.
+It manages the xref:operation:alarms/introduction.adoc[alarm] state based on generated events.
 
 .Alarmd configuration file overview
 [options="header"]
@@ -21,12 +23,10 @@ Manages xref:operation:alarms/introduction.adoc[alarm] state based on generated 
 .Alarmd log file overview
 [options="header"]
 [cols="2,3"]
-
 |===
 | File
 | Description
 
 | alarmd.log
 | Logs relating to alarmd server events.
-
 |===
