@@ -62,15 +62,11 @@ public class UsageStatisticsReportDTO {
     private int m_destinationPathCount;
     private Boolean m_notificationEnablementStatus;
     private int m_onCallRoleCount;
-
     private Map<String, Long> m_nodesBySysOid = Collections.emptyMap();
-
     private long m_monitoringLocations;
     private long m_minions;
-
     private String m_installedFeatures;
     private String m_installedOIAPlugins;
-
     private Integer m_availableProcessors;
     private Long m_freePhysicalMemorySize;
     private Long m_totalPhysicalMemorySize;
@@ -87,15 +83,14 @@ public class UsageStatisticsReportDTO {
     private String m_sinkStrategy;
     private String m_rpcStrategy;
     private String m_tssStrategies;
-
     private int m_businessEdgeCount;
-
     private long m_pollsCompleted;
     private long m_eventLogsProcessed;
     private long m_coreFlowsPersisted;
     private long m_coreNewtsSamplesInserted;
     private long m_coreQueuedUpdatesCompleted;
-
+    private int m_users;
+    private int m_groups;
     public void setSystemId(String systemId) {
         m_systemId = systemId;
     }
@@ -446,6 +441,23 @@ public class UsageStatisticsReportDTO {
     public String getTssStrategies() {
         return m_tssStrategies;
     }
+
+    public int getGroups() {
+        return this.m_groups;
+    }
+
+    public void setGroups(int m_groups) {
+        this.m_groups = m_groups;
+    }
+
+    public int getUsers() {
+        return this.m_users;
+    }
+
+    public void setUsers(int m_users) {
+        this.m_users = m_users;
+    }
+
 
     public String toJson() {
         return toJson(false);
