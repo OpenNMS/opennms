@@ -30,21 +30,33 @@ package org.opennms.core.ipc.sink.offheap;
 
 import java.util.AbstractMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ForkJoinPool;
 
-public class MemoryDataBlock<T>implements DataBlock<T>{
-    protected int queueSize;
-    protected BlockingQueue<Map.Entry<String, T>> queue;
+public class MemoryDataBlock<T> implements DataBlock<T> {
+    private static final ForkJoinPool serdesPool = new ForkJoinPool(
+            Math.max(Runtime.getRuntime().availableProcessors() - 1, 1));
+    private int queueSize;
+    private BlockingQueue<Map.Entry<String, T>> queue;
+    private String name;
+    private DataBlock<T> nextDataBlock;
 
     public MemoryDataBlock(int queueSize) {
         this.queueSize = queueSize;
         queue = new ArrayBlockingQueue<>(queueSize, true);
+        name = System.nanoTime() + "_" + (int) Math.floor(Math.random() * 1000);
     }
 
     @Override
     public int size() {
         return queue.size();
+    }
+
+    @Override
+    public String getName() {
+        return name;
     }
 
     @Override
@@ -63,5 +75,21 @@ public class MemoryDataBlock<T>implements DataBlock<T>{
     @Override
     public Map.Entry<String, T> dequeue() throws InterruptedException {
         return queue.take();
+    }
+
+    @Override
+    public void notifyNextDataBlock() {
+        if(nextDataBlock == null){
+            return;
+        }
+        if (nextDataBlock instanceof OffHeapDataBlock) {
+            serdesPool.submit(() -> ((OffHeapDataBlock<T>) nextDataBlock).enableQueue());
+        }
+        nextDataBlock = null;
+    }
+
+    @Override
+    public void setNextDataBlock(DataBlock<T> dataBlock) {
+        this.nextDataBlock = Objects.requireNonNull(dataBlock);
     }
 }

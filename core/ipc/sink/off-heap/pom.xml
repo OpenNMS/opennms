@@ -49,6 +49,12 @@
       <groupId>com.swrve</groupId>
       <artifactId>rate-limited-logger</artifactId>
     </dependency>
+<dependency>
+    <groupId>berkeleydb</groupId>
+    <artifactId>je</artifactId>
+    <version>3.2.76</version>
+</dependency>
+
 
     <dependency>
       <groupId>org.hamcrest</groupId>

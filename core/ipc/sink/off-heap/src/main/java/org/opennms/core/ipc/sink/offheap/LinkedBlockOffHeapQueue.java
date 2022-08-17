@@ -28,6 +28,11 @@
 
 package org.opennms.core.ipc.sink.offheap;
 
+import com.sleepycat.je.Database;
+import com.sleepycat.je.DatabaseConfig;
+import com.sleepycat.je.DatabaseException;
+import com.sleepycat.je.Environment;
+import com.sleepycat.je.EnvironmentConfig;
 import com.swrve.ratelimitedlogger.RateLimitedLog;
 import org.opennms.core.ipc.sink.api.DispatchQueue;
 import org.opennms.core.ipc.sink.api.WriteFailedException;
@@ -36,6 +41,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
@@ -88,6 +94,7 @@ public class LinkedBlockOffHeapQueue<T> implements DispatchQueue<T> {
         return diskBlocks.get();
     }
 
+    private static Database db;
     public LinkedBlockOffHeapQueue(Function<T, byte[]> serializer, Function<byte[], T> deserializer,
                                    String moduleName, Path filePath, int inMemoryQueueSize, int batchSize,
                                    long maxFileSizeInBytes) throws IOException {
@@ -113,10 +120,27 @@ public class LinkedBlockOffHeapQueue<T> implements DispatchQueue<T> {
         this.filePath = filePath;
 
         File file = Paths.get(filePath.toString(), moduleName).toFile();
+
+        Files.deleteIfExists(file.toPath());
         if(!file.mkdirs()){
             throw new RuntimeException("Fail make dir. " + file);
         }
 
+
+        EnvironmentConfig envConfig = new EnvironmentConfig();
+        envConfig.setAllowCreate(true);
+        Environment dbEnv = null;
+        try {
+            dbEnv = new Environment(file, envConfig);
+            DatabaseConfig dbconf = new DatabaseConfig();
+            dbconf.setAllowCreate(true);
+            //dbconf.setDeferredWrite(true);
+            dbconf.setTransactional(false);
+            dbconf.setSortedDuplicates(false);//allow update
+            db = dbEnv.openDatabase(null, this.getClass().getSimpleName(), dbconf);
+        } catch (DatabaseException e) {
+            e.printStackTrace();
+        }
         createDataBlock(true);
 
         // Setting the max file size to 0 or less will disable the off-heap portion of this queue
@@ -218,24 +242,26 @@ public class LinkedBlockOffHeapQueue<T> implements DispatchQueue<T> {
         if (!force && (tailBlock != null && tailBlock.size() < batchSize)) {
             return;
         }
-        var tmp = tailBlock;
         DataBlock newBlock;
         if (tailBlock == null || !isMemoryFull()) {
             newBlock = new MemoryDataBlock(batchSize);
             memoryBlocks.incrementAndGet();
         } else {
-            newBlock = new OffHeapDataBlock(batchSize, Paths.get(this.filePath.toString(), moduleName), serializer, deserializer);
+            newBlock = new OffHeapDataBlock(batchSize, Paths.get(this.filePath.toString(), moduleName), serializer, deserializer, db);
             diskBlocks.incrementAndGet();
         }
-        System.out.println("Create "+newBlock+", mem:"+memoryBlocks.get()+", disk: "+ diskBlocks.get());
+        //System.out.println("Create "+newBlock+", mem:"+memoryBlocks.get()+", disk: "+ diskBlocks.get());
 
         LOG.warn("Create {}, mem: {}, disk: {}", newBlock, memoryBlocks.get(), diskBlocks.get());
-        if (tmp == null) {
-            ////System.out.println("ERROR 5 !!!! NULL");
-        } else if (tmp != tailBlock) {
-            ////System.out.println("ERROR 3 !!!! " + tmp + " " + tailBlock);
-        } else if (tmp.size() != batchSize) {
-            ////System.out.println("ERROR 4 !!!! oil tail size = " + tmp.size() + " != " + batchSize + " " + tmp);
+//        if (tmp == null) {
+//            ////System.out.println("ERROR 5 !!!! NULL");
+//        } else if (tmp != tailBlock) {
+//            ////System.out.println("ERROR 3 !!!! " + tmp + " " + tailBlock);
+//        } else if (tmp.size() != batchSize) {
+//            ////System.out.println("ERROR 4 !!!! oil tail size = " + tmp.size() + " != " + batchSize + " " + tmp);
+//        }
+        if (tailBlock != null) {
+            this.tailBlock.setNextDataBlock(newBlock);
         }
         this.tailBlock = newBlock;
         this.mainQueue.add(newBlock);

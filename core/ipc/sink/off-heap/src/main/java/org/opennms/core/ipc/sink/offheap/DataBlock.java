@@ -31,11 +31,17 @@ package org.opennms.core.ipc.sink.offheap;
 import java.util.Map;
 
 public interface DataBlock<T> {
-
+    String getName();
     boolean enqueue(String key, T message);
 
     Map.Entry<String, T> peek() throws InterruptedException;
     Map.Entry<String, T> dequeue() throws InterruptedException;
+
+    /**
+     * Make sure queue is ready
+     */
+    void notifyNextDataBlock();
+    void setNextDataBlock(DataBlock<T> dataBlock);
 
     int size();
 }

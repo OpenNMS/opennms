@@ -28,17 +28,24 @@
 
 package org.opennms.core.ipc.sink.offheap;
 
+import com.sleepycat.je.Database;
+import com.sleepycat.je.DatabaseEntry;
+import com.sleepycat.je.DatabaseException;
+import com.sleepycat.je.LockMode;
+import com.sleepycat.je.OperationStatus;
 import com.squareup.tape2.QueueFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.SystemPropertyUtils;
 
-import java.io.File;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Method;
-import java.nio.file.Files;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +53,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.FutureTask;
@@ -61,32 +67,38 @@ public class OffHeapDataBlock<T> implements DataBlock<T> {
     private static final ForkJoinPool serdesPool = new ForkJoinPool(
             Math.max(Runtime.getRuntime().availableProcessors() - 1, 1));
 
+
     protected int queueSize;
     protected BlockingQueue<Map.Entry<String, T>> queue;
     private QueueFile offHeapQueue;
-    private final File queueFile;
+    //private final File queueFile;
+    private String name;
     private final Function<T, byte[]> serializer;
     private final Function<byte[], T> deserializer;
-    private final Lock lock = new ReentrantLock(true);
     private final Lock diskLock = new ReentrantLock(true);
+    private int offHeapQueueSize = -1;
 
     private RunnableFuture<QueueFile> future;
+    private Database db;
 
-
-    public OffHeapDataBlock(int queueSize, Path fileDir, Function<T, byte[]> serializer, Function<byte[], T> deserializer) throws IOException {
+    public OffHeapDataBlock(int queueSize, Path fileDir, Function<T, byte[]> serializer, Function<byte[], T> deserializer, Database db) {
         Objects.requireNonNull(fileDir);
         this.serializer = Objects.requireNonNull(serializer);
         this.deserializer = Objects.requireNonNull(deserializer);
         this.queueSize = queueSize;
+        this.db = Objects.requireNonNull(db);
         queue = new ArrayBlockingQueue<>(queueSize, true);
-        queueFile = Paths.get(fileDir.toString(), System.nanoTime() + "_" + (int) Math.floor(Math.random() * 1000) + ".fifo").toFile();
+        name = System.nanoTime() + "_" + (int) Math.floor(Math.random() * 1000);
+    }
+
+    @Override
+    public String getName() {
+        return name;
     }
 
     @Override
     public boolean enqueue(String key, T message) {
         try {
-            lock.lock();
-
             if (queue == null || future != null) {
                 return false;
             }
@@ -98,44 +110,42 @@ public class OffHeapDataBlock<T> implements DataBlock<T> {
         } catch (IllegalStateException | IOException | ExecutionException | InterruptedException ex) {
             LOG.error(ex.getMessage());
             return false;
-        } finally {
-            lock.unlock();
         }
     }
 
     @Override
     public Map.Entry<String, T> peek() throws InterruptedException {
-        try {
-            lock.lock();
-            enableQueue();
-            return queue.peek();
-        } finally {
-            lock.unlock();
-        }
+        enableQueue();
+        return queue.peek();
     }
 
     @Override
     public Map.Entry<String, T> dequeue() throws InterruptedException {
-        try {
-            lock.lock();
-            enableQueue();
-            return queue.take();
-        } finally {
-            lock.unlock();
+        enableQueue();
+        return queue.take();
+    }
+
+    @Override
+    public void notifyNextDataBlock() {
+        if (nextDataBlock == null) {
+            return;
         }
+        if (nextDataBlock instanceof OffHeapDataBlock) {
+            new Thread(() -> ((OffHeapDataBlock<T>) nextDataBlock).enableQueue());
+        }
+    }
+
+    private DataBlock<T> nextDataBlock;
+
+    @Override
+    public void setNextDataBlock(DataBlock<T> dataBlock) {
+        this.nextDataBlock = Objects.requireNonNull(dataBlock);
     }
 
     @Override
     public int size() {
-        try {
-            lock.lock();
-            return (queue != null) ? queue.size() : offHeapQueue.size();
-        } finally {
-            lock.unlock();
-        }
+        return (queue != null) ? queue.size() : offHeapQueueSize;
     }
-
-    private Thread thread = null;
 
     //freddy
     private void flushToDisk() throws IOException, ExecutionException, InterruptedException {
@@ -144,43 +154,60 @@ public class OffHeapDataBlock<T> implements DataBlock<T> {
 //        //System.out.println("enqueue flushToDisk");
         //QueueFlusher flusher = new QueueFlusher();
         future = new FutureTask<>(() -> {
+            long start = System.currentTimeMillis();
             try {
-                long start = System.currentTimeMillis();
-                LOG.warn("Enqueue flush to queue: {}", queueFile);
+                offHeapQueueSize = queue.size();
+                LOG.warn("Enqueue flush to queue: {}", name);
 
                 diskLock.lock();
-                offHeapQueue = new QueueFile.Builder(queueFile).build();
-                Method usedBytesMethod = offHeapQueue.getClass().getDeclaredMethod("usedBytes");
-                usedBytesMethod.setAccessible(true);
+                LOG.warn("Enqueue flush to queue time0 : {} time: {}", name, (System.currentTimeMillis() - start));
+                //start = System.currentTimeMillis();
+//                Method usedBytesMethod = offHeapQueue.getClass().getDeclaredMethod("usedBytes");
+//                usedBytesMethod.setAccessible(true);
+                LOG.warn("Enqueue flush to queue time1 : {} time: {}", name, (System.currentTimeMillis() - start));
+                //start = System.currentTimeMillis();
 
-                List<byte[]> datas = serdesPool.submit(() ->
+                List<byte[]> serializedMessages = serdesPool.submit(() ->
                         queue.parallelStream()
                                 .map(d -> d.getValue())
                                 .map(serializer)
                                 .collect(Collectors.toList())).get();
 
-                for (byte[] data : datas) {
-                    offHeapQueue.add(data);
+
+                LOG.warn("Enqueue flush to queue time2 : {} time: {}", name, (System.currentTimeMillis() - start));
+                //start = System.currentTimeMillis();
+                byte[] serializedBatch = new SerializedBatch(serializedMessages).toBytes();
+                DatabaseEntry key = new DatabaseEntry(name.getBytes(StandardCharsets.UTF_8));
+                DatabaseEntry data = new DatabaseEntry(serializedBatch);
+                OperationStatus status = db.putNoDupData(null, key, data);
+                if (status != OperationStatus.SUCCESS) {
+                    LOG.error("FAIL TO WRITE DATA!");
                 }
 
+                //offHeapQueue.add(serializedBatch);
+//
+//                for (byte[] data : datas) {
+//                    offHeapQueue.add(data);
+//                }
+                LOG.warn("Enqueue flush to queue time3 : {} time: {}", name, (System.currentTimeMillis() - start));
+                //start = System.currentTimeMillis();
                 // store to disk
                 queue.clear();
                 queue = null;
-                diskLock.unlock();
-                LOG.warn("Enqueue flush to queue: {} DONE time: {}", queueFile, (System.currentTimeMillis() - start));
+                LOG.warn("Enqueue flush to queue: {} DONE time: {}", name, (System.currentTimeMillis() - start));
                 return offHeapQueue;
-            } catch (NoSuchMethodException e) {
-                LOG.warn("Could not instantiate queue", e);
-                throw new RuntimeException(e);
+//            } catch (NoSuchMethodException e) {
+//                LOG.warn("Could not instantiate queue", e);
+//                throw new RuntimeException(e);
             } catch (Exception e) {
                 LOG.warn("Could not instantiate queue", e);
                 throw new RuntimeException(e);
             } finally {
                 diskLock.unlock();
+                LOG.warn("flush to queue DONE: {} time: {}", name, (System.currentTimeMillis() - start));
             }
         });
-        thread = new Thread(future);
-        thread.start();
+        serdesPool.submit(future);
 
 //        String values = queue.stream().map(d -> (String) d.getValue()).collect(Collectors.joining(","));
         //System.out.println("enqueue flushToDisk: " + values);
@@ -207,7 +234,7 @@ public class OffHeapDataBlock<T> implements DataBlock<T> {
             queue.clear();
             queue = null;
         } catch (NoSuchMethodException e) {
-            LOG.warn("Could not instantiate queue", e);
+LOG.warn("Could not instantiate queue", e);
             throw new RuntimeException(e);
         } finally {
             diskLock.unlock();
@@ -217,28 +244,45 @@ public class OffHeapDataBlock<T> implements DataBlock<T> {
     }
 
 
-    private void toMemory() throws ExecutionException, InterruptedException, IOException {
+    private void toMemory() throws ExecutionException, InterruptedException, IOException, DatabaseException {
+        long start = System.currentTimeMillis();
         var tmpQueue = queue = new ArrayBlockingQueue<>(this.queueSize, true);
-        List<byte[]> bytesList = new ArrayList<>();
-        offHeapQueue.iterator().forEachRemaining(bytesList::add);
+
+        DatabaseEntry key = new DatabaseEntry(name.getBytes(StandardCharsets.UTF_8));
+        DatabaseEntry searchEntry = new DatabaseEntry();
+        db.get(null, key, searchEntry, LockMode.DEFAULT);
+        byte[] serializedBatchBytes = searchEntry.getData();
+        LOG.warn("toMemory time1 : {} time: {}", name, (System.currentTimeMillis() - start));
+        //start = System.currentTimeMillis();
 
         serdesPool.submit(() -> {
-            bytesList.parallelStream()
-                    .map(deserializer).forEachOrdered(d -> {
-                        tmpQueue.add(new AbstractMap.SimpleImmutableEntry<>(null, d));
-                    });
+            try {
+                (new SerializedBatch(serializedBatchBytes)).batchedMessages.parallelStream()
+                        .map(deserializer).forEachOrdered(d -> {
+                            tmpQueue.add(new AbstractMap.SimpleImmutableEntry<>(null, d));
+                        });
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }).get();
+        LOG.warn("toMemory time2 : {} time: {}", name, (System.currentTimeMillis() - start));
+        //start = System.currentTimeMillis();
 
-        offHeapQueue.clear();
+        //offHeapQueue.clear();
         offHeapQueue = null;
-        LOG.warn("TO_MEMORY DONE size: {}", tmpQueue.size());
+        offHeapQueueSize = -1;
         queue = tmpQueue;
 
-        Files.delete(queueFile.toPath());
+        db.delete(null, key);
+//        Files.delete(queueFile.toPath());
+        LOG.warn("toMemory time3 : {} time: {}", name, (System.currentTimeMillis() - start));
+        LOG.warn("toMemory DONE: {} time: {}", name, (System.currentTimeMillis() - start));
+        LOG.warn("TO_MEMORY DONE size: {}", tmpQueue.size());
+
     }
 
     // make sure data is in memory queue
-    private void enableQueue() throws InterruptedException {
+    public void enableQueue() {
 //        System.out.println("check future: " + future);
 //        while (!future.isDone()) {
 //            Thread.sleep(10);
@@ -251,23 +295,59 @@ public class OffHeapDataBlock<T> implements DataBlock<T> {
             while (future == null || !future.isDone()) {
                 Thread.sleep(10);
             }
-            System.out.println("HERE !!! " + offHeapQueue);
             diskLock.lock();
-            System.out.println("HERE AFTER !!! " + offHeapQueue);
 
-            if (offHeapQueue != null) {
-                //System.out.println("Start to enable queue");
-                toMemory();
-                future = null;
-                thread = null;
+
+            //System.out.println("Start to enable queue");
+            toMemory();
+            future = null;
 //                System.out.println("Start to enable queue done");
-            }
+
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             diskLock.unlock();
         }
 
+    }
+
+    /**
+     * The serialized form of the batch that is written to disk.
+     */
+    public static final class SerializedBatch implements Serializable {
+        private static final long serialVersionUID = 1L;
+
+        private final List<byte[]> batchedMessages = new ArrayList<>();
+
+        SerializedBatch(List<byte[]> messages) {
+            batchedMessages.addAll(messages);
+        }
+
+        SerializedBatch(byte[] bytes) throws IOException {
+            try (ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
+                 ObjectInput in = new ObjectInputStream(bis)) {
+                try {
+                    batchedMessages.addAll(((SerializedBatch) in.readObject()).batchedMessages);
+                } catch (ClassNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+
+        byte[] toBytes() throws IOException {
+            try (
+                    ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                    ObjectOutputStream out = new ObjectOutputStream(bos)) {
+                out.writeObject(this);
+                out.flush();
+
+                var tmp = bos.toByteArray();
+                out.close();
+                bos.close();
+
+                return tmp;
+            }
+        }
     }
 /*
 
@@ -288,7 +368,7 @@ public class OffHeapDataBlock<T> implements DataBlock<T> {
                 Method usedBytesMethod = offHeapQueue.getClass().getDeclaredMethod("usedBytes");
                 usedBytesMethod.setAccessible(true);
             } catch (NoSuchMethodException e) {
-                LOG.warn("Could not instantiate queue", e);
+LOG.warn("Could not instantiate queue", e);
                 throw new RuntimeException(e);
             }
             try {
