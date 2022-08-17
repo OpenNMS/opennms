@@ -70,7 +70,7 @@ The default is `3600` seconds, so every hour an event will be sent.
 [[telemetryd-ipfix-parser-tcp]]
 == IPFIX TCP Parser
 
-The IPFIX TCP parser accepts packets received by a <<deep-dive/telemetryd/listeners/tcp.adoc#telemetryd-listener-tcp, TCP Listener>> and must forward them to an <<deep-dive/telemetryd-ipfix-adapter, IPFIX adapter>>.
+The IPFIX TCP parser accepts packets received by a <<telemetryd/listeners/tcp.adoc#telemetryd-listener-tcp, TCP Listener>> and must forward them to an <<telemetryd-ipfix-adapter, IPFIX adapter>>.
 
 === Facts
 
