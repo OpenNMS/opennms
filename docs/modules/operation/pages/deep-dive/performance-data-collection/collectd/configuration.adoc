@@ -7,7 +7,7 @@ It also specifies the list of available collectors.
 Edit the `collectd-configuration.xml` file to:
 
 * <<ga-thread-pool-edit, set the thread pool>>
-* xref:operation:reference/deep-dive/performance-data-collection/collectd/collection-packages.adoc[configure collector packages]
+* xref:operation:deep-dive/performance-data-collection/collectd/collection-packages.adoc[configure collector packages]
 * specify collectors to use
 
 In addition to editing `collectd-configuration.xml`, you need to xref:operation:reference/performance-data-collection/collectors/introduction.adoc[configure collectors] for the protocols from which you want to collect data by editing the configuration files associated with them.
