@@ -123,6 +123,14 @@
     "@featherds/utils" "^0.10.17"
     vue "^3.1.0-0"
 
+"@featherds/composables@^0.11.2":
+  version "0.11.2"
+  resolved "https://registry.yarnpkg.com/@featherds/composables/-/composables-0.11.2.tgz#9ea9130dfddaec2b6b407660bb322e4112f299c1"
+  integrity sha512-EsHT57O/hPeO7QuWrPFpzdd/Q0RTt71UglPO72+L5krR4ac7yjQKLYrYfo0pmckNivJHGDAsIDSlH88MFIopaQ==
+  dependencies:
+    "@featherds/utils" "^0.11.2"
+    vue "^3.1.0-0"
+
 "@featherds/date-input@0.10.17":
   version "0.10.17"
   resolved "https://registry.yarnpkg.com/@featherds/date-input/-/date-input-0.10.17.tgz#d8502425933ca10fb7ed4502f2614ccf39f0a826"
@@ -231,7 +239,18 @@
     "@featherds/utils" "^0.10.17"
     vue "^3.1.0-0"
 
-"@featherds/menu@0.10.17", "@featherds/menu@^0.10.17":
+"@featherds/menu@0.11.2":
+  version "0.11.2"
+  resolved "https://registry.yarnpkg.com/@featherds/menu/-/menu-0.11.2.tgz#ebe82f869b9328ee8c71c3b7b61ceacd476d8289"
+  integrity sha512-WRvxH16Ude+QxCmvK86HQaksZEON/zLfGhraRKe0owiYXl3FbS0HFRgkY0Cx4bTtJ5ZeaymDjYZfLkKLUhtyiQ==
+  dependencies:
+    "@featherds/composables" "^0.11.2"
+    "@featherds/ripple" "^0.11.2"
+    "@featherds/styles" "^0.11.2"
+    "@featherds/utils" "^0.11.2"
+    vue "^3.1.0-0"
+
+"@featherds/menu@^0.10.17":
   version "0.10.17"
   resolved "https://registry.yarnpkg.com/@featherds/menu/-/menu-0.10.17.tgz#8f7b7b39d28dea257af992de3d8b22af43148d10"
   integrity sha512-eN0VF8SsDtp0BwKZsriolJxDKKa88q8LPzfF3zAIGrjEmfKvI63rnpp4EjVk8+7KzWADYyETKofsxCnK5TCgpQ==
@@ -301,6 +320,13 @@
   dependencies:
     vue "^3.1.0-0"
 
+"@featherds/ripple@^0.11.2":
+  version "0.11.2"
+  resolved "https://registry.yarnpkg.com/@featherds/ripple/-/ripple-0.11.2.tgz#fc826439bcb12594fc71089e21e0ca1657d28e51"
+  integrity sha512-q5nAi0u3sdJvoFqRR8Hc04++cYTVeCIBFtxhBKn1Lx1E+81g8DTEKJzz250VRAyyfnYL5XwFBJ0ZrKsfovOdBw==
+  dependencies:
+    vue "^3.1.0-0"
+
 "@featherds/select@0.10.17", "@featherds/select@^0.10.17":
   version "0.10.17"
   resolved "https://registry.yarnpkg.com/@featherds/select/-/select-0.10.17.tgz#6c38c3251bb77e9fd2cd39dc7bfdf3e5b67a9ebc"
@@ -326,6 +352,11 @@
   version "0.10.17"
   resolved "https://registry.yarnpkg.com/@featherds/styles/-/styles-0.10.17.tgz#603686055c45e34c6eb5a6797b870478408658b2"
   integrity sha512-kNkir7MQy1KhSstaBBpOHmBPpSmL07Mfeq1hGudtPuPt0hRejyaCmpoBUiiFUf9SI/e3h9dyTUTEymhEyyuV1w==
+
+"@featherds/styles@^0.11.2":
+  version "0.11.2"
+  resolved "https://registry.yarnpkg.com/@featherds/styles/-/styles-0.11.2.tgz#c1317723640d2b000a72a7d8a81e1952e2847dcd"
+  integrity sha512-mJriuANWwAvnEJbneS4aUjRELqrp3j6DtGtSy5IOCH0tdQqBYPEu9g/H/aV9QLjtDnBOtGkk9QR+HRVaQtcIfg==
 
 "@featherds/switch@^0.10.17":
   version "0.10.17"
@@ -380,6 +411,11 @@
   version "0.10.17"
   resolved "https://registry.yarnpkg.com/@featherds/utils/-/utils-0.10.17.tgz#8687af26c2b0821aa513989c7dde5b0e6dcae41d"
   integrity sha512-+aWVAGTZ/m16feuuFAJX6H3ze2zpVu+RzAx4PA9Q2WsBJj/qfmp2VQFkohW3Wypg4Fj37vMiTD56iA1/jTEgXg==
+
+"@featherds/utils@^0.11.2":
+  version "0.11.2"
+  resolved "https://registry.yarnpkg.com/@featherds/utils/-/utils-0.11.2.tgz#a1cca9c17920d449193763db01c3541d2fa61640"
+  integrity sha512-lUq58CJHFowF7ARgTrwNQYyCYGpJ+R1Uk7zRIrwgxiVYdxFYIkg02YwqoPhjGiaLOk38ric2YzdhiOGl5knyEA==
 
 "@humanwhocodes/config-array@^0.10.4":
   version "0.10.4"
@@ -714,10 +750,10 @@
   resolved "https://registry.yarnpkg.com/@types/marked/-/marked-4.0.3.tgz#2098f4a77adaba9ce881c9e0b6baf29116e5acc4"
   integrity sha512-HnMWQkLJEf/PnxZIfbm0yGJRRZYYMhb++O9M36UCTA9z53uPvVoSlAwJr3XOpDEryb7Hwl1qAx/MV6YIW1RXxg==
 
-"@types/node@*", "@types/node@^18.7.4":
-  version "18.7.4"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-18.7.4.tgz#95baa50846ae112a7376869d49fec23b2506c69d"
-  integrity sha512-RzRcw8c0B8LzryWOR4Wj7YOTFXvdYKwvrb6xQQyuDfnlTxwYXGCV5RZ/TEbq5L5kn+w3rliHAUyRcG1RtbmTFg==
+"@types/node@*", "@types/node@^18.7.6":
+  version "18.7.6"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-18.7.6.tgz#31743bc5772b6ac223845e18c3fc26f042713c83"
+  integrity sha512-EdxgKRXgYsNITy5mjjXjVE/CS8YENSdhiagGrLqjG0pvA2owgJ6i4l7wy/PFZGC0B1/H20lWKN7ONVDNYDZm7A==
 
 "@types/node@^10.0.3":
   version "10.17.60"
