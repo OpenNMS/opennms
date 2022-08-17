@@ -26,7 +26,7 @@ For information on how to create a threshold group, see xref:deep-dive/threshold
 | Datasource
 | Name of the data source you want to threshold against.
 For this tutorial, we have provided the data source for logged-in users.
-For information on how to determine a metric's data source, see xref:thresholds/datasource.adoc#datasource-determine[Determine the data source].
+For information on how to determine a metric's data source, see xref:operation:deep-dive/thresholds/datasource.adoc#datasource-determine[Determine the data source].
 | hrSystemNumUsers
 
 

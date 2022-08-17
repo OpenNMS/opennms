@@ -7,7 +7,7 @@ See <<operation:deep-dive/flows/introduction.adoc#ga-flow-support-introduction, 
 [[telemetryd-netflow5-parser-udp]]
 == Netflow v5 UDP parser
 
-The Netflow v5 UDP parser accepts packets received by a <<deep-dive/telemetryd/listeners/udp.adoc#telemetryd-listener-udp, UDP listener>> and must forward them to a <<deep-dive/telemetryd-netflow5-adapter, Netflow v5 adapter>>.
+The Netflow v5 UDP parser accepts packets received by a <<telemetryd/listeners/udp.adoc#telemetryd-listener-udp, UDP listener>> and must forward them to a <<telemetryd-netflow5-adapter, Netflow v5 adapter>>.
 
 The Netflow v5 UDP parser supports protocol detection.
 
@@ -50,7 +50,7 @@ The default is `3600` seconds, so every hour an event will be sent.
 [[telemetryd-netflow5-adapter]]
 == Netflow v5 adapter
 
-The Netflow v5 adapter handles Netflow v5 payloads received and parsed by by the <<deep-dive/telemetryd-netflow5-parser-udp, Netflow v5 UDP Parser>>.
+The Netflow v5 adapter handles Netflow v5 payloads received and parsed by by the <<telemetryd-netflow5-parser-udp, Netflow v5 UDP Parser>>.
 Flows are decoded from the messages into the canonical flow format and published to the flow repository.
 
 === Facts

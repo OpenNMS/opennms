@@ -137,7 +137,7 @@ Each parameter consists of a name and a value.
 For example, the `ciscoC3800SysAggregateStatusChange` event description lists out each of the parameters.
 Thus the second parameter, the `sysName`, is printed using `%parm[#2]%`.
 
-See xref:operation:/events/event-tokens.adoc#parameter-tokens[Parameter tokens] for more information.
+See xref:operation:deep-dive/events/event-tokens.adoc#parameter-tokens[Parameter tokens] for more information.
 
 [[varbind-filter]]
 == Filter on varbinds

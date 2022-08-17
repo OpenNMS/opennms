@@ -11,7 +11,7 @@ image::bmp/bmp_integration_overview.png[width=70%]
 
 == BMP TCP Parser
 
-The BMP parser accepts BMP connections from router packets using a <<deep-dive/telemetryd/listeners/tcp.adoc#telemetryd-listener-tcp, TCP Listener>>.
+The BMP parser accepts BMP connections from router packets using a <<telemetryd/listeners/tcp.adoc#telemetryd-listener-tcp, TCP Listener>>.
 
 === Facts
 

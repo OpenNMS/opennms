@@ -3,7 +3,7 @@
 
 The IMAPS monitor tests the response of an SSL-enabled IMAP server.
 The IMAPS monitor is an SSL-enabled extension of the IMAP monitor with a default TCP port value of 993.
-All ImapMonitor parameters apply, so refer to <<deep-dive/service-assurance/monitors/ImapMonitor.adoc#poller-imap-monitor, ImapMonitor>> for more information.
+All ImapMonitor parameters apply, so refer to <<service-assurance/monitors/ImapMonitor.adoc#poller-imap-monitor, ImapMonitor>> for more information.
 
 == Monitor facts
 

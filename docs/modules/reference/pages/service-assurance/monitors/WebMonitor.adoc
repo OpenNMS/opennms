@@ -1,7 +1,7 @@
 
 = WebMonitor
 
-WebMonitor is a clone of <<deep-dive/service-assurance/monitors/HttpMonitor.adoc#poller-http-monitor, HttpMonitor>>, that uses a different underlying library for doing HTTP connections.
+WebMonitor is a clone of <<service-assurance/monitors/HttpMonitor.adoc#poller-http-monitor, HttpMonitor>>, that uses a different underlying library for doing HTTP connections.
 WebMonitor uses Apache HttpClient, which acts more like a real browser (follows redirects, and so on) than HttpMonitor.
 
 == Monitor facts

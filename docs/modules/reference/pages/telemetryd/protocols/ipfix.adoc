@@ -7,7 +7,7 @@ See <<operation:deep-dive/flows/introduction.adoc#ga-flow-support-introduction, 
 [[telemetryd-ipfix-parser-udp]]
 == IPFIX UDP Parser
 
-The IPFIX UDP parser accepts packets received by a <<deep-dive/telemetryd/listeners/udp.adoc#telemetryd-listener-udp, UDP listener>> and must forward them to an <<deep-dive/telemetryd-ipfix-adapter, IPFIX adapter>>.
+The IPFIX UDP parser accepts packets received by a <<telemetryd/listeners/udp.adoc#telemetryd-listener-udp, UDP listener>> and must forward them to an <<telemetryd-ipfix-adapter, IPFIX adapter>>.
 
 The IPFIX UDP parser supports protocol detection.
 
