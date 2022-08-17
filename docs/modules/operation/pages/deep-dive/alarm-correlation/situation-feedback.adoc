@@ -42,5 +42,5 @@ NOTE: This configuration is stored in `$\{OPENNMS_HOME}/etc/org.opennms.features
 
 Installing the feature exposes a REST endpoint that OpenNMS Helm uses to display and submit feedback.
 
-Find further information on the REST API in the <<gs-situation-feedback, Developer Guide>>.
+Find further information on the REST API in the xref:development:rest/situation-feedback.adoc[Developer Guide].
 

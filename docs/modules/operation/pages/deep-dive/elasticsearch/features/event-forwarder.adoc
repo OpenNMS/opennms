@@ -91,8 +91,7 @@ opennms-events-raw-2017-01/eventdata/11549
 https://www.elastic.co/guide/en/sense/current/installing.html[Kibana Sense] is a Kibana app that lets you run queries directly against Elasticsearch.
 
 If you install Kibana Sense, you can use the following commands to view the events sent to Elasticsearch.
-You should review the https://www.elastic.co/guide/en/elasticsearch/reference/current/search.html)
-[Elasticsearch REST API documentation] to understand how to specify searches.
+You should review the https://www.elastic.co/guide/en/elasticsearch/reference/current/search.html[Elasticsearch REST API documentation] to understand how to specify searches.
 
 .Example searches to use in Kibana Sense
 [source]

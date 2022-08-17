@@ -71,7 +71,7 @@ javax.net.ssl.trustStore=${OPENNMS_HOME}/etc/trust-store.jks
 javax.net.ssl.trustStorePassword=change-me
 ----
 
-For more details on the Java built-in SSL system properties, see <<ga-operation-ssl-properties, Debugging/Properties>>.
+For more details on the Java built-in SSL system properties, see <<ga-ssl-client-debugging, Debugging/Properties>>.
 
 NOTE: Each time you modify the Java Truststore, you must restart {page-component-title} services for the changes to take effect.
 
