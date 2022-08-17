@@ -181,8 +181,8 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
                 cleanupStaleConfigs(parameters, ipInterface, svc.getSvcName(), updatedId);
             }
         }
-        // TODO place to debug and put the correct counter
-        if (status.equals(DeviceConfigStatus.SUCCESS)) {
+        // UsageAnalytics
+        if (status.isUp()) {
             usageAnalyticDao.incrementCounterByMetricName(UsageAnalyticMetricName.DCB_SUCCEED.toString());
         } else {
             usageAnalyticDao.incrementCounterByMetricName(UsageAnalyticMetricName.DCB_FAILED.toString());

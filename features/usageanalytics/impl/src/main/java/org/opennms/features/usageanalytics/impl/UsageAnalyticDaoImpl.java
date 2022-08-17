@@ -86,7 +86,7 @@ public class UsageAnalyticDaoImpl extends AbstractDaoHibernate<UsageAnalytic, Lo
         if (uaList.isEmpty()) {
             ua = new UsageAnalytic();
             ua.setMetricName(metricName);
-            ua.setCounter(1l);
+            ua.setCounter(0l);
         } else {
             // since criteriaBuilder returns list of objects we know that metricName unique, thus we will get only 1 object
             ua = uaList.get(0);
