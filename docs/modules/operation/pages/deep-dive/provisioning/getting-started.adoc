@@ -38,7 +38,7 @@ Proper SNMP configuration lets {page-component-title} understand network/node to
 . In the *Provisioning* area, choose *Configure SNMP Community Names by IP Address*, and fill in the fields as desired:
 
 .Configure SNMP community names
-image::deep-dive/provisioning/SNMP_Config.png[]
+image::provisioning/SNMP_Config.png[]
 
 This screen sets up SNMP within {page-component-title} for agents listening on IP addresses 10.1.1.1 through 10.254.254.254.
 These settings are optimized into the `snmp-config.xml` file.
@@ -61,7 +61,7 @@ Provisiond applies the existing default foreign source definition unless you cho
 
 +
 
-image::deep-dive/provisioning/FS_def.png[]
+image::provisioning/FS_def.png[]
 
 +
 
@@ -123,7 +123,7 @@ Links to additional information on customizing a requisition appear at the end o
 
 NOTE: The requisition remains red until you synchronize it with the database.
 
-image::deep-dive/provisioning/red_requisition.png[]
+image::provisioning/red_requisition.png[]
 
 Once created, you can add nodes to the requisition.
 
