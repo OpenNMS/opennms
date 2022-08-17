@@ -227,11 +227,9 @@ public class LinkedBlockOffHeapQueue<T> implements DispatchQueue<T> {
             newBlock = new OffHeapDataBlock(batchSize, Paths.get(this.filePath.toString(), moduleName), serializer, deserializer);
             diskBlocks.incrementAndGet();
         }
+        System.out.println("Create "+newBlock+", mem:"+memoryBlocks.get()+", disk: "+ diskBlocks.get());
 
-        ////System.out.println(String.format("Create %s, mem: %s, disk: %s ", newBlock, memoryBlocks.get(), diskBlocks.get()));
-
-
-        //LOG.warn("Create {}, mem: {}, disk: {}", newBlock, memoryBlocks.get(), diskBlocks.get());
+        LOG.warn("Create {}, mem: {}, disk: {}", newBlock, memoryBlocks.get(), diskBlocks.get());
         if (tmp == null) {
             ////System.out.println("ERROR 5 !!!! NULL");
         } else if (tmp != tailBlock) {
@@ -246,9 +244,11 @@ public class LinkedBlockOffHeapQueue<T> implements DispatchQueue<T> {
     private void removeHeadBlockIfNeeded() throws InterruptedException {
         DataBlock<T> head = mainQueue.peek();
         if (head.size() <= 0 && mainQueue.size() > 1) {
-            mainQueue.remove(head);
-            ////System.out.println("removeHeadBlockIfNeeded head: " + head + " new head " + mainQueue.peek());
-
+            var tmpHead = mainQueue.remove();
+            if (tmpHead != head) {
+                LOG.error("Queue is modified. May have data lost");
+                throw new RuntimeException("Queue is modified. May have data lost");
+            }
             if (head instanceof MemoryDataBlock) {
                 memoryBlocks.decrementAndGet();
             } else {

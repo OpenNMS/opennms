@@ -61,6 +61,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static com.jayway.awaitility.Awaitility.await;
+import static com.jayway.awaitility.Awaitility.to;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -160,16 +161,17 @@ public class LinkedBlockOffHeapQueueTest {
     }
 
     @Test
-    public void checkDeadlock() throws IOException {
+    public void checkDeadlock() throws IOException, InterruptedException {
         DispatchQueue<String> queue = new LinkedBlockOffHeapQueue<>(String::getBytes, String::new,
-                "checkDeadlock", Paths.get(folder.newFolder().toURI()), 100, 20, 100000);
-
+                "checkDeadlock", Paths.get("/tmp/queue/" + System.currentTimeMillis()), 100, 100, 100000);
+//folder.newFolder().toURI()
         int itemPerThread = 10;
         int writeThread = 600;
         int readThread = 50;
-
+long start = System.currentTimeMillis();
         List<String> enQueueData = Collections.synchronizedList(new ArrayList<>(itemPerThread * writeThread));
         List<String> deQueueData = Collections.synchronizedList(new ArrayList<>(itemPerThread * writeThread));
+
 
         ThreadPoolExecutor executor =
                 (ThreadPoolExecutor) Executors.newFixedThreadPool(writeThread + readThread);
@@ -179,6 +181,7 @@ public class LinkedBlockOffHeapQueueTest {
             futures.add(executor.submit(new Enqueue(String.valueOf(i), queue, enQueueData, itemPerThread)));
         }
 
+        Thread.sleep(10000L);
         for(int i = 0 ; i < readThread ; i++) {
             futures.add(executor.submit(new Dequeue(String.valueOf(i), queue, deQueueData, itemPerThread)));
         }
@@ -186,6 +189,7 @@ public class LinkedBlockOffHeapQueueTest {
         await().atMost(30, TimeUnit.SECONDS).until(() -> {
             return executor.getActiveCount() == 0 || deQueueData.size() == writeThread * itemPerThread;
         }, equalTo(true));
+        System.out.println("Time spent: " + (System.currentTimeMillis() - start));
 
         assertEquals(enQueueData.size(), deQueueData.size());
         assertEquals(writeThread * itemPerThread, deQueueData.size());
@@ -243,18 +247,13 @@ public class LinkedBlockOffHeapQueueTest {
             //System.out.println("FAIL !!!! size not matching!!!");
             //e.printStackTrace();
         }
-        //System.out.println("HERE count.get() = " + count.get());
 //        await().atMost(15, TimeUnit.SECONDS).until(() -> {
 //            //System.out.println(String.format("dequeue: %s toqueue: %s queueSize: %s",dequeued.size(), toQueue.size(), queue.getSize()));
 //            return dequeued;
 //        }, equalTo(toQueue));
 //
 //
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+
 
         toQueue.removeAll(dequeued);
         //toQueue.removeAll(dequeued);
@@ -284,6 +283,19 @@ public class LinkedBlockOffHeapQueueTest {
         while (queue.getSize() > 0) {
             dequeued.add(queue.dequeue().getValue());
         }
+
+//
+//        System.out.println("===TO");
+//        System.out.println(toQueue.stream().collect(Collectors.joining("\n")));
+//        System.out.println("===DE");
+//        System.out.println(dequeued.stream().collect(Collectors.joining("\n")));
+
+        List<String> diff = new ArrayList<>(toQueue);
+        diff.removeAll(dequeued);
+        if(diff.size()>0){
+            System.out.println("HERE");
+        }
+        assertThat(diff, equalTo(new ArrayList<>()));
         assertThat(dequeued, equalTo(toQueue));
     }
 

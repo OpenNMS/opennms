@@ -34,7 +34,7 @@ public interface DataBlock<T> {
 
     boolean enqueue(String key, T message);
 
-    Map.Entry<String, T> peek();
+    Map.Entry<String, T> peek() throws InterruptedException;
     Map.Entry<String, T> dequeue() throws InterruptedException;
 
     int size();
