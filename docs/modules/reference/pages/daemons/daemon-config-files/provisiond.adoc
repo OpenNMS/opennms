@@ -2,7 +2,48 @@
 [[ref-daemon-config-files-provisiond]]
 = Provisiond
 
-Handles scanning of requisition data to xref:operation:provisioning/introduction.adoc[provision] into monitored nodes.
+The provision daemon scans nodes from requisition and import files, and from newSuspect events.
+The scanned nodes are then added to the database.
+Note that only nodes in the database are monitored by other daemons.
+
+NewSuspect events are triggered by Discovery scans, and by trapd and syslogd if those daemons are configured to create the event.
+
+We recommend that you use the {page-component-title} UI to update configuration settings.
+
+.Provisiond configuration file overview
+[options="header"]
+[cols="2,3,1,1"]
+|===
+| File
+| Description
+| Reload Event
+| Restart Required
+
+ifeval::["{page-component-title}" == "Meridian"]
+| provisiond-configuration.xml
+| This file sets requisition definitions for defined discovery of nodes and foreign sources.
+| yes
+| yes
+endif::[]
+
+| default-foreign-source.xml
+| List of xref:reference:provisioning/detectors.adoc[detectors] and xref:reference:provisioning/policies.adoc[policies] to apply when scanning requisitioned nodes.
+Does not exist by default.
+Once these settings are modified using the UI, a `default-foreign-source.xml` file will be automatically created in `$\{OPENNMS_HOME}/etc`.
+| no
+| no
+
+| foreign-sources/*.xml
+| List of xref:reference:provisioning/detectors.adoc[detectors] and xref:reference:provisioning/policies.adoc[policies] to apply when scanning nodes in a requisition that matches the filename.
+Does not exist by default.
+| yes
+| no
+
+| imports/*.xml
+| One file per requisition, containing the list of nodes to import for monitoring.
+| yes
+| no
+|===
 
 .Provisiond log file overview
 [options="header"]
