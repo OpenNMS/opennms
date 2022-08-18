@@ -127,8 +127,8 @@ commands:
         - run:
             name: Extract Maven POM version
             command: .circleci/scripts/pom2version.sh pom.xml > pom-version-cache.key
-  cached-checkout:
-      description: "Checkout with caching"
+  cached-checkout-readonly:
+      description: "Checkout from cache"
       steps:
         - restore_cache:
             keys:
@@ -142,6 +142,10 @@ commands:
         - run:
             name: git fetch origin
             command: git fetch origin
+  cached-checkout:
+      description: "Checkout with cache (updates cache)"
+      steps:
+        - cached-checkout-readonly
         - save_cache:
             key: source-v2-{{ .Branch }}-{{ .Revision }}
             paths:
@@ -930,7 +934,7 @@ jobs:
         description: Mapping of path regular expressions to pipeline parameters and values. One mapping per line, whitespace-delimited.
         type: string
     steps:
-      - cached-checkout
+      - cached-checkout-readonly
       # copied from https://circleci.com/developer/orbs/orb/circleci/path-filtering
       # we do it ourselves because otherwise we have to do a full un-cached checkout every time
       - run:
@@ -1049,7 +1053,7 @@ jobs:
   build-docs:
     executor: docs-executor
     steps:
-      - cached-checkout
+      - cached-checkout-readonly
       - run:
           name: Validate Xrefs in docs
           command: |
@@ -1463,7 +1467,7 @@ jobs:
   horizon-publish-oci:
     executor: centos-build-executor
     steps:
-      - cached-checkout
+      - cached-checkout-readonly
       - setup_remote_docker:
           docker_layer_caching: true
       - dockerhub-login
@@ -1478,7 +1482,7 @@ jobs:
   sentinel-publish-oci:
     executor: centos-build-executor
     steps:
-      - cached-checkout
+      - cached-checkout-readonly
       - setup_remote_docker:
           docker_layer_caching: true
       - dockerhub-login
