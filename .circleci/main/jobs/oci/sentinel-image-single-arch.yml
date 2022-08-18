@@ -10,5 +10,4 @@ jobs:
     steps:
       - build-image-single-arch:
           architecture: << parameters.architecture >>
-          cache_prefix: deb-sentinel
           container_name: sentinel

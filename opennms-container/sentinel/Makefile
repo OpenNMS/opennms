@@ -1,5 +1,5 @@
 ##
-# Makefile to build Minion container image with Docker
+# Makefile to build Sentinel container image with Docker
 ##
 .PHONY: help test build install uninstall clean clean-all
 
@@ -10,10 +10,10 @@ SHELL                   := /bin/bash -o nounset -o pipefail -o errexit
 BUILD_DATE              := $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
 BASE_IMAGE              := opennms/deploy-base:jre-1.2.0.b105
 DOCKER_CLI_EXPERIMENTAL := enabled
-DOCKERX_INSTANCE        := env-minion-oci
+DOCKERX_INSTANCE        := env-sentinel-oci
 DOCKER_REGISTRY         := docker.io
 DOCKER_ORG              := opennms
-DOCKER_PROJECT          := minion
+DOCKER_PROJECT          := sentinel
 DOCKER_TAG              := $(DOCKER_REGISTRY)/$(DOCKER_ORG)/$(DOCKER_PROJECT):$(VERSION)
 DOCKER_ARCH             := linux/amd64
 DOCKER_IMAGE_NAME       := $(DOCKER_PROJECT)-$(VERSION).oci
@@ -24,26 +24,19 @@ BUILD_NUMBER            := 0
 BUILD_URL               := "unset"
 BUILD_BRANCH            := $(shell git describe --always)
 
-%.yml: %.yml.in
-	@echo "Generating $@..."
-	@sed -e 's,@VERSION@,$(VERSION),' \
-		-e 's,@REVISION@,$(REVISION),' \
-		-e 's,@BRANCH@,$(BUILD_BRANCH),' \
-		-e 's,@BUILD_NUMBER@,$(BUILD_NUMBER),' $< > $@
-
 help:
 	@echo ""
-	@echo "Makefile to build Minion Docker container images and push to a registry."
+	@echo "Makefile to build Sentinel Docker container images and push to a registry."
 	@echo ""
 	@echo "Requirements to build images:"
 	@echo "  * Docker 18+"
 	@echo "  * Buildx CLI tools from https://github.com/docker/buildx/releases in search path as docker-buildx"
-	@echo "  * Minion assembled with: ./assemble.pl -Dopennms.home=/opt/opennms -DskipTests"
+	@echo "  * Sentinel assembled with: ./assemble.pl -Dopennms.home=/opt/opennms -DskipTests"
 	@echo ""
 	@echo "Targets:"
 	@echo "  help:      Show this help"
 	@echo "  build:     Create an OCI image file in images/$(DOCKER_IMAGE_NAME)"
-	@echo "  test:      Test requirements to build the Minion OCI"
+	@echo "  test:      Test requirements to build the Sentinel OCI"
 	@echo "  install:   Load the OCI file in your Docker instance"
 	@echo "  uninstall: Remove the container image from your Docker instance"
 	@echo "  clean:     Remove the Dockerx build instance keep the files in the directory images/"
@@ -69,14 +62,14 @@ help:
 	@echo ""
 
 test:
-	@echo "Test Docker Buildx installation and existence of the Minion tarball ..."
+	@echo "Test Docker Buildx installation and existence of the Sentinel tarball ..."
 	@command -v docker
 	@command -v docker-buildx
-	test -f ../../opennms-assemblies/minion/target/org.opennms.assemblies.minion-*-minion.tar.gz
+	test -f ../../opennms-assemblies/sentinel/target/org.opennms.assemblies.sentinel-*-sentinel.tar.gz
 
-build: test minion-config-schema.yml
-	@echo "Copy Minion tarball to Docker context ..."
-	@mkdir -p tarball-root && tar -x -z --strip-components 1 -C ./tarball-root -f ../../opennms-assemblies/minion/target/org.opennms.assemblies.minion-*-minion.tar.gz
+build: test
+	@echo "Copy Sentinel tarball to Docker context ..."
+	@mkdir -p tarball-root && tar -x -z --strip-components 1 -C ./tarball-root -f ../../opennms-assemblies/sentinel/target/org.opennms.assemblies.sentinel-*-sentinel.tar.gz
 	@echo "Initialize builder instance ..."
 	if ! docker-buildx inspect $(DOCKERX_INSTANCE); then docker-buildx create --name $(DOCKERX_INSTANCE); fi;
 	docker-buildx use $(DOCKERX_INSTANCE)
@@ -110,4 +103,3 @@ clean-all: clean
 	@echo "Delete tarball and artifacts ..."
 	@rm -rf images/*.oci
 	@rm -rf tarball-root
-	@rm -rf minion-config-schema.yml

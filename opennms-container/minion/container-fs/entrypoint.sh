@@ -142,6 +142,15 @@ initConfig() {
         echo "id = ${MINION_ID}" >> ${MINION_CONFIG}
         echo "broker-url = ${OPENNMS_BROKER_URL}" >> ${MINION_CONFIG}
 
+        # Create SSH Key-Pair to use with the Karaf Shell
+        mkdir "${MINION_HOME}/.ssh"
+        ssh-keygen -t rsa -f "${MINION_HOME}/.ssh/id_rsa" -q -N ""
+        chmod 700 "${MINION_HOME}/.ssh"
+        chmod 600 "${MINION_HOME}/.ssh/id_rsa"
+        chown -R minion:minion "${MINION_HOME}/.ssh"
+        echo minion=$(cat ${MINION_HOME}/.ssh/id_rsa.pub | awk '{print $2}'),viewer > ${MINION_HOME}/etc/keys.properties
+        echo "_g_\\:admingroup = group,admin,manager,viewer,systembundles,ssh" >> ${MINION_HOME}/etc/keys.properties
+
         parseEnvironment
 
         echo "Configured $(date)" > ${MINION_HOME}/etc/configured

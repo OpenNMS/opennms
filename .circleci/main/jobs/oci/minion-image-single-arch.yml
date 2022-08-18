@@ -22,9 +22,10 @@ jobs:
             cd opennms-container/minion
             ARCH="$(printf "<< parameters.architecture >>" | tr / -)"
             TAG="${MINION_IMAGE_VERSION}-${ARCH}"
+            export OCI_FILE="minion-${TAG}.oci"
             make DOCKER_ARCH="<< parameters.architecture >>" \
                  DOCKER_FLAGS=--load \
-                 DOCKER_IMAGE_NAME="minion-${ARCH}.oci" \
+                 DOCKER_IMAGE_NAME="${OCI_FILE}" \
                  VERSION="${TAG}" \
                  BUILD_NUMBER="${CIRCLE_BUILD_NUM}" \
                  BUILD_URL="${CIRCLE_BUILD_URL}" \
@@ -37,4 +38,4 @@ jobs:
             docker push ${MINION_AZ_REPO}:${TAG}
             echo "pushed to AZ"
       - store_artifacts:
-          path: ~/project/opennms-container/minion/images/minion-linux-*.oci
+          path: ~/project/opennms-container/minion/images/${OCI_FILE}
