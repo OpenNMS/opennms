@@ -28,10 +28,15 @@
 
 package org.opennms.web.rest.v2;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.concurrent.ThreadLocalRandom;
 
 import javax.ws.rs.core.MediaType;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import net.bytebuddy.implementation.bind.annotation.Default;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
@@ -48,6 +53,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
+
+import static org.junit.Assert.assertTrue;
 
 /**
  * TODO
@@ -163,5 +170,110 @@ public class MonitoringLocationRestServiceIT extends AbstractSpringJerseyRestTes
 
         // delete the one with polling packages
         sendRequest(DELETE, "/monitoringLocations/location2", 204);
+    }
+
+    /**
+     * Add more locations than the previous limit of 10
+     * Store them locally as we add them
+     * Then fetch the list, sort and compare the lists
+     */
+    @Test
+    @Transactional
+    public void testListLimitAndSort() throws Exception {
+        LOG.info("--------------------- testListLimitAndSort --------------------");
+
+        final int LOCATION_COUNT= ThreadLocalRandom.current().nextInt(11, 101); // original default limit was 10
+        //int LOCATION_COUNT = 5;
+        ArrayList<Location> localLocations = new ArrayList<Location>(LOCATION_COUNT);
+
+        // Add locations with random names which will be sorted
+        for (int i = 0; i < LOCATION_COUNT; i++) {
+            Location loc = new Location();
+            loc.locationName = "location-"+i+ThreadLocalRandom.current().nextInt(1, 101)+"-"+i; // we i just to make sure it is unique
+            loc.monitoringArea = "rand-area-"+i+ThreadLocalRandom.current().nextInt(1, 101)+"-"+i;
+            localLocations.add(loc);
+
+            String location = "<location location-name=\"" + loc.locationName + "\" monitoring-area=\""+loc.monitoringArea+"\"/>";
+            sendPost("/monitoringLocations", location, 201, null);
+            LOG.debug("testListLimitAndSort: posted="+loc.locationName);
+        }
+
+        // Add default location but do not post it as it is already there
+        Location defaultLoc = new Location();
+        defaultLoc.locationName = "Default";
+        defaultLoc.monitoringArea = "localhost";
+        localLocations.add(defaultLoc);
+
+        // Fetch count and check it against local count
+        String remoteCount = sendRequest(GET, "/monitoringLocations/count", Collections.emptyMap(), 200);
+        LOG.info("testListLimitAndSort: remoteCount="+remoteCount+" localCount="+localLocations.size());
+        assertTrue (localLocations.size() == Integer.parseInt(remoteCount));
+
+        String fetchedJson = sendRequest(GET, "/monitoringLocations", Collections.emptyMap(), 200);
+        LOG.info("testListLimitAndSort: Got locations="+fetchedJson);
+
+        Locations locationsFetchedObj = (new ObjectMapper()).readValue(fetchedJson, Locations.class);
+        ArrayList<Location> locationsFetched = locationsFetchedObj.location;
+
+        LOG.info("testListLimitAndSort: locationsFetched BEFORE sort ");
+        for (Location location : locationsFetched) {
+            LOG.info(location.locationName);
+        }
+        LOG.info("testListLimitAndSort: localLlocations ");
+        for (Location location : localLocations) {
+            LOG.info(location.locationName);
+        }
+
+        //locationsFetched is sorted by webservice
+        //Collections.sort(locationsFetched);
+        Collections.sort(localLocations);
+
+        LOG.info("testListLimitAndSort: locationsFetched AFTER sort ");
+        for (Location location : locationsFetched) {
+            LOG.info(location.locationName);
+        }
+        LOG.info("testListLimitAndSort: localLlocations ");
+        for (Location location : localLocations) {
+            LOG.info(location.locationName);
+        }
+
+        // finally check the sorted lists are the same
+        boolean listsAreTheSame = locationsFetched.equals(localLocations);
+        LOG.info("testListLimitAndSort: listsAreTheSame = "+listsAreTheSame);
+        assertTrue (listsAreTheSame);
+    }
+
+    /**
+     * Used for mapper to load Json from rest service
+     */
+    public static class Location implements Comparable {
+        public int priority;
+        public ArrayList<Object> tags;
+        public Object geolocation;
+        public Object latitude;
+        public Object longitude;
+        @JsonProperty("location-name")
+        public String locationName;
+        @JsonProperty("monitoring-area")
+        public String monitoringArea;
+
+        @Override
+        public int compareTo(Object other) {
+            return this.locationName.compareTo(((Location) other).locationName);
+        }
+
+        public boolean equals(Object other){
+            return this.locationName.equals(((Location) other).locationName);
+        }
+    }
+
+    /**
+     * Used for mapper to load Json from rest service
+     */
+    public static class Locations {
+        public int offset;
+        public int count;
+        public int totalCount;
+        public ArrayList<Location> location;
     }
 }
