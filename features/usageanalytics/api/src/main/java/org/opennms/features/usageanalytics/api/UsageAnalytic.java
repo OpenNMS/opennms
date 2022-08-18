@@ -44,9 +44,8 @@ public class UsageAnalytic implements Serializable {
 
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "usageAnalyticSequence")
-    @SequenceGenerator(name = "usageAnalyticSequence", sequenceName = "usage_analytics_nxtid")
-    @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false, unique = true)
     private Long id;
 
     @Column(name = "metric_name", nullable = false, unique = true)

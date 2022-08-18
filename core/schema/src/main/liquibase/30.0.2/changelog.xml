@@ -7,8 +7,8 @@
     <changeSet runOnChange="false" author="achadfield" id="30.0.2-usage_analytics">
         <createTable tableName="usage_analytics">
             <!-- Unique identifier -->
-            <column name="id" type="bigint">
-                <constraints nullable="false" primaryKey="true"/>
+            <column name="id" type="bigint" autoIncrement="true" incrementBy="1" startWith="1">
+                <constraints nullable="false" primaryKey="true" unique="true"/>
             </column>
             <!-- metric name  -->
             <column name="metric_name" type="text">
@@ -24,7 +24,6 @@
 	        </column>
         </createTable>
 
-        <createSequence sequenceName="usage_analytics_nxtid"/>
     </changeSet>
 
 </databaseChangeLog>
