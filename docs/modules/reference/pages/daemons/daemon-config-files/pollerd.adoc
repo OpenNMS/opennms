@@ -1,3 +1,4 @@
+
 [[ref-daemon-config-files-pollerd]]
 = Pollerd
 
@@ -34,12 +35,10 @@ Can reload with `uei.opennms.org/internal/schedOutagesChanged`.
 .Pollerd log file overview
 [options="header"]
 [cols="2,3"]
-
 |===
 | File
 | Description
 
 | pollerd.log
 | Logs relating to service availability monitors.
-
 |===

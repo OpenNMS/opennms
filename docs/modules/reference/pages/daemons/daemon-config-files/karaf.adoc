@@ -1,12 +1,12 @@
+
 [[ref-daemon-config-files-karaf]]
 = Karaf
 
-The core runtime module that manages all other daemon services.
+The core runtime module that manages all other daemon services running within the {page-component-title} system.
 
 .Karaf log file overview
 [options="header"]
 [cols="2,3"]
-
 |===
 | File
 | Description

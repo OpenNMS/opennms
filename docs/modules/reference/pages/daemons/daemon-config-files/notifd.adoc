@@ -1,3 +1,4 @@
+
 [[ref-daemon-config-files-notifd]]
 = Notifd
 
@@ -13,12 +14,12 @@ Generates xref:operation:deep-dive/notifications/introduction.adoc[notifications
 | Restart Required
 
 | notifd-configuration.xml
-| Describes auto-acknowledge prefix; for example, prefix "RESOLVED: " for nodeUp/nodeDown events.
+| Describes auto-acknowledge prefix (for example, prefix "RESOLVED: " for nodeUp/nodeDown events).
 | yes
 | no
 
 | notificationCommands.xml
-| Configuration for notification media; for example, scripts, XMPP, or HTTP Post, immediately applied.
+| Configuration for notification media (for example, scripts, XMPP, or HTTP Post, immediately applied).
 | no
 | no
 
@@ -28,12 +29,12 @@ Generates xref:operation:deep-dive/notifications/introduction.adoc[notifications
 | no
 
 | destinationPaths.xml
-| Contains paths for notification targets; for example, JavaMail, XMPP, or external scripts.
+| Contains paths for notification targets (for example, JavaMail, XMPP, or external scripts).
 | no
 | no
 
 | users.xml
-| Contain pager and address information for notification destination paths.
+| Contains pager and address information for notification destination paths.
 | no
 | no
 
@@ -51,12 +52,10 @@ Generates xref:operation:deep-dive/notifications/introduction.adoc[notifications
 .Notifd log file overview
 [options="header"]
 [cols="2,3"]
-
 |===
 | File
 | Description
 
 | notifd.log
 | Information about the notifications that were or were not sent.
-
 |===

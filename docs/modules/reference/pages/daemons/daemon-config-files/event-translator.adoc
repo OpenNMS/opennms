@@ -1,3 +1,4 @@
+
 [[ref-daemon-event-translate]]
 = Event Translator
 
@@ -16,8 +17,7 @@ For more information, see xref:operation:deep-dive/events/event-translator.adoc[
 | Restart Required
 
 | translator-configuration.xml
-| Configure event translator behavior.
-For example, associate an event with a different node.
+| Configure event translator behavior (for example, associate an event with a different node).
 | no
 | yes
 |===
@@ -25,12 +25,10 @@ For example, associate an event with a different node.
 .Event translator log file overview
 [options="header"]
 [cols="2,3"]
-
 |===
 | File
 | Description
 
 | translator.log
 | Logs relating to event translator events.
-
 |===

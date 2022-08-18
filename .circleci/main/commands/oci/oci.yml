@@ -35,8 +35,6 @@ commands:
     parameters:
       architecture:
         type: string
-      cache_prefix:
-        type: string
       container_name:
         type: string
     steps:
@@ -44,14 +42,11 @@ commands:
           at: ~/
       - qemu-user-static
       - install-buildx
-      - restore-workflow-assets:
-          cache_prefix: << parameters.cache_prefix >>
-          target_path: "target/debs"
       - run:
-          name: Fetch DEB artifacts and build << parameters.container_name >> container image
+          name: build << parameters.container_name >> container image
           command: |
             cd opennms-container/<< parameters.container_name >>
             env DOCKER_ARCH="<< parameters.architecture >>" ./build_container_image.sh
       - store_artifacts:
-          path: ~/project/opennms-container/<< parameters.container_name >>/images/container.oci
+          path: ~/project/opennms-container/<< parameters.container_name >>/images/<< parameters.container_name >>-*.oci
           destination: << parameters.container_name >>.oci
