@@ -28,12 +28,8 @@
 
 package org.opennms.core.ipc.sink.offheap;
 
-import com.sleepycat.je.Database;
-import com.sleepycat.je.DatabaseEntry;
-import com.sleepycat.je.DatabaseException;
-import com.sleepycat.je.LockMode;
-import com.sleepycat.je.OperationStatus;
 import com.squareup.tape2.QueueFile;
+import org.h2.mvstore.MVMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,7 +40,6 @@ import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -79,9 +74,9 @@ public class OffHeapDataBlock<T> implements DataBlock<T> {
     private int offHeapQueueSize = -1;
 
     private RunnableFuture<QueueFile> future;
-    private Database db;
+    private MVMap<String, byte[]> db;
 
-    public OffHeapDataBlock(int queueSize, Path fileDir, Function<T, byte[]> serializer, Function<byte[], T> deserializer, Database db) {
+    public OffHeapDataBlock(int queueSize, Path fileDir, Function<T, byte[]> serializer, Function<byte[], T> deserializer, MVMap<String, byte[]> db) {
         Objects.requireNonNull(fileDir);
         this.serializer = Objects.requireNonNull(serializer);
         this.deserializer = Objects.requireNonNull(deserializer);
@@ -173,16 +168,10 @@ public class OffHeapDataBlock<T> implements DataBlock<T> {
                                 .map(serializer)
                                 .collect(Collectors.toList())).get();
 
-
                 LOG.warn("Enqueue flush to queue time2 : {} time: {}", name, (System.currentTimeMillis() - start));
                 //start = System.currentTimeMillis();
                 byte[] serializedBatch = new SerializedBatch(serializedMessages).toBytes();
-                DatabaseEntry key = new DatabaseEntry(name.getBytes(StandardCharsets.UTF_8));
-                DatabaseEntry data = new DatabaseEntry(serializedBatch);
-                OperationStatus status = db.putNoDupData(null, key, data);
-                if (status != OperationStatus.SUCCESS) {
-                    LOG.error("FAIL TO WRITE DATA!");
-                }
+                db.put(name, serializedBatch);
 
                 //offHeapQueue.add(serializedBatch);
 //
@@ -244,14 +233,17 @@ LOG.warn("Could not instantiate queue", e);
     }
 
 
-    private void toMemory() throws ExecutionException, InterruptedException, IOException, DatabaseException {
+    private void toMemory() throws ExecutionException, InterruptedException {
         long start = System.currentTimeMillis();
         var tmpQueue = queue = new ArrayBlockingQueue<>(this.queueSize, true);
 
-        DatabaseEntry key = new DatabaseEntry(name.getBytes(StandardCharsets.UTF_8));
-        DatabaseEntry searchEntry = new DatabaseEntry();
-        db.get(null, key, searchEntry, LockMode.DEFAULT);
-        byte[] serializedBatchBytes = searchEntry.getData();
+//        DatabaseEntry key = new DatabaseEntry(name.getBytes(StandardCharsets.UTF_8));
+//        DatabaseEntry searchEntry = new DatabaseEntry();
+
+        byte[] serializedBatchBytes = db.remove(name);
+        if(serializedBatchBytes == null){
+            LOG.error("Data not found for name: {}", name);
+        }
         LOG.warn("toMemory time1 : {} time: {}", name, (System.currentTimeMillis() - start));
         //start = System.currentTimeMillis();
 
@@ -273,7 +265,6 @@ LOG.warn("Could not instantiate queue", e);
         offHeapQueueSize = -1;
         queue = tmpQueue;
 
-        db.delete(null, key);
 //        Files.delete(queueFile.toPath());
         LOG.warn("toMemory time3 : {} time: {}", name, (System.currentTimeMillis() - start));
         LOG.warn("toMemory DONE: {} time: {}", name, (System.currentTimeMillis() - start));

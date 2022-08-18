@@ -28,12 +28,9 @@
 
 package org.opennms.core.ipc.sink.offheap;
 
-import com.sleepycat.je.Database;
-import com.sleepycat.je.DatabaseConfig;
-import com.sleepycat.je.DatabaseException;
-import com.sleepycat.je.Environment;
-import com.sleepycat.je.EnvironmentConfig;
 import com.swrve.ratelimitedlogger.RateLimitedLog;
+import org.h2.mvstore.MVMap;
+import org.h2.mvstore.MVStore;
 import org.opennms.core.ipc.sink.api.DispatchQueue;
 import org.opennms.core.ipc.sink.api.WriteFailedException;
 import org.slf4j.Logger;
@@ -83,7 +80,8 @@ public class LinkedBlockOffHeapQueue<T> implements DispatchQueue<T> {
     private AtomicInteger diskBlocks = new AtomicInteger(0);
     private int inMemoryQueueSize;
     private Path filePath;
-
+    private MVStore mvstore;
+    private MVMap<String, byte[]> db;
     //private final FileCapacityLatch fileCapacityLatch = new FileCapacityLatch()
 
     public int getMemoryBlocks() {
@@ -94,7 +92,7 @@ public class LinkedBlockOffHeapQueue<T> implements DispatchQueue<T> {
         return diskBlocks.get();
     }
 
-    private static Database db;
+
     public LinkedBlockOffHeapQueue(Function<T, byte[]> serializer, Function<byte[], T> deserializer,
                                    String moduleName, Path filePath, int inMemoryQueueSize, int batchSize,
                                    long maxFileSizeInBytes) throws IOException {
@@ -122,25 +120,21 @@ public class LinkedBlockOffHeapQueue<T> implements DispatchQueue<T> {
         File file = Paths.get(filePath.toString(), moduleName).toFile();
 
         Files.deleteIfExists(file.toPath());
-        if(!file.mkdirs()){
+        if (!file.mkdirs()) {
             throw new RuntimeException("Fail make dir. " + file);
         }
 
+        mvstore = new MVStore.Builder()
+                .cacheSize(500)
+//                .keysPerPage(100)
+//                .pageSplitSize(100)
+                //.compress()
+                .compressHigh()
+                .fileName(filePath + "/LinkedBlockOffHeapQueue.mvstore")
+                .open();
 
-        EnvironmentConfig envConfig = new EnvironmentConfig();
-        envConfig.setAllowCreate(true);
-        Environment dbEnv = null;
-        try {
-            dbEnv = new Environment(file, envConfig);
-            DatabaseConfig dbconf = new DatabaseConfig();
-            dbconf.setAllowCreate(true);
-            //dbconf.setDeferredWrite(true);
-            dbconf.setTransactional(false);
-            dbconf.setSortedDuplicates(false);//allow update
-            db = dbEnv.openDatabase(null, this.getClass().getSimpleName(), dbconf);
-        } catch (DatabaseException e) {
-            e.printStackTrace();
-        }
+        db = mvstore.openMap("data");
+
         createDataBlock(true);
 
         // Setting the max file size to 0 or less will disable the off-heap portion of this queue
@@ -172,14 +166,14 @@ public class LinkedBlockOffHeapQueue<T> implements DispatchQueue<T> {
 
     @Override
     public EnqueueResult enqueue(T message, String key) throws WriteFailedException {
-       //System.out.println("enqueue lock " + message);
+        //System.out.println("enqueue lock " + message);
         tailLock.lock();
         ////System.out.println(tailBlock + " enqueue 0 " + message);
         boolean status = tailBlock.enqueue(key, message);
         ////System.out.println(tailBlock + " enqueue 1 status = " + status + " " + message);
         if (!status) {
             ////System.out.println(tailBlock + "enqueue DEFERRED " + status + message);
-           //System.out.println("enqueue unlock 1 " + message);
+            //System.out.println("enqueue unlock 1 " + message);
             tailLock.unlock();
             return EnqueueResult.DEFERRED;
         }
@@ -190,7 +184,7 @@ public class LinkedBlockOffHeapQueue<T> implements DispatchQueue<T> {
             ////System.out.println(tailBlock + " enqueue WriteFailedException");
             throw new WriteFailedException(e);
         } finally {
-           //System.out.println("enqueue unlock 2 " + message);
+            //System.out.println("enqueue unlock 2 " + message);
             tailLock.unlock();
         }
 
@@ -208,7 +202,7 @@ public class LinkedBlockOffHeapQueue<T> implements DispatchQueue<T> {
         while (data == null) {
             boolean headTailEqual = false;
             if (mainQueue.peek() == tailBlock) {
-                if(!tailLock.tryLock(1, TimeUnit.MILLISECONDS)){
+                if (!tailLock.tryLock(1, TimeUnit.MILLISECONDS)) {
                     continue;
                 }
                 headTailEqual = true;
