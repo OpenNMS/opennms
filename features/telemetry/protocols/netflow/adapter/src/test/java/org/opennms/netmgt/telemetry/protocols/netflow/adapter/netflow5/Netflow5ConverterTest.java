@@ -35,6 +35,10 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.slice;
 
+import static org.opennms.integration.api.v1.flows.Flow.Direction;
+import static org.opennms.integration.api.v1.flows.Flow.NetflowVersion;
+import static org.opennms.integration.api.v1.flows.Flow.SamplingAlgorithm;
+
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -67,13 +71,13 @@ public class Netflow5ConverterTest {
         MatcherAssert.assertThat(flows, hasSize(2));
 
         final Flow flow = flows.get(0);
-        assertThat(flow.getNetflowVersion(), is((Flow.NetflowVersion.V5)));
+        assertThat(flow.getNetflowVersion(), is((NetflowVersion.V5)));
         assertThat(flow.getFlowRecords(), is(2));
         assertThat(flow.getFlowSeqNum(), is(0L));
         assertThat(flow.getEngineId(), is(0));
         assertThat(flow.getEngineType(), is(0));
         assertThat(flow.getSamplingInterval(), is(0.0));
-        assertThat(flow.getSamplingAlgorithm(), is(Flow.SamplingAlgorithm.Unassigned));
+        assertThat(flow.getSamplingAlgorithm(), is(SamplingAlgorithm.Unassigned));
         MatcherAssert.assertThat(flow.getSrcAddr(), equalTo("10.0.2.2"));
         MatcherAssert.assertThat(flow.getSrcAddrHostname(), equalTo(Optional.empty()));
         MatcherAssert.assertThat(flow.getSrcPort(), equalTo(54435));
@@ -87,11 +91,11 @@ public class Netflow5ConverterTest {
         MatcherAssert.assertThat(flow.getBytes(), equalTo(230L));
         MatcherAssert.assertThat(flow.getInputSnmp(), equalTo(0));
         MatcherAssert.assertThat(flow.getOutputSnmp(), equalTo(0));
-        MatcherAssert.assertThat(flow.getFirstSwitched(), equalTo(1430608661859L));
-        MatcherAssert.assertThat(flow.getLastSwitched(), equalTo(1434870077556L));
-        MatcherAssert.assertThat(flow.getDeltaSwitched(), equalTo(1430608661859L));
+        MatcherAssert.assertThat(flow.getFirstSwitched(), equalTo(Instant.ofEpochMilli(1430608661859L)));
+        MatcherAssert.assertThat(flow.getLastSwitched(), equalTo(Instant.ofEpochMilli(1434870077556L)));
+        MatcherAssert.assertThat(flow.getDeltaSwitched(), equalTo(Instant.ofEpochMilli(1430608661859L)));
         MatcherAssert.assertThat(flow.getPackets(), equalTo(5L));
-        MatcherAssert.assertThat(flow.getDirection(), equalTo(Flow.Direction.INGRESS));
+        MatcherAssert.assertThat(flow.getDirection(), equalTo(Direction.INGRESS));
         MatcherAssert.assertThat(flow.getNextHop(), equalTo("0.0.0.0"));
         MatcherAssert.assertThat(flow.getNextHopHostname(), equalTo(Optional.empty()));
         MatcherAssert.assertThat(flow.getVlan(), nullValue());

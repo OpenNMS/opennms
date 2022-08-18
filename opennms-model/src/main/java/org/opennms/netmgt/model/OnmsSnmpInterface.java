@@ -120,6 +120,8 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
     public static final int MAX_FLOW_AGE = SystemProperties.getInteger("org.opennms.features.telemetry.maxFlowAgeSeconds", 604800);
     public static final boolean INGRESS_AND_EGRESS_REQUIRED = Boolean.getBoolean("org.opennms.features.telemetry.ingressAndEgressRequired");
 
+    public static enum CollectDefinitionSource {NONE, USER, POLICY};
+
     /**
      * <p>Constructor for OnmsSnmpInterface.</p>
      * @param node a {@link org.opennms.netmgt.model.OnmsNode} object.
@@ -432,7 +434,32 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
     public boolean isCollectionUserSpecified(){
         return m_collect.startsWith("U");
     }
-    
+
+    /**
+     * <p>isCollectionPolicySpecified</p>
+     *
+     * @return a boolean.
+     */
+    @Transient
+    public boolean isCollectionPolicySpecified() {
+        return m_collect.startsWith("P");
+    }
+
+    /**
+     * <p>getCollectionDefinitionSource</p>
+     *
+     * @return The source of the current collection policy for this interface
+     */
+    @Transient CollectDefinitionSource getCollectionDefinitionSource() {
+        if (isCollectionUserSpecified()) {
+            return CollectDefinitionSource.USER;
+        } else if (isCollectionPolicySpecified()) {
+            return CollectDefinitionSource.POLICY;
+        } else {
+            return CollectDefinitionSource.NONE;
+        }
+    }
+
     /**
      * <p>isCollectionEnabled</p>
      *
@@ -441,7 +468,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
     @Transient
     @XmlAttribute(name="collect")
     public boolean isCollectionEnabled() {
-        return "C".equals(m_collect) || "UC".equals(m_collect);
+        return m_collect.endsWith("C");
     }
     
     /**
@@ -450,21 +477,33 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
      * @param shouldCollect a boolean.
      */
     public void setCollectionEnabled(boolean shouldCollect) {
-        setCollectionEnabled(shouldCollect, false);
+        setCollectionEnabled(shouldCollect, CollectDefinitionSource.NONE);
     }
     
     /**
      * <p>setCollectionEnabled</p>
      *
      * @param shouldCollect a boolean.
-     * @param userSpecified a boolean.
+     * @param source what is driving this change.
      */
-    public void setCollectionEnabled(boolean shouldCollect, boolean userSpecified){
-       if(userSpecified){
-           m_collect = shouldCollect ? "UC":"UN";
-       }else if(!m_collect.startsWith("U")){
-           m_collect = shouldCollect ? "C" : "N";
-       }
+    public void setCollectionEnabled(boolean shouldCollect, CollectDefinitionSource source){
+        switch (source) {
+            case USER:
+                m_collect = shouldCollect ? "UC":"UN";
+                break;
+            case POLICY:
+                // Don't let policies override user input
+                if (!isCollectionUserSpecified()) {
+                    m_collect = shouldCollect ? "PC" : "PN";
+                }
+                break;
+            case NONE:
+                // Don't let provisiond override either
+                if (!isCollectionUserSpecified() || !isCollectionPolicySpecified()) {
+                    m_collect = shouldCollect ? "C" : "N";
+                }
+                break;
+        }
     }
 
     /**
@@ -766,10 +805,8 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
             setLastSnmpPoll(scannedSnmpIface.getLastSnmpPoll());
         }
         
-        if(scannedSnmpIface.isCollectionUserSpecified() || !isCollectionUserSpecified()){
-            setCollectionEnabled(scannedSnmpIface.isCollectionEnabled(), scannedSnmpIface.isCollectionUserSpecified());
-        }
-        
+        setCollectionEnabled(scannedSnmpIface.isCollectionEnabled(), scannedSnmpIface.getCollectionDefinitionSource());
+
     }
 
 }

@@ -29,6 +29,7 @@
 package org.opennms.netmgt.flows.processing.impl;
 
 import java.net.InetAddress;
+import java.time.Duration;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -184,16 +185,16 @@ public class DocumentEnricherImpl {
             // Fix skewed clock
             // If received time and export time differ to much, correct all timestamps by the difference
             if (this.clockSkewCorrectionThreshold > 0) {
-                final long skew = flow.getTimestamp() - flow.getReceivedAt();
-                if (Math.abs(skew) >= this.clockSkewCorrectionThreshold) {
-                    // The applied correction the the negative skew
-                    document.setClockCorrection(-skew);
+                final var skew = Duration.between(flow.getReceivedAt(), flow.getTimestamp());
+                if (skew.abs().toMillis() >= this.clockSkewCorrectionThreshold) {
+                    // The applied correction is the negative skew
+                    document.setClockCorrection(skew.negated());
 
                     // Fix the skew on all timestamps of the flow
-                    document.setTimestamp(flow.getTimestamp() - skew);
-                    document.setFirstSwitched(flow.getFirstSwitched() - skew);
-                    document.setDeltaSwitched(flow.getDeltaSwitched() - skew);
-                    document.setLastSwitched(flow.getLastSwitched() - skew);
+                    document.setTimestamp(flow.getTimestamp().minus(skew));
+                    document.setFirstSwitched(flow.getFirstSwitched().minus(skew));
+                    document.setDeltaSwitched(flow.getDeltaSwitched().minus(skew));
+                    document.setLastSwitched(flow.getLastSwitched().minus(skew));
                 }
             }
 

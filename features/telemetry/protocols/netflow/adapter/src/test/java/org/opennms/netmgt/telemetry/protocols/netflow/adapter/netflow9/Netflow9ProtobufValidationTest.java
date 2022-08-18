@@ -32,6 +32,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.slice;
 
+import static org.opennms.integration.api.v1.flows.Flow.Direction;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URISyntaxException;
@@ -83,7 +85,7 @@ public class Netflow9ProtobufValidationTest {
             Assert.assertEquals(flows.get(i).getFlowRecords(), jsonFlows.get(i).getFlowRecords());
             Assert.assertEquals(flows.get(i).getTimestamp(), jsonFlows.get(i).getTimestamp());
             Assert.assertEquals(flows.get(i).getBytes(), jsonFlows.get(i).getBytes());
-            Flow.Direction direction = jsonFlows.get(i).getDirection() != null ? jsonFlows.get(i).getDirection() : Flow.Direction.INGRESS;
+            Direction direction = jsonFlows.get(i).getDirection() != null ? jsonFlows.get(i).getDirection() : Direction.INGRESS;
             Assert.assertEquals(flows.get(i).getDirection(), direction);
             Assert.assertEquals(flows.get(i).getFirstSwitched(), jsonFlows.get(i).getFirstSwitched());
             Assert.assertEquals(flows.get(i).getLastSwitched(), jsonFlows.get(i).getLastSwitched());

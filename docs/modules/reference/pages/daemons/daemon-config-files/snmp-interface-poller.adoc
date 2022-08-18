@@ -1,7 +1,8 @@
-[[ref-daemon-config-files-snmppoller]]
-= SNMP Interface Poller
 
-Monitors the state of xref:operation:snmp-poller/concepts.adoc[SNMP interfaces] based on the administrative and/or operational state of the interface.
+[[ref-daemon-config-files-snmppoller]]
+= SnmpPoller
+
+Monitors the state of xref:operation:snmp-poller/concepts.adoc[SNMP interfaces] based on the administrative and operational state of the interface.
 This is independent of the xref:operation:performance-data-collection/introduction.adoc[data collection] functionality.
 
 [options="header"]
@@ -14,7 +15,7 @@ This is independent of the xref:operation:performance-data-collection/introducti
 | uei.opennms.org/internal/reloadSnmpPollerConfig
 |===
 
-.SNMP Interface Poller configuration file overview
+.SnmpPoller configuration file overview
 [options="header"]
 [cols="2,3,1,1"]
 |===

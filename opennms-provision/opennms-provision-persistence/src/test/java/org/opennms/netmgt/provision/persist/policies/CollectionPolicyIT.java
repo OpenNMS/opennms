@@ -163,6 +163,10 @@ public class CollectionPolicyIT implements InitializingBean {
             o = p.apply(iface, Collections.emptyMap());
             if (o != null) {
                 matchedInterfaces.add(o);
+                if (p.getAction().contains("COLLECT")) {
+                    assertTrue(o.isCollectionPolicySpecified());
+                    assertFalse(o.isCollectionUserSpecified());
+                }
             }
             for (OnmsIpInterface ipif : iface.getIpInterfaces()) {
                 if (ipif.getIpAddress().equals(matchingIp)) {

@@ -168,17 +168,4 @@ public class KafkaFlowForwarderIT {
         }
 
     }
-
-
-    private static OnmsNode createOnmsNode(int nodeId, String foreignSource, String foreignId) {
-        final OnmsNode node = new OnmsNode();
-        node.setId(nodeId);
-        node.setForeignSource(foreignSource);
-        node.setForeignId(foreignId);
-        final OnmsCategory category = new OnmsCategory();
-        category.setName("SomeCategory");
-        node.setCategories(Sets.newHashSet(category));
-        return node;
-    }
-
 }

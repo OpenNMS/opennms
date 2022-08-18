@@ -35,12 +35,12 @@ import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
 import org.opennms.netmgt.flows.api.Flow;
-import org.opennms.netmgt.flows.api.FlowException;
+import org.opennms.integration.api.v1.flows.FlowException;
 import org.opennms.netmgt.flows.api.FlowSource;
 import org.opennms.netmgt.flows.processing.Pipeline;
 import org.opennms.netmgt.flows.processing.ProcessingOptions;
 import org.opennms.netmgt.flows.processing.enrichment.EnrichedFlow;
-import org.opennms.netmgt.flows.processing.persisting.FlowRepository;
+import org.opennms.integration.api.v1.flows.FlowRepository;
 import org.opennms.netmgt.threshd.api.ThresholdInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

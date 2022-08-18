@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.flows.processing.impl;
 
+import static org.opennms.integration.api.v1.flows.Flow.Direction;
+
 import java.io.Closeable;
 import java.io.File;
 import java.time.Instant;
@@ -65,7 +67,6 @@ import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.flows.classification.ClassificationRuleProvider;
 import org.opennms.netmgt.flows.classification.FilterService;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
-import org.opennms.netmgt.flows.api.Flow.Direction;
 import org.opennms.netmgt.flows.processing.ProcessingOptions;
 import org.opennms.netmgt.flows.processing.enrichment.EnrichedFlow;
 import org.opennms.netmgt.model.OnmsIpInterface;

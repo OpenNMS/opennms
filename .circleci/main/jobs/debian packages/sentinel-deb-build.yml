@@ -23,23 +23,12 @@ jobs:
           packages: target/debs/*.deb
       - setup_remote_docker:
           docker_layer_caching: true
-      #- run:
-      #    name: Fetch DEB artifacts and build sentinel container image
-      #    command: |
-      #      cd opennms-container/sentinel
-      #      env DOCKER_ARCH="linux/amd64" ./build_container_image.sh
       - save-artifacts:
           path: ~/project/target/debs
           location: sentineldebs    
       - store_artifacts:
           path: ~/project/target/debs
           destination: debs
-      #- store_artifacts:
-      #    path: ~/project/opennms-container/sentinel/images/container.oci
-      #    destination: sentinel.oci
       - cache-workflow-assets:
           cache_prefix: deb-sentinel
           source_path: target/debs
-      #- cache-oci:
-      #    key: sentinel
-      #    path: opennms-container/sentinel/images/
