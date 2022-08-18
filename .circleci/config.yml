@@ -26,21 +26,17 @@ setup: true
 
 commands:
   cached-checkout:
-      description: "Checkout with caching"
+      description: "Checkout from cache"
       steps:
         - restore_cache:
             keys:
-              - pre-build-source-v1-{{ .Branch }}-{{ .Revision }}
-              - pre-build-source-v1-{{ .Branch }}-
-              - pre-build-source-v1-
+              - source-v3-{{ .Branch }}-{{ .Revision }}
+              - source-v3-{{ .Branch }}-
+              - source-v3-
         - checkout
         - run:
             name: git config merge.renameLimit
             command: git config merge.renameLimit 999999
-        - save_cache:
-            key: pre-build-source-v1-{{ .Branch }}-{{ .Revision }}
-            paths:
-              - ".git"
   pack-config:
     description: "Pack the dynamic config in .circleci/main/"
     steps:
