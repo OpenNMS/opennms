@@ -182,7 +182,12 @@ if "smoke" in git_keywords or "Smoke_tests" in What_to_build:
         build_mappings["tests"]["smoke"] = True
     build_mappings["filters"]["enabled"] = False
 
-if "oci" in git_keywords or "oci_" in What_to_build:
+if (
+    "oci" in git_keywords
+    or "oci_horizon_image" in What_to_build
+    or "oci_horizon_image" in What_to_build
+    or "oci_sentinel_image" in What_to_build
+):
     build_mappings["build"]["build"] = True
     build_mappings["oci-images"]["minion"] = True
     build_mappings["oci-images"]["horizon"] = True
