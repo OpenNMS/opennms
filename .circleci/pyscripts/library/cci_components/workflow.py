@@ -156,7 +156,7 @@ class workflow:
                     )
                     tmp_output.append(
                         self._common_library.create_space(leading_space + 8)
-                        + "architecture:"
+                        + "architecture: "
                         + str(tmp_output_elements[element])
                     )
 
