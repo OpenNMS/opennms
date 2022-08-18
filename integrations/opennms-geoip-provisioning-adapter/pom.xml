@@ -108,5 +108,11 @@
       <artifactId>opennms-rrdtool-api</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features.usageanalytics</groupId>
+      <artifactId>org.opennms.features.usageanalytics.impl</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>
