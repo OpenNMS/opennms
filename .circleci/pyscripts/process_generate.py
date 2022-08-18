@@ -106,11 +106,11 @@ for change in changes:
         add_to_build_list("Smoke_tests")
     elif "opennms-container" in change:
         if "horizon" in change:
-            add_to_build_list("OCI_horizon_image")
+            add_to_build_list("oci_horizon_image")
         elif "minion" in change:
-            add_to_build_list("OCI_minion_image")
+            add_to_build_list("oci_minion_image")
         elif "sentinel" in change:
-            add_to_build_list("OCI_sentinel_image")
+            add_to_build_list("oci_sentinel_image")
     elif ".circleci" in change:
         add_to_build_list("circleci_configuration")
     elif "doc" in change:
@@ -182,7 +182,12 @@ if "smoke" in git_keywords or "Smoke_tests" in What_to_build:
         build_mappings["tests"]["smoke"] = True
     build_mappings["filters"]["enabled"] = False
 
-if "oci" in git_keywords:
+if (
+    "oci" in git_keywords
+    or "oci_horizon_image" in What_to_build
+    or "oci_horizon_image" in What_to_build
+    or "oci_sentinel_image" in What_to_build
+):
     build_mappings["build"]["build"] = True
     build_mappings["oci-images"]["minion"] = True
     build_mappings["oci-images"]["horizon"] = True

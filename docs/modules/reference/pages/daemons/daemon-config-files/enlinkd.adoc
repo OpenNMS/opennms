@@ -7,7 +7,6 @@ The enhanced link daemon collects xref:operation:deep-dive/topology/enlinkd/intr
 .Enlinkd log file overview
 [options="header"]
 [cols="2,3"]
-
 |===
 | File
 | Description
