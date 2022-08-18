@@ -25,18 +25,17 @@ parameters:
 setup: true
 
 commands:
-  cached-checkout:
-      description: "Checkout from cache"
+  shallow-clone:
+      description: "Quick shallow checkout"
       steps:
-        - restore_cache:
-            keys:
-              - source-v3-{{ .Branch }}-{{ .Revision }}
-              - source-v3-{{ .Branch }}-
-              - source-v3-
-        - checkout
         - run:
-            name: git config merge.renameLimit
-            command: git config merge.renameLimit 999999
+            name: git clone
+            command: |
+              install -d -m 700 ~/.ssh
+              ssh-keyscan github.com >> ~/.ssh/known_hosts
+              ssh-keyscan -p 443 ssh.github.com >> ~/.ssh/known_hosts
+              chmod 600 ~/.ssh/known_hosts
+              git clone --depth 20 "${CIRCLE_REPOSITORY_URL}" --branch "${CIRCLE_BRANCH}" .
   pack-config:
     description: "Pack the dynamic config in .circleci/main/"
     steps:
@@ -149,7 +148,7 @@ jobs:
     docker:
       - image: cimg/python:3.10.1
     steps:
-      - cached-checkout
+      - shallow-clone
       - run:
           name: Creating build-trigger file
           command: |
@@ -176,7 +175,7 @@ jobs:
         description: Mapping of path regular expressions to pipeline parameters and values. One mapping per line, whitespace-delimited.
         type: string
     steps:
-      - cached-checkout
+      - shallow-clone
       - run:
           name: Trigger Status
           command: |
