@@ -34,8 +34,11 @@ import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -158,6 +161,19 @@ public class RestClient {
     public OnmsNode getNode(String nodeCriteria) {
         final WebTarget target = getTarget().path("nodes").path(nodeCriteria);
         return getBuilder(target).get(OnmsNode.class);
+    }
+
+    public Map<String, Object> getUsageStatistics() throws Exception {
+        final Response response = getBuilder(getTarget().path("datachoices")).get();
+        final String jsonContent = response.readEntity(String.class);
+        final Map<String, Object> hashMap = new ObjectMapper().readValue(jsonContent, HashMap.class);
+        return hashMap.entrySet().stream().collect(Collectors.toMap(e -> e.getKey(), e-> {
+                    if (e.getValue() instanceof Integer) {
+                        return Long.valueOf( (Integer) e.getValue());
+                    } else {
+                        return e.getValue();
+                    }
+                }));
     }
 
     public Response getResponseForNode(String nodeCriteria) {
