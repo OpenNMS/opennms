@@ -158,6 +158,9 @@ for e in main_yml_content:
                 and build_components["build"]["docs"]
                 and not build_components["build"]["ui"]
                 and not build_components["build"]["build"]
+                and not build_components["tests"]["integration"]
+                and not build_components["tests"]["smoke-flaky"]
+                and not build_components["tests"]["smoke"]
             ):
                 workflow_path.append(common_library.create_space(level) + "docs:")
             elif (
@@ -165,6 +168,9 @@ for e in main_yml_content:
                 and not build_components["build"]["docs"]
                 and build_components["build"]["ui"]
                 and not build_components["build"]["build"]
+                and not build_components["tests"]["integration"]
+                and not build_components["tests"]["smoke-flaky"]
+                and not build_components["tests"]["smoke"]
             ):
                 workflow_path.append(common_library.create_space(level) + "ui:")
             elif (
