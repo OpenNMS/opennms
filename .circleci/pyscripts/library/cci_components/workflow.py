@@ -83,10 +83,10 @@ class workflow:
         tmp_output = []
 
         for dependency in workflow_dependency:
-            if dependency in self._analyzed_dependencies:
-                continue
+            # if dependency in self._analyzed_dependencies:
+            #    continue
 
-            self._analyzed_dependencies.append(dependency)
+            # self._analyzed_dependencies.append(dependency)
             print(dependency, ">>>", self._analyzed_dependencies)
             # do we have any items under this key
             tmp_output_elements = self.find(dependency)
@@ -199,7 +199,7 @@ class workflow:
                 else:
                     print("Problem!!! Not sure how to handle element: ", element)
 
-        self._analyzed_dependencies.clear()
+        # self._analyzed_dependencies.clear()
         return tmp_output
 
     def get_dependency(self, interested_workflow):

@@ -208,10 +208,10 @@ for e in main_yml_content:
                 print("tests > smoke:", circleCI.get_Workflow_dependency("smoke"))
 
                 if filters_enabled:
-                    filters_enabled = False
+                    tmp_filters_enabled = False
 
                 workflow = circleCI.get_Workflow_yaml(
-                    "smoke", level, enable_filters=filters_enabled
+                    "smoke", level, enable_filters=tmp_filters_enabled
                 )
                 workflow_path = append_to_sample_workflow(workflow_path, workflow)
 
@@ -222,10 +222,10 @@ for e in main_yml_content:
                 )
 
                 if filters_enabled:
-                    filters_enabled = False
+                    tmp_filters_enabled = False
 
                 workflow = circleCI.get_Workflow_yaml(
-                    "smoke-test-flaky", level, enable_filters=filters_enabled
+                    "smoke-test-flaky", level, enable_filters=tmp_filters_enabled
                 )
                 print("\n".join(workflow))
 
