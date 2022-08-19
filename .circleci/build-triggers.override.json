@@ -1,0 +1,36 @@
+{
+    "build": {
+        "docs": true,
+        "ui": false,
+        "coverage": false,
+        "build": false,
+        "deploy": false
+    },
+    "publish": {
+        "packages": false
+    },
+    "tests": {
+        "smoke": false,
+        "smoke-flaky": true,
+        "integration": false
+    },
+    "oci-images": {
+        "minion": false,
+        "horizon": false,
+        "sentinel": false
+    },
+    "debian-packages": {
+        "minion": false,
+        "horizon": false,
+        "sentinel": false
+    },
+    "rpm-packages": {
+        "minion": false,
+        "horizon": false,
+        "sentinel": false
+    },
+    "experimental": false,
+    "filters": {
+        "enabled": true
+    }
+}
