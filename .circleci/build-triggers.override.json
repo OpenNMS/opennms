@@ -11,7 +11,7 @@
     },
     "tests": {
         "smoke": false,
-        "smoke-flaky": true,
+        "smoke-flaky": false,
         "integration": false
     },
     "oci-images": {
