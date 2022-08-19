@@ -200,7 +200,11 @@ class workflow:
                             + require
                         )
                         if require not in workflow_jobs:
-                            print("AHHH")
+                            print(
+                                "We shouldn't be here as the follow job",
+                                require,
+                                "doesn't exist in our workflow_jobs",
+                            )
 
                 else:
                     print("Problem!!! Not sure how to handle element: ", element)
