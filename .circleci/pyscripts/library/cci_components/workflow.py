@@ -199,6 +199,7 @@ class workflow:
                 else:
                     print("Problem!!! Not sure how to handle element: ", element)
 
+        self._analyzed_dependencies.clear()
         return tmp_output
 
     def get_dependency(self, interested_workflow):

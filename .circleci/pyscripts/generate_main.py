@@ -206,6 +206,10 @@ for e in main_yml_content:
 
             if build_components["tests"]["smoke"]:
                 print("tests > smoke:", circleCI.get_Workflow_dependency("smoke"))
+
+                if filters_enabled:
+                    filters_enabled = False
+
                 workflow = circleCI.get_Workflow_yaml(
                     "smoke", level, enable_filters=filters_enabled
                 )
@@ -216,6 +220,10 @@ for e in main_yml_content:
                     "tests > smoke-flaky:",
                     circleCI.get_Workflow_dependency("smoke-test-flaky"),
                 )
+
+                if filters_enabled:
+                    filters_enabled = False
+
                 workflow = circleCI.get_Workflow_yaml(
                     "smoke-test-flaky", level, enable_filters=filters_enabled
                 )
