@@ -87,7 +87,7 @@ class workflow:
             #    continue
 
             # self._analyzed_dependencies.append(dependency)
-            print(dependency, ">>>", self._analyzed_dependencies)
+            # print(dependency, ">>>", self._analyzed_dependencies)
             # do we have any items under this key
             tmp_output_elements = self.find(dependency)
 
