@@ -1,6 +1,6 @@
 {
     "build": {
-        "docs": true,
+        "docs": false,
         "ui": false,
         "coverage": false,
         "build": false,
@@ -11,7 +11,7 @@
     },
     "tests": {
         "smoke": false,
-        "smoke-flaky": false,
+        "smoke-flaky": true,
         "integration": false
     },
     "oci-images": {
