@@ -1,9 +1,9 @@
 {
     "build": {
         "docs": false,
-        "ui": true,
+        "ui": false,
         "coverage": false,
-        "build": false,
+        "build": true,
         "deploy": false
     },
     "publish": {
@@ -11,7 +11,7 @@
     },
     "tests": {
         "smoke": false,
-        "smoke-flaky": false,
+        "smoke-flaky": true,
         "integration": false
     },
     "oci-images": {
