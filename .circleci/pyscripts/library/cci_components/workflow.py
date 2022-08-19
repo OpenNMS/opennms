@@ -1,5 +1,6 @@
 import re
 import json
+from this import d
 
 from library import common
 
@@ -76,17 +77,17 @@ class workflow:
         """
         Returns a list containing yaml entries for the workflow
         """
-        workflow_dependency = self.get_dependency(interested_workflow)
+        workflow_dependency = self.get_dependency(interested_workflow)[::-1]
         # print("get_worflow_yaml::Dependencies>",workflow_dependency)
         # print("get_worflow_yaml::leadingSpace>",leadingSpace)
 
         tmp_output = []
 
         for dependency in workflow_dependency:
-            # if dependency in self._analyzed_dependencies:
-            #    continue
+            if dependency in self._analyzed_dependencies:
+                continue
 
-            # self._analyzed_dependencies.append(dependency)
+            self._analyzed_dependencies.append(dependency)
             # print(dependency, ">>>", self._analyzed_dependencies)
             # do we have any items under this key
             tmp_output_elements = self.find(dependency)
@@ -115,6 +116,7 @@ class workflow:
             # if we have any items, lets add the : after the entry
             if tmp_output_elements:
                 tmp_output[-1] += ":"
+            # print(dependency, tmp_output_elements)
 
             # lets loop through the elements
             for element in tmp_output_elements:
@@ -190,6 +192,11 @@ class workflow:
                             + require
                         )
                         if require not in workflow_dependency:
+                            print(dependency, tmp_output_elements)
+                            print(dependency, require, tmp_output_elements[element])
+                            print("\n".join(tmp_output))
+                            tmp_output.append(" ")
+
                             tmp_output.extend(
                                 self.get_workflow_yaml(
                                     require, leading_space, enable_filters

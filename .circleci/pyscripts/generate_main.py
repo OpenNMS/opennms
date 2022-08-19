@@ -227,7 +227,7 @@ for e in main_yml_content:
                 workflow = circleCI.get_Workflow_yaml(
                     "smoke-test-flaky", level, enable_filters=tmp_filters_enabled
                 )
-                print("\n".join(workflow))
+                # print("\n".join(workflow))
 
                 workflow_path = append_to_sample_workflow(workflow_path, workflow)
 
