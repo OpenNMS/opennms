@@ -19,7 +19,7 @@ The `rtc` user profile is used for the communication of the Real-Time Console on
 == Create a user
 
 . Log in as a user with admin permissions.
-. Click the gear icon at the top-right of the screen.
+. Click the *Gear* icon at the top-right of the screen.
 . Choose menu:Configure OpenNMS[Configure Users, Groups and On-Call Roles > Configure Users].
 . Click *Add new user* and specify a user ID and password, confirm the password, and click *OK*.
 +
@@ -31,7 +31,7 @@ WARNING: You cannot use angle brackets (<>), single (') and double quotation mar
 NOTE: By default, a new user has permissions to acknowledge and work with alarms and notifications.
 They cannot access the *Configure OpenNMS* administration menu.
 +
-To create a user with administrative priviliges, add the `ROLE_ADMIN` role to their account. 
+To create a user with administrative privileges, add the `ROLE_ADMIN` role to their account.
 
 . (Optional) Specify where to send messages to the user in the notification information area.
 . (Optional) <<ga-user-schedule, Set a schedule>> for when a user should receive notifications.
@@ -55,10 +55,9 @@ Notifications sent to users in groups are different, depending on the scenario:
 To add a duty schedule for a user or group of users, follow these steps:
 
 . Log in as a user with admin permissions.
-. Click the gear icon at the top-right of the screen.
+. Click the *Gear* icon at the top-right of the screen.
 . Choose menu:Configure OpenNMS[Configure Users, Groups and On-Call Roles > Configure Users] or *Configure Groups*.
 . Choose the user or group you want to modify.
 . In the *Duty Schedule* area, choose the number of schedules you want to add from the list and click *Add Schedule*.
 . Specify the days and times during which you want the user or group to receive notifications.
 . Click *Finish*.
-
