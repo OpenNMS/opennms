@@ -180,7 +180,9 @@ if "smoke" in git_keywords or "Smoke_tests" in What_to_build:
         build_mappings["tests"]["smoke-flaky"] = True
     else:
         build_mappings["tests"]["smoke"] = True
-    build_mappings["filters"]["enabled"] = False
+    build_mappings["build"]["build"] = True
+    # We disable filters for smoke jobs in generate_main.py
+    # build_mappings["filters"]["enabled"] = False
 
 if (
     "oci" in git_keywords
