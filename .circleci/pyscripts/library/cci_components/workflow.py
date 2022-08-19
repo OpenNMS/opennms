@@ -11,6 +11,7 @@ class workflow:
     """
 
     _internal_workflow = {}
+    _analyzed_dependencies = []
 
     def __init__(self) -> None:
         self._common_library = common.common()
@@ -82,6 +83,11 @@ class workflow:
         tmp_output = []
 
         for dependency in workflow_dependency:
+            if dependency in self._analyzed_dependencies:
+                continue
+
+            self._analyzed_dependencies.append(dependency)
+            print(dependency, ">>>", self._analyzed_dependencies)
             # do we have any items under this key
             tmp_output_elements = self.find(dependency)
 
@@ -134,9 +140,9 @@ class workflow:
                                     + options_entry
                                     + ":"
                                 )
-                                for options_subentry in tmp_output_elements[element][element_options][
-                                    options_entry
-                                ]:
+                                for options_subentry in tmp_output_elements[element][
+                                    element_options
+                                ][options_entry]:
                                     tmp_output.append(
                                         self._common_library.create_space(
                                             leading_space + 10
