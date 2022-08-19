@@ -77,7 +77,7 @@ class workflow:
         """
         Returns a list containing yaml entries for the workflow
         """
-        workflow_dependency = self.get_dependency(interested_workflow)[::-1]
+        workflow_dependency = self.get_dependency(interested_workflow)
         # print("get_worflow_yaml::Dependencies>",workflow_dependency)
         # print("get_worflow_yaml::leadingSpace>",leadingSpace)
 
@@ -103,6 +103,7 @@ class workflow:
                 tmp_output.append(
                     self._common_library.create_space(leading_space) + "- " + dependency
                 )
+                print(tmp_output_elements)
 
             if "extends" in tmp_output_elements:
                 # Since we have expanded the dependency we don't need this anymore
