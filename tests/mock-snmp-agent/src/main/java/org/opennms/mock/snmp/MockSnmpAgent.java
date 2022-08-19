@@ -50,7 +50,7 @@ import org.snmp4j.agent.BaseAgent;
 import org.snmp4j.agent.CommandProcessor;
 import org.snmp4j.agent.DuplicateRegistrationException;
 import org.snmp4j.agent.ManagedObject;
-import org.snmp4j.agent.io.ImportModes;
+import org.snmp4j.agent.io.ImportMode;
 import org.snmp4j.agent.mo.snmp.RowStatus;
 import org.snmp4j.agent.mo.snmp.SnmpCommunityMIB;
 import org.snmp4j.agent.mo.snmp.SnmpCommunityMIB.SnmpCommunityEntryRow;
@@ -59,8 +59,6 @@ import org.snmp4j.agent.mo.snmp.SnmpTargetMIB;
 import org.snmp4j.agent.mo.snmp.StorageType;
 import org.snmp4j.agent.mo.snmp.TransportDomains;
 import org.snmp4j.agent.mo.snmp.VacmMIB;
-import org.snmp4j.log.ConsoleLogFactory;
-import org.snmp4j.log.Log4jLogFactory;
 import org.snmp4j.log.LogAdapter;
 import org.snmp4j.log.LogFactory;
 import org.snmp4j.mp.MPv1;
@@ -94,18 +92,13 @@ import org.snmp4j.util.ThreadPool;
  * @author Jeff Gehlbach
  */
 public class MockSnmpAgent extends BaseAgent implements Runnable {
-	
+
+    private static final LogAdapter LOG = LogFactory.getLogger(MockSnmpAgent.class);
+
     private static final String PROPERTY_SLEEP_ON_CREATE = "mockSnmpAgent.sleepOnCreate";
 
     // initialize Log4J logging
     static {
-        try {
-            Class.forName("org.apache.log4j.Logger");
-            LogFactory.setLogFactory(new Log4jLogFactory());
-        } catch (Exception e) {
-            LogFactory.setLogFactory(new ConsoleLogFactory());
-        }
-
         // Check to see if the pseudorandom byte generator device exists
         if (new File("/dev/urandom").exists()) {
 
@@ -124,8 +117,6 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
         // Override the default security protocols
         //System.setProperty(SecurityProtocols.SECURITY_PROTOCOLS_PROPERTIES, "/org/opennms/mock/snmp/SecurityProtocols.properties");
     }
-
-    private static final LogAdapter s_log = LogFactory.getLogger(MockSnmpAgent.class);
 
     private AtomicReference<String> m_address = new AtomicReference<>();
     private AtomicReference<URL> m_moFile = new AtomicReference<>();
@@ -177,7 +168,6 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
     }
     
     public static MockSnmpAgent createAgentAndRun(URL moFile, String bindAddress) throws InterruptedException {
-        setupLogging();
         try {
             InputStream in = moFile.openStream();
             if (in == null) {
@@ -198,7 +188,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
                 Thread.sleep(10);
             }
         } catch (final InterruptedException e) {
-            s_log.warn("MockSnmpAgent: Agent interrupted while starting: " + e.getLocalizedMessage());
+            LOG.warn("MockSnmpAgent: Agent interrupted while starting: " + e.getLocalizedMessage());
             thread.interrupt();
             agent.shutDownAndWait();
             throw e;
@@ -218,14 +208,8 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
         return agent;
     }
 
-    private static void setupLogging() {
-        if (LogFactory.getLogFactory() == null) {
-            LogFactory.setLogFactory(new ConsoleLogFactory());
-        }
-    }
 
     public static void main(String[] args) throws UnknownHostException, MalformedURLException {
-        LogFactory.setLogFactory(new ConsoleLogFactory());
         AgentConfigData agentConfig = parseCli(args);
         if (agentConfig == null) {
             System.err.println("Could not parse configuration.");
@@ -319,7 +303,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
      */
     @Override
     protected void initMessageDispatcher() {
-        s_log.info("MockSnmpAgent: starting initMessageDispatcher()");
+        LOG.info("MockSnmpAgent: starting initMessageDispatcher()");
         try {
             dispatcher = new MessageDispatcherImpl();
     
@@ -335,47 +319,47 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
             dispatcher.addMessageProcessingModel(mpv3);
             initSnmpSession();
         } finally {
-            s_log.info("MockSnmpAgent: finished initMessageDispatcher()");
+            LOG.info("MockSnmpAgent: finished initMessageDispatcher()");
         }
     }
 
     @Override
     public void initSnmpSession() {
-        s_log.info("MockSnmpAgent: starting initTransportMappings()");
+        LOG.info("MockSnmpAgent: starting initTransportMappings()");
         try {
             super.initSnmpSession();
         } finally {
-            s_log.info("MockSnmpAgent: finished initTransportMappings()");
+            LOG.info("MockSnmpAgent: finished initTransportMappings()");
         }
     }
 
     @Override
     public void initConfigMIB() {
-        s_log.info("MockSnmpAgent: starting initConfigMIB()");
+        LOG.info("MockSnmpAgent: starting initConfigMIB()");
         try {
             super.initConfigMIB();
         } finally {
-            s_log.info("MockSnmpAgent: finished initConfigMIB()");
+            LOG.info("MockSnmpAgent: finished initConfigMIB()");
         }
     }
 
     @Override
     public void setupDefaultProxyForwarder() {
-        s_log.info("MockSnmpAgent: starting setupDefaultProxyForwarder()");
+        LOG.info("MockSnmpAgent: starting setupDefaultProxyForwarder()");
         try {
             super.setupDefaultProxyForwarder();
         } finally {
-            s_log.info("MockSnmpAgent: finished setupDefaultProxyForwarder()");
+            LOG.info("MockSnmpAgent: finished setupDefaultProxyForwarder()");
         }
     }
 
     @Override
     public void updateSession(Session session) {
-        s_log.info("MockSnmpAgent: starting updateSession()");
+        LOG.info("MockSnmpAgent: starting updateSession()");
         try {
             super.updateSession(session);
         } finally {
-            s_log.info("MockSnmpAgent: finished updateSession()");
+            LOG.info("MockSnmpAgent: finished updateSession()");
         }
     }
 
@@ -401,28 +385,28 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
      */
     @Override
     public void run() {
-	s_log.info("MockSnmpAgent: Initializing SNMP Agent");
+        LOG.info("MockSnmpAgent: Initializing SNMP Agent");
         try {
             init();
-	    s_log.info("MockSnmpAgent: Finished 'init' loading config");
-            loadConfig(ImportModes.UPDATE_CREATE);
-	    s_log.info("MockSnmpAgent: finished 'loadConfig' adding shutdown hook");
+            LOG.info("MockSnmpAgent: Finished 'init' loading config");
+            loadConfig(ImportMode.UPDATE_CREATE);
+            LOG.info("MockSnmpAgent: finished 'loadConfig' adding shutdown hook");
             addShutdownHook();
-	    s_log.info("MockSnmpAgent: finished 'addShutdownHook' finishing init");
+            LOG.info("MockSnmpAgent: finished 'addShutdownHook' finishing init");
             finishInit();
-	    s_log.info("MockSnmpAgent: finished 'finishInit' running agent");
+            LOG.info("MockSnmpAgent: finished 'finishInit' running agent");
             super.run();
-	    s_log.info("MockSnmpAgent: finished running Agent - setting running to true");
+            LOG.info("MockSnmpAgent: finished running Agent - setting running to true");
             m_running.set(true);
         } catch (final BindException e) {
-        	s_log.error(String.format("MockSnmpAgent: Unable to bind to %s.  You probably specified an invalid address or a port < 1024 and are not running as root. Exception: %s", m_address.get(), e), e);
+            LOG.error(String.format("MockSnmpAgent: Unable to bind to %s.  You probably specified an invalid address or a port < 1024 and are not running as root. Exception: %s", m_address.get(), e), e);
         } catch (final Throwable t) {
-        	s_log.error("MockSnmpAgent: An error occurred while initializing: " + t, t);
+            LOG.error("MockSnmpAgent: An error occurred while initializing: " + t, t);
         	t.printStackTrace();
         }
 
         boolean interrupted = false;
-	s_log.info("MockSnmpAgent: Initialization Complete processing message until agent is shutdown.");
+        LOG.info("MockSnmpAgent: Initialization Complete processing message until agent is shutdown.");
         while (m_running.get()) {
             try {
                 Thread.sleep(10); // fast, Fast, FAST, *FAST*!!!
@@ -432,20 +416,20 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
             }
         }
 
-	s_log.info("MockSnmpAgent: Shutdown called stopping agent.");
+        LOG.info("MockSnmpAgent: Shutdown called stopping agent.");
         for (final TransportMapping<?> transportMapping : transportMappings) {
             try {
                 if (transportMapping != null) {
                 	transportMapping.close();
                 }
             } catch (final IOException t) {
-            	s_log.error("MockSnmpAgent: an error occurred while closing the transport mapping " + transportMapping + ": " + t, t);
+                LOG.error("MockSnmpAgent: an error occurred while closing the transport mapping " + transportMapping + ": " + t, t);
             }
         }
 
         m_stopped.set(true);
 
-        s_log.info("MockSnmpAgent: Agent is no longer running.");
+        LOG.info("MockSnmpAgent: Agent is no longer running.");
         if (interrupted) {
         	Thread.currentThread().interrupt();
         }
@@ -638,17 +622,17 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
     /** {@inheritDoc} */
     @Override
     protected void initTransportMappings() throws IOException {
-        s_log.info("MockSnmpAgent: starting initTransportMappings()");
+        LOG.info("MockSnmpAgent: starting initTransportMappings()");
         try {
             final MockUdpTransportMapping mapping = new MockUdpTransportMapping(new UdpAddress(m_address.get()), true);
             mapping.setThreadName("MockSnmpAgent-UDP-Transport");
             transportMappings = new TransportMapping<?>[] { mapping };
         } catch (final IOException e) {
-            s_log.info("MockSnmpAgent: initTransportMappings() caught an IoException: " + e.getMessage());
+            LOG.info("MockSnmpAgent: initTransportMappings() caught an IoException: " + e.getMessage());
             m_failure.set(e);
             throw e;
         } finally {
-            s_log.info("MockSnmpAgent: finished initTransportMappings()");
+            LOG.info("MockSnmpAgent: finished initTransportMappings()");
         }
     }
     
@@ -680,11 +664,11 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
     /** {@inheritDoc} */
     @Override
     protected void registerSnmpMIBs() {
-        s_log.info("MockSnmpAgent: starting registerSnmpMIBs()");
+        LOG.info("MockSnmpAgent: starting registerSnmpMIBs()");
         try {
             registerManagedObjects();
         } finally {
-            s_log.info("MockSnmpAgent: finished registerSnmpMIBs()");
+            LOG.info("MockSnmpAgent: finished registerSnmpMIBs()");
         }
     }
 
@@ -707,7 +691,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
                 server.register(mo, null);
             }
             catch (final DuplicateRegistrationException ex) {
-                s_log.error("MockSnmpAgent: unable to register managed object", ex);
+                LOG.error("MockSnmpAgent: unable to register managed object", ex);
             }
         }
     }

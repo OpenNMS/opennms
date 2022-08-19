@@ -54,14 +54,12 @@ import org.opennms.netmgt.snmp.SnmpV3TrapBuilder;
 import org.opennms.netmgt.snmp.SnmpV3User;
 import org.opennms.netmgt.snmp.TrapInformation;
 import org.opennms.netmgt.snmp.TrapNotificationListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.snmp4j.CommandResponder;
 import org.snmp4j.CommandResponderEvent;
 import org.snmp4j.PDU;
 import org.snmp4j.PDUv1;
 import org.snmp4j.Snmp;
-import org.snmp4j.log.Log4jLogFactory;
+import org.snmp4j.log.LogAdapter;
 import org.snmp4j.log.LogFactory;
 import org.snmp4j.security.AuthMD5;
 import org.snmp4j.security.PrivDES;
@@ -71,13 +69,13 @@ import org.snmp4j.smi.UdpAddress;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
 
 public class Snmp4jTrapReceiverIT extends MockSnmpAgentITCase implements CommandResponder {
-    private static final Logger LOG = LoggerFactory.getLogger(Snmp4jTrapReceiverIT.class);
+    private static final LogAdapter LOG = LogFactory.getLogger(Snmp4jTrapReceiverIT.class);
 
     private int m_trapCount;
 
     @BeforeClass
     public static void setupSnmp4jLogging() {
-        LogFactory.setLogFactory(new Log4jLogFactory());
+        LogFactory.setLogFactory(new LogFactory());
         MockLogAppender.setupLogging(true, "DEBUG");
     }
 
@@ -135,14 +133,14 @@ public class Snmp4jTrapReceiverIT extends MockSnmpAgentITCase implements Command
                 try {
                     snmp.close();
                 } catch (final IOException e) {
-                    LOG.debug("Failed to close Snmp object: {}", snmp, e);
+                    LOG.error("Failed to close Snmp object: " + snmp, e);
                 }
             }
             if (transportMapping != null) {
                 try {
                     transportMapping.close();
                 } catch (final IOException e) {
-                    LOG.debug("Failed to close transport mapping: {}", transportMapping, e);
+                    LOG.error("Failed to close transport mapping: " + transportMapping, e);
                 }
             }
         }
@@ -164,15 +162,15 @@ public class Snmp4jTrapReceiverIT extends MockSnmpAgentITCase implements Command
             sendTraps(strategy, "MD5", SnmpConfiguration.AUTH_PRIV);
             await().atMost(5, SECONDS).until(() -> m_trapCount, equalTo(2));
         } catch (final IOException e) {
-            LOG.debug("Failed to register for traps.", e);
+            LOG.error("Failed to register for traps.", e);
         } catch (final Exception e) {
-            LOG.debug("Failed to send traps.", e);
+            LOG.error("Failed to send traps.", e);
         } finally {
             LOG.debug("ONMS: Unregister for Traps");
             try {
                 strategy.unregisterForTraps(trapListener);
             } catch (final IOException e) {
-                LOG.debug("Failed to unregister for traps.", e);
+                LOG.error("Failed to unregister for traps.", e);
             }
         }
 
@@ -194,15 +192,15 @@ public class Snmp4jTrapReceiverIT extends MockSnmpAgentITCase implements Command
             sendTraps(strategy, "SHA-256", SnmpConfiguration.AUTH_PRIV);
             await().atMost(5, SECONDS).until(() -> m_trapCount, equalTo(2));
         } catch (final IOException e) {
-            LOG.debug("Failed to register for traps.", e);
+            LOG.error("Failed to register for traps.", e);
         } catch (final Exception e) {
-            LOG.debug("Failed to send traps.", e);
+            LOG.error("Failed to send traps.", e);
         } finally {
             LOG.debug("ONMS: Unregister for Traps");
             try {
                 strategy.unregisterForTraps(trapListener);
             } catch (final IOException e) {
-                LOG.debug("Failed to unregister for traps.", e);
+                LOG.error("Failed to unregister for traps.", e);
             }
         }
 
@@ -227,15 +225,15 @@ public class Snmp4jTrapReceiverIT extends MockSnmpAgentITCase implements Command
             sendTraps(strategy, null, SnmpConfiguration.NOAUTH_NOPRIV);
             await().atMost(5, SECONDS).until(() -> m_trapCount, equalTo(2));
         } catch (final IOException e) {
-            LOG.debug("Failed to register for traps.", e);
+            LOG.error("Failed to register for traps.", e);
         } catch (final Exception e) {
-            LOG.debug("Failed to send traps.", e);
+            LOG.error("Failed to send traps.", e);
         } finally {
             LOG.debug("ONMS: Unregister for Traps");
             try {
                 strategy.unregisterForTraps(trapListener);
             } catch (final IOException e) {
-                LOG.debug("Failed to unregister for traps.", e);
+                LOG.error("Failed to unregister for traps.", e);
             }
         }
 
@@ -258,15 +256,15 @@ public class Snmp4jTrapReceiverIT extends MockSnmpAgentITCase implements Command
             sendTraps(strategy, null, SnmpConfiguration.NOAUTH_NOPRIV);
             await().atMost(5, SECONDS).until(() -> m_trapCount, equalTo(2));
         } catch (final IOException e) {
-            LOG.debug("Failed to register for traps.", e);
+            LOG.error("Failed to register for traps.", e);
         } catch (final Exception e) {
-            LOG.debug("Failed to send traps.", e);
+            LOG.error("Failed to send traps.", e);
         } finally {
             LOG.debug("ONMS: Unregister for Traps");
             try {
                 strategy.unregisterForTraps(trapListener);
             } catch (final IOException e) {
-                LOG.debug("Failed to unregister for traps.", e);
+                LOG.error("Failed to unregister for traps.", e);
             }
         }
 
@@ -376,7 +374,7 @@ public class Snmp4jTrapReceiverIT extends MockSnmpAgentITCase implements Command
 
         @Override
         public void trapReceived(final TrapInformation trapInformation) {
-            LOG.debug("Received Trap... {}", trapInformation);
+            LOG.debug("Received Trap... " + trapInformation);
             if (trapInformation != null) {
                 LOG.debug(trapInformation.getClass().getName());
             }
@@ -386,7 +384,7 @@ public class Snmp4jTrapReceiverIT extends MockSnmpAgentITCase implements Command
 
         @Override
         public void trapError(final int error, final String msg) {
-            LOG.debug("Received Trap Error... {}:{}", error, msg);
+            LOG.error("Received Trap Error... " + error + ":" + msg);
             m_errors.add(msg);
         }
 

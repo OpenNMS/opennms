@@ -30,10 +30,8 @@ package org.opennms.netmgt.mock;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.util.Vector;
+import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.snmp4j.CommandResponder;
 import org.snmp4j.CommandResponderEvent;
 import org.snmp4j.MessageException;
@@ -41,6 +39,8 @@ import org.snmp4j.PDU;
 import org.snmp4j.PDUv1;
 import org.snmp4j.Snmp;
 import org.snmp4j.TransportMapping;
+import org.snmp4j.log.LogAdapter;
+import org.snmp4j.log.LogFactory;
 import org.snmp4j.mp.StateReference;
 import org.snmp4j.mp.StatusInformation;
 import org.snmp4j.smi.Null;
@@ -57,7 +57,7 @@ import org.snmp4j.transport.DefaultUdpTransportMapping;
  */
 public class MockProxy implements CommandResponder {
     
-    private static final Logger LOG = LoggerFactory.getLogger(MockProxy.class);
+    private static final LogAdapter LOG = LogFactory.getLogger(MockProxy.class);
 
     private TransportMapping<UdpAddress> m_transport;
     private Snmp m_snmp;
@@ -87,7 +87,7 @@ public class MockProxy implements CommandResponder {
           StatusInformation statusInformation = new StatusInformation();
           StateReference ref = e.getStateReference();
           try {
-              LOG.debug("Replying with: {}", command);
+              LOG.debug("Replying with: " + command);
               e.setProcessed(true);
               e.getMessageDispatcher().returnResponsePdu(e.getMessageProcessingModel(),
                                                          e.getSecurityModel(),
@@ -175,7 +175,7 @@ public class MockProxy implements CommandResponder {
         response.setErrorStatus(0);
         response.setType(PDU.RESPONSE);
         
-        Vector<? extends VariableBinding> varBinds = response.getVariableBindings();
+        List<? extends VariableBinding> varBinds = response.getVariableBindings();
         for(int i = 0; i < varBinds.size(); i++) {
             VariableBinding varBind = varBinds.get(i);
             VariableBinding nextVarBind = m_agent.get(varBind.getOid());
@@ -206,7 +206,7 @@ public class MockProxy implements CommandResponder {
         response.setErrorStatus(0);
         response.setType(PDU.RESPONSE);
         
-        Vector<? extends VariableBinding> varBinds = response.getVariableBindings();
+        List<? extends VariableBinding> varBinds = response.getVariableBindings();
         for(int i = 0; i < varBinds.size(); i++) {
             VariableBinding varBind = varBinds.get(i);
             VariableBinding nextVarBind = m_agent.getNext(varBind.getOid());
