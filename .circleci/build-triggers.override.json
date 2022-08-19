@@ -1,7 +1,7 @@
 {
     "build": {
-        "docs": true,
-        "ui": false,
+        "docs": false,
+        "ui": true,
         "coverage": false,
         "build": false,
         "deploy": false
