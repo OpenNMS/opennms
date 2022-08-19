@@ -1,6 +1,6 @@
 {
     "build": {
-        "docs": false,
+        "docs": true,
         "ui": false,
         "coverage": false,
         "build": false,
@@ -31,6 +31,6 @@
     },
     "experimental": false,
     "filters": {
-        "enabled": true
+        "enabled": false
     }
 }
