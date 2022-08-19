@@ -3,7 +3,7 @@
         "docs": false,
         "ui": false,
         "coverage": false,
-        "build": true,
+        "build": false,
         "deploy": false
     },
     "publish": {
@@ -11,8 +11,8 @@
     },
     "tests": {
         "smoke": false,
-        "smoke-flaky": false,
-        "integration": true
+        "smoke-flaky": true,
+        "integration": false
     },
     "oci-images": {
         "minion": false,
