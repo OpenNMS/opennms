@@ -100,9 +100,9 @@ def add_to_build_list(item):
 for change in changes:
     if not change:
         continue
-    if "IT.java" in change:
+    if "src/test/" in change and "smoke-test/" not in change:
         add_to_build_list("Integration_tests")
-    elif "Test.java" in change:
+    elif "src/test/" in change and "smoke-test/" in change:
         add_to_build_list("Smoke_tests")
     elif "opennms-container" in change:
         if "horizon" in change:
@@ -153,7 +153,7 @@ if "trigger-ui" in mappings:
 if "trigger-coverage" in mappings:
     build_mappings["build"]["coverage"] = mappings["trigger-coverage"]
 
-if mappings["trigger-flaky-smoke"]:
+if "trigger-flaky-smoke" in mappings:
     build_mappings["tests"]["smoke-flaky"] = mappings["trigger-flaky-smoke"]
 
 if re.match(".*smoke.*", branch_name):
@@ -180,7 +180,9 @@ if "smoke" in git_keywords or "Smoke_tests" in What_to_build:
         build_mappings["tests"]["smoke-flaky"] = True
     else:
         build_mappings["tests"]["smoke"] = True
-    build_mappings["filters"]["enabled"] = False
+    build_mappings["build"]["build"] = True
+    # We disable filters for smoke jobs in generate_main.py
+    # build_mappings["filters"]["enabled"] = False
 
 if (
     "oci" in git_keywords
