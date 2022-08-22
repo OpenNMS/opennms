@@ -43,12 +43,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.springframework.web.bind.annotation.PathVariable;
-
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-
 @Path("/cm")
 @Produces("application/json")
 @Consumes("application/json")
@@ -63,18 +57,10 @@ public interface ConfigManagerRestService {
      */
     @GET
     @Produces(value = {MediaType.APPLICATION_JSON})
-    @Operation(summary = "List configs", description = "Lists all available configs")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successful"),
-            @ApiResponse(responseCode = "403", description = "User have no access rights")})
     Response listConfigs();
 
     @GET
     @Path("/schema")
-    @Operation(summary = "List schemas", description = "Lists all available schemas")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successful"),
-            @ApiResponse(responseCode = "403", description = "User have no access rights")})
     Response getAllOpenApiSchema(@HeaderParam("accept") String acceptType, @Context HttpServletRequest request);
 
     /**
@@ -86,11 +72,6 @@ public interface ConfigManagerRestService {
      */
     @GET
     @Path("/schema/{configName}")
-    @Operation(summary = "Get schema", description = "Get schema for specified configuration")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successful"),
-            @ApiResponse(responseCode = "403", description = "User have no access rights"),
-            @ApiResponse(responseCode = "404", description = "Configuration not found")})
     Response getOpenApiSchema(@PathParam("configName") String configName, @HeaderParam("accept") String acceptType, @Context HttpServletRequest request);
 
     /**
@@ -101,11 +82,6 @@ public interface ConfigManagerRestService {
      */
     @GET
     @Path("/{configName}")
-    @Operation(summary = "Get config IDs", description = "Get configuration IDs for specified configuration name")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successful"),
-            @ApiResponse(responseCode = "403", description = "User have no access rights"),
-            @ApiResponse(responseCode = "404", description = "Configuration with specified name does not exists")})
     Response getConfigIds(@PathParam("configName") String configName);
 
     /**
@@ -117,11 +93,6 @@ public interface ConfigManagerRestService {
      */
     @GET
     @Path("/{configName}/{configId}")
-    @Operation(summary = "Get config IDs", description = "Get configuration IDs for specified configuration")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successful"),
-            @ApiResponse(responseCode = "403", description = "User have no access rights"),
-            @ApiResponse(responseCode = "404", description = "Configuration not found")})
     Response getConfig(@PathParam("configName") String configName, @PathParam("configId") String configId);
 
     /**
@@ -134,11 +105,6 @@ public interface ConfigManagerRestService {
      */
     @POST
     @Path("/{configName}/{configId}")
-    @Operation(summary = "Get configuration", description = "Get configuration IDs for specified configuration")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successful"),
-            @ApiResponse(responseCode = "403", description = "User have no access rights"),
-            @ApiResponse(responseCode = "400", description = "Wrong configuration specified or wrong format")})
     Response addConfig(@PathParam("configName") String configName, @PathParam("configId") String configId, String jsonStr);
 
     /**
@@ -150,11 +116,6 @@ public interface ConfigManagerRestService {
      */
     @PUT
     @Path("/{configName}/{configId}")
-    @Operation(summary = "Update configuration", description = "Update an existing configuration")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successful"),
-            @ApiResponse(responseCode = "403", description = "User have no access rights"),
-            @ApiResponse(responseCode = "400", description = "Bad request")})
     Response updateConfig(@PathParam("configName") String configName, @PathParam("configId") String configId, @QueryParam("replace") boolean isReplace, String jsonStr);
 
     /**
@@ -166,11 +127,6 @@ public interface ConfigManagerRestService {
      */
     @DELETE
     @Path("/{configName}/{configId}")
-    @Operation(summary = "Delete configuration", description = "Delete specified configuration")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successful"),
-            @ApiResponse(responseCode = "403", description = "User have no access rights"),
-            @ApiResponse(responseCode = "400", description = "Wrong configuration specified")})
     Response deleteConfig(@PathParam("configName") String configName, @PathParam("configId") String configId);
 
     /**
@@ -182,15 +138,9 @@ public interface ConfigManagerRestService {
      * @return requested part of configuration
      */
     @GET
-    @Path(value="/{configName}/{configId}/{path:.*}")
-    @Operation(summary = "Get a part of configuration", description = "Get a part of specified configuration")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successful"),
-            @ApiResponse(responseCode = "403", description = "User have no access rights"),
-            @ApiResponse(responseCode = "400", description = "Wrong parameter specified"),
-            @ApiResponse(responseCode = "404", description = "Configuration not found")})
-    Response getConfigPart(@PathVariable("configName") String configName, @PathVariable("configId") String configId,
-                           @PathVariable("path") String path);
+    @Path(value="/{configName}/{configId}/{path}")
+    Response getConfigPart(@PathParam("configName") String configName, @PathParam("configId") String configId,
+                           @PathParam("path") String path);
 
     /**
      * Update config part specified by configName, configId and path to the part
@@ -201,15 +151,9 @@ public interface ConfigManagerRestService {
      * @return empty response
      */
     @PUT
-    @Path(value="/{configName}/{configId}/{path:.+}")
-    @Operation(summary = "Update a part of configuration", description = "Update a part of specified configuration")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successful"),
-            @ApiResponse(responseCode = "403", description = "User have no access rights"),
-            @ApiResponse(responseCode = "400", description = "Wrong parameter specified"),
-            @ApiResponse(responseCode = "404", description = "Configuration not found")})
-    Response updateConfigPart(@PathVariable("configName") String configName, @PathVariable("configId") String configId,
-                              @PathVariable("path") String path, String newContent);
+    @Path(value="/{configName}/{configId}/{path}")
+    Response updateConfigPart(@PathParam("configName") String configName, @PathParam("configId") String configId,
+                              @PathParam("path") String path, String newContent);
 
     /**
      * Add an array element to a config specified by configName, configId and path to the array
@@ -221,15 +165,9 @@ public interface ConfigManagerRestService {
      * @return empty response
      */
     @POST
-    @Path(value="/{configName}/{configId}/{path:.+}")
-    @Operation(summary = "Add an element to array in config", description = "Add an element to array in specified configuration")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successful"),
-            @ApiResponse(responseCode = "403", description = "User have no access rights"),
-            @ApiResponse(responseCode = "400", description = "Wrong parameter specified"),
-            @ApiResponse(responseCode = "404", description = "Configuration not found")})
-    Response appendToArrayInConfig(@PathVariable("configName") String configName, @PathVariable("configId") String configId,
-                                   @PathVariable("path") String path, String newElement);
+    @Path(value="/{configName}/{configId}/{path}")
+    Response appendToArrayInConfig(@PathParam("configName") String configName, @PathParam("configId") String configId,
+                                   @PathParam("path") String path, String newElement);
 
     /**
      * Delete config part specified by configName, configId and path to the part
@@ -240,14 +178,8 @@ public interface ConfigManagerRestService {
      * @return empty response
      */
     @DELETE
-    @Path(value="/{configName}/{configId}/{path:.+}")
-    @Operation(summary = "Delete a part of configuration", description = "Delete a part of specified configuration")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successful"),
-            @ApiResponse(responseCode = "403", description = "User have no access rights"),
-            @ApiResponse(responseCode = "400", description = "Wrong parameter specified"),
-            @ApiResponse(responseCode = "404", description = "Configuration not found")})
-    Response deleteConfigPart(@PathVariable("configName") String configName, @PathVariable("configId") String configId,
-                              @PathVariable("path") String path);
+    @Path(value="/{configName}/{configId}/{path}")
+    Response deleteConfigPart(@PathParam("configName") String configName, @PathParam("configId") String configId,
+                              @PathParam("path") String path);
 
 }
