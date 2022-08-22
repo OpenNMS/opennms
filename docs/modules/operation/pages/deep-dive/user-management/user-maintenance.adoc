@@ -2,6 +2,9 @@
 [[ga-user-maintenance]]
 = User Maintenance
 
+Users are entities with login accounts in the {page-component-title} system.
+Ideally, each user account corresponds to only one person.
+
 This page describes additional tasks and information related to user accounts.
 
 == Passwords

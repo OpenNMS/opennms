@@ -14,7 +14,7 @@ Notifications are commonly sent through email or a text/pager message, but mecha
 * IRCcat Internet Relay Chat bot
 * SNMP traps
 * Slack, Mattermost, and other API-compatible team chat platforms
-* Twitter, GNU Social, and other API-compatible microblog services
+* Twitter, GNU social, and other API-compatible microblog services
 * User-provided scripts in any JSR-223 compatible language
 * XMPP
 
@@ -29,4 +29,4 @@ For a thorough understanding of notifications, you should be familiar with these
 * Destination paths
 * Notification commands
 
-For more information on these core concepts, see xref:operation:deep-dive/notifications/concepts.adoc[Concepts].
+For more information on these concepts, see xref:operation:deep-dive/notifications/concepts.adoc[Concepts].

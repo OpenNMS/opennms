@@ -12,20 +12,18 @@ Almost everything that happens in the system is the result of, or the cause of, 
 Each notification is triggered by exactly one event.
 A good understanding of events is therefore essential to a working knowledge of notifications.
 
-Every event has a UEI (unique event identifier), a string that uniquely identifies the event's type.
+Every event has a unique string identifier (UEI), a string that uniquely identifies the event's type.
 UEIs are typically formatted in the style of a URI, but the only requirement is that they start with the string `uei.`.
 Most notifications are triggered by an exact UEI match (although they may also be triggered with partial UEI matches using regular expression syntax).
 
-== Users and Groups
-
-Users are entities with login accounts in the {page-component-title} system.
-Ideally, each user account corresponds to only one person.
+== Users and groups
 
 User accounts control access to the web UI, but also store contact information (e-mail addresses, phone numbers, and so on) for the people they represent.
 A user may receive notifications either individually or as part of a group or on-call role.
 Each user has several technology-specific contact fields, which must be filled if they are to receive notifications by the associated method.
 
-Groups are collections of users.
+To learn more about user accounts and how to manage them, see xref:operation:deep-dive/user-management/user-maintenance.adoc[User Maintenance].
+
 In large systems with many users, it might be helpful to organize them into groups.
 Groups may receive notifications; this is often a more convenient way to operate than configuring notifications to be sent to individuals.
 Within a group, a set of users can be assigned to on-call roles.
@@ -33,7 +31,7 @@ This lets you build more complex notification workflows.
 
 To learn more about groups and how to manage them, see xref:operation:deep-dive/user-management/user-groups.adoc[Groups].
 
-== On-Call Roles
+== On-Call roles
 
 On-call roles are an overlay on top of groups.
 They are designed to let {page-component-title} target the appropriate users according to calendar configurations.
