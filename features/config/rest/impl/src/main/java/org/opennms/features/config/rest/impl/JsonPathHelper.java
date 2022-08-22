@@ -56,12 +56,20 @@ public class JsonPathHelper {
         //the object under specified path will be replaced with providet text without checking if the text is valid JSON 
         //for that on the first step the specified node will be replaced by unique number, and then this number will be replaced 
         //withh provided text
-        Long unique = new Random().nextLong();
-        while (data.contains(unique.toString())) {
-            //just to be sure we do not overwrite come existing data
-            unique = new Random().nextLong();
-        }
+        Long unique = getUnique(data);
         String newJson = JsonPath.parse(data).set(jsonPath, unique).jsonString();
+        return newJson.replace(unique.toString(), newPartContent);
+    }
+
+    public static String append(String data, String path, String newPartContent) {
+        JsonPath jsonPath = JsonPath.compile(path);
+        assertThereIsExactlyOnePath(data, jsonPath);
+
+        //the object under specified path will be replaced with provided text without checking if the text is valid JSON
+        //for that on the first step the specified node will be replaced by unique number, and then this number will be replaced
+        //with provided text
+        Long unique = getUnique(data);
+        String newJson = JsonPath.parse(data).add(jsonPath, unique).jsonString();
         return newJson.replace(unique.toString(), newPartContent);
     }
 
@@ -70,11 +78,20 @@ public class JsonPathHelper {
         assertThereIsExactlyOnePath(data, jsonPath);
         return JsonPath.parse(data).delete(jsonPath).jsonString();
     }
-    
+
     private static void assertThereIsExactlyOnePath(String data, JsonPath jsonPath) {
         List<String> paths = JsonPath.using(AS_PATH_LIST).parse(data).read(jsonPath);
         if (paths.size() != 1) {
             throw new IllegalArgumentException("There must be exactly one path in JSON");
         }
+    }
+
+    private static Long getUnique(String data) {
+        Long unique = new Random().nextLong();
+        while (data.contains(unique.toString())) {
+            //just to be sure we do not overwrite come existing data
+            unique = new Random().nextLong();
+        }
+        return unique;
     }
 }

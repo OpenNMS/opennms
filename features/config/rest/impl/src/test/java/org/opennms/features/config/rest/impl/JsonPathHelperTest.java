@@ -48,13 +48,14 @@ public class JsonPathHelperTest {
     private static final int EVIL = 666;
     private static final int LUCKY = 777;
     private static final String SOMETEXT1 ="someText1";
+    private static final String SOME_TEXT_ELEMENT_WITH_QUOTE ="\"some text in array\"";
     private static final String EVIL_TEXT = "evil text";
     private static final String LUCKY_TEXT = "lucky text";
 
     private static final String OBJECT1 = "{\"objNumber\":" + OBJNUMBER1 + ",\"objText\":\""+SOMETEXT1+"\"}";
     private static final String OBJECT2 = "{\"objNumber\":" + OBJNUMBER2 + ",\"objText\":\"someText2\"}";
     private static final String OBJECT3 = "{\"objNumber\":" + EVIL + ",\"objText\":\"" + EVIL_TEXT + "\"}";
-    private static final String ARRAY = "[123456," + OBJECT1 + "," + OBJECT2 + ",\"someArrayTextElement\"" + "]";
+    private static final String ARRAY = "[123456," + OBJECT1 + "," + OBJECT2 + "," + SOME_TEXT_ELEMENT_WITH_QUOTE + "]";
     private static final String DATA = "{\"numProperty\":" + SOMENUMBER + ",\"textProperty\":\"barFoo\",\"array\":"
             + ARRAY + ",\"nestedObject\":" + OBJECT3 + ",\"anotherText\":\"someText1\"}";
     private static final String MULTIPLE_PATH = "$..*";
@@ -88,10 +89,6 @@ public class JsonPathHelperTest {
         JsonPathHelper.get(DATA, "$.noSuchProperty");
     }
 
-
-    /**
-     * Test of update method, of class JsonPathPartHelper.
-     */
     @Test
     public void testUpdate_ok() {
         //replace text
@@ -119,6 +116,31 @@ public class JsonPathHelperTest {
         JsonPathHelper.update(DATA, "$.array[1,2]", OBJECT2);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testAppend_Multiple() {
+        JsonPathHelper.append(DATA, "$.array[1,2]", OBJECT2);
+    }
+
+    @Test
+    public void testAppend_ok() {
+        //append text
+        assertEquals(
+                DATA.replace(SOME_TEXT_ELEMENT_WITH_QUOTE, SOME_TEXT_ELEMENT_WITH_QUOTE + "," + SOME_TEXT_ELEMENT_WITH_QUOTE),
+                JsonPathHelper.append(DATA,"$.array",SOME_TEXT_ELEMENT_WITH_QUOTE)
+        );
+
+        //append number
+        assertEquals(
+                DATA.replace(SOME_TEXT_ELEMENT_WITH_QUOTE, SOME_TEXT_ELEMENT_WITH_QUOTE + "," + LUCKY),
+                JsonPathHelper.append(DATA,"$.array",Long.toString(LUCKY))
+        );
+
+        //append object
+        assertEquals(
+                DATA.replace(SOME_TEXT_ELEMENT_WITH_QUOTE, SOME_TEXT_ELEMENT_WITH_QUOTE + "," + OBJECT3),
+                JsonPathHelper.append(DATA,"$.array",OBJECT3)
+        );
+    }
 
     @Test(expected = IllegalArgumentException.class)
     public void testDelete_Multiple() {

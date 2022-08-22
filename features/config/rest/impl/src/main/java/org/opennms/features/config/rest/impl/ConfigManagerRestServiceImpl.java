@@ -188,6 +188,25 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
     }
 
     @Override
+    public Response appendToArrayInConfig(String configName, String configId, String path, String newElement) {
+        try {
+            Optional<String> json = configurationManagerService.getJSONStrConfiguration(configName, configId);
+            if (json.isEmpty()) {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+
+            String newJson = JsonPathHelper.append(json.get(),path, newElement);
+
+            configurationManagerService.updateConfiguration(configName, configId, new JsonAsString(newJson), true);
+
+        } catch (Exception e) {
+            LOG.error("configName: {}, configId: {}", configName, configId, e);
+            return this.generateSimpleMessageResponse(Response.Status.BAD_REQUEST, e.getMessage());
+        }
+        return Response.ok().build();
+    }
+
+    @Override
     public Response deleteConfigPart(String configName, String configId, String path) {
         try {
             Optional<String> json = configurationManagerService.getJSONStrConfiguration(configName, configId);

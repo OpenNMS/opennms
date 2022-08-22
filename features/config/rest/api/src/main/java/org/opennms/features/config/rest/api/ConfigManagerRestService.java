@@ -158,6 +158,20 @@ public interface ConfigManagerRestService {
                               @PathVariable("path") String path, String newContent);
 
     /**
+     * Add an array element to a config specified by configName, configId and path to the array
+     *
+     * @param configName configuration name
+     * @param configId configuration id
+     * @param path path to the array
+     * @param newElement a new element to add to array in configuration
+     * @return empty response
+     */
+    @POST
+    @Path(value="/{configName}/{configId}/{path:.+}")
+    Response appendToArrayInConfig(@PathVariable("configName") String configName, @PathVariable("configId") String configId,
+                                   @PathVariable("path") String path, String newElement);
+
+    /**
      * Delete config part specified by configName, configId and path to the part
      *
      * @param configName configuration name
