@@ -100,9 +100,9 @@ def add_to_build_list(item):
 for change in changes:
     if not change:
         continue
-    if "IT.java" in change:
+    if "src/test/" in change and "smoke-test/" not in change:
         add_to_build_list("Integration_tests")
-    elif "Test.java" in change:
+    elif "src/test/" in change and "smoke-test/" in change:
         add_to_build_list("Smoke_tests")
     elif "opennms-container" in change:
         if "horizon" in change:
