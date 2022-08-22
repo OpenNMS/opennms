@@ -3,63 +3,62 @@
 = Concepts
 
 This page describes core concepts related to {page-component-title} notifications.
-They ultimately fit together to form an xref:operation:deep-dive/events/event-definition.adoc[Event Notification Definition].
-
-NOTE: Alarms and Acknowledgements are also related, but are currently only loosely coupled with notifications.
+They ultimately combine to form an xref:operation:deep-dive/events/event-definition.adoc[Event Notification Definition].
 
 == Events and UEIs
 
 As discussed in <<deep-dive/events/introduction.adoc#events, Events>>, events are central to the operation of {page-component-title}.
-Almost everything that happens in the system is the result of, or the cause of, one or more events; each notification is triggered by exactly one event.
+Almost everything that happens in the system is the result of, or the cause of, one or more events.
+Each notification is triggered by exactly one event.
 A good understanding of events is therefore essential to a working knowledge of notifications.
 
-Every event has a UEI (Unique Event Identifier), a string that uniquely identifies the event's type.
+Every event has a UEI (unique event identifier), a string that uniquely identifies the event's type.
 UEIs are typically formatted in the style of a URI, but the only requirement is that they start with the string `uei.`.
-Most notifications are triggered by an exact UEI match (though they may also be triggered with partial UEI matches using regular expression syntax).
+Most notifications are triggered by an exact UEI match (although they may also be triggered with partial UEI matches using regular expression syntax).
 
 == Users and Groups
 
 Users are entities with login accounts in the {page-component-title} system.
 Ideally, each user account corresponds to only one person.
 
-User accounts control access to the web UI, but also store contact information (e-mail addresses, phone numbers, etc.) for the people they represent.
-A user may receive notifications either individually or as part of a Group or On-Call Role.
+User accounts control access to the web UI, but also store contact information (e-mail addresses, phone numbers, and so on) for the people they represent.
+A user may receive notifications either individually or as part of a group or on-call role.
 Each user has several technology-specific contact fields, which must be filled if they are to receive notifications by the associated method.
 
 Groups are collections of users.
-In large systems with many users, it might be helpful to organize them into Groups.
+In large systems with many users, it might be helpful to organize them into groups.
 Groups may receive notifications; this is often a more convenient way to operate than configuring notifications to be sent to individuals.
-Within a Group, a set of users can be assigned to On-Call Roles.
+Within a group, a set of users can be assigned to on-call roles.
 This lets you build more complex notification workflows.
 
-To learn more about Groups and how to manage them, see xref:operation:deep-dive/user-management/user-groups.adoc[Groups] in the Deep Dive section.
+To learn more about groups and how to manage them, see xref:operation:deep-dive/user-management/user-groups.adoc[Groups].
 
 == On-Call Roles
 
-On-Call Roles are an overlay on top of Groups.
+On-call roles are an overlay on top of groups.
 They are designed to let {page-component-title} target the appropriate users according to calendar configurations.
-A common use case is to have System Engineers in on-call rotations with a defined schedule.
+A common use case is to have system engineers in on-call rotations with a defined schedule.
 
-On-Call Roles let you assign a predefined Duty Schedule to an existing Group.
-The Group must have users associated with it.
+On-call roles let you assign a predefined duty schedule to an existing group.
+The group must have users associated with it.
 
-For each On-Call Role, a user is designated as a Supervisor.
-They are responsible for the group of people assigned to the On-Call Role.
+For each on-call role, a user is designated as a supervisor.
+They are responsible for the group of people assigned to the on-call role.
 
-For more information on On-Call Roles, see xref:operation:deep-dive/user-management/user-oncall.adoc[On-Call Roles] in the Deep Dive section.
+See xref:operation:deep-dive/user-management/user-oncall.adoc[On-Call Roles] for more information.
 
 == Duty schedules
 
-Every user and Group may have an associated duty schedule.
-The duty schedule defines the user or Group's weekly availability for receiving notifications.
+Any user and group may have an associated duty schedule.
+The duty schedule defines the user or group's weekly availability for receiving notifications.
 
-If a notification should be delivered to an individual user, but they are not on duty at the time that it's generated, the notification will never be delivered.
+If a notification should be delivered to an individual user, but they are not on duty at the time that it's generated, the notification will not be delivered.
 
-If a notification targets a user via a Group, the logic is slightly different: if the Group is on duty at the time the notification is generated, all users who are also on duty will be notified.
-If the Group is on duty when the notification is generated, but no member users are on duty, the notification will be queued and sent to the next user who comes on duty.
-If the Group is off duty when the notification is generated, the notification will never be delivered.
+If a notification targets a user via a group, the logic is slightly different: if the group is on duty at the time the notification is generated, all users who are also on duty will be notified.
+If the group is on duty when the notification is generated, but no member users are on duty, the notification will be queued and sent to the next user who comes on duty.
+If the group is off duty when the notification is generated, the notification will not be delivered.
 
-For more information on duty schedules, see xref:deep-dive/user-management/user-config.adoc#ga-user-schedule[Create user duty schedule] in the Deep Dive section.
+For more information on duty schedules, see xref:deep-dive/user-management/user-config.adoc#ga-user-schedule[Create user duty schedule].
 
 == Destination paths
 
@@ -67,21 +66,22 @@ A destination path is a named, reusable set of rules for sending notifications.
 Each destination path has a defined initial step and zero or more escalation steps.
 Every step in a destination path has an associated delay, which defaults to zero seconds.
 The initial step's delay is called the initial delay, while an escalation step's delay is simply called its delay.
+If an alarm is cleared or acknowledged within the delay time, the notification will not be sent.
 
 Each step has one or more targets.
-A target may be a user, a Group, an On-Call Role, or a one-off email address.
+A target may be a user, a group, an on-call role, or a one-off email address.
 
 NOTE: While it may be tempting to regularly use one-off email addresses to target individual users, it's a good idea to reserve their use for special cases.
-If a user changes their email address, for example, you will need to update it in every Destination Path in which it appears.
+If a user changes their email address, for example, you will need to update it in every destination path in which it appears.
 One-off email addresses are meant for situations where a vendor or other external party is assisting with troubleshooting in the short-term.
 
-When a step targets one or more Groups, a delay may be specified for each Group.
-The default delay is zero seconds; this means all Group members are notified at the same time.
-If a longer delay is set, Group members will be notified in alphabetical order, based on their usernames.
+When a step targets one or more groups, you may specify a delay for each group.
+The default delay is zero seconds; this means all group members are notified at the same time.
+If you set a longer delay, group members will be notified in alphabetical order, based on their usernames.
 
-IMPORTANT: Avoid using the same name for a Group and a user.
-Destination path configuration settings do not distinguish between Users and Groups as the step level.
-If you have both a user and a Group named "admin," the behavior will be undefined.
+IMPORTANT: Avoid using the same name for a group and a user.
+Destination path configuration settings do not distinguish between users and groups as the step level.
+If you have both a user and a group named "admin," the behavior will be undefined.
 Because of this, the default administrators group is called "Admin"—case matters.
 
 Within a step, each target is associated with one or more notification commands.

@@ -5,7 +5,7 @@
 {page-component-title} uses notifications to inform users about events that happen in the network.
 Notifications allow you to keep track of your network status without having to log in and look at the UI.
 
-Notifications are commonly sent through email or a pager message, but mechanisms also exist for the following:
+Notifications are commonly sent through email or a text/pager message, but mechanisms also exist for the following:
 
 * Browser-based desktop notifications
 * Arbitrary HTTP GET and POST operations
@@ -23,10 +23,10 @@ For more information on configuring rules, see xref:operation:quick-start/notifi
 
 For a thorough understanding of notifications, you should be familiar with these core concepts:
 
-* Events and UEIs
-* Users, Groups, and On-Call Roles
-* Duty Schedules
-* Destination Paths
-* Notification Commands
+* Events and unique event identifiers (UEIs)
+* Users, groups, and on-call roles
+* Duty schedules
+* Destination paths
+* Notification commands
 
-For more information on these core concepts, see xref:operation:deep-dive/notifications/concepts.adoc[Concepts] in the Deep Dive section.
+For more information on these core concepts, see xref:operation:deep-dive/notifications/concepts.adoc[Concepts].

@@ -22,15 +22,15 @@ This page describes additional tasks and information related to user accounts.
 . Click *Submit*.
 . Log out and log in with your new password.
 
-== Delete users and Groups
+== Delete users and groups
 
 . Log in as a user with admin permissions.
 . Click the *Gear* icon at the top-right of the screen, and choose menu:Configure OpenNMS[Configure Users, Groups and On-Call Roles > Configure Users] or *Configure Groups*.
-. Click the *Delete* icon beside the user or Group that you want to delete.
+. Click the *Delete* icon beside the user or group that you want to delete.
 . Click *OK* to confirm deletion.
 
-IMPORTANT: If you delete a Group, no one receives a notification that it has been deleted.
-If the Group is associated with a schedule, that schedule will also be deleted, and users previously included in the Group will no longer receive notifications that were set up in the schedule.
+IMPORTANT: If you delete a group, no one receives a notification that it has been deleted.
+If the group is associated with a schedule, that schedule will also be deleted, and users previously included in the group will no longer receive notifications that were set up in the schedule.
 
 == Advanced configuration
 
