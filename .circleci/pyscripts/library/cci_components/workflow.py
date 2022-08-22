@@ -201,7 +201,7 @@ class workflow:
                         )
                         if require not in workflow_jobs:
                             print(
-                                "We shouldn't be here as the follow job",
+                                "We shouldn't be here as the following job",
                                 require,
                                 "doesn't exist in our workflow_jobs",
                             )
