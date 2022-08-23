@@ -5,7 +5,6 @@ import subprocess
 from library import libprocess
 
 
-
 class libgit:
     def __init__(self, log_fullpath) -> None:
         self.libprocess = libprocess.libprocess()
@@ -51,7 +50,7 @@ class libgit:
 
     def extract_keywords_from_last_commit(self) -> list:
         last_commit = self.get_last_commit()
-        keywords = re.findall("\#([\w]+)?(:[\w]+-?[\w]+)?", last_commit)
+        keywords = re.findall("\!([\w]+)?(:[\w]+-?[\w]+)?", last_commit)
         keywords_dict = {}
         print("Number of keywords detected:", len(keywords))
         print("Keywords:", keywords)

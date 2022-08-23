@@ -139,45 +139,36 @@ for e in main_yml_content:
 
             if (
                 not build_components["experimental"]
-                and (
-                    build_components["build"]["docs"]
-                    and build_components["build"]["ui"]
-                )
-                or (
-                    build_components["build"]["docs"]
-                    and build_components["build"]["build"]
-                )
-                or (
-                    build_components["build"]["ui"]
-                    and build_components["build"]["build"]
-                )
+                and (build_components["docs"] and build_components["ui"])
+                or (build_components["docs"] and build_components["build"])
+                or (build_components["ui"] and build_components["build-deploy"])
             ):
                 workflow_path.append(common_library.create_space(level) + "multibuild:")
             elif (
                 not build_components["experimental"]
-                and build_components["build"]["docs"]
-                and not build_components["build"]["ui"]
-                and not build_components["build"]["build"]
-                and not build_components["tests"]["integration"]
-                and not build_components["tests"]["smoke-flaky"]
-                and not build_components["tests"]["smoke"]
+                and build_components["docs"]
+                and not build_components["ui"]
+                and not build_components["build"]
+                and not build_components["integration"]
+                and not build_components["smoke-flaky"]
+                and not build_components["smoke"]
             ):
                 workflow_path.append(common_library.create_space(level) + "docs:")
             elif (
                 not build_components["experimental"]
-                and not build_components["build"]["docs"]
-                and build_components["build"]["ui"]
-                and not build_components["build"]["build"]
-                and not build_components["tests"]["integration"]
-                and not build_components["tests"]["smoke-flaky"]
-                and not build_components["tests"]["smoke"]
+                and not build_components["docs"]
+                and build_components["ui"]
+                and not build_components["build"]
+                and not build_components["integration"]
+                and not build_components["smoke-flaky"]
+                and not build_components["smoke"]
             ):
                 workflow_path.append(common_library.create_space(level) + "ui:")
             elif (
                 not build_components["experimental"]
-                and not build_components["build"]["docs"]
-                and not build_components["build"]["ui"]
-                and build_components["build"]["build"]
+                and not build_components["docs"]
+                and not build_components["ui"]
+                and build_components["build-deploy"]
             ):
                 workflow_path.append(common_library.create_space(level) + "build:")
             else:
@@ -188,18 +179,14 @@ for e in main_yml_content:
             level += 2
             job_entry_spaces = level
 
-            if (
-                build_components["rpm-packages"]["minion"]
-                or build_components["rpm-packages"]["horizon"]
-                or build_components["rpm-packages"]["sentinel"]
-            ):
+            if build_components["rpms"]:
                 print("rpm-packages > all:", circleCI.get_Workflow_dependency("rpms"))
                 workflow = circleCI.get_Workflow_yaml(
                     "rpms", level, enable_filters=filters_enabled
                 )
                 workflow_path = append_to_sample_workflow(workflow_path, workflow)
 
-            if build_components["tests"]["integration"]:
+            if build_components["integration"]:
                 print(
                     "tests > integration:",
                     circleCI.get_Workflow_dependency("integration-test"),
@@ -210,7 +197,7 @@ for e in main_yml_content:
                 )
                 workflow_path = append_to_sample_workflow(workflow_path, workflow)
 
-            if build_components["tests"]["smoke"]:
+            if build_components["smoke"]:
                 print("tests > smoke:", circleCI.get_Workflow_dependency("smoke"))
 
                 if filters_enabled:
@@ -221,7 +208,7 @@ for e in main_yml_content:
                 )
                 workflow_path = append_to_sample_workflow(workflow_path, workflow)
 
-            if build_components["tests"]["smoke-flaky"]:
+            if build_components["smoke-flaky"]:
                 print(
                     "tests > smoke-flaky:",
                     circleCI.get_Workflow_dependency("smoke-test-flaky"),
@@ -233,15 +220,10 @@ for e in main_yml_content:
                 workflow = circleCI.get_Workflow_yaml(
                     "smoke-test-flaky", level, enable_filters=tmp_filters_enabled
                 )
-                # print("\n".join(workflow))
 
                 workflow_path = append_to_sample_workflow(workflow_path, workflow)
 
-            if (
-                build_components["debian-packages"]["minion"]
-                or build_components["debian-packages"]["horizon"]
-                or build_components["debian-packages"]["sentinel"]
-            ):
+            if build_components["debs"]:
                 print(
                     "debian-packages > all:", circleCI.get_Workflow_dependency("debs")
                 )
@@ -250,52 +232,11 @@ for e in main_yml_content:
                 )
                 workflow_path = append_to_sample_workflow(workflow_path, workflow)
 
-            if (
-                build_components["oci-images"]["minion"]
-                or build_components["oci-images"]["horizon"]
-                or build_components["oci-images"]["sentinel"]
-            ):
-                if (
-                    build_components["oci-images"]["minion"]
-                    and not build_components["oci-images"]["horizon"]
-                    and not build_components["oci-images"]["sentinel"]
-                ):
-                    print(
-                        "oci-images > minion:",
-                        circleCI.get_Workflow_dependency("minion-image"),
-                    )
-                    workflow = circleCI.get_Workflow_yaml(
-                        "minion-image", level, enable_filters=filters_enabled
-                    )
-                elif (
-                    not build_components["oci-images"]["minion"]
-                    and build_components["oci-images"]["horizon"]
-                    and not build_components["oci-images"]["sentinel"]
-                ):
-                    print(
-                        "oci-images > horizon:",
-                        circleCI.get_Workflow_dependency("horizon-image"),
-                    )
-                    workflow = circleCI.get_Workflow_yaml(
-                        "horizon-image", level, enable_filters=filters_enabled
-                    )
-                elif (
-                    not build_components["oci-images"]["minion"]
-                    and not build_components["oci-images"]["horizon"]
-                    and build_components["oci-images"]["sentinel"]
-                ):
-                    print(
-                        "oci-images > sentinel:",
-                        circleCI.get_Workflow_dependency("sentinel-image"),
-                    )
-                    workflow = circleCI.get_Workflow_yaml(
-                        "sentinel-image", level, enable_filters=filters_enabled
-                    )
-                else:
-                    print("oci-images > all:", circleCI.get_Workflow_dependency("oci"))
-                    workflow = circleCI.get_Workflow_yaml(
-                        "oci", level, enable_filters=filters_enabled
-                    )
+            if build_components["oci"]:
+                print("oci-images > all:", circleCI.get_Workflow_dependency("oci"))
+                workflow = circleCI.get_Workflow_yaml(
+                    "oci", level, enable_filters=filters_enabled
+                )
                 workflow_path = append_to_sample_workflow(workflow_path, workflow)
 
             if build_components["experimental"]:
@@ -305,14 +246,14 @@ for e in main_yml_content:
                 )
                 workflow_path = append_to_sample_workflow(workflow_path, workflow)
 
-            if build_components["build"]["build"]:
-                print("build> build:", circleCI.get_Workflow_dependency("build"))
+            if build_components["build-deploy"]:
+                print("build> build:", circleCI.get_Workflow_dependency("build-deploy"))
                 workflow = circleCI.get_Workflow_yaml(
                     "build", level, enable_filters=filters_enabled
                 )
                 workflow_path = append_to_sample_workflow(workflow_path, workflow)
 
-            if build_components["build"]["docs"]:
+            if build_components["docs"]:
                 print("build> docs :", circleCI.get_Workflow_dependency("docs"))
                 workflow = circleCI.get_Workflow_yaml(
                     "docs", level, enable_filters=filters_enabled
@@ -320,14 +261,14 @@ for e in main_yml_content:
 
                 workflow_path = append_to_sample_workflow(workflow_path, workflow)
 
-            if build_components["build"]["ui"]:
+            if build_components["ui"]:
                 print("build> ui :", circleCI.get_Workflow_dependency("ui"))
                 workflow = circleCI.get_Workflow_yaml(
                     "ui", level, enable_filters=filters_enabled
                 )
                 workflow_path = append_to_sample_workflow(workflow_path, workflow)
 
-            if build_components["build"]["coverage"]:
+            if build_components["coverage"]:
                 print(
                     "build> coverage :",
                     circleCI.get_Workflow_dependency("weekly-coverage"),
@@ -337,7 +278,7 @@ for e in main_yml_content:
                 )
                 workflow_path = append_to_sample_workflow(workflow_path, workflow)
 
-            if build_components["build"]["deploy"]:
+            if build_components["deploy"]:
                 print(
                     "build> deploy :", circleCI.get_Workflow_dependency("build-deploy")
                 )
@@ -346,7 +287,7 @@ for e in main_yml_content:
                 )
                 workflow_path = append_to_sample_workflow(workflow_path, workflow)
 
-            if build_components["publish"]["packages"]:
+            if build_components["build-publish"]:
                 print(
                     "publish> packages :",
                     circleCI.get_Workflow_dependency("build-publish"),
@@ -357,10 +298,10 @@ for e in main_yml_content:
                 workflow_path = append_to_sample_workflow(workflow_path, workflow)
 
             if (
-                not build_components["build"]["build"]
-                and not build_components["build"]["docs"]
-                and not build_components["build"]["ui"]
-                and not build_components["build"]["coverage"]
+                not build_components["build"]
+                and not build_components["docs"]
+                and not build_components["ui"]
+                and not build_components["coverage"]
                 and len(workflow_path) < 4
             ):
                 print("empty:", circleCI.get_Workflow_dependency("empty"))
