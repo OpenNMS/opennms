@@ -21,6 +21,7 @@ head = os.environ.get("CIRCLE_SHA1")
 base_revision = os.environ.get("BASE_REVISION")
 branch_name = os.environ.get("CIRCLE_BRANCH")
 
+
 libgit = libgit.libgit("stdout")
 
 
@@ -140,6 +141,10 @@ else:
         "experimental": False,
         "filters": {"enabled": True},
     }
+
+
+if "trigger-build" in mappings:
+    build_mappings["build-deploy"] = mappings["trigger-build"]
 
 if "trigger-docs" in mappings:
     build_mappings["docs"] = mappings["trigger-docs"]
