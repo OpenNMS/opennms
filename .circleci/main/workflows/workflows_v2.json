@@ -95,7 +95,8 @@
                     "ignore": [
                         "/.*/"
                     ]
-                }
+                },
+                "override": false
             }
         },
         "build": {
