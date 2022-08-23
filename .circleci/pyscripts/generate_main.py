@@ -165,6 +165,8 @@ for e in main_yml_content:
                     workflow_name = "build-deploy"
                 elif build_components["experimental"]:
                     workflow_name = "experimental"
+                elif build_components["smoke-flaky"]:
+                    workflow_name = "build-with-flaky"
                 else:
                     workflow_name = "build"
             else:
