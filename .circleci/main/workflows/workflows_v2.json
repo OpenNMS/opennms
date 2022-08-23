@@ -288,7 +288,7 @@
             "filters": {
                 "branches": {
                     "ignore": [
-                        "/^merge-foundation.*/",
+                        "/^merge-foundation.*/"
                     ]
                 }
             }
@@ -305,7 +305,7 @@
             "filters": {
                 "branches": {
                     "ignore": [
-                        "/^merge-foundation.*/",
+                        "/^merge-foundation.*/"
                     ]
                 }
             }
