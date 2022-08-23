@@ -120,7 +120,7 @@ with open(path_to_workflow, "r", encoding="UTF-8") as file_handler:
     workflow_data = json.load(file_handler)
 
 workflow_keywords = workflow_data["bundles"].keys()
-workflow_keywords.append(workflow_data["individual"].keys())
+print("Workflow Keywords:", workflow_keywords)
 
 if os.path.exists(path_to_build_trigger_override):
     with open(path_to_build_trigger_override, "r", encoding="UTF-8") as file_handler:
