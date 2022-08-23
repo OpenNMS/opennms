@@ -24,6 +24,7 @@
  *     OpenNMS(R) Licensing <license@opennms.org>
  *     http://www.opennms.org/
  *     http://www.opennms.com/
+ * 
  *******************************************************************************/
 
 package org.opennms.core.config.api;
