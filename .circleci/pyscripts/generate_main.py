@@ -187,12 +187,10 @@ for e in main_yml_content:
             if build_components["integration"]:
                 print(
                     "tests > integration:",
-                    circleCI.get_Workflow_dependency("integration"),
+                    circleCI.get_Workflow_dependency("integration-test"),
                 )
 
-                workflow = circleCI.get_Workflow_yaml(
-                    "integration", level, enable_filters=tmp_filters_enabled
-                )
+                workflow = circleCI.get_Workflow_yaml("integration-test", level)
                 workflow_path = append_to_sample_workflow(workflow_path, workflow)
 
             if build_components["smoke"]:
