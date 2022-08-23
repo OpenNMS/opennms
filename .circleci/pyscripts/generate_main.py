@@ -140,7 +140,7 @@ for e in main_yml_content:
             if (
                 not build_components["experimental"]
                 and (build_components["doc"] and build_components["ui"])
-                or (build_components["doc"] and build_components["build"])
+                or (build_components["doc"] and build_components["build-deploy"])
                 or (build_components["ui"] and build_components["build-deploy"])
             ):
                 workflow_path.append(common_library.create_space(level) + "multibuild:")
@@ -148,7 +148,7 @@ for e in main_yml_content:
                 not build_components["experimental"]
                 and build_components["doc"]
                 and not build_components["ui"]
-                and not build_components["build"]
+                and not build_components["build-deploy"]
                 and not build_components["smoke-flaky"]
                 and not build_components["smoke"]
             ):
@@ -157,7 +157,7 @@ for e in main_yml_content:
                 not build_components["experimental"]
                 and not build_components["doc"]
                 and build_components["ui"]
-                and not build_components["build"]
+                and not build_components["build-deploy"]
                 and not build_components["smoke-flaky"]
                 and not build_components["smoke"]
             ):
@@ -298,7 +298,7 @@ for e in main_yml_content:
                 workflow_path = append_to_sample_workflow(workflow_path, workflow)
 
             if (
-                not build_components["build"]
+                not build_components["build-deploy"]
                 and not build_components["doc"]
                 and not build_components["ui"]
                 and not build_components["coverage"]
