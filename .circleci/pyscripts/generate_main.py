@@ -167,6 +167,8 @@ for e in main_yml_content:
                     workflow_name = "experimental"
                 else:
                     workflow_name = "autobuild"
+            else:
+                workflow_name = "build"
 
             workflow_path.append(
                 common_library.create_space(level) + workflow_name + ":"
