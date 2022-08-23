@@ -1,9 +1,9 @@
 {
     "build-deploy": false,
     "coverage": false,
-    "doc": false,
+    "doc": true,
     "ui": false,
-    "integration": true,
+    "integration": false,
     "smoke": false,
     "smoke-flaky": false,
     "rpms": false,
