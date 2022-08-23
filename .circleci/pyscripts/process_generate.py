@@ -179,8 +179,6 @@ if (
 
 for keyword in git_keywords:
     if keyword in workflow_keywords:
-        workflow_keywords[keyword] = True
-
         if "doc" in keyword or "doc" in What_to_build:
             build_mappings["docs"] = True
         if "ui" in keyword or "ui" in What_to_build:
