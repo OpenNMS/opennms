@@ -1,0 +1,87 @@
+
+= Cortex Time Series Plugin
+
+The Time Series Storage Plugin for Cortex helps {page-component-title} to persist aggregated flow data to Cortex.
+The plugin uses the xref:deployment:time-series-storage/timeseries/t.adoc[time series storage interface] to convert metrics to a Prometheus model and delegate writes and reads to https://cortexmetrics.io/[Cortex].
+The plugin also makes it possible for OpenNMS Helm to visualize flow graphs from the Cortex instance.
+
+image::time-series-storage/
+
+== Requirements
+
+Make sure you have the following before you start to use the Cortex Time Series Storage plugin:
+
+* Horizon 30.0.0 (scheduled for Meridian 2023.1.0 release)
+* Cortex version 1.11.0
+
+== Deployment
+
+To use the Time Series Storage Plugin for Cortex, do the following:
+
+.Start Cortex
+See https://cortexmetrics.io/docs/getting-started/.
+
+You can also download https://github.com/opennms-forge/stack-play/tree/master/standalone-cortex-minimal and start Cortex with `docker-compose up`.
+
+.Build and install the plugin into your local Maven repository
+
+[source, console]
+----
+mvn clean install
+----
+
+.Enable and configure the time series storage
+
+[source, console]
+----
+echo "org.opennms.timeseries.strategy=integration
+org.opennms.timeseries.tin.metatags.tag.node=${node:label}
+org.opennms.timeseries.tin.metatags.tag.location=${node:location}
+org.opennms.timeseries.tin.metatags.tag.geohash=${node:geohash}
+org.opennms.timeseries.tin.metatags.tag.ifDescr=${interface:if-description}
+org.opennms.timeseries.tin.metatags.tag.label=${resource:label}" >> ${OPENNMS_HOME}/etc/opennms.properties.d/cortex.properties
+----
+
+.Install the plugin from the OpenNMS Karaf shell
+
+[source, console]
+----
+feature:repo-add mvn:org.opennms.plugins.timeseries/cortex-karaf-features/1.0.0-SNAPSHOT/xml
+feature:install opennms-plugins-cortex-tss
+----
+
+.Configure
+Note that you can omit this step if you use the default values.
+
+[source, console]
+----
+config:edit org.opennms.plugins.tss.cortex
+
+property-set writeUrl http://localhost:9009/api/prom/push
+property-set readUrl http://localhost:9009/prometheus/api/v1
+property-set maxConcurrentHttpConnections 100
+property-set writeTimeoutInMs 1000
+property-set readTimeoutInMs 1000
+property-set metricCacheSize 1000
+property-set externalTagsCacheSize 1000
+property-set bulkheadMaxWaitDurationInMs 9223372036854775807
+
+config:update
+----
+
+.Update automatically
+
+[source, console]
+----
+bundle:watch *
+----
+
+== Cortex tips
+
+=== View the ring
+
+http://localhost:9009/ring
+
+=== View internal metrics
+
+http://localhost:9009/metrics
