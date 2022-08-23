@@ -1,10 +1,10 @@
 {
-    "build-deploy": false,
+    "build-deploy": true,
     "coverage": false,
     "doc": false,
     "ui": false,
     "integration": false,
-    "smoke": true,
+    "smoke": false,
     "smoke-flaky": false,
     "rpms": false,
     "debs": false,

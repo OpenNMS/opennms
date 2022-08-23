@@ -143,7 +143,7 @@ for e in main_yml_content:
                 or (build_components["doc"] and build_components["build-deploy"])
                 or (build_components["ui"] and build_components["build-deploy"])
             ):
-                workflow_path.append(common_library.create_space(level) + "multibuild:")
+                workflow_name = "multiple-build"
             elif (
                 not build_components["experimental"]
                 and build_components["doc"]
@@ -152,7 +152,7 @@ for e in main_yml_content:
                 and not build_components["smoke-flaky"]
                 and not build_components["smoke"]
             ):
-                workflow_path.append(common_library.create_space(level) + "doc:")
+                workflow_name = "doc"
             elif (
                 not build_components["experimental"]
                 and not build_components["doc"]
@@ -161,16 +161,20 @@ for e in main_yml_content:
                 and not build_components["smoke-flaky"]
                 and not build_components["smoke"]
             ):
-                workflow_path.append(common_library.create_space(level) + "ui:")
+                workflow_name = "ui"
             elif (
                 not build_components["experimental"]
                 and not build_components["doc"]
                 and not build_components["ui"]
                 and build_components["build-deploy"]
             ):
-                workflow_path.append(common_library.create_space(level) + "build:")
+                workflow_name = "build"
             else:
-                workflow_path.append(common_library.create_space(level) + "autobuild:")
+                workflow_name = "autobuild"
+
+            workflow_path.append(
+                common_library.create_space(level) + workflow_name + ":"
+            )
 
             level += 2
             workflow_path.append(common_library.create_space(level) + "jobs:")
