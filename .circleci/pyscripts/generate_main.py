@@ -137,48 +137,36 @@ for e in main_yml_content:
                 workflow_path.append(common_library.create_space(level) + "workflows:")
             level = level + 2
 
-            if (
-                not build_components["experimental"]
-                and (build_components["doc"] and build_components["ui"])
-                or (build_components["doc"] and build_components["build-deploy"])
-                or (build_components["ui"] and build_components["build-deploy"])
-            ):
+            enabled_components = [
+                build_components["build-deploy"],
+                build_components["coverage"],
+                build_components["doc"],
+                build_components["ui"],
+                build_components["integration"],
+                build_components["smoke"],
+                build_components["smoke-flaky"],
+                build_components["rpms"],
+                build_components["debs"],
+                build_components["oci"],
+                build_components["build-publish"],
+                build_components["experimental"],
+            ]
+
+            if enabled_components.count(True) > 1:
                 workflow_name = "combined_builds"
-            elif (
-                not build_components["experimental"]
-                and build_components["doc"]
-                and not build_components["ui"]
-                and not build_components["build-deploy"]
-                and not build_components["smoke-flaky"]
-                and not build_components["smoke"]
-            ):
-                workflow_name = "doc"
-            elif (
-                not build_components["experimental"]
-                and not build_components["doc"]
-                and build_components["ui"]
-                and not build_components["build-deploy"]
-                and not build_components["smoke-flaky"]
-                and not build_components["smoke"]
-            ):
-                workflow_name = "ui"
-            elif (
-                not build_components["experimental"]
-                and not build_components["doc"]
-                and not build_components["ui"]
-                and build_components["build-deploy"]
-            ):
-                workflow_name = "build_deploy"
-            elif (
-                not build_components["experimental"]
-                and not build_components["doc"]
-                and not build_components["ui"]
-                and not build_components["build-deploy"]
-                and build_components["build-publish"]
-            ):
-                workflow_name = "build_publish"
-            else:
-                workflow_name = "autobuild"
+            elif enabled_components.count(True) == 1:
+                if build_components["doc"]:
+                    workflow_name = "doc"
+                elif build_components["ui"]:
+                    workflow_name = "ui"
+                elif build_components["build-publish"]:
+                    workflow_name = "build-publish"
+                elif build_components["build-deploy"]:
+                    workflow_name = "build-deploy"
+                elif build_components["experimental"]:
+                    workflow_name = "experimental"
+                else:
+                    workflow_name = "autobuild"
 
             workflow_path.append(
                 common_library.create_space(level) + workflow_name + ":"
