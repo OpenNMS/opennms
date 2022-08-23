@@ -143,7 +143,7 @@ for e in main_yml_content:
                 or (build_components["doc"] and build_components["build-deploy"])
                 or (build_components["ui"] and build_components["build-deploy"])
             ):
-                workflow_name = "multiple-build"
+                workflow_name = "combined_builds"
             elif (
                 not build_components["experimental"]
                 and build_components["doc"]
@@ -168,7 +168,15 @@ for e in main_yml_content:
                 and not build_components["ui"]
                 and build_components["build-deploy"]
             ):
-                workflow_name = "build"
+                workflow_name = "build_deploy"
+            elif (
+                not build_components["experimental"]
+                and not build_components["doc"]
+                and not build_components["ui"]
+                and not build_components["build-deploy"]
+                and build_components["build-publish"]
+            ):
+                workflow_name = "build_publish"
             else:
                 workflow_name = "autobuild"
 
