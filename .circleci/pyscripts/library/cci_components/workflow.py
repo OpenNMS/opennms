@@ -110,7 +110,7 @@ class workflow:
 
             if "filters" in tmp_output_elements and not enable_filters:
                 # If we have disabled filters
-                if "build" not in job:
+                if job not in ["build", "integration-test"]:
                     print("Deleting " + job + " filters as the user has disabled them")
                     del tmp_output_elements["filters"]
 
