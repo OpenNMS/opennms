@@ -20,7 +20,7 @@ jobs:
           name: Create & push multi-arch manifest
           command: |
             create_and_push_manifest(){
-              IMAGE_REF="${1}:${MINION_IMAGE_VERSION}"
+              IMAGE_REF="${1}:${DOCKER_IMAGE_VERSION}"
               docker manifest create ${IMAGE_REF} \
                 ${IMAGE_REF}-linux-amd64 \
                 ${IMAGE_REF}-linux-arm64 \
@@ -51,11 +51,11 @@ jobs:
             # -> the following lines can not be used:
             #
             # export NOTARY_DELEGATION_PASSPHRASE="${DCT_DELEGATE_KEY_PASSPHRASE}"
-            # notary -d ~/.docker/trust/ -s https://notary.docker.io addhash "${MINION_DK_REPO}" "${MINION_IMAGE_VERSION}" 946 --sha256 "${SHA_256_DK}" --roles targets/opennms-circle-delegate --publish --verbose
+            # notary -d ~/.docker/trust/ -s https://notary.docker.io addhash "${MINION_DK_REPO}" "${DOCKER_IMAGE_VERSION}" 946 --sha256 "${SHA_256_DK}" --roles targets/opennms-circle-delegate --publish --verbose
             #
             # -> use the targets key of the minion repository to sign the multi-arch image instead
             export NOTARY_TARGETS_PASSPHRASE="${DCT_REPO_MINION_KEY_PASSPHRASE}"
-            notary -d ~/.docker/trust/ -s https://notary.docker.io addhash "${MINION_DK_REPO}" "${MINION_IMAGE_VERSION}" "${BYTES_SIZE_DK}" --sha256 "${SHA_256_DK}" --publish --verbose
+            notary -d ~/.docker/trust/ -s https://notary.docker.io addhash "${MINION_DK_REPO}" "${DOCKER_IMAGE_VERSION}" "${BYTES_SIZE_DK}" --sha256 "${SHA_256_DK}" --publish --verbose
             echo "Dockerhub Done!"
             # notary -d ~/.docker/trust/ -s https://notary.docker.io list "${MINION_DK_REPO}"
 
@@ -66,6 +66,6 @@ jobs:
             # publishing a new manifests requires targets key
             export NOTARY_TARGETS_PASSPHRASE="${AZURE_DCT_REPO_MINION_KEY_PASSPHRASE}"
             echo "Sign ${SHA_256_AZ} with Azure notary"
-            notary -d ~/.docker/trust/ -s "${NOTARY_AZ_SERVER}" addhash "${MINION_AZ_REPO}" "${MINION_IMAGE_VERSION}" "${BYTES_SIZE_AZ}" --sha256 "${SHA_256_AZ}" --publish --verbose
+            notary -d ~/.docker/trust/ -s "${NOTARY_AZ_SERVER}" addhash "${MINION_AZ_REPO}" "${DOCKER_IMAGE_VERSION}" "${BYTES_SIZE_AZ}" --sha256 "${SHA_256_AZ}" --publish --verbose
             echo "ACR Done!"
             # notary -d ~/.docker/trust/ -s "${NOTARY_AZ_SERVER}" list "${MINION_AZ_REPO}"

@@ -123,7 +123,7 @@ public class UsageStatisticsIT {
         assertThat(nodesBySysOid.get(".1.3.6.1.4.1.9.1.799"), is(3));
         assertThat(nodesBySysOid.get(".1.3.6.1.4.1.2636.1.1.1.2.137"), is(1));
 
-        assertThat((String) usageReport.get("installedOIAPlugins"), is(emptyString()));
+        assertThat((String) usageReport.get("installedOIAPlugins"), not(emptyString()));
         assertThat((long) usageReport.get("onCallRoleCount"), is(0L));
         assertThat((long) usageReport.get("requisitionCount"), is(0L));
         assertThat((long) usageReport.get("businessEdgeCount"), is(0L));

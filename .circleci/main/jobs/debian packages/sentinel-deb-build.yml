@@ -21,11 +21,6 @@ jobs:
           gnupg_home: ~/tmp/gpg
           gnupg_key: opennms@opennms.org
           packages: target/debs/*.deb
-      - setup_remote_docker:
-          docker_layer_caching: true
-      - save-artifacts:
-          path: ~/project/target/debs
-          location: sentineldebs    
       - store_artifacts:
           path: ~/project/target/debs
           destination: debs

@@ -262,10 +262,10 @@ for e in main_yml_content:
                 ):
                     print(
                         "oci-images > minion:",
-                        circleCI.get_Workflow_dependency("minion-image"),
+                        circleCI.get_Workflow_dependency("minion-image-single-arch-linux-amd64"),
                     )
                     workflow = circleCI.get_Workflow_yaml(
-                        "minion-image", level, enable_filters=filters_enabled
+                        "minion-image-single-arch-linux-amd64", level, enable_filters=filters_enabled
                     )
                 elif (
                     not build_components["oci-images"]["minion"]
@@ -274,10 +274,10 @@ for e in main_yml_content:
                 ):
                     print(
                         "oci-images > horizon:",
-                        circleCI.get_Workflow_dependency("horizon-image"),
+                        circleCI.get_Workflow_dependency("horizon-image-single-arch-linux-amd64"),
                     )
                     workflow = circleCI.get_Workflow_yaml(
-                        "horizon-image", level, enable_filters=filters_enabled
+                        "horizon-image-single-arch-linux-amd64", level, enable_filters=filters_enabled
                     )
                 elif (
                     not build_components["oci-images"]["minion"]
@@ -286,10 +286,10 @@ for e in main_yml_content:
                 ):
                     print(
                         "oci-images > sentinel:",
-                        circleCI.get_Workflow_dependency("sentinel-image"),
+                        circleCI.get_Workflow_dependency("sentinel-image-single-arch-linux-amd64"),
                     )
                     workflow = circleCI.get_Workflow_yaml(
-                        "sentinel-image", level, enable_filters=filters_enabled
+                        "sentinel-image-single-arch-linux-amd64", level, enable_filters=filters_enabled
                     )
                 else:
                     print("oci-images > all:", circleCI.get_Workflow_dependency("oci"))

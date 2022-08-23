@@ -16,11 +16,11 @@ commands:
             sudo sysctl vm.swappiness=5
             cat /proc/sys/vm/swappiness
       - load-oci:
-          key: horizon
+          key: horizon-linux/amd64
       - load-oci:
-          key: minion
+          key: minion-linux/amd64
       - load-oci:
-          key: sentinel
+          key: sentinel-linux/amd64
       - run:
           name: Monitor JVM processes
           background: true
