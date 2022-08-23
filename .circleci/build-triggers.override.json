@@ -2,7 +2,7 @@
     "build-deploy": false,
     "coverage": false,
     "doc": true,
-    "ui": false,
+    "ui": true,
     "integration": false,
     "smoke": false,
     "smoke-flaky": false,
