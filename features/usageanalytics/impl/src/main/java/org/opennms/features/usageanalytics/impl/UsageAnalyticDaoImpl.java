@@ -63,8 +63,9 @@ public class UsageAnalyticDaoImpl extends AbstractDaoHibernate<UsageAnalytic, Lo
         cb.eq("metricName", metricName);
         List<UsageAnalytic> uaList = findMatching(cb.toCriteria());
 
-        if (uaList.isEmpty())
+        if (uaList.isEmpty()) {
             return 0l;
+        }
         // since criteriaBuilder returns list of objects we know that metricName unique, thus we will get only 1 object
         ua = uaList.get(0);
 
