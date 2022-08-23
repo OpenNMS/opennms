@@ -29,7 +29,6 @@ class workflow:
         """
         Returns the build dependency for a workflow
         """
-        # print("generate_dependency:",current_workflow)
         output_list = [current_workflow]
 
         for workflow_type in self._internal_workflow:
@@ -41,7 +40,6 @@ class workflow:
                         if output_list[-1] == workflow_key:
                             output_list.pop(-1)
 
-                    # print("Found",current_workflow,"in",a)
                     for workflow_property in self._internal_workflow[workflow_type][
                         workflow_key
                     ]:
@@ -77,15 +75,12 @@ class workflow:
         Returns a list containing yaml entries for the workflow
         """
 
-        print("get_workflow_yaml_debugger -- START")
         workflow_dependency = self.get_dependency(interested_workflow)
-        print("workflow_dependency(", interested_workflow, ")", workflow_dependency)
 
         tmp_output = []
 
         workflow_jobs = set()
         # Let's find all the jobs we depend on (or need)
-        print("WORKFLOW JOB DETECTION -- START")
         for dependency in workflow_dependency:
             print("\t", "Processing", dependency)
             tmp_output_elements = self.find(dependency)
@@ -94,13 +89,9 @@ class workflow:
             if "requires" in tmp_output_elements:
                 for require in tmp_output_elements["requires"]:
                     workflow_jobs.add(require)
-        print("JOBS:", workflow_jobs)
-        print("WORKFLOW JOB DETECTION -- END")
 
         for job in sorted(workflow_jobs):
             tmp_output_elements = self.find(job)
-            print("\t", "JOB", job)
-            print("\t", "\t", tmp_output_elements)
 
             if "job" in tmp_output_elements:
                 tmp_output.append(
@@ -193,7 +184,6 @@ class workflow:
                         + "requires:"
                     )
                     for require in tmp_output_elements[element]:
-                        # print(tmp_output)
                         tmp_output.append(
                             self._common_library.create_space(leading_space + 6)
                             + "- "
@@ -209,22 +199,14 @@ class workflow:
                 else:
                     print("Problem!!! Not sure how to handle element: ", element)
 
-        print("get_workflow_yaml_debugger -- END")
-        print("")
-        print("Result::>>")
-        print("\n".join(tmp_output))
         return tmp_output
 
     def get_dependency(self, interested_workflow):
         """
         Given a workflow, it will return its dependency
         """
-        # print("get_dependency:",workflow)
-
         tmp_output = self.generate_dependency(interested_workflow)
-        # print("Pre-Clean Up:",tmp_output,len(tmp_output))
 
         tmp_output2 = list(set(tmp_output))
-        # print("Post-Clean Up:",tmp_output2,len(tmp_output2))
 
         return tmp_output2
