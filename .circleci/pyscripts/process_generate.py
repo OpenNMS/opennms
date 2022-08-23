@@ -132,6 +132,7 @@ else:
         "coverage": False,
         "doc": False,
         "ui": False,
+        "integration": False,
         "smoke": False,
         "smoke-flaky": False,
         "rpms": False,
@@ -176,6 +177,7 @@ if (
     # if circleci_configuration is the only entry in the list we don't want to trigger a buildss.
     mappings["trigger-build"] = False
     build_mappings["build-deploy"] = False
+    build_mappings["build-publish"] = False
 
 for keyword in git_keywords:
     if keyword in workflow_keywords:
@@ -197,7 +199,7 @@ for keyword in git_keywords:
         if "oci" in keyword or "oci" in What_to_build:
             build_mappings["oci"] = True
         if "build-publish" in keyword:
-            build_mappings["publish"] = True
+            build_mappings["build-publish"] = True
 
 
 if "smoke" in git_keywords or "smoke_tests" in What_to_build:
@@ -221,7 +223,7 @@ if "build" in What_to_build:
     build_mappings["build-deploy"] = True
 
 if "doc" in git_keywords or "docs" in git_keywords or "doc" in What_to_build:
-    build_mappings["docs"] = True
+    build_mappings["doc"] = True
 
 if "ui" in git_keywords or "ui" in What_to_build:
     build_mappings["ui"] = True
