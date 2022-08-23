@@ -502,8 +502,7 @@
                 "branches": {
                     "only": [
                         "<< pipeline.parameters.main_branch >>"
-                    ],
-                    "override": false
+                    ]
                 },
                 "override": false
             }
