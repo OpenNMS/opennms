@@ -166,11 +166,11 @@ print("Git Keywords:", git_keywords)
 if (
     "circleci_configuration" in What_to_build
     and len(What_to_build) == 1
-    and not build_mappings["build"]["build"]
+    and not build_mappings["build-deploy"]
 ):
     # if circleci_configuration is the only entry in the list we don't want to trigger a buildss.
     mappings["trigger-build"] = False
-    build_mappings["build"] = False
+    build_mappings["build-deploy"] = False
 
 for keyword in git_keywords:
     if keyword in workflow_keywords:
