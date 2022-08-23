@@ -119,6 +119,8 @@ class workflow:
                         )
                         del tmp_output_elements["filters"]
                     else:
+                        print("We cannot disable filters for " + job + "")
+
                         del tmp_output_elements["filters"]["override"]
                 else:
                     print("Deleting " + job + " filters as the user has disabled them")
