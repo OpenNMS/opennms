@@ -465,6 +465,10 @@
                 "smoke-test-minion",
                 "smoke-test-sentinel"
             ],
+            "variations": [
+                "linux/amd64",
+                "linux/arm64"
+            ],
             "filters": {
                 "branches": {
                     "only": [
