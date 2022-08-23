@@ -499,7 +499,7 @@
         },
         "merge-foundation-branch": {
             "requires": [
-                "tarball-assembly"
+                "tarball-assembly-only"
             ],
             "filters": {
                 "branches": {
