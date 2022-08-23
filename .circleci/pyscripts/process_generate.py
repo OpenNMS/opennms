@@ -144,7 +144,7 @@ else:
 
 
 if "trigger-build" in mappings:
-    build_mappings["build-deploy"] = mappings["trigger-build"]
+    build_mappings["build-publish"] = mappings["trigger-build"]
 
 if "trigger-docs" in mappings:
     build_mappings["docs"] = mappings["trigger-docs"]
@@ -220,8 +220,7 @@ if "integration" in git_keywords or "Integration_tests" in What_to_build:
     build_mappings["integration"] = True
 
 if "build" in What_to_build:
-    # build_mappings["build-deploy"] = True
-    build_mappings["build-publish"] = True
+    build_mappings["build-deploy"] = True
 
 if "doc" in git_keywords or "docs" in git_keywords or "doc" in What_to_build:
     build_mappings["docs"] = True
