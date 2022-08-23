@@ -19,7 +19,6 @@ Notifications are commonly sent through email or a text/pager message, but mecha
 * XMPP
 
 xref:reference:daemons/daemon-config-files/notifd.adoc[Notifd] creates and sends notifications according to configured rules when selected events occur in {page-component-title}.
-For more information on configuring rules, see xref:operation:quick-start/notifications.adoc[Notifications] in the Quick Start section.
 
 For a thorough understanding of notifications, you should be familiar with these core concepts:
 
