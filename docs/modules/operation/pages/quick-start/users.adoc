@@ -45,14 +45,15 @@ WARNING: Do not delete the default `admin` and `rtc` user accounts.
 The `rtc` user account is used for the communication of the Real-Time Console on the start page to calculate the node and service availability.
 You should still change the password of the `admin` user to be more secure.
 
+[[ga-users-next]]
 == Next steps
 
-Before xref:operation:quick-start/notifications.adoc[setting up default notifications], you must configure notification information in your user profile:
+Before xref:operation:quick-start/notifications.adoc[setting up default notifications], you must configure notification information for the `admin` user profile:
 
 . Click the *Gear* icon at the top-right of the screen.
 . Choose menu:OpenNMS System[Configure Users, Groups, and On-Call Roles, Configure Users].
-. Click *Modify* beside the user account you want to modify.
-. In the Notification Information section, add contact information for notification routing (for example, your email address and mobile phone number).
+. Click *Modify* beside the `admin` user account.
+. In the Notification Information section, add contact information for default notification routing (for example, an email address or mobile phone number).
 . Click *Finish* at the bottom of the screen to save your changes.
 
 This configuration lets you receive default notifications when they are turned on.
