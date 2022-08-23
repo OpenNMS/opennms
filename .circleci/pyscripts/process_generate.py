@@ -157,7 +157,8 @@ if "trigger-coverage" in mappings:
     build_mappings["coverage"] = mappings["trigger-coverage"]
 
 if "trigger-flaky-smoke" in mappings:
-    build_mappings["smoke-flaky"] = mappings["trigger-flaky-smoke"]
+    if not build_mappings["smoke-flaky"]:
+        build_mappings["smoke-flaky"] = mappings["trigger-flaky-smoke"]
 
 if re.match(".*smoke.*", branch_name):
     print("Detected smoke in the branch name")

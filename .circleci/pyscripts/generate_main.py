@@ -166,7 +166,7 @@ for e in main_yml_content:
                 elif build_components["experimental"]:
                     workflow_name = "experimental"
                 else:
-                    workflow_name = "autobuild"
+                    workflow_name = "build"
             else:
                 workflow_name = "build"
 
