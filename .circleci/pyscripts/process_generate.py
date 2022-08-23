@@ -14,7 +14,7 @@ path_to_build_components = os.path.join("/tmp", "build-triggers.json")
 path_to_build_trigger_override = os.path.join(
     ".circleci", "build-triggers.override.json"
 )
-path_to_workflow = os.path.join(".circleci", "workflows", "workflows_v2.json")
+path_to_workflow = os.path.join(".circleci", "main", "workflows", "workflows_v2.json")
 
 output_path = os.environ.get("OUTPUT_PATH")
 head = os.environ.get("CIRCLE_SHA1")
