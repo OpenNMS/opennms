@@ -244,7 +244,10 @@ for e in main_yml_content:
                 workflow_path = append_to_sample_workflow(workflow_path, workflow)
 
             if build_components["build-deploy"]:
-                print("build> build:", circleCI.get_Workflow_dependency("build-deploy"))
+                print(
+                    "build> build-deploy:",
+                    circleCI.get_Workflow_dependency("build-deploy"),
+                )
                 workflow = circleCI.get_Workflow_yaml(
                     "build", level, enable_filters=filters_enabled
                 )
@@ -275,14 +278,14 @@ for e in main_yml_content:
                 )
                 workflow_path = append_to_sample_workflow(workflow_path, workflow)
 
-            if build_components["deploy"]:
-                print(
-                    "build> deploy :", circleCI.get_Workflow_dependency("build-deploy")
-                )
-                workflow = circleCI.get_Workflow_yaml(
-                    "build-deploy", level, enable_filters=filters_enabled
-                )
-                workflow_path = append_to_sample_workflow(workflow_path, workflow)
+            # if build_components["deploy"]:
+            #    print(
+            #        "build> deploy :", circleCI.get_Workflow_dependency("build-deploy")
+            #    )
+            #    workflow = circleCI.get_Workflow_yaml(
+            #        "build-deploy", level, enable_filters=filters_enabled
+            #    )
+            #    workflow_path = append_to_sample_workflow(workflow_path, workflow)
 
             if build_components["build-publish"]:
                 print(
