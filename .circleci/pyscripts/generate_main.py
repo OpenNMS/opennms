@@ -139,24 +139,24 @@ for e in main_yml_content:
 
             if (
                 not build_components["experimental"]
-                and (build_components["docs"] and build_components["ui"])
-                or (build_components["docs"] and build_components["build"])
+                and (build_components["doc"] and build_components["ui"])
+                or (build_components["doc"] and build_components["build"])
                 or (build_components["ui"] and build_components["build-deploy"])
             ):
                 workflow_path.append(common_library.create_space(level) + "multibuild:")
             elif (
                 not build_components["experimental"]
-                and build_components["docs"]
+                and build_components["doc"]
                 and not build_components["ui"]
                 and not build_components["build"]
                 and not build_components["integration"]
                 and not build_components["smoke-flaky"]
                 and not build_components["smoke"]
             ):
-                workflow_path.append(common_library.create_space(level) + "docs:")
+                workflow_path.append(common_library.create_space(level) + "doc:")
             elif (
                 not build_components["experimental"]
-                and not build_components["docs"]
+                and not build_components["doc"]
                 and build_components["ui"]
                 and not build_components["build"]
                 and not build_components["integration"]
@@ -166,7 +166,7 @@ for e in main_yml_content:
                 workflow_path.append(common_library.create_space(level) + "ui:")
             elif (
                 not build_components["experimental"]
-                and not build_components["docs"]
+                and not build_components["doc"]
                 and not build_components["ui"]
                 and build_components["build-deploy"]
             ):
@@ -253,10 +253,10 @@ for e in main_yml_content:
                 )
                 workflow_path = append_to_sample_workflow(workflow_path, workflow)
 
-            if build_components["docs"]:
-                print("build> docs :", circleCI.get_Workflow_dependency("docs"))
+            if build_components["doc"]:
+                print("build> doc :", circleCI.get_Workflow_dependency("doc"))
                 workflow = circleCI.get_Workflow_yaml(
-                    "docs", level, enable_filters=filters_enabled
+                    "doc", level, enable_filters=filters_enabled
                 )
 
                 workflow_path = append_to_sample_workflow(workflow_path, workflow)
@@ -299,7 +299,7 @@ for e in main_yml_content:
 
             if (
                 not build_components["build"]
-                and not build_components["docs"]
+                and not build_components["doc"]
                 and not build_components["ui"]
                 and not build_components["coverage"]
                 and len(workflow_path) < 4
