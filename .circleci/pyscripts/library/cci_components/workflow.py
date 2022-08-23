@@ -108,9 +108,19 @@ class workflow:
                 # Since we have expanded the dependency we don't need this anymore
                 del tmp_output_elements["extends"]
 
-            if "filters" in tmp_output_elements and not enable_filters:
-                # If we have disabled filters
-                if job not in ["build", "integration-test"]:
+            if "filters" in tmp_output_elements:
+                if "override" in tmp_output_elements["filters"]:
+                    if (
+                        tmp_output_elements["filters"]["override"]
+                        and not enable_filters
+                    ):
+                        print(
+                            "Deleting " + job + " filters as the user has disabled them"
+                        )
+                        del tmp_output_elements["filters"]
+                    else:
+                        del tmp_output_elements["filters"]["override"]
+                else:
                     print("Deleting " + job + " filters as the user has disabled them")
                     del tmp_output_elements["filters"]
 

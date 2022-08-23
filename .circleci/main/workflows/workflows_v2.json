@@ -104,7 +104,8 @@
                     "ignore": [
                         "/^from-foundation.*/"
                     ]
-                }
+                },
+                "override": false
             }
         },
         "doc": {
@@ -114,7 +115,8 @@
                     "ignore": [
                         "/^from-foundation.*/"
                     ]
-                }
+                },
+                "override": false
             }
         },
         "ui": {
@@ -124,7 +126,8 @@
                     "ignore": [
                         "/^from-foundation.*/"
                     ]
-                }
+                },
+                "override": false
             }
         },
         "integration-test": {
@@ -136,7 +139,8 @@
                     "ignore": [
                         "/^from-foundation.*/"
                     ]
-                }
+                },
+                "override": false
             }
         },
         "minion-rpm-build": {
@@ -454,7 +458,8 @@
                         "/^features\/.+/",
                         "/^release-.*/"
                     ]
-                }
+                },
+                "override": false
             }
         },
         "sentinel-image-single-arch": {
@@ -497,8 +502,10 @@
                 "branches": {
                     "only": [
                         "<< pipeline.parameters.main_branch >>"
-                    ]
-                }
+                    ],
+                    "override": false
+                },
+                "override": false
             }
         },
         "merge-foundation-branch": {
@@ -510,7 +517,8 @@
                     "only": [
                         "merge-foundation/<< pipeline.parameters.previous_branch_label >>-to-<< pipeline.parameters.main_branch_label >>"
                     ]
-                }
+                },
+                "override": false
             }
         },
         "create-merge-meridian-branch": {
@@ -529,7 +537,8 @@
                     "only": [
                         "/^foundation.*/"
                     ]
-                }
+                },
+                "override": false
             }
         },
         "horizon-publish-oci": {
@@ -553,7 +562,8 @@
                         "/^features\/.+/",
                         "/^foundation.*/"
                     ]
-                }
+                },
+                "override": false
             }
         },
         "merge-poweredby-branch": {
@@ -570,7 +580,8 @@
                     "only": [
                         "/^foundation.*/"
                     ]
-                }
+                },
+                "override": false
             }
         },
         "publish-cloudsmith": {
@@ -592,7 +603,8 @@
                         "/^release-.*/",
                         "/^foundation.*/"
                     ]
-                }
+                },
+                "override": false
             }
         },
         "integration-test-with-coverage": {
