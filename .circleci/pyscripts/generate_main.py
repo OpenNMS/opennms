@@ -249,7 +249,7 @@ for e in main_yml_content:
                     circleCI.get_Workflow_dependency("build-deploy"),
                 )
                 workflow = circleCI.get_Workflow_yaml(
-                    "build", level, enable_filters=filters_enabled
+                    "build-deploy", level, enable_filters=filters_enabled
                 )
                 workflow_path = append_to_sample_workflow(workflow_path, workflow)
 
