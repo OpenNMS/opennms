@@ -1,7 +1,7 @@
 ##
 # Use Java base image and setup required RPMS as cacheable image.
 ##
-ARG BASE_IMAGE="opennms/deploy-base:jre-1.3.0.b138"
+ARG BASE_IMAGE="opennms/deploy-base:jre-2.0.4.b161"
 
 FROM ${BASE_IMAGE} as horizon-base
 
