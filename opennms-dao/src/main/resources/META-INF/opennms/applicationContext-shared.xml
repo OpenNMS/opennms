@@ -45,6 +45,7 @@
                 <value>org.opennms.netmgt.graph</value>
                 <value>org.opennms.netmgt.telemetry.protocols.bmp.persistence.api</value>
                 <value>org.opennms.features.deviceconfig.persistence.api</value>
+                <value>org.opennms.features.usageanalytics.api</value>
             </list>
         </property>
         <!--  property name="schemaUpdate" value="true">
