@@ -40,6 +40,7 @@ commands:
       - run:
           name: Compile OpenNMS
           command: |        
+            ulimit -n 65536 || :
             ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
               -Daether.connector.resumeDownloads=false \
               -Daether.connector.basic.threads=1 \
