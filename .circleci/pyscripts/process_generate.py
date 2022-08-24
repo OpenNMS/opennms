@@ -145,7 +145,10 @@ else:
 
 
 if "trigger-build" in mappings:
-    build_mappings["build-publish"] = mappings["trigger-build"]
+    if "jira" in branch_name:
+        build_mappings["build-deploy"] = mappings["trigger-build"]
+    else:
+        build_mappings["build-publish"] = mappings["trigger-build"]
 
 if "trigger-docs" in mappings:
     build_mappings["docs"] = mappings["trigger-docs"]
