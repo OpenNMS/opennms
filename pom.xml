@@ -1527,7 +1527,7 @@
     <enforcer-skip-banned-dependencies>false</enforcer-skip-banned-dependencies>
     <!-- we have a lot of work to do before this is possible -->
     <enforcer-skip-dependency-convergence>true</enforcer-skip-dependency-convergence>
-    <enforcer-license-skip-third-party>true</enforcer-license-skip-third-party>
+    <enforcer-license-skip-third-party>false</enforcer-license-skip-third-party>
 
     <!--
       Surefire forked JVM arguments
