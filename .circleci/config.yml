@@ -181,6 +181,7 @@ commands:
         - run:
             name: Collect Maven Dependencies
             command: |
+              ulimit -n 65536 || :
               ./compile.pl -t \
                 -Dbuild.skip.tarball=true \
                 --update-plugins \
@@ -337,6 +338,7 @@ commands:
           name: Compile OpenNMS
           no_output_timeout: 20m
           command: |
+            ulimit -n 65536 || :
             export OPENNMS_VERSION="$(.circleci/scripts/pom2version.sh pom.xml)"
             .circleci/scripts/configure-signing.sh
             ./clean.pl
@@ -1103,6 +1105,7 @@ jobs:
                 MAVEN_ARGS="-Dbuild.type=production $MAVEN_ARGS"
                 ;;
             esac
+            ulimit -n 65536 || :
             ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
               -Daether.connector.resumeDownloads=false \
               -Daether.connector.basic.threads=1 \
