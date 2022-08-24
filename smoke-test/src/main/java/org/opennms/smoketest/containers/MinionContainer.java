@@ -33,7 +33,6 @@ import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.opennms.smoketest.utils.KarafShellUtils.awaitHealthCheckSucceeded;
 import static org.opennms.smoketest.utils.OverlayUtils.jsonMapper;
 
 import java.io.File;
@@ -57,9 +56,9 @@ import org.opennms.smoketest.stacks.NetworkProtocol;
 import org.opennms.smoketest.stacks.StackModel;
 import org.opennms.smoketest.utils.DevDebugUtils;
 import org.opennms.smoketest.utils.OverlayUtils;
+import org.opennms.smoketest.utils.RestHealthClient;
 import org.opennms.smoketest.utils.SshClient;
 import org.opennms.smoketest.utils.TestContainerUtils;
-import org.opennms.smoketest.utils.RestHealthClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.BindMode;
@@ -71,6 +70,8 @@ import org.testcontainers.lifecycle.TestLifecycleAware;
 import org.testcontainers.utility.MountableFile;
 
 import com.github.dockerjava.api.command.CreateContainerCmd;
+
+import joptsimple.internal.Strings;
 
 public class MinionContainer extends GenericContainer implements KarafContainer, TestLifecycleAware {
     private static final Logger LOG = LoggerFactory.getLogger(MinionContainer.class);
@@ -161,7 +162,16 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
                 "\t\"broker-url\": \"failover:tcp://" + OpenNMSContainer.ALIAS + ":61616\"\n" +
                 "}";
         OverlayUtils.writeYaml(minionConfigYaml, jsonMapper.readValue(config, Map.class));
-        
+
+        if (!Strings.isNullOrEmpty(profile.getScvProvider())) {
+            String scvProvider = "{\n" +
+                    "\t\"scv\": {\n" +
+                    "\t\t\"provider\": \"" + profile.getScvProvider() + "\"\n" +
+                    "\t}\n" +
+                    "}";
+            OverlayUtils.writeYaml(minionConfigYaml, jsonMapper.readValue(scvProvider, Map.class));
+        }
+
         if (IpcStrategy.KAFKA.equals(model.getIpcStrategy())) {
             String kafkaIpc = "{\n" +
                     "\t\"ipc\": {\n" +
