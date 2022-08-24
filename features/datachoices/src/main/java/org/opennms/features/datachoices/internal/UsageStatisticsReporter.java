@@ -36,6 +36,7 @@ import java.sql.DatabaseMetaData;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.stream.Collectors;
@@ -52,6 +53,8 @@ import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.core.utils.TimeSeries;
 import org.opennms.core.web.HttpClientWrapper;
 import org.opennms.features.datachoices.internal.StateManager.StateChangeHandler;
+import org.opennms.features.usageanalytics.api.UsageAnalyticDao;
+import org.opennms.features.usageanalytics.api.UsageAnalyticMetricName;
 import org.opennms.netmgt.config.*;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.EventDao;
@@ -136,6 +139,8 @@ public class UsageStatisticsReporter implements StateChangeHandler {
     private DestinationPathFactory m_destinationPathFactory;
 
     private NotifdConfigFactory m_notifdConfigFactory;
+
+    private UsageAnalyticDao m_usageAnalyticDao;
 
     private GroupFactory m_groupFactory;
     private ForeignSourceRepository m_deployedForeignSourceRepository;
@@ -267,6 +272,11 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         usageStatisticsReport.setSinkStrategy(SinkStrategy.getSinkStrategy().getName());
         usageStatisticsReport.setRpcStrategy(RpcStrategy.getRpcStrategy().getName());
         usageStatisticsReport.setTssStrategies(TimeSeries.getTimeseriesStrategy().getName());
+        // DCB statistics
+        usageStatisticsReport.setM_dcbSucceed(UsageAnalyticMetricName.DCB_SUCCEED.toString().toLowerCase());
+        usageStatisticsReport.setM_dcbSucceed_count(m_usageAnalyticDao.getValueByMetricName(UsageAnalyticMetricName.DCB_SUCCEED.toString()));
+        usageStatisticsReport.setM_dcbFailed(UsageAnalyticMetricName.DCB_FAILED.toString().toLowerCase());
+        usageStatisticsReport.setM_dcbFailed_count(m_usageAnalyticDao.getValueByMetricName(UsageAnalyticMetricName.DCB_FAILED.toString()));
 
         setDatasourceInfo(usageStatisticsReport);
 

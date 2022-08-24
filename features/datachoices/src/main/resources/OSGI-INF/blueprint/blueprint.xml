@@ -33,6 +33,7 @@
     <reference id="provisiondConfigDao" interface="org.opennms.netmgt.dao.api.ProvisiondConfigurationDao" availability="mandatory"/>
     <reference id="deployedForeignSourceRepository" interface="org.opennms.netmgt.provision.persist.ForeignSourceRepository" filter="(type=deployed)"/>
     <reference id="businessServiceEdgeDao" interface="org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeDao" />
+    <reference id="usageAnalytics" interface="org.opennms.features.usageanalytics.api.UsageAnalyticDao" />
 
     <bean id="serviceConfigurationFactory" class="org.opennms.netmgt.config.ServiceConfigFactory" />
 
@@ -83,6 +84,7 @@
         <property name="groupFactory" ref="groupFactory"/>
         <property name="deployedForeignSourceRepository" ref="deployedForeignSourceRepository"/>
         <property name="dataSourceFactoryBean" ref="dataSourceFactoryBean"/>
+        <property name="usageAnalytics" ref="usageAnalytics"/>
     </bean>
 
     <bean id="dataChoiceRestService" class="org.opennms.features.datachoices.web.internal.DataChoiceRestServiceImpl">
