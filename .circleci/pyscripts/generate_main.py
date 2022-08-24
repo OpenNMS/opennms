@@ -153,7 +153,7 @@ for e in main_yml_content:
             ]
 
             if enabled_components.count(True) > 1:
-                workflow_name = "combined_builds"
+                workflow_name = "combined-builds"
             elif enabled_components.count(True) == 1:
                 if build_components["doc"]:
                     workflow_name = "doc"
