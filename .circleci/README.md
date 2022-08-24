@@ -23,7 +23,7 @@ referencing various `trigger-*` parameters to enable or disable them.
 
 The user has ability to modify the build path by
 1. using git commit:
-    * You can use the bundle names as the keywords (with `!` and prefix). Here are few example
+    * You can use the bundle names as the keywords (add `!` as prefix). Here are few example
 
       | Keyword       | Description |
       | ------------- | ------------- |
