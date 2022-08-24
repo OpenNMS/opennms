@@ -5,6 +5,7 @@ commands:
         - run:
             name: Collect Maven Dependencies
             command: |
+              ulimit -n 65536 || :
               ./compile.pl -t \
                 -Dbuild.skip.tarball=true \
                 --update-plugins \
