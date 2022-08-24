@@ -23,18 +23,17 @@ referencing various `trigger-*` parameters to enable or disable them.
 
 The user has ability to modify the build path by
 1. using git commit:
-    * You can use the following keywords to enable build path(s)
+    * You can use the bundle names as the keywords (with `!` and prefix). Here are few example
 
       | Keyword       | Description |
       | ------------- | ------------- |
-      | #smoke        | Enable smoke tests |
-      | #smoke-flaky  | Enable flaky smoke tests|
-      | #integration  | Enable integration tests|
-      | #rpm          | Enable rpm jobs |
-      | #deb          | Enable debian package jobs |
-      | #oci          | Enable oci jobs |
-      | #doc          | Enable doc job  |
-      | #ui           | Enable ui job |
+      | !build-deploy | Runs build-deploy path |
+      | !smoke        | Runs smoke tests |
+      | !smoke-flaky  | Runs flaky smoke tests|
+      | !oci          | Runs Docker Container jobs |
+      | !doc          | Runs doc job  |
+      | !ui           | Runs ui job |
+      * For the latest list take a look at `.circleci/main/workflows/workflows_v2.json` file.
 
     * `process_generate.py` script attempts to detect and enable corresponding jobs automatically if incoming changes contains changes to:
       * "IT.java" or "Test.java" files
