@@ -140,15 +140,19 @@ else:
         "oci": False,
         "build-publish": False,
         "experimental": False,
-        "filters": {"enabled": True},
     }
 
 
 if "trigger-build" in mappings:
-    if "jira" in branch_name:
-        build_mappings["build-deploy"] = mappings["trigger-build"]
-    else:
+    if (
+        "develop" in branch_name
+        or "master" in branch_name
+        or "release-" in branch_name
+        or "foundation-" in branch_name
+    ):
         build_mappings["build-publish"] = mappings["trigger-build"]
+    else:
+        build_mappings["build-deploy"] = mappings["trigger-build"]
 
 if "trigger-docs" in mappings:
     build_mappings["docs"] = mappings["trigger-docs"]

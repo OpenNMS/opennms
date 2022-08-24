@@ -86,16 +86,12 @@ component_folders = [ALIAS_FOLDER, COMMANDS_FOLDER, WORKFLOW_FOLDER, JOB_FOLDER]
 
 components_path = os.path.join(working_directory.name, ".circleci", "main")
 
-if "filters" in build_components:
-    filters_enabled = build_components["filters"]["enabled"]
-else:
-    filters_enabled = True
+filters_enabled = True
 
 print("main_filename:", MAIN_FILENAME)
 print("path_to_main:", path_to_main_yml)
 print("path_to_modified_main:", path_to_modified_main)
 print("components_path:", components_path)
-print("Filters Enabled:", filters_enabled)
 
 if os.path.exists(os.path.join("/tmp", ".circleci")):
     print("clean up existing folder:", os.path.join("/tmp", ".circleci"))

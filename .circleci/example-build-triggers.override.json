@@ -10,8 +10,5 @@
     "debs": false,
     "oci": false,
     "build-publish": false,
-    "experimental": false,
-    "filters": {
-        "enabled": true
-    }
+    "experimental": false
 }
