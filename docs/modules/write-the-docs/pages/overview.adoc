@@ -19,6 +19,7 @@ We follow the guidelines established in the https://docs.microsoft.com/en-us/sty
 
 Our internal UI style guide supplements this document.
 
+[[ga-opennms-docs-dictionaries]]
 == Dictionaries
 
 We use American English spelling and grammar standards as outlined in the dictionaries below, in order of precedence:
