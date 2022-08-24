@@ -34,6 +34,8 @@
     <reference id="deployedForeignSourceRepository" interface="org.opennms.netmgt.provision.persist.ForeignSourceRepository" filter="(type=deployed)"/>
     <reference id="businessServiceEdgeDao" interface="org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeDao" />
     <reference id="deviceConfigDao" interface="org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao" />
+    <reference id="outageDao" interface="org.opennms.netmgt.dao.api.OutageDao" availability="mandatory"/>
+    <reference id="notificationDao" interface="org.opennms.netmgt.dao.api.NotificationDao" availability="mandatory"/>
 
     <bean id="serviceConfigurationFactory" class="org.opennms.netmgt.config.ServiceConfigFactory" />
 
@@ -85,6 +87,8 @@
         <property name="deployedForeignSourceRepository" ref="deployedForeignSourceRepository"/>
         <property name="dataSourceFactoryBean" ref="dataSourceFactoryBean"/>
         <property name="deviceConfigDao" ref="deviceConfigDao"/>
+        <property name="outageDao" ref="outageDao"/>
+        <property name="notificationDao" ref="notificationDao"/>
     </bean>
 
     <bean id="dataChoiceRestService" class="org.opennms.features.datachoices.web.internal.DataChoiceRestServiceImpl">

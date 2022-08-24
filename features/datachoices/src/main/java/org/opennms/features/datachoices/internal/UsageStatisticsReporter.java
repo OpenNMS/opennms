@@ -60,9 +60,11 @@ import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.MonitoringSystemDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.dao.api.ProvisiondConfigurationDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.model.OnmsMonitoringSystem;
+import org.opennms.netmgt.dao.api.NotificationDao;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeDao;
@@ -142,6 +144,8 @@ public class UsageStatisticsReporter implements StateChangeHandler {
     private GroupFactory m_groupFactory;
     private ForeignSourceRepository m_deployedForeignSourceRepository;
     private DataSourceFactoryBean m_dataSourceFactoryBean;
+    private OutageDao m_outageDao;
+    private NotificationDao m_notificationDao;
     private boolean m_useSystemProxy = true; // true == legacy behaviour
 
     public synchronized void init() {
@@ -250,6 +254,8 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         usageStatisticsReport.setSituations(m_alarmDao.getNumSituations());
         usageStatisticsReport.setMonitoringLocations(m_monitoringLocationDao.countAll());
         usageStatisticsReport.setMinions(m_monitoringSystemDao.getNumMonitoringSystems(OnmsMonitoringSystem.TYPE_MINION));
+        usageStatisticsReport.setOutages(m_outageDao.currentOutageCount());
+        usageStatisticsReport.setNotifications(m_notificationDao.countAll());
         // Node statistics
         usageStatisticsReport.setNodesBySysOid(m_nodeDao.getNumberOfNodesBySysOid());
         // Karaf features
@@ -507,6 +513,15 @@ public class UsageStatisticsReporter implements StateChangeHandler {
     public void setMonitoringSystemDao(MonitoringSystemDao monitoringSystemDao) {
         m_monitoringSystemDao = monitoringSystemDao;
     }
+
+    public void setOutageDao(OutageDao outageDao){
+        m_outageDao = outageDao;
+    }
+
+    public void setNotificationDao(NotificationDao notificationDao){
+        m_notificationDao = notificationDao;
+    }
+
 
     public void setBusinessServiceEdgeDao(BusinessServiceEdgeDao businessServiceDao) {
         m_businessServiceEdgeDao = businessServiceDao;
