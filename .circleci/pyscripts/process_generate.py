@@ -150,8 +150,10 @@ if "trigger-build" in mappings:
         or "release-" in branch_name
         or "foundation-" in branch_name
     ):
+        print("Executing workflow: build-publish")
         build_mappings["build-publish"] = mappings["trigger-build"]
     else:
+        print("Executing workflow: build-deploy")
         build_mappings["build-deploy"] = mappings["trigger-build"]
 
 if "trigger-docs" in mappings:
