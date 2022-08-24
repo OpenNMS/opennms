@@ -1139,7 +1139,7 @@ jobs:
             docker push ${MINION_AZ_REPO}:${TAG}
             echo "pushed to AZ"
       - store_artifacts:
-          path: ~/project/opennms-container/minion/images/minion-linux-*.oci
+          path: ~/project/opennms-container/minion/images/minion-${ARCH}.oci
 
   minion-image-multi-arch:
     machine:
