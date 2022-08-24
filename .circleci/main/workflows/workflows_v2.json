@@ -478,7 +478,7 @@
                 "smoke-test-flaky",
                 "smoke-test-minion",
                 "smoke-test-sentinel",
-                "sentinel-image"
+                "sentinel-image-single-arch-linux-amd64"
             ],
             "filters": {
                 "branches": {
