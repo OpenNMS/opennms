@@ -109,9 +109,9 @@ class workflow:
                 del tmp_output_elements["extends"]
 
             if "filters" in tmp_output_elements:
-                if "override" in tmp_output_elements["filters"]:
+                if "user_overridable" in tmp_output_elements["filters"]:
                     if (
-                        tmp_output_elements["filters"]["override"]
+                        tmp_output_elements["filters"]["user_overridable"]
                         and not enable_filters
                     ):
                         print(
@@ -135,7 +135,7 @@ class workflow:
                         + "filters:"
                     )
                     for element_options in tmp_output_elements[element]:
-                        if "override" in element_options:
+                        if "user_overridable" in element_options:
                             continue
                         if isinstance(
                             tmp_output_elements[element][element_options], dict

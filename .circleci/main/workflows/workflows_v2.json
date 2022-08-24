@@ -96,7 +96,7 @@
                         "/.*/"
                     ]
                 },
-                "override": false
+                "user_overridable": false
             }
         },
         "build": {
@@ -106,7 +106,7 @@
                         "/^from-foundation.*/"
                     ]
                 },
-                "override": false
+                "user_overridable": false
             }
         },
         "doc": {
@@ -117,7 +117,7 @@
                         "/^from-foundation.*/"
                     ]
                 },
-                "override": false
+                "user_overridable": false
             }
         },
         "ui": {
@@ -128,7 +128,7 @@
                         "/^from-foundation.*/"
                     ]
                 },
-                "override": false
+                "user_overridable": false
             }
         },
         "integration-test": {
@@ -141,7 +141,7 @@
                         "/^from-foundation.*/"
                     ]
                 },
-                "override": false
+                "user_overridable": false
             }
         },
         "minion-rpm-build": {
@@ -460,7 +460,7 @@
                         "/^release-.*/"
                     ]
                 },
-                "override": false
+                "user_overridable": false
             }
         },
         "sentinel-image-single-arch": {
@@ -505,7 +505,7 @@
                         "<< pipeline.parameters.main_branch >>"
                     ]
                 },
-                "override": false
+                "user_overridable": false
             }
         },
         "merge-foundation-branch": {
@@ -518,7 +518,7 @@
                         "merge-foundation/<< pipeline.parameters.previous_branch_label >>-to-<< pipeline.parameters.main_branch_label >>"
                     ]
                 },
-                "override": false
+                "user_overridable": false
             }
         },
         "create-merge-meridian-branch": {
@@ -538,7 +538,7 @@
                         "/^foundation.*/"
                     ]
                 },
-                "override": false
+                "user_overridable": false
             }
         },
         "horizon-publish-oci": {
@@ -563,7 +563,7 @@
                         "/^foundation.*/"
                     ]
                 },
-                "override": false
+                "user_overridable": false
             }
         },
         "merge-poweredby-branch": {
@@ -581,7 +581,7 @@
                         "/^foundation.*/"
                     ]
                 },
-                "override": false
+                "user_overridable": false
             }
         },
         "publish-cloudsmith": {
@@ -604,7 +604,7 @@
                         "/^foundation.*/"
                     ]
                 },
-                "override": false
+                "user_overridable": false
             }
         },
         "integration-test-with-coverage": {
