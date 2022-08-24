@@ -1,7 +1,5 @@
 package org.opennms.smoketest.minion;
 
-import static org.opennms.smoketest.utils.KarafShellUtils.awaitHealthCheckSucceeded;
-
 import java.net.InetSocketAddress;
 
 import org.junit.ClassRule;
@@ -36,7 +34,5 @@ public class NMS14655_IT {
         karafShell.runCommand("bundle:list | grep SCV | wc -l", output -> "3".equals(output.trim()));
         karafShell.runCommand("bundle:list | grep SCV", output -> !output.contains("SCV :: JCEKS Impl"));
         karafShell.runCommand("bundle:list | grep SCV", output -> output.contains("SCV :: Dominion gRPC Impl"));
-
-        awaitHealthCheckSucceeded(karafSsh, 3, "Minion");
     }
 }
