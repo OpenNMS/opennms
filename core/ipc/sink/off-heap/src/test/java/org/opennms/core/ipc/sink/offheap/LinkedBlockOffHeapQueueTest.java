@@ -93,13 +93,53 @@ public class LinkedBlockOffHeapQueueTest {
         assertThat(queue.getSize(), equalTo(3));
         assertThat(queue.getMemoryBlocks(), equalTo(1));
         // one empty block
-        assertThat(queue.getDiskBlocks(), equalTo(3));
+        assertThat(queue.getOffHeapBlocks(), equalTo(3));
 
         assertThat(queue.dequeue().getValue(), equalTo(payload1));
         assertThat(queue.dequeue().getValue(), equalTo(payload2));
         assertThat(queue.dequeue().getValue(), equalTo(payload3));
 
     }
+
+
+
+    @Test
+    public void canRestoreOffHeapBlock() throws IOException, WriteFailedException, InterruptedException {
+        Path offHeapPath = Paths.get(folder.newFolder().toURI());
+        LinkedBlockOffHeapQueue<String> queue = new LinkedBlockOffHeapQueue<>(String::getBytes, String::new,
+                "canQueueAndDequeue", offHeapPath, 4, 2, 10000);
+
+        // Since size is 1, the first entry should be in-memory and the second entry should be on disk
+        for(int i = 0 ; i < 11 ; i++){
+            String payload = "msg" + i;
+            queue.enqueue(payload, "key" + i);
+            System.out.println(payload);
+        }
+
+        assertThat(queue.getSize(), equalTo(11));
+        assertThat(queue.getOffHeapBlocks(), equalTo(4));
+        assertThat(queue.getMemoryBlocks(), equalTo(2));
+        //give time to flush all data
+        Thread.sleep(1000L);
+
+        queue.shutdown();
+        queue = null;
+
+        LinkedBlockOffHeapQueue<String> newQueue = new LinkedBlockOffHeapQueue<>(String::getBytes, String::new,
+                "canQueueAndDequeue", offHeapPath, 2, 2, 10000);
+
+        // should able to find 2 offheapblocks
+        System.out.println(newQueue.getSize());
+        // it will lose 2 batch in memory & 1 unfinished offheap block due to not persist yet
+        assertThat(newQueue.getSize(), equalTo(6));
+        assertThat(newQueue.getOffHeapBlocks(), equalTo(3));
+
+        for (int i = 4; i < 10; i++) {
+            assertThat(newQueue.dequeue().getValue(), equalTo("msg" + i));
+        }
+        assertThat(newQueue.getSize(), equalTo(0));
+    }
+
 
     class Enqueue implements Runnable {
         DispatchQueue<String> queue;

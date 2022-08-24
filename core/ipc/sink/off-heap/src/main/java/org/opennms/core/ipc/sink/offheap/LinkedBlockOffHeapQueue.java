@@ -33,6 +33,11 @@ import org.h2.mvstore.MVMap;
 import org.h2.mvstore.MVStore;
 import org.opennms.core.ipc.sink.api.DispatchQueue;
 import org.opennms.core.ipc.sink.api.WriteFailedException;
+import org.rocksdb.CompressionType;
+import org.rocksdb.LRUCache;
+import org.rocksdb.Options;
+import org.rocksdb.RocksDB;
+import org.rocksdb.RocksIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,6 +66,9 @@ public class LinkedBlockOffHeapQueue<T> implements DispatchQueue<T> {
             .every(Duration.ofSeconds(30))
             .build();
 
+    private final Lock headLock = new ReentrantLock(true);
+    private final Lock tailLock = new ReentrantLock(true);
+
     // This must match the size of the HEADER_LENGTH in QueueFile's Element class
     //
     // We could pull this out of that class reflectively but it seemed easier to just hard code it here
@@ -77,19 +85,20 @@ public class LinkedBlockOffHeapQueue<T> implements DispatchQueue<T> {
     private final BlockingQueue<DataBlock<T>> mainQueue;
     private DataBlock<T> tailBlock;
     private AtomicInteger memoryBlocks = new AtomicInteger(0);
-    private AtomicInteger diskBlocks = new AtomicInteger(0);
+    private AtomicInteger offHeapBlocks = new AtomicInteger(0);
     private int inMemoryQueueSize;
-    private Path filePath;
+
     private MVStore mvstore;
-    private MVMap<String, byte[]> db;
+    private RocksDB rocksdb;
+
     //private final FileCapacityLatch fileCapacityLatch = new FileCapacityLatch()
 
     public int getMemoryBlocks() {
         return memoryBlocks.get();
     }
 
-    public int getDiskBlocks() {
-        return diskBlocks.get();
+    public int getOffHeapBlocks() {
+        return offHeapBlocks.get();
     }
 
 
@@ -115,27 +124,76 @@ public class LinkedBlockOffHeapQueue<T> implements DispatchQueue<T> {
         this.batchSize = batchSize;
         this.maxFileSizeInBytes = maxFileSizeInBytes;
         this.inMemoryQueueSize = inMemoryQueueSize;
-        this.filePath = filePath;
 
         File file = Paths.get(filePath.toString(), moduleName).toFile();
 
-        Files.deleteIfExists(file.toPath());
-        if (!file.mkdirs()) {
+        if (!file.isDirectory() && !file.mkdirs()) {
             throw new RuntimeException("Fail make dir. " + file);
         }
 
-        mvstore = new MVStore.Builder()
-                .cacheSize(500)
-//                .keysPerPage(100)
-//                .pageSplitSize(100)
-                //.compress()
-                .compressHigh()
-                .fileName(filePath + "/LinkedBlockOffHeapQueue.mvstore")
-                .open();
+//        mvstore = new MVStore.Builder()
+//                .cacheSize(500)
+////                .keysPerPage(100)
+////                .pageSplitSize(100)
+//                .compress()
+//                .fileName(filePath + "/LinkedBlockOffHeapQueue.mvstore")
+//                .open();
 
-        db = mvstore.openMap("data");
+        try {
 
-        createDataBlock(true);
+            Options options = new Options();
+            options.setCreateIfMissing(true);
+            options.setCompressionType(CompressionType.SNAPPY_COMPRESSION);
+            options.setEnableBlobFiles(true);
+            options.setEnableBlobGarbageCollection(true);
+            options.setMinBlobSize(100_000);
+            options.setBlobCompressionType(CompressionType.SNAPPY_COMPRESSION);
+            options.setWriteBufferSize(100 * 1024 * 1024);
+            options.setBlobFileSize(100 * 1024 * 1024);
+            options.setTargetFileSizeBase(64 * 1024 * 1024);
+            options.setMaxBytesForLevelBase(64 * 1024 * 1024 * 10);
+            //options.setMaxBackgroundCompactions(100);
+            options.setMaxBackgroundJobs(Math.max(Runtime.getRuntime().availableProcessors(), 3));
+
+            LRUCache cache = new LRUCache(512 * 1024 * 1024, 8);
+            options.setRowCache(cache);
+//            options.setLogReadaheadSize()
+//                    options.setCompactionReadaheadSize().setAllowMmapReads().setUseDirectReads().setBlobCompactionReadaheadSize()
+
+
+            //   new StackableDB();
+            rocksdb = RocksDB.open(options, file.getAbsolutePath());
+
+            long keyCount = rocksdb.getLongProperty("rocksdb.estimate-num-keys");
+            LOG.warn("Current keys in db: " + keyCount);
+            if (keyCount > 0) {
+                //restore data
+                DataBlock<T> lastBlock = null;
+                RocksIterator ite = rocksdb.newIterator();
+                ite.seekToFirst();
+                while (ite.isValid()) {
+                    String key = new String(ite.key());
+                    //LOG.error("KEY: {}", key);
+                    DataBlock<T> newBlock = new RocksDBOffHeapDataBlock<>(key, batchSize, serializer, deserializer, rocksdb, ite.value());
+                    if (lastBlock != null) {
+                        lastBlock.setNextDataBlock(newBlock);
+                    }
+                    mainQueue.add(newBlock);
+                    offHeapBlocks.incrementAndGet();
+                    lastBlock = newBlock;
+                    ite.next();
+                }
+                //((OffHeapDataBlock) mainQueue.peek()).enableQueue();
+                //mainQueue.peek().notifyNextDataBlock();
+            }
+        } catch (Exception e) {
+            LOG.error("Exception: {}", e);
+            throw new RuntimeException(e);
+        }
+
+        if (mainQueue.size() == 0) {
+            createDataBlock(true);
+        }
 
         // Setting the max file size to 0 or less will disable the off-heap portion of this queue
 //        if (maxFileSizeInBytes > 0) {
@@ -160,9 +218,36 @@ public class LinkedBlockOffHeapQueue<T> implements DispatchQueue<T> {
 //        }
     }
 
-    private final Lock headLock = new ReentrantLock(true);
-    private final Lock tailLock = new ReentrantLock(true);
 
+    private void createDataBlock(boolean force) throws IOException {
+        if (!force && (tailBlock != null && tailBlock.size() < batchSize)) {
+            return;
+        }
+        DataBlock newBlock;
+        if (tailBlock == null || !isMemoryFull()) {
+            newBlock = new MemoryDataBlock(batchSize);
+            memoryBlocks.incrementAndGet();
+        } else {
+            newBlock = new RocksDBOffHeapDataBlock<>(batchSize, serializer, deserializer, rocksdb);
+            //newBlock = new H2OffHeapDataBlock<>(batchSize, serializer, deserializer, mvstore);
+            offHeapBlocks.incrementAndGet();
+        }
+        //System.out.println("Create "+newBlock+", mem:"+memoryBlocks.get()+", disk: "+ diskBlocks.get());
+
+        LOG.warn("Create {}, mem: {}, disk: {}", newBlock, memoryBlocks.get(), offHeapBlocks.get());
+//        if (tmp == null) {
+//            ////System.out.println("ERROR 5 !!!! NULL");
+//        } else if (tmp != tailBlock) {
+//            ////System.out.println("ERROR 3 !!!! " + tmp + " " + tailBlock);
+//        } else if (tmp.size() != batchSize) {
+//            ////System.out.println("ERROR 4 !!!! oil tail size = " + tmp.size() + " != " + batchSize + " " + tmp);
+//        }
+        if (tailBlock != null) {
+            this.tailBlock.setNextDataBlock(newBlock);
+        }
+        this.tailBlock = newBlock;
+        this.mainQueue.add(newBlock);
+    }
 
     @Override
     public EnqueueResult enqueue(T message, String key) throws WriteFailedException {
@@ -232,34 +317,6 @@ public class LinkedBlockOffHeapQueue<T> implements DispatchQueue<T> {
         return data;
     }
 
-    private void createDataBlock(boolean force) throws IOException {
-        if (!force && (tailBlock != null && tailBlock.size() < batchSize)) {
-            return;
-        }
-        DataBlock newBlock;
-        if (tailBlock == null || !isMemoryFull()) {
-            newBlock = new MemoryDataBlock(batchSize);
-            memoryBlocks.incrementAndGet();
-        } else {
-            newBlock = new OffHeapDataBlock(batchSize, Paths.get(this.filePath.toString(), moduleName), serializer, deserializer, db);
-            diskBlocks.incrementAndGet();
-        }
-        //System.out.println("Create "+newBlock+", mem:"+memoryBlocks.get()+", disk: "+ diskBlocks.get());
-
-        LOG.warn("Create {}, mem: {}, disk: {}", newBlock, memoryBlocks.get(), diskBlocks.get());
-//        if (tmp == null) {
-//            ////System.out.println("ERROR 5 !!!! NULL");
-//        } else if (tmp != tailBlock) {
-//            ////System.out.println("ERROR 3 !!!! " + tmp + " " + tailBlock);
-//        } else if (tmp.size() != batchSize) {
-//            ////System.out.println("ERROR 4 !!!! oil tail size = " + tmp.size() + " != " + batchSize + " " + tmp);
-//        }
-        if (tailBlock != null) {
-            this.tailBlock.setNextDataBlock(newBlock);
-        }
-        this.tailBlock = newBlock;
-        this.mainQueue.add(newBlock);
-    }
 
     private void removeHeadBlockIfNeeded() throws InterruptedException {
         DataBlock<T> head = mainQueue.peek();
@@ -272,7 +329,7 @@ public class LinkedBlockOffHeapQueue<T> implements DispatchQueue<T> {
             if (head instanceof MemoryDataBlock) {
                 memoryBlocks.decrementAndGet();
             } else {
-                diskBlocks.decrementAndGet();
+                offHeapBlocks.decrementAndGet();
             }
         } else {
             ////System.out.println("removeHeadBlockIfNeeded last head not going to remove: " + head);
@@ -282,9 +339,9 @@ public class LinkedBlockOffHeapQueue<T> implements DispatchQueue<T> {
     private boolean isDiskFull() {
         int remain = inMemoryQueueSize;
         if (tailBlock instanceof OffHeapDataBlock) {
-            remain -= (tailBlock.size() + this.batchSize * (diskBlocks.get() - 1));
+            remain -= (tailBlock.size() + this.batchSize * (offHeapBlocks.get() - 1));
         } else {
-            remain -= this.batchSize * diskBlocks.get();
+            remain -= this.batchSize * offHeapBlocks.get();
         }
         return remain >= 0;
     }
@@ -326,6 +383,10 @@ public class LinkedBlockOffHeapQueue<T> implements DispatchQueue<T> {
 //            memorySize += tailBlock.size();
 //        }
 //        return memorySize + (int) diskSize;
+    }
+
+    public void shutdown() {
+        rocksdb.close();
     }
 
 //    private List<Map.Entry<String, T>> unbatchSerializedBatch(SerializedBatch serializedBatch)

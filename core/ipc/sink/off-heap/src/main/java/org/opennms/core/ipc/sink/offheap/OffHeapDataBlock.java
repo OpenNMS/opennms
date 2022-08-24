@@ -57,9 +57,9 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class OffHeapDataBlock<T> implements DataBlock<T> {
-    private static final Logger LOG = LoggerFactory.getLogger(OffHeapDataBlock.class);
-    private static final ForkJoinPool serdesPool = new ForkJoinPool(
+public abstract class OffHeapDataBlock<T> implements DataBlock<T> {
+    protected static final Logger LOG = LoggerFactory.getLogger(OffHeapDataBlock.class);
+    protected static final ForkJoinPool serdesPool = new ForkJoinPool(
             Math.max(Runtime.getRuntime().availableProcessors() - 1, 1));
 
 
@@ -74,16 +74,42 @@ public class OffHeapDataBlock<T> implements DataBlock<T> {
     private int offHeapQueueSize = -1;
 
     private RunnableFuture<QueueFile> future;
-    private MVMap<String, byte[]> db;
 
-    public OffHeapDataBlock(int queueSize, Path fileDir, Function<T, byte[]> serializer, Function<byte[], T> deserializer, MVMap<String, byte[]> db) {
-        Objects.requireNonNull(fileDir);
+    private boolean restore = false;
+
+
+    abstract void writeData(String key, byte[] data);
+
+    abstract byte[] loadData(String key);
+
+    /**
+     *
+     * @param name (nullable, if not null it assume restore mode)
+     * @param queueSize
+     * @param serializer
+     * @param deserializer
+     */
+    public OffHeapDataBlock(String name, int queueSize, Function<T, byte[]> serializer, Function<byte[], T> deserializer, byte[] data) {
         this.serializer = Objects.requireNonNull(serializer);
         this.deserializer = Objects.requireNonNull(deserializer);
         this.queueSize = queueSize;
-        this.db = Objects.requireNonNull(db);
-        queue = new ArrayBlockingQueue<>(queueSize, true);
-        name = System.nanoTime() + "_" + (int) Math.floor(Math.random() * 1000);
+        if(data == null)
+        {
+            this.restore = false;
+            this.name = System.nanoTime() + "_" + (int) Math.floor(Math.random() * 1000);
+        } else {
+            this.restore = true;
+            this.name = name;
+            try {
+                SerializedBatch batch = new SerializedBatch(data);
+                this.offHeapQueueSize = batch.batchedMessages.size();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        if (!restore) {
+            queue = new ArrayBlockingQueue<>(queueSize, true);
+        }
     }
 
     @Override
@@ -171,7 +197,7 @@ public class OffHeapDataBlock<T> implements DataBlock<T> {
                 LOG.warn("Enqueue flush to queue time2 : {} time: {}", name, (System.currentTimeMillis() - start));
                 //start = System.currentTimeMillis();
                 byte[] serializedBatch = new SerializedBatch(serializedMessages).toBytes();
-                db.put(name, serializedBatch);
+                this.writeData(name, serializedBatch);
 
                 //offHeapQueue.add(serializedBatch);
 //
@@ -240,7 +266,7 @@ LOG.warn("Could not instantiate queue", e);
 //        DatabaseEntry key = new DatabaseEntry(name.getBytes(StandardCharsets.UTF_8));
 //        DatabaseEntry searchEntry = new DatabaseEntry();
 
-        byte[] serializedBatchBytes = db.remove(name);
+        byte[] serializedBatchBytes = this.loadData(name);
         if(serializedBatchBytes == null){
             LOG.error("Data not found for name: {}", name);
         }
@@ -283,7 +309,7 @@ LOG.warn("Could not instantiate queue", e);
             return;
         }
         try {
-            while (future == null || !future.isDone()) {
+            while (!restore && (future == null || !future.isDone())) {
                 Thread.sleep(10);
             }
             diskLock.lock();
@@ -292,6 +318,7 @@ LOG.warn("Could not instantiate queue", e);
             //System.out.println("Start to enable queue");
             toMemory();
             future = null;
+            restore = false;
 //                System.out.println("Start to enable queue done");
 
         } catch (Exception e) {
