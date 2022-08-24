@@ -33,7 +33,7 @@ The user has ability to modify the build path by
       | !oci          | Runs Docker Container jobs |
       | !doc          | Runs doc job  |
       | !ui           | Runs ui job |
-      * For the latest list take a look at `.circleci/main/workflows/workflows_v2.json` file.
+      * For the latest list take a look at `.circleci/main/workflows/workflows_v2.json`.
 
     * `process_generate.py` script attempts to detect and enable corresponding jobs automatically if incoming changes contains changes to:
       * "IT.java" or "Test.java" files
