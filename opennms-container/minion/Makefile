@@ -8,7 +8,7 @@
 VERSION                 := $(shell ../../.circleci/scripts/pom2version.sh ../../pom.xml)
 SHELL                   := /bin/bash -o nounset -o pipefail -o errexit
 BUILD_DATE              := $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
-BASE_IMAGE              := opennms/deploy-base:jre-1.2.0.b105
+BASE_IMAGE              := opennms/deploy-base:jre-2.0.4.b161
 DOCKER_CLI_EXPERIMENTAL := enabled
 DOCKERX_INSTANCE        := env-minion-oci
 DOCKER_REGISTRY         := docker.io
