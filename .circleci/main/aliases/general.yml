@@ -4,25 +4,25 @@ aliases:
     command: |
       case "${CIRCLE_BRANCH}" in
         "master-"*)
-           MINION_IMAGE_VERSION="$(~/project/.circleci/scripts/pom2version.sh ~/project/pom.xml)"
+           DOCKER_IMAGE_VERSION="$(~/project/.circleci/scripts/pom2version.sh ~/project/pom.xml)"
           ;;
         "release-"*)
-           MINION_IMAGE_VERSION="release-candidate"
+           DOCKER_IMAGE_VERSION="release-candidate"
           ;;
         "foundation-"20[1-2][0-9])
-           MINION_IMAGE_VERSION="${CIRCLE_BRANCH}"
+           DOCKER_IMAGE_VERSION="${CIRCLE_BRANCH}"
           ;;
         "develop")
-           MINION_IMAGE_VERSION="bleeding"
+           DOCKER_IMAGE_VERSION="bleeding"
           ;;
         *)
-          MINION_IMAGE_VERSION="${CIRCLE_BRANCH//\//-}"
+          DOCKER_IMAGE_VERSION="${CIRCLE_BRANCH//\//-}"
           ;;
       esac
       echo "export DOCKER_CONTENT_TRUST=1" >> $BASH_ENV
       echo "export DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE=\"$DCT_DELEGATE_KEY_PASSPHRASE\"" >> $BASH_ENV
       echo "export MINION_DK_REPO=docker.io/opennms/minion" >> $BASH_ENV
-      echo "export MINION_IMAGE_VERSION=\"$MINION_IMAGE_VERSION\"" >> $BASH_ENV
+      echo "export DOCKER_IMAGE_VERSION=\"$DOCKER_IMAGE_VERSION\"" >> $BASH_ENV
       echo "export MINION_AZ_REPO=opennmspubacr.azurecr.io/opennms/minion" >> $BASH_ENV
       echo "export KEY_FOLDER=~/.docker/trust/private" >> $BASH_ENV
   - &setup_dct_key

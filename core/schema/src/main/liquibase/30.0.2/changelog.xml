@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+    <changeSet runOnChange="false" author="achadfield" id="30.0.2-usage_analytics">
+        <createTable tableName="usage_analytics">
+            <!-- Unique identifier -->
+            <column name="id" type="bigint" autoIncrement="true" incrementBy="1" startWith="1">
+                <constraints nullable="false" primaryKey="true" unique="true"/>
+            </column>
+            <!-- metric name  -->
+            <column name="metric_name" type="text">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <!-- namespace  -->
+            <column name="namespace" type="text">
+                <constraints nullable="true" />
+            </column>
+            <!--   counter for the feature         -->
+	        <column name="counter" type="bigint" value="0">
+                <constraints nullable="false"/>
+	        </column>
+        </createTable>
+
+    </changeSet>
+
+</databaseChangeLog>

@@ -11,6 +11,7 @@ class workflow:
     """
 
     _internal_workflow = {}
+    _analyzed_dependencies = []
 
     def __init__(self) -> None:
         self._common_library = common.common()
@@ -75,15 +76,31 @@ class workflow:
         """
         Returns a list containing yaml entries for the workflow
         """
+
+        print("get_workflow_yaml_debugger -- START")
         workflow_dependency = self.get_dependency(interested_workflow)
-        # print("get_worflow_yaml::Dependencies>",workflow_dependency)
-        # print("get_worflow_yaml::leadingSpace>",leadingSpace)
+        print("workflow_dependency(", interested_workflow, ")", workflow_dependency)
 
         tmp_output = []
 
+        workflow_jobs = set()
+        # Let's find all the jobs we depend on (or need)
+        print("WORKFLOW JOB DETECTION -- START")
         for dependency in workflow_dependency:
-            # do we have any items under this key
+            print("\t", "Processing", dependency)
             tmp_output_elements = self.find(dependency)
+            print("\t", "\t", tmp_output_elements)
+            workflow_jobs.add(dependency)
+            if "requires" in tmp_output_elements:
+                for require in tmp_output_elements["requires"]:
+                    workflow_jobs.add(require)
+        print("JOBS:", workflow_jobs)
+        print("WORKFLOW JOB DETECTION -- END")
+
+        for job in sorted(workflow_jobs):
+            tmp_output_elements = self.find(job)
+            print("\t", "JOB", job)
+            print("\t", "\t", tmp_output_elements)
 
             if "job" in tmp_output_elements:
                 tmp_output.append(
@@ -94,9 +111,8 @@ class workflow:
                 del tmp_output_elements["job"]
             else:
                 tmp_output.append(
-                    self._common_library.create_space(leading_space) + "- " + dependency
+                    self._common_library.create_space(leading_space) + "- " + job
                 )
-
             if "extends" in tmp_output_elements:
                 # Since we have expanded the dependency we don't need this anymore
                 del tmp_output_elements["extends"]
@@ -109,7 +125,6 @@ class workflow:
             # if we have any items, lets add the : after the entry
             if tmp_output_elements:
                 tmp_output[-1] += ":"
-
             # lets loop through the elements
             for element in tmp_output_elements:
                 if "filters" in element:
@@ -134,9 +149,9 @@ class workflow:
                                     + options_entry
                                     + ":"
                                 )
-                                for options_subentry in tmp_output_elements[element][element_options][
-                                    options_entry
-                                ]:
+                                for options_subentry in tmp_output_elements[element][
+                                    element_options
+                                ][options_entry]:
                                     tmp_output.append(
                                         self._common_library.create_space(
                                             leading_space + 10
@@ -178,21 +193,26 @@ class workflow:
                         + "requires:"
                     )
                     for require in tmp_output_elements[element]:
+                        # print(tmp_output)
                         tmp_output.append(
                             self._common_library.create_space(leading_space + 6)
                             + "- "
                             + require
                         )
-                        if require not in workflow_dependency:
-                            tmp_output.extend(
-                                self.get_workflow_yaml(
-                                    require, leading_space, enable_filters
-                                )
+                        if require not in workflow_jobs:
+                            print(
+                                "We shouldn't be here as the following job",
+                                require,
+                                "doesn't exist in our workflow_jobs",
                             )
 
                 else:
                     print("Problem!!! Not sure how to handle element: ", element)
 
+        print("get_workflow_yaml_debugger -- END")
+        print("")
+        print("Result::>>")
+        print("\n".join(tmp_output))
         return tmp_output
 
     def get_dependency(self, interested_workflow):

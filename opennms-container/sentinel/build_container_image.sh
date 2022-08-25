@@ -9,38 +9,35 @@ set -o errexit
 # Use the error status of the first failure, rather than that of the last item in a pipeline.
 set -o pipefail
 
-cd "$(dirname "$0")"
+MYDIR="$(cd "$(dirname "$0")"; pwd)"
+cd "${MYDIR}"
 
 # shellcheck disable=SC1091
 source ../set-build-environment.sh
 
-../launch_apt_server.sh "$DEBDIR" "$REPO_PORT" "$APT_VOLUME"
-
-if [ ! -d debs ]; then
-  mkdir debs
+TARBALL="$(find ../../opennms-assemblies/sentinel -name \*-sentinel.tar.gz -type f | head -n 1)"
+if [ -z "${TARBALL}" ]; then
+  echo "unable to find sentinel tarball in opennms-assemblies"
+  exit 1
 fi
-
-docker cp "${APT_CONTAINER_NAME}:/repo/pgp-key.public" debs/
-
-# local apt repo
-APT_CONTAINER_IP=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$APT_CONTAINER_NAME")
-cat <<END >debs/opennms.list
-deb [signed-by=/tmp/debs/pgp-key.public] http://${APT_CONTAINER_NAME}:${REPO_PORT} stable main
-END
-
+rm -rf "${MYDIR}/tarball-root"
+mkdir -p "${MYDIR}/tarball-root"
+tar -x -z --strip-components 1 \
+	-C "${MYDIR}/tarball-root" \
+	-f "${TARBALL}"
 
 BUILDER_NAME=sentinel-build
 if [ $(docker buildx ls | grep -c "${BUILDER_NAME}") -gt 0 ]; then
   docker buildx rm $BUILDER_NAME
 fi
 
+docker context rm tls-environment >/dev/null 2>&1 || :
 docker context create tls-environment
-docker buildx create --name $BUILDER_NAME --driver docker-container --driver-opt network="${BUILD_NETWORK}" --use tls-environment
+docker buildx create --name $BUILDER_NAME --driver docker-container --use tls-environment
 
 docker buildx build -t sentinel \
   --builder $BUILDER_NAME \
   --platform="${DOCKER_ARCH}" \
-  --add-host ${APT_CONTAINER_NAME}:${APT_CONTAINER_IP} \
   --build-arg BUILD_DATE="${BUILD_DATE}" \
   --build-arg VERSION="${VERSION}" \
   --build-arg SOURCE="${SOURCE}" \
@@ -52,9 +49,6 @@ docker buildx build -t sentinel \
   --load \
   --progress plain \
   .
-docker image save sentinel -o images/container.oci
-
-rm -f debs/*.list
-../stop_apt_server.sh $APT_CONTAINER_NAME $APT_VOLUME
+docker image save sentinel -o "images/sentinel-${VERSION}.oci"
 
 docker context rm tls-environment

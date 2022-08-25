@@ -4,7 +4,7 @@
 # To avoid issues, we rearrange the directories in pre-stage to avoid injecting these
 # as additional layers into the final image.
 ##
-ARG BASE_IMAGE="opennms/deploy-base:jre-1.2.2.b135"
+ARG BASE_IMAGE="opennms/deploy-base:jre-1.3.0.b138"
 
 FROM ${BASE_IMAGE} as minion-base
 
@@ -58,7 +58,7 @@ RUN chmod +x /opt/minion/confd/scripts/*
 COPY ./minion-config-schema.yml /opt/minion/confd/
 
 # Create the directory for server certificates
-RUN mkdir /opt/minion/server-certs
+RUN install -d -m 750 /opt/minion/server-certs
 
 # Arguments for labels should not invalidate caches
 ARG BUILD_DATE="1970-01-01T00:00:00+0000"
