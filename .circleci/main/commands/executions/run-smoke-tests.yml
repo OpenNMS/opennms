@@ -36,34 +36,34 @@ commands:
           no_output_timeout: 30m
           command: |
             .circleci/scripts/smoke.sh << parameters.suite >>
+
       - run:
-          name: Gather system logs
+          name: Gather JUnit Output
           when: always
           command: |
-            mkdir -p ~/test-results/system-logs
-            (dmesg || :) > ~/test-results/system-logs/dmesg 2>&1
-            (ps auxf || :) > ~/test-results/system-logs/ps 2>&1
-            (free -m || :) > ~/test-results/system-logs/free 2>&1
-            (docker stats --no-stream || :) > ~/test-results/system-logs/docker_stats 2>&1
-            cp -R /tmp/jvmprocmon ~/test-results/system-logs/ || :
-            ls -alh ~/project/smoke-test/ || :
-      - run:
-          name: Gather test artifacts
-          when: always
-          command: |
+            cd smoke-test
             mkdir -p ~/test-results/junit
             find . -type f -regex ".*/target/surefire-reports/.*xml" -exec cp {} ~/test-results/junit/ \;
             find . -type f -regex ".*/target/failsafe-reports/.*xml" -exec cp {} ~/test-results/junit/ \;
+      - store_test_results:
+          path: ~/test-results/junit
+
+      - run:
+          name: Gather system logs and test artifacts
+          when: always
+          command: |
+            mkdir -p ~/test-artifacts/system-logs
+            (dmesg || :) > ~/test-artifacts/system-logs/dmesg 2>&1
+            (ps auxf || :) > ~/test-artifacts/system-logs/ps 2>&1
+            (free -m || :) > ~/test-artifacts/system-logs/free 2>&1
+            (docker stats --no-stream || :) > ~/test-artifacts/system-logs/docker_stats 2>&1
+            cp -R /tmp/jvmprocmon ~/test-artifacts/system-logs/ || :
+            ls -alh ~/project/smoke-test/ || :
+
             mkdir -p ~/test-artifacts/recordings
-            cp -R ~/project/smoke-test/target/*.flv ~/test-artifacts/recordings || true
+            cp -R ~/project/smoke-test/target/*.flv ~/test-artifacts/recordings/ || true
             cp -R ~/project/smoke-test/target/screenshots ~/test-artifacts/ || true
             cp -R ~/project/smoke-test/target/logs ~/test-artifacts/ || true
-      - store_test_results:
-          path: ~/test-results
-      - store_artifacts:
-          when: always
-          path: ~/test-results
-          destination: test-results
       - store_artifacts:
           when: always
           path: ~/test-artifacts

@@ -7,15 +7,8 @@ fi
 
 find_tests()
 {
-    # Generate surefire test list
-    circleci tests glob '**/src/test/java/**/*Test*.java' |\
-        sed -e 's#^.*src/test/java/\(.*\)\.java#\1#' | tr "/" "." > surefire_classnames
-    circleci tests split --split-by=timings --timings-type=classname < surefire_classnames > /tmp/this_node_tests
-
-    # Generate failsafe list
-    circleci tests glob '**/src/test/java/**/*IT*.java' |\
-        sed -e 's#^.*src/test/java/\(.*\)\.java#\1#' | tr "/" "." > failsafe_classnames
-    circleci tests split --split-by=timings --timings-type=classname < failsafe_classnames > /tmp/this_node_it_tests
+    circleci tests glob 'src/test/java/**/*.java' > /tmp/test-files.txt
+    circleci tests split --split-by=timings < /tmp/test-files.txt | sed -e 's#^.*src/test/java/\(.*\)\.java#\1#' | tr "/" "."  > /tmp/this_node_tests
 }
 
 # prime Docker to already contain the images we need in parallel, since
@@ -54,7 +47,8 @@ export MAVEN_OPTS="-Xmx1g -Xms1g"
 # Set higher open files limit
 ulimit -n 65536
 
-cd ~/project/smoke-test
+cd smoke-test
+
 if [ $SUITE = "minimal" ]; then
   echo "#### Executing minimal set smoke/system tests"
   IT_TESTS="MenuHeaderIT,SinglePortFlowsIT"
@@ -62,7 +56,13 @@ if [ $SUITE = "minimal" ]; then
 else
   find_tests
   echo "#### Executing complete suite of smoke/system tests"
-  IT_TESTS="$(< /tmp/this_node_it_tests paste -s -d, -)"
+  IT_TESTS="$(< /tmp/this_node_tests paste -s -d, -)"
+fi
+
+echo "tests: $IT_TESTS"
+if [ -z "$IT_TESTS" ]; then
+  echo "something went wrong, there are no tests to run"
+  exit 1
 fi
 
 ../compile.pl \
