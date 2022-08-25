@@ -282,6 +282,7 @@ public class UsageStatisticsReporter implements StateChangeHandler {
 
         return usageStatisticsReport;
     }
+
     private void setJmxAttributes(UsageStatisticsReportDTO usageStatisticsReport) {
         setSystemJmxAttributes(usageStatisticsReport);
         setOpenNmsJmxAttributes(usageStatisticsReport);
@@ -537,6 +538,10 @@ public class UsageStatisticsReporter implements StateChangeHandler {
 
     public void setDataSourceFactoryBean(DataSourceFactoryBean dataSourceFactoryBean) {
         m_dataSourceFactoryBean = dataSourceFactoryBean;
+    }
+
+    public void setUsageAnalyticDao(UsageAnalyticDao usageAnalyticDao) {
+        m_usageAnalyticDao = usageAnalyticDao;
     }
 
     private void gatherProvisiondData(final UsageStatisticsReportDTO usageStatisticsReport) {
