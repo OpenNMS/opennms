@@ -35,8 +35,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.function.Function;
 
 import org.opennms.smoketest.containers.MinionContainer;
+import org.testcontainers.containers.wait.strategy.WaitStrategy;
 
 /**
  * All the Minion related settings that need to be tweaked on
@@ -57,7 +59,7 @@ public class MinionProfile {
     private final List<OverlayFile> files;
 
     private final String dominionGrpcScvClientSecret;
-    private MinionContainer.WaitStrategyInterface waitStrategyInterface;
+    private final Function<MinionContainer, WaitStrategy> waitStrategy;
 
     private MinionProfile(Builder builder) {
         location = builder.location;
@@ -66,7 +68,7 @@ public class MinionProfile {
         icmpSupportEnabled = builder.icmpSupportEnabled;
         files = Collections.unmodifiableList(builder.files);
         dominionGrpcScvClientSecret = builder.dominionGrpcScvClientSecret;
-        waitStrategyInterface = builder.waitStrategyInterface;
+        waitStrategy = Objects.requireNonNull(builder.waitStrategy);
     }
 
     public static Builder newBuilder() {
@@ -80,7 +82,7 @@ public class MinionProfile {
         private boolean icmpSupportEnabled = false;
         private List<OverlayFile> files = new LinkedList<>();
         private String dominionGrpcScvClientSecret;
-        private MinionContainer.WaitStrategyInterface waitStrategyInterface = container -> new MinionContainer.WaitForMinion(container);
+        private Function<MinionContainer, WaitStrategy> waitStrategy = MinionContainer.WaitForMinion::new;
 
         public Builder withLocation(String location) {
             this.location = Objects.requireNonNull(location);
@@ -116,8 +118,8 @@ public class MinionProfile {
             return this;
         }
 
-        public Builder withWaitStrategy(final MinionContainer.WaitStrategyInterface waitStrategyInterface) {
-            this.waitStrategyInterface = waitStrategyInterface;
+        public Builder withWaitStrategy(final Function<MinionContainer, WaitStrategy> waitStrategy) {
+            this.waitStrategy = waitStrategy;
             return this;
         }
 
@@ -150,7 +152,7 @@ public class MinionProfile {
         return dominionGrpcScvClientSecret;
     }
 
-    public MinionContainer.WaitStrategyInterface getWaitStrategy() {
-        return waitStrategyInterface;
+    public Function<MinionContainer, WaitStrategy> getWaitStrategy() {
+        return waitStrategy;
     }
 }

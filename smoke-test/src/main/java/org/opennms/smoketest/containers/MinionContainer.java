@@ -47,6 +47,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
 
 import org.apache.commons.io.FileUtils;
 import org.awaitility.core.ConditionTimeoutException;
@@ -71,8 +72,7 @@ import org.testcontainers.lifecycle.TestLifecycleAware;
 import org.testcontainers.utility.MountableFile;
 
 import com.github.dockerjava.api.command.CreateContainerCmd;
-
-import joptsimple.internal.Strings;
+import com.google.common.base.Strings;
 
 public class MinionContainer extends GenericContainer implements KarafContainer, TestLifecycleAware {
     private static final Logger LOG = LoggerFactory.getLogger(MinionContainer.class);
@@ -94,11 +94,7 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
     private final String location;
     private final GenericContainer container;
 
-    public interface WaitStrategyInterface {
-        WaitStrategy getStrategy(MinionContainer container);
-    }
-
-    private MinionContainer(final StackModel model, final String id, final String location, final WaitStrategyInterface waitStrategyInterface) {
+    private MinionContainer(final StackModel model, final String id, final String location, final Function<MinionContainer, WaitStrategy> waitStrategy) {
         super("minion");
         this.model = Objects.requireNonNull(model);
         this.id = Objects.requireNonNull(id);
@@ -118,7 +114,7 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
                 .withNetwork(Network.SHARED)
                 .withNetworkAliases(ALIAS)
                 .withCommand("-c")
-                .waitingFor(Objects.requireNonNull(waitStrategyInterface).getStrategy(this));
+                .waitingFor(Objects.requireNonNull(waitStrategy).apply(this));
 
         // Help make development/debugging easier
         DevDebugUtils.setupMavenRepoBind(this, "/opt/minion/.m2");
@@ -137,7 +133,7 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
     }
 
     public MinionContainer(final StackModel model, final Map<String, String> configuration) {
-        this(model, configuration.get("MINION_ID"), configuration.get("MINION_LOCATION"), c -> new WaitForMinion(c));
+        this(model, configuration.get("MINION_ID"), configuration.get("MINION_LOCATION"), WaitForMinion::new);
 
         for(final Map.Entry<String, String> entry : configuration.entrySet()) {
             container.addEnv(entry.getKey(), entry.getValue());
