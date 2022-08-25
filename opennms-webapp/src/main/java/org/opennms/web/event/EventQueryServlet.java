@@ -80,7 +80,7 @@ public class EventQueryServlet extends HttpServlet {
      * The list of parameters that are extracted by this servlet and not passed
      * on to the servlet.
      */
-    protected static String[] IGNORE_LIST = new String[] { "eventid", "eventtext", "msgsub", "msgmatchany", "nodenamelike", "exactuei", "service", "iplike", "severity", "relativetime", "usebeforetime", "beforehour", "beforeminute", "beforeampm", "beforedate", "beforemonth", "beforeyear", "useaftertime", "afterhour", "afterminute", "afterampm", "afterdate", "aftermonth", "afteryear" };
+    protected static String[] IGNORE_LIST = new String[] { "eventid", "eventtext", "msgsub", "msgmatchany", "nodenamelike", "exactuei", "location", "nodelocation", "systemId", "service", "iplike", "severity", "eventId", "relativetime", "usebeforetime", "beforehour", "beforeminute", "beforeampm", "beforedate", "beforemonth", "beforeyear", "useaftertime", "afterhour", "afterminute", "afterampm", "afterdate", "aftermonth", "afteryear" };
 
     /**
      * The URL for the servlet. The
