@@ -168,16 +168,15 @@
           <version>2.0.0.ONMS.1</version>
           <inherited>true</inherited>
           <executions>
-            <execution>
-              <id>module-third-party</id>
-              <goals>
-                <goal>add-third-party</goal>
-              </goals>
-              <phase>generate-resources</phase>
-            </execution>
-          </executions>
+          <execution>
+            <id>module-third-party</id>
+            <goals>
+              <goal>add-third-party</goal>
+            </goals>
+            <phase>generate-resources</phase>
+          </execution>
+        </executions>
           <configuration>
-            <skip>${enforcer-license-skip-third-party}</skip>
             <acceptPomPackaging>true</acceptPomPackaging>
             <errorRemedy>xmlOutput</errorRemedy>
             <excludedArtifacts>^.*opennms.*$</excludedArtifacts>
@@ -1527,7 +1526,6 @@
     <enforcer-skip-banned-dependencies>false</enforcer-skip-banned-dependencies>
     <!-- we have a lot of work to do before this is possible -->
     <enforcer-skip-dependency-convergence>true</enforcer-skip-dependency-convergence>
-    <enforcer-license-skip-third-party>false</enforcer-license-skip-third-party>
 
     <!--
       Surefire forked JVM arguments
