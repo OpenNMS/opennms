@@ -1,9 +1,9 @@
 
 = Cortex Time Series Plugin
 
-The Time Series Storage Plugin for Cortex helps {page-component-title} to persist aggregated flow data to Cortex.
+The Time Series Storage Plugin for Cortex enables {page-component-title} to persist aggregated flow data to Cortex.
 The plugin uses the xref:deployment:time-series-storage/timeseries/ts-integration-layer.adoc[time series storage integration layer] to convert metrics to a Prometheus model and delegate writes and reads to https://cortexmetrics.io/[Cortex].
-The plugin also makes it possible for https://docs.opennms.com/helm/latest/index.html[OpenNMS Helm] to visualize flow graphs from the Cortex instance.
+The plugin also makes it possible for users to visualize flow graphs from the Cortex instance in https://docs.opennms.com/helm/latest/index.html[OpenNMS Helm], through the performance data source.
 
 .Time Series Storage Plugin for Cortex architecture
 image::time-series-storage/cortex.png[Cortex plugin architecture,500]
@@ -27,12 +27,9 @@ See https://cortexmetrics.io/docs/getting-started/.
 
 You can also download a https://github.com/opennms-forge/stack-play/tree/master/standalone-cortex-minimal[minimal, standalone version of Cortex] and start Cortex with `docker-compose up`.
 
-.Build and install the plugin into your local Maven repository
+.Download the plugin
 
-[source, console]
-----
-mvn clean install
-----
+TBD
 
 .Enable and configure the time series storage
 
@@ -71,13 +68,6 @@ property-set externalTagsCacheSize 1000
 property-set bulkheadMaxWaitDurationInMs 9223372036854775807
 
 config:update
-----
-
-.Update automatically
-
-[source, console]
-----
-bundle:watch *
 ----
 
 == Cortex tips
