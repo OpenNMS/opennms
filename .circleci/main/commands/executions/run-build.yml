@@ -49,7 +49,7 @@ commands:
               -DmaxCpus=<< parameters.number-vcpu >> \
               -Prun-expensive-tasks \
               -Psmoke \
-              -Penable.license=true \
+              -Denable.license=true \
               --batch-mode \
               $MAVEN_ARGS || exit 1
       - run:
