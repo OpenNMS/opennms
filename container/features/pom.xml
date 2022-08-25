@@ -694,12 +694,6 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.usageanalytics</groupId>
-      <artifactId>org.opennms.features.usageanalytics.api</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.features.device-config</groupId>
       <artifactId>org.opennms.features.device-config.ssh-scripting</artifactId>
       <version>${project.version}</version>

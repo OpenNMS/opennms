@@ -91,10 +91,8 @@ public class UsageStatisticsReportDTO {
     private long m_coreQueuedUpdatesCompleted;
     private int m_users;
     private int m_groups;
-    private String m_dcbSucceed;
-    private String m_dcbFailed;
-    private long m_dcbSucceed_count;
-    private long m_dcbFailed_count;
+    private long m_dcbSucceed;
+    private long m_dcbFailed;
 
     public void setSystemId(String systemId) {
         m_systemId = systemId;
@@ -463,36 +461,20 @@ public class UsageStatisticsReportDTO {
         this.m_users = m_users;
     }
 
-    public String getM_dcbSucceed() {
+    public long getDcbSucceed() {
         return m_dcbSucceed;
     }
 
-    public void setM_dcbSucceed(String m_dcbSucceed) {
+    public void setDcbSucceed(long m_dcbSucceed) {
         this.m_dcbSucceed = m_dcbSucceed;
     }
 
-    public String getM_dcbFailed() {
+    public long getDcbFailed() {
         return m_dcbFailed;
     }
 
-    public void setM_dcbFailed(String m_dcbFailed) {
+    public void setDcbFailed(long m_dcbFailed) {
         this.m_dcbFailed = m_dcbFailed;
-    }
-
-    public long getM_dcbSucceed_count() {
-        return m_dcbSucceed_count;
-    }
-
-    public void setM_dcbSucceed_count(long m_dcbSucceed_count) {
-        this.m_dcbSucceed_count = m_dcbSucceed_count;
-    }
-
-    public long getM_dcbFailed_count() {
-        return m_dcbFailed_count;
-    }
-
-    public void setM_dcbFailed_count(long m_dcbFailed_count) {
-        this.m_dcbFailed_count = m_dcbFailed_count;
     }
 
     public String toJson() {

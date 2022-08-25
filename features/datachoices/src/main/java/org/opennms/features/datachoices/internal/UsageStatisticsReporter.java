@@ -36,7 +36,6 @@ import java.sql.DatabaseMetaData;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.stream.Collectors;
@@ -273,10 +272,8 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         usageStatisticsReport.setRpcStrategy(RpcStrategy.getRpcStrategy().getName());
         usageStatisticsReport.setTssStrategies(TimeSeries.getTimeseriesStrategy().getName());
         // DCB statistics
-        usageStatisticsReport.setM_dcbSucceed(UsageAnalyticMetricName.DCB_SUCCEED.toString().toLowerCase());
-        usageStatisticsReport.setM_dcbSucceed_count(m_usageAnalyticDao.getValueByMetricName(UsageAnalyticMetricName.DCB_SUCCEED.toString()));
-        usageStatisticsReport.setM_dcbFailed(UsageAnalyticMetricName.DCB_FAILED.toString().toLowerCase());
-        usageStatisticsReport.setM_dcbFailed_count(m_usageAnalyticDao.getValueByMetricName(UsageAnalyticMetricName.DCB_FAILED.toString()));
+        usageStatisticsReport.setDcbSucceed(m_usageAnalyticDao.getValueByMetricName(UsageAnalyticMetricName.DCB_SUCCEED.toString()));
+        usageStatisticsReport.setDcbFailed(m_usageAnalyticDao.getValueByMetricName(UsageAnalyticMetricName.DCB_FAILED.toString()));
 
         setDatasourceInfo(usageStatisticsReport);
 
