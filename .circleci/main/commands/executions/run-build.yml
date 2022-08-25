@@ -39,7 +39,7 @@ commands:
             esac
       - run:
           name: Compile OpenNMS
-          command: |        
+          command: |
             ulimit -n 65536 || :
             ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
               -Daether.connector.resumeDownloads=false \
@@ -49,11 +49,12 @@ commands:
               -DmaxCpus=<< parameters.number-vcpu >> \
               -Prun-expensive-tasks \
               -Psmoke \
+              -Penable.license=true \
               --batch-mode \
               $MAVEN_ARGS || exit 1
       - run:
           name: Check if we have generated apidocs
-          command: |      
+          command: |
             if [ -d target/site/apidocs ]; then
               pushd target/site/apidocs
                 tar -czf "../../artifacts/opennms-${OPENNMS_VERSION}-javadoc.tar.gz" *
