@@ -1,3 +1,0 @@
-
-[[import-inventory]]
-= Step 3: Import Inventory

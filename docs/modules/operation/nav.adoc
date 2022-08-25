@@ -3,7 +3,7 @@
 
 * xref:quick-start/introduction.adoc[]
 ** xref:quick-start/users.adoc[]
-** xref:quick-start/inventory/introduction.adoc[]
+** xref:quick-start/inventory.adoc[]
 
 * xref:deep-dive/introduction.adoc[]
 
