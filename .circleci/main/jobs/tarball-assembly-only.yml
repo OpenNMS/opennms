@@ -26,6 +26,7 @@ jobs:
                 MAVEN_ARGS="-Dbuild.type=production $MAVEN_ARGS"
                 ;;
             esac
+            ulimit -n 65536 || :
             ./assemble.pl -DskipTests=true -Dbuild.skip.tarball=false \
               -Daether.connector.resumeDownloads=false \
               -Daether.connector.basic.threads=1 \

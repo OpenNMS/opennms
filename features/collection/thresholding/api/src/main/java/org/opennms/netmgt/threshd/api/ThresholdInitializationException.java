@@ -51,4 +51,15 @@ public class ThresholdInitializationException extends Exception {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 
+    public class Unchecked extends RuntimeException {
+        private Unchecked() {}
+
+        public ThresholdInitializationException getChecked() {
+            return ThresholdInitializationException.this;
+        }
+    }
+
+    public Unchecked wrapUnchecked() {
+        throw new Unchecked();
+    }
 }
