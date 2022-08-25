@@ -65,13 +65,12 @@ import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.SelinuxContext;
+import org.testcontainers.containers.wait.strategy.WaitStrategy;
 import org.testcontainers.lifecycle.TestDescription;
 import org.testcontainers.lifecycle.TestLifecycleAware;
 import org.testcontainers.utility.MountableFile;
 
 import com.github.dockerjava.api.command.CreateContainerCmd;
-
-import joptsimple.internal.Strings;
 
 public class MinionContainer extends GenericContainer implements KarafContainer, TestLifecycleAware {
     private static final Logger LOG = LoggerFactory.getLogger(MinionContainer.class);
@@ -91,9 +90,13 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
 
     private final String id;
     private final String location;
-    private final GenericContainer container;
+    protected final GenericContainer container;
 
-    private MinionContainer(final StackModel model, final String id, final String location) {
+    public interface WaitStrategyInterface {
+        WaitStrategy getStrategy(MinionContainer container);
+    }
+
+    protected MinionContainer(final StackModel model, final String id, final String location, final WaitStrategyInterface waitStrategyInterface) {
         super("minion");
         this.model = Objects.requireNonNull(model);
         this.id = Objects.requireNonNull(id);
@@ -113,14 +116,14 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
                 .withNetwork(Network.SHARED)
                 .withNetworkAliases(ALIAS)
                 .withCommand("-c")
-                .waitingFor(new WaitForMinion(this));
+                .waitingFor(Objects.requireNonNull(waitStrategyInterface).getStrategy(this));
 
         // Help make development/debugging easier
         DevDebugUtils.setupMavenRepoBind(this, "/opt/minion/.m2");
     }
 
     public MinionContainer(final StackModel model, final MinionProfile profile) {
-        this(model, profile.getId(), profile.getLocation());
+        this(model, profile.getId(), profile.getLocation(), c -> new WaitForMinion(c));
 
         container.addFileSystemBind(writeMinionConfig(profile).toString(),
                 "/opt/minion/minion-config.yaml", BindMode.READ_ONLY, SelinuxContext.SINGLE);
@@ -132,7 +135,7 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
     }
 
     public MinionContainer(final StackModel model, final Map<String, String> configuration) {
-        this(model, configuration.get("MINION_ID"), configuration.get("MINION_LOCATION"));
+        this(model, configuration.get("MINION_ID"), configuration.get("MINION_LOCATION"), c -> new WaitForMinion(c));
 
         for(final Map.Entry<String, String> entry : configuration.entrySet()) {
             container.addEnv(entry.getKey(), entry.getValue());
@@ -162,15 +165,6 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
                 "\t\"broker-url\": \"failover:tcp://" + OpenNMSContainer.ALIAS + ":61616\"\n" +
                 "}";
         OverlayUtils.writeYaml(minionConfigYaml, jsonMapper.readValue(config, Map.class));
-
-        if (!Strings.isNullOrEmpty(profile.getScvProvider())) {
-            String scvProvider = "{\n" +
-                    "\t\"scv\": {\n" +
-                    "\t\t\"provider\": \"" + profile.getScvProvider() + "\"\n" +
-                    "\t}\n" +
-                    "}";
-            OverlayUtils.writeYaml(minionConfigYaml, jsonMapper.readValue(scvProvider, Map.class));
-        }
 
         if (IpcStrategy.KAFKA.equals(model.getIpcStrategy())) {
             String kafkaIpc = "{\n" +

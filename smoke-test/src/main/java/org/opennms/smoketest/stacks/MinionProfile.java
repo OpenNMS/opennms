@@ -54,15 +54,12 @@ public class MinionProfile {
     private final boolean icmpSupportEnabled;
     private final List<OverlayFile> files;
 
-    private final String scvProvider;
-
     private MinionProfile(Builder builder) {
         location = builder.location;
         id = builder.id;
         jvmDebuggingEnabled = builder.jvmDebuggingEnabled;
         icmpSupportEnabled = builder.icmpSupportEnabled;
         files = Collections.unmodifiableList(builder.files);
-        scvProvider = builder.scvProvider;
     }
 
     public static Builder newBuilder() {
@@ -75,7 +72,6 @@ public class MinionProfile {
         private boolean jvmDebuggingEnabled = false;
         private boolean icmpSupportEnabled = false;
         private List<OverlayFile> files = new LinkedList<>();
-        private String scvProvider = null;
 
         public Builder withLocation(String location) {
             this.location = Objects.requireNonNull(location);
@@ -106,11 +102,6 @@ public class MinionProfile {
             return this;
         }
 
-        public Builder withScvProvider(final String scvProvider) {
-            this.scvProvider = scvProvider;
-            return this;
-        }
-
         public MinionProfile build() {
             return new MinionProfile(this);
         }
@@ -137,7 +128,5 @@ public class MinionProfile {
         return files;
     }
 
-    public String getScvProvider() {
-        return scvProvider;
-    }
+
 }
