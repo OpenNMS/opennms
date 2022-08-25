@@ -36,6 +36,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+import org.opennms.smoketest.containers.MinionContainer;
+
 /**
  * All the Minion related settings that need to be tweaked on
  * a per container basis.
@@ -54,12 +56,17 @@ public class MinionProfile {
     private final boolean icmpSupportEnabled;
     private final List<OverlayFile> files;
 
+    private final String dominionGrpcScvClientSecret;
+    private MinionContainer.WaitStrategyInterface waitStrategyInterface;
+
     private MinionProfile(Builder builder) {
         location = builder.location;
         id = builder.id;
         jvmDebuggingEnabled = builder.jvmDebuggingEnabled;
         icmpSupportEnabled = builder.icmpSupportEnabled;
         files = Collections.unmodifiableList(builder.files);
+        dominionGrpcScvClientSecret = builder.dominionGrpcScvClientSecret;
+        waitStrategyInterface = builder.waitStrategyInterface;
     }
 
     public static Builder newBuilder() {
@@ -72,6 +79,8 @@ public class MinionProfile {
         private boolean jvmDebuggingEnabled = false;
         private boolean icmpSupportEnabled = false;
         private List<OverlayFile> files = new LinkedList<>();
+        private String dominionGrpcScvClientSecret;
+        private MinionContainer.WaitStrategyInterface waitStrategyInterface = container -> new MinionContainer.WaitForMinion(container);
 
         public Builder withLocation(String location) {
             this.location = Objects.requireNonNull(location);
@@ -102,10 +111,19 @@ public class MinionProfile {
             return this;
         }
 
+        public Builder withDominionGrpcScvClientSecret(final String dominionGrpcScvClientSecret) {
+            this.dominionGrpcScvClientSecret = dominionGrpcScvClientSecret;
+            return this;
+        }
+
+        public Builder withWaitStrategy(final MinionContainer.WaitStrategyInterface waitStrategyInterface) {
+            this.waitStrategyInterface = waitStrategyInterface;
+            return this;
+        }
+
         public MinionProfile build() {
             return new MinionProfile(this);
         }
-
     }
 
     public String getLocation() {
@@ -128,5 +146,11 @@ public class MinionProfile {
         return files;
     }
 
+    public String getDominionGrpcScvClientSecret() {
+        return dominionGrpcScvClientSecret;
+    }
 
+    public MinionContainer.WaitStrategyInterface getWaitStrategy() {
+        return waitStrategyInterface;
+    }
 }

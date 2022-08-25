@@ -72,6 +72,8 @@ import org.testcontainers.utility.MountableFile;
 
 import com.github.dockerjava.api.command.CreateContainerCmd;
 
+import joptsimple.internal.Strings;
+
 public class MinionContainer extends GenericContainer implements KarafContainer, TestLifecycleAware {
     private static final Logger LOG = LoggerFactory.getLogger(MinionContainer.class);
     private static final int MINION_DEBUG_PORT = 5005;
@@ -90,13 +92,13 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
 
     private final String id;
     private final String location;
-    protected final GenericContainer container;
+    private final GenericContainer container;
 
     public interface WaitStrategyInterface {
         WaitStrategy getStrategy(MinionContainer container);
     }
 
-    protected MinionContainer(final StackModel model, final String id, final String location, final WaitStrategyInterface waitStrategyInterface) {
+    private MinionContainer(final StackModel model, final String id, final String location, final WaitStrategyInterface waitStrategyInterface) {
         super("minion");
         this.model = Objects.requireNonNull(model);
         this.id = Objects.requireNonNull(id);
@@ -123,7 +125,7 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
     }
 
     public MinionContainer(final StackModel model, final MinionProfile profile) {
-        this(model, profile.getId(), profile.getLocation(), c -> new WaitForMinion(c));
+        this(model, profile.getId(), profile.getLocation(), profile.getWaitStrategy());
 
         container.addFileSystemBind(writeMinionConfig(profile).toString(),
                 "/opt/minion/minion-config.yaml", BindMode.READ_ONLY, SelinuxContext.SINGLE);
@@ -165,6 +167,14 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
                 "\t\"broker-url\": \"failover:tcp://" + OpenNMSContainer.ALIAS + ":61616\"\n" +
                 "}";
         OverlayUtils.writeYaml(minionConfigYaml, jsonMapper.readValue(config, Map.class));
+
+        if (!Strings.isNullOrEmpty(profile.getDominionGrpcScvClientSecret())) {
+            final String scvConfig = "{\"scv\": {\"provider\": \"dominion\"}}";
+            OverlayUtils.writeYaml(minionConfigYaml, jsonMapper.readValue(scvConfig, Map.class));
+
+            final String gprcConfig = "{\"dominion\": { \"grpc\": { \"client-secret\":\"" + profile.getDominionGrpcScvClientSecret() + "\"}}}";
+            OverlayUtils.writeYaml(minionConfigYaml, jsonMapper.readValue(gprcConfig, Map.class));
+        }
 
         if (IpcStrategy.KAFKA.equals(model.getIpcStrategy())) {
             String kafkaIpc = "{\n" +
@@ -240,7 +250,7 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
         return new InetSocketAddress(getContainerIpAddress(), mappedPort);
     }
 
-    private static class WaitForMinion extends org.testcontainers.containers.wait.strategy.AbstractWaitStrategy {
+    public static class WaitForMinion extends org.testcontainers.containers.wait.strategy.AbstractWaitStrategy {
         private final MinionContainer container;
 
         public WaitForMinion(MinionContainer container) {
