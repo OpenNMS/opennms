@@ -20,11 +20,15 @@ jobs:
             export MAVEN_OPTS="-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
             export MAVEN_ARGS="install"
             export MAVEN_ARGS="install"
+            # release branches should enable extra "production" stuff like license indexing
             case "${CIRCLE_BRANCH}" in
               "master-"*)
+                MAVEN_ARGS="-Dbuild.type=production $MAVEN_ARGS"
+                ;;
               "release-"*)
+                MAVEN_ARGS="-Dbuild.type=production $MAVEN_ARGS"
+                ;;
               "develop")
-                # release branches should enable extra "production" stuff like license indexing
                 MAVEN_ARGS="-Dbuild.type=production $MAVEN_ARGS"
                 ;;
             esac
