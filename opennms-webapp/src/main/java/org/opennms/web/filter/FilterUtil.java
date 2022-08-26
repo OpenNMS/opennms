@@ -34,6 +34,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.opennms.core.utils.StringUtils;
+
 public abstract class FilterUtil {
 
     public static String toFilterURL(String[] filters) {
