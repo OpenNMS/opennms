@@ -91,6 +91,8 @@ public class UsageStatisticsReportDTO {
     private long m_coreQueuedUpdatesCompleted;
     private int m_users;
     private int m_groups;
+    private Map<String, Long> m_nodesWithDeviceConfigBySysOid = Collections.emptyMap();
+
     public void setSystemId(String systemId) {
         m_systemId = systemId;
     }
@@ -458,6 +460,13 @@ public class UsageStatisticsReportDTO {
         this.m_users = m_users;
     }
 
+    public Map<String, Long> getNodesWithDeviceConfigBySysOid() {
+        return m_nodesWithDeviceConfigBySysOid;
+    }
+
+    public void setNodesWithDeviceConfigBySysOid(Map<String, Long> nodesWithConfigBySysOid) {
+        this.m_nodesWithDeviceConfigBySysOid = nodesWithConfigBySysOid;
+    }
 
     public String toJson() {
         return toJson(false);
