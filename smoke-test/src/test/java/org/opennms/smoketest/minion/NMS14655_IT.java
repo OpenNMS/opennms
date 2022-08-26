@@ -5,7 +5,6 @@ import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 import java.io.PrintStream;
-import java.net.InetSocketAddress;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -40,13 +39,13 @@ public class NMS14655_IT {
         await().atMost(5, MINUTES)
                 .pollInterval(5, SECONDS)
                 .until(() -> {
-                    final String bundleCount = ssh(MINION_CONTAINER.getSshAddress(), "bundle:list | grep SCV | wc -l");
-                    final String scvBundles = ssh(MINION_CONTAINER.getSshAddress(), "bundle:list | grep SCV");
+                    final String bundleCount = ssh("bundle:list | grep SCV | wc -l");
+                    final String scvBundles = ssh("bundle:list | grep SCV");
                     return bundleCount.contains("3") && scvBundles.contains("Dominion gRPC Impl") && !scvBundles.contains("JCEKS Impl");
                 });
     }
 
-    private String ssh(final InetSocketAddress sshAddress, final String command) {
+    private String ssh(final String command) {
         try (final SshClient sshClient = MINION_CONTAINER.ssh()) {
             final PrintStream pipe = sshClient.openShell();
             if (command != null) {
