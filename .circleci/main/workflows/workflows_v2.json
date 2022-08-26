@@ -533,6 +533,9 @@
             ],
             "filters": {
                 "branches": {
+                    "ignore": [
+                        "develop"
+                    ],
                     "only": [
                         "<< pipeline.parameters.main_branch >>"
                     ]
