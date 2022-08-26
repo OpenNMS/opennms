@@ -21,7 +21,9 @@ jobs:
             export MAVEN_ARGS="install"
             export MAVEN_ARGS="install"
             case "${CIRCLE_BRANCH}" in
-              "master"*|"release-"*|develop)
+              "master-"*)
+              "release-"*)
+              "develop")
                 # release branches should enable extra "production" stuff like license indexing
                 MAVEN_ARGS="-Dbuild.type=production $MAVEN_ARGS"
                 ;;

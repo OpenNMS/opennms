@@ -33,7 +33,9 @@ commands:
             export MAVEN_OPTS="-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
             MAVEN_ARGS="install"
             case "${CIRCLE_BRANCH}" in
-              "master-"*|"release-"*|develop)
+              "master-"*)
+              "release-"*)
+              "develop")
                 mkdir -p target/artifacts
                 MAVEN_ARGS="-Dbuild.type=production $MAVEN_ARGS javadoc:aggregate"
                 ;;
