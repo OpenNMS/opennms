@@ -1,49 +1,48 @@
 
 [[provision-getting-started]]
-= Step 3: Catalog Inventory
+= Step 3: Provision Inventory
 
-{page-component-title} installs with a base configuration that automatically begins service-level monitoring and reporting as soon as you catalog the managed entities (nodes, IP interfaces, SNMP interfaces, and services) you want to monitor.
+{page-component-title} installs with a base configuration that automatically begins service-level monitoring and reporting as soon as you identify and catalog (provision) the managed entities (nodes, IP interfaces, SNMP interfaces, and services) you want to monitor.
 
 {page-component-title} has three methods of provisioning:
 
 * xref:deep-dive/provisioning/auto-discovery.adoc[] (automatically add nodes)
-* xref:deep-dive/provisioning/directed-discovery.adoc[] 
+* xref:deep-dive/provisioning/directed-discovery.adoc[] (manually add nodes)
 * xref:development:rest/rest-api.adoc#rest-api[Asset import] through the RestAPI
-
-Use auto discovery if you do not have a "source of truth" for your network inventory.
-Auto discovery can become that source.
-Be aware that auto discovery can include entities you do not want to monitor, if not properly configured.
-
-Directed discovery is effective if you know your inventory, particularly with smaller networks (for example, 100–200 nodes).
-It is also useful for areas of your network that you cannot auto discover.
 
 Regardless of the method, provisioning is an iterative process.
 You will need to fine-tune your results to exclude or add things to what you monitor.
 
-== Before you begin
+This quick start presents a very basic example of auto and manual discovery of nodes, through SNMP.
+Beyond this quick start, you can complete additional tasks to provision your system, including the following:
 
-If you collect data via SNMP or are monitoring the availability of the SNMP service on a node, you must <<deep-dive/provision-snmp-configuration, configure SNMP for provisioning>> before using auto or directed discovery.
-This ensures that {page-component-title} can immediately scan newly discovered devices for entities.
-It also makes reporting and thresholding available for these devices.
+* Use plugins to integrate with external systems
+* Specify more complex entity detection with OpenNMS detectors (ActiveMQ, DNS, FTP, JDBC, TCP, and so on)
+* Create policies to manage provisioning behavior
 
-In addition, you may want to xref:foreign-source-definition[edit the default foreign source definition] to specify the services to detect and policies to apply during discovery.
+Refer to xref:operation:deep-dive/provisioning/introduction.adoc[Provisioning] in the deep-dive section for details.
 
 [[provision-snmp-configuration]]
 == Configure SNMP for provisioning
 
+To collect data through SNMP or monitor the availability of SNMP services on a node, you need to configure SNMP for provisioning before using auto or directed discovery.
+This ensures that {page-component-title} can immediately scan newly discovered devices for entities.
+
 Proper SNMP configuration lets {page-component-title} understand network/node topology and automatically enables performance data collection.
+
 {page-component-title} updates network topology as it provisions nodes.
 
-. In the web UI, click the gear icon in the top right.
-. In the *Provisioning* area, choose *Configure SNMP Community Names by IP Address*, and fill in the fields as desired:
+. In the web UI, click the *Gear* icon in the top right.
+. In the *Provisioning* area, choose *Configure SNMP Community Names by IP Address*, and fill in the fields as desired.
++
+This screen sets up SNMP within {page-component-title} for agents listening on IP addresses 10.1.1.1 through 10.254.254.254.
 
 .Configure SNMP community names
 image::provisioning/SNMP_Config.png[]
 
-This screen sets up SNMP within {page-component-title} for agents listening on IP addresses 10.1.1.1 through 10.254.254.254.
 These settings are optimized into the `snmp-config.xml` file.
 
-For an example of the resulting XML configuration, see link:#SNMP-community-xml[Configure SNMP community names].
+For an example of the resulting XML configuration, see xref:operation:deep-dive/provisioning/xml-samples.adoc#SNMP-community-xml[Configure SNMP community names].
 
 [[foreign-source-definition]]
 == Edit Default Foreign Source Definition
