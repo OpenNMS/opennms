@@ -23,7 +23,7 @@ commands:
       - restore-maven-cache
       - restore-nodejs-cache
       - run:
-          name: Setup Environment
+          name: Compile OpenNMS
           command: |
             ulimit -n 65536 || :
             export OPENNMS_VERSION="$(.circleci/scripts/pom2version.sh pom.xml)"
@@ -33,23 +33,11 @@ commands:
             MAVEN_ARGS="install"
             mkdir -p target/artifacts
             case "${CIRCLE_BRANCH}" in
-              "master-"*)
-                MAVEN_ARGS="-Dbuild.type=production $MAVEN_ARGS javadoc:aggregate"
-                ;;
-              "release-"*)
-                MAVEN_ARGS="-Dbuild.type=production $MAVEN_ARGS javadoc:aggregate"
-                ;;
-              "develop")
+              "master-"*|"release-"*|"develop")
                 MAVEN_ARGS="-Dbuild.type=production $MAVEN_ARGS javadoc:aggregate"
                 ;;
             esac
-            echo "export OPENNMS_VERSION=$OPENNMS_VERSION" >> $BASH_ENV
-            echo "export MAVEN_ARGS=$MAVEN_ARGS" >> $BASH_ENV
-            echo "export MAVEN_OPTS=$MAVEN_OPTS" >> $BASH_ENV
-      - run:
-          name: Compile OpenNMS
-          command: |
-            ulimit -n 65536 || :
+            echo "export OPENNMS_VERSION=\"$OPENNMS_VERSION\"" >> $BASH_ENV
             ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
               -Daether.connector.resumeDownloads=false \
               -Daether.connector.basic.threads=1 \
