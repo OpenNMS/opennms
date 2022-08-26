@@ -32,7 +32,7 @@ import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.smoketest.stacks.IpcStrategy;
 
 // Verifies that flows can be processed by a sentinel and are persisted to Elastic communicating via kafka
-@org.junit.experimental.categories.Category(org.opennms.smoketest.junit.FlakyTests.class)
+//@org.junit.experimental.categories.Category(org.opennms.smoketest.junit.FlakyTests.class)
 public class FlowStackKafkaIT extends AbstractFlowIT {
 
     @Override

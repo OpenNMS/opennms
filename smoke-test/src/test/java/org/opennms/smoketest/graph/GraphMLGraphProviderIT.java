@@ -46,7 +46,7 @@ import org.opennms.smoketest.utils.RestClient;
  * @author mvrueden
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-@org.junit.experimental.categories.Category(org.opennms.smoketest.junit.FlakyTests.class)
+//@org.junit.experimental.categories.Category(org.opennms.smoketest.junit.FlakyTests.class)
 public class GraphMLGraphProviderIT extends OpenNMSSeleniumIT {
 
     private static final String LABEL = "GraphML Topology Provider (test-graph)";

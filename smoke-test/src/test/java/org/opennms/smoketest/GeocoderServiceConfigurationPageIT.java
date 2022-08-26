@@ -53,7 +53,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 
-@Ignore("Flapping. See NMS-12114")
+//@Ignore("Flapping. See NMS-12114")
 public class GeocoderServiceConfigurationPageIT extends UiPageTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(GeocoderServiceConfigurationPageIT.class);

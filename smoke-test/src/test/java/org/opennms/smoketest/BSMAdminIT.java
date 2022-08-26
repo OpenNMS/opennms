@@ -59,7 +59,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 
-@Ignore
+//@Ignore
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class BSMAdminIT extends OpenNMSSeleniumIT {
 

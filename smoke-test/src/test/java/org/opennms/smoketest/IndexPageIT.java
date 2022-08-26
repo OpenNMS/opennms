@@ -50,7 +50,7 @@ import com.google.common.base.Predicate;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-@org.junit.experimental.categories.Category(org.opennms.smoketest.junit.FlakyTests.class)
+//@org.junit.experimental.categories.Category(org.opennms.smoketest.junit.FlakyTests.class)
 public class IndexPageIT extends OpenNMSSeleniumIT {
 
     private static final Logger LOG = LoggerFactory.getLogger(IndexPageIT.class);

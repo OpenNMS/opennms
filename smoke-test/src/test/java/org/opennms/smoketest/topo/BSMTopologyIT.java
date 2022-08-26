@@ -56,7 +56,7 @@ import com.google.common.collect.Lists;
  *
  * @author jwhite
  */
-@org.junit.experimental.categories.Category(org.opennms.smoketest.junit.FlakyTests.class)
+//@org.junit.experimental.categories.Category(org.opennms.smoketest.junit.FlakyTests.class)
 public class BSMTopologyIT extends OpenNMSSeleniumIT {
 
     private BsmAdminPage bsmAdminPage;

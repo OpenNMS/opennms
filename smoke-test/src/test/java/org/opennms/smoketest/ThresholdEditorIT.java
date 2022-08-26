@@ -35,7 +35,7 @@ import org.junit.runners.MethodSorters;
 import org.openqa.selenium.By;
 import org.openqa.selenium.support.ui.Select;
 
-@Ignore("Flapping")
+//@Ignore("Flapping")
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ThresholdEditorIT extends OpenNMSSeleniumIT {
     @Before

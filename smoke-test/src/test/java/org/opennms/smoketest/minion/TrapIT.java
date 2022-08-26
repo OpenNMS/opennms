@@ -74,7 +74,7 @@ import org.slf4j.LoggerFactory;
  * @author seth
  */
 // @Category(MinionTests.class)
-@org.junit.experimental.categories.Category(org.opennms.smoketest.junit.FlakyTests.class)
+//@org.junit.experimental.categories.Category(org.opennms.smoketest.junit.FlakyTests.class)
 public class TrapIT {
     private static final Logger LOG = LoggerFactory.getLogger(TrapIT.class);
 

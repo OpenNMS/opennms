@@ -75,7 +75,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-@Ignore("This test flaps because it doesn't account for provision ordering correctly")
+//@Ignore("This test flaps because it doesn't account for provision ordering correctly")
 public class PolicyIT {
 
     public static interface BackgroundTask {

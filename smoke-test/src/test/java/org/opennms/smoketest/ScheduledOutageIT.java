@@ -48,7 +48,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
  * 1. Verifies that the scheduled outage text is correctly displayed. See LTS-233.
  * 2. Verifies that special characters can be used in scheduled outage names. See LTS-234.
  */
-@Ignore("flapping")
+//@Ignore("flapping")
 public class ScheduledOutageIT extends OpenNMSSeleniumIT {
 
     @Before

@@ -43,7 +43,7 @@ import org.opennms.smoketest.utils.KarafShell;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 
-@org.junit.experimental.categories.Category(org.opennms.smoketest.junit.FlakyTests.class)
+//@org.junit.experimental.categories.Category(org.opennms.smoketest.junit.FlakyTests.class)
 public class HealthCheckRestIT {
 
     @ClassRule
