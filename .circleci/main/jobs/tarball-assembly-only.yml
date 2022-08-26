@@ -22,14 +22,8 @@ jobs:
             export MAVEN_ARGS="install"
             # release branches should enable extra "production" stuff like license indexing
             case "${CIRCLE_BRANCH}" in
-              "master-"*)
-                MAVEN_ARGS="-Dbuild.type=production $MAVEN_ARGS"
-                ;;
-              "release-"*)
-                MAVEN_ARGS="-Dbuild.type=production $MAVEN_ARGS"
-                ;;
-              "develop")
-                MAVEN_ARGS="-Dbuild.type=production $MAVEN_ARGS"
+              "master-"*|"release-"*|"develop")
+                MAVEN_ARGS="-Pproduction -Dbuild.type=production $MAVEN_ARGS"
                 ;;
             esac
             ulimit -n 65536 || :

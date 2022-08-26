@@ -34,7 +34,7 @@ commands:
             mkdir -p target/artifacts
             case "${CIRCLE_BRANCH}" in
               "master-"*|"release-"*|"develop")
-                MAVEN_ARGS="-Dbuild.type=production $MAVEN_ARGS javadoc:aggregate"
+                MAVEN_ARGS="-Pproduction -Dbuild.type=production $MAVEN_ARGS javadoc:aggregate"
                 ;;
             esac
             echo "export OPENNMS_VERSION=\"$OPENNMS_VERSION\"" >> $BASH_ENV
