@@ -112,6 +112,7 @@ commands:
         - run:
             name: Collect Maven Dependencies
             command: |
+              ulimit -n 65536 || :
               ./compile.pl -t \
                 -Dbuild.skip.tarball=true \
                 --update-plugins \
@@ -280,6 +281,7 @@ commands:
       - run:
           name: Compile OpenNMS
           command: |
+            ulimit -n 65536 || :
             export OPENNMS_VERSION="$(.circleci/scripts/pom2version.sh pom.xml)"
             .circleci/scripts/configure-signing.sh
             ./clean.pl
@@ -1032,6 +1034,7 @@ jobs:
       - run:
           name: Assemble tarballs and related artifacts
           command: |
+            ulimit -n 65536 || :
             export MAVEN_OPTS="-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
             export MAVEN_ARGS="install"
             export MAVEN_ARGS="install"
