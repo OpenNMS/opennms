@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+    <changeSet author="pschweizer" id="31.0.0-make-systemid-a-uuid">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(*) from monitoringsystems
+                WHERE id = '00000000-0000-0000-0000-000000000000'
+                AND type='OpenNMS'
+                AND location='Default'
+            </sqlCheck>
+        </preConditions>
+        <sql>
+            CREATE EXTENSION pgcrypto;
+        </sql>
+        <sql>
+            UPDATE monitoringsystems
+            SET id=gen_random_uuid ()
+            WHERE id = '00000000-0000-0000-0000-000000000000' AND type='OpenNMS' AND location='Default';
+        </sql>
+        <sql>
+            UPDATE events
+            SET systemid = subquery.id
+            FROM (SELECT id FROM monitoringsystems where type='OpenNMS' AND location='Default') AS subquery
+            WHERE systemid = '00000000-0000-0000-0000-000000000000';
+        </sql>
+    </changeSet>
+</databaseChangeLog>
