@@ -1,8 +1,0 @@
-workflows:
-  empty:
-    jobs:
-      - run-empty:
-          filters:
-            branches:
-              ignore:
-                - /^from-foundation.*/

@@ -91,6 +91,9 @@ public class UsageStatisticsReportDTO {
     private long m_coreQueuedUpdatesCompleted;
     private int m_users;
     private int m_groups;
+    private long m_dcbSucceed;
+    private long m_dcbFailed;
+
     public void setSystemId(String systemId) {
         m_systemId = systemId;
     }
@@ -458,6 +461,21 @@ public class UsageStatisticsReportDTO {
         this.m_users = m_users;
     }
 
+    public long getDcbSucceed() {
+        return m_dcbSucceed;
+    }
+
+    public void setDcbSucceed(long m_dcbSucceed) {
+        this.m_dcbSucceed = m_dcbSucceed;
+    }
+
+    public long getDcbFailed() {
+        return m_dcbFailed;
+    }
+
+    public void setDcbFailed(long m_dcbFailed) {
+        this.m_dcbFailed = m_dcbFailed;
+    }
 
     public String toJson() {
         return toJson(false);

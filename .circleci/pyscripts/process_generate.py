@@ -14,11 +14,13 @@ path_to_build_components = os.path.join("/tmp", "build-triggers.json")
 path_to_build_trigger_override = os.path.join(
     ".circleci", "build-triggers.override.json"
 )
+path_to_workflow = os.path.join(".circleci", "main", "workflows", "workflows_v2.json")
 
 output_path = os.environ.get("OUTPUT_PATH")
 head = os.environ.get("CIRCLE_SHA1")
 base_revision = os.environ.get("BASE_REVISION")
 branch_name = os.environ.get("CIRCLE_BRANCH")
+
 
 libgit = libgit.libgit("stdout")
 
@@ -83,9 +85,6 @@ mappings = dict(mappings)
 print("Mappings:", mappings)
 
 
-# If *IT.java files have changed -> enable integration builds
-# If *Test.java files have changed -> enable smoke builds
-# if Dockerfiles (under opennms-container) have changed enable docker builds
 What_to_build = []
 
 
@@ -103,14 +102,9 @@ for change in changes:
     if "src/test/" in change and "smoke-test/" not in change:
         add_to_build_list("Integration_tests")
     elif "src/test/" in change and "smoke-test/" in change:
-        add_to_build_list("Smoke_tests")
+        add_to_build_list("smoke_tests")
     elif "opennms-container" in change:
-        if "horizon" in change:
-            add_to_build_list("oci_horizon_image")
-        elif "minion" in change:
-            add_to_build_list("oci_minion_image")
-        elif "sentinel" in change:
-            add_to_build_list("oci_sentinel_image")
+        add_to_build_list("oci")
     elif ".circleci" in change:
         add_to_build_list("circleci_configuration")
     elif "doc" in change:
@@ -123,106 +117,152 @@ for change in changes:
 print("What we want to build:", What_to_build, len(What_to_build))
 git_keywords = libgit.extract_keywords_from_last_commit()
 
-if os.path.exists(path_to_build_trigger_override):
+with open(path_to_workflow, "r", encoding="UTF-8") as file_handler:
+    workflow_data = json.load(file_handler)
+
+workflow_keywords = workflow_data["bundles"].keys()
+print("Workflow Keywords:", workflow_keywords)
+
+# Check to see if build-trigger.overrride file exists and we are not
+# on the main branches
+if os.path.exists(path_to_build_trigger_override) and (
+    "develop" not in branch_name
+    and "master" not in branch_name
+    and "release-" not in branch_name
+    and "foundation-" not in branch_name
+    and "merge-foundation/" not in branch_name
+):
+    build_trigger_override_found = True
+else:
+    build_trigger_override_found = False
+
+
+if build_trigger_override_found:
     with open(path_to_build_trigger_override, "r", encoding="UTF-8") as file_handler:
         build_mappings = json.load(file_handler)
 else:
     build_mappings = {
-        "build": {
-            "docs": False,
-            "ui": False,
-            "coverage": False,
-            "build": False,
-            "deploy": False,
-        },
-        "publish": {"packages": False},
-        "tests": {"smoke": False, "smoke-flaky": False, "integration": False},
-        "oci-images": {"minion": False, "horizon": False, "sentinel": False},
-        "debian-packages": {"minion": False, "horizon": False, "sentinel": False},
-        "rpm-packages": {"minion": False, "horizon": False, "sentinel": False},
+        "build-deploy": False,
+        "coverage": False,
+        "doc": False,
+        "ui": False,
+        "integration": False,
+        "smoke": False,
+        "smoke-flaky": False,
+        "rpms": False,
+        "debs": False,
+        "oci": False,
+        "build-publish": False,
         "experimental": False,
-        "filters": {"enabled": True},
     }
 
+print("Build Trigger Override Found:", str(build_trigger_override_found))
+
+if "trigger-build" in mappings:
+    if (
+        "develop" in branch_name
+        or "master" in branch_name
+        or "release-" in branch_name
+        or "foundation-" in branch_name
+        and "merge-foundation/" not in branch_name
+    ):
+        print("Executing workflow: build-publish")
+        build_mappings["build-publish"] = mappings["trigger-build"]
+    else:
+        if "merge-foundation/" in branch_name:
+            print("Execute workflow: merge-foundation")
+            build_mappings["merge-foundation"] = True
+            build_mappings["build-publish"] = False
+            build_mappings["build-deploy"] = False
+        elif not build_trigger_override_found:
+            print("Executing workflow: build-deploy")
+            build_mappings["build-deploy"] = mappings["trigger-build"]
+
 if "trigger-docs" in mappings:
-    build_mappings["build"]["docs"] = mappings["trigger-docs"]
+    build_mappings["docs"] = mappings["trigger-docs"]
 
 if "trigger-ui" in mappings:
-    build_mappings["build"]["ui"] = mappings["trigger-ui"]
+    build_mappings["ui"] = mappings["trigger-ui"]
 
 if "trigger-coverage" in mappings:
-    build_mappings["build"]["coverage"] = mappings["trigger-coverage"]
+    build_mappings["coverage"] = mappings["trigger-coverage"]
 
 if "trigger-flaky-smoke" in mappings:
-    build_mappings["tests"]["smoke-flaky"] = mappings["trigger-flaky-smoke"]
+    if not build_mappings["smoke-flaky"]:
+        build_mappings["smoke-flaky"] = mappings["trigger-flaky-smoke"]
 
 if re.match(".*smoke.*", branch_name):
     print("Detected smoke in the branch name")
-    build_mappings["tests"]["smoke"] = True
+    build_mappings["smoke"] = True
 
 if re.match(".*flaky.*", branch_name):
     print("Detected smoke in the branch name")
-    build_mappings["tests"]["smoke-flaky"] = True
+    build_mappings["smoke-flaky"] = True
 
 
 print("Git Keywords:", git_keywords)
 if (
     "circleci_configuration" in What_to_build
     and len(What_to_build) == 1
-    and not build_mappings["build"]["build"]
+    and not build_mappings["build-deploy"]
+    and not build_mappings["build-publish"]
 ):
     # if circleci_configuration is the only entry in the list we don't want to trigger a buildss.
     mappings["trigger-build"] = False
-    build_mappings["build"]["build"] = False
+    build_mappings["build-deploy"] = False
+    build_mappings["build-publish"] = False
 
-if "smoke" in git_keywords or "Smoke_tests" in What_to_build:
+for keyword in git_keywords:
+    if keyword in workflow_keywords:
+        if "doc" in keyword or "doc" in What_to_build:
+            build_mappings["docs"] = True
+        if "ui" in keyword or "ui" in What_to_build:
+            build_mappings["ui"] = True
+        if "build-deploy" in keyword:
+            build_mappings["build-deploy"] = True
+        if "smoke" in keyword or "smoke_tests" in What_to_build:
+            if "flaky" in str(git_keywords):
+                build_mappings["smoke-flaky"] = True
+            else:
+                build_mappings["smoke"] = True
+        if "rpms" in keyword:
+            build_mappings["rpms"] = True
+        if "debs" in keyword:
+            build_mappings["debs"] = True
+        if "oci" in keyword or "oci" in What_to_build:
+            build_mappings["oci"] = True
+        if "build-publish" in keyword:
+            build_mappings["build-publish"] = True
+
+
+if "smoke" in git_keywords or "smoke_tests" in What_to_build:
     if "flaky" in str(git_keywords):
-        build_mappings["tests"]["smoke-flaky"] = True
+        build_mappings["smoke-flaky"] = True
     else:
-        build_mappings["tests"]["smoke"] = True
-    build_mappings["build"]["build"] = True
-    # We disable filters for smoke jobs in generate_main.py
-    # build_mappings["filters"]["enabled"] = False
-
-if (
-    "oci" in git_keywords
-    or "oci_horizon_image" in What_to_build
-    or "oci_horizon_image" in What_to_build
-    or "oci_sentinel_image" in What_to_build
-):
-    build_mappings["build"]["build"] = True
-    build_mappings["oci-images"]["minion"] = True
-    build_mappings["oci-images"]["horizon"] = True
-    build_mappings["oci-images"]["sentinel"] = True
+        build_mappings["smoke"] = True
+if "oci" in git_keywords:
+    build_mappings["oci"] = True
 
 if "rpms" in git_keywords:
-    build_mappings["build"]["build"] = True
-    build_mappings["rpm-packages"]["minion"] = True
-    build_mappings["rpm-packages"]["horizon"] = True
-    build_mappings["rpm-packages"]["sentinel"] = True
+    build_mappings["rpms"] = True
 
 if "debs" in git_keywords:
-    build_mappings["build"]["build"] = True
-    build_mappings["debian-packages"]["minion"] = True
-    build_mappings["debian-packages"]["horizon"] = True
-    build_mappings["debian-packages"]["sentinel"] = True
+    build_mappings["debs"] = True
 
 if "integration" in git_keywords or "Integration_tests" in What_to_build:
-    build_mappings["build"]["build"] = True
-    build_mappings["tests"]["integration"] = True
+    build_mappings["integration"] = True
 
 if "build" in What_to_build:
-    build_mappings["build"]["build"] = True
+    build_mappings["build-deploy"] = True
 
 if "doc" in git_keywords or "docs" in git_keywords or "doc" in What_to_build:
-    build_mappings["build"]["docs"] = True
+    build_mappings["doc"] = True
 
 if "ui" in git_keywords or "ui" in What_to_build:
-    build_mappings["build"]["ui"] = True
+    build_mappings["ui"] = True
 
 if "experimentalPath" in git_keywords:
     build_mappings["experimental"] = True
-    build_mappings["build"]["build"] = False
 
 with open(output_path, "w", encoding="UTF-8") as file_handler:
     file_handler.write(json.dumps(mappings))
