@@ -11,7 +11,7 @@
 * xref:development:rest/rest-api.adoc#rest-api[Asset import] through the RestAPI
 
 Regardless of the method, provisioning is an iterative process.
-You will need to fine-tune your results to exclude or add things to what you monitor.
+You will need to fine-tune your results to exclude or add to what you monitor.
 
 This quick start presents a very basic example of auto and manual discovery of nodes, through SNMP.
 Beyond this quick start, you can complete additional tasks to provision your system, including the following:
