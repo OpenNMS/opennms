@@ -123,6 +123,8 @@ with open(path_to_workflow, "r", encoding="UTF-8") as file_handler:
 workflow_keywords = workflow_data["bundles"].keys()
 print("Workflow Keywords:", workflow_keywords)
 
+# Check to see if build-trigger.overrride file exists and we are not
+# on the main branches
 if os.path.exists(path_to_build_trigger_override) and (
     "develop" not in branch_name
     or "master" not in branch_name
