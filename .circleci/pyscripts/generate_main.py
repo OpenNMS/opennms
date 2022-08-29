@@ -177,6 +177,19 @@ for e in main_yml_content:
             level += 2
             job_entry_spaces = level
 
+            if (
+                "merge-foundation" in build_components
+                and build_components["merge-foundation"]
+            ):
+                print(
+                    "merge-foundation:",
+                    circleCI.get_Workflow_dependency("merge-foundation-branch"),
+                )
+                workflow = circleCI.get_Workflow_yaml(
+                    "merge-foundation-branch", level, enable_filters=filters_enabled
+                )
+                workflow_path = append_to_sample_workflow(workflow_path, workflow)
+
             if build_components["rpms"]:
                 print("rpm-packages > all:", circleCI.get_Workflow_dependency("rpms"))
                 workflow = circleCI.get_Workflow_yaml(

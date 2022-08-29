@@ -58,7 +58,7 @@ class libgit:
         for e in keywords:
             key, value = e
             if key in keywords_dict:
-                print("Processing:", value)
+                print("Processing:", key)
                 if isinstance(keywords_dict[key], list):
                     print("Current List:", keywords_dict[key])
                     keywords_dict[key].append(
