@@ -124,9 +124,11 @@ workflow_keywords = workflow_data["bundles"].keys()
 print("Workflow Keywords:", workflow_keywords)
 
 if os.path.exists(path_to_build_trigger_override):
+    build_trigger_override_found = True
     with open(path_to_build_trigger_override, "r", encoding="UTF-8") as file_handler:
         build_mappings = json.load(file_handler)
 else:
+    build_trigger_override_found = False
     build_mappings = {
         "build-deploy": False,
         "coverage": False,
@@ -142,19 +144,27 @@ else:
         "experimental": False,
     }
 
+print("Build Trigger Override Found:", str(build_trigger_override_found))
 
 if "trigger-build" in mappings:
     if (
         "develop" in branch_name
         or "master" in branch_name
+        and not "merge-foundation/" in branch_name
         or "release-" in branch_name
         or "foundation-" in branch_name
     ):
         print("Executing workflow: build-publish")
         build_mappings["build-publish"] = mappings["trigger-build"]
     else:
-        print("Executing workflow: build-deploy")
-        build_mappings["build-deploy"] = mappings["trigger-build"]
+        if "merge-foundation/" in branch_name:
+            print("Execute workflow: merge-foundation")
+            build_mappings["merge-foundation"] = True
+            build_mappings["build-publish"] = False
+            build_mappings["build-deploy"] = False
+        elif not build_trigger_override_found:
+            print("Executing workflow: build-deploy")
+            build_mappings["build-deploy"] = mappings["trigger-build"]
 
 if "trigger-docs" in mappings:
     build_mappings["docs"] = mappings["trigger-docs"]
@@ -183,6 +193,7 @@ if (
     "circleci_configuration" in What_to_build
     and len(What_to_build) == 1
     and not build_mappings["build-deploy"]
+    and not build_mappings["build-publish"]
 ):
     # if circleci_configuration is the only entry in the list we don't want to trigger a buildss.
     mappings["trigger-build"] = False
