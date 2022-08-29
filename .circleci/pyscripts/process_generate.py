@@ -127,9 +127,9 @@ print("Workflow Keywords:", workflow_keywords)
 # on the main branches
 if os.path.exists(path_to_build_trigger_override) and (
     "develop" not in branch_name
-    or "master" not in branch_name
-    or "release-" not in branch_name
-    or "foundation-" not in branch_name
+    and "master" not in branch_name
+    and "release-" not in branch_name
+    and "foundation-" not in branch_name
     and "merge-foundation/" not in branch_name
 ):
     build_trigger_override_found = True
