@@ -63,6 +63,7 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ProvisiondConfigurationDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.model.OnmsMonitoringSystem;
+import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeDao;
@@ -142,6 +143,7 @@ public class UsageStatisticsReporter implements StateChangeHandler {
     private GroupFactory m_groupFactory;
     private ForeignSourceRepository m_deployedForeignSourceRepository;
     private DataSourceFactoryBean m_dataSourceFactoryBean;
+    private ApplicationDao m_applicationDao;
     private boolean m_useSystemProxy = true; // true == legacy behaviour
 
     public synchronized void init() {
@@ -250,6 +252,7 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         usageStatisticsReport.setSituations(m_alarmDao.getNumSituations());
         usageStatisticsReport.setMonitoringLocations(m_monitoringLocationDao.countAll());
         usageStatisticsReport.setMinions(m_monitoringSystemDao.getNumMonitoringSystems(OnmsMonitoringSystem.TYPE_MINION));
+        usageStatisticsReport.setApplications(m_applicationDao.countAll());
         // Node statistics
         usageStatisticsReport.setNodesBySysOid(m_nodeDao.getNumberOfNodesBySysOid());
         // Karaf features
@@ -506,6 +509,10 @@ public class UsageStatisticsReporter implements StateChangeHandler {
 
     public void setMonitoringSystemDao(MonitoringSystemDao monitoringSystemDao) {
         m_monitoringSystemDao = monitoringSystemDao;
+    }
+
+    public void setApplicationDao(ApplicationDao applicationDao){
+        m_applicationDao = applicationDao;
     }
 
     public void setBusinessServiceEdgeDao(BusinessServiceEdgeDao businessServiceDao) {
