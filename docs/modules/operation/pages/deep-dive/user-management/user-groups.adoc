@@ -5,7 +5,7 @@
 Groups are collections of users.
 In large systems with many users, it might be helpful to organize them into groups.
 
-Groups may receive notifications; this is often a more convenient way to operate than configuring notifications to be sent to individuals.
+Groups may receive notifications; this is often a more convenient way to operate than configuring notifications to send to individuals.
 This lets you build more complex notification workflows and makes it easier to manage notification recipients.
 
 [[ga-user-group-create]]
