@@ -6,21 +6,21 @@
 
 {page-component-title} has three methods of provisioning:
 
-* xref:deep-dive/provisioning/auto-discovery.adoc[] (automatically add nodes)
-* xref:deep-dive/provisioning/directed-discovery.adoc[] (manually add nodes)
-* xref:development:rest/rest-api.adoc#rest-api[Asset import] through the RestAPI
+* xref:deep-dive/provisioning/auto-discovery.adoc[] (automatically add nodes).
+* xref:deep-dive/provisioning/directed-discovery.adoc[] (manually add nodes).
+* xref:development:rest/rest-api.adoc#rest-api[Asset import] through the RestAPI.
 
 Regardless of the method, provisioning is an iterative process.
 You will need to fine-tune your results to exclude or add to what you monitor.
 
 This quick start presents a very basic example of auto and manual discovery of nodes, through SNMP.
-Beyond this quick start, you can complete additional tasks to provision your system, including the following:
+Beyond this quick start, you can complete additional tasks to provision your system:
 
-* Use plugins to integrate with external systems
-* Specify more complex entity detection with OpenNMS detectors (ActiveMQ, DNS, FTP, JDBC, TCP, and so on)
-* Create policies to manage provisioning behavior
+* Use plugins to integrate with external systems.
+* Specify more complex entity detection with OpenNMS detectors (ActiveMQ, DNS, FTP, JDBC, TCP, and so on).
+* Create policies to manage provisioning behavior.
 
-Refer to xref:operation:deep-dive/provisioning/introduction.adoc[Provisioning] in the deep-dive section for details.
+Refer to xref:operation:deep-dive/provisioning/introduction.adoc[Provisioning] in the deep-dive section for details about these and other provisioning-related tasks.
 
 [[provision-snmp-configuration]]
 == Configure SNMP for provisioning
@@ -32,7 +32,7 @@ Proper SNMP configuration lets {page-component-title} understand network/node to
 
 {page-component-title} updates network topology as it provisions nodes.
 
-. In the web UI, click the *Gear* icon in the top right.
+. In the web UI, click the gear icon in the top right.
 . In the *Provisioning* area, choose *Configure SNMP Community Names by IP Address*, and fill in the fields as desired.
 +
 This screen sets up SNMP within {page-component-title} for agents listening on IP addresses 10.1.1.1 through 10.254.254.254.
