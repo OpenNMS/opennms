@@ -123,6 +123,10 @@ with open(path_to_workflow, "r", encoding="UTF-8") as file_handler:
 workflow_keywords = workflow_data["bundles"].keys()
 print("Workflow Keywords:", workflow_keywords)
 
+if "epoch" in change:
+    print("`epoch` file detected")
+    mappings["trigger-build"] = True
+
 # Check to see if build-trigger.overrride file exists and we are not
 # on the main branches
 if os.path.exists(path_to_build_trigger_override) and (
@@ -164,8 +168,7 @@ if "trigger-build" in mappings:
         or "master" in branch_name
         or "release-" in branch_name
         or "foundation-" in branch_name
-        and "merge-foundation/" not in branch_name
-    ):
+    ) and "merge-foundation/" not in branch_name:
         print("Executing workflow: build-publish")
         build_mappings["build-publish"] = mappings["trigger-build"]
     else:
