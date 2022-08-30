@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Collection;
@@ -258,18 +259,17 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
     public Map<String, Long> getNumberOfNodesWithDeviceConfigBySysOid() {
         String query = "SELECT n.nodesysoid, count(*) FROM device_config dcb LEFT JOIN ipinterface ip ON ipinterface_id = ip.id LEFT JOIN node n ON ip.nodeid = n.nodeid GROUP BY nodesysoid";
 
-        List<Object[]> pairs = getHibernateTemplate().executeWithNativeSession(session -> {
-             SQLQuery queryObject = session.createSQLQuery(query);
-             return queryObject.list();
-
+        return getHibernateTemplate().executeWithNativeSession(session -> {
+            SQLQuery queryObject = session.createSQLQuery(query);
+            Map<String, Long> numberOfNodesWithDeviceConfigBySysOid = new HashMap();
+            for (Object obj : queryObject.list()) {
+                Object[] pair = (Object[]) obj;
+                String sysOid = (String)pair[0];
+                Long count = ((BigInteger)pair[1]).longValue();
+                numberOfNodesWithDeviceConfigBySysOid.put(StringUtils.isEmpty(sysOid) ? "none" : sysOid, count);
+            }
+            return Collections.unmodifiableMap(numberOfNodesWithDeviceConfigBySysOid);
         });
-        Map<String, Long> numberOfNodesWithConfigBySysOid = new HashMap<String, Long>();
-        for (Object[] pair : pairs) {
-            String sysOid = (String)pair[0];
-            Long count = ((BigInteger)pair[1]).longValue();
-            numberOfNodesWithConfigBySysOid.put(StringUtils.isEmpty(sysOid) ? "none" : sysOid, count);
-        }
-        return Collections.unmodifiableMap(numberOfNodesWithConfigBySysOid);
     }
 
     private DeviceConfigQueryCriteria createSqlQueryCriteria(Integer limit, Integer offset,
