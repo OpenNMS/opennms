@@ -123,7 +123,21 @@ with open(path_to_workflow, "r", encoding="UTF-8") as file_handler:
 workflow_keywords = workflow_data["bundles"].keys()
 print("Workflow Keywords:", workflow_keywords)
 
-if os.path.exists(path_to_build_trigger_override):
+# Check to see if build-trigger.overrride file exists and we are not
+# on the main branches
+if os.path.exists(path_to_build_trigger_override) and (
+    "develop" not in branch_name
+    and "master" not in branch_name
+    and "release-" not in branch_name
+    and "foundation-" not in branch_name
+    and "merge-foundation/" not in branch_name
+):
+    build_trigger_override_found = True
+else:
+    build_trigger_override_found = False
+
+
+if build_trigger_override_found:
     with open(path_to_build_trigger_override, "r", encoding="UTF-8") as file_handler:
         build_mappings = json.load(file_handler)
 else:
@@ -142,6 +156,7 @@ else:
         "experimental": False,
     }
 
+print("Build Trigger Override Found:", str(build_trigger_override_found))
 
 if "trigger-build" in mappings:
     if (
@@ -149,12 +164,19 @@ if "trigger-build" in mappings:
         or "master" in branch_name
         or "release-" in branch_name
         or "foundation-" in branch_name
+        and "merge-foundation/" not in branch_name
     ):
         print("Executing workflow: build-publish")
         build_mappings["build-publish"] = mappings["trigger-build"]
     else:
-        print("Executing workflow: build-deploy")
-        build_mappings["build-deploy"] = mappings["trigger-build"]
+        if "merge-foundation/" in branch_name:
+            print("Execute workflow: merge-foundation")
+            build_mappings["merge-foundation"] = True
+            build_mappings["build-publish"] = False
+            build_mappings["build-deploy"] = False
+        elif not build_trigger_override_found:
+            print("Executing workflow: build-deploy")
+            build_mappings["build-deploy"] = mappings["trigger-build"]
 
 if "trigger-docs" in mappings:
     build_mappings["docs"] = mappings["trigger-docs"]
@@ -183,6 +205,7 @@ if (
     "circleci_configuration" in What_to_build
     and len(What_to_build) == 1
     and not build_mappings["build-deploy"]
+    and not build_mappings["build-publish"]
 ):
     # if circleci_configuration is the only entry in the list we don't want to trigger a buildss.
     mappings["trigger-build"] = False
