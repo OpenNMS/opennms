@@ -36,6 +36,7 @@ export interface DeviceConfigQueryParams extends QueryParameters {
   createdBefore?: number
   location?: string
   status?: status
+  pageEnter?: boolean
 }
 
 export type status = 'NONE' | 'SUCCESS' | 'FAILED'
