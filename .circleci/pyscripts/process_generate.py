@@ -107,8 +107,8 @@ for change in changes:
         add_to_build_list("oci")
     elif ".circleci" in change and ".circleci/epoch" not in change:
         add_to_build_list("circleci_configuration")
-    elif "doc" in change:
-        add_to_build_list("doc")
+    elif "docs" in change:
+        add_to_build_list("docs")
     elif "ui" in change:
         add_to_build_list("ui")
     else:
@@ -148,7 +148,7 @@ else:
     build_mappings = {
         "build-deploy": False,
         "coverage": False,
-        "doc": False,
+        "docs": False,
         "ui": False,
         "integration": False,
         "smoke": False,
@@ -217,7 +217,7 @@ if (
 
 for keyword in git_keywords:
     if keyword in workflow_keywords:
-        if "doc" in keyword or "doc" in What_to_build:
+        if "docs" in keyword or "docs" in What_to_build:
             build_mappings["docs"] = True
         if "ui" in keyword or "ui" in What_to_build:
             build_mappings["ui"] = True
@@ -258,8 +258,8 @@ if "integration" in git_keywords or "Integration_tests" in What_to_build:
 if "build" in What_to_build:
     build_mappings["build-deploy"] = True
 
-if "doc" in git_keywords or "docs" in git_keywords or "doc" in What_to_build:
-    build_mappings["doc"] = True
+if "docs" in git_keywords or "docs" in What_to_build:
+    build_mappings["docs"] = True
 
 if "ui" in git_keywords or "ui" in What_to_build:
     build_mappings["ui"] = True
