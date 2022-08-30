@@ -22,17 +22,17 @@ The minimum supported Mimir version is 2.0.0.
 
 To use the Time Series Storage Plugin for Cortex, do the following:
 
-. Start Cortex
+. Start Cortex.
 +
 See https://cortexmetrics.io/docs/getting-started/.
 +
-You can also download a https://github.com/opennms-forge/stack-play/tree/master/standalone-cortex-minimal[minimal, standalone version of Cortex] and start Cortex with `docker-compose up`.
+You can also download a https://github.com/opennms-forge/stack-play/tree/master/standalone-cortex-minimal[minimal, standalone version of Cortex] and start Cortex with the `docker-compose up` command.
 
-. Download the plugin
+. Download the plugin.
 +
 TBD
 
-. Enable and configure the time series storage
+. Enable and configure the time series storage.
 +
 [source, console]
 ----
@@ -44,7 +44,7 @@ org.opennms.timeseries.tin.metatags.tag.ifDescr=${interface:if-description}
 org.opennms.timeseries.tin.metatags.tag.label=${resource:label}" >> ${OPENNMS_HOME}/etc/opennms.properties.d/cortex.properties
 ----
 
-. Install the plugin from the OpenNMS Karaf shell
+. Install the plugin from the OpenNMS Karaf shell.
 +
 [source, console]
 ----
@@ -52,9 +52,9 @@ feature:repo-add mvn:org.opennms.plugins.timeseries/cortex-karaf-features/1.0.0-
 feature:install opennms-plugins-cortex-tss
 ----
 
-. Configure
+. Configure the plugin.
 +
-Note that you can omit this step if you use the default values.
+Note that you can omit this step if you use the default settings.
 +
 [source, console]
 ----
