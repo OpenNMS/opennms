@@ -105,7 +105,7 @@ for change in changes:
         add_to_build_list("smoke_tests")
     elif "opennms-container" in change:
         add_to_build_list("oci")
-    elif ".circleci" in change:
+    elif ".circleci" in change and ".circleci/epoch" not in change:
         add_to_build_list("circleci_configuration")
     elif "doc" in change:
         add_to_build_list("doc")
