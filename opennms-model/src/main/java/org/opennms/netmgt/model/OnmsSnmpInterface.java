@@ -488,7 +488,6 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
     @XmlElement(name="nodeId")
     //@XmlIDREF
     @XmlJavaTypeAdapter(NodeIdAdapter.class)
-    @JsonIgnore
     public OnmsNode getNode() {
         return m_node;
     }
@@ -577,7 +576,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
             .add("snmpifalias", getIfAlias())
             .add("snmpCollect", getCollect())
             .add("snmpPoll", getPoll())
-            .add("nodeId", getNode() == null ? null : getNode().getId())
+            .add("nodeId", getNodeId())
             .add("lastCapsdPoll", getLastCapsdPoll())
             .add("lastSnmpPoll", getLastSnmpPoll())
             .add("lastIngressFlow", m_lastIngressFlow)
