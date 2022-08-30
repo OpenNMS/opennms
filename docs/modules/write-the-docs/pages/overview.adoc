@@ -4,7 +4,6 @@
 The OpenNMS Group Technical Writing Style Guide is the set of standards for writing our content, to make it consistent and intuitive.
 The OpenNMS software is free and open source, and we welcome any kind of contribution.
 If you didn't find something in the docs, or you noticed a page that can be expanded upon, feel free to contribute.
-For more information, see the xref:development:docs/introduction.adoc[Develop Documentation] section.
 
 Please observe the rules and guidelines outlined here to maintain consistency across the projects.
 
