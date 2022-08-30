@@ -127,6 +127,7 @@
         <feature version="${guavaOsgiVersion}" prerequisite="true">guava</feature>
         <feature>sentinel-telemetry</feature>
         <feature>opennms-jest</feature>
+        <feature>opennms-integration-api</feature>
         <feature>opennms-telemetry-collection</feature>
         <feature>opennms-dnsresolver-netty</feature>
         <feature>sentinel-kvstore-api</feature>

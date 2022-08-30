@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -34,8 +34,11 @@ import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -64,10 +67,14 @@ import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.smoketest.containers.OpenNMSContainer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class RestClient {
+    private static final Logger LOG = LoggerFactory.getLogger(RestClient.class);
 
     private static final String DEFAULT_USERNAME = OpenNMSContainer.ADMIN_USER;
 
@@ -121,8 +128,9 @@ public class RestClient {
             JsonNode actualObj = mapper.readTree(json);
             return actualObj.get("displayVersion").asText();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            LOG.debug("Failed to get displayVersion from the info REST service. (OpenNMS is probably not up yet): {}", e.getMessage());
         }
+        return null;
     }
 
     public void addOrReplaceRequisition(Requisition requisition) {
@@ -158,6 +166,19 @@ public class RestClient {
     public OnmsNode getNode(String nodeCriteria) {
         final WebTarget target = getTarget().path("nodes").path(nodeCriteria);
         return getBuilder(target).get(OnmsNode.class);
+    }
+
+    public Map<String, Object> getUsageStatistics() throws Exception {
+        final Response response = getBuilder(getTarget().path("datachoices")).get();
+        final String jsonContent = response.readEntity(String.class);
+        final Map<String, Object> hashMap = new ObjectMapper().readValue(jsonContent, HashMap.class);
+        return hashMap.entrySet().stream().collect(Collectors.toMap(e -> e.getKey(), e-> {
+                    if (e.getValue() instanceof Integer) {
+                        return Long.valueOf( (Integer) e.getValue());
+                    } else {
+                        return e.getValue();
+                    }
+                }));
     }
 
     public Response getResponseForNode(String nodeCriteria) {

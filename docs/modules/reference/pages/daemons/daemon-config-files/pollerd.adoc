@@ -1,7 +1,8 @@
+
 [[ref-daemon-config-files-pollerd]]
 = Pollerd
 
-Performs xref:operation:service-assurance/introduction.adoc[service assurance] monitor checks to determine device availability.
+Performs xref:operation:deep-dive/service-assurance/introduction.adoc[service assurance] monitor checks to determine device availability.
 
 .Pollerd configuration file overview
 [options="header"]
@@ -34,12 +35,10 @@ Can reload with `uei.opennms.org/internal/schedOutagesChanged`.
 .Pollerd log file overview
 [options="header"]
 [cols="2,3"]
-
 |===
 | File
 | Description
 
 | pollerd.log
 | Logs relating to service availability monitors.
-
 |===

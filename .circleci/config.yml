@@ -25,22 +25,17 @@ parameters:
 setup: true
 
 commands:
-  cached-checkout:
-      description: "Checkout with caching"
+  shallow-clone:
+      description: "Quick shallow checkout"
       steps:
-        - restore_cache:
-            keys:
-              - pre-build-source-v1-{{ .Branch }}-{{ .Revision }}
-              - pre-build-source-v1-{{ .Branch }}-
-              - pre-build-source-v1-
-        - checkout
         - run:
-            name: git config merge.renameLimit
-            command: git config merge.renameLimit 999999
-        - save_cache:
-            key: pre-build-source-v1-{{ .Branch }}-{{ .Revision }}
-            paths:
-              - ".git"
+            name: git clone
+            command: |
+              install -d -m 700 ~/.ssh
+              ssh-keyscan github.com >> ~/.ssh/known_hosts
+              ssh-keyscan -p 443 ssh.github.com >> ~/.ssh/known_hosts
+              chmod 600 ~/.ssh/known_hosts
+              git clone --depth 20 "${CIRCLE_REPOSITORY_URL}" --branch "${CIRCLE_BRANCH}" .
   pack-config:
     description: "Pack the dynamic config in .circleci/main/"
     steps:
@@ -53,6 +48,7 @@ commands:
             curl -fLSs https://raw.githubusercontent.com/CircleCI-Public/circleci-cli/master/install.sh | DESTDIR="$CIRCLE_BIN_DIR" bash
             "$CIRCLE_BIN_DIR/circleci" version
             "$CIRCLE_BIN_DIR/circleci" config pack /tmp/.circleci/main --skip-update-check > /tmp/.circleci/main.yml || exit 1
+            "$CIRCLE_BIN_DIR/circleci" config validate --skip-update-check /tmp/.circleci/main.yml || exit 1
       - store_artifacts:
           path: .circleci/main.yml
           destination: main.yml
@@ -90,6 +86,7 @@ workflows:
             .circleci/.*      trigger-build       true
             .circleci/main/jobs/build/build-docs.yml trigger-docs        true
             .circleci/main/jobs/build/build-ui.yml trigger-ui        true
+            antora-playbook-local.yml      trigger-docs        true
 
   pre-build-with-flaky:
     when:
@@ -110,6 +107,7 @@ workflows:
             .circleci/.*      trigger-build       true
             .circleci/main/jobs/build/build-docs.yml trigger-docs        true
             .circleci/main/jobs/build/build-ui.yml trigger-ui        true
+            antora-playbook-local.yml      trigger-docs        true
 
   automation:
     when:
@@ -150,8 +148,15 @@ jobs:
     docker:
       - image: cimg/python:3.10.1
     steps:
-      - cached-checkout
-      #- pack-config
+      - shallow-clone
+      - run:
+          name: Creating build-trigger file
+          command: |
+               cp .circleci/example-build-triggers.override.json /tmp/build-triggers.json
+               sed -i 's/"coverage": false/"coverage": true/g' /tmp/build-triggers.json
+      - store_artifacts:
+          path: /tmp/build-triggers.json
+          destination: build-triggers.json      
       - continuation/continue:
           circleci_domain: circleci.com
           configuration_path: .circleci/main.yml
@@ -170,32 +175,33 @@ jobs:
         description: Mapping of path regular expressions to pipeline parameters and values. One mapping per line, whitespace-delimited.
         type: string
     steps:
-      - cached-checkout
-      # copied from https://circleci.com/developer/orbs/orb/circleci/path-filtering
-      # we do it ourselves because otherwise we have to do a full un-cached checkout every time
+      - shallow-clone
       - run:
-          name: process mapping
+          name: Trigger Status
+          command: |
+            echo Coverage API: << pipeline.parameters.trigger-coverage-api >>
+            echo Prebuild: << pipeline.parameters.trigger-prebuild >>
+            echo Automation: << pipeline.parameters.trigger-automation >>
+            echo Trigger Flaky Tests: << pipeline.parameters.trigger-flaky >>
+      - run:
+          name: Process Generate
           environment:
             BASE_REVISION: << parameters.base-revision >>
             MAPPING: << parameters.mapping >>
             OUTPUT_PATH: /tmp/pipeline-parameters.json
-          command: python3 .circleci/pyscripts/process_mapping.py     
+          command: python3 .circleci/pyscripts/process_generate.py 
       - run:
           name: Generate Main YAML file
           command: python3 .circleci/pyscripts/generate_main.py 
-      #- pack-config
-      - run:
-          name: check for empty trigger config
-          command: |
-            if [ "$(grep -c trigger-coverage /tmp/pipeline-parameters.json)" -eq 0 ]; then
-              if [ "$(grep -c trigger-prebuild /tmp/pipeline-parameters.json)" -eq 0 ]; then
-                # this can happen in the case of merges or other similar "empty" commits
-                echo '{ "trigger-prebuild": false, "trigger-build": true }' > /tmp/pipeline-parameters.json
-              fi
-            fi
       - store_artifacts:
           path: /tmp/pipeline-parameters.json
           destination: pipeline-parameters.json
+      - store_artifacts:
+          path: /tmp/build-triggers.json
+          destination: build-triggers.json
+      - store_artifacts:
+          path: /tmp/.circleci/main.yml
+          destination: main.yml
       - continuation/continue:
           circleci_domain: circleci.com
           configuration_path: /tmp/.circleci/main.yml

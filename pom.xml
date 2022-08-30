@@ -166,7 +166,7 @@
         <artifactId>license-maven-plugin</artifactId>
         <version>2.0.0.ONMS.1</version>
         <inherited>true</inherited>
-<!--        <executions>
+        <executions>
           <execution>
             <id>module-third-party</id>
             <goals>
@@ -174,7 +174,7 @@
             </goals>
             <phase>generate-resources</phase>
           </execution>
-        </executions>-->
+        </executions>
         <configuration>
           <acceptPomPackaging>true</acceptPomPackaging>
           <errorRemedy>xmlOutput</errorRemedy>
@@ -1774,7 +1774,7 @@
     <pktsVersion>3.0.0</pktsVersion>
     <protobufVersion>3.16.1</protobufVersion>
     <protobuf2Version>2.6.1</protobuf2Version>
-    <postgresqlVersion>42.3.3</postgresqlVersion>
+    <postgresqlVersion>42.4.1</postgresqlVersion>
     <powermockVersion>2.0.9</powermockVersion>
     <okhttpVersion>3.10.0</okhttpVersion>
     <okioVersion>1.14.0</okioVersion>

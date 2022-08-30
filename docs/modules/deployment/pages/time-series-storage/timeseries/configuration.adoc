@@ -141,7 +141,7 @@ The configuration of the tags has the following form:
 * The prefix is: `org.opennms.timeseries.tin.metatags.tag`
 * The tagKey can be an arbitrary string as long as it does not break the Java properties file https://en.wikipedia.org/wiki/.properties[syntax].
 * The query expression lets you query the value.
-Supports use of the xref:operation:meta-data.adoc#ga-meta-data-dsl[Metadata DSL].
+Supports use of the xref:operation:deep-dive/meta-data.adoc#ga-meta-data-dsl[Metadata DSL].
 
 Examples:
 

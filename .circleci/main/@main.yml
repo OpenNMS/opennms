@@ -20,16 +20,12 @@ commands:
   #commands:oci/oci#
   #commands:generic/generic#
 
-workflows:
-  #workflows:weekly-coverage#
-  #workflows:build-minimal#
-  #workflows:docs#
-  #workflows:ui#
-  #workflows:build-deploy#
+#workflows#
 
 jobs:
   #jobs:build/build.index#
   #jobs:tarball-assembly#
+  #jobs:tarball-assembly-only#
   #jobs:rpms/rpms.index#
   #jobs:debian packages/deb.index#
   #jobs:oci/oci.index#
