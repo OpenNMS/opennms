@@ -3,6 +3,7 @@
 # Normally we install to /opt/minion and not /opt/minion-XX.X.X-SNAPSHOT
 # To avoid issues, we rearrange the directories in pre-stage to avoid injecting these
 # as additional layers into the final image.
+#
 ##
 ARG BASE_IMAGE="opennms/deploy-base:jre-2.0.4.b161"
 
