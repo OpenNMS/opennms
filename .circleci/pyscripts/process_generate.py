@@ -107,7 +107,7 @@ for change in changes:
         add_to_build_list("oci")
     elif ".circleci" in change and ".circleci/epoch" not in change:
         add_to_build_list("circleci_configuration")
-    elif "doc" in change:
+    elif "docs/" in change:
         add_to_build_list("doc")
     elif "ui" in change:
         add_to_build_list("ui")
