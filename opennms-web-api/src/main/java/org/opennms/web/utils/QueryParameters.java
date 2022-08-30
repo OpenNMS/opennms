@@ -73,7 +73,6 @@ public class QueryParameters {
     }
 
     public Integer getLimit() {
-        Log.info("QueryParameters.getLimit limit="+limit);
         if (limit == null) {
             return DEFAULT_LIMIT;
         }
