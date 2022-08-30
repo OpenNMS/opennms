@@ -1717,7 +1717,7 @@
     <geronimoVersion>1.1.1</geronimoVersion>
     <groovyVersion>2.5.16</groovyVersion>
     <grpcVersion>1.46.0</grpcVersion>
-    <gsonVersion>2.8.5</gsonVersion>
+    <gsonVersion>2.9.1</gsonVersion>
     <guavaVersion>25.1-jre</guavaVersion>
     <guavaOsgiVersion>25.1.0</guavaOsgiVersion>
     <guavagRPCVersion>28.2-jre</guavagRPCVersion>
@@ -1747,7 +1747,7 @@
     <jcommonVersion>1.0.23</jcommonVersion>
     <jettyVersion>9.4.44.v20210927</jettyVersion>
     <jestVersion>5.3.3</jestVersion>
-    <jestGsonVersion>${gsonVersion}</jestGsonVersion>
+    <jestGsonVersion>2.9.1</jestGsonVersion>
     <jfreechartVersion>1.0.19</jfreechartVersion>
     <jicmpVersion>2.0.4</jicmpVersion>
     <jicmp6Version>2.0.3</jicmp6Version>
