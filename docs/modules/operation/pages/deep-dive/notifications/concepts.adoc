@@ -20,12 +20,12 @@ Most notifications are triggered by an exact UEI match (although they may also b
 
 User accounts control access to the web UI, but also store contact information (e-mail addresses, phone numbers, and so on) for the people they represent.
 A user may receive notifications either individually or as part of a group or on-call role.
-Each user has several technology-specific contact fields, which must be filled if they are to receive notifications by the associated method.
+Each user has several technology-specific contact fields, which must be filled for the user to receive notifications by the associated method.
 
 To learn more about user accounts and how to manage them, see xref:operation:deep-dive/user-management/user-maintenance.adoc[User Maintenance].
 
 In large systems with many users, it might be helpful to organize them into groups.
-Groups may receive notifications; this is often a more convenient way to operate than configuring notifications to be sent to individuals.
+Groups may receive notifications; this is often a more convenient way to operate than configuring notifications to send to individuals.
 Within a group, a set of users can be assigned to on-call roles.
 This lets you build more complex notification workflows.
 
@@ -78,14 +78,14 @@ The default delay is zero seconds; this means all group members are notified at 
 If you set a longer delay, group members will be notified in alphabetical order, based on their usernames.
 
 IMPORTANT: Avoid using the same name for a group and a user.
-Destination path configuration settings do not distinguish between users and groups as the step level.
+Destination path configuration settings do not distinguish between users and groups at the step level.
 If you have both a user and a group named "admin," the behavior will be undefined.
 Because of this, the default administrators group is called "Admin"—case matters.
 
 Within a step, each target is associated with one or more notification commands.
-If multiple commands are selected, they will be run at the same time.
+If multiple commands are selected, they will run at the same time.
 
-Each step also has an auto-notify switch which may be set to `off`, `on`, or `auto`.
+Each step also has an auto-notify switch which you may set to `off`, `on`, or `auto`.
 This switch specifies the logic used when deciding whether to send a notice for an automatically acknowledged notification to a target that was not on duty when the notification was generated.
 If the switch is `off`, notices will never be sent to the target.
 If the switch is `on`, notices will always be sent to the target.

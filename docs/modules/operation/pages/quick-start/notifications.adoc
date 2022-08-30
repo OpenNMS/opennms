@@ -45,7 +45,7 @@ It also specifies escalation targets.
 Configuring destination paths separately from individual events lets you use the same information for multiple notifications.
 This minimizes duplication and encourages reuse.
 
-A destination path is required to receive notifications from {page-component-title}.
+You must specify a destination path to receive notifications from {page-component-title}.
 The `Email-Admin` destination path is defined by default.
 It sends notifications to the `admin` user, as defined in their notification information (see xref:operation:quick-start/users.adoc#ga-users-next[Users]).
 
