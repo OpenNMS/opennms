@@ -356,15 +356,15 @@ Alt text should succinctly convey the image's content and function.
 You can use common attributes to automatically render certain text.
 Some of these include the following:
 
-* `{opennms-version}` - The current version of the OpenNMS software
-* `{page-component-title}` - The name of the product (Horizon or Meridian)
+* `\{version}` - The current version of the OpenNMS software
+* `\{page-component-title}` - The name of the product (Horizon or Meridian)
 
 For a complete list of attributes, see the repository's `antora.yml` file.
 
 AsciiDocs also includes common attributes that can be used:
 
-* `{docdir}` - The document's root directory.
-* `{nbsp}` - Inserts a non-breaking space.
+* `\{docdir}` - The document's root directory.
+* `\{nbsp}` - Inserts a non-breaking space.
 
 == Comments
 
