@@ -28,9 +28,11 @@
 
 package org.opennms.web.utils;
 
+import org.jfree.util.Log;
+
 public class QueryParameters {
 
-    private static final Integer DEFAULT_LIMIT = 10;
+    private static final Integer DEFAULT_LIMIT = 100;
 
     public static class Order {
         private final String column;
@@ -71,6 +73,7 @@ public class QueryParameters {
     }
 
     public Integer getLimit() {
+        Log.info("QueryParameters.getLimit limit="+limit);
         if (limit == null) {
             return DEFAULT_LIMIT;
         }
