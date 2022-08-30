@@ -122,8 +122,8 @@ with open(path_to_workflow, "r", encoding="UTF-8") as file_handler:
 
 workflow_keywords = workflow_data["bundles"].keys()
 print("Workflow Keywords:", workflow_keywords)
-print("Changes", ",".join(change))
-if ".circleci/epoch" in change:
+
+if ".circleci/epoch" in changes:
     print("`epoch` file detected")
     mappings["trigger-build"] = True
 
