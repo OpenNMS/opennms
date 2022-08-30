@@ -179,9 +179,12 @@
     <feature name="guava17" version="${guavaOldVersion}" description="Google :: Guava">
         <bundle dependency="true">mvn:com.google.guava/guava/${guavaOldVersion}</bundle>
     </feature>
+    <feature name="dom4j" version="${dom4jVersion}" description="DOM4J">
+        <bundle dependency="true">wrap:mvn:org.dom4j/dom4j/${dom4jVersion}</bundle>
+    </feature>
     <feature name="hibernate36" version="3.6.10.Final" description="Hibernate :: Hibernate ORM">
+        <feature>dom4j</feature>
         <bundle dependency="true">wrap:mvn:antlr/antlr/${antlr.version}$Import-Package=org.hibernate.hql.ast</bundle>
-        <bundle dependency="true">wrap:mvn:dom4j/dom4j/1.6.1</bundle>
         <bundle dependency="true">mvn:commons-collections/commons-collections/${commonsCollectionsVersion}</bundle>
         <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/${geronimoVersion}</bundle>
         <bundle dependency="true">mvn:org.javassist/javassist/3.18.2-GA</bundle>
@@ -900,6 +903,7 @@
         <feature>commons-cli</feature>
         <feature>commons-io</feature>
         <feature>commons-lang</feature>
+        <feature>dom4j</feature>
         <feature>guava</feature>
         <bundle dependency="true">mvn:org.apache.httpcomponents/httpcore-osgi/${httpcoreVersion}</bundle>
         <bundle dependency="true">mvn:org.apache.httpcomponents/httpclient-osgi/${httpclientVersion}</bundle>

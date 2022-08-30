@@ -1168,6 +1168,7 @@
                    <exclude>com.github.detro:*</exclude>             <!-- use: com.codeborne.phantomjsdriver -->
                    <exclude>com.github.detro.ghostdriver:*</exclude> <!-- use: com.codeborne.phantomjsdriver -->
                    <exclude>com.sun.xml.bind:jaxb-impl</exclude>     <!-- use: jaxb-dependencies -->
+                   <exclude>dom4j:dom4j</exclude>                    <!-- use: org.dom4j:dom4j -->
                    <exclude>javax.servlet:jstl</exclude>             <!-- use: jstl-dependencies -->
                    <exclude>javax.servlet.jsp:jsp-api</exclude>      <!-- use: servlet-dependencies -->
                    <exclude>javax.ws.rs:jsr311-api</exclude>         <!-- use: javax.ws.rs-api -->
@@ -1716,6 +1717,7 @@
     <cxfXjcVersion>3.3.0</cxfXjcVersion>
     <dhcp4javaVersion>1.1.0</dhcp4javaVersion>
     <dnsjavaVersion>2.1.9_1</dnsjavaVersion>
+    <dom4jVersion>2.1.3</dom4jVersion>
     <dropwizardMetricsVersion>3.1.2</dropwizardMetricsVersion>
     <ecjVersion>4.4.2</ecjVersion>
     <eclipseGeminiVersion>2.0.0.RELEASE</eclipseGeminiVersion>
@@ -3843,6 +3845,11 @@
         <artifactId>dbunit</artifactId>
         <version>2.4.8</version>
         <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.dom4j</groupId>
+        <artifactId>dom4j</artifactId>
+        <version>${dom4jVersion}</version>
       </dependency>
       <dependency>
         <groupId>geoGoogle</groupId>
