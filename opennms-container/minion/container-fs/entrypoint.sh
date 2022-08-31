@@ -123,7 +123,7 @@ initConfig() {
 
     if [ ! -f ${MINION_HOME}/etc/configured ]; then
         # Create SSH Key-Pair to use with the Karaf Shell
-        RUN mkdir -p "${MINION_HOME}/.ssh" && \
+        mkdir -p "${MINION_HOME}/.ssh" && \
             chmod 700 "${MINION_HOME}/.ssh" && \
             ssh-keygen -t rsa -f "${MINION_HOME}/.ssh/id_rsa" -q -N "" && \
             echo "minion=$(cat "${MINION_HOME}/.ssh/id_rsa.pub" | awk '{print $2}'),viewer" > "${MINION_HOME}/etc/keys.properties" && \
