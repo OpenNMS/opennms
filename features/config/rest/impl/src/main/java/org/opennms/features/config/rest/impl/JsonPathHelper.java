@@ -43,8 +43,7 @@ public class JsonPathHelper {
     public static String get(String data, String path) {
         JsonPath jsonPath = JsonPath.compile(path);
 
-        //it's ok to read multiple nodes, it could be useful 
-        //assertThereIsExactlyOnePath(data, jsonPath);
+        //it's Ok to read multiple nodes, it could be useful so there is no assertThereIsExactlyOnePath() here
         
         return JsonPath.parse(data).read(jsonPath).toString();
     }
@@ -55,7 +54,7 @@ public class JsonPathHelper {
         
         //the object under specified path will be replaced with providet text without checking if the text is valid JSON 
         //for that on the first step the specified node will be replaced by unique number, and then this number will be replaced 
-        //withh provided text
+        //with provided text
         Long unique = getUnique(data);
         String newJson = JsonPath.parse(data).set(jsonPath, unique).jsonString();
         return newJson.replace(unique.toString(), newPartContent);
@@ -82,7 +81,7 @@ public class JsonPathHelper {
     private static void assertThereIsExactlyOnePath(String data, JsonPath jsonPath) {
         List<String> paths = JsonPath.using(AS_PATH_LIST).parse(data).read(jsonPath);
         if (paths.size() != 1) {
-            throw new IllegalArgumentException("There must be exactly one path in JSON");
+            throw new IllegalArgumentException("Path must resolve to a single element");
         }
     }
 

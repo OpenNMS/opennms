@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -160,7 +160,7 @@ public interface ConfigManagerRestService {
      *
      * @param configName configuration name
      * @param configId configuration id
-     * @param path path to the array
+     * @param path the path to the array to add an element into
      * @param newElement a new element to add to array in configuration
      * @return empty response
      */

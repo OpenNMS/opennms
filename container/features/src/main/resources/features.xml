@@ -1815,10 +1815,9 @@
         <bundle>mvn:org.apache.ws.xmlschema/xmlschema-walker/${xmlschemaVersion}</bundle>
         <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jaxp-api-1.4/${servicemixSpecsVersion}</bundle>
         <bundle>mvn:org.opennms.features.config.rest/org.opennms.features.config.rest.api/${project.version}</bundle>
-        <!--bundle dependency="true">wrap:mvn:com.jayway.jsonpath/json-path/${jsonPathVersion}</bundle-->
-        <bundle>mvn:net.minidev/accessors-smart/2.4.8</bundle>
-        <bundle>mvn:net.minidev/json-smart/2.4.8</bundle>
-        <bundle>mvn:com.jayway.jsonpath/json-path/2.7.0</bundle>
+        <bundle>mvn:net.minidev/accessors-smart/${accessorsSmartVersion}</bundle>
+        <bundle>mvn:net.minidev/json-smart/${jsonSmartVersion}</bundle>
+        <bundle>wrap:mvn:com.jayway.jsonpath/json-path/${jsonPathVersion}</bundle>
         <bundle>mvn:org.opennms.features.config.rest/org.opennms.features.config.rest.impl/${project.version}</bundle>
     </feature>
     <feature name="opennms-config-management-osgi-del" description="OpenNMS :: Features :: Config :: Osgi :: Delegate" version="${project.version}">

@@ -53,7 +53,7 @@ public class JaxbXmlConverterTest {
     final static String FOREIGN_SOURCES = "/opt/opennms/etc/foreign-sources";
 
     @Test
-    //TODO: Failing test after bugfix in ProvisiondConfiguration.equals().
+    //TODO: Failing test after bugfix in ProvisiondConfiguration.equals(). JIRA: https://issues.opennms.org/browse/NMS-14709
     @Ignore
     public void testConverter() throws IOException {
         final JaxbXmlConverter converter = new JaxbXmlConverter("provisiond-configuration.xsd", "provisiond-configuration", null);
