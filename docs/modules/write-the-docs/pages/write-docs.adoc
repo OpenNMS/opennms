@@ -27,7 +27,7 @@ The OpenNMS documentation uses the following conventions:
 * File names and paths are written as \`poller-configuration.xml` (rendered as `poller-configuration.xml`).
 * Bold field names, button and icon names, and words that require strong emphasis using the \*Bold* syntax (rendered as *Bold*).
 * Italicize words that require emphasis using the \_Italics_ syntax (rendered as _Italics_).
-* command line commands and configuration file lines are written as \`command` (rendered as `command`).
+* Write command line commands and configuration file lines as \`command` (rendered as `command`).
 Note that the contents will not be parsed.
 * You can force line breaks by including `+` at the end of a line, followed by a line break.
 +
@@ -65,7 +65,7 @@ Each document begins with headings from level one (the document title) and an as
 When writing a document's title, capitalize the following:
 
 * The initial letter of the first word in the title.
-* The initial letter in all principal words——that is, words that are not articles ("the," "an," "a"), conjunctions ("and," "but," "or"), or prepositions.
+* The initial letter in all principal words—that is, words that are not articles ("the," "an," "a"), conjunctions ("and," "but," "or"), or prepositions.
 * All prepositions with five or more letters.
 * Any preposition that is part of a compound verb (for example, "Backing Up Files").
 * Both words in a hyphenated compound (for example, "Year-End Processing"); exceptions are short articles, such as "of-the" in "Run-of-the-Mill."
@@ -106,7 +106,7 @@ To refer to a target's assigned ID, use the following syntax:
 ----
 
 To use your target's assigned ID in a document, simply write the ID in your text.
-For example, `see <<target-id>>`.
+For example, `see \<<target-id>>`.
 
 If you need to link to another document and want to modify the link text, use the following syntax:
 
@@ -147,7 +147,7 @@ Tables present structured information, and can improve the visual impact of a do
 
 When creating a table, follow these guidelines:
 
-* Capitalize the initial letter of all principal words in column headings——that is, words that are not articles ("the," "an," "a"), conjunctions ("and," "but," "or"), or prepositions.
+* Capitalize the initial letter of all principal words in column headings—that is, words that are not articles ("the," "an," "a"), conjunctions ("and," "but," "or"), or prepositions.
 * In most cases, do not use end punctuation for column headings, with the exception of ellipses (`...`) when the items in the column complete the phrase begun in the heading.
 * For items within a column (with the exception of the heading), use periods for whole sentences only (strings of words that include at least one verb).
 
@@ -236,7 +236,7 @@ Code becomes obsolete very quickly, and directing to archaic practices is detrim
 
 To include code snippets, use the following syntax:
 
-.Example: Include code snippet
+.Include code snippet
 ====
 [source]
 ----
@@ -245,13 +245,19 @@ example code here
 ====
 
 If there is no suitable syntax highlighter for the language used, simply omit it, as in the example above.
-The following syntax highlighters are enabled:
+The following syntax highlighters are available:
 
-* Bash
+* Bash, Console, or Shell
 * Groovy
+* Java
 * Javascript
+* JSON
+* Karaf
+* Properties
 * Python
+* SQL
 * XML
+* YAML or YML
 
 == Admonitions
 
@@ -271,7 +277,7 @@ Do not create your own for inclusion in the OpenNMS documentation.
 NOTE: This is a note.
 ----
 
-A Note is rendered as follows:
+A Note renders as follows:
 
 NOTE: This is a note.
 
@@ -281,7 +287,7 @@ NOTE: This is a note.
 TIP: This is a tip.
 ----
 
-A Tip is rendered as follows:
+A Tip renders as follows:
 
 TIP: This is a tip.
 
@@ -291,7 +297,7 @@ TIP: This is a tip.
 IMPORTANT: This is an important hint.
 ----
 
-An Important note is rendered as follows:
+An Important note renders as follows:
 
 IMPORTANT: This is an important hint.
 
@@ -301,7 +307,7 @@ IMPORTANT: This is an important hint.
 CAUTION: This is a cautionary note.
 ----
 
-A Caution note is rendered as follows:
+A Caution note renders as follows:
 
 CAUTION: This is a cautionary note.
 
@@ -311,7 +317,7 @@ CAUTION: This is a cautionary note.
 WARNING: This is a warning.
 ----
 
-A Warning is rendered as follows:
+A Warning renders as follows:
 
 WARNING: This is a warning.
 
@@ -319,7 +325,7 @@ WARNING: This is a warning.
 == Images
 
 Images may be useful to help explain and visualize complex problems, but they can clutter a document.
-When considering whether you should add an image to a document, determine whether the image itself is necessary——is the reader already looking at the software in question?
+When considering whether you should add an image to a document, determine whether the image itself is necessary by asking yourself if the reader is already looking at the software in question.
 Is there a button that is hard to find or a complicated screen that needs explanation?
 Additionally, consider how much of the image is text-based.
 Don't insert images of tables or text that the reader _must_ read to understand the rest of the document.
@@ -336,10 +342,10 @@ Where possible, include the source file in the `./images` directory as well; thi
 
 Insert an image into a document using the following syntax:
 
-[source]
+[source, asciidoc]
 ----
 .This is the image caption
-image::docs/02_opennms-logo.png[]
+image::docs/02_opennms-logo.png[opennms logo]
 ----
 
 The image path for all images that you include is relative to the `.adoc` file where the image is referenced.

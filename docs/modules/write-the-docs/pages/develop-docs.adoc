@@ -22,13 +22,13 @@ Minimize the use of screenshots; they should be included only to illustrate a co
 See the xref:write-the-docs:write-docs.adoc#ga-opennms-docs-images[Images] section for more information.
 
 [[ga-opennms-docs-repo-structure]]
-== `opennms` documentation file structure
+== Documentation file structure
 
 All OpenNMS projects that have documentation include it in the `docs` directory.
 Within this directory, you will find the `./modules` directory, which contains all technical documentation associated with the source code in the repository.
 The `./modules` directory may have more nested directories to create a hierarchy for the content (for example, components and subcomponents).
 
-You will find `.adoc` filds in the `./pages` directory or one of its subdirectories, and image files in the `./images` directory or one of its subdirectories.
+You will find `.adoc` files in the `./pages` directory or one of its subdirectories, and image files in the `./images` directory or one of its subdirectories.
 The following table describes the documentation modules for the Horizon project:
 
 [options="header", cols="1,3"]
@@ -63,18 +63,18 @@ Every new directory or `.adoc` file must be included in the general structure of
 . Open the directory's `nav.adoc` file (in this example, `docs/modules/operation/nav.adoc`).
 . Add a new bullet list entry linking to the new page.
 +
-In this example, `meta-data.adoc` is located in the main `/operation/pages` directory, so it should be added as a level-one list item.
-If the document is located in a sub-directory (for example, `/operation/pages/admin`), it should be added as a level-two list item, and so on.
+In this example, `meta-data.adoc` is located in the main `/operation/pages` directory, so you should add it as a level-one list item.
+If the document is located in a sub-directory (for example, `/operation/pages/admin`), you should add it as a level-two list item, and so on.
 To add a new level-one list item, use the following syntax:
-
++
 .Example: Level-one `nav.adoc` list item with defined hyperlink text
 [source]
 ----
 * xref:meta-data.adoc[Meta Data]
 ----
-
++
 If you choose not to define the hyperlink text within the square brackets, the link will use the top-level heading in the specified file.
 
 . Save your changes and commit them to your active repository branch.
 
-To test your changes locally, xref:write-the-docs:build-docs.adoc[build the docs].
+To test your changes locally, xref:write-the-docs:build-docs.adoc[build the documentation].

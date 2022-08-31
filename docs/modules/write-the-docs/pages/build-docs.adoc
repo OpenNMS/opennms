@@ -8,7 +8,17 @@ We recommend that you do this to test major changes, particularly if adding a lo
 
 To install Antora, follow the https://docs.antora.org/antora/2.2/install/install-antora/[instructions] on the Antora website.
 
-== Copy the docs repository
+=== Run Antora in Docker
+
+You can also build the docs using a containerized version of Antora.
+
+.Run the following command in the root folder of the repository
+[source, console]
+----
+docker run --rm -v $(pwd):/antora opennms/antora:2.3.4-b6293 --stacktrace generate antora-playbook-local.yml
+----
+
+== Clone the docs repository
 
 If you already know how to use Git, then this is going to sound very familiar:
 

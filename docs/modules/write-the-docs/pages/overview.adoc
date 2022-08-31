@@ -14,10 +14,6 @@ For information on syntax, see Antora's https://docs.antora.org/antora/2.3/ascii
 
 We follow the guidelines established in the https://docs.microsoft.com/en-us/style-guide/welcome/[Microsoft Writing Style Guide].
 
-== UI style guide
-
-Our internal UI style guide supplements this document.
-
 [[ga-opennms-docs-dictionaries]]
 == Dictionaries
 

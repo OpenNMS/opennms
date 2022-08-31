@@ -4,7 +4,7 @@
 This glossary supplements the OpenNMS Group Editorial Style Guide.
 While it might be useful to consult when writing or editing documentation, it is for reference only.
 
-NOTE: If you want to review docs for the Horizon project, it's recommended that you reference this glossary.
+NOTE: If you want to review docs for the Horizon project, we recommend that you reference this glossary.
 
 == Numbers/Symbols
 
@@ -37,7 +37,7 @@ scalable
 |===
 
 [[glossary-abort]] abort:: Avoid.
-"End" should be used for operations, "exit" for programs, "stop" for hardware operations, and "cancel" for requests or processes.
+Use "end" for operations, "exit" for programs, "stop" for hardware operations, and "cancel" for requests or processes.
 
 [[glossary-above-below]] above, below:: Avoid when referring to information in text.
 Instead, use "preceding" and "following" (or "previous" and "next") if you cannot make specific cross-references.
@@ -95,11 +95,10 @@ Did you create a backup for that?
 We need a backout plan.
 ====
 
-[[glossary-box]] box:: When referencing the UI, use "box" instead of <<glossary-field, field>> to refer to any box _except_ a check box, a <<glossary-list, list>>, or a menu box.
+[[glossary-box]] box:: When referencing the UI, use "box" instead of <<glossary-field, field>> to refer to any box _except_ a check box, a <<glossary-lists, list>>, or a menu box.
 
 [[glossary-button]] button:: Do not use the words "the" and "button" when referring to named buttons.
 If you refer to an unnamed button or an icon in the interface, use the tooltip name along with "the" and "button."
-If possible, insert an image of the button or icon the first time it is referenced in a document or section.
 
 == C
 
@@ -164,7 +163,7 @@ current window:: Do not use.
 Use "active window" or "open window" instead.
 
 [[glossary-cursor]] cursor:: The cursor is the pointer that appears on the screen and moves according to the movements of the mouse.
-A cursor takes on different shapes (different arrows,a hand with a pointing finger, and so on) according to its context.
+A cursor takes on different shapes (different arrows, a hand with a pointing finger, and so on) according to its context.
 The <<glossary-mouse, mouse>> is the device that the user moves on the desk to control the cursor.
 +
 In general, do not refer to the mouse or the cursor.
@@ -224,7 +223,7 @@ Its use is acceptable if necessary to describe the type of item, as in "a drop-d
 
 drop-down arrow:: When referring to an arrow that becomes a drop-down list, indicate which list the user can view by clicking the arrow.
 For example, "Click the *Size* arrow for more options."
-The arrow should be referred to using its hovertext name.
+Refer to the arrow using its hovertext name.
 
 == E
 
@@ -543,8 +542,8 @@ An exception to this rule is when the prompt or field label ends in a question m
 | Type *your name* in the User: box.
 | Type your name in the User box.
 
-| You must type *Y* in the Display Template? box.
 | You must type *Y* in the Display Template box.
+| You must type *Y* in the Display Template? box.
 |===
 
 == R
