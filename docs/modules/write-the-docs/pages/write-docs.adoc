@@ -31,8 +31,8 @@ The OpenNMS documentation uses the following conventions:
 Note that the contents will not be parsed.
 * You can force line breaks by including `+` at the end of a line, followed by a line break.
 +
-.Example: Forced line break
-[source]
+.Forced line break
+[source, asciidoc]
 ----
 This is the first line +
 and this is a forced second line.
@@ -41,8 +41,8 @@ and this is a forced second line.
 Always leave a blank line at the beginning and end of a new `.adoc` file.
 Start the content on line 2, setting a relative path to the images directory (if applicable) to allow image rendering on GitHub:
 
-.Example: Set relative path to images directory
-[source]
+.Set relative path to images directory
+[source, asciidoc]
 ----
 :imagesdir: relative/path/to/images/dir
 ----
@@ -55,8 +55,8 @@ If you do not escape the opening brace, the braces and the text inside them will
 
 Each document begins with headings from level one (the document title) and an assigned ID.
 
-.Example: Assigned ID and document title
-[source]
+.Assign ID and document title
+[source, asciidoc]
 ----
 [[unique-id-verbose-is-ok]]
 = The Document Title
@@ -72,8 +72,8 @@ When writing a document's title, capitalize the following:
 
 Subsequent headings should use the following syntax:
 
-.Example: Create subheadings
-[source]
+.Create subheadings
+[source, asciidoc]
 ----
 == Subheading one
 
@@ -99,8 +99,8 @@ A missing ID in a mandatory place causes the docs build to fail.
 Use the target's assigned ID to link to other parts of the documentation.
 To refer to a target's assigned ID, use the following syntax:
 
-.Example: Reference assigned ID
-[source]
+.Reference assigned ID
+[source, asciidoc]
 ----
 <<doc-guidelines-links>>
 ----
@@ -110,16 +110,16 @@ For example, `see \<<target-id>>`.
 
 If you need to link to another document and want to modify the link text, use the following syntax:
 
-.Example: Reference assigned ID with defined link text
-[source]
+.Reference assigned ID with defined link text
+[source, asciidoc]
 ----
 <<target-it, link text that fits the context>>
 ----
 
 To include an external link, use the following syntax:
 
-.Example: Include external link with defined hyperlink text
-[source]
+.Include external link with defined hyperlink text
+[source, asciidoc]
 ----
 http://www.opennnms.com[Link text here]
 ----
@@ -155,8 +155,8 @@ In most cases, the "Description" column should appear immediately following the 
 
 Construct tables using the following syntax:
 
-.Example: Construct table with three columns
-[source]
+.Construct table with three columns
+[source, asciidoc]
 ----
 [options="header", cols="1,3,1"]
 |===
@@ -174,7 +174,7 @@ Construct tables using the following syntax:
 |===
 ----
 
-This is rendered as follows:
+This renders as follows:
 
 [options="header", cols="1,3,1"]
 |===
@@ -195,8 +195,8 @@ For tables that are made up of more than two columns, use a separate line for ea
 
 For content that has required and optional elements, use the following syntax:
 
-.Example: Construct table with required and optional elements
-[source]
+.Construct table with required and optional elements
+[source, asciidoc]
 ----
 [options="header", cols="1,3,1"]
 |===
@@ -238,13 +238,13 @@ To include code snippets, use the following syntax:
 
 .Include code snippet
 ====
-[source]
+[source, asciidoc]
 ----
 example code here
 ----
 ====
 
-If there is no suitable syntax highlighter for the language used, simply omit it, as in the example above.
+If there is no suitable syntax highlighter for the language used, simply omit it, as in the previous example.
 The following syntax highlighters are available:
 
 * Bash, Console, or Shell
@@ -271,8 +271,8 @@ Remember to write the admonition type in full caps; it does not render properly 
 IMPORTANT: There is no easy way to add new admonition types.
 Do not create your own for inclusion in the OpenNMS documentation.
 
-.Example: Include a Note admonition
-[source]
+.Include a Note admonition
+[source, asciidoc]
 ----
 NOTE: This is a note.
 ----
@@ -281,8 +281,8 @@ A Note renders as follows:
 
 NOTE: This is a note.
 
-.Example: Include a Tip admonition
-[source]
+.Include a Tip admonition
+[source, asciidoc]
 ----
 TIP: This is a tip.
 ----
@@ -291,8 +291,8 @@ A Tip renders as follows:
 
 TIP: This is a tip.
 
-.Example: Include an Important note
-[source]
+.Include an Important note
+[source, asciidoc]
 ----
 IMPORTANT: This is an important hint.
 ----
@@ -301,8 +301,8 @@ An Important note renders as follows:
 
 IMPORTANT: This is an important hint.
 
-.Example: Include a Caution note
-[source]
+.Include a Caution note
+[source, asciidoc]
 ----
 CAUTION: This is a cautionary note.
 ----
@@ -311,8 +311,8 @@ A Caution note renders as follows:
 
 CAUTION: This is a cautionary note.
 
-.Example: Include a Warning
-[source]
+.Include a Warning
+[source, asciidoc]
 ----
 WARNING: This is a warning.
 ----
@@ -382,16 +382,16 @@ The resulting "annotated" docs render the full manual as a single page, allowing
 
 To write a comment, use the following syntax:
 
-.Example: Include a comment
-[source]
+.Include a comment
+[source, asciidoc]
 ----
 // this is a comment
 ----
 
 To write a comment block, use the following syntax:
 
-.Example: Include a comment block
-[source]
+.Include a comment block
+[source, asciidoc]
 ----
 ////
 The note included here will still be processed, but will not be rendered in the output.

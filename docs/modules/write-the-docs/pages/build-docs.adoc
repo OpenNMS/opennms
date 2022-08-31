@@ -4,20 +4,6 @@
 This section describes how to build the OpenNMS docs locally.
 We recommend that you do this to test major changes, particularly if adding a lot of new content or making significant revisions to existing content.
 
-== Install Antora
-
-To install Antora, follow the https://docs.antora.org/antora/2.2/install/install-antora/[instructions] on the Antora website.
-
-=== Run Antora in Docker
-
-You can also build the docs using a containerized version of Antora.
-
-.Run the following command in the root folder of the repository
-[source, console]
-----
-docker run --rm -v $(pwd):/antora opennms/antora:2.3.4-b6293 --stacktrace generate antora-playbook-local.yml
-----
-
 == Clone the docs repository
 
 If you already know how to use Git, then this is going to sound very familiar:
@@ -30,10 +16,25 @@ If the project that you are working on already has version branches, then you wi
 
 After you have cloned the repository to your local system, you can track its branches with the following command:
 
-.Example: Git command to track repository changes
+.Git command to track repository changes
 [source]
 ----
 git checkout -b <local_branch_name> <remote_repo>/<remote_branch_name>
+----
+
+== Install Antora
+
+To install Antora, follow the https://docs.antora.org/antora/2.2/install/install-antora/[instructions] on the Antora website.
+
+=== Run Antora in Docker
+
+You can also build the docs using a containerized version of Antora.
+To do so, run the following command in the repository's root folder:
+
+.Console command to generate `antora-playbook-local.yml` file
+[source, console]
+----
+docker run --rm -v $(pwd):/antora opennms/antora:2.3.4-b6293 --stacktrace generate antora-playbook-local.yml
 ----
 
 == Build the docs
