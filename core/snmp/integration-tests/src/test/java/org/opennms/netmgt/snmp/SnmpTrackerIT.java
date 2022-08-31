@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -302,20 +302,6 @@ public class SnmpTrackerIT implements InitializingBean {
         assertNull("ifMtu.4 should be null", results.getResult(SnmpTableConstants.ifMtu, "4"));
         assertEquals("ifDescr.5 should be en1", "en1", results.getResult(SnmpTableConstants.ifDescr, "5").toString());
         assertEquals("ifMtu.6 should be 4078", 4078, results.getResult(SnmpTableConstants.ifMtu, "6").toInt());
-    }
-
-    @Test
-    @Ignore("Hmm, what *should* this do?  When using a callback, we don't pass storeResult() up-stream...")
-    public void testAggregateTable() throws Exception {
-    	final TestRowCallback rc = new TestRowCallback();
-        final TableTracker[] tt = new TableTracker[2];
-        tt[0] = new TableTracker(rc, SnmpTableConstants.ifIndex, SnmpTableConstants.ifDescr);
-        tt[1] = new TableTracker(rc, SnmpTableConstants.ifMtu, SnmpTableConstants.ifLastChange);
-        final AggregateTracker at = new AggregateTracker(tt);
-
-        walk(at, 4, 10, 0);
-
-        printResponses(rc);
     }
 
     private void printResponses(final TestRowCallback rc) {

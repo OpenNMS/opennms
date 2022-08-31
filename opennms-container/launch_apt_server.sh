@@ -14,6 +14,7 @@ PORT="$1"; shift || :
 APT_VOLUME="$1"; shift || :
 OCI="ubuntu:focal"
 MOUNT_PATH="/repo"
+TIMEOUT=120
 
 [ -n "${APT_CONTAINER_NAME}" ] || APT_CONTAINER_NAME="apt-repo"
 [ -n "${BUILD_NETWORK}"      ] || BUILD_NETWORK="opennms-build-network"
@@ -74,7 +75,7 @@ docker run --rm --detach --name "${APT_CONTAINER_NAME}" --volume ${APT_VOLUME}:$
 
 echo "=== waiting for server to be available ==="
 COUNT=0
-while [ "$COUNT" -lt 120 ]; do
+while [ "$COUNT" -lt $TIMEOUT ]; do
   COUNT="$((COUNT+1))"
   if [ "$( (docker logs "${APT_CONTAINER_NAME}" 2>&1 || :) | grep -c 'Start apt server' )" -gt 0 ]; then
     echo "READY"
@@ -83,12 +84,11 @@ while [ "$COUNT" -lt 120 ]; do
   sleep 1
 done
 
+echo "docker logs:"
 docker logs "${APT_CONTAINER_NAME}"
 
-if [ "$COUNT" -eq 30 ]; then
-  echo "gave up waiting for server"
-  echo "docker logs:"
+if [ "$COUNT" -eq $TIMEOUT ]; then
   echo ""
-  docker logs "${APT_CONTAINER_NAME}"
+  echo "Giving up after waiting $COUNT seconds for the server to come up"
   exit 1
 fi

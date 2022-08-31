@@ -24,7 +24,7 @@
   </div>
 </template>
   
-<script setup lang=ts>
+<script setup lang="ts">
 import { useStore } from 'vuex'
 import GraphContainer from './GraphContainer.vue'
 import TimeControls from './TimeControls.vue'

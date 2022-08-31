@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -153,14 +153,14 @@ public class PrometheusCollector extends AbstractRemoteServiceCollector {
         try {
             parsedUri = URI.create(url);
         } catch (IllegalArgumentException e) {
-            throw new CollectionException("Invalid URL: " + url, e);
+            throw new CollectionException("Invalid URL '" + url + "': " + e);
         }
 
         final MetricCollectingWalker walker = new MetricCollectingWalker();
         try {
             PrometheusScraper.scrape(parsedUri, map, walker);
         } catch (IOException e) {
-            throw new CollectionException("Failed to scrape metrics for: " + parsedUri, e);
+            throw new CollectionException("Failed to scrape metrics for '" + parsedUri + "': " + e);
         }
 
         return toCollectionSet(agent, request, walker.getMetrics());

@@ -49,7 +49,7 @@ public class NumericAttributeType extends SnmpAttributeType implements NumericCo
 
     private final AttributeType m_type;
 
-    private static final String[] s_numericTypes = new String[] { "counter", "gauge", "timeticks", "integer", "octetstring" };
+    private static final String[] s_numericTypes = new String[] { "counter", "gauge", "timeticks", "integer", "octetstring", "opaque" };
 
     /**
      * <p>isNumericType</p>

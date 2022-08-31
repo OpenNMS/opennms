@@ -45,12 +45,18 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfig;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigStatus;
+import org.opennms.features.deviceconfig.service.DeviceConfigConstants;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
+import org.opennms.netmgt.dao.mock.MockEventIpcManager;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitorAdaptor;
@@ -76,7 +82,9 @@ import java.util.stream.Collectors;
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-        "classpath*:/META-INF/opennms/component-dao.xml"})
+        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-daemon.xml",
+        "classpath:/META-INF/opennms/applicationContext-deviceConfig-MonitorAdaptor.xml"})
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(reuseDatabase = false)
 public class DeviceConfigMonitorAdaptorIT {
@@ -97,6 +105,9 @@ public class DeviceConfigMonitorAdaptorIT {
 
     @Autowired
     private SessionUtils sessionUtils;
+    
+    @Autowired
+    private MockEventIpcManager eventIpcManager;
 
     private OnmsIpInterface ipInterface;
     private OnmsNode node;
@@ -140,9 +151,25 @@ public class DeviceConfigMonitorAdaptorIT {
         attributes.put("encoding", StandardCharsets.UTF_16.name());
 
         // Send failed update first ( scenario 1)
+        String failureReason = "Failed to connect to SSHServer";
         Mockito.when(pollStatus.getDeviceConfig()).thenReturn(new org.opennms.netmgt.poller.DeviceConfig());
-        Mockito.when(pollStatus.getReason()).thenReturn("Failed to connect to SSHServer");
+        Mockito.when(pollStatus.getReason()).thenReturn(failureReason);
+        // start event
+        EventBuilder builder = new EventBuilder(EventConstants.DEVICE_CONFIG_BACKUP_STARTED_UEI, "poller");
+        builder.setInterface(ipInterface.getIpAddress());
+        builder.setNodeid(ipInterface.getNodeId());
+        builder.setService(DEFAULT_SERVICE_NAME);
+        eventIpcManager.getEventAnticipator().anticipateEvent(builder.getEvent());
+        // failed event
+        builder = new EventBuilder(EventConstants.DEVICE_CONFIG_BACKUP_FAILED_UEI, "poller");
+        builder.addParam(EventConstants.PARM_LOSTSERVICE_REASON, failureReason);
+        builder.setInterface(ipInterface.getIpAddress());
+        builder.setNodeid(ipInterface.getNodeId());
+        builder.setService(DEFAULT_SERVICE_NAME);
+        eventIpcManager.getEventAnticipator().anticipateEvent(builder.getEvent());
         deviceConfigAdaptor.handlePollResult(service, attributes, pollStatus);
+        // Verify that event for config failure was sent.
+        eventIpcManager.getEventAnticipator().verifyAnticipated();
         Optional<DeviceConfig> configOnMonday = deviceConfigDao.getLatestConfigForInterface(ipInterface, DEFAULT_SERVICE_NAME);
         Assert.assertTrue(configOnMonday.isPresent());
         Assert.assertNull(configOnMonday.get().getConfig());
@@ -150,14 +177,30 @@ public class DeviceConfigMonitorAdaptorIT {
         Assert.assertNull(configOnMonday.get().getCreatedTime());
         Assert.assertNull(configOnMonday.get().getLastSucceeded());
 
-
         // Send valid config (Scenario 2)
         byte[] configInBytes = config.getBytes(StandardCharsets.UTF_16);
         var fileName = "fileName";
         var deviceConfig = new org.opennms.netmgt.poller.DeviceConfig(configInBytes, fileName);
         Mockito.when(pollStatus.getDeviceConfig()).thenReturn(deviceConfig);
+
+        builder = new EventBuilder(EventConstants.DEVICE_CONFIG_BACKUP_STARTED_UEI, "poller");
+        builder.setInterface(ipInterface.getIpAddress());
+        builder.setNodeid(ipInterface.getNodeId());
+        builder.setService(DEFAULT_SERVICE_NAME);
+        builder.addParam(DeviceConfigConstants.PARM_DEVICE_CONFIG_BACKUP_DATA_PROTOCOL, "TFTP");
+        builder.addParam(DeviceConfigConstants.PARM_DEVICE_CONFIG_BACKUP_CONTROL_PROTOCOL, DeviceConfigConstants.CRON);
+        eventIpcManager.getEventAnticipator().anticipateEvent(builder.getEvent());
+
+        builder = new EventBuilder(EventConstants.DEVICE_CONFIG_BACKUP_SUCCEEDED_UEI, "poller");
+        builder.setInterface(ipInterface.getIpAddress());
+        builder.setNodeid(ipInterface.getNodeId());
+        builder.setService(DEFAULT_SERVICE_NAME);
+        eventIpcManager.getEventAnticipator().anticipateEvent(builder.getEvent());
+        
         // Send pollStatus with config to adaptor.
         deviceConfigAdaptor.handlePollResult(service, attributes, pollStatus);
+        // Verify that event for config success was sent.
+        eventIpcManager.getEventAnticipator().verifyAnticipated();
 
         Optional<DeviceConfig> configOnTuesday = deviceConfigDao.getLatestConfigForInterface(ipInterface, DEFAULT_SERVICE_NAME);
         Assert.assertTrue(configOnTuesday.isPresent());
@@ -227,6 +270,12 @@ public class DeviceConfigMonitorAdaptorIT {
         Assert.assertArrayEquals(configOnSunday.get().getConfig(), configOnThursday.get().getConfig());
         Assert.assertEquals(configOnSunday.get().getLastUpdated(), configOnSunday.get().getLastSucceeded());
         Assert.assertNotEquals(configOnSunday.get().getLastUpdated(), configOnSunday.get().getCreatedTime());
+
+        eventIpcManager.sendNowSync(EventUtils.createInterfaceDeletedEvent("dcb-test", node.getId(), ipInterface.getIpAddress(),ipInterface.getId()));
+        List<DeviceConfig> allConfigs = deviceConfigDao.getAllDeviceConfigsWithAnInterfaceId(ipInterface.getId());
+        // Verify that they got deleted
+        Assert.assertTrue(allConfigs.isEmpty());
+
     }
 
     @Test
@@ -333,7 +382,7 @@ public class DeviceConfigMonitorAdaptorIT {
             Map<String, Object> attributes = new HashMap<>();
             // Set charset and retention information in attributes.
             attributes.put("encoding", StandardCharsets.UTF_16.name());
-            attributes.put("retention-period", "P10D");
+            attributes.put(DeviceConfigConstants.RETENTION_PERIOD, "P10D");
 
             // Send valid config
             byte[] configInBytes = config.getBytes(StandardCharsets.UTF_16);

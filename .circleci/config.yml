@@ -17,26 +17,25 @@ parameters:
     description: whether to trigger garbage collection for older feature images
     type: boolean
     default: false
+  trigger-flaky:
+    description: whether to enable running flaky smoke tests
+    type: boolean
+    default: false
 
 setup: true
 
 commands:
-  cached-checkout:
-      description: "Checkout with caching"
+  shallow-clone:
+      description: "Quick shallow checkout"
       steps:
-        - restore_cache:
-            keys:
-              - pre-build-source-v1-{{ .Branch }}-{{ .Revision }}
-              - pre-build-source-v1-{{ .Branch }}-
-              - pre-build-source-v1-
-        - checkout
         - run:
-            name: git config merge.renameLimit
-            command: git config merge.renameLimit 999999
-        - save_cache:
-            key: pre-build-source-v1-{{ .Branch }}-{{ .Revision }}
-            paths:
-              - ".git"
+            name: git clone
+            command: |
+              install -d -m 700 ~/.ssh
+              ssh-keyscan github.com >> ~/.ssh/known_hosts
+              ssh-keyscan -p 443 ssh.github.com >> ~/.ssh/known_hosts
+              chmod 600 ~/.ssh/known_hosts
+              git clone --depth 20 "${CIRCLE_REPOSITORY_URL}" --branch "${CIRCLE_BRANCH}" .
   pack-config:
     description: "Pack the dynamic config in .circleci/main/"
     steps:
@@ -60,6 +59,7 @@ workflows:
         - equal: [ true, << pipeline.parameters.trigger-coverage-api >> ]
         - equal: [ false, << pipeline.parameters.trigger-prebuild >> ]
         - equal: [ false, << pipeline.parameters.trigger-automation >> ]
+        - equal: [ false, << pipeline.parameters.trigger-flaky >> ]
     jobs:
       - trigger-path-filtering:
           base-revision: << pipeline.git.branch >>
@@ -72,17 +72,39 @@ workflows:
         - equal: [ false, << pipeline.parameters.trigger-coverage-api >> ]
         - equal: [ true, << pipeline.parameters.trigger-prebuild >> ]
         - equal: [ false, << pipeline.parameters.trigger-automation >> ]
+        - equal: [ false, << pipeline.parameters.trigger-flaky >> ]
     jobs:
       - trigger-path-filtering:
           base-revision: << pipeline.git.branch >>
           mapping: |
-            .*                trigger-coverage false
-            ((?!docs/).)*     trigger-build    true
-            docs/.*           trigger-docs     true
-            ui/.*             trigger-ui       true
-            .circleci/.*      trigger-build    true
-            .circleci/.*      trigger-docs     true
-            .circleci/.*      trigger-ui       true
+            .*                trigger-coverage    false
+            .*                trigger-flaky-smoke false
+            ((?!docs/).)*     trigger-build       true
+            docs/.*           trigger-docs        true
+            ui/.*             trigger-ui          true
+            .circleci/.*      trigger-build       true
+            .circleci/.*      trigger-docs        true
+            .circleci/.*      trigger-ui          true
+
+  pre-build-with-flaky:
+    when:
+      and:
+        - equal: [ false, << pipeline.parameters.trigger-coverage-api >> ]
+        - equal: [ true, << pipeline.parameters.trigger-prebuild >> ]
+        - equal: [ false, << pipeline.parameters.trigger-automation >> ]
+        - equal: [ true, << pipeline.parameters.trigger-flaky >> ]
+    jobs:
+      - trigger-path-filtering:
+          base-revision: << pipeline.git.branch >>
+          mapping: |
+            .*                trigger-coverage    false
+            .*                trigger-flaky-smoke true
+            ((?!docs/).)*     trigger-build       true
+            docs/.*           trigger-docs        true
+            ui/.*             trigger-ui          true
+            .circleci/.*      trigger-build       true
+            .circleci/.*      trigger-docs        true
+            .circleci/.*      trigger-ui          true
 
   automation:
     when:
@@ -123,7 +145,7 @@ jobs:
     docker:
       - image: cimg/python:3.10.1
     steps:
-      - cached-checkout
+      - shallow-clone
       - pack-config
       - continuation/continue:
           circleci_domain: circleci.com
@@ -143,7 +165,7 @@ jobs:
         description: Mapping of path regular expressions to pipeline parameters and values. One mapping per line, whitespace-delimited.
         type: string
     steps:
-      - cached-checkout
+      - shallow-clone
       # copied from https://circleci.com/developer/orbs/orb/circleci/path-filtering
       # we do it ourselves because otherwise we have to do a full un-cached checkout every time
       - run:

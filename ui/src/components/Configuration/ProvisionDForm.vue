@@ -17,10 +17,7 @@
         :options="requisitionTypeList"
         :error="errors.type"
         :modelValue="config.type"
-        @update:modelValue="(((val: {name:string}) => {
-          props.updateFormValue('type', val)
-          updateHint(val.name)
-        }) as any)"
+        @update:modelValue="updateExternalSource"
       />
       <div class="icon">
         <FeatherButton
@@ -74,6 +71,8 @@
         @update:modelValue="(val) => updateFormValue('zone', val)"
         hint="DNS zone to use as basis for this definition"
       />
+    </div>
+    <div v-if="[RequisitionTypes.DNS].includes(config.type.name) || [RequisitionTypes.VMWare].includes(config.type.name)">
       <FeatherInput
         label="Requisition Name"
         class="side-input mb-m"
@@ -91,7 +90,7 @@
           :error="errors.username"
           :modelValue="config.username"
           @update:modelValue="(val) => updateFormValue('username', val)"
-          hint="vSphere username"
+          hint="vSphere username (optional)"
         />
         <FeatherInput
           type="password"
@@ -100,7 +99,7 @@
           :error="errors.password"
           :modelValue="config.password"
           @update:modelValue="(val) => updateFormValue('password', val)"
-          hint="vSphere password"
+          hint="vSphere password (optional)"
         />
       </div>
     </div>
@@ -152,6 +151,7 @@ import Help from '@featherds/icon/action/Help'
 import { LocalConfigurationWrapper } from './configuration.types'
 import { ConfigurationHelper } from './ConfigurationHelper'
 import ConfigurationCronSelector from './ConfigurationCronSelector.vue'
+import { UpdateModelFunction } from '@/types'
 const firstInput = ref<HTMLInputElement | null>(null)
 
 const props = defineProps({
@@ -175,6 +175,11 @@ watch(formActive, () => {
     firstInput.value.focus()
   }
 })
+
+const updateExternalSource: UpdateModelFunction = (val: {name:string}) => {
+  props.updateFormValue('type', val)
+  updateHint(val.name)
+}
 
 const updateCronValue = (type:string, val:string) => {
   props.updateFormValue(type, val)

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2004-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2004-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,7 +29,6 @@
 package org.opennms.netmgt.poller;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -42,12 +41,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Properties;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.db.DataSourceFactory;
@@ -57,8 +53,8 @@ import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.Querier;
-import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.eventd.AbstractEventUtil;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -140,6 +136,9 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
 	private LocationAwarePollerClient m_locationAwarePollerClient;
 
 	private LocationAwarePingClient m_locationAwarePingClient;
+
+	@Autowired
+	private OutageDao m_outageDao;
 
 	@Override
 	public void setTemporaryDatabase(MockDatabase database) {
@@ -231,6 +230,7 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
 		m_poller.setLocationAwarePollerClient(m_locationAwarePollerClient);
 		m_poller.setServiceMonitorAdaptor((svc, parameters, status) -> status);
 		m_poller.setPersisterFactory(new MockPersisterFactory());
+		m_poller.setOutageDao(m_outageDao);
 	}
 
 	@After
@@ -273,84 +273,6 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
         }
         assertTrue(foundNodeDown);
     }
-
-    @Test
-    @Ignore
-	public void testBug1564() {
-		// NODE processing = true;
-		m_pollerConfig.setNodeOutageProcessingEnabled(true);
-		MockNode node = m_network.getNode(2);
-		MockService icmpService = m_network.getService(2, "192.168.1.3", "ICMP");
-		MockService smtpService = m_network.getService(2, "192.168.1.3", "SMTP");
-		MockService snmpService = m_network.getService(2, "192.168.1.3", "SNMP");
-
-		// start the poller
-		startDaemons();
-
-		//
-		// Bring Down the HTTP service and expect nodeLostService Event
-		//
-
-		resetAnticipated();
-		anticipateDown(snmpService);
-		// One service works fine
-		snmpService.bringDown();
-
-		verifyAnticipated(10000);
-
-		// Now we simulate the restart, the node
-		// looses all three at the same time
-
-		resetAnticipated();
-		anticipateDown(node);
-
-		icmpService.bringDown();
-		smtpService.bringDown();
-		snmpService.bringDown();
-
-		verifyAnticipated(10000);
-		
-		anticipateDown(smtpService);
-		verifyAnticipated(10000);
-		anticipateDown(snmpService);
-		verifyAnticipated(10000);
-
-		// This is to simulate a restart,
-		// where I turn off the node behaviour
-
-		m_pollerConfig.setNodeOutageProcessingEnabled(false);
-
-		anticipateUp(snmpService);
-		snmpService.bringUp();
-
-		verifyAnticipated(10000);
-
-		anticipateUp(smtpService);
-		smtpService.bringUp();
-
-		verifyAnticipated(10000);
-
-		// Another restart - let's see if this will work?
-
-		m_pollerConfig.setNodeOutageProcessingEnabled(true);
-		// So everything is down, now
-		// SNMP will regain and SMTP will regain
-		// will the node come up?
-
-		
-		smtpService.bringDown();
-		
-		anticipateUp(smtpService);
-		smtpService.bringUp();
-
-		verifyAnticipated(10000,true);
-
-		anticipateUp(snmpService);
-		snmpService.bringUp();
-
-		verifyAnticipated(10000);
-
-	}
 
     @Test
 	public void testBug709() {

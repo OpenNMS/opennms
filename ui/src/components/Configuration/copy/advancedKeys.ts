@@ -108,21 +108,9 @@ export const advancedKeys = [
     hint: ''
   },
   {
-    id: 20,
-    name: 'password',
-    _text: 'password',
-    hint: ''
-  },
-  {
     id: 21,
     name: 'timeout',
     _text: 'timeout',
-    hint: ''
-  },
-  {
-    id: 19,
-    name: 'username',
-    _text: 'username',
     hint: ''
   },
   {

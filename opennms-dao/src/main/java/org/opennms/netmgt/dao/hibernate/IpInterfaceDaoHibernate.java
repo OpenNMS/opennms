@@ -221,8 +221,8 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
     }
 
     @Override
-    public OnmsIpInterface findByIpAddressAndLocation(String address, String location) {
-        return findUnique(
+    public List<OnmsIpInterface> findByIpAddressAndLocation(String address, String location) {
+        return find(
                 "from OnmsIpInterface i where i.ipAddress = ? and exists (from OnmsNode n where n.id = i.node.id AND n.location.locationName = ?)",
                 address, location
         );

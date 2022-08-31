@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -34,7 +34,7 @@ import org.junit.Ignore;
  *
  * @author Markus Neumann <markus@opennms.com>
  */
-@Ignore 
+@Ignore("this is used by other tests, but is not a test itself")
 public class JmxTestDummy implements JmxTestDummyMBean {
 
     private int writable = 0;

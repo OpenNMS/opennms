@@ -11,6 +11,11 @@ export const RequisitionTypes = {
   RequisitionPluginForServer: 'requisition'
 }
 
+export const requisitionDNSField = {
+  zone: 'zone',
+  requisitionName: 'foreign source'
+}
+
 export const RequisitionPluginSubTypes = {
   ACI: 'ACI',
   AzureIot: 'Azure IoT',
@@ -43,27 +48,32 @@ export const VMWareFields = {
   Username: 'username',
   Password: 'password',
   UpperUsername: 'Username',
-  UpperPassword: 'Password'
+  UpperPassword: 'Password',
+  RequisitionName: 'Requisition Name'
 }
 
 export const SplitTypes = {
   dns: 'dns://',
-  file: 'file://'
+  file: 'file://',
+  vmware: 'vmware://'
 }
 
 export const ErrorStrings = {
-  DuplicateName: 'Name must be unique',
-  TypeError: 'Must select a type',
-  OccuranceTime: 'Must schedule a time',
-  OccuranceWeekTime: 'Must select a day of the week',
-  OccuranceDayTime: 'Must select a day of the month',
-  QuartzFormatSupportError: 'Error: Expression has only 5 parts. At least 6 parts are required.',
+  DuplicateName: 'Name must be unique.',
+  QuartzFormatSupportError: (numPart: number) => `Error: Expression has only ${numPart} part${numPart > 1 ? 's' : ''}. At least 6 parts are required.`,
   InvalidHostname: 'Invalid hostname',
-  FilePath: 'Must include a file path',
-  FilePathStart: 'Path must start with a /',
-  MustHave: (nameType: string) => `Must have a ${nameType.toLocaleLowerCase()}`,
-  NameShort: (nameType: string) => `${nameType} must have at least two chars`,
-  NameLong: (nameType: string, length = 255) => `${nameType} must be shorter than ${length}`
+  InvalidZoneName: 'Invalid zone name',
+  InvalidRequisitionName: 'Invalid requisition name',
+  FilePathStart: 'Path must start with a /.',
+  FilePathWithQueryChar: 'Path contains invalid character: ?.',
+  Required: (nameType: string) => `${nameType} required.`,
+  NameShort: (nameType: string) => `${nameType} must have at least two chars.`,
+  NameLong: (nameType: string, length = 255) => `${nameType} must be shorter than ${length}.`
+}
+
+export const LabelStrings = {
+  duplicateKey: 'Duplicate key',
+  optionNotAvailable: 'Option not available'
 }
 
 export const requisitionTypeList = [

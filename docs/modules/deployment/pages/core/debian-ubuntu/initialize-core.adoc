@@ -58,6 +58,12 @@ Reload the systemd unit with `systemctl daemon-reload` and restart the service w
 
 (For more background on this issue, see https://opennms.discourse.group/t/h29-wont-start-with-permission-error-to-open-icmp-socket/2387[H29+ won't start with permission error to open ICMP socket] on Discourse.)
 
+.Enable {page-component-title} core instance on system boot and start immediately
+[source, console]
+----
+sudo systemctl enable --now opennms
+----
+
 .Allow connection to the web UI from your network
 
 If you are using Uncomplicated Firewall (UFW) as your host firewall, you can allow access to the web user interface with the command:

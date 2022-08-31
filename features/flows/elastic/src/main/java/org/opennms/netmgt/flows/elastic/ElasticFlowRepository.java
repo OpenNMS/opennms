@@ -375,26 +375,36 @@ public class ElasticFlowRepository implements FlowRepository {
 
                 final Integer nodeId = flow.getNodeExporter().getNodeId();
 
-                Set<Integer> ifaceMarkerCache = this.markerCache.get(flow.getDirection()).getIfPresent(nodeId);
-
-                if (ifaceMarkerCache == null) {
-                    this.markerCache.get(flow.getDirection()).put(nodeId, ifaceMarkerCache = Sets.newConcurrentHashSet());
-                    nodesToUpdate.get(flow.getDirection()).add(nodeId);
-                }
-
                 if (flow.getInputSnmp() != null &&
                     flow.getInputSnmp() != 0 &&
-                    flow.getDirection() == Direction.INGRESS &&
-                    !ifaceMarkerCache.contains(flow.getInputSnmp())) {
-                    ifaceMarkerCache.add(flow.getInputSnmp());
-                    interfacesToUpdate.get(flow.getDirection()).computeIfAbsent(nodeId, k -> Lists.newArrayList()).add(flow.getInputSnmp());
+                    (flow.getDirection() == Direction.INGRESS || flow.getDirection() == Direction.UNKNOWN)) {
+
+                    Set<Integer> ingressMarkerCache = this.markerCache.get(Direction.INGRESS).getIfPresent(nodeId);
+                    if (ingressMarkerCache == null) {
+                        this.markerCache.get(Direction.INGRESS).put(nodeId, ingressMarkerCache = Sets.newConcurrentHashSet());
+                        nodesToUpdate.get(Direction.INGRESS).add(nodeId);
+                    }
+
+                    if(!ingressMarkerCache.contains(flow.getInputSnmp())) {
+                        ingressMarkerCache.add(flow.getInputSnmp());
+                        interfacesToUpdate.get(Direction.INGRESS).computeIfAbsent(nodeId, k -> Lists.newArrayList()).add(flow.getInputSnmp());
+                    }
                 }
+
                 if (flow.getOutputSnmp() != null &&
                     flow.getOutputSnmp() != 0 &&
-                    flow.getDirection() == Direction.EGRESS &&
-                    !ifaceMarkerCache.contains(flow.getOutputSnmp())) {
-                    ifaceMarkerCache.add(flow.getOutputSnmp());
-                    interfacesToUpdate.get(flow.getDirection()).computeIfAbsent(nodeId, k -> Lists.newArrayList()).add(flow.getOutputSnmp());
+                    (flow.getDirection() == Direction.EGRESS || flow.getDirection() == Direction.UNKNOWN)) {
+
+                    Set<Integer> egressMarkerCache = this.markerCache.get(Direction.EGRESS).getIfPresent(nodeId);
+                    if (egressMarkerCache == null) {
+                        this.markerCache.get(Direction.EGRESS).put(nodeId, egressMarkerCache = Sets.newConcurrentHashSet());
+                        nodesToUpdate.get(Direction.EGRESS).add(nodeId);
+                    }
+
+                    if(!egressMarkerCache.contains(flow.getOutputSnmp())) {
+                        egressMarkerCache.add(flow.getOutputSnmp());
+                        interfacesToUpdate.get(Direction.EGRESS).computeIfAbsent(nodeId, k -> Lists.newArrayList()).add(flow.getOutputSnmp());
+                    }
                 }
             }
 
@@ -442,7 +452,7 @@ public class ElasticFlowRepository implements FlowRepository {
                 bulkRequest.execute();
             } catch (BulkException ex) {
                 if (ex.getBulkResult() != null) {
-                    throw new PersistenceException(ex.getMessage(), ex.getBulkResult().getFailedDocuments());
+                    throw new PersistenceException(ex.getMessage(), ex.getBulkResult().getFailedItems());
                 } else {
                     throw new PersistenceException(ex.getMessage(), Collections.emptyList());
                 }

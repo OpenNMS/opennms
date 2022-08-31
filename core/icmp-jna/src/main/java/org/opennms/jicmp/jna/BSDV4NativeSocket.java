@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -68,7 +68,7 @@ public class BSDV4NativeSocket extends NativeDatagramSocket {
 	public void setTrafficClass(final int tc) throws IOException {
 	    final IntByReference tc_ptr = new IntByReference(tc);
             try {
-                setsockopt(getSock(), IPPROTO_IP, IP_TOS, tc_ptr.getPointer(), Pointer.SIZE);
+                setsockopt(getSock(), IPPROTO_IP, IP_TOS, tc_ptr.getPointer(), Native.POINTER_SIZE);
             } catch (final LastErrorException e) {
                 throw new IOException("setsockopt: " + strerror(e.getErrorCode()));
             }

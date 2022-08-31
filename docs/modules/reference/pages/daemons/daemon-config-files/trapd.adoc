@@ -2,6 +2,8 @@
 [[ref-daemon-config-files-trapd]]
 = Trapd
 
+Handles processing of xref:operation:events/sources/snmp-traps.adoc[SNMP traps] into events.
+
 .Trapd configuration file overview
 [options="header"]
 [cols="2,3,1,1"]
@@ -12,7 +14,7 @@
 | Restart Required
 
 | trapd-configuration.xml
-| Configure generic behavior of Trapd; for example, port numbers with IP addresses to listen for traps.
+| Configure generic behavior of trapd (for example, port numbers with IP addresses to listen for traps).
 | yes
 | no
 
@@ -21,4 +23,15 @@
 Files in this folder must be specified as an include directive in `eventconf.xml`.
 | yes
 | no
+|===
+
+.Trapd log file overview
+[options="header"]
+[cols="2,3"]
+|===
+| File
+| Description
+
+| trapd.log
+| Logs relating to trapd server events.
 |===

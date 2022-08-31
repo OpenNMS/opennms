@@ -108,7 +108,7 @@ public class DefaultScvRestService implements ScvRestService {
                 if (!pattern.matcher(value).matches()) {
                     attributes.put(key, value);
                 } else {
-                    attributes.get(existingAttributes.get(key));
+                    attributes.put(key, existingAttributes.get(key));
                 }
             });
             // If password is masked, we are using username and password from existing credentials.

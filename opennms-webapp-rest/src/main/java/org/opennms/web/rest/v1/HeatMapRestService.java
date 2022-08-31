@@ -164,7 +164,7 @@ public class HeatMapRestService extends OnmsRestService {
     @Transactional
     @Path("outages/foreignSources")
     public Response outagesByForeignsources() throws IOException {
-        final List<HeatMapElement> heatMapElements = m_outageDao.getHeatMapItemsForEntity("foreignsource", "0", null, null, "foreignsource");
+        final List<HeatMapElement> heatMapElements = m_outageDao.getHeatMapItemsForEntity("node.foreignsource", null, null, null, "node.foreignsource");
         return Response.ok(transformResults(heatMapElements, System.getProperty(FOREIGNSOURCE_FILTER_PROPERTY_KEY, FOREIGNSOURCE_FILTER_PROPERTY_DEFAULT))).build();
     }
 
@@ -191,7 +191,7 @@ public class HeatMapRestService extends OnmsRestService {
     @Transactional
     @Path("outages/nodesByForeignSource/{foreignSource}")
     public Response outagesOfNodesByForeignSource(@PathParam("foreignSource") final String foreignSource) throws IOException {
-        final List<HeatMapElement> heatMapElements = m_outageDao.getHeatMapItemsForEntity("node.nodelabel", "node.nodeid", "foreignsource", foreignSource);
+        final List<HeatMapElement> heatMapElements = m_outageDao.getHeatMapItemsForEntity("node.nodelabel", "node.nodeid", "node.foreignsource", foreignSource);
         return Response.ok(transformResults(heatMapElements, null)).build();
     }
 
@@ -220,7 +220,7 @@ public class HeatMapRestService extends OnmsRestService {
     @Path("alarms/foreignSources")
     public Response alarmsByForeignsources() throws IOException {
         boolean processAcknowledged = !Boolean.parseBoolean(System.getProperty(ONLY_UNACKNOWLEDGED_PROPERTY_KEY, ONLY_UNACKNOWLEDGED_PROPERTY_DEFAULT));
-        final List<HeatMapElement> heatMapElements = m_alarmDao.getHeatMapItemsForEntity("foreignsource", "0", processAcknowledged, null, null, "foreignsource");
+        final List<HeatMapElement> heatMapElements = m_alarmDao.getHeatMapItemsForEntity("node.foreignsource", null, processAcknowledged, null, null, "node.foreignsource");
         return Response.ok(transformResults(heatMapElements, System.getProperty(FOREIGNSOURCE_FILTER_PROPERTY_KEY, FOREIGNSOURCE_FILTER_PROPERTY_DEFAULT))).build();
     }
 
@@ -250,7 +250,7 @@ public class HeatMapRestService extends OnmsRestService {
     @Path("alarms/nodesByForeignSource/{foreignSource}")
     public Response alarmsOfNodesByForeignSource(@PathParam("foreignSource") final String foreignSource) throws IOException {
         boolean processAcknowledged = !Boolean.parseBoolean(System.getProperty(ONLY_UNACKNOWLEDGED_PROPERTY_KEY, ONLY_UNACKNOWLEDGED_PROPERTY_DEFAULT));
-        final List<HeatMapElement> heatMapElements = m_alarmDao.getHeatMapItemsForEntity("node.nodelabel", "node.nodeid", processAcknowledged, "foreignsource", foreignSource);
+        final List<HeatMapElement> heatMapElements = m_alarmDao.getHeatMapItemsForEntity("node.nodelabel", "node.nodeid", processAcknowledged, "node.foreignsource", foreignSource);
         return Response.ok(transformResults(heatMapElements, null)).build();
     }
 

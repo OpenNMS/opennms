@@ -30,10 +30,10 @@ package org.opennms.netmgt.dao.api;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
 import org.opennms.netmgt.config.provisiond.RequisitionDef;
-import org.springframework.dao.DataAccessResourceFailureException;
 
 /**
  * DAO interface for Provisiond configuration
@@ -120,4 +120,5 @@ public interface ProvisiondConfigurationDao {
      */
     void reloadConfiguration() throws IOException;
 
+    Map<String, Long> getRequisitionSchemeCount() throws IOException;
 }

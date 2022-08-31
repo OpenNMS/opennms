@@ -1,0 +1,9 @@
+await: #
+send: copy running-config tftp://${tftpServerIp}/running-config${filenameSuffix}
+await: ]?
+send: ${tftpServerIp}
+await: ]?
+send: running-config${filenameSuffix}
+await: bytes/sec)
+await: #
+send: exit

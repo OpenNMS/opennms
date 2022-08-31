@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -73,7 +73,7 @@ public class DominoIIOPDetectorTest {
      * allow the connection. 
      */
     @Test(timeout=20000)
-    @Ignore
+    @Ignore("manual test against a Domino server")
     public void testDetectorSuccessTokenPort() throws UnknownHostException {
         //m_detector.setPort(8080);
         //m_detector.init();

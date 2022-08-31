@@ -1,0 +1,45 @@
+[[restore]]
+= Restore OpenNMS {page-component-title}
+
+This section describes a basic restore process for a default OpenNMS {page-component-title} xref:deployment:core/getting-started.adoc#getting-started-core[installation].
+OpenNMS {page-component-title} binaries, logs, RRD archives, configurations and the database will be restored.
+
+NOTE: The backup storage path in this example is `/tmp` for demonstration purposes.
+Please be aware that `/tmp` is not persisted, as most operating systems will delete the content at bootup.
+
+[[restore-objectives]]
+== Objectives
+
+* Restore your backup of OpenNMS {page-component-title} components.
+* Install a PostgreSQL database and restore your backup.
+* Install OpenJDK.
+* Create a systemd OpenNMS service unit.
+
+[[restore-requirements]]
+== Requirements
+
+* Backup files you created in xref:deployment:upgrade/backup/debian-ubuntu/backup-debian-ubuntu.adoc[Debian Ubuntu].
+* A system user with administrative permissions (sudo).
+* Internet access to download and install OpenJDK and PostgreSQL.
++
+NOTE: The PostgreSQL link:https://www.postgresql.org/about/news/announcing-apt-archivepostgresqlorg-2024/[archive repository] also hosts older versions.
+* Database password for `opennms` and `postgres` user.
+
+== Restore backups
+
+[{tabs}]
+====
+CentOS/RHEL 8::
++
+--
+include::centos-rhel8/restore-centos-rhel8.adoc[]
+--
+
+ifeval::["{page-component-title}" == "Horizon"]
+Debian/Ubuntu::
++
+--
+include::debian-ubuntu/restore-debian-ubuntu.adoc[]
+--
+endif::[]
+====

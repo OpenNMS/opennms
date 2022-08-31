@@ -43,9 +43,21 @@ public class DeviceConfig {
     @XmlAttribute(name="filename")
     private String filename;
 
+    @XmlAttribute(name="scriptOutput")
+    private String scriptOutput;
+
+    public DeviceConfig(String scriptOutput) {
+        this(null, null, scriptOutput);
+    }
+
     public DeviceConfig(byte[] content, String fileName) {
+        this(content, fileName, null);
+    }
+
+    public DeviceConfig(byte[] content, String fileName, String scriptOutput) {
         this.content = content;
         this.filename = fileName;
+        this.scriptOutput = scriptOutput;
     }
 
     // for JAXB
@@ -66,5 +78,13 @@ public class DeviceConfig {
 
     public void setFilename(String filename) {
         this.filename = filename;
+    }
+
+    public String getScriptOutput() {
+        return scriptOutput;
+    }
+
+    public void setScriptOutput(String scriptOutput) {
+        this.scriptOutput = scriptOutput;
     }
 }

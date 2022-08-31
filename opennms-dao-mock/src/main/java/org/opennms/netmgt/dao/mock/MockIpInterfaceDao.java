@@ -202,7 +202,7 @@ public class MockIpInterfaceDao extends AbstractMockDao<OnmsIpInterface, Integer
     }
 
     @Override
-    public OnmsIpInterface findByIpAddressAndLocation(String location, String address) {
+    public List<OnmsIpInterface> findByIpAddressAndLocation(String location, String address) {
         throw new UnsupportedOperationException("Not yet implemented!");
     }
 }

@@ -140,7 +140,7 @@ public class InterfaceToNodeCacheEventProcessor implements InitializingBean {
         Long nodeId = event.getNodeid();
         LOG.debug("Received event: {} with nodeId = {}", event.getUei(), nodeId);
         if (nodeId == null) {
-            LOG.error("{} : Event with no node ID: {}", EventConstants.INTERFACE_DELETED_EVENT_UEI, event.toString());
+            LOG.error("{} : Event with no node ID: {}", EventConstants.NODE_DELETED_EVENT_UEI, event.toString());
             return;
         }
         // remove all interfaces for this node.

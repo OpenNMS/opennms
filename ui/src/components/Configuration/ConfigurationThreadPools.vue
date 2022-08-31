@@ -32,12 +32,13 @@
     <div>
       <p class="pb-xl">
         Thread pool sizes impact the performance of the provisioning subsystem. Larger systems may require larger
-        values. To adjust them, select a value from the drop-down list.
+        values. To adjust them, type a new number in the field or use the up/down arrows to select a value.
       </p>
       <FeatherInput
         :error="getError('importThreads')"
         type="number"
         label="Import"
+        hint="Number of threads to allocate for importing requisitions."
         v-model="threadPoolData.importThreads"
         @keypress="enterCheck"
       />
@@ -45,6 +46,7 @@
         :error="getError('scanThreads')"
         type="number"
         label="Scan"
+        hint="Number of threads to allocate for scanning new nodes."
         v-model="threadPoolData.scanThreads"
         @keypress="enterCheck"
       />
@@ -52,13 +54,16 @@
         :error="getError('rescanThreads')"
         type="number"
         label="Rescan"
+        hint="Number of threads to allocate for rescanning existing nodes."
         v-model="threadPoolData.rescanThreads"
         @keypress="enterCheck"
       />
       <FeatherInput
+        class="last-input"
         :error="getError('writeThreads')"
         type="number"
         label="Write"
+        hint="Number of threads to allocate for writing to the database."
         v-model="threadPoolData.writeThreads"
         @keypress="enterCheck"
       />
@@ -102,7 +107,9 @@ const threadPoolsErrors = ref<Record<string, boolean>>({})
 const threadPoolsActive = ref(false)
 const loading = ref(false)
 
-const errorDefaultMessage = 'Thread pool values have to be between 1 and 2000.'
+const getUpperBound = (key: string) => ['importThreads', 'writeThreads'].includes(key) ? 100 : 2000
+const upperBoundErrorMessage = (upperBound: number) => `Thread pool values have to be between 1 and ${upperBound}.`
+const snackbarErrorMessage = 'Thread pool values are outside of supported range.'
 
 const threadPoolData = computed(() => {
   const localThreads: Record<string, string> = {}
@@ -139,7 +146,7 @@ const updateThreadpools = async () => {
   // Validate Threadpool Data
   threadPoolKeys.forEach((key) => {
     const val = parseInt(currentThreadpoolState?.[key])
-    if (val < 1 || val > 2000) {
+    if (val < 1 || val > getUpperBound(key)) {
       threadPoolsErrors.value[key] = true
     }
   })
@@ -198,7 +205,7 @@ const updateThreadpools = async () => {
     }
   } else {
     showSnackBar({
-      msg: errorDefaultMessage,
+      msg: snackbarErrorMessage,
       error: true
     })
   }
@@ -220,7 +227,7 @@ const enterCheck = (key: { key: string }) => {
  * Determine is error is set for a key, and if so, return generic error message.
  */
 const getError = (key: string) => {
-  return threadPoolsErrors.value[key] ? errorDefaultMessage : ''
+  return threadPoolsErrors.value[key] ? upperBoundErrorMessage(getUpperBound(key)) : ''
 }
 </script>
 
@@ -242,6 +249,9 @@ const getError = (key: string) => {
 .title-flex {
   display: flex;
   align-items: center;
+}
+.last-input {
+  margin-bottom: 10px;
 }
 </style>
 

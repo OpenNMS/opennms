@@ -187,12 +187,16 @@ If the TimescaleDB extension is not installed, stat tables will not be converted
 
 To load the adapter while {page-component-title} is running, use the following command in the Karaf shell.
 
-[source, console]
+[source, karaf]
 ----
 feature:install opennms-telemetry-bmp-stats
 ----
 
-To ensure that the feature continues to be installed on subsequent restarts, add `opennms-telemetry-bmp-stats` to the `featuresBoot` property in `$OPENNMS_HOME/etc/org.apache.karaf.features.cfg`.
+To ensure that the feature continues to be installed on subsequent restarts, add `opennms-telemetry-bmp-stats` to a file in `featuresBoot.d`:
+[source, console]
+----
+echo "opennms-telemetry-bmp-stats" | sudo tee ${OPENNMS_HOME}/etc/featuresBoot.d/telemetry-bmp.boot
+----
 
 === Configuration BMP persistence for external sources
 

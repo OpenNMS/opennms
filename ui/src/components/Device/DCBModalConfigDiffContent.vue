@@ -20,7 +20,7 @@
   <p class="select-msg" v-if="numberOfSelectedConfigs < 2">Select two dates to compare.</p>
   <p
     class="select-msg"
-    v-if="!defaultConfigTypeBackups.length && !otherConfigTypeBackups.length"
+    v-if="!historyModalBackups.length"
   >No dates are available.</p>
 
   <FeatherChipList
@@ -38,25 +38,11 @@
   </FeatherChipList>
 
   <div class="flex-container" v-if="!isCompareView">
-    <FeatherCheckboxGroup label="Startup" vertical v-if="defaultConfigTypeBackups.length">
+    <FeatherCheckboxGroup :label="historyModalBackups[0].configName" vertical v-if="historyModalBackups.length">
       <div class="history-dates-column">
         <FeatherCheckbox
           class="history-date"
-          v-for="config of defaultConfigTypeBackups"
-          :key="config.id"
-          @update:modelValue="onCheckbox(config)"
-          :modelValue="selectedConfigs[config.id]"
-        >
-          <span v-date>{{ config.lastBackupDate }}</span>
-        </FeatherCheckbox>
-      </div>
-    </FeatherCheckboxGroup>
-
-    <FeatherCheckboxGroup label="Running" vertical v-if="otherConfigTypeBackups.length">
-      <div class="history-dates-column">
-        <FeatherCheckbox
-          class="history-date"
-          v-for="config of otherConfigTypeBackups"
+          v-for="config of historyModalBackups"
           :key="config.id"
           @update:modelValue="onCheckbox(config)"
           :modelValue="selectedConfigs[config.id]"
@@ -85,7 +71,7 @@ import { FeatherCheckbox, FeatherCheckboxGroup } from '@featherds/checkbox'
 import { FeatherChip, FeatherChipList } from '@featherds/chips'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
-import Compare from '@featherds/icon/action/ContentCopy'
+import Compare from '@/assets/Compare.vue'
 import Restore from '@featherds/icon/action/Restore'
 import Download from '@featherds/icon/action/DownloadFile'
 import { diffLines } from 'diff'
@@ -100,8 +86,6 @@ const isCompareView = ref(false)
 const changes = ref<{ additions: number; deletions: number }>({ additions: 0, deletions: 0 })
 
 const historyModalBackups = computed<DeviceConfigBackup[]>(() => store.state.deviceModule.historyModalBackups)
-const defaultConfigTypeBackups = computed<DeviceConfigBackup[]>(() => historyModalBackups.value.filter((config) => config.configType === 'default'))
-const otherConfigTypeBackups = computed<DeviceConfigBackup[]>(() => historyModalBackups.value.filter((config) => config.configType !== 'default'))
 const numberOfSelectedConfigs = computed<number>(() => Object.values(selectedConfigs.value).filter((val) => val).length)
 
 const onCompare = () => isCompareView.value = true

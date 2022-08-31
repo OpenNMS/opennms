@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -44,6 +44,7 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import com.google.gson.GsonBuilder;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.opennms.netmgt.endpoints.grafana.api.Dashboard;
@@ -65,7 +66,7 @@ import okhttp3.ResponseBody;
 public class GrafanaClientImpl implements GrafanaClient {
     private final GrafanaServerConfiguration config;
 
-    private final Gson gson = new Gson();
+    private final Gson gson;
     private final OkHttpClient client;
     private final HttpUrl baseUrl;
 
@@ -78,6 +79,11 @@ public class GrafanaClientImpl implements GrafanaClient {
                 .readTimeout(config.getReadTimeoutSeconds(), TimeUnit.SECONDS);
         builder = configureToIgnoreCertificate(builder);
         client = builder.build();
+
+        // The schema changed between Grafana 7 and 8 for the `datasource` property on panels.
+        this.gson = new GsonBuilder()
+                .registerTypeAdapter(Panel.class, new PanelDeserializer())
+                .create();
     }
 
     @Override

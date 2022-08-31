@@ -62,22 +62,6 @@ public class HandlerTest {
     }
     
     @Test
-    @Ignore
-    public void dwOpenConnectionURL() throws IOException {
-        
-        URL url = new URL(DNS_URL);
-        
-        UrlResource resource = new UrlResource(url);
-
-        MockForeignSourceRepository fsr = new MockForeignSourceRepository();
-        Requisition r = fsr.importResourceRequisition(resource);
-        
-        Assert.assertTrue("Number of nodes in Model Import > 1", 1 == r.getNodeCount());
-        Assert.assertTrue("NodeLabel isn't localhost", "localhost".equals(r.getNodes().get(0).getNodeLabel()));
-        Assert.assertTrue("127.0.0.1".equals(InetAddressUtils.str(r.getNodes().get(0).getInterfaces().get(0).getIpAddr())));
-    }
-
-    @Test
     public void dwParseURL() throws MalformedURLException {
         
         String urlString = "dns://localhost:53/opennms";

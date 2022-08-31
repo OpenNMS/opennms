@@ -139,7 +139,7 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         final String helpMenuName = "nav-help-top";
         clickMenuItemWithIcon(helpMenuName, "Help", "opennms/help/index.jsp");
         findElementByXpath("//div[@class='card-header']/span[text()='Documentation']");
-        clickMenuItemWithIcon(helpMenuName, "Support", "opennms/support/index.htm");
+        clickMenuItemWithIcon(helpMenuName, "Support", "opennms/support/index.jsp");
         findElementByXpath("//div[@class='card-header']/span[text()='Commercial Support']");
         clickMenuItemWithIcon(helpMenuName, "About", "opennms/about/index.jsp");
         findElementByXpath("//div[@class='card-header']/span[text()='Version Details']");
@@ -199,7 +199,7 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         final ContextSearchResult contextSearchResult = searchResult.forContext(SearchContext.Action);
         assertThat(contextSearchResult.hasMore(), is(true));
         contextSearchResult.loadMore();
-        assertThat(contextSearchResult.size(), is(13L));
+        assertThat(contextSearchResult.size(), is(14L));
 
         // Select last element from the now loaded elements
         contextSearchResult.getItem("Configure Users").click();

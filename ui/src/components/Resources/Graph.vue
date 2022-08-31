@@ -33,7 +33,7 @@
   </div>
 </template>
   
-<script setup lang=ts>
+<script setup lang="ts">
 import RrdGraphConverter from './utils/RrdGraphConverter.class'
 import { formatTimestamps, getFormattedLegendStatements } from './utils/LegendFormatter'
 import GraphDataTable from './GraphDataTable.vue'

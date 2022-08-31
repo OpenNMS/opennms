@@ -1,0 +1,22 @@
+<records>
+    <record>
+        <input>foo</input>
+        <read>10</read>
+        <write>10</write>
+    </record>
+    <record>
+        <input>bar</input>
+        <read>20</read>
+        <write>20</write>
+    </record>
+    <record>
+        <input>blupp</input>
+        <read>30</read>
+        <write>30</write>
+    </record>
+    <record>
+        <input>bla</input>
+        <read>40</read>
+        <write>40</write>
+    </record>
+</records>

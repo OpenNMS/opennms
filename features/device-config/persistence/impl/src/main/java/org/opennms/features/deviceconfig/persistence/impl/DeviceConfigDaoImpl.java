@@ -29,13 +29,17 @@
 package org.opennms.features.deviceconfig.persistence.impl;
 
 import com.google.common.base.Strings;
+
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+
 import java.util.stream.Collectors;
 import org.hibernate.SQLQuery;
 import org.hibernate.transform.ResultTransformer;
@@ -49,13 +53,16 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataAccessException;
 
 public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long> implements DeviceConfigDao {
     private static final Map<String,String> ORDERBY_QUERY_PROPERTY_MAP = Map.of(
         "lastupdated", "last_updated",
         "devicename", "nodelabel",
         "lastbackup", "created_time",
-        "ipaddress", "ipaddr"
+        "ipaddress", "ipaddr",
+        "location", "location",
+        "status", "status"
     );
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceConfigDaoImpl.class);
@@ -105,12 +112,19 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
 
     @Override
     public Optional<DeviceConfig> getLatestConfigForInterface(OnmsIpInterface ipInterface, String serviceName) {
-        List<DeviceConfig> deviceConfigs =
-                findObjects(DeviceConfig.class,
-                        "from DeviceConfig dc WHERE dc.ipInterface.id = ? AND serviceName = ? " +
-                                "ORDER BY lastUpdated DESC LIMIT 1", ipInterface.getId(), serviceName);
+        List<DeviceConfig> deviceConfigs = new ArrayList<>();
+        if (!Strings.isNullOrEmpty(serviceName)) {
+            deviceConfigs =
+                    findObjects(DeviceConfig.class,
+                            "from DeviceConfig dc WHERE dc.ipInterface.id = ? AND serviceName = ? " +
+                                    "ORDER BY lastUpdated DESC LIMIT 1", ipInterface.getId(), serviceName);
+        } else {
+            deviceConfigs = findObjects(DeviceConfig.class,
+                    "from DeviceConfig dc WHERE dc.ipInterface.id = ? AND serviceName is NULL " +
+                            "ORDER BY lastUpdated DESC LIMIT 1", ipInterface.getId());
+        }
 
-        if (deviceConfigs != null && !deviceConfigs.isEmpty()) {
+        if (!deviceConfigs.isEmpty()) {
             return Optional.of(deviceConfigs.get(0));
         }
         return Optional.empty();
@@ -227,6 +241,12 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
             : this.queryInt(hql);
 
         return count;
+    }
+
+    @Override
+    public List<DeviceConfig> getAllDeviceConfigsWithAnInterfaceId(Integer ipInterfaceId) {
+        return find("from DeviceConfig dc where dc.ipInterface.id = ? ",
+                ipInterfaceId);
     }
 
     private DeviceConfigQueryCriteria createSqlQueryCriteria(Integer limit, Integer offset,
@@ -373,4 +393,9 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
         deviceConfig.setStatus(DeviceConfigStatus.NONE);
         saveOrUpdate(deviceConfig);
     }
+
+    public void deleteDeviceConfigs(Collection<DeviceConfig> entities) throws DataAccessException{
+        super.deleteAll(entities);
+    }
+
 }

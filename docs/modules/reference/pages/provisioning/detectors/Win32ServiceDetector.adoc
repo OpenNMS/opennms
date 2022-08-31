@@ -1,7 +1,7 @@
 = Win32 Service Detector
 
-The Win32 service detector detects the availability of services on Windows devices that have SNMP enabled.
-It will query the Microsoft LAN Manager MIB `.1.3.6.1.4.1.77` over SNMP to confirm the service exists and is active.
+The Win32ServiceDetector detects the availability of services on Windows devices that have SNMP enabled.
+It queries the Microsoft LAN Manager MIB `.1.3.6.1.4.1.77` over SNMP to confirm the service exists and is active.
 The given `win32ServiceName` parameter is converted into the decimal ASCII characters of the Windows service display name.
 A service is detected when the OID returns `active(1)` from the `svSvcOperatingState` (`.1.3.6.1.4.1.77.1.2.3.1.3`) table.
 
@@ -18,13 +18,13 @@ For example, the display name for the `Task Scheduler` has 14 characters and bec
 
 == Configuration and use
 
-.Required parameters for the Win32 service detector
+.Required parameters for the Win32ServiceDetector
 [options="header"]
 [cols="1,3,1"]
 |===
 | Parameter
 | Description
-| Default
+| Default value
 
 | win32ServiceName
 | The Windows service name to discover.

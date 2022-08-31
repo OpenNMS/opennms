@@ -82,9 +82,10 @@ The following key is available under this context:
 | service:name       | The full name of the service
 |===
 
+[[ga-metadata-scv]]
 === SCV (Secure Credentials Vault)
 
-The special context `scv` provides access to values stored in the Secure Credentials Vault.
+The special context `scv` provides access to values stored in the xref:operation:admin/scv-configuration.adoc[Secure Credentials Vault].
 The key used in this context must consist of the alias and the attribute of the credential separated by a colon.
 
 Example: `${scv:mydevice:password}`.

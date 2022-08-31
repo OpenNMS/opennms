@@ -40,40 +40,10 @@ build: configure $(STAMP_BUILD)
 $(STAMP_BUILD):
 	dh_testdir
 	# -Duser.home=$(HOME) is needed to get maven to use the correct ~/.m2/ directory when being run with fakeroot
-	@if [ -f "$$OPENNMS_SETTINGS_XML" ]; then \
-		echo "using $$OPENNMS_SETTINGS_XML"; \
-		if [ -z "$$OPENNMS_SKIP_COMPILE" ] || [ "$$OPENNMS_SKIP_COMPILE" = 0 ]; then \
-			if [ -z "$$OPENNMS_ENABLE_SNAPSHOTS" ] || [ "$$OPENNMS_ENABLE_SNAPSHOTS" = 1 ]; then \
-				./compile.pl -Denable.snapshots=true -DupdatePolicy=always -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) -PskipCompile install && \
-				./assemble.pl -Denable.snapshots=true -DupdatePolicy=always -Dbuild.profile=fulldir -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) -PskipCompile install; \
-			else \
-				./compile.pl -DupdatePolicy=never -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) -PskipCompile install && \
-				./assemble.pl -DupdatePolicy=never -Dbuild.profile=fulldir -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) -PskipCompile install; \
-			fi; \
-		else \
-			if [ -z "$$OPENNMS_ENABLE_SNAPSHOTS" ] || [ "$$OPENNMS_ENABLE_SNAPSHOTS" = 1 ]; then \
-				./assemble.pl -Denable.snapshots=true -DupdatePolicy=always -Dbuild.profile=fulldir -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) install; \
-			else \
-				./assemble.pl -DupdatePolicy=never -Dbuild.profile=fulldir -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) install; \
-			fi; \
-		fi; \
-	else \
-		if [ -z "$$OPENNMS_SKIP_COMPILE" ] || [ "$$OPENNMS_SKIP_COMPILE" = 0 ]; then \
-			if [ -z "$$OPENNMS_ENABLE_SNAPSHOTS" ] || [ "$$OPENNMS_ENABLE_SNAPSHOTS" = 1 ]; then \
-				./compile.pl -Denable.snapshots=true -DupdatePolicy=always -Duser.home=$(HOME) $(BUILDDEFINES) -PskipCompile install && \
-				./assemble.pl -Denable.snapshots=true -DupdatePolicy=always -Dbuild.profile=fulldir -Duser.home=$(HOME) $(BUILDDEFINES) -PskipCompile install; \
-			else \
-				./compile.pl -DupdatePolicy=never -Duser.home=$(HOME) $(BUILDDEFINES) -PskipCompile install && \
-				./assemble.pl -DupdatePolicy=never -Dbuild.profile=fulldir -Duser.home=$(HOME) $(BUILDDEFINES) -PskipCompile install; \
-			fi; \
-		else \
-			if [ -z "$$OPENNMS_ENABLE_SNAPSHOTS" ] || [ "$$OPENNMS_ENABLE_SNAPSHOTS" = 1 ]; then \
-				./assemble.pl -Denable.snapshots=true -DupdatePolicy=always -Dbuild.profile=fulldir $(BUILDDEFINES) install; \
-			else \
-				./assemble.pl -DupdatePolicy=never -Dbuild.profile=fulldir $(BUILDDEFINES) install; \
-			fi; \
-		fi; \
+	@if [ -z "$$OPENNMS_SKIP_COMPILE" ] || [ "$$OPENNMS_SKIP_COMPILE" = 0 ]; then \
+		./compile.pl $(shell debian/get-build-args.sh) $(BUILDDEFINES) -PskipCompile install; \
 	fi
+	./assemble.pl $(shell debian/get-build-args.sh) -Dbuild.profile=fulldir $(BUILDDEFINES) -PskipCompile install
 	find debian/temp -type d -name .svn -exec rm -rf {} \;
 	find debian/temp -type d -name .git -exec rm -rf {} \;
 	touch $(STAMP_BUILD)
@@ -94,6 +64,13 @@ install: build
 	rsync -avr --exclude=examples debian/temp/etc/ debian/opennms-common/var/lib/opennms/etc-pristine/
 	chmod -R go-w debian/opennms-common/var/lib/opennms/etc-pristine/
 
+	mkdir -p debian/opennms-common/var/lib/opennms/web-inf-pristine/spring-security.d/
+	rsync -avr --exclude=examples debian/temp/jetty-webapps/opennms/WEB-INF/spring-security.d/ debian/opennms-common/var/lib/opennms/web-inf-pristine/spring-security.d/
+	cp debian/temp/jetty-webapps/opennms/WEB-INF/applicationContext-spring-security.xml debian/opennms-common/var/lib/opennms/web-inf-pristine/applicationContext-spring-security.xml
+	cp debian/temp/jetty-webapps/opennms/WEB-INF/web.xml debian/opennms-common/var/lib/opennms/web-inf-pristine/web.xml
+	cp debian/temp/etc/examples/jetty.xml debian/opennms-common/var/lib/opennms/web-inf-pristine/jetty.xml
+	chmod -R go-w debian/opennms-common/var/lib/opennms/web-inf-pristine/
+	
 	##
 	## Setup the alarm northbounders
 	##

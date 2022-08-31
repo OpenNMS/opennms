@@ -138,7 +138,7 @@ public class DefaultDataCollectionConfigDaoIT {
      * Use this test to test speed improvements for the data collection config parsing code.
      */
     @Test
-    @Ignore
+    @Ignore("manual test for benchmarking")
     public void testLoadTimeOfDao() throws Exception {
         for (int i = 0; i < 100; i++) {
             instantiateDao("datacollection-config.xml", true);

@@ -8,7 +8,7 @@
     </template>
   </FeatherDialog>
 </template>
-<script setup lang=ts>
+<script setup lang="ts">
 import { useStore } from 'vuex'
 import { FeatherDialog } from '@featherds/dialog'
 import { FeatherButton } from '@featherds/button'
@@ -21,12 +21,9 @@ const labels = {
 }
 
 const open = ref(false)
-const file = computed(() => {
-  const fileToDelete = store.state.fileEditorModule.fileToDelete
-  // eslint-disable-next-line vue/no-side-effects-in-computed-properties
-  open.value = Boolean(fileToDelete)
-  return fileToDelete
-})
+const file = computed(() => store.state.fileEditorModule.fileToDelete)
+
+watchEffect(() => open.value = Boolean(file.value))
 
 const deleteFile = () => store.dispatch('fileEditorModule/deleteFile', file.value.fullPath)
 const cancel = () => store.dispatch('fileEditorModule/setFileToDelete', null)

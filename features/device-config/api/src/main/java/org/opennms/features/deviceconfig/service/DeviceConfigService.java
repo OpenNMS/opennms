@@ -35,18 +35,19 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public interface DeviceConfigService {
+    public static final String DEVICE_CONFIG_PREFIX = "DeviceConfig";
 
     /**
-     *   Trigger device config backup for the given ipAddress at given location.
+     * Trigger device config backup for the given ipAddress at given location.
      *
-     * @param ipAddress  specific IpAddress for which we need to fetch device config.
-     * @param location   specific minion location at which we need to fetch device config.
-     * @param service    name of the bound service.
+     * @param ipAddress specific IpAddress for which we need to fetch device config.
+     * @param location  specific minion location at which we need to fetch device config.
+     * @param service   name of the bound service.
      * @param persist
-     * @throws IOException
      * @return
+     * @throws IOException
      */
-    CompletableFuture<Boolean> triggerConfigBackup(String ipAddress, String location, String service, boolean persist) throws IOException;
+    CompletableFuture<DeviceConfigBackupResponse> triggerConfigBackup(String ipAddress, String location, String service, boolean persist) throws IOException;
 
     /**
      * Get device config for the given ipAddress at given location.
@@ -77,5 +78,23 @@ public interface DeviceConfigService {
         String getServiceName();
         String getConfigType();
         String getSchedule();
+    }
+
+    public class DeviceConfigBackupResponse {
+        private String errorStr;
+        private String scriptOutput;
+
+        public DeviceConfigBackupResponse(String error, String scriptOutput) {
+            this.errorStr = error;
+            this.scriptOutput = scriptOutput;
+        }
+
+        public String getErrorMessage() {
+            return errorStr;
+        }
+
+        public String getScriptOutput() {
+            return scriptOutput;
+        }
     }
 }

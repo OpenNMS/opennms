@@ -69,6 +69,9 @@ public class DeviceConfigDTO {
     /** The device configuration type, either 'default' or 'running'. */
     private String configType;
 
+    /** Human-readable name for the configuration type, derived from the service name. */
+    private String configName;
+
     /** Filename of the configuration data as received from the device. */
     private String fileName;
 
@@ -171,6 +174,10 @@ public class DeviceConfigDTO {
     public void setConfigType(final String configType) {
         this.configType = configType;
     }
+
+    public String getConfigName() { return this.configName; }
+
+    public void setConfigName(final String configName) { this.configName = configName; }
 
     public String getFileName() { return this.fileName; }
 

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -58,7 +58,6 @@ import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.timeseries.TimeseriesStorageManager;
 
 public class TimeseriesSearcherTest {
-
     TimeSeriesStorage storage = spy(new InMemoryStorage());
     TimeseriesSearcher searcher;
 
@@ -67,7 +66,9 @@ public class TimeseriesSearcherTest {
         TimeseriesStorageManager storageManager = Mockito.mock(TimeseriesStorageManager.class);
         when(storageManager.get()).thenReturn(storage);
         CacheConfig cacheConfig = new CacheConfigBuilder().withName(TimeseriesSearcherTest.class.getSimpleName()).build();
-        searcher = new TimeseriesSearcher(storageManager, cacheConfig);
+        // for test shouldBuildCacheOnce
+        cacheConfig.setExpireAfterRead(1L);
+        searcher = spy(new TimeseriesSearcher(storageManager, cacheConfig));
     }
 
     @Test
@@ -115,6 +116,23 @@ public class TimeseriesSearcherTest {
         searcher.search(ResourcePath.fromString("snmp/5/eth0"),  0);
         verify(storage, times(1)).findMetrics(any());
         clearInvocations(storage);
+    }
+
+    @Test
+    public void shouldOnlyBuildCacheOnce() throws StorageException, InterruptedException {
+        Metric n2_loadavg1m = createAndAddMetric("snmp/2/node-stats", "loadavg1m");
+        Metric n2_loadavg5m = createAndAddMetric("snmp/2/node-stats", "loadavg5m");
+
+        test("snmp/2", n2_loadavg1m, n2_loadavg5m );
+        verify(searcher, times(1)).buildCache(any());
+        test("snmp/2/notExist", new Metric[0]);
+        // it should still 1
+        verify(searcher, times(1)).buildCache(any());
+
+        Thread.sleep(1000L);
+        test("snmp/2/notExist", new Metric[0]);
+        // should be 2 now because of read expiry
+        verify(searcher, times(2)).buildCache(any());
     }
 
     private void test(String path, Metric...expectedMetrics) throws StorageException {

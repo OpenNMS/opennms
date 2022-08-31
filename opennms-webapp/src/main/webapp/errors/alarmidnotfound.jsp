@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -48,13 +48,17 @@
   <jsp:param name="breadcrumb" value="Error" />
 </jsp:include>
 
-<h1>Alarm ID Not Found</h1>
+<h1>Alarm Cleared or Not Found</h1>
+
+<h1>Alarm Cleared or Not Found</h1>
 
 <p>
-  The alarm ID <%=einfe.getBadID()%> is invalid. <%=einfe.getMessage()%>
+  <%=einfe.getMessage()%>. The alarm has been cleared or has an invalid alarm ID.
   <br/>
-  You can re-enter it here or <a href="alarm/list.htm?acktyp=unack">browse all
-  of the alarms</a> to find the alarm you are looking for.
+  Re-enter the alarm ID below or <a href="alarm/list.htm?acktyp=unack">browse all
+   alarms</a> to find the alarm you are looking for.
+   <br /> If you get the same error message,
+   you can assume that the alarm has been cleared.
 </p>
 
 <form role="form" method="get" action="alarm/detail.htm" class="form mb-4">

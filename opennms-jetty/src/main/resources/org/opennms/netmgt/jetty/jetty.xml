@@ -4,7 +4,8 @@
 <Configure id="Server" class="org.eclipse.jetty.server.Server">
 
   <New id="httpConfig" class="org.eclipse.jetty.server.HttpConfiguration">
-     <Set name="requestHeaderSize"><SystemProperty name="org.opennms.netmgt.jetty.requestHeaderSize" default="4000" /></Set>
+    <Set name="requestHeaderSize"><SystemProperty name="org.opennms.netmgt.jetty.requestHeaderSize" default="4000" /></Set>
+    <Set name="sendServerVersion"><SystemProperty name="org.opennms.netmgt.jetty.sendServerVersion" default="false" /></Set>
   </New>
 
   <Call name="addConnector">

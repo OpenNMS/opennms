@@ -31,9 +31,9 @@ package org.opennms.features.datachoices.internal;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.junit.Test;
-import org.opennms.features.datachoices.internal.UsageStatisticsReportDTO;
 
 import com.google.common.collect.Maps;
 
@@ -51,8 +51,24 @@ public class UsageStatisticsReportDTOTest {
         numberOfNodesBySysOid.put(".1.2.3.5", 6L);
         usageStatisticsReport.setNodesBySysOid(numberOfNodesBySysOid);
 
+        final Map<String, Long> requisitionSchemeCount = new TreeMap<>();
+        requisitionSchemeCount.put("vmware", 3L);
+        requisitionSchemeCount.put("file", 4L);
+        usageStatisticsReport.setProvisiondRequisitionSchemeCount(requisitionSchemeCount);
+
+        final Map<String, Boolean> services = new TreeMap<>();
+        services.put("Provisiond", true);
+        services.put("Telemetryd", false);
+        usageStatisticsReport.setServices(services);
+
+        usageStatisticsReport.setOnCallRoleCount(1);
+        usageStatisticsReport.setNotificationEnablementStatus(null);
+        usageStatisticsReport.setDestinationPathCount(-1);
+        usageStatisticsReport.setUsers(0);
+        usageStatisticsReport.setGroups(0);
         String actualJson = usageStatisticsReport.toJson();
-        String expectedJson = "{\"alarms\":0,\"events\":0,\"ipInterfaces\":0,\"monitoredServices\":0,\"nodes\":0,\"nodesBySysOid\":{\".1.2.3.4\":2,\".1.2.3.5\":6},\"osArch\":null,\"osName\":null,\"osVersion\":null,\"packageName\":\"opennms\",\"snmpInterfaces\":0,\"systemId\":\"aae3fdeb-3014-47b4-bb13-c8aa503fccb7\",\"version\":\"10.5.7\"}";
+        System.err.println(actualJson);
+        String expectedJson = "{\"alarms\":0,\"availableProcessors\":null,\"businessEdgeCount\":0,\"coreFlowsPersisted\":0,\"coreNewtsSamplesInserted\":0,\"coreQueuedUpdatesCompleted\":0,\"databaseProductName\":null,\"databaseProductVersion\":null,\"destinationPathCount\":-1,\"eventLogsProcessed\":0,\"events\":0,\"freePhysicalMemorySize\":null,\"groups\":0,\"installedFeatures\":null,\"installedOIAPlugins\":null,\"ipInterfaces\":0,\"minions\":0,\"monitoredServices\":0,\"monitoringLocations\":0,\"nodes\":0,\"nodesBySysOid\":{\".1.2.3.4\":2,\".1.2.3.5\":6},\"notificationEnablementStatus\":null,\"onCallRoleCount\":1,\"osArch\":null,\"osName\":null,\"osVersion\":null,\"packageName\":\"opennms\",\"pollsCompleted\":0,\"provisiondImportThreadPoolSize\":0,\"provisiondRequisitionSchemeCount\":{\"file\":4,\"vmware\":3},\"provisiondRescanThreadPoolSize\":0,\"provisiondScanThreadPoolSize\":0,\"provisiondWriteThreadPoolSize\":0,\"requisitionCount\":0,\"requisitionWithChangedFSCount\":0,\"rpcStrategy\":null,\"services\":{\"Provisiond\":true,\"Telemetryd\":false},\"sinkStrategy\":null,\"situations\":0,\"snmpInterfaces\":0,\"snmpInterfacesWithFlows\":0,\"systemId\":\"aae3fdeb-3014-47b4-bb13-c8aa503fccb7\",\"totalPhysicalMemorySize\":null,\"tssStrategies\":null,\"users\":0,\"version\":\"10.5.7\"}";
         assertEquals(expectedJson, actualJson);
     }
 }

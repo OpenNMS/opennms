@@ -18,7 +18,7 @@ const state: State = {
   modalDeviceConfigBackup: {} as DeviceConfigBackup,
   selectedIds: [],
   vendorOptions: [],
-  backupStatusOptions: ['success', 'failed', 'none'],
+  backupStatusOptions: ['SUCCESS', 'FAILED', 'NONE'],
   osImageOptions: [],
   deviceConfigTotal: 'N/A',
   historyModalBackups: []

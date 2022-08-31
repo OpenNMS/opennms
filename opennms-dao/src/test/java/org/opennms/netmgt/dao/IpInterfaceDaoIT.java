@@ -208,11 +208,11 @@ public class IpInterfaceDaoIT implements InitializingBean {
     public void testFindByIpAddressAndLocation() {
         var ipAddress = "192.168.1.1";
         var location = "Default";
-        OnmsIpInterface itf = m_ipInterfaceDao.findByIpAddressAndLocation(ipAddress, location);
+        OnmsIpInterface itf = m_ipInterfaceDao.findByIpAddressAndLocation(ipAddress, location).stream().findFirst().orElse(null);
         assertNotNull(itf);
         assertEquals(itf.getIpAddress().getHostAddress(), ipAddress);
         assertEquals(itf.getNode().getLocation().getLocationName(), location);
-        OnmsIpInterface itf2 = m_ipInterfaceDao.findByIpAddressAndLocation(ipAddress, location + location);
+        OnmsIpInterface itf2 = m_ipInterfaceDao.findByIpAddressAndLocation(ipAddress, location + location).stream().findFirst().orElse(null);
         assertNull(itf2);
     }
 }

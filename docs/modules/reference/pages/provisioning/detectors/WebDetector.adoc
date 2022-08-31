@@ -1,6 +1,6 @@
 = Web Detector
 
-Use this detector to find and assign services based on HTTP.
+The WebDetector finds and assigns services based on HTTP.
 
 == Detector facts
 
@@ -11,13 +11,15 @@ Use this detector to find and assign services based on HTTP.
 
 == Configuration and use
 
-.Optional parameters for the Web service detector
+The WebDetector uses the xref:reference:provisioning/detectors.adoc#ref-detector-provisioning-common-parameters[common configuration parameters].
+
+.Optional parameters for the WebDetector
 [options="header"]
 [cols="1,3,1"]
 |===
 | Parameter
 | Description
-| Default
+| Default value
 
 | authEnable
 | Whether to enable basic authentication.
@@ -37,12 +39,6 @@ Use this detector to find and assign services based on HTTP.
 
 | headers
 | Optional headers to pass in the HTTP request.
-| none
-
-| ipMatch
-| Matches against specific IP addresses or patterns.
-Use filters here to match single addresses or ranges.
-Substring match by default (see note below regarding regular expressions).
 | none
 
 | path
@@ -67,10 +63,6 @@ This will be matched against every line, and it will be considered a success at 
 Substring match by default (see note below regarding regular expressions).
 | none
 
-| retries
-| none
-| Number of attempts to test a service's up/down status.
-
 | schema
 | Protocol/scheme to use.
 | http
@@ -78,10 +70,6 @@ Substring match by default (see note below regarding regular expressions).
 | serviceName
 | A custom service name to identify this service.
 | WEB
-
-| timeout
-| Timeout in milliseconds to wait for a response.
-| 2000
 
 | useHttpV1
 | True/false whether to use HTTP 1.0 or 1.1.

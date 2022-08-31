@@ -196,6 +196,8 @@ public class TimeseriesWriter implements WorkHandler<SampleBatchEvent>, Disposab
             this.stats.record(event.getSamples());
         } catch (Throwable t) {
             RATE_LIMITED_LOGGER.error("An error occurred while inserting samples. Some sample may be lost.", t);
+        } finally {
+            event.setSamples(null); // free sample reference for garbage collection
         }
     }
 

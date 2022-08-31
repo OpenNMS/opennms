@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -236,12 +236,6 @@ public class ImportSchedulerIT implements InitializingBean {
         // Verify
         anticipator.waitForAnticipated(10*1000);
         anticipator.verifyAnticipated();
-    }
-
-    @Test
-    @Ignore
-    public void dwRemoveCurrentJobsFromSchedule() {
-        fail("Not yet implemented");
     }
 
 }

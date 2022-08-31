@@ -114,9 +114,9 @@ const scheduledTime = computed(() => {
     } catch (e) {
       // custom error instead of cronstrue lib's error message
       if (String(e).match(/^(Error: DOM)/g)) {
-        ret = ErrorStrings.OccuranceDayTime
+        ret = ErrorStrings.Required('Day of the month')
       } else if (String(e).match(/^(Error: DOW)/g)) {
-        ret = ErrorStrings.OccuranceWeekTime
+        ret = ErrorStrings.Required('Day of the week')
       }
     }
   }

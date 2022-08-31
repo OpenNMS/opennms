@@ -23,7 +23,7 @@
   </div>
 </template>
   
-<script setup lang=ts>
+<script setup lang="ts">
 import { useStore } from 'vuex'
 import { groupBy } from 'lodash'
 import { FeatherCheckbox } from '@featherds/checkbox'
