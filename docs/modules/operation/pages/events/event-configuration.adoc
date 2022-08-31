@@ -215,7 +215,7 @@ $\{OPENNMS_HOME}/bin/send-event.pl uei.opennms.org/internal/reloadDaemonConfig -
 
 At level `DEBUG`, `eventd` will log a verbose description of every event it handles to `$\{OPENNMS_HOME}/logs/eventd.log`.
 On busy systems, this setting may create so much noise as to be impractical.
-In these cases, you can get terse event summaries by setting `Eventd` to log at level `INFO` and setting `logEventSummaries="yes"` in `$\{OPENNMS_HOME}/etc/eventd-configuration.xml`.
+In these cases, you can get terse event summaries by setting `eventd` to log at level `INFO` and setting `logEventSummaries="yes"` in `$\{OPENNMS_HOME}/etc/eventd-configuration.xml`.
 Note that changes to `eventd-configuration.xml` require a full restart of {page-component-title}.
 
 === Karaf Shell
