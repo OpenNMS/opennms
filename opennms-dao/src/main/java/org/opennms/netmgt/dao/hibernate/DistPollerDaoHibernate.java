@@ -42,7 +42,8 @@ public class DistPollerDaoHibernate extends AbstractDaoHibernate<OnmsDistPoller,
 
     @Override
     public OnmsDistPoller whoami() {
-        // Return the OnmsDistPoller with the default UUID
-        return get(DEFAULT_DIST_POLLER_ID);
+        // Return the OnmsDistPoller
+        final String hql = "from OnmsMonitoringSystem where type='OpenNMS'";
+        return this.findUnique(hql);
     }
 }
