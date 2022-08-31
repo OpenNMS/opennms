@@ -59,11 +59,11 @@ Follow these steps to define a new destination path:
 ... To add a single email address to the Send to Email Addresses list, click *Add Address*, type the email address, and click *OK*.
 ... To remove email addresses from the Send to Email Addresses list, select them from the list and click *Remove Selected Addresses*.
 .. Click *Next Step*.
-.. (Optional) Define a delay interval.
+.. (Optional) Define a delay interval for group notification.
 This will determine the delay between sending notifications to each member of a group.
 +
 For example, defining a five minute delay will mean that, when a notification is generated, the first member of the group will be notified immediately.
-Subsequent members will then be notified in five minute increments, from the top of the list of group members to the bottom.
+Subsequent members will then be notified in five-minute increments, from the top of the list of group members to the bottom.
 
 .. Click *Next Step*.
 .. Select `javaEmail` from the list of commands and make sure it is on.
