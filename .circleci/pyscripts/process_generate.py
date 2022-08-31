@@ -105,9 +105,9 @@ for change in changes:
         add_to_build_list("smoke_tests")
     elif "opennms-container" in change:
         add_to_build_list("oci")
-    elif ".circleci" in change:
+    elif ".circleci" in change and ".circleci/epoch" not in change:
         add_to_build_list("circleci_configuration")
-    elif "doc" in change:
+    elif "docs/" in change:
         add_to_build_list("doc")
     elif "ui" in change:
         add_to_build_list("ui")
@@ -122,6 +122,10 @@ with open(path_to_workflow, "r", encoding="UTF-8") as file_handler:
 
 workflow_keywords = workflow_data["bundles"].keys()
 print("Workflow Keywords:", workflow_keywords)
+
+if ".circleci/epoch" in changes:
+    print("`epoch` file detected")
+    mappings["trigger-build"] = True
 
 # Check to see if build-trigger.overrride file exists and we are not
 # on the main branches
@@ -164,8 +168,7 @@ if "trigger-build" in mappings:
         or "master" in branch_name
         or "release-" in branch_name
         or "foundation-" in branch_name
-        and "merge-foundation/" not in branch_name
-    ):
+    ) and "merge-foundation/" not in branch_name:
         print("Executing workflow: build-publish")
         build_mappings["build-publish"] = mappings["trigger-build"]
     else:

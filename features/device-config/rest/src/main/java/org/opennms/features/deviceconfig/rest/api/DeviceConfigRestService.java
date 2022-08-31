@@ -99,6 +99,8 @@ public interface DeviceConfigRestService {
      * @param order used for sorting; valid values are 'asc' and 'desc', defaults to 'desc'
      * @param searchTerm A search term, currently to search by device name or IP address.
      * @param statuses An optional set of {@link DeviceConfigStatus} values. If supplied, only return records
+     * @param pageEnter An optional flag as to whether the user is entering the DCB page. Used for usage analytics.
+     *                  Parameter is added here since this API call is made when entering the DCB page.
      *      with any of the given statuses; defaults to returning all values.
      */
     @GET
@@ -110,7 +112,8 @@ public interface DeviceConfigRestService {
         @QueryParam("orderBy") @DefaultValue("lastUpdated") String orderBy,
         @QueryParam("order") @DefaultValue("desc") String order,
         @QueryParam("search") String searchTerm,
-        @QueryParam("status") Set<DeviceConfigStatus> statuses
+        @QueryParam("status") Set<DeviceConfigStatus> statuses,
+        @QueryParam("pageEnter") @DefaultValue("false") boolean pageEnter
     );
 
     /**
