@@ -12,7 +12,7 @@ This lets you build more complex notification workflows and makes it easier to m
 == Create a group
 
 . Log in as a user with admin permissions.
-. Click the *Gear* icon at the top-right of the screen and choose menu:Configure OpenNMS[Configure Users, Groups and On-Call Roles > Configure Groups].
+. Click the *Gear* symbol at the top-right of the screen and choose menu:Configure OpenNMS[Configure Users, Groups and On-Call Roles > Configure Groups].
 . Click *Add New Group* and specify the its name and description.
 +
 WARNING: You cannot use angle brackets (`<>`), single (`'`) and double (`"`) quotation marks, or the ampersand symbol (`&`) in the group name.
@@ -28,7 +28,7 @@ Notifications are sent to users in order from the top of the group membership li
 === Modify group membership
 
 . Log in as a user with admin permissions.
-. Click the *Gear* icon at the top-right of the screen and choose menu:Configure OpenNMS[Configure Users, Groups and On-Call Roles > Configure Groups].
+. Click the *Gear* symbol at the top-right of the screen and choose menu:Configure OpenNMS[Configure Users, Groups and On-Call Roles > Configure Groups].
 . Find the group that you want to modify and click the *Modify* icon next to its name.
 . Modify the group membership as appropriate.
 ** Add a user to the group by selecting them from the Available Users list and clicking *>>* to move them to the Currently in Group list.
@@ -41,8 +41,8 @@ Notifications are sent to users in chronological order, from the top of the grou
 === Delete a group
 
 . Log in as a user with admin permissions.
-. Click the *Gear* icon in the top-right of the screen and choose menu:Configure OpenNMS[Configure Users, Groups and On-Call Roles > Configure Groups].
-. Find the group that you want to delete and click the *Delete* icon next to its name.
+. Click the *Gear* symbol in the top-right of the screen and choose menu:Configure OpenNMS[Configure Users, Groups and On-Call Roles > Configure Groups].
+. Find the group that you want to delete and click the *Delete* symbol next to its name.
 . Click *OK* to confirm your decision.
 
 IMPORTANT: If you delete a group, no one receives a notification that it has been deleted.

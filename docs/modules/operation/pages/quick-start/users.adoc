@@ -28,7 +28,7 @@ NOTE: Admin users can xref:deep-dive/admin/housekeeping/introduction.adoc#disabl
 
 After logging in for the first time, make sure to change the default `admin` account password to a secure one:
 
-. Click the *Gear* icon at the top-right of the screen.
+. Click the *Gear* symbol at the top-right of the screen.
 . Choose menu:OpenNMS System[Configure Users, Groups and On-Call Roles, Configure Users].
 . Click *Modify* beside the `admin` user.
 . In the User Password area, click *Reset Password*.
@@ -38,7 +38,7 @@ After logging in for the first time, make sure to change the default `admin` acc
 We recommend that you do not use the default `admin` user account, but instead xref:deep-dive/user-management/user-config.adoc#ga-user-config[create specific users] with the Admin role and other permissions.
 This helps to keep track of who has performed tasks such as clearing alarms or creating notifications.
 
-For the purposes of this Quick Start guide, create one new user account for yourself and assign it the Admin role.
+For the purposes of this Quick Start guide, xref:operation:deep-dive/user-management/user-config.adoc#ga-user-create[create one new user account] for yourself and assign it the Admin role.
 Include your email address and any other relevant contact information for notification routing:
 
 . Click the *Gear* symbol at the top-right of the screen.

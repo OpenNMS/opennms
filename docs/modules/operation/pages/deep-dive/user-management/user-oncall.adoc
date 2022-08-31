@@ -15,7 +15,7 @@ The supervisor must have admin privileges.
 Before you can assign a group to an on-call role, you must xref:operation:deep-dive/user-management/user-groups.adoc#ga-user-group-create[create a group].
 
 . Log in as a user with admin permissions.
-. Click the *Gear* icon at the top-right of the screen, and choose menu:Configure OpenNMS[Configure Users, Groups and On-Call Roles > Configure On-Call Roles].
+. Click the *Gear* symbol at the top-right of the screen, and choose menu:Configure OpenNMS[Configure Users, Groups and On-Call Roles > Configure On-Call Roles].
 . Click *Add New On-Call Role* and specify a name, the associated group, a user to be designated as the supervisor, and a description.
 The description should be meaningful (for example, describe the team that the on-call role has been created for).
 . Click *Save*.
