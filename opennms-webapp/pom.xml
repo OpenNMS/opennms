@@ -785,6 +785,13 @@
       </exclusions>
     </dependency>
 
+    <!-- Main Guacamole library -->
+    <dependency>
+      <groupId>org.apache.guacamole</groupId>
+      <artifactId>guacamole-common</artifactId>
+      <version>1.4.0</version>
+    </dependency>
+
     <!--
 
       JMesa is the latest version of the extremecomponents library. We

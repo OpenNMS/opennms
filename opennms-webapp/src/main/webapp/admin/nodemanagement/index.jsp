@@ -130,7 +130,12 @@
     <a href="admin/nodemanagement/setPathOutage.jsp?node=<%=nodeId%>">
     Configure Path Outage</a>
   </p>
-  
+
+  <p>
+    <a href="admin/nodemanagement/remoteDesktopOptions.jsp?node=<%=nodeId%>">
+      Remote Desktop</a>
+  </p>
+
       <% if ("true".equalsIgnoreCase(Vault.getProperty("opennms.rancidIntegrationEnabled"))) { %>
   <p>
     <a href="admin/rancid/rancidAdmin.htm?node=<%=nodeId%>">

@@ -676,6 +676,11 @@
     <servlet-name>newPasswordAction</servlet-name>
     <servlet-class>org.opennms.web.account.selfService.NewPasswordActionServlet</servlet-class>
   </servlet>
+  <servlet>
+    <description>Guacamole Tunnel Servlet.</description>
+    <servlet-name>guacamoleTunnel</servlet-name>
+    <servlet-class>org.opennms.web.guacamole.MyGuacamoleTunnelServlet</servlet-class>
+  </servlet>
 
   <!-- Servlet mappings for user account self-service -->
   <servlet-mapping>
@@ -1113,6 +1118,11 @@
   <servlet-mapping>
     <servlet-name>dispatcher</servlet-name>
     <url-pattern>/element/service.jsp</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>guacamoleTunnel</servlet-name>
+    <url-pattern>/guacamole-tunnel</url-pattern>
   </servlet-mapping>
 
   <!-- Although this will be matched by the above *.htm url-pattern,
