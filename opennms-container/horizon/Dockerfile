@@ -103,7 +103,9 @@ RUN if [[ -n "${ADD_DEB_PACKAGES}" ]]; then \
     ln -s /opennms-data/reports /usr/share/opennms/share/reports && \
     ln -s /opennms-data/mibs /usr/share/opennms/share/mibs && \
 # Align with old opennms path
-    ln -s /usr/share/opennms /opt/opennms
+    ln -s /usr/share/opennms /opt/opennms && \
+# Create etc-pristine
+    rsync -ar /opt/opennms/etc/ /opt/opennms/share/etc-pristine/
 
 # Add templates replaced at runtime and entrypoint
 COPY --chown=10001:0 ./container-fs/confd /etc/confd
