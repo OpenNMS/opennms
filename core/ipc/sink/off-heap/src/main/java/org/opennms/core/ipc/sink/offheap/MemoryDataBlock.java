@@ -28,16 +28,20 @@
 
 package org.opennms.core.ipc.sink.offheap;
 
+import org.opennms.core.ipc.sink.api.ReadFailedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.AbstractMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Random;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ForkJoinPool;
 
 public class MemoryDataBlock<T> implements DataBlock<T> {
-    private static final ForkJoinPool serdesPool = new ForkJoinPool(
-            Math.max(Runtime.getRuntime().availableProcessors() - 1, 1));
+    private static final Logger LOG = LoggerFactory.getLogger(MemoryDataBlock.class);
+
     private int queueSize;
     private BlockingQueue<Map.Entry<String, T>> queue;
     private String name;
@@ -46,7 +50,7 @@ public class MemoryDataBlock<T> implements DataBlock<T> {
     public MemoryDataBlock(int queueSize) {
         this.queueSize = queueSize;
         queue = new ArrayBlockingQueue<>(queueSize, true);
-        name = System.nanoTime() + "_" + (int) Math.floor(Math.random() * 1000);
+        name = System.nanoTime() + "_" + new Random().nextInt(1000);
     }
 
     @Override
@@ -78,12 +82,18 @@ public class MemoryDataBlock<T> implements DataBlock<T> {
     }
 
     @Override
-    public void notifyNextDataBlock() {
-        if(nextDataBlock == null){
+    public void notifyNextDataBlock() throws ReadFailedException {
+        if (nextDataBlock == null) {
             return;
         }
         if (nextDataBlock instanceof OffHeapDataBlock) {
-            serdesPool.submit(() -> ((OffHeapDataBlock<T>) nextDataBlock).enableQueue());
+            OffHeapDataBlock.executorService.submit(()->{
+                try {
+                    ((OffHeapDataBlock<T>) nextDataBlock).enableQueue();
+                } catch (ReadFailedException | InterruptedException e) {
+                    LOG.error("Fail to call enableQueue");
+                }
+            });
         }
         nextDataBlock = null;
     }

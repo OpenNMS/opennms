@@ -28,22 +28,19 @@
 
 package org.opennms.core.ipc.sink.offheap;
 
-import com.swrve.ratelimitedlogger.RateLimitedLog;
 import org.rocksdb.RocksDB;
 import org.rocksdb.RocksDBException;
 
-import java.nio.file.Path;
-import java.time.Duration;
 import java.util.Objects;
 import java.util.function.Function;
 
 public class RocksDBOffHeapDataBlock<T> extends OffHeapDataBlock<T> {
 
-    private  RocksDB rocksdb;
+    private RocksDB rocksdb;
 
     public RocksDBOffHeapDataBlock(String name, int queueSize, Function<T, byte[]> serializer, Function<byte[], T> deserializer, RocksDB rocksdb, byte[] data) {
-        super(name, queueSize, serializer, deserializer,data);
-        LOG.warn("Create OffHeapDataBlock name = {}", name);
+        super(name, queueSize, serializer, deserializer, data);
+        LOG.warn("Create OffHeapDataBlock name = {}, data is empty {}, size {} ", name, data == null || data.length == 0, this.size());
         this.rocksdb = Objects.requireNonNull(rocksdb);
     }
 
@@ -53,10 +50,8 @@ public class RocksDBOffHeapDataBlock<T> extends OffHeapDataBlock<T> {
 
     void writeData(String key, byte[] data) {
         try {
-            LOG.warn("writeData size: {}", data.length);
             rocksdb.put(key.getBytes(), data);
         } catch (RocksDBException e) {
-            e.printStackTrace();
             throw new RuntimeException(e);
         }
     }

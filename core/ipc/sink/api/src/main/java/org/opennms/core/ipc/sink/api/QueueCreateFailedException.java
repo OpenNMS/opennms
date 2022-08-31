@@ -26,27 +26,16 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.ipc.sink.offheap;
+package org.opennms.core.ipc.sink.api;
 
-import org.opennms.core.ipc.sink.api.ReadFailedException;
+public class QueueCreateFailedException extends Exception {
 
-import java.util.Map;
+    public QueueCreateFailedException(String message) {
+        super(message);
+    }
 
-public interface DataBlock<T> {
-    String getName();
+    public QueueCreateFailedException(Throwable t) {
+        super(t);
+    }
 
-    boolean enqueue(String key, T message);
-
-    Map.Entry<String, T> peek() throws InterruptedException, ReadFailedException;
-
-    Map.Entry<String, T> dequeue() throws InterruptedException, ReadFailedException;
-
-    /**
-     * Make sure queue is ready
-     */
-    void notifyNextDataBlock() throws ReadFailedException;
-
-    void setNextDataBlock(DataBlock<T> dataBlock);
-
-    int size();
 }

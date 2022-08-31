@@ -30,10 +30,7 @@ package org.opennms.core.ipc.sink.offheap;
 
 import org.h2.mvstore.MVMap;
 import org.h2.mvstore.MVStore;
-import org.rocksdb.RocksDB;
 
-import java.nio.file.Path;
-import java.util.Objects;
 import java.util.function.Function;
 
 public class H2OffHeapDataBlock<T> extends OffHeapDataBlock<T> {

@@ -29,23 +29,19 @@
 package org.opennms.core.ipc.sink.offheap;
 
 import com.jayway.awaitility.core.ConditionTimeoutException;
-import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.opennms.core.ipc.sink.api.DispatchQueue;
+import org.opennms.core.ipc.sink.api.QueueCreateFailedException;
+import org.opennms.core.ipc.sink.api.ReadFailedException;
 import org.opennms.core.ipc.sink.api.WriteFailedException;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -61,7 +57,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static com.jayway.awaitility.Awaitility.await;
-import static com.jayway.awaitility.Awaitility.to;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -75,7 +70,7 @@ public class LinkedBlockOffHeapQueueTest {
     public TemporaryFolder folder = new TemporaryFolder();
 
     @Test
-    public void canQueueAndDequeue() throws IOException, WriteFailedException, InterruptedException {
+    public void canQueueAndDequeue() throws IOException, WriteFailedException, InterruptedException, QueueCreateFailedException, ReadFailedException {
         LinkedBlockOffHeapQueue<String> queue = new LinkedBlockOffHeapQueue<>(String::getBytes, String::new,
                 "canQueueAndDequeue", Paths.get(folder.newFolder().toURI()), 1, 1, 10000);
 
@@ -89,7 +84,6 @@ public class LinkedBlockOffHeapQueueTest {
         String payload3 = "msg3";
         queue.enqueue(payload3, "key3");
 
-
         assertThat(queue.getSize(), equalTo(3));
         assertThat(queue.getMemoryBlocks(), equalTo(1));
         // one empty block
@@ -98,22 +92,18 @@ public class LinkedBlockOffHeapQueueTest {
         assertThat(queue.dequeue().getValue(), equalTo(payload1));
         assertThat(queue.dequeue().getValue(), equalTo(payload2));
         assertThat(queue.dequeue().getValue(), equalTo(payload3));
-
     }
 
-
-
     @Test
-    public void canRestoreOffHeapBlock() throws IOException, WriteFailedException, InterruptedException {
+    public void canRestoreOffHeapBlock() throws IOException, WriteFailedException, InterruptedException, QueueCreateFailedException, ReadFailedException {
         Path offHeapPath = Paths.get(folder.newFolder().toURI());
         LinkedBlockOffHeapQueue<String> queue = new LinkedBlockOffHeapQueue<>(String::getBytes, String::new,
                 "canQueueAndDequeue", offHeapPath, 4, 2, 10000);
 
         // Since size is 1, the first entry should be in-memory and the second entry should be on disk
-        for(int i = 0 ; i < 11 ; i++){
+        for (int i = 0; i < 11; i++) {
             String payload = "msg" + i;
             queue.enqueue(payload, "key" + i);
-            System.out.println(payload);
         }
 
         assertThat(queue.getSize(), equalTo(11));
@@ -121,36 +111,30 @@ public class LinkedBlockOffHeapQueueTest {
         assertThat(queue.getMemoryBlocks(), equalTo(2));
         //give time to flush all data
         Thread.sleep(1000L);
-
         queue.shutdown();
-        queue = null;
-
         LinkedBlockOffHeapQueue<String> newQueue = new LinkedBlockOffHeapQueue<>(String::getBytes, String::new,
                 "canQueueAndDequeue", offHeapPath, 2, 2, 10000);
 
-        // should able to find 2 offheapblocks
-        System.out.println(newQueue.getSize());
-        // it will lose 2 batch in memory & 1 unfinished offheap block due to not persist yet
+        // it will lose 2 block in memory & 1 unfinished offheap block due to not persist yet
         assertThat(newQueue.getSize(), equalTo(6));
-        assertThat(newQueue.getOffHeapBlocks(), equalTo(3));
 
+        assertThat(newQueue.getOffHeapBlocks(), equalTo(3));
         for (int i = 4; i < 10; i++) {
             assertThat(newQueue.dequeue().getValue(), equalTo("msg" + i));
         }
         assertThat(newQueue.getSize(), equalTo(0));
     }
 
-
     class Enqueue implements Runnable {
-        DispatchQueue<String> queue;
-        List<String> storage;
-        int size;
-        String name;
+        private DispatchQueue<String> queue;
+        private AtomicInteger counter;
+        private int size;
+        private String name;
 
-        Enqueue(String name, DispatchQueue<String> queue, List<String> storage, int size) {
+        Enqueue(String name, DispatchQueue<String> queue, AtomicInteger counter, int size) {
             this.name = name;
             this.queue = queue;
-            this.storage = storage;
+            this.counter = counter;
             this.size = size;
         }
 
@@ -159,11 +143,8 @@ public class LinkedBlockOffHeapQueueTest {
             for (int i = 0; i < size; i++) {
                 try {
                     var tmp = name + "_" + i;
-//                    Thread.sleep((int) Math.random() * 10);
-                    //System.out.println("ADD:" + tmp);
                     queue.enqueue(tmp, tmp);
-                    //System.out.println("ADD END:" + tmp);
-                    storage.add(tmp);
+                    counter.incrementAndGet();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -172,73 +153,70 @@ public class LinkedBlockOffHeapQueueTest {
     }
 
     class Dequeue implements Runnable {
-        DispatchQueue<String> queue;
-        List<String> storage;
-        int size;
-        String name;
+        private DispatchQueue<String> queue;
+        private AtomicInteger counter;
+        private int size;
+        private String name;
+        private ThreadPoolExecutor enQueueExecutor;
 
-        Dequeue(String name, DispatchQueue<String> queue, List<String> storage, int size) {
-            this.name = name;
-            this.queue = queue;
-            this.storage = storage;
-            this.size = size;
+        Dequeue(String name, DispatchQueue<String> queue, AtomicInteger counter, int size, ThreadPoolExecutor enQueueExecutor) {
+            this.name = Objects.requireNonNull(name);
+            this.queue = Objects.requireNonNull(queue);
+            this.counter = Objects.requireNonNull(counter);
+            this.size = Objects.requireNonNull(size);
+            this.enQueueExecutor = Objects.requireNonNull(enQueueExecutor);
         }
 
         @Override
         public void run() {
-            while(queue.getSize() > 0) {
+            while (enQueueExecutor.getActiveCount() > 0 || queue.getSize() > 0) {
                 try {
-                    //System.out.println("REMOVE: "+ name);
-                    var tmp = queue.dequeue();
-                    //System.out.println("REMOVE: "+ name + " DONE VAL = " + tmp.getValue() + " queue.getSize() = " +  queue.getSize());
-                    storage.add(tmp.getValue());
-//                    Thread.sleep((int) Math.random() * 10);
+                    queue.dequeue();
+                    //storage.add(tmp.getValue());
+                    counter.incrementAndGet();
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    System.out.println("ERROR Dequeue: " + e.getMessage());
                 }
             }
         }
     }
 
     @Test
-    public void checkDeadlock() throws IOException, InterruptedException {
+    public void checkDeadlock() throws IOException, QueueCreateFailedException {
         DispatchQueue<String> queue = new LinkedBlockOffHeapQueue<>(String::getBytes, String::new,
-                "checkDeadlock", Paths.get("/tmp/queue/" + System.currentTimeMillis()), 100, 100, 100000);
-//folder.newFolder().toURI()
-        int itemPerThread = 10;
-        int writeThread = 600;
-        int readThread = 50;
-long start = System.currentTimeMillis();
-        List<String> enQueueData = Collections.synchronizedList(new ArrayList<>(itemPerThread * writeThread));
-        List<String> deQueueData = Collections.synchronizedList(new ArrayList<>(itemPerThread * writeThread));
+                "checkDeadlock", Paths.get(folder.newFolder().toURI()), 10000, 1000, 100000);
+        int itemPerThread = 50000;
+        int writeThread = 20;
+        int readThread = 20;
+        long start = System.currentTimeMillis();
 
-
-        ThreadPoolExecutor executor =
-                (ThreadPoolExecutor) Executors.newFixedThreadPool(writeThread + readThread);
+        AtomicInteger enQueueDataCounter = new AtomicInteger(0);
+        AtomicInteger deQueueDataCounter = new AtomicInteger(0);
+        ThreadPoolExecutor enQueueExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(readThread);
+        ThreadPoolExecutor deQueueExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(writeThread);
 
         List<Future<?>> futures = new ArrayList<>();
-        for(int i = 0 ; i < writeThread ; i++) {
-            futures.add(executor.submit(new Enqueue(String.valueOf(i), queue, enQueueData, itemPerThread)));
+        for (int i = 0; i < writeThread; i++) {
+            futures.add(enQueueExecutor.submit(new Enqueue(String.valueOf(i), queue, enQueueDataCounter, itemPerThread)));
         }
 
-        Thread.sleep(10000L);
-        for(int i = 0 ; i < readThread ; i++) {
-            futures.add(executor.submit(new Dequeue(String.valueOf(i), queue, deQueueData, itemPerThread)));
+        for (int i = 0; i < readThread; i++) {
+            futures.add(deQueueExecutor.submit(new Dequeue(String.valueOf(i), queue, deQueueDataCounter, itemPerThread, enQueueExecutor)));
         }
 
-        await().atMost(30, TimeUnit.SECONDS).until(() -> {
-            return executor.getActiveCount() == 0 || deQueueData.size() == writeThread * itemPerThread;
+        await().atMost(10, TimeUnit.SECONDS).until(() -> {
+            System.out.println("deQueueDataCounter: " + deQueueDataCounter.get() + " queue " + queue.getSize());
+            return (deQueueDataCounter.get() > 0 && deQueueExecutor.getActiveCount() == 0) || deQueueDataCounter.get() == writeThread * itemPerThread;
         }, equalTo(true));
         System.out.println("Time spent: " + (System.currentTimeMillis() - start));
+        System.out.println("enQueueData.size(): " + enQueueDataCounter.get() + " deQueueData.size() " + deQueueDataCounter.get());
 
-        assertEquals(enQueueData.size(), deQueueData.size());
-        assertEquals(writeThread * itemPerThread, deQueueData.size());
-        assertThat(enQueueData, Matchers.containsInAnyOrder(deQueueData.toArray()));
+        assertEquals(enQueueDataCounter.get(), deQueueDataCounter.get());
+        assertEquals(writeThread * itemPerThread, deQueueDataCounter.get());
     }
 
-
     @Test
-    public void canQueueAndDequeueInParallel() throws IOException {
+    public void canQueueAndDequeueInParallel() throws IOException, QueueCreateFailedException {
         DispatchQueue<String> queue = new LinkedBlockOffHeapQueue<>(String::getBytes, String::new,
                 "canQueueAndDequeue", Paths.get(folder.newFolder().toURI()), 20, 5, 100_000_000);
 
@@ -253,7 +231,8 @@ long start = System.currentTimeMillis();
         CompletableFuture.runAsync(() -> {
             while (count.get() < numEntries) {
                 try {
-                    queue.enqueue(toQueue.get(count.getAndIncrement()), "key");
+                    var value = toQueue.get(count.getAndIncrement());
+                    queue.enqueue(value, value);
                     startedQueueing.countDown();
                 } catch (WriteFailedException e) {
                     throw new RuntimeException(e);
@@ -270,7 +249,8 @@ long start = System.currentTimeMillis();
             }
             while (true) {
                 try {
-                    dequeued.add(queue.dequeue().getValue());
+                    var tmp = queue.dequeue().getValue();
+                    dequeued.add(tmp);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
@@ -278,7 +258,7 @@ long start = System.currentTimeMillis();
         });
 
         try {
-            await().atMost(10, TimeUnit.SECONDS).until(() -> {
+            await().atMost(30, TimeUnit.SECONDS).until(() -> {
                 //System.out.println(String.format("dequeue: %s toqueue: %s queueSize: %s", dequeued.size(), toQueue.size(), queue.getSize()));
                 return dequeued;
             }, equalTo(toQueue));
@@ -292,7 +272,6 @@ long start = System.currentTimeMillis();
 //            return dequeued;
 //        }, equalTo(toQueue));
 //
-//
 
 
         toQueue.removeAll(dequeued);
@@ -301,9 +280,9 @@ long start = System.currentTimeMillis();
     }
 
     @Test
-    public void dequeuesInOrder() throws IOException, WriteFailedException, InterruptedException {
+    public void dequeuesInOrder() throws IOException, WriteFailedException, InterruptedException, QueueCreateFailedException, ReadFailedException {
         DispatchQueue<String> queue = new LinkedBlockOffHeapQueue<>(String::getBytes, String::new,
-                "dequeuesInOrder", Paths.get(folder.newFolder().toURI()), 1000, 100, 10_000_000);
+                "dequeuesInOrder", Paths.get(folder.newFolder().toURI()), 10, 10, 10_000_000);
 
         int numEntries = 10020;
         List<String> toQueue = IntStream.range(0, numEntries)
@@ -324,23 +303,16 @@ long start = System.currentTimeMillis();
             dequeued.add(queue.dequeue().getValue());
         }
 
-//
-//        System.out.println("===TO");
-//        System.out.println(toQueue.stream().collect(Collectors.joining("\n")));
-//        System.out.println("===DE");
-//        System.out.println(dequeued.stream().collect(Collectors.joining("\n")));
 
         List<String> diff = new ArrayList<>(toQueue);
         diff.removeAll(dequeued);
-        if(diff.size()>0){
-            System.out.println("HERE");
-        }
+
         assertThat(diff, equalTo(new ArrayList<>()));
         assertThat(dequeued, equalTo(toQueue));
     }
 
     @Test
-    public void blocksWhenEmpty() throws IOException, WriteFailedException {
+    public void blocksWhenEmpty() throws IOException, WriteFailedException, QueueCreateFailedException {
         DispatchQueue<String> queue = new LinkedBlockOffHeapQueue<>(String::getBytes, String::new,
                 "blocksWhenEmpty", Paths.get(folder.newFolder().toURI()), 1, 1, 10000);
 
@@ -355,7 +327,6 @@ long start = System.currentTimeMillis();
                 throw new RuntimeException(e);
             }
         });
-        //System.out.println("here1");
         assertThat(atomicString.get(), is(nullValue()));
 
         String payload = "a";
@@ -366,10 +337,8 @@ long start = System.currentTimeMillis();
             fail("Dequeue did not block");
         } catch (ConditionTimeoutException expected) {
         }
-        //System.out.println("here2");
 
         queue.enqueue(payload, "key");
-        //System.out.println("here3");
 
         await().pollDelay(10, TimeUnit.MILLISECONDS)
                 .atMost(1, TimeUnit.SECONDS)
@@ -414,30 +383,6 @@ long start = System.currentTimeMillis();
 //        await().atMost(1, TimeUnit.SECONDS).until(didQueue::get);
 //    }
 
-//    @Test
-//    public void canDequeueOffHeapAfterRestart() throws IOException, WriteFailedException, InterruptedException {
-//        Path path = Paths.get(folder.newFolder().toURI());
-//        String moduleName = "canQueueAfterRestart";
-//        DispatchQueue<String> queue = new LinkedBlockOffHeapQueue<>(String::getBytes, String::new,
-//                moduleName, path, 1, 1, 10000);
-//
-//        // Should be immediate since it should be queued in-memory
-//        String payload1 = "msg1";
-//        assertThat(queue.enqueue(payload1, "key1"), equalTo(DispatchQueue.EnqueueResult.IMMEDIATE));
-//
-//        // Should get deferred since it will be written off-heap
-//        String payload2 = "msg2";
-//        assertThat(queue.enqueue(payload2, "key2"), equalTo(DispatchQueue.EnqueueResult.DEFERRED));;
-//
-//        // Reinitialize to simulate coming back up after restart
-//        queue = new LinkedBlockOffHeapQueue<>(String::getBytes, String::new,
-//                moduleName, path, 1, 1, 10000);
-//
-//        // We will have lost the in-memory portion of the queue
-//        assertThat(queue.getSize(), equalTo(1));
-//        assertThat(queue.dequeue().getValue(), equalTo(payload2));
-//    }
-//
 //    @Test
 //    public void recoversFromCorruptFile() throws IOException, WriteFailedException, InterruptedException {
 //        String moduleName = "recoversFromCorruptFile";

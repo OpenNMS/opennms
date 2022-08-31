@@ -29,21 +29,23 @@
 package org.opennms.core.ipc.sink.offheap;
 
 import com.swrve.ratelimitedlogger.RateLimitedLog;
-import org.h2.mvstore.MVMap;
 import org.h2.mvstore.MVStore;
 import org.opennms.core.ipc.sink.api.DispatchQueue;
+import org.opennms.core.ipc.sink.api.QueueCreateFailedException;
+import org.opennms.core.ipc.sink.api.ReadFailedException;
 import org.opennms.core.ipc.sink.api.WriteFailedException;
 import org.rocksdb.CompressionType;
+import org.rocksdb.Env;
 import org.rocksdb.LRUCache;
 import org.rocksdb.Options;
 import org.rocksdb.RocksDB;
+import org.rocksdb.RocksDBException;
 import org.rocksdb.RocksIterator;
+import org.rocksdb.SstFileManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
@@ -60,7 +62,7 @@ import java.util.function.Function;
 public class LinkedBlockOffHeapQueue<T> implements DispatchQueue<T> {
 
     private static final Logger LOG = LoggerFactory.getLogger(LinkedBlockOffHeapQueue.class);
-    private final RateLimitedLog RATE_LIMITED_LOGGER = RateLimitedLog
+    private static final RateLimitedLog RATE_LIMITED_LOGGER = RateLimitedLog
             .withRateLimit(LOG)
             .maxRate(5)
             .every(Duration.ofSeconds(30))
@@ -69,16 +71,9 @@ public class LinkedBlockOffHeapQueue<T> implements DispatchQueue<T> {
     private final Lock headLock = new ReentrantLock(true);
     private final Lock tailLock = new ReentrantLock(true);
 
-    // This must match the size of the HEADER_LENGTH in QueueFile's Element class
-    //
-    // We could pull this out of that class reflectively but it seemed easier to just hard code it here
-    private static final int SERIALIZED_OBJECT_HEADER_SIZE_IN_BYTES = 4;
-
     private final Function<T, byte[]> serializer;
     private final Function<byte[], T> deserializer;
-    private final String moduleName;
 
-    private final long maxFileSizeInBytes;
     private final int batchSize;
 
     // it will not include head
@@ -91,8 +86,6 @@ public class LinkedBlockOffHeapQueue<T> implements DispatchQueue<T> {
     private MVStore mvstore;
     private RocksDB rocksdb;
 
-    //private final FileCapacityLatch fileCapacityLatch = new FileCapacityLatch()
-
     public int getMemoryBlocks() {
         return memoryBlocks.get();
     }
@@ -101,10 +94,9 @@ public class LinkedBlockOffHeapQueue<T> implements DispatchQueue<T> {
         return offHeapBlocks.get();
     }
 
-
     public LinkedBlockOffHeapQueue(Function<T, byte[]> serializer, Function<byte[], T> deserializer,
                                    String moduleName, Path filePath, int inMemoryQueueSize, int batchSize,
-                                   long maxFileSizeInBytes) throws IOException {
+                                   long maxFileSizeInBytes) throws QueueCreateFailedException {
         if (inMemoryQueueSize < 1) {
             throw new IllegalArgumentException("In memory queue size must be greater than 0");
         }
@@ -120,128 +112,97 @@ public class LinkedBlockOffHeapQueue<T> implements DispatchQueue<T> {
         this.mainQueue = new LinkedBlockingQueue<>();
         this.serializer = Objects.requireNonNull(serializer);
         this.deserializer = Objects.requireNonNull(deserializer);
-        this.moduleName = Objects.requireNonNull(moduleName);
+        Objects.requireNonNull(moduleName);
         this.batchSize = batchSize;
-        this.maxFileSizeInBytes = maxFileSizeInBytes;
         this.inMemoryQueueSize = inMemoryQueueSize;
 
         File file = Paths.get(filePath.toString(), moduleName).toFile();
 
         if (!file.isDirectory() && !file.mkdirs()) {
-            throw new RuntimeException("Fail make dir. " + file);
+            throw new QueueCreateFailedException("Fail make dir. " + file);
         }
 
-//        mvstore = new MVStore.Builder()
-//                .cacheSize(500)
-////                .keysPerPage(100)
-////                .pageSplitSize(100)
-//                .compress()
-//                .fileName(filePath + "/LinkedBlockOffHeapQueue.mvstore")
-//                .open();
+        Options options = new Options();
+        options.setCreateIfMissing(true);
+        options.setCompressionType(CompressionType.SNAPPY_COMPRESSION);
+        options.setEnableBlobFiles(true);
+        options.setEnableBlobGarbageCollection(true);
+        options.setMinBlobSize(100_000L);
+        options.setBlobCompressionType(CompressionType.SNAPPY_COMPRESSION);
+        options.setWriteBufferSize(100L * 1024L * 1024L);
+        options.setBlobFileSize(options.writeBufferSize());
+        options.setTargetFileSizeBase(64L * 1024L * 1024L);
+        options.setMaxBytesForLevelBase(options.targetFileSizeBase() * 10L);
+
+        options.setMaxBackgroundJobs(Math.max(Runtime.getRuntime().availableProcessors(), 3));
+
+        LRUCache cache = new LRUCache(512L * 1024L * 1024L, 8);
+        options.setRowCache(cache);
 
         try {
-
-            Options options = new Options();
-            options.setCreateIfMissing(true);
-            options.setCompressionType(CompressionType.SNAPPY_COMPRESSION);
-            options.setEnableBlobFiles(true);
-            options.setEnableBlobGarbageCollection(true);
-            options.setMinBlobSize(100_000);
-            options.setBlobCompressionType(CompressionType.SNAPPY_COMPRESSION);
-            options.setWriteBufferSize(100 * 1024 * 1024);
-            options.setBlobFileSize(100 * 1024 * 1024);
-            options.setTargetFileSizeBase(64 * 1024 * 1024);
-            options.setMaxBytesForLevelBase(64 * 1024 * 1024 * 10);
-            //options.setMaxBackgroundCompactions(100);
-            options.setMaxBackgroundJobs(Math.max(Runtime.getRuntime().availableProcessors(), 3));
-
-            LRUCache cache = new LRUCache(512 * 1024 * 1024, 8);
-            options.setRowCache(cache);
-//            options.setLogReadaheadSize()
-//                    options.setCompactionReadaheadSize().setAllowMmapReads().setUseDirectReads().setBlobCompactionReadaheadSize()
-
-
-            //   new StackableDB();
             rocksdb = RocksDB.open(options, file.getAbsolutePath());
+            Env env = Env.getDefault();
+            SstFileManager sstFileManager = new SstFileManager(env);
+            sstFileManager.setMaxAllowedSpaceUsage(maxFileSizeInBytes);
+            options.setSstFileManager(sstFileManager);
 
-            long keyCount = rocksdb.getLongProperty("rocksdb.estimate-num-keys");
-            LOG.warn("Current keys in db: " + keyCount);
-            if (keyCount > 0) {
-                //restore data
-                DataBlock<T> lastBlock = null;
-                RocksIterator ite = rocksdb.newIterator();
-                ite.seekToFirst();
-                while (ite.isValid()) {
-                    String key = new String(ite.key());
-                    //LOG.error("KEY: {}", key);
-                    DataBlock<T> newBlock = new RocksDBOffHeapDataBlock<>(key, batchSize, serializer, deserializer, rocksdb, ite.value());
-                    if (lastBlock != null) {
-                        lastBlock.setNextDataBlock(newBlock);
-                    }
-                    mainQueue.add(newBlock);
-                    offHeapBlocks.incrementAndGet();
-                    lastBlock = newBlock;
-                    ite.next();
-                }
-                //((OffHeapDataBlock) mainQueue.peek()).enableQueue();
-                //mainQueue.peek().notifyNextDataBlock();
+            restoreDataFromOffHeap();
+
+            if (mainQueue.isEmpty()) {
+                createDataBlock(true);
             }
-        } catch (Exception e) {
-            LOG.error("Exception: {}", e);
-            throw new RuntimeException(e);
+        } catch (RocksDBException ex) {
+            throw new QueueCreateFailedException(ex);
         }
-
-        if (mainQueue.size() == 0) {
-            createDataBlock(true);
-        }
-
-        // Setting the max file size to 0 or less will disable the off-heap portion of this queue
-//        if (maxFileSizeInBytes > 0) {
-//            Objects.requireNonNull(filePath);
-//
-//            File file = Paths.get(filePath.toString(), moduleName).toFile();
-//            file.mkdirs();
-//
-//            // QueueFile unfortunately does not expose its file size usage publicly so we need to access it reflectively
-//            try {
-//                usedBytesMethod = offHeapQueue.getClass().getDeclaredMethod("usedBytes");
-//                usedBytesMethod.setAccessible(true);
-//            } catch (NoSuchMethodException e) {
-//                LOG.warn("Could not instantiate queue", e);
-//                throw new RuntimeException(e);
-//            }
-//
-//            checkFileSize();
-//        } else {
-//            offHeapQueue = null;
-//            usedBytesMethod = null;
-//        }
     }
 
+    /**
+     * It will read the existing offheap data into mainQueue
+     *
+     * @throws RocksDBException
+     */
+    private void restoreDataFromOffHeap() throws RocksDBException {
+        long keyCount = rocksdb.getLongProperty("rocksdb.estimate-num-keys");
+        LOG.info("Current keys in db: {}", keyCount);
+        if (keyCount <= 0) {
+            return;
+        }
+        RocksIterator ite = rocksdb.newIterator();
+        try {
+            //restore data
+            DataBlock<T> lastBlock = null;
+            ite.seekToFirst();
+            while (ite.isValid()) {
+                String key = new String(ite.key());
+                DataBlock<T> newBlock = new RocksDBOffHeapDataBlock<>(key, batchSize, serializer, deserializer, rocksdb, ite.value());
+                if (lastBlock != null) {
+                    lastBlock.setNextDataBlock(newBlock);
+                }
+                mainQueue.add(newBlock);
+                offHeapBlocks.incrementAndGet();
+                lastBlock = newBlock;
+                ite.next();
+            }
+        } finally {
+            ite.close();
+        }
+    }
 
-    private void createDataBlock(boolean force) throws IOException {
+    private void createDataBlock(boolean force) {
         if (!force && (tailBlock != null && tailBlock.size() < batchSize)) {
             return;
         }
-        DataBlock newBlock;
+        DataBlock<T> newBlock;
         if (tailBlock == null || !isMemoryFull()) {
-            newBlock = new MemoryDataBlock(batchSize);
+            newBlock = new MemoryDataBlock<>(batchSize);
             memoryBlocks.incrementAndGet();
         } else {
             newBlock = new RocksDBOffHeapDataBlock<>(batchSize, serializer, deserializer, rocksdb);
-            //newBlock = new H2OffHeapDataBlock<>(batchSize, serializer, deserializer, mvstore);
             offHeapBlocks.incrementAndGet();
         }
-        //System.out.println("Create "+newBlock+", mem:"+memoryBlocks.get()+", disk: "+ diskBlocks.get());
 
-        LOG.warn("Create {}, mem: {}, disk: {}", newBlock, memoryBlocks.get(), offHeapBlocks.get());
-//        if (tmp == null) {
-//            ////System.out.println("ERROR 5 !!!! NULL");
-//        } else if (tmp != tailBlock) {
-//            ////System.out.println("ERROR 3 !!!! " + tmp + " " + tailBlock);
-//        } else if (tmp.size() != batchSize) {
-//            ////System.out.println("ERROR 4 !!!! oil tail size = " + tmp.size() + " != " + batchSize + " " + tmp);
-//        }
+        RATE_LIMITED_LOGGER.debug("Create {}, mem: {}, disk: {}", newBlock, memoryBlocks.get(), offHeapBlocks.get());
+
         if (tailBlock != null) {
             this.tailBlock.setNextDataBlock(newBlock);
         }
@@ -251,88 +212,70 @@ public class LinkedBlockOffHeapQueue<T> implements DispatchQueue<T> {
 
     @Override
     public EnqueueResult enqueue(T message, String key) throws WriteFailedException {
-        //System.out.println("enqueue lock " + message);
         tailLock.lock();
-        ////System.out.println(tailBlock + " enqueue 0 " + message);
         boolean status = tailBlock.enqueue(key, message);
-        ////System.out.println(tailBlock + " enqueue 1 status = " + status + " " + message);
         if (!status) {
-            ////System.out.println(tailBlock + "enqueue DEFERRED " + status + message);
-            //System.out.println("enqueue unlock 1 " + message);
             tailLock.unlock();
             return EnqueueResult.DEFERRED;
         }
 
-        try {
-            this.createDataBlock(false);
-        } catch (IOException e) {
-            ////System.out.println(tailBlock + " enqueue WriteFailedException");
-            throw new WriteFailedException(e);
-        } finally {
-            //System.out.println("enqueue unlock 2 " + message);
-            tailLock.unlock();
-        }
+        this.createDataBlock(false);
+        tailLock.unlock();
 
-        ////System.out.println(tailBlock + " enqueue 2 " + " " + message);
         return EnqueueResult.IMMEDIATE;
     }
 
     @Override
-    public Map.Entry<String, T> dequeue() throws InterruptedException {
-        LOG.debug("Dequeueing an entry from queue with current size {}", getSize());
-        //System.out.println("dequeue 0");
+    public synchronized Map.Entry<String, T> dequeue() throws InterruptedException {
         headLock.lock();
+
         Map.Entry<String, T> data = null;
-        DataBlock<T> head = null;
-        while (data == null) {
-            boolean headTailEqual = false;
-            if (mainQueue.peek() == tailBlock) {
-                if (!tailLock.tryLock(1, TimeUnit.MILLISECONDS)) {
-                    continue;
+        DataBlock<T> head;
+        try {
+            while (data == null) {
+                boolean headTailEqual = false;
+                if (mainQueue.peek() == tailBlock) {
+                    if (!tailLock.tryLock(1, TimeUnit.MILLISECONDS)) {
+                        continue;
+                    }
+                    headTailEqual = true;
                 }
-                headTailEqual = true;
-                //System.out.println("dequeue lock tail");
-            }
-            head = mainQueue.peek();
-            //System.out.println("dequeue 0.2");
-            ////System.out.println(head + " dequeue 1 " + head + " size: " + head.size());
-            if (head.size() > 0) {
-                data = head.dequeue();
-                //System.out.println(head + " dequeue 2 " + data.getValue());
-                if (headTailEqual) {
-                    tailLock.unlock();
-                    //System.out.println("dequeue unlock tail 1");
+                head = mainQueue.peek();
+                if (head.size() > 0) {
+                    data = head.dequeue();
+                    if (headTailEqual) {
+                        tailLock.unlock();
+                    } else {
+                        removeHeadBlockIfNeeded();
+                    }
                 } else {
-                    removeHeadBlockIfNeeded();
-                }
-            } else {
-                if (headTailEqual) {
-                    tailLock.unlock();
-                    //System.out.println("dequeue unlock tail 2");
+                    if (headTailEqual) {
+                        tailLock.unlock();
+                    }
                 }
             }
+        } catch (ReadFailedException e) {
+            LOG.error("Fail to dequeue. {}", e.getMessage());
+            return null;
+        } finally {
+            headLock.unlock();
         }
-        headLock.unlock();
-        //System.out.println(head + " dequeue 3 " + data.getValue());
         return data;
     }
 
-
-    private void removeHeadBlockIfNeeded() throws InterruptedException {
+    private void removeHeadBlockIfNeeded() throws ReadFailedException {
         DataBlock<T> head = mainQueue.peek();
         if (head.size() <= 0 && mainQueue.size() > 1) {
             var tmpHead = mainQueue.remove();
             if (tmpHead != head) {
                 LOG.error("Queue is modified. May have data lost");
-                throw new RuntimeException("Queue is modified. May have data lost");
             }
             if (head instanceof MemoryDataBlock) {
                 memoryBlocks.decrementAndGet();
             } else {
                 offHeapBlocks.decrementAndGet();
             }
-        } else {
-            ////System.out.println("removeHeadBlockIfNeeded last head not going to remove: " + head);
+            mainQueue.peek().notifyNextDataBlock();
         }
     }
 
@@ -347,16 +290,7 @@ public class LinkedBlockOffHeapQueue<T> implements DispatchQueue<T> {
     }
 
     private boolean isMemoryFull() {
-
-//        int remain = inMemoryQueueSize;
-//        if (tailBlock instanceof MemoryDataBlock) {
-//            remain -= (tailBlock.size() + this.batchSize * (memoryBlocks.get() - 1));
-//        } else {
-//            remain -= this.batchSize * memoryBlocks.get();
-//        }
-//        return remain >= 0;
-
-        int memorySize = mainQueue.stream().filter(b -> b instanceof MemoryDataBlock).map(b -> b.size())
+        int memorySize = mainQueue.stream().filter(MemoryDataBlock.class::isInstance).map(DataBlock::size)
                 .reduce(0, Integer::sum);
         return inMemoryQueueSize - memorySize <= 0;
     }
@@ -372,95 +306,11 @@ public class LinkedBlockOffHeapQueue<T> implements DispatchQueue<T> {
 
     @Override
     public int getSize() {
-
-        return mainQueue.stream().map(b -> b.size())
-                .reduce(0, Integer::sum);
-        //int memorySize = this.batchSize * memoryBlocks.get();
-//        long diskSize = this.batchSize * diskBlocks.get();
-//        if (tailBlock instanceof OffHeapDataBlock) {
-//            diskSize += tailBlock.size();
-//        } else {
-//            memorySize += tailBlock.size();
-//        }
-//        return memorySize + (int) diskSize;
+        return mainQueue.stream().map(DataBlock::size)
+                .reduce(Integer::sum).orElse(0);
     }
 
     public void shutdown() {
         rocksdb.close();
     }
-
-//    private List<Map.Entry<String, T>> unbatchSerializedBatch(SerializedBatch serializedBatch)
-//            throws ExecutionException, InterruptedException {
-//        final Batch deserializedBatch = new Batch(batchSize);
-//
-//        serdesPool.submit(() ->
-//                        serializedBatch.batchedMessages.parallelStream()
-//                                .map(deserializer)
-//                                .collect(Collectors.toList()))
-//                .get()
-//                .forEach(deserializedBatch::add);
-//
-//        return deserializedBatch.unbatch();
-//    }
-//
-//    /**
-//     * A latch that can be used to wait for the backing file to have capacity.
-//     */
-//    private final class FileCapacityLatch {
-//        private boolean isFull = false;
-//        private long currentCapacityBytes = Long.MAX_VALUE;
-//        private boolean flushNeeded = false;
-//
-//        public synchronized void waitForCapacity(long capacityNeededBytes) throws InterruptedException {
-//            while (currentCapacityBytes < capacityNeededBytes) {
-//                if (!flushNeeded) {
-//                    // Someone cleared out the batch while we were waiting to write
-//                    break;
-//                }
-//
-//                markFull();
-//                LOG.trace("Waiting for capacity... Need {} bytes but current capacity is {} bytes",
-//                        capacityNeededBytes, currentCapacityBytes);
-//                wait();
-//            }
-//
-//            markNotFull();
-//        }
-//
-//        public synchronized void setCurrentCapacityBytes(long currentCapacityBytes) {
-//            this.currentCapacityBytes = currentCapacityBytes;
-//            notifyAll();
-//        }
-//
-//        private void markFull() {
-//            if (!isFull) {
-//                RATE_LIMITED_LOGGER.info("Off heap file for module {} is now full", moduleName);
-//                isFull = true;
-//            }
-//        }
-//
-//        private void markNotFull() {
-//            if (isFull) {
-//                RATE_LIMITED_LOGGER.info("Off heap file for module {} is no longer full", moduleName);
-//                isFull = false;
-//            }
-//        }
-//
-//        public synchronized boolean isFull() {
-//            return isFull;
-//        }
-//
-//        public synchronized void markFlushNeeded() {
-//            flushNeeded = true;
-//        }
-//
-//        public synchronized void cancelFlush() {
-//            flushNeeded = false;
-//            notifyAll();
-//        }
-//
-//        public synchronized boolean isFlushNeeded() {
-//            return flushNeeded;
-//        }
-//    }
 }
