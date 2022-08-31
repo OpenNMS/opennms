@@ -64,7 +64,7 @@ public class JsonPathHelperTest {
     @Test
     public void testGetWhenOk() {
         assertEquals(Integer.toString(OBJ_NUMBER1), JsonPathHelper.get(DATA, "$.array[1].objNumber"));
-        assertEquals("[" + Integer.toString(OBJ_NUMBER1) + "]", JsonPathHelper.get(DATA, "$.array[?(@.objText=='" + SOMETEXT1 + "')].objNumber"));
+        assertEquals("[" + Integer.toString(OBJ_NUMBER1) + "]", JsonPathHelper.get(DATA, "$.array[?(@.objText=='" + SOME_TEXT1 + "')].objNumber"));
         assertEquals(ARRAY, JsonPathHelper.get(DATA, "$.array"));
     }
 
