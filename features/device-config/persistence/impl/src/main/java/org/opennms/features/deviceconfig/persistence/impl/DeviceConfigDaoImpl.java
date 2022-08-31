@@ -30,8 +30,12 @@ package org.opennms.features.deviceconfig.persistence.impl;
 
 import com.google.common.base.Strings;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Collection;
@@ -44,6 +48,7 @@ import java.util.stream.Collectors;
 import org.hibernate.SQLQuery;
 import org.hibernate.transform.ResultTransformer;
 import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.utils.StringUtils;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfig;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigQueryResult;
@@ -247,6 +252,24 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
     public List<DeviceConfig> getAllDeviceConfigsWithAnInterfaceId(Integer ipInterfaceId) {
         return find("from DeviceConfig dc where dc.ipInterface.id = ? ",
                 ipInterfaceId);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public Map<String, Long> getNumberOfNodesWithDeviceConfigBySysOid() {
+        String query = "SELECT n.nodesysoid, count(*) FROM device_config dcb LEFT JOIN ipinterface ip ON ipinterface_id = ip.id LEFT JOIN node n ON ip.nodeid = n.nodeid GROUP BY nodesysoid";
+
+        return getHibernateTemplate().executeWithNativeSession(session -> {
+            SQLQuery queryObject = session.createSQLQuery(query);
+            Map<String, Long> numberOfNodesWithDeviceConfigBySysOid = new HashMap();
+            for (Object obj : queryObject.list()) {
+                Object[] pair = (Object[]) obj;
+                String sysOid = (String)pair[0];
+                Long count = ((BigInteger)pair[1]).longValue();
+                numberOfNodesWithDeviceConfigBySysOid.put(StringUtils.isEmpty(sysOid) ? "none" : sysOid, count);
+            }
+            return Collections.unmodifiableMap(numberOfNodesWithDeviceConfigBySysOid);
+        });
     }
 
     private DeviceConfigQueryCriteria createSqlQueryCriteria(Integer limit, Integer offset,
