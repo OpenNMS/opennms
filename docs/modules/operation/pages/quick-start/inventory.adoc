@@ -10,10 +10,17 @@
 * xref:deep-dive/provisioning/directed-discovery.adoc[] (manually add nodes).
 * xref:development:rest/rest-api.adoc#rest-api[Asset import] through the RestAPI.
 
+Use auto discovery if you do not have a "source of truth" for your network inventory.
+Auto discovery can become that source.
+Be aware that auto discovery can include entities you do not want to monitor, if not properly configured.
+
+Directed discovery is effective if you know your inventory, particularly with smaller networks (for example, 100–200 nodes).
+It is also useful for areas of your network that you cannot auto discover.
+
 Regardless of the method, provisioning is an iterative process.
 You will need to fine-tune your results to exclude or add to what you monitor.
 
-This quick start presents a very basic example of auto and manual discovery of nodes, through SNMP.
+This quick start presents a very basic example of auto discovery of nodes, through SNMP.
 Beyond this quick start, you can complete additional tasks to provision your system:
 
 * Use plugins to integrate with external systems.
@@ -28,12 +35,11 @@ Refer to xref:operation:deep-dive/provisioning/introduction.adoc[Provisioning] i
 To collect data through SNMP or monitor the availability of SNMP services on a node, you need to configure SNMP for provisioning before using auto or directed discovery.
 This ensures that {page-component-title} can immediately scan newly discovered devices for entities.
 
-Proper SNMP configuration lets {page-component-title} understand network/node topology and automatically enables performance data collection.
-Very basic ... might not be optimized ...
-Run default, try to detect a lot of stuff ... 
-Policies are also part of optimizing, and not necessary for the QS.
-
+Proper SNMP configuration lets {page-component-title} understand network and node topology and automatically enables performance data collection.
 {page-component-title} updates network topology as it provisions nodes.
+
+This quick start procedure illustrates a very basic SNMP configuration using the default parameters.
+You can customize these values for your own network needs.
 
 . In the web UI, click the gear icon in the top right.
 . In the *Provisioning* area, choose *Configure SNMP Community Names by IP Address*.
@@ -52,27 +58,22 @@ For an example of the resulting XML configuration, see xref:operation:deep-dive/
 [[requisition-create]]
 == Create a requisition
 
-A requisition is a set of nodes (networked devices) that you want to import into {page-component-title} for monitoring and management.
-You can iteratively build a requisition and later actually import the nodes in the requisition into {page-component-title}.
-Doing so processes all of the adds/changes/deletes at once.
+A requisition is a set of nodes (networked devices) to import into {page-component-title} for monitoring and management.
 
-TIP: Organize nodes with a similar network monitoring profile into a requisition, so that you can assign the same services, detectors, and policies to model the network monitoring behavior (for example, routers or switches).
+Organizing nodes with a similar network monitoring profile into a requisition (for example, routers or switches), lets you assign the same services, detectors, and policies for network monitoring behavior.
 
-This procedure describes how to create an empty requisition.
-Links to additional information on customizing a requisition appear at the end of the procedure.
+A requisition includes a default foreign source definition that serves as a template to define the services to detect on (DNS, FTP, ICMP, and so on), the scan interval for discovery, and the policies to use when provisioning.
 
-You can do discovery without a requisition and edit it later, but we recommend creating a req.
-Don't need to define services, means it will include it even if it's false.
+While you can perform discovery without a requisition and edit it later, we recommend that you create a requisition before discovery.
+You can iteratively build a requisition and later actually import the requisition's nodes into {page-component-title} to process all add, changes, and deletes at once.
 
-The requisition editor in the OpenNMS web UI (Admin -> Manage Provisioning Requisitions) is designed for very small-scale usage. Do not attempt to use this interface to edit requisitions containing more than a few dozen nodes; it’s simply not designed for that use case and will fail in sometimes spectacular ways.
+This procedure describes how to create an empty requisition using the default foreign source definition.
+See the links at the end of the procedure for additional information on customizing a requisition.
 
-Requisition also includes FS definition and policies. We will accept the defaults. By default, FS 
+To create a requisition, follow these steps:
 
 . In the web UI, click the gear icon in the top right.
 . In the *Provisioning* area, choose *Manage Provisioning Requisitions*.
-. Click *Edit Default FS* to see the default detectors the default foreign source definition uses.
-
-If you haven't already, xref:foreign-source-definition[edit the default foreign source definition] to define services to detect.
 . Click *Add Requisition*, type a name, and click *OK*.
 
 NOTE: The requisition remains red until you synchronize it with the database.
@@ -82,10 +83,23 @@ image::provisioning/red_requisition.png[]
 
 Once created, you can add nodes to the requisition.
 
+IMPORTANT: The requisition editor in the OpenNMS web UI is designed for small-scale use.
+Do not attempt to use this interface to edit requisitions containing more than a few dozen nodes.
+It is not designed for that use case and will fail.
+
+Additional configuration options for requisitions:
+
+* xref:deep-dive/provisioning/directed-discovery.adoc#directed-discovery[Manually specify nodes to add to a requisition]
+* xref:deep-dive/provisioning/auto-discovery.adoc#auto-discovery[Automatically discover nodes to add to a requisition]
+* Customize a requisition with xref:reference:provisioning/detectors.adoc#ref-detectors[detectors] and xref:deep-dive/provisioning/policies.adoc#policies[policies]
+
 [[configure-discovery]]
 == Configure discovery
-For this quick start ... do not have a list of nodes to start from.
-Specify general settings like timeouts and retries, as well as the addresses you want to scan.
+For this quick start, we assume that you do not have a list of nodes to start from.
+The procedure uses the default general settings for parameters like timeouts and retries.
+You can customize these for your own needs.
+
+To configure discovery, follow these steps:
 
 . In the web UI, click the gear icon in the top right.
 . In the *Provisioning* area, choose *Configure Discovery*.
@@ -96,15 +110,4 @@ Specify general settings like timeouts and retries, as well as the addresses you
 
 You can view imported nodes under *Info > Nodes*.
 
-* xref:deep-dive/provisioning/directed-discovery.adoc#directed-discovery[Manually specify nodes to add to a requisition]
-* xref:deep-dive/provisioning/auto-discovery.adoc#auto-discovery[Automatically discover nodes to add to a requisition]
-* Customize a requisition with xref:reference:provisioning/detectors.adoc#ref-detectors[detectors] and xref:deep-dive/provisioning/policies.adoc#policies[policies]
 
-
-[[foreign-source-definition]]
-== Edit Default Foreign Source Definition
-
-The default foreign source definition serves as a template that defines the services to detect on (DNS, FTP, ICMP, and so on), the scan interval for discovery, and the policies to use when provisioning.
-
-Policies determine entity persistence and/or set attributes on the discovered entities that control {page-component-title} management behavior.
-Provisiond applies the existing default foreign source definition unless you choose to modify it.
