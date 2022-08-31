@@ -40,10 +40,10 @@ echo "#### Generate project structure .json"
 echo "#### Determining tests to run"
 cd ~/project
 find_tests
-if [ ! -s /tmp/this_node_projects ]; then
-  echo "No tests to run."
-  exit 0
-fi
+#if [ ! -s /tmp/this_node_projects ]; then
+#  echo "No tests to run."
+#  exit 0
+#fi
 
 echo "#### Set loopback to 127.0.0.1"
 sudo sed -i 's/127.0.1.1/127.0.0.1/g' /etc/hosts
@@ -118,8 +118,7 @@ echo "#### Building Assembly Dependencies"
            -Dci.instance="${CIRCLE_NODE_INDEX:-0}" \
            --batch-mode \
            "${CCI_FAILURE_OPTION:--fae}" \
-           --also-make \
-           --projects "$(< /tmp/this_node_projects paste -s -d, -)"
+           --also-make
 
 echo "#### Executing tests"
 ./compile.pl $MAVEN_ARGS \
@@ -138,6 +137,5 @@ echo "#### Executing tests"
            -Dorg.opennms.core.test-api.snmp.useMockSnmpStrategy=false \
            -Djava.security.egd=file:/dev/./urandom \
            -Dtest="$(< /tmp/this_node_tests paste -s -d, -)" \
-           -Dit.test="$(< /tmp/this_node_it_tests paste -s -d, -)" \
-           --projects "$(< /tmp/this_node_projects paste -s -d, -)"
+           -Dit.test="$(< /tmp/this_node_it_tests paste -s -d, -)"
 
