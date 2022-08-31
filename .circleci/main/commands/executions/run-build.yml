@@ -56,7 +56,9 @@ commands:
                 tar -czf "../../artifacts/opennms-${OPENNMS_VERSION}-javadoc.tar.gz" *
               popd
             fi
-      - update-maven-cache
+      # 90% of this is done just by the act of building, I'm not sure it's worth spending 7 minutes
+      # re-running an entire maven reactor build just to fill in a few missing assembly-only bits
+      # - update-maven-cache
       - run:
           name: Remove Extra Maven Repository OpenNMS Files
           command: |
