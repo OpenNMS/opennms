@@ -16,7 +16,7 @@ MINION_SERVER_CERTS_CFG="/opt/minion/etc/minion-server-certs.env"
 MINION_OVERLAY_ETC="/opt/minion-etc-overlay"
 CONFD_KEY_STORE="/opt/minion/minion-config.yaml"
 CONFD_CONFIG_DIR="/opt/minion/confd"
-CONFD_BIN="/usr/local/bin/confd"
+CONFD_BIN="/usr/bin/confd"
 CONFD_CONFIG_FILE="${CONFD_CONFIG_DIR}/confd.toml"
 CACERTS="/opt/minion/cacerts"
 
