@@ -45,7 +45,6 @@ import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsSeverity;
-import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 
 import com.google.common.collect.Maps;
 
@@ -70,7 +69,7 @@ public class LinkdEdgeStatusProvider implements EdgeStatusProvider {
 
         @Override
         public Map<String, String> getStatusProperties() {
-            Map<String, String> statusMap = new LinkedHashMap<String, String>();
+            Map<String, String> statusMap = new LinkedHashMap<>();
             statusMap.put("status", m_status);
 
             return statusMap;
@@ -89,15 +88,16 @@ public class LinkdEdgeStatusProvider implements EdgeStatusProvider {
 
     private AlarmDao m_alarmDao;
     private SessionUtils m_sessionUtils;
+    private LinkdTopologyFactory m_linkdTopologyFactory;
 
     @Override
     public String getNamespace() {
-        return OnmsTopology.TOPOLOGY_NAMESPACE_LINKD;
+        return m_linkdTopologyFactory.getActiveNamespace();
     }
 
     @Override
     public Map<EdgeRef, Status> getStatusForEdges(BackendGraph graph, Collection<EdgeRef> edges, Criteria[] criteria) {
-        Map<EdgeRef, Status> retVal = new LinkedHashMap<EdgeRef, Status>();
+        Map<EdgeRef, Status> retVal = new LinkedHashMap<>();
 EDGES:        for (EdgeRef edgeRef : edges) {
                 LinkdEdge edge = (LinkdEdge) graph.getEdge(edgeRef);
                 for (OnmsAlarm alarm: getLinkdEdgeDownAlarms()) {
@@ -128,7 +128,7 @@ EDGES:        for (EdgeRef edgeRef : edges) {
 
     @Override
     public boolean contributesTo(String namespace) {
-        return namespace.equals(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD);
+        return namespace.equals(m_linkdTopologyFactory.getActiveNamespace());
     }
 
     public AlarmDao getAlarmDao() {
@@ -146,6 +146,14 @@ EDGES:        for (EdgeRef edgeRef : edges) {
 
     public void setAlarmDao(AlarmDao alarmDao) {
         m_alarmDao = alarmDao;
+    }
+
+    public LinkdTopologyFactory getLinkdTopologyFactory() {
+        return m_linkdTopologyFactory;
+    }
+
+    public void setLinkdTopologyFactory(LinkdTopologyFactory linkdTopologyFactory) {
+        this.m_linkdTopologyFactory = linkdTopologyFactory;
     }
 
     public SessionUtils getSessionUtils() {

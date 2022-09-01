@@ -5,7 +5,7 @@
 The event translator transforms and enhances the data from {page-component-title} events that other daemons generate.
 It enables better integration with external systems, based on data from sources internal and external to {page-component-title}.
 
-For more information, see xref:operation:events/event-translator.adoc[Event Translator].
+For more information, see xref:operation:deep-dive/events/event-translator.adoc[Event Translator].
 
 .Event translator configuration file overview
 [options="header"]

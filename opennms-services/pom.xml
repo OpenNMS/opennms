@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>30.0.3-SNAPSHOT</version>
+    <version>31.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-services</artifactId>
@@ -261,6 +261,11 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.usageanalytics</groupId>
+      <artifactId>org.opennms.features.usageanalytics.impl</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.poller.monitors</groupId>
       <artifactId>org.opennms.features.poller.monitors.core</artifactId>
       <version>${project.version}</version>
@@ -486,12 +491,6 @@
     <dependency>
       <groupId>org.opennms.features.device-config.persistence</groupId>
       <artifactId>org.opennms.features.device-config.persistence.impl</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.device-config</groupId>
-      <artifactId>org.opennms.features.device-config.monitor-adaptor</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>

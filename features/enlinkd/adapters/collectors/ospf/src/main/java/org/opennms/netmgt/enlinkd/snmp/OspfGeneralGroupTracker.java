@@ -61,13 +61,13 @@ public final class OspfGeneralGroupTracker extends AggregateTracker {
     public final static String OSPF_AREA_AS_BDR_RTR_STATUS_OID = ".1.3.6.1.2.1.14.1.5";
     
 
-    public static NamedSnmpVar[] ms_elemList = null;
+    public static NamedSnmpVar[] ms_elemList;
     
     static {
         ms_elemList = new NamedSnmpVar[5];
         int ndx = 0;
 
-        /**
+        /*
          * <P>
          * SYNTAX   RouterID
          * MAX-ACCESS   read-only
@@ -85,7 +85,7 @@ public final class OspfGeneralGroupTracker extends AggregateTracker {
          */
         ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPIPADDRESS,OSPF_ROUTER_ID_ALIAS,OSPF_ROUTER_ID_OID);
                 
-        /**
+        /*
          * ospfAdminStat OBJECT-TYPE
          * SYNTAX   Status
          * MAX-ACCESS   read-only
@@ -101,7 +101,7 @@ public final class OspfGeneralGroupTracker extends AggregateTracker {
          */
         ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,OSPF_ADMIN_STAT_ALIAS,OSPF_ADMIN_STAT_OID);
 
-        /**
+        /*
          * ospfVersionNumber OBJECT-TYPE
          * SYNTAX   INTEGER    { version2 (2) }
          * MAX-ACCESS   read-only
@@ -116,7 +116,7 @@ public final class OspfGeneralGroupTracker extends AggregateTracker {
          */
         ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,OSPF_VERSION_NUMBER_ALIAS,OSPF_VERSION_NUMBER_OID);
         
-        /**
+        /*
          * ospfAreaBdrRtrStatus OBJECT-TYPE
          * SYNTAX   TruthValue
          * MAX-ACCESS   read-only
@@ -132,7 +132,7 @@ public final class OspfGeneralGroupTracker extends AggregateTracker {
          */
         ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,OSPF_AREA_BDR_RTR_STATUS_ALIAS,OSPF_AREA_BDR_RTR_STATUS_OID);
 
-        /**
+        /*
          * ospfASBdrRtrStatus OBJECT-TYPE
          * SYNTAX   TruthValue
          * MAX-ACCESS   read-only
@@ -146,12 +146,10 @@ public final class OspfGeneralGroupTracker extends AggregateTracker {
          * ::= { ospfGeneralGroup 5 }
          * 
          */
-        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,OSPF_AREA_AS_BDR_RTR_STATUS_ALIAS,OSPF_AREA_AS_BDR_RTR_STATUS_OID);
+        ms_elemList[ndx] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,OSPF_AREA_AS_BDR_RTR_STATUS_ALIAS,OSPF_AREA_AS_BDR_RTR_STATUS_OID);
     }
-    
-    public static final String OSPF_GENERAL_GROUP_OID = ".1.3.6.1.2.1.14.1";
 
-    private SnmpStore m_store;
+    private final SnmpStore m_store;
     
     public OspfGeneralGroupTracker() {
         super(NamedSnmpVar.getTrackersFor(ms_elemList));

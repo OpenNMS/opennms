@@ -188,8 +188,13 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
         String orderBy,
         String order,
         String searchTerm,
-        Set<DeviceConfigStatus> statuses
+        Set<DeviceConfigStatus> statuses,
+        boolean pageEnter
     ) {
+        if (pageEnter) {
+            // TODO: update DCB_WEBUI_ENTRY metric
+        }
+
         List<DeviceConfigDTO> dtos =
             this.deviceConfigDao.getLatestConfigForEachInterface(limit, offset, orderBy, order, searchTerm, statuses)
                 .stream()
@@ -246,9 +251,9 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
         return operations.execute(status -> {
             try {
                 final List<DeviceConfig> deviceConfigList = new ArrayList<>();
-                for(Long id : ids){
+                for (Long id : ids) {
                     final DeviceConfig dc = deviceConfigDao.get(id);
-                    if(dc == null){
+                    if (dc == null) {
                         LOG.debug("could not find device config data for id: {}", id);
                         return Response.status(Status.NOT_FOUND).entity("Invalid 'id' parameter").build();
                     }
@@ -409,7 +414,6 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
             LOG.error("Invalid cron expression {}", schedulePattern, e);
             return new ScheduleInfo(null, "Invalid Schedule");
         }
-
     }
 
     @Override
@@ -445,6 +449,7 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
                 backupResponses.add(new BackupResponseDTO(Status.INTERNAL_SERVER_ERROR.getStatusCode(), e.getMessage(), requestDto));
             }
         }
+
         if (backupResponses.isEmpty()) {
             return Response.accepted().build();
         } else if (backupRequestDtoList.size() == 1 && backupResponses.size() == 1) {
@@ -453,7 +458,6 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
         }
         // multi response with some failures.
         return Response.status(207).entity(backupResponses).build();
-
     }
 
     private Criteria getCriteria(

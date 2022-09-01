@@ -31,7 +31,6 @@ package org.opennms.netmgt.enlinkd.snmp;
 import org.opennms.netmgt.enlinkd.model.BridgeStpLink;
 import org.opennms.netmgt.enlinkd.model.BridgeStpLink.BridgeDot1dStpPortEnable;
 import org.opennms.netmgt.enlinkd.model.BridgeStpLink.BridgeDot1dStpPortState;
-import org.opennms.netmgt.snmp.RowCallback;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpRowResult;
@@ -48,7 +47,6 @@ import org.opennms.netmgt.snmp.TableTracker;
  * form more information.</P>
  *
  * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio</A>
- * @see Dot1dStpPortTable
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213</A>
  * @version $Id: $
  */
@@ -65,7 +63,7 @@ public class Dot1dStpPortTableTracker extends TableTracker {
 	public final static SnmpObjId DOT1D_STP_PORT_DESIGNATED_PORT   = SnmpObjId.get(".1.3.6.1.2.1.17.2.15.1.9");
 
 	public static final SnmpObjId[] stpport_elemList = new SnmpObjId[] {
-		/**
+		/*
 	     * SYNTAX      Integer32 (1..65535)
          * MAX-ACCESS  read-only
          * STATUS      current
@@ -79,7 +77,7 @@ public class Dot1dStpPortTableTracker extends TableTracker {
 		DOT1D_STP_PORT,
 		DOT1D_STP_PORT_PRIORITY,
 				
-		/**
+		/*
 		 *  dot1dStpPortState OBJECT-TYPE
          * SYNTAX      INTEGER {
          *              disabled(1),
@@ -104,7 +102,7 @@ public class Dot1dStpPortTableTracker extends TableTracker {
          */
 		DOT1D_STP_PORT_STATE,
 		
-		/**
+		/*
 		 *    dot1dStpPortEnable OBJECT-TYPE
          * SYNTAX      INTEGER {
          *              enabled(1),
@@ -121,7 +119,7 @@ public class Dot1dStpPortTableTracker extends TableTracker {
 		DOT1D_STP_PORT_PATH_COST,
 		DOT1D_STP_PORT_DESIGNATED_ROOT,
 		DOT1D_STP_PORT_DESIGNATED_COST,
-		/**
+		/*
 		 *    dot1dStpPortDesignatedBridge OBJECT-TYPE
          * SYNTAX      BridgeId
          * MAX-ACCESS  read-only
@@ -135,7 +133,7 @@ public class Dot1dStpPortTableTracker extends TableTracker {
 		 */
 		DOT1D_STP_PORT_DESIGNATED_BRIDGE,
 		
-		/**
+		/*
 		 * SYNTAX      OCTET STRING (SIZE (2))
          * MAX-ACCESS  read-only
          * STATUS      current
@@ -244,10 +242,6 @@ public class Dot1dStpPortTableTracker extends TableTracker {
 	
 	public Dot1dStpPortTableTracker() {
 		super(stpport_elemList);
-	}
-
-	public Dot1dStpPortTableTracker(RowCallback rowProcessor) {
-		super(rowProcessor, stpport_elemList);
 	}
 
     /** {@inheritDoc} */

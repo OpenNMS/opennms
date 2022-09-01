@@ -2,7 +2,7 @@
 [[ref-daemon-config-files-eventd]]
 = Eventd
 
-Core {page-component-title} process that generates xref:operation:events/introduction.adoc[events].
+Core {page-component-title} process that generates xref:operation:deep-dive/events/introduction.adoc[events].
 
 .Eventd configuration file overview
 [options="header"]

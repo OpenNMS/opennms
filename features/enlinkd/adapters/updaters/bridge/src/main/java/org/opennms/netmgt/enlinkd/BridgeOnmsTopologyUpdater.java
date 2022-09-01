@@ -189,6 +189,8 @@ public class BridgeOnmsTopologyUpdater extends TopologyUpdater {
                     targetbp=bp;
                     targetport = create(bpVtxMap.get(bp),bp,snmpiface);
                 }
+                assert sourcebp != null;
+                assert targetbp != null;
                 topology.getEdges().add(OnmsTopologyEdge.create(Topology.getEdgeId(sourcebp, targetbp), sourceport, targetport));
             } else if (bpVtxMap.size() == 1 && 
                     macPortToNodeVertexMap.size() == 1 && macsVertex == null ){

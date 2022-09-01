@@ -28,35 +28,46 @@
 
 package org.opennms.netmgt.enlinkd;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.fail;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.BAGMANE_IP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.BAGMANE_OSPF_ID;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.BAGMANE_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.BAGMANE_SNMP_RESOURCE_B;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.BANGALORE_IP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.BANGALORE_OSPF_ID;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.BANGALORE_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.BANGALORE_SNMP_RESOURCE_B;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.DELHI_OSPF_ID;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.DELHI_IP;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.DELHI_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.DELHI_SNMP_RESOURCE_B;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.J6350_42_OSPF_ID;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.J6350_42_IP;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.J6350_42_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.J6350_42_SNMP_RESOURCE_B;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.MUMBAI_OSPF_ID;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.MUMBAI_IP;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.MUMBAI_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.MUMBAI_SNMP_RESOURCE_B;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.MYSORE_IP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.MYSORE_OSPF_ID;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.MYSORE_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.MYSORE_SNMP_RESOURCE_B;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.SPACE_EX_SW1_OSPF_ID;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.SPACE_EX_SW1_IP;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.SPACE_EX_SW1_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.SPACE_EX_SW1_SNMP_RESOURCE_B;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.SPACE_EX_SW2_OSPF_ID;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.SPACE_EX_SW2_IP;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.SPACE_EX_SW2_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.SPACE_EX_SW2_SNMP_RESOURCE_B;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.SRX_100_IP;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.SRX_100_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.SRX_100_SNMP_RESOURCE_B;
-
 import java.util.List;
 
 import org.junit.Test;
@@ -66,8 +77,11 @@ import org.opennms.netmgt.enlinkd.model.LldpElement;
 import org.opennms.netmgt.enlinkd.model.LldpLink;
 import org.opennms.netmgt.enlinkd.model.OspfElement;
 import org.opennms.netmgt.enlinkd.model.OspfLink;
+import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.nb.Nms10205bNetworkBuilder;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
+import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 
 public class Nms10205bEnIT extends EnLinkdBuilderITCase {
 
@@ -218,7 +232,7 @@ it has a link to Mysore that does not support LLDP
             @JUnitSnmpAgent(host=J6350_42_IP, port=161, resource=J6350_42_SNMP_RESOURCE_B),
             @JUnitSnmpAgent(host=SRX_100_IP, port=161, resource=SRX_100_SNMP_RESOURCE_B)
     })
-    public void testNetwork10205bLldpLinks() throws Exception {
+    public void testNetwork10205bLldpLinks() {
         m_nodeDao.save(builder.getMumbai());
         m_nodeDao.save(builder.getDelhi());
         m_nodeDao.save(builder.getBangalore());
@@ -237,10 +251,10 @@ it has a link to Mysore that does not support LLDP
         m_linkdConfig.getConfiguration().setUseIsisDiscovery(false);
 
         assertTrue(m_linkdConfig.useLldpDiscovery());
-        assertTrue(!m_linkdConfig.useCdpDiscovery());
-        assertTrue(!m_linkdConfig.useOspfDiscovery());
-        assertTrue(!m_linkdConfig.useBridgeDiscovery());
-        assertTrue(!m_linkdConfig.useIsisDiscovery());
+        assertFalse(m_linkdConfig.useCdpDiscovery());
+        assertFalse(m_linkdConfig.useOspfDiscovery());
+        assertFalse(m_linkdConfig.useBridgeDiscovery());
+        assertFalse(m_linkdConfig.useIsisDiscovery());
         
         final OnmsNode mumbai = m_nodeDao.findByForeignId("linkd", MUMBAI_NAME);
         final OnmsNode delhi = m_nodeDao.findByForeignId("linkd", DELHI_NAME);
@@ -263,30 +277,94 @@ it has a link to Mysore that does not support LLDP
         assertTrue(m_linkd.scheduleNodeCollection(srx100.getId()));
 
         assertEquals(0,m_lldpLinkDao.countAll());
+
         assertTrue(m_linkd.runSingleSnmpCollection(mumbai.getId()));
-        assertEquals(0,m_lldpLinkDao.countAll());
+        assertEquals(0,m_lldpLinkDao.findByNodeId(mumbai.getId()).size());
+
         assertTrue(m_linkd.runSingleSnmpCollection(delhi.getId()));
-        assertEquals(2,m_lldpLinkDao.countAll());
+        List<LldpLink> delhilldpLinks = m_lldpLinkDao.findByNodeId(delhi.getId());
+        printLldpTopology(delhilldpLinks);
+        assertEquals(2,delhilldpLinks.size());
+
         assertTrue(m_linkd.runSingleSnmpCollection(bangalore.getId()));
-        assertEquals(2,m_lldpLinkDao.countAll());
+        assertEquals(0,m_lldpLinkDao.findByNodeId(bangalore.getId()).size());
+
         assertTrue(m_linkd.runSingleSnmpCollection(bagmane.getId()));
-        assertEquals(5,m_lldpLinkDao.countAll());
+        List<LldpLink> bagmanelldpLinks = m_lldpLinkDao.findByNodeId(bagmane.getId());
+        printLldpTopology(bagmanelldpLinks);
+        assertEquals(3,bagmanelldpLinks.size());
+
         assertTrue(m_linkd.runSingleSnmpCollection(mysore.getId()));
-        assertEquals(5,m_lldpLinkDao.countAll());
+        assertEquals(0,m_lldpLinkDao.findByNodeId(mysore.getId()).size());
+
         assertTrue(m_linkd.runSingleSnmpCollection(spaceexsw1.getId()));
-        assertEquals(8,m_lldpLinkDao.countAll());
+        List<LldpLink> spaceexsw1lldpLinks = m_lldpLinkDao.findByNodeId(spaceexsw1.getId());
+        printLldpTopology(spaceexsw1lldpLinks);
+        assertEquals(3,spaceexsw1lldpLinks.size());
+
         assertTrue(m_linkd.runSingleSnmpCollection(spaceexsw2.getId()));
-        assertEquals(10,m_lldpLinkDao.countAll());
+        List<LldpLink> spaceexsw2lldpLinks = m_lldpLinkDao.findByNodeId(spaceexsw2.getId());
+        printLldpTopology(spaceexsw2lldpLinks);
+        assertEquals(2,spaceexsw2lldpLinks.size());
+
         assertTrue(m_linkd.runSingleSnmpCollection(j635042.getId()));
-        assertEquals(10,m_lldpLinkDao.countAll());
+        assertEquals(0,m_lldpLinkDao.findByNodeId(j635042.getId()).size());
+
         assertTrue(m_linkd.runSingleSnmpCollection(srx100.getId()));
+        assertEquals(0,m_lldpLinkDao.findByNodeId(srx100.getId()).size());
+
         assertEquals(10,m_lldpLinkDao.countAll());
-     
-        final List<LldpLink> topologyC = m_lldpLinkDao.findAll();
-        printLldpTopology(topologyC);
-        assertEquals(10,topologyC.size());
+        assertEquals(6,m_lldpElementDao.countAll());
         for (final LldpElement node: m_lldpElementDao.findAll()) {
             printLldpElement(node);
+        }
+
+        m_linkd.forceTopologyUpdaterRun(ProtocolSupported.LLDP);
+        m_linkd.runTopologyUpdater(ProtocolSupported.LLDP);
+
+        LldpOnmsTopologyUpdater topologyUpdater = m_linkd.getLldpTopologyUpdater();
+
+        OnmsTopology topology = topologyUpdater.getTopology();
+
+        assertNotNull(topology);
+        printOnmsTopology(topology);
+
+        for (OnmsTopologyEdge edge: topology.getEdges()) {
+            switch (edge.getSource().getVertex().getLabel()) {
+                case DELHI_NAME:
+                    switch (edge.getTarget().getVertex().getLabel()) {
+                        case BAGMANE_NAME:
+                            assertEquals("ge-1/1/5", edge.getSource().getIfname());
+                            assertEquals("28519 type LLDP_PORTID_SUBTYPE_LOCAL", edge.getSource().getAddr());
+                            assertEquals(28519, edge.getSource().getIfindex().intValue());
+                            assertEquals("ge-1/0/1", edge.getTarget().getIfname());
+                            assertEquals("513 type LLDP_PORTID_SUBTYPE_LOCAL", edge.getTarget().getAddr());
+                            assertEquals(513, edge.getTarget().getIfindex().intValue());
+                            break;
+                        case SPACE_EX_SW1_NAME:
+                            assertEquals("ge-1/1/6", edge.getSource().getIfname());
+                            assertEquals("28520 type LLDP_PORTID_SUBTYPE_LOCAL", edge.getSource().getAddr());
+                            assertEquals(28520, edge.getSource().getIfindex().intValue());
+                            assertEquals("ge-0/0/6.0", edge.getTarget().getIfname());
+                            assertEquals("528 type LLDP_PORTID_SUBTYPE_LOCAL", edge.getTarget().getAddr());
+                            assertEquals(528, edge.getTarget().getIfindex().intValue());
+                            break;
+                        default:
+                            fail();
+                    }
+                    break;
+                case SPACE_EX_SW1_NAME:
+                    assertEquals(SPACE_EX_SW2_NAME,edge.getTarget().getVertex().getLabel());
+                    assertEquals("ge-0/0/0.0", edge.getSource().getIfname());
+                    assertEquals("1361 type LLDP_PORTID_SUBTYPE_LOCAL", edge.getSource().getAddr());
+                    assertEquals(1361, edge.getSource().getIfindex().intValue());
+                    assertEquals("ge-0/0/0.0", edge.getTarget().getIfname());
+                    assertEquals("531 type LLDP_PORTID_SUBTYPE_LOCAL", edge.getTarget().getAddr());
+                    assertEquals(531, edge.getTarget().getIfindex().intValue());
+                    break;
+                default:
+                    fail();
+            }
         }
 
     }
@@ -392,11 +470,11 @@ Address          Interface              State     ID               Pri  Dead
         m_linkdConfig.getConfiguration().setUseLldpDiscovery(false);
         m_linkdConfig.getConfiguration().setUseIsisDiscovery(false);
 
-        assertTrue(!m_linkdConfig.useLldpDiscovery());
-        assertTrue(!m_linkdConfig.useCdpDiscovery());
+        assertFalse(m_linkdConfig.useLldpDiscovery());
+        assertFalse(m_linkdConfig.useCdpDiscovery());
         assertTrue(m_linkdConfig.useOspfDiscovery());
-        assertTrue(!m_linkdConfig.useBridgeDiscovery());
-        assertTrue(!m_linkdConfig.useIsisDiscovery());
+        assertFalse(m_linkdConfig.useBridgeDiscovery());
+        assertFalse(m_linkdConfig.useIsisDiscovery());
 
         assertTrue(m_linkd.scheduleNodeCollection(mumbai.getId()));
         assertTrue(m_linkd.scheduleNodeCollection(delhi.getId()));
@@ -411,90 +489,210 @@ Address          Interface              State     ID               Pri  Dead
         assertEquals(0,m_ospfLinkDao.countAll());
 
         assertTrue(m_linkd.runSingleSnmpCollection(mumbai.getId()));
-        final List<OspfLink> topologyA = m_ospfLinkDao.findAll();
-        printOspfTopology(topologyA);
-        assertEquals(4,topologyA.size());
-        for (final OspfElement node: m_ospfElementDao.findAll()) {
-            printOspfElement(node);
-        }
-        
+        OspfElement mumbaiospfelem = m_ospfElementDao.findByRouterId(MUMBAI_OSPF_ID);
+        assertNotNull(mumbaiospfelem);
+        printOspfElement(mumbaiospfelem);
+        final List<OspfLink> mumbaiospflinks = m_ospfLinkDao.findByNodeId(mumbai.getId());
+        printOspfTopology(mumbaiospflinks);
+        assertEquals(4,mumbaiospflinks.size());
         Thread.sleep(1000);
         
         assertTrue(m_linkd.runSingleSnmpCollection(delhi.getId()));
-        final List<OspfLink> topologyB = m_ospfLinkDao.findAll();
-        printOspfTopology(topologyB);
-        assertEquals(7,topologyB.size());
-        for (final OspfElement node: m_ospfElementDao.findAll()) {
-            printOspfElement(node);
-        }
-        
+        OspfElement delhiospfelem = m_ospfElementDao.findByRouterId(DELHI_OSPF_ID);
+        assertNotNull(delhiospfelem);
+        printOspfElement(delhiospfelem);
+        final List<OspfLink> delhiospflinks = m_ospfLinkDao.findByNodeId(delhi.getId());
+        printOspfTopology(delhiospflinks);
+        assertEquals(3,delhiospflinks.size());
         Thread.sleep(1000);
 
         assertTrue(m_linkd.runSingleSnmpCollection(bangalore.getId()));
-        final List<OspfLink> topologyC = m_ospfLinkDao.findAll();
-        printOspfTopology(topologyC);
-        assertEquals(11,topologyC.size());
-        for (final OspfElement node: m_ospfElementDao.findAll()) {
-            printOspfElement(node);
-        }
-        
+        OspfElement bangaloreospfelem = m_ospfElementDao.findByRouterId(BANGALORE_OSPF_ID);
+        assertNotNull(bangaloreospfelem);
+        printOspfElement(bangaloreospfelem);
+        final List<OspfLink> bangaloreospflinks = m_ospfLinkDao.findByNodeId(bangalore.getId());
+        printOspfTopology(bangaloreospflinks);
+        assertEquals(4,bangaloreospflinks.size());
         Thread.sleep(1000);
 
         assertTrue(m_linkd.runSingleSnmpCollection(bagmane.getId()));
-        final List<OspfLink> topologyD = m_ospfLinkDao.findAll();
-        printOspfTopology(topologyD);
-        assertEquals(15,topologyD.size());
-        for (final OspfElement node: m_ospfElementDao.findAll()) {
-            printOspfElement(node);
-        }
-        
+        OspfElement bagmaneospfelem = m_ospfElementDao.findByRouterId(BAGMANE_OSPF_ID);
+        assertNotNull(bagmaneospfelem);
+        printOspfElement(bagmaneospfelem);
+        final List<OspfLink> bagmaneospflinks = m_ospfLinkDao.findByNodeId(bagmane.getId());
+        printOspfTopology(bagmaneospflinks);
+        assertEquals(4,bagmaneospflinks.size());
         Thread.sleep(1000);
 
         assertTrue(m_linkd.runSingleSnmpCollection(mysore.getId()));
-        final List<OspfLink> topologyE = m_ospfLinkDao.findAll();
-        printOspfTopology(topologyE);
-        assertEquals(17,topologyE.size());
-        for (final OspfElement node: m_ospfElementDao.findAll()) {
-            printOspfElement(node);
-        }
-        
+        OspfElement mysoreospfelem = m_ospfElementDao.findByRouterId(MYSORE_OSPF_ID);
+        assertNotNull(mysoreospfelem);
+        printOspfElement(mysoreospfelem);
+        final List<OspfLink> mysoreosplinks = m_ospfLinkDao.findByNodeId(mysore.getId());
+        printOspfTopology(mysoreosplinks);
+        assertEquals(2,mysoreosplinks.size());
         Thread.sleep(1000);
 
         assertTrue(m_linkd.runSingleSnmpCollection(spaceexsw1.getId()));
-        final List<OspfLink> topologyF = m_ospfLinkDao.findAll();
-        printOspfTopology(topologyF);
-        assertEquals(19,topologyF.size());
-        for (final OspfElement node: m_ospfElementDao.findAll()) {
-            printOspfElement(node);
-        }
-        
+        OspfElement spaceexsw1ospfelem = m_ospfElementDao.findByRouterId(SPACE_EX_SW1_OSPF_ID);
+        assertNotNull(spaceexsw1ospfelem);
+        printOspfElement(spaceexsw1ospfelem);
+        final List<OspfLink> spaceexsw1ospflinks = m_ospfLinkDao.findByNodeId(spaceexsw1.getId());
+        printOspfTopology(spaceexsw1ospflinks);
+        assertEquals(2,spaceexsw1ospflinks.size());
         Thread.sleep(1000);
 
         assertTrue(m_linkd.runSingleSnmpCollection(spaceexsw2.getId()));
-        final List<OspfLink> topologyG = m_ospfLinkDao.findAll();
-        printOspfTopology(topologyG);
-        assertEquals(21,topologyG.size());
-        for (final OspfElement node: m_ospfElementDao.findAll()) {
-            printOspfElement(node);
-        }
-        
+        OspfElement spaceexsw2ospfelem = m_ospfElementDao.findByRouterId(SPACE_EX_SW2_OSPF_ID);
+        assertNotNull(spaceexsw2ospfelem);
+        printOspfElement(spaceexsw2ospfelem);
+        final List<OspfLink> spaceexsw2ospflinks = m_ospfLinkDao.findByNodeId(spaceexsw2.getId());
+        printOspfTopology(spaceexsw2ospflinks);
+        assertEquals(2,spaceexsw2ospflinks.size());
         Thread.sleep(1000);
 
         assertTrue(m_linkd.runSingleSnmpCollection(j635042.getId()));
-        final List<OspfLink> topologyH = m_ospfLinkDao.findAll();
-        printOspfTopology(topologyH);
-        assertEquals(22,topologyH.size());
-        for (final OspfElement node: m_ospfElementDao.findAll()) {
-            printOspfElement(node);
-        }
+        OspfElement j635042ospfelem = m_ospfElementDao.findByRouterId(J6350_42_OSPF_ID);
+        assertNotNull(j635042ospfelem);
+        printOspfElement(j635042ospfelem);
+        final List<OspfLink> j635042ospflinks = m_ospfLinkDao.findByNodeId(j635042.getId());
+        printOspfTopology(j635042ospflinks);
+        assertEquals(1,j635042ospflinks.size());
+        Thread.sleep(1000);
+
         assertTrue(m_linkd.runSingleSnmpCollection(srx100.getId()));
-        
-        final List<OspfLink> topologyI = m_ospfLinkDao.findAll();
-        printOspfTopology(topologyI);
-        assertEquals(22,topologyI.size());
-        for (final OspfElement node: m_ospfElementDao.findAll()) {
-            printOspfElement(node);
+        assertNull(m_ospfElementDao.findByNodeId(srx100.getId()));
+        assertEquals(0,m_ospfLinkDao.findByNodeId(srx100.getId()).size());
+
+        assertEquals(8,m_ospfElementDao.countAll());
+        assertEquals(22,m_ospfLinkDao.countAll());
+
+        m_linkd.forceTopologyUpdaterRun(ProtocolSupported.OSPF);
+        m_linkd.runTopologyUpdater(ProtocolSupported.OSPF);
+
+        OspfOnmsTopologyUpdater topologyUpdater = m_linkd.getOspfTopologyUpdater();
+
+        OnmsTopology topology = topologyUpdater.getTopology();
+        assertEquals(8,topology.getVertices().size());
+        assertNotNull(topology);
+        printOnmsTopology(topology);
+        assertEquals(8,topology.getVertices().size());
+        assertEquals(11,topology.getEdges().size());
+        for (OnmsTopologyEdge edge: topology.getEdges()) {
+            switch (edge.getSource().getVertex().getLabel()) {
+                case MUMBAI_NAME:
+                    switch (edge.getTarget().getVertex().getLabel()) {
+                        case MYSORE_NAME:
+                            assertEquals("ge-0/1/1.0", edge.getSource().getIfname());
+                            assertEquals("192.168.5.21", edge.getSource().getAddr());
+                            assertEquals(978, edge.getSource().getIfindex().intValue());
+                            assertEquals("ge-0/0/1.0", edge.getTarget().getIfname());
+                            assertEquals("192.168.5.22", edge.getTarget().getAddr());
+                            assertEquals(508, edge.getTarget().getIfindex().intValue());
+                            break;
+                        case BAGMANE_NAME:
+                            assertEquals("ge-0/0/2.0", edge.getSource().getIfname());
+                            assertEquals("192.168.5.17", edge.getSource().getAddr());
+                            assertEquals(977, edge.getSource().getIfindex().intValue());
+                            assertEquals("ge-1/0/0.0", edge.getTarget().getIfname());
+                            assertEquals("192.168.5.18", edge.getTarget().getAddr());
+                            assertEquals(534, edge.getTarget().getIfindex().intValue());
+                            break;
+                        case DELHI_NAME:
+                            assertEquals("ge-0/1/2.0", edge.getSource().getIfname());
+                            assertEquals("192.168.5.9", edge.getSource().getAddr());
+                            assertEquals(519, edge.getSource().getIfindex().intValue());
+                            assertEquals("ge-1/0/2.0", edge.getTarget().getIfname());
+                            assertEquals("192.168.5.10", edge.getTarget().getAddr());
+                            assertEquals(28503, edge.getTarget().getIfindex().intValue());
+                            break;
+                        case BANGALORE_NAME:
+                            assertEquals("ge-0/0/1.0", edge.getSource().getIfname());
+                            assertEquals("192.168.5.13", edge.getSource().getAddr());
+                            assertEquals(507, edge.getSource().getIfindex().intValue());
+                            assertEquals("ge-0/0/0.0", edge.getTarget().getIfname());
+                            assertEquals("192.168.5.14", edge.getTarget().getAddr());
+                            assertEquals(2401, edge.getTarget().getIfindex().intValue());
+                            break;
+                        default:
+                            fail();
+                            break;
+                    }
+                    break;
+                case BANGALORE_NAME:
+                    if (edge.getTarget().getVertex().getLabel().equals(BAGMANE_NAME)) {
+                        assertEquals("ge-0/1/0.0",edge.getSource().getIfname());
+                        assertEquals("192.168.1.9",edge.getSource().getAddr());
+                        assertEquals(2396,edge.getSource().getIfindex().intValue());
+                        assertEquals("ge-1/0/4.0",edge.getTarget().getIfname());
+                        assertEquals("192.168.1.10",edge.getTarget().getAddr());
+                        assertEquals(1732,edge.getTarget().getIfindex().intValue());
+                    } else  if (edge.getTarget().getVertex().getLabel().equals(SPACE_EX_SW2_NAME)) {
+                        assertEquals("ge-0/0/3.0",edge.getSource().getIfname());
+                        assertEquals("172.16.9.1",edge.getSource().getAddr());
+                        assertEquals(2398,edge.getSource().getIfindex().intValue());
+                        assertEquals("ge-0/0/3.0",edge.getTarget().getIfname());
+                        assertEquals("172.16.9.2",edge.getTarget().getAddr());
+                        assertEquals(551,edge.getTarget().getIfindex().intValue());
+                    } else {
+                        fail();
+                    }
+                    break;
+                case SPACE_EX_SW1_NAME:
+                    if (edge.getTarget().getVertex().getLabel().equals(SPACE_EX_SW2_NAME)) {
+                        assertEquals("ge-0/0/0.0",edge.getSource().getIfname());
+                        assertEquals("172.16.10.1",edge.getSource().getAddr());
+                        assertEquals(1361,edge.getSource().getIfindex().intValue());
+                        assertEquals("ge-0/0/0.0",edge.getTarget().getIfname());
+                        assertEquals("172.16.10.2",edge.getTarget().getAddr());
+                        assertEquals(531,edge.getTarget().getIfindex().intValue());
+                    } else {
+                        fail();
+                    }
+                    break;
+                case BAGMANE_NAME:
+                    if (edge.getTarget().getVertex().getLabel().equals(MYSORE_NAME)) {
+                        assertEquals("ge-1/0/5.0",edge.getSource().getIfname());
+                        assertEquals("192.168.1.13",edge.getSource().getAddr());
+                        assertEquals(654,edge.getSource().getIfindex().intValue());
+                        assertEquals("ge-0/1/1.0",edge.getTarget().getIfname());
+                        assertEquals("192.168.1.14",edge.getTarget().getAddr());
+                        assertEquals(520,edge.getTarget().getIfindex().intValue());
+                    } else  if (edge.getTarget().getVertex().getLabel().equals(J6350_42_NAME)) {
+                        assertEquals("ge-1/0/2.0",edge.getSource().getIfname());
+                        assertEquals("172.16.20.1",edge.getSource().getAddr());
+                        assertEquals(540,edge.getSource().getIfindex().intValue());
+                        assertEquals("ge-0/0/2.0",edge.getTarget().getIfname());
+                        assertEquals("172.16.20.2",edge.getTarget().getAddr());
+                        assertEquals(549,edge.getTarget().getIfindex().intValue());
+                    } else {
+                        fail();
+                    }
+                    break;
+                case DELHI_NAME:
+                    if (edge.getTarget().getVertex().getLabel().equals(SPACE_EX_SW1_NAME)) {
+                        assertEquals("ge-1/1/6.0",edge.getSource().getIfname());
+                        assertEquals("172.16.7.1",edge.getSource().getAddr());
+                        assertEquals(17619,edge.getSource().getIfindex().intValue());
+                        assertEquals("ge-0/0/6.0",edge.getTarget().getIfname());
+                        assertEquals("172.16.7.2",edge.getTarget().getAddr());
+                        assertEquals(528,edge.getTarget().getIfindex().intValue());
+                    } else  if (edge.getTarget().getVertex().getLabel().equals(BANGALORE_NAME)) {
+                        assertEquals("ge-1/0/1.0",edge.getSource().getIfname());
+                        assertEquals("192.168.1.5",edge.getSource().getAddr());
+                        assertEquals(3674,edge.getSource().getIfindex().intValue());
+                        assertEquals("ge-0/0/1.0",edge.getTarget().getIfname());
+                        assertEquals("192.168.1.6",edge.getTarget().getAddr());
+                        assertEquals(2397,edge.getTarget().getIfindex().intValue());
+                    } else {
+                        fail();
+                    }
+                    break;
+                default:
+                    fail();
+            }
         }
+
 
     }
 }

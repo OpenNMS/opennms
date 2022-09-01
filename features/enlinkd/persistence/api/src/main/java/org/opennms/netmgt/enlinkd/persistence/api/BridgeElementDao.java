@@ -41,13 +41,13 @@ import org.opennms.netmgt.enlinkd.model.BridgeElement;
  */
 public interface BridgeElementDao extends OnmsDao<BridgeElement, Integer> {
     
-    public List<BridgeElement> findByNodeId(Integer id);
+    List<BridgeElement> findByNodeId(Integer id);
 
-    public BridgeElement getByNodeIdVlan(Integer id, Integer vlanId);
+    BridgeElement getByNodeIdVlan(Integer id, Integer vlanId);
 
-    public List<BridgeElement> findByBridgeId(String id);
+    List<BridgeElement> findByBridgeId(String id);
 
-    public BridgeElement getByBridgeIdVlan(String id, Integer vlanId);
+    BridgeElement getByBridgeIdVlan(String id, Integer vlanId);
 
     void deleteByNodeIdOlderThen(Integer nodeiId, Date now);
     

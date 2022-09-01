@@ -58,13 +58,13 @@ public final class LldpLocalGroupTracker extends AggregateTracker {
     public final static String LLDP_LOC_SYSNAME_ALIAS = "lldpLocSysName";
     public final static String LLDP_LOC_SYSNAME_OID = ".1.0.8802.1.1.2.1.3.3";
     
-    public static NamedSnmpVar[] ms_elemList = null;
+    public static NamedSnmpVar[] ms_elemList;
     
     static {
         ms_elemList = new NamedSnmpVar[3];
         int ndx = 0;
 
-        /**
+        /*
          * <P>
          * "The type of encoding used to identify the chassis
          * associated with the local system."
@@ -72,7 +72,7 @@ public final class LldpLocalGroupTracker extends AggregateTracker {
          */
         ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,LLDP_LOC_CHASSISID_SUBTYPE_ALIAS,LLDP_LOC_CHASSISID_SUBTYPE_OID);
 
-        /**
+        /*
          * <P>
          *  "The string value used to identify the chassis component
          *   associated with the local system."
@@ -80,7 +80,7 @@ public final class LldpLocalGroupTracker extends AggregateTracker {
          */
         ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING,LLDP_LOC_CHASSISID_ALIAS,LLDP_LOC_CHASSISID_OID);
         
-        /**
+        /*
          * <P>
          * "The string value used to identify the system name of the
          * local system.  If the local agent supports IETF RFC 3418,
@@ -88,10 +88,8 @@ public final class LldpLocalGroupTracker extends AggregateTracker {
          * object."
          *   </P>
          */
-        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING,LLDP_LOC_SYSNAME_ALIAS,LLDP_LOC_SYSNAME_OID);
+        ms_elemList[ndx] = new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING,LLDP_LOC_SYSNAME_ALIAS,LLDP_LOC_SYSNAME_OID);
     }
-    
-    public static final String LLDP_LOC_OID = ".1.0.8802.1.1.2.1.3";
 
     public static String getDisplayable(final SnmpValue snmpValue) {
         String decodedsnmpValue = snmpValue.toHexString();
@@ -123,7 +121,7 @@ public final class LldpLocalGroupTracker extends AggregateTracker {
     public static String decodeLldpChassisId(final SnmpValue lldpchassisid, Integer lldpLocChassisidSubType) {
         if (lldpLocChassisidSubType == null) 
             return getDisplayable(lldpchassisid);
-        LldpChassisIdSubType type = null;
+        LldpChassisIdSubType type;
         try {
             type = LldpChassisIdSubType.get(lldpLocChassisidSubType);
         }  catch (IllegalArgumentException iae) {
@@ -256,7 +254,7 @@ public final class LldpLocalGroupTracker extends AggregateTracker {
         return getDisplayable(lldpchassisid);
     }
 
-    private SnmpStore m_store;
+    private final SnmpStore m_store;
     
     public LldpLocalGroupTracker() {
         super(NamedSnmpVar.getTrackersFor(ms_elemList));

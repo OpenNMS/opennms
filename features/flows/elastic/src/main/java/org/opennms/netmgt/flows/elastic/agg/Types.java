@@ -30,7 +30,7 @@ package org.opennms.netmgt.flows.elastic.agg;
 
 import org.opennms.netmgt.flows.api.Conversation;
 import org.opennms.netmgt.flows.api.Host;
-import org.opennms.netmgt.flows.elastic.ConversationKeyUtils;
+import org.opennms.netmgt.flows.processing.ConversationKeyUtils;
 
 /**
  * Type definitions that consolidate the logic used to query and

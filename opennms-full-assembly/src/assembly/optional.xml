@@ -14,6 +14,5 @@
     <componentDescriptor>src/assembly/components/radius.xml</componentDescriptor>
     <componentDescriptor>src/assembly/components/vtdxml.xml</componentDescriptor>
     <componentDescriptor>src/assembly/components/xml-contrib.xml</componentDescriptor>
-    <componentDescriptor>src/assembly/components/xmp.xml</componentDescriptor>
   </componentDescriptors>
 </assembly>

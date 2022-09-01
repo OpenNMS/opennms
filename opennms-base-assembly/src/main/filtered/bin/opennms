@@ -18,18 +18,11 @@
 # Description:       ${install.package.description} daemon for network monitoring
 ### END INIT INFO
 #
-#  $Id$
-#
 #  For info on the "chkconfig:" section, see:
 #     http://www.sensi.org/~alec/unix/redhat/sysvinit.html
 #
 #  For info on the "BEGIN INIT INFO" section, see:
 #     http://www.suse.de/~mmj/Package-Conventions/
-#
-# Modifications:
-#
-# 2005 Oct 01: Removed `date` from a few echo commands and redirected
-#              a few error messages to stderr. -- DJ Gregor
 #
 
 #### ------------> DO NOT CHANGE VARIABLES IN THIS FILE <------------- ####
@@ -930,6 +923,8 @@ NOEXECUTE=0
 VERBOSE=0
 BACKGROUND=1
 SYSTEMD=0
+SMALLTFLAG=0
+BIGTFLAG=0
 
 NAME="opennms"
 
@@ -952,10 +947,12 @@ while getopts c:fsntTvpoQ c; do
 			;;
 		t)
 			TEST=1
+			SMALLTFLAG=1
 			;;
 		T)
 			TEST=1
 			JPDA_SUSPEND=y
+			BIGTFLAG=1
 			;;
 		p)
 			TPROFILE=1
@@ -1097,6 +1094,12 @@ case "$COMMAND" in
 		## Stop the service and regardless of whether it was
 		## running or not, start it again.
 		__opennms_cmd=("$OPENNMS_HOME/bin/opennms");
+		if [ "$BIGTFLAG" -eq 1 ]; then
+			__opennms_cmd+=("-T")
+		fi
+		if [ "$SMALLTFLAG" -eq 1 ]; then
+			__opennms_cmd+=("-t")
+		fi
 		if [ "$NOEXECUTE" -eq 1 ]; then
 			__opennms_cmd+=("-n")
 		fi

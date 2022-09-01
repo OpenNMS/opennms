@@ -63,7 +63,7 @@ public class SFlowConverterTest {
         assertThat(bsonDocument.getDocument("data").getArray("samples"), notNullValue());
         assertThat(bsonDocument.getDocument("data").getArray("samples").size(), is(7));
 
-        final List<Flow> flows = new SFlowConverter().convert(bsonDocument, Instant.now());
+        final List<Flow> flows = SFlowAdapter.convertDocument(bsonDocument, Instant.now());
 
         // There are six flows int the document, but two are skipped, because they don't contain IPv{4,6} information
         assertThat(flows.size(), is(5));
@@ -86,7 +86,7 @@ public class SFlowConverterTest {
         assertThat(bsonDocument.getDocument("data").getArray("samples"), notNullValue());
         assertThat(bsonDocument.getDocument("data").getArray("samples").size(), is(7));
 
-        final List<Flow> flows = new SFlowConverter().convert(bsonDocument, Instant.now());
+        final List<Flow> flows = SFlowAdapter.convertDocument(bsonDocument, Instant.now());
 
         assertThat(compareValues(flows, 4, 17), is(true));
         assertThat(compareValues(flows, 4, 42), is(true));

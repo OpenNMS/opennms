@@ -30,8 +30,9 @@ package org.opennms.netmgt.enlinkd;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.fail;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.ROUTER1_IF_IFDESCR_MAP;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.ROUTER1_IP;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.ROUTER1_IP_IF_MAP;
@@ -154,10 +155,10 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
         m_linkdConfig.getConfiguration().setUseIsisDiscovery(false);
 
         assertTrue(m_linkdConfig.useLldpDiscovery());
-        assertTrue(!m_linkdConfig.useCdpDiscovery());
-        assertTrue(!m_linkdConfig.useOspfDiscovery());
-        assertTrue(!m_linkdConfig.useBridgeDiscovery());
-        assertTrue(!m_linkdConfig.useIsisDiscovery());
+        assertFalse(m_linkdConfig.useCdpDiscovery());
+        assertFalse(m_linkdConfig.useOspfDiscovery());
+        assertFalse(m_linkdConfig.useBridgeDiscovery());
+        assertFalse(m_linkdConfig.useIsisDiscovery());
 
         final OnmsNode switch1 = m_nodeDao.findByForeignId("linkd", SWITCH1_NAME);
         final OnmsNode switch2 = m_nodeDao.findByForeignId("linkd", SWITCH2_NAME);
@@ -218,7 +219,7 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
                 assertEquals(SWITCH5_LLDP_CHASSISID, node.getLldpChassisId());
                 assertEquals(SWITCH5_NAME, node.getLldpSysname());
             } else {
-                assertTrue(false);
+                fail();
             }
         }
         
@@ -227,115 +228,209 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
             assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, link.getLldpRemChassisIdSubType());
             assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME, link.getLldpPortIdSubType());
             assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME, link.getLldpRemPortIdSubType());
-            assertNull(link.getLldpPortIfindex());
-            if         (link.getNode().getId().intValue() == switch1.getId().intValue()) {
-                assertEquals(SWITCH2_LLDP_CHASSISID, link.getLldpRemChassisId());
-                assertEquals(SWITCH2_NAME,link.getLldpRemSysname());
-                switch (link.getLldpLocalPortNum().intValue()) {
-                case 4:
-                    assertEquals(SWITCH1_IF_IFNAME_MAP.get(10109), link.getLldpPortId());
-                    assertEquals(SWITCH1_IF_IFDESCR_MAP.get(10109), link.getLldpPortDescr());
-                    assertEquals(SWITCH2_IF_IFNAME_MAP.get(10101), link.getLldpRemPortId());
-                    assertEquals(SWITCH2_IF_IFDESCR_MAP.get(10101), link.getLldpRemPortDescr());
+            assertNotNull(link.getLldpPortIfindex());
+            OnmsNode node = m_nodeDao.get(link.getNode().getId());
+            switch (node.getLabel()) {
+                case SWITCH1_NAME:
+                    assertEquals(SWITCH2_LLDP_CHASSISID, link.getLldpRemChassisId());
+                    assertEquals(SWITCH2_NAME,link.getLldpRemSysname());
+                    switch (link.getLldpLocalPortNum()) {
+                        case 4:
+                            assertEquals(10109,link.getLldpPortIfindex().intValue());
+                            assertEquals(SWITCH1_IF_IFNAME_MAP.get(10109), link.getLldpPortId());
+                            assertEquals(SWITCH1_IF_IFDESCR_MAP.get(10109), link.getLldpPortDescr());
+                            assertEquals(SWITCH2_IF_IFNAME_MAP.get(10101), link.getLldpRemPortId());
+                            assertEquals(SWITCH2_IF_IFDESCR_MAP.get(10101), link.getLldpRemPortDescr());
+                            break;
+                        case 3:
+                            assertEquals(10110,link.getLldpPortIfindex().intValue());
+                            assertEquals(SWITCH1_IF_IFNAME_MAP.get(10110), link.getLldpPortId());
+                            assertEquals(SWITCH1_IF_IFDESCR_MAP.get(10110), link.getLldpPortDescr());
+                            assertEquals(SWITCH2_IF_IFNAME_MAP.get(10102), link.getLldpRemPortId());
+                            assertEquals(SWITCH2_IF_IFDESCR_MAP.get(10102), link.getLldpRemPortDescr());
+                            break;
+                        case 1:
+                            assertEquals(10111,link.getLldpPortIfindex().intValue());
+                            assertEquals(SWITCH1_IF_IFNAME_MAP.get(10111), link.getLldpPortId());
+                            assertEquals(SWITCH1_IF_IFDESCR_MAP.get(10111), link.getLldpPortDescr());
+                            assertEquals(SWITCH2_IF_IFNAME_MAP.get(10103), link.getLldpRemPortId());
+                            assertEquals(SWITCH2_IF_IFDESCR_MAP.get(10103), link.getLldpRemPortDescr());
+                            break;
+                        case 2:
+                            assertEquals(10112,link.getLldpPortIfindex().intValue());
+                            assertEquals(SWITCH1_IF_IFNAME_MAP.get(10112), link.getLldpPortId());
+                            assertEquals(SWITCH1_IF_IFDESCR_MAP.get(10112), link.getLldpPortDescr());
+                            assertEquals(SWITCH2_IF_IFNAME_MAP.get(10104), link.getLldpRemPortId());
+                            assertEquals(SWITCH2_IF_IFDESCR_MAP.get(10104), link.getLldpRemPortDescr());
+                            break;
+                        default:
+                            fail();
+                            break;
+                    }
                     break;
-                case 3:
-                    assertEquals(SWITCH1_IF_IFNAME_MAP.get(10110), link.getLldpPortId());
-                    assertEquals(SWITCH1_IF_IFDESCR_MAP.get(10110), link.getLldpPortDescr());
-                    assertEquals(SWITCH2_IF_IFNAME_MAP.get(10102), link.getLldpRemPortId());
-                    assertEquals(SWITCH2_IF_IFDESCR_MAP.get(10102), link.getLldpRemPortDescr());
+                case SWITCH2_NAME:
+                    switch (link.getLldpLocalPortNum()) {
+                        case 4:
+                            assertEquals(SWITCH1_LLDP_CHASSISID, link.getLldpRemChassisId());
+                            assertEquals(SWITCH1_NAME,link.getLldpRemSysname());
+                            assertEquals(10101,link.getLldpPortIfindex().intValue());
+                            assertEquals(SWITCH2_IF_IFNAME_MAP.get(10101), link.getLldpPortId());
+                            assertEquals(SWITCH2_IF_IFDESCR_MAP.get(10101), link.getLldpPortDescr());
+                            assertEquals(SWITCH1_IF_IFNAME_MAP.get(10109), link.getLldpRemPortId());
+                            assertEquals(SWITCH1_IF_IFDESCR_MAP.get(10109), link.getLldpRemPortDescr());
+                            break;
+                        case 3:
+                            assertEquals(SWITCH1_LLDP_CHASSISID, link.getLldpRemChassisId());
+                            assertEquals(SWITCH1_NAME,link.getLldpRemSysname());
+                            assertEquals(10102,link.getLldpPortIfindex().intValue());
+                            assertEquals(SWITCH2_IF_IFNAME_MAP.get(10102), link.getLldpPortId());
+                            assertEquals(SWITCH2_IF_IFDESCR_MAP.get(10102), link.getLldpPortDescr());
+                            assertEquals(SWITCH1_IF_IFNAME_MAP.get(10110), link.getLldpRemPortId());
+                            assertEquals(SWITCH1_IF_IFDESCR_MAP.get(10110), link.getLldpRemPortDescr());
+                            break;
+                        case 5:
+                            assertEquals(SWITCH1_LLDP_CHASSISID, link.getLldpRemChassisId());
+                            assertEquals(SWITCH1_NAME,link.getLldpRemSysname());
+                            assertEquals(10103,link.getLldpPortIfindex().intValue());
+                            assertEquals(SWITCH2_IF_IFNAME_MAP.get(10103), link.getLldpPortId());
+                            assertEquals(SWITCH2_IF_IFDESCR_MAP.get(10103), link.getLldpPortDescr());
+                            assertEquals(SWITCH1_IF_IFNAME_MAP.get(10111), link.getLldpRemPortId());
+                            assertEquals(SWITCH1_IF_IFDESCR_MAP.get(10111), link.getLldpRemPortDescr());
+                            break;
+                        case 6:
+                            assertEquals(SWITCH1_LLDP_CHASSISID, link.getLldpRemChassisId());
+                            assertEquals(SWITCH1_NAME,link.getLldpRemSysname());
+                            assertEquals(10104,link.getLldpPortIfindex().intValue());
+                            assertEquals(SWITCH2_IF_IFNAME_MAP.get(10104), link.getLldpPortId());
+                            assertEquals(SWITCH2_IF_IFDESCR_MAP.get(10104), link.getLldpPortDescr());
+                            assertEquals(SWITCH1_IF_IFNAME_MAP.get(10112), link.getLldpRemPortId());
+                            assertEquals(SWITCH1_IF_IFDESCR_MAP.get(10112), link.getLldpRemPortDescr());
+                            break;
+                        case 1:
+                            assertEquals(SWITCH3_LLDP_CHASSISID, link.getLldpRemChassisId());
+                            assertEquals(SWITCH3_NAME,link.getLldpRemSysname());
+                            assertEquals(10119,link.getLldpPortIfindex().intValue());
+                            assertEquals(SWITCH2_IF_IFNAME_MAP.get(10119), link.getLldpPortId());
+                            assertEquals(SWITCH2_IF_IFDESCR_MAP.get(10119), link.getLldpPortDescr());
+                            assertEquals(SWITCH3_IF_IFNAME_MAP.get(10019), link.getLldpRemPortId());
+                            assertEquals(SWITCH3_IF_IFDESCR_MAP.get(10019), link.getLldpRemPortDescr());
+                            break;
+                        case 2:
+                            assertEquals(SWITCH3_LLDP_CHASSISID, link.getLldpRemChassisId());
+                            assertEquals(SWITCH3_NAME,link.getLldpRemSysname());
+                            assertEquals(10120,link.getLldpPortIfindex().intValue());
+                            assertEquals(SWITCH2_IF_IFNAME_MAP.get(10120), link.getLldpPortId());
+                            assertEquals(SWITCH2_IF_IFDESCR_MAP.get(10120), link.getLldpPortDescr());
+                            assertEquals(SWITCH3_IF_IFNAME_MAP.get(10020), link.getLldpRemPortId());
+                            assertEquals(SWITCH3_IF_IFDESCR_MAP.get(10020), link.getLldpRemPortDescr());
+                            break;
+                        default:
+                            fail();
+                            break;
+                    }
                     break;
-                case 1:
-                    assertEquals(SWITCH1_IF_IFNAME_MAP.get(10111), link.getLldpPortId());
-                    assertEquals(SWITCH1_IF_IFDESCR_MAP.get(10111), link.getLldpPortDescr());
-                    assertEquals(SWITCH2_IF_IFNAME_MAP.get(10103), link.getLldpRemPortId());
-                    assertEquals(SWITCH2_IF_IFDESCR_MAP.get(10103), link.getLldpRemPortDescr());
+                case SWITCH3_NAME:
+                    assertEquals(SWITCH2_LLDP_CHASSISID, link.getLldpRemChassisId());
+                    assertEquals(SWITCH2_NAME,link.getLldpRemSysname());
+                    switch (link.getLldpLocalPortNum()) {
+                        case 1:
+                            assertEquals(10019,link.getLldpPortIfindex().intValue());
+                            assertEquals(SWITCH3_IF_IFNAME_MAP.get(10019), link.getLldpPortId());
+                            assertEquals(SWITCH3_IF_IFDESCR_MAP.get(10019), link.getLldpPortDescr());
+                            assertEquals(SWITCH2_IF_IFNAME_MAP.get(10119), link.getLldpRemPortId());
+                            assertEquals(SWITCH2_IF_IFDESCR_MAP.get(10119), link.getLldpRemPortDescr());
+                            break;
+                        case 2:
+                            assertEquals(10020,link.getLldpPortIfindex().intValue());
+                            assertEquals(SWITCH3_IF_IFNAME_MAP.get(10020), link.getLldpPortId());
+                            assertEquals(SWITCH3_IF_IFDESCR_MAP.get(10020), link.getLldpPortDescr());
+                            assertEquals(SWITCH2_IF_IFNAME_MAP.get(10120), link.getLldpRemPortId());
+                            assertEquals(SWITCH2_IF_IFDESCR_MAP.get(10120), link.getLldpRemPortDescr());
+                            break;
+                        default:
+                            fail();
+                            break;
+                    }
                     break;
-                case 2:
-                    assertEquals(SWITCH1_IF_IFNAME_MAP.get(10112), link.getLldpPortId());
-                    assertEquals(SWITCH1_IF_IFDESCR_MAP.get(10112), link.getLldpPortDescr());
-                    assertEquals(SWITCH2_IF_IFNAME_MAP.get(10104), link.getLldpRemPortId());
-                    assertEquals(SWITCH2_IF_IFDESCR_MAP.get(10104), link.getLldpRemPortDescr());
-                    break;
-                 default: assertTrue(false);
-                     break;
-                }
-            } else if  (link.getNode().getId().intValue() == switch2.getId().intValue()) {
-                switch (link.getLldpLocalPortNum().intValue()) {
-                case 4:
-                    assertEquals(SWITCH1_LLDP_CHASSISID, link.getLldpRemChassisId());
-                    assertEquals(SWITCH1_NAME,link.getLldpRemSysname());
-                    assertEquals(SWITCH2_IF_IFNAME_MAP.get(10101), link.getLldpPortId());
-                    assertEquals(SWITCH2_IF_IFDESCR_MAP.get(10101), link.getLldpPortDescr());
-                    assertEquals(SWITCH1_IF_IFNAME_MAP.get(10109), link.getLldpRemPortId());
-                    assertEquals(SWITCH1_IF_IFDESCR_MAP.get(10109), link.getLldpRemPortDescr());
-                    break;
-                case 3:
-                    assertEquals(SWITCH1_LLDP_CHASSISID, link.getLldpRemChassisId());
-                    assertEquals(SWITCH1_NAME,link.getLldpRemSysname());
-                    assertEquals(SWITCH2_IF_IFNAME_MAP.get(10102), link.getLldpPortId());
-                    assertEquals(SWITCH2_IF_IFDESCR_MAP.get(10102), link.getLldpPortDescr());
-                    assertEquals(SWITCH1_IF_IFNAME_MAP.get(10110), link.getLldpRemPortId());
-                    assertEquals(SWITCH1_IF_IFDESCR_MAP.get(10110), link.getLldpRemPortDescr());
-                    break;
-                case 5:
-                    assertEquals(SWITCH1_LLDP_CHASSISID, link.getLldpRemChassisId());
-                    assertEquals(SWITCH1_NAME,link.getLldpRemSysname());
-                    assertEquals(SWITCH2_IF_IFNAME_MAP.get(10103), link.getLldpPortId());
-                    assertEquals(SWITCH2_IF_IFDESCR_MAP.get(10103), link.getLldpPortDescr());
-                    assertEquals(SWITCH1_IF_IFNAME_MAP.get(10111), link.getLldpRemPortId());
-                    assertEquals(SWITCH1_IF_IFDESCR_MAP.get(10111), link.getLldpRemPortDescr());
-                    break;
-                case 6:
-                    assertEquals(SWITCH1_LLDP_CHASSISID, link.getLldpRemChassisId());
-                    assertEquals(SWITCH1_NAME,link.getLldpRemSysname());
-                    assertEquals(SWITCH2_IF_IFNAME_MAP.get(10104), link.getLldpPortId());
-                    assertEquals(SWITCH2_IF_IFDESCR_MAP.get(10104), link.getLldpPortDescr());
-                    assertEquals(SWITCH1_IF_IFNAME_MAP.get(10112), link.getLldpRemPortId());
-                    assertEquals(SWITCH1_IF_IFDESCR_MAP.get(10112), link.getLldpRemPortDescr());
-                    break;
-                case 1:
-                    assertEquals(SWITCH3_LLDP_CHASSISID, link.getLldpRemChassisId());
-                    assertEquals(SWITCH3_NAME,link.getLldpRemSysname());
-                    assertEquals(SWITCH2_IF_IFNAME_MAP.get(10119), link.getLldpPortId());
-                    assertEquals(SWITCH2_IF_IFDESCR_MAP.get(10119), link.getLldpPortDescr());
-                    assertEquals(SWITCH3_IF_IFNAME_MAP.get(10019), link.getLldpRemPortId());
-                    assertEquals(SWITCH3_IF_IFDESCR_MAP.get(10019), link.getLldpRemPortDescr());
-                    break;
-                case 2:
-                    assertEquals(SWITCH3_LLDP_CHASSISID, link.getLldpRemChassisId());
-                    assertEquals(SWITCH3_NAME,link.getLldpRemSysname());
-                    assertEquals(SWITCH2_IF_IFNAME_MAP.get(10120), link.getLldpPortId());
-                    assertEquals(SWITCH2_IF_IFDESCR_MAP.get(10120), link.getLldpPortDescr());
-                    assertEquals(SWITCH3_IF_IFNAME_MAP.get(10020), link.getLldpRemPortId());
-                    assertEquals(SWITCH3_IF_IFDESCR_MAP.get(10020), link.getLldpRemPortDescr());
-                    break;
-                default: assertTrue(false);
-                break;
-                }
-            } else if  (link.getNode().getId().intValue() == switch3.getId().intValue()) {
-                assertEquals(SWITCH2_LLDP_CHASSISID, link.getLldpRemChassisId());
-                assertEquals(SWITCH2_NAME,link.getLldpRemSysname());
-                switch (link.getLldpLocalPortNum().intValue()) {
-                case 1:
-                    assertEquals(SWITCH3_IF_IFNAME_MAP.get(10019), link.getLldpPortId());
-                    assertEquals(SWITCH3_IF_IFDESCR_MAP.get(10019), link.getLldpPortDescr());
-                    assertEquals(SWITCH2_IF_IFNAME_MAP.get(10119), link.getLldpRemPortId());
-                    assertEquals(SWITCH2_IF_IFDESCR_MAP.get(10119), link.getLldpRemPortDescr());
-                    break;
-                case 2:
-                    assertEquals(SWITCH3_IF_IFNAME_MAP.get(10020), link.getLldpPortId());
-                    assertEquals(SWITCH3_IF_IFDESCR_MAP.get(10020), link.getLldpPortDescr());
-                    assertEquals(SWITCH2_IF_IFNAME_MAP.get(10120), link.getLldpRemPortId());
-                    assertEquals(SWITCH2_IF_IFDESCR_MAP.get(10120), link.getLldpRemPortDescr());
-                    break;
-                default: assertTrue(false);
-                break;
-                }
-            } else {
-                assertTrue(false);
+                default:
+                    fail();
             }
         }
 
+        m_linkd.forceTopologyUpdaterRun(ProtocolSupported.LLDP);
+        m_linkd.runTopologyUpdater(ProtocolSupported.LLDP);
+
+        LldpOnmsTopologyUpdater topologyUpdater = m_linkd.getLldpTopologyUpdater();
+
+        OnmsTopology topology = topologyUpdater.getTopology();
+
+        assertNotNull(topology);
+        printOnmsTopology(topology);
+        assertEquals(5,topology.getVertices().size());
+        assertEquals(6,topology.getEdges().size());
+
+        for (OnmsTopologyEdge edge: topology.getEdges()) {
+            switch (edge.getSource().getVertex().getLabel()) {
+                case SWITCH2_NAME:
+                    assertEquals(SWITCH3_NAME, edge.getTarget().getVertex().getLabel());
+                    switch (edge.getTarget().getIfindex()) {
+                        case 10019:
+                            assertEquals(10119, edge.getSource().getIfindex().intValue());
+                            assertEquals("Gi0/19", edge.getSource().getIfname());
+                            assertEquals("Gi0/19 type LLDP_PORTID_SUBTYPE_INTERFACENAME", edge.getSource().getAddr());
+                            assertEquals("Fa0/19", edge.getTarget().getIfname());
+                            assertEquals("Fa0/19 type LLDP_PORTID_SUBTYPE_INTERFACENAME", edge.getTarget().getAddr());
+                            break;
+                        case 10020:
+                            assertEquals(10120, edge.getSource().getIfindex().intValue());
+                            assertEquals("Gi0/20", edge.getSource().getIfname());
+                            assertEquals("Gi0/20 type LLDP_PORTID_SUBTYPE_INTERFACENAME", edge.getSource().getAddr());
+                            assertEquals("Fa0/20", edge.getTarget().getIfname());
+                            assertEquals("Fa0/20 type LLDP_PORTID_SUBTYPE_INTERFACENAME", edge.getTarget().getAddr());
+                            break;
+                        default:
+                            fail();
+                    }
+                    break;
+                case SWITCH1_NAME:
+                    assertEquals(SWITCH2_NAME, edge.getTarget().getVertex().getLabel());
+                    switch (edge.getTarget().getIfindex()) {
+                        case 10103:
+                            assertEquals("Gi0/11", edge.getSource().getIfname());
+                            assertEquals("Gi0/11 type LLDP_PORTID_SUBTYPE_INTERFACENAME", edge.getSource().getAddr());
+                            assertEquals(10111, edge.getSource().getIfindex().intValue());
+                            assertEquals("Gi0/3", edge.getTarget().getIfname());
+                            assertEquals("Gi0/3 type LLDP_PORTID_SUBTYPE_INTERFACENAME", edge.getTarget().getAddr());
+                            break;
+                        case 10101:
+                            assertEquals("Gi0/9", edge.getSource().getIfname());
+                            assertEquals("Gi0/9 type LLDP_PORTID_SUBTYPE_INTERFACENAME", edge.getSource().getAddr());
+                            assertEquals(10109, edge.getSource().getIfindex().intValue());
+                            assertEquals("Gi0/1", edge.getTarget().getIfname());
+                            assertEquals("Gi0/1 type LLDP_PORTID_SUBTYPE_INTERFACENAME", edge.getTarget().getAddr());
+                            break;
+                        case 10102:
+                            assertEquals("Gi0/10", edge.getSource().getIfname());
+                            assertEquals("Gi0/10 type LLDP_PORTID_SUBTYPE_INTERFACENAME", edge.getSource().getAddr());
+                            assertEquals(10110, edge.getSource().getIfindex().intValue());
+                            assertEquals("Gi0/2", edge.getTarget().getIfname());
+                            assertEquals("Gi0/2 type LLDP_PORTID_SUBTYPE_INTERFACENAME", edge.getTarget().getAddr());
+                            break;
+                        case 10104:
+                            assertEquals("Gi0/12", edge.getSource().getIfname());
+                            assertEquals("Gi0/12 type LLDP_PORTID_SUBTYPE_INTERFACENAME", edge.getSource().getAddr());
+                            assertEquals(10112, edge.getSource().getIfindex().intValue());
+                            assertEquals("Gi0/4", edge.getTarget().getIfname());
+                            assertEquals("Gi0/4 type LLDP_PORTID_SUBTYPE_INTERFACENAME", edge.getTarget().getAddr());
+                            break;
+                        default:
+                            fail();
+                    }
+                    break;
+                default:
+                    fail();
+            }
+        }
 
     }
     
@@ -379,7 +474,7 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
             @JUnitSnmpAgent(host=ROUTER4_IP, port=161, resource=ROUTER4_SNMP_RESOURCE)
 
     })
-    public void testNetwork17216CdpLinks() throws Exception {
+    public void testNetwork17216CdpLinks() {
         m_nodeDao.save(builder.getSwitch1());
         m_nodeDao.save(builder.getSwitch2());
         m_nodeDao.save(builder.getSwitch3());
@@ -398,11 +493,11 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
         m_linkdConfig.getConfiguration().setUseLldpDiscovery(false);
         m_linkdConfig.getConfiguration().setUseIsisDiscovery(false);
 
-        assertTrue(!m_linkdConfig.useLldpDiscovery());
+        assertFalse(m_linkdConfig.useLldpDiscovery());
         assertTrue(m_linkdConfig.useCdpDiscovery());
-        assertTrue(!m_linkdConfig.useOspfDiscovery());
-        assertTrue(!m_linkdConfig.useBridgeDiscovery());
-        assertTrue(!m_linkdConfig.useIsisDiscovery());
+        assertFalse(m_linkdConfig.useOspfDiscovery());
+        assertFalse(m_linkdConfig.useBridgeDiscovery());
+        assertFalse(m_linkdConfig.useIsisDiscovery());
 
         final OnmsNode switch1 = m_nodeDao.findByForeignId("linkd", SWITCH1_NAME);
         final OnmsNode switch2 = m_nodeDao.findByForeignId("linkd", SWITCH2_NAME);
@@ -484,7 +579,7 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
             } else if (node.getNode().getId().intValue() == router4.getId().intValue()) {
                 assertEquals(ROUTER4_NAME,node.getCdpGlobalDeviceId());
             } else {
-                assertTrue(false);
+                fail();
             }
         }
         
@@ -492,35 +587,35 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
             printCdpLink(link);
             assertEquals(CiscoNetworkProtocolType.ip, link.getCdpCacheAddressType());
             if        (link.getNode().getId().intValue() == switch1.getId().intValue()) {
-                if (link.getCdpCacheIfIndex().intValue() == 10101 && link.getCdpCacheDeviceIndex().intValue() == 1 ) {
+                if (link.getCdpCacheIfIndex() == 10101 && link.getCdpCacheDeviceIndex() == 1 ) {
                     assertEquals(SWITCH1_IF_IFDESCR_MAP.get(10101), link.getCdpInterfaceName());
                     assertEquals(ROUTER1_IP,link.getCdpCacheAddress());
                     assertEquals("Cisco IOS Software, 2800 Software (C2800NM-ADVENTERPRISEK9-M), Version 12.4(24)T1, RELEASE SOFTWARE (fc3) Technical Support: http://www.cisco.com/techsupport Copyright (c) 1986-2009 by Cisco Systems, Inc. Compiled Fri 19-Jun-09 15:13 by prod_rel_team",link.getCdpCacheVersion());
                     assertEquals(ROUTER1_NAME, link.getCdpCacheDeviceId());
                     assertEquals("Cisco 2811",link.getCdpCacheDevicePlatform());
                     assertEquals(ROUTER1_IF_IFDESCR_MAP.get(7), link.getCdpCacheDevicePort());
-                } else if (link.getCdpCacheIfIndex().intValue() == 10109 && link.getCdpCacheDeviceIndex().intValue() == 5 ) {
+                } else if (link.getCdpCacheIfIndex() == 10109 && link.getCdpCacheDeviceIndex() == 5 ) {
                     assertEquals(SWITCH1_IF_IFDESCR_MAP.get(10109), link.getCdpInterfaceName());
                     assertEquals(SWITCH2_IP,link.getCdpCacheAddress());
                     assertEquals("Cisco IOS Software, C2960 Software (C2960-LANBASEK9-M), Version 12.2(58)SE1, RELEASE SOFTWARE (fc1) Technical Support: http://www.cisco.com/techsupport Copyright (c) 1986-2011 by Cisco Systems, Inc. Compiled Thu 05-May-11 02:53 by prod_rel_team",link.getCdpCacheVersion());
                     assertEquals(SWITCH2_NAME, link.getCdpCacheDeviceId());
                     assertEquals("cisco WS-C2960G-24TC-L",link.getCdpCacheDevicePlatform());
                     assertEquals(SWITCH2_IF_IFDESCR_MAP.get(10101), link.getCdpCacheDevicePort());
-                } else if (link.getCdpCacheIfIndex().intValue() == 10110 && link.getCdpCacheDeviceIndex().intValue() == 2 ) {
+                } else if (link.getCdpCacheIfIndex() == 10110 && link.getCdpCacheDeviceIndex() == 2 ) {
                     assertEquals(SWITCH1_IF_IFDESCR_MAP.get(10110), link.getCdpInterfaceName());
                     assertEquals(SWITCH2_IP,link.getCdpCacheAddress());
                     assertEquals("Cisco IOS Software, C2960 Software (C2960-LANBASEK9-M), Version 12.2(58)SE1, RELEASE SOFTWARE (fc1) Technical Support: http://www.cisco.com/techsupport Copyright (c) 1986-2011 by Cisco Systems, Inc. Compiled Thu 05-May-11 02:53 by prod_rel_team",link.getCdpCacheVersion());
                     assertEquals(SWITCH2_NAME, link.getCdpCacheDeviceId());
                     assertEquals("cisco WS-C2960G-24TC-L",link.getCdpCacheDevicePlatform());
                     assertEquals(SWITCH2_IF_IFDESCR_MAP.get(10102), link.getCdpCacheDevicePort());
-                } else if (link.getCdpCacheIfIndex().intValue() == 10111 && link.getCdpCacheDeviceIndex().intValue() == 3 ) {
+                } else if (link.getCdpCacheIfIndex() == 10111 && link.getCdpCacheDeviceIndex() == 3 ) {
                     assertEquals(SWITCH1_IF_IFDESCR_MAP.get(10111), link.getCdpInterfaceName());
                     assertEquals(SWITCH2_IP,link.getCdpCacheAddress());
                     assertEquals("Cisco IOS Software, C2960 Software (C2960-LANBASEK9-M), Version 12.2(58)SE1, RELEASE SOFTWARE (fc1) Technical Support: http://www.cisco.com/techsupport Copyright (c) 1986-2011 by Cisco Systems, Inc. Compiled Thu 05-May-11 02:53 by prod_rel_team",link.getCdpCacheVersion());
                     assertEquals(SWITCH2_NAME, link.getCdpCacheDeviceId());
                     assertEquals("cisco WS-C2960G-24TC-L",link.getCdpCacheDevicePlatform());
                     assertEquals(SWITCH2_IF_IFDESCR_MAP.get(10103), link.getCdpCacheDevicePort());
-                } else if (link.getCdpCacheIfIndex().intValue() == 10112 && link.getCdpCacheDeviceIndex().intValue() == 4 ) {
+                } else if (link.getCdpCacheIfIndex() == 10112 && link.getCdpCacheDeviceIndex() == 4 ) {
                     assertEquals(SWITCH1_IF_IFDESCR_MAP.get(10112), link.getCdpInterfaceName());
                     assertEquals(SWITCH2_IP,link.getCdpCacheAddress());
                     assertEquals("Cisco IOS Software, C2960 Software (C2960-LANBASEK9-M), Version 12.2(58)SE1, RELEASE SOFTWARE (fc1) Technical Support: http://www.cisco.com/techsupport Copyright (c) 1986-2011 by Cisco Systems, Inc. Compiled Thu 05-May-11 02:53 by prod_rel_team",link.getCdpCacheVersion());
@@ -528,45 +623,45 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
                     assertEquals("cisco WS-C2960G-24TC-L",link.getCdpCacheDevicePlatform());
                     assertEquals(SWITCH2_IF_IFDESCR_MAP.get(10104), link.getCdpCacheDevicePort());
                 } else {
-                    assertTrue(false);
+                    fail();
                 }
             } else if (link.getNode().getId().intValue() == switch2.getId().intValue()) {
-                if (link.getCdpCacheIfIndex().intValue() == 10101 && link.getCdpCacheDeviceIndex().intValue() == 3 ) {
+                if (link.getCdpCacheIfIndex() == 10101 && link.getCdpCacheDeviceIndex() == 3 ) {
                     assertEquals(SWITCH2_IF_IFDESCR_MAP.get(10101), link.getCdpInterfaceName());
                     assertEquals(SWITCH1_IP,link.getCdpCacheAddress());
                     assertEquals("Cisco IOS Software, C3560 Software (C3560-IPSERVICESK9-M), Version 12.2(58)SE1, RELEASE SOFTWARE (fc1) Technical Support: http://www.cisco.com/techsupport Copyright (c) 1986-2011 by Cisco Systems, Inc. Compiled Thu 05-May-11 02:19 by prod_rel_team",link.getCdpCacheVersion());
                     assertEquals(SWITCH1_NAME, link.getCdpCacheDeviceId());
                     assertEquals("cisco WS-C3560G-24PS",link.getCdpCacheDevicePlatform());
                     assertEquals(SWITCH1_IF_IFDESCR_MAP.get(10109), link.getCdpCacheDevicePort());
-                } else if (link.getCdpCacheIfIndex().intValue() == 10102 && link.getCdpCacheDeviceIndex().intValue() == 4 ) {
+                } else if (link.getCdpCacheIfIndex() == 10102 && link.getCdpCacheDeviceIndex() == 4 ) {
                     assertEquals(SWITCH2_IF_IFDESCR_MAP.get(10102), link.getCdpInterfaceName());
                     assertEquals(SWITCH1_IP,link.getCdpCacheAddress());
                     assertEquals("Cisco IOS Software, C3560 Software (C3560-IPSERVICESK9-M), Version 12.2(58)SE1, RELEASE SOFTWARE (fc1) Technical Support: http://www.cisco.com/techsupport Copyright (c) 1986-2011 by Cisco Systems, Inc. Compiled Thu 05-May-11 02:19 by prod_rel_team",link.getCdpCacheVersion());
                     assertEquals(SWITCH1_NAME, link.getCdpCacheDeviceId());
                     assertEquals("cisco WS-C3560G-24PS",link.getCdpCacheDevicePlatform());
                     assertEquals(SWITCH1_IF_IFDESCR_MAP.get(10110), link.getCdpCacheDevicePort());
-                } else if (link.getCdpCacheIfIndex().intValue() == 10103 && link.getCdpCacheDeviceIndex().intValue() == 5 ) {
+                } else if (link.getCdpCacheIfIndex() == 10103 && link.getCdpCacheDeviceIndex() == 5 ) {
                     assertEquals(SWITCH2_IF_IFDESCR_MAP.get(10103), link.getCdpInterfaceName());
                     assertEquals(SWITCH1_IP,link.getCdpCacheAddress());
                     assertEquals("Cisco IOS Software, C3560 Software (C3560-IPSERVICESK9-M), Version 12.2(58)SE1, RELEASE SOFTWARE (fc1) Technical Support: http://www.cisco.com/techsupport Copyright (c) 1986-2011 by Cisco Systems, Inc. Compiled Thu 05-May-11 02:19 by prod_rel_team",link.getCdpCacheVersion());
                     assertEquals(SWITCH1_NAME, link.getCdpCacheDeviceId());
                     assertEquals("cisco WS-C3560G-24PS",link.getCdpCacheDevicePlatform());
                     assertEquals(SWITCH1_IF_IFDESCR_MAP.get(10111), link.getCdpCacheDevicePort());
-                } else if (link.getCdpCacheIfIndex().intValue() == 10104 && link.getCdpCacheDeviceIndex().intValue() == 6 ) {
+                } else if (link.getCdpCacheIfIndex() == 10104 && link.getCdpCacheDeviceIndex() == 6 ) {
                     assertEquals(SWITCH2_IF_IFDESCR_MAP.get(10104), link.getCdpInterfaceName());
                     assertEquals(SWITCH1_IP,link.getCdpCacheAddress());
                     assertEquals("Cisco IOS Software, C3560 Software (C3560-IPSERVICESK9-M), Version 12.2(58)SE1, RELEASE SOFTWARE (fc1) Technical Support: http://www.cisco.com/techsupport Copyright (c) 1986-2011 by Cisco Systems, Inc. Compiled Thu 05-May-11 02:19 by prod_rel_team",link.getCdpCacheVersion());
                     assertEquals(SWITCH1_NAME, link.getCdpCacheDeviceId());
                     assertEquals("cisco WS-C3560G-24PS",link.getCdpCacheDevicePlatform());
                     assertEquals(SWITCH1_IF_IFDESCR_MAP.get(10112), link.getCdpCacheDevicePort());
-                } else if (link.getCdpCacheIfIndex().intValue() == 10119 && link.getCdpCacheDeviceIndex().intValue() == 1 ) {
+                } else if (link.getCdpCacheIfIndex() == 10119 && link.getCdpCacheDeviceIndex() == 1 ) {
                     assertEquals(SWITCH2_IF_IFDESCR_MAP.get(10119), link.getCdpInterfaceName());
                     assertEquals(SWITCH3_IP,link.getCdpCacheAddress());
                     assertEquals("Cisco IOS Software, C2960 Software (C2960-LANBASEK9-M), Version 12.2(50)SE5, RELEASE SOFTWARE (fc1) Technical Support: http://www.cisco.com/techsupport Copyright (c) 1986-2010 by Cisco Systems, Inc. Compiled Tue 28-Sep-10 13:44 by prod_rel_team",link.getCdpCacheVersion());
                     assertEquals(SWITCH3_NAME, link.getCdpCacheDeviceId());
                     assertEquals("cisco WS-C2960-24TT-L",link.getCdpCacheDevicePlatform());
                     assertEquals(SWITCH3_IF_IFDESCR_MAP.get(10019), link.getCdpCacheDevicePort());
-                } else if (link.getCdpCacheIfIndex().intValue() == 10120 && link.getCdpCacheDeviceIndex().intValue() == 2 ) {
+                } else if (link.getCdpCacheIfIndex() == 10120 && link.getCdpCacheDeviceIndex() == 2 ) {
                     assertEquals(SWITCH2_IF_IFDESCR_MAP.get(10120), link.getCdpInterfaceName());
                     assertEquals(SWITCH3_IP,link.getCdpCacheAddress());
                     assertEquals("Cisco IOS Software, C2960 Software (C2960-LANBASEK9-M), Version 12.2(50)SE5, RELEASE SOFTWARE (fc1) Technical Support: http://www.cisco.com/techsupport Copyright (c) 1986-2010 by Cisco Systems, Inc. Compiled Tue 28-Sep-10 13:44 by prod_rel_team",link.getCdpCacheVersion());
@@ -574,31 +669,31 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
                     assertEquals("cisco WS-C2960-24TT-L",link.getCdpCacheDevicePlatform());
                     assertEquals(SWITCH3_IF_IFDESCR_MAP.get(10020), link.getCdpCacheDevicePort());
                 } else {
-                    assertTrue(false);
+                    fail();
                 }
            } else if (link.getNode().getId().intValue() == switch3.getId().intValue()) {
-               if (link.getCdpCacheIfIndex().intValue() == 10019 && link.getCdpCacheDeviceIndex().intValue() == 3 ) {
+               if (link.getCdpCacheIfIndex() == 10019 && link.getCdpCacheDeviceIndex() == 3 ) {
                    assertEquals(SWITCH3_IF_IFDESCR_MAP.get(10019), link.getCdpInterfaceName());
                    assertEquals(SWITCH2_IP,link.getCdpCacheAddress());
                    assertEquals("Cisco IOS Software, C2960 Software (C2960-LANBASEK9-M), Version 12.2(58)SE1, RELEASE SOFTWARE (fc1) Technical Support: http://www.cisco.com/techsupport Copyright (c) 1986-2011 by Cisco Systems, Inc. Compiled Thu 05-May-11 02:53 by prod_rel_team",link.getCdpCacheVersion());
                    assertEquals(SWITCH2_NAME, link.getCdpCacheDeviceId());
                    assertEquals("cisco WS-C2960G-24TC-L",link.getCdpCacheDevicePlatform());
                    assertEquals(SWITCH2_IF_IFDESCR_MAP.get(10119), link.getCdpCacheDevicePort());
-               } else if (link.getCdpCacheIfIndex().intValue() == 10020 && link.getCdpCacheDeviceIndex().intValue() == 4 ) {
+               } else if (link.getCdpCacheIfIndex() == 10020 && link.getCdpCacheDeviceIndex() == 4 ) {
                    assertEquals(SWITCH3_IF_IFDESCR_MAP.get(10020), link.getCdpInterfaceName());
                    assertEquals(SWITCH2_IP,link.getCdpCacheAddress());
                    assertEquals("Cisco IOS Software, C2960 Software (C2960-LANBASEK9-M), Version 12.2(58)SE1, RELEASE SOFTWARE (fc1) Technical Support: http://www.cisco.com/techsupport Copyright (c) 1986-2011 by Cisco Systems, Inc. Compiled Thu 05-May-11 02:53 by prod_rel_team",link.getCdpCacheVersion());
                    assertEquals(SWITCH2_NAME, link.getCdpCacheDeviceId());
                    assertEquals("cisco WS-C2960G-24TC-L",link.getCdpCacheDevicePlatform());
                    assertEquals(SWITCH2_IF_IFDESCR_MAP.get(10120), link.getCdpCacheDevicePort());
-               } else if (link.getCdpCacheIfIndex().intValue() == 10023 && link.getCdpCacheDeviceIndex().intValue() == 1 ) {
+               } else if (link.getCdpCacheIfIndex() == 10023 && link.getCdpCacheDeviceIndex() == 1 ) {
                    assertEquals(SWITCH3_IF_IFDESCR_MAP.get(10023), link.getCdpInterfaceName());
                    assertEquals(SWITCH5_IP,link.getCdpCacheAddress());
                    assertEquals("Cisco IOS Software, C2960 Software (C2960-LANBASEK9-M), Version 12.2(50)SE5, RELEASE SOFTWARE (fc1) Technical Support: http://www.cisco.com/techsupport Copyright (c) 1986-2010 by Cisco Systems, Inc. Compiled Tue 28-Sep-10 13:44 by prod_rel_team",link.getCdpCacheVersion());
                    assertEquals(SWITCH5_NAME, link.getCdpCacheDeviceId());
                    assertEquals("cisco WS-C2960-24TT-L",link.getCdpCacheDevicePlatform());
                    assertEquals(SWITCH5_IF_IFDESCR_MAP.get(10001), link.getCdpCacheDevicePort());
-               } else if (link.getCdpCacheIfIndex().intValue() == 10024 && link.getCdpCacheDeviceIndex().intValue() == 2 ) {
+               } else if (link.getCdpCacheIfIndex() == 10024 && link.getCdpCacheDeviceIndex() == 2 ) {
                    assertEquals(SWITCH3_IF_IFDESCR_MAP.get(10024), link.getCdpInterfaceName());
                    assertEquals(SWITCH5_IP,link.getCdpCacheAddress());
                    assertEquals("Cisco IOS Software, C2960 Software (C2960-LANBASEK9-M), Version 12.2(50)SE5, RELEASE SOFTWARE (fc1) Technical Support: http://www.cisco.com/techsupport Copyright (c) 1986-2010 by Cisco Systems, Inc. Compiled Tue 28-Sep-10 13:44 by prod_rel_team",link.getCdpCacheVersion());
@@ -606,10 +701,10 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
                    assertEquals("cisco WS-C2960-24TT-L",link.getCdpCacheDevicePlatform());
                    assertEquals(SWITCH5_IF_IFDESCR_MAP.get(10013), link.getCdpCacheDevicePort());
                } else {
-                   assertTrue(false);
+                   fail();
                }
             } else if (link.getNode().getId().intValue() == switch4.getId().intValue()) {
-                if (link.getCdpCacheIfIndex().intValue() == 10001 && link.getCdpCacheDeviceIndex().intValue() == 1 ) {
+                if (link.getCdpCacheIfIndex() == 10001 && link.getCdpCacheDeviceIndex() == 1 ) {
                     assertEquals(SWITCH4_IF_IFDESCR_MAP.get(10001), link.getCdpInterfaceName());
                     assertEquals(ROUTER3_IP,link.getCdpCacheAddress());
                     assertEquals("Cisco IOS Software, C2900 Software (C2900-UNIVERSALK9-M), Version 15.1(4)M4, RELEASE SOFTWARE (fc1) Technical Support: http://www.cisco.com/techsupport Copyright (c) 1986-2012 by Cisco Systems, Inc. Compiled Tue 20-Mar-12 18:57 by prod_rel_team",link.getCdpCacheVersion());
@@ -617,17 +712,17 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
                     assertEquals("Cisco CISCO2911/K9",link.getCdpCacheDevicePlatform());
                     assertEquals(ROUTER3_IF_IFDESCR_MAP.get(9), link.getCdpCacheDevicePort());
                 } else {
-                    assertTrue(false);
+                    fail();
                 }
             } else if (link.getNode().getId().intValue() == switch5.getId().intValue()) {
-                if (link.getCdpCacheIfIndex().intValue() == 10001 && link.getCdpCacheDeviceIndex().intValue() == 1 ) {
+                if (link.getCdpCacheIfIndex() == 10001 && link.getCdpCacheDeviceIndex() == 1 ) {
                     assertEquals(SWITCH5_IF_IFDESCR_MAP.get(10001), link.getCdpInterfaceName());
                     assertEquals(SWITCH3_IP,link.getCdpCacheAddress());
                     assertEquals("Cisco IOS Software, C2960 Software (C2960-LANBASEK9-M), Version 12.2(50)SE5, RELEASE SOFTWARE (fc1) Technical Support: http://www.cisco.com/techsupport Copyright (c) 1986-2010 by Cisco Systems, Inc. Compiled Tue 28-Sep-10 13:44 by prod_rel_team",link.getCdpCacheVersion());
                     assertEquals(SWITCH3_NAME, link.getCdpCacheDeviceId());
                     assertEquals("cisco WS-C2960-24TT-L",link.getCdpCacheDevicePlatform());
                     assertEquals(SWITCH3_IF_IFDESCR_MAP.get(10023), link.getCdpCacheDevicePort());
-                } else if (link.getCdpCacheIfIndex().intValue() == 10013 && link.getCdpCacheDeviceIndex().intValue() == 2 ) {
+                } else if (link.getCdpCacheIfIndex() == 10013 && link.getCdpCacheDeviceIndex() == 2 ) {
                     assertEquals(SWITCH5_IF_IFDESCR_MAP.get(10013), link.getCdpInterfaceName());
                     assertEquals(SWITCH3_IP,link.getCdpCacheAddress());
                     assertEquals("Cisco IOS Software, C2960 Software (C2960-LANBASEK9-M), Version 12.2(50)SE5, RELEASE SOFTWARE (fc1) Technical Support: http://www.cisco.com/techsupport Copyright (c) 1986-2010 by Cisco Systems, Inc. Compiled Tue 28-Sep-10 13:44 by prod_rel_team",link.getCdpCacheVersion());
@@ -635,17 +730,17 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
                     assertEquals("cisco WS-C2960-24TT-L",link.getCdpCacheDevicePlatform());
                     assertEquals(SWITCH3_IF_IFDESCR_MAP.get(10024), link.getCdpCacheDevicePort());
                 } else {
-                    assertTrue(false);
+                    fail();
                 }
             } else if (link.getNode().getId().intValue() == router1.getId().intValue()) {
-                if (link.getCdpCacheIfIndex().intValue() == 7 && link.getCdpCacheDeviceIndex().intValue() == 2 ) {
+                if (link.getCdpCacheIfIndex() == 7 && link.getCdpCacheDeviceIndex() == 2 ) {
                     assertEquals(ROUTER1_IF_IFDESCR_MAP.get(7), link.getCdpInterfaceName());
                     assertEquals(10101,SWITCH1_IP_IF_MAP.get(InetAddressUtils.addr(link.getCdpCacheAddress())).intValue());
                     assertEquals("Cisco IOS Software, C3560 Software (C3560-IPSERVICESK9-M), Version 12.2(58)SE1, RELEASE SOFTWARE (fc1) Technical Support: http://www.cisco.com/techsupport Copyright (c) 1986-2011 by Cisco Systems, Inc. Compiled Thu 05-May-11 02:19 by prod_rel_team",link.getCdpCacheVersion());
                     assertEquals(SWITCH1_NAME, link.getCdpCacheDeviceId());
                     assertEquals("cisco WS-C3560G-24PS",link.getCdpCacheDevicePlatform());
                     assertEquals(SWITCH1_IF_IFDESCR_MAP.get(10101), link.getCdpCacheDevicePort());
-                 } else if (link.getCdpCacheIfIndex().intValue() == 13 && link.getCdpCacheDeviceIndex().intValue() == 1 ) {
+                 } else if (link.getCdpCacheIfIndex() == 13 && link.getCdpCacheDeviceIndex() == 1 ) {
                      assertEquals(ROUTER1_IF_IFDESCR_MAP.get(13), link.getCdpInterfaceName());
                      assertEquals(12,ROUTER2_IP_IF_MAP.get(InetAddressUtils.addr(link.getCdpCacheAddress())).intValue());
                      assertEquals("Cisco IOS Software, C2900 Software (C2900-UNIVERSALK9-M), Version 15.1(4)M4, RELEASE SOFTWARE (fc1) Technical Support: http://www.cisco.com/techsupport Copyright (c) 1986-2012 by Cisco Systems, Inc. Compiled Tue 20-Mar-12 18:57 by prod_rel_team",link.getCdpCacheVersion());
@@ -654,17 +749,17 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
                      assertEquals(ROUTER2_IF_IFDESCR_MAP.get(12), link.getCdpCacheDevicePort());
                      
                  } else {
-                     assertTrue(false);
+                    fail();
                  }
             } else if (link.getNode().getId().intValue() == router2.getId().intValue()) {
-                if (link.getCdpCacheIfIndex().intValue() == 12 && link.getCdpCacheDeviceIndex().intValue() == 2 ) {
+                if (link.getCdpCacheIfIndex() == 12 && link.getCdpCacheDeviceIndex() == 2 ) {
                      assertEquals(ROUTER2_IF_IFDESCR_MAP.get(12), link.getCdpInterfaceName());
                      assertEquals(13,ROUTER1_IP_IF_MAP.get(InetAddressUtils.addr(link.getCdpCacheAddress())).intValue());
                      assertEquals("Cisco IOS Software, 2800 Software (C2800NM-ADVENTERPRISEK9-M), Version 12.4(24)T1, RELEASE SOFTWARE (fc3) Technical Support: http://www.cisco.com/techsupport Copyright (c) 1986-2009 by Cisco Systems, Inc. Compiled Fri 19-Jun-09 15:13 by prod_rel_team",link.getCdpCacheVersion());
                      assertEquals(ROUTER1_NAME, link.getCdpCacheDeviceId());
                      assertEquals("Cisco 2811",link.getCdpCacheDevicePlatform());
                      assertEquals(ROUTER1_IF_IFDESCR_MAP.get(13), link.getCdpCacheDevicePort());
-                } else if (link.getCdpCacheIfIndex().intValue() == 13 && link.getCdpCacheDeviceIndex().intValue() == 1 ) {
+                } else if (link.getCdpCacheIfIndex() == 13 && link.getCdpCacheDeviceIndex() == 1 ) {
                     assertEquals(ROUTER2_IF_IFDESCR_MAP.get(13), link.getCdpInterfaceName());
                     assertEquals(13,ROUTER3_IP_IF_MAP.get(InetAddressUtils.addr(link.getCdpCacheAddress())).intValue());
                     assertEquals("Cisco IOS Software, C2900 Software (C2900-UNIVERSALK9-M), Version 15.1(4)M4, RELEASE SOFTWARE (fc1) Technical Support: http://www.cisco.com/techsupport Copyright (c) 1986-2012 by Cisco Systems, Inc. Compiled Tue 20-Mar-12 18:57 by prod_rel_team",link.getCdpCacheVersion());
@@ -672,24 +767,24 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
                     assertEquals("Cisco CISCO2911/K9",link.getCdpCacheDevicePlatform());
                     assertEquals(ROUTER3_IF_IFDESCR_MAP.get(13), link.getCdpCacheDevicePort());
                  } else {
-                     assertTrue(false);
+                    fail();
                  }
             } else if (link.getNode().getId().intValue() == router3.getId().intValue()) {
-                if (link.getCdpCacheIfIndex().intValue() == 8 && link.getCdpCacheDeviceIndex().intValue() == 2 ) {
+                if (link.getCdpCacheIfIndex() == 8 && link.getCdpCacheDeviceIndex() == 2 ) {
                     assertEquals(ROUTER3_IF_IFDESCR_MAP.get(8), link.getCdpInterfaceName());
                     assertEquals(3,ROUTER4_IP_IF_MAP.get(InetAddressUtils.addr(link.getCdpCacheAddress())).intValue());
                     assertEquals("Cisco IOS Software, C2900 Software (C2900-UNIVERSALK9-M), Version 15.1(4)M4, RELEASE SOFTWARE (fc1) Technical Support: http://www.cisco.com/techsupport Copyright (c) 1986-2012 by Cisco Systems, Inc. Compiled Tue 20-Mar-12 18:57 by prod_rel_team",link.getCdpCacheVersion());
                     assertEquals(ROUTER4_NAME, link.getCdpCacheDeviceId());
                     assertEquals("Cisco CISCO2911/K9",link.getCdpCacheDevicePlatform());
                     assertEquals(ROUTER4_IF_IFDESCR_MAP.get(3), link.getCdpCacheDevicePort());
-               } else if (link.getCdpCacheIfIndex().intValue() == 9 && link.getCdpCacheDeviceIndex().intValue() == 3 ) {
+               } else if (link.getCdpCacheIfIndex() == 9 && link.getCdpCacheDeviceIndex() == 3 ) {
                    assertEquals(ROUTER3_IF_IFDESCR_MAP.get(9), link.getCdpInterfaceName());
                    assertEquals(SWITCH4_IP,link.getCdpCacheAddress());
                    assertEquals("Cisco IOS Software, C2960 Software (C2960-LANBASEK9-M), Version 12.2(50)SE5, RELEASE SOFTWARE (fc1) Technical Support: http://www.cisco.com/techsupport Copyright (c) 1986-2010 by Cisco Systems, Inc. Compiled Tue 28-Sep-10 13:44 by prod_rel_team",link.getCdpCacheVersion());
                    assertEquals(SWITCH4_NAME, link.getCdpCacheDeviceId());
                    assertEquals("cisco WS-C2960-24TT-L",link.getCdpCacheDevicePlatform());
                    assertEquals(SWITCH4_IF_IFDESCR_MAP.get(10001), link.getCdpCacheDevicePort());
-               } else if (link.getCdpCacheIfIndex().intValue() == 13 && link.getCdpCacheDeviceIndex().intValue() == 1 ) {
+               } else if (link.getCdpCacheIfIndex() == 13 && link.getCdpCacheDeviceIndex() == 1 ) {
                    assertEquals(ROUTER3_IF_IFDESCR_MAP.get(13), link.getCdpInterfaceName());
                    assertEquals(13,ROUTER2_IP_IF_MAP.get(InetAddressUtils.addr(link.getCdpCacheAddress())).intValue());
                    assertEquals("Cisco IOS Software, C2900 Software (C2900-UNIVERSALK9-M), Version 15.1(4)M4, RELEASE SOFTWARE (fc1) Technical Support: http://www.cisco.com/techsupport Copyright (c) 1986-2012 by Cisco Systems, Inc. Compiled Tue 20-Mar-12 18:57 by prod_rel_team",link.getCdpCacheVersion());
@@ -697,10 +792,10 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
                    assertEquals("Cisco CISCO2911/K9",link.getCdpCacheDevicePlatform());
                    assertEquals(ROUTER2_IF_IFDESCR_MAP.get(13), link.getCdpCacheDevicePort());
                 } else {
-                    assertTrue(false);
+                    fail();
                 }
             } else if (link.getNode().getId().intValue() == router4.getId().intValue()) {
-                if (link.getCdpCacheIfIndex().intValue() == 3 && link.getCdpCacheDeviceIndex().intValue() == 1 ) {
+                if (link.getCdpCacheIfIndex() == 3 && link.getCdpCacheDeviceIndex() == 1 ) {
                     assertEquals(ROUTER4_IF_IFDESCR_MAP.get(3), link.getCdpInterfaceName());
                     assertEquals(8,ROUTER3_IP_IF_MAP.get(InetAddressUtils.addr(link.getCdpCacheAddress())).intValue());
                     assertEquals("Cisco IOS Software, C2900 Software (C2900-UNIVERSALK9-M), Version 15.1(4)M4, RELEASE SOFTWARE (fc1) Technical Support: http://www.cisco.com/techsupport Copyright (c) 1986-2012 by Cisco Systems, Inc. Compiled Tue 20-Mar-12 18:57 by prod_rel_team",link.getCdpCacheVersion());
@@ -708,10 +803,10 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
                     assertEquals("Cisco CISCO2911/K9",link.getCdpCacheDevicePlatform());
                     assertEquals(ROUTER3_IF_IFDESCR_MAP.get(8), link.getCdpCacheDevicePort());
                  } else {
-                     assertTrue(false);
+                    fail();
                  }
             } else {
-                assertTrue(false);
+                fail();
             }
         }
     }
@@ -727,7 +822,7 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
             @JUnitSnmpAgent(host=SWITCH2_IP, port=161, resource=SWITCH2_SNMP_RESOURCE)
 
     })
-    public void testNetwork17216CdpTopology() throws Exception {
+    public void testNetwork17216CdpTopology() {
         m_nodeDao.save(builder.getSwitch1());
         m_nodeDao.save(builder.getSwitch2());
         
@@ -739,22 +834,22 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
         m_linkdConfig.getConfiguration().setUseLldpDiscovery(false);
         m_linkdConfig.getConfiguration().setUseIsisDiscovery(false);
 
-        assertTrue(!m_linkdConfig.useLldpDiscovery());
+        assertFalse(m_linkdConfig.useLldpDiscovery());
         assertTrue(m_linkdConfig.useCdpDiscovery());
-        assertTrue(!m_linkdConfig.useOspfDiscovery());
-        assertTrue(!m_linkdConfig.useBridgeDiscovery());
-        assertTrue(!m_linkdConfig.useIsisDiscovery());
+        assertFalse(m_linkdConfig.useOspfDiscovery());
+        assertFalse(m_linkdConfig.useBridgeDiscovery());
+        assertFalse(m_linkdConfig.useIsisDiscovery());
 
         //update configuration to support only CDP updates
         //need to reload daemon
         m_linkd.reload();
         assertEquals(3, getSupportedProtocolsAsProtocolSupported().size());
         assertTrue(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.NODES));
-        assertTrue(!getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.BRIDGE));
+        assertFalse(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.BRIDGE));
         assertTrue(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.CDP));
-        assertTrue(!getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.ISIS));
-        assertTrue(!getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.LLDP));
-        assertTrue(!getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.OSPF));
+        assertFalse(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.ISIS));
+        assertFalse(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.LLDP));
+        assertFalse(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.OSPF));
         assertTrue(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.USERDEFINED));
 
         final OnmsNode switch1 = m_nodeDao.findByForeignId("linkd", SWITCH1_NAME);
@@ -776,13 +871,13 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
         assertEquals(2, m_nodeTopologyService.findAllNode().size());
         assertEquals(6, m_nodeTopologyService.findAllIp().size());
         
-        m_nodeTopologyService.findAllNode().stream().forEach( node -> {
+        m_nodeTopologyService.findAllNode().forEach(node -> {
             System.err.println(node);
             assertNotNull(node.getId());
             assertNotNull(node.getLabel());
         });
 
-        m_nodeTopologyService.findAllIp().stream().forEach( ip -> {
+        m_nodeTopologyService.findAllIp().forEach(ip -> {
             System.err.println(ip);
             assertNotNull(ip.getId());
             assertNotNull(ip.getIpAddress());
@@ -808,8 +903,8 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
         System.err.println("--------Printing new start----------");
         m_linkd.runTopologyUpdater(ProtocolSupported.CDP);
         System.err.println("--------Printing new end----------");
-        assertTrue(!m_cdpTopologyService.hasUpdates());
-        assertTrue(!m_cdpTopologyService.parseUpdates());
+        assertFalse(m_cdpTopologyService.hasUpdates());
+        assertFalse(m_cdpTopologyService.parseUpdates());
         assertEquals(6, tl.getQueue().size());
         for (OnmsTopologyMessage m: tl.getQueue()) {
             assertEquals(TopologyUpdater.create(ProtocolSupported.CDP), m.getProtocol());
@@ -828,7 +923,7 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
                 assertNotNull(edge.getSource().getVertex());
                 assertNotNull(edge.getTarget().getVertex());
             } else {
-                assertTrue(false);
+                fail();
             }
         }
         System.err.println("--------no updates start----------");
@@ -836,7 +931,7 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
         System.err.println("--------no updates end----------");
         m_cdpTopologyService.updatesAvailable();
         assertTrue(m_cdpTopologyService.parseUpdates());
-        assertTrue(!m_cdpTopologyService.hasUpdates());
+        assertFalse(m_cdpTopologyService.hasUpdates());
         assertEquals(6, tl.getQueue().size());
     }
     
@@ -846,7 +941,7 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
             @JUnitSnmpAgent(host=SWITCH2_IP, port=161, resource=SWITCH2_SNMP_RESOURCE),
             @JUnitSnmpAgent(host=SWITCH3_IP, port=161, resource=SWITCH3_SNMP_RESOURCE)
     })
-    public void testNetwork17216LldpTopology() throws Exception {
+    public void testNetwork17216LldpTopology() {
         m_nodeDao.save(builder.getSwitch1());
         m_nodeDao.save(builder.getSwitch2());
         m_nodeDao.save(builder.getSwitch3());
@@ -860,20 +955,20 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
         m_linkdConfig.getConfiguration().setUseIsisDiscovery(false);
 
         assertTrue(m_linkdConfig.useLldpDiscovery());
-        assertTrue(!m_linkdConfig.useCdpDiscovery());
-        assertTrue(!m_linkdConfig.useOspfDiscovery());
-        assertTrue(!m_linkdConfig.useBridgeDiscovery());
-        assertTrue(!m_linkdConfig.useIsisDiscovery());
+        assertFalse(m_linkdConfig.useCdpDiscovery());
+        assertFalse(m_linkdConfig.useOspfDiscovery());
+        assertFalse(m_linkdConfig.useBridgeDiscovery());
+        assertFalse(m_linkdConfig.useIsisDiscovery());
         
         // reload daemon and support only: LLDP updates
         m_linkd.reload();
         assertTrue(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.NODES));
         assertEquals(3, getSupportedProtocolsAsProtocolSupported().size());
-        assertTrue(!getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.BRIDGE));
-        assertTrue(!getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.CDP));
-        assertTrue(!getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.ISIS));
+        assertFalse(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.BRIDGE));
+        assertFalse(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.CDP));
+        assertFalse(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.ISIS));
         assertTrue(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.LLDP));
-        assertTrue(!getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.OSPF));
+        assertFalse(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.OSPF));
         assertTrue(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.USERDEFINED));
 
         final OnmsNode switch1 = m_nodeDao.findByForeignId("linkd", SWITCH1_NAME);
@@ -940,7 +1035,7 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
                 assertNotNull(edge.getTarget().getVertex());
                 edges++;
             } else {
-                assertTrue(false);
+                fail();
             }
         }
         assertEquals(3, vertices);
