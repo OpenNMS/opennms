@@ -107,7 +107,7 @@ Note that changes to `eventd-configuration.xml` require a full restart of {page-
 Use the `opennms:show-event-config` command to render the event definition for one or more event UEIs (matching a substring) to XML.
 This command is useful for displaying event definitions that may not be easily accessible on disk, or verifying that particular events were actually loaded.
 
-[source]
+[source, console]
 ----
 $ ssh -p 8101 admin@localhost
 ...
