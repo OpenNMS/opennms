@@ -221,7 +221,7 @@
                 </c:choose>
                 <c:choose>
                     <c:when test="${(!empty resultSet.resource.link) && loggedIn}">
-                        <a href="<c:url value='${resultSet.resource.link}'/>">${resultSet.resource.label}</a>
+                        <a href="<c:url value='${resultSet.resource.link}'/>"><c:out value="${resultSet.resource.label}"/></a>
                     </c:when>
                     <c:otherwise>
                         ${resultSet.resource.label}
