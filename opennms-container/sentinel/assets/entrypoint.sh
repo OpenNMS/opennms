@@ -46,9 +46,7 @@ useEnvCredentials(){
 
 setCredentials() {
   # Directory to initialize a new keystore file which can be mounted to the local host
-  if [ -d /keystore ]; then
-    mkdir /keystore
-  fi
+  mkdir -p /keystore
 
   read -r -p "Enter OpenNMS HTTP username: " OPENNMS_HTTP_USER
   read -r -s -p "Enter OpenNMS HTTP password: " OPENNMS_HTTP_PASS
