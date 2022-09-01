@@ -28,8 +28,6 @@
 
 package org.opennms.web.utils;
 
-import org.jfree.util.Log;
-
 public class QueryParameters {
 
     private static final Integer DEFAULT_LIMIT = 100;
