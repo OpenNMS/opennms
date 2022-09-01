@@ -77,6 +77,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.opennms.features.usageanalytics</groupId>
+            <artifactId>org.opennms.features.usageanalytics.api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz</artifactId>
             <version>${quartzVersion}</version>

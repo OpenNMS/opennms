@@ -274,6 +274,7 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         // DCB statistics
         usageStatisticsReport.setDcbSucceed(m_usageAnalyticDao.getValueByMetricName(UsageAnalyticMetricName.DCB_SUCCEED.toString()));
         usageStatisticsReport.setDcbFailed(m_usageAnalyticDao.getValueByMetricName(UsageAnalyticMetricName.DCB_FAILED.toString()));
+        usageStatisticsReport.setDcbWebUiEntries(m_usageAnalyticDao.getValueByMetricName(UsageAnalyticMetricName.DCB_WEBUI_ENTRY.toString()));
 
         setDatasourceInfo(usageStatisticsReport);
 
