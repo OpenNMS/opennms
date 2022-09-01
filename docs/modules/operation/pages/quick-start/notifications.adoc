@@ -47,7 +47,7 @@ This minimizes duplication and encourages reuse.
 
 You must specify a destination path to receive notifications from {page-component-title}.
 The `Email-Admin` destination path is defined by default, and is the notification path when no other destination paths are specified.
-It sends email notifications to users in the Admin group (see xref:operation:quick-start/users.adoc#ga-users-next[Users]).
+It sends email notifications to users in the Admin group.
 
 Follow these steps to define a new destination path:
 
@@ -56,8 +56,8 @@ Follow these steps to define a new destination path:
 . Click *New Path* and configure it:
 .. Specify a name for the path (for example, Email-Bob) and define an initial delay.
 .. Click *Edit*, and select the users, groups, roles, or email addresses to send notifications to.
-... To add a single email address to the Send to Email Addresses list, click *Add Address*, type the email address, and click *OK*.
-... To remove email addresses from the Send to Email Addresses list, select them from the list and click *Remove Selected Addresses*.
+*** To add a single email address to the Send to Email Addresses list, click *Add Address*, type the email address, and click *OK*.
+*** To remove email addresses from the Send to Email Addresses list, select them from the list and click *Remove Selected Addresses*.
 .. Click *Next Step*.
 .. (Optional) Define a delay interval for group notification.
 This will determine the delay between sending notifications to each member of a group.
