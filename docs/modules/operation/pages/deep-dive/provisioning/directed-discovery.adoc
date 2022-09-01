@@ -2,17 +2,18 @@
 = Directed Discovery
 
 Directed discovery is the process of manually adding nodes to {page-component-title} through the requisition UI.
-Two other methods for manually adding nodes (quick add node and manually adding an interface) are in the process of being deprecated. We do not recommend using these features.
+Two other methods for manually adding nodes (quick adding a node and manually adding an interface) are in the process of being deprecated.
+We do not recommend using these features.
 
 Make sure you complete the tasks in <<quick-start/provisioning/inventory.adoc, Step 3: Provision Inventory>> before adding nodes.
 
 [[requisition-add-nodes]]
-== Add nodes through the Requisition UI
+== Add nodes through the requisition UI
 
 Before adding nodes to a requisition, you must <<quick-start/inventory.adoc#requisition-create, create a requisition>>.
 
-. In the web UI, click the gear icon in the top right.
-. In the *Provisioning* area, choose *Manage Provisioning Requisition*.
+. In the web UI, click the *Gear* symbol in the top-right of the screen.
+. Choose menu:Provisioning[Manage Provisioning Requisition].
 . Click the edit icon beside the requisition you want to add nodes to.
 . Click *Add Node*.
 .. {page-component-title} auto-generates the foreign ID used to identify this node.
