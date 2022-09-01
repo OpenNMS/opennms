@@ -72,25 +72,41 @@ public class JsonPathHelper {
         return newJson.replace(unique.toString(), newPartContent);
     }
 
+    public static String insertOrUpdateNode(String data, String parent, String nodeName, String newPartContent) {
+        JsonPath jsonPath = JsonPath.compile(parent);
+        assertThereIsExactlyOnePath(data, jsonPath);
+        Long unique = getUnique(data);
+        String newJson = JsonPath.parse(data).put(parent, nodeName, unique).jsonString();
+        return newJson.replace(unique.toString(), newPartContent);
+    }
+
     public static String delete(String data, String path) {
         JsonPath jsonPath = JsonPath.compile(path);
         assertThereIsExactlyOnePath(data, jsonPath);
         return JsonPath.parse(data).delete(jsonPath).jsonString();
     }
 
-    private static void assertThereIsExactlyOnePath(String data, JsonPath jsonPath) {
+    private static int count(String data, JsonPath jsonPath) {
         List<String> paths = JsonPath.using(AS_PATH_LIST).parse(data).read(jsonPath);
-        if (paths.size() != 1) {
+        return paths.size();
+    }
+
+    private static void assertThereIsExactlyOnePath(String data, JsonPath jsonPath) {
+        if (count(data, jsonPath) != 1) {
             throw new IllegalArgumentException("Path must resolve to a single element");
         }
     }
 
+    private static String combine(String parent, String node) {
+        return parent + ".['" + node.replace("\\", "\\\\").replace("'", "\\'") + "']";
+    }
+
     private static Long getUnique(String data) {
-        Long unique = new Random().nextLong();
-        while (data.contains(unique.toString())) {
-            //just to be sure we do not overwrite come existing data
-            unique = new Random().nextLong();
+        while (true) {
+            Long unique = new Random().nextLong();
+            if(!data.contains(unique.toString())) {
+                return unique;
+            }
         }
-        return unique;
     }
 }

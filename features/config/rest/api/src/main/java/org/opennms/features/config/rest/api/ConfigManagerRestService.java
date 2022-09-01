@@ -134,7 +134,7 @@ public interface ConfigManagerRestService {
      *
      * @param configName configuration name
      * @param configId configuration id
-     * @param path path to the part
+     * @param path jsonPath to the part
      * @return requested part of configuration
      */
     @GET
@@ -147,7 +147,8 @@ public interface ConfigManagerRestService {
      *
      * @param configName configuration name
      * @param configId configuration id
-     * @param path path to the part
+     * @param path jsonPath to the part
+     * @param newContent the new content for the node
      * @return empty response
      */
     @PUT
@@ -156,12 +157,31 @@ public interface ConfigManagerRestService {
                               @PathParam("path") String path, String newContent);
 
     /**
+     * Update config part specified by configName, configId, path to the parent node and the node name.
+     * Unlike {@link #updateConfigPart(String, String, String, String) updateConfigPart} this method does not fail when
+     * the node is valid but the path can not be found while configuration manager does not provide some elements when
+     * they are not set. Only the parent node must exist.
+     *
+     * @param configName configuration name
+     * @param configId configuration id
+     * @param pathToParent jsonPath to the parent node
+     * @param nodeName name of the node to update/insert within the parent node
+     * @param newContent the new content for the node
+     * @return empty response
+     */
+    @PUT
+    @Path(value="/{configName}/{configId}/{pathToParent}/{nodeName}")
+    Response updateOrInsertConfigPart(@PathParam("configName") String configName, @PathParam("configId") String configId,
+                                      @PathParam("pathToParent") String pathToParent,
+                                      @PathParam("nodeName") String nodeName,String newContent);
+
+    /**
      * Add an array element to a config specified by configName, configId and path to the array
      *
      * @param configName configuration name
      * @param configId configuration id
-     * @param path the path to the array to add an element into
-     * @param newElement a new element to add to array in configuration
+     * @param path jsonPath to the array to add an element into
+     * @param newElement a new element to add to the specified array in configuration
      * @return empty response
      */
     @POST
@@ -174,7 +194,7 @@ public interface ConfigManagerRestService {
      *
      * @param configName configuration name
      * @param configId configuration id
-     * @param path path to the part
+     * @param path jsonPath to the part
      * @return empty response
      */
     @DELETE

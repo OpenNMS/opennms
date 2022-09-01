@@ -35,6 +35,8 @@ import static org.junit.Assert.assertTrue;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
+import com.jayway.jsonpath.JsonPath;
+
 /**
  *
  * @author dmitri
@@ -111,9 +113,47 @@ public class JsonPathHelperTest {
         assertEquals(expected,step2);
     }
 
+    @Test
+    public void testInsertOrUpdateWhenOkAndPathExists() {
+        assertEquals(
+                DATA.replace(EVIL_TEXT, LUCKY_TEXT),
+                JsonPathHelper.insertOrUpdateNode(DATA, "$.nestedObject", "objText", "\"" + LUCKY_TEXT + "\"")
+       );
+    }
+
+    @Test
+    public void testInsertOrUpdateWhenOkAndPathDoesNotExists() {
+        String wiredKey = "a'd\\c\\d\"e[f]g";
+        String wiredPath = "$.nestedObject.['" + wiredKey.replace("\\", "\\\\").replace("'", "\\'") + "']";
+
+        String jsonWithNewElement = JsonPathHelper.insertOrUpdateNode(DATA, "$.nestedObject", wiredKey, "\"" + LUCKY_TEXT + "\"");
+
+        assertEquals(
+                "Content stored successfully",
+                LUCKY_TEXT,
+                JsonPath.read(jsonWithNewElement, wiredPath)
+        );
+
+        assertEquals(
+                "No errors while deleting and we get the original JSON",
+                JsonPath.parse(jsonWithNewElement).delete(wiredPath).jsonString(),
+                DATA
+        );
+    }
+
+    @Test(expected = Exception.class)
+    public void testInsertOrUpdateWhenWrongJson() {
+        JsonPathHelper.get("some eerors" + DATA, "$.numProperty");
+    }
+
+    @Test(expected = Exception.class)
+    public void testInsertOrUpdateWhenNotExistingPath() {
+        JsonPathHelper.insertOrUpdateNode(DATA, "$.noSuchProperty", "someName", "someContent");
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void testUpdateWhenMultiple() {
-        JsonPathHelper.update(DATA, "$.array[1,2]", OBJECT2);
+        JsonPathHelper.insertOrUpdateNode(DATA, "$.array[1,2]", "someName", OBJECT2);
     }
 
     @Test(expected = IllegalArgumentException.class)
