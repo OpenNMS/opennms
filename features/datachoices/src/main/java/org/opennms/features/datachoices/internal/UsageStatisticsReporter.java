@@ -68,6 +68,7 @@ import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeDao;
+import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
 import org.opennms.core.ipc.sink.common.SinkStrategy;
 import org.opennms.core.rpc.common.RpcStrategy;
 import org.slf4j.Logger;
@@ -128,6 +129,8 @@ public class UsageStatisticsReporter implements StateChangeHandler {
     private MonitoringSystemDao m_monitoringSystemDao;
 
     private BusinessServiceEdgeDao m_businessServiceEdgeDao;
+
+    private DeviceConfigDao m_deviceConfigDao;
 
     private FeaturesService m_featuresService;
 
@@ -275,6 +278,7 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         usageStatisticsReport.setDcbSucceed(m_usageAnalyticDao.getValueByMetricName(UsageAnalyticMetricName.DCB_SUCCEED.toString()));
         usageStatisticsReport.setDcbFailed(m_usageAnalyticDao.getValueByMetricName(UsageAnalyticMetricName.DCB_FAILED.toString()));
         usageStatisticsReport.setDcbWebUiEntries(m_usageAnalyticDao.getValueByMetricName(UsageAnalyticMetricName.DCB_WEBUI_ENTRY.toString()));
+        usageStatisticsReport.setNodesWithDeviceConfigBySysOid(m_deviceConfigDao.getNumberOfNodesWithDeviceConfigBySysOid());
 
         setDatasourceInfo(usageStatisticsReport);
 
@@ -580,6 +584,10 @@ public class UsageStatisticsReporter implements StateChangeHandler {
 
     public ForeignSourceRepository getDeployedForeignSourceRepository() {
         return m_deployedForeignSourceRepository;
+    }
+
+    public void setDeviceConfigDao(DeviceConfigDao deviceConfigDao) {
+        this.m_deviceConfigDao = deviceConfigDao;
     }
 
     private int getDestinationPathCount(){
