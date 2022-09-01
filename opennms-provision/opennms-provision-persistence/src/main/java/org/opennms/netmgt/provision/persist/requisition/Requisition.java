@@ -376,12 +376,12 @@ public class Requisition implements Serializable, Comparable<Requisition> {
     }
 
     /**
-     * <p>getNodeRequistion</p>
+     * <p>getNodeRequisition</p>
      *
      * @param foreignId a {@link java.lang.String} object.
      * @return a {@link org.opennms.netmgt.provision.persist.OnmsNodeRequisition} object.
      */
-    public OnmsNodeRequisition getNodeRequistion(final String foreignId) {
+    public OnmsNodeRequisition getNodeRequisition(final String foreignId) {
         updateNodeCacheIfNecessary();
         return m_nodeReqs.get(foreignId);
     }

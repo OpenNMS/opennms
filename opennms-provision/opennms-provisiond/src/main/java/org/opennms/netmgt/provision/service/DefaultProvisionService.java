@@ -1340,7 +1340,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         if (node != null) {
             if (effectiveForeignSource != null) {
                 node.setForeignId(node.getNodeId());
-                createUpdateRequistion(ipAddress, node, effectiveLocationName, effectiveForeignSource);
+                createUpdateRequisition(ipAddress, node, effectiveLocationName, effectiveForeignSource);
             }
 
             // we do this here rather than in the doInsert method because
@@ -1352,8 +1352,8 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
     }
 
-    private boolean createUpdateRequistion(final String addrString, final OnmsNode node, final String locationName, String m_foreignSource) {
-        LOG.debug("Creating/Updating requistion {} for newSuspect {}...", m_foreignSource, addrString);
+    private boolean createUpdateRequisition(final String addrString, final OnmsNode node, final String locationName, String m_foreignSource) {
+        LOG.debug("Creating/Updating requisition {} for newSuspect {}...", m_foreignSource, addrString);
         try {
             Requisition r = null;
             if (m_foreignSource != null) {
@@ -1383,10 +1383,10 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
             m_foreignSourceRepository.save(r);
             m_foreignSourceRepository.flush();
         } catch (ForeignSourceRepositoryException e) {
-            LOG.error("Couldn't create/update requistion for newSuspect "+addrString, e);
+            LOG.error("Couldn't create/update requisition for newSuspect "+addrString, e);
             return false;
         }
-        LOG.debug("Created/Updated requistion {} for newSuspect {}.", m_foreignSource, addrString);
+        LOG.debug("Created/Updated requisition {} for newSuspect {}.", m_foreignSource, addrString);
         return true;
     }
 

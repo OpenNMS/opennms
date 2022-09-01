@@ -166,7 +166,7 @@ public class QueueingForeignSourceRepository implements ForeignSourceRepository,
 
     @Override
     public void delete(final Requisition requisition) throws ForeignSourceRepositoryException {
-        LOG.debug("Queueing delete of requistion {}", requisition.getForeignSource());
+        LOG.debug("Queueing delete of requisition {}", requisition.getForeignSource());
         m_pendingRequisitions.put(requisition.getForeignSource(), new DeletedRequisition(requisition));
         m_executor.execute(new QueuePersistRunnable());
     }

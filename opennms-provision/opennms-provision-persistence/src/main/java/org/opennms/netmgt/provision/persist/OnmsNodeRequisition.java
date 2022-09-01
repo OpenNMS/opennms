@@ -48,7 +48,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * OnmsNodeRequistion
+ * OnmsNodeRequisition
  *
  * @author brozow
  */
@@ -68,10 +68,10 @@ public class OnmsNodeRequisition {
     public OnmsNodeRequisition(final String foreignSource, final RequisitionNode node) {
         m_foreignSource = foreignSource;
         m_node = node;
-        m_assetReqs = constructAssetRequistions();
-        m_metaDataReqs = constructMetaDataRequistions();
-        m_ifaceReqs = constructIpInterfaceRequistions();
-        m_categoryReqs = constructCategoryRequistions();
+        m_assetReqs = constructAssetRequisitions();
+        m_metaDataReqs = constructMetaDataRequisitions();
+        m_ifaceReqs = constructIpInterfaceRequisitions();
+        m_categoryReqs = constructCategoryRequisitions();
     }
     
     /* (non-Javadoc)
@@ -86,7 +86,7 @@ public class OnmsNodeRequisition {
         return m_foreignSource;
     }
     
-    private List<OnmsAssetRequisition> constructAssetRequistions() {
+    private List<OnmsAssetRequisition> constructAssetRequisitions() {
     	final List<OnmsAssetRequisition> reqs = new ArrayList<OnmsAssetRequisition>(m_node.getAssets().size());
         for(final RequisitionAsset asset : m_node.getAssets()) {
             reqs.add(new OnmsAssetRequisition(asset));
@@ -94,13 +94,13 @@ public class OnmsNodeRequisition {
         return reqs;
     }
 
-    private List<OnmsNodeMetaDataRequisition> constructMetaDataRequistions() {
+    private List<OnmsNodeMetaDataRequisition> constructMetaDataRequisitions() {
         return m_node.getMetaData().stream()
                 .map(OnmsNodeMetaDataRequisition::new)
                 .collect(Collectors.toList());
     }
 
-    private List<OnmsIpInterfaceRequisition> constructIpInterfaceRequistions() {
+    private List<OnmsIpInterfaceRequisition> constructIpInterfaceRequisitions() {
     	final List<OnmsIpInterfaceRequisition> reqs = new ArrayList<OnmsIpInterfaceRequisition>(m_node.getInterfaces().size());
         for(final RequisitionInterface iface : m_node.getInterfaces()) {
             reqs.add(new OnmsIpInterfaceRequisition(iface));
@@ -108,7 +108,7 @@ public class OnmsNodeRequisition {
         return reqs;
     }
 
-    private List<OnmsNodeCategoryRequisition> constructCategoryRequistions() {
+    private List<OnmsNodeCategoryRequisition> constructCategoryRequisitions() {
     	final List<OnmsNodeCategoryRequisition> reqs = new ArrayList<OnmsNodeCategoryRequisition>(m_node.getCategories().size());
         for(final RequisitionCategory category : m_node.getCategories()) {
             reqs.add(new OnmsNodeCategoryRequisition(category));

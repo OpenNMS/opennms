@@ -142,7 +142,7 @@ TestCreateEmptyRequisition()
     local foreignSource=$PROV_GROUP
 
     createEmptyRequisition ${BASE_URL} ${foreignSource}
-    shuAssert "Unexpected failure creating requistion" $?
+    shuAssert "Unexpected failure creating requisition" $?
 
     shuAssertRequisitionEmpty $foreignSource
 
@@ -158,7 +158,7 @@ TestCreateRequisitionWithOneNode()
     local ip=192.168.39.1
 
     createRequisitionWithOneNode ${BASE_URL} ${foreignSource} ${foreignId} ${nodeLabel} ${ip}
-    shuAssert "Unexpected failure creating requistion" $?
+    shuAssert "Unexpected failure creating requisition" $?
 
     shuAssertRequisitionExists $foreignSource
 
@@ -175,7 +175,7 @@ TestAddNodeToRequisition()
 
     # Create requisition
     createEmptyRequisition ${BASE_URL} ${foreignSource}
-    shuAssert "0: Unexpected failure creating requistion" $?
+    shuAssert "0: Unexpected failure creating requisition" $?
 
     shuAssertRequisitionExists ${foreignSource}
 
@@ -221,7 +221,7 @@ TestAddNodeWithDuplicatedForeignIdToRequisition()
     local ip=192.168.39.1
 
     createRequisitionWithOneNode ${BASE_URL} ${foreignSource} ${foreignId} ${nodeLabel} ${ip}
-    shuAssert "Unexpected failure creating requistion" $?
+    shuAssert "Unexpected failure creating requisition" $?
 
     shuAssertRequisitionExists $foreignSource
 
@@ -244,7 +244,7 @@ TestDeleteNodeFromRequisition()
     local foreignId=21
 
     createRequisitionWithOneNode ${BASE_URL} ${foreignSource} ${foreignId} testNode 1.1.1.1
-    shuAssert "Unexpected failure creating requistion" $?
+    shuAssert "Unexpected failure creating requisition" $?
 
     shuAssertNodeInRequisition ${foreignSource} ${foreignId}
 

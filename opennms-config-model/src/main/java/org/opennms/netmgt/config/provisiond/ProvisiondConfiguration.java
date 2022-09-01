@@ -57,7 +57,7 @@ public class ProvisiondConfiguration implements Serializable {
     @JsonProperty("writeThreads")
     private Long writeThreads;
 
-    private String requistionDir;
+    private String requisitionDir;
 
     private String foreignSourceDir;
 
@@ -110,12 +110,12 @@ public class ProvisiondConfiguration implements Serializable {
         this.writeThreads = writeThreads;
     }
 
-    public String getRequistionDir() {
-        return this.requistionDir != null ? this.requistionDir : DEFAULT_REQUISITION_DIR;
+    public String getRequisitionDir() {
+        return this.requisitionDir != null ? this.requisitionDir : DEFAULT_REQUISITION_DIR;
     }
 
-    public void setRequistionDir(final String requistionDir) {
-        this.requistionDir = ConfigUtils.assertNotEmpty(requistionDir, "requisition-dir");
+    public void setRequisitionDir(final String requisitionDir) {
+        this.requisitionDir = ConfigUtils.assertNotEmpty(requisitionDir, "requisition-dir");
     }
 
     public String getForeignSourceDir() {
@@ -155,7 +155,7 @@ public class ProvisiondConfiguration implements Serializable {
                             this.scanThreads, 
                             this.rescanThreads, 
                             this.writeThreads, 
-                            this.requistionDir, 
+                            this.requisitionDir, 
                             this.foreignSourceDir, 
                             this.requisitionDefs);
     }
@@ -172,7 +172,7 @@ public class ProvisiondConfiguration implements Serializable {
                     && Objects.equals(that.scanThreads,that.scanThreads)
                     && Objects.equals(that.rescanThreads,that.rescanThreads)
                     && Objects.equals(that.writeThreads,that.writeThreads)
-                    && Objects.equals(that.requistionDir,that.requistionDir)
+                    && Objects.equals(that.requisitionDir,that.requisitionDir)
                     && Objects.equals(that.foreignSourceDir,that.foreignSourceDir)
                     && Objects.equals(that.requisitionDefs,that.requisitionDefs);
         }

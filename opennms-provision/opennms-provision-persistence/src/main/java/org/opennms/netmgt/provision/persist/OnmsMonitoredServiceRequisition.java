@@ -56,7 +56,7 @@ public class OnmsMonitoredServiceRequisition {
     public OnmsMonitoredServiceRequisition(RequisitionMonitoredService svc) {
         m_svc = svc;
         m_categoryReqs = constructCategoryReqs();
-        m_metaDataReqs = constructMetaDataRequistions();
+        m_metaDataReqs = constructMetaDataRequisitions();
     }
     
     private List<OnmsServiceCategoryRequisition> constructCategoryReqs() {
@@ -67,7 +67,7 @@ public class OnmsMonitoredServiceRequisition {
         return reqs;
     }
 
-    private List<OnmsServiceMetaDataRequisition> constructMetaDataRequistions() {
+    private List<OnmsServiceMetaDataRequisition> constructMetaDataRequisitions() {
         return m_svc.getMetaData().stream()
                 .map(OnmsServiceMetaDataRequisition::new)
                 .collect(Collectors.toList());
