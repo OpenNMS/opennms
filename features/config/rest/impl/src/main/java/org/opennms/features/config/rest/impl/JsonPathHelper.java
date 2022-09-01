@@ -29,7 +29,6 @@
 package org.opennms.features.config.rest.impl;
 
 import java.util.List;
-import java.util.Random;
 
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
@@ -51,33 +50,25 @@ public class JsonPathHelper {
     public static String update(String data, String path, String newPartContent) {
         JsonPath jsonPath = JsonPath.compile(path);
         assertThereIsExactlyOnePath(data, jsonPath);
-        
-        //the object under specified path will be replaced with providet text without checking if the text is valid JSON 
-        //for that on the first step the specified node will be replaced by unique number, and then this number will be replaced 
-        //with provided text
-        Long unique = getUnique(data);
-        String newJson = JsonPath.parse(data).set(jsonPath, unique).jsonString();
-        return newJson.replace(unique.toString(), newPartContent);
+
+        Object newContentObject = Configuration.defaultConfiguration().jsonProvider().parse(newPartContent);
+        return JsonPath.parse(data).set(jsonPath, newContentObject).jsonString();
     }
 
     public static String append(String data, String path, String newPartContent) {
         JsonPath jsonPath = JsonPath.compile(path);
         assertThereIsExactlyOnePath(data, jsonPath);
 
-        //the object under specified path will be replaced with provided text without checking if the text is valid JSON
-        //for that on the first step the specified node will be replaced by unique number, and then this number will be replaced
-        //with provided text
-        Long unique = getUnique(data);
-        String newJson = JsonPath.parse(data).add(jsonPath, unique).jsonString();
-        return newJson.replace(unique.toString(), newPartContent);
+        Object newContentObject = Configuration.defaultConfiguration().jsonProvider().parse(newPartContent);
+        return JsonPath.parse(data).add(jsonPath, newContentObject).jsonString();
     }
 
     public static String insertOrUpdateNode(String data, String parent, String nodeName, String newPartContent) {
         JsonPath jsonPath = JsonPath.compile(parent);
         assertThereIsExactlyOnePath(data, jsonPath);
-        Long unique = getUnique(data);
-        String newJson = JsonPath.parse(data).put(parent, nodeName, unique).jsonString();
-        return newJson.replace(unique.toString(), newPartContent);
+
+        Object newContentObject = Configuration.defaultConfiguration().jsonProvider().parse(newPartContent);
+        return JsonPath.parse(data).put(parent, nodeName, newContentObject).jsonString();
     }
 
     public static String delete(String data, String path) {
@@ -94,19 +85,6 @@ public class JsonPathHelper {
     private static void assertThereIsExactlyOnePath(String data, JsonPath jsonPath) {
         if (count(data, jsonPath) != 1) {
             throw new IllegalArgumentException("Path must resolve to a single element");
-        }
-    }
-
-    private static String combine(String parent, String node) {
-        return parent + ".['" + node.replace("\\", "\\\\").replace("'", "\\'") + "']";
-    }
-
-    private static Long getUnique(String data) {
-        while (true) {
-            Long unique = new Random().nextLong();
-            if(!data.contains(unique.toString())) {
-                return unique;
-            }
         }
     }
 }
