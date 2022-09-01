@@ -1,7 +1,7 @@
 ##
 # Use Java base image and setup required RPMS as cacheable image.
 ##
-ARG BASE_IMAGE="opennms/deploy-base:jre-2.0.4.b161"
+ARG BASE_IMAGE="opennms/deploy-base:jre-2.0.6.b165"
 
 FROM ${BASE_IMAGE} as horizon-base
 
@@ -9,23 +9,12 @@ ADD --chown=10001:10001 ./tarball-root/ /usr/share/opennms/
 
 ARG REQUIRED_DEBS="rrdtool jrrd2 r-base-core rsync libxml-twig-perl libwww-perl jq diffutils hostname sudo"
 
-ARG CONFD_ARCH="linux-amd64"
-ARG CONFD_VERSION="0.16.0"
-ARG CONFD_URL="https://github.com/kelseyhightower/confd/releases/download/v${CONFD_VERSION}/confd-${CONFD_VERSION}-${CONFD_ARCH}"
 ARG REPO_KEY_URL="https://debian.opennms.org/OPENNMS-GPG-KEY"
 
 SHELL ["/bin/bash", "-c"]
 
 # Prevent setup prompt
 ENV DEBIAN_FRONTEND=noninteractive
-
-# Collect generic steps in a layer for caching
-RUN curl \
-    --retry 5 \
-    --fail \
-    -L ${CONFD_URL} \
-    -o /usr/bin/confd && \
-    chmod +x /usr/bin/confd
 
 # import keys
 RUN apt-get update && \
@@ -103,7 +92,9 @@ RUN if [[ -n "${ADD_DEB_PACKAGES}" ]]; then \
     ln -s /opennms-data/reports /usr/share/opennms/share/reports && \
     ln -s /opennms-data/mibs /usr/share/opennms/share/mibs && \
 # Align with old opennms path
-    ln -s /usr/share/opennms /opt/opennms
+    ln -s /usr/share/opennms /opt/opennms && \
+# Create etc-pristine
+    rsync -ar /opt/opennms/etc/ /opt/opennms/share/etc-pristine/
 
 # Add templates replaced at runtime and entrypoint
 COPY --chown=10001:0 ./container-fs/confd /etc/confd

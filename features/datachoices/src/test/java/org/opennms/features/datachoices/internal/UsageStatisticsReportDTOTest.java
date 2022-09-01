@@ -74,7 +74,7 @@ public class UsageStatisticsReportDTOTest {
                         "\"dcbFailed\":0,\"dcbSucceed\":0,\"dcbWebUiEntries\":0," +
                         "\"destinationPathCount\":-1,\"eventLogsProcessed\":0,\"events\":0,\"freePhysicalMemorySize\":null,\"groups\":0," +
                         "\"installedFeatures\":null,\"installedOIAPlugins\":null,\"ipInterfaces\":0,\"minions\":0,\"monitoredServices\":0,\"monitoringLocations\":0,\"nodes\":0," +
-                        "\"nodesBySysOid\":{\".1.2.3.4\":2,\".1.2.3.5\":6},\"notificationEnablementStatus\":null,\"onCallRoleCount\":1," +
+                        "\"nodesBySysOid\":{\".1.2.3.4\":2,\".1.2.3.5\":6},\"nodesWithDeviceConfigBySysOid\":{},\"notificationEnablementStatus\":null,\"onCallRoleCount\":1," +
                         "\"osArch\":null,\"osName\":null,\"osVersion\":null,\"packageName\":\"opennms\",\"pollsCompleted\":0," +
                         "\"provisiondImportThreadPoolSize\":0,\"provisiondRequisitionSchemeCount\":{\"file\":4,\"vmware\":3}," +
                         "\"provisiondRescanThreadPoolSize\":0,\"provisiondScanThreadPoolSize\":0,\"provisiondWriteThreadPoolSize\":0," +
