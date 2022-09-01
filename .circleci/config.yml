@@ -17,21 +17,25 @@ parameters:
     description: whether to trigger garbage collection for older feature images
     type: boolean
     default: false
+  trigger-flaky:
+    description: whether to enable running flaky smoke tests
+    type: boolean
+    default: false
 
 setup: true
 
 commands:
   shallow-clone:
-    description: "Quick shallow checkout"
-    steps:
-      - run:
-          name: git clone
-          command: |
-            install -d -m 700 ~/.ssh
-            ssh-keyscan github.com >> ~/.ssh/known_hosts
-            ssh-keyscan -p 443 ssh.github.com >> ~/.ssh/known_hosts
-            chmod 600 ~/.ssh/known_hosts
-            git clone --depth 20 "${CIRCLE_REPOSITORY_URL}" --branch "${CIRCLE_BRANCH}" .
+      description: "Quick shallow checkout"
+      steps:
+        - run:
+            name: git clone
+            command: |
+              install -d -m 700 ~/.ssh
+              ssh-keyscan github.com >> ~/.ssh/known_hosts
+              ssh-keyscan -p 443 ssh.github.com >> ~/.ssh/known_hosts
+              chmod 600 ~/.ssh/known_hosts
+              git clone --depth 20 "${CIRCLE_REPOSITORY_URL}" --branch "${CIRCLE_BRANCH}" .
   pack-config:
     description: "Pack the dynamic config in .circleci/main/"
     steps:
@@ -43,19 +47,20 @@ commands:
             export PATH="$CIRCLE_BIN_DIR:$PATH"
             curl -fLSs https://raw.githubusercontent.com/CircleCI-Public/circleci-cli/master/install.sh | DESTDIR="$CIRCLE_BIN_DIR" bash
             "$CIRCLE_BIN_DIR/circleci" version
-            "$CIRCLE_BIN_DIR/circleci" config pack .circleci/main --skip-update-check > .circleci/main.yml || exit 1
+            "$CIRCLE_BIN_DIR/circleci" config pack /tmp/.circleci/main --skip-update-check > /tmp/.circleci/main.yml || exit 1
+            "$CIRCLE_BIN_DIR/circleci" config validate --skip-update-check /tmp/.circleci/main.yml || exit 1
       - store_artifacts:
-          path: /tmp/.circleci/main.yml
+          path: .circleci/main.yml
           destination: main.yml
 
 workflows:
   coverage:
     when:
       and:
-        - equal: [true, << pipeline.parameters.trigger-coverage-api >>]
-        - equal: [false, << pipeline.parameters.trigger-prebuild >>]
-        - equal: [false, << pipeline.parameters.trigger-automation >>]
-        - equal: [false, << pipeline.parameters.trigger-flaky >>]
+        - equal: [ true, << pipeline.parameters.trigger-coverage-api >> ]
+        - equal: [ false, << pipeline.parameters.trigger-prebuild >> ]
+        - equal: [ false, << pipeline.parameters.trigger-automation >> ]
+        - equal: [ false, << pipeline.parameters.trigger-flaky >> ]
     jobs:
       - trigger-path-filtering:
           base-revision: << pipeline.git.branch >>
@@ -65,28 +70,51 @@ workflows:
   pre-build:
     when:
       and:
-        - equal: [false, << pipeline.parameters.trigger-coverage-api >>]
-        - equal: [true, << pipeline.parameters.trigger-prebuild >>]
-        - equal: [false, << pipeline.parameters.trigger-automation >>]
-        - equal: [false, << pipeline.parameters.trigger-flaky >>]
+        - equal: [ false, << pipeline.parameters.trigger-coverage-api >> ]
+        - equal: [ true, << pipeline.parameters.trigger-prebuild >> ]
+        - equal: [ false, << pipeline.parameters.trigger-automation >> ]
+        - equal: [ false, << pipeline.parameters.trigger-flaky >> ]
     jobs:
       - trigger-path-filtering:
           base-revision: << pipeline.git.branch >>
           mapping: |
-            .*                trigger-coverage false
-            ((?!docs/).)*     trigger-build    true
-            docs/.*           trigger-docs     true
-            ui/.*             trigger-ui       true
-            .circleci/.*      trigger-build    true
-            .circleci/.*      trigger-docs     true
-            .circleci/.*      trigger-ui       true
+            .*                trigger-coverage    false
+            .*                trigger-flaky-smoke false
+            ((?!docs/).)*     trigger-build       true
+            docs/.*           trigger-docs        true
+            ui/.*             trigger-ui          true
+            .circleci/.*      trigger-build       true
+            .circleci/main/jobs/build/build-docs.yml trigger-docs        true
+            .circleci/main/jobs/build/build-ui.yml trigger-ui        true
+            antora-playbook-local.yml      trigger-docs        true
+
+  pre-build-with-flaky:
+    when:
+      and:
+        - equal: [ false, << pipeline.parameters.trigger-coverage-api >> ]
+        - equal: [ true, << pipeline.parameters.trigger-prebuild >> ]
+        - equal: [ false, << pipeline.parameters.trigger-automation >> ]
+        - equal: [ true, << pipeline.parameters.trigger-flaky >> ]
+    jobs:
+      - trigger-path-filtering:
+          base-revision: << pipeline.git.branch >>
+          mapping: |
+            .*                trigger-coverage    false
+            .*                trigger-flaky-smoke true
+            ((?!docs/).)*     trigger-build       true
+            docs/.*           trigger-docs        true
+            ui/.*             trigger-ui          true
+            .circleci/.*      trigger-build       true
+            .circleci/main/jobs/build/build-docs.yml trigger-docs        true
+            .circleci/main/jobs/build/build-ui.yml trigger-ui        true
+            antora-playbook-local.yml      trigger-docs        true
 
   automation:
     when:
       and:
-        - equal: [false, << pipeline.parameters.trigger-coverage-api >>]
-        - equal: [false, << pipeline.parameters.trigger-prebuild >>]
-        - equal: [true, << pipeline.parameters.trigger-automation >>]
+        - equal: [ false, << pipeline.parameters.trigger-coverage-api >> ]
+        - equal: [ false, << pipeline.parameters.trigger-prebuild >> ]
+        - equal: [ true, << pipeline.parameters.trigger-automation >> ]
     jobs:
       - docker_gc
 
@@ -96,7 +124,7 @@ jobs:
       - image: docker
     steps:
       - run:
-          name: Docker GC - remove inactive images on feature branches
+          name:  Docker GC - remove inactive images on feature branches
           # TODO replace expect when https://github.com/docker/hub-tool/pull/198 is merged
           command: |
             wget https://github.com/docker/hub-tool/releases/download/v0.4.4/hub-tool-linux-amd64.tar.gz
@@ -124,14 +152,14 @@ jobs:
       - run:
           name: Creating build-trigger file
           command: |
-            cp .circleci/example-build-triggers.override.json /tmp/build-triggers.json
-            sed -i 's/"coverage": false/"coverage": true/g' /tmp/build-triggers.json
+               cp .circleci/example-build-triggers.override.json /tmp/build-triggers.json
+               sed -i 's/"coverage": false/"coverage": true/g' /tmp/build-triggers.json
       - store_artifacts:
           path: /tmp/build-triggers.json
-          destination: build-triggers.json
+          destination: build-triggers.json      
       - continuation/continue:
           circleci_domain: circleci.com
-          configuration_path: /tmp/.circleci/main.yml
+          configuration_path: .circleci/main.yml
           parameters: '{ "trigger-coverage": true }'
 
   trigger-path-filtering:
@@ -147,108 +175,24 @@ jobs:
         description: Mapping of path regular expressions to pipeline parameters and values. One mapping per line, whitespace-delimited.
         type: string
     steps:
-      - cached-checkout
-      # copied from https://circleci.com/developer/orbs/orb/circleci/path-filtering
-      # we do it ourselves because otherwise we have to do a full un-cached checkout every time
+      - shallow-clone
       - run:
-          name: process mapping
+          name: Trigger Status
+          command: |
+            echo Coverage API: << pipeline.parameters.trigger-coverage-api >>
+            echo Prebuild: << pipeline.parameters.trigger-prebuild >>
+            echo Automation: << pipeline.parameters.trigger-automation >>
+            echo Trigger Flaky Tests: << pipeline.parameters.trigger-flaky >>
+      - run:
+          name: Process Generate
           environment:
             BASE_REVISION: << parameters.base-revision >>
             MAPPING: << parameters.mapping >>
             OUTPUT_PATH: /tmp/pipeline-parameters.json
-          shell: /usr/bin/env python3
-          command: |+
-            #!/usr/bin/env python3
-
-            import json
-            import os
-            import re
-            import subprocess
-
-            def checkout(revision):
-              """
-              Helper function for checking out a branch
-
-              :param revision: The revision to checkout
-              :type revision: str
-              """
-              subprocess.run(
-                ['git', 'checkout', revision],
-                check=True
-              )
-
-            output_path = os.environ.get('OUTPUT_PATH')
-            head = os.environ.get('CIRCLE_SHA1')
-            base_revision = os.environ.get('BASE_REVISION')
-            checkout(base_revision)  # Checkout base revision to make sure it is available for comparison
-            checkout(head)  # return to head commit
-
-            base = subprocess.run(
-              ['git', 'merge-base', base_revision, head],
-              check=True,
-              capture_output=True
-            ).stdout.decode('utf-8').strip()
-
-            if head == base:
-              try:
-                # If building on the same branch as BASE_REVISION, we will get the
-                # current commit as merge base. In that case try to go back to the
-                # first parent, i.e. the last state of this branch before the
-                # merge, and use that as the base.
-                base = subprocess.run(
-                  ['git', 'rev-parse', 'HEAD~1'], # FIXME this breaks on the first commit, fallback to something
-                  check=True,
-                  capture_output=True
-                ).stdout.decode('utf-8').strip()
-              except:
-                # This can fail if this is the first commit of the repo, so that
-                # HEAD~1 actually doesn't resolve. In this case we can compare
-                # against this magic SHA below, which is the empty tree. The diff
-                # to that is just the first commit as patch.
-                base = '4b825dc642cb6eb9a060e54bf8d69288fbee4904'
-
-            print('Comparing {}...{}'.format(base, head))
-            changes = subprocess.run(
-              ['git', 'diff', '--name-only', base, head],
-              check=True,
-              capture_output=True
-            ).stdout.decode('utf-8').splitlines()
-
-            mappings = [
-              m.split() for m in
-              os.environ.get('MAPPING').splitlines()
-            ]
-
-            def check_mapping(m):
-              if 3 != len(m):
-                raise Exception("Invalid mapping")
-              path, param, value = m
-              regex = re.compile(r'^' + path + r'$')
-              for change in changes:
-                if regex.match(change):
-                  return True
-              return False
-
-            def convert_mapping(m):
-              return [m[1], json.loads(m[2])]
-
-            mappings = filter(check_mapping, mappings)
-            mappings = map(convert_mapping, mappings)
-            mappings = dict(mappings)
-
-            with open(output_path, 'w') as fp:
-              fp.write(json.dumps(mappings))
-
-      - pack-config
+          command: python3 .circleci/pyscripts/process_generate.py 
       - run:
-          name: check for empty trigger config
-          command: |
-            if [ "$(grep -c trigger-coverage /tmp/pipeline-parameters.json)" -eq 0 ]; then
-              if [ "$(grep -c trigger-prebuild /tmp/pipeline-parameters.json)" -eq 0 ]; then
-                # this can happen in the case of merges or other similar "empty" commits
-                echo '{ "trigger-prebuild": false, "trigger-build": true }' > /tmp/pipeline-parameters.json
-              fi
-            fi
+          name: Generate Main YAML file
+          command: python3 .circleci/pyscripts/generate_main.py 
       - store_artifacts:
           path: /tmp/pipeline-parameters.json
           destination: pipeline-parameters.json

@@ -19,19 +19,19 @@ ENV DEBIAN_FRONTEND=noninteractive
 # import keys
 RUN apt-get update && \
     apt-get \
-    --no-install-recommends \
-    -yq \
-    install \
-    gnupg \
-    ca-certificates && \
+        --no-install-recommends \
+        -yq \
+        install \
+            gnupg \
+            ca-certificates && \
     curl -fsSL ${REPO_KEY_URL} | apt-key add && \
     echo "deb https://debian.opennms.org stable main" > /etc/apt/sources.list.d/opennms.list && \
     apt-get update && \
     apt-get \
-    --no-install-recommends \
-    -yq \
-    install \
-    ${REQUIRED_DEBS} && \
+        --no-install-recommends \
+        -yq \
+        install \
+            ${REQUIRED_DEBS} && \
     apt-get -y autoclean && \
     apt-get -y clean && \
     rm -rf /var/cache/apt
@@ -43,15 +43,15 @@ RUN setcap cap_net_raw+ep ${JAVA_HOME}/bin/java && \
 
 # Create OpenNMS user with a specific group ID
 RUN groupadd \
-    -g 10001 \
-    opennms && \
+        -g 10001 \
+        opennms && \
     adduser \
-    --uid 10001 \
-    --gid 10001 \
-    --home /opt/opennms \
-    --no-create-home \
-    --shell /usr/bin/bash \
-    opennms
+        --uid 10001 \
+        --gid 10001 \
+        --home /opt/opennms \
+        --no-create-home \
+        --shell /usr/bin/bash \
+        opennms
 
 ##
 # Install and setup OpenNMS RPMS
@@ -71,29 +71,29 @@ ARG ADD_DEB_PACKAGES
 
 # Install any spare packages and create some compatibility links
 RUN if [[ -n "${ADD_DEB_PACKAGES}" ]]; then \
-    apt-get --no-install-recommends install -yq ${ADD_DEB_PACKAGES}; \
+        apt-get --no-install-recommends install -yq ${ADD_DEB_PACKAGES}; \
     fi && \
     apt-get -y autoclean && \
     apt-get -y clean && \
     rm -rf /usr/share/opennms/share/rrd \
-    /usr/share/opennms/share/reports \
-    /usr/share/opennms/share/mibs \
-    /var/cache/apt && \
+           /usr/share/opennms/share/reports \
+           /usr/share/opennms/share/mibs \
+           /var/cache/apt && \
     install -d -m 755 -g 10001 -o 10001 \
-    /opt/opennms-etc-overlay \
-    /opt/opennms-jetty-webinf-overlay \
-    /opt/opennms-overlay \
-    /opennms-data && \
+            /opt/opennms-etc-overlay \
+            /opt/opennms-jetty-webinf-overlay \
+            /opt/opennms-overlay \
+            /opennms-data && \
     install -d -m 755 -g 10001 -o 10001 \
-    /opennms-data/rrd \
-    /opennms-data/reports \
-    /opennms-data/mibs && \
+            /opennms-data/rrd \
+            /opennms-data/reports \
+            /opennms-data/mibs && \
     ln -s /opennms-data/rrd /usr/share/opennms/share/rrd && \
     ln -s /opennms-data/reports /usr/share/opennms/share/reports && \
     ln -s /opennms-data/mibs /usr/share/opennms/share/mibs && \
-    # Align with old opennms path
+# Align with old opennms path
     ln -s /usr/share/opennms /opt/opennms && \
-    # Create etc-pristine
+# Create etc-pristine
     rsync -ar /opt/opennms/etc/ /opt/opennms/share/etc-pristine/
 
 # Add templates replaced at runtime and entrypoint
@@ -109,18 +109,18 @@ ARG BUILD_URL
 ARG BUILD_BRANCH
 
 LABEL org.opencontainers.image.created="${BUILD_DATE}" \
-    org.opencontainers.image.title="OpenNMS Horizon ${VERSION}" \
-    org.opencontainers.image.source="${SOURCE}" \
-    org.opencontainers.image.revision="${REVISION}" \
-    org.opencontainers.image.version="${VERSION}" \
-    org.opencontainers.image.vendor="The OpenNMS Group, Inc." \
-    org.opencontainers.image.authors="OpenNMS Community" \
-    org.opencontainers.image.licenses="AGPL-3.0" \
-    org.opennms.image.base="${BASE_IMAGE}" \
-    org.opennme.cicd.jobid="${BUILD_JOB_ID}" \
-    org.opennms.cicd.buildnumber="${BUILD_NUMBER}" \
-    org.opennms.cicd.buildurl="${BUILD_URL}" \
-    org.opennms.cicd.branch="${BUILD_BRANCH}"
+      org.opencontainers.image.title="OpenNMS Horizon ${VERSION}" \
+      org.opencontainers.image.source="${SOURCE}" \
+      org.opencontainers.image.revision="${REVISION}" \
+      org.opencontainers.image.version="${VERSION}" \
+      org.opencontainers.image.vendor="The OpenNMS Group, Inc." \
+      org.opencontainers.image.authors="OpenNMS Community" \
+      org.opencontainers.image.licenses="AGPL-3.0" \
+      org.opennms.image.base="${BASE_IMAGE}" \
+      org.opennme.cicd.jobid="${BUILD_JOB_ID}" \
+      org.opennms.cicd.buildnumber="${BUILD_NUMBER}" \
+      org.opennms.cicd.buildurl="${BUILD_URL}" \
+      org.opennms.cicd.branch="${BUILD_BRANCH}"
 
 WORKDIR /opt/opennms
 

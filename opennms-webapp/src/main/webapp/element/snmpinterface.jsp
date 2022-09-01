@@ -42,6 +42,7 @@
     org.opennms.netmgt.dao.hibernate.IfLabelDaoImpl"
 %>
 <%@ page import="org.opennms.netmgt.model.ResourceId" %>
+<%@ page import="org.opennms.core.utils.WebSecurityUtils" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <%
@@ -144,7 +145,7 @@ if (request.isUserInRole( Authentication.ROLE_ADMIN )) {
       <table class="table table-sm">
         <tr>
           <th>Node</th>
-          <td><a href="element/node.jsp?node=<%=intf_db.getNodeId()%>"><%=node.getLabel()%></a></td>
+          <td><a href="element/node.jsp?node=<%=intf_db.getNodeId()%>"><%=WebSecurityUtils.sanitizeString(node.getLabel())%></a></td>
         </tr>
         <tr>
           <th>Interface Index</th>

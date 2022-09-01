@@ -43,13 +43,13 @@ SHELL ["/bin/bash", "-c"]
 # Create Sentinel user with a specific group ID
 RUN groupadd -g 10001 sentinel && \
     useradd \
-    --system \
-    --uid 10001 \
-    --gid 10001 \
-    --home-dir /usr/share/sentinel \
-    --no-create-home \
-    --shell /usr/bin/bash \
-    sentinel
+      --system \
+      --uid 10001 \
+      --gid 10001 \
+      --home-dir /usr/share/sentinel \
+      --no-create-home \
+      --shell /usr/bin/bash \
+      sentinel
 
 # we want these to break the caching so yum will re-install now that
 # we're not copying DEBs into /tmp/debs by default
@@ -63,11 +63,11 @@ RUN  getent passwd sentinel
 
 # Install any spare packages and create some compatibility links
 RUN if [[ -n "${ADD_DEB_PACKAGES}" ]]; then \
-    apt-get --no-install-recommends install -yq ${ADD_DEB_PACKAGES}; \
+        apt-get --no-install-recommends install -yq ${ADD_DEB_PACKAGES}; \
     fi && \
     install -d -g 10001 -o 10001 -m 755 \
-    /var/lib/sentinel \
-    /usr/share/sentinel/data/{log,tmp} && \
+        /var/lib/sentinel \
+        /usr/share/sentinel/data/{log,tmp} && \
     ln -s /usr/share/sentinel/data /var/lib/sentinel/data && \
     ln -s /usr/share/sentinel/deploy /var/lib/sentinel/deploy && \
     ln -s /usr/share/sentinel/etc /etc/sentinel && \
@@ -103,18 +103,18 @@ ARG BUILD_URL
 ARG BUILD_BRANCH
 
 LABEL org.opencontainers.image.created="${BUILD_DATE}" \
-    org.opencontainers.image.title="OpenNMS Sentinel ${VERSION}" \
-    org.opencontainers.image.source="${SOURCE}" \
-    org.opencontainers.image.revision="${REVISION}" \
-    org.opencontainers.image.version="${VERSION}" \
-    org.opencontainers.image.vendor="The OpenNMS Group, Inc." \
-    org.opencontainers.image.authors="OpenNMS Community" \
-    org.opencontainers.image.licenses="AGPL-3.0" \
-    org.opennms.image.base="${BASE_IMAGE}" \
-    org.opennme.cicd.jobid="${BUILD_JOB_ID}" \
-    org.opennms.cicd.buildnumber="${BUILD_NUMBER}" \
-    org.opennms.cicd.buildurl="${BUILD_URL}" \
-    org.opennms.cicd.branch="${BUILD_BRANCH}"
+      org.opencontainers.image.title="OpenNMS Sentinel ${VERSION}" \
+      org.opencontainers.image.source="${SOURCE}" \
+      org.opencontainers.image.revision="${REVISION}" \
+      org.opencontainers.image.version="${VERSION}" \
+      org.opencontainers.image.vendor="The OpenNMS Group, Inc." \
+      org.opencontainers.image.authors="OpenNMS Community" \
+      org.opencontainers.image.licenses="AGPL-3.0" \
+      org.opennms.image.base="${BASE_IMAGE}" \
+      org.opennme.cicd.jobid="${BUILD_JOB_ID}" \
+      org.opennms.cicd.buildnumber="${BUILD_NUMBER}" \
+      org.opennms.cicd.buildurl="${BUILD_URL}" \
+      org.opennms.cicd.branch="${BUILD_BRANCH}"
 
 ### Runtime information and not relevant at build time
 

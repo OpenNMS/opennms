@@ -30,11 +30,6 @@ find_tests()
       --output=/tmp/this_node_projects \
       .
 }
-echo "##TEST - predanger WR"
-mkdir ~/
-
-echo "##TEST - danger WR ## "
-ssh-keyscan github.com >> ~/.ssh/known_hosts
 
 echo "#### Making sure git is up-to-date"
 git fetch --all
