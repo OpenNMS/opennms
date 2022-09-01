@@ -349,9 +349,6 @@ image::docs/02_opennms-logo.png[opennms logo]
 ----
 
 The image path for all images that you include is relative to the `.adoc` file where the image is referenced.
-Below is an overview of image folders in the `opennms` project:
-
-image::opennms-imagehierarchy.png[`opennms` image folder hierarchy]
 
 Images should have alt text associated with them.
 This allows screen readers to provide users with information about the image and its role in the document.
