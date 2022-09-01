@@ -29,7 +29,7 @@ Use <<deep-dive/provisioning/auto-discovery.adoc#ga-provisioning-auto-discovery-
 
 Use xref:reference:provisioning/handlers/introduction.adoc#import-handlers[import handlers] to provision nodes from other data sources such as DNS zone records and VMware.
 
-Automatically discovered entities are analyzed, persisted to the relational data store, and managed based on the policies defined in the <<deep-dive/provisioning/getting-started.adoc#foreign-source-definition, default foreign source definition>>:
+Automatically discovered entities are analyzed, persisted to the relational data store, and managed based on the policies defined in the <<deep-dive/provisioning/foreign-source.adoc#foreign-source-definition, default foreign source definition>>:
 
 * Scanned to discover node entity’s interfaces (SNMP and IP).
 * Interfaces are persisted.

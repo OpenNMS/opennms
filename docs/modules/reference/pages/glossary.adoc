@@ -70,7 +70,7 @@ xref:operation:deep-dive/flows/introduction.adoc[Flows]:: Summaries of network t
 
 Foreign source:: A data source hosted outside of your local network.
 To customize monitoring of nodes in a foreign source, you can set a foreign source definition with your desired detectors and policies.
-(See xref:operation:deep-dive/provisioning/getting-started.adoc#foreign-source-definition[Foreign Source Definition].)
+(See xref:operation:deep-dive/provisioning/foreign-source.adoc#foreign-source-definition[Foreign Source Definition].)
 
 Geolocation:: The actual physical location of a node monitored by {page-component-title}.
 Nodes can be manually assigned a location, or the location can be automatically determined using the xref:reference:provisioning/adapters/geoip.adoc[GeoIP Provisioning Adapter].

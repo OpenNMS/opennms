@@ -9,7 +9,7 @@ Make sure you complete the tasks in <<quick-start/provisioning/inventory.adoc, S
 [[requisition-add-nodes]]
 == Add nodes through the Requisition UI
 
-Before adding nodes to a requisition, you must <<deep-dive/provisioning/getting-started.adoc#requisition-create, create a requisition>>.
+Before adding nodes to a requisition, you must <<quick-start/inventory.adoc#requisition-create, create a requisition>>.
 
 . In the web UI, click the gear icon in the top right.
 . In the *Provisioning* area, choose *Manage Provisioning Requisition*.

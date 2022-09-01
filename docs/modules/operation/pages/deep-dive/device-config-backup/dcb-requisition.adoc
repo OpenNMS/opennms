@@ -17,7 +17,7 @@ For example, `0 0 0 * * ?` runs every 24 hrs at 12:00 a.m. `0 0 1 * * ?` runs ev
 . Click *Add Requisition* and enter a name for the requisition.
 If you want to enable device config backup on existing nodes in a requisition, select the desired requisition and edit the node definition.
 . Click on the edit icon and click *Add Node*.
-. Set up your requisition as described in xref:operation:deep-dive/provisioning/getting-started.adoc#requisition-create[Create a requisition].
+. Set up your requisition as described in xref:operation:quick-start/inventory.adoc#requisition-create[Create a requisition].
 . Add one or more `DeviceConfig` services on the interface where we are backing up the config.
 .. If a device has multiple config types, use the prefix `DeviceConfig-` to add services.
 +
