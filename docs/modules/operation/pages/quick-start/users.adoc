@@ -48,7 +48,7 @@ Include your email address and any other relevant contact information for notifi
 . (Optional) Add other contact information (for example, a mobile phone number).
 . Click *Finish* at the bottom of the screen to save your changes.
 
-You will need this user account for the next page: <<quick-start/notifications.adoc, Step 2: Turn on Default Notifications>>.
+You will need this user account for the next step: <<quick-start/notifications.adoc, Turn on Default Notifications>>.
 
 WARNING: Do not delete the default `admin` and `rtc` user accounts.
 The `rtc` user account is used for the communication of the Real-Time Console on the start page to calculate the node and service availability.
