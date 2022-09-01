@@ -199,7 +199,7 @@ function doDelete() {
                   <c:param name="node" value="${service.ipInterface.node.id}"/>
                 </c:url>
                 <th>Node</th>
-                <td><a href="${fn:escapeXml(nodeLink)}">${service.ipInterface.node.label}</a></td>
+                <td><a href="${fn:escapeXml(nodeLink)}"><c:out value="${service.ipInterface.node.label}"/></a></td>
               </tr>
               <tr>
                 <c:url var="interfaceLink" value="element/interface.jsp">

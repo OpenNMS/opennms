@@ -43,6 +43,7 @@
                 org.springframework.web.context.WebApplicationContext,
                 org.springframework.web.context.support.WebApplicationContextUtils"
 %>
+<%@ page import="org.opennms.core.utils.WebSecurityUtils" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <%!
@@ -120,7 +121,7 @@
 <table class="table table-sm table-hover tree">
   <% if (root == null) { %>
       <br/>
-      <div class="jumbotron"><h3>The node <%= node.getLabel() %> doesn't have hardware information on the database.</h3></div>
+      <div class="jumbotron"><h3>The node <%=WebSecurityUtils.sanitizeString(node.getLabel())%> doesn't have hardware information on the database.</h3></div>
   <% } else {
        printTree(out, root);
      }
