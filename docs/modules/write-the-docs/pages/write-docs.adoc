@@ -337,7 +337,7 @@ NOTE: All images share the same namespace.
 The best practice is to use unique identifiers for all image files.
 Image files should be in the `.png` format.
 
-To include an image file in a doc, make sure that it resides in the appropriate `./images` directory relative to the document that you are including it in (see the xref:write-the-docs:develop-docs.adoc#ga-opennms-docs-repo-structure[`opennms` repository file structure] section).
+To include an image file in a doc, make sure that it resides in the appropriate `./images` directory relative to the document that you are including it in (see the xref:write-the-docs:develop-docs.adoc#ga-opennms-docs-repo-structure[repository file structure] section).
 Where possible, include the source file in the `./images` directory as well; this allows other contributors to update it in the future.
 
 Insert an image into a document using the following syntax:

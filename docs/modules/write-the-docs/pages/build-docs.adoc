@@ -45,4 +45,7 @@ You can open the latter directly in your browser.
 
 The generic path to a given version of the docs is as follows:
 
-`<docs_repo_dir>/build/site/<distro>/<branch_dir_name>`
+[source]
+----
+<docs_repo_dir>/build/site/<distro>/<branch_dir_name>
+----
