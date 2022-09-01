@@ -52,11 +52,11 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
         m_nodeDao.save(builder.getSwitch2());
 
         final List<NodeTopologyEntity> nodes = nodeTopologyService.findAllNode();
-        nodes.stream().forEach(n -> System.err.println(n));
+        nodes.forEach(System.err::println);
         assertThat(nodes, hasSize(2));
         
         final List<IpInterfaceTopologyEntity> ips = nodeTopologyService.findAllIp();
-        ips.stream().forEach(i -> System.err.println(i));
+        ips.forEach(System.err::println);
         
         assertThat(ips, hasSize(6));
     }

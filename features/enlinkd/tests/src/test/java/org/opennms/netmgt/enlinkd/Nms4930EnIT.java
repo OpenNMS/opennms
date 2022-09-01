@@ -29,6 +29,7 @@
 package org.opennms.netmgt.enlinkd;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.DLINK1_IP;
@@ -46,11 +47,12 @@ import org.junit.Test;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.netmgt.enlinkd.model.BridgeMacLink;
-import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
 import org.opennms.netmgt.enlinkd.model.BridgeMacLink.BridgeMacLinkType;
+import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
 import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry;
-import org.opennms.netmgt.enlinkd.service.api.BridgePort;
 import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry.BridgeDot1qTpFdbStatus;
+import org.opennms.netmgt.enlinkd.service.api.BridgePort;
+import org.opennms.netmgt.enlinkd.service.api.DiscoveryBridgeTopology;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.nb.Nms4930NetworkBuilder;
 
@@ -334,7 +336,7 @@ String[] forwardersdlink2on10bbport= {"001195256302","f07d68a13d67","001517028e0
             "0013774b4ab2"
     };
     @Before
-    public void setUpNetwork4930() throws Exception {
+    public void setUpNetwork4930() {
     	builder.setNodeDao(m_nodeDao);
         builder.setIpNetToMediaDao(m_ipNetToMediaDao);
         builder.buildNetwork4930();
@@ -356,7 +358,7 @@ String[] forwardersdlink2on10bbport= {"001195256302","f07d68a13d67","001517028e0
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=DLINK1_IP, port=161, resource=DLINK1_SNMP_RESOURCE)
     })
-    public void testNms4930Bft() throws Exception {
+    public void testNms4930Bft() {
         testNms4930Bft(false);
     }
 
@@ -365,11 +367,11 @@ String[] forwardersdlink2on10bbport= {"001195256302","f07d68a13d67","001517028e0
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=DLINK1_IP, port=161, resource=DLINK1_SNMP_RESOURCE)
     })
-    public void testNms4930BftWithDisabledBridgeVlanDiscovery() throws Exception {
+    public void testNms4930BftWithDisabledBridgeVlanDiscovery() {
         testNms4930Bft(true);
     }
 
-    private void testNms4930Bft(final boolean disableBridgeVlanDiscovery) throws Exception {
+    private void testNms4930Bft(final boolean disableBridgeVlanDiscovery) {
         final OnmsNode dlink1 = m_nodeDao.findByForeignId("linkd", DLINK1_NAME);
         m_linkdConfig.getConfiguration().setUseBridgeDiscovery(true);
         m_linkdConfig.getConfiguration().setDisableBridgeVlanDiscovery(disableBridgeVlanDiscovery);
@@ -378,11 +380,11 @@ String[] forwardersdlink2on10bbport= {"001195256302","f07d68a13d67","001517028e0
         m_linkdConfig.getConfiguration().setUseLldpDiscovery(false);
         m_linkdConfig.getConfiguration().setUseIsisDiscovery(false);
 
-        assertTrue(!m_linkdConfig.useLldpDiscovery());
-        assertTrue(!m_linkdConfig.useCdpDiscovery());
-        assertTrue(!m_linkdConfig.useOspfDiscovery());
+        assertFalse(m_linkdConfig.useLldpDiscovery());
+        assertFalse(m_linkdConfig.useCdpDiscovery());
+        assertFalse(m_linkdConfig.useOspfDiscovery());
         assertTrue(m_linkdConfig.useBridgeDiscovery());
-        assertTrue(!m_linkdConfig.useIsisDiscovery());
+        assertFalse(m_linkdConfig.useIsisDiscovery());
 
         assertTrue(m_linkd.scheduleNodeCollection(dlink1.getId()));
 
@@ -402,11 +404,16 @@ String[] forwardersdlink2on10bbport= {"001195256302","f07d68a13d67","001517028e0
                 continue;
             }
             assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED,link.getBridgeDot1qTpFdbStatus());
-            BridgeMacLink maclink =
-                    BridgeForwardingTableEntry.create(
-                            BridgePort.getFromBridgeForwardingTableEntry(link),
-                            link.getMacAddress(),
-                            BridgeMacLinkType.BRIDGE_LINK);
+            BridgePort bp =  DiscoveryBridgeTopology.getFromBridgeForwardingTableEntry(link);
+            BridgeMacLink maclink = new BridgeMacLink();
+            OnmsNode node = new OnmsNode();
+            node.setId(bp.getNodeId());
+            maclink.setNode(node);
+            maclink.setBridgePort(bp.getBridgePort());
+            maclink.setBridgePortIfIndex(bp.getBridgePortIfIndex());
+            maclink.setMacAddress(link.getMacAddress());
+            maclink.setVlan(bp.getVlan());
+            maclink.setLinkType(BridgeMacLinkType.BRIDGE_LINK);
             maclink.setBridgeMacLinkLastPollTime(maclink.getBridgeMacLinkCreateTime());
             m_bridgeMacLinkDao.save(maclink);
         }
@@ -418,7 +425,7 @@ String[] forwardersdlink2on10bbport= {"001195256302","f07d68a13d67","001517028e0
             assertNotNull(maclink.getBridgePort());
             assertNotNull(maclink.getNode());
             assertNotNull(maclink.getMacAddress());
-            System.err.println(maclink.toString());
+            System.err.println(maclink);
         }
     }
 
@@ -426,7 +433,7 @@ String[] forwardersdlink2on10bbport= {"001195256302","f07d68a13d67","001517028e0
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=DLINK1_IP, port=161, resource=DLINK1_SNMP_RESOURCE)
     })
-    public void testNms4930Dlink1() throws Exception {
+    public void testNms4930Dlink1() {
         final OnmsNode dlink1 = m_nodeDao.findByForeignId("linkd", DLINK1_NAME);
         
         m_linkdConfig.getConfiguration().setUseBridgeDiscovery(true);
@@ -435,11 +442,11 @@ String[] forwardersdlink2on10bbport= {"001195256302","f07d68a13d67","001517028e0
         m_linkdConfig.getConfiguration().setUseLldpDiscovery(false);
         m_linkdConfig.getConfiguration().setUseIsisDiscovery(false);
 
-        assertTrue(!m_linkdConfig.useLldpDiscovery());
-        assertTrue(!m_linkdConfig.useCdpDiscovery());
-        assertTrue(!m_linkdConfig.useOspfDiscovery());
+        assertFalse(m_linkdConfig.useLldpDiscovery());
+        assertFalse(m_linkdConfig.useCdpDiscovery());
+        assertFalse(m_linkdConfig.useOspfDiscovery());
         assertTrue(m_linkdConfig.useBridgeDiscovery());
-        assertTrue(!m_linkdConfig.useIsisDiscovery());
+        assertFalse(m_linkdConfig.useIsisDiscovery());
 
         assertTrue(m_linkd.scheduleNodeCollection(dlink1.getId()));
         assertEquals(0,m_bridgeBridgeLinkDao.countAll());
@@ -455,7 +462,7 @@ String[] forwardersdlink2on10bbport= {"001195256302","f07d68a13d67","001517028e0
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=DLINK2_IP, port=161, resource=DLINK2_SNMP_RESOURCE)
     })
-    public void testNms4930Dlink2() throws Exception {
+    public void testNms4930Dlink2() {
         final OnmsNode dlink2 = m_nodeDao.findByForeignId("linkd", DLINK2_NAME);
         
         m_linkdConfig.getConfiguration().setUseBridgeDiscovery(true);
@@ -464,11 +471,11 @@ String[] forwardersdlink2on10bbport= {"001195256302","f07d68a13d67","001517028e0
         m_linkdConfig.getConfiguration().setUseLldpDiscovery(false);
         m_linkdConfig.getConfiguration().setUseIsisDiscovery(false);
 
-        assertTrue(!m_linkdConfig.useLldpDiscovery());
-        assertTrue(!m_linkdConfig.useCdpDiscovery());
-        assertTrue(!m_linkdConfig.useOspfDiscovery());
+        assertFalse(m_linkdConfig.useLldpDiscovery());
+        assertFalse(m_linkdConfig.useCdpDiscovery());
+        assertFalse(m_linkdConfig.useOspfDiscovery());
         assertTrue(m_linkdConfig.useBridgeDiscovery());
-        assertTrue(!m_linkdConfig.useIsisDiscovery());
+        assertFalse(m_linkdConfig.useIsisDiscovery());
 
         assertTrue(m_linkd.scheduleNodeCollection(dlink2.getId()));
         assertEquals(0,m_bridgeBridgeLinkDao.countAll());
@@ -491,7 +498,7 @@ String[] forwardersdlink2on10bbport= {"001195256302","f07d68a13d67","001517028e0
             @JUnitSnmpAgent(host=DLINK1_IP, port=161, resource=DLINK1_SNMP_RESOURCE),
             @JUnitSnmpAgent(host=DLINK2_IP, port=161, resource=DLINK2_SNMP_RESOURCE)
     })
-    public void testNms4930Network() throws Exception {
+    public void testNms4930Network() {
         
         final OnmsNode dlink1 = m_nodeDao.findByForeignId("linkd", DLINK1_NAME);
         final OnmsNode dlink2 = m_nodeDao.findByForeignId("linkd", DLINK2_NAME);
@@ -507,11 +514,11 @@ String[] forwardersdlink2on10bbport= {"001195256302","f07d68a13d67","001517028e0
         m_linkdConfig.getConfiguration().setUseLldpDiscovery(false);
         m_linkdConfig.getConfiguration().setUseIsisDiscovery(false);
 
-        assertTrue(!m_linkdConfig.useLldpDiscovery());
-        assertTrue(!m_linkdConfig.useCdpDiscovery());
-        assertTrue(!m_linkdConfig.useOspfDiscovery());
+        assertFalse(m_linkdConfig.useLldpDiscovery());
+        assertFalse(m_linkdConfig.useCdpDiscovery());
+        assertFalse(m_linkdConfig.useOspfDiscovery());
         assertTrue(m_linkdConfig.useBridgeDiscovery());
-        assertTrue(!m_linkdConfig.useIsisDiscovery());
+        assertFalse(m_linkdConfig.useIsisDiscovery());
 
         assertTrue(m_linkd.scheduleNodeCollection(dlink1.getId()));
         assertTrue(m_linkd.scheduleNodeCollection(dlink2.getId()));
@@ -524,7 +531,7 @@ String[] forwardersdlink2on10bbport= {"001195256302","f07d68a13d67","001517028e0
 
         assertTrue(m_linkd.runSingleSnmpCollection(dlink2.getId()));
         m_linkd.runDiscoveryBridgeDomains();
-        checkTopology(dlink1, dlink2, nodeonlink1dport6, nodebetweendlink1dlink2,false);
+        checkTopology(dlink1, dlink2, false);
     }
     
     @Test
@@ -532,7 +539,7 @@ String[] forwardersdlink2on10bbport= {"001195256302","f07d68a13d67","001517028e0
             @JUnitSnmpAgent(host=DLINK1_IP, port=161, resource=DLINK1_SNMP_RESOURCE),
             @JUnitSnmpAgent(host=DLINK2_IP, port=161, resource=DLINK2_SNMP_RESOURCE)
     })
-    public void testNms4930NetworkReverse() throws Exception {
+    public void testNms4930NetworkReverse() {
   
         final OnmsNode dlink1 = m_nodeDao.findByForeignId("linkd", DLINK1_NAME);
         final OnmsNode dlink2 = m_nodeDao.findByForeignId("linkd", DLINK2_NAME);
@@ -548,11 +555,11 @@ String[] forwardersdlink2on10bbport= {"001195256302","f07d68a13d67","001517028e0
         m_linkdConfig.getConfiguration().setUseLldpDiscovery(false);
         m_linkdConfig.getConfiguration().setUseIsisDiscovery(false);
 
-        assertTrue(!m_linkdConfig.useLldpDiscovery());
-        assertTrue(!m_linkdConfig.useCdpDiscovery());
-        assertTrue(!m_linkdConfig.useOspfDiscovery());
+        assertFalse(m_linkdConfig.useLldpDiscovery());
+        assertFalse(m_linkdConfig.useCdpDiscovery());
+        assertFalse(m_linkdConfig.useOspfDiscovery());
         assertTrue(m_linkdConfig.useBridgeDiscovery());
-        assertTrue(!m_linkdConfig.useIsisDiscovery());
+        assertFalse(m_linkdConfig.useIsisDiscovery());
 
         assertTrue(m_linkd.scheduleNodeCollection(dlink2.getId()));
         assertTrue(m_linkd.scheduleNodeCollection(dlink1.getId()));
@@ -565,7 +572,7 @@ String[] forwardersdlink2on10bbport= {"001195256302","f07d68a13d67","001517028e0
 
         assertTrue(m_linkd.runSingleSnmpCollection(dlink1.getId()));
         m_linkd.runDiscoveryBridgeDomains();
-        checkTopology(dlink1, dlink2, nodeonlink1dport6, nodebetweendlink1dlink2,true);
+        checkTopology(dlink1, dlink2,true);
     }
 
     
@@ -605,8 +612,7 @@ String[] forwardersdlink2on10bbport= {"001195256302","f07d68a13d67","001517028e0
 
     }
     
-    private void checkTopology(OnmsNode dlink1, OnmsNode dlink2, OnmsNode nodeonlink1dport6,
-    		OnmsNode nodebetweendlink1dlink2, boolean reverse) {
+    private void checkTopology(OnmsNode dlink1, OnmsNode dlink2, boolean reverse) {
         
         /*
          *  

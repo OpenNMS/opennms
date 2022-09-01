@@ -83,7 +83,6 @@ import org.opennms.netmgt.enlinkd.persistence.api.LldpLinkDao;
 import org.opennms.netmgt.enlinkd.persistence.api.OspfElementDao;
 import org.opennms.netmgt.enlinkd.persistence.api.OspfLinkDao;
 import org.opennms.netmgt.enlinkd.service.api.BridgePort;
-import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyException;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.SharedSegment;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -639,7 +638,7 @@ public class EnLinkdElementFactory implements InitializingBean,
             Map<String, List<IpNetToMedia>> physAddrToIpNetToMedias,
             Map<String, List<OnmsIpInterface>> ipAddressToIpInterfaces,
             UniqueMapCache<String, OnmsSnmpInterface> physAddrToSnmpInterface
-    ) throws BridgeTopologyException {
+    ) {
         
         BridgeLinkNode linknode = new BridgeLinkNode();
         BridgePort bridgePort = segment.getBridgePort(nodeid);
@@ -830,21 +829,17 @@ public class EnLinkdElementFactory implements InitializingBean,
         var physAddrToSnmpInterface = uniqueMapCache(() -> m_snmpInterfaceDao.findByMacLinksOfNode(nodeId), OnmsSnmpInterface::getPhysAddr, OnmsSnmpInterface::getId);
 
         for (SharedSegment segment: m_bridgeTopologyService.getSharedSegments(nodeId)) {
-            try {
-                bridgelinks.add(
-                        convertFromModel(
-                                nodeId,
-                                segment,
-                                bridgeElementCache,
-                                snmpInterfaceCache,
-                                physAddrToIpNetToMedias,
-                                ipAddressToIpInterfaces,
-                                physAddrToSnmpInterface
-                        )
-                );
-            } catch (BridgeTopologyException e) {
-                e.printStackTrace();
-            }
+            bridgelinks.add(
+                    convertFromModel(
+                            nodeId,
+                            segment,
+                            bridgeElementCache,
+                            snmpInterfaceCache,
+                            physAddrToIpNetToMedias,
+                            ipAddressToIpInterfaces,
+                            physAddrToSnmpInterface
+                    )
+            );
         }
         if (bridgelinks.size() > 0 ) {
             Collections.sort(bridgelinks);

@@ -1,0 +1,70 @@
+jobs:
+  tarball-assembly-only:
+    machine:
+      image: ubuntu-2004:202010-01
+      docker_layer_caching: true
+    resource_class: xlarge
+    parameters:
+      number-vcpu:
+        default: 6
+        type: integer
+      vaadin-javamaxmem:
+        default: 1g
+        type: string
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Assemble tarballs and related artifacts
+          command: |
+            export MAVEN_OPTS="-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
+            export MAVEN_ARGS="install"
+            export MAVEN_ARGS="install"
+            # release branches should enable extra "production" stuff like license indexing
+            case "${CIRCLE_BRANCH}" in
+              "master-"*|"release-"*|"develop")
+                MAVEN_ARGS="-Dbuild.type=production $MAVEN_ARGS"
+                ;;
+            esac
+            ulimit -n 65536 || :
+            ./assemble.pl -DskipTests=true -Dbuild.skip.tarball=false \
+              -Daether.connector.resumeDownloads=false \
+              -Daether.connector.basic.threads=1 \
+              -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
+              -DvaadinJavaMaxMemory=<< parameters.vaadin-javamaxmem >> \
+              -DmaxCpus=<< parameters.number-vcpu >> \
+              -Pbuild-bamboo \
+              -Prun-expensive-tasks \
+              -Dopennms.home=/opt/opennms \
+              --batch-mode \
+              $MAVEN_ARGS || exit 1
+      - run:
+          name: Collect Artifacts
+          command: |
+            mkdir -p target/{artifacts,config-schema,tarballs}
+            OPENNMS_VERSION="$(.circleci/scripts/pom2version.sh pom.xml)"
+            find ./target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} "./target/tarballs/opennms-${OPENNMS_VERSION}.tar.gz" \;
+            find ./opennms-assemblies/minion/target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} "./target/tarballs/minion-${OPENNMS_VERSION}.tar.gz" \;
+            find ./opennms-assemblies/sentinel/target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} "./target/tarballs/sentinel-${OPENNMS_VERSION}.tar.gz" \;
+            cp ./opennms-assemblies/xsds/target/*-xsds.tar.gz "./target/artifacts/opennms-${OPENNMS_VERSION}-xsds.tar.gz"
+            cp target/*-source.tar.gz ./target/artifacts/
+            mkdir -p minion-target
+            tar czf minion-target/minion-target.tar.gz opennms-assemblies/minion/target/
+      - save-artifacts:
+          path: ~/project/minion-target
+          location: miniontarget
+      - store_artifacts:
+          when: always
+          path: ~/project/target/artifacts
+          destination: artifacts
+      - store_artifacts:
+          when: always
+          path: ~/project/target/tarballs
+          destination: tarballs
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - .artifacts
+            - project/opennms-full-assembly/target/opennms-full-assembly-*-core.tar.gz
+            - project/opennms-assemblies/minion/target/org.opennms.assemblies.minion-*-minion.tar.gz
+            - project/opennms-assemblies/sentinel/target/org.opennms.assemblies.sentinel-*-sentinel.tar.gz

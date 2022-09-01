@@ -52,6 +52,8 @@ import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.core.utils.TimeSeries;
 import org.opennms.core.web.HttpClientWrapper;
 import org.opennms.features.datachoices.internal.StateManager.StateChangeHandler;
+import org.opennms.features.usageanalytics.api.UsageAnalyticDao;
+import org.opennms.features.usageanalytics.api.UsageAnalyticMetricName;
 import org.opennms.netmgt.config.*;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.EventDao;
@@ -139,6 +141,8 @@ public class UsageStatisticsReporter implements StateChangeHandler {
     private DestinationPathFactory m_destinationPathFactory;
 
     private NotifdConfigFactory m_notifdConfigFactory;
+
+    private UsageAnalyticDao m_usageAnalyticDao;
 
     private GroupFactory m_groupFactory;
     private ForeignSourceRepository m_deployedForeignSourceRepository;
@@ -272,12 +276,16 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         usageStatisticsReport.setSinkStrategy(SinkStrategy.getSinkStrategy().getName());
         usageStatisticsReport.setRpcStrategy(RpcStrategy.getRpcStrategy().getName());
         usageStatisticsReport.setTssStrategies(TimeSeries.getTimeseriesStrategy().getName());
+        // DCB statistics
+        usageStatisticsReport.setDcbSucceed(m_usageAnalyticDao.getValueByMetricName(UsageAnalyticMetricName.DCB_SUCCEED.toString()));
+        usageStatisticsReport.setDcbFailed(m_usageAnalyticDao.getValueByMetricName(UsageAnalyticMetricName.DCB_FAILED.toString()));
         usageStatisticsReport.setNodesWithDeviceConfigBySysOid(m_deviceConfigDao.getNumberOfNodesWithDeviceConfigBySysOid());
 
         setDatasourceInfo(usageStatisticsReport);
 
         return usageStatisticsReport;
     }
+
     private void setJmxAttributes(UsageStatisticsReportDTO usageStatisticsReport) {
         setSystemJmxAttributes(usageStatisticsReport);
         setOpenNmsJmxAttributes(usageStatisticsReport);
@@ -537,6 +545,10 @@ public class UsageStatisticsReporter implements StateChangeHandler {
 
     public void setDataSourceFactoryBean(DataSourceFactoryBean dataSourceFactoryBean) {
         m_dataSourceFactoryBean = dataSourceFactoryBean;
+    }
+
+    public void setUsageAnalyticDao(UsageAnalyticDao usageAnalyticDao) {
+        m_usageAnalyticDao = usageAnalyticDao;
     }
 
     private void gatherProvisiondData(final UsageStatisticsReportDTO usageStatisticsReport) {

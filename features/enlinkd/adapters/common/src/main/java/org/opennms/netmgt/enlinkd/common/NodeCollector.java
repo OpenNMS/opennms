@@ -56,9 +56,6 @@ public abstract class NodeCollector extends Discovery {
      * as the collection point. The collection does not occur until the
      * <code>run</code> method is invoked.
      * 
-     * @param nodeid
-     * @param config
-     *            The SnmpPeer object to collect from.
      */
     public NodeCollector(final LocationAwareSnmpClient locationAwareSnmpClient,
             final long interval,final long initial, final Node node) {
@@ -139,11 +136,8 @@ public abstract class NodeCollector extends Discovery {
             return false;
         NodeCollector other = (NodeCollector) obj;
         if (m_node == null) {
-            if (other.m_node != null)
-                return false;
-        } else if (!m_node.equals(other.m_node))
-            return false;
-        return true;
+            return other.m_node == null;
+        } else return m_node.equals(other.m_node);
     }
     
     public SnmpAgentConfig getSnmpAgentConfig() {

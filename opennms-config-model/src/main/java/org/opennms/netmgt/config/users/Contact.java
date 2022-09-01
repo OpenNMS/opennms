@@ -38,6 +38,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.config.utils.ConfigUtils;
 
@@ -77,7 +78,7 @@ public class Contact implements Serializable {
     }
 
     public void setInfo(final String info) {
-        m_info = ConfigUtils.normalizeString(info);
+        m_info = ConfigUtils.normalizeString(WebSecurityUtils.sanitizeString(info));
     }
 
     public Optional<String> getServiceProvider() {
@@ -85,7 +86,7 @@ public class Contact implements Serializable {
     }
 
     public void setServiceProvider(final String serviceProvider) {
-        m_serviceProvider = ConfigUtils.normalizeString(serviceProvider);
+        m_serviceProvider = ConfigUtils.normalizeString(WebSecurityUtils.sanitizeString(serviceProvider));
     }
 
     @Override

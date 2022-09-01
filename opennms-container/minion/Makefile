@@ -5,10 +5,10 @@
 
 .DEFAULT_GOAL := build
 
-VERSION                 := localbuild
+VERSION                 := $(shell ../../.circleci/scripts/pom2version.sh ../../pom.xml)
 SHELL                   := /bin/bash -o nounset -o pipefail -o errexit
 BUILD_DATE              := $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
-BASE_IMAGE              := opennms/deploy-base:jre-1.2.0.b105
+BASE_IMAGE              := opennms/deploy-base:jre-2.0.6.b165
 DOCKER_CLI_EXPERIMENTAL := enabled
 DOCKERX_INSTANCE        := env-minion-oci
 DOCKER_REGISTRY         := docker.io
@@ -16,7 +16,7 @@ DOCKER_ORG              := opennms
 DOCKER_PROJECT          := minion
 DOCKER_TAG              := $(DOCKER_REGISTRY)/$(DOCKER_ORG)/$(DOCKER_PROJECT):$(VERSION)
 DOCKER_ARCH             := linux/amd64
-DOCKER_IMAGE_NAME       := $(DOCKER_PROJECT).oci
+DOCKER_IMAGE_NAME       := $(DOCKER_PROJECT)-$(VERSION).oci
 DOCKER_FLAGS            := --output=type=docker,dest=images/$(DOCKER_IMAGE_NAME)
 SOURCE                  := $(shell git remote get-url origin)
 REVISION                := $(shell git describe --always)
@@ -76,7 +76,7 @@ test:
 
 build: test minion-config-schema.yml
 	@echo "Copy Minion tarball to Docker context ..."
-	@find ../../opennms-assemblies/minion/target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} ./tarball/minion.tar.gz \;
+	@mkdir -p tarball-root && tar -x -z --strip-components 1 -C ./tarball-root -f ../../opennms-assemblies/minion/target/org.opennms.assemblies.minion-*-minion.tar.gz
 	@echo "Initialize builder instance ..."
 	if ! docker-buildx inspect $(DOCKERX_INSTANCE); then docker-buildx create --name $(DOCKERX_INSTANCE); fi;
 	docker-buildx use $(DOCKERX_INSTANCE)
@@ -94,9 +94,10 @@ build: test minion-config-schema.yml
 	  $(DOCKER_FLAGS) \
 	  .
 
-install: images/$(DOCKER_IMAGE_NAME)
+install: build images/$(DOCKER_IMAGE_NAME)
 	@echo "Load image ..."
-	@docker image load -i images/$(DOCKER_IMAGE_NAME)
+	@docker image load -i "images/$(DOCKER_IMAGE_NAME)"
+	@docker image tag "$(DOCKER_ORG)/$(DOCKER_PROJECT):$(VERSION)" "$(DOCKER_PROJECT):latest"
 
 uninstall:
 	@echo "Remove image ..."
@@ -104,12 +105,10 @@ uninstall:
 
 clean:
 	@echo "Destroy builder environment: $(DOCKERX_INSTANCE) ..."
-	@docker-buildx rm $(DOCKERX_INSTANCE)
+	@docker-buildx rm $(DOCKERX_INSTANCE) >/dev/null 2>&1 || :
 
-clean-all:
-	@echo "Destroy builder environment: $(DOCKERX_INSTANCE) ..."
-	@docker-buildx rm $(DOCKERX_INSTANCE)
+clean-all: clean
 	@echo "Delete tarball and artifacts ..."
-	@rm -rf images/*.*
-	@rm -rf tarball/*.*
+	@rm -rf images/*.oci
+	@rm -rf tarball-root
 	@rm -rf minion-config-schema.yml

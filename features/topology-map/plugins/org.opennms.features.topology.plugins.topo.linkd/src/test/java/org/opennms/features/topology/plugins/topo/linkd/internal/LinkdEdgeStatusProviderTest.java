@@ -67,6 +67,7 @@ public class LinkdEdgeStatusProviderTest {
 
     private AlarmDao m_alarmDao;
     private LinkdEdgeStatusProvider m_statusProvider;
+    private LinkdTopologyFactory m_topologyFactory;
     private BackendGraph m_graph;
     private OnmsNode m_node1;
     private OnmsNode m_node2;
@@ -79,7 +80,7 @@ public class LinkdEdgeStatusProviderTest {
     private List<LinkdEdge> m_edges; 
 
     private LinkdVertex getVertexFromNode(OnmsNode node) {
-        return LinkdVertex.create(TopologyUpdater.create(NodeTopologyEntity.toNodeTopologyInfo(node), null));
+        return LinkdVertex.create(TopologyUpdater.create(NodeTopologyEntity.toNodeTopologyInfo(node), null), LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD);
     }
 
     @Before
@@ -124,7 +125,7 @@ public class LinkdEdgeStatusProviderTest {
 
         m_edges = new ArrayList<>();
         //segment s:1:48
-        LinkdVertex segmentVertex = new LinkdVertex("s:1:48");
+        LinkdVertex segmentVertex = new LinkdVertex("s:1:48", LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD);
         LinkdVertex node1Vertex = getVertexFromNode(m_node1);
         LinkdVertex node2Vertex = getVertexFromNode(m_node2);
         LinkdVertex node3Vertex = getVertexFromNode(m_node3);
@@ -133,9 +134,9 @@ public class LinkdEdgeStatusProviderTest {
         LinkdPort bpnode2port24 = new LinkdPort(node2Vertex,24);
         LinkdPort iptm3 = new LinkdPort(node3Vertex,-1);
         iptm3.setToolTipText("a8d0e5a0a467/[10.10.1.1]");
-        m_edges.add(LinkdEdge.create("s:1:48|1:48", segmentPort, bpnode1port48, ProtocolSupported.BRIDGE));
-        m_edges.add(LinkdEdge.create("s:1:48|2:24", segmentPort, bpnode2port24, ProtocolSupported.BRIDGE));
-        m_edges.add(LinkdEdge.create("s:1:48|3",segmentPort,iptm3,ProtocolSupported.BRIDGE));
+        m_edges.add(LinkdEdge.create("s:1:48|1:48", segmentPort, bpnode1port48, ProtocolSupported.BRIDGE, LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD));
+        m_edges.add(LinkdEdge.create("s:1:48|2:24", segmentPort, bpnode2port24, ProtocolSupported.BRIDGE, LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD));
+        m_edges.add(LinkdEdge.create("s:1:48|3",segmentPort,iptm3,ProtocolSupported.BRIDGE, LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD));
 
         
         // node4 and node5 connected via cdp isis ospf and lldp
@@ -149,36 +150,42 @@ public class LinkdEdgeStatusProviderTest {
         LinkdPort node5port10100 = new LinkdPort(node5Vertex, 10100);
         LinkdPort node4port101 = new LinkdPort(node4Vertex, 101);
         LinkdPort node5port100 = new LinkdPort(node5Vertex, 100);
-        m_edges.add(LinkdEdge.create("104|105", node4port599, node5port578,ProtocolSupported.ISIS));
-        m_edges.add(LinkdEdge.create("204|205", node4port1, node5port21,ProtocolSupported.LLDP));
-        m_edges.add(LinkdEdge.create("404|405", node4port10101, node5port10100, ProtocolSupported.OSPF));
-        m_edges.add(LinkdEdge.create("504|505", node4port101, node5port100, ProtocolSupported.CDP));
+        m_edges.add(LinkdEdge.create("104|105", node4port599, node5port578,ProtocolSupported.ISIS, LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD));
+        m_edges.add(LinkdEdge.create("204|205", node4port1, node5port21,ProtocolSupported.LLDP, LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD));
+        m_edges.add(LinkdEdge.create("404|405", node4port10101, node5port10100, ProtocolSupported.OSPF, LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD));
+        m_edges.add(LinkdEdge.create("504|505", node4port101, node5port100, ProtocolSupported.CDP, LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD));
 
         // dehli and chennai connected via ospf
         LinkdVertex dehliVertex = getVertexFromNode(m_nodeDehli);
         LinkdVertex chennaiVertex = getVertexFromNode(m_nodeChennai);
         LinkdPort dehliport12 = new LinkdPort(dehliVertex, 12); 
         LinkdPort chennaiport13 = new LinkdPort(chennaiVertex, 13);
-        m_edges.add(LinkdEdge.create("310|314", dehliport12, chennaiport13, ProtocolSupported.OSPF));
+        m_edges.add(LinkdEdge.create("310|314", dehliport12, chennaiport13, ProtocolSupported.OSPF, LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD));
+
+        assertEquals(8, m_edges.size());
 
         m_alarmDao = mock(AlarmDao.class);
         m_graph = mock(BackendGraph.class);
+        m_topologyFactory = mock(LinkdTopologyFactory.class);
         m_statusProvider = new LinkdEdgeStatusProvider();
         m_statusProvider.setAlarmDao(m_alarmDao);
         m_statusProvider.setSessionUtils(new MockSessionUtils());
+        m_statusProvider.setLinkdTopologyFactory(m_topologyFactory);
     }
 
     @After
     public void tearDown() {
         verifyNoMoreInteractions(m_alarmDao);
         verifyNoMoreInteractions(m_graph);
+        verifyNoMoreInteractions(m_topologyFactory);
     }
 
     @Test
     public void testLinkStatusWithNoAlarms() {
         when(m_alarmDao.findMatching(any(org.opennms.core.criteria.Criteria.class))).thenReturn(createEmptyAlarmList());
         List<EdgeRef> edges = getEdgeRefs();
-        for (EdgeRef ref: edges) 
+        assertEquals(8, edges.size());
+        for (EdgeRef ref: edges)
             when(m_graph.getEdge(ref)).thenReturn(getEdgeFromRef(ref));
         
 

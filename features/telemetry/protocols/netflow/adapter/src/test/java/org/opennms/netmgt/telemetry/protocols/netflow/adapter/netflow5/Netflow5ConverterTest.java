@@ -34,7 +34,10 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.slice;
-import static org.opennms.netmgt.telemetry.protocols.netflow.adapter.Utils.buildAndSerialize;
+
+import static org.opennms.integration.api.v1.flows.Flow.Direction;
+import static org.opennms.integration.api.v1.flows.Flow.NetflowVersion;
+import static org.opennms.integration.api.v1.flows.Flow.SamplingAlgorithm;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -49,22 +52,17 @@ import java.util.Optional;
 import org.hamcrest.MatcherAssert;
 import org.junit.Test;
 import org.opennms.netmgt.flows.api.Flow;
-import org.opennms.netmgt.telemetry.protocols.netflow.adapter.common.NetflowConverter;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.IllegalFlowException;
+import org.opennms.netmgt.telemetry.protocols.netflow.adapter.common.NetflowMessage;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.InvalidPacketException;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.Protocol;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow5.proto.Header;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow5.proto.Packet;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.Netflow5MessageBuilder;
 import org.opennms.netmgt.telemetry.protocols.netflow.transport.FlowMessage;
-
-import com.google.protobuf.InvalidProtocolBufferException;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
 public class Netflow5ConverterTest {
-
-    private NetflowConverter nf5Converter = new NetflowConverter();
 
     @Test
     public void canParseNetflow5Flows() {
@@ -73,13 +71,13 @@ public class Netflow5ConverterTest {
         MatcherAssert.assertThat(flows, hasSize(2));
 
         final Flow flow = flows.get(0);
-        assertThat(flow.getNetflowVersion(), is((Flow.NetflowVersion.V5)));
+        assertThat(flow.getNetflowVersion(), is((NetflowVersion.V5)));
         assertThat(flow.getFlowRecords(), is(2));
         assertThat(flow.getFlowSeqNum(), is(0L));
         assertThat(flow.getEngineId(), is(0));
         assertThat(flow.getEngineType(), is(0));
         assertThat(flow.getSamplingInterval(), is(0.0));
-        assertThat(flow.getSamplingAlgorithm(), is(Flow.SamplingAlgorithm.Unassigned));
+        assertThat(flow.getSamplingAlgorithm(), is(SamplingAlgorithm.Unassigned));
         MatcherAssert.assertThat(flow.getSrcAddr(), equalTo("10.0.2.2"));
         MatcherAssert.assertThat(flow.getSrcAddrHostname(), equalTo(Optional.empty()));
         MatcherAssert.assertThat(flow.getSrcPort(), equalTo(54435));
@@ -93,11 +91,11 @@ public class Netflow5ConverterTest {
         MatcherAssert.assertThat(flow.getBytes(), equalTo(230L));
         MatcherAssert.assertThat(flow.getInputSnmp(), equalTo(0));
         MatcherAssert.assertThat(flow.getOutputSnmp(), equalTo(0));
-        MatcherAssert.assertThat(flow.getFirstSwitched(), equalTo(1430608661859L));
-        MatcherAssert.assertThat(flow.getLastSwitched(), equalTo(1434870077556L));
-        MatcherAssert.assertThat(flow.getDeltaSwitched(), equalTo(1430608661859L));
+        MatcherAssert.assertThat(flow.getFirstSwitched(), equalTo(Instant.ofEpochMilli(1430608661859L)));
+        MatcherAssert.assertThat(flow.getLastSwitched(), equalTo(Instant.ofEpochMilli(1434870077556L)));
+        MatcherAssert.assertThat(flow.getDeltaSwitched(), equalTo(Instant.ofEpochMilli(1430608661859L)));
         MatcherAssert.assertThat(flow.getPackets(), equalTo(5L));
-        MatcherAssert.assertThat(flow.getDirection(), equalTo(Flow.Direction.INGRESS));
+        MatcherAssert.assertThat(flow.getDirection(), equalTo(Direction.INGRESS));
         MatcherAssert.assertThat(flow.getNextHop(), equalTo("0.0.0.0"));
         MatcherAssert.assertThat(flow.getNextHopHostname(), equalTo(Optional.empty()));
         MatcherAssert.assertThat(flow.getVlan(), nullValue());
@@ -125,16 +123,8 @@ public class Netflow5ConverterTest {
                 header = new Header(slice(buffer, Header.SIZE));
                 final Packet packet = new Packet(header, buffer);
                 packet.getRecords().forEach(rec -> {
-
-                    final FlowMessage flowMessage;
-                    try {
-                        flowMessage = buildAndSerialize(Protocol.NETFLOW5, rec).build();
-                    } catch (IllegalFlowException e) {
-                        throw new RuntimeException(e);
-                    }
-
-                    flows.addAll(nf5Converter.convert(flowMessage, Instant.now()));
-
+                    final FlowMessage flowMessage = new Netflow5MessageBuilder().buildMessage(rec, (address) -> Optional.empty()).build();
+                    flows.add(new NetflowMessage(flowMessage, Instant.now()));
                 });
             } catch (InvalidPacketException e) {
                 throw new RuntimeException(e);

@@ -32,7 +32,6 @@ import org.opennms.netmgt.snmp.TableTracker;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpRowResult;
-import org.opennms.netmgt.snmp.RowCallback;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,10 +74,6 @@ public class MtxrNeighborTableTracker extends TableTracker {
     public MtxrNeighborTableTracker() {
 	    super(s_mtxrneiinterfaceid_elemList);
 	}
-
-	public MtxrNeighborTableTracker(final RowCallback rowProcessor) {
-        super(rowProcessor, s_mtxrneiinterfaceid_elemList);
-    }
 
     /** {@inheritDoc} */
     @Override

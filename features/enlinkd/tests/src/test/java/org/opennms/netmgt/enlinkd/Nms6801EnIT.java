@@ -29,8 +29,10 @@
 package org.opennms.netmgt.enlinkd;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.CISCOISIS_IP;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.CISCOISIS_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.CISCOISIS_ISIS_SYS_ID;
@@ -55,7 +57,7 @@ public class Nms6801EnIT extends EnLinkdBuilderITCase {
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host = CISCOISIS_IP, port = 161, resource = CISCOISIS_SNMP_RESOURCE),
     })
-    public void testIsIsLinks() throws Exception {
+    public void testIsIsLinks() {
         
         m_nodeDao.save(builder.getCiscoIosXrRouter());
         m_nodeDao.flush();
@@ -66,10 +68,10 @@ public class Nms6801EnIT extends EnLinkdBuilderITCase {
         m_linkdConfig.getConfiguration().setUseCdpDiscovery(false);
         
         assertTrue(m_linkdConfig.useIsisDiscovery());
-        assertTrue(!m_linkdConfig.useBridgeDiscovery());
-        assertTrue(!m_linkdConfig.useOspfDiscovery());
-        assertTrue(!m_linkdConfig.useLldpDiscovery());
-        assertTrue(!m_linkdConfig.useCdpDiscovery());
+        assertFalse(m_linkdConfig.useBridgeDiscovery());
+        assertFalse(m_linkdConfig.useOspfDiscovery());
+        assertFalse(m_linkdConfig.useLldpDiscovery());
+        assertFalse(m_linkdConfig.useCdpDiscovery());
         
         final OnmsNode ciscoiosxr = m_nodeDao.findByForeignId("linkd", CISCOISIS_NAME);
         
@@ -117,7 +119,7 @@ public class Nms6801EnIT extends EnLinkdBuilderITCase {
                 assertEquals(33554944,link.getIsisISAdjNbrExtendedCircID().intValue());
                 break;
             default:
-                assertTrue(false);
+                fail();
                 break;
             }
         }

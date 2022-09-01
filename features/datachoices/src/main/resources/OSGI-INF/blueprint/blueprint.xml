@@ -33,6 +33,7 @@
     <reference id="provisiondConfigDao" interface="org.opennms.netmgt.dao.api.ProvisiondConfigurationDao" availability="mandatory"/>
     <reference id="deployedForeignSourceRepository" interface="org.opennms.netmgt.provision.persist.ForeignSourceRepository" filter="(type=deployed)"/>
     <reference id="businessServiceEdgeDao" interface="org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeDao" />
+    <reference id="usageAnalyticDao" interface="org.opennms.features.usageanalytics.api.UsageAnalyticDao" />
     <reference id="deviceConfigDao" interface="org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao" />
     <reference id="applicationDao" interface="org.opennms.netmgt.dao.api.ApplicationDao" availability="mandatory"/>
 
@@ -85,6 +86,7 @@
         <property name="groupFactory" ref="groupFactory"/>
         <property name="deployedForeignSourceRepository" ref="deployedForeignSourceRepository"/>
         <property name="dataSourceFactoryBean" ref="dataSourceFactoryBean"/>
+        <property name="usageAnalyticDao" ref="usageAnalyticDao"/>
         <property name="deviceConfigDao" ref="deviceConfigDao"/>
         <property name="applicationDao" ref="applicationDao"/>
     </bean>

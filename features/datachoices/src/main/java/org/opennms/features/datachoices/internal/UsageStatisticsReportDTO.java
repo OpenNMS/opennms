@@ -91,6 +91,8 @@ public class UsageStatisticsReportDTO {
     private long m_coreQueuedUpdatesCompleted;
     private int m_users;
     private int m_groups;
+    private long m_dcbSucceed;
+    private long m_dcbFailed;
     private Map<String, Long> m_nodesWithDeviceConfigBySysOid = Collections.emptyMap();
     private int applications;
 
@@ -463,6 +465,22 @@ public class UsageStatisticsReportDTO {
 
     public void setUsers(int m_users) {
         this.m_users = m_users;
+    }
+
+    public long getDcbSucceed() {
+        return m_dcbSucceed;
+    }
+
+    public void setDcbSucceed(long m_dcbSucceed) {
+        this.m_dcbSucceed = m_dcbSucceed;
+    }
+
+    public long getDcbFailed() {
+        return m_dcbFailed;
+    }
+
+    public void setDcbFailed(long m_dcbFailed) {
+        this.m_dcbFailed = m_dcbFailed;
     }
 
     public Map<String, Long> getNodesWithDeviceConfigBySysOid() {

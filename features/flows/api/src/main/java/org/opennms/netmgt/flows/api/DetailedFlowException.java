@@ -30,6 +30,8 @@ package org.opennms.netmgt.flows.api;
 
 import java.util.List;
 
+import org.opennms.integration.api.v1.flows.FlowException;
+
 public abstract class DetailedFlowException extends FlowException {
     public DetailedFlowException(String message) {
         super(message);
