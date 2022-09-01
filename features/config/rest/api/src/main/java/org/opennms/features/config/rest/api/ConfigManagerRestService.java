@@ -173,7 +173,7 @@ public interface ConfigManagerRestService {
     @Path(value="/{configName}/{configId}/{pathToParent}/{nodeName}")
     Response updateOrInsertConfigPart(@PathParam("configName") String configName, @PathParam("configId") String configId,
                                       @PathParam("pathToParent") String pathToParent,
-                                      @PathParam("nodeName") String nodeName,String newContent);
+                                      @PathParam("nodeName") String nodeName, String newContent);
 
     /**
      * Add an array element to a config specified by configName, configId and path to the array
