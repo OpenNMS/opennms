@@ -1,6 +1,6 @@
 = WMI Service Detector
 
-Use the WMI detector to detect the availability of WmiConfiguration on a device when scanning it using Provisiond.
+The WMIDetector detects the availability of WMIConfiguration on a device when scanning it using Provisiond.
 By default, it expects to make a WMI query to the `Win32_ComputerSystem` class, checking for `OK` from the Status object.
 
 == Detector facts
@@ -12,13 +12,13 @@ By default, it expects to make a WMI query to the `Win32_ComputerSystem` class, 
 
 == Configuration and use
 
-.Required parameters for the WMI service detector
+.Required parameters for the WMIDetector
 [options="header"]
 [cols="1,4a,1"]
 |===
 | Parameter
 | Description
-| Default
+| Default value
 
 | username
 | The username to use when authenticating against the WMI host.
@@ -33,7 +33,8 @@ By default, it expects to make a WMI query to the `Win32_ComputerSystem` class, 
 | WORKGROUP
 
 | wmiClass
-| The class of instances within WMI. An example would be the `Win32_ComputerSystem` class.
+| The class of instances within WMI.
+An example would be the `Win32_ComputerSystem` class.
 This class contains objects representing properties and methods available.
 | Win32_ComputerSystem
 
@@ -45,13 +46,13 @@ The default WMI service uses the `Status` property to determine if the system is
 
 | wmiWqlStr
 | Microsoft WMI also implements an `ExecQuery` method that is more common in Windows scripting but less common in OpenNMS polling and monitoring.
-WQL is a simple, SQL-like, syntax to query WMI classes, properties, and instances.
+WQL is a simple, SQL-like syntax used to query WMI classes, properties, and instances.
 Here's an example of a WQL query that you could use to discover whether a Windows service is running:
 `Select State From Win32_Service Where Name='Server'`
 | NOTSET
 
 | compVal
-| The value to use when performing a comparison against the wmiObject.
+| The value to use when performing a comparison against the WMIObject.
 | OK
 
 | compOp
@@ -64,7 +65,8 @@ Available compare operations are:
 * *GT*: greater than
 * *LT*: less than
 * *NOOP*: no operation
-The NOOP operation is a special case in which the Manager will always return a result code of "OK".
+
+The `NOOP` operation is a special case in which the Manager will always return a result code of `OK`.
 This is typically used in scenarios where the existence of a class or property is more interesting than the contents of the property.
 This can be used to ensure that WMI data is available before adding a collectd service based on the `WmiCollector` class.
 | EQ

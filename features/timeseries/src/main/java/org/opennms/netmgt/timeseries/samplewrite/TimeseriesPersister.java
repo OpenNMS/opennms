@@ -51,6 +51,8 @@ import org.opennms.netmgt.rrd.RrdRepository;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Maps;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TimeseriesPersister persistence strategy.
@@ -69,6 +71,8 @@ import com.google.common.collect.Maps;
  *     + numeric attributes
  */
 public class TimeseriesPersister extends AbstractPersister {
+
+    private static final Logger LOG = LoggerFactory.getLogger(TimeseriesPersister.class);
 
     private final RrdRepository repository;
     private final TimeseriesWriter writer;

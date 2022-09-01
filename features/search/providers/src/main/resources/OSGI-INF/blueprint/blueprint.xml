@@ -17,7 +17,7 @@
     <reference id="kscReportService"            interface="org.opennms.web.svclayer.api.KscReportService"           availability="mandatory"/>
     <reference id="requisitionAccessService"    interface="org.opennms.web.svclayer.api.RequisitionAccessService"   availability="mandatory"/>
     <reference id="menuProvider"                interface="org.opennms.web.api.MenuProvider"                        availability="mandatory"/>
-    <reference id="entityScopeProvider"         interface="org.opennms.core.rpc.utils.mate.EntityScopeProvider"     availability="mandatory"/>
+    <reference id="entityScopeProvider" interface="org.opennms.core.mate.api.EntityScopeProvider" availability="mandatory"/>
 
     <!-- Node Providers -->
     <bean id="nodeMetaDataSearchProvider" class="org.opennms.netmgt.search.providers.node.NodeMetaDataSearchProvider">

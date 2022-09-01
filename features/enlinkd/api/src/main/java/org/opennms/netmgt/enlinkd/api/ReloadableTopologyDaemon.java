@@ -33,8 +33,7 @@ package org.opennms.netmgt.enlinkd.api;
  */
 public interface ReloadableTopologyDaemon {
     /**
-     * Triggers a reload of the topology in case the topology has been updated without going through the
-     * {@link org.opennms.netmgt.topologies.service.api.OnmsTopologyDao}.
+     * Triggers a reload of the topology in case the topology has been updated
      */
     void reloadTopology();
 }

@@ -62,7 +62,7 @@ html {
 }
 a {
   text-decoration: none;
-  color: var($primary);
+  color: var($clickable-normal);
 }
 .pointer {
   cursor: pointer !important;

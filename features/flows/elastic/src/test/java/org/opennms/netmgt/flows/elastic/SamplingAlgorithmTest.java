@@ -31,9 +31,10 @@ package org.opennms.netmgt.flows.elastic;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
 
+import org.opennms.integration.api.v1.flows.Flow;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.netmgt.flows.api.Flow;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -62,7 +63,7 @@ public class SamplingAlgorithmTest {
                 Flow.SamplingAlgorithm.Unassigned,
                 Flow.SamplingAlgorithm.SystematicCountBasedSampling,
                 Flow.SamplingAlgorithm.SystematicTimeBasedSampling,
-                Flow.SamplingAlgorithm.RandomNoutOfNSampling,
+                Flow.SamplingAlgorithm.RandomNOutOfNSampling,
                 Flow.SamplingAlgorithm.UniformProbabilisticSampling,
                 Flow.SamplingAlgorithm.PropertyMatchFiltering,
                 Flow.SamplingAlgorithm.HashBasedFiltering,

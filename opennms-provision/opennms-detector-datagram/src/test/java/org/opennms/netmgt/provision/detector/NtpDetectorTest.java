@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2005-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -122,19 +122,6 @@ public class NtpDetectorTest implements InitializingBean {
         assertFalse(m_detector.isServiceDetected(m_server.getInetAddress()));
     }
     
-    // This test is no longer valid because setIpToValidate is no longer needed.
-    @Ignore
-    @Test(timeout=20000)
-    public void testDetectorFailIncorrectIp() throws Exception{
-        m_server.onInit();
-        m_server.startServer();
-        
-        m_detector.setPort(m_server.getPort());
-        m_detector.setIpToValidate("127.0.0.10");
-        m_detector.init();
-        assertFalse(m_detector.isServiceDetected(m_server.getInetAddress()));
-    }
-
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);

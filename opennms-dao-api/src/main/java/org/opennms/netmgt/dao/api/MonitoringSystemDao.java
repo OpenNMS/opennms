@@ -31,4 +31,7 @@ package org.opennms.netmgt.dao.api;
 import org.opennms.netmgt.model.OnmsMonitoringSystem;
 
 public interface MonitoringSystemDao extends OnmsDao<OnmsMonitoringSystem, String> {
+
+    long getNumMonitoringSystems(String type);
+
 }

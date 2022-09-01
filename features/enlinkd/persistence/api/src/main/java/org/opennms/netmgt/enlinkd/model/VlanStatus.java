@@ -48,9 +48,6 @@ public class VlanStatus implements Comparable<VlanStatus>, Serializable {
     /** Constant <code>CISCOVTP_VLAN_STATUS_mtuTooBigForTrunk=4</code> */
     public static final int CISCOVTP_VLAN_STATUS_mtuTooBigForTrunk = 4;
 
-    // RowStatus Definition and mapping
-    public static final int ROWSTATUS_STARTING_INDEX = 4;
-
     public static final int SNMPV2C_ROWSTATUS_ACTIVE = 5;
     public static final int SNMPV2C_ROWSTATUS_NOTINSERVICE = 6;
     public static final int SNMPV2C_ROWSTATUS_NOTREADY = 7;
@@ -101,7 +98,7 @@ public class VlanStatus implements Comparable<VlanStatus>, Serializable {
 
     private static int getIndex(Integer code) {
         for (int i = 0; i < s_order.length; i++) {
-            if (s_order[i] == code) {
+            if (s_order[i].equals(code)) {
                 return i;
             }
         }
@@ -161,8 +158,6 @@ public class VlanStatus implements Comparable<VlanStatus>, Serializable {
      * <p>getVlanStatusString</p>
      *
      * @return a {@link java.lang.String} object.
-     */
-    /**
      */
     public static String getVlanStatusString(Integer code) {
         if (vlanStatusMap.containsKey(code))

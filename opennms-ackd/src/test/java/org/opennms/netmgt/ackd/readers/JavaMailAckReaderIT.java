@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -204,25 +204,6 @@ public class JavaMailAckReaderIT implements InitializingBean {
         Assert.assertEquals(new Integer(1234), acks.get(0).getRefId());
     }
 
-    @Ignore
-    @Test
-    public void findAndProcessAcks() throws InterruptedException {
-        AckReader reader = new DefaultAckReader();
-        ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1);
-        reader.setAckProcessor(m_processor);
-        Future<?> f = executor.schedule(m_processor, 5, TimeUnit.SECONDS);
-        
-        m_processor.setJmConfigDao(m_jmDao);
-        m_processor.setAckdConfigDao(createAckdConfigDao());
-        //m_processor.setAcknowledgmentDao(ackDao);
-        //Thread.sleep(20000);
-        while (!f.isDone()) {
-            Thread.sleep(10);
-        }
-        Assert.assertTrue(f.isDone());
-    }
-
-
     private AckdConfigurationDao createAckdConfigDao() {
         
         class AckdConfigDao extends DefaultAckdConfigurationDao {
@@ -363,37 +344,6 @@ public class JavaMailAckReaderIT implements InitializingBean {
         }        
     }
     
-    @Ignore
-    public void createAcknowledgment() {
-        fail("Not yet implemented");
-    }
-
-    @Ignore
-    public void determineAckAction() {
-        fail("Not yet implemented");
-    }
-
-    @Ignore
-    public void start() {
-        fail("Not yet implemented");
-    }
-
-    @Ignore
-    public void pause() {
-        fail("Not yet implemented");
-    }
-
-    @Ignore
-    public void resume() {
-        fail("Not yet implemented");
-    }
-
-    @Ignore
-    public void stop() {
-        fail("Not yet implemented");
-    }
-
-    
     /**
      * This test requires that 4 emails can be read from a Google account.  The mails should be
      * in this order:
@@ -408,7 +358,7 @@ public class JavaMailAckReaderIT implements InitializingBean {
      * @throws JavaMailerException 
      * 
      */
-    @Ignore
+    @Ignore("manual test requires a manual google account setup")
     @Test
     public void testIntegration() throws JavaMailerException {
         

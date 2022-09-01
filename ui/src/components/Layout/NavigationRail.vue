@@ -17,10 +17,10 @@
         title="Map"
       />
       <FeatherRailItem
-        :class="{ selected: isSelected('/configuration'), 'title-multiline-custom': navRailOpen }"
+        :class="{ selected: isSelected('/configuration') }"
         href="#/configuration"
         :icon="LoggerConfigs"
-        title="External Requisitions and Thread Pools"
+        title="External Requisitions"
       />
       <FeatherRailItem
         :class="{ selected: isSelected('/file-editor') }"
@@ -67,7 +67,7 @@
       <FeatherRailItem
         v-for="plugin of plugins"
         :key="plugin.extensionId"
-        :class="{ selected: isSelected(`/plugins/${plugin.extensionId}/${plugin.resourceRootPath}/${plugin.moduleFileName}`) }"
+        :class="{ selected: isSelected(`/plugins/${plugin.extensionId}/${plugin.resourceRootPath}/${plugin.moduleFileName}`, true) }"
         :href="`#/plugins/${plugin.extensionId}/${plugin.resourceRootPath}/${plugin.moduleFileName}`"
         :title="plugin.menuEntry"
         :icon="UpdateUtilities"
@@ -75,7 +75,10 @@
     </template>
   </FeatherNavigationRail>
 </template>
-<script setup lang="ts">
+<script
+  setup
+  lang="ts"
+>
 import { useStore } from 'vuex'
 import useRole from '@/composables/useRole'
 import Instances from '@featherds/icon/hardware/Instances'
@@ -100,7 +103,10 @@ const { adminRole, filesystemEditorRole, dcbRole } = useRole()
 const plugins = computed<Plugin[]>(() => store.state.pluginModule.plugins)
 const navRailOpen = computed(() => store.state.appModule.navRailOpen)
 const onNavRailClick = () => store.dispatch('appModule/setNavRailOpen', !navRailOpen.value)
-const isSelected = (path: string) => path === route.fullPath
+const isSelected = (path: string, useInclude?: boolean): boolean => {
+  if (useInclude) return route.fullPath.includes(path)
+  return path === route.fullPath
+}
 </script>
 
 <style lang="scss">
@@ -110,13 +116,5 @@ const isSelected = (path: string) => path === route.fullPath
   .nav-header {
     display: none !important;
   }
-
-  .title-multiline-custom {
-    white-space: pre-wrap;
-    height: auto !important;
-    padding-top: var($spacing-xs) !important;
-    padding-bottom: var($spacing-xs) !important;
-  }
 }
 </style>
-

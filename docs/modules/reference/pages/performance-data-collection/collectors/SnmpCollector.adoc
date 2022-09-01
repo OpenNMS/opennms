@@ -50,7 +50,7 @@ The `datacollection-config.xml` is reloaded automatically whenever the file is m
 The content of dataCollectionGroups in `etc/datacollection/*.xml` files are reloaded each time the Collectd process gathers metrics from a node.
 This allows you to modify which metrics are collected without needing to restart services, once the Collectd collector service has been defined.
 
-Understanding xref:operation:performance-data-collection/resource-types.adoc#resource-types[resource types] helps when editing collector-specific configuration files.
+Understanding xref:operation:deep-dive/performance-data-collection/resource-types.adoc#resource-types[resource types] helps when editing collector-specific configuration files.
 
 .Structure of the `datacollection-config.xml` file
 [source, xml]
@@ -88,6 +88,26 @@ Ignored when using Newts as time-series storage.
 [[ga-performance-management-collectors-snmp-datacollection-configuration]]
 .Configuration overview for SNMP data collection
 image::performance-management/collectors/01_snmp-datacollection-configuration.png[]
+
+=== Support for opaque data types
+
+OpenNMS can import SNMP MIB definitions with opaque data types, specifically the float data type.
+To define the opaque type in a data collection, set the `mibObj` element's `type` attribute to `opaque`.
+
+[source, xml]
+----
+<datacollection-group xmlns="http://xmlns.opennms.org/xsd/config/datacollection" name="Net-SNMP">
+   ...
+   <group name="laLoadFloat" ifType="ignore">
+      <!-- use type="opaque" in mibObj to define a opaque data type-->
+      <mibObj oid=".1.3.6.1.4.1.2021.10.1.6" instance="1" alias="loadavgFloat1" type="opaque"/>
+      ...
+   </group>
+   ...
+</datacollection-group>
+
+----
+
 
 === SNMP data collection example
 

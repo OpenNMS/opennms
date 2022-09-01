@@ -1,0 +1,120 @@
+
+= WmiMonitor
+
+The WMI monitor tests the availability of WMI services on remote interfaces.
+
+NOTE: xref:reference:service-assurance/monitors/WsManMonitor.adoc[WSMAN] does everything that WMI does and is a more modern protocol for Windows monitoring.
+
+== Monitor facts
+
+[cols="1,7"]
+|===
+| Class Name
+| `org.opennms.netmgt.poller.monitors.WmiMonitor`
+|===
+
+== Configuration and use
+
+Note that username, password, and domain credentials defined here override any defined in the wmi-config file.
+Best practice is to put credentials there instead of in the pollerd/collectd configuration.
+
+.Optional monitor-specific parameters for the WmiMonitor
+[options="header"]
+[cols="1,3a,1"]
+|===
+| Parameter
+| Description
+| Default
+
+| username
+| The username to use when authenticating against the WMI host.
+| none
+
+| password
+| The password to use when authenticating against the WMI host.
+| none
+
+| domain
+| Windows domain where the user is located.
+You do not have to use the domain parameter if you use local user accounts.
+| none
+
+| matchType
+| Tells the OpenNMS WMI system to deal with multiple instance results.
+Available match types are:
+
+* *all*: all instances must comply to the compare operation.
+* *none*: no instances should comply with the compare operation.
+* *some*: only some (one or more) must comply with the compare operation.
+* *one*: only one instance can comply with the compare operation.
+| all
+
+| wmiClass
+| Class of instances within WMI.
+This class contains objects representing properties and methods available.
+| Win32_ComputerSystem
+
+| wmiObject
+| Member of a WMI property set.
+For example, the `Win32_ComputerSystem` class contains properties that we can look at and poll.
+The default "WMI" service uses the "Status" property to determine if the system is running and if WMI is available.
+| Status
+
+| compareOp
+| The compare operation tells the OpenNMS WMI poller plugins how to verify the nature (up, critical) of a specific property within WMI.
+In the event of unequal comparisons, the system will always have the WMI value (as retrieved from the target) on the left.
+Available compare operations are:
+
+* *EQ* (equals)
+* *NEQ* (not equals)
+* *GT* (greater than)
+* *LT* (less than)
+* *NOOP* (no operation)
+
+The NOOP operation is a special case which always evaluates to a result code of "OK."
+| EQ
+
+| compareValue
+| The value to use when performing a comparison against the wmiObject.
+| OK
+
+| service-name
+| Name of the service to monitor.
+ If there is a ~ at the beginning of the parameter, the rest of the string will be used as a regular expression pattern match, otherwise it will be considered an exact match.
+| WMI
+
+| retry
+| Number of retries before the service is marked as down.
+| 0
+
+| timeout
+| Time in milliseconds to wait for a response.
+|
+
+| namespace
+| Every WMI class exists in a namespace.
+The default namespace for most common classes is root/cimv2.
+It is possible to refer to WMI objects from other namespaces such as root/MicrosoftActiveDirectory.
+| root/cimv2
+
+|===
+
+== Example
+
+The following example shows how to enable monitoring that already discovered WMI services are still running.
+
+[source, xml]
+----
+    <service name="WMI" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="2" />
+      <parameter key="timeout" value="30000" />
+      <parameter key="matchType" value="all"/>
+      <parameter key="wmiClass" value="Win32_ComputerSystem" />
+      <parameter key="wmiObject" value="Status" />
+      <parameter key="compareOp" value="EQ" />
+      <parameter key="compareValue" value="OK" />
+      <parameter key="service-name" value="WMI" />
+    </service>
+
+<monitor service="WMI" class-name="org.opennms.netmgt.poller.monitors.WmiMonitor" />
+----

@@ -99,7 +99,7 @@ public class BridgeBridgeLink implements Serializable {
         m_node = node;
     }
 
-    @Column(name = "bridgePort", nullable = true)
+    @Column(name = "bridgePort")
     public Integer getBridgePort() {
         return m_bridgePort;
     }
@@ -108,7 +108,7 @@ public class BridgeBridgeLink implements Serializable {
         m_bridgePort = bridgePort;
     }
 
-    @Column(name = "bridgePortIfIndex", nullable = true)
+    @Column(name = "bridgePortIfIndex")
     public Integer getBridgePortIfIndex() {
         return m_bridgePortIfIndex;
     }
@@ -117,7 +117,7 @@ public class BridgeBridgeLink implements Serializable {
         m_bridgePortIfIndex = bridgePortIfIndex;
     }
 
-    @Column(name = "bridgePortIfName", length = 32, nullable = true)
+    @Column(name = "bridgePortIfName", length = 32)
     public String getBridgePortIfName() {
         return m_bridgePortIfName;
     }
@@ -126,7 +126,7 @@ public class BridgeBridgeLink implements Serializable {
         m_bridgePortIfName = bridgePortIfName;
     }
 
-    @Column(name = "vlan", nullable = true)
+    @Column(name = "vlan")
     public Integer getVlan() {
         return m_vlan;
     }
@@ -145,7 +145,7 @@ public class BridgeBridgeLink implements Serializable {
         m_designatedNode = designatedNode;
     }
 
-    @Column(name = "designatedBridgePort", nullable = true)
+    @Column(name = "designatedBridgePort")
     public Integer getDesignatedPort() {
         return m_designatedPort;
     }
@@ -154,7 +154,7 @@ public class BridgeBridgeLink implements Serializable {
         m_designatedPort = bridgePort;
     }
 
-    @Column(name = "designatedBridgePortIfIndex", nullable = true)
+    @Column(name = "designatedBridgePortIfIndex")
     public Integer getDesignatedPortIfIndex() {
         return m_designatedPortIfIndex;
     }
@@ -163,7 +163,7 @@ public class BridgeBridgeLink implements Serializable {
         m_designatedPortIfIndex = bridgePortIfIndex;
     }
 
-    @Column(name = "designatedBridgePortIfName", length = 32, nullable = true)
+    @Column(name = "designatedBridgePortIfName", length = 32)
     public String getDesignatedPortIfName() {
         return m_designatedPortIfName;
     }
@@ -172,7 +172,7 @@ public class BridgeBridgeLink implements Serializable {
         m_designatedPortIfName = bridgePortIfName;
     }
 
-    @Column(name = "designatedVlan", nullable = true)
+    @Column(name = "designatedVlan")
     public Integer getDesignatedVlan() {
         return m_designatedVlan;
     }
@@ -203,27 +203,24 @@ public class BridgeBridgeLink implements Serializable {
 
     @Override
     public String toString() {
-        StringBuffer strbfr = new StringBuffer();
 
-        strbfr.append("bridge link: nodeid:[");
-        strbfr.append(getNode().getId());
-        strbfr.append("], bridgeport:[");
-        strbfr.append(getBridgePort());
-        strbfr.append("], ifindex:[");
-        strbfr.append(getBridgePortIfIndex());
-        strbfr.append("], vlan:[");
-        strbfr.append(getVlan());
-        strbfr.append("], designatednodeid:[");
-        strbfr.append(getDesignatedNode().getId());
-        strbfr.append("],designatedbridgeport:[");
-        strbfr.append(getDesignatedPort());
-        strbfr.append("],designatedifindex:[");
-        strbfr.append(getDesignatedPortIfIndex());
-        strbfr.append("], designatedvlan:[");
-        strbfr.append(getDesignatedVlan());
-        strbfr.append("]");
-
-        return strbfr.toString();
+        return "bridge link: nodeid:[" +
+                getNode().getId() +
+                "], bridgeport:[" +
+                getBridgePort() +
+                "], ifindex:[" +
+                getBridgePortIfIndex() +
+                "], vlan:[" +
+                getVlan() +
+                "], designatednodeid:[" +
+                getDesignatedNode().getId() +
+                "],designatedbridgeport:[" +
+                getDesignatedPort() +
+                "],designatedifindex:[" +
+                getDesignatedPortIfIndex() +
+                "], designatedvlan:[" +
+                getDesignatedVlan() +
+                "]";
     }
 
     public void merge(BridgeBridgeLink element) {

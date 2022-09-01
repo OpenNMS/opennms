@@ -52,6 +52,7 @@ public class DeviceConfigQueryResult {
     private String nodeLabel;
     private String operatingSystem;
     private String location;
+    private DeviceConfigStatus status;
 
     public Long getId() { return this.id; }
     public Integer getIpInterfaceId() { return this.ipInterfaceId; }
@@ -70,6 +71,8 @@ public class DeviceConfigQueryResult {
     public String getNodeLabel() { return this.nodeLabel; }
     public String getOperatingSystem() { return this.operatingSystem; }
     public String getLocation() { return this.location; }
+    public DeviceConfigStatus getStatus() { return this.status; }
+    public DeviceConfigStatus getStatusOrDefault() { return this.status != null ? this.status : DeviceConfigStatus.NONE; }
 
     public void setId(Long n) { this.id = n; }
     public void setIpInterfaceId(Integer n) { this.ipInterfaceId = n; }
@@ -88,6 +91,7 @@ public class DeviceConfigQueryResult {
     public void setNodeLabel(String s) { this.nodeLabel = s; }
     public void setOperatingSystem(String s) { this.operatingSystem = s; }
     public void setLocation(String s) { this.location = s; }
+    public void setStatus(DeviceConfigStatus status) { this.status = status; }
 
     public DeviceConfigQueryResult() {
     }
@@ -110,5 +114,6 @@ public class DeviceConfigQueryResult {
         this.nodeLabel = node.getLabel();
         this.operatingSystem = node.getOperatingSystem();
         this.location = node.getLocation().getLocationName();
+        this.status = dc.getStatus();
     }
 }

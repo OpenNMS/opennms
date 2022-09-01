@@ -1,0 +1,27 @@
+[[maintenance-strategy-report]]
+= Maintenance Contracts Strategy Report
+
+This assessment management report assists in creating and reviewing a network device maintenance strategy.
+This report has a pie chart with each slice representing the three different contract states: in contract, expired, and no contract.
+
+The next chart is a stacked bar chart and groups the devices by their age and shows the number of assets in each age group that have an active contract, an expired contract, or no contract.
+
+The last chart is a stacked bar chart that breaks the devices down by age group and shows the number of devices in each group that have active contracts that are valid for the next 12 months and devices whose contract expires in the next 12 months.
+
+You can customize this report with a company logo (approximately 195px by 50px) in the page header.
+
+== Parameters
+
+[options="header, autowidth"]
+[cols="1,2,3"]
+
+|===
+| Field
+| Description
+| Default
+
+| Date Format
+| Specify the date format in the maintenance contracts date fields.
+| YYYY-MM-DD
+|===
+

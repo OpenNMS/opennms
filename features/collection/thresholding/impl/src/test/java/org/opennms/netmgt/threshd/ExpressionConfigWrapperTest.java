@@ -39,8 +39,8 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.core.rpc.utils.mate.ContextKey;
-import org.opennms.core.rpc.utils.mate.Scope;
+import org.opennms.core.mate.api.ContextKey;
+import org.opennms.core.mate.api.Scope;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.config.threshd.Expression;
 

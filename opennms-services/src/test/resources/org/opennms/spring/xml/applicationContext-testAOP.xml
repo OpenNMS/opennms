@@ -17,13 +17,13 @@
     
     <bean name="eventIpcManager" class="org.opennms.netmgt.dao.mock.MockEventIpcManager"/>
 
-    <bean name="handler" class="org.opennms.spring.xml.AspectJTestEventHandler" />
+    <bean name="handler" class="org.opennms.spring.xml.AspectJITEventHandler" />
     
     <bean name="adapter" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
         <property name="eventSubscriptionService" ref="eventIpcManager" />
         <property name="annotatedListener" ref="handler" />
     </bean>
 
-    <bean class="org.opennms.spring.xml.AspectJTestEventHandlerInteceptor"/>  
+    <bean class="org.opennms.spring.xml.AspectJITEventHandlerInteceptor"/>
 
 </beans>

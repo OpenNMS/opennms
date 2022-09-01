@@ -27,7 +27,7 @@ import DCBSearch from '@/components/Device/DCBSearch.vue'
 
 const store = useStore()
 
-onMounted(() => store.dispatch('deviceModule/getDeviceConfigBackups'))
+onMounted(() => store.dispatch('deviceModule/getDeviceConfigBackups', true))
 </script>
 
 <style scoped lang="scss">
@@ -63,7 +63,7 @@ onMounted(() => store.dispatch('deviceModule/getDeviceConfigBackups'))
         justify-content: space-between;
 
         .title {
-          @include headline4;
+          @include headline1;
           margin: 24px 0px 24px 19px;
           display: block;
         }

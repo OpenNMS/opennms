@@ -1,0 +1,86 @@
+commands:
+  run-integration-tests:
+    parameters:
+      run-code-coverage:
+        default: false
+        type: boolean
+      rerun-failtest-count:
+        default: 0
+        type: integer
+      failure-option:
+        default: -fae
+        type: string
+      changes-only:
+        default: true
+        type: boolean
+    steps:
+      - run:
+          name: Monitor JVM processes
+          background: true
+          command: |
+            .circleci/scripts/jvmprocmon-start.sh
+      - run:
+          name: Monitor memory usage
+          background: true
+          command: |
+            free -m -c 500 -s 30
+      - run:
+          name: Integration Tests
+          no_output_timeout: 15m
+          command: |
+            export CCI_CODE_COVERAGE=<< parameters.run-code-coverage >>
+            export CCI_RERUN_FAILTEST=<< parameters.rerun-failtest-count >>
+            export CCI_FAILURE_OPTION=<< parameters.failure-option >>
+            export CCI_CHANGES_ONLY=<< parameters.changes-only >>
+            .circleci/scripts/itest.sh
+      - run:
+          name: Gather test results
+          when: always
+          command: |
+            mkdir -p ~/test-results/junit
+            find . -type f -regex ".*/target/.*-reports-[0-9]+/.*xml" -exec cp {} ~/test-results/junit/ \;
+            find . -type f -regex ".*/target/.*-reports-[0-9]+/.*dump.*" -exec cp {} ~/test-results/junit/ \;
+      - run:
+          name: Gather tests
+          when: always
+          command: |
+            mkdir -p ~/generated-tests
+            cp ./surefire_classname* ~/generated-tests/ || :
+            cp ./failsafe_classname* ~/generated-tests/ || :
+            cp /tmp/this_node* ~/generated-tests/       || :
+      - when:
+          condition: << parameters.run-code-coverage >>
+          steps:
+            - run:
+                name: Compress Target Directories (Code Coverage)
+                when: always
+                command: |
+                  .circleci/scripts/codecoverage-save.sh
+            - persist_to_workspace:
+                root: ~/
+                paths:
+                  - code-coverage
+      - run:
+          name: Gather system logs
+          when: always
+          command: |
+            mkdir -p ~/build-results/system-logs
+            (dmesg || :) > ~/build-results/system-logs/dmesg 2>&1
+            (ps auxf || :) > ~/build-results/system-logs/ps 2>&1
+            (free -m || :) > ~/build-results/system-logs/free 2>&1
+            (docker stats --no-stream || :) > ~/build-results/system-logs/docker_stats 2>&1
+            cp -R /tmp/jvmprocmon ~/build-results/system-logs/ || :
+      - store_test_results:
+          path: ~/test-results
+      - store_artifacts:
+          when: always
+          path: ~/test-results
+          destination: test-results
+      - store_artifacts:
+          when: always
+          path: ~/build-results
+          destination: build-results
+      - store_artifacts:
+          when: always
+          path: ~/generated-tests
+          destination: generated-tests

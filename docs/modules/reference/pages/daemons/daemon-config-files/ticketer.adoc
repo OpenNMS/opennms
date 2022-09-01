@@ -1,0 +1,16 @@
+
+[[ref-daemon-config-files-ticketer]]
+= Ticketer
+
+Creates xref:operation:deep-dive/ticketing/introduction.adoc[tickets] in external systems based on alarm status.
+
+.Ticketer log file overview
+[options="header"]
+[cols="2,3"]
+|===
+| File
+| Description
+
+| trouble-ticketer.log
+| Logs relating to Ticketer server events.
+|===

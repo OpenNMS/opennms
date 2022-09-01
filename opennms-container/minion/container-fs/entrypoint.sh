@@ -122,6 +122,13 @@ initConfig() {
     fi
 
     if [ ! -f ${MINION_HOME}/etc/configured ]; then
+        # Create SSH Key-Pair to use with the Karaf Shell
+        RUN mkdir -p "${MINION_HOME}/.ssh" && \
+            chmod 700 "${MINION_HOME}/.ssh" && \
+            ssh-keygen -t rsa -f "${MINION_HOME}/.ssh/id_rsa" -q -N "" && \
+            echo "minion=$(cat "${MINION_HOME}/.ssh/id_rsa.pub" | awk '{print $2}'),viewer" > "${MINION_HOME}/etc/keys.properties" && \
+            echo "_g_\\:admingroup = group,admin,manager,viewer,systembundles,ssh" >> ${MINION_HOME}/etc/keys.properties && \
+            chmod 600 "${MINION_HOME}/.ssh/id_rsa"
 
         # Expose Karaf Shell
         sed -i "/^sshHost/s/=.*/= 0.0.0.0/" ${MINION_HOME}/etc/org.apache.karaf.shell.cfg
@@ -134,6 +141,15 @@ initConfig() {
         echo "location = ${MINION_LOCATION}" > ${MINION_CONFIG}
         echo "id = ${MINION_ID}" >> ${MINION_CONFIG}
         echo "broker-url = ${OPENNMS_BROKER_URL}" >> ${MINION_CONFIG}
+
+        # Create SSH Key-Pair to use with the Karaf Shell
+        mkdir "${MINION_HOME}/.ssh"
+        ssh-keygen -t rsa -f "${MINION_HOME}/.ssh/id_rsa" -q -N ""
+        chmod 700 "${MINION_HOME}/.ssh"
+        chmod 600 "${MINION_HOME}/.ssh/id_rsa"
+        chown -R minion:minion "${MINION_HOME}/.ssh"
+        echo minion=$(cat ${MINION_HOME}/.ssh/id_rsa.pub | awk '{print $2}'),viewer > ${MINION_HOME}/etc/keys.properties
+        echo "_g_\\:admingroup = group,admin,manager,viewer,systembundles,ssh" >> ${MINION_HOME}/etc/keys.properties
 
         parseEnvironment
 

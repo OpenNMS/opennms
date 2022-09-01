@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -289,53 +289,6 @@ public class JRobinRrdStrategyTest {
         
     }
 
-    /**
-     * This test fails because of
-     * <a href="http://bugzilla.opennms.org/show_bug.cgi?id=2272">bug #2272</a>
-     * in org.jrobin.core.Sample.
-     */
-    @Test
-    @Ignore("fails due to bug 2272")
-    public void testSampleSetFloatingPointValueWithComma() throws Exception {
-        File rrdFile = createRrdFile();
-        
-        RrdDb openedFile = m_strategy.openFile(rrdFile.getAbsolutePath());
-        
-        Sample sample = openedFile.createSample();
-        sample.set("N:1,234");
-        m_strategy.closeFile(openedFile);
-        
-        double[] values = sample.getValues();
-        assertEquals("values list size", 1, values.length);
-        assertEquals("values item 0", 1.234, values[0], 0.0);
-    }
-
-    /**
-     * This test fails because of
-     * <a href="http://bugzilla.opennms.org/show_bug.cgi?id=2272">bug #2272</a>
-     * in org.jrobin.core.Sample.
-     */
-    @Test
-    @Ignore("fails due to bug 2272")
-    public void testSampleSetFloatingPointValueWithExtraJunk() throws Exception {
-        File rrdFile = createRrdFile();
-        
-        RrdDb openedFile = m_strategy.openFile(rrdFile.getAbsolutePath());
-        
-        Sample sample = openedFile.createSample();
-        
-        ThrowableAnticipator ta = new ThrowableAnticipator();
-        ta.anticipate(new Exception("Some exception that complains about bogus data"));
-        try {
-            sample.set("N:1.234 extra junk");
-        } catch (Throwable t) {
-            ta.throwableReceived(t);
-        } finally {
-            m_strategy.closeFile(openedFile);
-        }
-        ta.verifyAnticipated();
-    }
-    
     @Test
     public void testCommentWithNewlines() throws Exception {
         long end = System.currentTimeMillis();

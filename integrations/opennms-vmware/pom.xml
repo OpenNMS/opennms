@@ -88,6 +88,14 @@
             <version>6.0.05</version>
             <exclusions>
                 <exclusion>
+                    <groupId>org.apache.directory.studio</groupId>
+                    <artifactId>org.dom4j.dom4j</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>dom4j</groupId>
+                    <artifactId>dom4j</artifactId>
+                </exclusion>
+                <exclusion>
                     <groupId>log4j</groupId>
                     <artifactId>log4j</artifactId>
                 </exclusion>
@@ -101,6 +109,10 @@
                     <artifactId>lombok</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.dom4j</groupId>
+            <artifactId>dom4j</artifactId>
         </dependency>
 
         <!-- Attention this is EPL license -->

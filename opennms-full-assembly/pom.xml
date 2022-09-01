@@ -12,45 +12,10 @@
   <name>OpenNMS Full Assembly</name>
   <properties>
     <build.profile>default</build.profile>
+    <build.assembly.type>default</build.assembly.type>
+    <build.assembly.format>tar.gz</build.assembly.format>
   </properties>
   <profiles>
-    <profile>
-      <id>default</id>
-      <activation>
-        <property>
-          <name>build.profile</name>
-          <value>default</value>
-        </property>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <inherited>false</inherited>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-assembly-plugin</artifactId>
-            <executions>
-              <execution>
-                <phase>package</phase>
-                <goals>
-                  <goal>single</goal>
-                </goals>
-              </execution>
-            </executions>
-            <configuration>
-              <descriptors>
-                <descriptor>src/assembly/full.xml</descriptor>
-              </descriptors>
-              <appendAssemblyId>false</appendAssemblyId>
-              <overrideUid>0</overrideUid>
-              <overrideGid>0</overrideGid>
-              <tarLongFileMode>posix</tarLongFileMode>
-              <outputDirectory>${dist.dir}</outputDirectory>
-              <finalName>${dist.name}</finalName>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
     <profile>
       <id>full</id>
       <activation>
@@ -59,34 +24,10 @@
           <value>full</value>
         </property>
       </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <inherited>false</inherited>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-assembly-plugin</artifactId>
-            <executions>
-              <execution>
-                <phase>package</phase>
-                <goals>
-                  <goal>single</goal>
-                </goals>
-              </execution>
-            </executions>
-            <configuration>
-              <descriptors>
-                <descriptor>src/assembly/full.xml</descriptor>
-              </descriptors>
-              <appendAssemblyId>false</appendAssemblyId>
-              <overrideUid>0</overrideUid>
-              <overrideGid>0</overrideGid>
-              <tarLongFileMode>posix</tarLongFileMode>
-              <outputDirectory>${dist.dir}</outputDirectory>
-              <finalName>${dist.name}</finalName>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
+      <properties>
+        <build.assembly.type>full</build.assembly.type>
+        <build.assembly.format>tar.gz</build.assembly.format>
+      </properties>
     </profile>
     <profile>
       <id>dir</id>
@@ -96,34 +37,10 @@
           <value>dir</value>
         </property>
       </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <inherited>false</inherited>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-assembly-plugin</artifactId>
-            <executions>
-              <execution>
-                <phase>package</phase>
-                <goals>
-                  <goal>single</goal>
-                </goals>
-              </execution>
-            </executions>
-            <configuration>
-              <descriptors>
-                <descriptor>src/assembly/fulldir.xml</descriptor>
-              </descriptors>
-              <appendAssemblyId>false</appendAssemblyId>
-              <overrideUid>0</overrideUid>
-              <overrideGid>0</overrideGid>
-              <tarLongFileMode>posix</tarLongFileMode>
-              <outputDirectory>${dist.dir}</outputDirectory>
-              <finalName>${dist.name}</finalName>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
+      <properties>
+        <build.assembly.type>default</build.assembly.type>
+        <build.assembly.format>dir</build.assembly.format>
+      </properties>
     </profile>
     <profile>
       <id>fulldir</id>
@@ -133,32 +50,10 @@
           <value>fulldir</value>
         </property>
       </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <inherited>false</inherited>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-assembly-plugin</artifactId>
-            <executions>
-              <execution>
-                <phase>package</phase>
-                <goals>
-                  <goal>single</goal>
-                </goals>
-              </execution>
-            </executions>
-            <configuration>
-              <descriptors>
-                <descriptor>src/assembly/fulldir.xml</descriptor>
-              </descriptors>
-              <appendAssemblyId>false</appendAssemblyId>
-              <tarLongFileMode>posix</tarLongFileMode>
-              <outputDirectory>${dist.dir}</outputDirectory>
-              <finalName>${dist.name}</finalName>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
+      <properties>
+        <build.assembly.type>full</build.assembly.type>
+        <build.assembly.format>dir</build.assembly.format>
+      </properties>
     </profile>
   </profiles>
   <build>
@@ -212,6 +107,7 @@
               <goal>copy</goal>
             </goals>
             <configuration>
+              <skip>${skipTests}</skip>
               <artifactItems>
                 <artifactItem>
                   <groupId>org.apache.mina</groupId>
@@ -231,6 +127,7 @@
               <goal>unpack</goal>
             </goals>
             <configuration>
+              <skip>${skipTests}</skip>
               <outputDirectory>${project.build.directory}/minion-core-repo</outputDirectory>
               <artifactItems>
                 <artifactItem>
@@ -251,6 +148,7 @@
               <goal>unpack</goal>
             </goals>
             <configuration>
+              <skip>${skipTests}</skip>
               <outputDirectory>${project.build.directory}/minion-default-repo</outputDirectory>
               <artifactItems>
                 <artifactItem>
@@ -317,6 +215,7 @@
                 <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/spring-legacy</descriptor>
 
                 <!-- OpenNMS product features generated by container/features/pom.xml -->
+                <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/karaf-extensions</descriptor>
                 <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/features</descriptor>
                 <!-- OpenNMS Minion features generated by container/features/pom.xml -->
                 <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/minion</descriptor>
@@ -634,6 +533,7 @@
               <goal>features-add-to-repository</goal>
             </goals>
             <configuration>
+              <skip>${skipTests}</skip>
               <descriptors>
                 <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/spring-legacy</descriptor>
                 <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/experimental</descriptor>
@@ -677,6 +577,72 @@
         </configuration>
       </plugin>
       <plugin>
+        <inherited>false</inherited>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>prepare-dir</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <descriptors>
+                <descriptor>src/assembly/core.xml</descriptor>
+                <descriptor>src/assembly/optional.xml</descriptor>
+              </descriptors>
+              <formats>
+                <format>dir</format>
+              </formats>
+              <attach>false</attach>
+              <tarLongFileMode>posix</tarLongFileMode>
+              <outputDirectory>${project.build.directory}</outputDirectory>
+            </configuration>
+          </execution>
+          <execution>
+            <id>prepare-tar</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <descriptors>
+                <descriptor>src/assembly/core.xml</descriptor>
+                <descriptor>src/assembly/optional.xml</descriptor>
+              </descriptors>
+              <formats>
+                <format>dir</format>
+                <format>tar.gz</format>
+              </formats>
+              <tarLongFileMode>posix</tarLongFileMode>
+              <outputDirectory>${project.build.directory}</outputDirectory>
+            </configuration>
+          </execution>
+          <execution>
+            <id>generate-assembly</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <descriptors>
+                <descriptor>src/assembly/${build.assembly.type}.xml</descriptor>
+              </descriptors>
+              <formats>
+                <format>${build.assembly.format}</format>
+              </formats>
+              <appendAssemblyId>false</appendAssemblyId>
+              <overrideUid>0</overrideUid>
+              <overrideGid>0</overrideGid>
+              <tarLongFileMode>posix</tarLongFileMode>
+              <outputDirectory>${dist.dir}</outputDirectory>
+              <finalName>${dist.name}</finalName>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <artifactId>maven-clean-plugin</artifactId>
         <executions>
           <execution>
@@ -686,6 +652,8 @@
               <goal>clean</goal>
             </goals>
             <configuration>
+              <skip>${skipTests}</skip>
+              <fast>true</fast>
               <excludeDefaultDirectories>true</excludeDefaultDirectories>
               <filesets>
                 <fileset>
@@ -710,13 +678,15 @@
         <artifactId>maven-antrun-plugin</artifactId>
         <executions>
           <execution>
-            <phase>validate</phase>
+            <phase>verify</phase>
             <goals>
               <goal>run</goal>
             </goals>
             <configuration>
               <tasks>
-                <echo>Build Profile is '${build.profile}'.</echo>
+                <echo>* profile:    ${build.profile}</echo>
+                <echo>* format:     ${build.assembly.format}</echo>
+                <echo>* descriptor: src/assembly/${build.assembly.type}.xml</echo>
               </tasks>
             </configuration>
           </execution>
@@ -888,25 +858,6 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.protocols</groupId>
-      <artifactId>org.opennms.protocols.xmp</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.protocols</groupId>
-      <artifactId>org.opennms.protocols.xmp</artifactId>
-      <version>${project.version}</version>
-      <type>tar.gz</type>
-      <classifier>etc</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.protocols</groupId>
-      <artifactId>org.opennms.protocols.xmp</artifactId>
-      <version>${project.version}</version>
-      <type>tar.gz</type>
-      <classifier>lib</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.protocols</groupId>
       <artifactId>selenium-monitor</artifactId>
       <version>${project.version}</version>
       <exclusions>
@@ -979,6 +930,20 @@
       <version>${paxWebVersion}</version>
       <classifier>features</classifier>
       <type>xml</type>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.karaf</groupId>
+      <artifactId>opennms</artifactId>
+      <version>${project.version}</version>
+      <type>xml</type>
+      <classifier>core</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.karaf</groupId>
+      <artifactId>opennms</artifactId>
+      <version>${project.version}</version>
+      <type>xml</type>
+      <classifier>karaf-extensions</classifier>
     </dependency>
     <dependency>
       <groupId>org.opennms.karaf</groupId>

@@ -18,7 +18,6 @@ import {
   requisitionSubTypes,
   requisitionTypeList,
   RequisitionTypes,
-  requisitionDNSField,
   RequisitionPluginSubTypes,
   RequisitionHTTPTypes
 } from './copy/requisitionTypes'
@@ -27,7 +26,11 @@ import cronstrue from 'cronstrue'
 import ipRegex from 'ip-regex'
 import isValidDomain from 'is-valid-domain'
 
-const cronTabLength = (cronTab: string) => cronTab.replace(/\s$/, '').split(' ').length
+const cronTabLength = (cronTab: string) => {
+  if(!cronTab) return 0
+
+  return cronTab.replace(/\s$/, '').split(' ').length
+}
 
 const obfuscatePassword = (url: string) => {
   const regexPasswordValue = /(password=)([^&]+)/
@@ -229,6 +232,10 @@ const convertItemToURL = (localItem: LocalConfiguration) => {
   } else if(type === RequisitionTypes.VMWare) {
     host = localItem.host
 
+    if (localItem.foreignSource) {
+      host += `/${localItem.foreignSource}`
+    }
+
     // username/password if set in UI input field: translated to have/save them as query part of the URL
     const usernameQuery = localItem.username ? `${VMWareFields.Username}=${localItem.username}` : ''
     const passwordQuery = localItem.password ? `${VMWareFields.Password}=${localItem.password}` : ''
@@ -386,7 +393,7 @@ const convertURLToLocal = (urlIn: string) => {
       localConfig.path = urlPath
       break
     case RequisitionTypes.VMWare:
-      localConfig.host = findHost(url)
+      localConfig = findVMware(localConfig, urlIn)
       break
     case RequisitionTypes.RequisitionPlugin:
       localConfig.subType = findSubType(url)
@@ -490,8 +497,9 @@ const createBlankSubConfiguration = () => {
 const cronToEnglish = (cronFormatted: string) => {
   let error = ''
 
-  if (cronTabLength(cronFormatted) === 5) {
-    error = ErrorStrings.QuartzFormatSupportError // custom error of 6th part quartz format support
+  const tabLength = cronTabLength(cronFormatted)
+  if (tabLength > 0 && tabLength < 6 ) {
+    error = ErrorStrings.QuartzFormatSupportError(tabLength) // custom error of 6th part quartz format support (i.e. cronstrue package supports 6th part as optional, thus no error message if expression contains only 5 parts)
   } else {
     try {
       error = cronstrue.toString(cronFormatted, { dayOfWeekStartIndexZero: false })
@@ -509,7 +517,7 @@ const cronToEnglish = (cronFormatted: string) => {
  * @param item Advanced Option
  * @param fullItem Local Configuration Object
  * @returns Local Configuration Object with attached username/password and boolean
- * indiciating whether or not to filter this result from the list.
+ * indicating whether or not to filter this result from the list.
  */
 const filterForVMWareValues = (
   type: string,
@@ -538,16 +546,45 @@ const filterForVMWareValues = (
  * @returns Current Local Configuration with updated DNS Related fields.
  */
 const findDNS = (currentConfig: LocalSubConfiguration, urlIn: string) => {
+  return findDNSorVMware(currentConfig, urlIn, true)
+}
+
+/**
+ *
+ * @param currentConfig Current Local Configuration Object
+ * @param urlIn Full URL In
+ * @returns Current Local Configuration with updated VMware related fields.
+ */
+const findVMware = (currentConfig: LocalSubConfiguration, urlIn: string) => {
+  return findDNSorVMware(currentConfig, urlIn, false)
+}
+
+/**
+ *
+ * @param currentConfig Current Local Configuration Object
+ * @param urlIn Full URL In
+ * @param isDNS true if DNS configuration, false if VMware configuration
+ * @returns Current Local Configuration with updated DNS or VMware related fields.
+ */
+const findDNSorVMware = (currentConfig: LocalSubConfiguration, urlIn: string, isDNS: boolean) => {
   const localConfig = { ...currentConfig }
 
-  const urlPart = urlIn.split(SplitTypes.dns)[1].split('/')
+  const splitType = isDNS ? SplitTypes.dns : SplitTypes.vmware
+
+  const urlPart = urlIn.split(splitType)[1].split('/')
   localConfig.host = urlPart[0]
-  localConfig.zone = urlPart[1]
-  if (urlPart[2]) {
-    if (urlPart[2].includes('?')) {
-      localConfig.foreignSource = urlPart[2].split('?')[0]
+
+  if (isDNS) {
+    localConfig.zone = urlPart[1]
+  }
+
+  const urlIndex = isDNS ? 2 : 1
+
+  if (urlPart[urlIndex]) {
+    if (urlPart[urlIndex].includes('?')) {
+      localConfig.foreignSource = urlPart[urlIndex].split('?')[0]
     } else {
-      localConfig.foreignSource = urlPart[2]
+      localConfig.foreignSource = urlPart[urlIndex]
     }
   }
   return localConfig
@@ -628,7 +665,7 @@ const getHostHint = (type: string) => {
   let hintText = ''
   if (type === RequisitionTypes.DNS) {
     hintText = 'DNS resolver host to contact. Must allow IXFR or AXFR zone transfers.'
-  } else if (type === RequisitionTypes.HTTPS || type === RequisitionTypes.HTTP) {
+  } else if (type === RequisitionTypes.HTTPS || type === RequisitionTypes.HTTP || type === RequisitionTypes.VMWare) {
     hintText = 'Hostname or IP address'
   }
   return hintText
@@ -726,40 +763,48 @@ const validateCronTab = (item: LocalConfiguration, oldErrors: LocalErrors) => {
 
 /**
  * Validates a Hostname. Can be an IP address or valid domain name.
- * It also validates Foreign source (Requisition name) of DNS type, with a slightly different regex which includes underscore and space
  * @param host Hostname
- * @param fieldName Requisition name, Zone
  * @returns Blank if Valid, Error Message if Not.
  */
-const validateHost = (host: string, fieldName = '') => {
-  let hostError = ''
-
-  // no spaces, may contain (but not start with), hyphen or dot, cannot be over 49 chars
-  const customHostnameRegex = /^[a-zA-Z0-9]{1}[a-zA-Z0-9-.]{0,48}$/
+const validateHost = (host: string) => {
+  // no spaces, may starts and ends with brackets, may contain (but not start with) hyphen or dot or colon, cannot be over 49 chars (e.g. IPv6 - vmware://[2001:db8:0:8d3:0:8a2e:70:7344])
+  const customHostnameRegex = /^[?[a-zA-Z\d]{1}[a-zA-Z\d.\-:]{0,48}]?$/
   
-  // same as customHostnameRegex but including underscore and space
-  const customForeignSourceRegex = /^[a-zA-Z0-9]{1}[a-zA-Z0-9-._\s]{0,48}$/
-
   // Either IPv4, IPv6, a valid domain name, or passes custom regex
   const isHostValid = 
     ipRegex({exact: true}).test(host) 
     || isValidDomain(host) 
-    || (fieldName === requisitionDNSField.requisitionName ? customForeignSourceRegex : customHostnameRegex).test(host)
+    || customHostnameRegex.test(host)
 
-  if (!isHostValid) {
-    switch(fieldName) {
-      case requisitionDNSField.requisitionName:
-        hostError = ErrorStrings.InvalidRequisitionName
-        break
-      case requisitionDNSField.zone:
-        hostError = ErrorStrings.InvalidZoneName
-        break
-      default:
-        hostError = ErrorStrings.InvalidHostname
-    }
-  }
+  return !isHostValid ? ErrorStrings.InvalidHostname : ''
+}
 
-  return hostError
+/**
+ * Field required
+ * Field invalid if:
+ *  - has space as first or last character
+ *  - has: not alpha, digit, _, -, and .
+ * @param fieldVal Field value
+ * @returns Blank if valid, else error message
+ */
+const validateZoneField = (fieldVal: string) => {
+  const regex = /^[\s]|[^\w\d\-.\s]|[\s]$/
+
+  return !fieldVal || regex.test(fieldVal) ? ErrorStrings.InvalidZoneName : ''
+}
+
+/**
+ * Field not required
+ * Field invalid if:
+ *  - has space as first or last character
+ *  - has: /, \, ?, &, *, ', "
+ * @param fieldVal field value
+ * @returns Blank if valid, else error message
+ */
+const validateRequisitionNameField = (fieldVal: string) => {
+  const regex = /^[\s]|[/\\?&*'"]|[\s]$/
+  
+  return regex.test(fieldVal) ? ErrorStrings.InvalidRequisitionName : ''
 }
 
 /**
@@ -785,17 +830,21 @@ const validateLocalItem = (
     errors.type = validateType(localItem.type.name)
 
     if (RequsitionTypesUsingHost.includes(localItem.type.name)) {
-      errors.host = validateHost(localItem.host)
+      if (!localItem.host) {
+        errors.host = ErrorStrings.Required('Host')
+      } else {
+        errors.host = validateHost(localItem.host)
+      }
     }
     if (RequisitionHTTPTypes.includes(localItem.type.name) && localItem.urlPath) {
       errors.urlPath = validatePath(localItem.urlPath)
     }
     if (localItem.type.name === RequisitionTypes.DNS) {
-      errors.zone = validateHost(localItem.zone, requisitionDNSField.zone)
+      errors.zone = validateZoneField(localItem.zone)
 
       // Only validate foreign source if it's set.
       if (localItem.foreignSource) {
-        errors.foreignSource = validateHost(localItem.foreignSource, requisitionDNSField.requisitionName)
+        errors.foreignSource = validateRequisitionNameField(localItem.foreignSource)
       }
     }
     if (localItem.type.name === RequisitionTypes.File) {
@@ -807,6 +856,13 @@ const validateLocalItem = (
       }
       if (localItem.password && !localItem.username) {
         errors.username = ErrorStrings.Required(VMWareFields.UpperUsername)
+      }
+
+      // Always validate Requisition Name / Foreign Source Name
+      if (!localItem.foreignSource) {
+        errors.foreignSource = ErrorStrings.Required(VMWareFields.RequisitionName)
+      } else {
+        errors.foreignSource = validateRequisitionNameField(localItem.foreignSource)
       }
     }
     if (!localItem.advancedCrontab) {
@@ -823,7 +879,7 @@ const validateLocalItem = (
       errors.hasErrors = true
     }
   }
-
+  
   return errors
 }
 
@@ -946,6 +1002,8 @@ export const ConfigurationHelper = {
   parseHint,
   stripOriginalIndexes,
   validateHost,
+  validateZoneField,
+  validateRequisitionNameField,
   validateLocalItem,
   validateName,
   validateOccurance,

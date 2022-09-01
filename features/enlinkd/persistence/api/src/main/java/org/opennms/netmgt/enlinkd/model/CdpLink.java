@@ -124,13 +124,13 @@ public class CdpLink implements Serializable {
         clnsPfx(24),
         http(25),
         unknown(65535);
-		private int m_type;
+		private final int m_type;
   
 		CiscoNetworkProtocolType(Integer chassisIdsubtype) {
 	    	m_type = chassisIdsubtype;
 	    }
 
-	    protected static final Map<Integer, String> s_typeMap = new HashMap<Integer, String>();
+	    protected static final Map<Integer, String> s_typeMap = new HashMap<>();
 
 	    static {
 	    	s_typeMap.put(1,"ip");
@@ -164,8 +164,6 @@ public class CdpLink implements Serializable {
 	     * <p>ElementIdentifierTypeString</p>
 	     *
 	     * @return a {@link java.lang.String} object.
-	     */
-	    /**
 	     */
 	    public static String getTypeString(Integer code) {
 	        if (s_typeMap.containsKey(code))
@@ -275,7 +273,7 @@ public class CdpLink implements Serializable {
         m_cdpCacheDeviceIndex = cdpCacheDeviceIndex;
     }
 
-    @Column(name="cdpInterfaceName" , length=96, nullable = true)
+    @Column(name="cdpInterfaceName" , length=96)
     public String getCdpInterfaceName() {
         return m_cdpInterfaceName;
     }
@@ -378,26 +376,24 @@ public class CdpLink implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String toString() {
-        StringBuffer strb = new StringBuffer();
-            strb.append("cdplink: nodeid:["); 
-            strb.append(getNode().getId());
-            strb.append("]. ifindex:[ ");
-            strb.append(getCdpCacheIfIndex());
-            strb.append("], deviceindex:[");
-            strb.append(getCdpCacheDeviceIndex());
-            strb.append("], interfacename:[");
-            strb.append(getCdpInterfaceName()); 
-            strb.append("], address/type:[");
-            strb.append(getCdpCacheAddress()); 
-            strb.append("/");
-            strb.append(CiscoNetworkProtocolType.getTypeString(getCdpCacheAddressType().getValue()));
-            strb.append("], deviceid:[");
-            strb.append(getCdpCacheDeviceId()); 
-            strb.append("], deviceport:[");
-            strb.append(getCdpCacheDevicePort()); 
-           strb.append("]");
 
-        return strb.toString();
+        return "cdplink: nodeid:[" +
+                getNode().getId() +
+                "]. ifindex:[ " +
+                getCdpCacheIfIndex() +
+                "], deviceindex:[" +
+                getCdpCacheDeviceIndex() +
+                "], interfacename:[" +
+                getCdpInterfaceName() +
+                "], address/type:[" +
+                getCdpCacheAddress() +
+                "/" +
+                CiscoNetworkProtocolType.getTypeString(getCdpCacheAddressType().getValue()) +
+                "], deviceid:[" +
+                getCdpCacheDeviceId() +
+                "], deviceport:[" +
+                getCdpCacheDevicePort() +
+                "]";
     }
 
 }

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -75,7 +75,6 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 
-@org.junit.experimental.categories.Category(org.opennms.smoketest.junit.FlakyTests.class)
 public class GraphRestServiceIT extends OpenNMSSeleniumIT {
     private static final Logger LOG = LoggerFactory.getLogger(GraphRestServiceIT.class);
     private static final String CONTAINER_ID = "test";
@@ -158,10 +157,10 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                 .body("[1].graphs[0].description", Matchers.is("Displays the hierarchy of the defined Business Services and their computed operational states."))
 
                 .body("[2].id", Matchers.is("nodes"))
-                .body("[2].label", Matchers.is("Enhanced Linkd Topology Provider"))
+                .body("[2].label", Matchers.is("All"))
                 .body("[2].graphs.size()", Matchers.is(1))
                 .body("[2].graphs[0].namespace", Matchers.is("nodes"))
-                .body("[2].graphs[0].label", Matchers.is("Enhanced Linkd Topology Provider"))
+                .body("[2].graphs[0].label", Matchers.is("All"))
                 .body("[2].graphs[0].description", Matchers.is("This Topology Provider displays the topology information discovered by the Enhanced Linkd daemon. It uses the SNMP information of several protocols like OSPF, ISIS, LLDP and CDP to generate an overall topology."))
 
                 .body("[3].id", Matchers.is(CONTAINER_ID))

@@ -39,9 +39,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.opennms.core.rpc.utils.mate.EntityScopeProvider;
-import org.opennms.core.rpc.utils.mate.FallbackScope;
-import org.opennms.core.rpc.utils.mate.Interpolator;
+import org.opennms.core.mate.api.EntityScopeProvider;
+import org.opennms.core.mate.api.FallbackScope;
+import org.opennms.core.mate.api.Interpolator;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.ServiceRef;
 import org.opennms.netmgt.dao.api.ServiceTracker;

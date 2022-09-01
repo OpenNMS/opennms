@@ -30,7 +30,6 @@ package org.opennms.netmgt.enlinkd.snmp;
 
 import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry;
 import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry.BridgeDot1qTpFdbStatus;
-import org.opennms.netmgt.snmp.RowCallback;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpRowResult;
@@ -47,19 +46,10 @@ import org.opennms.netmgt.snmp.TableTracker;
  * form more information.</P>
  *
  * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio</A>
- * @see Dot1dTpFdbTable
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213</A>
  * @version $Id: $
  */
 public class Dot1dTpFdbTableTracker extends TableTracker {
-
-	/**
-	 * The status of the info in FDB table entry The status of this entry. The
-	 * meanings of the values are: learned(3) : the value of the corresponding
-	 * instance of dot1dTpFdbPort was learned, and is being used.
-	 */
-	public static final int SNMP_DOT1D_FDB_STATUS_LEARNED = 3;
-
 
 	 public final static SnmpObjId DOT1D_TP_FDB_ADDRESS = SnmpObjId.get(".1.3.6.1.2.1.17.4.3.1.1");
 	 public final static SnmpObjId DOT1D_TP_FDB_PORT    = SnmpObjId.get(".1.3.6.1.2.1.17.4.3.1.2");
@@ -67,7 +57,7 @@ public class Dot1dTpFdbTableTracker extends TableTracker {
 
 
 	public static final SnmpObjId[] ms_elemList = new SnmpObjId[] {
-	    /**
+	    /*
 	     * A unicast MAC address for which the bridge has
 	     * forwarding and/or filtering information.
 	     *  REFERENCE
@@ -75,7 +65,7 @@ public class Dot1dTpFdbTableTracker extends TableTracker {
 	     */
 	    DOT1D_TP_FDB_ADDRESS,
 
-	    /**
+	    /*
 	     * Either the value '0', or the port number of the
 	     * port on which a frame having a source address
 	     * equal to the value of the corresponding instance
@@ -91,7 +81,7 @@ public class Dot1dTpFdbTableTracker extends TableTracker {
 	     */
 	    DOT1D_TP_FDB_PORT,
 
-	    /**
+	    /*
          *  "The status of this entry.  The meanings of the
          *  values are:
          *      other(1) - none of the following.  This would
@@ -183,12 +173,8 @@ public class Dot1dTpFdbTableTracker extends TableTracker {
 	public Dot1dTpFdbTableTracker() {
 		super(ms_elemList);
 	}
-	
-	public Dot1dTpFdbTableTracker(RowCallback rowProcessor) {
-		super(rowProcessor, ms_elemList);
-	}
 
-    /** {@inheritDoc} */
+	/** {@inheritDoc} */
     @Override
     public SnmpRowResult createRowResult(final int columnCount, final SnmpInstId instance) {
         return new Dot1dTpFdbRow(columnCount, instance);

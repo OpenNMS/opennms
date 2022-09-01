@@ -36,10 +36,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.opennms.integration.api.v1.timeseries.DataPoint;
 import org.opennms.integration.api.v1.timeseries.IntrinsicTagNames;
+import org.opennms.integration.api.v1.timeseries.MetaTagNames;
 import org.opennms.integration.api.v1.timeseries.Metric;
 import org.opennms.integration.api.v1.timeseries.Sample;
 import org.opennms.integration.api.v1.timeseries.Tag;
+import org.opennms.integration.api.v1.timeseries.TimeSeriesData;
+import org.opennms.integration.api.v1.timeseries.immutables.ImmutableDataPoint;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableSample;
 import org.opennms.newts.api.Context;
 import org.opennms.newts.api.Counter;
@@ -56,25 +60,26 @@ import com.google.common.base.Optional;
 /** Provides methods to convert between the Timeseries API world and Newts. */
 public class NewtsConverterUtils {
 
-    public static Iterator<Results.Row<org.opennms.newts.api.Sample>> samplesToNewtsRowIterator(List<Sample> allSamples) {
-        return allSamples
+    public static Iterator<Results.Row<org.opennms.newts.api.Sample>> samplesToNewtsRowIterator(TimeSeriesData allDataPoints) {
+        return allDataPoints
+                .getDataPoints()
                 .stream()
-                .map(NewtsConverterUtils::sampleToRow)
+                .map(d -> dataPointToRow(allDataPoints.getMetric(), d))
                 .collect(Collectors.toList())
                 .iterator();
     }
 
-    private static Results.Row<org.opennms.newts.api.Sample> sampleToRow(final Sample sample) {
+    private static Results.Row<org.opennms.newts.api.Sample> dataPointToRow(final Metric metric, final DataPoint dataPoint) {
 
-        Optional<Map<String, String>> resourceAttributes = sample.getMetric().getExternalTags().isEmpty() ?
-                Optional.absent() : Optional.of(asMap(sample.getMetric().getMetaTags()));
+        Optional<Map<String, String>> resourceAttributes = metric.getExternalTags().isEmpty() ?
+                Optional.absent() : Optional.of(asMap(metric.getMetaTags()));
 
-        final Timestamp timestamp = Timestamp.fromEpochMillis(sample.getTime().toEpochMilli());
+        final Timestamp timestamp = Timestamp.fromEpochMillis(dataPoint.getTime().toEpochMilli());
         final Context context = new Context("not relevant");
-        final Resource resource = new Resource(sample.getMetric().getFirstTagByKey(IntrinsicTagNames.resourceId).getValue(), resourceAttributes);
-        final String name = sample.getMetric().getFirstTagByKey(IntrinsicTagNames.name).getValue();
-        final MetricType type = toNewts(Metric.Mtype.valueOf(sample.getMetric().getFirstTagByKey(IntrinsicTagNames.mtype).getValue()));
-        final ValueType<?> value = toNewtsValue(sample);
+        final Resource resource = new Resource(metric.getFirstTagByKey(IntrinsicTagNames.resourceId).getValue(), resourceAttributes);
+        final String name = metric.getFirstTagByKey(IntrinsicTagNames.name).getValue();
+        final MetricType type = toNewts(Metric.Mtype.valueOf(metric.getFirstTagByKey(IntrinsicTagNames.mtype).getValue()));
+        final ValueType<?> value = toNewtsValue(metric, dataPoint);
         final Map<String, String> attributes = new HashMap<>();
 
         org.opennms.newts.api.Sample newtsSample = new org.opennms.newts.api.Sample(
@@ -95,19 +100,19 @@ public class NewtsConverterUtils {
         }
     }
 
-    private static ValueType<?> toNewtsValue(final Sample sample) {
-        final Metric.Mtype mtype = Metric.Mtype.valueOf(sample.getMetric().getFirstTagByKey(IntrinsicTagNames.mtype).getValue());
+    private static ValueType<?> toNewtsValue(final Metric metric, final DataPoint dataPoint) {
+        final Metric.Mtype mtype = Metric.Mtype.valueOf(metric.getFirstTagByKey(MetaTagNames.mtype).getValue());
         if(Metric.Mtype.count == mtype) {
-            return new Counter(sample.getValue().longValue());
+            return new Counter(dataPoint.getValue().longValue());
         } else if(Metric.Mtype.gauge == mtype) {
-            return new Gauge(sample.getValue());
+            return new Gauge(dataPoint.getValue());
         } else  {
             throw new IllegalArgumentException(String.format("I don't know how to map %s to ValueType", mtype));
         }
     }
 
     // this only works if we have exactly one column in a row. */
-    public static Sample toTimeseriesSample(final Results.Row<Measurement> row, final Metric metric) {
+    public static DataPoint toTimeSeriesDataPoint(final Results.Row<Measurement> row) {
 
         // check preconditions
         final int sizeOfRow = row.getElements().size();
@@ -117,8 +122,7 @@ public class NewtsConverterUtils {
 
         // and convert
         Measurement measurement = row.getElements().iterator().next();
-        return ImmutableSample.builder()
-                .metric(metric)
+        return ImmutableDataPoint.builder()
                 .time(toInstant(measurement.getTimestamp()))
                 .value(measurement.getValue())
                 .build();

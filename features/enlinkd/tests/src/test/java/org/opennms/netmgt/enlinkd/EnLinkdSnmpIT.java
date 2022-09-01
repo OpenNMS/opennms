@@ -728,7 +728,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
     /**
      * This test is designed to test the issues in bug NMS-13923.
      *
-     * @see "https://issues.opennms.org/browse/NMS-13923"
+     * @see <a href="https://issues.opennms.org/browse/NMS-13923">NMS-13923</a>
      *
      * (NMS-13923 TIMETETRA LLDP supported device does not persist all remote links)
      *

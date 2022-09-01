@@ -46,8 +46,8 @@
         <property name="title" value="OpenNMS V2 RESTful API" />
         <property name="version" value="0.1.0" />
         <property name="description" value="OpenNMS V2 RESTful API" />
-        <property name="license" value="OpenNMS(R) Licensing" />
-        <property name="licenseUrl" value="http://www.gnu.org/licenses/" />
+        <property name="license" value="OpenNMS(R) Licensing (GNU Affero General Public License)" />
+        <property name="licenseUrl" value="http://www.gnu.org/licenses/agpl.html" />
         <property name="contactName" value="OpenNMS" />
         <property name="contactUrl" value="http://www.opennms.com/" />
         <property name="securityDefinitions" ref="securityDefinitionsMap" />

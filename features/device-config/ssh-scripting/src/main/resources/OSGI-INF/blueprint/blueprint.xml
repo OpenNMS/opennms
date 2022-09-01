@@ -15,12 +15,18 @@
             -->
             <cm:property name="tftpServerIPv4Address" value=""/>
             <cm:property name="tftpServerIPv6Address" value=""/>
+            <!--
+            By default, the ssh session output is saved in the PollerStatus object. If this could potentially
+            contain sensitive information, this can be disabled using the option below.
+            -->
+            <cm:property name="disableIOCollection" value="false"/>
         </cm:default-properties>
     </cm:property-placeholder>
 
     <bean id="sshScriptingService" class="org.opennms.features.deviceconfig.sshscripting.impl.SshScriptingServiceImpl">
         <property name="tftpServerIPv4Address" value="${tftpServerIPv4Address}" />
         <property name="tftpServerIPv6Address" value="${tftpServerIPv6Address}" />
+        <property name="disableIOCollection"   value="${disableIOCollection}" />
     </bean>
 
     <service ref="sshScriptingService" interface="org.opennms.features.deviceconfig.sshscripting.SshScriptingService"/>

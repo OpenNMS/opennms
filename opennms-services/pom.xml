@@ -252,8 +252,17 @@
       <artifactId>org.opennms.core.ipc.rpc.utils</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.opennms.core.mate</groupId>
+      <artifactId>org.opennms.core.mate.model</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.device-config</groupId>
       <artifactId>org.opennms.features.device-config.monitor-adaptor</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.usageanalytics</groupId>
+      <artifactId>org.opennms.features.usageanalytics.impl</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -482,12 +491,6 @@
     <dependency>
       <groupId>org.opennms.features.device-config.persistence</groupId>
       <artifactId>org.opennms.features.device-config.persistence.impl</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.device-config</groupId>
-      <artifactId>org.opennms.features.device-config.monitor-adaptor</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>

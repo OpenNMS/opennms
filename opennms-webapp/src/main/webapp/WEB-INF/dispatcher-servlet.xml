@@ -95,8 +95,6 @@
     <bean name="/admin/userGroupView/groups/modifyGroup"
           class="org.opennms.web.controller.admin.group.GroupController"/>
 
-    <bean name="supportRtConfigDao" class="org.opennms.web.controller.support.SupportRtConfigDao"/>
-
     <bean name="systemReport" class="org.opennms.systemreport.SystemReport">
         <property name="serviceRegistry" ref="serviceRegistry"/>
     </bean>
@@ -108,11 +106,6 @@
 
     <bean name="/admin/support/systemReportList.htm"
           class="org.opennms.web.controller.admin.support.SystemReportListController">
-        <property name="systemReport" ref="systemReport"/>
-    </bean>
-
-    <bean name="/support/index.htm" class="org.opennms.web.controller.support.SupportController">
-        <property name="rtConfigDao" ref="supportRtConfigDao"/>
         <property name="systemReport" ref="systemReport"/>
     </bean>
 

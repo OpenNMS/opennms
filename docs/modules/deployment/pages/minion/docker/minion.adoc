@@ -1,6 +1,6 @@
 :docker-version-tag: bleeding
 ifeval::["{prerelease}" == "false"]
-:docker-version-tag: {page-component-version}
+:docker-version-tag: {full-display-version}
 endif::[]
 
 .Create a project directory for {page-component-title} core and create a `docker-compose.yml` file.

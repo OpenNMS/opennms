@@ -358,8 +358,8 @@
          <parameter key="password" value="${requisition:dcb:password|admin}"/>
          <parameter key="ssh-port" value="${requisition:dcb:ssh-port|22}"/>
          <parameter key="ssh-timeout" value="${requisition:dcb:ssh-timeout|60000}"/>
-         <!-- schedule is a cron expression -->
-         <parameter key="schedule" value="${requisition:dcb:schedule|0 0 0 * * ?}"/>
+         <!-- schedule is a cron expression like 0 0 0 * * ?, defaults to never -->
+         <parameter key="schedule" value="${requisition:dcb:schedule|never}"/>
          <!-- retention-period is a Java Period expression -->
          <parameter key="retention-period" value="${requisition:dcb:retention-period|P1Y}"/>
          <parameter key="script-file" value="${requisition:dcb:script-file|assets:operating-system|node:os|default}.dcb"/>

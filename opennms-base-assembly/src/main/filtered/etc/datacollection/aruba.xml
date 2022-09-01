@@ -1,0 +1,26 @@
+<datacollection-group xmlns="http://xmlns.opennms.org/xsd/config/datacollection" name="Aruba">
+
+   <resourceType name="arubaWiredTempSensorTable" label="Aruba Temperature Sensor" resourceLabel="${arubaTmpSensorName}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+
+   <group name="aruba-temperature" ifType="all">
+      <mibObj oid=".1.3.6.1.4.1.47196.4.1.1.3.11.3.1.1.4" instance="arubaWiredTempSensorTable" alias="arubaTmpSensorIndex" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.47196.4.1.1.3.11.3.1.1.5" instance="arubaWiredTempSensorTable" alias="arubaTmpSensorName" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.47196.4.1.1.3.11.3.1.1.7" instance="arubaWiredTempSensorTable" alias="arubaTmpSensorValue" type="integer"/>
+   </group>
+
+   <systemDef name="Aruba">
+      <sysoidMask>.1.3.6.1.4.1.47196.</sysoidMask>
+      <collect>
+         <includeGroup>mib2-host-resources-storage</includeGroup>
+         <includeGroup>mib2-host-resources-system</includeGroup>
+         <includeGroup>mib2-host-resources-memory</includeGroup>
+         <includeGroup>mib2-host-resources-processor</includeGroup>
+         <includeGroup>aruba-temperature</includeGroup>
+      </collect>
+   </systemDef>
+
+</datacollection-group>
+

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -21,14 +21,15 @@
  *      http://www.gnu.org/licenses/
  *
  * For more information contact:
- * OpenNMS(R) Licensing <license@opennms.org>
- *      http://www.opennms.org/
- *      http://www.opennms.com/
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
  *******************************************************************************/
 
 package org.opennms.web.rest.v2.bsm.model.edge;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -46,7 +47,7 @@ import org.opennms.web.rest.api.support.JsonResourceLocationDeserializationProvi
 import org.opennms.web.rest.api.support.JsonResourceLocationSerializationProvider;
 import org.opennms.web.rest.v2.bsm.model.MapFunctionDTO;
 
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 
 @XmlAccessorType(XmlAccessType.NONE)
 public abstract class AbstractEdgeResponseDTO {
@@ -127,18 +128,18 @@ public abstract class AbstractEdgeResponseDTO {
         if (obj == this) return true;
         if (!(obj instanceof AbstractEdgeResponseDTO)) return false;
         final AbstractEdgeResponseDTO other = (AbstractEdgeResponseDTO) obj;
-        final boolean equals = Objects.equal(id, other.id)
-                && Objects.equal(operationalStatus, other.operationalStatus)
-                && Objects.equal(mapFunction, other.mapFunction)
-                && Objects.equal(reductionKeys, other.reductionKeys)
-                && Objects.equal(weight, other.weight)
-                && Objects.equal(location, other.location);
+        final boolean equals = Objects.equals(id, other.id)
+                && Objects.equals(operationalStatus, other.operationalStatus)
+                && Objects.equals(mapFunction, other.mapFunction)
+                && Objects.equals(reductionKeys, other.reductionKeys)
+                && Objects.equals(weight, other.weight)
+                && Objects.equals(location, other.location);
         return equals;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id,
+        return Objects.hash(id,
                 operationalStatus,
                 mapFunction,
                 reductionKeys,
@@ -148,7 +149,7 @@ public abstract class AbstractEdgeResponseDTO {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
+        return MoreObjects.toStringHelper(this)
                 .add("id", id)
                 .add("operationalStatus", operationalStatus)
                 .add("weight", weight)

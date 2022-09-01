@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.flows.elastic;
 
-import org.opennms.netmgt.flows.api.Flow;
+import org.opennms.integration.api.v1.flows.Flow;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -36,16 +36,22 @@ public enum Direction {
     @SerializedName("ingress")
     INGRESS,
     @SerializedName("egress")
-    EGRESS;
+    EGRESS,
+    @SerializedName("unknown")
+    UNKNOWN;
 
     public static Direction from(Flow.Direction direction) {
-        if (direction == null) return INGRESS;
+        if (direction == null) {
+            return UNKNOWN;
+        }
 
         switch (direction) {
             case INGRESS:
                 return INGRESS;
             case EGRESS:
                 return EGRESS;
+            case UNKNOWN:
+                return UNKNOWN;
             default:
                 throw new IllegalArgumentException("Unknown direction: " + direction.name());
         }

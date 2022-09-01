@@ -31,6 +31,8 @@ package org.opennms.netmgt.dao.hibernate;
 import java.util.Collection;
 import java.util.List;
 
+import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.springframework.util.Assert;
@@ -130,4 +132,12 @@ public class SnmpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsSnmpInte
     public List<OnmsSnmpInterface> findAllHavingEgressFlows(final Integer nodeId) {
         return find("select iface from OnmsSnmpInterface as iface where iface.node.id = ? and EXTRACT(EPOCH FROM (NOW() - lastEgressFlow)) <= " + OnmsSnmpInterface.MAX_FLOW_AGE, nodeId);
     }
+
+    @Override
+    public long getNumInterfacesWithFlows() {
+        CriteriaBuilder criteriaBuilder = new CriteriaBuilder(OnmsSnmpInterface.class);
+        criteriaBuilder.or(Restrictions.isNotNull("lastIngressFlow"), Restrictions.isNotNull("lastEgressFlow"));
+        return countMatching(criteriaBuilder.toCriteria());
+    }
+
 }

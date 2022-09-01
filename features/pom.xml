@@ -184,5 +184,8 @@
     <module>ui-extension</module>
     <!-- Configuration Manager -->
     <module>config</module>
+
+    <!-- Usage Analytics -->
+    <module>usageanalytics</module>
   </modules>
 </project>

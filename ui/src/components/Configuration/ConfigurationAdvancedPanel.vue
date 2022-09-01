@@ -18,10 +18,7 @@
           textProp="name"
           @search="(query: string) => search(query, props.type, props.subType, index)"
           v-model="item.key"
-          @update:modelValue="(key: { hint: string }, index: number): any => {
-            ConfigurationHelper.forceSetHint(key, index);
-            props.advancedKeyUpdate(key, index)
-          }"
+          @update:modelValue="updateKey(item.key, index)"
           :results="results.list[index]"
           :labels="labels"
         ></FeatherAutocomplete>
@@ -112,6 +109,11 @@ const buttonAddDisabled = computed(() => {
   const { key, value } = props.items[itemsLength - 1] // last item
   return !(key.name && value) // disabled
 })
+
+const updateKey: any = (key: { hint: string }, index: any) => {
+  ConfigurationHelper.forceSetHint(key, index)
+  props.advancedKeyUpdate(key, index)
+}
 
 /**
  * Depending on which Type is selected, we have different

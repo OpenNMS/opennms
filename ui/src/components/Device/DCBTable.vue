@@ -17,7 +17,7 @@
           <FeatherButton
             data-test="view-history-btn"
             @click="onViewHistory"
-            :disabled="(!all && selectedDeviceConfigIds.length !== 1) || (all && deviceConfigBackups.length !== 1)"
+            :disabled="!singleConfigSelected"
             text
           >
             <template v-slot:icon>
@@ -29,7 +29,7 @@
           <FeatherButton
             data-test="download-btn"
             @click="onDownload"
-            :disabled="(selectedDeviceConfigIds.length === 0 && !all) || (all && !deviceConfigBackups.length)"
+            :disabled="noConfigsSelected"
             text
           >
             <template v-slot:icon>
@@ -41,7 +41,7 @@
           <FeatherButton
             data-test="backup-now-btn"
             @click="onBackupNow"
-            :disabled="(selectedDeviceConfigIds.length === 0 && !all) || (all && !deviceConfigBackups.length)"
+            :disabled="noConfigsSelected || singleConfigSelectedHasNoServiceName"
             text
           >
             <template v-slot:icon>
@@ -53,7 +53,7 @@
           <FeatherButton
             data-test="compare-btn"
             @click="onCompare"
-            :disabled="(!all && selectedDeviceConfigIds.length !== 1) || (all && deviceConfigBackups.length !== 1)"
+            :disabled="!singleConfigSelected"
             text
           >
             <template v-slot:icon>
@@ -79,6 +79,7 @@
               v-model="all"
               @update:modelValue="selectAll"
               data-test="all-checkbox"
+              class="dcb-all-checkbox"
             />
           </th>
           <FeatherSortHeader
@@ -125,21 +126,8 @@
             <DCBTableStatusDropdown />
           </th>
 
-          <FeatherSortHeader
-            scope="col"
-            property="scheduleDate"
-            :sort="sortStates.scheduleDate"
-            v-on:sort-changed="sortByColumnHandler"
-            >Schedule Date</FeatherSortHeader
-          >
-
-          <FeatherSortHeader
-            scope="col"
-            property="scheduleInterval"
-            :sort="sortStates.scheduleInterval"
-            v-on:sort-changed="sortByColumnHandler"
-            >Schedule Interval</FeatherSortHeader
-          >
+          <th>Schedule Date</th>
+          <th>Schedule Interval</th>
         </tr>
       </thead>
       <tbody>
@@ -149,7 +137,7 @@
         >
           <td>
             <FeatherCheckbox
-              class="device-config-checkbox"
+              class="dcb-config-checkbox"
               @update:modelValue="selectCheckbox(config)"
               :modelValue="all || selectedDeviceConfigBackups[config.id]"
             />
@@ -160,12 +148,15 @@
               target="_blank"
             >
               {{ config.deviceName }}
-              <span :title="config.configName">
+              <FeatherTooltip
+                :title="config.configName"
+                v-slot="{ attrs, on }">
                 <FeatherIcon
+                  v-bind="attrs" v-on="on"
                   v-if="config.configType !== 'default'"
                   :icon="Speed"
                 />
-              </span>
+              </FeatherTooltip>
             </router-link>
           </td>
           <td>{{ config.ipAddress }}</td>
@@ -174,11 +165,16 @@
             class="last-backup-date pointer"
             @click="onLastBackupDateClick(config)"
           >
-            <span
+            <FeatherTooltip
               title="View config"
-              v-date
-              >{{ config.lastBackupDate }}</span
-            >
+              v-slot="{ attrs, on }">
+              <span
+                v-bind="attrs" 
+                v-on="on"
+                v-date
+                >{{ config.lastBackupDate }}
+              </span>
+            </FeatherTooltip>
           </td>
           <td v-date>{{ config.lastUpdatedDate }}</td>
           <td>
@@ -222,6 +218,7 @@ import { useStore } from 'vuex'
 import { FeatherSortHeader, SORT } from '@featherds/table'
 import { FeatherSortObject } from '@/types'
 import { FeatherCheckbox } from '@featherds/checkbox'
+import { FeatherTooltip } from '@featherds/tooltip'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
 import History from '@featherds/icon/action/Restore'
@@ -254,9 +251,7 @@ const sortStates: Record<string, SORT> = reactive({
   ipAddress: SORT.NONE,
   location: SORT.NONE,
   lastBackup: SORT.NONE,
-  lastUpdated: SORT.NONE,
-  scheduleDate: SORT.NONE,
-  scheduleInterval: SORT.NONE
+  lastUpdated: SORT.NONE
 })
 const { arrivedState, directions } = useScroll(tableWrap, {
   offset: { bottom: 300 }
@@ -277,13 +272,19 @@ const selectedDeviceConfigIds = computed<number[]>(() => {
     .map((id) => parseInt(id))
 })
 
-const numberOfSelectedDevices = computed(() => {
+const numberOfSelectedDevices = computed<number>(() => {
   if (all.value) {
     return totalCountOfDeviceConfigBackups.value
   }
 
   return selectedDeviceConfigIds.value.length
 })
+
+// for enabling / disabling table buttons (history, backup, d/l, compare...)
+const noConfigsSelected = computed<boolean>(() => (selectedDeviceConfigIds.value.length === 0 && !all.value) || (all.value && !deviceConfigBackups.value.length))
+const singleConfigSelected = computed<boolean>(() => (!all.value && selectedDeviceConfigIds.value.length === 1) || (all.value && deviceConfigBackups.value.length === 1))
+const singleConfigSelectedHasNoServiceName = computed<boolean>(() => singleConfigSelected.value && !getDeviceConfigBackupById(selectedDeviceConfigIds.value[0]).serviceName)
+const getDeviceConfigBackupById = (id: number) => deviceConfigBackups.value.filter((backup) => backup.id === id)[0]
 
 const sortByColumnHandler = (sortObj: FeatherSortObject) => {
   for (const key in sortStates) {
@@ -441,10 +442,17 @@ onMounted(() => {
     }
   }
 }
+a:visited {
+  color: var($clickable-normal) !important;
+}
 </style>
 
 <style lang="scss">
-.device-config-checkbox {
+.dcb-config-checkbox, 
+.dcb-all-checkbox {
+  margin-bottom: 0px !important;
+}
+.dcb-config-checkbox {
   label {
     display: none;
   }

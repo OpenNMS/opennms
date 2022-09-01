@@ -13,6 +13,7 @@ import "google/protobuf/wrappers.proto";
 enum Direction {
     INGRESS = 0;
     EGRESS = 1;
+    UNKNOWN = 255;
 }
 
 enum SamplingAlgorithm {

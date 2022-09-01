@@ -28,11 +28,11 @@
 
 package org.opennms.netmgt.threshd;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
-import org.opennms.core.rpc.utils.mate.EntityScopeProvider;
+import org.opennms.core.mate.api.EntityScopeProvider;
 import org.opennms.netmgt.config.dao.outages.api.ReadablePollOutagesDao;
 import org.opennms.netmgt.config.dao.thresholding.api.ReadableThreshdDao;
 import org.opennms.netmgt.config.dao.thresholding.api.ReadableThresholdingDao;
@@ -51,7 +51,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class DefaultThresholdingSetPersister implements ThresholdingSetPersister
 {
 
-    private Map<ThresholdingSessionKey, ThresholdingSet> thresholdingSets = new HashMap<>();
+    private ConcurrentMap<ThresholdingSessionKey, ThresholdingSet> thresholdingSets = new ConcurrentHashMap<>();
     
     @Autowired
     private ReadableThreshdDao threshdDao;
@@ -69,31 +69,38 @@ public class DefaultThresholdingSetPersister implements ThresholdingSetPersister
     private EntityScopeProvider entityScopeProvider;
 
     @Override
-    public synchronized void persistSet(ThresholdingSession session, ThresholdingSet set) {
+    public void persistSet(ThresholdingSession session, ThresholdingSet set) {
         thresholdingSets.put(session.getKey(), set);
     }
 
     @Override
-    public synchronized ThresholdingSet getThresholdingSet(ThresholdingSession session, ThresholdingEventProxy eventProxy) throws ThresholdInitializationException {
-        ThresholdingSessionKey key = session.getKey();
-        ThresholdingSet tSet = thresholdingSets.get(key);
-        if (tSet == null) {
-            tSet = new ThresholdingSetImpl(key.getNodeId(), key.getLocation(), key.getServiceName(),
-                                           ((ThresholdingSessionImpl) session).getServiceParameters(),
-                                           eventProxy, session, threshdDao,
-                                           thresholdingDao, pollOutagesDao, ifLabelDao, entityScopeProvider);
-            thresholdingSets.put(key, tSet);
+    public ThresholdingSet getThresholdingSet(ThresholdingSession session, ThresholdingEventProxy eventProxy) throws ThresholdInitializationException {
+        // Hacky way to use `computeIfAbsent` with something that throws a checked exception.
+        // This is needed because `computeIfAbsent` is guaranteed to be atomic. In contrast to
+        // an implementation using two calls like `get` and `put`.
+        try {
+            return thresholdingSets.computeIfAbsent(session.getKey(), (key) -> {
+                try {
+                    return new ThresholdingSetImpl(key.getNodeId(), key.getLocation(), key.getServiceName(),
+                                                   ((ThresholdingSessionImpl) session).getServiceParameters(),
+                                                   eventProxy, session, threshdDao,
+                                                   thresholdingDao, pollOutagesDao, ifLabelDao, entityScopeProvider);
+                } catch (final ThresholdInitializationException e) {
+                    throw e.wrapUnchecked();
+                }
+            });
+        } catch (final ThresholdInitializationException.Unchecked e) {
+            throw e.getChecked();
         }
-        return tSet;
     }
 
     @Override
-    public synchronized void reinitializeThresholdingSets() {
+    public void reinitializeThresholdingSets() {
         thresholdingSets.values().forEach(ThresholdingSet::reinitialize);
     }
 
     @Override
-    public synchronized void clear(ThresholdingSession session) {
+    public void clear(ThresholdingSession session) {
         ThresholdingSessionKey key = session.getKey();
         thresholdingSets.remove(key);
     }

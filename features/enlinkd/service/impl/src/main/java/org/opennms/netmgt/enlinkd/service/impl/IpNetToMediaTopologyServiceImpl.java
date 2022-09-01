@@ -84,14 +84,14 @@ public class IpNetToMediaTopologyServiceImpl implements
     @Transactional
     protected void saveIpNetToMedia(final int nodeId,
             final IpNetToMedia saveMe) {
-        new UpsertTemplate<IpNetToMedia, IpNetToMediaDao>(
-                                                          m_transactionManager,
-                                                          m_ipNetToMediaDao) {
+        new UpsertTemplate<>(
+                m_transactionManager,
+                m_ipNetToMediaDao) {
 
             @Override
             protected IpNetToMedia query() {
                 return m_dao.getByNetAndPhysAddress(saveMe.getNetAddress(),
-                                                    saveMe.getPhysAddress());
+                        saveMe.getPhysAddress());
             }
 
             @Override
@@ -136,7 +136,7 @@ public class IpNetToMediaTopologyServiceImpl implements
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Found {} OnmsIpInterface for {}", onmsiplist.size(),ipnetToMedia);
             }
-            List<Integer> nodeids =onmsiplist.stream().map(onmsip -> onmsip.getNodeId()).collect(Collectors.toList());
+            List<Integer> nodeids =onmsiplist.stream().map(OnmsIpInterface::getNodeId).collect(Collectors.toList());
             ipnetToMedia.setPort("Multiple Nodes: " + nodeids);
             return;
         }

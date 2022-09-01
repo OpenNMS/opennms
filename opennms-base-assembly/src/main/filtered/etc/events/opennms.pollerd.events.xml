@@ -325,8 +325,8 @@
    <event>
       <uei>uei.opennms.org/nodes/nodeCategoryMembershipChanged</uei>
       <event-label>OpenNMS-defined node event: nodeCategoryMembershipChanged</event-label>
-      <descr>&lt;p>Node category membership has changed for node
-            (%parm[nodelabel]%)&lt;/p></descr>
+      <descr>&lt;p>Node (%parm[nodelabel]%) has changed its Category
+          membership and deleted (%parm[categoriesDeleted]%) and added (%parm[categoriesAdded]%).&lt;/p></descr>
       <logmsg dest="logndisplay">
             Node category membership has changed for node (%parm[nodelabel]%).
         </logmsg>
@@ -562,8 +562,7 @@
         <logmsg dest="logndisplay">
             %service% config backup started on interface %interface%.
         </logmsg>
-        <severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" alarm-type="3" auto-clean="true"/>
+        <severity>Normal</severity>
     </event>
     <event>
         <uei>uei.opennms.org/deviceconfig/configBackupFailed</uei>

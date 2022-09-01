@@ -58,37 +58,37 @@ public class TimeTetraLldpRemTableTracker extends TableTracker {
 
     public static final SnmpObjId[] s_timetetralldpremtable_elemList = new SnmpObjId[] {
 
-        /**
+        /*
          *  "The type of encoding used to identify the chassis associated
          *  with the remote system."
          */
             TIMETETRA_LLDP_REM_CHASSIS_ID_SUBTYPE,
 
-        /**
+        /*
          * "The string value used to identify the chassis component
          * associated with the remote system."
          */
             TIMETETRA_LLDP_REM_CHASSIS_ID,
 
-        /**
+        /*
          * "The type of port identifier encoding used in the associated
          * 'lldpRemPortId' object."
          */
             TIMETETRA_LLDP_REM_PORT_ID_SUBTYPE,
 
-        /**
+        /*
          * "The string value used to identify the port component
             associated with the remote system."
          */
             TIMETETRA_LLDP_REM_PORT_ID,
 
-        /**
+        /*
          * 	"The string value used to identify the description of
          *  the given port associated with the remote system."
          */
             TIMETETRA_LLDP_REM_PORT_DESCR,
 
-        /**
+        /*
          * "The string value used to identify the port component
          * associated with the remote system."
          */

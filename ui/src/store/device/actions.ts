@@ -16,23 +16,31 @@ const getDeviceConfigBackupObjByIds = (deviceConfigs: DeviceConfigBackup[], ids:
   return deviceConfigs.filter((dcb) => ids.includes(dcb.id))
 }
 
-const getDeviceConfigBackups = async (context: ContextWithState) => {
-  const deviceConfigBackups = await API.getDeviceConfigBackups(context.state.deviceConfigBackupQueryParams)
+const getDeviceConfigBackups = async (context: ContextWithState, pageEnter?: boolean) => {
+  const queryParams : DeviceConfigQueryParams =
+    (pageEnter && { ...context.state.deviceConfigBackupQueryParams, pageEnter: true }) ||
+      context.state.deviceConfigBackupQueryParams
+
+  const deviceConfigBackups = await API.getDeviceConfigBackups(queryParams)
   if (deviceConfigBackups) {
     context.commit('SAVE_DEVICE_CONFIG_BACKUPS', deviceConfigBackups.data || [])
     context.commit('SAVE_DEVICE_CONFIG_TOTAL', deviceConfigBackups.headers['content-range'])
   }
 }
 
+
 const getHistoryByIpInterface = async (context: ContextWithState) => {
   const modalDeviceConfigIpInterface = context.state.modalDeviceConfigBackup.ipInterfaceId
-  const historyModalBackups = await API.getHistoryByIpInterface(modalDeviceConfigIpInterface)
+  const modalDeviceConfigConfigType = context.state.modalDeviceConfigBackup.configType
+  const historyModalBackups = await API.getHistoryByIpInterface(modalDeviceConfigIpInterface, modalDeviceConfigConfigType)
   context.commit('SET_HISTORY_MODAL_BACKUPS', historyModalBackups)
 }
 
 const getAndMergeDeviceConfigBackups = async (context: ContextWithState) => {
   const deviceConfigBackups = await API.getDeviceConfigBackups(context.state.deviceConfigBackupQueryParams)
-  context.commit('MERGE_DEVICE_CONFIG_BACKUPS', deviceConfigBackups)
+  if (deviceConfigBackups && deviceConfigBackups.data) {
+    context.commit('MERGE_DEVICE_CONFIG_BACKUPS', deviceConfigBackups.data)
+  }
 }
 
 const downloadByConfig = async (context: VuexContext, config: DeviceConfigBackup | DeviceConfigBackup[]) => {

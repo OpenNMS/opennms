@@ -39,9 +39,9 @@ import org.opennms.netmgt.enlinkd.model.IsIsElement;
  */
 public interface IsIsElementDao extends OnmsDao<IsIsElement, Integer> {
     
-    public IsIsElement findByNodeId(Integer id);
+    IsIsElement findByNodeId(Integer id);
 
-    public IsIsElement findByIsIsSysId(String isisSysId);
+    IsIsElement findByIsIsSysId(String isisSysId);
 
     /**
      * Returns all IsIsElements that have an isisSysID that matches an isisISAdjNeighSysID of an IsIsLink related to the given
@@ -49,6 +49,6 @@ public interface IsIsElementDao extends OnmsDao<IsIsElement, Integer> {
      */
     List<IsIsElement> findBySysIdOfIsIsLinksOfNode(int nodeId);
     
-    public void deleteByNodeId(Integer nodeId);
+    void deleteByNodeId(Integer nodeId);
 
 }

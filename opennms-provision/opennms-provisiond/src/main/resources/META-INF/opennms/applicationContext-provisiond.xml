@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans" 
+<beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:tx="http://www.springframework.org/schema/tx" 
+       xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
-       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd"
-       >
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+       http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd"
+>
 
   <tx:annotation-driven />
   <context:annotation-config/>
@@ -177,8 +179,8 @@
     <constructor-arg value="file:${opennms.home}/etc/provisiond-configuration.xml" />
   </bean>
 
-  <bean id="provisiondConfigDao" class="org.opennms.netmgt.dao.jaxb.DefaultProvisiondConfigurationDao">
-  </bean>
+  <bean id="provisiondConfigDao" class="org.opennms.netmgt.dao.jaxb.DefaultProvisiondConfigurationDao"/>
+  <onmsgi:service ref="provisiondConfigDao" interface="org.opennms.netmgt.dao.api.ProvisiondConfigurationDao"/>
 
   <bean id="quartzScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
     <property name="schedulerName" value="provisiond" />

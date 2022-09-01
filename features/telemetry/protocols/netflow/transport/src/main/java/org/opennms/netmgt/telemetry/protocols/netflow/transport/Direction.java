@@ -44,6 +44,10 @@ public enum Direction
    * <code>EGRESS = 1;</code>
    */
   EGRESS(1),
+  /**
+   * <code>UNKNOWN = 255;</code>
+   */
+  UNKNOWN(255),
   UNRECOGNIZED(-1),
   ;
 
@@ -55,6 +59,10 @@ public enum Direction
    * <code>EGRESS = 1;</code>
    */
   public static final int EGRESS_VALUE = 1;
+  /**
+   * <code>UNKNOWN = 255;</code>
+   */
+  public static final int UNKNOWN_VALUE = 255;
 
 
   public final int getNumber() {
@@ -66,6 +74,8 @@ public enum Direction
   }
 
   /**
+   * @param value The numeric wire value of the corresponding enum entry.
+   * @return The enum associated with the given numeric wire value.
    * @deprecated Use {@link #forNumber(int)} instead.
    */
   @java.lang.Deprecated
@@ -73,10 +83,15 @@ public enum Direction
     return forNumber(value);
   }
 
+  /**
+   * @param value The numeric wire value of the corresponding enum entry.
+   * @return The enum associated with the given numeric wire value.
+   */
   public static Direction forNumber(int value) {
     switch (value) {
       case 0: return INGRESS;
       case 1: return EGRESS;
+      case 255: return UNKNOWN;
       default: return null;
     }
   }
@@ -95,6 +110,10 @@ public enum Direction
 
   public final com.google.protobuf.Descriptors.EnumValueDescriptor
       getValueDescriptor() {
+    if (this == UNRECOGNIZED) {
+      throw new java.lang.IllegalStateException(
+          "Can't get the descriptor of an unrecognized enum value.");
+    }
     return getDescriptor().getValues().get(ordinal());
   }
   public final com.google.protobuf.Descriptors.EnumDescriptor

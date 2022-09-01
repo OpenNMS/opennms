@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2014-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -146,7 +146,7 @@ public class NodeLevelDataWithRrdtoolTest extends XmlCollectorITCase {
      * @throws Exception the exception
      */
     @Test
-    @Ignore // Ignoring the test because it relies on the RRDtool binary and JRRD
+    @Ignore("manual test relies on the RRDtool binary and JRRD")
     public void testDefaultXmlCollector() throws Exception {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("collection", "NodeLevel");

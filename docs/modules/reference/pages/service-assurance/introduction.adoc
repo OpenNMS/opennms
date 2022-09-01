@@ -1,10 +1,20 @@
 [[service-monitors]]
 = Service Monitors
 
-This section describes all available built-in monitors for xref:operation:service-assurance/introduction.adoc[service assurance].
+This section describes all available built-in monitors for xref:operation:deep-dive/service-assurance/introduction.adoc[service assurance].
 You can configure them to allow complex monitoring to meet the needs of your environment.
 
 For information on how to extend the functionality of these monitors, see the xref:development:development.adoc#development[Development section] to contribute to the project.
+
+[[ref-service-assurance-monitors-name-definition]]
+== Name definitions
+
+Service names are subject to certain definitions:
+
+* Maximum length of 256 characters
+* Alphanumeric characters +[Aa-Zz, 0-9]+
+* Special characters +[_-:. ]+
+* Spaces not allowed
 
 [[ref-service-assurance-monitors-common-parameters]]
 == Common configuration parameters

@@ -76,8 +76,8 @@ const render = function(options) {
         let icons = {};
         for (let i = 0; i < severities.length; i++) {
             icons[severities[i]] = L.icon({
-                iconUrl: baseHref + '/assets/' + severityImages[i],
-                iconRetinaUrl: baseHref + '/assets/' + severityImagesRetina[i],
+                iconUrl: baseHref + '/assets/' + severityImages[i].default,
+                iconRetinaUrl: baseHref + '/assets/' + severityImagesRetina[i].default,
                 iconSize: [25, 41],
                 iconAnchor: [12, 41],
                 popupAnchor: [1, -34],

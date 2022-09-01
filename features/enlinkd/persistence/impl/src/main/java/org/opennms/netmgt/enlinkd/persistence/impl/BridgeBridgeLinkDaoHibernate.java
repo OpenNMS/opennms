@@ -83,13 +83,13 @@ public class BridgeBridgeLinkDaoHibernate extends AbstractDaoHibernate<BridgeBri
 	@Override
 	public void deleteByNodeIdOlderThen(Integer nodeId, Date now) {
 	    getHibernateTemplate().bulkUpdate("delete from BridgeBridgeLink rec where rec.node.id = ? and rec.bridgeBridgeLinkLastPollTime < ?",
-	                                      new Object[] {nodeId,now});
+				nodeId,now);
 	}
 
 	@Override
 	public void deleteByDesignatedNodeIdOlderThen(Integer nodeId, Date now) {
 	    getHibernateTemplate().bulkUpdate("delete from BridgeBridgeLink rec where rec.designatedNode.id = ? and rec.bridgeBridgeLinkLastPollTime < ?",
-	                                      new Object[] {nodeId,now}); 
+				nodeId,now);
 	}
 
         @Override

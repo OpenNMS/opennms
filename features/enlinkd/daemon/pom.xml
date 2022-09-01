@@ -52,6 +52,11 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features.enlinkd</groupId>
+      <artifactId>org.opennms.features.enlinkd.adapters.discovers.bridge</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.enlinkd</groupId>
       <artifactId>org.opennms.features.enlinkd.adapters.collectors.cdp</artifactId>
       <version>${project.version}</version>
     </dependency>
