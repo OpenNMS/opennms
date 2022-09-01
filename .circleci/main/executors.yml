@@ -18,7 +18,6 @@ executors:
 =======
     machine:
       image: ubuntu-2204:2022.07.1
->>>>>>> origin/develop
   smoke-test-executor:
     machine:
       image: ubuntu-2204:2022.07.1
