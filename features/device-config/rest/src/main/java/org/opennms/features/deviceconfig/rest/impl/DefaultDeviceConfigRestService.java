@@ -200,7 +200,10 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
         boolean pageEnter
     ) {
         if (pageEnter) {
-            usageAnalyticDao.incrementCounterByMetricName(UsageAnalyticMetricName.DCB_WEBUI_ENTRY.toString());
+            operations.execute(status -> {
+                usageAnalyticDao.incrementCounterByMetricName(UsageAnalyticMetricName.DCB_WEBUI_ENTRY.toString());
+                return null;
+            });
         }
 
         List<DeviceConfigDTO> dtos =
