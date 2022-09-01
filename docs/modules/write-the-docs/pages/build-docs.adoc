@@ -26,18 +26,7 @@ git checkout -b <local_branch_name> <remote_repo>/<remote_branch_name>
 
 To install Antora, follow the https://docs.antora.org/antora/2.2/install/install-antora/[instructions] on the Antora website.
 
-=== Run Antora in Docker
-
-You can also build the docs using a containerized version of Antora.
-To do so, run the following command in the repository's root folder:
-
-.Console command to generate `antora-playbook-local.yml` file
-[source, console]
-----
-docker run --rm -v $(pwd):/antora opennms/antora:2.3.4-b6293 --stacktrace generate antora-playbook-local.yml
-----
-
-== Build the docs
+=== Build the docs
 
 Transform the Antora repository into a documentation site using the `make docs` command.
 Antora creates an archive of the documentation in `build/site.zip`, and an extracted version in `public/index.html`.
@@ -49,3 +38,16 @@ The generic path to a given version of the docs is as follows:
 ----
 <docs_repo_dir>/build/site/<distro>/<branch_dir_name>
 ----
+
+== Run Antora in Docker
+
+You can also build the docs using a containerized version of Antora.
+To do so, run the following command in the repository's root folder:
+
+.Console command to generate `antora-playbook-local.yml` file
+[source, console]
+----
+docker run --rm -v $(pwd):/antora opennms/antora:2.3.4-b6293 --stacktrace generate antora-playbook-local.yml
+----
+
+NOTE: You must have Docker installed to build the docs using this method.
