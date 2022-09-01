@@ -44,10 +44,10 @@ For the purposes of this Quick Start guide, create one new user account for your
 . Click the *Gear* symbol at the top-right of the screen, and choose menu:Configure OpenNMS[Configure Users, Groups and On-Call Roles > Configure Users].
 . Click *Add New User*, specify a user ID and password, confirm the password, and click *OK*.
 . Enter your information:
-** In the User Information section, type your name in the Full Name box.
-** In the Security Roles section, select `ROLE_ADMIN` in the Available Roles list and click *Add >>* to add it to your account.
+** In the User Information section, type your name in the *Full Name* box.
+** In the Security Roles section, select `ROLE_ADMIN` in the *Available Roles* list and click *Add >>* to add it to your account.
 *** (Optional) Add xref:operation:deep-dive/user-management/security-roles.adoc[other security roles].
-** In the Notification Information section, add your email address in the Email box.
+** In the Notification Information section, add your email address in the *Email* box.
 *** (Optional) Add other contact information (for example, a mobile phone number).
 . Click *Finish* at the bottom of the screen to create the account.
 
@@ -56,9 +56,3 @@ You will need this user account for the next step: xref:operation:quick-start/no
 WARNING: Do not delete the default `admin` and `rtc` user accounts.
 The `rtc` user account is used for the communication of the Real-Time Console on the start page to calculate the node and service availability.
 You should still change the password of the `admin` user to be more secure.
-
-[[ga-users-next]]
-== Next steps
-
-Before xref:operation:quick-start/notifications.adoc[setting up default notifications], make sure you have configured contact information for your account.
-At minimum, your user account must have an email address associated with it to receive default notifications when they are turned on.
