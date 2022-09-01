@@ -112,7 +112,8 @@ for change in changes:
     elif "ui" in change:
         add_to_build_list("ui")
     else:
-        add_to_build_list("build")
+        if "merge-foundation/" not in branch_name:
+            add_to_build_list("build")
 
 print("What we want to build:", What_to_build, len(What_to_build))
 git_keywords = libgit.extract_keywords_from_last_commit()
@@ -177,7 +178,9 @@ if "trigger-build" in mappings:
             build_mappings["merge-foundation"] = True
             build_mappings["build-publish"] = False
             build_mappings["build-deploy"] = False
-        elif not build_trigger_override_found:
+        elif (
+            not build_trigger_override_found and "merge-foundation/" not in branch_name
+        ):
             print("Executing workflow: build-deploy")
             build_mappings["build-deploy"] = mappings["trigger-build"]
 
