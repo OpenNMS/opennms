@@ -1,7 +1,7 @@
 # Configuring Horizon via confd
 (instructions for testing/developing confd templates are given at the end of this document)
 ## Mounting
-When starting the Horizon container, mount a yaml file to the following path `/opt/minion/horizon-config.yaml`.
+When starting the Horizon container, mount a yaml file to the following path `/opt/opennms/horizon-config.yaml`.
 
 Any configuration provided to confd will overwrite configuration specified as environment variables. Direct overlay of
 specific configuration files will overwrite the corresponding config provided by confd.
