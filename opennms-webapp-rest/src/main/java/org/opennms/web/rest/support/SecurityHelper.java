@@ -28,12 +28,12 @@
 
 package org.opennms.web.rest.support;
 
-import org.opennms.web.api.Authentication;
-
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
+
+import org.opennms.web.api.Authentication;
 
 public class SecurityHelper {
 
@@ -53,10 +53,6 @@ public class SecurityHelper {
         throw new WebApplicationException(Response.status(Response.Status.FORBIDDEN).entity("User '" + currentUser + "', is not allowed to read alarms.").type(MediaType.TEXT_PLAIN).build());
     }
 
-    public static void assertUserEditCredentials(final SecurityContext securityContext) {
-        assertUserEditCredentials(securityContext, null);
-    }
-
     public static void assertUserEditCredentials(final SecurityContext securityContext, final String ackUser) {
         final String currentUser = securityContext.getUserPrincipal().getName();
 
@@ -71,14 +67,14 @@ public class SecurityHelper {
         if (securityContext.isUserInRole(Authentication.ROLE_REST) ||
                 securityContext.isUserInRole(Authentication.ROLE_USER) ||
                 securityContext.isUserInRole(Authentication.ROLE_MOBILE)) {
-            if (ackUser == null || ackUser.equals(currentUser) || securityContext.isUserInRole(Authentication.ROLE_DELEGATE)) {
+            if (ackUser.equals(currentUser) || (!ackUser.equals(currentUser) && securityContext.isUserInRole(Authentication.ROLE_DELEGATE))) {
                 // ROLE_REST and ROLE_MOBILE are allowed to modify things as long as it's as the
                 // same user as they're logging in with, or if they also have ROLE_DELEGATE.
                 return;
             }
         }
         // otherwise
-        throw new WebApplicationException(Response.status(Response.Status.FORBIDDEN).entity("User '" + currentUser + "', is not allowed to perform updates as user '" + ackUser + "'").type(MediaType.TEXT_PLAIN).build());
+        throw new WebApplicationException(Response.status(Response.Status.FORBIDDEN).entity("User '" + currentUser + "', is not allowed to perform updates to alarms as user '" + ackUser + "'").type(MediaType.TEXT_PLAIN).build());
     }
 
 }
