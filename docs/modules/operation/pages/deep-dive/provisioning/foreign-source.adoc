@@ -37,7 +37,7 @@ To add more parameters (retries, timeout, port, and so on), click *Add Parameter
 For example, to prompt a scan every 6 days and 53 minutes, use `6d53m`.
 Type `0` to disable automatic scanning.
 
-. Click *Save*.
+. Click *Save* to save the foreign source definition.
 
 == Create policies
 
