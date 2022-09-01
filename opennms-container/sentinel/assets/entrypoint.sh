@@ -71,6 +71,14 @@ initConfig() {
     fi
 
     if [ ! -f ${SENTINEL_HOME}/etc/configured ]; then
+        # Create SSH Key-Pair to use with the Karaf Shell
+        mkdir -p "${SENTINEL_HOME}/.ssh" && \
+            chmod 700 "${SENTINEL_HOME}/.ssh" && \
+            ssh-keygen -t rsa -f "${SENTINEL_HOME}/.ssh/id_rsa" -q -N "" && \
+            echo "sentinel=$(cat "${SENTINEL_HOME}/.ssh/id_rsa.pub" | awk '{print $2}'),viewer" > "${SENTINEL_HOME}/etc/keys.properties" && \
+            echo "_g_\\:admingroup = group,admin,manager,viewer,systembundles,ssh" >> "${SENTINEL_HOME}/etc/keys.properties" && \
+            chmod 600 "${SENTINEL_HOME}/.ssh/id_rsa"
+
         # Expose Karaf Shell
         sed -i "/^sshHost/s/=.*/= 0.0.0.0/" ${SENTINEL_HOME}/etc/org.apache.karaf.shell.cfg
 

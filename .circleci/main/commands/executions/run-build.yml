@@ -23,23 +23,21 @@ commands:
       - restore-maven-cache
       - restore-nodejs-cache
       - run:
-          name: Setup Environment
+          name: Compile OpenNMS
           command: |
+            ulimit -n 65536 || :
             export OPENNMS_VERSION="$(.circleci/scripts/pom2version.sh pom.xml)"
             .circleci/scripts/configure-signing.sh
-            ./clean.pl
             << parameters.node-memory >>
             export MAVEN_OPTS="-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
             MAVEN_ARGS="install"
+            mkdir -p target/artifacts
             case "${CIRCLE_BRANCH}" in
-              "master-"*|"release-"*|develop)
-                mkdir -p target/artifacts
+              "master-"*|"release-"*|"develop")
                 MAVEN_ARGS="-Dbuild.type=production $MAVEN_ARGS javadoc:aggregate"
                 ;;
             esac
-      - run:
-          name: Compile OpenNMS
-          command: |        
+            echo "export OPENNMS_VERSION=\"$OPENNMS_VERSION\"" >> $BASH_ENV
             ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
               -Daether.connector.resumeDownloads=false \
               -Daether.connector.basic.threads=1 \
@@ -49,10 +47,10 @@ commands:
               -Prun-expensive-tasks \
               -Psmoke \
               --batch-mode \
-              $MAVEN_ARGS
+              $MAVEN_ARGS || exit 1
       - run:
           name: Check if we have generated apidocs
-          command: |      
+          command: |
             if [ -d target/site/apidocs ]; then
               pushd target/site/apidocs
                 tar -czf "../../artifacts/opennms-${OPENNMS_VERSION}-javadoc.tar.gz" *
@@ -81,3 +79,4 @@ commands:
           paths:
             - project
             - .m2
+            - .artifacts

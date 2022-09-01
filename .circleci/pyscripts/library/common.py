@@ -1,52 +1,79 @@
 import re
-import os 
+import os
 import shutil
 
-class common:
-    def read_file(self,path):
-        _tmp=""
-        with open(path,"r") as f:
-            _tmp=f.readlines()
-        return _tmp
 
-    def extract_keywords(self,path):
-        re_pattern=re.compile("^.*#.*#")
-        keywords={}
-        for line in self.read_file(path):
-            re_match=re.match(re_pattern,line)
+
+class common:
+    """
+    Helper class containing common functionalities
+    """
+    def __init__(self) -> None:
+        pass
+
+    def create_space(self, space):
+        """
+        Creates number of empty space based on given value
+        """
+        return " " * space
+
+    def extract_keywords(self, path):
+        re_pattern = re.compile("^.*#.*#")
+        keywords = {}
+        with open(path, "r", encoding="UTF-8") as file_handler:
+            file_content = file_handler.readlines()
+        for line in file_content:
+            re_match = re.match(re_pattern, line)
             if re_match:
-                block=re_match.group().split(":")[0].strip().replace("#","")
+                block = re_match.group().split(":")[0].strip().replace("#", "")
                 if block not in keywords:
-                    keywords[block]={}
-                keywords[block][re_match.group().strip()]={
-                    "block_indentation":len(re.findall(' ',line))
+                    keywords[block] = {}
+                keywords[block][re_match.group().strip()] = {
+                    "block_indentation": len(re.findall(" ", line))
                 }
         return keywords
-    
-    #This is incorrect, we are always adding to the same tmp_output 
-    def expand_index(self,index,path_to_main_folder,tmp_output=[]):
-        folder=index.replace("#","").split(":")[0].strip()
-        filepath=index.replace("#","").split(":")[1].strip()
-        file_content=self.read_file(os.path.join(path_to_main_folder,folder,filepath))
-        re_pattern=re.compile("^.*#.*#")
+
+    def expand_index(self, index, path_to_main_folder, tmp_output=[]):
+        """
+        Reads an index file and expands it
+        """
+        folder = index.replace("#", "").split(":")[0].strip()
+        filepath = index.replace("#", "").split(":")[1].strip()
+        with open(os.path.join(path_to_main_folder, folder, filepath), "r", encoding="UTF-8") as file_handler:
+            file_content = file_handler.readlines()
+
+        re_pattern = re.compile("^.*#.*#")
         for entry in file_content:
-            tmp_match=re.match(re_pattern,entry)
+            tmp_match = re.match(re_pattern, entry)
             if tmp_match:
                 if ".index" in tmp_match.group().strip():
                     print("We do not support nested index files")
                 else:
-                    tmp_output.append(self.expand_keyword(tmp_match.group().strip(),path_to_main_folder))
-        
-        shutil.move(os.path.join(path_to_main_folder,folder,filepath),os.path.join(path_to_main_folder,folder,filepath+"_DONE"))
+                    tmp_output.append(
+                        self.expand_keyword(
+                            tmp_match.group().strip(), path_to_main_folder
+                        )
+                    )
 
-                
+        shutil.move(
+            os.path.join(path_to_main_folder, folder, filepath),
+            os.path.join(path_to_main_folder, folder, filepath + "_DONE"),
+        )
+
         return tmp_output
-    
-    def expand_keyword(self,index,path_to_main_folder):
-        folder=index.replace("#","").split(":")[0].strip()
-        filepath=index.replace("#","").split(":")[1].strip()+".yml"
-        file_content=self.read_file(os.path.join(path_to_main_folder,folder,filepath))[1:]
 
-        shutil.move(os.path.join(path_to_main_folder,folder,filepath),os.path.join(path_to_main_folder,folder,filepath+"_DONE"))
+    def expand_keyword(self, index, path_to_main_folder):
+        """
+        Expands the keywords found in the yaml file
+        """
+        folder = index.replace("#", "").split(":")[0].strip()
+        filepath = index.replace("#", "").split(":")[1].strip() + ".yml"
+        with open(os.path.join(path_to_main_folder, folder, filepath), "r", encoding="UTF-8") as file_handler:
+            file_content = file_handler.readlines()
 
-        return file_content
+        shutil.move(
+            os.path.join(path_to_main_folder, folder, filepath),
+            os.path.join(path_to_main_folder, folder, filepath + "_DONE"),
+        )
+
+        return file_content[1:]

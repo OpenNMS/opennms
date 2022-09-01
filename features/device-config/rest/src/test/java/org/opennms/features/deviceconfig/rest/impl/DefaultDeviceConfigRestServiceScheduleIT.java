@@ -211,7 +211,7 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
             deviceConfigDao.saveOrUpdate(createDeviceConfig(ipInterfaces.get(1), CONFIG_TYPES.get(1),
                 SERVICE_NAMES.get(1), olderDate, olderConfig));
 
-            final var response = deviceConfigRestService.getLatestDeviceConfigsForDeviceAndConfigType(10, 0, "lastUpdated", "asc", null, null);
+            final var response = deviceConfigRestService.getLatestDeviceConfigsForDeviceAndConfigType(10, 0, "lastUpdated", "asc", null, null, false);
             assertThat(response, notNullValue());
             assertThat(response.hasEntity(), is(true));
 
@@ -332,7 +332,7 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
                 // SUCCESS or FAILED
                 final var response = deviceConfigRestService.getLatestDeviceConfigsForDeviceAndConfigType(
                     10, 0, "lastUpdated", "asc", null,
-                    Set.of(DeviceConfigStatus.SUCCESS, DeviceConfigStatus.FAILED));
+                    Set.of(DeviceConfigStatus.SUCCESS, DeviceConfigStatus.FAILED), false);
                 assertThat(response, notNullValue());
                 assertThat(response.hasEntity(), is(true));
 
@@ -356,7 +356,7 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
                 // SUCCESS only
                 final var response = deviceConfigRestService.getLatestDeviceConfigsForDeviceAndConfigType(
                     10, 0, "lastUpdated", "asc", null,
-                    Set.of(DeviceConfigStatus.SUCCESS));
+                    Set.of(DeviceConfigStatus.SUCCESS), false);
                 assertThat(response, notNullValue());
                 assertThat(response.hasEntity(), is(true));
 
@@ -374,7 +374,7 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
                 // FAILED only
                 final var response = deviceConfigRestService.getLatestDeviceConfigsForDeviceAndConfigType(
                     10, 0, "lastUpdated", "asc", null,
-                    Set.of(DeviceConfigStatus.FAILED));
+                    Set.of(DeviceConfigStatus.FAILED), false);
                 assertThat(response, notNullValue());
                 assertThat(response.hasEntity(), is(true));
 
@@ -392,7 +392,7 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
                 // NONE only
                 final var response = deviceConfigRestService.getLatestDeviceConfigsForDeviceAndConfigType(
                     10, 0, "lastUpdated", "asc", null,
-                    Set.of(DeviceConfigStatus.NONE));
+                    Set.of(DeviceConfigStatus.NONE), false);
                 assertThat(response, notNullValue());
                 assertThat(response.hasEntity(), is(true));
 
@@ -430,7 +430,7 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
             deviceConfigDao.saveOrUpdate(createDeviceConfig(ipInterfaces.get(0), CONFIG_TYPES.get(0),
                 SUBSTITUTE_SERVICE_NAMES.get(0), dates.get(0), CONFIG_BYTES.get(0)));
 
-            final var response = deviceConfigRestService.getLatestDeviceConfigsForDeviceAndConfigType(10, 0, "lastUpdated", "asc", null, null);
+            final var response = deviceConfigRestService.getLatestDeviceConfigsForDeviceAndConfigType(10, 0, "lastUpdated", "asc", null, null, false);
             assertThat(response, notNullValue());
             assertThat(response.hasEntity(), is(true));
 
@@ -480,7 +480,7 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
             final var searchTerms = List.of("dcb-2", "192.168.3.2");
 
             searchTerms.forEach(searchTerm -> {
-                var response = deviceConfigRestService.getLatestDeviceConfigsForDeviceAndConfigType(10, 0, null, null, searchTerm, null);
+                var response = deviceConfigRestService.getLatestDeviceConfigsForDeviceAndConfigType(10, 0, null, null, searchTerm, null, false);
                 assertThat(response, notNullValue());
                 assertThat(response.hasEntity(), is(true));
 
@@ -538,7 +538,7 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
                     SERVICE_NAMES.get(idx), dates.get(idx), CONFIG_BYTES.get(idx)));
             });
 
-            final var response = deviceConfigRestService.getLatestDeviceConfigsForDeviceAndConfigType(null, null, "lastUpdated", "asc", null, null);
+            final var response = deviceConfigRestService.getLatestDeviceConfigsForDeviceAndConfigType(null, null, "lastUpdated", "asc", null, null, false);
             final List<DeviceConfigDTO> responseList = (List<DeviceConfigDTO>) response.getEntity();
             assertThat(responseList.size(), equalTo(RECORD_COUNT));
 
@@ -547,7 +547,7 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
                 final String[] expectedSortedItems = responseList.stream()
                     .map(DeviceConfigDTO::getDeviceName).sorted(Comparator.reverseOrder()).toArray(String[]::new);
 
-                final var sortedResponse = deviceConfigRestService.getLatestDeviceConfigsForDeviceAndConfigType(null, null, "deviceName", "desc", null, null);
+                final var sortedResponse = deviceConfigRestService.getLatestDeviceConfigsForDeviceAndConfigType(null, null, "deviceName", "desc", null, null, false);
                 final List<DeviceConfigDTO> sortedResponseList = (List<DeviceConfigDTO>) sortedResponse.getEntity();
                 final String[] actualSortedItems = sortedResponseList.stream()
                     .map(DeviceConfigDTO::getDeviceName).toArray(String[]::new);
@@ -561,7 +561,7 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
                 final String[] expectedSortedItems = responseList.stream()
                     .map(DeviceConfigDTO::getLocation).sorted().toArray(String[]::new);
 
-                final var sortedResponse = deviceConfigRestService.getLatestDeviceConfigsForDeviceAndConfigType(null, null, "location", "asc", null, null);
+                final var sortedResponse = deviceConfigRestService.getLatestDeviceConfigsForDeviceAndConfigType(null, null, "location", "asc", null, null, false);
                 final List<DeviceConfigDTO> sortedResponseList = (List<DeviceConfigDTO>) sortedResponse.getEntity();
                 final String[] actualSortedItems = sortedResponseList.stream()
                     .map(DeviceConfigDTO::getLocation).toArray(String[]::new);
@@ -596,14 +596,14 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
                 deviceConfigDao.saveOrUpdate(dc);
             });
 
-            final var response = deviceConfigRestService.getLatestDeviceConfigsForDeviceAndConfigType(null, null, "lastUpdated", "asc", null, null);
+            final var response = deviceConfigRestService.getLatestDeviceConfigsForDeviceAndConfigType(null, null, "lastUpdated", "asc", null, null, false);
             final List<DeviceConfigDTO> responseList = (List<DeviceConfigDTO>) response.getEntity();
             assertThat(responseList.size(), equalTo(RECORD_COUNT));
 
             final String[] expectedSortedItems = responseList.stream()
                 .map(DeviceConfigDTO::getBackupStatus).sorted().toArray(String[]::new);
 
-            final var sortedResponse = deviceConfigRestService.getLatestDeviceConfigsForDeviceAndConfigType(null, null, "status", "asc", null, null);
+            final var sortedResponse = deviceConfigRestService.getLatestDeviceConfigsForDeviceAndConfigType(null, null, "status", "asc", null, null, false);
             final List<DeviceConfigDTO> sortedResponseList = (List<DeviceConfigDTO>) sortedResponse.getEntity();
             final String[] actualSortedItems = sortedResponseList.stream()
                 .map(DeviceConfigDTO::getBackupStatus).toArray(String[]::new);

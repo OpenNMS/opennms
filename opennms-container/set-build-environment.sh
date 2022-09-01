@@ -4,8 +4,10 @@ TOPDIR="$(cd "$(dirname "$0")" || exit 1; pwd -P)"
 # shellcheck disable=SC2001
 TOPDIR="$(echo "$TOPDIR" | sed -e 's,opennms-container/.*$,opennms-container,')"
 
+POM2VERSION="${TOPDIR}/../.circleci/scripts/pom2version.sh"
+
 # Use version number from pom except from develop and features branches
-POM_VERSION="$("${TOPDIR}/pom2version.py" "${TOPDIR}/../pom.xml")"
+POM_VERSION="$("${POM2VERSION}" "${TOPDIR}/../pom.xml")"
 case "${CIRCLE_BRANCH}" in
   master-*)
     VERSION="${POM_VERSION}"
@@ -20,7 +22,7 @@ case "${CIRCLE_BRANCH}" in
 esac
 
 if [ -z "$VERSION" ]; then
-  VERSION="$("${TOPDIR}/pom2version.py" "${TOPDIR}/../pom.xml")"
+  VERSION="$("${POM2VERSION}" "${TOPDIR}/../pom.xml")"
 fi
 
 [ -n "${BUILD_BRANCH}"            ] || BUILD_BRANCH="${CIRCLE_BRANCH}"
