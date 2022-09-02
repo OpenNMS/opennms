@@ -1,11 +1,11 @@
 
 = Cortex Time Series Plugin
 
-The Time Series Storage Plugin for Cortex enables {page-component-title} to persist time-series performance and latency data to Cortex.
+The Cortex Time Series Plugin enables {page-component-title} to persist time-series performance and latency data to Cortex.
 The plugin uses the xref:deployment:time-series-storage/timeseries/ts-integration-layer.adoc[time series storage integration layer] to convert metrics to a Prometheus model and delegate writes and reads to https://cortexmetrics.io/[Cortex].
 The plugin also makes it possible for users to visualize graphs from the Cortex instance in https://docs.opennms.com/helm/latest/index.html[OpenNMS Helm], through the OpenNMS performance data source or the https://grafana.com/grafana/plugins/prometheus/[Prometheus Data Source].
 
-.Time Series Storage Plugin for Cortex architecture
+.Cortex Time Series Plugin
 image::time-series-storage/cortex-plugin.png[Cortex plugin architecture,500]
 
 == Requirements
@@ -20,7 +20,7 @@ The minimum supported Mimir version is 2.0.0.
 
 == Deployment
 
-To use the Time Series Storage Plugin for Cortex, do the following:
+To use the Cortex Time Series Plugin, do the following:
 
 . Start Cortex.
 +
@@ -76,8 +76,8 @@ config:update
 
 === View the ring
 
-http://cortex-service-ip-addr:9009/ring
+\http://cortex-service-ip-addr:9009/ring
 
 === View internal metrics
 
-http://cortex-service-ip-addr:9009/metrics
+\http://cortex-service-ip-addr:9009/metrics
