@@ -6,7 +6,7 @@ jobs:
       - attach_workspace:
           at: ~/
       - fetch-artifacts:
-          path: ~/.m2/repository/org/opennms/
+          path: /tmp/maven-keep
           location: opennmsmavenartifact
       - sign-packages/setup-env:
           skip_if_forked_pr: true
