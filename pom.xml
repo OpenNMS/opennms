@@ -1660,6 +1660,7 @@
     <hawtio.version>2.14.5</hawtio.version>
 
     <!-- dependency versions -->
+    <accessorsSmartVersion>2.4.8</accessorsSmartVersion>
     <args4jVersion>2.32</args4jVersion>
     <asmVersion>5.0.4</asmVersion>
     <activemqVersion>5.14.5</activemqVersion>
@@ -1764,6 +1765,8 @@
     <jschVersion>0.1.72</jschVersion>
     <jsonVersion>20171018</jsonVersion>
     <jsonPatchVersion>1.13</jsonPatchVersion>
+    <jsonPathVersion>2.7.0</jsonPathVersion>
+    <jsonSmartVersion>2.4.8</jsonSmartVersion>
     <jsoupVersion>1.7.2</jsoupVersion>
     <jsonlibVersion>2.4</jsonlibVersion>
     <jsonlibBundleVersion>2.4_1</jsonlibBundleVersion>
