@@ -52,7 +52,7 @@ if head == base:
 
 print("base", base)
 
-changes = libgit.get_changed_files_in_commits(base, head)
+changed_files = libgit.get_changed_files_in_commits(base, head)
 
 mappings = [m.split() for m in os.environ.get("MAPPING").splitlines()]
 
@@ -65,7 +65,7 @@ def check_mapping(mapping):
         raise Exception("Invalid mapping size. Current mapping:", mapping)
     path, param, value = mapping
     regex = re.compile(r"^" + path + r"$")
-    for change in changes:
+    for change in changed_files:
         if regex.match(change):
             return True
     return False
@@ -96,7 +96,9 @@ def add_to_build_list(item):
         What_to_build.append(item)
 
 
-for change in changes:
+print("We have detected the following changes:")
+print(changed_files)
+for change in changed_files:
     if not change:
         continue
     if "src/test/" in change and "smoke-test/" not in change:
@@ -115,6 +117,7 @@ for change in changes:
         if "merge-foundation/" not in branch_name:
             add_to_build_list("build")
 
+
 print("What we want to build:", What_to_build, len(What_to_build))
 git_keywords = libgit.extract_keywords_from_last_commit()
 
@@ -124,7 +127,7 @@ with open(path_to_workflow, "r", encoding="UTF-8") as file_handler:
 workflow_keywords = workflow_data["bundles"].keys()
 print("Workflow Keywords:", workflow_keywords)
 
-if ".circleci/epoch" in changes:
+if ".circleci/epoch" in changed_files:
     print("`epoch` file detected")
     mappings["trigger-build"] = True
 
