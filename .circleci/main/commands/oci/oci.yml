@@ -1,66 +1,37 @@
 commands:
-  cache-oci:
-    parameters:
-      key:
-        description: the cache key for storing the OCI
-        type: string
-      path:
-        description: the path to the directory containing the OCI
-        type: string
-    steps:
-      - cache-workflow-assets:
-          cache_prefix: oci-<< parameters.key >>
-          source_path: << parameters.path >>
   load-oci:
     parameters:
-      key:
-        description: the OCI cache key to restore
+      match:
+        description: regular expression match for OCI filename
         type: string
     steps:
-      - restore-workflow-assets:
-          cache_prefix: oci-<< parameters.key >>
+      - download-download-artifacts
       - run:
-          name: Load Docker Image(s) in oci-<< parameters.key >>
+          name: restore OCI files matching "<< parameters.match >>"
           command: |
-            cd "/tmp/oci-<< parameters.key >>"
+            if [ -n "<< parameters.match >>" ]; then
+              download-artifacts.pl --include-failed --workflow="${CIRCLE_WORKFLOW_ID}" --match="<< parameters.match >>" oci "${CIRCLE_BRANCH}" /tmp/oci-artifacts
+            else
+              download-artifacts.pl --include-failed --workflow="${CIRCLE_WORKFLOW_ID}" oci "${CIRCLE_BRANCH}" /tmp/oci-artifacts
+            fi
+
+            cd /tmp/oci-artifacts
             if [ "$(ls -1 *.oci | wc -l)" -eq 0 ]; then
               echo "ERROR: No OCI files to load. Something probably went wrong earlier."
               exit 1
             fi
+
             for FILE in *.oci; do
               echo "Loading ${FILE} into Docker..."
-              _output="$(docker image load -i "${FILE}" 2>&1)"
-              _tag="$(echo "${_output}" | grep 'Loaded image:' | sed -e 's,Loaded image: *,,')"
-              _image="$(echo "${_tag}" | cut -d: -f1)"
-              _unprefixed="$(echo "${_image}" | cut -d/ -f2)"
-              echo "Tagging image ${_tag} as ${_unprefixed}:latest"
+              _tag="$(printf "${FILE}" | sed -e 's,\.oci$,,'):latest"
+              if [ -z "$(docker image ls -q "${_tag}")" ]; then
+                docker image load -i "${FILE}"
+              fi
+              _unprefixed="$(echo "${_tag}" | cut -d/ -f2 | cut -d- -f1)"
+              echo "Tagging docker image ${_tag} as [opennms/]${_unprefixed}:latest"
+              docker image tag "${_tag}" "opennms/${_unprefixed}:latest"
               docker image tag "${_tag}" "${_unprefixed}:latest"
             done
-
-  sign-and-push-single-arch:
-    parameters:
-      architecture:
-        type: string
-      container_name:
-        type: string
-    steps:
-      - dockerhub-login
-      - acr-login
-      - run: *setup_dct_env
-      - run: *setup_dct_key
-      - run:
-          name: sign and push << parameters.container_name >>=<< parameters.architecture>> image
-          command: |
-            cd opennms-container/<< parameters.container_name >>
-            export ARCH="$(printf "<< parameters.architecture >>" | tr / -)"
-            export TAG="${DOCKER_IMAGE_VERSION}-${ARCH}"
-            docker push ${MINION_DK_REPO}:${TAG}
-            echo "pushed to DK"
-            docker tag ${MINION_DK_REPO}:${TAG} ${MINION_AZ_REPO}:${TAG}
-            export MINION_CONTENT_TRUST_REPOSITORY_PASSPHRASE=${AZURE_DCT_CI_PASSPHRASE}
-            docker trust key load $KEY_FOLDER/$AZURE_DCT_CI_KEY_ID.key
-            docker push ${MINION_AZ_REPO}:${TAG}
-            echo "pushed to AZ"
 
   build-image-single-arch:
     parameters:
@@ -71,25 +42,23 @@ commands:
     steps:
       - attach_workspace:
           at: ~/
+      # - dockerhub-login
       - qemu-user-static
       - install-buildx
-      - run: *setup_dct_env
       - run:
           name: build << parameters.container_name >>=<< parameters.architecture >> container image
           command: |
+            export DOCKER_CONTENT_TRUST=1
             cd opennms-container/<< parameters.container_name >>
             export ARCH="$(printf "<< parameters.architecture >>" | tr / -)"
-            export TAG="${DOCKER_IMAGE_VERSION}-${ARCH}"
+            export TAG="<< parameters.container_name >>-${ARCH}"
             make DOCKER_ARCH="<< parameters.architecture >>" \
-                 DOCKER_IMAGE_NAME="<< parameters.container_name >>-${TAG}.oci" \
-                 VERSION="${TAG}" \
+                 DOCKER_IMAGE_NAME="${TAG}.oci" \
+                 DOCKER_TAG="${TAG}" \
                  BUILD_NUMBER="${CIRCLE_BUILD_NUM}" \
                  BUILD_URL="${CIRCLE_BUILD_URL}" \
                  BUILD_BRANCH="${CIRCLE_BRANCH}" \
                  build install
-      - cache-oci:
-          key: << parameters.container_name >>-<< parameters.architecture >>
-          path: opennms-container/<< parameters.container_name >>/images/
       - store_artifacts:
           path: ~/project/opennms-container/<< parameters.container_name >>/images/
           destination: /

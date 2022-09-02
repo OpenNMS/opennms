@@ -38,6 +38,7 @@
         "debs": {
             "extends": [
                 "build",
+                "integration-test",
                 "horizon-deb-build",
                 "minion-deb-build",
                 "sentinel-deb-build"
@@ -61,8 +62,7 @@
             "extends": [
                 "tarball-assembly-only",
                 "minion-image-single-arch",
-                "minion-image-single-arch-linux-amd64",
-                "minion-image-multi-arch"
+                "minion-image-single-arch-linux-amd64"
             ]
         },
         "oci-sentinel": {
@@ -79,19 +79,16 @@
                 "debs",
                 "oci",
                 "smoke",
-                "horizon-image-single-arch",
-                "horizon-image-single-arch-linux-amd64",
-                "minion-image-single-arch",
-                "minion-image-single-arch-linux-amd64",
-                "minion-image-multi-arch",
-                "sentinel-image-single-arch-linux-amd64",
-                "sentinel-publish-oci",
-                "horizon-publish-oci",
+                "merge",
+                "publish"
+            ]
+        },
+        "merge": {
+            "extends": [
                 "create-merge-foundation-branch",
                 "create-merge-meridian-branch",
                 "merge-foundation-branch",
-                "merge-poweredby-branch",
-                "publish-cloudsmith"
+                "merge-poweredby-branch"
             ]
         },
         "weekly-coverage": {
@@ -151,17 +148,12 @@
             }
         },
         "integration-test": {
+            "context": [
+                "docker-publish-account"
+            ],
             "requires": [
                 "build"
-            ],
-            "filters": {
-                "branches": {
-                    "ignore": [
-                        "/^from-foundation.*/"
-                    ]
-                },
-                "user_overridable": false
-            }
+            ]
         },
         "minion-rpm-build": {
             "requires": [
@@ -169,34 +161,20 @@
             ],
             "filters": {
                 "branches": {
-                    "only": [
-                        "develop",
-                        "/^master-.*/",
-                        "/^dependabot\/.*/",
-                        "/^features\/.+/",
-                        "/^foundation.*/",
-                        "/^release-.*/",
-                        "/.*rpm.*/",
-                        "/.*smoke.*/"
+                    "ignore": [
+                        "/^merge-foundation.*/"
                     ]
                 }
             }
         },
         "horizon-rpm-build": {
             "requires": [
-                "integration-test"
+                "build"
             ],
             "filters": {
                 "branches": {
-                    "only": [
-                        "develop",
-                        "/^master-.*/",
-                        "/^dependabot\/.*/",
-                        "/^features\/.+/",
-                        "/^foundation.*/",
-                        "/^release-.*/",
-                        "/.*rpm.*/",
-                        "/.*smoke.*/"
+                    "ignore": [
+                        "/^merge-foundation.*/"
                     ]
                 }
             }
@@ -207,103 +185,56 @@
             ],
             "filters": {
                 "branches": {
-                    "only": [
-                        "develop",
-                        "/^master-.*/",
-                        "/^dependabot\/.*/",
-                        "/^features\/.+/",
-                        "/^foundation.*/",
-                        "/^release-.*/",
-                        "/.*rpm.*/",
-                        "/.*smoke.*/"
+                    "ignore": [
+                        "/^merge-foundation.*/"
                     ]
                 }
             }
         },
         "smoke-test-core": {
+            "context": [
+                "docker-publish-account"
+            ],
             "requires": [
                 "tarball-assembly-only",
                 "horizon-image-single-arch-linux-amd64",
                 "sentinel-image-single-arch-linux-amd64",
                 "minion-image-single-arch-linux-amd64"
-            ],
-            "filters": {
-                "branches": {
-                    "only": [
-                        "develop",
-                        "/^master-.*/",
-                        "/^dependabot.*/",
-                        "/^features\/.+/",
-                        "/^foundation.*/",
-                        "/^release-.*/",
-                        "/.*smoke.*/"
-                    ]
-                }
-            }
+            ]
         },
         "smoke-test-flaky": {
+            "context": [
+                "docker-publish-account"
+            ],
             "job": "smoke-test-flaky",
             "requires": [
                 "tarball-assembly-only",
                 "horizon-image-single-arch-linux-amd64",
                 "minion-image-single-arch-linux-amd64",
                 "sentinel-image-single-arch-linux-amd64"
-            ],
-            "filters": {
-                "branches": {
-                    "only": [
-                        "develop",
-                        "/^master-.*/",
-                        "/^dependabot.*/",
-                        "/^features\/.+/",
-                        "/^foundation.*/",
-                        "/^release-.*/",
-                        "/.*smoke.*/"
-                    ]
-                }
-            }
+            ]
         },
         "smoke-test-minion": {
+            "context": [
+                "docker-publish-account"
+            ],
             "requires": [
                 "tarball-assembly-only",
                 "horizon-image-single-arch-linux-amd64",
                 "minion-image-single-arch-linux-amd64",
                 "sentinel-image-single-arch-linux-amd64"
-            ],
-            "filters": {
-                "branches": {
-                    "only": [
-                        "develop",
-                        "/^master-.*/",
-                        "/^dependabot.*/",
-                        "/^features\/.+/",
-                        "/^foundation.*/",
-                        "/^release-.*/",
-                        "/.*smoke.*/"
-                    ]
-                }
-            }
+            ]
         },
         "smoke-test-sentinel": {
+            "context": [
+                "docker-publish-account"
+            ],
             "requires": [
                 "tarball-assembly-only",
                 "horizon-image-single-arch-linux-amd64",
                 "minion-image-single-arch-linux-amd64",
                 "sentinel-image-single-arch-linux-amd64"
-            ],
-            "filters": {
-                "branches": {
-                    "only": [
-                        "develop",
-                        "/^master-.*/",
-                        "/^dependabot.*/",
-                        "/^features\/.+/",
-                        "/^foundation.*/",
-                        "/^release-.*/",
-                        "/.*smoke.*/"
-                    ]
-                }
-            }
+            ]
         },
         "sentinel-deb-build": {
             "requires": [
@@ -324,7 +255,7 @@
         },
         "minion-deb-build": {
             "requires": [
-                "integration-test"
+                "build"
             ],
             "filters": {
                 "branches": {
@@ -340,24 +271,15 @@
             ],
             "filters": {
                 "branches": {
-                    "only": [
-                        "develop",
-                        "/^master-.*/",
-                        "/^dependabot\/.*/",
-                        "/^features\/.+/",
-                        "/^foundation.*/",
-                        "/^release-.*/",
-                        "/.*deb.*/",
-                        "/.*docker.*/",
-                        "/.*smoke.*/"
+                    "ignore": [
+                        "/^merge-foundation.*/"
                     ]
                 }
             }
         },
         "minion-image-single-arch-linux-amd64": {
             "context": [
-                "docker-content-trust",
-                "azure-sp-dct"
+                "docker-publish-account"
             ],
             "requires": [
                 "tarball-assembly-only"
@@ -365,8 +287,7 @@
         },
         "horizon-image-single-arch-linux-amd64": {
             "context": [
-                "docker-content-trust",
-                "azure-sp-dct"
+                "docker-publish-account"
             ],
             "requires": [
                 "tarball-assembly-only"
@@ -374,74 +295,31 @@
         },
         "sentinel-image-single-arch-linux-amd64": {
             "context": [
-                "docker-content-trust",
-                "azure-sp-dct"
+                "docker-publish-account"
             ],
             "requires": [
                 "tarball-assembly-only"
             ]
         },
         "minion-image-single-arch": {
+            "context": [
+                "docker-publish-account"
+            ],
+            "variations": [
+                "linux/arm64",
+                "linux/arm/v7"
+            ],
             "requires": [
                 "tarball-assembly-only",
                 "smoke-test-core",
                 "smoke-test-flaky",
                 "smoke-test-minion",
                 "smoke-test-sentinel"
-            ],
-            "variations": [
-                "linux/arm64",
-                "linux/arm/v7"
-            ],
-            "context": [
-                "docker-content-trust",
-                "azure-sp-dct"
-            ],
-            "filters": {
-                "branches": {
-                    "only": [
-                        "develop",
-                        "/^master-.*/",
-                        "/^dependabot\/.*/",
-                        "/^features\/.+/",
-                        "/^foundation.*/",
-                        "/^release-.*/",
-                        "/.*deb.*/",
-                        "/.*docker.*/",
-                        "/.*smoke.*/"
-                    ]
-                }
-            }
-        },
-        "minion-image-multi-arch": {
-            "context": [
-                "docker-content-trust",
-                "azure-sp-dct"
-            ],
-            "requires": [
-                "minion-image-single-arch-linux-amd64",
-                "minion-image-single-arch"
-            ],
-            "filters": {
-                "branches": {
-                    "only": [
-                        "develop",
-                        "/^master-.*/",
-                        "/^dependabot\/.*/",
-                        "/^features\/.+/",
-                        "/^foundation.*/",
-                        "/^release-.*/",
-                        "/.*deb.*/",
-                        "/.*docker.*/",
-                        "/.*smoke.*/"
-                    ]
-                }
-            }
+            ]
         },
         "horizon-image-single-arch": {
             "context": [
-                "docker-content-trust",
-                "azure-sp-dct"
+                "docker-publish-account"
             ],
             "variations": [
                 "linux/arm64",
@@ -453,50 +331,11 @@
                 "smoke-test-flaky",
                 "smoke-test-minion",
                 "smoke-test-sentinel"
-            ],
-            "filters": {
-                "branches": {
-                    "only": [
-                        "develop",
-                        "/^master-.*/",
-                        "/^dependabot\/.*/",
-                        "/^features\/.+/",
-                        "/^foundation.*/",
-                        "/^release-.*/",
-                        "/.*deb.*/",
-                        "/.*docker.*/",
-                        "/.*smoke.*/"
-                    ]
-                }
-            }
-        },
-        "sentinel-publish-oci": {
-            "requires": [
-                "integration-test",
-                "sentinel-image-single-arch-linux-amd64",
-                "smoke-test-core",
-                "smoke-test-flaky",
-                "smoke-test-minion",
-                "smoke-test-sentinel",
-                "sentinel-image-single-arch-linux-amd64"
-            ],
-            "filters": {
-                "branches": {
-                    "only": [
-                        "develop",
-                        "/^master-.*/",
-                        "/^foundation.*/",
-                        "/^features\/.+/",
-                        "/^release-.*/"
-                    ]
-                },
-                "user_overridable": false
-            }
+            ]
         },
         "sentinel-image-single-arch": {
             "context": [
-                "docker-content-trust",
-                "azure-sp-dct"
+                "docker-publish-account"
             ],
             "variations": [
                 "linux/arm64",
@@ -508,24 +347,23 @@
                 "smoke-test-flaky",
                 "smoke-test-minion",
                 "smoke-test-sentinel"
-            ],
-            "filters": {
-                "branches": {
-                    "only": [
-                        "develop",
-                        "/^master-.*/",
-                        "/^foundation.*/",
-                        "/^release-.*/",
-                        "/.*docker.*/",
-                        "/.*smoke.*/"
-                    ]
-                }
-            }
+            ]
         },
         "create-merge-foundation-branch": {
             "requires": [
+                "horizon-deb-build",
+                "horizon-rpm-build",
+                "horizon-image-single-arch",
+                "horizon-image-single-arch-linux-amd64",
+                "minion-deb-build",
+                "minion-rpm-build",
+                "minion-image-single-arch",
+                "minion-image-single-arch-linux-amd64",
+                "sentinel-deb-build",
+                "sentinel-rpm-build",
+                "sentinel-image-single-arch",
+                "sentinel-image-single-arch-linux-amd64",
                 "integration-test",
-                "tarball-assembly-only",
                 "smoke-test-core",
                 "smoke-test-flaky",
                 "smoke-test-minion",
@@ -558,9 +396,77 @@
         },
         "create-merge-meridian-branch": {
             "requires": [
+                "horizon-deb-build",
                 "horizon-rpm-build",
+                "horizon-image-single-arch",
+                "horizon-image-single-arch-linux-amd64",
                 "minion-deb-build",
+                "minion-rpm-build",
+                "minion-image-single-arch",
+                "minion-image-single-arch-linux-amd64",
+                "sentinel-deb-build",
                 "sentinel-rpm-build",
+                "sentinel-image-single-arch",
+                "sentinel-image-single-arch-linux-amd64",
+                "integration-test",
+                "smoke-test-core",
+                "smoke-test-flaky",
+                "smoke-test-minion",
+                "smoke-test-sentinel"
+            ],
+            "filters": {
+                "branches": {
+                    "only": [
+                        "merge-foundation/<< pipeline.parameters.previous_branch_label >>-to-<< pipeline.parameters.main_branch_label >>"
+                    ]
+                },
+                "user_overridable": false
+            }
+        },
+        "create-merge-meridian-branch": {
+            "requires": [
+                "horizon-deb-build",
+                "horizon-rpm-build",
+                "horizon-image-single-arch",
+                "horizon-image-single-arch-linux-amd64",
+                "minion-deb-build",
+                "minion-rpm-build",
+                "minion-image-single-arch",
+                "minion-image-single-arch-linux-amd64",
+                "sentinel-deb-build",
+                "sentinel-rpm-build",
+                "sentinel-image-single-arch",
+                "sentinel-image-single-arch-linux-amd64",
+                "integration-test",
+                "smoke-test-core",
+                "smoke-test-flaky",
+                "smoke-test-minion",
+                "smoke-test-sentinel",
+                "horizon-image-single-arch-linux-amd64"
+            ],
+            "filters": {
+                "branches": {
+                    "only": [
+                        "/^foundation.*/"
+                    ]
+                },
+                "user_overridable": false
+            }
+        },
+        "merge-poweredby-branch": {
+            "requires": [
+                "horizon-deb-build",
+                "horizon-rpm-build",
+                "horizon-image-single-arch",
+                "horizon-image-single-arch-linux-amd64",
+                "minion-deb-build",
+                "minion-rpm-build",
+                "minion-image-single-arch",
+                "minion-image-single-arch-linux-amd64",
+                "sentinel-deb-build",
+                "sentinel-rpm-build",
+                "sentinel-image-single-arch",
+                "sentinel-image-single-arch-linux-amd64",
                 "integration-test",
                 "smoke-test-core",
                 "smoke-test-flaky",
@@ -576,54 +482,26 @@
                 "user_overridable": false
             }
         },
-        "horizon-publish-oci": {
-            "requires": [
-                "horizon-rpm-build",
-                "minion-deb-build",
-                "sentinel-rpm-build",
-                "integration-test",
-                "smoke-test-core",
-                "smoke-test-flaky",
-                "smoke-test-minion",
-                "smoke-test-sentinel",
-                "horizon-image-single-arch-linux-amd64"
+        "publish": {
+            "context": [
+                "cloudsmith-publish-account",
+                "docker-content-trust",
+                "docker-publish-account",
+                "azure-sp-dct"
             ],
-            "filters": {
-                "branches": {
-                    "only": [
-                        "develop",
-                        "/^master-.*/",
-                        "/^release-.*/",
-                        "/^features\/.+/",
-                        "/^foundation.*/"
-                    ]
-                },
-                "user_overridable": false
-            }
-        },
-        "merge-poweredby-branch": {
             "requires": [
+                "horizon-deb-build",
                 "horizon-rpm-build",
-                "smoke-test-core",
-                "smoke-test-flaky",
-                "smoke-test-minion",
-                "smoke-test-sentinel",
-                "integration-test"
-            ],
-            "filters": {
-                "branches": {
-                    "only": [
-                        "/^foundation.*/"
-                    ]
-                },
-                "user_overridable": false
-            }
-        },
-        "publish-cloudsmith": {
-            "requires": [
-                "horizon-rpm-build",
+                "horizon-image-single-arch",
+                "horizon-image-single-arch-linux-amd64",
                 "minion-deb-build",
+                "minion-rpm-build",
+                "minion-image-single-arch",
+                "minion-image-single-arch-linux-amd64",
+                "sentinel-deb-build",
                 "sentinel-rpm-build",
+                "sentinel-image-single-arch",
+                "sentinel-image-single-arch-linux-amd64",
                 "integration-test",
                 "smoke-test-core",
                 "smoke-test-flaky",
@@ -643,6 +521,9 @@
             }
         },
         "integration-test-with-coverage": {
+            "context": [
+                "docker-publish-account"
+            ],
             "requires": [
                 "build"
             ]
