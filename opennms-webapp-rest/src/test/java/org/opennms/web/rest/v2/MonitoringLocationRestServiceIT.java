@@ -203,7 +203,7 @@ public class MonitoringLocationRestServiceIT extends AbstractSpringJerseyRestTes
         // Fetch count and check it against local count
         String remoteCount = sendRequest(GET, "/monitoringLocations/count", Collections.emptyMap(), 200);
         LOG.info("testListLimitAndSort: remoteCount="+remoteCount+" localCount="+localLocations.size());
-        assertTrue (localLocations.size() == Integer.parseInt(remoteCount));
+        assertEquals (localLocations.size(), Integer.parseInt(remoteCount));
 
         String fetchedJson = sendRequest(GET, "/monitoringLocations", Collections.emptyMap(), 200);
 
