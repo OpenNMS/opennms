@@ -57,13 +57,22 @@ commands:
               popd
             fi
       - update-maven-cache
+      #- run:
+      #    name: Remove Extra Maven Repository OpenNMS Files
+      #    command: |
+      #      # move these out of the way so they're not stored in the maven pre-cache
+      #      cd ~/.m2/repository/org/opennms
+      #      mkdir /tmp/maven-keep
+      #      mv $(ls -1 | grep -v -E '^(jicmp-api|jicmp6-api|jrrd-api|jrrd2-api|lib|maven)$') /tmp/maven-keep
       - run:
-          name: Remove Extra Maven Repository OpenNMS Files
+          name: CLean up Maven Repository (BadIdea)
           command: |
             # move these out of the way so they're not stored in the maven pre-cache
             cd ~/.m2/repository/org/opennms
             mkdir /tmp/maven-keep
             mv $(ls -1 | grep -v -E '^(jicmp-api|jicmp6-api|jrrd-api|jrrd2-api|lib|maven)$') /tmp/maven-keep
+            cd ../../../
+            rm -r repository && mkdir -p repository/org/opennms
       - save-maven-cache
       - run:
           name: Restore Extra Maven Repository OpenNMS Files
@@ -71,11 +80,12 @@ commands:
             # now move them back so they end up in the workspace for builds further down the workflow
             mv /tmp/maven-keep/* ~/.m2/repository/org/opennms/
       - save-nodejs-cache
-      - store_artifacts:
-          path: ~/project/target/artifacts
-          destination: artifacts
+      #- store_artifacts:
+      #    path: ~/project/target/artifacts
+      #    destination: artifacts
       - persist_to_workspace:
           root: ~/
           paths:
             - project
+            - .m2
             - .artifacts
