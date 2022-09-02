@@ -189,10 +189,10 @@ jobs:
             BASE_REVISION: << parameters.base-revision >>
             MAPPING: << parameters.mapping >>
             OUTPUT_PATH: /tmp/pipeline-parameters.json
-          command: python3 -m cProfile .circleci/pyscripts/process_generate.py
+          command: python3 .circleci/pyscripts/process_generate.py
       - run:
           name: Generate Main YAML file
-          command: python3 -m cProfile .circleci/pyscripts/generate_main.py
+          command: python3 .circleci/pyscripts/generate_main.py
       - store_artifacts:
           path: /tmp/pipeline-parameters.json
           destination: pipeline-parameters.json
