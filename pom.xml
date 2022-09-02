@@ -1720,7 +1720,7 @@
     <jrubyVersion>9.2.6.0</jrubyVersion>
     <jsonVersion>20171018</jsonVersion>
     <jsonPatchVersion>1.13</jsonPatchVersion>
-    <jsoupVersion>1.7.2</jsoupVersion>
+    <jsoupVersion>1.15.3</jsoupVersion>
     <jsonlibVersion>2.4</jsonlibVersion>
     <jsonlibBundleVersion>2.4_1</jsonlibBundleVersion>
     <junitVintageEngineVersion>5.6.2</junitVintageEngineVersion>
