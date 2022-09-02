@@ -179,7 +179,7 @@ RMI integration lets you access a remote Horizon and/or Meridian instance for mo
 
 Requisitions:: Sets of nodes to import into {page-component-title} for monitoring and management.
 You can build requisitions iteratively and import them at a later date.
-(See xref:operation:deep-dive/provisioning/getting-started.adoc#requisition-create[Create a Requisition].)
+(See xref:operation:quick-start/inventory.adoc#requisition-create[Create a Requisition].)
 
 Resource:: Any hardware or software that {page-component-title} can access.
 
