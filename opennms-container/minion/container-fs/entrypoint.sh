@@ -49,9 +49,7 @@ useEnvCredentials(){
 
 setCredentials() {
   # Directory to initialize a new keystore file which can be mounted to the local host
-  if [ ! -d /keystore ]; then
-    mkdir /keystore
-  fi
+  mkdir -p /keystore
 
   read -r -p "Enter OpenNMS HTTP username: " OPENNMS_HTTP_USER
   read -r -s -p "Enter OpenNMS HTTP password: " OPENNMS_HTTP_PASS
@@ -141,15 +139,6 @@ initConfig() {
         echo "location = ${MINION_LOCATION}" > ${MINION_CONFIG}
         echo "id = ${MINION_ID}" >> ${MINION_CONFIG}
         echo "broker-url = ${OPENNMS_BROKER_URL}" >> ${MINION_CONFIG}
-
-        # Create SSH Key-Pair to use with the Karaf Shell
-        mkdir "${MINION_HOME}/.ssh"
-        ssh-keygen -t rsa -f "${MINION_HOME}/.ssh/id_rsa" -q -N ""
-        chmod 700 "${MINION_HOME}/.ssh"
-        chmod 600 "${MINION_HOME}/.ssh/id_rsa"
-        chown -R minion:minion "${MINION_HOME}/.ssh"
-        echo minion=$(cat ${MINION_HOME}/.ssh/id_rsa.pub | awk '{print $2}'),viewer > ${MINION_HOME}/etc/keys.properties
-        echo "_g_\\:admingroup = group,admin,manager,viewer,systembundles,ssh" >> ${MINION_HOME}/etc/keys.properties
 
         parseEnvironment
 

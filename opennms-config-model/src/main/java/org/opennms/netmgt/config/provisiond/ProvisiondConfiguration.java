@@ -28,13 +28,13 @@
 
 package org.opennms.netmgt.config.provisiond;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import org.opennms.netmgt.config.utils.ConfigUtils;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
-import org.opennms.netmgt.config.utils.ConfigUtils;
 
 /**
  * Behavior configuration for the Provisioner Daemon
@@ -168,13 +168,13 @@ public class ProvisiondConfiguration implements Serializable {
 
         if (obj instanceof ProvisiondConfiguration) {
             final ProvisiondConfiguration that = (ProvisiondConfiguration)obj;
-            return Objects.equals(that.importThreads,that.importThreads)
-                    && Objects.equals(that.scanThreads,that.scanThreads)
-                    && Objects.equals(that.rescanThreads,that.rescanThreads)
-                    && Objects.equals(that.writeThreads,that.writeThreads)
-                    && Objects.equals(that.requistionDir,that.requistionDir)
-                    && Objects.equals(that.foreignSourceDir,that.foreignSourceDir)
-                    && Objects.equals(that.requisitionDefs,that.requisitionDefs);
+            return Objects.equals(this.importThreads,that.importThreads)
+                    && Objects.equals(this.scanThreads,that.scanThreads)
+                    && Objects.equals(this.rescanThreads,that.rescanThreads)
+                    && Objects.equals(this.writeThreads,that.writeThreads)
+                    && Objects.equals(this.requistionDir,that.requistionDir)
+                    && Objects.equals(this.foreignSourceDir,that.foreignSourceDir)
+                    && Objects.equals(this.requisitionDefs,that.requisitionDefs);
         }
         return false;
     }

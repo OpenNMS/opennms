@@ -15,6 +15,31 @@ commands:
       - run:
           name: Install Docker buildx
           command: |
-            sudo wget https://github.com/docker/buildx/releases/download/v0.5.1/buildx-v0.5.1.linux-amd64 -O /usr/local/bin/docker-buildx
+            sudo wget https://github.com/docker/buildx/releases/download/v0.9.1/buildx-v0.9.1.linux-amd64 -O /usr/local/bin/docker-buildx
             sudo chmod a+x /usr/local/bin/docker-buildx
             sudo systemctl restart docker
+  download-download-artifacts:
+    steps:
+      - run:
+          name: download the download-artifacts.pl script and its dependencies
+          command: |
+            do_sudo() {
+              local _sudo="$(command -v sudo)"
+              if [ -x "${_sudo}" ]; then
+                "${_sudo}" "$@"
+              else
+                "$@"
+              fi
+            }
+
+            if [ ! -x /usr/local/bin/download-artifacts.pl ]; then
+              do_sudo wget https://raw.githubusercontent.com/OpenNMS/opennms-repo/master/script/download-artifacts.pl -O /usr/local/bin/download-artifacts.pl
+              do_sudo chmod a+x /usr/local/bin/download-artifacts.pl
+            fi
+
+            do_sudo apt-get -y update && \
+              do_sudo apt-get -y -q --no-install-recommends install \
+                libdatetime-format-iso8601-perl \
+                libjson-pp-perl \
+                libwww-perl \
+                liblwp-protocol-https-perl
