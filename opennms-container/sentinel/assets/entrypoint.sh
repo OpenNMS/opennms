@@ -46,9 +46,7 @@ useEnvCredentials(){
 
 setCredentials() {
   # Directory to initialize a new keystore file which can be mounted to the local host
-  if [ -d /keystore ]; then
-    mkdir /keystore
-  fi
+  mkdir -p /keystore
 
   read -r -p "Enter OpenNMS HTTP username: " OPENNMS_HTTP_USER
   read -r -s -p "Enter OpenNMS HTTP password: " OPENNMS_HTTP_PASS
@@ -72,7 +70,7 @@ initConfig() {
 
     if [ ! -f ${SENTINEL_HOME}/etc/configured ]; then
         # Create SSH Key-Pair to use with the Karaf Shell
-        RUN mkdir -p "${SENTINEL_HOME}/.ssh" && \
+        mkdir -p "${SENTINEL_HOME}/.ssh" && \
             chmod 700 "${SENTINEL_HOME}/.ssh" && \
             ssh-keygen -t rsa -f "${SENTINEL_HOME}/.ssh/id_rsa" -q -N "" && \
             echo "sentinel=$(cat "${SENTINEL_HOME}/.ssh/id_rsa.pub" | awk '{print $2}'),viewer" > "${SENTINEL_HOME}/etc/keys.properties" && \

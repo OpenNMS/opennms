@@ -93,6 +93,7 @@ public class UsageStatisticsReportDTO {
     private int m_groups;
     private long m_dcbSucceed;
     private long m_dcbFailed;
+    private Map<String, Long> m_nodesWithDeviceConfigBySysOid = Collections.emptyMap();
 
     public void setSystemId(String systemId) {
         m_systemId = systemId;
@@ -475,6 +476,14 @@ public class UsageStatisticsReportDTO {
 
     public void setDcbFailed(long m_dcbFailed) {
         this.m_dcbFailed = m_dcbFailed;
+    }
+
+    public Map<String, Long> getNodesWithDeviceConfigBySysOid() {
+        return m_nodesWithDeviceConfigBySysOid;
+    }
+
+    public void setNodesWithDeviceConfigBySysOid(Map<String, Long> nodesWithConfigBySysOid) {
+        this.m_nodesWithDeviceConfigBySysOid = nodesWithConfigBySysOid;
     }
 
     public String toJson() {

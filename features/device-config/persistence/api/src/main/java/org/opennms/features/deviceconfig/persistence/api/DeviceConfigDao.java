@@ -34,6 +34,7 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -75,6 +76,8 @@ public interface DeviceConfigDao extends OnmsDao<DeviceConfig, Long> {
     int getLatestConfigCountForEachInterface(String searchTerm, Set<DeviceConfigStatus> statuses);
 
     List<DeviceConfig> getAllDeviceConfigsWithAnInterfaceId(Integer ipInterfaceId);
+
+    Map<String, Long> getNumberOfNodesWithDeviceConfigBySysOid();
 
     /**
      * Update the content of the specific device config.
