@@ -54,9 +54,6 @@ export MAVEN_OPTS="-Xmx1g -Xms1g"
 # Set higher open files limit
 ulimit -n 65536
 
-# Clean up the workspace so there's less junk lying around
-./clean.pl
-
 cd ~/project/smoke-test
 if [ $SUITE = "minimal" ]; then
   echo "#### Executing minimal set smoke/system tests"

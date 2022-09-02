@@ -627,6 +627,7 @@ workflows:
             - minion-deb-build
             - sentinel-deb-build
             - integration-test
+            - code-coverage
             - smoke-test-core
             - smoke-test-flaky
             - smoke-test-minion
@@ -707,6 +708,7 @@ workflows:
       - sentinel-rpm-build:
           requires:
             - integration-test
+            - code-coverage
           filters:
             branches:
               only:
@@ -726,6 +728,17 @@ workflows:
               ignore:
                 - /^merge-foundation.*/
                 - /^.*flaky.*/
+                - /^.*sonar.*/
+      - integration-test-with-coverage:
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - /^.*sonar.*/
+      - code-coverage:
+          requires:
+            - integration-test-with-coverage
       - smoke-test-core:
           requires:
             - tarball-assembly
@@ -808,6 +821,7 @@ workflows:
             - minion-deb-build
             - sentinel-deb-build
             - integration-test
+            - code-coverage
             - smoke-test-core
             - smoke-test-flaky
             - smoke-test-minion
@@ -827,6 +841,7 @@ workflows:
             - minion-deb-build
             - sentinel-deb-build
             - integration-test
+            - code-coverage
             - smoke-test-core
             - smoke-test-flaky
             - smoke-test-minion
@@ -840,11 +855,12 @@ workflows:
                 - /^release-.*/
                 - /^features\/.+/
                 - /^foundation.*/
-      # These don't actually require `integration-test` but we shouldn't bother
+      # These don't actually require `integration-test`/`code-coverage` but we shouldn't bother
       # spending cycles unless everything else passed
       - horizon-rpm-build:
           requires:
             - integration-test
+            - code-coverage
           filters:
             branches:
               only:
@@ -859,6 +875,7 @@ workflows:
       - minion-deb-build:
           requires:
             - integration-test
+            - code-coverage
           filters:
             branches:
               only:
@@ -908,6 +925,7 @@ workflows:
             - minion-deb-build
             - sentinel-rpm-build
             - integration-test
+            - code-coverage
             - smoke-test-core
             - smoke-test-flaky
             - smoke-test-minion
@@ -932,6 +950,7 @@ workflows:
             - minion-deb-build
             - sentinel-rpm-build
             - integration-test
+            - code-coverage
             - smoke-test-core
             - smoke-test-flaky
             - smoke-test-minion
@@ -951,6 +970,7 @@ workflows:
             - smoke-test-sentinel
 #            - smoke-test-minimal
             - integration-test
+            - code-coverage
           filters:
             branches:
               only:
@@ -963,6 +983,7 @@ workflows:
             - minion-deb-build
             - sentinel-rpm-build
             - integration-test
+            - code-coverage
             - smoke-test-core
             - smoke-test-flaky
             - smoke-test-minion
