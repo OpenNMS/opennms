@@ -196,7 +196,7 @@ Simple Mail Transfer Protocol (SMTP):: An internet standard protocol.
 (See xref:reference:service-assurance/monitors/MailTransportMonitor.adoc[MailTransportMonitor].)
 
 Simple Network Management Protocol (SNMP):: An internet standard protocol used to collect, organize, and modify information about managed devices on an IP network.
-(See xref:operation:deep-dive/provisioning/getting-started.adoc#provision-snmp-configuration[Configure SNMP for Provisioning].)
+(See xref:operation:quick-start/inventory.adoc#provision-snmp-configuration[Configure SNMP for Provisioning].)
 
 Snaps:: Self-contained software packages that run in a sandbox and have mediated access to host systems.
 Our Appliance Service uses snaps to distribute operating system packages and Minion service updates.
