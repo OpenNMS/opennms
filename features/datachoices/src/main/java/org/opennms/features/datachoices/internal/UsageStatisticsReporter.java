@@ -131,6 +131,7 @@ public class UsageStatisticsReporter implements StateChangeHandler {
     private BusinessServiceEdgeDao m_businessServiceEdgeDao;
 
     private DeviceConfigDao m_deviceConfigDao;
+
     private FeaturesService m_featuresService;
 
     private ProvisiondConfigurationDao m_provisiondConfigurationDao;
@@ -276,6 +277,7 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         // DCB statistics
         usageStatisticsReport.setDcbSucceed(m_usageAnalyticDao.getValueByMetricName(UsageAnalyticMetricName.DCB_SUCCEED.toString()));
         usageStatisticsReport.setDcbFailed(m_usageAnalyticDao.getValueByMetricName(UsageAnalyticMetricName.DCB_FAILED.toString()));
+        usageStatisticsReport.setDcbWebUiEntries(m_usageAnalyticDao.getValueByMetricName(UsageAnalyticMetricName.DCB_WEBUI_ENTRY.toString()));
         usageStatisticsReport.setNodesWithDeviceConfigBySysOid(m_deviceConfigDao.getNumberOfNodesWithDeviceConfigBySysOid());
 
         setDatasourceInfo(usageStatisticsReport);
