@@ -423,36 +423,6 @@
                 "user_overridable": false
             }
         },
-        "create-merge-meridian-branch": {
-            "requires": [
-                "horizon-deb-build",
-                "horizon-rpm-build",
-                "horizon-image-single-arch",
-                "horizon-image-single-arch-linux-amd64",
-                "minion-deb-build",
-                "minion-rpm-build",
-                "minion-image-single-arch",
-                "minion-image-single-arch-linux-amd64",
-                "sentinel-deb-build",
-                "sentinel-rpm-build",
-                "sentinel-image-single-arch",
-                "sentinel-image-single-arch-linux-amd64",
-                "integration-test",
-                "smoke-test-core",
-                "smoke-test-flaky",
-                "smoke-test-minion",
-                "smoke-test-sentinel",
-                "horizon-image-single-arch-linux-amd64"
-            ],
-            "filters": {
-                "branches": {
-                    "only": [
-                        "/^foundation.*/"
-                    ]
-                },
-                "user_overridable": false
-            }
-        },
         "merge-poweredby-branch": {
             "requires": [
                 "horizon-deb-build",
