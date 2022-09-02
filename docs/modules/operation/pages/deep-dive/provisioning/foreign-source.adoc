@@ -4,7 +4,7 @@
 
 The default foreign source definition serves as a template that defines the services to detect on (DNS, FTP, ICMP, and so on), the scan interval for discovery, and the policies to use when provisioning.
 
-Policies determine entity persistence and/or set attributes on the discovered entities that control {page-component-title} management behavior.
+Policies determine entity persistence and set attributes on the discovered entities that control {page-component-title} management behavior.
 Provisiond applies the existing default foreign source definition unless you choose to modify it.
 
 This section describes how to edit the default foreign source definition.
@@ -34,7 +34,7 @@ To add more parameters (retries, timeout, port, and so on), click *Add Parameter
 * s: seconds
 * ms: milliseconds
 +
-For example, to prompt a scan every 6 days and 53 minutes, use `6d53m`.
+For example, to prompt a scan every 6 days and 53 minutes, enter `6d53m`.
 Type `0` to disable automatic scanning.
 
 . Click *Save* to save the foreign source definition.
@@ -51,3 +51,4 @@ Type `0` to disable automatic scanning.
 . Click *Save* to save the foreign source definition.
 
 NOTE: To return to the default foreign source definition, click *Reset to Default*.
+This will reset any changes that you have made to the definition.

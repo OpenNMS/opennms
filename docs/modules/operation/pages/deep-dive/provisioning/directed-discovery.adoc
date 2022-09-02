@@ -14,9 +14,9 @@ Before adding nodes to a requisition, you must <<quick-start/inventory.adoc#requ
 
 . In the web UI, click the *Gear* symbol in the top-right of the screen.
 . Choose menu:Provisioning[Manage Provisioning Requisition].
-. Click the edit icon beside the requisition you want to add nodes to.
+. Click the *Edit* symbol beside the requisition that you want to add nodes to.
 . Click *Add Node*.
-.. {page-component-title} auto-generates the foreign ID used to identify this node.
+** {page-component-title} auto-generates the foreign ID used to identify this node.
 . Fill out information in each of the tabs and click *Save*.
 
 * basic information (node label, auto-generated foreign ID, location)

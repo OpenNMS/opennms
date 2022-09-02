@@ -14,7 +14,7 @@ Use auto discovery if you do not have a "source of truth" for your network inven
 Auto discovery can become that source.
 Be aware that auto discovery can include entities you do not want to monitor if it is not properly configured.
 
-Directed discovery is effective if you know your inventory, particularly with smaller networks (for example, 100–200 nodes).
+Directed discovery is effective if you know your inventory, particularly if you have a smaller network (for example, 100–200 nodes).
 It is also useful for areas of your network that you cannot auto discover.
 
 Regardless of the method, provisioning is an iterative process.
@@ -46,21 +46,21 @@ You can customize these values for your own network needs.
 . Under General Parameters, specify an IP range using the *First IP Address* and *Last IP Address* boxes, and accept the default values for the other fields.
 . Click *Save Config*.
 +
-This screen sets up SNMP within {page-component-title} for agents listening on IP addresses 10.1.1.1 through 10.254.254.254.
+This screen sets up SNMP within {page-component-title} for agents listening on IP addresses `10.1.1.1` through `10.254.254.254`.
 
 .Configure SNMP community names
 image::provisioning/SNMP_Config.png[SNMP-configuration, 600]
 
 These settings are optimized into the `snmp-config.xml` file.
 
-For an example of the resulting XML configuration, see xref:operation:deep-dive/provisioning/xml-samples.adoc#SNMP-community-xml[Configure SNMP community names].
+For an example of the resulting XML configuration, see xref:operation:deep-dive/provisioning/xml-samples.adoc#SNMP-community-xml[Configure SNMP community names] in the Deep Dive section.
 
 [[requisition-create]]
 == Create a requisition
 
 A requisition is a set of nodes (networked devices) to import into {page-component-title} for monitoring and management.
 
-Organizing nodes with a similar network monitoring profile into a requisition (for example, routers or switches), lets you assign the same services, detectors, and policies for network monitoring behavior.
+Organizing nodes with a similar network monitoring profile into a requisition (for example, routers or switches) lets you assign the same services, detectors, and policies for network monitoring behavior.
 
 A requisition includes a default foreign source definition that serves as a template to define the services to detect on (DNS, FTP, ICMP, and so on), the scan interval for discovery, and the policies to use when provisioning.
 
@@ -107,9 +107,9 @@ To configure discovery, follow these steps:
 . Choose menu:Provisioning[Configure Discovery].
 . In the *General Settings* area, select the requisition you just created from the *Requisition* list.
 ** (Optional) Change the default values.
-. Click *Save and Restart Discovery*, in the top-left of the screen.
-. Go to *Manage Provisioning Requsitions* and click the *Synchronize the Requisition* icon, choose a scan option, and click *Synchronize*.
+. Click *Save and Restart Discovery* in the top-left of the screen.
+. Return to *Manage Provisioning Requisitions* and click *Synchronize the Requisition*.
+. Choose a scan option and click *Synchronize*.
 
 You can view imported nodes under menu:Info[Nodes] at the top of the screen.
-
 

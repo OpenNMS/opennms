@@ -13,15 +13,16 @@ To prevent all devices fetching the configuration at the same time, it is better
 For example, `0 0 0 * * ?` runs every 24 hrs at 12:00 a.m. `0 0 1 * * ?` runs every 24 hrs at 1:00 a.m.
 
 . Log in to OpenNMS and click the gears icon.
-. Choose *Provisioning>Manage Provisioning Requisitions*.
+. Choose menu:Provisioning[Manage Provisioning Requisitions].
 . Click *Add Requisition* and enter a name for the requisition.
 If you want to enable device config backup on existing nodes in a requisition, select the desired requisition and edit the node definition.
 . Click the *Edit* symbol and click *Add Node*.
 . Set up your requisition as described in xref:operation:quick-start/inventory.adoc#requisition-create[Create a requisition].
 . Add one or more `DeviceConfig` services on the interface where you are backing up the config.
-.. If a device has multiple config types, use the prefix `DeviceConfig-` to add services.
+** If a device has multiple config types, use the prefix `DeviceConfig-` to add services.
 +
-For example use `DeviceConfig-running` to specify a configuration that the device currently has while running. +
+For example, you can use `DeviceConfig-running` to specify a configuration that the device currently has while running.
++
 The UI displays this as "Running Configuration". +
 +
 For `DeviceConfig-running-xml`, the UI displays "Running Xml Configuration".
