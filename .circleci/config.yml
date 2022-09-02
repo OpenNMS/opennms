@@ -341,7 +341,6 @@ commands:
             ulimit -n 65536 || :
             export OPENNMS_VERSION="$(.circleci/scripts/pom2version.sh pom.xml)"
             .circleci/scripts/configure-signing.sh
-            ./clean.pl
             << parameters.node-memory >>
             export MAVEN_OPTS="$MAVEN_OPTS -Xmx8g -XX:ReservedCodeCacheSize=1g"
             MAVEN_ARGS="install"
@@ -561,25 +560,6 @@ workflows:
             ((?!docs/).)* trigger-build true
             docs/.*       trigger-docs  true
             .circleci/.*  trigger-docs  true
-#  weekly-coverage:
-#    when:
-#      equal: [ false, << pipeline.parameters.minimal >> ]
-#    triggers:
-#      - schedule:
-#          # Saturday at 12:00 AM
-#          cron: "0 0 * * 6"
-#          filters:
-#            branches:
-#              only:
-#                - develop
-#    jobs:
-#      - build
-#      - integration-test-with-coverage:
-#          requires:
-#            - build
-#      - code-coverage:
-#          requires:
-#            - integration-test-with-coverage
   build-minimal:
     when:
       and:
@@ -718,7 +698,18 @@ workflows:
           filters:
             branches:
               ignore:
+                - /^.*sonar.*/
                 - /^merge-foundation.*/
+      - integration-test-with-coverage:
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - /^.*sonar.*/
+      - code-coverage:
+          requires:
+            - integration-test-with-coverage
       - smoke-test-core:
           requires:
             - tarball-assembly
@@ -801,6 +792,7 @@ workflows:
             - minion-deb-build
             - sentinel-deb-build
             - integration-test
+            - code-coverage
             - smoke-test-core
             - smoke-test-flaky
             - smoke-test-minion
@@ -817,6 +809,7 @@ workflows:
             - minion-deb-build
             - sentinel-deb-build
             - integration-test
+            - code-coverage
             - smoke-test-core
             - smoke-test-flaky
             - smoke-test-minion
@@ -827,11 +820,12 @@ workflows:
                 - develop
                 - /^master-.*/
                 - /^release-.*/
-      # These don't actually require `integration-test` but we shouldn't bother
+      # These don't actually require `integration-test`/`code-coverage` but we shouldn't bother
       # spending cycles unless everything else passed
       - horizon-deb-build:
           requires:
             - integration-test
+            - code-coverage
           filters:
             branches:
               ignore:
@@ -839,6 +833,7 @@ workflows:
       - minion-deb-build:
           requires:
             - integration-test
+            - code-coverage
           filters:
             branches:
               ignore:
@@ -846,6 +841,7 @@ workflows:
       - sentinel-deb-build:
           requires:
             - integration-test
+            - code-coverage
           filters:
             branches:
               ignore:
@@ -858,6 +854,7 @@ workflows:
             - minion-deb-build
             - sentinel-deb-build
             - integration-test
+            - code-coverage
             - smoke-test-core
             - smoke-test-flaky
             - smoke-test-minion
@@ -881,6 +878,7 @@ workflows:
             - minion-deb-build
             - sentinel-deb-build
             - integration-test
+            - code-coverage
             - smoke-test-core
             - smoke-test-flaky
             - smoke-test-minion
@@ -898,6 +896,7 @@ workflows:
             - smoke-test-minion
             - smoke-test-sentinel
             - integration-test
+            - code-coverage
           filters:
             branches:
               only:
@@ -910,6 +909,7 @@ workflows:
             - minion-deb-build
             - sentinel-deb-build
             - integration-test
+            - code-coverage
             - smoke-test-core
             - smoke-test-flaky
             - smoke-test-minion
