@@ -13,14 +13,15 @@ parameters:
     description: the previous branch, if any (escaped, no slashes)
     type: string
     default: release-30.x
+  # special case, "" instead of "develop" to avoid creating a merge-foundation branch
   main_branch:
     description: the auto-merge main branch
     type: string
-    default: develop
+    default: ""
   main_branch_label:
     description: the auto-merge main branch (escaped, no slashes)
     type: string
-    default: develop
+    default: ""
   next_branch:
     description: the auto-merge target branch
     type: string
