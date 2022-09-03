@@ -1,57 +1,64 @@
 commands:
-  cache-oci:
-    parameters:
-      key:
-        description: the cache key for storing the OCI
-        type: string
-      path:
-        description: the path to the directory containing the OCI
-        type: string
-    steps:
-      - cache-workflow-assets:
-          cache_prefix: oci-<< parameters.key >>
-          source_path: << parameters.path >>
   load-oci:
     parameters:
-      key:
-        description: the OCI cache key to restore
+      match:
+        description: regular expression match for OCI filename
         type: string
     steps:
-      - restore-workflow-assets:
-          cache_prefix: oci-<< parameters.key >>
+      - download-download-artifacts
       - run:
-          name: Load Docker Image(s) in oci-<< parameters.key >>
+          name: restore OCI files matching "<< parameters.match >>"
           command: |
-            cd "/tmp/oci-<< parameters.key >>"
+            if [ -n "<< parameters.match >>" ]; then
+              download-artifacts.pl --include-failed --workflow="${CIRCLE_WORKFLOW_ID}" --match="<< parameters.match >>" oci "${CIRCLE_BRANCH}" /tmp/oci-artifacts
+            else
+              download-artifacts.pl --include-failed --workflow="${CIRCLE_WORKFLOW_ID}" oci "${CIRCLE_BRANCH}" /tmp/oci-artifacts
+            fi
+
+            cd /tmp/oci-artifacts
             if [ "$(ls -1 *.oci | wc -l)" -eq 0 ]; then
               echo "ERROR: No OCI files to load. Something probably went wrong earlier."
               exit 1
             fi
+
             for FILE in *.oci; do
               echo "Loading ${FILE} into Docker..."
-              docker image load -i "$FILE"
+              _tag="$(printf "${FILE}" | sed -e 's,\.oci$,,'):latest"
+              if [ -z "$(docker image ls -q "${_tag}")" ]; then
+                docker image load -i "${FILE}"
+              fi
+              _unprefixed="$(echo "${_tag}" | cut -d/ -f2 | cut -d- -f1)"
+              echo "Tagging docker image ${_tag} as [opennms/]${_unprefixed}:latest"
+              docker image tag "${_tag}" "opennms/${_unprefixed}:latest"
+              docker image tag "${_tag}" "${_unprefixed}:latest"
             done
+
   build-image-single-arch:
     parameters:
       architecture:
-        type: string
-      cache_prefix:
         type: string
       container_name:
         type: string
     steps:
       - attach_workspace:
           at: ~/
+      # - dockerhub-login
       - qemu-user-static
       - install-buildx
-      - restore-workflow-assets:
-          cache_prefix: << parameters.cache_prefix >>
-          target_path: "target/debs"
       - run:
-          name: Fetch DEB artifacts and build << parameters.container_name >> container image
+          name: build << parameters.container_name >>=<< parameters.architecture >> container image
           command: |
+            export DOCKER_CONTENT_TRUST=1
             cd opennms-container/<< parameters.container_name >>
-            env DOCKER_ARCH="<< parameters.architecture >>" ./build_container_image.sh
+            export ARCH="$(printf "<< parameters.architecture >>" | tr / -)"
+            export TAG="<< parameters.container_name >>-${ARCH}"
+            make DOCKER_ARCH="<< parameters.architecture >>" \
+                 DOCKER_IMAGE_NAME="${TAG}.oci" \
+                 DOCKER_TAG="${TAG}" \
+                 BUILD_NUMBER="${CIRCLE_BUILD_NUM}" \
+                 BUILD_URL="${CIRCLE_BUILD_URL}" \
+                 BUILD_BRANCH="${CIRCLE_BRANCH}" \
+                 build install
       - store_artifacts:
-          path: ~/project/opennms-container/<< parameters.container_name >>/images/container.oci
-          destination: << parameters.container_name >>.oci
+          path: ~/project/opennms-container/<< parameters.container_name >>/images/
+          destination: /

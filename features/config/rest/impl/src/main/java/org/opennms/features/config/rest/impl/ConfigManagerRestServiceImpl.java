@@ -28,7 +28,16 @@
 
 package org.opennms.features.config.rest.impl;
 
-import io.swagger.v3.oas.models.OpenAPI;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Response;
+
 import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.impl.util.ConfigSwaggerConverter;
 import org.opennms.features.config.exception.ConfigRuntimeException;
@@ -39,10 +48,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.Response;
-import java.util.*;
-import java.util.stream.Collectors;
+import io.swagger.v3.oas.models.OpenAPI;
 
 /**
  * <b>Currently for testing OSGI integration</b>
@@ -146,6 +152,97 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
             LOG.error("configName: {}, configId: {}", configName, configId, e);
             return this.generateSimpleMessageResponse(Response.Status.BAD_REQUEST, e.getMessage());
         }
+    }
+
+    @Override
+    public Response getConfigPart(String configName, String configId, String path) {
+        try {
+            Optional<String> json = configurationManagerService.getJSONStrConfiguration(configName, configId);
+            if (json.isEmpty()) {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+            return Response.ok(JsonPathHelper.get(json.get(), path)).build();
+        } catch (Exception e) {
+            LOG.error("configName: {}, configId: {}", configName, configId, e);
+            return this.generateSimpleMessageResponse(Response.Status.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @Override
+    public Response updateConfigPart(String configName, String configId, String path, String newPartContent) {
+        try {
+            Optional<String> json = configurationManagerService.getJSONStrConfiguration(configName, configId);
+            if (json.isEmpty()) {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+
+            String newJson = JsonPathHelper.update(json.get(), path, newPartContent);
+
+            configurationManagerService.updateConfiguration(configName, configId, new JsonAsString(newJson), true);
+
+        } catch (Exception e) {
+            LOG.error("configName: {}, configId: {}", configName, configId, e);
+            return this.generateSimpleMessageResponse(Response.Status.BAD_REQUEST, e.getMessage());
+        }
+        return Response.ok().build();
+    }
+
+    @Override
+    public Response updateOrInsertConfigPart(String configName, String configId, String pathToParent, String nodeName,
+                                             String newPartContent) {
+        try {
+            Optional<String> json = configurationManagerService.getJSONStrConfiguration(configName, configId);
+            if (json.isEmpty()) {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+
+            String newJson = JsonPathHelper.insertOrUpdateNode(json.get(), pathToParent, nodeName, newPartContent);
+
+            configurationManagerService.updateConfiguration(configName, configId, new JsonAsString(newJson), true);
+
+        } catch (Exception e) {
+            LOG.error("configName: {}, configId: {}", configName, configId, e);
+            return this.generateSimpleMessageResponse(Response.Status.BAD_REQUEST, e.getMessage());
+        }
+        return Response.ok().build();
+    }
+
+    @Override
+    public Response appendToArrayInConfig(String configName, String configId, String path, String newElement) {
+        try {
+            Optional<String> json = configurationManagerService.getJSONStrConfiguration(configName, configId);
+            if (json.isEmpty()) {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+
+            String newJson = JsonPathHelper.append(json.get(),path, newElement);
+
+            configurationManagerService.updateConfiguration(configName, configId, new JsonAsString(newJson), true);
+
+        } catch (Exception e) {
+            LOG.error("configName: {}, configId: {}", configName, configId, e);
+            return this.generateSimpleMessageResponse(Response.Status.BAD_REQUEST, e.getMessage());
+        }
+        return Response.ok().build();
+    }
+
+    @Override
+    public Response deleteConfigPart(String configName, String configId, String path) {
+        try {
+            Optional<String> json = configurationManagerService.getJSONStrConfiguration(configName, configId);
+            if (json.isEmpty()) {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+
+            String newJson = JsonPathHelper.delete(json.get(),path);
+
+            configurationManagerService.updateConfiguration(configName, configId, new JsonAsString(newJson), true);
+
+        } catch (Exception e) {
+            LOG.error("configName: {}, configId: {}", configName, configId, e);
+            return this.generateSimpleMessageResponse(Response.Status.BAD_REQUEST, e.getMessage());
+        }
+        return Response.ok().build();
     }
 
     @Override

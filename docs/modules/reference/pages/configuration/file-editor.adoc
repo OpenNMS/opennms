@@ -56,7 +56,7 @@ Depending on which file was edited, OpenNMS may detect and apply the configurati
 
 Some additional information can be found in these topics:
 
-** xref:operation:admin/daemon-config-files.adoc[]
+** xref:operation:deep-dive/admin/daemon-config-files.adoc[]
 ** xref:reference:daemons/introduction#ga-daemons[Daemon Reference] provides an overview of all daemons, their related configuration files, and which ones you can reload without restarting OpenNMS
 
 ## Console

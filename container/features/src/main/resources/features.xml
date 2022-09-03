@@ -184,9 +184,12 @@
         <!-- <bundle>mvn:org.codehaus.groovy/groovy-testng/${groovyVersion}</bundle> -->
         <bundle>mvn:org.codehaus.groovy/groovy-xml/${groovyVersion}</bundle>
     </feature>
+    <feature name="dom4j" version="${dom4jVersion}" description="DOM4J">
+        <bundle dependency="true">wrap:mvn:org.dom4j/dom4j/${dom4jVersion}</bundle>
+    </feature>
     <feature name="hibernate36" version="3.6.10.Final" description="Hibernate :: Hibernate ORM">
+        <feature>dom4j</feature>
         <bundle dependency="true">wrap:mvn:antlr/antlr/${antlr.version}$Import-Package=org.hibernate.hql.ast</bundle>
-        <bundle dependency="true">wrap:mvn:dom4j/dom4j/1.6.1</bundle>
         <bundle dependency="true">mvn:commons-collections/commons-collections/${commonsCollectionsVersion}</bundle>
         <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/${geronimoVersion}</bundle>
         <bundle dependency="true">mvn:org.javassist/javassist/3.18.2-GA</bundle>
@@ -508,6 +511,7 @@
         <feature>rate-limited-logger</feature>
         <feature>opennms-core</feature>
         <feature>opennms-distributed-core-api</feature>
+        <feature>opennms-integration-api</feature>
         <feature>opennms-core-tracing</feature>
         <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
         <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.api/${project.version}</bundle>
@@ -928,6 +932,7 @@
         <feature>commons-cli</feature>
         <feature>commons-io</feature>
         <feature>commons-lang</feature>
+        <feature>dom4j</feature>
         <feature version="${guavaOsgiVersion}">guava</feature>
         <bundle dependency="true">mvn:org.apache.httpcomponents/httpcore-osgi/${httpcoreVersion}</bundle>
         <bundle dependency="true">mvn:org.apache.httpcomponents/httpclient-osgi/${httpclientVersion}</bundle>
@@ -1164,6 +1169,7 @@
         <feature>quartz</feature>
         <feature>opennms-core-tracing</feature>
         <feature>opennms-distributed-core-api</feature>
+        <feature>opennms-integration-api</feature>
         <feature>opennms-telemetry-collection</feature>
         <feature>opennms-dnsresolver-api</feature>
         <feature>opennms-kafka</feature>
@@ -1558,6 +1564,9 @@
         <bundle>mvn:org.codehaus.jackson/jackson-mapper-asl/${jacksonVersion}</bundle>
         <bundle>mvn:org.opennms/opennms-web-api/${project.version}</bundle>
         <bundle>mvn:org.freemarker/freemarker/${freemarkerVersion}</bundle>
+        <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.common/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.common/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.usageanalytics/org.opennms.features.usageanalytics.api/${project.version}</bundle>
     </feature>
     <feature name="opennms-es-rest" version="${project.version}" description="OpenNMS :: Features :: ElasticSearch Rest">
         <details>OpenNMS :: Features :: ElasticSearch Rest</details>
@@ -1810,6 +1819,9 @@
         <bundle>mvn:org.apache.ws.xmlschema/xmlschema-walker/${xmlschemaVersion}</bundle>
         <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jaxp-api-1.4/${servicemixSpecsVersion}</bundle>
         <bundle>mvn:org.opennms.features.config.rest/org.opennms.features.config.rest.api/${project.version}</bundle>
+        <bundle>mvn:net.minidev/accessors-smart/${accessorsSmartVersion}</bundle>
+        <bundle>mvn:net.minidev/json-smart/${jsonSmartVersion}</bundle>
+        <bundle>wrap:mvn:com.jayway.jsonpath/json-path/${jsonPathVersion}</bundle>
         <bundle>mvn:org.opennms.features.config.rest/org.opennms.features.config.rest.impl/${project.version}</bundle>
     </feature>
     <feature name="opennms-config-management-osgi-del" description="OpenNMS :: Features :: Config :: Osgi :: Delegate" version="${project.version}">

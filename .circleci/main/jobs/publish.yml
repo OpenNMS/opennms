@@ -1,0 +1,53 @@
+jobs:
+  publish:
+    docker:
+      - image: cimg/python:3.10
+    resource_class: small
+    environment:
+      DOCKER_CLI_EXPERIMENTAL: enabled
+    steps:
+      - shallow-clone
+      - setup_remote_docker:
+          version: 20.10.11
+      - cloudsmith/ensure-api-key
+      - cloudsmith/install-cli
+      - run:
+          name: Install notary
+          command: |
+            sudo wget https://github.com/theupdateframework/notary/releases/download/v0.6.1/notary-Linux-amd64 -O /usr/local/bin/notary
+            sudo chmod a+x /usr/local/bin/notary
+      - download-download-artifacts
+      - run:
+          name: download resources from parent jobs
+          command: |
+            sudo apt-get update
+            sudo apt-get -y install \
+              libdatetime-format-iso8601-perl \
+              libjson-pp-perl \
+              libwww-perl \
+              liblwp-protocol-https-perl
+
+            for TYPE in oci rpm deb yml; do
+              download-artifacts.pl \
+                --vault-layout \
+                --include-failed \
+                --workflow="${CIRCLE_WORKFLOW_ID}" \
+               "${TYPE}" \
+               "${CIRCLE_BRANCH}" \
+               /tmp/artifacts
+            done
+      - run:
+          name: Import OCI Files
+          command: |
+            find /tmp/artifacts/oci -name \*.oci | while read -r OCI; do
+              docker image load --quiet -i "${OCI}"
+            done
+      - run:
+          name: Publish to Docker Hub
+          command: .circleci/scripts/publish-dockerhub.sh
+      - run:
+          name: Publish to Cloudsmith
+          command: .circleci/scripts/publish-cloudsmith.sh
+      - run:
+          name: Publish to Azure
+          command: .circleci/scripts/publish-azure.sh

@@ -1,0 +1,20 @@
+jobs:
+  minion-image-single-arch-linux-amd64:
+    machine:
+      image: ubuntu-2204:current
+      docker_layer_caching: true
+    environment:
+      DOCKER_CLI_EXPERIMENTAL: enabled
+    steps:
+      - build-image-single-arch:
+          architecture: linux/amd64
+          container_name: minion
+      - run:
+          name: copy minion config schema for archiving
+          command: |
+            cd ~/project
+            mkdir -p target/config-schema
+            cp opennms-container/minion/minion-config-schema.yml target/config-schema/
+      - save-artifacts:
+          path: target/config-schema/
+          location: minion-config-schema

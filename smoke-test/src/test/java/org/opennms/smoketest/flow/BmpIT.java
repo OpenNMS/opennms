@@ -63,6 +63,7 @@ import com.google.common.collect.Sets;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 
+@org.junit.experimental.categories.Category(org.opennms.smoketest.junit.FlakyTests.class)
 public class BmpIT {
     private static final Logger LOG = LoggerFactory.getLogger(BmpIT.class);
 

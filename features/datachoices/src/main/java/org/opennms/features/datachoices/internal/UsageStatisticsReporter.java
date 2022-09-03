@@ -49,12 +49,12 @@ import org.apache.karaf.features.Feature;
 import org.apache.karaf.features.FeaturesService;
 import org.opennms.core.db.DataSourceFactoryBean;
 import org.opennms.core.utils.SystemInfoUtils;
+import org.opennms.core.utils.TimeSeries;
 import org.opennms.core.web.HttpClientWrapper;
 import org.opennms.features.datachoices.internal.StateManager.StateChangeHandler;
-import org.opennms.netmgt.config.GroupFactory;
-import org.opennms.netmgt.config.NotifdConfigFactory;
-import org.opennms.netmgt.config.ServiceConfigFactory;
-import org.opennms.netmgt.config.DestinationPathFactory;
+import org.opennms.features.usageanalytics.api.UsageAnalyticDao;
+import org.opennms.features.usageanalytics.api.UsageAnalyticMetricName;
+import org.opennms.netmgt.config.*;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
@@ -68,6 +68,9 @@ import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeDao;
+import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
+import org.opennms.core.ipc.sink.common.SinkStrategy;
+import org.opennms.core.rpc.common.RpcStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -127,6 +130,8 @@ public class UsageStatisticsReporter implements StateChangeHandler {
 
     private BusinessServiceEdgeDao m_businessServiceEdgeDao;
 
+    private DeviceConfigDao m_deviceConfigDao;
+
     private FeaturesService m_featuresService;
 
     private ProvisiondConfigurationDao m_provisiondConfigurationDao;
@@ -137,10 +142,11 @@ public class UsageStatisticsReporter implements StateChangeHandler {
 
     private NotifdConfigFactory m_notifdConfigFactory;
 
+    private UsageAnalyticDao m_usageAnalyticDao;
+
     private GroupFactory m_groupFactory;
     private ForeignSourceRepository m_deployedForeignSourceRepository;
     private DataSourceFactoryBean m_dataSourceFactoryBean;
-
     private boolean m_useSystemProxy = true; // true == legacy behaviour
 
     public synchronized void init() {
@@ -257,18 +263,28 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         setJmxAttributes(usageStatisticsReport);
         gatherProvisiondData(usageStatisticsReport);
         usageStatisticsReport.setServices(m_serviceConfigurationFactory.getServiceNameMap());
-
+        usageStatisticsReport.setGroups(this.getGroupCount());
+        usageStatisticsReport.setUsers(this.getUserCount());
         usageStatisticsReport.setDestinationPathCount(getDestinationPathCount());
         usageStatisticsReport.setNotificationEnablementStatus(getNotificationEnablementStatus());
         usageStatisticsReport.setOnCallRoleCount(m_groupFactory.getRoles().size());
         usageStatisticsReport.setRequisitionCount(getDeployedRequisitionCount());
         usageStatisticsReport.setRequisitionWithChangedFSCount(getDeployedRequisitionWithModifiedFSCount());
         usageStatisticsReport.setBusinessEdgeCount(m_businessServiceEdgeDao.countAll());
+        usageStatisticsReport.setSinkStrategy(SinkStrategy.getSinkStrategy().getName());
+        usageStatisticsReport.setRpcStrategy(RpcStrategy.getRpcStrategy().getName());
+        usageStatisticsReport.setTssStrategies(TimeSeries.getTimeseriesStrategy().getName());
+        // DCB statistics
+        usageStatisticsReport.setDcbSucceed(m_usageAnalyticDao.getValueByMetricName(UsageAnalyticMetricName.DCB_SUCCEED.toString()));
+        usageStatisticsReport.setDcbFailed(m_usageAnalyticDao.getValueByMetricName(UsageAnalyticMetricName.DCB_FAILED.toString()));
+        usageStatisticsReport.setDcbWebUiEntries(m_usageAnalyticDao.getValueByMetricName(UsageAnalyticMetricName.DCB_WEBUI_ENTRY.toString()));
+        usageStatisticsReport.setNodesWithDeviceConfigBySysOid(m_deviceConfigDao.getNumberOfNodesWithDeviceConfigBySysOid());
 
         setDatasourceInfo(usageStatisticsReport);
 
         return usageStatisticsReport;
     }
+
     private void setJmxAttributes(UsageStatisticsReportDTO usageStatisticsReport) {
         setSystemJmxAttributes(usageStatisticsReport);
         setOpenNmsJmxAttributes(usageStatisticsReport);
@@ -352,7 +368,25 @@ public class UsageStatisticsReporter implements StateChangeHandler {
             LOG.error("Error retrieving datasource information", e);
         }
     }
-    
+    private int getUserCount() {
+        try {
+            UserFactory.init();
+            UserManager userFactory = UserFactory.getInstance();
+            return userFactory.getUsers().size();
+        }catch (Exception e) {
+            return 0;
+        }
+    }
+
+    private int getGroupCount() {
+        try{
+            GroupFactory.init();
+            GroupManager groupFactory = GroupFactory.getInstance();
+            return groupFactory.getGroups().size();
+        } catch (Exception e) {
+            return 0;
+        }
+    }
     private String getInstalledFeatures() {
         String installedFeatures;
         try {
@@ -375,9 +409,11 @@ public class UsageStatisticsReporter implements StateChangeHandler {
      */
     private String getInstalledOIAPluginsByDependencyTree() {
         List<Feature> featuresDependentOnOIA = new ArrayList<>();
+        List<String> featuresToIgnore = new ArrayList<>();
+        featuresToIgnore.add(API_LAYER_FEATURE_NAME);
         try {
             for (Feature feature : m_featuresService.listInstalledFeatures()) {
-                featuresDependentOnOIA = recurse(feature, featuresDependentOnOIA, List.of(API_LAYER_FEATURE_NAME), 0);
+                featuresDependentOnOIA = recurse(feature, featuresDependentOnOIA, featuresToIgnore, 0);
             }
         }
         catch (Exception e) {
@@ -506,6 +542,10 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         m_dataSourceFactoryBean = dataSourceFactoryBean;
     }
 
+    public void setUsageAnalyticDao(UsageAnalyticDao usageAnalyticDao) {
+        m_usageAnalyticDao = usageAnalyticDao;
+    }
+
     private void gatherProvisiondData(final UsageStatisticsReportDTO usageStatisticsReport) {
         try {
             usageStatisticsReport.setProvisiondImportThreadPoolSize(m_provisiondConfigurationDao.getImportThreads());
@@ -544,6 +584,10 @@ public class UsageStatisticsReporter implements StateChangeHandler {
 
     public ForeignSourceRepository getDeployedForeignSourceRepository() {
         return m_deployedForeignSourceRepository;
+    }
+
+    public void setDeviceConfigDao(DeviceConfigDao deviceConfigDao) {
+        this.m_deviceConfigDao = deviceConfigDao;
     }
 
     private int getDestinationPathCount(){

@@ -1,0 +1,21 @@
+
+[[events]]
+= Events
+
+Events are structured historical records of things that happen in {page-component-title} and the nodes, interfaces, and services it monitors.
+Events are central to the operation of the {page-component-title} platform, so it's critical to have a firm grasp of this topic.
+Whenever something in {page-component-title} appears to work by magic, it's probably events working in the background.
+
+Events may originate within {page-component-title} itself, or from an external source via <<deep-dive/events/sources/snmp-traps.adoc#ga-events-sources-snmp-traps, SNMP traps>>, <<deep-dive/events/sources/syslog.adoc#ga-events-sources-syslog, syslog messages>>, or a variety of other <<deep-dive/events/event-sources.adoc#ga-events-sources-of-events, sources>>.
+Event definition files are used to provide a standard framework for eventd to process events evenly, regardless of how they were sent to the server.
+
+[[ga-events-event-bus]]
+== The event bus
+
+At the heart of {page-component-title} lies an event bus.
+Any {page-component-title} component can publish events to the bus, and any component can subscribe to receive events of interest that have been published on the bus.
+This publish-subscribe model enables components to use events as a mechanism to send messages to each other.
+
+For example, the {page-component-title} provisioning subsystem publishes a node-added event whenever a new node is added to the system.
+Other subsystems with an interest in new nodes subscribe to the node-added event and automatically receive these events, so they know to start monitoring and managing the new node if their configuration dictates.
+The publisher and subscriber components do not need to have any knowledge of each other, allowing for a clean division of labor and lessening the programming burden to add entirely new subsystems or modify the behavior of existing ones.

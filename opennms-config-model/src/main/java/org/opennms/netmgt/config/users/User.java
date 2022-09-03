@@ -46,6 +46,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.opennms.core.xml.StringTrimAdapter;
 import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.config.utils.ConfigUtils;
+import org.opennms.core.utils.WebSecurityUtils;
 
 @XmlRootElement(name = "user")
 @XmlAccessorType(XmlAccessType.NONE)
@@ -110,7 +111,7 @@ public class User implements Serializable {
     }
 
     public void setFullName(final String fullName) {
-        m_fullName = ConfigUtils.normalizeString(fullName);
+        m_fullName = ConfigUtils.normalizeString(WebSecurityUtils.sanitizeString(fullName));
     }
 
     public Optional<String> getUserComments() {

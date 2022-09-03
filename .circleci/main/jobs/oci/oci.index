@@ -1,6 +1,6 @@
   #jobs:oci/horizon-image-single-arch#
   #jobs:oci/sentinel-image-single-arch#
   #jobs:oci/minion-image-single-arch#
-  #jobs:oci/minion-image-multi-arch#
-  #jobs:oci/horizon-publish-oci#
-  #jobs:oci/sentinel-publish-oci#
+  #jobs:oci/minion-image-single-arch-linux-amd64#
+  #jobs:oci/horizon-image-single-arch-linux-amd64#
+  #jobs:oci/sentinel-image-single-arch-linux-amd64#

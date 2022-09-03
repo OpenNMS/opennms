@@ -6,7 +6,7 @@ commands:
           name: Login to DockerHub
           command: |
             if [ -n "${DOCKERHUB_LOGIN}" ]; then
-              docker login -u ${DOCKERHUB_LOGIN} -p ${DOCKERHUB_PASS}
+              printf "${DOCKERHUB_PASS}" | docker login -u ${DOCKERHUB_LOGIN} --password-stdin
             else
               echo "WARNING: dockerhub login not found. Assuming this is a PR or other external branch build."
             fi

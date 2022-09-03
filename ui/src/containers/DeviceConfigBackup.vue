@@ -27,7 +27,7 @@ import DCBSearch from '@/components/Device/DCBSearch.vue'
 
 const store = useStore()
 
-onMounted(() => store.dispatch('deviceModule/getDeviceConfigBackups'))
+onMounted(() => store.dispatch('deviceModule/getDeviceConfigBackups', true))
 </script>
 
 <style scoped lang="scss">

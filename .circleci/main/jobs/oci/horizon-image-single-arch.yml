@@ -4,11 +4,11 @@ jobs:
       architecture:
         type: string
     machine:
-      image: ubuntu-2004:202010-01
+      image: ubuntu-2204:current
+      docker_layer_caching: true
     environment:
       DOCKER_CLI_EXPERIMENTAL: enabled
     steps:
       - build-image-single-arch:
           architecture: << parameters.architecture >>
-          cache_prefix: deb-horizon
           container_name: horizon
