@@ -93,6 +93,12 @@ public class UsageStatisticsReportDTO {
     private int m_groups;
     private Map<String, Long> m_nodesWithDeviceConfigBySysOid = Collections.emptyMap();
 
+    private int applications;
+
+    public int getApplications(){return applications;}
+
+    public void setApplications(int applications){this.applications = applications;}
+
     public void setSystemId(String systemId) {
         m_systemId = systemId;
     }
