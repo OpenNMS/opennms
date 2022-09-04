@@ -5146,6 +5146,11 @@
         <artifactId>opentelemetry-opentracing-shim</artifactId> <!-- not included in opentelemetry-bom -->
         <version>${opentelemetryVersion}-alpha</version>
       </dependency>
+      <dependency>
+        <groupId>io.sniffy</groupId>
+        <artifactId>sniffy</artifactId>
+        <version>3.1.13</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
   <pluginRepositories>

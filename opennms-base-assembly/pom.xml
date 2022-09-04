@@ -1014,6 +1014,10 @@
       <artifactId>postgresql</artifactId>
     </dependency>
     <dependency>
+      <groupId>io.sniffy</groupId>
+      <artifactId>sniffy</artifactId>
+    </dependency>
+    <dependency>
       <groupId>io.opentelemetry.javaagent</groupId>
       <artifactId>opentelemetry-javaagent</artifactId>
       <version>${opentelemetryVersion}</version>
