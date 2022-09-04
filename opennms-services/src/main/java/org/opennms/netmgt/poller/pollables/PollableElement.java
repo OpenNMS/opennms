@@ -32,6 +32,9 @@ import java.util.Date;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 
+import io.opentelemetry.api.GlobalOpenTelemetry;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.Tracer;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
@@ -45,7 +48,9 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class PollableElement {
     private static final Logger LOG = LoggerFactory.getLogger(PollableElement.class);
-    private final Scope m_scope; 
+
+    private final Tracer m_tracer = GlobalOpenTelemetry.getTracer(getClass().getCanonicalName());
+    private final Scope m_scope;
 
     private volatile PollableContainer m_parent;
     private volatile PollStatus m_status = PollStatus.unknown();
@@ -198,7 +203,14 @@ public abstract class PollableElement {
      * <p>obtainTreeLock</p>
      */
     protected void obtainTreeLock() {
-        getLockRoot().obtainTreeLock();
+        Span span = m_tracer.spanBuilder("obtainTreeLock")
+                .setAttribute("element", this.toString())
+                .startSpan();
+        try (io.opentelemetry.context.Scope scope = span.makeCurrent()) {
+            getLockRoot().obtainTreeLock();
+        } finally {
+            span.end();
+        }
     }
     
     /**
@@ -208,7 +220,15 @@ public abstract class PollableElement {
      * @throws LockUnavailable 
      */
     protected void obtainTreeLock(long timeout) throws LockUnavailable {
-        getLockRoot().obtainTreeLock(timeout);
+        Span span = m_tracer.spanBuilder("obtainTreeLock")
+                .setAttribute("timeout", timeout)
+                .setAttribute("element", this.toString())
+                .startSpan();
+        try (io.opentelemetry.context.Scope scope = span.makeCurrent()) {
+            getLockRoot().obtainTreeLock(timeout);
+        } finally {
+            span.end();
+        }
     }
     
     /**

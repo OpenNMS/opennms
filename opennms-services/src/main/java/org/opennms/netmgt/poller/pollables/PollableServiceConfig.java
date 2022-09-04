@@ -35,6 +35,11 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.TimeUnit;
 
+import io.opentelemetry.api.GlobalOpenTelemetry;
+import io.opentelemetry.api.common.Attributes;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.Tracer;
+import io.opentelemetry.context.Scope;
 import org.opennms.core.rpc.api.RpcExceptionHandler;
 import org.opennms.core.rpc.api.RpcExceptionUtils;
 import org.opennms.netmgt.collection.api.PersisterFactory;
@@ -45,6 +50,7 @@ import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.poller.LocationAwarePollerClient;
+import org.opennms.netmgt.poller.PollerRequestBuilder;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.PollerResponse;
 import org.opennms.netmgt.poller.ServiceMonitor;
@@ -63,6 +69,8 @@ import org.slf4j.LoggerFactory;
  */
 public class PollableServiceConfig implements PollConfig, ScheduleInterval {
     private static final Logger LOG = LoggerFactory.getLogger(PollableServiceConfig.class);
+
+    private final Tracer m_tracer = GlobalOpenTelemetry.getTracer(this.getClass().getCanonicalName());
 
     private PollerConfig m_pollerConfig;
     private PollableService m_service;
@@ -123,33 +131,57 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
      */
     @Override
     public PollStatus poll() {
-        try {
+        Span span = m_tracer.spanBuilder("poll")
+                .setAttribute("node.id", m_service.getNodeId())
+                .setAttribute("node.label", m_service.getNodeLabel())
+                .setAttribute("node.location", m_service.getNodeLocation())
+                .setAttribute("interface.ipaddr", m_service.getIpAddr())
+                .setAttribute("service.name", m_service.getSvcName())
+                .startSpan();
+        try (Scope scope = span.makeCurrent()) {
             final String packageName = getPackageName();
             // Use the service's configured interval as the TTL for this request
             final Long ttlInMs = m_configService.getInterval();
+            span.setAttribute("package", packageName);
+            span.setAttribute("ttl", (double)ttlInMs / 1000);
             LOG.debug("Polling {} with TTL {} using pkg {}",
                     m_service, ttlInMs, packageName);
 
-            CompletableFuture<PollerResponse> future = m_locationAwarePollerClient.poll()
-                .withService(m_service)
-                .withMonitor(m_pollerConfig.getServiceMonitor(m_configService.getName()))
-                .withTimeToLive(ttlInMs)
-                .withAttributes(getParameters())
-                .withAdaptor(m_latencyStoringServiceMonitorAdaptor)
-                .withAdaptor(m_statusStoringServiceMonitorAdaptor)
-                .withAdaptor(m_invertedStatusServiceMonitorAdaptor)
-                .withAdaptor(m_DeviceConfigMonitorAdaptor)
-                .withPatternVariables(m_patternVariables)
-                .execute();
+            PollerRequestBuilder pollerRequestBuilder = m_locationAwarePollerClient.poll()
+                    .withService(m_service)
+                    .withMonitor(m_pollerConfig.getServiceMonitor(m_configService.getName()))
+                    .withTimeToLive(ttlInMs)
+                    .withAttributes(getParameters())
+                    .withAdaptor(m_latencyStoringServiceMonitorAdaptor)
+                    .withAdaptor(m_statusStoringServiceMonitorAdaptor)
+                    .withAdaptor(m_invertedStatusServiceMonitorAdaptor)
+                    .withAdaptor(m_DeviceConfigMonitorAdaptor)
+                    .withPatternVariables(m_patternVariables);
+            CompletableFuture<PollerResponse> future = pollerRequestBuilder.execute();
 
-            PollerResponse response = future.get();
+            PollerResponse response;
+            Span pollSpan = m_tracer.spanBuilder("poll execute").startSpan();
+            span.addEvent("foo", Attributes.builder().put("foo", "bar").build());
+            try (Scope pollScope = pollSpan.makeCurrent()) {
+                response = future.get();
+            } finally {
+                pollSpan.end();
+            }
             PollStatus result = response.getPollStatus();
             LOG.debug("Finish polling {} using pkg {} result = {}", m_service, packageName, result);
 
             // Track the results of the poll
             m_service.getContext().trackPoll(m_service, result);
+            span.setAttribute("status", result.getStatusName());
+            if (!result.isUp()) {
+                span.setAttribute("reason", result.getReason());
+            }
+            if (result.getResponseTime() != null) {
+                span.setAttribute("response_time", (double) result.getResponseTime() / 1000);
+            }
             return result;
         } catch (Throwable e) {
+            span.recordException(e);
             return RpcExceptionUtils.handleException(e, new RpcExceptionHandler<PollStatus>() {
                 @Override
                 public PollStatus onInterrupted(Throwable cause) {
@@ -178,6 +210,8 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
                     return PollStatus.down("Unexpected exception while polling "+m_service+". "+e);
                 }
             });
+        } finally {
+            span.end();
         }
     }
 

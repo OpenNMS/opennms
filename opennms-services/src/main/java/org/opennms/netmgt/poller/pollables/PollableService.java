@@ -32,6 +32,10 @@ import java.net.InetAddress;
 import java.util.Date;
 import java.util.Map;
 
+import io.opentelemetry.api.GlobalOpenTelemetry;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.Tracer;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -52,6 +56,7 @@ import org.slf4j.LoggerFactory;
 public class PollableService extends PollableElement implements ReadyRunnable, MonitoredService {
     
     private static final Logger LOG = LoggerFactory.getLogger(PollableService.class);
+    private final Tracer m_tracer;
 
     private final class PollRunner implements Runnable {
     	
@@ -82,6 +87,7 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
     public PollableService(PollableInterface iface, String svcName) {
         super(iface, Scope.SERVICE);
         m_svcName = svcName;
+        m_tracer = GlobalOpenTelemetry.getTracer(this.getClass().getCanonicalName());
     }
     
     /**
@@ -188,11 +194,19 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
      */
     @Override
     public PollStatus poll() {
-        PollStatus newStatus = m_pollConfig.poll();
-        if (!newStatus.isUnknown()) { 
-            updateStatus(newStatus);
+        Span span = m_tracer.spanBuilder("poll")
+                .setAttribute("service", m_svcName)
+                .setAttribute("stacktrace", ExceptionUtils.getStackTrace(new Exception()))
+                .startSpan();
+        try (io.opentelemetry.context.Scope scope = span.makeCurrent()) {
+            PollStatus newStatus = m_pollConfig.poll();
+            if (!newStatus.isUnknown()) {
+                updateStatus(newStatus);
+            }
+            return getStatus();
+        } finally {
+            span.end();
         }
-        return getStatus();
     }
 
     /**

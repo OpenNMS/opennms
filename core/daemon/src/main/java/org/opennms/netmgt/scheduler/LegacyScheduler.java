@@ -39,6 +39,13 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 
+import io.opentelemetry.api.GlobalOpenTelemetry;
+import io.opentelemetry.api.common.Attributes;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.SpanBuilder;
+import io.opentelemetry.api.trace.Tracer;
+import io.opentelemetry.context.Scope;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.fiber.PausableFiber;
 import org.slf4j.Logger;
@@ -57,12 +64,19 @@ import org.springframework.util.Assert;
 public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
     
     private static final Logger LOG = LoggerFactory.getLogger(LegacyScheduler.class);
-    
+
+    private final Tracer m_tracer = GlobalOpenTelemetry.getTracer(getClass().getCanonicalName());
+
     /**
      * The map of queue that contain {@link ReadyRunnable ready runnable}
      * instances. The queues are mapped according to the interval of scheduling.
      */
     private final Map<Long, BlockingQueue<ReadyRunnable>> m_queues;
+
+    /**
+     * The name of this scheduler.
+     */
+    private final String m_name;
 
     /**
      * The total number of elements currently scheduled. This should be the sum
@@ -103,6 +117,7 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
      *            The maximum size of the thread pool.
      */
     public LegacyScheduler(final String parent, final int maxSize) {
+        m_name = parent;
         m_status = START_PENDING;
         m_runner = Executors.newFixedThreadPool(maxSize, new LogPreservingThreadFactory(parent, maxSize));
         m_queues = new ConcurrentSkipListMap<Long, BlockingQueue<ReadyRunnable>>();
@@ -168,21 +183,54 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
     @Override
     public synchronized void schedule(long interval, final ReadyRunnable runnable) {
         final long timeToRun = getCurrentTime()+interval;
-        ReadyRunnable timeKeeper = new ReadyRunnable() {
-            @Override
-            public boolean isReady() {
-                return getCurrentTime() >= timeToRun && runnable.isReady();
-            }
-            
-            @Override
-            public void run() {
-                runnable.run();
-            }
-            
-            @Override
-            public String toString() { return runnable.toString()+" (ready in "+Math.max(0, timeToRun-getCurrentTime())+"ms)"; }
-        };
-        schedule(timeKeeper, interval);
+
+        Span span = m_tracer.spanBuilder(m_name + " " + getClass().getSimpleName() + " schedule")
+                .setAttribute("name", m_name)
+                .setAttribute("interval", interval)
+                .setAttribute("timeToRun", timeToRun)
+                .setAttribute("runner", this.getName())
+                .setAttribute("runnable", runnable.toString())
+                .setAttribute("stacktrace", ExceptionUtils.getStackTrace(new Exception()))
+                .startSpan();
+        try (Scope scope = span.makeCurrent()) {
+            String runner = this.getName();
+            ReadyRunnable timeKeeper = new ReadyRunnable() {
+                @Override
+                public boolean isReady() {
+                    return getCurrentTime() >= timeToRun && runnable.isReady();
+                }
+
+                @Override
+                public void run() {
+                    Span currentSpan = Span.current();
+                    SpanBuilder builder  = m_tracer.spanBuilder(m_name + " " + getClass().getSimpleName() + " run")
+                            .setNoParent()
+                            .addLink(span.getSpanContext(), Attributes.builder().put("parent", "scheduler").build())
+                            .setAttribute("stacktrace", ExceptionUtils.getStackTrace(new Exception()))
+                            .setAttribute("runner", runner)
+                            .setAttribute("runnable", runnable.toString())
+                            .setAttribute("name", m_name)
+                            .setAttribute("run_delay", ((double) System.currentTimeMillis() - timeToRun) / 1000);
+                    if (currentSpan.getSpanContext().isValid()) {
+                        builder = builder.addLink(currentSpan.getSpanContext(), Attributes.builder().put("parent", "runner").build());
+                    }
+                    Span innerSpan = builder.startSpan();
+                    try (Scope scope = innerSpan.makeCurrent()) {
+                        runnable.run();
+                    } finally {
+                        innerSpan.end();
+                    }
+                }
+
+                @Override
+                public String toString() {
+                    return runnable.toString() + " (ready in " + Math.max(0, timeToRun - getCurrentTime()) + "ms)";
+                }
+            };
+            schedule(timeKeeper, interval);
+        } finally {
+            span.end();
+        }
     }
     
     /* (non-Javadoc)
