@@ -5,6 +5,7 @@
 ** xref:quick-start/users.adoc[]
 ** xref:quick-start/notifications.adoc[]
 ** xref:quick-start/inventory.adoc[]
+** xref:quick-start/performance-data.adoc[]
 
 * xref:deep-dive/introduction.adoc[]
 

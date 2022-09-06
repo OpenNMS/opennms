@@ -1,5 +1,5 @@
 
-= Step 3: Set Up Performance Data Collection
+= Step 4: Set Up Performance Data Collection
 
 This section describes how to set up performance data collection in {page-component-title}.
 
@@ -31,8 +31,6 @@ By default, {page-component-title} collects a large variety of information from 
 This information includes widely-implemented metrics that are standard for MIB-2 sources (for example, TCP group data, network interface counters).
 SNMP data collection definitions are also included for devices from a range of popular vendors (for example, if you add a Cisco router to your instance, {page-component-title} will automatically collect Cisco-specific metrics).
 The metrics included in these collections vary by vendor.
-
-// Where they can see what's collected by default, and how to access it.
 
 == SNMP collections and data collection groups
 
