@@ -1,39 +1,39 @@
 jobs:
-    sentinel-deb-build:
-        executor: debian-build-executor
-        resource_class: xlarge
-        steps:
-            - attach_workspace:
-                  at: ~/
-            - fetch-artifacts:
-                  path: /tmp/test
-                  location: opennmsmavenartifact
-            - sign-packages/setup-env:
-                  skip_if_forked_pr: true
-                  gnupg_home: ~/tmp/gpg
-            - run:
-                  name: Extract maven keep artifacts
-                  command: |
-                      cd /tmp
-                      tar -xvf /tmp/test/maven-keep.tar.gz
-                      ls
-                      mv /tmp/tmp/maven-keep/* ~/.m2/repository/org/opennms/
-            - run:
-                  name: Build Debian Packages
-                  command: |
-                      export NODE_OPTIONS=--max_old_space_size=1024
-                      export CCI_MAXCPU=4
-                      export CCI_VAADINJAVAMAXMEM=768m
-                      export MAVEN_OPTS="-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
-                      .circleci/scripts/makedeb.sh sentinel
-            - sign-packages/sign-debs:
-                  skip_if_forked_pr: true
-                  gnupg_home: ~/tmp/gpg
-                  gnupg_key: opennms@opennms.org
-                  packages: target/debs/*.deb
-            - store_artifacts:
-                  path: ~/project/target/debs
-                  destination: debs
-            - cache-workflow-assets:
-                  cache_prefix: deb-sentinel
-                  source_path: target/debs
+  sentinel-deb-build:
+    executor: debian-build-executor
+    resource_class: xlarge
+    steps:
+      - attach_workspace:
+          at: ~/
+      - fetch-artifacts:
+          path: /tmp/test
+          location: opennmsmavenartifact
+      - sign-packages/setup-env:
+          skip_if_forked_pr: true
+          gnupg_home: ~/tmp/gpg
+      - run:
+          name: Extract maven keep artifacts
+          command: |
+            cd /tmp
+            tar -xvf /tmp/test/maven-keep.tar.gz
+            ls
+            mv /tmp/tmp/maven-keep/* ~/.m2/repository/org/opennms/ 
+      - run:
+          name: Build Debian Packages
+          command: |
+            export NODE_OPTIONS=--max_old_space_size=1024
+            export CCI_MAXCPU=4
+            export CCI_VAADINJAVAMAXMEM=768m
+            export MAVEN_OPTS="-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
+            .circleci/scripts/makedeb.sh sentinel
+      - sign-packages/sign-debs:
+          skip_if_forked_pr: true
+          gnupg_home: ~/tmp/gpg
+          gnupg_key: opennms@opennms.org
+          packages: target/debs/*.deb
+      - store_artifacts:
+          path: ~/project/target/debs
+          destination: debs
+      - cache-workflow-assets:
+          cache_prefix: deb-sentinel
+          source_path: target/debs
