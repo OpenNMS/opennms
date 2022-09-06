@@ -9,7 +9,7 @@ Whether it is an MIB-2 host-resources storage table, a Brocade fibre channel por
 == Create a resourceType definition
 
 Configure data collection as normal, but with a few small differences.
-First, make sure a resourceType element exists in datacollection-config.xml to specify the custom resource type.
+First, make sure a resourceType element exists in `datacollection-config.xml` to specify the custom resource type.
 This element needs to be before the "groups" element.
 For the MIB-2 host resources storage table, we have an entry like this:
 
@@ -24,7 +24,7 @@ For the MIB-2 host resources storage table, we have an entry like this:
 *Name attribute*
 
 The name attribute ("hrStorageIndex" above) is not magical in any way; it does not need to correlate to an MIB that OpenNMS has knowledge of.
-The datacollection-config.xml file and the snmp-graph.properties file use this attribute to refer to this custom resource type.
+The `datacollection-config.xml` file and the `snmp-graph.properties` file use this attribute to refer to this custom resource type.
 
 To ensure all resource type data stays separate, all RRD data goes into a directory based on this name.
 For example, for node 1, all data for the example resource type goes into `$\{OPENNMS_HOME}/share/rrd/snmp/1/hrStorageIndex`.
