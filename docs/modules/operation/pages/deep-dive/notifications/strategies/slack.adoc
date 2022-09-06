@@ -1,5 +1,4 @@
 
-
 [[ga-notifications-strategy-slack]]
 = Slack Notifications
 
