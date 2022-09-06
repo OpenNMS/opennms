@@ -14,7 +14,7 @@ jobs:
       - run:
           name: Extract maven keep artifacts
           command: |
-            cd /tmp/tezt
+            cd /tmp
             tar -xvf /tmp/test/maven-keep.tar.gz
             ls
             mv /tmp/maven-keep/* ~/.m2/repository/org/opennms/ 
