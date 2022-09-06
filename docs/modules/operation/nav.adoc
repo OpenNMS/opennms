@@ -4,6 +4,7 @@
 * xref:quick-start/introduction.adoc[]
 ** xref:quick-start/users.adoc[]
 ** xref:quick-start/notifications.adoc[]
+** xref:quick-start/inventory.adoc[]
 
 * xref:deep-dive/introduction.adoc[]
 
@@ -16,11 +17,12 @@
 *** xref:deep-dive/user-management/pre-authentication.adoc[]
 
 ** xref:deep-dive/provisioning/introduction.adoc[]
-*** xref:deep-dive/provisioning/getting-started.adoc[]
-*** xref:deep-dive/provisioning/adapters.adoc[]
-*** xref:deep-dive/provisioning/detectors.adoc[]
-*** xref:deep-dive/provisioning/policies.adoc[]
-*** xref:deep-dive/provisioning/import-handler.adoc[]
+*** xref:deep-dive/provisioning/configuration.adoc[]
+**** xref:deep-dive/provisioning/foreign-source.adoc[]
+**** xref:deep-dive/provisioning/adapters.adoc[]
+**** xref:deep-dive/provisioning/detectors.adoc[]
+**** xref:deep-dive/provisioning/policies.adoc[]
+**** xref:deep-dive/provisioning/import-handler.adoc[]
 *** xref:deep-dive/provisioning/directed-discovery.adoc[]
 *** xref:deep-dive/provisioning/auto-discovery.adoc[]
 *** xref:deep-dive/provisioning/integration.adoc[]

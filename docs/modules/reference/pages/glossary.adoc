@@ -70,7 +70,7 @@ xref:operation:deep-dive/flows/introduction.adoc[Flows]:: Summaries of network t
 
 Foreign source:: A data source hosted outside of your local network.
 To customize monitoring of nodes in a foreign source, you can set a foreign source definition with your desired detectors and policies.
-(See xref:operation:deep-dive/provisioning/getting-started.adoc#foreign-source-definition[Foreign Source Definition].)
+(See xref:operation:deep-dive/provisioning/foreign-source.adoc[Foreign Source Definition].)
 
 Geolocation:: The actual physical location of a node monitored by {page-component-title}.
 Nodes can be manually assigned a location, or the location can be automatically determined using the xref:reference:provisioning/adapters/geoip.adoc[GeoIP Provisioning Adapter].
@@ -179,7 +179,7 @@ RMI integration lets you access a remote Horizon and/or Meridian instance for mo
 
 Requisitions:: Sets of nodes to import into {page-component-title} for monitoring and management.
 You can build requisitions iteratively and import them at a later date.
-(See xref:operation:deep-dive/provisioning/getting-started.adoc#requisition-create[Create a Requisition].)
+(See xref:operation:quick-start/inventory.adoc#requisition-create[Create a Requisition].)
 
 Resource:: Any hardware or software that {page-component-title} can access.
 
@@ -196,7 +196,7 @@ Simple Mail Transfer Protocol (SMTP):: An internet standard protocol.
 (See xref:reference:service-assurance/monitors/MailTransportMonitor.adoc[MailTransportMonitor].)
 
 Simple Network Management Protocol (SNMP):: An internet standard protocol used to collect, organize, and modify information about managed devices on an IP network.
-(See xref:operation:deep-dive/provisioning/getting-started.adoc#provision-snmp-configuration[Configure SNMP for Provisioning].)
+(See xref:operation:quick-start/inventory.adoc#provision-snmp-configuration[Configure SNMP for Provisioning].)
 
 Snaps:: Self-contained software packages that run in a sandbox and have mediated access to host systems.
 Our Appliance Service uses snaps to distribute operating system packages and Minion service updates.
