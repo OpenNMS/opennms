@@ -2,9 +2,10 @@
 [[ga-notifications-introduction]]
 = Notifications
 
-{page-component-title} uses notifications to inform users about an event that happened in the network, without the user having to log in and look at the UI.
+{page-component-title} uses notifications to inform users about events that happen in the network.
+Notifications allow you to keep track of your network status without having to log in and look at the UI.
 
-Common notification methods are email and paging, but notification mechanisms also exist for:
+Notifications are commonly sent through email or a text/pager message, but mechanisms also exist for the following:
 
 * Browser-based desktop notifications
 * Arbitrary HTTP GET and POST operations
@@ -13,9 +14,18 @@ Common notification methods are email and paging, but notification mechanisms al
 * IRCcat Internet Relay Chat bot
 * SNMP traps
 * Slack, Mattermost, and other API-compatible team chat platforms
-* Twitter, GNU Social, and other API-compatible microblog services
+* Twitter, GNU social, and other API-compatible microblog services
 * User-provided scripts in any JSR-223 compatible language
 * XMPP
 
-The notification daemon Notifd creates and sends notifications according to configured rules when selected events occur in {page-component-title}.
+xref:reference:daemons/daemon-config-files/notifd.adoc[Notifd] creates and sends notifications according to configured rules when selected events occur in {page-component-title}.
 
+For a thorough understanding of notifications, you should be familiar with these core concepts:
+
+* Events and unique event identifiers (UEIs)
+* Users, groups, and on-call roles
+* Duty schedules
+* Destination paths
+* Notification commands
+
+For more information on these concepts, see xref:operation:deep-dive/notifications/concepts.adoc[Concepts].

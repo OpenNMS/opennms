@@ -3,6 +3,7 @@
 
 * xref:quick-start/introduction.adoc[]
 ** xref:quick-start/users.adoc[]
+** xref:quick-start/notifications.adoc[]
 
 * xref:deep-dive/introduction.adoc[]
 
@@ -101,7 +102,6 @@
 *** xref:deep-dive/alarms/ifttt-integration.adoc[]
 
 ** xref:deep-dive/notifications/introduction.adoc[]
-*** xref:deep-dive/notifications/getting-started.adoc[]
 *** xref:deep-dive/notifications/concepts.adoc[]
 *** xref:deep-dive/notifications/bonus-strategies.adoc[]
 **** xref:deep-dive/notifications/strategies/mattermost.adoc[]
