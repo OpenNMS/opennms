@@ -49,7 +49,7 @@ public class SchedulableExecutableGroup extends Schedulable {
     /**
      * priority for executing runnables
      */
-    private final Integer m_priority;
+    private Integer m_priority;
 
     /**
      * name under which are executed runnables
@@ -82,6 +82,12 @@ public class SchedulableExecutableGroup extends Schedulable {
     public Integer getPriority() {
         return m_priority;
     }
+
+    public void setPriority(Integer priority) {
+        m_priority = priority;
+    }
+
+
     public Set<AbstractExecutable> getExecutables() {
         return m_executables;
     }

@@ -39,7 +39,7 @@ public class SchedulableNodeCollectorGroup extends SchedulableExecutableGroup {
      *
      * @param interval the time in msec between group of collections
      * @param initial the time in msec wait before performing a collection at all
-     * @param executor the executor service that will perform the single collections
+     * @param executor the executor service that will perform the collections
      * @param priority the priority for executables
      * @param name a unique name that identifies this group
      */
