@@ -78,7 +78,7 @@ commands:
       #      # now move them back so they end up in the workspace for builds further down the workflow
       #      mv /tmp/maven-keep/* ~/.m2/repository/org/opennms/
       - save-nodejs-cache
-      - store_artifacts:
+      - save-artifacts:
           path: /tmp/maven-keep
           destination: opennmsmavenartifact
       - persist_to_workspace:
