@@ -71,7 +71,7 @@ commands:
             cd ~/.m2/repository/org/opennms
             mkdir /tmp/maven-keep
             mv $(ls -1 | grep -v -E '^(jicmp-api|jicmp6-api|jrrd-api|jrrd2-api|lib|maven)$') /tmp/maven-keep
-            tar -c -f -z -v /tmp/maven-keep.tar.gz /tmp/maven-keep
+            tar -c -f -z /tmp/maven-keep.tar.gz /tmp/maven-keep
       - save-maven-cache
       #- run:
       #    name: Restore Extra Maven Repository OpenNMS Files
