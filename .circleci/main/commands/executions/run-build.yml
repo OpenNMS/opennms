@@ -71,7 +71,8 @@ commands:
             cd ~/.m2/repository/org/opennms
             mkdir /tmp/maven-keep
             mv $(ls -1 | grep -v -E '^(jicmp-api|jicmp6-api|jrrd-api|jrrd2-api|lib|maven)$') /tmp/maven-keep
-            tar -c -z -f  /tmp/maven-keep.tar.gz /tmp/maven-keep
+            mkdir /tmp/test
+            tar -c -z -f  /tmp/test/maven-keep.tar.gz /tmp/maven-keep
       - save-maven-cache
       #- run:
       #    name: Restore Extra Maven Repository OpenNMS Files
@@ -80,7 +81,7 @@ commands:
       #      mv /tmp/maven-keep/* ~/.m2/repository/org/opennms/
       - save-nodejs-cache
       - save-artifacts:
-          path: /tmp/maven-keep.tar.gz
+          path: /tmp/test/
           location: opennmsmavenartifact
       - persist_to_workspace:
           root: ~/
