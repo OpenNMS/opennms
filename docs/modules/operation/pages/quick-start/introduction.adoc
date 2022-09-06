@@ -2,4 +2,3 @@
 = Quick Start
 
 The quick start guide assumes you have already completed the deployment steps, have installed a xref:deployment:core/introduction.adoc[{page-component-title} instance], and are able to connect to the web UI at `\http://<ip-or-fqdn-of-your-server>:8980/opennms`.
-

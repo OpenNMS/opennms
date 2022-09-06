@@ -21,6 +21,12 @@ generate_junit_report_names()
   echo "$(generate_report_names 'target/surefire-reports-'),$(generate_report_names 'target/failsafe-reports-')"
 }
 
+dnf -y remove npm nodejs-full-i18n
+dnf module reset -y nodejs
+dnf module enable -y nodejs:14
+dnf module switch-to -y nodejs:14
+dnf -y install npm nodejs-full-i18n
+
 echo "#### Executing Sonar"
 cd ~/project
 ./compile.pl sonar:sonar \
