@@ -16,15 +16,33 @@ Before adding nodes to a requisition, you must <<quick-start/inventory.adoc#requ
 . Choose menu:Provisioning[Manage Provisioning Requisition].
 . Click the *Edit* symbol beside the requisition that you want to add nodes to.
 . Click *Add Node*.
-** {page-component-title} auto-generates the foreign ID used to identify this node.
+{page-component-title} auto-generates the foreign ID used to identify this node.
 . Enter the appropriate information in each of the tabs:
 +
-* Basic information (node label, auto-generated foreign ID, location)
-* Path outage (configure network path to limit notifications from nodes behind other nodes, see <<deep-dive/service-assurance/path-outages#ga-service-assurance-path-outage, Path Outages>>)
-* Interfaces (add interface IP addresses and services)
-* Assets (pre-defined metadata types)
-* Categories (label/tag for type of node, e.g., routers, production, switches)
-* meta-data (customized asset information)
+[options="header", cols="1,3"]
+|===
+| Tab
+| Settings
+
+| Basic Information
+| Required: Auto-generated foreign ID, node label +
+Optional: Minion location, building, city
+
+| <<deep-dive/service-assurance/path-outages#ga-service-assurance-path-outage, Path Outage>>
+| Parent foreign source, parent foreign ID, parent node label
+
+| Interfaces
+| Interface IP addresses, description, SNMP primary, services, actions
+
+| Assets
+| Pre-defined metadata types (name, value, actions)
+
+| Categories
+| Category name for node type (for example, Routers, Production)
+
+| Meta-Data
+| Customized asset information (scope, interface, service, and so on)
+|===
 
 . Repeat for each node you want to add.
 . Click *Return* to view the list of nodes you have added.

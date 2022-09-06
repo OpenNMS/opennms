@@ -7,7 +7,7 @@ To activate the device configuration backup, you must add metadata that defines 
 
 We recommend you also add metadata to overwrite the default device configuration backup schedule.
 By default, {page-component-title} never schedules the device config backup (see xref:reference:service-assurance/monitors/DeviceConfigMonitor.adoc[Device Config Monitor] for details).
-It is still possible to retrieve backups on demand by using the Web UI or the REST services.
+It is still possible to retrieve backups on demand by using the web UI or the REST services.
 Specify a backup schedule in the form of a cron expression to overwrite default behavior.
 To prevent all devices fetching the configuration at the same time, it is better to space out the schedule.
 For example, `0 0 0 * * ?` runs every 24 hrs at 12:00 a.m., and `0 0 1 * * ?` runs every 24 hrs at 1:00 a.m.
@@ -23,9 +23,10 @@ If you want to enable device config backup on existing nodes in a requisition, s
 +
 For example, you can use `DeviceConfig-running` to specify a configuration that the device currently has while running.
 +
-The UI displays this as "Running Configuration".
+The UI displays this as "Running Configuration."
 +
-For `DeviceConfig-running-xml`, the UI displays "Running Xml Configuration".
+For `DeviceConfig-running-xml`, the UI displays "Running Xml Configuration."
+
 . Click *Add Meta-Data*, and define the following key-value pairs:
 .. `dcb:username`: username for the device. This can also be an xref:operation:deep-dive/meta-data.adoc#ga-metadata-scv[SCV metadata expression].
 .. `dcb:password`: password for the device. This can also be an SCV metadata expression.
