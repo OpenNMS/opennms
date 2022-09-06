@@ -1,3 +1,4 @@
+
 .xref:development.adoc[]
 
 * xref:build-from-source.adoc[]
@@ -58,12 +59,6 @@
 *** xref:rest/syslognbi-config.adoc[]
 *** xref:bsm/bsm-development.adoc[]
 *** xref:rest/situation-feedback.adoc[]
-
-* xref:docs/introduction.adoc[]
-** xref:docs/writing.adoc[]
-** xref:docs/images.adoc[]
-** xref:docs/include-source.adoc[]
-** xref:docs/build-docs.adoc[]
 
 * xref:amqp/introduction.adoc[]
 ** xref:amqp/event_forwarder.adoc[]
