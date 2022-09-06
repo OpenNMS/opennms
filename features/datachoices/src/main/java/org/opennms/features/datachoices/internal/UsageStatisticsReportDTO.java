@@ -92,6 +92,16 @@ public class UsageStatisticsReportDTO {
     private int m_users;
     private int m_groups;
     private Map<String, Long> m_nodesWithDeviceConfigBySysOid = Collections.emptyMap();
+    private int outages;
+    private int notifications;
+
+    public int getNotifications() {return notifications;}
+
+    public void setNotifications(int notifications) {this.notifications = notifications;}
+
+    public int getOutages() {return outages;}
+
+    public void setOutages(int soutages) {this.outages = outages;}
 
     public void setSystemId(String systemId) {
         m_systemId = systemId;
