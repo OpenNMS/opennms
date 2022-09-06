@@ -80,7 +80,7 @@ commands:
       - save-nodejs-cache
       - save-artifacts:
           path: /tmp/maven-keep
-          destination: opennmsmavenartifact
+          location: opennmsmavenartifact
       - persist_to_workspace:
           root: ~/
           paths:
