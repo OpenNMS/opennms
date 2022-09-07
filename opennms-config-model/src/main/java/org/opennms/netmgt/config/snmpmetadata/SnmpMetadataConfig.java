@@ -45,7 +45,7 @@ import org.opennms.core.xml.ValidateUsing;
 @ValidateUsing("snmp-metadata-adapter-configuration.xsd")
 public class SnmpMetadataConfig {
     @XmlAttribute(name = "resultsBehavior")
-    private String resultsBehavior = "";
+    private String resultsBehavior = "replace";
 
     @XmlElement(name = "config")
     private List<Config> configs = new ArrayList<>();
