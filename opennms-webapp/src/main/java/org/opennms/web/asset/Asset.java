@@ -210,6 +210,12 @@ public class Asset extends Object {
 
     protected String rackunitheight ="";
 
+    protected String guacdhostname = "";
+    protected Integer guacdport = -1;
+    protected Integer vncport = -1;
+    protected String vncusername = "";
+    protected String vncpassword = "";
+
     /**
      * <p>Getter for the field <code>rackunitheight</code>.</p>
      *
@@ -1555,6 +1561,66 @@ public class Asset extends Object {
         }        
       }
 
+    public String getGuacdhostname() {
+        return guacdhostname;
+    }
+
+    public void setGuacdhostname(String guacdhostname) {
+        if (guacdhostname != null) {
+            this.guacdhostname = guacdhostname;
+        } else {
+            this.guacdhostname = "";
+        }
+    }
+
+    public Integer getGuacdport() {
+        return guacdport;
+    }
+
+    public void setGuacdport(Integer guacdport) {
+        if (guacdport != null) {
+            this.guacdport = guacdport;
+        } else {
+            this.guacdport = -1;
+        }
+    }
+
+    public Integer getVncport() {
+        return vncport;
+    }
+
+    public void setVncport(Integer vncport) {
+        if (vncport != null) {
+            this.vncport = vncport;
+        } else {
+            this.vncport = -1;
+        }
+    }
+
+    public String getVncusername() {
+        return vncusername;
+    }
+
+    public void setVncusername(String vncusername) {
+        if (vncusername != null) {
+            this.vncusername = vncusername;
+        } else {
+            this.vncusername = "";
+        }
+    }
+
+    public String getVncpassword() {
+        return vncpassword;
+    }
+
+    public void setVncpassword(String vncpassword) {
+        if (vncpassword != null) {
+            this.vncpassword = vncpassword;
+        } else {
+            this.vncpassword = "";
+        }
+    }
+
     /**
      * <p>Getter for the field <code>ram</code>.</p>
      *
@@ -1706,6 +1772,16 @@ public class Asset extends Object {
         builder.append(snmpcommunity);
         builder.append(", rackunitheight=");
         builder.append(rackunitheight);
+        builder.append(", guacdhostname=");
+        builder.append(guacdhostname);
+        builder.append(", guacdport=");
+        builder.append(guacdport);
+        builder.append(", vncport=");
+        builder.append(vncport);
+        builder.append(", vncusername=");
+        builder.append(vncusername);
+        builder.append(", vncpassword=");
+        builder.append(vncpassword);
         builder.append("]");
         return builder.toString();
     }

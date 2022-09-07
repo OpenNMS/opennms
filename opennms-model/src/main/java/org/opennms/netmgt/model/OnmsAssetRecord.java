@@ -378,6 +378,13 @@ public class OnmsAssetRecord implements Serializable {
 
     private OnmsGeolocation m_geolocation = new OnmsGeolocation();
 
+    private String m_guacdHostname;
+    private Integer m_guacdPort;
+
+    private Integer m_vncPort;
+    private String m_vncUsername;
+    private String m_vncPassword;
+
     /**
      * default constructor
      */
@@ -1656,6 +1663,50 @@ public class OnmsAssetRecord implements Serializable {
             m_geolocation.setLatitude(latitude);
     }
 
+    @Column(name = "guacdhostname")
+    public String getGuacdHostname() {
+        return m_guacdHostname;
+    }
+
+    public void setGuacdHostname(String guacdHostname) {
+        this.m_guacdHostname = guacdHostname;
+    }
+
+    @Column(name = "guacdport")
+    public Integer getGuacdPort() {
+        return m_guacdPort;
+    }
+
+    public void setGuacdPort(Integer guacdPort) {
+        this.m_guacdPort = guacdPort;
+    }
+
+    @Column(name = "vncport")
+    public Integer getVncPort() {
+        return m_vncPort;
+    }
+
+    public void setVncPort(Integer vncPort) {
+        this.m_vncPort = vncPort;
+    }
+
+    @Column(name = "vncusername")
+    public String getVncUsername() {
+        return m_vncUsername;
+    }
+
+    public void setVncUsername(String vncUsername) {
+        this.m_vncUsername = vncUsername;
+    }
+
+    @Column(name = "vncpassword")
+    public String getVncPassword() {
+        return m_vncPassword;
+    }
+
+    public void setVncPassword(String m_vncPassword) {
+        this.m_vncPassword = m_vncPassword;
+    }
 
     /**
      * {@inheritDoc}
@@ -1725,6 +1776,11 @@ public class OnmsAssetRecord implements Serializable {
         .add("admin", getAdmin())
         .add("snmpcommunity", getSnmpcommunity())
         .add("rackunitheight", getRackunitheight())
+        .add("guacdhostname", getGuacdHostname())
+        .add("guacdport", getGuacdPort())
+        .add("vncport", getGuacdPort())
+        .add("vncusername", getVncUsername())
+        .add("vncpassword", getVncPassword())
         .toString();
     }
 

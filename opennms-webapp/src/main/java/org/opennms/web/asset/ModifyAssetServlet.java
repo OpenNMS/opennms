@@ -201,6 +201,11 @@ public class ModifyAssetServlet extends HttpServlet {
         asset.setAdmin(getRequestParameter(request, "admin"));
         asset.setSnmpcommunity(getRequestParameter(request, "snmpcommunity"));
         asset.setRackunitheight(getRequestParameter(request, "rackunitheight"));
+        asset.setGuacdhostname(getRequestParameter(request, "guacdhostname"));
+        asset.setGuacdport(Integer.parseInt(getRequestParameter(request, "guacdport")));
+        asset.setVncport(Integer.parseInt(getRequestParameter(request, "vncport")));
+        asset.setVncusername(getRequestParameter(request, "vncusername"));
+        asset.setVncpassword(getRequestParameter(request, "vncpassword"));
 
         asset.setUserLastModified(request.getRemoteUser());
         asset.setLastModifiedDate(new Date());

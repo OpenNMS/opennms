@@ -70,10 +70,7 @@
     <jsp:param name="title" value="Remote Desktop"/>
     <jsp:param name="headTitle" value="Remote Desktop"/>
     <jsp:param name="headTitle" value="Node Management"/>
-    <jsp:param name="headTitle" value="Admin"/>
     <jsp:param name="location" value="Node Management"/>
-    <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>"/>
-    <jsp:param name="breadcrumb" value="<a href='admin/nodemanagement/index.jsp?node=<%=nodeId%>'>Node Management</a>"/>
     <jsp:param name="breadcrumb" value="Remote Desktop"/>
 </jsp:include>
 
@@ -83,9 +80,6 @@
 
         const protocolValue = document.getElementById("rdRrotocolSelect").value;
         const ipAddressValue = document.getElementById("ipAddressSelect").value;
-
-        console.log("protocolValue: " + protocolValue);
-        console.log("ipAddressValue: " + ipAddressValue);
 
         window.location.href="admin/nodemanagement/remoteDesktop.jsp?node=<%=nodeId%>&protocol=" + protocolValue + "&ipAddress=" + ipAddressValue;
     }

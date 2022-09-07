@@ -474,6 +474,46 @@
               ]
             }
           ]
+        },
+        {
+          "class": "col-md-6",
+          "panels": [
+            {
+              "title": "Guacamole Remote Desktop",
+              "fields": [
+                {
+                  "label": "Guacd Hostname",
+                  "tooltip": "The hostname of the running Guacd instance",
+                  "model": "guacdHostname",
+                  "type": "text"
+                },
+                {
+                  "label": "Guacd Port",
+                  "tooltip": "The port of the running Guacd instance",
+                  "model": "guacdPort",
+                  "type": "text"
+                },
+                {
+                  "label": "VNC Port",
+                  "tooltip": "The port of the running VNC service running on the node",
+                  "model": "vncPort",
+                  "type": "text"
+                },
+                {
+                  "label": "VNC Username",
+                  "tooltip": "The username configured to connect to VNC",
+                  "model": "vncUsername",
+                  "type": "text"
+                },
+                {
+                  "label": "VNC Password",
+                  "tooltip": "The password configured to connect to VNC",
+                  "model": "vncPassword",
+                  "type": "password"
+                }
+              ]
+            }
+          ]
         }
       ]
     },

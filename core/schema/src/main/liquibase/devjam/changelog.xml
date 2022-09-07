@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+    <changeSet author="tbigg" id="devjam-guacamole">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="assets" columnName="vncpassword"/>
+            </not>
+        </preConditions>
+
+        <addColumn tableName="assets">
+            <column name="guacdhostname" type="varchar(32)"/>
+            <column name="guacdport" type="integer"/>
+            <column name="vncport" type="integer"/>
+            <column name="vncusername" type="varchar(32)"/>
+            <column name="vncpassword" type="varchar(32)"/>
+        </addColumn>
+
+        <rollback>
+            <dropColumn tableName="assets" columnName="guacdhostname"/>
+            <dropColumn tableName="assets" columnName="guacdport"/>
+            <dropColumn tableName="assets" columnName="vncport"/>
+            <dropColumn tableName="assets" columnName="vncusername"/>
+            <dropColumn tableName="assets" columnName="vncpassword"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

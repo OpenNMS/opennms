@@ -76,15 +76,20 @@
     <jsp:param name="headTitle" value="<%=protocolString%>"/>
     <jsp:param name="headTitle" value="Remote Desktop"/>
     <jsp:param name="headTitle" value="Node Management"/>
-    <jsp:param name="headTitle" value="Admin"/>
     <jsp:param name="location" value="Node Management"/>
-    <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>"/>
     <jsp:param name="breadcrumb" value="<%=protocolString%>"/>
 </jsp:include>
 
+<style>
+    .displayContainer {
+        display: flex;
+        justify-content: center;
+    }
+</style>
+
 <h3>Node: <%=node_db.getLabel()%></h3>
 
-<div id="display"></div>
+<div class="displayContainer" id="display"></div>
 
 <script type="text/javascript">
     'use strict';var Guacamole=Guacamole||{};Guacamole.ArrayBufferReader=function(b){var a=this;b.onblob=function(b){b=window.atob(b);for(var c=new ArrayBuffer(b.length),e=new Uint8Array(c),d=0;d<b.length;d++)e[d]=b.charCodeAt(d);if(a.ondata)a.ondata(c)};b.onend=function(){if(a.onend)a.onend()};this.onend=this.ondata=null};Guacamole=Guacamole||{};

@@ -39,7 +39,7 @@ import org.apache.guacamole.servlet.GuacamoleHTTPTunnelServlet;
 
 import javax.servlet.http.HttpServletRequest;
 
-public class MyGuacamoleTunnelServlet extends GuacamoleHTTPTunnelServlet {
+public class GuacamoleTunnelServlet extends GuacamoleHTTPTunnelServlet {
 
     private static final String HEADER_CONNECTION_PROTOCOL = "X-Connection-Protocol";
     private static final String HEADER_CONNECTION_HOSTNAME = "X-Connection-Hostname";

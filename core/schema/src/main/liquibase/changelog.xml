@@ -108,4 +108,8 @@
 	<include file="stored-procedures/dropTriggerIfExists.xml" />
 	<include file="stored-procedures/generate_daily_series.xml"/>
 
+
+	<!--	todo: change this folder to something else -->
+	<include file="devjam/changelog.xml"/>
+
 </databaseChangeLog>

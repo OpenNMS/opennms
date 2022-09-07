@@ -679,7 +679,7 @@
   <servlet>
     <description>Guacamole Tunnel Servlet.</description>
     <servlet-name>guacamoleTunnel</servlet-name>
-    <servlet-class>org.opennms.web.guacamole.MyGuacamoleTunnelServlet</servlet-class>
+    <servlet-class>org.opennms.web.guacamole.GuacamoleTunnelServlet</servlet-class>
   </servlet>
 
   <!-- Servlet mappings for user account self-service -->
