@@ -86,8 +86,6 @@ public abstract class OffHeapDataBlock<T> implements DataBlock<T> {
         this.deserializer = Objects.requireNonNull(deserializer);
         this.queueSize = queueSize;
 
-        LOG.warn("serdesPool size: {}", serdesPool.getPoolSize());
-
         if (data == null) {
             this.restore = false;
             this.name = System.nanoTime() + "_" + new Random().nextInt(1000);
@@ -182,7 +180,7 @@ public abstract class OffHeapDataBlock<T> implements DataBlock<T> {
                 byte[] serializedBatch = new SerializedBatch(serializedMessages).toBytes();
 
                 this.writeData(name, serializedBatch);
-                if(LOG.isDebugEnabled()) {
+                if (LOG.isDebugEnabled()) {
                     LOG.debug("flushToDisk writeData: {} size: {} time: {}", name, serializedBatch.length,
                             (System.currentTimeMillis() - start));
                 }
@@ -228,7 +226,9 @@ public abstract class OffHeapDataBlock<T> implements DataBlock<T> {
         var tmpQueue = queue = new ArrayBlockingQueue<>(this.queueSize, true);
         long start = System.currentTimeMillis();
         byte[] serializedBatchBytes = this.loadData(name);
-        LOG.debug("toMemory loadData: {} time: {}", name, (System.currentTimeMillis() - start));
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("toMemory loadData: {} time: {}", name, (System.currentTimeMillis() - start));
+        }
         if (serializedBatchBytes == null) {
             LOG.error("Data not found for name: {}", name);
             return;
