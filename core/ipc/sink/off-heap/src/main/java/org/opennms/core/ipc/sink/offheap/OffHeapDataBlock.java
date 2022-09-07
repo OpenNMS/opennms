@@ -145,6 +145,7 @@ public abstract class OffHeapDataBlock<T> implements DataBlock<T> {
                             ((OffHeapDataBlock<T>) nextDataBlock).enableQueue();
                         } catch (ReadFailedException | InterruptedException e) {
                             LOG.error("Fail to notify next block.");
+                            Thread.currentThread().interrupt();
                         }
                     }
             );
@@ -180,9 +181,11 @@ public abstract class OffHeapDataBlock<T> implements DataBlock<T> {
                                 .collect(Collectors.toList())).get();
                 byte[] serializedBatch = new SerializedBatch(serializedMessages).toBytes();
 
-                LOG.warn("flushToDisk convert: {} time: {}", name, (System.currentTimeMillis() - start));
                 this.writeData(name, serializedBatch);
-                LOG.warn("flushToDisk writeData: {} size: {} time: {}", name, serializedBatch.length, (System.currentTimeMillis() - start));
+                if(LOG.isDebugEnabled()) {
+                    LOG.debug("flushToDisk writeData: {} size: {} time: {}", name, serializedBatch.length,
+                            (System.currentTimeMillis() - start));
+                }
 
                 offHeapQueueSize = queue.size();
                 queue = null;

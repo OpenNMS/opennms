@@ -72,7 +72,7 @@ public class LinkedBlockOffHeapQueueTest {
     @Test
     public void canQueueAndDequeue() throws IOException, WriteFailedException, InterruptedException, QueueCreateFailedException, ReadFailedException {
         LinkedBlockOffHeapQueue<String> queue = new LinkedBlockOffHeapQueue<>(String::getBytes, String::new,
-                "canQueueAndDequeue", Paths.get(folder.newFolder().toURI()), 1, 1, 10000);
+                "canQueueAndDequeue", Paths.get(folder.newFolder().toURI()), 1, 1, 1000_000_000L);
 
         // Since size is 1, the first entry should be in-memory and the second entry should be on disk
         String payload1 = "msg1";
@@ -98,7 +98,7 @@ public class LinkedBlockOffHeapQueueTest {
     public void canRestoreOffHeapBlock() throws IOException, WriteFailedException, InterruptedException, QueueCreateFailedException, ReadFailedException {
         Path offHeapPath = Paths.get(folder.newFolder().toURI());
         LinkedBlockOffHeapQueue<String> queue = new LinkedBlockOffHeapQueue<>(String::getBytes, String::new,
-                "canQueueAndDequeue", offHeapPath, 4, 2, 10000);
+                "canQueueAndDequeue", offHeapPath, 4, 2, 1000_000_000L);
 
         // Since size is 1, the first entry should be in-memory and the second entry should be on disk
         for (int i = 0; i < 11; i++) {
@@ -106,9 +106,9 @@ public class LinkedBlockOffHeapQueueTest {
             queue.enqueue(payload, "key" + i);
         }
 
-        assertThat(queue.getSize(), equalTo(11));
-        assertThat(queue.getOffHeapBlocks(), equalTo(4));
-        assertThat(queue.getMemoryBlocks(), equalTo(2));
+        assertThat(11, equalTo(queue.getSize()));
+        assertThat(4, equalTo(queue.getOffHeapBlocks()));
+        assertThat(2, equalTo(queue.getMemoryBlocks()));
         //give time to flush all data
         Thread.sleep(1000L);
         queue.shutdown();
@@ -116,13 +116,13 @@ public class LinkedBlockOffHeapQueueTest {
                 "canQueueAndDequeue", offHeapPath, 2, 2, 10000);
 
         // it will lose 2 block in memory & 1 unfinished offheap block due to not persist yet
-        assertThat(newQueue.getSize(), equalTo(6));
+        assertThat(6, equalTo(newQueue.getSize()));
 
-        assertThat(newQueue.getOffHeapBlocks(), equalTo(3));
+        assertThat(3, equalTo(newQueue.getOffHeapBlocks()));
         for (int i = 4; i < 10; i++) {
-            assertThat(newQueue.dequeue().getValue(), equalTo("msg" + i));
+            assertThat("msg" + i, equalTo(newQueue.dequeue().getValue()));
         }
-        assertThat(newQueue.getSize(), equalTo(0));
+        assertThat(0, equalTo(newQueue.getSize()));
     }
 
     class Enqueue implements Runnable {
@@ -184,7 +184,7 @@ public class LinkedBlockOffHeapQueueTest {
     @Test
     public void checkDeadlock() throws IOException, QueueCreateFailedException {
         DispatchQueue<String> queue = new LinkedBlockOffHeapQueue<>(String::getBytes, String::new,
-                "checkDeadlock", Paths.get(folder.newFolder().toURI()), 10000, 1000, 100000);
+                "checkDeadlock", Paths.get(folder.newFolder().toURI()), 10000, 1000, 1000_000_000L);
         int itemPerThread = 50000;
         int writeThread = 20;
         int readThread = 20;
@@ -205,7 +205,7 @@ public class LinkedBlockOffHeapQueueTest {
         }
 
         await().atMost(10, TimeUnit.SECONDS).until(() -> {
-            System.out.println("deQueueDataCounter: " + deQueueDataCounter.get() + " queue " + queue.getSize());
+            System.out.println("deQueueDataCounter: " + deQueueDataCounter.get() + " queue size: " + queue.getSize());
             return (deQueueDataCounter.get() > 0 && deQueueExecutor.getActiveCount() == 0) || deQueueDataCounter.get() == writeThread * itemPerThread;
         }, equalTo(true));
         System.out.println("Time spent: " + (System.currentTimeMillis() - start));
@@ -257,32 +257,17 @@ public class LinkedBlockOffHeapQueueTest {
             }
         });
 
-        try {
-            await().atMost(30, TimeUnit.SECONDS).until(() -> {
-                //System.out.println(String.format("dequeue: %s toqueue: %s queueSize: %s", dequeued.size(), toQueue.size(), queue.getSize()));
-                return dequeued;
-            }, equalTo(toQueue));
-        } catch (Exception e) {
-            //System.out.println(e.getMessage());
-            //System.out.println("FAIL !!!! size not matching!!!");
-            //e.printStackTrace();
-        }
-//        await().atMost(15, TimeUnit.SECONDS).until(() -> {
-//            //System.out.println(String.format("dequeue: %s toqueue: %s queueSize: %s",dequeued.size(), toQueue.size(), queue.getSize()));
-//            return dequeued;
-//        }, equalTo(toQueue));
-//
 
+        await().atMost(30, TimeUnit.SECONDS).until(() -> dequeued, equalTo(toQueue));
 
         toQueue.removeAll(dequeued);
-        //toQueue.removeAll(dequeued);
         assertEquals(new ArrayList<>(), toQueue);
     }
 
     @Test
     public void dequeuesInOrder() throws IOException, WriteFailedException, InterruptedException, QueueCreateFailedException, ReadFailedException {
         DispatchQueue<String> queue = new LinkedBlockOffHeapQueue<>(String::getBytes, String::new,
-                "dequeuesInOrder", Paths.get(folder.newFolder().toURI()), 10, 10, 10_000_000);
+                "dequeuesInOrder", Paths.get(folder.newFolder().toURI()), 10, 10, 1000_000_000L);
 
         int numEntries = 10020;
         List<String> toQueue = IntStream.range(0, numEntries)
@@ -303,7 +288,6 @@ public class LinkedBlockOffHeapQueueTest {
             dequeued.add(queue.dequeue().getValue());
         }
 
-
         List<String> diff = new ArrayList<>(toQueue);
         diff.removeAll(dequeued);
 
@@ -314,7 +298,7 @@ public class LinkedBlockOffHeapQueueTest {
     @Test
     public void blocksWhenEmpty() throws IOException, WriteFailedException, QueueCreateFailedException {
         DispatchQueue<String> queue = new LinkedBlockOffHeapQueue<>(String::getBytes, String::new,
-                "blocksWhenEmpty", Paths.get(folder.newFolder().toURI()), 1, 1, 10000);
+                "blocksWhenEmpty", Paths.get(folder.newFolder().toURI()), 1, 1, 1000_000_000L);
 
         AtomicReference<String> atomicString = new AtomicReference<>(null);
         AtomicBoolean receivedValue = new AtomicBoolean(false);
@@ -344,59 +328,42 @@ public class LinkedBlockOffHeapQueueTest {
                 .atMost(1, TimeUnit.SECONDS)
                 .until(() -> Objects.equals(payload, atomicString.get()));
     }
-//
-//    @Test
-//    public void blocksWhenFull() throws WriteFailedException, IOException, InterruptedException {
-//        LinkedBlockOffHeapQueue<byte[]> queue = new LinkedBlockOffHeapQueue<>(b -> b, b -> b,
-//                "blocksWhenFull", Paths.get(folder.newFolder().toURI()), 1, 1, 300);
-//
-//        // Fill the in-memory queue and the file and force a file check
-//        queue.enqueue(new byte[0], "key1");
-//        queue.enqueue(new byte[10], "key2");
-//        queue.checkFileSize();
-//
-//        AtomicBoolean didQueue = new AtomicBoolean(false);
-//
-//        CompletableFuture.runAsync(() -> {
-//            // Now try to queue again and verify that we block
-//            try {
-//                queue.enqueue(new byte[1], "key3");
-//                didQueue.set(true);
-//            } catch (WriteFailedException e) {
-//                throw new RuntimeException(e);
-//            }
-//        });
-//
-//        try {
-//            await().pollDelay(10, TimeUnit.MILLISECONDS)
-//                    .atMost(100, TimeUnit.MILLISECONDS)
-//                    .until(didQueue::get);
-//            fail("Dequeue happened but we should have been blocking");
-//        } catch (ConditionTimeoutException expected) {
-//        }
-//
-//        // Now dequeue which should free up space in the file
-//        queue.dequeue();
-//        queue.dequeue();
-//        queue.checkFileSize();
-//
-//        await().atMost(1, TimeUnit.SECONDS).until(didQueue::get);
-//    }
 
-//    @Test
-//    public void recoversFromCorruptFile() throws IOException, WriteFailedException, InterruptedException {
-//        String moduleName = "recoversFromCorruptFile";
-//        File tmpFolder = folder.newFolder();
-//        File corruptfile = Paths.get(tmpFolder.getAbsolutePath(), moduleName + ".fifo").toFile();
-//        Files.write(corruptfile.toPath(), "corrupt!".getBytes());
-//        LinkedBlockOffHeapQueue<String> queue = new LinkedBlockOffHeapQueue<>(String::getBytes, String::new,
-//                moduleName, Paths.get(tmpFolder.toURI()), 1, 1, 300);
-//
-//        String payload1 = "msg1";
-//        queue.enqueue(payload1, "key1");
-//
-//        String received = queue.dequeue().getValue();
-//        assertThat(received, equalTo(payload1));
-//    }
+    @Test
+    public void blocksWhenFull() throws WriteFailedException, IOException, InterruptedException, QueueCreateFailedException {
+        Path path = Paths.get(folder.newFolder().toURI());
+        LinkedBlockOffHeapQueue<byte[]> queue = new LinkedBlockOffHeapQueue<>(b -> b, b -> b,
+                "blocksWhenFull", path, 1, 1, 1);
 
+
+        // Fill the in-memory queue and the file and force a file check
+        queue.enqueue(new byte[100], "key1");
+        queue.enqueue(new byte[100], "key2");
+
+        AtomicBoolean didQueue = new AtomicBoolean(false);
+
+        CompletableFuture.runAsync(() -> {
+            // Now try to queue again and verify that we block
+            try {
+                queue.enqueue(new byte[1], "key3");
+                didQueue.set(true);
+            } catch (WriteFailedException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        try {
+            await().pollDelay(10, TimeUnit.MILLISECONDS)
+                    .atMost(100, TimeUnit.MILLISECONDS)
+                    .until(didQueue::get);
+            fail("Dequeue happened but we should have been blocking");
+        } catch (ConditionTimeoutException expected) {
+        }
+
+        // Now dequeue which should free up space in the file
+        queue.dequeue();
+        queue.dequeue();
+
+        await().atMost(1, TimeUnit.SECONDS).until(didQueue::get);
+    }
 }

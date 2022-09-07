@@ -54,7 +54,7 @@ public class MemoryDataBlock<T> implements DataBlock<T> {
     }
 
     @Override
-    public int size() {
+    public synchronized int size() {
         return queue.size();
     }
 
@@ -64,7 +64,7 @@ public class MemoryDataBlock<T> implements DataBlock<T> {
     }
 
     @Override
-    public boolean enqueue(String key, T message) {
+    public synchronized boolean enqueue(String key, T message) {
         if (this.size() >= this.queueSize) {
             return false;
         }
@@ -72,26 +72,27 @@ public class MemoryDataBlock<T> implements DataBlock<T> {
     }
 
     @Override
-    public Map.Entry<String, T> peek() {
+    public synchronized Map.Entry<String, T> peek() {
         return queue.peek();
     }
 
     @Override
-    public Map.Entry<String, T> dequeue() throws InterruptedException {
+    public synchronized Map.Entry<String, T> dequeue() throws InterruptedException {
         return queue.take();
     }
 
     @Override
-    public void notifyNextDataBlock() throws ReadFailedException {
+    public synchronized void notifyNextDataBlock() {
         if (nextDataBlock == null) {
             return;
         }
         if (nextDataBlock instanceof OffHeapDataBlock) {
-            OffHeapDataBlock.executorService.submit(()->{
+            OffHeapDataBlock.executorService.submit(() -> {
                 try {
                     ((OffHeapDataBlock<T>) nextDataBlock).enableQueue();
                 } catch (ReadFailedException | InterruptedException e) {
                     LOG.error("Fail to call enableQueue");
+                    Thread.currentThread().interrupt();
                 }
             });
         }
