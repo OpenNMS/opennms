@@ -32,7 +32,8 @@ The provisioning adapter automatically appends the `.0` value to single-entry OI
 In some edge cases, you will need to specify the entire OID statically to retrieve a single piece of data.
 Specifying the attribute `exact="true"` allows you to specify the entire OID.
 
-There is also an optional attribute `resultsBehavior` that can be used to specify how the adapter should update the node's metadata. The table below outlines the behavior of each option:
+There is also an optional `resultsBehavior` attribute that you can use to specify how the adapter should update the node's metadata. 
+The table below outlines the behavior of each option:
 [options="header", cols="1,2"]
 |===
 | Value
