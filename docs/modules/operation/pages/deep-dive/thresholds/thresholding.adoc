@@ -19,21 +19,11 @@ You can further create notifications and alarms for threshold events.
 
 image::thresholding/thresholding-flow.png[]
 
-== What triggers a thresholding event?
+{page-component-title} uses four thresholding algorithms to trigger an event.
+See thresholding event, see xref:quick-start/thresholding.adoc[set up a threshold] in the Quick Start section for more information.
 
-{page-component-title} uses four thresholding algorithms that trigger an event when the data source value:
-
-* *Low* - equals or drops below the threshold value and re-arms when it equals or comes back up above the re-arm value (for example, available disk space falls under the specified value)
-* *High* - equals or exceeds the threshold value, and re-arms when it equals or drops below the re-arm value (for example, bandwidth use exceeds the specified amount)
-* *Absolute* - changes by the specified amount (for example, on a fiber-optic link, a change in loss of anything greater than 3 dB is a problem regardless of what the original or final value is)
-* *Relative* - changes by percent (for example, available disk space changes more than 5% from the last poll)
-
-These thresholds can be *basic* (tested against a single value) or an *expression* (evaluated against multiple values in an expression).
-
-{page-component-title} applies these algorithms against any performance data (telemetry) collected by <<deep-dive/performance-data-collection/introduction.adoc#ga-performance-mgmt,collectd>> or pushed to <<deep-dive/telemetryd/introduction.adoc#ga-telemetryd, telemetryd>>.
+{page-component-title} applies these threshold algorithms against any performance data (telemetry) collected by <<deep-dive/performance-data-collection/introduction.adoc#ga-performance-mgmt,collectd>> or pushed to <<deep-dive/telemetryd/introduction.adoc#ga-telemetryd, telemetryd>>.
 This includes, but is not limited to, metrics such as CPU load, bandwidth, disk space, and so on.
-
-NOTE: The basic walk-through focuses on how to set simple thresholds using default values in the {page-component-title} setup.
 
 For information on setting and configuring collectors, collectd, and the  _collectd-configuration.xml_ file, see <<deep-dive/performance-data-collection/introduction.adoc#performance-management, Performance Management>>.
 
