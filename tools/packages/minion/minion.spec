@@ -83,7 +83,7 @@ Prefix:         %{minioninstprefix}
 OpenNMS Minion is a container infrastructure for distributed, scalable network
 management and monitoring.
 
-http://docs.opennms.com/horizon/latest/deployment/minion/introduction.html
+https://docs.opennms.com/horizon/latest/deployment/minion/introduction.html
 
 %{extrainfo}
 %{extrainfo2}
