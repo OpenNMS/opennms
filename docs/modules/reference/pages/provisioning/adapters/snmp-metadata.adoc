@@ -42,7 +42,7 @@ The table below outlines the behavior of each option:
 | replace
 | Default behavior. The adapter will replace the node's metadata context `snmp` with the data retrieved from the node.
 
-| `update`
+| update
 | The adapter will update the node's metadata context `snmp` with the data retrieved from the node.
 
  New values will be added, existing values will be updated, and values not present in the retrieved data will be left unchanged.
