@@ -37,6 +37,7 @@
                 org.opennms.netmgt.model.OnmsNode,
                 org.opennms.web.servlet.MissingParameterException"
 %>
+<%@ page import="org.opennms.netmgt.model.OnmsAssetRecord" %>
 
 <%
     int nodeId = -1;
@@ -69,6 +70,8 @@
     if (ipAddressString == null) {
         throw new MissingParameterException("ipAddress");
     }
+
+    OnmsAssetRecord assetRecord = node_db.getAssetRecord();
 %>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
@@ -252,9 +255,35 @@
     const display = document.getElementById("display");
 
     const headers = {
+        "X-Guacd-Hostname": "<%=assetRecord.getGuacdHostname()%>",
+        "X-Guacd-Port": "<%=assetRecord.getGuacdPort()%>",
         "X-Connection-Hostname": "<%=ipAddressString%>",
         "X-Connection-Protocol": "<%=protocolString%>",
     };
+<%
+    switch (protocolString.toLowerCase()) {
+        case "vnc": {
+%>
+            headers["X-Vnc-Port"] = <%=assetRecord.getVncPort()%> ;
+            headers["X-Vnc-Username"] = <%=assetRecord.getVncUsername()%> ;
+            headers["X-Vnc-Password"] = <%=assetRecord.getVncPassword()%> ;
+<%
+            break;
+        }
+        case "rdp": {
+%>
+            console.log("RDP CONNECTION.....");
+<%
+            break;
+        }
+        case "ssh": {
+%>
+            console.log("SSH CONNECTION.....");
+<%
+            break;
+        }
+    }
+%>
 
     // Here is a more complete example of the tunnel usage.
     // https://github.com/apache/incubator-datalab/blob/4b1ec16844fefbf857071738ee94d6923fe4e447/services/self-service/src/main/resources/webapp/src/app/webterminal/webterminal.component.ts#L63

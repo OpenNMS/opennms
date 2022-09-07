@@ -28,6 +28,8 @@
 
 package org.opennms.web.guacamole;
 
+import org.apache.commons.lang3.NotImplementedException;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.GuacamoleSocket;
 import org.apache.guacamole.net.GuacamoleTunnel;
@@ -36,28 +38,91 @@ import org.apache.guacamole.net.SimpleGuacamoleTunnel;
 import org.apache.guacamole.protocol.ConfiguredGuacamoleSocket;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
 import org.apache.guacamole.servlet.GuacamoleHTTPTunnelServlet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.NotSupportedException;
+import java.text.MessageFormat;
 
 public class GuacamoleTunnelServlet extends GuacamoleHTTPTunnelServlet {
-
+    private static final Logger LOG = LoggerFactory.getLogger(GuacamoleTunnelServlet.class.getSimpleName());
+    private static final String HEADER_GUACD_HOSTNAME = "X-Guacd-Hostname";
+    private static final String HEADER_GUACD_PORT = "X-Guacd-Port";
     private static final String HEADER_CONNECTION_PROTOCOL = "X-Connection-Protocol";
     private static final String HEADER_CONNECTION_HOSTNAME = "X-Connection-Hostname";
+    private static final String HEADER_VNC_PORT = "X-Vnc-Port";
+    private static final String HEADER_VNC_USERNAME = "X-Vnc-Username";
+    private static final String HEADER_VNC_PASSWORD = "X-Vnc-Password";
+
+    private static final String DEFAULT_GUACD_HOSTNAME = "127.0.0.1";
+    private static final int DEFAULT_GUACD_PORT = 4822;
 
     @Override
     protected GuacamoleTunnel doConnect(HttpServletRequest request) throws GuacamoleException {
-        // VNC connection information
-        // parameters found here: https://guacamole.apache.org/doc/0.8.3/gug/configuring-guacamole.html
-        GuacamoleConfiguration config = new GuacamoleConfiguration();
-        config.setProtocol(request.getHeader(HEADER_CONNECTION_PROTOCOL));
-        config.setParameter("hostname", request.getHeader(HEADER_CONNECTION_HOSTNAME));
-        config.setParameter("port", "5900");
-        config.setParameter("username", "");
-        config.setParameter("password", "password");
+        GuacamoleConfiguration config = buildGuacamoleConfiguration(request);
+        InetGuacamoleSocket inetGuacamoleSocket = buildInetGuacamoleSocket(request);
 
-        // Connect to guacd, proxying a connection to the VNC server above
-        InetGuacamoleSocket inetGuacamoleSocket = new InetGuacamoleSocket("127.0.0.1", 4822);
         GuacamoleSocket socket = new ConfiguredGuacamoleSocket(inetGuacamoleSocket, config);
         return new SimpleGuacamoleTunnel(socket);
+    }
+
+    private GuacamoleConfiguration buildGuacamoleConfiguration(HttpServletRequest request) {
+
+        // https://guacamole.apache.org/doc/0.8.3/gug/configuring-guacamole.html
+        GuacamoleConfiguration config = new GuacamoleConfiguration();
+
+        String protocol = request.getHeader(HEADER_CONNECTION_PROTOCOL);
+        config.setProtocol(protocol);
+        config.setParameter("hostname", request.getHeader(HEADER_CONNECTION_HOSTNAME));
+
+        switch (protocol.toLowerCase()) {
+            case "vnc": {
+                config.setParameter("port", getHeader(request, HEADER_VNC_PORT, "5900"));
+                config.setParameter("username", getHeader(request, HEADER_VNC_USERNAME, ""));
+                config.setParameter("password", getHeader(request, HEADER_VNC_PASSWORD, ""));
+                break;
+            }
+            case "rdp": {
+                throw new NotImplementedException("Connection RDP");
+            }
+            case "ssh": {
+                throw new NotImplementedException("Connection SSH");
+            }
+            default: {
+                throw new NotSupportedException("Protocol " + protocol + " not supported");
+            }
+        }
+        return config;
+    }
+
+    private InetGuacamoleSocket buildInetGuacamoleSocket(HttpServletRequest request) throws GuacamoleException {
+        String guacdHostname = getHeader(request, HEADER_GUACD_HOSTNAME, DEFAULT_GUACD_HOSTNAME);
+        int guacdPort = getHeader(request, HEADER_GUACD_PORT, DEFAULT_GUACD_PORT);
+
+        return new InetGuacamoleSocket(guacdHostname, guacdPort);
+    }
+
+    private String getHeader(HttpServletRequest request, String header, String defaultValue) {
+        String value = request.getHeader(header);
+        if (StringUtils.isEmpty(value)) {
+            return defaultValue;
+        }
+        return value;
+    }
+
+    private int getHeader(HttpServletRequest request, String header, int defaultValue) {
+        String value = getHeader(request, header, null);
+        if (StringUtils.isEmpty(value)) {
+            return defaultValue;
+        }
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            String message = MessageFormat.format("Falling back to " +
+                    "default value {} for header value: {}:{}", defaultValue, header, value);
+            LOG.warn(message, e);
+            return defaultValue;
+        }
     }
 }
