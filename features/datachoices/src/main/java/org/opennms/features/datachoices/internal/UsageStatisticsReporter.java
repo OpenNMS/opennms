@@ -56,6 +56,8 @@ import org.opennms.netmgt.config.*;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.ApplicationDao;
+import org.opennms.netmgt.dao.api.OutageDao;
+import org.opennms.netmgt.dao.api.NotificationDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
@@ -145,7 +147,12 @@ public class UsageStatisticsReporter implements StateChangeHandler {
     private DataSourceFactoryBean m_dataSourceFactoryBean;
 
     private ApplicationDao m_applicationDao;
+    
     private boolean m_useSystemProxy = true; // true == legacy behaviour
+
+    private OutageDao m_outageDao;
+
+    private NotificationDao m_notificationDao;
 
     public synchronized void init() {
         if (m_timer != null) {
@@ -254,6 +261,9 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         usageStatisticsReport.setMonitoringLocations(m_monitoringLocationDao.countAll());
         usageStatisticsReport.setMinions(m_monitoringSystemDao.getNumMonitoringSystems(OnmsMonitoringSystem.TYPE_MINION));
         usageStatisticsReport.setApplications(m_applicationDao.countAll());
+        usageStatisticsReport.setOutages(m_outageDao.currentOutageCount());
+        usageStatisticsReport.setNotifications(m_notificationDao.countAll());
+        
         // Node statistics
         usageStatisticsReport.setNodesBySysOid(m_nodeDao.getNumberOfNodesBySysOid());
         // Karaf features
@@ -516,6 +526,13 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         m_businessServiceEdgeDao = businessServiceDao;
     }
 
+    public void setOutageDao(OutageDao outageDao){
+        m_outageDao = outageDao;
+    }
+
+    public void setNotificationDao(NotificationDao notificationDao){
+        m_notificationDao = notificationDao;
+    }
     public void setFeaturesService(FeaturesService featuresService) {
         m_featuresService = featuresService;
     }
