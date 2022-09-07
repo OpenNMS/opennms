@@ -39,7 +39,7 @@ The table below outlines the behavior of each option:
 | Value
 | Description
 
-| `replace`
+| replace
 | Default behavior. The adapter will replace the node's metadata context `snmp` with the data retrieved from the node.
 
 | `update`
