@@ -44,7 +44,7 @@ There is also an optional attribute `resultsBehavior` that can be used to specif
 | `update`
 | The adapter will update the node's metadata context `snmp` with the data retrieved from the node.
 
- New values will be  added, existing values will be updated, and values not present in the retrieved data will be left unchanged.
+ New values will be added, existing values will be updated, and values not present in the retrieved data will be left unchanged.
 
  NOTE: This behavior can leave old values in the metadata context if the retrieved data does not contain the same keys.
 |===
