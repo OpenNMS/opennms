@@ -1,4 +1,15 @@
 
+[[metric-collect]]
+=== Determine that you are collecting the metric
+In this case, we have chosen a metric (number of logged-in users) that is collected by default.
+We are also using data collected via SNMP. (For information on other collectors, see <<deep-dive/performance-data-collection/collectors.adoc#collectors-overview,Collectors>>.)
+
+. In the {page-component-title} UI, choose *Reports>Resource Graphs*.
+. Select one of the listed resources.
+. Under *SNMP Node Data*, select *Node-level Performance Data* and choose *Graph Selection*.
+. Scroll to find the *Number of Users* graph.
+.. You can click the binoculars icon to display only this graph.
+
 [[datasource-determine]]
 = Determine the Data Source
 Creating a threshold requires the name of the data source generating the metrics on which you want to threshold.

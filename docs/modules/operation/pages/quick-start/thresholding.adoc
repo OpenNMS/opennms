@@ -1,6 +1,35 @@
 
+= Step 5: Set up a Threshold
+
+A threshold lets you define limits against network performance metrics (CPU load, bandwidth, disk space, and so on) of a managed entity to trigger an event when a data source value goes above or below the specified limit:
+
+* High - equals or exceeds the threshold value, and re-arms when it equals or drops below the re-arm value (for example, bandwidth use exceeds the specified amount).
+* Low - equals or drops below the threshold value and re-arms when it equals or comes back up above the re-arm value (for example, available disk space falls under the specified value).
+* Absolute change - changes by the specified amount (for example, on a fiber-optic link, a change in loss of anything greater than 3 dB is a problem regardless of what the original or final value is).
+* Relative change - changes by percent (for example, available disk space changes more than 5% from the last poll).
+
+These thresholds can be *basic* (tested against a single value) or an *expression* (evaluated against multiple values in an expression).
+
+== Create a basic threshold
+
+This Quick Start describes how to create a basic threshold for a single, system-wide variable: the number of logged-in users.
+Our threshold tells {page-component-title} to create an event when the number of logged-in users on the device exceeds two, and re-arm when it falls below two.
+
+Before creating a threshold, you need to make sure you are collecting the metric against which you want to threshold.
+
+[[metric-collect]]
+=== Determine that you are collecting the metric
+In this case, we have chosen a metric (number of logged-in users) that is collected by default.
+We are also using data collected via SNMP. (For information on other collectors, see <<deep-dive/performance-data-collection/collectors.adoc#collectors-overview,Collectors>>.)
+
+. In the {page-component-title} UI, choose *Reports>Resource Graphs*.
+. Select one of the listed resources.
+. Under *SNMP Node Data*, select *Node-level Performance Data* and choose *Graph Selection*.
+. Scroll to find the *Number of Users* graph.
+.. You can click the binoculars icon to display only this graph.
+
 [[threshold-create]]
-= Create a Threshold
+=== Create threshold
 
 . Click the gear icon in the top-right.
 . Under *Performance Measurement*, choose *Configure Thresholds*.
@@ -17,7 +46,7 @@ For information on how to create a threshold group, see xref:deep-dive/threshold
 
 | Field
 | Description
-| Default
+| Input value
 
 | Type
 | Triggers an event when the data source value equals or exceeds the threshold value, and re-arms when it equals or drops below the re-arm value.
@@ -66,7 +95,7 @@ If left blank, it defaults to the standard thresholds UEIs.
 |===
 
 [[threshold-test]]
-== Test the threshold
+=== Test the threshold
 
 To test the threshold we just created, log a second person into the node you are monitoring.
 Navigate to the *Events* page.
@@ -76,8 +105,10 @@ Log out the second user.
 The *Events* page should indicate that the system has re-armed.
 
 [[thresh-cpu]]
-== Create a threshold for CPU use
-This procedure describes how to create an expression-based threshold when the five-minute CPU load average metric reaches or goes above 70% for two consecutive measurement intervals.
+== Create an expression-based threshold
+
+This procedure describes how to create an expression-based threshold for CPU use.
+It will create an event when the five-minute CPU load average metric reaches or goes above 70% for two consecutive measurement intervals.
 Expression-based thresholds are useful when you need to threshold on a percentage, not the actual value of the data collected.
 
 NOTE: Expression-based thresholds work only if the data sources in question are in the same directory.
@@ -148,3 +179,14 @@ If left blank, it defaults to the standard thresholds UEIs.
 |===
 
 . Click *Save*.
+
+== Beyond Quick Start
+
+Refer to <<deep-dive/thresholds/thresholding.adoc, Thresholding>> in the Deep Dive section for more information on thresholding, including the following:
+
+* <<deep-dive/thresholds/metadata.adoc, Using metadata in a threshold>>.
+* <<deep-dive/thresholds/thresh-group.adoc, Creating a threshold group>>.
+* <<deep-dive/thresholds/troubleshoot.adocTroubleshooting and managing thresholds>>.
+
+
+

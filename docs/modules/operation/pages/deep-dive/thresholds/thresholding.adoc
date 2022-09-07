@@ -1,11 +1,11 @@
 = Thresholding
 
-Thresholding lets you define limits against network performance metrics of a managed entity to trigger an event when a value goes above or below the specified limit.
+A threshold lets you define limits against network performance metrics of a managed entity to trigger an event when a value goes above or below the specified limit.
 
 * High
 * Low
-* Absolute Value
-* Relative Change
+* Absolute value
+* Relative change
 
 == How thresholding works in {page-component-title}
 
