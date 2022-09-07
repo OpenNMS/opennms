@@ -1,4 +1,15 @@
 commands:
+  shallow-clone:
+      description: "Quick shallow checkout"
+      steps:
+        - run:
+            name: git clone
+            command: |
+              install -d -m 700 ~/.ssh
+              ssh-keyscan github.com >> ~/.ssh/known_hosts
+              ssh-keyscan -p 443 ssh.github.com >> ~/.ssh/known_hosts
+              chmod 600 ~/.ssh/known_hosts
+              git clone --depth 20 "${CIRCLE_REPOSITORY_URL}" --branch "${CIRCLE_BRANCH}" .
   cached-checkout:
       description: "Checkout with caching"
       steps:
@@ -181,3 +192,31 @@ commands:
             fi
             cd -
 
+  fix-workspace-permissions:
+    description: fix permissions of a path to be compatible with the docker cimg `circleci` user
+    parameters:
+      path:
+        description: the path that should be fixed, relative to `~`
+        type: string
+    steps:
+      - run:
+          name: change ownership to `circleci` user in << parameters.path >>
+          command: |
+            SUDO="$(command -v sudo || :)"
+            CIRCLE_USER="$(id -u -n circleci 2>/dev/null || echo 3434)"
+            CIRCLE_GROUP="$(id -g -n circleci 2>/dev/null || echo 3434)"
+
+            cd ~
+            if [ ! -x "<< parameters.path >>" ]; then
+              echo "WARNING: << parameters.path >> does not exist, but we are trying to chown it. This is probably not great. Exiting."
+              exit 0
+            fi
+            if [ -n "$SUDO" ]; then
+              "$SUDO" chown -R "${CIRCLE_USER}:${CIRCLE_GROUP}" "<< parameters.path >>"
+              "$SUDO" chmod -R ug+rw "<< parameters.path >>"
+              "$SUDO" find "<< parameters.path >>" -type d -print0 | "$SUDO" xargs -0 chmod ug+xs
+            else
+              chown -R "${CIRCLE_USER}:${CIRCLE_GROUP}" "<< parameters.path >>"
+              chmod -R ug+rw "<< parameters.path >>"
+              find "<< parameters.path >>" -type d -print0 | xargs -0 chmod ug+xs
+            fi

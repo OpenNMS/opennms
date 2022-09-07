@@ -1,7 +1,8 @@
 jobs:
   sentinel-image-single-arch-linux-amd64:
     machine:
-      image: ubuntu-2004:202010-01
+      image: ubuntu-2204:current
+      docker_layer_caching: true
     environment:
       DOCKER_CLI_EXPERIMENTAL: enabled
     steps:

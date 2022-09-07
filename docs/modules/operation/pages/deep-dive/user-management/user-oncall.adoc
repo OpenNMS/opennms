@@ -1,30 +1,29 @@
 
 [[ga-on-call-role]]
-= On-Call Role
+= On-Call Roles
 
-The on-call roles feature lets you assign a predefined xref:deep-dive/user-management/user-config.adoc#ga-user-schedule[duty schedule] to an existing group of users.
-A common use case is to have system engineers in on-call rotations with a given schedule.
+On-call roles let you assign a predefined xref:deep-dive/user-management/user-config.adoc#ga-user-schedule[duty schedule] to an existing group of users.
+A common use case is to have system engineers in on-call rotations with a defined schedule.
 
-Each on-call role includes a user who is designated as a supervisor.
-They receive notifications when no one is on duty to receive {page-component-title} notifications.
+For each on-call role, a user is designated as a supervisor.
+They are responsible for the group of people assigned to the on-call role, and receive {page-component-title} notifications when no one else is on duty.
 The supervisor must have admin privileges.
 
 [[ga-user-on-call]]
 == Assign a group to an on-call role
 
-Before assigning a group to an on-call role, you must <<deep-dive/user-management/user-groups.adoc#ga-user-group-create, create a group>>.
+Before you can assign a group to an on-call role, you must xref:operation:deep-dive/user-management/user-groups.adoc#ga-user-group-create[create a group].
 
 . Log in as a user with admin permissions.
-. Click the gear icon at the top-right of the screen.
-. Choose menu:Configure OpenNMS[Configure Users, Groups and On-Call Roles > Configure On-Call Roles].
-. Click *Add New On-Call Role* and specify a name, supervisor, group, and description.
+. Click the *Gear* symbol at the top-right of the screen, and choose menu:Configure OpenNMS[Configure Users, Groups and On-Call Roles > Configure On-Call Roles].
+. Click *Add New On-Call Role* and specify a name, the associated group, a user to be designated as the supervisor, and a description.
+The description should be meaningful (for example, describe the team that the on-call role has been created for).
 . Click *Save*.
-. In the calendar, click the plus (*+*) icon on the day for which you want to create a schedule.
-. Specify the user, date, and time the user should be on call and click *Save*:
+. In the calendar, select a date and click the *Add* icon (*+*).
+. Specify the user and designate an on-call schedule.
+. Click *Save*.
 +
 image::users/on-call-schedule.png[]
 
-. Repeat for other days and users.
+. Repeat as necessary for other dates and users.
 . Click *Done* to apply the changes.
-
-
