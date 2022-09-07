@@ -11,6 +11,13 @@ jobs:
           skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
       - run:
+          name: Extract maven keep artifacts
+          command: |
+            cd /tmp
+            tar -xvf /tmp/test/maven-keep.tar.gz
+            ls
+            mv /tmp/tmp/maven-keep/* ~/.m2/repository/org/opennms/ 
+      - run:
           name: Build RPMs
           command: |
             export NODE_OPTIONS=--max_old_space_size=1024

@@ -15,6 +15,13 @@ jobs:
       - attach_workspace:
           at: ~/
       - run:
+          name: Extract maven keep artifacts
+          command: |
+            cd /tmp
+            tar -xvf /tmp/test/maven-keep.tar.gz
+            ls
+            mv /tmp/tmp/maven-keep/* ~/.m2/repository/org/opennms/ 
+      - run:
           name: Assemble tarballs and related artifacts
           command: |
             export MAVEN_OPTS="-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"

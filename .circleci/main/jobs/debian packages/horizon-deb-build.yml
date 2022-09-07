@@ -9,6 +9,13 @@ jobs:
           skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
       - run:
+          name: Extract maven keep artifacts
+          command: |
+            cd /tmp
+            tar -xvf /tmp/test/maven-keep.tar.gz
+            ls
+            mv /tmp/tmp/maven-keep/* ~/.m2/repository/org/opennms/ 
+      - run:
           name: Monitor memory usage
           background: true
           command: |
