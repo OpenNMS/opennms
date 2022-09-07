@@ -36,6 +36,7 @@ import org.opennms.core.ipc.sink.api.DispatchQueue;
 import org.opennms.core.ipc.sink.api.QueueCreateFailedException;
 import org.opennms.core.ipc.sink.api.ReadFailedException;
 import org.opennms.core.ipc.sink.api.WriteFailedException;
+import org.rocksdb.RocksDBException;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -64,14 +65,14 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-public class LinkedBlockOffHeapQueueTest {
+public class DataBlocksOffHeapQueueTest {
 
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
     @Test
     public void canQueueAndDequeue() throws IOException, WriteFailedException, InterruptedException, QueueCreateFailedException, ReadFailedException {
-        LinkedBlockOffHeapQueue<String> queue = new LinkedBlockOffHeapQueue<>(String::getBytes, String::new,
+        DataBlocksOffHeapQueue<String> queue = new DataBlocksOffHeapQueue<>(String::getBytes, String::new,
                 "canQueueAndDequeue", Paths.get(folder.newFolder().toURI()), 1, 1, 1000_000_000L);
 
         // Since size is 1, the first entry should be in-memory and the second entry should be on disk
@@ -84,20 +85,20 @@ public class LinkedBlockOffHeapQueueTest {
         String payload3 = "msg3";
         queue.enqueue(payload3, "key3");
 
-        assertThat(queue.getSize(), equalTo(3));
-        assertThat(queue.getMemoryBlocks(), equalTo(1));
+        assertThat(3, equalTo(queue.getSize()));
+        assertThat(1, equalTo(queue.getMemoryBlockCount()));
         // one empty block
-        assertThat(queue.getOffHeapBlocks(), equalTo(3));
+        assertThat(3, equalTo(queue.getOffHeapBlockCount()));
 
-        assertThat(queue.dequeue().getValue(), equalTo(payload1));
-        assertThat(queue.dequeue().getValue(), equalTo(payload2));
-        assertThat(queue.dequeue().getValue(), equalTo(payload3));
+        assertThat(payload1, equalTo(queue.dequeue().getValue()));
+        assertThat(payload2, equalTo(queue.dequeue().getValue()));
+        assertThat(payload3, equalTo(queue.dequeue().getValue()));
     }
 
     @Test
-    public void canRestoreOffHeapBlock() throws IOException, WriteFailedException, InterruptedException, QueueCreateFailedException, ReadFailedException {
+    public synchronized void canRestoreOffHeapBlock() throws IOException, WriteFailedException, InterruptedException, QueueCreateFailedException, ReadFailedException {
         Path offHeapPath = Paths.get(folder.newFolder().toURI());
-        LinkedBlockOffHeapQueue<String> queue = new LinkedBlockOffHeapQueue<>(String::getBytes, String::new,
+        DataBlocksOffHeapQueue<String> queue = new DataBlocksOffHeapQueue<>(String::getBytes, String::new,
                 "canQueueAndDequeue", offHeapPath, 4, 2, 1000_000_000L);
 
         // Since size is 1, the first entry should be in-memory and the second entry should be on disk
@@ -107,25 +108,25 @@ public class LinkedBlockOffHeapQueueTest {
         }
 
         assertThat(11, equalTo(queue.getSize()));
-        assertThat(4, equalTo(queue.getOffHeapBlocks()));
-        assertThat(2, equalTo(queue.getMemoryBlocks()));
+        assertThat(4, equalTo(queue.getOffHeapBlockCount()));
+        assertThat(2, equalTo(queue.getMemoryBlockCount()));
         //give time to flush all data
-        Thread.sleep(1000L);
+        this.wait(1000L);
         queue.shutdown();
-        LinkedBlockOffHeapQueue<String> newQueue = new LinkedBlockOffHeapQueue<>(String::getBytes, String::new,
+        DataBlocksOffHeapQueue<String> newQueue = new DataBlocksOffHeapQueue<>(String::getBytes, String::new,
                 "canQueueAndDequeue", offHeapPath, 2, 2, 10000);
 
         // it will lose 2 block in memory & 1 unfinished offheap block due to not persist yet
         assertThat(6, equalTo(newQueue.getSize()));
 
-        assertThat(3, equalTo(newQueue.getOffHeapBlocks()));
+        assertThat(3, equalTo(newQueue.getOffHeapBlockCount()));
         for (int i = 4; i < 10; i++) {
             assertThat("msg" + i, equalTo(newQueue.dequeue().getValue()));
         }
         assertThat(0, equalTo(newQueue.getSize()));
     }
 
-    class Enqueue implements Runnable {
+    private class Enqueue implements Runnable {
         private DispatchQueue<String> queue;
         private AtomicInteger counter;
         private int size;
@@ -152,7 +153,7 @@ public class LinkedBlockOffHeapQueueTest {
         }
     }
 
-    class Dequeue implements Runnable {
+    private class Dequeue implements Runnable {
         private DispatchQueue<String> queue;
         private AtomicInteger counter;
         private int size;
@@ -183,7 +184,7 @@ public class LinkedBlockOffHeapQueueTest {
 
     @Test
     public void checkDeadlock() throws IOException, QueueCreateFailedException {
-        DispatchQueue<String> queue = new LinkedBlockOffHeapQueue<>(String::getBytes, String::new,
+        DispatchQueue<String> queue = new DataBlocksOffHeapQueue<>(String::getBytes, String::new,
                 "checkDeadlock", Paths.get(folder.newFolder().toURI()), 10000, 1000, 1000_000_000L);
         int itemPerThread = 50000;
         int writeThread = 20;
@@ -204,7 +205,7 @@ public class LinkedBlockOffHeapQueueTest {
             futures.add(deQueueExecutor.submit(new Dequeue(String.valueOf(i), queue, deQueueDataCounter, itemPerThread, enQueueExecutor)));
         }
 
-        await().atMost(10, TimeUnit.SECONDS).until(() -> {
+        await().atMost(30, TimeUnit.SECONDS).until(() -> {
             System.out.println("deQueueDataCounter: " + deQueueDataCounter.get() + " queue size: " + queue.getSize());
             return (deQueueDataCounter.get() > 0 && deQueueExecutor.getActiveCount() == 0) || deQueueDataCounter.get() == writeThread * itemPerThread;
         }, equalTo(true));
@@ -217,7 +218,7 @@ public class LinkedBlockOffHeapQueueTest {
 
     @Test
     public void canQueueAndDequeueInParallel() throws IOException, QueueCreateFailedException {
-        DispatchQueue<String> queue = new LinkedBlockOffHeapQueue<>(String::getBytes, String::new,
+        DispatchQueue<String> queue = new DataBlocksOffHeapQueue<>(String::getBytes, String::new,
                 "canQueueAndDequeue", Paths.get(folder.newFolder().toURI()), 20, 5, 100_000_000);
 
         int numEntries = 11_111;
@@ -266,7 +267,7 @@ public class LinkedBlockOffHeapQueueTest {
 
     @Test
     public void dequeuesInOrder() throws IOException, WriteFailedException, InterruptedException, QueueCreateFailedException, ReadFailedException {
-        DispatchQueue<String> queue = new LinkedBlockOffHeapQueue<>(String::getBytes, String::new,
+        DispatchQueue<String> queue = new DataBlocksOffHeapQueue<>(String::getBytes, String::new,
                 "dequeuesInOrder", Paths.get(folder.newFolder().toURI()), 10, 10, 1000_000_000L);
 
         int numEntries = 10020;
@@ -297,7 +298,7 @@ public class LinkedBlockOffHeapQueueTest {
 
     @Test
     public void blocksWhenEmpty() throws IOException, WriteFailedException, QueueCreateFailedException {
-        DispatchQueue<String> queue = new LinkedBlockOffHeapQueue<>(String::getBytes, String::new,
+        DispatchQueue<String> queue = new DataBlocksOffHeapQueue<>(String::getBytes, String::new,
                 "blocksWhenEmpty", Paths.get(folder.newFolder().toURI()), 1, 1, 1000_000_000L);
 
         AtomicReference<String> atomicString = new AtomicReference<>(null);
@@ -330,15 +331,20 @@ public class LinkedBlockOffHeapQueueTest {
     }
 
     @Test
-    public void blocksWhenFull() throws WriteFailedException, IOException, InterruptedException, QueueCreateFailedException {
+    public synchronized void blocksWhenFull() throws WriteFailedException, IOException, InterruptedException, QueueCreateFailedException, RocksDBException {
         Path path = Paths.get(folder.newFolder().toURI());
-        LinkedBlockOffHeapQueue<byte[]> queue = new LinkedBlockOffHeapQueue<>(b -> b, b -> b,
-                "blocksWhenFull", path, 1, 1, 1);
-
+        DataBlocksOffHeapQueue<byte[]> queue = new DataBlocksOffHeapQueue<>(b -> b, b -> b,
+                "blocksWhenFull", path, 1, 1, 100, 100, 100);
 
         // Fill the in-memory queue and the file and force a file check
-        queue.enqueue(new byte[100], "key1");
-        queue.enqueue(new byte[100], "key2");
+        for(int i = 0 ; i < 100 ; i++) {
+            queue.enqueue(new byte[1000], "key" + i);
+        }
+
+        // force flush to disk
+        queue.flushOffHeap();
+        this.wait(1000L);
+        System.out.println(queue.getOffHeapFileSize());
 
         AtomicBoolean didQueue = new AtomicBoolean(false);
 

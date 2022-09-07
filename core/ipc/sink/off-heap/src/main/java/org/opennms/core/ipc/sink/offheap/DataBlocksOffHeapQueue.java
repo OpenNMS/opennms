@@ -29,13 +29,13 @@
 package org.opennms.core.ipc.sink.offheap;
 
 import com.swrve.ratelimitedlogger.RateLimitedLog;
-import org.h2.mvstore.MVStore;
 import org.opennms.core.ipc.sink.api.DispatchQueue;
 import org.opennms.core.ipc.sink.api.QueueCreateFailedException;
 import org.opennms.core.ipc.sink.api.ReadFailedException;
 import org.opennms.core.ipc.sink.api.WriteFailedException;
 import org.rocksdb.CompressionType;
 import org.rocksdb.Env;
+import org.rocksdb.FlushOptions;
 import org.rocksdb.LRUCache;
 import org.rocksdb.Options;
 import org.rocksdb.RocksDB;
@@ -59,9 +59,15 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 
-public class LinkedBlockOffHeapQueue<T> implements DispatchQueue<T> {
+/**
+ * This dispatch queue is controlled by main queue with datablocks (memory & offheap), it will append specific datablock depends on resources.
+ * serializer & deserializer will impact performance a lot. Suggest to use FST serializer.
+ *
+ * @param <T>
+ */
+public class DataBlocksOffHeapQueue<T> implements DispatchQueue<T> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(LinkedBlockOffHeapQueue.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DataBlocksOffHeapQueue.class);
     private static final RateLimitedLog RATE_LIMITED_LOGGER = RateLimitedLog
             .withRateLimit(LOG)
             .maxRate(5)
@@ -79,27 +85,32 @@ public class LinkedBlockOffHeapQueue<T> implements DispatchQueue<T> {
     // it will not include head
     private final BlockingQueue<DataBlock<T>> mainQueue;
     private DataBlock<T> tailBlock;
-    private AtomicInteger memoryBlocks = new AtomicInteger(0);
-    private AtomicInteger offHeapBlocks = new AtomicInteger(0);
+    private AtomicInteger memoryBlockCount = new AtomicInteger(0);
+    private AtomicInteger getOffHeapBlockCount = new AtomicInteger(0);
     private int inMemoryQueueSize;
-    private long offHeapQueueSize;
+    private long maxOffHeapFileSize;
 
     private RocksDB rocksdb;
     private final SstFileManager sstFileManager;
     private final Options options;
     private final LRUCache cache;
 
-    public int getMemoryBlocks() {
-        return memoryBlocks.get();
-    }
-
-    public int getOffHeapBlocks() {
-        return offHeapBlocks.get();
-    }
-
-    public LinkedBlockOffHeapQueue(Function<T, byte[]> serializer, Function<byte[], T> deserializer,
-                                   String moduleName, Path filePath, int inMemoryQueueSize, int batchSize,
-                                   long offHeapQueueSize) throws QueueCreateFailedException {
+    /**
+     * Create queue. Special notes about maxOffHeapFileSize. It is base on the actual file size. It will not include the size of journals and meta data.
+     * @param serializer (suggest to use FST)
+     * @param deserializer (suggest to use FST)
+     * @param moduleName
+     * @param filePath file path for offheap storage
+     * @param inMemoryQueueSize
+     * @param batchSize
+     * @param maxOffHeapFileSize
+     * @param writeBufferSize
+     * @param cacheSize
+     * @throws QueueCreateFailedException
+     */
+    public DataBlocksOffHeapQueue(Function<T, byte[]> serializer, Function<byte[], T> deserializer,
+                                  String moduleName, Path filePath, int inMemoryQueueSize, int batchSize,
+                                  long maxOffHeapFileSize, long writeBufferSize, long cacheSize) throws QueueCreateFailedException {
         if (inMemoryQueueSize < 1) {
             throw new IllegalArgumentException("In memory queue size must be greater than 0");
         }
@@ -108,8 +119,12 @@ public class LinkedBlockOffHeapQueue<T> implements DispatchQueue<T> {
             throw new IllegalArgumentException("In memory queue size must be a multiple of batch size");
         }
 
-        if (offHeapQueueSize < 0) {
-            throw new IllegalArgumentException("Max offheap queue size must be either 0 or a positive integer");
+        if (maxOffHeapFileSize < 0) {
+            throw new IllegalArgumentException("Max offheap file size must be either 0 or a positive integer");
+        }
+
+        if (cacheSize < 0) {
+            throw new IllegalArgumentException("Cache size must be either 0 or a positive integer");
         }
 
         this.mainQueue = new LinkedBlockingQueue<>();
@@ -118,7 +133,7 @@ public class LinkedBlockOffHeapQueue<T> implements DispatchQueue<T> {
         Objects.requireNonNull(moduleName);
         this.batchSize = batchSize;
         this.inMemoryQueueSize = inMemoryQueueSize;
-        this.offHeapQueueSize = offHeapQueueSize;
+        this.maxOffHeapFileSize = maxOffHeapFileSize;
 
         File file = Paths.get(filePath.toString(), moduleName).toFile();
 
@@ -133,14 +148,14 @@ public class LinkedBlockOffHeapQueue<T> implements DispatchQueue<T> {
         options.setEnableBlobGarbageCollection(true);
         options.setMinBlobSize(100_000L);
         options.setBlobCompressionType(CompressionType.SNAPPY_COMPRESSION);
-        options.setWriteBufferSize(100L * 1024L * 1024L);
+        options.setWriteBufferSize(writeBufferSize);
         options.setBlobFileSize(options.writeBufferSize());
         options.setTargetFileSizeBase(64L * 1024L * 1024L);
         options.setMaxBytesForLevelBase(options.targetFileSizeBase() * 10L);
 
         options.setMaxBackgroundJobs(Math.max(Runtime.getRuntime().availableProcessors(), 3));
 
-        cache = new LRUCache(512L * 1024L * 1024L, 8);
+        cache = new LRUCache(cacheSize, 8);
         options.setRowCache(cache);
 
         try {
@@ -158,6 +173,13 @@ public class LinkedBlockOffHeapQueue<T> implements DispatchQueue<T> {
         } catch (RocksDBException ex) {
             throw new QueueCreateFailedException(ex);
         }
+    }
+
+    public DataBlocksOffHeapQueue(Function<T, byte[]> serializer, Function<byte[], T> deserializer,
+                                  String moduleName, Path filePath, int inMemoryQueueSize, int batchSize,
+                                  long maxOffHeapFileSize) throws QueueCreateFailedException {
+        this(serializer, deserializer, moduleName, filePath, inMemoryQueueSize, batchSize, maxOffHeapFileSize,
+                100L * 1024L * 1024L, 512L * 1024L * 1024L);
     }
 
     /**
@@ -183,7 +205,7 @@ public class LinkedBlockOffHeapQueue<T> implements DispatchQueue<T> {
                     lastBlock.setNextDataBlock(newBlock);
                 }
                 mainQueue.add(newBlock);
-                offHeapBlocks.incrementAndGet();
+                getOffHeapBlockCount.incrementAndGet();
                 lastBlock = newBlock;
                 ite.next();
             }
@@ -192,6 +214,11 @@ public class LinkedBlockOffHeapQueue<T> implements DispatchQueue<T> {
         }
     }
 
+    /**
+     * It will create memory / offheap block base on resources
+     *
+     * @param force
+     */
     private void createDataBlock(boolean force) {
         if (!force && (tailBlock != null && tailBlock.size() < batchSize)) {
             return;
@@ -199,13 +226,13 @@ public class LinkedBlockOffHeapQueue<T> implements DispatchQueue<T> {
         DataBlock<T> newBlock;
         if (tailBlock == null || !isMemoryFull()) {
             newBlock = new MemoryDataBlock<>(batchSize);
-            memoryBlocks.incrementAndGet();
+            memoryBlockCount.incrementAndGet();
         } else {
             newBlock = new RocksDBOffHeapDataBlock<>(batchSize, serializer, deserializer, rocksdb);
-            offHeapBlocks.incrementAndGet();
+            getOffHeapBlockCount.incrementAndGet();
         }
 
-        RATE_LIMITED_LOGGER.debug("Create {}, mem: {}, disk: {}", newBlock, memoryBlocks.get(), offHeapBlocks.get());
+        RATE_LIMITED_LOGGER.debug("Create {}, mem: {}, disk: {}", newBlock, memoryBlockCount.get(), getOffHeapBlockCount.get());
 
         if (tailBlock != null) {
             this.tailBlock.setNextDataBlock(newBlock);
@@ -244,35 +271,40 @@ public class LinkedBlockOffHeapQueue<T> implements DispatchQueue<T> {
         headLock.lock();
 
         Map.Entry<String, T> data = null;
-        DataBlock<T> head;
         try {
             while (data == null) {
-                boolean headTailEqual = false;
-                if (mainQueue.peek() == tailBlock) {
-                    if (!tailLock.tryLock(1, TimeUnit.MILLISECONDS)) {
-                        continue;
-                    }
-                    headTailEqual = true;
-                }
-                head = mainQueue.peek();
-                if (head.size() > 0) {
-                    data = head.dequeue();
-                    if (headTailEqual) {
-                        tailLock.unlock();
-                    } else {
-                        removeHeadBlockIfNeeded();
-                    }
-                } else {
-                    if (headTailEqual) {
-                        tailLock.unlock();
-                    }
-                }
+                data = readData();
             }
         } catch (ReadFailedException e) {
             LOG.error("Fail to dequeue. {}", e.getMessage());
             return null;
         } finally {
             headLock.unlock();
+        }
+        return data;
+    }
+
+    private Map.Entry<String, T> readData() throws ReadFailedException, InterruptedException {
+        Map.Entry<String, T> data = null;
+        boolean headTailEqual = false;
+        if (mainQueue.peek() == tailBlock) {
+            if (!tailLock.tryLock(1, TimeUnit.MILLISECONDS)) {
+                return null;
+            }
+            headTailEqual = true;
+        }
+        var head = mainQueue.peek();
+        if (head.size() > 0) {
+            data = head.dequeue();
+            if (headTailEqual) {
+                tailLock.unlock();
+            } else {
+                removeHeadBlockIfNeeded();
+            }
+        } else {
+            if (headTailEqual) {
+                tailLock.unlock();
+            }
         }
         return data;
     }
@@ -285,31 +317,21 @@ public class LinkedBlockOffHeapQueue<T> implements DispatchQueue<T> {
                 LOG.error("Queue is modified. May have data lost");
             }
             if (head instanceof MemoryDataBlock) {
-                memoryBlocks.decrementAndGet();
+                memoryBlockCount.decrementAndGet();
             } else {
-                offHeapBlocks.decrementAndGet();
+                getOffHeapBlockCount.decrementAndGet();
             }
             mainQueue.peek().notifyNextDataBlock();
         }
     }
 
     private boolean isOffHeapFull() {
-        OffHeapDataBlock<T> lastBlock = (tailBlock instanceof OffHeapDataBlock) ? (OffHeapDataBlock) tailBlock : null;
-        long remain = offHeapQueueSize - (offHeapBlocks.get() - (lastBlock == null ? 0 : 1)) * batchSize;
-        if (remain > 0 && lastBlock == null) {
-            return false;
-        } else {
-            if (lastBlock != null) {
-                return remain - lastBlock.size() <= 0;
-            } else {
-                return true;
-            }
-        }
+        return this.sstFileManager.getTotalSize() >= this.maxOffHeapFileSize;
     }
 
     private boolean isMemoryFull() {
         MemoryDataBlock<T> lastBlock = (tailBlock instanceof MemoryDataBlock) ? (MemoryDataBlock) tailBlock : null;
-        long remain = inMemoryQueueSize - (memoryBlocks.get() - (lastBlock == null ? 0 : 1)) * batchSize;
+        int remain = inMemoryQueueSize - (memoryBlockCount.get() - (lastBlock == null ? 0 : 1)) * batchSize;
         if (remain > 0 && lastBlock == null) {
             return false;
         } else {
@@ -334,6 +356,24 @@ public class LinkedBlockOffHeapQueue<T> implements DispatchQueue<T> {
     public int getSize() {
         return mainQueue.stream().map(DataBlock::size)
                 .reduce(Integer::sum).orElse(0);
+    }
+
+    public int getMemoryBlockCount() {
+        return memoryBlockCount.get();
+    }
+
+    public int getOffHeapBlockCount() {
+        return getOffHeapBlockCount.get();
+    }
+
+    public long getOffHeapFileSize() {
+        return sstFileManager.getTotalSize();
+    }
+
+    public void flushOffHeap() throws RocksDBException {
+        try (FlushOptions fOptions = new FlushOptions()) {
+            rocksdb.flush(fOptions.setWaitForFlush(true).setAllowWriteStall(true));
+        }
     }
 
     public void shutdown() {
