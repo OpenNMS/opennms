@@ -6,12 +6,14 @@
     <reference id="monitoredServiceDao" interface="org.opennms.netmgt.dao.api.MonitoredServiceDao" availability="mandatory"/>
     <reference id="deviceConfigService" interface="org.opennms.features.deviceconfig.service.DeviceConfigService" availability="mandatory"/>
     <reference id="operations" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory" />
+    <reference id="usageAnalyticDao" interface="org.opennms.features.usageanalytics.api.UsageAnalyticDao" availability="mandatory"/>
 
     <bean id="defaultDeviceConfigRestService"
           class="org.opennms.features.deviceconfig.rest.impl.DefaultDeviceConfigRestService">
         <argument ref="deviceConfigDao"/>
         <argument ref="deviceConfigService"/>
         <argument ref="operations"/>
+        <property name="usageAnalyticDao" ref="usageAnalyticDao"/>
     </bean>
 
     <service interface="org.opennms.features.deviceconfig.rest.api.DeviceConfigRestService" ref="defaultDeviceConfigRestService">

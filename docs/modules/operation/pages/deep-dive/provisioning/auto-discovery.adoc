@@ -2,9 +2,9 @@
 = Auto Discovery
 
 Auto discovery is the process of automatically adding nodes to {page-component-title}.
-You do this through discovery, either periodically on schedule or through single, unscheduled times.
+You do this through discovery, which is run either periodically on a schedule or as one-off, unscheduled operations.
 
-Make sure you complete the tasks in the <<deep-dive/provisioning/getting-started.adoc#provision-getting-started, Getting Started>> section before adding nodes.
+Make sure you complete the tasks in <<quick-start/inventory.adoc, Step 3: Provision Inventory>> before adding nodes.
 
 [[discovery-configure]]
 == Configure discovery

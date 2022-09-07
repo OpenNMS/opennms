@@ -1,7 +1,7 @@
  jobs:
   code-coverage:
     executor: centos-build-executor
-    resource_class: medium
+    resource_class: large
     steps:
       - attach_workspace:
           at: ~/

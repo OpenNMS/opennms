@@ -56,14 +56,9 @@ commands:
                 tar -czf "../../artifacts/opennms-${OPENNMS_VERSION}-javadoc.tar.gz" *
               popd
             fi
-      - update-maven-cache
-      #- run:
-      #    name: Remove Extra Maven Repository OpenNMS Files
-      #    command: |
-      #      # move these out of the way so they're not stored in the maven pre-cache
-      #      cd ~/.m2/repository/org/opennms
-      #      mkdir /tmp/maven-keep
-      #      mv $(ls -1 | grep -v -E '^(jicmp-api|jicmp6-api|jrrd-api|jrrd2-api|lib|maven)$') /tmp/maven-keep
+      # 90% of this is done just by the act of building, I'm not sure it's worth spending 7 minutes
+      # re-running an entire maven reactor build just to fill in a few missing assembly-only bits
+      # - update-maven-cache
       - run:
           name: CLean up Maven Repository (BadIdea)
           command: |
