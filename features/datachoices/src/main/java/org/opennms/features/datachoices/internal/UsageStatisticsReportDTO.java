@@ -103,6 +103,12 @@ public class UsageStatisticsReportDTO {
 
     public void setOutages(int soutages) {this.outages = outages;}
 
+    private int applications;
+
+    public int getApplications(){return applications;}
+
+    public void setApplications(int applications){this.applications = applications;}
+
     public void setSystemId(String systemId) {
         m_systemId = systemId;
     }

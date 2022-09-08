@@ -55,6 +55,7 @@ import org.opennms.features.datachoices.internal.StateManager.StateChangeHandler
 import org.opennms.netmgt.config.*;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.EventDao;
+import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.dao.api.NotificationDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
@@ -144,6 +145,9 @@ public class UsageStatisticsReporter implements StateChangeHandler {
     private GroupFactory m_groupFactory;
     private ForeignSourceRepository m_deployedForeignSourceRepository;
     private DataSourceFactoryBean m_dataSourceFactoryBean;
+
+    private ApplicationDao m_applicationDao;
+    
     private boolean m_useSystemProxy = true; // true == legacy behaviour
 
     private OutageDao m_outageDao;
@@ -256,8 +260,10 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         usageStatisticsReport.setSituations(m_alarmDao.getNumSituations());
         usageStatisticsReport.setMonitoringLocations(m_monitoringLocationDao.countAll());
         usageStatisticsReport.setMinions(m_monitoringSystemDao.getNumMonitoringSystems(OnmsMonitoringSystem.TYPE_MINION));
+        usageStatisticsReport.setApplications(m_applicationDao.countAll());
         usageStatisticsReport.setOutages(m_outageDao.currentOutageCount());
         usageStatisticsReport.setNotifications(m_notificationDao.countAll());
+        
         // Node statistics
         usageStatisticsReport.setNodesBySysOid(m_nodeDao.getNumberOfNodesBySysOid());
         // Karaf features
@@ -530,7 +536,10 @@ public class UsageStatisticsReporter implements StateChangeHandler {
     public void setFeaturesService(FeaturesService featuresService) {
         m_featuresService = featuresService;
     }
-
+    
+    public void setApplicationDao(ApplicationDao applicationDao){
+        m_applicationDao = applicationDao;
+    }
     public void setUseSystemProxy(boolean useSystemProxy){
         m_useSystemProxy = useSystemProxy;
     }
