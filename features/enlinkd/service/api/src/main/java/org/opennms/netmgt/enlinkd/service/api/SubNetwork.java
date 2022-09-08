@@ -29,7 +29,9 @@
 package org.opennms.netmgt.enlinkd.service.api;
 
 import java.net.InetAddress;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.opennms.core.utils.InetAddressUtils;
@@ -41,22 +43,25 @@ public class SubNetwork {
     private final InetAddress m_network;
     private final InetAddress m_netmask;
 
-    private final Set<IpInterfaceTopologyEntity> m_ipInterfaces = new HashSet<>();
+    private final Map<Integer, Set<InetAddress>> m_nodeInterfaceMap = new HashMap<>();
 
     public static SubNetwork createSubNetwork(IpInterfaceTopologyEntity ip) throws IllegalArgumentException {
         Assert.notNull(ip);
-        return createSubNetwork(ip.getIpAddress(),ip.getNetMask());
+        return createSubNetwork(ip.getNodeId(), ip.getIpAddress(), ip.getNetMask());
     }
 
-    public static SubNetwork createSubNetwork(InetAddress ip, InetAddress mask) throws IllegalArgumentException {
+    public static SubNetwork createSubNetwork(Integer nodeid, InetAddress ip, InetAddress mask) throws IllegalArgumentException {
         Assert.notNull(ip);
         Assert.notNull(mask);
-        return new SubNetwork(InetAddressUtils.getNetwork(ip,mask),mask);
+        Assert.notNull(nodeid);
+        return new SubNetwork(nodeid, ip, mask);
     }
 
-    private SubNetwork(final InetAddress  network, final InetAddress netmask) {
-        m_network=network;
+    private SubNetwork(final Integer nodeid, final InetAddress  ip, final InetAddress netmask) {
+        m_network=InetAddressUtils.getNetwork(ip,netmask);
         m_netmask=netmask;
+        m_nodeInterfaceMap.put(nodeid, new HashSet<>());
+        m_nodeInterfaceMap.get(nodeid).add(ip);
     }
 
     public InetAddress getNetwork() {
@@ -72,9 +77,7 @@ public class SubNetwork {
     }
 
     public Set<Integer> getNodeIds() {
-        Set<Integer> set = new HashSet<>();
-        m_ipInterfaces.forEach(ip -> set.add(ip.getNodeId()));
-        return set;
+        return m_nodeInterfaceMap.keySet();
     }
 
     @Override
@@ -95,27 +98,49 @@ public class SubNetwork {
         return result;
     }
 
-    public boolean add(IpInterfaceTopologyEntity ipInterfaceTopologyEntity) {
-        if (isInRange(ipInterfaceTopologyEntity.getIpAddress())) {
-            return m_ipInterfaces.add(ipInterfaceTopologyEntity);
+    public boolean add(Integer nodeid, InetAddress ip) {
+        if (isInRange(ip)) {
+            if (!m_nodeInterfaceMap.containsKey(nodeid)) {
+                m_nodeInterfaceMap.put(nodeid, new HashSet<>());
+            }
+            return m_nodeInterfaceMap.get(nodeid).add(ip);
         }
         return false;
     }
 
-    public boolean remove(IpInterfaceTopologyEntity ipInterfaceTopologyEntity) {
-        return m_ipInterfaces.remove(ipInterfaceTopologyEntity);
+    public boolean remove(Integer nodeid, InetAddress ip) {
+        if (m_nodeInterfaceMap.containsKey(nodeid)) {
+            boolean removed = m_nodeInterfaceMap.get(nodeid).remove(ip);
+            if (removed && m_nodeInterfaceMap.get(nodeid).size() == 0) {
+                m_nodeInterfaceMap.remove(nodeid);
+            }
+            return removed;
+        }
+        return false;
     }
 
     public boolean isInRange(InetAddress ip) {
         return InetAddressUtils.inSameNetwork(ip,m_network,m_netmask);
     }
 
+    public boolean hasDuplicatedAddress() {
+        Set<InetAddress> ips = new HashSet<>();
+        for (Set<InetAddress> addresses: m_nodeInterfaceMap.values()) {
+            for (InetAddress address: addresses) {
+                if (ips.contains(address)) {
+                    return true;
+                }
+                ips.add(address);
+            }
+        }
+        return false;
+    }
     @Override
     public String toString() {
-        return "SubNetwork{" +
+        return "SubNetwork{ " +
                 getCidr() +
-                ", number of ipInterfaces:" + m_ipInterfaces.size() +
-                ", nodeIds: " + getNodeIds() +
-                '}';
+                ". NodeMap: " +
+                m_nodeInterfaceMap +
+                "}";
     }
 }

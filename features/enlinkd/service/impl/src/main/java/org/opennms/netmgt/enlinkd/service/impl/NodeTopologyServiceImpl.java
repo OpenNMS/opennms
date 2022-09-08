@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.opennms.core.criteria.Alias;
 import org.opennms.core.criteria.Alias.JoinType;
@@ -73,18 +74,32 @@ public class NodeTopologyServiceImpl extends TopologyServiceImpl implements Node
     }
 
     @Override
+    public Set<SubNetwork> findAllLegalSubNetwork() {
+        return findAllSubNetwork().stream().filter(s -> s.getNodeIds().size() > 1 && !s.hasDuplicatedAddress()).collect(Collectors.toSet());
+    }
+        @Override
     public Set<SubNetwork> findAllSubNetwork() {
         final Set<SubNetwork> subnets = new HashSet<>();
-        findAllIp().stream().filter(ip -> ip.isManaged() && ip.getNetMask() != null).forEach(ip -> {
-            SubNetwork found = SubNetwork.createSubNetwork(ip);
+        final List<IpInterfaceTopologyEntity> ips = findAllIp();
+        ips.stream().filter(ip -> ip.isManaged() && ip.getNetMask() != null ).forEach(ip -> {
+            boolean found = false;
             for (SubNetwork s: subnets) {
                 if (s.isInRange(ip.getIpAddress())) {
-                    found=s;
+                    found=true;
+                    s.add(ip.getNodeId(),ip.getIpAddress());
                     break;
                 }
             }
-            found.add(ip);
-            subnets.add(found);
+            if (!found) {
+                subnets.add(SubNetwork.createSubNetwork(ip));
+            }
+        });
+        ips.stream().filter(ip -> ip.isManaged() && ip.getNetMask() == null).forEach(ip -> {
+            for (SubNetwork s: subnets) {
+                if (s.isInRange(ip.getIpAddress())) {
+                    s.add(ip.getNodeId(),ip.getIpAddress());
+                }
+            }
         });
         return subnets;
     }
@@ -114,20 +129,13 @@ public class NodeTopologyServiceImpl extends TopologyServiceImpl implements Node
     }
 
     @Override
-    public Set<SubNetwork> getSubNetwork(int nodeid) {
-        final Set<SubNetwork> subnets = new HashSet<>();
-        findAllIp().stream().filter(ip -> ip.getNodeId() == nodeid && ip.isManaged() && ip.getNetMask() != null).forEach(ip -> {
-            SubNetwork found = SubNetwork.createSubNetwork(ip);
-            for (SubNetwork s: subnets) {
-                if (s.isInRange(ip.getIpAddress())) {
-                    found=s;
-                    break;
-                }
-            }
-            found.add(ip);
-            subnets.add(found);
-        });
-        return subnets;
+    public Set<SubNetwork> getLegalSubNetworks(int nodeid) {
+        return findAllLegalSubNetwork().stream().filter(s -> s.getNodeIds().contains(nodeid)).collect(Collectors.toSet());
+    }
+
+    @Override
+    public Set<SubNetwork> getSubNetworks(int nodeid) {
+        return findAllSubNetwork().stream().filter(s -> s.getNodeIds().contains(nodeid)).collect(Collectors.toSet());
     }
 
     @Override

@@ -41,12 +41,12 @@ import org.junit.Test;
 public class SubNetworkTest {
 
     @Test
-    public void ipv4SubnetTest() throws UnknownHostException {
-        SubNetwork ipv4 = SubNetwork.createSubNetwork(InetAddress.getByName("192.168.1.10"),InetAddress.getByName("255.255.255.0"));
+    public void s() throws UnknownHostException {
+        SubNetwork ipv4 = SubNetwork.createSubNetwork(100, InetAddress.getByName("192.168.1.10"),InetAddress.getByName("255.255.255.0"));
         assertEquals(ipv4.getCidr(),"192.168.1.0/24");
         assertEquals(str(ipv4.getNetwork()),"192.168.1.0");
         assertEquals(str(ipv4.getNetmask()),"255.255.255.0");
-        SubNetwork ipv4B = SubNetwork.createSubNetwork(InetAddress.getByName("192.168.1.100"),InetAddress.getByName("255.255.255.0"));
+        SubNetwork ipv4B = SubNetwork.createSubNetwork(101, InetAddress.getByName("192.168.1.100"),InetAddress.getByName("255.255.255.0"));
         assertEquals(ipv4B.getCidr(),"192.168.1.0/24");
         assertEquals(str(ipv4B.getNetwork()),"192.168.1.0");
         assertEquals(str(ipv4B.getNetmask()),"255.255.255.0");
@@ -60,16 +60,28 @@ public class SubNetworkTest {
         for (int i=0;i<256;i++) {
             assertFalse(ipv4B.isInRange(InetAddress.getByName("192.168.2." + i)));
         }
+        assertEquals(1,ipv4.getNodeIds().size());
+        assertTrue(ipv4.getNodeIds().contains(100));
+        assertEquals(1,ipv4B.getNodeIds().size());
+        assertTrue(ipv4B.getNodeIds().contains(101));
+
+        assertFalse(ipv4.remove(1, InetAddress.getByName("192.168.1.10")));
+        assertFalse(ipv4B.remove(100, InetAddress.getByName("192.168.1.100")));
+
+        assertTrue(ipv4B.remove(101, InetAddress.getByName("192.168.1.100")));
+        assertEquals(0,ipv4B.getNodeIds().size());
+
     }
 
     @Test
     public void ipv6SubnetTest() throws UnknownHostException {
-        SubNetwork ipv6 = SubNetwork.createSubNetwork(InetAddress.getByName("2001:0db8:85a3:08d3:1319:8a2e:0370:7344"),InetAddress.getByName("FFFF:FF00:0000:0000:0000:0000:0000:0000"));
+        SubNetwork ipv6 = SubNetwork.createSubNetwork(200,InetAddress.getByName("2001:0db8:85a3:08d3:1319:8a2e:0370:7344"),InetAddress.getByName("FFFF:FF00:0000:0000:0000:0000:0000:0000"));
         assertEquals(ipv6.getCidr(),"2001:d00:0:0:0:0:0:0/24");
-        SubNetwork ipv6A = SubNetwork.createSubNetwork(InetAddress.getByName("2001:0db8:85a3:08d3:1319:8a2e:0370:7344"),InetAddress.getByName("FFFF:FFFF:0000:0000:0000:0000:0000:0000"));
+
+        SubNetwork ipv6A = SubNetwork.createSubNetwork(201,InetAddress.getByName("2001:0db8:85a3:08d3:1319:8a2e:0370:7344"),InetAddress.getByName("FFFF:FFFF:0000:0000:0000:0000:0000:0000"));
         assertEquals(ipv6A.getCidr(),"2001:db8:0:0:0:0:0:0/32");
 
-        SubNetwork ipv6B = SubNetwork.createSubNetwork(InetAddress.getByName("2001:0db8:85a3:08d3:1319:8a2e:0370:7344"),InetAddress.getByName("FFFF:FFFF:FFFF:FFFF:0000:0000:0000:0000"));
+        SubNetwork ipv6B = SubNetwork.createSubNetwork(202,InetAddress.getByName("2001:0db8:85a3:08d3:1319:8a2e:0370:7344"),InetAddress.getByName("FFFF:FFFF:FFFF:FFFF:0000:0000:0000:0000"));
         assertEquals(ipv6B.getCidr(),"2001:db8:85a3:8d3:0:0:0:0/64");
 
     }

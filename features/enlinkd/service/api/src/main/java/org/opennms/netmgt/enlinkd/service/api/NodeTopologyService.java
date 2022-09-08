@@ -39,10 +39,12 @@ public interface NodeTopologyService extends TopologyService {
 
     List<Node> findAllSnmpNode();
     Set<SubNetwork> findAllSubNetwork();
+    Set<SubNetwork> findAllLegalSubNetwork();
 
     Node getSnmpNode(int nodeid);
-    Set<SubNetwork> getSubNetwork(int nodeid);
-    
+    Set<SubNetwork> getSubNetworks(int nodeid);
+    Set<SubNetwork> getLegalSubNetworks(int nodeid);
+
     List<NodeTopologyEntity> findAllNode();
 
     List<IpInterfaceTopologyEntity> findAllIp();
