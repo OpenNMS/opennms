@@ -30,89 +30,27 @@ package org.opennms.netmgt.enlinkd;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
-import java.util.Objects;
 import java.util.Properties;
-import java.util.concurrent.PriorityBlockingQueue;
-import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.fiber.Fiber;
-import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.test.MockLogAppender;
-import org.opennms.netmgt.scheduler.Executable;
-import org.opennms.netmgt.scheduler.LegacyPriorityExecutor;
 import org.opennms.netmgt.enlinkd.common.SchedulableNodeCollectorGroup;
+import org.opennms.netmgt.scheduler.LegacyPriorityExecutor;
 import org.opennms.netmgt.scheduler.LegacyScheduler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class CollectorGroupTest {
-
-    private static final Logger LOG = LoggerFactory.getLogger(CollectorGroupTest.class);
 
     @Before
     public void setUp() throws Exception {
         Properties p = new Properties();
-        p.setProperty("log4j.logger.org.opennms.netmgt.enlinkd.service.api", "DEBUG");
+        p.setProperty("log4j.logger.org.opennms.netmgt.enlinkd", "DEBUG");
+        p.setProperty("log4j.logger.org.opennms.netmgt.scheduler", "DEBUG");
         MockLogAppender.setupLogging(p);
     }
 
-    public static class ExecutableTest extends Executable {
-
-        private final String m_name;
-        public ExecutableTest(String name) {
-            super();
-            m_name=name;
-        }
-
-        public ExecutableTest(String name, int priority) {
-            super(priority);
-            m_name=name;
-        }
-
-        @Override
-        public String getName() {
-            return m_name;
-        }
-
-        @Override
-        public void runExecutable() {
-            LOG.info("Started: {}", m_name);
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            LOG.info("Ended: {}", m_name);
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            if (!super.equals(o)) return false;
-
-            ExecutableTest that = (ExecutableTest) o;
-
-            return Objects.equals(m_name, that.m_name);
-        }
-
-        @Override
-        public int hashCode() {
-            int result = super.hashCode();
-            result = 31 * result + (m_name != null ? m_name.hashCode() : 0);
-            return result;
-        }
-
-        @Override
-        public boolean isReady() {
-            return true;
-        }
-    }
 
     @Test
     public void testAddAndRemove() {
@@ -138,42 +76,6 @@ public class CollectorGroupTest {
         assertEquals(0,collectorGroup.getExecutables().size());
         assertNull(discoveryTestA.getPriority());
         assertNull(discoveryTestB.getPriority());
-    }
-
-    @Test
-    public void testRun() {
-        ExecutableTest discoveryTestA = new ExecutableTest("testA");
-        discoveryTestA.setPriority(9);
-        assertTrue(discoveryTestA.isReady());
-        discoveryTestA.run();
-    }
-
-    @Test
-    public void testPauseAndResume() throws InterruptedException {
-        LegacyPriorityExecutor executor = new LegacyPriorityExecutor("CollectorGroupTest", 2, 5);
-        executor.addPriorityReadyRunnable(new ExecutableTest("A",10) );
-        executor.addPriorityReadyRunnable(new ExecutableTest("B",10) );
-        executor.addPriorityReadyRunnable(new ExecutableTest("C",20) );
-        executor.addPriorityReadyRunnable(new ExecutableTest("D",20) );
-        executor.addPriorityReadyRunnable(new ExecutableTest("E",20) );
-        executor.addPriorityReadyRunnable(new ExecutableTest("F",30) );
-        executor.addPriorityReadyRunnable(new ExecutableTest("G",30) );
-        executor.addPriorityReadyRunnable(new ExecutableTest("H",30) );
-        executor.addPriorityReadyRunnable(new ExecutableTest("I",40) );
-        executor.addPriorityReadyRunnable(new ExecutableTest("L",40) );
-
-        executor.start();
-        Thread.sleep(2);
-        executor.pause();
-        assertEquals(PausableFiber.PAUSE_PENDING, executor.getStatus());
-        Thread.sleep(3000);
-        assertEquals(PausableFiber.PAUSED, executor.getStatus());
-        executor.resume();
-        assertEquals(PausableFiber.RESUME_PENDING, executor.getStatus());
-        Thread.sleep(200);
-        assertEquals(PausableFiber.RUNNING, executor.getStatus());
-        Thread.sleep(5000);
-
     }
 
     @Test
@@ -208,47 +110,4 @@ public class CollectorGroupTest {
         assertEquals(Fiber.STOPPED,executor.getStatus());
     }
 
-    @Test
-    public void testPriorityBlockingQueueOrder() {
-        PriorityBlockingQueue<Integer> queue = new PriorityBlockingQueue<>();
-        ArrayList<Integer> polledElements = new ArrayList<>();
-
-        queue.add(1);
-        queue.add(5);
-        queue.add(2);
-        queue.add(3);
-        queue.add(4);
-
-        queue.drainTo(polledElements);
-
-        assertEquals(polledElements.get(0).intValue(),1);
-        assertEquals(polledElements.get(1).intValue(),2);
-        assertEquals(polledElements.get(2).intValue(),3);
-        assertEquals(polledElements.get(3).intValue(),4);
-        assertEquals(polledElements.get(4).intValue(),5);
-    }
-
-    @Test
-    public void testPriorityBlockingQueueTake() throws InterruptedException {
-        PriorityBlockingQueue<Integer> queue = new PriorityBlockingQueue<>();
-
-        new Thread(() -> {
-            LOG.info("Polling...");
-            while(true) {
-            try {
-                LOG.info("Taking");
-                Integer poll = queue.take();
-                LOG.info("Taked: " + poll);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-
-            }            }
-        }).start();
-
-        Thread.sleep(TimeUnit.SECONDS.toMillis(5));
-        LOG.info("Adding to queue");
-        queue.add(1);
-        queue.add(2);
-        queue.add(3);
-    }
 }
