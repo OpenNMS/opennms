@@ -7,7 +7,7 @@ FROM ${BASE_IMAGE} as sentinel-base
 
 ADD --chown=10001:10001 ./tarball-root/ /usr/share/sentinel/
 
-ARG REQUIRED_DEBS="hostname wget gettext openssh-client"
+ARG REQUIRED_DEBS="hostname wget gettext openssh-client uuid-runtime"
 
 ARG REPO_KEY_URL="https://debian.opennms.org/OPENNMS-GPG-KEY"
 

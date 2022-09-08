@@ -8,13 +8,6 @@ ARG BASE_IMAGE="opennms/deploy-base:jre-2.0.6.b165"
 
 FROM ${BASE_IMAGE} as minion-base
 
-# get any security updates for the base system
-RUN grep security /etc/apt/sources.list > /etc/apt/security.sources.list && \
-    apt update -o Dir::Etc::SourceList=/etc/apt/security.sources.list && \
-    apt -y -u -o Dir::Etc::SourceList=/etc/apt/security.sources.list full-upgrade && \
-    apt clean && \
-    rm -rf /var/cache/apt /etc/apt/security.sources.list
-
 ADD --chown=10001:0 ./tarball-root/ /opt/minion/
 RUN rm /opt/minion/etc/org.opennms.features.telemetry.listeners-single-port-flows.cfg
 RUN chmod -R g-w /opt/minion
@@ -23,6 +16,27 @@ RUN chmod -R g-w /opt/minion
 # Prod image with minimal image size
 ##
 FROM ${BASE_IMAGE}
+
+ARG REQUIRED_DEBS="hostname uuid-runtime"
+
+# Prevent prompts
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Collect generic steps in a layer for caching
+
+# import keys & install required debs
+RUN apt-get update && \
+    apt-get --no-install-recommends install -yq ${REQUIRED_DEBS} && \
+    apt-get -y autoclean && \
+    apt-get -y clean && \
+    rm -rf /var/cache/apt
+
+# get any security updates for the base system
+RUN grep security /etc/apt/sources.list > /etc/apt/security.sources.list && \
+    apt update -o Dir::Etc::SourceList=/etc/apt/security.sources.list && \
+    apt -y -u -o Dir::Etc::SourceList=/etc/apt/security.sources.list full-upgrade && \
+    apt clean && \
+    rm -rf /var/cache/apt /etc/apt/security.sources.list
 
 RUN groupadd --gid 10001 minion && \
     useradd \
