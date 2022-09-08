@@ -43,15 +43,6 @@ fi
 
 [ -n "${DOCKER_ARCH}" ] || DOCKER_ARCH="linux/amd64"
 
-if [ "${DOCKER_ARCH}" = "linux/amd64" ]; then
-  CONFD_ARCH="linux-amd64"
-elif [ "${DOCKER_ARCH}" = "linux/arm64" ]; then
-  CONFD_ARCH="linux-arm64"
-else
-  echo "ARCH ${DOCKER_ARCH} not supported by confd!"
-  exit -1
-fi
-
 # shellcheck disable=SC2034
 # Array of tags for the OCI image used in the specific projects
 OCI_TAGS=("${VERSION}")
