@@ -1,17 +1,71 @@
 
-[[metric-collect]]
-=== Determine that you are collecting the metric
-In this case, we have chosen a metric (number of logged-in users) that is collected by default.
-We are also using data collected via SNMP. (For information on other collectors, see <<deep-dive/performance-data-collection/collectors.adoc#collectors-overview,Collectors>>.)
+= Threshold creation
 
-. In the {page-component-title} UI, choose *Reports>Resource Graphs*.
+For information on how to create a basic or expression-based threshold, see <<quickstart/thresholding.adoc, Set up a threshold>> in the Quick Start section.
+
+This section describes related thresholding tasks. 
+
+[[ga-threshold-metadata]]
+== Use metadata in a threshold
+
+Metadata in expression-based thresholds can streamline threshold creation.
+The <<deep-dive/meta-data.adoc#ga-meta-data-dsl, Metadata DSL>> (domain specific language) lets you use patterns in an expression, whereby the metadata is replaced with a corresponding value during the collection process.
+A single expression can behave differently based on the node being tested against.
+
+During evaluation of an expression, the following scopes are available:
+
+* Node metadata
+* Interface metadata
+* Service metadata
+
+Metadata is also supported in value, re-arm, and trigger fields for Single-DS and expression-based thresholds.
+
+NOTE: For more information on metadata and how to define it, see <<deep-dive/meta-data.adoc#metadata-overview, Metadata>>.
+
+=== Example
+
+This procedure uses metadata to trigger an event when the number of logged-in users exceeds 1.
+
+The expression is in the form `${context:key|context_fallback:key_fallback|...|default}`.
+
+Before using metadata in a threshold, you need to add the metadata context pair, in this case, a requisition key called userLimit (see <deep-dive/<meta-data.adoc#ga-metadata-webui, Adding metadata through the web UI>>).
+
+. Click the gear icon in the top-right menu.
+. Under *Performance Measurement*, choose *Configure Thresholds*.
+. Click *Edit* beside the *netsnmp* group.
+. Click *Create New Expression-based Threshold*.
+. Fill in the following information:
+
++
+* Type: High
+* Expression: `hrSystemNumUsers / ${requisition:userLimit|1}`
+* Datasource type: Node
+* Value: 1
+* Rearm: 1
+* Description: Too many logged-in users
+
++
+
+image::metadata/meta-expression1.png[]
+
+. Click *Save*.
+
+This expression will trigger an event when the number of logged-in users exceeds 1.
+
+image::metadata/meta-expression2.png[]
+
+[[metric-collect]]
+== Determine that you are collecting the metric
+Before creating a threshold, you need to make sure you are collecting the metric against which you want to threshold.
+
+. In the {page-component-title} UI, choose menu:[Reports]Resource Graphs.
 . Select one of the listed resources.
 . Under *SNMP Node Data*, select *Node-level Performance Data* and choose *Graph Selection*.
 . Scroll to find the *Number of Users* graph.
 .. You can click the binoculars icon to display only this graph.
 
 [[datasource-determine]]
-= Determine the Data Source
+== Determine the Data Source
 Creating a threshold requires the name of the data source generating the metrics on which you want to threshold.
 Data source names for the SNMP protocol appear in `etc/snmp-graph.properties.d/`.
 
@@ -28,3 +82,4 @@ image::thresholding/Graphs.png[]
 . Go to `etc/snmp-graph.properties.d/` and search for the title of the graph (for example, "System Uptime").
 
 . Note the name of the data source, and type it in the *Datasource* field when you xref:quick-start/thresholding.adoc[create your threshold].
+

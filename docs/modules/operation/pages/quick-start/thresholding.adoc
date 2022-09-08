@@ -18,7 +18,7 @@ This procedure describes how to create a basic threshold for a single, system-wi
 This threshold tells {page-component-title} to create an event when the number of logged-in users on the device exceeds two, and re-arm when it falls below two.
 
 Before creating this threshold, make sure you have at least two users defined in your {page-component-title}.
-(See quick-start/users.adoc#create-user, create a new user).
+(See <<quick-start/users.adoc#create-user, create a new user>>).
 
 . Click the *Gear* symbol in the top-right.
 . Under *Performance Measurement*, choose *Configure Thresholds*.

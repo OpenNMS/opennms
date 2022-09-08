@@ -32,7 +32,6 @@
 *** xref:deep-dive/provisioning/snmp-profile.adoc[]
 
 ** xref:deep-dive/thresholds/thresholding.adoc[]
-**** xref:deep-dive/thresholds/metadata.adoc[]
 **** xref:deep-dive/thresholds/datasource.adoc[]
 **** xref:deep-dive/thresholds/thresh-group.adoc[]
 *** xref:deep-dive/thresholds/thresh-service.adoc[]
