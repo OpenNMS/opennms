@@ -35,10 +35,6 @@ fi
 [ -n "${BUILD_NUMBER}"            ] || BUILD_NUMBER="${CIRCLE_BUILD_NUM:-0}"
 [ -n "${BUILD_URL}"               ] || BUILD_URL="${CIRCLE_BUILD_URL}"
 
-[ -n "${APT_CONTAINER_NAME}"      ] || APT_CONTAINER_NAME="apt-repo"
-[ -n "${APT_VOLUME}"              ] || APT_VOLUME="${APT_CONTAINER_NAME}-volume"
-[ -n "${DEBDIR}"                  ] || DEBDIR="${TOPDIR}/../target/debs"
-
 [ -n "${CONTAINER_PROJECT}"       ] || CONTAINER_PROJECT="$(basename "${TOPDIR}")"
 [ -n "${CONTAINER_REGISTRY}"      ] || CONTAINER_REGISTRY="docker.io"
 [ -n "${CONTAINER_REGISTRY_REPO}" ] || CONTAINER_REGISTRY_REPO="opennms"
