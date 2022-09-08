@@ -41,7 +41,21 @@ fi
 
 [ -n "${REPO_PORT}"               ] || REPO_PORT="19990"
 
-[ -n "${DOCKER_ARCH}" ] || DOCKER_ARCH="linux/amd64"
+if [ -z "${DOCKER_ARCH}" ]; then
+  _machine="$(uname -m)"
+  case "${_machine}" in
+    x86_64|amd64)
+      DOCKER_ARCH="linux/amd64"
+      ;;
+    arm64)
+      DOCKER_ARCH="linux/arm64"
+      ;;
+    *)
+      echo "WARNING: unable to detect local arch, assuming linux/amd64"
+      DOCKER_ARCH="linux/amd64"
+      ;;
+  esac
+fi
 
 # shellcheck disable=SC2034
 # Array of tags for the OCI image used in the specific projects
