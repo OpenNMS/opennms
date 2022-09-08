@@ -33,19 +33,17 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.config.EnhancedLinkdConfig;
 import org.opennms.netmgt.config.datacollection.SnmpCollection;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.enlinkd.api.ReloadableTopologyDaemon;
-import org.opennms.netmgt.enlinkd.common.AbstractExecutable;
+import org.opennms.netmgt.scheduler.Executable;
 import org.opennms.netmgt.enlinkd.common.NodeCollector;
-import org.opennms.netmgt.enlinkd.common.LegacyPriorityExecutor;
+import org.opennms.netmgt.scheduler.LegacyPriorityExecutor;
 import org.opennms.netmgt.enlinkd.common.SchedulableNodeCollectorGroup;
 import org.opennms.netmgt.enlinkd.common.TopologyUpdater;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
@@ -510,7 +508,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
             scheduleNodeCollection(nodeid);
             return;
         } 
-        getNodeCollectors(nodeid).forEach(AbstractExecutable::wakeUp);
+        getNodeCollectors(nodeid).forEach(Executable::wakeUp);
     }
 
     public void addNode() {
@@ -551,7 +549,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
     void suspendNodeCollection(int nodeid) {
         LOG.info("suspendNodeCollection: suspend collection for node {}",
                         nodeid);   
-        getNodeCollectors(nodeid).forEach(AbstractExecutable::suspend);
+        getNodeCollectors(nodeid).forEach(Executable::suspend);
     }
 
     public NodeTopologyService getQueryManager() {

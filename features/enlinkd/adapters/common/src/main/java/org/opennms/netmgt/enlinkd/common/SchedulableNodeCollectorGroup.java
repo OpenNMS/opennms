@@ -31,6 +31,10 @@ package org.opennms.netmgt.enlinkd.common;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.opennms.netmgt.scheduler.Executable;
+import org.opennms.netmgt.scheduler.LegacyPriorityExecutor;
+import org.opennms.netmgt.scheduler.SchedulableExecutableGroup;
+
 public class SchedulableNodeCollectorGroup extends SchedulableExecutableGroup {
 
     /**
@@ -57,7 +61,7 @@ public class SchedulableNodeCollectorGroup extends SchedulableExecutableGroup {
 
     public Set<NodeCollector> get(int nodeid) {
         Set<NodeCollector> nodeCollectors = new HashSet<>();
-        for (AbstractExecutable executable: getExecutables()) {
+        for (Executable executable: getExecutables()) {
             if (executable instanceof NodeCollector) {
                 NodeCollector nodeCollector = (NodeCollector) executable;
                 if (nodeCollector.getNodeId() == nodeid) {
@@ -69,7 +73,7 @@ public class SchedulableNodeCollectorGroup extends SchedulableExecutableGroup {
     }
 
     public boolean hasCollectionFor(int nodeid) {
-        for (AbstractExecutable executable: getExecutables()) {
+        for (Executable executable: getExecutables()) {
             if (executable instanceof NodeCollector) {
                 NodeCollector nodeCollector = (NodeCollector) executable;
                 if (nodeCollector.getNodeId() == nodeid) {

@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.enlinkd.common;
+package org.opennms.netmgt.scheduler;
 
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 

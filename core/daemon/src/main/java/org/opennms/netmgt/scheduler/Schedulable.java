@@ -26,10 +26,8 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.enlinkd.common;
+package org.opennms.netmgt.scheduler;
 
-import org.opennms.netmgt.scheduler.LegacyScheduler;
-import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

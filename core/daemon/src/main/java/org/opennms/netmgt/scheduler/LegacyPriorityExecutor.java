@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.enlinkd.common;
+package org.opennms.netmgt.scheduler;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

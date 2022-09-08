@@ -35,6 +35,7 @@ import java.util.Objects;
 
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.enlinkd.service.api.Node;
+import org.opennms.netmgt.scheduler.Executable;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 
@@ -45,7 +46,7 @@ import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
  * creating and collection occurs in the main run method of the instance. This
  * allows the collection to occur in a thread if necessary.
  */
-public abstract class NodeCollector extends AbstractExecutable {
+public abstract class NodeCollector extends Executable {
     /**
      * The node ID of the system used to collect the SNMP information
      */

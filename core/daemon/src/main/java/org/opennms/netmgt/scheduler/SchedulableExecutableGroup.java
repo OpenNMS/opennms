@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.enlinkd.common;
+package org.opennms.netmgt.scheduler;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -38,7 +38,7 @@ import org.springframework.util.Assert;
 public class SchedulableExecutableGroup extends Schedulable {
     private static final Logger LOG = LoggerFactory.getLogger(SchedulableExecutableGroup.class);
 
-    private final Set<AbstractExecutable> m_executables = new HashSet<>();
+    private final Set<Executable> m_executables = new HashSet<>();
 
     /**
      *  The Executor Group
@@ -88,11 +88,11 @@ public class SchedulableExecutableGroup extends Schedulable {
     }
 
 
-    public Set<AbstractExecutable> getExecutables() {
+    public Set<Executable> getExecutables() {
         return m_executables;
     }
 
-    public void add(AbstractExecutable discovery) {
+    public void add(Executable discovery) {
         synchronized (m_executables) {
             if (m_executables.add(discovery)) {
                 discovery.setPriority(m_priority);
@@ -101,7 +101,7 @@ public class SchedulableExecutableGroup extends Schedulable {
         }
     }
 
-    public void remove(AbstractExecutable discovery) {
+    public void remove(Executable discovery) {
         synchronized (m_executables) {
             if (m_executables.remove(discovery)) {
                 LOG.info("remove: {}", discovery.getInfo());

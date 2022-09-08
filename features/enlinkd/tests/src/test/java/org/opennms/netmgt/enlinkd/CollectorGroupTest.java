@@ -43,8 +43,8 @@ import org.junit.Test;
 import org.opennms.core.fiber.Fiber;
 import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.test.MockLogAppender;
-import org.opennms.netmgt.enlinkd.common.AbstractExecutable;
-import org.opennms.netmgt.enlinkd.common.LegacyPriorityExecutor;
+import org.opennms.netmgt.scheduler.Executable;
+import org.opennms.netmgt.scheduler.LegacyPriorityExecutor;
 import org.opennms.netmgt.enlinkd.common.SchedulableNodeCollectorGroup;
 import org.opennms.netmgt.scheduler.LegacyScheduler;
 import org.slf4j.Logger;
@@ -61,7 +61,7 @@ public class CollectorGroupTest {
         MockLogAppender.setupLogging(p);
     }
 
-    public static class ExecutableTest extends AbstractExecutable {
+    public static class ExecutableTest extends Executable {
 
         private final String m_name;
         public ExecutableTest(String name) {

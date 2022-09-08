@@ -26,15 +26,14 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.enlinkd.common;
+package org.opennms.netmgt.scheduler;
 
-import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class AbstractExecutable implements PriorityReadyRunnable {
+public abstract class Executable implements PriorityReadyRunnable {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AbstractExecutable.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Executable.class);
 
     private boolean m_suspend = false;
 
@@ -48,10 +47,10 @@ public abstract class AbstractExecutable implements PriorityReadyRunnable {
         m_priority=priority;
     }
 
-    public AbstractExecutable() {
+    public Executable() {
     }
 
-    public AbstractExecutable(int priority) {
+    public Executable(int priority) {
         m_priority=priority;
     }
 
