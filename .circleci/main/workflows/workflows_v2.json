@@ -100,7 +100,9 @@
         },
         "experimental": {
             "extends": [
-                "empty"
+                "build",
+                "integration-test-with-coverage",
+                "code-coverage"
             ]
         }
     },
