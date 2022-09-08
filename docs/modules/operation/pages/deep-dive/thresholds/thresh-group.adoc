@@ -3,7 +3,7 @@
 = Create a Threshold Group
 
 A threshold group associates a set of thresholds to a service (for example, thresholds that apply to all Cisco devices).
-{page-component-title} includes seven preconfigured, editable threshold groups:
+{page-component-title} includes the following preconfigured, editable threshold groups:
 
 * mib2
 * cisco
@@ -12,11 +12,12 @@ A threshold group associates a set of thresholds to a service (for example, thre
 * juniper-srx
 * netsnmp-memory-linux
 * netsnmp-memory-nonlinux
+* opennms-jvm-jvx
 
 You can edit an existing group (through the UI) or create a new one (in the `thresholds.xml` file located in `$OPENNMS_HOME/etc/thresholds.xml`).
 Once you create the group, you can then define it in the `thresholds.xml` file or define it in the UI.
 
-We will create a threshold group called "demo_group".
+This procedure creates a threshold group called "demo_group".
 
 . Type the following in the `thresholds.xml` file.
 
@@ -28,8 +29,8 @@ We will create a threshold group called "demo_group".
 ----
 
 . Once you have created the group in the `thresholds.xml` file, switch to the UI, go to the threshold screen and click *Reload Threshold Configuration*.
-
-.. The group you created should appear in the UI.
++
+The group you created should appear in the UI.
 
 . Click *Edit* to edit it.
 
