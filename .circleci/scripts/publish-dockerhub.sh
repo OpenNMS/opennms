@@ -42,13 +42,13 @@ for TYPE in horizon minion sentinel; do
 
     _push_tag="${DOCKER_BRANCH_TAG}-${_arch_tag}"
     docker tag "${_internal_tag}" "${DOCKER_REPO}:${_push_tag}"
-    docker push --quiet "${DOCKER_REPO}:${_push_tag}"
+    do_with_retries docker push --quiet "${DOCKER_REPO}:${_push_tag}"
   done
 
   export NOTARY_TARGETS_PASSPHRASE="${!_key_passphrase_variable}"
   for _publish_tag in "${DOCKER_TAGS[@]}"; do
     create_and_push_manifest "${DOCKER_REPO}" "${DOCKER_BRANCH_TAG}" "${_publish_tag}"
-    notary -d ~/.docker/trust/ -s https://notary.docker.io addhash "${DOCKER_REPO}" "${_publish_tag}" "${DOCKER_IMAGE_BYTES_SIZE}" --sha256 "${DOCKER_IMAGE_SHA_256}" --publish --verbose
+    do_with_retries notary -d ~/.docker/trust/ -s https://notary.docker.io addhash "${DOCKER_REPO}" "${_publish_tag}" "${DOCKER_IMAGE_BYTES_SIZE}" --sha256 "${DOCKER_IMAGE_SHA_256}" --publish --verbose
   done
 
 done

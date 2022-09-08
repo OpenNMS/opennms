@@ -41,6 +41,14 @@ if [ -n "$CIRCLE_BUILD_NUM" ] && [ -n "$CIRCLE_BRANCH" ]; then
   ONMS_MICRO_REVISION="${CIRCLE_BUILD_NUM}"
 fi
 
+# retry a command 3 times
+do_with_retries() {
+  for try in 1 2 3; do
+    if "$@"; then return 0; fi
+  done
+  return 1
+}
+
 export \
   OPENNMS_POM_VERSION \
   OPENNMS_VERSION \
