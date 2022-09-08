@@ -42,14 +42,6 @@ org.opennms.timeseries.tin.metatags.tag.ifDescr=${interface:if-description}
 org.opennms.timeseries.tin.metatags.tag.label=${resource:label}" >> ${OPENNMS_HOME}/etc/opennms.properties.d/cortex.properties
 ----
 
-. Install the plugin from the OpenNMS Karaf shell.
-+
-[source, console]
-----
-feature:repo-add mvn:org.opennms.plugins.timeseries/cortex-karaf-features/1.0.0-SNAPSHOT/xml
-feature:install opennms-plugins-cortex-tss
-----
-
 . Configure the plugin.
 +
 Note that you can omit this step if you use the default settings.
@@ -68,6 +60,12 @@ property-set externalTagsCacheSize 1000
 property-set bulkheadMaxWaitDurationInMs 9223372036854775807
 
 config:update
+----
+. Configure the plugin to remain installed after reboot:
+
+[source,console]
+----
+echo 'opennms-plugins-cortex-tss wait-for-kar=opennms-cortex-plugin' > "$OPENNMS_HOME/etc/featuresBoot.d/cortex.boot"
 ----
 
 == Cortex tips
