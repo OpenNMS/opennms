@@ -101,7 +101,7 @@ public class UsageStatisticsReportDTO {
 
     public int getOutages() {return outages;}
 
-    public void setOutages(int soutages) {this.outages = outages;}
+    public void setOutages(int outages) {this.outages = outages;}
 
     private int applications;
 
