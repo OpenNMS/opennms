@@ -6,15 +6,5 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
-      - fetch-artifacts:
-          path: /tmp/test
-          location: opennmsmavenartifact
-      - run:
-          name: Extract maven keep artifacts
-          command: |
-            cd /tmp
-            tar -xvf /tmp/test/maven-keep.tar.gz
-            ls
-            mv /tmp/tmp/maven-keep/* ~/.m2/repository/org/opennms/           
       - run-integration-tests:
           rerun-failtest-count: 1
