@@ -255,7 +255,7 @@ if "rpms" in git_keywords:
 if "debs" in git_keywords:
     build_mappings["debs"] = True
 
-if "integration" in git_keywords or "Integration_tests" in What_to_build:
+if "integration" in git_keywords or "Integration_tests" in What_to_build and not build_mappings["experimental"] and not build_mappings["coverage"]:
     build_mappings["integration"] = True
 
 if "build" in What_to_build and not build_mappings["experimental"]:
