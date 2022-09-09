@@ -174,9 +174,9 @@ The official Jaspersoft Studio documentation and wiki describe how to do this.
 === Use Measurements Datasource and Helpers
 
 To use the Measurements API you must add the Measurements Datasource library to the build path of JasperStudio.
-To do so, right click in the Project Explorer and select *Configure Buildpath*.
+To do so, right-click in the Project Explorer and select *Configure Buildpath*.
 
-image::database-reports/1_configure-build-path-1.png[]
+image::database-reports/1_configure-build-path-1.png[400]
 
 . Switch to the *Libraries* tab.
 . Click *Add External JARs* and select the `opennms-jasperstudio-extension-\{opennms-version}-jar-with-dependencies.jar` file located in `$OPENNMS_HOME/contrib/jasperstudio-extension`.
