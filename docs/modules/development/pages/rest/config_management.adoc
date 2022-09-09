@@ -25,7 +25,9 @@ Configurations modified will take effect instantly.
 
 400: Return: {"MESSAGE": "<ERROR_MESSAGE>"}
 | `/cm/\{configName}/\{configId}/\{path}` |
-Returns a part of configuration specified by configName, configId and the path to the part in JsonPath format. Returns 404 when the configuration does not exist. Returns 400 When the path parameter has a wrong format or specifies a nonexistent path.
+Returns a part of the configuration specified by `configName`, `configId`, and the path to the part in JSONPath format.
+Returns 404 when the configuration does not exist.
+Returns 400 when the path parameter has a wrong format or specifies a nonexistent path.
 
 200 Return: part of the configuration
 
