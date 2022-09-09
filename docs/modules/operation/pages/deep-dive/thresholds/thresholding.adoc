@@ -20,7 +20,7 @@ You can further create notifications and alarms for threshold events.
 image::thresholding/thresholding-flow.png[]
 
 {page-component-title} uses four thresholding algorithms to trigger an event.
-See xref:quick-start/thresholding.adoc[set up a threshold] in the Quick Start section for more information.
+See xref:quick-start/thresholding.adoc[Set Up a Threshold] in the Quick Start section for more information.
 
 {page-component-title} applies these threshold algorithms against any performance data (telemetry) collected by <<deep-dive/performance-data-collection/introduction.adoc#ga-performance-mgmt,collectd>> or pushed to <<deep-dive/telemetryd/introduction.adoc#ga-telemetryd, telemetryd>>.
 This includes, but is not limited to, metrics such as CPU load, bandwidth, disk space, and so on.

@@ -15,12 +15,11 @@ A threshold group associates a set of thresholds to a service (for example, thre
 * opennms-jvm-jvx
 
 You can edit an existing group (through the UI) or create a new one (in the `thresholds.xml` file located in `$OPENNMS_HOME/etc/thresholds.xml`).
-Once you create the group, you can then define it in the `thresholds.xml` file or define it in the UI.
+Once you create the group, you can then define it in the `thresholds.xml` file or in the UI.
 
-This procedure creates a threshold group called "demo_group".
+This procedure creates a threshold group called "demo_group":
 
-. Type the following in the `thresholds.xml` file.
-
+. Type the following in the `thresholds.xml` file:
 +
 [source, xml]
 ----
@@ -28,11 +27,11 @@ This procedure creates a threshold group called "demo_group".
 </group>
 ----
 
-. Once you have created the group in the `thresholds.xml` file, switch to the UI, go to the threshold screen and click *Reload Threshold Configuration*.
+. Switch to the UI, go to the threshold screen, and click *Reload Threshold Configuration*.
 +
 The group you created should appear in the UI.
 
-. Click *Edit* to edit it.
+. Click *Edit* to edit the group.
 
 The following is a sample of how the threshold appears in the `thresholds.xml` file:
 

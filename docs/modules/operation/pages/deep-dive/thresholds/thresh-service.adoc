@@ -12,4 +12,4 @@ When running on Sentinel, the thresholding state can be stored in either Cassand
 Given that Newts already requires Cassandra, we recommend using Cassandra to minimize the load on PostgreSQL.
 
 Thresholding on Sentinel uses the same configuration files as {page-component-title} and operates similarly.
-When a thresholding changes to or from trigger or cleared, an event is published which is processed by {page-component-title} and the alarm is created or updated.
+When a thresholding changes to or from `trigger` or `cleared`, an event is published which is processed by {page-component-title} and the alarm is created or updated.
