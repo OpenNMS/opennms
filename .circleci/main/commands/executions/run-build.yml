@@ -60,7 +60,7 @@ commands:
       # re-running an entire maven reactor build just to fill in a few missing assembly-only bits
       # - update-maven-cache
       - run:
-          name: CLean up Maven Repository (BadIdea)
+          name: Remove Extra Maven Repository OpenNMS Files
           command: |
             # move these out of the way so they're not stored in the maven pre-cache
             cd ~/.m2/repository/org/opennms
@@ -73,6 +73,9 @@ commands:
             # now move them back so they end up in the workspace for builds further down the workflow
             mv /tmp/maven-keep/* ~/.m2/repository/org/opennms/
       - save-nodejs-cache
+      - store_artifacts:
+          path: ~/project/target/artifacts
+          destination: artifacts
       - persist_to_workspace:
           root: ~/
           paths:
