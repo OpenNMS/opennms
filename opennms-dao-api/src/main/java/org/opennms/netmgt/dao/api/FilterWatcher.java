@@ -40,9 +40,21 @@ import java.util.function.Consumer;
 public interface FilterWatcher {
 
     interface FilterResults {
-        Map<Integer, Map<InetAddress, Set<String>>> getNodeIpServiceMap();
+        Map<String, Map<Integer, Map<InetAddress, Set<String>>>> getRuleNodeIpServiceMap();
 
         Set<ServiceRef> getServicesNamed(String serviceName);
+    }
+
+    interface Session extends Closeable {
+        @Override
+        void close();
+
+        /**
+         * Alter the filter rule used in this watcher session.
+         * This will trigger a re-evaluation of the filters and may trigger the callback if the filter output changed.
+         * @param filterRules see {@link FilterWatcher#watch(Set, Consumer)} for how filters behave
+         */
+        void setFilters(Set<String> filterRules);
     }
 
     /**
@@ -52,11 +64,16 @@ public interface FilterWatcher {
      *
      * Additional callback will be made if/when the results change.
      *
-     * @param filterRule a valid filter rule
-     *                   if null, or empty the filter will match everything
+     * @param filterRules a set of valid filter rule
+     *                    if null, or empty the filter will match everything
+     *                    if any element is null or empty the filter will match everything
      * @param callback used for callbacks
      * @return close when done watching
      */
-    Closeable watch(String filterRule, Consumer<FilterResults> callback);
+    Session watch(Set<String> filterRules, Consumer<FilterResults> callback);
+
+    default Session watch(String filterRule, Consumer<FilterResults> callback) {
+        return this.watch(filterRule == null ? null : Set.of(filterRule), callback);
+    }
 
 }

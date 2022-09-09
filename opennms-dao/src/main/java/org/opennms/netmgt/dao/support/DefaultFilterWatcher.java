@@ -28,20 +28,17 @@
 
 package org.opennms.netmgt.dao.support;
 
-import java.io.Closeable;
 import java.net.InetAddress;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.opennms.core.sysprops.SystemProperties;
@@ -59,6 +56,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 @EventListener(name = "FilterWatcher")
 public class DefaultFilterWatcher implements FilterWatcher, InitializingBean, DisposableBean {
@@ -80,7 +80,7 @@ public class DefaultFilterWatcher implements FilterWatcher, InitializingBean, Di
 
     private final Timer timer = new Timer("FilterService-Timer");
 
-    private final Map<String, FilterSession> sessionByRule = new ConcurrentHashMap<>();
+    private final Set<FilterSession> sessions = Sets.newConcurrentHashSet();
 
     @Override
     public void afterPropertiesSet() {
@@ -89,11 +89,11 @@ public class DefaultFilterWatcher implements FilterWatcher, InitializingBean, Di
             @Override
             public void run() {
                 try {
-                    sessionByRule.values().forEach(s -> {
+                    sessions.forEach(s -> {
                         try {
                             s.refreshIfNeeded();
                         } catch (Exception e) {
-                            LOG.warn("Error refreshing filter for rule: {}. Will retry again in {}ms.", s.rule, timerIntevalMs, e);
+                            LOG.warn("Error refreshing filter for rule: {}. Will retry again in {}ms.", s.rules, timerIntevalMs, e);
                         }
                     });
                 } catch (Exception e) {
@@ -109,38 +109,9 @@ public class DefaultFilterWatcher implements FilterWatcher, InitializingBean, Di
     }
 
     @Override
-    public Closeable watch(String filterRule, Consumer<FilterResults> callback) {
-        String effectiveFilterRule;
-        if (StringUtils.isEmpty(filterRule)) {
-            effectiveFilterRule = MATCH_ANY_RULE;
-        } else {
-            effectiveFilterRule = filterRule.trim();
-        }
-
-        final FilterSession session;
-        synchronized (sessionByRule) {
-            // Create a new session if necessary
-            session = sessionByRule.computeIfAbsent(effectiveFilterRule, FilterSession::new);
-            // Register the callback with the session
-            session.addCallback(callback);
-        }
-
-        // Remove the callback and close any sessions we no longer need
-        return () -> {
-            synchronized (sessionByRule) {
-                session.removeCallback(callback);
-                garbageCollectSessions();
-            }
-        };
-    }
-
-    private void garbageCollectSessions() {
-        List<FilterSession> sessionsToRemove = sessionByRule.values().stream()
-                .filter(s -> s.callbacks.isEmpty())
-                .collect(Collectors.toList());
-        for (FilterSession session : sessionsToRemove) {
-            sessionByRule.remove(session.rule);
-        }
+    public Session watch(final Set<String> filterRules,
+                         final Consumer<FilterResults> callback) {
+        return new FilterSession(filterRules, callback);
     }
 
     @EventHandler(ueis = {
@@ -159,30 +130,32 @@ public class DefaultFilterWatcher implements FilterWatcher, InitializingBean, Di
     })
     public void inventoryChangeEventHandler(final IEvent event) {
         // Filters can depend on arbitrary node fields & relationships so we need to refresh these periodically
-        sessionByRule.values().forEach(FilterSession::requestRefresh);
+        sessions.forEach(FilterSession::requestRefresh);
     }
     
     private static class FilterResultsImpl implements FilterResults {
-        private final Map<Integer, Map<InetAddress, Set<String>>> nodeIpServiceMap;
+        private final Map<String, Map<Integer, Map<InetAddress, Set<String>>>> ruleNodeIpServiceMap;
 
-        public FilterResultsImpl(Map<Integer, Map<InetAddress, Set<String>>> nodeIpServiceMap) {
-            this.nodeIpServiceMap = Objects.requireNonNull(nodeIpServiceMap);
+        public FilterResultsImpl(Map<String, Map<Integer, Map<InetAddress, Set<String>>>> ruleNodeIpServiceMap) {
+            this.ruleNodeIpServiceMap = Objects.requireNonNull(ruleNodeIpServiceMap);
         }
 
         @Override
-        public Map<Integer, Map<InetAddress, Set<String>>> getNodeIpServiceMap() {
-            return nodeIpServiceMap;
+        public Map<String, Map<Integer, Map<InetAddress, Set<String>>>> getRuleNodeIpServiceMap() {
+            return this.ruleNodeIpServiceMap;
         }
 
         @Override
         public Set<ServiceRef> getServicesNamed(String serviceName) {
             Set<ServiceRef> serviceRefs = new LinkedHashSet<>();
-            for (Map.Entry<Integer, Map<InetAddress, Set<String>>> nodeEntry : nodeIpServiceMap.entrySet()) {
-                int nodeId = nodeEntry.getKey();
-                for (Map.Entry<InetAddress, Set<String>> interfaceEntry : nodeEntry.getValue().entrySet()) {
-                    InetAddress interfaceAddress = interfaceEntry.getKey();
-                    if (interfaceEntry.getValue().contains(serviceName)) {
-                        serviceRefs.add(new ServiceRef(nodeId, interfaceAddress, serviceName));
+            for (final var rule : this.ruleNodeIpServiceMap.values()) {
+                for (final var nodeEntry : rule.entrySet()) {
+                    int nodeId = nodeEntry.getKey();
+                    for (final var interfaceEntry : nodeEntry.getValue().entrySet()) {
+                        InetAddress interfaceAddress = interfaceEntry.getKey();
+                        if (interfaceEntry.getValue().contains(serviceName)) {
+                            serviceRefs.add(new ServiceRef(nodeId, interfaceAddress, serviceName));
+                        }
                     }
                 }
             }
@@ -190,42 +163,31 @@ public class DefaultFilterWatcher implements FilterWatcher, InitializingBean, Di
         }
     }
 
-    private class FilterSession {
-        private final String rule;
-        private final List<Consumer<FilterResults>> callbacks = new LinkedList<>();
+    private class FilterSession implements Session {
+        private Set<String> rules;
+        private final Consumer<FilterResults> callback;
         private final AtomicReference<FilterResults> lastFilterResultsRef = new AtomicReference<>();
         private long lastRefreshedMs;
         private long lastRefreshRequestMs;
 
-        public FilterSession(String rule) {
-            this.rule = Objects.requireNonNull(rule);
-            filterDao.validateRule(rule);
-        }
+        public FilterSession(final Set<String> rules, final Consumer<FilterResults> callback) {
+            this.rules = normalizeFilters(Objects.requireNonNull(rules));
+            this.callback = Objects.requireNonNull(callback);
 
-        public synchronized void addCallback(Consumer<FilterResults> callback) {
-            callbacks.add(callback);
+            // Initially request a refresh
+            requestRefresh();
 
-            // Request a refresh whenever callback are added
-            if(requestRefresh()) {
-                // Our request actually triggered a refresh, so the callback was already made
-                return;
-            }
-
-            final FilterResults lastFilterResults = lastFilterResultsRef.get();
-            if (lastFilterResults != null) {
-                callback.accept(lastFilterResults);
-            }
-        }
-
-        public synchronized void removeCallback(Consumer<FilterResults> callback) {
-            callbacks.remove(callback);
+            // Register ourself for updates
+            DefaultFilterWatcher.this.sessions.add(this);
         }
 
         public synchronized void refreshNow() {
             lastRefreshedMs = System.currentTimeMillis();
-            LOG.debug("Refreshing results for filter rule: {}", rule);
+            LOG.debug("Refreshing results for filter rules: {}", rules);
             FilterResults newFilterResults = sessionUtils.withReadOnlyTransaction(() ->
-                    new FilterResultsImpl(filterDao.getNodeIPAddressServiceMap(rule)));
+                    new FilterResultsImpl(rules.stream()
+                            .collect(Collectors.toMap(Function.identity(),
+                                                      (rule) -> filterDao.getNodeIPAddressServiceMap(rule)))));
             LOG.debug("Done refreshing results for rule.");
 
             final FilterResults lastFilterResults = lastFilterResultsRef.get();
@@ -235,7 +197,7 @@ public class DefaultFilterWatcher implements FilterWatcher, InitializingBean, Di
             }
 
             lastFilterResultsRef.set(newFilterResults);
-            notifyCallbacks(newFilterResults);
+            notifyCallback(newFilterResults);
         }
 
         public synchronized boolean refreshIfNeeded() {
@@ -254,14 +216,23 @@ public class DefaultFilterWatcher implements FilterWatcher, InitializingBean, Di
             return refreshIfNeeded();
         }
 
-        private void notifyCallbacks(FilterResults results) {
-            callbacks.forEach(c -> {
-                try {
-                    c.accept(results);
-                } catch (Exception e) {
-                    LOG.warn("Error notifying callback: {} for results of filter rule: {}.", c, rule, e);
-                }
-            });
+        private void notifyCallback(FilterResults results) {
+            try {
+                this.callback.accept(results);
+            } catch (Exception e) {
+                LOG.warn("Error notifying callback: {} for results of filter rules: {}.", this.callback, rules, e);
+            }
+        }
+
+        @Override
+        public void setFilters(final Set<String> filterRules) {
+            this.rules = normalizeFilters(filterRules);
+            this.refreshNow();
+        }
+
+        @Override
+        public void close() {
+            DefaultFilterWatcher.this.sessions.remove(this);
         }
     }
 
@@ -279,5 +250,23 @@ public class DefaultFilterWatcher implements FilterWatcher, InitializingBean, Di
 
     public void setSessionUtils(SessionUtils sessionUtils) {
         this.sessionUtils = sessionUtils;
+    }
+
+    private Set<String> normalizeFilters(final Set<String> filters) {
+        if (filters == null || filters.isEmpty()) {
+            return Set.of(MATCH_ANY_RULE);
+        } else {
+            // TODO fooker: Return a wildcard if any element is wildcard?
+            return filters.stream()
+                          .map(filter -> {
+                              if (StringUtils.isEmpty(filter)) {
+                                  return MATCH_ANY_RULE;
+                              } else {
+                                  this.filterDao.validateRule(filter);
+                                  return filter.trim();
+                              }
+                          })
+                          .collect(Collectors.toSet());
+        }
     }
 }

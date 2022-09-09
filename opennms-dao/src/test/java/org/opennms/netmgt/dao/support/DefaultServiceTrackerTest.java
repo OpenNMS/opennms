@@ -138,10 +138,18 @@ public class DefaultServiceTrackerTest implements ServiceTracker.ServiceListener
         private final List<Consumer<FilterResults>> callbacks = new LinkedList<>();
 
         @Override
-        public Closeable watch(String filterRule, Consumer<FilterResults> callback) {
+        public Session watch(Set<String> filterRule, Consumer<FilterResults> callback) {
             callbacks.add(callback);
-            return () -> {
-                callbacks.remove(callback);
+            return new Session() {
+                @Override
+                public void close() {
+                    callbacks.remove(callback);
+                }
+
+                @Override
+                public void setFilters(final Set<String> filterRules) {
+                    throw new UnsupportedOperationException();
+                }
             };
         }
 
@@ -158,7 +166,7 @@ public class DefaultServiceTrackerTest implements ServiceTracker.ServiceListener
         private void rebuildResultsAndNotify() {
             FilterResults filterResults = new FilterResults() {
                 @Override
-                public Map<Integer, Map<InetAddress, Set<String>>> getNodeIpServiceMap() {
+                public Map<String, Map<Integer, Map<InetAddress, Set<String>>>> getRuleNodeIpServiceMap() {
                     return Collections.emptyMap();
                 }
 
