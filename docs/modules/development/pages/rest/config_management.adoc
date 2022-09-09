@@ -85,7 +85,9 @@ Returns 400 when the path parameter has a wrong format, specifies a nonexistent 
 400 Return: {"MESSAGE": "<ERROR_MESSAGE>"}
 
 | `/cm/\{configName}/\{configId}/\{pathToParent}/\{nodeName}` |
-Updates or inserts a part of configuration specified by configName, configId, path to the parent node in JsonPath format and node name. Returns 404 when the configuration does not exist. Returns 400 When the pathToParent parameter has a wrong format or specifies a nonexistent path or provided part of configuration has a wrong format.
+Updates or inserts a part of the configuration specified by `configName`, `configId`, and the path to the parent node in JSONPath format with the node name.
+Returns 404 when the configuration does not exist.
+Returns 400 when the `pathToParent` parameter has a wrong format, specifies a nonexistent path, or the provided part of the configuration has a wrong format.
 
 200 Return: nothing
 
