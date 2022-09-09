@@ -74,7 +74,9 @@ Returns 400 when the path parameter has a wrong format, specifies a nonexistent 
 
 400: Return: {"MESSAGE": "<ERROR_MESSAGE>"}
 | `/cm/\{configName}/\{configId}/\{path}` |
-Updates a part of configuration specified by configName, configId and the path to the part in JsonPath format. Returns 404 when the configuration does not exist. Returns 400 When the path parameter has a wrong format or specifies a nonexistent path or provided part of configuration has a wrong format.
+Updates a part of the configuration specified by `configName`, `configId`, and the path to the part in JSONPath format.
+Returns 404 when the configuration does not exist.
+Returns 400 when the path parameter has a wrong format, specifies a nonexistent path, or the provided part of the configuration has a wrong format.
 
 200 Return: nothing
 
