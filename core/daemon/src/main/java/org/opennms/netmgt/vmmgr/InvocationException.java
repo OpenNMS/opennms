@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2022 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,22 +26,16 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.daemon;
+package org.opennms.netmgt.vmmgr;
 
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.InitializingBean;
+public class InvocationException extends Exception {
+	private static final long serialVersionUID = 1L;
 
-/**
- * <p>SpringServiceDaemon interface.</p>
- *
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- */
-public interface SpringServiceDaemon extends InitializingBean, DisposableBean {
-    /**
-     * <p>start</p>
-     *
-     * @throws java.lang.Exception if any.
-     */
-    void start() throws ServiceDaemonException;
+	public InvocationException(final Throwable t) {
+		super(t);
+	}
+
+	public InvocationException(final String message, final Throwable t) {
+		super(message, t);
+	}
 }

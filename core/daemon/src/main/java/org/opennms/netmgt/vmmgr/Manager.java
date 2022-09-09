@@ -32,7 +32,6 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -98,7 +97,7 @@ public class Manager implements ManagerMBean {
      *  Register shutdown hook to handle SIGTERM signal for the process.
      */
     public void init() {
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> stop()));
+        Runtime.getRuntime().addShutdownHook(new Thread(this::stop));
     }
     /**
      * <p>stop</p>
@@ -220,12 +219,7 @@ public class Manager implements ManagerMBean {
             }
         }
         LOG.debug("Thread dump of {} threads ({} daemons):", threads.size(), daemons);
-        Map<Thread, StackTraceElement[]> sortedThreads = new TreeMap<Thread, StackTraceElement[]>(new Comparator<Thread>() {
-            @Override
-            public int compare(Thread t1, Thread t2) {
-                return new Long(t1.getId()).compareTo(new Long(t2.getId()));
-            }
-        });
+        Map<Thread, StackTraceElement[]> sortedThreads = new TreeMap<>((t1, t2) -> Long.valueOf(t1.getId()).compareTo(Long.valueOf(t2.getId())));
         sortedThreads.putAll(threads);
 
         for (Entry<Thread, StackTraceElement[]> entry : sortedThreads.entrySet()) {

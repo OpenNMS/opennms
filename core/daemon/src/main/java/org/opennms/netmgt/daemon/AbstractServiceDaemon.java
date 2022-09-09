@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -217,17 +217,12 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
      */
     public final void init() {
         
-        Logging.withPrefix(getName(), new Runnable() {
+        Logging.withPrefix(getName(), () -> {
+            LOG.info("{} initializing.", getName());
 
-            @Override
-            public void run() {
-                LOG.info("{} initializing.", getName());
+            onInit();
 
-                onInit();
-
-                LOG.info("{} initialization complete.", getName());
-            }
-            
+            LOG.info("{} initialization complete.", getName());
         });
     }
 
@@ -238,21 +233,16 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
      */
     @Override
     public final void pause() {
-        Logging.withPrefix(getName(), new Runnable() {
+        Logging.withPrefix(getName(), () -> {
+            if (!isRunning()) return;
 
-            @Override
-            public void run() {
-                if (!isRunning()) return;
+            LOG.info("{} pausing.", getName());
 
-                LOG.info("{} pausing.", getName());
+            setStatus(PAUSE_PENDING);
+            onPause();
+            setStatus(PAUSED);
 
-                setStatus(PAUSE_PENDING);
-                onPause();
-                setStatus(PAUSED);
-
-                LOG.info("{} paused.", getName());
-            }
-            
+            LOG.info("{} paused.", getName());
         });
     }
 
@@ -262,21 +252,16 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
     @Override
     public final void resume() {
         
-        Logging.withPrefix(getName(), new Runnable() {
+        Logging.withPrefix(getName(), () -> {
+            if (!isPaused()) return;
 
-            @Override
-            public void run() {
-                if (!isPaused()) return;
+            LOG.info("{} resuming.", getName());
 
-                LOG.info("{} resuming.", getName());
+            setStatus(RESUME_PENDING);
+            onResume();
+            setStatus(RUNNING);
 
-                setStatus(RESUME_PENDING);
-                onResume();
-                setStatus(RUNNING);
-
-                LOG.info("{} resumed.", getName());
-            }
-            
+            LOG.info("{} resumed.", getName());
         });
     }
 
@@ -287,19 +272,14 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
     @Override
     public final synchronized void start() {
         
-        Logging.withPrefix(getName(), new Runnable() {
+        Logging.withPrefix(getName(), () -> {
+            LOG.info("{} starting.", getName());
 
-            @Override
-            public void run() {
-                LOG.info("{} starting.", getName());
+            setStatus(STARTING);
+            onStart();
+            setStatus(RUNNING);
 
-                setStatus(STARTING);
-                onStart();
-                setStatus(RUNNING);
-
-                LOG.info("{} started.", getName());
-            }
-            
+            LOG.info("{} started.", getName());
         });
         
     }
@@ -311,19 +291,14 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
     @Override
     public final synchronized void stop() {
         
-        Logging.withPrefix(getName(), new Runnable() {
+        Logging.withPrefix(getName(), () -> {
+            LOG.info("{} stopping.", getName());
 
-            @Override
-            public void run() {
-                LOG.info("{} stopping.", getName());
+            setStatus(STOP_PENDING);
+            onStop();
+            setStatus(STOPPED);
 
-                setStatus(STOP_PENDING);
-                onStop();
-                setStatus(STOPPED);
-
-                LOG.info("{} stopped.", getName());
-            }
-            
+            LOG.info("{} stopped.", getName());
         });
         
     }

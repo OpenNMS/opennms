@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -40,8 +40,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class DaemonTools {
-
     public static final Logger LOG = LoggerFactory.getLogger(DaemonTools.class);
+
+    protected DaemonTools() {
+    }
 
     public static void handleReloadEvent(IEvent e, String daemonName, Consumer<IEvent> handleConfigurationChanged) {
         final IParm daemonNameParm = e.getParm(EventConstants.PARM_DAEMON_NAME);

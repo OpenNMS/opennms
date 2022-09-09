@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,11 +28,11 @@
 
 package org.opennms.netmgt.vmmgr;
 
-public class InvalidDataSourceException extends Exception {
-    private static final long serialVersionUID = -1236387740430245142L;
+public class InvalidDataSourceException extends RuntimeException {
+    private static final long serialVersionUID = 1L;
 
     public InvalidDataSourceException() {
-        // TODO Auto-generated constructor stub
+    	super();
     }
 
     public InvalidDataSourceException(final String message) {

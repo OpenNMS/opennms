@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2005-2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -43,7 +43,7 @@ public class StatusGetter {
     private static final Logger LOG = LoggerFactory.getLogger(StatusGetter.class);
     public static final Pattern SERVICE_STATUS_PATTERN = Pattern.compile("Status: OpenNMS:Name=(\\S+) = (\\S+)");
 
-    public static enum Status {
+    public enum Status {
         UNKNOWN, RUNNING, PARTIALLY_RUNNING, NOT_RUNNING, CONNECTION_REFUSED
     }
 
@@ -60,7 +60,7 @@ public class StatusGetter {
     }
 
     public Map<String,String> retrieveStatus() throws IllegalStateException {
-        final LinkedHashMap<String, String> results = new LinkedHashMap<String, String>();
+        final LinkedHashMap<String, String> results = new LinkedHashMap<>();
 
         try {
             @SuppressWarnings("unchecked")
@@ -77,7 +77,7 @@ public class StatusGetter {
                 }
                 results.put(m.group(1), m.group(2).toLowerCase());
             }
-        } catch (final Throwable e) {
+        } catch (final Exception e) {
             throw new IllegalStateException("Unable to retrieve status from running services.", e);
         }
 
@@ -90,12 +90,12 @@ public class StatusGetter {
         try {
             results = this.retrieveStatus();
         } catch (final IllegalStateException e) {
-            LOG.debug("Could not fetch status: " + e.getMessage());
             if (m_controller.isVerbose()) {
-                System.out.println("Could not connect to the OpenNMS JVM"
+                LOG.debug("Could not connect to the OpenNMS JVM"
                         + " (OpenNMS might not be running or "
-                        + "could be starting up or shutting down): "
-                        + e.getMessage());
+                        + "could be starting up or shutting down)", e);
+            } else {
+                LOG.debug("Could not fetch status: {} ", e.getMessage());
             }
             m_status = Status.CONNECTION_REFUSED;
             return;
