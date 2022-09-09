@@ -46,7 +46,6 @@ docker buildx build -t horizon \
   --build-arg BUILD_NUMBER="${BUILD_NUMBER}" \
   --build-arg BUILD_URL="${BUILD_URL}" \
   --build-arg BUILD_BRANCH="${BUILD_BRANCH}" \
-  --build-arg CONFD_ARCH="${CONFD_ARCH}" \
   --load \
   --progress plain \
   .

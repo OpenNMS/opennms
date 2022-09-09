@@ -104,7 +104,13 @@ public class UsageStatisticsReportDTO {
 
     public int getOutages() {return outages;}
 
-    public void setOutages(int soutages) {this.outages = outages;}
+    public void setOutages(int outages) {this.outages = outages;}
+
+    private int applications;
+
+    public int getApplications(){return applications;}
+
+    public void setApplications(int applications){this.applications = applications;}
 
     public void setSystemId(String systemId) {
         m_systemId = systemId;
