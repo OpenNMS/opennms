@@ -11,10 +11,6 @@
   <name>OpenNMS :: Features :: Vaadin + Dependencies</name>
   <description>The Vaadin web application framework including some addons and osgi related packages.</description>
   <packaging>pom</packaging>
-  <properties>
-    <vaadinGentyrefVersion>1.2.0.vaadin1</vaadinGentyrefVersion>
-    <vaadinJsoupVersion>1.15.3</vaadinJsoupVersion>
-  </properties>
   <dependencies>
     <dependency>
       <groupId>com.vaadin</groupId>
@@ -56,7 +52,7 @@
     <dependency>
       <groupId>org.jsoup</groupId>
       <artifactId>jsoup</artifactId>
-      <version>${vaadinJsoupVersion}</version> <!-- Vaadin uses a different jsoup version than globally defined -->
+      <version>${vaadinJsoupVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.vaadin-components</groupId>
