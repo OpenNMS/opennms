@@ -2792,6 +2792,7 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RSeMalmNobe_IF_IFNAME_MAP.put(5183, "StackSub-St2-1");
         RSeMalmNobe_IF_IFDESCR_MAP.put(5183, "StackSub-St2-1");
         
+
         SSeMalmNobe_IP_IF_MAP.put(InetAddressUtils.addr("10.108.191.171"), 13600001);
         SSeMalmNobe_IF_IFNAME_MAP.put(2013, "2/13");
         SSeMalmNobe_IF_IFDESCR_MAP.put(2013, "Alcatel-Lucent 2/13");
@@ -3360,7 +3361,7 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
     }    
 
     public OnmsNode getSSeMalmNobe561() {
-        return getNode(SSeMalmNobe_NAME,SSeMalmNobe_SYSOID,SSeMalmNobe_IP,SSeMalmNobe_IP_IF_MAP,SSeMalmNobe_IF_IFNAME_MAP,SSeMalmNobe_IF_MAC_MAP,SSeMalmNobe_IF_IFDESCR_MAP,SSeMalmNobe_IF_IFALIAS_MAP);
+        return getNode(SSeMalmNobe_NAME,SSeMalmNobe_SYSOID,SSeMalmNobe_IP,SSeMalmNobe_IP_IF_MAP,SSeMalmNobe_IF_IFNAME_MAP,SSeMalmNobe_IF_MAC_MAP,SSeMalmNobe_IF_IFDESCR_MAP,SSeMalmNobe_IF_IFALIAS_MAP, SSeMalmNobe_IF_NETMASK_MAP);
     }    
 
 }
