@@ -87,9 +87,12 @@ import sun.misc.SignalHandler;
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj</a>
  */
 public class Invoker {
-	
 	private static final Logger LOG = LoggerFactory.getLogger(Invoker.class);
 	
+	@SuppressWarnings("rawtypes")
+	private static final Class[] STRING_ARRAY_CLASS = new Class[] { String.class };
+	private static final String STATUS_METHOD = "status";
+
     private MBeanServer m_server;
     private InvokeAtType m_atType;
     private boolean m_reverse = false;
@@ -147,27 +150,27 @@ public class Invoker {
                         getServer().setAttribute(name, getAttribute(attrib));
                     }
                 }
-            } catch (Throwable t) {
-                LOG.error("An error occurred loading the mbean {} of type {}", service.getName(), service.getClassName(), t);
-                invokerService.setBadThrowable(t);
+            } catch (final Exception e) {
+                LOG.error("An error occurred loading the mbean {} of type {}", service.getName(), service.getClassName(), e);
+                invokerService.setBadThrowable(e);
             }
         }
     }
 
+    @SuppressWarnings("java:S2696")
     private void registerSignalHandlerOnce() {
         if (s_handler != null) return;
 
         try {
             s_handler = Signal.handle(new Signal("USR1"), signal -> writeStatusUpdate());
-        } catch (final Throwable t) {
-            System.err.println("WARNING: failed to register service status signal handler");
-            t.printStackTrace();
+        } catch (final Exception e) {
+            LOG.warn("failed to register service status signal handler", e);
         }
     }
 
     private void writeStatusUpdate() {
         if (m_statusPath == null) {
-            System.err.println("WARNING: status signal triggered, but no status path is configured!");
+            LOG.warn("status signal triggered, but no status path is configured!");
             return;
         }
 
@@ -176,13 +179,12 @@ public class Invoker {
         for (final var invokerService : getServices()) {
             final var serviceName = invokerService.getService().getName();
             for (final var invoke : invokerService.getService().getInvokes()) {
-                if ("status".equals(invoke.getMethod())) {
+                if (STATUS_METHOD.equals(invoke.getMethod())) {
                     try {
                         Object result = invoke(invoke, invokerService.getMbean());
                         output.append(StatusGetter.formatStatusEntry(serviceName, result.toString())).append("\n");
                     } catch (final Throwable e) {
-                        System.err.println("ERROR: an error occurred while calling 'status' on " + serviceName);
-                        e.printStackTrace();
+                        LOG.error("an error occurred while calling 'status' on {}", serviceName, e);
                         output.append(StatusGetter.formatStatusEntry(serviceName, "STATUS_CHECK_ERROR")).append("\n");
                         output.append(serviceName).append("=").append("STATUS_CHECK_ERROR").append("\n");
                     }
@@ -193,8 +195,7 @@ public class Invoker {
         try {
             Files.writeString(m_statusPath, output.toString(), Charset.defaultCharset(), CREATE, TRUNCATE_EXISTING);
         } catch (final IOException e) {
-            System.err.println("ERROR: failed to write current status to " + m_statusPath.toString());
-            e.printStackTrace();
+            LOG.error("failed to write current status to {}", m_statusPath, e);
         }
     }
 
@@ -222,14 +223,14 @@ public class Invoker {
     public List<InvokerResult> invokeMethods() {
         List<InvokerService> invokerServicesOrdered;
         if (isReverse()) {
-            invokerServicesOrdered = new ArrayList<InvokerService>(getServices());
+            invokerServicesOrdered = new ArrayList<>(getServices());
             Collections.reverse(invokerServicesOrdered);
         } else {
             // We can  use the original list
             invokerServicesOrdered = getServices();
         }
         
-        List<InvokerResult> resultInfo = new ArrayList<InvokerResult>(invokerServicesOrdered.size());
+        List<InvokerResult> resultInfo = new ArrayList<>(invokerServicesOrdered.size());
         for (int pass = 0, end = getLastPass(); pass <= end; pass++) {
         	LOG.debug("starting pass {}", pass);
             
@@ -305,21 +306,22 @@ public class Invoker {
         List<Argument> args = invoke.getArguments();
         Object[] parms = new Object[0];
         String[] sig = new String[0];
-        if (args != null && args.size() > 0) {
+        if (args != null && !args.isEmpty()) {
             parms = new Object[args.size()];
             sig = new String[args.size()];
             for (int k = 0; k < parms.length; k++) {
                 try {
                     parms[k] = getArgument(args.get(k));
-                } catch (Throwable t) {
-			LOG.error("An error occurred building argument {} for operation {} on MBean {}", k, invoke.getMethod(), mbean.getObjectName(), t);
-                  throw t;
+                } catch (final Throwable t) {
+                	final String message = String.format("An error occurred building argument %d for operation %s on MBean %s", k, invoke.getMethod(), mbean.getObjectName());
+                	LOG.error(message, t);
+                	throw new InvocationException(message, t);
                 }
                 sig[k] = parms[k].getClass().getName();
             }
         }
 
-        if ("status".equals(invoke.getMethod())) {
+        if (STATUS_METHOD.equals(invoke.getMethod())) {
             LOG.debug("Invoking {} on object {}", invoke.getMethod(), mbean.getObjectName());
         } else {
             LOG.info("Invoking {} on object {}", invoke.getMethod(), mbean.getObjectName());
@@ -339,7 +341,7 @@ public class Invoker {
             throw t;
         }
 
-        if ("status".equals(invoke.getMethod())) {
+        if (STATUS_METHOD.equals(invoke.getMethod())) {
             LOG.debug("Invocation {} successful for MBean {}", invoke.getMethod(), mbean.getObjectName());
         } else {
             LOG.info("Invocation {} successful for MBean {}", invoke.getMethod(), mbean.getObjectName());
@@ -350,12 +352,12 @@ public class Invoker {
 
     private Attribute getAttribute(org.opennms.netmgt.config.service.Attribute attrib) throws Exception {
         Class<?> attribClass = Class.forName(attrib.getValue().getType());
-        Constructor<?> construct = attribClass.getConstructor(new Class[] { String.class });
+        Constructor<?> construct = attribClass.getConstructor(STRING_ARRAY_CLASS);
 
         Object value;
         Map<String,String> mdc = Logging.getCopyOfContextMap();
         try {
-            value = construct.newInstance(new Object[] { attrib.getValue().getContent() });
+            value = construct.newInstance(attrib.getValue().getContent());
         } finally {
             Logging.setContextMap(mdc);
         }
@@ -365,11 +367,11 @@ public class Invoker {
 
     private Object getArgument(Argument arg) throws ClassNotFoundException, SecurityException, NoSuchMethodException, IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException {
         Class<?> argClass = Class.forName(arg.getType());
-        Constructor<?> construct = argClass.getConstructor(new Class[] { String.class });
+        Constructor<?> construct = argClass.getConstructor(STRING_ARRAY_CLASS);
 
         Map<String,String> mdc = Logging.getCopyOfContextMap();
         try {
-            return construct.newInstance(new Object[] { arg.getValue().orElse(null) });
+            return construct.newInstance(arg.getValue().orElse(null));
         } finally {
             Logging.setContextMap(mdc);
         }

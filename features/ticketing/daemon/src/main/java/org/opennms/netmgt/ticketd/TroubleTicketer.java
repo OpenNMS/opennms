@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -64,8 +64,8 @@ public class TroubleTicketer implements SpringServiceDaemon, EventListener {
      * Typically wired in by Spring (applicationContext-troubleTicketer.xml)
      * @param eventIpcManager
      */
-	private volatile EventIpcManager m_eventIpcManager;
-    private volatile TicketerServiceLayer m_ticketerServiceLayer;
+	private EventIpcManager m_eventIpcManager;
+    private TicketerServiceLayer m_ticketerServiceLayer;
 
 	/**
 	 * <p>setEventIpcManager</p>
@@ -111,25 +111,14 @@ public class TroubleTicketer implements SpringServiceDaemon, EventListener {
         m_initialized = true;
     }
 
-    //FIXME
-    /**
-     * <p>start</p>
-     *
-     * @throws java.lang.Exception if any.
-     */
     @Override
-    public void start() throws Exception {
-        // DO NOTHING?
+    public void start() {
+    	// nothing to do to "start", we only do state transitions here
     }
 
-    /**
-     * <p>destroy</p>
-     *
-     * @throws java.lang.Exception if any.
-     */
     @Override
     public void destroy() throws Exception {
-        // DO NOTHING?
+    	// like start, nothing to destroy
     }
 
 	/**
@@ -159,11 +148,11 @@ public class TroubleTicketer implements SpringServiceDaemon, EventListener {
 		} else if (EventConstants.TROUBLETICKET_UPDATE_UEI.equals(e.getUei())) {
 			handleUpdateTicket(e);
 		} else if (isReloadConfigEvent(e)) {
-            handleTicketerReload(e);
+            m_ticketerServiceLayer.reloadTicketer();
  		}
         } catch (InsufficientInformationException ex) {
             LOG.warn("Unable to create trouble ticket due to lack of information: {}", ex.getMessage());
-        } catch (Throwable t) {
+        } catch (final Exception t) {
             LOG.error("Error occurred during trouble ticket processing!", t);
         }
 	}
@@ -213,7 +202,7 @@ public class TroubleTicketer implements SpringServiceDaemon, EventListener {
         EventUtils.requireParm(e, EventConstants.PARM_USER);
 
         int alarmId = EventUtils.getIntParm(e, EventConstants.PARM_ALARM_ID, 0);
-        Map<String,String> attributes = new HashMap<String, String>();
+        Map<String,String> attributes = new HashMap<>();
         for (final IParm parm: e.getParmCollection()) {
         	attributes.put(parm.getParmName(), parm.getValue().getContent());
         }
@@ -252,10 +241,6 @@ public class TroubleTicketer implements SpringServiceDaemon, EventListener {
         return isTarget;
     }
     
-    private void handleTicketerReload(IEvent e) {
-        m_ticketerServiceLayer.reloadTicketer();
-    }
-
     public static String getLoggingCategory() {
         return LOG4J_CATEGORY;
     }

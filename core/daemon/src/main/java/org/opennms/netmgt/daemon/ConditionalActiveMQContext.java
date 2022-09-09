@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -46,6 +46,9 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 @ImportResource("/META-INF/opennms/applicationContext-activemq.xml")
 public class ConditionalActiveMQContext {
     public static final String DISABLE_BROKER_SYS_PROP = "org.opennms.activemq.broker.disable";
+
+    protected ConditionalActiveMQContext() {
+    }
 
     static class Condition implements ConfigurationCondition {
          @Override

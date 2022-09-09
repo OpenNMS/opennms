@@ -29,7 +29,6 @@
 package org.opennms.netmgt.vmmgr;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanException;
@@ -99,6 +98,7 @@ public class Controller {
      *
      * @param argv an array of {@link java.lang.String} objects.
      */
+    @SuppressWarnings("java:S106")
     public static void main(String[] argv) {
         
         Logging.putPrefix(LOG4J_CATEGORY);
@@ -193,10 +193,9 @@ public class Controller {
 
         try {
             statusGetter.queryStatus();
-        } catch (Throwable t) {
-            String message = "error invoking \"status\" operation: " + t.getMessage();
-            LOG.error(message, t);
-            System.err.println(message);
+        } catch (final Exception e) {
+            String message = "error invoking \"status\" operation: " + e.getMessage();
+            LOG.error(message, e);
             return 1;
         }
 
@@ -229,10 +228,8 @@ public class Controller {
     public int check() {
         try {
             new DatabaseChecker().check();
-        } catch (final Throwable t) {
-            String message = "error invoking \"check\" operation: " + t.getMessage();
-            LOG.error(message, t);
-            System.err.println(message);
+        } catch (final Exception e) {
+            LOG.error("error invoking \"check\" operation: " + e.getMessage(), e);
             return 1;
         }
         return 0;
@@ -259,17 +256,15 @@ public class Controller {
     public int invokeOperation(String operation) {
         try {
             doInvokeOperation(operation); // Ignore the returned object
-        } catch (final Throwable t) {
-            String message = "error invoking \"" + operation + "\" operation: " + t.getMessage();
-            LOG.error(message, t);
-            System.err.println(message);
+        } catch (final Exception e) {
+            LOG.error("error invoking \"" + operation + "\" operation: " + e.getMessage(), e);
             return 1;
         }
 
         return 0;
     }
 
-    public Object doInvokeOperation(String operation) throws MalformedURLException, IOException, InstanceNotFoundException, MalformedObjectNameException, MBeanException, ReflectionException, NullPointerException {
+    public Object doInvokeOperation(String operation) throws IOException, InstanceNotFoundException, MalformedObjectNameException, MBeanException, ReflectionException, NullPointerException {
         try (JMXConnector connector = JMXConnectorFactory.connect(new JMXServiceURL(getJmxUrl()))) {
             MBeanServerConnection connection = connector.getMBeanServerConnection();
             return connection.invoke(ObjectName.getInstance("OpenNMS:Name=Manager"), operation, new Object[0], new String[0]);
@@ -336,11 +331,13 @@ public class Controller {
         }
 
         if (foundVm == null) {
-            LOG.debug("Could not find OpenNMS JVM (\"" + OPENNMS_JVM_DISPLAY_NAME_SUBSTRING + "\") among JVMs (" + vmNames + ")");
+            LOG.debug("Could not find OpenNMS JVM (\"{}\") among JVMs ({})", OPENNMS_JVM_DISPLAY_NAME_SUBSTRING, vmNames);
         } else {
             try {
                 vm = VirtualMachine.attach(foundVm);
-                LOG.debug("Attached to OpenNMS JVM: " + foundVm.id() + " (" + foundVm.displayName() + ")");
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Attached to OpenNMS JVM: {} ({})", foundVm.id(), foundVm.displayName());
+                }
             } catch (AttachNotSupportedException e) {
                 // This exception is unexpected so log a warning
                 LOG.warn("Cannot attach to OpenNMS JVM", e);
@@ -356,14 +353,14 @@ public class Controller {
             } else {
                 try {
                     vm = VirtualMachine.attach(m_pid);
-                    LOG.debug("Attached to OpenNMS JVM with PID: " + m_pid);
+                    LOG.debug("Attached to OpenNMS JVM with PID: {}", m_pid);
                 } catch (AttachNotSupportedException e) {
                     // This exception is unexpected so log a warning
-                    LOG.warn("Cannot attach to OpenNMS JVM at PID: " + m_pid, e);
+                    LOG.warn("Cannot attach to OpenNMS JVM at PID: {}", m_pid, e);
                 } catch (IOException e) {
                     // This exception will occur if the PID cannot be found
                     // because the process has been terminated
-                    LOG.debug("IOException when attaching to OpenNMS JVM at PID: " + m_pid + ": " + e.getMessage());
+                    LOG.debug("IOException when attaching to OpenNMS JVM at PID: {}: {}", m_pid, e.getMessage());
                 }
             }
         }
@@ -397,7 +394,9 @@ public class Controller {
         // If there is no local JMX connector URI, we need to launch the
         // JMX agent via this VirtualMachine attachment.
         if (connectorAddress == null) {
-            LOG.info("Starting local management agent in JVM with ID: " + vm.id());
+        	if (LOG.isInfoEnabled()) {
+        		LOG.info("Starting local management agent in JVM with ID: {}", vm.id());
+        	}
 
             try {
                 vm.startLocalManagementAgent();

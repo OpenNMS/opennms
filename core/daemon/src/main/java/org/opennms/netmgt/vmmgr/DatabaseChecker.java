@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -66,28 +66,19 @@ public class DatabaseChecker {
 	
     private static List<String> m_required = new ArrayList<>();
     private static List<String> m_optional = new ArrayList<>();
-    private Map<String,JdbcDataSource> m_dataSources = new HashMap<String,JdbcDataSource>();
+    private Map<String,JdbcDataSource> m_dataSources = new HashMap<>();
 
     static {
         m_required.add("opennms");
         m_optional.add("opennms-admin");
     }
     
-    /**
-     * Protected constructor
-     *
-     * @exception java.io.IOException
-     *                Thrown if the specified config file cannot be read
-     * @param configFile a {@link java.lang.String} object.
-     * @throws java.io.IOException if any.
-     * @throws java.lang.ClassNotFoundException if any.
-     */
-    protected DatabaseChecker(final String configFile) throws IOException, ClassNotFoundException {
+    protected DatabaseChecker(final String configFile) throws InvalidDataSourceException {
         final DataSourceConfiguration database;
         try {
             database = JaxbUtils.unmarshal(DataSourceConfiguration.class, new File(configFile));
-        } catch (Exception e) {
-            throw new RuntimeException(String.format("Failed to unmarshal: %s Cause: %s",
+        } catch (final Exception e) {
+            throw new InvalidDataSourceException(String.format("Failed to unmarshal: %s Cause: %s",
                     configFile, e.getMessage()), e);
         }
 
@@ -105,7 +96,7 @@ public class DatabaseChecker {
      * @throws java.io.IOException if any.
      * @throws java.lang.ClassNotFoundException if any.
      */
-    protected DatabaseChecker() throws IOException, ClassNotFoundException {
+    protected DatabaseChecker() throws InvalidDataSourceException, IOException {
     	this(ConfigFileConstants.getFile(ConfigFileConstants.OPENNMS_DATASOURCE_CONFIG_FILE_NAME).getPath());
     }
 
@@ -148,11 +139,11 @@ public class DatabaseChecker {
                 try {
                     Class.forName(dataSource.getClassName());
                     connection = DriverManager.getConnection(dataSource.getUrl(), dataSource.getUserName(), dataSource.getPassword());
-                } catch (final Throwable t) {
+                } catch (final Exception e) {
                     final String errorMessage = "Unable to connect to data source '{}' at URL '{}' with username '{}', check opennms-datasources.xml and your database permissions.";
                     if (m_required.contains(name)) {
                         LOG.error(errorMessage, name, dataSource.getUrl(), dataSource.getUserName());
-                        throw new InvalidDataSourceException("Data source '" + name + "' failed.", t);
+                        throw new InvalidDataSourceException("Data source '" + name + "' failed.", e);
                     } else {
                         LOG.warn(errorMessage, name, dataSource.getUrl(), dataSource.getUserName());
                     }

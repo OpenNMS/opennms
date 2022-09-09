@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,7 +29,6 @@
 package org.opennms.netmgt.daemon;
 
 import java.lang.reflect.UndeclaredThrowableException;
-import java.util.concurrent.Callable;
 
 import org.opennms.core.fiber.Fiber;
 import org.opennms.core.logging.Logging;
@@ -56,15 +55,6 @@ public abstract class AbstractSpringContextJmxServiceDaemon<T extends SpringServ
 
     private int m_status = Fiber.START_PENDING;
 
-    /**
-     * <p>Constructor for AbstractSpringContextJmxServiceDaemon.</p>
-     *
-     * @param <T> a T object.
-     */
-    public AbstractSpringContextJmxServiceDaemon() {
-        super();
-    }
-    
     /**
      * <p>getSpringContext</p>
      *
@@ -93,60 +83,51 @@ public abstract class AbstractSpringContextJmxServiceDaemon<T extends SpringServ
      */
     @Override
     public final void init() {
-        Logging.withPrefix(getLoggingPrefix(), new Runnable() {
+        Logging.withPrefix(getLoggingPrefix(), () -> {
+            LOG.info("{} initializing.", getLoggingPrefix());
+            LOG.debug("SPRING: thread.classLoader={}", Thread.currentThread().getContextClassLoader());
 
-            @Override
-            public void run() {
-                LOG.info("{} initializing.", getLoggingPrefix());
-                LOG.debug("SPRING: thread.classLoader={}", Thread.currentThread().getContextClassLoader());
+            m_context = BeanUtils.getFactory(getSpringContext(), ClassPathXmlApplicationContext.class);
 
-                m_context = BeanUtils.getFactory(getSpringContext(), ClassPathXmlApplicationContext.class);
-
-                LOG.debug("SPRING: context.classLoader= {}",  m_context.getClassLoader());
-                LOG.info("{} initialization complete.", getLoggingPrefix());
-            }
-            
+            LOG.debug("SPRING: context.classLoader= {}",  m_context.getClassLoader());
+            LOG.info("{} initialization complete.", getLoggingPrefix());
         });
     }
     
     /**
      * <p>start</p>
      */
+    @SuppressWarnings("java:S1181")
     @Override
     public final void start() {
         
-        Logging.withPrefix(getLoggingPrefix(), new Runnable() {
+        Logging.withPrefix(getLoggingPrefix(), () -> {
+            LOG.info("{} starting.", getLoggingPrefix());
+            LOG.debug("SPRING: thread.classLoader={}", Thread.currentThread().getContextClassLoader());
 
-            @Override
-            public void run() {
-                LOG.info("{} starting.", getLoggingPrefix());
-                LOG.debug("SPRING: thread.classLoader={}", Thread.currentThread().getContextClassLoader());
+            setStatus(Fiber.STARTING);
+            SpringServiceDaemon daemon = getDaemon();
+            try {
+                daemon.start();
+            } catch (final Throwable t) {
+                LOG.error("Could not start daemon", t);
 
-                setStatus(Fiber.STARTING);
-                SpringServiceDaemon daemon = getDaemon();
                 try {
-                    daemon.start();
-                } catch (Throwable t) {
-                    LOG.error("Could not start daemon: {}", t, t);
-                    
-                    try {
-                        stop();
-                    } catch (Throwable tt) {
-                        LOG.error("Could not stop daemon after it failed to start: {}", tt, tt);
-                    }
-                    
-                    if (t instanceof RuntimeException) {
-                        throw (RuntimeException) t;
-                    } else {
-                        throw new UndeclaredThrowableException(t);
-                    }
+                    stop();
+                } catch (final Throwable tt) {
+                    LOG.error("Could not stop daemon after it failed to start", tt);
                 }
-                setStatus(Fiber.RUNNING);
 
-                LOG.debug("SPRING: context.classLoader= {}",  m_context.getClassLoader());
-                LOG.info("{} starting complete.", getLoggingPrefix());
+                if (t instanceof RuntimeException) {
+                    throw (RuntimeException) t;
+                } else {
+                    throw new UndeclaredThrowableException(t);
+                }
             }
-            
+            setStatus(Fiber.RUNNING);
+
+            LOG.debug("SPRING: context.classLoader= {}",  m_context.getClassLoader());
+            LOG.info("{} starting complete.", getLoggingPrefix());
         });
         
     }
@@ -166,28 +147,17 @@ public abstract class AbstractSpringContextJmxServiceDaemon<T extends SpringServ
      */
     @Override
     public final void stop() {
-        Logging.withPrefix(getLoggingPrefix(), new Runnable() {
+        Logging.withPrefix(getLoggingPrefix(), () -> {
+            setStatus(Fiber.STOP_PENDING);
 
-            @Override
-            public void run() {
-                
-                setStatus(Fiber.STOP_PENDING);
-
-                if (m_context != null) {
-                    m_context.close();
-                }
-                
-                setStatus(Fiber.STOPPED);
+            if (m_context != null) {
+                m_context.close();
             }
             
+            setStatus(Fiber.STOPPED);
         });
     }
 
-    /**
-     * <p>getStatus</p>
-     *
-     * @return a int.
-     */
     @Override
     public final int getStatus() {
         return m_status;
@@ -197,22 +167,10 @@ public abstract class AbstractSpringContextJmxServiceDaemon<T extends SpringServ
         m_status = status;
     }
 
-    /**
-     * <p>status</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
     @Override
     public final String status() {
         try {
-            return Logging.withPrefix(getLoggingPrefix(), new Callable<String>() {
-
-                @Override
-                public String call() {
-                    return Fiber.STATUS_NAMES[getStatus()];
-                }
-
-            });
+            return Logging.withPrefix(getLoggingPrefix(), () -> Fiber.STATUS_NAMES[getStatus()]);
         } catch (Exception e) {
             LOG.error("An exception occurred retrieving status for {}", getLoggingPrefix());
             return "failed";

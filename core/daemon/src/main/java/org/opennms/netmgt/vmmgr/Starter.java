@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -37,7 +37,6 @@ import javax.management.MBeanServer;
 import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.config.ServiceConfigFactory;
 import org.opennms.netmgt.config.service.InvokeAtType;
-import org.opennms.netmgt.config.service.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -102,7 +101,7 @@ public class Starter {
         setupFileResourceProperty("opennms.library.jicmp", System.mapLibraryName("jicmp"), "Initialization of ICMP socket will likely fail.");
         try {
             setupFileResourceProperty("opennms.library.jicmp6", System.mapLibraryName("jicmp6"), "Initialization of ICMPv6 socket will likely fail.");
-        } catch (Throwable e) {
+        } catch (final Exception e) {
             LOG.warn("Could not resolve library path for jicmp6: " + e.getMessage(), e);
         }
         setupFileResourceProperty("opennms.library.jrrd", System.mapLibraryName("jrrd"), "Initialization of RRD code will likely fail if the JniRrdStrategy is used.");
@@ -158,19 +157,7 @@ public class Starter {
 
         for (InvokerResult result : resultInfo) {
             if (result != null && result.getThrowable() != null) {
-                Service service = result.getService();
-                String name = service.getName();
-                String className = service.getClassName();
-
-                String message =
-                        "An error occurred while attempting to start the \"" +
-                                name + "\" service (class " + className + ").  "
-                                + "Shutting down and exiting.";
-
-                LOG.error(message, result.getThrowable());
-
-                System.err.println(message);
-                result.getThrowable().printStackTrace();
+                LOG.error("An error occurred while attempting to start the \"{}\" service (class {}). Shutting down and exiting.", result.getService().getName(), result.getService().getClassName(), result.getThrowable());
 
                 Manager manager = new Manager();
                 manager.stop();

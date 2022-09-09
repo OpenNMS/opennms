@@ -55,8 +55,9 @@ import org.springframework.util.Assert;
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
 public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
-    
-    private static final Logger LOG = LoggerFactory.getLogger(LegacyScheduler.class);
+    private static final String FIBER_NOT_INITIALIZED = "The fiber has never been started";
+
+	private static final Logger LOG = LoggerFactory.getLogger(LegacyScheduler.class);
     
     /**
      * The map of queue that contain {@link ReadyRunnable ready runnable}
@@ -105,11 +106,9 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
     public LegacyScheduler(final String parent, final int maxSize) {
         m_status = START_PENDING;
         m_runner = Executors.newFixedThreadPool(maxSize, new LogPreservingThreadFactory(parent, maxSize));
-        m_queues = new ConcurrentSkipListMap<Long, BlockingQueue<ReadyRunnable>>();
+        m_queues = new ConcurrentSkipListMap<>();
         m_scheduled = 0;
-        synchronized(m_worker) {
-            m_worker = null;
-        }
+        m_worker = null;
     }
 
     /**
@@ -149,12 +148,8 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
         LOG.debug("schedule: Adding ready runnable {} at interval {}", runnable, interval);
 
         Long key = Long.valueOf(interval);
-        if (!m_queues.containsKey(key)) {
-            LOG.debug("schedule: interval queue did not exist, a new one has been created");
-            m_queues.put(key, new LinkedBlockingQueue<ReadyRunnable>());
-        }
 
-        m_queues.get(key).add(runnable);
+        m_queues.computeIfAbsent(key, k -> new LinkedBlockingQueue<>()).add(runnable);
         if (m_scheduled++ == 0) {
             LOG.debug("schedule: queue element added, calling notify all since none were scheduled");
             notifyAll();
@@ -210,10 +205,10 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
     public synchronized void start() {
         Assert.state(m_worker == null, "The fiber has already run or is running");
 
-        synchronized(m_worker) {
-            m_worker = new Thread(this, getName());
-            m_worker.start();
-        }
+        m_worker = new Thread(this, getName());
+        Assert.state(m_worker == null, "Unable to create new thread!");
+
+        m_worker.start();
         m_status = STARTING;
 
         LOG.info("start: scheduler started");
@@ -227,12 +222,10 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
      */
     @Override
     public synchronized void stop() {
-        Assert.state(m_worker != null, "The fiber has never been started");
+        Assert.state(m_worker != null, FIBER_NOT_INITIALIZED);
 
         m_status = STOP_PENDING;
-        synchronized(m_worker) {
-            m_worker.interrupt();
-        }
+        m_worker.interrupt();
         m_runner.shutdown();
 
         LOG.info("stop: scheduler stopped");
@@ -246,7 +239,7 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
      */
     @Override
     public synchronized void pause() {
-        Assert.state(m_worker != null, "The fiber has never been started");
+        Assert.state(m_worker != null, FIBER_NOT_INITIALIZED);
         Assert.state(m_status != STOPPED && m_status != STOP_PENDING, "The fiber is not running or a stop is pending");
 
         if (m_status == PAUSED) {
@@ -265,7 +258,7 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
      */
     @Override
     public synchronized void resume() {
-        Assert.state(m_worker != null, "The fiber has never been started");
+        Assert.state(m_worker != null, FIBER_NOT_INITIALIZED);
         Assert.state(m_status != STOPPED && m_status != STOP_PENDING, "The fiber is not running or a stop is pending");
 
         if (m_status == RUNNING) {
@@ -286,7 +279,7 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
      */
     @Override
     public synchronized int getStatus() {
-        if (m_worker != null && m_worker.isAlive() == false) {
+        if (m_worker != null && !m_worker.isAlive()) {
             m_status = STOPPED;
         }
         return m_status;
@@ -360,6 +353,7 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
                     try {
                         wait();
                     } catch (InterruptedException ex) {
+                        Thread.currentThread().interrupt();
                         // exit
                         break;
                     }
@@ -378,6 +372,7 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
                         LOG.debug("run: no ready runnables scheduled, waiting...");
                         wait();
                     } catch (InterruptedException ex) {
+                        Thread.currentThread().interrupt();
                         break;
                     }
                 }
@@ -429,12 +424,13 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
                                 // Thread Pool Statistics
                                 if (m_runner instanceof ThreadPoolExecutor) {
                                     ThreadPoolExecutor e = (ThreadPoolExecutor) m_runner;
-                                    String ratio = String.format("%.3f", e.getTaskCount() > 0 ? new Double(e.getCompletedTaskCount())/new Double(e.getTaskCount()) : 0);
+                                    String ratio = String.format("%.3f", e.getTaskCount() > 0 ? Double.valueOf(e.getCompletedTaskCount())/Double.valueOf(e.getTaskCount()) : 0);
                                     LOG.debug("thread pool statistics: activeCount={}, taskCount={}, completedTaskCount={}, completedRatio={}, poolSize={}",
                                         e.getActiveCount(), e.getTaskCount(), e.getCompletedTaskCount(), ratio, e.getPoolSize());
                                 }
                             }
                         } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
                             return; // jump all the way out
                         } catch (RejectedExecutionException e) {
                             throw new UndeclaredThrowableException(e);
@@ -455,6 +451,7 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
                     try {
                         wait(1000);
                     } catch (InterruptedException ex) {
+                        Thread.currentThread().interrupt();
                         break; // exit for loop
                     }
                 }
