@@ -52,7 +52,7 @@ public class Schedule {
     private final ReadyRunnable m_schedulable;
     private final ScheduleInterval m_interval;
     private final ScheduleTimer m_timer;
-    private volatile AtomicInteger m_currentExpirationCode = new AtomicInteger();
+    private final AtomicInteger m_currentExpirationCode = new AtomicInteger();
     private volatile boolean m_scheduled = false;
 	
     

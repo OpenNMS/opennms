@@ -107,9 +107,7 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
         m_runner = Executors.newFixedThreadPool(maxSize, new LogPreservingThreadFactory(parent, maxSize));
         m_queues = new ConcurrentSkipListMap<Long, BlockingQueue<ReadyRunnable>>();
         m_scheduled = 0;
-        synchronized(m_worker) {
-            m_worker = null;
-        }
+        m_worker = null;
     }
 
     /**
@@ -210,10 +208,10 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
     public synchronized void start() {
         Assert.state(m_worker == null, "The fiber has already run or is running");
 
-        synchronized(m_worker) {
-            m_worker = new Thread(this, getName());
-            m_worker.start();
-        }
+        m_worker = new Thread(this, getName());
+        Assert.state(m_worker == null, "Unable to create new thread!");
+
+        m_worker.start();
         m_status = STARTING;
 
         LOG.info("start: scheduler started");
@@ -230,9 +228,7 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
         Assert.state(m_worker != null, "The fiber has never been started");
 
         m_status = STOP_PENDING;
-        synchronized(m_worker) {
-            m_worker.interrupt();
-        }
+        m_worker.interrupt();
         m_runner.shutdown();
 
         LOG.info("stop: scheduler stopped");
