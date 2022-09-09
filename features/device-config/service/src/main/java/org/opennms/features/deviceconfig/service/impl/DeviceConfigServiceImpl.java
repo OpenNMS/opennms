@@ -126,13 +126,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     @Override
     public List<RetrievalDefinition> getRetrievalDefinitions(final String ipAddress, final String location) {
         final var iface = findMatchingInterface(ipAddress, location, null);
-        PollerConfig pollerConfig;
-        try {
-            pollerConfig = this.getPollerConfig();
-        } catch (IOException e) {
-            LOG.error("Exception while retrieving pollerConfig", e);
-            return new ArrayList<>();
-        }
+
         return iface
                 // Get all device config services defined for this interface
                 .getMonitoredServices().stream()
@@ -275,10 +269,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         this.pollerConfig = pollerConfig;
     }
 
-    public PollerConfig getPollerConfig() throws IOException {
-        if (this.pollerConfig == null) {
-            this.pollerConfig = ReadOnlyPollerConfigManager.create();
-        }
-        return this.pollerConfig;
+    public PollerConfig getPollerConfig() {
+        return pollerConfig;
     }
 }
