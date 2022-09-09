@@ -184,7 +184,7 @@ jobs:
             echo Automation: << pipeline.parameters.trigger-automation >>
             echo Trigger Flaky Tests: << pipeline.parameters.trigger-flaky >>
       - run:
-          name: To Build or Not To Build
+          name: Detect if build should run
           command: |
             if [ -e ".nightly" ]; then
               PARENT_BRANCH="$(cat .nightly | grep -E '^parent_branch:' | sed -e 's,parent_branch: *,,')"
