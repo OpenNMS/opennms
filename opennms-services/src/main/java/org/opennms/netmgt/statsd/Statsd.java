@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,8 +28,7 @@
 
 package org.opennms.netmgt.statsd;
 
-import java.text.ParseException;
-
+import org.opennms.netmgt.daemon.ServiceDaemonException;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
@@ -45,15 +44,12 @@ import org.opennms.netmgt.model.events.EventUtils;
 import org.quartz.JobDetail;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.CronTriggerFactoryBean;
 import org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 
@@ -65,10 +61,10 @@ import org.springframework.util.Assert;
  */
 @EventListener(name="OpenNMS:Statsd", logPrefix="statsd")
 public class Statsd implements SpringServiceDaemon {
+	private static final Logger LOG = LoggerFactory.getLogger(Statsd.class);
     
-    private static final Logger LOG = LoggerFactory.getLogger(Statsd.class);
-
-    private static final String LOG4J_CATEGORY = "statsd";
+    private static final String NAME = "Statsd";
+    private static final String LOG4J_CATEGORY = Statsd.NAME;
 
     @Autowired
     private NodeDao m_nodeDao;
@@ -87,7 +83,7 @@ public class Statsd implements SpringServiceDaemon {
     private ReportPersister m_reportPersister;
     private Scheduler m_scheduler;
     private ReportDefinitionBuilder m_reportDefinitionBuilder;
-    private volatile EventForwarder m_eventForwarder;
+    private EventForwarder m_eventForwarder;
     
     private long m_reportsStarted = 0;
     private long m_reportsCompleted = 0;
@@ -116,17 +112,16 @@ public class Statsd implements SpringServiceDaemon {
                     LOG.debug("handleReloadConfigEvent: reports unscheduled, rescheduling...");
                     start();
                     LOG.debug("handleRelodConfigEvent: reports rescheduled.");
-                    ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, "Statsd");
-                    ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Statsd");
-                } catch (Throwable exception) {
+                    ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, NAME);
+                    ebldr.addParam(EventConstants.PARM_DAEMON_NAME, NAME);
+                } catch (final Exception exception) {
                     LOG.error("handleReloadConfigurationEvent: Error reloading configuration", exception);
-                    ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, "Statsd");
-                    ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Statsd");
+                    ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, NAME);
+                    ebldr.addParam(EventConstants.PARM_DAEMON_NAME, NAME);
                     ebldr.addParam(EventConstants.PARM_REASON, exception.getLocalizedMessage().substring(1, 128));
                 }
-                if (ebldr != null) {
-                    getEventForwarder().sendNow(ebldr.getEvent());
-                }
+
+                getEventForwarder().sendNow(ebldr.getEvent());
             }
             LOG.debug("handleReloadConfigEvent: lock released.");
         }
@@ -136,7 +131,7 @@ public class Statsd implements SpringServiceDaemon {
     private boolean isReloadConfigEventTarget(IEvent event) {
         boolean isTarget = false;
         
-        if ("Statsd".equalsIgnoreCase(EventUtils.getParm(event, EventConstants.PARM_DAEMON_NAME))) {
+        if (NAME.equalsIgnoreCase(EventUtils.getParm(event, EventConstants.PARM_DAEMON_NAME))) {
             isTarget = true;
         }
         
@@ -152,19 +147,21 @@ public class Statsd implements SpringServiceDaemon {
      */
     /**
      * <p>start</p>
-     *
-     * @throws java.lang.Exception if any.
      */
     @Override
-    public void start() throws Exception {
+    public void start() throws ServiceDaemonException {
         LOG.debug("start: acquiring lock...");
         synchronized (m_scheduler) {
             LOG.info("start: lock acquired (may have reentered), scheduling Reports...");
-            for (ReportDefinition reportDef : m_reportDefinitionBuilder.buildReportDefinitions()) {
-                LOG.debug("start: scheduling Report: {}", reportDef);
-                scheduleReport(reportDef);
-            }
-            LOG.info("start: {} jobs scheduled.", m_scheduler.getJobKeys(GroupMatcher.<JobKey>groupEquals(Scheduler.DEFAULT_GROUP)).size());
+            try {
+				for (ReportDefinition reportDef : m_reportDefinitionBuilder.buildReportDefinitions()) {
+				    LOG.debug("start: scheduling Report: {}", reportDef);
+				    scheduleReport(reportDef);
+				}
+	            LOG.info("start: {} jobs scheduled.", m_scheduler.getJobKeys(GroupMatcher.<JobKey>groupEquals(Scheduler.DEFAULT_GROUP)).size());
+			} catch (final Exception e) {
+				throw new ServiceDaemonException(e);
+			}
         }
         LOG.debug("start: lock released (unless reentrant).");
     }
@@ -192,7 +189,7 @@ public class Statsd implements SpringServiceDaemon {
         }
     }
     
-    private void scheduleReport(ReportDefinition reportDef) throws ClassNotFoundException, NoSuchMethodException, ParseException, SchedulerException, Exception {
+    private void scheduleReport(ReportDefinition reportDef) throws Exception {
         
         //this is most likely reentrant since the method is private and called from start via plural version.
         synchronized (m_scheduler) {
@@ -204,7 +201,7 @@ public class Statsd implements SpringServiceDaemon {
             jobFactory.setConcurrent(false);
             jobFactory.setBeanName(reportDef.getDescription());
             jobFactory.afterPropertiesSet();
-            JobDetail jobDetail = (JobDetail) jobFactory.getObject();
+            JobDetail jobDetail = jobFactory.getObject();
             
             CronTriggerFactoryBean cronReportTrigger = new CronTriggerFactoryBean();
             cronReportTrigger.setBeanName(reportDef.getDescription());
@@ -224,19 +221,17 @@ public class Statsd implements SpringServiceDaemon {
      * @param reportDef a {@link org.opennms.netmgt.statsd.ReportDefinition} object.
      * @throws java.lang.Throwable if any.
      */
-    public void runReport(ReportDefinition reportDef) throws Throwable {
+    public void runReport(ReportDefinition reportDef) throws Exception {
         final ReportInstance report;
         try {
             report = reportDef.createReport(m_nodeDao, m_resourceDao, m_fetchStrategy, m_filterDao);
-        } catch (Throwable t) {
-            LOG.error("Could not create a report instance for report definition {}", reportDef, t);
-            throw t;
+        } catch (final Exception e) {
+            LOG.error("Could not create a report instance for report definition {}", reportDef, e);
+            throw new ReportException(reportDef.getName(), e);
         }
-        
-        // FIXME What if the walker or the persister throws an exception ?
-        getTransactionTemplate().execute(new TransactionCallbackWithoutResult() {
-            @Override
-            public void doInTransactionWithoutResult(TransactionStatus status) {
+
+        final Exception reportException = getTransactionTemplate().execute(status -> {
+        	try {
                 long reportStartTime = System.currentTimeMillis();
                 LOG.debug("Starting report {}", report);
                 accountReportStart();
@@ -248,8 +243,14 @@ public class Statsd implements SpringServiceDaemon {
                 LOG.debug("Report {} persisted", report);
                 accountReportPersist();
                 accountReportRunTime(System.currentTimeMillis() - reportStartTime);
-            }
+        	} catch (final Exception e) {
+        		return e;
+        	}
+        	return null;
         });
+        if (reportException != null) {
+        	throw new ReportException(reportDef.getName(), reportException);
+        }
     }
 
     

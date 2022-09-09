@@ -56,6 +56,7 @@ import org.opennms.core.tracing.api.TracerRegistry;
 import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.core.utils.url.GenericURLFactory;
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
+import org.opennms.netmgt.daemon.ServiceDaemonException;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.MonitoringSystemDao;
@@ -77,6 +78,7 @@ import org.opennms.netmgt.provision.service.operations.NoOpProvisionMonitor;
 import org.opennms.netmgt.provision.service.operations.ProvisionMonitor;
 import org.opennms.netmgt.provision.service.operations.RequisitionImport;
 import org.opennms.netmgt.xml.event.Event;
+import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -110,8 +112,8 @@ public class Provisioner implements SpringServiceDaemon {
     private LifeCycleRepository m_lifeCycleRepository;
     private ProvisionService m_provisionService;
     private ScheduledExecutorService m_scheduledExecutor;
-    private final Map<Integer, ScheduledFuture<?>> m_scheduledNodes = new ConcurrentHashMap<Integer, ScheduledFuture<?>>();
-    private volatile EventForwarder m_eventForwarder;
+    private final Map<Integer, ScheduledFuture<?>> m_scheduledNodes = new ConcurrentHashMap<>();
+    private EventForwarder m_eventForwarder;
     private SnmpAgentConfigFactory m_agentConfigFactory;
 
     private final ThreadFactory newSuspectThreadFactory = new ThreadFactoryBuilder()
@@ -234,16 +236,20 @@ public class Provisioner implements SpringServiceDaemon {
      * @throws java.lang.Exception if any.
      */
     @Override
-    public void start() throws Exception {
+    public void start() throws ServiceDaemonException {
         m_manager.initializeAdapters();
         String enabled = System.getProperty(SCHEDULE_RESCAN_FOR_EXISTING_NODES, "true");
-        if (Boolean.valueOf(enabled)) {
+        if (Boolean.parseBoolean(enabled)) {
             // use a static monitor name for startup use only
             scheduleRescanForExistingNodes("startup");
         } else {
             LOG.warn("The schedule rescan for existing nodes is disabled.");
         }
-        m_importSchedule.start();
+    	try {
+			m_importSchedule.start();
+		} catch (final SchedulerException e) {
+			throw new ServiceDaemonException(e);
+		}
         m_tracerRegistry.init(SystemInfoUtils.getInstanceId());
         Tracer tracer = m_tracerRegistry.getTracer();
         m_provisionService.setTracer(tracer);
@@ -326,7 +332,7 @@ public class Provisioner implements SpringServiceDaemon {
      * @return a {@link org.opennms.netmgt.provision.service.ForceRescanScan} object.
      */
     public ForceRescanScan createForceRescanScan(Integer nodeId, String monitorKey) {
-        LOG.info("createForceRescanScan called with nodeId: "+nodeId);
+        LOG.info("createForceRescanScan called with nodeId: {}", nodeId);
         return new ForceRescanScan(nodeId, m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator, monitorHolder.getMonitor(monitorKey));
     }
 
@@ -406,7 +412,7 @@ public class Provisioner implements SpringServiceDaemon {
      */
     protected void checkNodeListForRemovals(List<NodeScanSchedule> schedules) {
         Set<Integer> keySet = m_scheduledNodes.keySet();
-        List<Integer> markedForDelete = new ArrayList<Integer>(); 
+        List<Integer> markedForDelete = new ArrayList<>(); 
         
         for(int nodeId : keySet) {
             boolean isDirty = false;
@@ -564,10 +570,10 @@ public class Provisioner implements SpringServiceDaemon {
     
             send(importSuccessEvent(monitor, url, rescanExisting, foreignSource), monitor);
     
-        } catch (final Throwable t) {
+        } catch (final Exception e) {
             final String msg = "Exception importing "+url;
-            LOG.error("Exception importing {} using rescanExisting={}", url, rescanExisting, t);
-            send(importFailedEvent((msg+": "+t.getMessage()), url, rescanExisting), monitor);
+            LOG.error("Exception importing {} using rescanExisting={}", url, rescanExisting, e);
+            send(importFailedEvent((msg+": "+e.getMessage()), url, rescanExisting), monitor);
         }
     }
 
@@ -578,16 +584,16 @@ public class Provisioner implements SpringServiceDaemon {
      * @param e a {@link org.opennms.netmgt.events.api.model.IEvent} object.
      */
     @EventHandler(uei = EventConstants.NODE_ADDED_EVENT_UEI)
-    public void handleNodeAddedEvent(IEvent e) {
+    public void handleNodeAddedEvent(IEvent event) {
         NodeScanSchedule scheduleForNode = null;
         LOG.warn("node added event ({})", System.currentTimeMillis());
         try {
             /* we don't force a scan on node added so new suspect doesn't cause 2 simultaneous node scans
              * New nodes that are created another way shouldn't have a 'lastCapsPoll' timestamp set 
              */ 
-            scheduleForNode = getProvisionService().getScheduleForNode(e.getNodeid().intValue(), false, getMonitorKey(e));
-        } catch (Throwable t) {
-            LOG.error("getScheduleForNode fails", t);
+            scheduleForNode = getProvisionService().getScheduleForNode(event.getNodeid().intValue(), false, getMonitorKey(event));
+        } catch (final Exception e) {
+            LOG.error("getScheduleForNode fails", e);
         }
         LOG.warn("scheduleForNode is {}", scheduleForNode);
         if (scheduleForNode != null) {
@@ -606,26 +612,23 @@ public class Provisioner implements SpringServiceDaemon {
         final Integer nodeId = e.getNodeid().intValue();
         final String monitorKey = getMonitorKey(e);
         removeNodeFromScheduleQueue(nodeId);
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    ForceRescanScan scan = createForceRescanScan(nodeId, monitorKey);
-                    Task t = scan.createTask();
-                    t.schedule();
-                    t.waitFor();
-                    NodeScanSchedule scheduleForNode = getProvisionService().getScheduleForNode(nodeId, false, monitorKey); // It has 'false' because a node scan was already executed by ForceRescanScan.
-                    if (scheduleForNode != null) {
-                        addToScheduleQueue(scheduleForNode);
-                    }
-                } catch (InterruptedException ex) {
-                    LOG.error("Task interrupted waiting for rescan of nodeId {} to finish", nodeId, ex);
-                } catch (ExecutionException ex) {
-                    LOG.error("An expected execution occurred waiting for rescan of nodeId {} to finish", nodeId, ex);
+        m_scheduledExecutor.execute(() -> {
+            try {
+                ForceRescanScan scan = createForceRescanScan(nodeId, monitorKey);
+                Task t = scan.createTask();
+                t.schedule();
+                t.waitFor();
+                NodeScanSchedule scheduleForNode = getProvisionService().getScheduleForNode(nodeId, false, monitorKey); // It has 'false' because a node scan was already executed by ForceRescanScan.
+                if (scheduleForNode != null) {
+                    addToScheduleQueue(scheduleForNode);
                 }
+            } catch (InterruptedException ex) {
+                LOG.error("Task interrupted waiting for rescan of nodeId {} to finish", nodeId, ex);
+                Thread.currentThread().interrupt();
+            } catch (ExecutionException ex) {
+                LOG.error("An expected execution occurred waiting for rescan of nodeId {} to finish", nodeId, ex);
             }
-        };
-        m_scheduledExecutor.execute(r);
+        });
     }
     
     @EventHandler(uei = EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI)
@@ -646,45 +649,42 @@ public class Provisioner implements SpringServiceDaemon {
             return;
         }
 
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    final InetAddress addr = addr(ip);
-                    if (addr == null) {
-                    	LOG.error("Unable to convert {} to an InetAddress.", ip);
-                    	return;
-                    }
-
-                    String effectiveLocation = MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID;
-                    if (paramMap.containsKey("location")) {
-                        effectiveLocation = paramMap.get("location");
-                    } else if (event.getDistPoller() != null) {
-                        final OnmsMonitoringSystem monitoringSystem = monitoringSystemDao.get(event.getDistPoller());
-                        if (monitoringSystem != null) {
-                            effectiveLocation = monitoringSystem.getLocation();
-                        } else {
-                            LOG.info("newSuspect event references monitoring system with id {}, but this system was not found. Using the default location.",
-                                    event.getDistPoller());
-                        }
-                    }
-
-                    final String foreignSource = paramMap.get("foreignSource");
-                    LOG.debug("Triggering new suspect scan for: {} at location: {} with foreign source: {}.",
-                            addr, effectiveLocation, foreignSource);
-                    final NewSuspectScan scan = createNewSuspectScan(addr, foreignSource, effectiveLocation, getMonitorKey(event));
-                    Task t = scan.createTask();
-                    t.schedule();
-                    t.waitFor();
-                } catch (InterruptedException ex) {
-                    LOG.error("Task interrupted waiting for new suspect scan of {} at location {} to finish", ip, ex);
-                } catch (Exception ex) {
-                    LOG.error("An unexpected execution occurred waiting for new suspect scan of {} to finish", ip, ex);
-                }
-            }
-        };
         // Run new suspect events in a single thread executor so that only one node will be scanned at a given time.
-        m_newSuspectExecutor.execute(r);
+        m_newSuspectExecutor.execute(() -> {
+            try {
+                final InetAddress addr = addr(ip);
+                if (addr == null) {
+                	LOG.error("Unable to convert {} to an InetAddress.", ip);
+                	return;
+                }
+
+                String effectiveLocation = MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID;
+                if (paramMap.containsKey("location")) {
+                    effectiveLocation = paramMap.get("location");
+                } else if (event.getDistPoller() != null) {
+                    final OnmsMonitoringSystem monitoringSystem = monitoringSystemDao.get(event.getDistPoller());
+                    if (monitoringSystem != null) {
+                        effectiveLocation = monitoringSystem.getLocation();
+                    } else {
+                        LOG.info("newSuspect event references monitoring system with id {}, but this system was not found. Using the default location.",
+                                event.getDistPoller());
+                    }
+                }
+
+                final String foreignSource = paramMap.get("foreignSource");
+                LOG.debug("Triggering new suspect scan for: {} at location: {} with foreign source: {}.",
+                        addr, effectiveLocation, foreignSource);
+                final NewSuspectScan scan = createNewSuspectScan(addr, foreignSource, effectiveLocation, getMonitorKey(event));
+                Task t = scan.createTask();
+                t.schedule();
+                t.waitFor();
+            } catch (InterruptedException ex) {
+                LOG.error("Task interrupted waiting for new suspect scan of {} at location {} to finish", ip, ex);
+                Thread.currentThread().interrupt();
+            } catch (Exception ex) {
+                LOG.error("An unexpected execution occurred waiting for new suspect scan of {} to finish", ip, ex);
+            }
+        });
         
     }
     
@@ -697,8 +697,8 @@ public class Provisioner implements SpringServiceDaemon {
     @EventHandler(uei = EventConstants.NODE_UPDATED_EVENT_UEI)
     public void handleNodeUpdated(IEvent e) {
     	LOG.debug("Node updated event received: {}", e);
-    	
-        if (!Boolean.valueOf(System.getProperty(SCHEDULE_RESCAN_FOR_UPDATED_NODES, "true"))) {
+
+        if (!Boolean.parseBoolean(System.getProperty(SCHEDULE_RESCAN_FOR_UPDATED_NODES, "true"))) {
         	LOG.debug("Rescanning updated nodes is disabled via property: {}", SCHEDULE_RESCAN_FOR_UPDATED_NODES);
         	return;
         }
@@ -712,12 +712,12 @@ public class Provisioner implements SpringServiceDaemon {
                 monitorKey = parm.getValue().getContent();
             }
         }
-        if (!Boolean.valueOf(rescanExisting)) {
+        if (!Boolean.parseBoolean(rescanExisting)) {
             LOG.debug("Rescanning updated nodes is disabled via event parameter: {}", EventConstants.PARM_RESCAN_EXISTING);
             return;
         }
         
-        removeNodeFromScheduleQueue(new Long(e.getNodeid()).intValue());
+        removeNodeFromScheduleQueue(e.getNodeid().intValue());
         NodeScanSchedule scheduleForNode = getProvisionService().getScheduleForNode(e.getNodeid().intValue(), true, monitorKey);
         if (scheduleForNode != null) {
             addToScheduleQueue(scheduleForNode);
@@ -755,21 +755,16 @@ public class Provisioner implements SpringServiceDaemon {
                 
                 LOG.debug("handleRelodConfigEvent: reports rescheduled.");
                 
-                ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, "Provisiond");
-                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Provisiond");
-                
-            } catch (Throwable exception) {
-                
+                ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, Provisioner.NAME);
+                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, Provisioner.NAME);
+            } catch (final Exception exception) {
                 LOG.error("handleReloadConfigurationEvent: Error reloading configuration", exception);
-                ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, "Provisiond");
-                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Provisiond");
+                ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, Provisioner.NAME);
+                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, Provisioner.NAME);
                 ebldr.addParam(EventConstants.PARM_REASON, exception.getLocalizedMessage().substring(1, 128));
-                
             }
             
-            if (ebldr != null) {
-                m_eventForwarder.sendNow(ebldr.getEvent());
-            }
+            m_eventForwarder.sendNow(ebldr.getEvent());
             LOG.info("handleReloadConfigEvent: configuration reloaded.");
         }
         
@@ -782,7 +777,7 @@ public class Provisioner implements SpringServiceDaemon {
         
 
         for (IParm parm : parmCollection) {
-            if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && "Provisiond".equalsIgnoreCase(parm.getValue().getContent())) {
+            if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && Provisioner.NAME.equalsIgnoreCase(parm.getValue().getContent())) {
                 isTarget = true;
                 break;
             }
@@ -802,7 +797,7 @@ public class Provisioner implements SpringServiceDaemon {
         if (m_provisionService.isDiscoveryEnabled()) {
             try {
                 doAddNode(event.getInterface(), EventUtils.getParm(event, EventConstants.PARM_NODE_LABEL), getMonitorKey(event));
-            } catch (Throwable e) {
+            } catch (Exception e) {
                 LOG.error("Unexpected exception processing event: {}", event.getUei(), e);
             }
         }
@@ -834,8 +829,8 @@ public class Provisioner implements SpringServiceDaemon {
     public void handleDeleteInterface(IEvent event) {
         try {
             doDeleteInterface(event.getNodeid(), event.getInterface());
-        } catch (Throwable e) {
-            LOG.error("Unexpected exception processing event: {}", event.getUei(), e);
+        } catch (final Exception e) {
+            logUnexpectedException(event, e);
         }
     }
     
@@ -852,11 +847,11 @@ public class Provisioner implements SpringServiceDaemon {
     public void handleDeleteNode(IEvent event) {
         try {
             doDeleteNode(event.getNodeid());
-        } catch (Throwable e) {
-            LOG.error("Unexpected exception processing event: {}", event.getUei(), e);
+        } catch (final Exception e) {
+            logUnexpectedException(event, e);
         }
     }
-    
+
     private void doDeleteNode(long nodeId) {
         m_provisionService.deleteNode((int)nodeId);
     }
@@ -875,8 +870,8 @@ public class Provisioner implements SpringServiceDaemon {
                 ignoreUnmanaged = Boolean.valueOf(ignoreUnmanagedParm.getValue().getContent());
             }
             doDeleteService(event.getNodeid(), event.getInterfaceAddress() == null ? null : event.getInterfaceAddress(), event.getService(), ignoreUnmanaged);
-        } catch (Throwable e) {
-            LOG.error("Unexpected exception processing event: {}", event.getUei(), e);
+        } catch (final Exception e) {
+            logUnexpectedException(event, e);
         }
     }
     
@@ -892,8 +887,7 @@ public class Provisioner implements SpringServiceDaemon {
         final String rescanExisting = EventUtils.getParm(event, EventConstants.PARM_IMPORT_RESCAN_EXISTING);
         
         if (rescanExisting == null) {
-            final String enabled = System.getProperty(SCHEDULE_RESCAN_FOR_UPDATED_NODES, "true");
-            return enabled;
+            return System.getProperty(SCHEDULE_RESCAN_FOR_UPDATED_NODES, "true");
         }
         
         return rescanExisting;
@@ -966,6 +960,8 @@ public class Provisioner implements SpringServiceDaemon {
         }, 0, TimeUnit.SECONDS);
         try {
             future.get();
+        } catch (final InterruptedException e) {
+        	Thread.currentThread().interrupt();
         } catch (final Exception e) {
             // ignore, we're just waiting for a reasonable chance things were finished
         }
@@ -979,4 +975,9 @@ public class Provisioner implements SpringServiceDaemon {
         var param = e.getParm(EventConstants.PARM_MONITOR_KEY);
         return param != null ? param.getValue().getContent() : null;
     }
+
+	private void logUnexpectedException(IEvent event, Exception e) {
+		LOG.error("Unexpected exception processing event: {}", event.getUei(), e);
+	}
+    
 }

@@ -30,4 +30,8 @@ package org.opennms.netmgt.daemon;
 
 public class ServiceDaemonException extends Exception {
 	private static final long serialVersionUID = 1L;
+
+	public ServiceDaemonException(final Exception e) {
+		super(e);
+	}
 }
