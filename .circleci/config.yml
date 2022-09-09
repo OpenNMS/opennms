@@ -192,6 +192,9 @@ jobs:
               if [ "$(git diff FETCH_HEAD..HEAD | wc -l)" -eq 0 ]; then
                 echo "no changes"
                 exit 0
+              else
+                echo "Changes:"
+                git diff FETCH_HEAD..HEAD
               fi
             fi
       - run:
