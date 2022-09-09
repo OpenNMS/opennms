@@ -36,6 +36,8 @@ import org.opennms.core.soa.lookup.ServiceLookupBuilder;
 import org.opennms.core.soa.lookup.ServiceRegistryLookup;
 import org.opennms.core.soa.support.DefaultServiceRegistry;
 
+import com.google.common.reflect.TypeToken;
+
 public class OsgiTwinPublisher implements TwinPublisher {
 
     private final ServiceLookup<Class<?>, String> blockingServiceLookup;
@@ -57,8 +59,8 @@ public class OsgiTwinPublisher implements TwinPublisher {
     }
 
     @Override
-    public <T> Session<T> register(String key, Class<T> clazz, String location) throws IOException {
-        return this.getDelegate().register(key, clazz, location);
+    public <T> Session<T> register(String key, TypeToken<T> type, String location) throws IOException {
+        return this.getDelegate().register(key, type, location);
     }
 
     @Override
