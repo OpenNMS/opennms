@@ -194,7 +194,7 @@ jobs:
                 exit 0
               else
                 echo "Changes:"
-                git diff FETCH_HEAD..HEAD
+                git diff --name-only FETCH_HEAD..HEAD
               fi
             fi
       - run:
