@@ -271,6 +271,10 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         this.serviceMonitorAdaptor = serviceMonitorAdaptor;
     }
 
+    public void setPollerConfig(PollerConfig pollerConfig) {
+        this.pollerConfig = pollerConfig;
+    }
+
     public PollerConfig getPollerConfig() throws IOException {
         if (this.pollerConfig == null) {
             this.pollerConfig = ReadOnlyPollerConfigManager.create();
