@@ -65,7 +65,8 @@ public interface FilterWatcher {
      * Additional callback will be made if/when the results change.
      *
      * @param filterRules a set of valid filter rule
-     *                    if null, or empty the filter will match everything
+     *                    if null the filter will match everything
+     *                    if empty, the filter will match nothing
      *                    if any element is null or empty the filter will match everything
      * @param callback used for callbacks
      * @return close when done watching

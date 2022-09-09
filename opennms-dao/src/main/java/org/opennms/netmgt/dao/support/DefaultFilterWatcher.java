@@ -253,7 +253,7 @@ public class DefaultFilterWatcher implements FilterWatcher, InitializingBean, Di
     }
 
     private Set<String> normalizeFilters(final Set<String> filters) {
-        if (filters == null || filters.isEmpty()) {
+        if (filters == null) {
             return Set.of(MATCH_ANY_RULE);
         } else {
             // TODO fooker: Return a wildcard if any element is wildcard?
