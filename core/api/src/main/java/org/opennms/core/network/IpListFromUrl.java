@@ -93,35 +93,30 @@ public abstract class IpListFromUrl {
             stream = u.openStream();
 
             // check to see if the file exists
-            if (stream != null) {
-                isr = new InputStreamReader(stream, StandardCharsets.UTF_8);
-                br = new BufferedReader(isr);
+            isr = new InputStreamReader(stream, StandardCharsets.UTF_8);
+            br = new BufferedReader(isr);
 
-                String ipLine = null;
-                String specIP = null;
+            String ipLine = null;
+            String specIP = null;
 
-                // get each line of the file and turn it into a specific range
-                while ((ipLine = br.readLine()) != null) {
-                    ipLine = ipLine.trim();
-                    if (ipLine.length() == 0 || ipLine.charAt(0) == COMMENT_CHAR) {
-                        // blank line or skip comment
-                        continue;
-                    }
-
-                    // check for comments after IP
-                    final int comIndex = ipLine.indexOf(COMMENT_STR);
-                    if (comIndex == -1) {
-                        specIP = ipLine;
-                    } else {
-                        specIP = ipLine.substring(0, comIndex);
-                        ipLine = ipLine.trim();
-                    }
-
-                    iplist.add(specIP);
+            // get each line of the file and turn it into a specific range
+            while ((ipLine = br.readLine()) != null) {
+                ipLine = ipLine.trim();
+                if (ipLine.length() == 0 || ipLine.charAt(0) == COMMENT_CHAR) {
+                    // blank line or skip comment
+                    continue;
                 }
-            } else {
-                // log something
-                LOG.warn("URL does not exist: {}", url);
+
+                // check for comments after IP
+                final int comIndex = ipLine.indexOf(COMMENT_STR);
+                if (comIndex == -1) {
+                    specIP = ipLine;
+                } else {
+                    specIP = ipLine.substring(0, comIndex);
+                    ipLine = ipLine.trim();
+                }
+
+                iplist.add(specIP);
             }
         } catch (final IOException e) {
             LOG.error("Error reading URL: {}: {}", url, e.getLocalizedMessage());
