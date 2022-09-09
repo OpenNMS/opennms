@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -35,6 +35,7 @@ import java.util.Random;
  * when sending messages to Apache Kafka.
  */
 public class RandomPartitionKeyGenerator {
+	private final Random m_random = new Random();
 
 	private final int m_maximum;
 
@@ -47,6 +48,6 @@ public class RandomPartitionKeyGenerator {
 	}
 
 	public int getPartitionKey() {
-		return new Random().nextInt(m_maximum);
+		return m_random.nextInt(m_maximum);
 	}
 }

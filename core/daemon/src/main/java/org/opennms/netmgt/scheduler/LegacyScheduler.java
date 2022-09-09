@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -84,7 +84,7 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
     /**
      * The worker thread that executes this instance.
      */
-    private volatile Thread m_worker;
+    private Thread m_worker;
 
     /**
      * Used to keep track of the number of tasks that have been executed.
@@ -107,7 +107,9 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
         m_runner = Executors.newFixedThreadPool(maxSize, new LogPreservingThreadFactory(parent, maxSize));
         m_queues = new ConcurrentSkipListMap<Long, BlockingQueue<ReadyRunnable>>();
         m_scheduled = 0;
-        m_worker = null;
+        synchronized(m_worker) {
+            m_worker = null;
+        }
     }
 
     /**
@@ -208,8 +210,10 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
     public synchronized void start() {
         Assert.state(m_worker == null, "The fiber has already run or is running");
 
-        m_worker = new Thread(this, getName());
-        m_worker.start();
+        synchronized(m_worker) {
+            m_worker = new Thread(this, getName());
+            m_worker.start();
+        }
         m_status = STARTING;
 
         LOG.info("start: scheduler started");
@@ -226,7 +230,9 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
         Assert.state(m_worker != null, "The fiber has never been started");
 
         m_status = STOP_PENDING;
-        m_worker.interrupt();
+        synchronized(m_worker) {
+            m_worker.interrupt();
+        }
         m_runner.shutdown();
 
         LOG.info("stop: scheduler stopped");
