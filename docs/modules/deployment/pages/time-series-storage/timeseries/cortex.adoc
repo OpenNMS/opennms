@@ -45,6 +45,7 @@ org.opennms.timeseries.tin.metatags.tag.label=${resource:label}" >> ${OPENNMS_HO
 . Configure the Cortex time series storage plugin in {page-component-title}.
 +
 Note that you can omit this step if you use the default settings.
+Substitute the correct host and port for your Cortex cluster in each place where cortex-service-host:9009 appears below.
 +
 [source, console]
 ----
