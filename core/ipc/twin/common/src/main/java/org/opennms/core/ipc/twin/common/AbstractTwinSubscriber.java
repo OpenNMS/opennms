@@ -30,12 +30,14 @@ package org.opennms.core.ipc.twin.common;
 
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.MetricRegistry;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
+import com.google.common.reflect.TypeToken;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.protobuf.InvalidProtocolBufferException;
 import io.opentracing.References;
@@ -105,13 +107,13 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
 
 
     @Override
-    public <T> Closeable subscribe(final String key, final Class<T> clazz, final Consumer<T> consumer) {
+    public <T> Closeable subscribe(final String key, final TypeToken<T> type, final Consumer<T> consumer) {
         if (this.executorService.isShutdown()) {
             throw new IllegalStateException("Subscriber is already closed");
         }
 
         final var subscription = this.subscriptions.computeIfAbsent(key, Subscription::new);
-        return subscription.consume(clazz, consumer);
+        return subscription.consume(type, consumer);
     }
 
     protected void accept(final TwinUpdate twinUpdate) {
@@ -251,22 +253,23 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
          * returned value is closed. If there is a value already available for the subscription, the consumer will be
          * called with this value immediately.
          *
-         * @param clazz The class of the value to consume
          * @param consumer The consumer accepting the values
          * @param <T> The class of the value to consume
          * @return a Closable, stopping the consumption when closed
          */
-        public synchronized <T> Closeable consume(final Class<T> clazz, final Consumer<T> consumer) {
+        public synchronized <T> Closeable consume(final TypeToken<T> type, final Consumer<T> consumer) {
             final Consumer<JsonNode> jsonConsumer = (json) -> {
-                try {
+                try (final var parser = AbstractTwinSubscriber.this.objectMapper.treeAsTokens(json)) {
+                    final var javaType = AbstractTwinSubscriber.this.objectMapper.constructType(type.getType());
+
                     // Deserialize to the final class
-                    final var value = AbstractTwinSubscriber.this.objectMapper.treeToValue(json, clazz);
+                    final T value = AbstractTwinSubscriber.this.objectMapper.readValue(parser, javaType);
 
                     // Forward to typed consumer
                     consumer.accept(value);
 
                 } catch (final Exception e) {
-                    LOG.error("Processing twin update failed: {} as {}", this.key, clazz, e);
+                    LOG.error("Processing twin update failed: {} as {}", this.key, type.getType().getTypeName(), e);
                 }
             };
 

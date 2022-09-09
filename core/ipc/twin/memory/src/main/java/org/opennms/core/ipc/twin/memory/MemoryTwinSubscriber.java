@@ -34,6 +34,8 @@ import java.util.function.Consumer;
 
 import org.opennms.core.ipc.twin.api.TwinSubscriber;
 
+import com.google.common.reflect.TypeToken;
+
 public class MemoryTwinSubscriber implements TwinSubscriber {
 
     private final MemoryTwinPublisher publisher;
@@ -47,8 +49,8 @@ public class MemoryTwinSubscriber implements TwinSubscriber {
     }
 
     @Override
-    public <T> Closeable subscribe(final String key, final Class<T> clazz, final Consumer<T> consumer) {
-        return this.publisher.subscribe(key, this.location, clazz, consumer);
+    public <T> Closeable subscribe(final String key, final TypeToken<T> type, final Consumer<T> consumer) {
+        return this.publisher.subscribe(key, this.location, type, consumer);
     }
 
     @Override

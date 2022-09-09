@@ -41,6 +41,7 @@ import org.opennms.core.ipc.twin.api.TwinPublisher;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.google.common.reflect.TypeToken;
 
 public class MemoryTwinPublisher implements TwinPublisher {
 
@@ -51,7 +52,7 @@ public class MemoryTwinPublisher implements TwinPublisher {
     public MemoryTwinPublisher() {
     }
 
-    private <T> Optional<SessionImpl<T>> findSession(final SessionKey key, final Class<T> clazz) {
+    private <T> Optional<SessionImpl<T>> findSession(final SessionKey key, final TypeToken<T> type) {
         var session = this.sessions.get(key);
         if (session == null && key.hasLocation()) {
             session = this.sessions.get(key.withoutLocation());
@@ -60,7 +61,7 @@ public class MemoryTwinPublisher implements TwinPublisher {
         if (session == null) {
             return Optional.empty();
         }
-        if (session.clazz != clazz) {
+        if (!session.type.equals(type)) {
             throw new IllegalStateException("Session has different class: " + key);
         }
 
@@ -68,7 +69,7 @@ public class MemoryTwinPublisher implements TwinPublisher {
     }
 
     @Override
-    public synchronized <T> Session<T> register(final String key, final Class<T> clazz, final String location) throws IOException {
+    public synchronized <T> Session<T> register(final String key, final TypeToken<T> type, final String location) throws IOException {
         final var sessionKey = new SessionKey(key, location);
 
         if (this.sessions.containsKey(sessionKey)) {
@@ -79,7 +80,7 @@ public class MemoryTwinPublisher implements TwinPublisher {
             throw new IllegalStateException("Session already registered without location: " + sessionKey);
         }
 
-        final var session = new SessionImpl<>(sessionKey, clazz);
+        final var session = new SessionImpl<>(sessionKey, type);
         this.sessions.put(sessionKey, session);
 
         // Find all pending subscriptions for this session and attach them
@@ -87,7 +88,7 @@ public class MemoryTwinPublisher implements TwinPublisher {
         while (pending.hasNext()) {
             final var subscription = pending.next();
             if (Objects.equals(subscription.key, key) && location == null || Objects.equals(subscription.location, location)) {
-                if (subscription.clazz != clazz) {
+                if (!subscription.type.equals(type)) {
                     throw new IllegalStateException("Session has different class: " + sessionKey);
                 }
 
@@ -99,12 +100,12 @@ public class MemoryTwinPublisher implements TwinPublisher {
         return session;
     }
 
-    public synchronized  <T> Subscription<T> subscribe(final String key, final String location, final Class<T> clazz, final Consumer<T> consumer) {
-        final var subscription = new Subscription<T>(key, location, clazz, consumer);
+    public synchronized  <T> Subscription<T> subscribe(final String key, final String location, final TypeToken<T> type, final Consumer<T> consumer) {
+        final var subscription = new Subscription<T>(key, location, type, consumer);
 
         // If the key is already registered, we subscribe to the session and publish the current value.
         // Otherwise, the subscription is stored as pending.
-        this.findSession(new SessionKey(key, location), clazz)
+        this.findSession(new SessionKey(key, location), type)
             .ifPresentOrElse((session) -> session.subscribe(subscription),
                              () -> this.pending.add(subscription));
 
@@ -149,16 +150,16 @@ public class MemoryTwinPublisher implements TwinPublisher {
 
     private class SessionImpl<T> implements TwinPublisher.Session<T> {
         private final SessionKey key;
-        private final Class<T> clazz;
+        private final TypeToken<T> type;
 
         private final AtomicReference<T> current = new AtomicReference<>();
 
         private final Set<Subscription<T>> subscriptions = Sets.newConcurrentHashSet();
 
         private SessionImpl(final SessionKey key,
-                            final Class<T> clazz) {
+                            final TypeToken<T> type) {
             this.key = Objects.requireNonNull(key);
-            this.clazz = Objects.requireNonNull(clazz);
+            this.type = Objects.requireNonNull(type);
         }
 
         @Override
@@ -187,13 +188,13 @@ public class MemoryTwinPublisher implements TwinPublisher {
     private class Subscription<T> implements Closeable {
         public final String key;
         public final String location;
-        public final Class<T> clazz;
+        public final TypeToken<T> type;
         public final Consumer<T> consumer;
 
-        private Subscription(final String key, final String location, final Class<T> clazz, final Consumer<T> consumer) {
+        private Subscription(final String key, final String location, final TypeToken<T> type, final Consumer<T> consumer) {
             this.key = Objects.requireNonNull(key);
             this.location = Objects.requireNonNull(location);
-            this.clazz = Objects.requireNonNull(clazz);
+            this.type = Objects.requireNonNull(type);
             this.consumer = Objects.requireNonNull(consumer);
         }
 
@@ -204,7 +205,7 @@ public class MemoryTwinPublisher implements TwinPublisher {
         @Override
         public void close() throws IOException {
             MemoryTwinPublisher.this.pending.remove(this);
-            MemoryTwinPublisher.this.findSession(new SessionKey(this.key, this.location), this.clazz)
+            MemoryTwinPublisher.this.findSession(new SessionKey(this.key, this.location), this.type)
                                     .ifPresent(session -> session.subscriptions.remove(this));
         }
     }

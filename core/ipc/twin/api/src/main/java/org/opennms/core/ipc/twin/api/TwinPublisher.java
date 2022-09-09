@@ -31,6 +31,8 @@ package org.opennms.core.ipc.twin.api;
 import java.io.Closeable;
 import java.io.IOException;
 
+import com.google.common.reflect.TypeToken;
+
 /**
  * TwinPublisher lives on OpenNMS that handles all the Objects that need to be replicated.
  * At boot up, modules register module specific key with TwinPublisher.
@@ -54,14 +56,22 @@ public interface TwinPublisher extends Closeable {
     /**
      * @param <T>      type of object for replication
      * @param key      unique key for the object.
-     * @param clazz    a class used for serialization.
+     * @param type     Type of T to marshal/unmarshal.
      * @param location targeted Minion location for the object, set null for all locations.
      * @return Session which provides updates to object.
      */
-    <T> Session<T> register(String key, Class<T> clazz, String location) throws IOException;
+    <T> Session<T> register(String key, TypeToken<T> type, String location) throws IOException;
+
+    default <T> Session<T> register(String key, Class<T> clazz, String location) throws IOException {
+        return this.register(key, TypeToken.of(clazz), location);
+    }
+
+    default <T> Session<T> register(String key, TypeToken<T> type) throws IOException {
+        return register(key, type, null);
+    }
 
     default <T> Session<T> register(String key, Class<T> clazz) throws IOException {
-        return register(key, clazz, null);
+        return register(key, TypeToken.of(clazz), null);
     }
 }
 

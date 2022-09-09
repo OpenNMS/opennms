@@ -34,6 +34,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.diff.JsonDiff;
 import com.google.common.base.Strings;
+import com.google.common.reflect.TypeToken;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import io.opentracing.Span;
@@ -95,7 +96,7 @@ public abstract class AbstractTwinPublisher implements TwinPublisher {
     protected abstract void handleSinkUpdate(TwinUpdate sinkUpdate);
 
     @Override
-    public <T> Session<T> register(String key, Class<T> clazz, String location) throws IOException {
+    public <T> Session<T> register(String key, TypeToken<T> type, String location) throws IOException {
         try (Logging.MDCCloseable mdc = Logging.withPrefixCloseable(TwinStrategy.LOG_PREFIX)) {
             SessionKey sessionKey = new SessionKey(key, location);
             LOG.info("Registered a session with key {}", sessionKey);
