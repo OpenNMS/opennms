@@ -171,7 +171,7 @@ public class DefaultFilterWatcher implements FilterWatcher, InitializingBean, Di
         private long lastRefreshRequestMs;
 
         public FilterSession(final Set<String> rules, final Consumer<FilterResults> callback) {
-            this.rules = normalizeFilters(Objects.requireNonNull(rules));
+            this.rules = normalizeFilters(rules);
             this.callback = Objects.requireNonNull(callback);
 
             // Initially request a refresh
