@@ -47,6 +47,11 @@ import javax.management.MBeanServer;
 import javax.management.ObjectInstance;
 import javax.management.ObjectName;
 
+import io.opentelemetry.api.GlobalOpenTelemetry;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.Tracer;
+import io.opentelemetry.context.Scope;
+
 import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.config.service.Argument;
 import org.opennms.netmgt.config.service.Invoke;
@@ -89,7 +94,9 @@ import sun.misc.SignalHandler;
 public class Invoker {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(Invoker.class);
-	
+
+    private final Tracer tracer = GlobalOpenTelemetry.getTracer(this.getClass().getCanonicalName());
+
     private MBeanServer m_server;
     private InvokeAtType m_atType;
     private boolean m_reverse = false;
@@ -144,6 +151,7 @@ public class Invoker {
                 if (attribs != null) {
                     for (final org.opennms.netmgt.config.service.Attribute attrib : attribs) {
                     	LOG.debug("setting attribute {}", attrib.getName());
+                        Span span = Span.current().setAttribute(attrib.getName(), attrib.getValue().getContent());
                         getServer().setAttribute(name, getAttribute(attrib));
                     }
                 }
@@ -228,20 +236,46 @@ public class Invoker {
             // We can  use the original list
             invokerServicesOrdered = getServices();
         }
-        
+
+        Span span = tracer.spanBuilder("invoke " + getAtType().name().toLowerCase() + " methods")
+                .setAttribute("type", getAtType().name())
+                .setAttribute("reverse", isReverse())
+                .setAttribute("fail_fast", isFailFast())
+                .setAttribute("passes", getLastPass() + 1)
+                .startSpan();
+        for (InvokerService service : invokerServicesOrdered) {
+            span.setAttribute("services", service.getService().getName());
+        }
+        Scope scope = span.makeCurrent();
+
         List<InvokerResult> resultInfo = new ArrayList<InvokerResult>(invokerServicesOrdered.size());
         for (int pass = 0, end = getLastPass(); pass <= end; pass++) {
         	LOG.debug("starting pass {}", pass);
-            
+            Span passSpan = tracer.spanBuilder("invoke pass " + pass)
+                    .setAttribute("pass", pass)
+                    .startSpan();
+            Scope passScope = passSpan.makeCurrent();
 
             for (InvokerService invokerService : invokerServicesOrdered) {
                 Service service = invokerService.getService();
                 String name = invokerService.getService().getName();
                 ObjectInstance mbean = invokerService.getMbean();
+                String nameShort = name.replaceFirst("^OpenNMS:Name=", "");
+
+                Span serviceSpan = tracer.spanBuilder("invoke service " + nameShort)
+                        .setAttribute("service", nameShort)
+                        .setAttribute("service_long", name)
+                        .setAttribute("mbean", mbean.getClassName())
+                        .startSpan();
+                Scope serviceScope = serviceSpan.makeCurrent();
 
                 if (invokerService.isBadService()) {
+                    serviceSpan.recordException(invokerService.getBadThrowable());
                     resultInfo.add(new InvokerResult(service, mbean, null, invokerService.getBadThrowable()));
                     if (isFailFast()) {
+                        serviceScope.close(); serviceSpan.end();
+                        passScope.close(); passSpan.end();
+                        scope.close(); span.end();
                         return resultInfo;
                     }
                 }
@@ -251,24 +285,48 @@ public class Invoker {
                         continue;
                     }
 
-                    LOG.debug("pass {} on service {} will invoke method \"{}\"", pass, name, invoke.getMethod()); 
-                    
+                    LOG.debug("pass {} on service {} will invoke method \"{}\"", pass, name, invoke.getMethod());
+                    Span invokeSpan = tracer.spanBuilder("invoke")
+                            .setAttribute("service", name)
+                            .setAttribute("mbean", mbean.getClassName())
+                            .setAttribute("method", invoke.getMethod())
+                            .startSpan();
+                    for (Argument argument : invoke.getArguments()) {
+                        if (argument.getValue().isPresent()) {
+                            invokeSpan.setAttribute("arguments", argument.getValue().get());
+                        }
+                    }
+                    Scope invokeScope = invokeSpan.makeCurrent();
 
                     try {
                         Object result = invoke(invoke, mbean);
                         resultInfo.add(new InvokerResult(service, mbean, result, null));
+                        if (result != null) {
+                            invokeSpan.setAttribute("result", result.toString());
+                        }
                     } catch (Throwable t) {
                         resultInfo.add(new InvokerResult(service, mbean, null, t));
+                        invokeSpan.recordException(t);
                         if (isFailFast()) {
+                            invokeScope.close(); invokeSpan.end();
+                            serviceScope.close(); serviceSpan.end();
+                            passScope.close(); passSpan.end();
+                            scope.close(); span.end();
                             return resultInfo;
                         }
                     }
+
+                    invokeScope.close(); invokeSpan.end();
                 }
+
+                serviceScope.close(); serviceSpan.end();
             }
-            
+            passScope.close(); passSpan.end();
+
             LOG.debug("completed pass {}", pass);
-           
         }
+
+        scope.close(); span.end();
 
         return resultInfo;
     }
@@ -276,7 +334,6 @@ public class Invoker {
     /**
      * Get the last pass for a set of InvokerServices.
      * 
-     * @param invokerServices list to look at
      * @return highest pass value found for all Invoke objects in the
      *      invokerServices list
      */
