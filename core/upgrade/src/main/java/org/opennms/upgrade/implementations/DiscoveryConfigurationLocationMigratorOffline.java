@@ -32,9 +32,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -46,7 +48,6 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.upgrade.api.AbstractOnmsUpgrade;
 import org.opennms.upgrade.api.OnmsUpgradeException;
@@ -59,8 +60,8 @@ public class DiscoveryConfigurationLocationMigratorOffline extends AbstractOnmsU
     private File m_configFile;
     private File m_backupFile;
 
-    public final static String OLD_DEFAULT_LOCATION = "localhost";
-    public final static String NEW_DEFAULT_LOCATION = "Default";
+    public static final String OLD_DEFAULT_LOCATION = "localhost";
+    public static final String NEW_DEFAULT_LOCATION = "Default";
 
 
     public DiscoveryConfigurationLocationMigratorOffline() throws OnmsUpgradeException {
@@ -108,19 +109,17 @@ public class DiscoveryConfigurationLocationMigratorOffline extends AbstractOnmsU
         final NodeList nodeList = document.getElementsByTagName(tag);
         for (int a = 0; a < nodeList.getLength(); a++) {
             Node node = nodeList.item(a).getAttributes().getNamedItem("location");
-            if (node != null) {
-                if (OLD_DEFAULT_LOCATION.equals(node.getNodeValue())) {
-                    node.setNodeValue(NEW_DEFAULT_LOCATION);
-                }
+            if (node != null && OLD_DEFAULT_LOCATION.equals(node.getNodeValue())) {
+                node.setNodeValue(NEW_DEFAULT_LOCATION);
             }
         }
     }
 
     @Override
     public void execute() throws OnmsUpgradeException {
-        Writer out = null;
         try {
             final DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+            docFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
             final DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
             final Document doc = docBuilder.parse(m_configFile);
 
@@ -129,16 +128,18 @@ public class DiscoveryConfigurationLocationMigratorOffline extends AbstractOnmsU
             updateLocations(doc, "include-url");
             updateLocations(doc, "specific");
 
-            final Transformer tf = TransformerFactory.newInstance().newTransformer();
+            TransformerFactory factory = TransformerFactory.newInstance();
+            factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+            factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
+            final Transformer tf = factory.newTransformer();
             tf.setOutputProperty(OutputKeys.ENCODING, StandardCharsets.UTF_8.name());
             tf.setOutputProperty(OutputKeys.INDENT, "yes");
-            out = new StringWriter();
-            tf.transform(new DOMSource(doc), new StreamResult(out));
-            FileUtils.write(m_configFile, out.toString());
+            try (Writer out = new StringWriter()){
+                tf.transform(new DOMSource(doc), new StreamResult(out));
+                FileUtils.write(m_configFile, out.toString(), Charset.defaultCharset());
+            }
         } catch (final IOException | SAXException | ParserConfigurationException | TransformerException e) {
             throw new OnmsUpgradeException("Failed to upgrade discovery-configuration.xml", e);
-        } finally {
-            IOUtils.closeQuietly(out);
         }
     }
 
