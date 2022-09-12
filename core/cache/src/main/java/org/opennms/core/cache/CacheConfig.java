@@ -122,7 +122,8 @@ public class CacheConfig {
     }
 
     protected <K, V> CacheBuilder<K,V> createBuilder() {
-        CacheBuilder cacheBuilder = CacheBuilder.newBuilder();
+        @SuppressWarnings("unchecked")
+        CacheBuilder<K, V> cacheBuilder = (CacheBuilder<K, V>) CacheBuilder.newBuilder();
         if (getMaximumSize() != null && getMaximumSize() > 0) {
             cacheBuilder.maximumSize(getMaximumSize());
         }
