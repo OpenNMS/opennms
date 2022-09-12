@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -51,7 +51,7 @@ public class InetAddressXmlAdapter extends XmlAdapter<String, InetAddress> {
         try {
             return (ipAddr == null || ipAddr.isEmpty()) ? null : new IPAddress(ipAddr).toInetAddress();
         }
-        catch (Throwable t) {
+        catch (final Exception e) {
             LOG.warn("Invalid IP Address {}", ipAddr);
             return null;
         }
