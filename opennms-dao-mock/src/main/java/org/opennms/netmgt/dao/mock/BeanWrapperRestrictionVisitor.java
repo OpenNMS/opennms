@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -37,7 +37,6 @@ import org.opennms.core.criteria.Alias;
 import org.opennms.core.criteria.restrictions.AllRestriction;
 import org.opennms.core.criteria.restrictions.AnyRestriction;
 import org.opennms.core.criteria.restrictions.AttributeRestriction;
-import org.opennms.core.criteria.restrictions.BaseRestrictionVisitor;
 import org.opennms.core.criteria.restrictions.BetweenRestriction;
 import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.core.criteria.restrictions.GeRestriction;
@@ -54,13 +53,14 @@ import org.opennms.core.criteria.restrictions.NotRestriction;
 import org.opennms.core.criteria.restrictions.NullRestriction;
 import org.opennms.core.criteria.restrictions.RegExpRestriction;
 import org.opennms.core.criteria.restrictions.Restriction;
+import org.opennms.core.criteria.restrictions.RestrictionVisitor;
 import org.opennms.core.criteria.restrictions.SqlRestriction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 
-final class BeanWrapperRestrictionVisitor extends BaseRestrictionVisitor {
+final class BeanWrapperRestrictionVisitor implements RestrictionVisitor {
     private static final Logger LOG = LoggerFactory.getLogger(BeanWrapperRestrictionVisitor.class);
 
     private final Object m_entity;

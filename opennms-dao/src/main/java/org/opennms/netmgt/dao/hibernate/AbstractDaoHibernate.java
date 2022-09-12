@@ -299,7 +299,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
         multiAndRestrictionSet.stream().forEach(restriction ->{
             Collection<Restriction> allMultiAndRestrictions = ((AllRestriction) restriction).getRestrictions();
             allMultiAndRestrictions.stream().forEach(singleMultiAndRestriction ->{
-                org.opennms.core.criteria.Criteria copyOfCriteria = criteria.clone();
+                org.opennms.core.criteria.Criteria copyOfCriteria = new org.opennms.core.criteria.Criteria(criteria);
                 copyOfCriteria.setRestrictions(nonMultiAndRestrictionSet);
                 copyOfCriteria.addRestriction(singleMultiAndRestriction);
                 if(allUniqueRecords.isEmpty()) {
