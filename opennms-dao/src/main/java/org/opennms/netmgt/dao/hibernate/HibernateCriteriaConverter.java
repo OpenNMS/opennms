@@ -49,9 +49,9 @@ import org.hibernate.type.IntegerType;
 import org.hibernate.type.LongType;
 import org.hibernate.type.StringType;
 import org.hibernate.type.TimestampType;
-import org.opennms.core.criteria.AbstractCriteriaVisitor;
 import org.opennms.core.criteria.Alias;
 import org.opennms.core.criteria.Criteria;
+import org.opennms.core.criteria.Criteria.CriteriaVisitor;
 import org.opennms.core.criteria.Criteria.LockType;
 import org.opennms.core.criteria.Fetch;
 import org.opennms.core.criteria.Order;
@@ -125,7 +125,7 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
         }
     }
 
-    public static class HibernateCriteriaVisitor extends AbstractCriteriaVisitor {
+    public static class HibernateCriteriaVisitor implements CriteriaVisitor {
         private DetachedCriteria m_criteria;
 
         private Class<?> m_class;

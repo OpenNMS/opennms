@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -67,31 +67,57 @@ public class Criteria implements Cloneable {
 	}
 
     public static interface CriteriaVisitor {
-        public void visitClassAndRootAlias(final Class<?> clazz, final String rootAlias);
+        default void visitClassAndRootAlias(final Class<?> clazz, final String rootAlias) {
+            // empty visitor methods allow for implementers to only write code for the bits that are relevant
+        }
 
-        public void visitOrder(final Order order);
+        default void visitOrder(final Order order) {
+            // empty visitor methods allow for implementers to only write code for the bits that are relevant
+        }
 
-        public void visitOrdersFinished();
+        default void visitOrdersFinished() {
+            // empty visitor methods allow for implementers to only write code for the bits that are relevant
+        }
 
-        public void visitAlias(final Alias alias);
+        default void visitAlias(final Alias alias) {
+            // empty visitor methods allow for implementers to only write code for the bits that are relevant
+        }
 
-        public void visitAliasesFinished();
+        default void visitAliasesFinished() {
+            // empty visitor methods allow for implementers to only write code for the bits that are relevant
+        }
 
-        public void visitFetch(final Fetch fetch);
+        default void visitFetch(final Fetch fetch) {
+            // empty visitor methods allow for implementers to only write code for the bits that are relevant
+        }
 
-        public void visitFetchesFinished();
+        default void visitFetchesFinished() {
+            // empty visitor methods allow for implementers to only write code for the bits that are relevant
+        }
 
-        public void visitLockType(final LockType lock);
+        default void visitLockType(final LockType lock) {
+            // empty visitor methods allow for implementers to only write code for the bits that are relevant
+        }
 
-        public void visitRestriction(final Restriction restriction);
+        default void visitRestriction(final Restriction restriction) {
+            // empty visitor methods allow for implementers to only write code for the bits that are relevant
+        }
 
-        public void visitRestrictionsFinished();
+        default void visitRestrictionsFinished() {
+            // empty visitor methods allow for implementers to only write code for the bits that are relevant
+        }
 
-        public void visitDistinct(final boolean distinct);
+        default void visitDistinct(final boolean distinct) {
+            // empty visitor methods allow for implementers to only write code for the bits that are relevant
+        }
 
-        public void visitLimit(final Integer limit);
+        default void visitLimit(final Integer limit) {
+            // empty visitor methods allow for implementers to only write code for the bits that are relevant
+        }
 
-        public void visitOffset(final Integer offset);
+        default void visitOffset(final Integer offset) {
+            // empty visitor methods allow for implementers to only write code for the bits that are relevant
+        }
     }
 
     public void visit(final CriteriaVisitor visitor) {
