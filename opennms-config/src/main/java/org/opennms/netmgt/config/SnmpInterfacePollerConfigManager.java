@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -66,11 +66,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author <a href="mailto:brozow@openms.org">Mathew Brozowski</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <a href="mailto:brozow@openms.org">Mathew Brozowski</a>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @version $Id: $
  */
-abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfacePollerConfig {
+public abstract class SnmpInterfacePollerConfigManager implements SnmpInterfacePollerConfig {
     private static final Logger LOG = LoggerFactory.getLogger(SnmpInterfacePollerConfigManager.class);
 
     /**
@@ -79,17 +76,9 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
      * @param stream a {@link java.io.InputStream} object.
      * @throws java.io.IOException if any.
      */
-    public SnmpInterfacePollerConfigManager(InputStream stream) throws IOException {
+    protected SnmpInterfacePollerConfigManager(InputStream stream) throws IOException {
         reloadXML(stream);
     }
-
-    /**
-     * <p>update</p>
-     *
-     * @throws java.io.IOException if any.
-     */
-    @Override
-    public abstract void update() throws IOException;
 
     /**
      * <p>saveXml</p>
@@ -124,15 +113,18 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
      * time so that repeated file reads can be avoided
      */
     private void createUrlIpMap() {
-        m_urlIPMap = new HashMap<String, List<String>>();
+        m_urlIPMap = new HashMap<>();
     
         for(Package pkg : packages()) {
     
-            for(String url : includeURLs(pkg)) {
-    
-                List<String> iplist = IpListFromUrl.fetch(url);
-                if (iplist.size() > 0) {
-                    m_urlIPMap.put(url, iplist);
+            for(final String url : includeURLs(pkg)) {
+                try {
+                    List<String> iplist = IpListFromUrl.fetch(url);
+                    if (!iplist.isEmpty()) {
+                        m_urlIPMap.put(url, iplist);
+                    }
+                } catch (final IOException e) {
+                    LOG.warn("Unable to get IPs from URL {}", url, e);
                 }
             }
 
@@ -235,7 +227,7 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
     
         // get list of IPs in this URL
         List<String> iplist = m_urlIPMap.get(url);
-        if (iplist != null && iplist.size() > 0) {
+        if (iplist != null && !iplist.isEmpty()) {
             bRet = iplist.contains(addr);
         }
     
@@ -261,12 +253,12 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
      * from the database.
      */
     private void createPackageIpListMap() {
-        m_pkgIpMap = new HashMap<Package, List<InetAddress>>();
-        m_pkgIntMap = new HashMap<String, Map<String, Interface>>();
+        m_pkgIpMap = new HashMap<>();
+        m_pkgIntMap = new HashMap<>();
         
         for(Package pkg : packages()) {
     
-            Map<String, Interface> interfaceMap = new HashMap<String, Interface>();
+            Map<String, Interface> interfaceMap = new HashMap<>();
             for (Interface interf: pkg.getInterfaces()) {
                 interfaceMap.put(interf.getName(),interf);
             }
@@ -278,12 +270,12 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
                 List<InetAddress> ipList = getIpList(pkg);
                 LOG.debug("createPackageIpMap: package {}: ipList size = {}", pkg.getName(), ipList.size());
     
-                if (ipList.size() > 0) {
+                if (!ipList.isEmpty()) {
                     LOG.debug("createPackageIpMap: package {}. IpList size is {}", pkg.getName(), ipList.size());
                     m_pkgIpMap.put(pkg, ipList);
                 }
-            } catch (Throwable t) {
-                LOG.error("createPackageIpMap: failed to map package: {} to an IP List", pkg.getName(), t);
+            } catch (final Exception e) {
+                LOG.error("createPackageIpMap: failed to map package: {} to an IP List", pkg.getName(), e);
             }
 
         }
@@ -297,8 +289,9 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
      */
     public List<InetAddress> getIpList(Package pkg) {
         final StringBuilder filterRules = new StringBuilder();
-        if (pkg.getFilter().getContent().isPresent()) {
-            filterRules.append(pkg.getFilter().getContent().get());
+        final Optional<String> content = pkg.getFilter().getContent();
+        if (content.isPresent()) {
+            filterRules.append(content.get());
         }
         LOG.debug("createPackageIpMap: package is {}. filer rules are {}", pkg.getName(), filterRules);
         FilterDaoFactory.getInstance().flushActiveIpAddressListCache();
@@ -340,7 +333,7 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
     
         // get list of IPs in this package
         List<InetAddress> ipList = m_pkgIpMap.get(pkg);
-        if (ipList != null && ipList.size() > 0) {
+        if (ipList != null && !ipList.isEmpty()) {
 			filterPassed = ipList.contains(ifaceAddr);
         }
     
@@ -427,7 +420,7 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
     @Override
     public synchronized List<String> getAllPackageMatches(String ipaddr) {
     
-        List<String> matchingPkgs = new ArrayList<String>();
+        List<String> matchingPkgs = new ArrayList<>();
 
         for(Package pkg : packages()) {
 

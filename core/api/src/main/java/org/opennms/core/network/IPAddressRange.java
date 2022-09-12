@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -314,7 +314,7 @@ public class IPAddressRange implements Comparable<IPAddressRange>, Iterable<IPAd
         } else if (!overlaps(range)) {
             return new IPAddressRange[] { this };
         } else {
-            List<IPAddressRange> ranges = new ArrayList<IPAddressRange>(2);
+            List<IPAddressRange> ranges = new ArrayList<>(2);
             if (getBegin().isLessThan(range.getBegin())) {
                 ranges.add(new IPAddressRange(getBegin(), range.getBegin().decr()));
             }
