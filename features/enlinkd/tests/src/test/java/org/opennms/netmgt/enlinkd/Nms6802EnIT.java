@@ -49,7 +49,7 @@ import org.opennms.netmgt.enlinkd.model.IsIsLink.IsisISAdjState;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.nb.Nms6802NetworkBuilder;
 
-public class Nms6801EnIT extends EnLinkdBuilderITCase {
+public class Nms6802EnIT extends EnLinkdBuilderITCase {
 
 	Nms6802NetworkBuilder builder = new Nms6802NetworkBuilder();
 

@@ -45,6 +45,7 @@ import org.opennms.netmgt.nb.Nms0002NetworkBuilder;
 import org.opennms.netmgt.nb.Nms0123NetworkBuilder;
 import org.opennms.netmgt.nb.Nms17216NetworkBuilder;
 import org.opennms.netmgt.nb.Nms4930NetworkBuilder;
+import org.opennms.netmgt.nb.Nms6802NetworkBuilder;
 import org.opennms.netmgt.nb.Nms7563NetworkBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -162,6 +163,23 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
         legalsubnets.forEach(System.err::println);
         assertThat(legalsubnets, hasSize(1));
 
+    }
+
+    @Test
+    public void nms6802SubnetworksTest() {
+        final Nms6802NetworkBuilder builder = new Nms6802NetworkBuilder();
+        m_nodeDao.save(builder.getCiscoIosXrRouter());
+        final List<IpInterfaceTopologyEntity> ips = nodeTopologyService.findAllIp();
+        ips.forEach(System.err::println);
+        assertThat(ips, hasSize(1));
+
+        final Set<SubNetwork> subnets = nodeTopologyService.findAllSubNetwork();
+        subnets.forEach(System.err::println);
+        assertThat(subnets, hasSize(1));
+
+        final Set<SubNetwork> legalsubnets = nodeTopologyService.findAllLegalSubNetwork();
+        legalsubnets.forEach(System.err::println);
+        assertThat(legalsubnets, hasSize(0));
 
     }
 
