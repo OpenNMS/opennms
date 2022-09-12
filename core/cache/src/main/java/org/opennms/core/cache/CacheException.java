@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2022 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -28,31 +28,11 @@
 
 package org.opennms.core.cache;
 
-import java.util.Objects;
+public class CacheException extends RuntimeException {
+    private static final long serialVersionUID = 1L;
 
-import com.google.common.cache.CacheLoader;
-
-public class CacheBuilder<K, V> {
-
-    private CacheConfig config;
-    private CacheLoader<K, V> loader;
-
-    @SuppressWarnings("rawtypes")
-    public CacheBuilder withConfig(CacheConfig config) {
-        this.config = config;
-        return this;
-    }
-
-    public CacheBuilder<K, V> withCacheLoader(CacheLoader<K, V> loader) {
-        this.loader = loader;
-        return this;
-    }
-
-    @SuppressWarnings("rawtypes")
-    public Cache build() {
-        Objects.requireNonNull(config);
-        Objects.requireNonNull(loader);
-        return new Cache<K, V>(config, loader);
+    public CacheException(final String message, final Exception cause) {
+        super(message, cause);
     }
 
 }
