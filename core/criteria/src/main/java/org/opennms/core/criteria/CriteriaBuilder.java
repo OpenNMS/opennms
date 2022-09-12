@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,7 +32,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import org.opennms.core.criteria.Alias.JoinType;
@@ -41,13 +40,8 @@ import org.opennms.core.criteria.restrictions.AllRestriction;
 import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.core.criteria.restrictions.SqlRestriction.Type;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class CriteriaBuilder {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(CriteriaBuilder.class);
-	
     private Class<?> m_class;
 
     private String m_rootAlias;
@@ -303,17 +297,17 @@ public class CriteriaBuilder {
     }
 
     public CriteriaBuilder sql(final String sql) {
-        addRestriction(Restrictions.sql((String) sql));
+        addRestriction(Restrictions.sql(sql));
         return this;
     }
 
     public CriteriaBuilder sql(final String sql, final Object parameter, final Type type) {
-        addRestriction(Restrictions.sql((String) sql, parameter, type));
+        addRestriction(Restrictions.sql(sql, parameter, type));
         return this;
     }
 
     public CriteriaBuilder sql(final String sql, final Object[] parameters, final Type[] types) {
-        addRestriction(Restrictions.sql((String) sql, parameters, types));
+        addRestriction(Restrictions.sql(sql, parameters, types));
         return this;
     }
 
