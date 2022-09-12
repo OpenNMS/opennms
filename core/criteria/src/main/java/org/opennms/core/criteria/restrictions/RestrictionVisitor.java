@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,41 +29,115 @@
 package org.opennms.core.criteria.restrictions;
 
 public interface RestrictionVisitor {
-    void visitNull(final NullRestriction restriction);
-    void visitNullComplete(final NullRestriction restriction);
-    void visitNotNull(final NotNullRestriction restriction);
-    void visitNotNullComplete(final NotNullRestriction restriction);
-    void visitEq(final EqRestriction restriction);
-    void visitEqComplete(final EqRestriction restriction);
-    void visitEqProperty(final EqPropertyRestriction restriction);
-    void visitEqPropertyComplete(final EqPropertyRestriction restriction);
-    void visitNe(final NeRestriction restriction);
-    void visitNeComplete(final NeRestriction restriction);
-    void visitGt(final GtRestriction restriction);
-    void visitGtComplete(final GtRestriction restriction);
-    void visitGe(final GeRestriction restriction);
-    void visitGeComplete(final GeRestriction restriction);
-    void visitLt(final LtRestriction restriction);
-    void visitLtComplete(final LtRestriction restriction);
-    void visitLe(final LeRestriction restriction);
-    void visitLeComplete(final LeRestriction restriction);
-    void visitAll(final AllRestriction restriction);
-    void visitAllComplete(final AllRestriction restriction);
-    void visitAny(final AnyRestriction restriction);
-    void visitAnyComplete(final AnyRestriction restriction);
-    void visitLike(final LikeRestriction restriction);
-    void visitLikeComplete(final LikeRestriction restriction);
-    void visitIlike(final IlikeRestriction restriction);
-    void visitIlikeComplete(final IlikeRestriction restriction);
-    void visitIn(final InRestriction restriction);
-    void visitInComplete(final InRestriction restriction);
-    void visitNot(final NotRestriction restriction);
-    void visitNotComplete(final NotRestriction restriction);
-    void visitBetween(final BetweenRestriction restriction);
-    void visitBetweenComplete(final BetweenRestriction restriction);
-    void visitSql(final SqlRestriction restriction);
-    void visitSqlComplete(final SqlRestriction restriction);
-    void visitIplike(final IplikeRestriction restriction);
-    void visitIplikeComplete(final IplikeRestriction restriction);
-    void visitRegExp(RegExpRestriction regExpRestriction);
+    default void visitNull(final NullRestriction restriction) {
+        // default visitor does nothing, implementers can choose which are relevant
+    }
+    default void visitNullComplete(final NullRestriction restriction) {
+        // default visitor does nothing, implementers can choose which are relevant
+    }
+    default void visitNotNull(final NotNullRestriction restriction) {
+        // default visitor does nothing, implementers can choose which are relevant
+    }
+    default void visitNotNullComplete(final NotNullRestriction restriction) {
+        // default visitor does nothing, implementers can choose which are relevant
+    }
+    default void visitEq(final EqRestriction restriction) {
+        // default visitor does nothing, implementers can choose which are relevant
+    }
+    default void visitEqComplete(final EqRestriction restriction) {
+        // default visitor does nothing, implementers can choose which are relevant
+    }
+    default void visitEqProperty(final EqPropertyRestriction restriction) {
+        // default visitor does nothing, implementers can choose which are relevant
+    }
+    default void visitEqPropertyComplete(final EqPropertyRestriction restriction) {
+        // default visitor does nothing, implementers can choose which are relevant
+    }
+    default void visitNe(final NeRestriction restriction) {
+        // default visitor does nothing, implementers can choose which are relevant
+    }
+    default void visitNeComplete(final NeRestriction restriction) {
+        // default visitor does nothing, implementers can choose which are relevant
+    }
+    default void visitGt(final GtRestriction restriction) {
+        // default visitor does nothing, implementers can choose which are relevant
+    }
+    default void visitGtComplete(final GtRestriction restriction) {
+        // default visitor does nothing, implementers can choose which are relevant
+    }
+    default void visitGe(final GeRestriction restriction) {
+        // default visitor does nothing, implementers can choose which are relevant
+    }
+    default void visitGeComplete(final GeRestriction restriction) {
+        // default visitor does nothing, implementers can choose which are relevant
+    }
+    default void visitLt(final LtRestriction restriction) {
+        // default visitor does nothing, implementers can choose which are relevant
+    }
+    default void visitLtComplete(final LtRestriction restriction) {
+        // default visitor does nothing, implementers can choose which are relevant
+    }
+    default void visitLe(final LeRestriction restriction) {
+        // default visitor does nothing, implementers can choose which are relevant
+    }
+    default void visitLeComplete(final LeRestriction restriction) {
+        // default visitor does nothing, implementers can choose which are relevant
+    }
+    default void visitAll(final AllRestriction restriction) {
+        // default visitor does nothing, implementers can choose which are relevant
+    }
+    default void visitAllComplete(final AllRestriction restriction) {
+        // default visitor does nothing, implementers can choose which are relevant
+    }
+    default void visitAny(final AnyRestriction restriction) {
+        // default visitor does nothing, implementers can choose which are relevant
+    }
+    default void visitAnyComplete(final AnyRestriction restriction) {
+        // default visitor does nothing, implementers can choose which are relevant
+    }
+    default void visitLike(final LikeRestriction restriction) {
+        // default visitor does nothing, implementers can choose which are relevant
+    }
+    default void visitLikeComplete(final LikeRestriction restriction) {
+        // default visitor does nothing, implementers can choose which are relevant
+    }
+    default void visitIlike(final IlikeRestriction restriction) {
+        // default visitor does nothing, implementers can choose which are relevant
+    }
+    default void visitIlikeComplete(final IlikeRestriction restriction) {
+        // default visitor does nothing, implementers can choose which are relevant
+    }
+    default void visitIn(final InRestriction restriction) {
+        // default visitor does nothing, implementers can choose which are relevant
+    }
+    default void visitInComplete(final InRestriction restriction) {
+        // default visitor does nothing, implementers can choose which are relevant
+    }
+    default void visitNot(final NotRestriction restriction) {
+        // default visitor does nothing, implementers can choose which are relevant
+    }
+    default void visitNotComplete(final NotRestriction restriction) {
+        // default visitor does nothing, implementers can choose which are relevant
+    }
+    default void visitBetween(final BetweenRestriction restriction) {
+        // default visitor does nothing, implementers can choose which are relevant
+    }
+    default void visitBetweenComplete(final BetweenRestriction restriction) {
+        // default visitor does nothing, implementers can choose which are relevant
+    }
+    default void visitSql(final SqlRestriction restriction) {
+        // default visitor does nothing, implementers can choose which are relevant
+    }
+    default void visitSqlComplete(final SqlRestriction restriction) {
+        // default visitor does nothing, implementers can choose which are relevant
+    }
+    default void visitIplike(final IplikeRestriction restriction) {
+        // default visitor does nothing, implementers can choose which are relevant
+    }
+    default void visitIplikeComplete(final IplikeRestriction restriction) {
+        // default visitor does nothing, implementers can choose which are relevant
+    }
+    default void visitRegExp(RegExpRestriction regExpRestriction) {
+        // default visitor does nothing, implementers can choose which are relevant
+    }
 }

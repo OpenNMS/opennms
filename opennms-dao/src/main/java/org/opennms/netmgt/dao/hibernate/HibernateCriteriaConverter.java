@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -58,7 +58,6 @@ import org.opennms.core.criteria.Order;
 import org.opennms.core.criteria.Order.OrderVisitor;
 import org.opennms.core.criteria.restrictions.AllRestriction;
 import org.opennms.core.criteria.restrictions.AnyRestriction;
-import org.opennms.core.criteria.restrictions.BaseRestrictionVisitor;
 import org.opennms.core.criteria.restrictions.BetweenRestriction;
 import org.opennms.core.criteria.restrictions.EqPropertyRestriction;
 import org.opennms.core.criteria.restrictions.EqRestriction;
@@ -335,7 +334,7 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
         }
     }
 
-    public static final class HibernateRestrictionVisitor extends BaseRestrictionVisitor implements RestrictionVisitor {
+    public static final class HibernateRestrictionVisitor implements RestrictionVisitor {
 
         static class RegExp extends SimpleExpression {
             public RegExp(final String propertyName, final Object value) {
