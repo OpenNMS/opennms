@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2014-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
-import org.apache.commons.io.IOUtils;
 import org.opennms.core.config.api.ConfigurationResource;
 import org.opennms.core.config.api.ConfigurationResourceException;
 import org.opennms.core.xml.JaxbUtils;
@@ -72,19 +71,15 @@ public class JaxbResourceConfiguration<T> implements ConfigurationResource<T> {
             throw new ConfigurationResourceException("Resource " + r + " is not writable!");
         }
         final WritableResource resource = (WritableResource)r;
-        OutputStream os = null;
-        OutputStreamWriter osw = null;
-        try {
-            os = resource.getOutputStream();
-            osw = new OutputStreamWriter(os);
+        try (
+            final OutputStream os = resource.getOutputStream();
+            final OutputStreamWriter osw = new OutputStreamWriter(os);
+        ) {
             JaxbUtils.marshal(config, osw);
         } catch (final IOException e) {
             throw new ConfigurationResourceException("Failed to write to " + r, e);
         } catch (final Exception e) {
             throw new ConfigurationResourceException("Failed to marshal configuration " + getClassType() + " to resource " + r, e);
-        } finally {
-            IOUtils.closeQuietly(osw);
-            IOUtils.closeQuietly(os);
         }
     }
 }
