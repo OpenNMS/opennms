@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -44,7 +44,7 @@ import org.opennms.core.utils.ConfigFileConstants;
  */
 public class ReadOnlyPollerConfigManager extends PollerConfigManager {
 
-    private ReadOnlyPollerConfigManager(InputStream stream) {
+    private ReadOnlyPollerConfigManager(InputStream stream) throws IOException {
         super(stream);
     }
 
