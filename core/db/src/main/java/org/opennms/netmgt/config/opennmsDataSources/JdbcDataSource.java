@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  * 
@@ -131,7 +131,7 @@ public class JdbcDataSource implements java.io.Serializable {
         
         if (obj instanceof JdbcDataSource) {
             JdbcDataSource temp = (JdbcDataSource)obj;
-            boolean equals = Objects.equals(temp.name, name)
+            return Objects.equals(temp.name, name)
                 && Objects.equals(temp.databaseName, databaseName)
                 && Objects.equals(temp.schemaName, schemaName)
                 && Objects.equals(temp.url, url)
@@ -139,7 +139,6 @@ public class JdbcDataSource implements java.io.Serializable {
                 && Objects.equals(temp.rawUserName, rawUserName)
                 && Objects.equals(temp.rawPassword, rawPassword)
                 && Objects.equals(temp.paramList, paramList);
-            return equals;
         }
         return false;
     }
@@ -186,7 +185,7 @@ public class JdbcDataSource implements java.io.Serializable {
             throw new IndexOutOfBoundsException("getParam: Index value '" + index + "' not in range [0.." + (this.paramList.size() - 1) + "]");
         }
         
-        return (org.opennms.netmgt.config.opennmsDataSources.Param) paramList.get(index);
+        return paramList.get(index);
     }
 
     /**
@@ -200,7 +199,7 @@ public class JdbcDataSource implements java.io.Serializable {
      */
     public org.opennms.netmgt.config.opennmsDataSources.Param[] getParam() {
         org.opennms.netmgt.config.opennmsDataSources.Param[] array = new org.opennms.netmgt.config.opennmsDataSources.Param[0];
-        return (org.opennms.netmgt.config.opennmsDataSources.Param[]) this.paramList.toArray(array);
+        return this.paramList.toArray(array);
     }
 
     /**
@@ -264,7 +263,7 @@ public class JdbcDataSource implements java.io.Serializable {
      * @return a hash code value for the object.
      */
     public int hashCode() {
-        int hash = Objects.hash(
+        return Objects.hash(
             name, 
             databaseName, 
             schemaName, 
@@ -273,7 +272,6 @@ public class JdbcDataSource implements java.io.Serializable {
             rawUserName,
             rawPassword,
             paramList);
-        return hash;
     }
 
     /**
@@ -298,8 +296,7 @@ public class JdbcDataSource implements java.io.Serializable {
      * @return true if the object was removed from the collection.
      */
     public boolean removeParam(final org.opennms.netmgt.config.opennmsDataSources.Param vParam) {
-        boolean removed = paramList.remove(vParam);
-        return removed;
+        return paramList.remove(vParam);
     }
 
     /**
@@ -382,17 +379,6 @@ public class JdbcDataSource implements java.io.Serializable {
         this.paramList.clear();
         
         this.paramList.addAll(vParamList);
-    }
-
-    /**
-     * Sets the value of 'paramList' by setting it to the given Vector. No type
-     * checking is performed.
-     * @deprecated
-     * 
-     * @param paramList the Vector to set.
-     */
-    public void setParamCollection(final java.util.List<org.opennms.netmgt.config.opennmsDataSources.Param> paramList) {
-        this.paramList = paramList;
     }
 
     /**
