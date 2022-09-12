@@ -44,6 +44,7 @@ import org.opennms.netmgt.nb.Nms0001NetworkBuilder;
 import org.opennms.netmgt.nb.Nms0002NetworkBuilder;
 import org.opennms.netmgt.nb.Nms0123NetworkBuilder;
 import org.opennms.netmgt.nb.Nms17216NetworkBuilder;
+import org.opennms.netmgt.nb.Nms4930NetworkBuilder;
 import org.opennms.netmgt.nb.Nms7563NetworkBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -135,6 +136,33 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
         subnets.forEach(System.err::println);
         assertThat(subnets, hasSize(1));
         assertEquals(8,subnets.iterator().next().getNodeIds().size());
+    }
+
+    @Test
+    public void nms4930SubnetworksTest() {
+        final Nms4930NetworkBuilder builder = new Nms4930NetworkBuilder();
+        m_nodeDao.save(builder.getDlink1());
+        m_nodeDao.save(builder.getDlink2());
+        m_nodeDao.save(builder.getHost1());
+        m_nodeDao.save(builder.getHost2());
+
+        final List<NodeTopologyEntity> nodes = nodeTopologyService.findAllNode();
+        nodes.forEach(System.err::println);
+        assertThat(nodes, hasSize(4));
+
+        final List<IpInterfaceTopologyEntity> ips = nodeTopologyService.findAllIp();
+        ips.forEach(System.err::println);
+        assertThat(ips, hasSize(7));
+
+        final Set<SubNetwork> subnets = nodeTopologyService.findAllSubNetwork();
+        subnets.forEach(System.err::println);
+        assertThat(subnets, hasSize(4));
+
+        final Set<SubNetwork> legalsubnets = nodeTopologyService.findAllLegalSubNetwork();
+        legalsubnets.forEach(System.err::println);
+        assertThat(legalsubnets, hasSize(1));
+
+
     }
 
     @Test
