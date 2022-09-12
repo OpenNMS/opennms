@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -58,8 +58,9 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  */
 public abstract class XADataSourceFactory {
+    private static final Logger LOG = LoggerFactory.getLogger(XADataSourceFactory.class);
 
-	private static final Logger LOG = LoggerFactory.getLogger(DataSourceFactory.class);
+    private static final String DATASOURCE_INSTANCE_NAME = "opennms";
 
 	private static DataSourceConfigurationFactory m_dataSourceConfigFactory;
 	
@@ -73,7 +74,11 @@ public abstract class XADataSourceFactory {
 		}
 	}
 
-	private static final Map<String, XADataSource> m_dataSources = new ConcurrentHashMap<String, XADataSource>();
+	private static final Map<String, XADataSource> m_dataSources = new ConcurrentHashMap<>();
+
+	protected XADataSourceFactory() {
+	    super();
+	}
 
 	/**
 	 * <p>init</p>
@@ -93,11 +98,11 @@ public abstract class XADataSourceFactory {
 			urlString = urlString.substring("jdbc:".length());
 		}
 		URI url = URI.create(urlString);
-		// TODO: Add support for more XADataSources (hsqldb, derby)
+		// Add support for more XADataSources (hsqldb, derby) ?
 		if ("postgresql".equalsIgnoreCase(url.getScheme())) {
 			PGXADataSource xaDataSource = new PGXADataSource();
-			xaDataSource.setServerName(url.getHost());
-			xaDataSource.setPortNumber(url.getPort());
+			xaDataSource.setServerNames(new String[] { url.getHost() });
+			xaDataSource.setPortNumbers(new int[] { url.getPort() });
 			xaDataSource.setDatabaseName(ds.getDatabaseName());
 			xaDataSource.setUser(ds.getUserName());
 			xaDataSource.setPassword(ds.getPassword());
@@ -138,7 +143,7 @@ public abstract class XADataSourceFactory {
 	 *             Thrown if the factory has not yet been initialized.
 	 */
 	public static XADataSource getInstance() {
-		return getInstance("opennms");
+		return getInstance(DATASOURCE_INSTANCE_NAME);
 	}
 
 	/**
@@ -162,7 +167,7 @@ public abstract class XADataSourceFactory {
 	 * @param ds a {@link javax.sql.DataSource} object.
 	 */
 	public static void setInstance(final XADataSource ds) {
-		setInstance("opennms", ds);
+		setInstance(DATASOURCE_INSTANCE_NAME, ds);
 	}
 
 	/**
@@ -181,7 +186,7 @@ public abstract class XADataSourceFactory {
 	 * @return the datasource configured for the database
 	 */
 	public static XADataSource getXADataSource() {
-		return getXADataSource("opennms");
+		return getXADataSource(DATASOURCE_INSTANCE_NAME);
 	}
 
 	/**

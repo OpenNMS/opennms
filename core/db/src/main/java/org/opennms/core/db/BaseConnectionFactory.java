@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -91,42 +91,20 @@ public abstract class BaseConnectionFactory implements ClosableDataSource {
     public abstract DataSource getDataSource();
 
     /**
-     * <p>getLoginTimeout</p>
-     *
-     * @return a int.
-     * @throws java.sql.SQLException if any.
-     */
-    @Override
-    public abstract int getLoginTimeout() throws SQLException;
-
-    /**
      * <p>close</p>
      */
     @Override
     public void close() {
     }
 
-    /**
-     * <p>unwrap</p>
-     *
-     * @param iface a {@link java.lang.Class} object.
-     * @param <T> a T object.
-     * @return a T object.
-     */
     @Override
     public <T> T unwrap(final Class<T> iface) {
-        return null;  //TODO
+        return null;
     }
 
-    /**
-     * <p>isWrapperFor</p>
-     *
-     * @param iface a {@link java.lang.Class} object.
-     * @return a boolean.
-     */
     @Override
     public boolean isWrapperFor(final Class<?> iface) {
-        return false; //TODO
+        return false;
     }
 
     protected static void validateJdbcUrl(String url) {
