@@ -265,20 +265,34 @@
         case "vnc": {
 %>
             headers["X-Vnc-Port"] = <%=assetRecord.getVncPort()%> ;
-            headers["X-Vnc-Username"] = <%=assetRecord.getVncUsername()%> ;
-            headers["X-Vnc-Password"] = <%=assetRecord.getVncPassword()%> ;
+            headers["X-Vnc-Username"] = "<%=assetRecord.getVncUsername()%>" ;
+            headers["X-Vnc-Password"] = "<%=assetRecord.getVncPassword()%>" ;
 <%
             break;
         }
         case "rdp": {
 %>
-            console.log("RDP CONNECTION.....");
+            alert("RDP not implemented yet!");
 <%
             break;
         }
         case "ssh": {
 %>
-            console.log("SSH CONNECTION.....");
+            headers["X-Ssh-Port"] = 22 ;
+            headers["X-Ssh-Username"] = "tbigg" ;
+            <%--headers["X-Ssh-Password"] = "<%=assetRecord.getVncPassword()%>" ;--%>
+<%
+            break;
+        }
+        case "telnet": {
+%>
+            alert("Telnet not implemented yet!");
+<%
+            break;
+        }
+        case "kubernetes": {
+%>
+            alert("Kubernetes not implemented yet!");
 <%
             break;
         }

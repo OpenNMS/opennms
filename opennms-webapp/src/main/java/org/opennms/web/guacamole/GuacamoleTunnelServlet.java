@@ -55,6 +55,10 @@ public class GuacamoleTunnelServlet extends GuacamoleHTTPTunnelServlet {
     private static final String HEADER_VNC_USERNAME = "X-Vnc-Username";
     private static final String HEADER_VNC_PASSWORD = "X-Vnc-Password";
 
+    private static final String HEADER_SSH_PORT = "X-Ssh-Port";
+    private static final String HEADER_SSH_USERNAME = "X-Ssh-Username";
+    private static final String HEADER_SSH_PASSWORD = "X-Ssh-Password";
+
     private static final String DEFAULT_GUACD_HOSTNAME = "127.0.0.1";
     private static final int DEFAULT_GUACD_PORT = 4822;
 
@@ -68,8 +72,6 @@ public class GuacamoleTunnelServlet extends GuacamoleHTTPTunnelServlet {
     }
 
     private GuacamoleConfiguration buildGuacamoleConfiguration(HttpServletRequest request) {
-
-        // https://guacamole.apache.org/doc/0.8.3/gug/configuring-guacamole.html
         GuacamoleConfiguration config = new GuacamoleConfiguration();
 
         String protocol = request.getHeader(HEADER_CONNECTION_PROTOCOL);
@@ -87,7 +89,16 @@ public class GuacamoleTunnelServlet extends GuacamoleHTTPTunnelServlet {
                 throw new NotImplementedException("Connection RDP");
             }
             case "ssh": {
-                throw new NotImplementedException("Connection SSH");
+                config.setParameter("port", getHeader(request, HEADER_SSH_PORT, "22"));
+                config.setParameter("username", getHeader(request, HEADER_SSH_USERNAME, ""));
+                config.setParameter("password", getHeader(request, HEADER_SSH_PASSWORD, ""));
+                break;
+            }
+            case "telnet": {
+                throw new NotImplementedException("Connection Telnet");
+            }
+            case "kubernetes": {
+                throw new NotImplementedException("Connection Kubernetes");
             }
             default: {
                 throw new NotSupportedException("Protocol " + protocol + " not supported");
@@ -119,8 +130,8 @@ public class GuacamoleTunnelServlet extends GuacamoleHTTPTunnelServlet {
         try {
             return Integer.parseInt(value);
         } catch (NumberFormatException e) {
-            String message = MessageFormat.format("Falling back to " +
-                    "default value {} for header value: {}:{}", defaultValue, header, value);
+            String message = MessageFormat.format("Falling back to " + "default value {} " +
+                    "for header value: {}:{}", defaultValue, header, value);
             LOG.warn(message, e);
             return defaultValue;
         }

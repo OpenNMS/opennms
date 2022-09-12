@@ -76,8 +76,6 @@
 
 <script type="text/javascript" >
     function connect() {
-        console.log("Connect Function called");
-
         const protocolValue = document.getElementById("rdRrotocolSelect").value;
         const ipAddressValue = document.getElementById("ipAddressSelect").value;
 
@@ -92,8 +90,10 @@
         <label for="rdRrotocolSelect">Remote Desktop Protocol:</label>
         <select id="rdRrotocolSelect" class="form-control custom-select" name="rdRrotocolSelect">
             <option value="vnc">VNC</option>
-            <option value="rdp">RDP</option>
+            <option value="rdp">RDP (todo)</option>
             <option value="ssh">SSH</option>
+            <option value="telnet">Telnet (todo)</option>
+            <option value="kubernetes">Kubernetes (todo)</option>
         </select>
     </div>
 
