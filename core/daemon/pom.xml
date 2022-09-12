@@ -52,6 +52,8 @@
               org.opennms.features.activemq.broker.impl;resolution:=optional,
               <!-- OpenTelemetry is not OSGI-friendly, yet -->
               io.opentelemetry.*;resolution:=optional,
+              <!-- HACK -->
+              org.apache.logging.log4j.*;resolution:=optional,
               *
             </Import-Package>
             <Export-Package>org.opennms.netmgt.daemon.*;org.opennms.netmgt.vmmgr.*;version="${project.version}"</Export-Package>
@@ -188,6 +190,14 @@
     <dependency>
       <groupId>io.opentelemetry</groupId>
       <artifactId>opentelemetry-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.opentelemetry</groupId>
+      <artifactId>opentelemetry-semconv</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
     </dependency>
   </dependencies>
 </project>
