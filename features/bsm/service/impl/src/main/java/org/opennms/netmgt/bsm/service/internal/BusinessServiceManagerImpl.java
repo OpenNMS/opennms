@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2015-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.bsm.service.internal;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -127,8 +128,8 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
     public List<BusinessService> findMatching(Criteria criteria) {
         criteria = transform(criteria);
         List<BusinessServiceEntity> all = getDao().findMatching(criteria);
-        if (all == null) {
-            return null;
+        if (all == null || all.isEmpty()) {
+            return new ArrayList<>();
         }
         return all.stream().map(e -> new BusinessServiceImpl(this, e)).collect(Collectors.toList());
     }
@@ -392,7 +393,10 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
         }
 
         for (BusinessServiceChildEdgeEntity eachChildEdge : descendant.getChildEdges()) {
-            return this.checkDescendantForLoop(parent, eachChildEdge.getChild());
+            final boolean child = this.checkDescendantForLoop(parent, eachChildEdge.getChild());
+            if (child) {
+                return true;
+            }
         }
 
         return false;
@@ -602,8 +606,8 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
      * @param input
      * @return
      */
-    private Criteria transform(Criteria input) {
-        Criteria criteria = input.clone();
+    private Criteria transform(final Criteria input) {
+        final Criteria criteria =  new Criteria(input);
         criteria.setClass(BusinessServiceEntity.class);
         return criteria;
     }

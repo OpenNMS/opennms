@@ -28,10 +28,12 @@
 
 package org.opennms.core.criteria.restrictions;
 
+import java.util.Objects;
+
 public abstract class BaseRestriction implements Restriction {
     private final RestrictionType m_type;
 
-    public BaseRestriction(final RestrictionType type) {
+    protected BaseRestriction(final RestrictionType type) {
         m_type = type;
     }
 
@@ -42,10 +44,7 @@ public abstract class BaseRestriction implements Restriction {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((m_type == null) ? 0 : m_type.hashCode());
-        return result;
+        return Objects.hash(m_type);
     }
 
     @Override
@@ -53,9 +52,8 @@ public abstract class BaseRestriction implements Restriction {
         if (this == obj) return true;
         if (obj == null) return false;
         if (!(obj instanceof BaseRestriction)) return false;
-        final BaseRestriction other = (BaseRestriction) obj;
-        if (m_type != other.m_type) return false;
-        return true;
+        final BaseRestriction that = (BaseRestriction) obj;
+        return Objects.equals(this.m_type, that.m_type);
     }
 
     @Override

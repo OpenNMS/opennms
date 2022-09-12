@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,7 +31,7 @@ package org.opennms.core.criteria.restrictions;
 public abstract class AttributeValueRestriction extends AttributeRestriction {
     protected final Object m_value;
 
-    public AttributeValueRestriction(final RestrictionType type, final String attribute, final Object value) {
+    protected AttributeValueRestriction(final RestrictionType type, final String attribute, final Object value) {
         super(type, attribute);
         m_value = value;
     }
