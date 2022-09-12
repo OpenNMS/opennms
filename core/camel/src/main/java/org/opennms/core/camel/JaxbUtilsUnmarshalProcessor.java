@@ -88,9 +88,4 @@ public class JaxbUtilsUnmarshalProcessor implements Processor {
 		final String object = exchange.getIn().getBody(String.class);
 		exchange.getIn().setBody(m_class.cast(unmarshaller.unmarshal(new StringReader(object))));
 	}
-
-	@Override
-	protected void finalize() {
-		m_unmarshaller.remove();
-	}
 }

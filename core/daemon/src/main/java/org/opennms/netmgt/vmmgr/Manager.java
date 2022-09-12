@@ -219,7 +219,7 @@ public class Manager implements ManagerMBean {
             }
         }
         LOG.debug("Thread dump of {} threads ({} daemons):", threads.size(), daemons);
-        Map<Thread, StackTraceElement[]> sortedThreads = new TreeMap<>((t1, t2) -> Long.valueOf(t1.getId()).compareTo(Long.valueOf(t2.getId())));
+        Map<Thread, StackTraceElement[]> sortedThreads = new TreeMap<>((t1, t2) -> Long.compare(t1.getId(),t2.getId()));
         sortedThreads.putAll(threads);
 
         for (Entry<Thread, StackTraceElement[]> entry : sortedThreads.entrySet()) {
