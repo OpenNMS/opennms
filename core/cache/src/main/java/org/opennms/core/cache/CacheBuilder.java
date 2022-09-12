@@ -37,7 +37,8 @@ public class CacheBuilder<K, V> {
     private CacheConfig config;
     private CacheLoader<K, V> loader;
 
-    public CacheBuilder<K, V> withConfig(CacheConfig config) {
+    @SuppressWarnings("rawtypes")
+    public CacheBuilder withConfig(CacheConfig config) {
         this.config = config;
         return this;
     }
@@ -47,10 +48,11 @@ public class CacheBuilder<K, V> {
         return this;
     }
 
-    public Cache<K, V> build() {
+    @SuppressWarnings("rawtypes")
+    public Cache build() {
         Objects.requireNonNull(config);
         Objects.requireNonNull(loader);
-        return new Cache<>(config, loader);
+        return new Cache<K, V>(config, loader);
     }
 
 }
