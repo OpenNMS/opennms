@@ -215,6 +215,9 @@ public class Asset extends Object {
     protected Integer vncport = -1;
     protected String vncusername = "";
     protected String vncpassword = "";
+    protected Integer sshport = -1;
+    protected String sshusername = "";
+    protected String sshpassword = "";
 
     /**
      * <p>Getter for the field <code>rackunitheight</code>.</p>
@@ -1621,6 +1624,42 @@ public class Asset extends Object {
         }
     }
 
+    public Integer getSshPort() {
+        return this.sshport;
+    }
+
+    public void setSshPort(Integer sshport) {
+        if (sshport != null) {
+            this.sshport = sshport;
+        } else {
+            this.sshport = -1;
+        }
+    }
+
+    public String getSshusername() {
+        return this.sshusername;
+    }
+
+    public void setSshusername(String sshusername) {
+        if (sshusername != null) {
+            this.sshusername = sshusername;
+        } else {
+            this.sshusername = "";
+        }
+    }
+
+    public String getSshpassword() {
+        return this.sshpassword;
+    }
+
+    public void setSshpassword(String sshpassword) {
+        if (sshpassword != null) {
+            this.sshpassword = sshpassword;
+        } else {
+            this.sshpassword = "";
+        }
+    }
+
     /**
      * <p>Getter for the field <code>ram</code>.</p>
      *
@@ -1782,6 +1821,12 @@ public class Asset extends Object {
         builder.append(vncusername);
         builder.append(", vncpassword=");
         builder.append(vncpassword);
+        builder.append(", sshport=");
+        builder.append(sshport);
+        builder.append(", sshusername=");
+        builder.append(sshusername);
+        builder.append(", sshpassword=");
+        builder.append(sshpassword);
         builder.append("]");
         return builder.toString();
     }

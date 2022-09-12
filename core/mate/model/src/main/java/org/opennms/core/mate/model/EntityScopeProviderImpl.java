@@ -183,11 +183,16 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
                         .map(ASSET, "managed-object-type", (a) -> Optional.ofNullable(a.getManagedObjectType()))
                         .map(ASSET, "managed-object-instance", (a) -> Optional.ofNullable(a.getManagedObjectInstance()))
                         .map(ASSET, "geolocation", (a) -> Optional.ofNullable(a.getGeolocation()).map(Object::toString))
+
                         .map(ASSET, "guacdhostname", (a) -> Optional.ofNullable(a.getGuacdHostname()).map(Object::toString))
                         .map(ASSET, "guacdport", (a) -> Optional.ofNullable(a.getGuacdPort()).map(Object::toString))
                         .map(ASSET, "vncport", (a) -> Optional.ofNullable(a.getVncPort()).map(Object::toString))
                         .map(ASSET, "vncusername", (a) -> Optional.ofNullable(a.getVncUsername()).map(Object::toString))
-                        .map(ASSET, "vncpassword", (a) -> Optional.ofNullable(a.getVncPassword()).map(Object::toString));
+                        .map(ASSET, "vncpassword", (a) -> Optional.ofNullable(a.getVncPassword()).map(Object::toString))
+                        .map(ASSET, "sshport", (a) -> Optional.ofNullable(a.getSshPort()).map(Object::toString))
+                        .map(ASSET, "sshusername", (a) -> Optional.ofNullable(a.getSshUsername()).map(Object::toString))
+                        .map(ASSET, "sshpassword", (a) -> Optional.ofNullable(a.getSshPassword()).map(Object::toString));
+
                 scopes.add(assetScope);
 
                 scopes.add(new SecureCredentialsVaultScope(this.scv));

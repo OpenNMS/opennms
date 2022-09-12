@@ -278,9 +278,9 @@
         }
         case "ssh": {
 %>
-            headers["X-Ssh-Port"] = 22 ;
-            headers["X-Ssh-Username"] = "tbigg" ;
-            <%--headers["X-Ssh-Password"] = "<%=assetRecord.getVncPassword()%>" ;--%>
+            headers["X-Ssh-Port"] = <%=assetRecord.getSshPort()%> ;
+            headers["X-Ssh-Username"] = "<%=assetRecord.getSshUsername()%>" ;
+            headers["X-Ssh-Password"] = "<%=assetRecord.getSshPassword()%>" ;
 <%
             break;
         }

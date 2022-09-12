@@ -385,6 +385,10 @@ public class OnmsAssetRecord implements Serializable {
     private String m_vncUsername;
     private String m_vncPassword;
 
+    private Integer m_sshPort;
+    private String m_sshUsername;
+    private String m_sshPassword;
+
     /**
      * default constructor
      */
@@ -1708,6 +1712,33 @@ public class OnmsAssetRecord implements Serializable {
         this.m_vncPassword = m_vncPassword;
     }
 
+    @Column(name = "sshport")
+    public Integer getSshPort() {
+        return this.m_sshPort;
+    }
+
+    public void setSshPort(Integer sshPort) {
+        this.m_sshPort = sshPort;
+    }
+
+    @Column(name = "sshusername")
+    public String getSshUsername() {
+        return this.m_sshUsername;
+    }
+
+    public void setSshUsername(String sshUsername) {
+        this.m_sshUsername = sshUsername;
+    }
+
+    @Column(name = "sshpassword")
+    public String getSshPassword() {
+        return this.m_sshPassword;
+    }
+
+    public void setSshPassword(String sshPassword) {
+        this.m_sshPassword = sshPassword;
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -1781,6 +1812,9 @@ public class OnmsAssetRecord implements Serializable {
         .add("vncport", getGuacdPort())
         .add("vncusername", getVncUsername())
         .add("vncpassword", getVncPassword())
+        .add("sshport", getSshPort())
+        .add("sshusername", getSshUsername())
+        .add("sshpassword", getSshPassword())
         .toString();
     }
 
