@@ -44,6 +44,12 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.TransactionSystemException;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.transaction.support.TransactionOperations;
+import io.opentelemetry.context.Scope;
+import io.opentelemetry.api.GlobalOpenTelemetry;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.StatusCode;
+import io.opentelemetry.api.trace.Tracer;
+import org.apache.commons.lang.exception.ExceptionUtils;
 
 public class DefaultSessionUtils implements SessionUtils {
 
@@ -58,6 +64,8 @@ public class DefaultSessionUtils implements SessionUtils {
     @Autowired
     private PlatformTransactionManager transactionManager;
 
+    private Tracer tracer = GlobalOpenTelemetry.get().getTracer(DefaultSessionUtils.class.getName());
+
     private static final DefaultTransactionDefinition readOnlyTransactionDefinition = new DefaultTransactionDefinition();
     static {
         readOnlyTransactionDefinition.setReadOnly(true);
@@ -65,22 +73,50 @@ public class DefaultSessionUtils implements SessionUtils {
 
     @Override
     public <V> V withTransaction(Supplier<V> supplier) {
-        return transactionOperations.execute(status -> supplier.get());
+        Span span = tracer.spanBuilder("withTransaction").startSpan();
+        span.setAttribute("stacktrace", ExceptionUtils.getStackTrace(new Exception()));
+        try (Scope scope = span.makeCurrent()) {
+            return transactionOperations.execute(status -> supplier.get());
+        } catch (Throwable throwable) {
+            span.setStatus(StatusCode.ERROR, "Received unexpected Throwable");
+            span.recordException(throwable);
+            throw throwable;
+        } finally {
+            span.end();
+        }
     }
 
     @Override
     public <V> V withReadOnlyTransaction(Supplier<V> supplier) {
-        return executeWithTransactionDefinition(readOnlyTransactionDefinition, () -> withManualFlush(supplier));
+        Span span = tracer.spanBuilder("withReadOnlyTransaction").startSpan();
+        span.setAttribute("stacktrace", ExceptionUtils.getStackTrace(new Exception()));
+        try (Scope scope = span.makeCurrent()) {
+            return executeWithTransactionDefinition(readOnlyTransactionDefinition, () -> withManualFlush(supplier));
+        } catch (Throwable throwable) {
+            span.setStatus(StatusCode.ERROR, "Received unexpected Throwable");
+            span.recordException(throwable);
+            throw throwable;
+        } finally {
+            span.end();
+        }
     }
 
     @Override
     public <V> V withManualFlush(Supplier<V> supplier) {
+        Span span = tracer.spanBuilder("withManualFlush").startSpan();
+        span.setAttribute("stacktrace", ExceptionUtils.getStackTrace(new Exception()));
         final FlushMode flushMode = sessionFactory.getCurrentSession().getFlushMode();
-        try {
+        span.setAttribute("original_flush_mode", flushMode.toString());
+        try (Scope scope = span.makeCurrent()) {
             sessionFactory.getCurrentSession().setFlushMode(FlushMode.MANUAL);
             return supplier.get();
+        } catch (Throwable throwable) {
+            span.setStatus(StatusCode.ERROR, "Received unexpected Throwable");
+            span.recordException(throwable);
+            throw throwable;
         } finally {
             sessionFactory.getCurrentSession().setFlushMode(flushMode);
+            span.end();
         }
     }
 

@@ -18,6 +18,8 @@
     <cache:annotation-driven />
     <tx:annotation-driven />
 
+    <bean id="transactionInterceptor" class="org.opennms.netmgt.dao.hibernate.TracingTransactionInterceptor" />
+
     <!-- Spring Cache Manager -->
     <bean id="cacheManager" class="org.springframework.cache.support.SimpleCacheManager">
         <property name="caches">
@@ -76,12 +78,15 @@
     <bean id="sessionUtils" class="org.opennms.netmgt.dao.hibernate.DefaultSessionUtils" />
     <onmsgi:service ref="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils"/>
 
+    <bean id="tracingInterceptor" class="org.opennms.netmgt.dao.hibernate.TracingInterceptor" />
+
     <bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
         <property name="sessionFactory" ref="sessionFactory" />
         <property name="nestedTransactionAllowed" value="true"/>
+        <property name="entityInterceptor" ref="tracingInterceptor" />
     </bean>
     <onmsgi:service interface="org.springframework.transaction.PlatformTransactionManager" ref="transactionManager" />
-    <bean id="transactionTemplate" class="org.springframework.transaction.support.TransactionTemplate">
+    <bean id="transactionTemplate" class="org.opennms.netmgt.dao.hibernate.TracingTransactionTemplate">
         <property name="transactionManager" ref="transactionManager" />
     </bean>
     <onmsgi:service interface="org.springframework.transaction.support.TransactionOperations" ref="transactionTemplate" />
