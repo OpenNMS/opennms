@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,12 +29,6 @@
 package org.opennms.netmgt.config;
 
 
-/**
- * <p>RancidAdapterConfig interface.</p>
- *
- * @author ranger
- * @version $Id: $
- */
 public interface RancidAdapterConfig {
     
     /**
@@ -59,17 +53,6 @@ public interface RancidAdapterConfig {
      */
     public abstract int getRetries(String ipaddress);
     
-    /**
-     * return the delay time for the specified address
-     * the retrydelay time is the time in msec that represents
-     * a delay in the execution of a RancidAdapter
-     * execution retry after a failure
-     * @param ipaddress
-     *          the ipaddress of the node
-     * @return the delay time for retry
-     */
-//    public abstract long getRetryDelay(String ipaddress);
-       
     /**
      * return if is to be used the opennms categories to get
      * rancid device type

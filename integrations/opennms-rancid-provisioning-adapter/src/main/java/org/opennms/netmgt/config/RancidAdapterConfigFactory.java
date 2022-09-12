@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -34,19 +34,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 
 import org.opennms.core.utils.ConfigFileConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * <p>RancidAdapterConfigFactory class.</p>
- *
- * @author ranger
- * @version $Id: $
- */
 public class RancidAdapterConfigFactory extends RancidAdapterConfigManager {
     private static final Logger LOG = LoggerFactory.getLogger(RancidAdapterConfigFactory.class);
 
@@ -147,14 +140,15 @@ public class RancidAdapterConfigFactory extends RancidAdapterConfigManager {
     protected void saveXml(final String xml) throws IOException {
         if (xml != null) {
             getWriteLock().lock();
-            try {
-                long timestamp = System.currentTimeMillis();
-                File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.RANCID_CONFIG_FILE_NAME);
-                LOG.debug("saveXml: saving config file at {}: {}", timestamp, cfgFile.getPath());
-                Writer fileWriter = new OutputStreamWriter(new FileOutputStream(cfgFile), StandardCharsets.UTF_8);
+            long timestamp = System.currentTimeMillis();
+            File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.RANCID_CONFIG_FILE_NAME);
+            LOG.debug("saveXml: saving config file at {}: {}", timestamp, cfgFile.getPath());
+            try (
+                final var fos = new FileOutputStream(cfgFile);
+                final var fileWriter = new OutputStreamWriter(fos, StandardCharsets.UTF_8);
+            ) {
                 fileWriter.write(xml);
                 fileWriter.flush();
-                fileWriter.close();
                 LOG.debug("saveXml: finished saving config file: {}", cfgFile.getPath());
             } finally {
                 getWriteLock().unlock();
@@ -169,13 +163,16 @@ public class RancidAdapterConfigFactory extends RancidAdapterConfigManager {
      */
     public void update() throws IOException {
         getWriteLock().lock();
+
         try {
             final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.RANCID_CONFIG_FILE_NAME);
             if (cfgFile.lastModified() > m_currentVersion) {
-                m_currentVersion = cfgFile.lastModified();
                 LOG.debug("init: config file path: {}", cfgFile.getPath());
-                reloadXML(new FileInputStream(cfgFile));
-                LOG.debug("init: finished loading config file: {}", cfgFile.getPath());
+                try (final var is = new FileInputStream(cfgFile)) {
+                    m_currentVersion = cfgFile.lastModified();
+                    reloadXML(new FileInputStream(cfgFile));
+                    LOG.debug("init: finished loading config file: {}", cfgFile.getPath());
+                }
             }
         } finally {
             getWriteLock().unlock();
