@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.config.dao.thresholding.impl;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -108,9 +109,13 @@ public abstract class AbstractThreshdDao implements ReadableThreshdDao {
         private synchronized void createUrlIpMap() {
             for (Package pkg : getReadOnlyConfig().getPackages()) {
                 for (String urlname : pkg.getIncludeUrls()) {
-                    java.util.List<String> iplist = IpListFromUrl.fetch(urlname);
-                    if (iplist.size() > 0) {
-                        urlIPMap.put(urlname, iplist);
+                    try {
+                        java.util.List<String> iplist = IpListFromUrl.fetch(urlname);
+                        if (!iplist.isEmpty()) {
+                            urlIPMap.put(urlname, iplist);
+                        }
+                    } catch (final IOException e) {
+                        LOG.warn("Failed to get package IPs from URL {}", urlname, e);
                     }
                 }
             }
@@ -128,8 +133,9 @@ public abstract class AbstractThreshdDao implements ReadableThreshdDao {
                 // database and populate the package, IP list map.
                 //
                 final StringBuilder filterRules = new StringBuilder();
-                if (pkg.getFilter().getContent().isPresent()) {
-                    filterRules.append(pkg.getFilter().getContent().get());
+                final Optional<String> content = pkg.getFilter().getContent();
+                if (content.isPresent()) {
+                    filterRules.append(content.get());
                 }
                 try {
                     LOG.debug("createPackageIpMap: package is {}. filer rules are {}", filterRules, pkg.getName());
@@ -137,12 +143,12 @@ public abstract class AbstractThreshdDao implements ReadableThreshdDao {
                     FilterDaoFactory.getInstance().flushActiveIpAddressListCache();
                     List<InetAddress> ipList =
                             FilterDaoFactory.getInstance().getActiveIPAddressList(filterRules.toString());
-                    if (ipList.size() > 0) {
+                    if (!ipList.isEmpty()) {
                         pkgIpMap.put(pkg, ipList);
                     }
-                } catch (Throwable t) {
+                } catch (final Exception e) {
                     LOG.error("createPackageIpMap: failed to map package: {} to an IP List with filter \"{}\"",
-                            pkg.getName(), pkg.getFilter().getContent().orElse(null), t);
+                            pkg.getName(), content.orElse(null), e);
                 }
             }
         }
@@ -175,7 +181,7 @@ public abstract class AbstractThreshdDao implements ReadableThreshdDao {
 
             // get list of IPs in this URL
             java.util.List<String> iplist = urlIPMap.get(url);
-            if (iplist != null && iplist.size() > 0) {
+            if (iplist != null && !iplist.isEmpty()) {
                 bRet = iplist.contains(addr);
             }
 
@@ -188,7 +194,7 @@ public abstract class AbstractThreshdDao implements ReadableThreshdDao {
 
             // get list of IPs in this package
             java.util.List<InetAddress> ipList = pkgIpMap.get(pkg);
-            if (ipList != null && ipList.size() > 0) {
+            if (ipList != null && !ipList.isEmpty()) {
                 filterPassed = ipList.contains(ifaceAddr);
             }
 
@@ -207,7 +213,7 @@ public abstract class AbstractThreshdDao implements ReadableThreshdDao {
             boolean has_range_include = false;
             boolean has_range_exclude = false;
 
-            has_range_include = pkg.getIncludeRanges().size() == 0 && pkg.getSpecifics().size() == 0;
+            has_range_include = pkg.getIncludeRanges().isEmpty() && pkg.getSpecifics().isEmpty();
 
             for (IncludeRange rng : pkg.getIncludeRanges()) {
                 if (InetAddressUtils.isInetAddressInRange(iface, rng.getBegin(), rng.getEnd())) {
