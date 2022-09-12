@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2022-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2022 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -32,12 +32,13 @@ package org.opennms.core.network;
 import javax.xml.bind.ValidationException;
 
 /**
- *  Sublcass of the generic XML ValidationException that indicates
+ *  Subclass of the generic XML ValidationException that indicates
  *  that an IP address parsed from an XML document is invalid.
  *
  *  See {@link org.opennms.netmgt.provision.persist.requisition.RequisitionNode#validate()}
  */
 public class IPValidationException extends ValidationException {
+    private static final long serialVersionUID = 1L;
 
     public IPValidationException(String message) {
         super(message);
