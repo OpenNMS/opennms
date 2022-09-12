@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  * 
@@ -131,13 +131,12 @@ public class ConnectionPool implements java.io.Serializable {
         
         if (obj instanceof ConnectionPool) {
             ConnectionPool temp = (ConnectionPool)obj;
-            boolean equals = Objects.equals(temp.factory, factory)
+            return Objects.equals(temp.factory, factory)
                 && Objects.equals(temp.idleTimeout, idleTimeout)
                 && Objects.equals(temp.loginTimeout, loginTimeout)
                 && Objects.equals(temp.minPool, minPool)
                 && Objects.equals(temp.maxPool, maxPool)
                 && Objects.equals(temp.maxSize, maxSize);
-            return equals;
         }
         return false;
     }
@@ -255,14 +254,13 @@ public class ConnectionPool implements java.io.Serializable {
      * @return a hash code value for the object.
      */
     public int hashCode() {
-        int hash = Objects.hash(
+        return Objects.hash(
             factory, 
             idleTimeout, 
             loginTimeout, 
             minPool, 
             maxPool, 
             maxSize);
-        return hash;
     }
 
     /**

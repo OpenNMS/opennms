@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  * 
@@ -30,6 +30,7 @@ package org.opennms.netmgt.config.opennmsDataSources;
 
 
 import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -111,9 +112,8 @@ public class DataSourceConfiguration implements java.io.Serializable {
         
         if (obj instanceof DataSourceConfiguration) {
             DataSourceConfiguration temp = (DataSourceConfiguration)obj;
-            boolean equals = Objects.equals(temp.connectionPool, connectionPool)
+            return Objects.equals(temp.connectionPool, connectionPool)
                 && Objects.equals(temp.jdbcDataSourceList, jdbcDataSourceList);
-            return equals;
         }
         return false;
     }
@@ -144,7 +144,7 @@ public class DataSourceConfiguration implements java.io.Serializable {
             throw new IndexOutOfBoundsException("getJdbcDataSource: Index value '" + index + "' not in range [0.." + (this.jdbcDataSourceList.size() - 1) + "]");
         }
         
-        return (JdbcDataSource) jdbcDataSourceList.get(index);
+        return jdbcDataSourceList.get(index);
     }
 
     /**
@@ -157,8 +157,7 @@ public class DataSourceConfiguration implements java.io.Serializable {
      * @return this collection as an Array
      */
     public JdbcDataSource[] getJdbcDataSource() {
-        JdbcDataSource[] array = new JdbcDataSource[0];
-        return (JdbcDataSource[]) this.jdbcDataSourceList.toArray(array);
+        return this.jdbcDataSourceList.toArray(new JdbcDataSource[0]);
     }
 
     /**
@@ -187,10 +186,9 @@ public class DataSourceConfiguration implements java.io.Serializable {
      * @return a hash code value for the object.
      */
     public int hashCode() {
-        int hash = Objects.hash(
+        return Objects.hash(
             connectionPool, 
             jdbcDataSourceList);
-        return hash;
     }
 
     /**
@@ -215,8 +213,7 @@ public class DataSourceConfiguration implements java.io.Serializable {
      * @return true if the object was removed from the collection.
      */
     public boolean removeJdbcDataSource(final JdbcDataSource vJdbcDataSource) {
-        boolean removed = jdbcDataSourceList.remove(vJdbcDataSource);
-        return removed;
+        return jdbcDataSourceList.remove(vJdbcDataSource);
     }
 
     /**
@@ -283,16 +280,4 @@ public class DataSourceConfiguration implements java.io.Serializable {
         
         this.jdbcDataSourceList.addAll(vJdbcDataSourceList);
     }
-
-    /**
-     * Sets the value of 'jdbcDataSourceList' by setting it to the given Vector.
-     * No type checking is performed.
-     * @deprecated
-     * 
-     * @param jdbcDataSourceList the Vector to set.
-     */
-    public void setJdbcDataSourceCollection(final java.util.List<JdbcDataSource> jdbcDataSourceList) {
-        this.jdbcDataSourceList = jdbcDataSourceList;
-    }
-
 }
