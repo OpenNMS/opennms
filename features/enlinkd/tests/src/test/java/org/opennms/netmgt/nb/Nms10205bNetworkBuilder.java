@@ -40,39 +40,39 @@ import org.opennms.netmgt.model.OnmsNode;
 public class Nms10205bNetworkBuilder extends NmsNetworkBuilder {
 
     public OnmsNode getMumbai() {
-        return getNode(MUMBAI_NAME,MUMBAI_SYSOID,MUMBAI_IP,MUMBAI_IP_IF_MAP,MUMBAI_IF_IFNAME_MAP,MUMBAI_IF_MAC_MAP,MUMBAI_IF_IFDESCR_MAP,MUMBAI_IF_IFALIAS_MAP,MUMBAI_IF_NETMASK_MAP);
+        return getNode(MUMBAI_NAME,MUMBAI_SYSOID,MUMBAI_IP,MUMBAI_IP_IF_MAP,MUMBAI_IF_IFNAME_MAP,MUMBAI_IF_MAC_MAP,MUMBAI_IF_IFDESCR_MAP,MUMBAI_IF_IFALIAS_MAP,MUMBAI_IP_MK_MAP);
     }    
     
     public OnmsNode getDelhi() {
-        return getNode(DELHI_NAME,DELHI_SYSOID,DELHI_IP,DELHI_IP_IF_MAP,DELHI_IF_IFNAME_MAP,DELHI_IF_MAC_MAP,DELHI_IF_IFDESCR_MAP,DELHI_IF_IFALIAS_MAP,DELHI_IF_NETMASK_MAP);
+        return getNode(DELHI_NAME,DELHI_SYSOID,DELHI_IP,DELHI_IP_IF_MAP,DELHI_IF_IFNAME_MAP,DELHI_IF_MAC_MAP,DELHI_IF_IFDESCR_MAP,DELHI_IF_IFALIAS_MAP,DELHI_IP_MK_MAP);
     }    
 
     public OnmsNode getBangalore() {
-        return getNode(BANGALORE_NAME,BANGALORE_SYSOID,BANGALORE_IP,BANGALORE_IP_IF_MAP,BANGALORE_IF_IFNAME_MAP,BANGALORE_IF_MAC_MAP,BANGALORE_IF_IFDESCR_MAP,BANGALORE_IF_IFALIAS_MAP,BANGALORE_IF_NETMASK_MAP);        
+        return getNode(BANGALORE_NAME,BANGALORE_SYSOID,BANGALORE_IP,BANGALORE_IP_IF_MAP,BANGALORE_IF_IFNAME_MAP,BANGALORE_IF_MAC_MAP,BANGALORE_IF_IFDESCR_MAP,BANGALORE_IF_IFALIAS_MAP,BANGALORE_IP_MK_MAP);        
     }
 
     public OnmsNode getBagmane() {
-        return getNode(BAGMANE_NAME,BAGMANE_SYSOID,BAGMANE_IP,BAGMANE_IP_IF_MAP,BAGMANE_IF_IFNAME_MAP,BAGMANE_IF_MAC_MAP,BAGMANE_IF_IFDESCR_MAP,BAGMANE_IF_IFALIAS_MAP,BAGMANE_IF_NETMASK_MAP);        
+        return getNode(BAGMANE_NAME,BAGMANE_SYSOID,BAGMANE_IP,BAGMANE_IP_IF_MAP,BAGMANE_IF_IFNAME_MAP,BAGMANE_IF_MAC_MAP,BAGMANE_IF_IFDESCR_MAP,BAGMANE_IF_IFALIAS_MAP,BAGMANE_IP_MK_MAP);        
     }
 
     public OnmsNode getMysore() {
-        return getNode(MYSORE_NAME,MYSORE_SYSOID,MYSORE_IP,MYSORE_IP_IF_MAP,MYSORE_IF_IFNAME_MAP,MYSORE_IF_MAC_MAP,MYSORE_IF_IFDESCR_MAP,MYSORE_IF_IFALIAS_MAP,MYSORE_IF_NETMASK_MAP);        
+        return getNode(MYSORE_NAME,MYSORE_SYSOID,MYSORE_IP,MYSORE_IP_IF_MAP,MYSORE_IF_IFNAME_MAP,MYSORE_IF_MAC_MAP,MYSORE_IF_IFDESCR_MAP,MYSORE_IF_IFALIAS_MAP,MYSORE_IP_MK_MAP);        
     }
 
     public OnmsNode getSpaceExSw1() {
-        return getNode(SPACE_EX_SW1_NAME,SPACE_EX_SW1_SYSOID,SPACE_EX_SW1_IP,SPACE_EX_SW1_IP_IF_MAP,SPACE_EX_SW1_IF_IFNAME_MAP,SPACE_EX_SW1_IF_MAC_MAP,SPACE_EX_SW1_IF_IFDESCR_MAP,SPACE_EX_SW1_IF_IFALIAS_MAP,SPACE_EX_SW1_IF_NETMASK_MAP);
+        return getNode(SPACE_EX_SW1_NAME,SPACE_EX_SW1_SYSOID,SPACE_EX_SW1_IP,SPACE_EX_SW1_IP_IF_MAP,SPACE_EX_SW1_IF_IFNAME_MAP,SPACE_EX_SW1_IF_MAC_MAP,SPACE_EX_SW1_IF_IFDESCR_MAP,SPACE_EX_SW1_IF_IFALIAS_MAP,SPACE_EX_SW1_IP_MK_MAP);
     }
 
     public OnmsNode getSpaceExSw2() {
-        return getNode(SPACE_EX_SW2_NAME,SPACE_EX_SW2_SYSOID,SPACE_EX_SW2_IP,SPACE_EX_SW2_IP_IF_MAP,SPACE_EX_SW2_IF_IFNAME_MAP,SPACE_EX_SW2_IF_MAC_MAP,SPACE_EX_SW2_IF_IFDESCR_MAP,SPACE_EX_SW2_IF_IFALIAS_MAP,SPACE_EX_SW2_IF_NETMASK_MAP);
+        return getNode(SPACE_EX_SW2_NAME,SPACE_EX_SW2_SYSOID,SPACE_EX_SW2_IP,SPACE_EX_SW2_IP_IF_MAP,SPACE_EX_SW2_IF_IFNAME_MAP,SPACE_EX_SW2_IF_MAC_MAP,SPACE_EX_SW2_IF_IFDESCR_MAP,SPACE_EX_SW2_IF_IFALIAS_MAP,SPACE_EX_SW2_IP_MK_MAP);
     }
 
     public OnmsNode getJ635042() {
-        return getNode(J6350_42_NAME,J6350_42_SYSOID,J6350_42_IP,J6350_42_IP_IF_MAP,J6350_42_IF_IFNAME_MAP,J6350_42_IF_MAC_MAP,J6350_42_IF_IFDESCR_MAP,J6350_42_IF_IFALIAS_MAP,J6350_42_IF_NETMASK_MAP);        
+        return getNode(J6350_42_NAME,J6350_42_SYSOID,J6350_42_IP,J6350_42_IP_IF_MAP,J6350_42_IF_IFNAME_MAP,J6350_42_IF_MAC_MAP,J6350_42_IF_IFDESCR_MAP,J6350_42_IF_IFALIAS_MAP,J6350_42_IP_MK_MAP);        
     }
 
     public OnmsNode getSRX100() {
-        return getNode(SRX_100_NAME,SRX_100_SYSOID,SRX_100_IP,SRX_100_IP_IF_MAP,SRX_100_IF_IFNAME_MAP,SRX_100_IF_MAC_MAP,SRX_100_IF_IFDESCR_MAP,SRX_100_IF_IFALIAS_MAP,SRX_100_IF_NETMASK_MAP);        
+        return getNode(SRX_100_NAME,SRX_100_SYSOID,SRX_100_IP,SRX_100_IP_IF_MAP,SRX_100_IF_IFNAME_MAP,SRX_100_IF_MAC_MAP,SRX_100_IF_IFDESCR_MAP,SRX_100_IF_IFALIAS_MAP,SRX_100_IP_MK_MAP);
     }
 
 static {
@@ -97,7 +97,7 @@ static {
     BAGMANE_IF_IFNAME_MAP.put(1729, "ge-1/0/1.0");
     BAGMANE_IF_IFDESCR_MAP.put(1729, "ge-1/0/1.0");
     BAGMANE_IF_MAC_MAP.put(1729, "80711fc70f61");
-    BAGMANE_IF_NETMASK_MAP.put(1729, InetAddressUtils.addr("255.255.255.252"));
+    //BAGMANE_IP_MK_MAP.put(1729, InetAddressUtils.addr("255.255.255.252"));
     BAGMANE_IF_IFNAME_MAP.put(655, "ge-1/0/6.0");
     BAGMANE_IF_IFDESCR_MAP.put(655, "ge-1/0/6.0");
     BAGMANE_IF_MAC_MAP.put(655, "80711fc70f66");
@@ -115,7 +115,7 @@ static {
     BAGMANE_IF_MAC_MAP.put(518, "80711fc70f66");
     BAGMANE_IF_IFNAME_MAP.put(16, "lo0.0");
     BAGMANE_IF_IFDESCR_MAP.put(16, "lo0.0");
-    BAGMANE_IF_NETMASK_MAP.put(16, InetAddressUtils.addr("255.255.255.255"));
+    //BAGMANE_IP_MK_MAP.put(16, InetAddressUtils.addr("255.255.255.255"));
     BAGMANE_IF_IFNAME_MAP.put(530, "ge-1/1/8");
     BAGMANE_IF_IFDESCR_MAP.put(530, "ge-1/1/8");
     BAGMANE_IF_MAC_MAP.put(530, "80711fc70f80");
@@ -131,7 +131,7 @@ static {
     BAGMANE_IF_IFNAME_MAP.put(535, "ge-1/0/3.0");
     BAGMANE_IF_IFDESCR_MAP.put(535, "ge-1/0/3.0");
     BAGMANE_IF_MAC_MAP.put(535, "80711fc70f63");
-    BAGMANE_IF_NETMASK_MAP.put(535, InetAddressUtils.addr("255.255.0.0"));
+    //BAGMANE_IP_MK_MAP.put(535, InetAddressUtils.addr("255.255.0.0"));
     BAGMANE_IF_IFNAME_MAP.put(10, "pime");
     BAGMANE_IF_IFDESCR_MAP.put(10, "pime");
     BAGMANE_IF_IFNAME_MAP.put(517, "ge-1/0/5");
@@ -163,7 +163,7 @@ static {
     BAGMANE_IF_IFNAME_MAP.put(654, "ge-1/0/5.0");
     BAGMANE_IF_IFDESCR_MAP.put(654, "ge-1/0/5.0");
     BAGMANE_IF_MAC_MAP.put(654, "80711fc70f65");
-    BAGMANE_IF_NETMASK_MAP.put(654, InetAddressUtils.addr("255.255.255.252"));
+    //BAGMANE_IP_MK_MAP.put(654, InetAddressUtils.addr("255.255.255.252"));
     BAGMANE_IF_IFNAME_MAP.put(539, "pfe-0/0/0.16383");
     BAGMANE_IF_IFDESCR_MAP.put(539, "pfe-0/0/0.16383");
     BAGMANE_IF_IFNAME_MAP.put(509, "xe-0/0/1");
@@ -177,7 +177,7 @@ static {
     BAGMANE_IF_IFNAME_MAP.put(18, "em0.0");
     BAGMANE_IF_IFDESCR_MAP.put(18, "em0.0");
     BAGMANE_IF_MAC_MAP.put(18, "020000000004");
-    BAGMANE_IF_NETMASK_MAP.put(18, InetAddressUtils.addr("255.0.0.0"));
+    //BAGMANE_IP_MK_MAP.put(18, InetAddressUtils.addr("255.0.0.0"));
     BAGMANE_IF_IFNAME_MAP.put(529, "ge-1/1/7");
     BAGMANE_IF_IFDESCR_MAP.put(529, "ge-1/1/7");
     BAGMANE_IF_MAC_MAP.put(529, "80711fc70f7f");
@@ -224,7 +224,7 @@ static {
     BAGMANE_IF_IFNAME_MAP.put(534, "ge-1/0/0.0");
     BAGMANE_IF_IFDESCR_MAP.put(534, "ge-1/0/0.0");
     BAGMANE_IF_MAC_MAP.put(534, "80711fc70f60");
-    BAGMANE_IF_NETMASK_MAP.put(534, InetAddressUtils.addr("255.255.255.252"));
+    //BAGMANE_IP_MK_MAP.put(534, InetAddressUtils.addr("255.255.255.252"));
     BAGMANE_IF_IFNAME_MAP.put(514, "ge-1/0/2");
     BAGMANE_IF_IFDESCR_MAP.put(514, "ge-1/0/2");
     BAGMANE_IF_MAC_MAP.put(514, "80711fc70f62");
@@ -245,16 +245,16 @@ static {
     BAGMANE_IF_IFNAME_MAP.put(1732, "ge-1/0/4.0");
     BAGMANE_IF_IFDESCR_MAP.put(1732, "ge-1/0/4.0");
     BAGMANE_IF_MAC_MAP.put(1732, "80711fc70f64");
-    BAGMANE_IF_NETMASK_MAP.put(1732, InetAddressUtils.addr("255.255.255.252"));
+    //BAGMANE_IP_MK_MAP.put(1732, InetAddressUtils.addr("255.255.255.252"));
     BAGMANE_IF_IFNAME_MAP.put(540, "ge-1/0/2.0");
     BAGMANE_IF_IFDESCR_MAP.put(540, "ge-1/0/2.0");
     BAGMANE_IF_MAC_MAP.put(540, "80711fc70f62");
-    BAGMANE_IF_NETMASK_MAP.put(540, InetAddressUtils.addr("255.255.255.252"));
+    //BAGMANE_IP_MK_MAP.put(540, InetAddressUtils.addr("255.255.255.252"));
     BAGMANE_IF_IFNAME_MAP.put(656, "ge-1/1/5.0");
     BAGMANE_IF_IFDESCR_MAP.put(656, "ge-1/1/5.0");
     BAGMANE_IF_MAC_MAP.put(656, "80711fc70f7d");
     BAGMANE_IF_IFALIAS_MAP.put(656, "TO-DELHI");
-    BAGMANE_IF_NETMASK_MAP.put(656, InetAddressUtils.addr("255.255.255.252"));
+    //BAGMANE_IP_MK_MAP.put(656, InetAddressUtils.addr("255.255.255.252"));
     BAGMANE_IF_IFNAME_MAP.put(527, "ge-1/1/5");
     BAGMANE_IF_IFDESCR_MAP.put(527, "ge-1/1/5");
     BAGMANE_IF_MAC_MAP.put(527, "80711fc70f7d");
@@ -284,10 +284,10 @@ static {
     BANGALORE_IF_IFNAME_MAP.put(2398, "ge-0/0/3.0");
     BANGALORE_IF_IFDESCR_MAP.put(2398, "ge-0/0/3.0");
     BANGALORE_IF_MAC_MAP.put(2398, "0022831d7c03");
-    BANGALORE_IF_NETMASK_MAP.put(2398, InetAddressUtils.addr("255.255.255.252"));
+    //BANGALORE_IP_MK_MAP.put(2398, InetAddressUtils.addr("255.255.255.252"));
     BANGALORE_IF_IFNAME_MAP.put(16, "lo0.0");
     BANGALORE_IF_IFDESCR_MAP.put(16, "lo0.0");
-    BANGALORE_IF_NETMASK_MAP.put(16, InetAddressUtils.addr("255.255.255.255"));
+    //BANGALORE_IP_MK_MAP.put(16, InetAddressUtils.addr("255.255.255.255"));
     BANGALORE_IF_IFNAME_MAP.put(3329, "ge-0/0/3");
     BANGALORE_IF_IFDESCR_MAP.put(3329, "ge-0/0/3");
     BANGALORE_IF_MAC_MAP.put(3329, "0022831d7c03");
@@ -296,7 +296,7 @@ static {
     BANGALORE_IF_IFNAME_MAP.put(14, "fxp1.0");
     BANGALORE_IF_IFDESCR_MAP.put(14, "fxp1.0");
     BANGALORE_IF_MAC_MAP.put(14, "020000000004");
-    BANGALORE_IF_NETMASK_MAP.put(14, InetAddressUtils.addr("255.0.0.0"));
+    //BANGALORE_IP_MK_MAP.put(14, InetAddressUtils.addr("255.0.0.0"));
     BANGALORE_IF_IFNAME_MAP.put(3321, "ge-0/0/1");
     BANGALORE_IF_IFDESCR_MAP.put(3321, "ge-0/0/1");
     BANGALORE_IF_MAC_MAP.put(3321, "0022831d7c01");
@@ -320,7 +320,7 @@ static {
     BANGALORE_IF_IFNAME_MAP.put(2397, "ge-0/0/1.0");
     BANGALORE_IF_IFDESCR_MAP.put(2397, "ge-0/0/1.0");
     BANGALORE_IF_MAC_MAP.put(2397, "0022831d7c01");
-    BANGALORE_IF_NETMASK_MAP.put(2397, InetAddressUtils.addr("255.255.255.252"));
+    //BANGALORE_IP_MK_MAP.put(2397, InetAddressUtils.addr("255.255.255.252"));
     BANGALORE_IF_IFNAME_MAP.put(1, "fxp0");
     BANGALORE_IF_IFDESCR_MAP.put(1, "fxp0");
     BANGALORE_IF_MAC_MAP.put(1, "00a0a561e749");
@@ -341,11 +341,11 @@ static {
     BANGALORE_IF_IFNAME_MAP.put(2401, "ge-0/0/0.0");
     BANGALORE_IF_IFDESCR_MAP.put(2401, "ge-0/0/0.0");
     BANGALORE_IF_MAC_MAP.put(2401, "0022831d7c00");
-    BANGALORE_IF_NETMASK_MAP.put(2401, InetAddressUtils.addr("255.255.255.252"));
+    //BANGALORE_IP_MK_MAP.put(2401, InetAddressUtils.addr("255.255.255.252"));
     BANGALORE_IF_IFNAME_MAP.put(2366, "ge-0/0/2.0");
     BANGALORE_IF_IFDESCR_MAP.put(2366, "ge-0/0/2.0");
     BANGALORE_IF_MAC_MAP.put(2366, "0022831d7c02");
-    BANGALORE_IF_NETMASK_MAP.put(2366, InetAddressUtils.addr("255.255.0.0"));
+    //BANGALORE_IP_MK_MAP.put(2366, InetAddressUtils.addr("255.255.0.0"));
     BANGALORE_IF_IFNAME_MAP.put(4, "lsi");
     BANGALORE_IF_IFDESCR_MAP.put(4, "lsi");
     BANGALORE_IF_IFNAME_MAP.put(3323, "ge-0/1/0");
@@ -374,7 +374,7 @@ static {
     BANGALORE_IF_IFNAME_MAP.put(2396, "ge-0/1/0.0");
     BANGALORE_IF_IFDESCR_MAP.put(2396, "ge-0/1/0.0");
     BANGALORE_IF_MAC_MAP.put(2396, "0022831d7c1f");
-    BANGALORE_IF_NETMASK_MAP.put(2396, InetAddressUtils.addr("255.255.255.252"));
+    //BANGALORE_IP_MK_MAP.put(2396, InetAddressUtils.addr("255.255.255.252"));
     BANGALORE_IF_IFNAME_MAP.put(3327, "ge-0/1/3");
     BANGALORE_IF_IFDESCR_MAP.put(3327, "ge-0/1/3");
     BANGALORE_IF_MAC_MAP.put(3327, "0022831d7c22");
@@ -387,7 +387,7 @@ static {
     BANGALORE_IF_IFNAME_MAP.put(2407, "ge-0/1/3.0");
     BANGALORE_IF_IFDESCR_MAP.put(2407, "ge-0/1/3.0");
     BANGALORE_IF_MAC_MAP.put(2407, "0022831d7c22");
-    BANGALORE_IF_NETMASK_MAP.put(2407, InetAddressUtils.addr("255.255.255.255"));
+    //BANGALORE_IP_MK_MAP.put(2407, InetAddressUtils.addr("255.255.255.255"));
     BANGALORE_IF_IFNAME_MAP.put(22, "lo0.16385");
     BANGALORE_IF_IFDESCR_MAP.put(22, "lo0.16385");
     BANGALORE_IF_IFNAME_MAP.put(3338, "pc-0/0/0.16383");
@@ -395,7 +395,7 @@ static {
     BANGALORE_IF_IFNAME_MAP.put(3350, "ge-0/1/3.1");
     BANGALORE_IF_IFDESCR_MAP.put(3350, "ge-0/1/3.1");
     BANGALORE_IF_MAC_MAP.put(3350, "0022831d7c22");
-    BANGALORE_IF_NETMASK_MAP.put(3350, InetAddressUtils.addr("255.255.0.0"));
+    //BANGALORE_IP_MK_MAP.put(3350, InetAddressUtils.addr("255.255.0.0"));
     DELHI_IP_IF_MAP.put(InetAddressUtils.addr("192.168.5.10"), 28503);
     DELHI_IP_IF_MAP.put(InetAddressUtils.addr("172.16.7.1"), 17619);
     DELHI_IP_IF_MAP.put(InetAddressUtils.addr("192.168.1.5"), 3674);
@@ -441,11 +441,11 @@ static {
     DELHI_IF_IFNAME_MAP.put(3674, "ge-1/0/1.0");
     DELHI_IF_IFDESCR_MAP.put(3674, "ge-1/0/1.0");
     DELHI_IF_MAC_MAP.put(3674, "002283f16296");
-    DELHI_IF_NETMASK_MAP.put(3674, InetAddressUtils.addr("255.255.255.252"));
+    //DELHI_IP_MK_MAP.put(3674, InetAddressUtils.addr("255.255.255.252"));
     DELHI_IF_IFNAME_MAP.put(18, "em0.0");
     DELHI_IF_IFDESCR_MAP.put(18, "em0.0");
     DELHI_IF_MAC_MAP.put(18, "020000000004");
-    DELHI_IF_NETMASK_MAP.put(18, InetAddressUtils.addr("255.0.0.0"));
+    //DELHI_IP_MK_MAP.put(18, InetAddressUtils.addr("255.0.0.0"));
     DELHI_IF_IFNAME_MAP.put(271, "ge-1/2/9");
     DELHI_IF_IFDESCR_MAP.put(271, "ge-1/2/9");
     DELHI_IF_MAC_MAP.put(271, "002283f163e8");
@@ -481,7 +481,7 @@ static {
     DELHI_IF_IFNAME_MAP.put(17619, "ge-1/1/6.0");
     DELHI_IF_IFDESCR_MAP.put(17619, "ge-1/1/6.0");
     DELHI_IF_MAC_MAP.put(17619, "002283f16340");
-    DELHI_IF_NETMASK_MAP.put(17619, InetAddressUtils.addr("255.255.255.252"));
+    //DELHI_IP_MK_MAP.put(17619, InetAddressUtils.addr("255.255.255.252"));
     DELHI_IF_IFNAME_MAP.put(28507, "ge-1/0/9");
     DELHI_IF_IFDESCR_MAP.put(28507, "ge-1/0/9");
     DELHI_IF_MAC_MAP.put(28507, "002283f1629e");
@@ -522,7 +522,7 @@ static {
     DELHI_IF_IFDESCR_MAP.put(29804, "ge-1/1/5.0");
     DELHI_IF_MAC_MAP.put(29804, "002283f1633f");
     DELHI_IF_IFALIAS_MAP.put(29804, "TO-BAGMANE");
-    DELHI_IF_NETMASK_MAP.put(29804, InetAddressUtils.addr("255.255.255.252"));
+    //DELHI_IP_MK_MAP.put(29804, InetAddressUtils.addr("255.255.255.252"));
     DELHI_IF_IFNAME_MAP.put(28511, "ge-1/1/0");
     DELHI_IF_IFDESCR_MAP.put(28511, "ge-1/1/0");
     DELHI_IF_MAC_MAP.put(28511, "002283f1633a");
@@ -542,7 +542,7 @@ static {
     DELHI_IF_MAC_MAP.put(28523, "002283f16343");
     DELHI_IF_IFNAME_MAP.put(16, "lo0.0");
     DELHI_IF_IFDESCR_MAP.put(16, "lo0.0");
-    DELHI_IF_NETMASK_MAP.put(16, InetAddressUtils.addr("255.255.255.255"));
+    //DELHI_IP_MK_MAP.put(16, InetAddressUtils.addr("255.255.255.255"));
     DELHI_IF_IFNAME_MAP.put(273, "lc-1/2/0.32769");
     DELHI_IF_IFDESCR_MAP.put(273, "lc-1/2/0.32769");
     DELHI_IF_IFNAME_MAP.put(267, "ge-1/2/5");
@@ -604,14 +604,14 @@ static {
     DELHI_IF_IFNAME_MAP.put(28514, "ge-1/1/0.0");
     DELHI_IF_IFDESCR_MAP.put(28514, "ge-1/1/0.0");
     DELHI_IF_MAC_MAP.put(28514, "002283f1633a");
-    DELHI_IF_NETMASK_MAP.put(28514, InetAddressUtils.addr("255.255.255.252"));
+    //DELHI_IP_MK_MAP.put(28514, InetAddressUtils.addr("255.255.255.252"));
     DELHI_IF_IFNAME_MAP.put(282, "ge-1/3/8");
     DELHI_IF_IFDESCR_MAP.put(282, "ge-1/3/8");
     DELHI_IF_MAC_MAP.put(282, "002283f1648c");
     DELHI_IF_IFNAME_MAP.put(13, "fxp0.0");
     DELHI_IF_IFDESCR_MAP.put(13, "fxp0.0");
     DELHI_IF_MAC_MAP.put(13, "00a0a56264ef");
-    DELHI_IF_NETMASK_MAP.put(13, InetAddressUtils.addr("255.255.0.0"));
+    //DELHI_IP_MK_MAP.put(13, InetAddressUtils.addr("255.255.0.0"));
     DELHI_IF_IFNAME_MAP.put(28513, "ge-1/1/1");
     DELHI_IF_IFDESCR_MAP.put(28513, "ge-1/1/1");
     DELHI_IF_MAC_MAP.put(28513, "002283f1633b");
@@ -620,7 +620,7 @@ static {
     DELHI_IF_IFNAME_MAP.put(28503, "ge-1/0/2.0");
     DELHI_IF_IFDESCR_MAP.put(28503, "ge-1/0/2.0");
     DELHI_IF_MAC_MAP.put(28503, "002283f16297");
-    DELHI_IF_NETMASK_MAP.put(28503, InetAddressUtils.addr("255.255.255.252"));
+    //DELHI_IP_MK_MAP.put(28503, InetAddressUtils.addr("255.255.255.252"));
     DELHI_IF_IFNAME_MAP.put(29800, "ge-1/2/4");
     DELHI_IF_IFDESCR_MAP.put(29800, "ge-1/2/4");
     DELHI_IF_MAC_MAP.put(29800, "002283f163e3");
@@ -640,14 +640,14 @@ static {
     J6350_42_IF_IFDESCR_MAP.put(7, "tap");
     J6350_42_IF_IFNAME_MAP.put(22, "lo0.16385");
     J6350_42_IF_IFDESCR_MAP.put(22, "lo0.16385");
-    J6350_42_IF_NETMASK_MAP.put(22, InetAddressUtils.addr("255.255.255.255"));
+    //J6350_42_IP_MK_MAP.put(22, InetAddressUtils.addr("255.255.255.255"));
     J6350_42_IF_IFNAME_MAP.put(513, "gr-0/0/0");
     J6350_42_IF_IFDESCR_MAP.put(513, "gr-0/0/0");
     J6350_42_IF_IFNAME_MAP.put(549, "ge-0/0/2.0");
     J6350_42_IF_IFDESCR_MAP.put(549, "ge-0/0/2.0");
     J6350_42_IF_MAC_MAP.put(549, "2c6bf55dc082");
     J6350_42_IF_IFALIAS_MAP.put(549, "TO-BAMANE");
-    J6350_42_IF_NETMASK_MAP.put(549, InetAddressUtils.addr("255.255.255.252"));
+    //J6350_42_IP_MK_MAP.put(549, InetAddressUtils.addr("255.255.255.252"));
     J6350_42_IF_IFNAME_MAP.put(501, "lo0.32768");
     J6350_42_IF_IFDESCR_MAP.put(501, "lo0.32768");
     J6350_42_IF_IFNAME_MAP.put(8, "gre");
@@ -655,7 +655,7 @@ static {
     J6350_42_IF_IFNAME_MAP.put(517, "ge-0/0/1.0");
     J6350_42_IF_IFDESCR_MAP.put(517, "ge-0/0/1.0");
     J6350_42_IF_MAC_MAP.put(517, "2c6bf55dc081");
-    J6350_42_IF_NETMASK_MAP.put(517, InetAddressUtils.addr("255.255.255.0"));
+    //J6350_42_IP_MK_MAP.put(517, InetAddressUtils.addr("255.255.255.0"));
     J6350_42_IF_IFNAME_MAP.put(9, "ipip");
     J6350_42_IF_IFDESCR_MAP.put(9, "ipip");
     J6350_42_IF_IFNAME_MAP.put(503, "st0");
@@ -684,13 +684,13 @@ static {
     J6350_42_IF_IFNAME_MAP.put(508, "ge-0/0/0.0");
     J6350_42_IF_IFDESCR_MAP.put(508, "ge-0/0/0.0");
     J6350_42_IF_MAC_MAP.put(508, "2c6bf55dc080");
-    J6350_42_IF_NETMASK_MAP.put(508, InetAddressUtils.addr("255.255.0.0"));
+    //J6350_42_IP_MK_MAP.put(508, InetAddressUtils.addr("255.255.0.0"));
     J6350_42_IF_IFNAME_MAP.put(509, "ge-0/0/1");
     J6350_42_IF_IFDESCR_MAP.put(509, "ge-0/0/1");
     J6350_42_IF_MAC_MAP.put(509, "2c6bf55dc081");
     J6350_42_IF_IFNAME_MAP.put(548, "st0.0");
     J6350_42_IF_IFDESCR_MAP.put(548, "st0.0");
-    J6350_42_IF_NETMASK_MAP.put(548, InetAddressUtils.addr("255.255.255.0"));
+    //J6350_42_IP_MK_MAP.put(548, InetAddressUtils.addr("255.255.255.0"));
     J6350_42_IF_IFNAME_MAP.put(505, "ppe0");
     J6350_42_IF_IFDESCR_MAP.put(505, "ppe0");
     J6350_42_IF_IFNAME_MAP.put(11, "pimd");
@@ -724,7 +724,7 @@ static {
     MUMBAI_IF_IFDESCR_MAP.put(12, "mtun");
     MUMBAI_IF_IFNAME_MAP.put(16, "lo0.0");
     MUMBAI_IF_IFDESCR_MAP.put(16, "lo0.0");
-    MUMBAI_IF_NETMASK_MAP.put(16, InetAddressUtils.addr("255.255.255.255"));
+    //MUMBAI_IP_MK_MAP.put(16, InetAddressUtils.addr("255.255.255.255"));
     MUMBAI_IF_IFNAME_MAP.put(515, "pc-0/1/0.16383");
     MUMBAI_IF_IFDESCR_MAP.put(515, "pc-0/1/0.16383");
     MUMBAI_IF_IFNAME_MAP.put(19, "bcm0");
@@ -744,11 +744,11 @@ static {
     MUMBAI_IF_IFNAME_MAP.put(519, "ge-0/1/2.0");
     MUMBAI_IF_IFDESCR_MAP.put(519, "ge-0/1/2.0");
     MUMBAI_IF_MAC_MAP.put(519, "0019e2709481");
-    MUMBAI_IF_NETMASK_MAP.put(519, InetAddressUtils.addr("255.255.255.252"));
+    //MUMBAI_IP_MK_MAP.put(519, InetAddressUtils.addr("255.255.255.252"));
     MUMBAI_IF_IFNAME_MAP.put(978, "ge-0/1/1.0");
     MUMBAI_IF_IFDESCR_MAP.put(978, "ge-0/1/1.0");
     MUMBAI_IF_MAC_MAP.put(978, "0019e2709480");
-    MUMBAI_IF_NETMASK_MAP.put(978, InetAddressUtils.addr("255.255.255.252"));
+    //MUMBAI_IP_MK_MAP.put(978, InetAddressUtils.addr("255.255.255.252"));
     MUMBAI_IF_IFNAME_MAP.put(511, "ge-0/1/1");
     MUMBAI_IF_IFDESCR_MAP.put(511, "ge-0/1/1");
     MUMBAI_IF_MAC_MAP.put(511, "0019e2709480");
@@ -756,7 +756,7 @@ static {
     MUMBAI_IF_IFNAME_MAP.put(508, "ge-0/0/3.0");
     MUMBAI_IF_IFDESCR_MAP.put(508, "ge-0/0/3.0");
     MUMBAI_IF_MAC_MAP.put(508, "0019e2709403");
-    MUMBAI_IF_NETMASK_MAP.put(508, InetAddressUtils.addr("255.255.0.0"));
+    //MUMBAI_IP_MK_MAP.put(508, InetAddressUtils.addr("255.255.0.0"));
     MUMBAI_IF_IFNAME_MAP.put(8, "gre");
     MUMBAI_IF_IFDESCR_MAP.put(8, "gre");
     MUMBAI_IF_IFNAME_MAP.put(522, "pfh-0/0/0.16383");
@@ -780,7 +780,7 @@ static {
     MUMBAI_IF_IFNAME_MAP.put(507, "ge-0/0/1.0");
     MUMBAI_IF_IFDESCR_MAP.put(507, "ge-0/0/1.0");
     MUMBAI_IF_MAC_MAP.put(507, "0019e2709401");
-    MUMBAI_IF_NETMASK_MAP.put(507, InetAddressUtils.addr("255.255.255.252"));
+    //MUMBAI_IP_MK_MAP.put(507, InetAddressUtils.addr("255.255.255.252"));
     MUMBAI_IF_IFNAME_MAP.put(514, "pc-0/1/0");
     MUMBAI_IF_IFDESCR_MAP.put(514, "pc-0/1/0");
     MUMBAI_IF_IFNAME_MAP.put(6, "lo0");
@@ -788,7 +788,7 @@ static {
     MUMBAI_IF_IFNAME_MAP.put(18, "em0.0");
     MUMBAI_IF_IFDESCR_MAP.put(18, "em0.0");
     MUMBAI_IF_MAC_MAP.put(18, "020001000004");
-    MUMBAI_IF_NETMASK_MAP.put(18, InetAddressUtils.addr("255.0.0.0"));
+    //MUMBAI_IP_MK_MAP.put(18, InetAddressUtils.addr("255.0.0.0"));
     MUMBAI_IF_IFNAME_MAP.put(512, "ge-0/1/2");
     MUMBAI_IF_IFDESCR_MAP.put(512, "ge-0/1/2");
     MUMBAI_IF_MAC_MAP.put(512, "0019e2709481");
@@ -817,15 +817,15 @@ static {
     MUMBAI_IF_IFNAME_MAP.put(977, "ge-0/0/2.0");
     MUMBAI_IF_IFDESCR_MAP.put(977, "ge-0/0/2.0");
     MUMBAI_IF_MAC_MAP.put(977, "0019e2709402");
-    MUMBAI_IF_NETMASK_MAP.put(977, InetAddressUtils.addr("255.255.255.252"));
+    //MUMBAI_IP_MK_MAP.put(977, InetAddressUtils.addr("255.255.255.252"));
     MUMBAI_IF_IFNAME_MAP.put(518, "ge-0/1/0.0");
     MUMBAI_IF_IFDESCR_MAP.put(518, "ge-0/1/0.0");
     MUMBAI_IF_MAC_MAP.put(518, "0019e270947f");
-    MUMBAI_IF_NETMASK_MAP.put(518, InetAddressUtils.addr("255.255.0.0"));
+    //MUMBAI_IP_MK_MAP.put(518, InetAddressUtils.addr("255.255.0.0"));
     MUMBAI_IF_IFNAME_MAP.put(520, "ge-0/1/3.0");
     MUMBAI_IF_IFDESCR_MAP.put(520, "ge-0/1/3.0");
     MUMBAI_IF_MAC_MAP.put(520, "0019e2709482");
-    MUMBAI_IF_NETMASK_MAP.put(520, InetAddressUtils.addr("255.255.255.252"));
+    //MUMBAI_IP_MK_MAP.put(520, InetAddressUtils.addr("255.255.255.252"));
     MUMBAI_IF_IFNAME_MAP.put(503, "ge-0/0/1");
     MUMBAI_IF_IFDESCR_MAP.put(503, "ge-0/0/1");
     MUMBAI_IF_MAC_MAP.put(503, "0019e2709401");
@@ -856,7 +856,7 @@ static {
     MYSORE_IF_IFNAME_MAP.put(14, "fxp1.0");
     MYSORE_IF_IFDESCR_MAP.put(14, "fxp1.0");
     MYSORE_IF_MAC_MAP.put(14, "020000000004");
-    MYSORE_IF_NETMASK_MAP.put(14, InetAddressUtils.addr("255.0.0.0"));
+    //MYSORE_IP_MK_MAP.put(14, InetAddressUtils.addr("255.0.0.0"));
     MYSORE_IF_IFNAME_MAP.put(9, "ipip");
     MYSORE_IF_IFDESCR_MAP.put(9, "ipip");
     MYSORE_IF_IFNAME_MAP.put(507, "ge-0/0/3");
@@ -876,7 +876,7 @@ static {
     MYSORE_IF_MAC_MAP.put(506, "0022831ba802");
     MYSORE_IF_IFNAME_MAP.put(16, "lo0.0");
     MYSORE_IF_IFDESCR_MAP.put(16, "lo0.0");
-    MYSORE_IF_NETMASK_MAP.put(16, InetAddressUtils.addr("255.255.255.255"));
+    //MYSORE_IP_MK_MAP.put(16, InetAddressUtils.addr("255.255.255.255"));
     MYSORE_IF_IFNAME_MAP.put(514, "ge-0/1/3");
     MYSORE_IF_IFDESCR_MAP.put(514, "ge-0/1/3");
     MYSORE_IF_MAC_MAP.put(514, "0022831ba822");
@@ -898,11 +898,11 @@ static {
     MYSORE_IF_IFNAME_MAP.put(520, "ge-0/1/1.0");
     MYSORE_IF_IFDESCR_MAP.put(520, "ge-0/1/1.0");
     MYSORE_IF_MAC_MAP.put(520, "0022831ba820");
-    MYSORE_IF_NETMASK_MAP.put(520, InetAddressUtils.addr("255.255.255.252"));
+    //MYSORE_IP_MK_MAP.put(520, InetAddressUtils.addr("255.255.255.252"));
     MYSORE_IF_IFNAME_MAP.put(505, "ge-0/0/0.0");
     MYSORE_IF_IFDESCR_MAP.put(505, "ge-0/0/0.0");
     MYSORE_IF_MAC_MAP.put(505, "0022831ba800");
-    MYSORE_IF_NETMASK_MAP.put(505, InetAddressUtils.addr("255.255.255.252"));
+    //MYSORE_IP_MK_MAP.put(505, InetAddressUtils.addr("255.255.255.252"));
     MYSORE_IF_IFNAME_MAP.put(503, "ge-0/0/0");
     MYSORE_IF_IFDESCR_MAP.put(503, "ge-0/0/0");
     MYSORE_IF_MAC_MAP.put(503, "0022831ba800");
@@ -917,15 +917,15 @@ static {
     MYSORE_IF_IFDESCR_MAP.put(521, "ge-0/1/2.0");
     MYSORE_IF_MAC_MAP.put(521, "0022831ba821");
     MYSORE_IF_IFALIAS_MAP.put(521, "TO-SRX100");
-    MYSORE_IF_NETMASK_MAP.put(521, InetAddressUtils.addr("255.255.255.252"));
+    //MYSORE_IP_MK_MAP.put(521, InetAddressUtils.addr("255.255.255.252"));
     MYSORE_IF_IFNAME_MAP.put(519, "ge-0/1/0.0");
     MYSORE_IF_IFDESCR_MAP.put(519, "ge-0/1/0.0");
     MYSORE_IF_MAC_MAP.put(519, "0022831ba81f");
-    MYSORE_IF_NETMASK_MAP.put(519, InetAddressUtils.addr("255.255.0.0"));
+    //MYSORE_IP_MK_MAP.put(519, InetAddressUtils.addr("255.255.0.0"));
     MYSORE_IF_IFNAME_MAP.put(508, "ge-0/0/1.0");
     MYSORE_IF_IFDESCR_MAP.put(508, "ge-0/0/1.0");
     MYSORE_IF_MAC_MAP.put(508, "0022831ba801");
-    MYSORE_IF_NETMASK_MAP.put(508, InetAddressUtils.addr("255.255.255.252"));
+    //MYSORE_IP_MK_MAP.put(508, InetAddressUtils.addr("255.255.255.252"));
     MYSORE_IF_IFNAME_MAP.put(511, "ge-0/1/1");
     MYSORE_IF_IFDESCR_MAP.put(511, "ge-0/1/1");
     MYSORE_IF_MAC_MAP.put(511, "0022831ba820");
@@ -967,13 +967,13 @@ static {
     SPACE_EX_SW1_IF_IFNAME_MAP.put(506, "vlan.0");
     SPACE_EX_SW1_IF_IFDESCR_MAP.put(506, "vlan.0");
     SPACE_EX_SW1_IF_MAC_MAP.put(506, "00239c023b41");
-    SPACE_EX_SW1_IF_NETMASK_MAP.put(506, InetAddressUtils.addr("255.255.255.0"));
+    //SPACE_EX_SW1_IP_MK_MAP.put(506, InetAddressUtils.addr("255.255.255.0"));
     SPACE_EX_SW1_IF_IFNAME_MAP.put(6, "lo0");
     SPACE_EX_SW1_IF_IFDESCR_MAP.put(6, "lo0");
     SPACE_EX_SW1_IF_IFNAME_MAP.put(38, "bme0.32768");
     SPACE_EX_SW1_IF_IFDESCR_MAP.put(38, "bme0.32768");
     SPACE_EX_SW1_IF_MAC_MAP.put(38, "000bcafe0000");
-    SPACE_EX_SW1_IF_NETMASK_MAP.put(38, InetAddressUtils.addr("192.0.0.0"));
+    //SPACE_EX_SW1_IP_MK_MAP.put(38, InetAddressUtils.addr("192.0.0.0"));
     SPACE_EX_SW1_IF_IFNAME_MAP.put(505, "ge-0/0/10");
     SPACE_EX_SW1_IF_IFDESCR_MAP.put(505, "ge-0/0/10");
     SPACE_EX_SW1_IF_MAC_MAP.put(505, "00239c023b4d");
@@ -983,7 +983,7 @@ static {
     SPACE_EX_SW1_IF_IFNAME_MAP.put(524, "ge-0/0/4.0");
     SPACE_EX_SW1_IF_IFDESCR_MAP.put(524, "ge-0/0/4.0");
     SPACE_EX_SW1_IF_MAC_MAP.put(524, "00239c023b47");
-    SPACE_EX_SW1_IF_NETMASK_MAP.put(524, InetAddressUtils.addr("255.255.0.0"));
+    //SPACE_EX_SW1_IP_MK_MAP.put(524, InetAddressUtils.addr("255.255.0.0"));
     SPACE_EX_SW1_IF_IFNAME_MAP.put(517, "ge-0/0/16");
     SPACE_EX_SW1_IF_IFDESCR_MAP.put(517, "ge-0/0/16");
     SPACE_EX_SW1_IF_MAC_MAP.put(517, "00239c023b53");
@@ -993,7 +993,7 @@ static {
     SPACE_EX_SW1_IF_IFNAME_MAP.put(504, "jsrv.1");
     SPACE_EX_SW1_IF_IFDESCR_MAP.put(504, "jsrv.1");
     SPACE_EX_SW1_IF_MAC_MAP.put(504, "00239c023b40");
-    SPACE_EX_SW1_IF_NETMASK_MAP.put(504, InetAddressUtils.addr("192.0.0.0"));
+    //SPACE_EX_SW1_IP_MK_MAP.put(504, InetAddressUtils.addr("192.0.0.0"));
     SPACE_EX_SW1_IF_IFNAME_MAP.put(540, "ge-0/0/6");
     SPACE_EX_SW1_IF_IFDESCR_MAP.put(540, "ge-0/0/6");
     SPACE_EX_SW1_IF_MAC_MAP.put(540, "00239c023b49");
@@ -1043,7 +1043,7 @@ static {
     SPACE_EX_SW1_IF_IFDESCR_MAP.put(1361, "ge-0/0/0.0");
     SPACE_EX_SW1_IF_MAC_MAP.put(1361, "00239c023b43");
     SPACE_EX_SW1_IF_IFALIAS_MAP.put(1361, "TO-EX-SW1");
-    SPACE_EX_SW1_IF_NETMASK_MAP.put(1361, InetAddressUtils.addr("255.255.255.252"));
+    //SPACE_EX_SW1_IP_MK_MAP.put(1361, InetAddressUtils.addr("255.255.255.252"));
     SPACE_EX_SW1_IF_IFNAME_MAP.put(523, "ge-0/0/19");
     SPACE_EX_SW1_IF_IFDESCR_MAP.put(523, "ge-0/0/19");
     SPACE_EX_SW1_IF_MAC_MAP.put(523, "00239c023b56");
@@ -1055,7 +1055,7 @@ static {
     SPACE_EX_SW1_IF_IFNAME_MAP.put(528, "ge-0/0/6.0");
     SPACE_EX_SW1_IF_IFDESCR_MAP.put(528, "ge-0/0/6.0");
     SPACE_EX_SW1_IF_MAC_MAP.put(528, "00239c023b49");
-    SPACE_EX_SW1_IF_NETMASK_MAP.put(528, InetAddressUtils.addr("255.255.255.252"));
+    //SPACE_EX_SW1_IP_MK_MAP.put(528, InetAddressUtils.addr("255.255.255.252"));
     SPACE_EX_SW1_IF_IFNAME_MAP.put(8, "gre");
     SPACE_EX_SW1_IF_IFDESCR_MAP.put(8, "gre");
     SPACE_EX_SW1_IF_IFNAME_MAP.put(502, "jsrv");
@@ -1103,7 +1103,7 @@ static {
     SPACE_EX_SW2_IF_IFNAME_MAP.put(531, "ge-0/0/0.0");
     SPACE_EX_SW2_IF_IFDESCR_MAP.put(531, "ge-0/0/0.0");
     SPACE_EX_SW2_IF_MAC_MAP.put(531, "002159cf4c00");
-    SPACE_EX_SW2_IF_NETMASK_MAP.put(531, InetAddressUtils.addr("255.255.255.252"));
+    //SPACE_EX_SW2_IP_MK_MAP.put(531, InetAddressUtils.addr("255.255.255.252"));
     SPACE_EX_SW2_IF_IFNAME_MAP.put(529, "ae1");
     SPACE_EX_SW2_IF_IFDESCR_MAP.put(529, "ae1");
     SPACE_EX_SW2_IF_MAC_MAP.put(529, "002159cf4c01");
@@ -1158,7 +1158,7 @@ static {
     SPACE_EX_SW2_IF_IFNAME_MAP.put(551, "ge-0/0/3.0");
     SPACE_EX_SW2_IF_IFDESCR_MAP.put(551, "ge-0/0/3.0");
     SPACE_EX_SW2_IF_MAC_MAP.put(551, "002159cf4c03");
-    SPACE_EX_SW2_IF_NETMASK_MAP.put(551, InetAddressUtils.addr("255.255.255.252"));
+    //SPACE_EX_SW2_IP_MK_MAP.put(551, InetAddressUtils.addr("255.255.255.252"));
     SPACE_EX_SW2_IF_IFNAME_MAP.put(522, "jsrv");
     SPACE_EX_SW2_IF_IFDESCR_MAP.put(522, "jsrv");
     SPACE_EX_SW2_IF_MAC_MAP.put(522, "002159cf4c00");
@@ -1176,11 +1176,11 @@ static {
     SPACE_EX_SW2_IF_IFNAME_MAP.put(523, "jsrv.1");
     SPACE_EX_SW2_IF_IFDESCR_MAP.put(523, "jsrv.1");
     SPACE_EX_SW2_IF_MAC_MAP.put(523, "002159cf4c00");
-    SPACE_EX_SW2_IF_NETMASK_MAP.put(523, InetAddressUtils.addr("192.0.0.0"));
+    //SPACE_EX_SW2_IP_MK_MAP.put(523, InetAddressUtils.addr("192.0.0.0"));
     SPACE_EX_SW2_IF_IFNAME_MAP.put(38, "bme0.32768");
     SPACE_EX_SW2_IF_IFDESCR_MAP.put(38, "bme0.32768");
     SPACE_EX_SW2_IF_MAC_MAP.put(38, "000bcafe0000");
-    SPACE_EX_SW2_IF_NETMASK_MAP.put(38, InetAddressUtils.addr("192.0.0.0"));
+    //SPACE_EX_SW2_IP_MK_MAP.put(38, InetAddressUtils.addr("192.0.0.0"));
     SPACE_EX_SW2_IF_IFNAME_MAP.put(539, "ge-0/0/17.0");
     SPACE_EX_SW2_IF_IFDESCR_MAP.put(539, "ge-0/0/17.0");
     SPACE_EX_SW2_IF_MAC_MAP.put(539, "002159cf4c11");
@@ -1223,7 +1223,7 @@ static {
     SPACE_EX_SW2_IF_IFNAME_MAP.put(34, "me0.0");
     SPACE_EX_SW2_IF_IFDESCR_MAP.put(34, "me0.0");
     SPACE_EX_SW2_IF_MAC_MAP.put(34, "002159cf4c3f");
-    SPACE_EX_SW2_IF_NETMASK_MAP.put(34, InetAddressUtils.addr("255.255.0.0"));
+    //SPACE_EX_SW2_IP_MK_MAP.put(34, InetAddressUtils.addr("255.255.0.0"));
     SPACE_EX_SW2_IF_IFNAME_MAP.put(35, "vme");
     SPACE_EX_SW2_IF_IFDESCR_MAP.put(35, "vme");
     SPACE_EX_SW2_IF_MAC_MAP.put(35, "002159cf4c01");
@@ -1283,7 +1283,7 @@ static {
     SRX_100_IF_MAC_MAP.put(503, "2c6bf502b870");
     SRX_100_IF_IFNAME_MAP.put(22, "lo0.16385");
     SRX_100_IF_IFDESCR_MAP.put(22, "lo0.16385");
-    SRX_100_IF_NETMASK_MAP.put(22, InetAddressUtils.addr("255.255.255.255"));
+    //SRX_100_IP_MK_MAP.put(22, InetAddressUtils.addr("255.255.255.255"));
     SRX_100_IF_IFNAME_MAP.put(4, "lsi");
     SRX_100_IF_IFDESCR_MAP.put(4, "lsi");
     SRX_100_IF_IFNAME_MAP.put(523, "ip-0/0/0");
@@ -1314,7 +1314,7 @@ static {
     SRX_100_IF_IFNAME_MAP.put(516, "fe-0/0/0.0");
     SRX_100_IF_IFDESCR_MAP.put(516, "fe-0/0/0.0");
     SRX_100_IF_MAC_MAP.put(516, "2c6bf502b800");
-    SRX_100_IF_NETMASK_MAP.put(516, InetAddressUtils.addr("255.255.0.0"));
+    //SRX_100_IP_MK_MAP.put(516, InetAddressUtils.addr("255.255.0.0"));
     SRX_100_IF_IFNAME_MAP.put(502, "vlan");
     SRX_100_IF_IFDESCR_MAP.put(502, "vlan");
     SRX_100_IF_MAC_MAP.put(502, "2c6bf502b808");
@@ -1337,10 +1337,10 @@ static {
     SRX_100_IF_IFDESCR_MAP.put(518, "fe-0/0/2.0");
     SRX_100_IF_MAC_MAP.put(518, "2c6bf502b802");
     SRX_100_IF_IFALIAS_MAP.put(518, "TO-MYSORE");
-    SRX_100_IF_NETMASK_MAP.put(518, InetAddressUtils.addr("255.255.255.252"));
+    //SRX_100_IP_MK_MAP.put(518, InetAddressUtils.addr("255.255.255.252"));
     SRX_100_IF_IFNAME_MAP.put(530, "sp-0/0/0.16383");
     SRX_100_IF_IFDESCR_MAP.put(530, "sp-0/0/0.16383");
-    SRX_100_IF_NETMASK_MAP.put(530, InetAddressUtils.addr("255.255.255.255"));
+    //SRX_100_IP_MK_MAP.put(530, InetAddressUtils.addr("255.255.255.255"));
     SRX_100_IF_IFNAME_MAP.put(8, "gre");
     SRX_100_IF_IFDESCR_MAP.put(8, "gre");
     SRX_100_IF_IFNAME_MAP.put(515, "fe-0/0/7");

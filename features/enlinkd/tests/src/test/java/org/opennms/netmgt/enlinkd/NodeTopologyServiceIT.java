@@ -42,10 +42,17 @@ import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.SubNetwork;
 import org.opennms.netmgt.nb.Nms0001NetworkBuilder;
 import org.opennms.netmgt.nb.Nms0002NetworkBuilder;
+import org.opennms.netmgt.nb.Nms003NetworkBuilder;
+import org.opennms.netmgt.nb.Nms007NetworkBuilder;
 import org.opennms.netmgt.nb.Nms0123NetworkBuilder;
+import org.opennms.netmgt.nb.Nms101NetworkBuilder;
+import org.opennms.netmgt.nb.Nms102NetworkBuilder;
+import org.opennms.netmgt.nb.Nms1055NetworkBuilder;
 import org.opennms.netmgt.nb.Nms17216NetworkBuilder;
+import org.opennms.netmgt.nb.Nms4005NetworkBuilder;
 import org.opennms.netmgt.nb.Nms4930NetworkBuilder;
 import org.opennms.netmgt.nb.Nms6802NetworkBuilder;
+import org.opennms.netmgt.nb.Nms7467NetworkBuilder;
 import org.opennms.netmgt.nb.Nms7563NetworkBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -114,6 +121,107 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
     }
 
     @Test
+    public void nms003SubnetworkTests() {
+        final Nms003NetworkBuilder builder = new Nms003NetworkBuilder();
+        m_nodeDao.save(builder.getSwitch1());
+        m_nodeDao.save(builder.getSwitch2());
+        m_nodeDao.save(builder.getSwitch3());
+        final List<NodeTopologyEntity> nodes = nodeTopologyService.findAllNode();
+        nodes.forEach(System.err::println);
+        assertThat(nodes, hasSize(3));
+
+        final List<IpInterfaceTopologyEntity> ips = nodeTopologyService.findAllIp();
+//        assertThat(ips, hasSize(8));
+        ips.forEach(System.err::println);
+
+        final Set<SubNetwork> subnets = nodeTopologyService.findAllLegalSubNetwork();
+        subnets.forEach(System.err::println);
+//        assertThat(subnets, hasSize(1));
+
+    }
+    @Test
+    public void nms007SubnetworkTest() {
+        final Nms007NetworkBuilder builder = new Nms007NetworkBuilder();
+        m_nodeDao.save(builder.getFireFly170());
+        m_nodeDao.save(builder.getFireFly171());
+        m_nodeDao.save(builder.getFireFly172());
+        m_nodeDao.save(builder.getFireFly173());
+        m_nodeDao.save(builder.getFireFly174());
+        m_nodeDao.save(builder.getFireFly175());
+        m_nodeDao.save(builder.getFireFly176());
+        m_nodeDao.save(builder.getFireFly177());
+        m_nodeDao.save(builder.getFireFly189());
+        final List<NodeTopologyEntity> nodes = nodeTopologyService.findAllNode();
+        nodes.forEach(System.err::println);
+        assertThat(nodes, hasSize(9));
+
+        final List<IpInterfaceTopologyEntity> ips = nodeTopologyService.findAllIp();
+//        assertThat(ips, hasSize(8));
+        ips.forEach(System.err::println);
+
+        final Set<SubNetwork> subnets = nodeTopologyService.findAllLegalSubNetwork();
+        subnets.forEach(System.err::println);
+//        assertThat(subnets, hasSize(1));
+
+    }
+
+    @Test
+    public void nms101SubnetworksTest() {
+        final Nms101NetworkBuilder builder = new Nms101NetworkBuilder();
+        m_nodeDao.save(builder.getCisco1700());
+        m_nodeDao.save(builder.getCisco1700b());
+        m_nodeDao.save(builder.getCisco2691());
+        m_nodeDao.save(builder.getCisco3600());
+        m_nodeDao.save(builder.getCisco3700());
+        m_nodeDao.save(builder.getCisco7200a());
+        m_nodeDao.save(builder.getCisco7200b());
+        m_nodeDao.save(builder.getLaptop());
+        m_nodeDao.save(builder.getExampleCom());
+        final List<NodeTopologyEntity> nodes = nodeTopologyService.findAllNode();
+        nodes.forEach(System.err::println);
+        assertThat(nodes, hasSize(9));
+
+        final List<IpInterfaceTopologyEntity> ips = nodeTopologyService.findAllIp();
+        ips.forEach(System.err::println);
+//        assertThat(ips, hasSize(7));
+
+        final Set<SubNetwork> subnets = nodeTopologyService.findAllSubNetwork();
+        subnets.forEach(System.err::println);
+ //       assertThat(subnets, hasSize(4));
+
+        final Set<SubNetwork> legalsubnets = nodeTopologyService.findAllLegalSubNetwork();
+        legalsubnets.forEach(System.err::println);
+//        assertThat(legalsubnets, hasSize(1));
+
+    }
+
+    @Test
+    public void nms102SubnetworksTest() {
+        final Nms102NetworkBuilder builder = new Nms102NetworkBuilder();
+        m_nodeDao.save(builder.getMikrotik());
+        m_nodeDao.save(builder.getSamsung());
+        m_nodeDao.save(builder.getMac1());
+        m_nodeDao.save(builder.getMac2());
+
+        final List<NodeTopologyEntity> nodes = nodeTopologyService.findAllNode();
+        nodes.forEach(System.err::println);
+        assertThat(nodes, hasSize(4));
+
+        final List<IpInterfaceTopologyEntity> ips = nodeTopologyService.findAllIp();
+        ips.forEach(System.err::println);
+//        assertThat(ips, hasSize(7));
+
+        final Set<SubNetwork> subnets = nodeTopologyService.findAllSubNetwork();
+        subnets.forEach(System.err::println);
+        //       assertThat(subnets, hasSize(4));
+
+        final Set<SubNetwork> legalsubnets = nodeTopologyService.findAllLegalSubNetwork();
+        legalsubnets.forEach(System.err::println);
+//        assertThat(legalsubnets, hasSize(1));
+
+    }
+
+    @Test
     public void nms0123SubnetworksTest() {
         final Nms0123NetworkBuilder builder = new Nms0123NetworkBuilder();
         m_nodeDao.save(builder.getItpn0111());
@@ -137,6 +245,58 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
         subnets.forEach(System.err::println);
         assertThat(subnets, hasSize(1));
         assertEquals(8,subnets.iterator().next().getNodeIds().size());
+    }
+
+    public void nms1055SubnetworksTest() {
+        final Nms1055NetworkBuilder builder =new Nms1055NetworkBuilder();
+        m_nodeDao.save(builder.getAustin());
+        m_nodeDao.save(builder.getDelaware());
+        m_nodeDao.save(builder.getPenrose());
+        m_nodeDao.save(builder.getPhoenix());
+        m_nodeDao.save(builder.getSanjose());
+        m_nodeDao.save(builder.getRiovista());
+
+        final List<NodeTopologyEntity> nodes = nodeTopologyService.findAllNode();
+        nodes.forEach(System.err::println);
+        assertThat(nodes, hasSize(6));
+
+        final List<IpInterfaceTopologyEntity> ips = nodeTopologyService.findAllIp();
+        ips.forEach(System.err::println);
+//        assertThat(ips, hasSize(7));
+
+        final Set<SubNetwork> subnets = nodeTopologyService.findAllSubNetwork();
+        subnets.forEach(System.err::println);
+ //       assertThat(subnets, hasSize(4));
+
+        final Set<SubNetwork> legalsubnets = nodeTopologyService.findAllLegalSubNetwork();
+        legalsubnets.forEach(System.err::println);
+   //     assertThat(legalsubnets, hasSize(1));
+
+    }
+
+    public void nms4005SubnetworksTest() {
+        final Nms4005NetworkBuilder builder = new Nms4005NetworkBuilder();
+        m_nodeDao.save(builder.getR1());
+        m_nodeDao.save(builder.getR2());
+        m_nodeDao.save(builder.getR3());
+        m_nodeDao.save(builder.getR4());
+
+        final List<NodeTopologyEntity> nodes = nodeTopologyService.findAllNode();
+        nodes.forEach(System.err::println);
+        assertThat(nodes, hasSize(4));
+
+        final List<IpInterfaceTopologyEntity> ips = nodeTopologyService.findAllIp();
+        ips.forEach(System.err::println);
+//        assertThat(ips, hasSize(7));
+
+        final Set<SubNetwork> subnets = nodeTopologyService.findAllSubNetwork();
+        subnets.forEach(System.err::println);
+        //       assertThat(subnets, hasSize(4));
+
+        final Set<SubNetwork> legalsubnets = nodeTopologyService.findAllLegalSubNetwork();
+        legalsubnets.forEach(System.err::println);
+        //     assertThat(legalsubnets, hasSize(1));
+
     }
 
     @Test
@@ -180,6 +340,32 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
         final Set<SubNetwork> legalsubnets = nodeTopologyService.findAllLegalSubNetwork();
         legalsubnets.forEach(System.err::println);
         assertThat(legalsubnets, hasSize(0));
+
+    }
+
+    public void nms7467SubnetworksTest() {
+        final Nms7467NetworkBuilder builder = new Nms7467NetworkBuilder();
+        m_nodeDao.save(builder.getCiscoC870());
+        m_nodeDao.save(builder.getDarwin108());
+        m_nodeDao.save(builder.getLinuxUbuntu());
+        m_nodeDao.save(builder.getCiscoWsC2948());
+        m_nodeDao.save(builder.getNetGearSw108());
+
+        final List<NodeTopologyEntity> nodes = nodeTopologyService.findAllNode();
+        nodes.forEach(System.err::println);
+        assertThat(nodes, hasSize(5));
+
+        final List<IpInterfaceTopologyEntity> ips = nodeTopologyService.findAllIp();
+        ips.forEach(System.err::println);
+//        assertThat(ips, hasSize(7));
+
+        final Set<SubNetwork> subnets = nodeTopologyService.findAllSubNetwork();
+        subnets.forEach(System.err::println);
+        //       assertThat(subnets, hasSize(4));
+
+        final Set<SubNetwork> legalsubnets = nodeTopologyService.findAllLegalSubNetwork();
+        legalsubnets.forEach(System.err::println);
+        //     assertThat(legalsubnets, hasSize(1));
 
     }
 

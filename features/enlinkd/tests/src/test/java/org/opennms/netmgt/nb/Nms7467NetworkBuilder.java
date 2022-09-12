@@ -130,7 +130,11 @@ public class Nms7467NetworkBuilder extends NmsNetworkBuilder {
         CISCO_C870_IP_IF_MAP.put(InetAddressUtils.addr("192.0.2.1"), 12);
         CISCO_C870_IP_IF_MAP.put(InetAddressUtils.addr("10.255.255.2"), 12);
         CISCO_C870_IP_IF_MAP.put(InetAddressUtils.addr("198.51.100.1"), 13);
-        CISCO_C870_IP_IF_MAP.put(InetAddressUtils.addr("65.41.39.146"), 14);            
+        CISCO_C870_IP_IF_MAP.put(InetAddressUtils.addr("65.41.39.146"), 14);
+        CISCO_C870_IP_MK_MAP.put(InetAddressUtils.addr("10.255.255.2"), InetAddressUtils.addr("255.255.255.252"));
+        CISCO_C870_IP_MK_MAP.put(InetAddressUtils.addr("65.41.39.146"), InetAddressUtils.addr("255.255.255.128"));
+        CISCO_C870_IP_MK_MAP.put(InetAddressUtils.addr("192.0.2.1"), InetAddressUtils.addr("255.255.255.0"));
+        CISCO_C870_IP_MK_MAP.put(InetAddressUtils.addr("198.51.100.1"), InetAddressUtils.addr("255.255.255.0"));
 
         CISCO_C870_IF_IFNAME_MAP.put(1, "Fa0");
         CISCO_C870_IF_IFNAME_MAP.put(2, "Fa1");
@@ -248,6 +252,7 @@ public class Nms7467NetworkBuilder extends NmsNetworkBuilder {
 
     static {
         CISCO_WS_C2948_IP_IF_MAP.put(InetAddressUtils.addr(CISCO_WS_C2948_IP), 3);
+        CISCO_WS_C2948_IP_MK_MAP.put(InetAddressUtils.addr("192.0.2.7"), InetAddressUtils.addr("255.255.255.0"));
 
         CISCO_WS_C2948_IF_IFNAME_MAP.put(1,"sc0");
         CISCO_WS_C2948_IF_IFNAME_MAP.put(2,"sl0");
@@ -345,6 +350,8 @@ public class Nms7467NetworkBuilder extends NmsNetworkBuilder {
      */
     static {
         NETGEAR_SW_108_IP_IF_MAP.put(InetAddressUtils.addr(NETGEAR_SW_108_IP), null);
+        NETGEAR_SW_108_IP_MK_MAP.put(InetAddressUtils.addr("192.0.2.8"), InetAddressUtils.addr("255.255.255.0"));
+
         NETGEAR_SW_108_IF_IFNAME_MAP.put(1, "");
         NETGEAR_SW_108_IF_IFNAME_MAP.put(2, "");
         NETGEAR_SW_108_IF_IFNAME_MAP.put(3, "");
@@ -403,8 +410,13 @@ public class Nms7467NetworkBuilder extends NmsNetworkBuilder {
      */ 
 
     static {
+        LINUX_UBUNTU_IP_IF_MAP.put(InetAddressUtils.addr("127.0.0.1"), 1);
         LINUX_UBUNTU_IP_IF_MAP.put(InetAddressUtils.addr("192.0.2.14"), 4);
         LINUX_UBUNTU_IP_IF_MAP.put(InetAddressUtils.addr("192.168.122.1"), 5);
+        LINUX_UBUNTU_IP_MK_MAP.put(InetAddressUtils.addr("127.0.0.1"), InetAddressUtils.addr("255.0.0.0"));
+        LINUX_UBUNTU_IP_MK_MAP.put(InetAddressUtils.addr("192.0.2.14"), InetAddressUtils.addr("255.255.255.0"));
+        LINUX_UBUNTU_IP_MK_MAP.put(InetAddressUtils.addr("192.168.122.1"), InetAddressUtils.addr("255.255.255.0"));
+
         LINUX_UBUNTU_IP_IF_MAP.put(InetAddressUtils.addr("2001:0470:e2f1:0000:4261:86ff:fee2:8b53"), 4);
         LINUX_UBUNTU_IP_IF_MAP.put(InetAddressUtils.addr("2001:0470:e2f1:0000:695c:e7ef:425e:63b0"), 4);
         LINUX_UBUNTU_IP_IF_MAP.put(InetAddressUtils.addr("2001:0470:e2f1:cafe:0dc0:e717:08d3:e5d6"), 4);
@@ -453,7 +465,11 @@ public class Nms7467NetworkBuilder extends NmsNetworkBuilder {
      */
 
     static {
-        DARWIN_10_8_IP_IF_MAP.put(InetAddressUtils.addr(DARWIN_10_8_IP), 4);
+        DARWIN_10_8_IP_IF_MAP.put(InetAddressUtils.addr("127.0.0.1"), 1);
+        DARWIN_10_8_IP_IF_MAP.put(InetAddressUtils.addr("192.0.2.28"), 4);
+
+        DARWIN_10_8_IP_MK_MAP.put(InetAddressUtils.addr("127.0.0.1"), InetAddressUtils.addr("255.0.0.0"));
+        DARWIN_10_8_IP_MK_MAP.put(InetAddressUtils.addr("192.0.2.28"), InetAddressUtils.addr("255.255.255.0"));
 
         DARWIN_10_8_IF_IFNAME_MAP.put(1, "lo0");
         DARWIN_10_8_IF_IFNAME_MAP.put(2, "gif0");
@@ -469,23 +485,23 @@ public class Nms7467NetworkBuilder extends NmsNetworkBuilder {
 
         
     public OnmsNode getCiscoC870() {
-        return getNode(CISCO_C870_NAME,CISCO_C870_SYSOID,CISCO_C870_IP,CISCO_C870_IP_IF_MAP,CISCO_C870_IF_IFNAME_MAP,CISCO_C870_IF_MAC_MAP,CISCO_C870_IF_IFDESCR_MAP,new HashMap<Integer, String>());
+        return getNode(CISCO_C870_NAME,CISCO_C870_SYSOID,CISCO_C870_IP,CISCO_C870_IP_IF_MAP,CISCO_C870_IF_IFNAME_MAP,CISCO_C870_IF_MAC_MAP,CISCO_C870_IF_IFDESCR_MAP,new HashMap<>(), CISCO_C870_IP_MK_MAP);
     }
     
     public OnmsNode getCiscoWsC2948() {
-        return getNode(CISCO_WS_C2948_NAME,CISCO_WS_C2948_SYSOID,CISCO_WS_C2948_IP,CISCO_WS_C2948_IP_IF_MAP,CISCO_WS_C2948_IF_IFNAME_MAP,CISCO_WS_C2948_IF_MAC_MAP, new HashMap<Integer, String>(),new HashMap<Integer, String>());
+        return getNode(CISCO_WS_C2948_NAME,CISCO_WS_C2948_SYSOID,CISCO_WS_C2948_IP,CISCO_WS_C2948_IP_IF_MAP,CISCO_WS_C2948_IF_IFNAME_MAP,CISCO_WS_C2948_IF_MAC_MAP, new HashMap<>(), new HashMap<>(), CISCO_WS_C2948_IP_MK_MAP);
     }
     
     public OnmsNode getNetGearSw108() {
-        return getNode(NETGEAR_SW_108_NAME,NETGEAR_SW_108_SYSOID,NETGEAR_SW_108_IP,NETGEAR_SW_108_IP_IF_MAP,NETGEAR_SW_108_IF_IFNAME_MAP,NETGEAR_SW_108_IF_MAC_MAP,new HashMap<Integer, String>(),new HashMap<Integer, String>());
+        return getNode(NETGEAR_SW_108_NAME,NETGEAR_SW_108_SYSOID,NETGEAR_SW_108_IP,NETGEAR_SW_108_IP_IF_MAP,NETGEAR_SW_108_IF_IFNAME_MAP,NETGEAR_SW_108_IF_MAC_MAP, new HashMap<>(), new HashMap<>(), NETGEAR_SW_108_IP_MK_MAP);
     }
     
     public OnmsNode getLinuxUbuntu() {
-        return getNode(LINUX_UBUNTU_NAME, LINUX_UBUNTU_SYSOID, LINUX_UBUNTU_IP, LINUX_UBUNTU_IP_IF_MAP, LINUX_UBUNTU_IF_IFNAME_MAP, LINUX_UBUNTU_IF_MAC_MAP, new HashMap<Integer, String>(),new HashMap<Integer, String>());
+        return getNode(LINUX_UBUNTU_NAME, LINUX_UBUNTU_SYSOID, LINUX_UBUNTU_IP, LINUX_UBUNTU_IP_IF_MAP, LINUX_UBUNTU_IF_IFNAME_MAP, LINUX_UBUNTU_IF_MAC_MAP, new HashMap<>(), new HashMap<>(), LINUX_UBUNTU_IP_MK_MAP);
     }
     
     public OnmsNode getDarwin108() {
-        return getNode(DARWIN_10_8_NAME,DARWIN_10_8_SYSOID,DARWIN_10_8_IP,DARWIN_10_8_IP_IF_MAP,DARWIN_10_8_IF_IFNAME_MAP,DARWIN_10_8_IF_MAC_MAP, new HashMap<Integer, String>(),new HashMap<Integer, String>());
+        return getNode(DARWIN_10_8_NAME,DARWIN_10_8_SYSOID,DARWIN_10_8_IP,DARWIN_10_8_IP_IF_MAP,DARWIN_10_8_IF_IFNAME_MAP,DARWIN_10_8_IF_MAC_MAP, new HashMap<>(), new HashMap<>(), DARWIN_10_8_IP_MK_MAP);
     }
     
 }

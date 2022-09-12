@@ -31,8 +31,6 @@ package org.opennms.netmgt.nb;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsNode;
 
-import java.util.Locale;
-
 /**
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  */
@@ -47,7 +45,7 @@ public class Nms13923NetworkBuilder extends NmsNetworkBuilder {
         srv005_IF_IFNAME_MAP.put(1, "lo0");
         srv005_IF_IFALIAS_MAP.put(1, "");
 
-    } catch (Exception e) {
+    } catch (Exception ignored) {
         
     }
     }

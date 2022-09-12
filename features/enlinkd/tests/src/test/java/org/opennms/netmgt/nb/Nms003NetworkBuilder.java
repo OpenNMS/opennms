@@ -39,11 +39,20 @@ import org.opennms.netmgt.model.OnmsNode;
 
 public class Nms003NetworkBuilder extends NmsNetworkBuilder {
     static {
-        SWITCH1_IP_IF_MAP.put(InetAddressUtils.addr("172.16.40.1"), 40);
         SWITCH1_IP_IF_MAP.put(InetAddressUtils.addr("192.168.100.246"), 10101);
-        SWITCH1_IP_IF_MAP.put(InetAddressUtils.addr("172.16.10.1"), 10);
+        SWITCH1_IP_IF_MAP.put(InetAddressUtils.addr("172.16.40.1"), 40);
+        SWITCH1_IP_MK_MAP.put(InetAddressUtils.addr("172.16.40.1"),InetAddressUtils.addr("255.255.255.0"));
         SWITCH1_IP_IF_MAP.put(InetAddressUtils.addr("172.16.30.1"), 30);
+        SWITCH1_IP_MK_MAP.put(InetAddressUtils.addr("172.16.30.1"),InetAddressUtils.addr("255.255.255.0"));
         SWITCH1_IP_IF_MAP.put(InetAddressUtils.addr("172.16.20.1"), 20);
+        SWITCH1_IP_MK_MAP.put(InetAddressUtils.addr("172.16.20.1"),InetAddressUtils.addr("255.255.255.0"));
+        SWITCH1_IP_IF_MAP.put(InetAddressUtils.addr("172.16.10.1"), 10);
+        SWITCH1_IP_MK_MAP.put(InetAddressUtils.addr("172.16.10.1"),InetAddressUtils.addr("255.255.255.0"));
+        SWITCH2_IP_IF_MAP.put(InetAddressUtils.addr("172.16.10.2"), 10);
+        SWITCH2_IP_MK_MAP.put(InetAddressUtils.addr("172.16.10.2"),InetAddressUtils.addr("255.255.255.0"));
+        SWITCH3_IP_IF_MAP.put(InetAddressUtils.addr("172.16.10.3"), 10);
+        SWITCH3_IP_MK_MAP.put(InetAddressUtils.addr("172.16.10.3"),InetAddressUtils.addr("255.255.255.0"));
+
         SWITCH1_IF_IFNAME_MAP.put(10128, "Gi0/28");
         SWITCH1_IF_IFDESCR_MAP.put(10128, "GigabitEthernet0/28");
         SWITCH1_IF_MAC_MAP.put(10128, "0016c8bd4d9c");
@@ -148,7 +157,7 @@ public class Nms003NetworkBuilder extends NmsNetworkBuilder {
         SWITCH1_IF_IFNAME_MAP.put(10114, "Gi0/14");
         SWITCH1_IF_IFDESCR_MAP.put(10114, "GigabitEthernet0/14");
         SWITCH1_IF_MAC_MAP.put(10114, "0016c8bd4d8e");
-        SWITCH2_IP_IF_MAP.put(InetAddressUtils.addr("172.16.10.2"), 10);
+
         SWITCH2_IF_IFNAME_MAP.put(10103, "Gi0/3");
         SWITCH2_IF_IFDESCR_MAP.put(10103, "GigabitEthernet0/3");
         SWITCH2_IF_MAC_MAP.put(10103, "0016c894aa83");
@@ -235,7 +244,7 @@ public class Nms003NetworkBuilder extends NmsNetworkBuilder {
         SWITCH2_IF_IFNAME_MAP.put(10116, "Gi0/16");
         SWITCH2_IF_IFDESCR_MAP.put(10116, "GigabitEthernet0/16");
         SWITCH2_IF_MAC_MAP.put(10116, "0016c894aa90");
-        SWITCH3_IP_IF_MAP.put(InetAddressUtils.addr("172.16.10.3"), 10);
+
         SWITCH3_IF_IFNAME_MAP.put(10008, "Fa0/8");
         SWITCH3_IF_IFDESCR_MAP.put(10008, "FastEthernet0/8");
         SWITCH3_IF_MAC_MAP.put(10008, "f4ea67ebdc08");
@@ -328,15 +337,15 @@ public class Nms003NetworkBuilder extends NmsNetworkBuilder {
     }
 
     public OnmsNode getSwitch1() {
-        return getNode(SWITCH1_NAME,SWITCH1_SYSOID,SWITCH1_IP,SWITCH1_IP_IF_MAP,SWITCH1_IF_IFNAME_MAP,SWITCH1_IF_MAC_MAP,SWITCH1_IF_IFDESCR_MAP,SWITCH1_IF_IFALIAS_MAP);
+        return getNode(SWITCH1_NAME,SWITCH1_SYSOID,SWITCH1_IP,SWITCH1_IP_IF_MAP,SWITCH1_IF_IFNAME_MAP,SWITCH1_IF_MAC_MAP,SWITCH1_IF_IFDESCR_MAP,SWITCH1_IF_IFALIAS_MAP, SWITCH1_IP_MK_MAP);
     }    
 
     public OnmsNode getSwitch2() {
-        return getNode(SWITCH2_NAME,SWITCH2_SYSOID,SWITCH2_IP,SWITCH2_IP_IF_MAP,SWITCH2_IF_IFNAME_MAP,SWITCH2_IF_MAC_MAP,SWITCH2_IF_IFDESCR_MAP,SWITCH2_IF_IFALIAS_MAP);
+        return getNode(SWITCH2_NAME,SWITCH2_SYSOID,SWITCH2_IP,SWITCH2_IP_IF_MAP,SWITCH2_IF_IFNAME_MAP,SWITCH2_IF_MAC_MAP,SWITCH2_IF_IFDESCR_MAP,SWITCH2_IF_IFALIAS_MAP,SWITCH1_IP_MK_MAP);
     }    
 
     public OnmsNode getSwitch3() {
-       return getNode(SWITCH3_NAME,SWITCH3_SYSOID,SWITCH3_IP,SWITCH3_IP_IF_MAP,SWITCH3_IF_IFNAME_MAP,SWITCH3_IF_MAC_MAP,SWITCH3_IF_IFDESCR_MAP,SWITCH3_IF_IFALIAS_MAP);
+       return getNode(SWITCH3_NAME,SWITCH3_SYSOID,SWITCH3_IP,SWITCH3_IP_IF_MAP,SWITCH3_IF_IFNAME_MAP,SWITCH3_IF_MAC_MAP,SWITCH3_IF_IFDESCR_MAP,SWITCH3_IF_IFALIAS_MAP,SWITCH1_IP_MK_MAP);
     }
 }    
 

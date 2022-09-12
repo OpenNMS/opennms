@@ -90,7 +90,7 @@ public abstract class NmsNetworkBuilder {
     public static final Map<Integer,String>      NMMR1_IF_IFDESCR_MAP = new HashMap<>();
     public static final Map<Integer,String>      NMMR1_IF_MAC_MAP = new HashMap<>();
     public static final Map<Integer,String>      NMMR1_IF_IFALIAS_MAP = new HashMap<>();
-    public static final Map<Integer,InetAddress> NMMR1_IF_NETMASK_MAP = new HashMap<>();    
+    public static final Map<InetAddress,InetAddress> NMMR1_IP_MK_MAP = new HashMap<>();
 
     public static final String NMMR2_IP = "192.168.2.1";
     public static final String NMMR2_NAME = "NMM-R2";
@@ -103,7 +103,7 @@ public abstract class NmsNetworkBuilder {
     public static final Map<Integer,String>      NMMR2_IF_IFDESCR_MAP = new HashMap<>();
     public static final Map<Integer,String>      NMMR2_IF_MAC_MAP = new HashMap<>();
     public static final Map<Integer,String>      NMMR2_IF_IFALIAS_MAP = new HashMap<>();
-    public static final Map<Integer,InetAddress> NMMR2_IF_NETMASK_MAP = new HashMap<>();    
+    public static final Map<InetAddress,InetAddress> NMMR2_IP_MK_MAP = new HashMap<>();
 
     public static final String NMMR3_IP = "192.168.255.1";
     public static final String NMMR3_NAME = "NMM-R3";
@@ -116,7 +116,7 @@ public abstract class NmsNetworkBuilder {
     public static final Map<Integer,String>      NMMR3_IF_IFDESCR_MAP = new HashMap<>();
     public static final Map<Integer,String>      NMMR3_IF_MAC_MAP = new HashMap<>();
     public static final Map<Integer,String>      NMMR3_IF_IFALIAS_MAP = new HashMap<>();
-    public static final Map<Integer,InetAddress> NMMR3_IF_NETMASK_MAP = new HashMap<>();    
+    public static final Map<InetAddress,InetAddress> NMMR3_IP_MK_MAP = new HashMap<>();
 
     public static final String NMMSW1_IP = "192.168.23.10";
     public static final String NMMSW1_NAME = "NMM-SW1";
@@ -129,7 +129,7 @@ public abstract class NmsNetworkBuilder {
     public static final Map<Integer,String>      NMMSW1_IF_IFDESCR_MAP = new HashMap<>();
     public static final Map<Integer,String>      NMMSW1_IF_MAC_MAP = new HashMap<>();
     public static final Map<Integer,String>      NMMSW1_IF_IFALIAS_MAP = new HashMap<>();
-    public static final Map<Integer,InetAddress> NMMSW1_IF_NETMASK_MAP = new HashMap<>();    
+    public static final Map<InetAddress,InetAddress> NMMSW1_IP_MK_MAP = new HashMap<>();
 
     public static final String NMMSW2_IP = "192.168.42.10";
     public static final String NMMSW2_NAME = "NMM-SW2";
@@ -142,7 +142,7 @@ public abstract class NmsNetworkBuilder {
     public static final Map<Integer,String>      NMMSW2_IF_IFDESCR_MAP = new HashMap<>();
     public static final Map<Integer,String>      NMMSW2_IF_MAC_MAP = new HashMap<>();
     public static final Map<Integer,String>      NMMSW2_IF_IFALIAS_MAP = new HashMap<>();
-    public static final Map<Integer,InetAddress> NMMSW2_IF_NETMASK_MAP = new HashMap<>();    
+    public static final Map<InetAddress,InetAddress> NMMSW2_IP_MK_MAP = new HashMap<>();
 
     //NMS6802
     public static final String CISCOISIS_IP = "10.100.68.2";
@@ -156,7 +156,7 @@ public abstract class NmsNetworkBuilder {
     public static final Map<Integer,String>      CISCOISIS_IF_IFDESCR_MAP = new HashMap<>();
     public static final Map<Integer,String>      CISCOISIS_IF_MAC_MAP = new HashMap<>();
     public static final Map<Integer,String>      CISCOISIS_IF_IFALIAS_MAP = new HashMap<>();
-    public static final Map<Integer,InetAddress> CISCOISIS_IF_NETMASK_MAP = new HashMap<>();    
+    public static final Map<InetAddress,InetAddress> CISCOISIS_IP_MK_MAP = new HashMap<>();
     
     //NMS7563
     public static final String HOMESERVER_IP = "192.168.88.1";
@@ -172,7 +172,7 @@ public abstract class NmsNetworkBuilder {
     public static final Map<Integer,String>      HOMESERVER_IF_IFDESCR_MAP = new HashMap<>();
     public static final Map<Integer,String>      HOMESERVER_IF_MAC_MAP = new HashMap<>();
     public static final Map<Integer,String>      HOMESERVER_IF_IFALIAS_MAP = new HashMap<>();
-    public static final Map<Integer,InetAddress> HOMESERVER_IF_NETMASK_MAP = new HashMap<>();    
+    public static final Map<InetAddress,InetAddress> HOMESERVER_IP_MK_MAP = new HashMap<>();
 
     public static final String CISCO01_IP = "192.168.88.240";
     public static final String CISCO01_NAME = "cisco01";
@@ -187,7 +187,7 @@ public abstract class NmsNetworkBuilder {
     public static final Map<Integer,String>      CISCO01_IF_IFDESCR_MAP = new HashMap<>();
     public static final Map<Integer,String>      CISCO01_IF_MAC_MAP = new HashMap<>();
     public static final Map<Integer,String>      CISCO01_IF_IFALIAS_MAP = new HashMap<>();
-    public static final Map<Integer,InetAddress> CISCO01_IF_NETMASK_MAP = new HashMap<>();
+    public static final Map<InetAddress,InetAddress> CISCO01_IP_MK_MAP = new HashMap<>();
 
     public static final String SWITCH02_IP = "192.168.88.241";
     public static final String SWITCH02_NAME = "switch02";
@@ -202,7 +202,7 @@ public abstract class NmsNetworkBuilder {
     public static final Map<Integer,String>      SWITCH02_IF_IFDESCR_MAP = new HashMap<>();
     public static final Map<Integer,String>      SWITCH02_IF_MAC_MAP = new HashMap<>();
     public static final Map<Integer,String>      SWITCH02_IF_IFALIAS_MAP = new HashMap<>();
-    public static final Map<Integer,InetAddress> SWITCH02_IF_NETMASK_MAP = new HashMap<>();    
+    public static final Map<InetAddress,InetAddress> SWITCH02_IP_MK_MAP = new HashMap<>();
 
     //NMS0123
     public static final String ITPN0111_IP = "10.1.1.1";
@@ -215,7 +215,7 @@ public abstract class NmsNetworkBuilder {
     public static final Map<Integer,String>      ITPN0111_IF_IFDESCR_MAP = new HashMap<>();
     public static final Map<Integer,String>      ITPN0111_IF_MAC_MAP = new HashMap<>();
     public static final Map<Integer,String>      ITPN0111_IF_IFALIAS_MAP = new HashMap<>();
-    public static final Map<Integer,InetAddress> ITPN0111_IF_NETMASK_MAP = new HashMap<>();    
+    public static final Map<InetAddress,InetAddress> ITPN0111_IP_MK_MAP = new HashMap<>();
 
     public static final String ITPN0112_IP = "10.1.1.2";
     public static final String ITPN0112_NAME = "ITPN0112";
@@ -227,7 +227,7 @@ public abstract class NmsNetworkBuilder {
     public static final Map<Integer,String>      ITPN0112_IF_IFDESCR_MAP = new HashMap<>();
     public static final Map<Integer,String>      ITPN0112_IF_MAC_MAP = new HashMap<>();
     public static final Map<Integer,String>      ITPN0112_IF_IFALIAS_MAP = new HashMap<>();
-    public static final Map<Integer,InetAddress> ITPN0112_IF_NETMASK_MAP = new HashMap<>();    
+    public static final Map<InetAddress,InetAddress> ITPN0112_IP_MK_MAP = new HashMap<>();
 
     public static final String ITPN0113_IP = "10.1.1.3";
     public static final String ITPN0113_NAME = "ITPN0113";
@@ -239,7 +239,7 @@ public abstract class NmsNetworkBuilder {
     public static final Map<Integer,String>      ITPN0113_IF_IFDESCR_MAP = new HashMap<>();
     public static final Map<Integer,String>      ITPN0113_IF_MAC_MAP = new HashMap<>();
     public static final Map<Integer,String>      ITPN0113_IF_IFALIAS_MAP = new HashMap<>();
-    public static final Map<Integer,InetAddress> ITPN0113_IF_NETMASK_MAP = new HashMap<>();    
+    public static final Map<InetAddress,InetAddress> ITPN0113_IP_MK_MAP = new HashMap<>();
 
     public static final String ITPN0114_IP = "10.1.1.4";
     public static final String ITPN0114_NAME = "ITPN0114";
@@ -251,7 +251,7 @@ public abstract class NmsNetworkBuilder {
     public static final Map<Integer,String>      ITPN0114_IF_IFDESCR_MAP = new HashMap<>();
     public static final Map<Integer,String>      ITPN0114_IF_MAC_MAP = new HashMap<>();
     public static final Map<Integer,String>      ITPN0114_IF_IFALIAS_MAP = new HashMap<>();
-    public static final Map<Integer,InetAddress> ITPN0114_IF_NETMASK_MAP = new HashMap<>();    
+    public static final Map<InetAddress,InetAddress> ITPN0114_IP_MK_MAP = new HashMap<>();
 
     public static final String ITPN0121_IP = "10.1.1.5";
     public static final String ITPN0121_NAME = "ITPN0121";
@@ -263,7 +263,7 @@ public abstract class NmsNetworkBuilder {
     public static final Map<Integer,String>      ITPN0121_IF_IFDESCR_MAP = new HashMap<>();
     public static final Map<Integer,String>      ITPN0121_IF_MAC_MAP = new HashMap<>();
     public static final Map<Integer,String>      ITPN0121_IF_IFALIAS_MAP = new HashMap<>();
-    public static final Map<Integer,InetAddress> ITPN0121_IF_NETMASK_MAP = new HashMap<>();    
+    public static final Map<InetAddress,InetAddress> ITPN0121_IP_MK_MAP = new HashMap<>();
 
     public static final String ITPN0123_IP = "10.1.1.6";
     public static final String ITPN0123_NAME = "ITPN0123";
@@ -275,7 +275,7 @@ public abstract class NmsNetworkBuilder {
     public static final Map<Integer,String>      ITPN0123_IF_IFDESCR_MAP = new HashMap<>();
     public static final Map<Integer,String>      ITPN0123_IF_MAC_MAP = new HashMap<>();
     public static final Map<Integer,String>      ITPN0123_IF_IFALIAS_MAP = new HashMap<>();
-    public static final Map<Integer,InetAddress> ITPN0123_IF_NETMASK_MAP = new HashMap<>();
+    public static final Map<InetAddress,InetAddress> ITPN0123_IP_MK_MAP = new HashMap<>();
 
     public static final String ITPN0201_IP = "10.1.1.7";
     public static final String ITPN0201_NAME = "ITPN0201";
@@ -287,7 +287,7 @@ public abstract class NmsNetworkBuilder {
     public static final Map<Integer,String>      ITPN0201_IF_IFDESCR_MAP = new HashMap<>();
     public static final Map<Integer,String>      ITPN0201_IF_MAC_MAP = new HashMap<>();
     public static final Map<Integer,String>      ITPN0201_IF_IFALIAS_MAP = new HashMap<>();
-    public static final Map<Integer,InetAddress> ITPN0201_IF_NETMASK_MAP = new HashMap<>();    
+    public static final Map<InetAddress,InetAddress> ITPN0201_IP_MK_MAP = new HashMap<>();
 
     public static final String ITPN0202_IP = "10.1.1.8";
     public static final String ITPN0202_NAME = "ITPN0202";
@@ -299,7 +299,7 @@ public abstract class NmsNetworkBuilder {
     public static final Map<Integer,String>      ITPN0202_IF_IFDESCR_MAP = new HashMap<>();
     public static final Map<Integer,String>      ITPN0202_IF_MAC_MAP = new HashMap<>();
     public static final Map<Integer,String>      ITPN0202_IF_IFALIAS_MAP = new HashMap<>();
-    public static final Map<Integer,InetAddress> ITPN0202_IF_NETMASK_MAP = new HashMap<>();    
+    public static final Map<InetAddress,InetAddress> ITPN0202_IP_MK_MAP = new HashMap<>();
 
     //NMSDRAGONWAVE
     public static final String DW_IP = "10.103.1.1";
@@ -312,7 +312,7 @@ public abstract class NmsNetworkBuilder {
     public static final Map<Integer,String> DW_IF_IFDESCR_MAP = new HashMap<>();
     public static final Map<Integer,String> DW_IF_MAC_MAP = new HashMap<>();
     public static final Map<Integer,String> DW_IF_IFALIAS_MAP = new HashMap<>();
-    public static final Map<Integer,InetAddress> DW_IF_NETMASK_MAP = new HashMap<>();
+    public static final Map<InetAddress,InetAddress> DW_IP_MK_MAP = new HashMap<>();
 
     //NMS4943
     public static final String DLINK1_IP = "10.1.1.2";
@@ -334,7 +334,7 @@ public abstract class NmsNetworkBuilder {
     public static final Map<Integer,String> FROH_IF_IFDESCR_MAP = new HashMap<>();
     public static final Map<Integer,String> FROH_IF_MAC_MAP = new HashMap<>();
     public static final Map<Integer,String> FROH_IF_IFALIAS_MAP = new HashMap<>();
-    public static final Map<Integer,InetAddress> FROH_IF_NETMASK_MAP = new HashMap<>();
+    public static final Map<InetAddress,InetAddress> FROH_IP_MK_MAP = new HashMap<>();
 
     public static final String OEDIPUS_IP = "192.168.239.62";
     public static final String OEDIPUS_NAME = "oedipus";
@@ -346,7 +346,7 @@ public abstract class NmsNetworkBuilder {
     public static  final Map<Integer,String> OEDIPUS_IF_IFDESCR_MAP = new HashMap<>();
     public static  final Map<Integer,String> OEDIPUS_IF_MAC_MAP = new HashMap<>();
     public static  final Map<Integer,String> OEDIPUS_IF_IFALIAS_MAP = new HashMap<>();
-    public static  final Map<Integer,InetAddress> OEDIPUS_IF_NETMASK_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> OEDIPUS_IP_MK_MAP = new HashMap<>();
         
     public static final String SIEGFRIE_IP = "192.168.239.54";
     public static final String SIEGFRIE_NAME = "siegfrie";
@@ -358,7 +358,7 @@ public abstract class NmsNetworkBuilder {
     public static  final Map<Integer,String> SIEGFRIE_IF_IFDESCR_MAP = new HashMap<>();
     public static  final Map<Integer,String> SIEGFRIE_IF_MAC_MAP = new HashMap<>();
     public static  final Map<Integer,String> SIEGFRIE_IF_IFALIAS_MAP = new HashMap<>();
-    public static  final Map<Integer,InetAddress> SIEGFRIE_IF_NETMASK_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> SIEGFRIE_IP_MK_MAP = new HashMap<>();
 
     public static final String FROH_ISIS_SYS_ID     = "000110088500";
     public static final String OEDIPUS_ISIS_SYS_ID  = "000110255062";
@@ -374,7 +374,7 @@ public abstract class NmsNetworkBuilder {
     public static  final Map<Integer,String> Rluck001_IF_IFDESCR_MAP = new HashMap<>();
     public static  final Map<Integer,String> Rluck001_IF_MAC_MAP = new HashMap<>();
     public static  final Map<Integer,String> Rluck001_IF_IFALIAS_MAP = new HashMap<>();
-    public static  final Map<Integer,InetAddress> Rluck001_IF_NETMASK_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> Rluck001_IP_MK_MAP = new HashMap<>();
 
     public static final String Sluck001_IP = "10.4.68.215";
     public static final String Sluck001_NAME = "s-de-juet-luck-001";
@@ -388,7 +388,7 @@ public abstract class NmsNetworkBuilder {
     public static  final Map<Integer,String> Sluck001_IF_IFDESCR_MAP = new HashMap<>();
     public static  final Map<Integer,String> Sluck001_IF_MAC_MAP = new HashMap<>();
     public static  final Map<Integer,String> Sluck001_IF_IFALIAS_MAP = new HashMap<>();
-    public static  final Map<Integer,InetAddress> Sluck001_IF_NETMASK_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> Sluck001_IP_MK_MAP = new HashMap<>();
         
     public static final String RPict001_IP = "10.140.252.57";
     public static final String RPict001_NAME = "r-ro-suce-pict-001";
@@ -400,7 +400,7 @@ public abstract class NmsNetworkBuilder {
     public static  final Map<Integer,String> RPict001_IF_IFDESCR_MAP = new HashMap<>();
     public static  final Map<Integer,String> RPict001_IF_MAC_MAP = new HashMap<>();
     public static  final Map<Integer,String> RPict001_IF_IFALIAS_MAP = new HashMap<>();
-    public static  final Map<Integer,InetAddress> RPict001_IF_NETMASK_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> RPict001_IP_MK_MAP = new HashMap<>();
     
     public static final String RNewt103_IP = "10.239.9.22";
     public static final String RNewt103_NAME = "r-uk-nott-newt-103";
@@ -412,7 +412,7 @@ public abstract class NmsNetworkBuilder {
     public static  final Map<Integer,String> RNewt103_IF_IFDESCR_MAP = new HashMap<>();
     public static  final Map<Integer,String> RNewt103_IF_MAC_MAP = new HashMap<>();
     public static  final Map<Integer,String> RNewt103_IF_IFALIAS_MAP = new HashMap<>();
-    public static  final Map<Integer,InetAddress> RNewt103_IF_NETMASK_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> RNewt103_IP_MK_MAP = new HashMap<>();
 
     public static final String RDeEssnBrue_IP = "10.167.254.40";
     public static final String RDeEssnBrue_NAME = "r-de-essn-brue-001";
@@ -488,7 +488,7 @@ public abstract class NmsNetworkBuilder {
     public static  final Map<Integer,String> RDeEssnBrue_IF_IFDESCR_MAP = new HashMap<>();
     public static  final Map<Integer,String> RDeEssnBrue_IF_MAC_MAP = new HashMap<>();
     public static  final Map<Integer,String> RDeEssnBrue_IF_IFALIAS_MAP = new HashMap<>();
-    public static  final Map<Integer,InetAddress> RDeEssnBrue_IF_NETMASK_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> RDeEssnBrue_IP_MK_MAP = new HashMap<>();
 
     public static final String SDeEssnBrue081_IP = "10.165.62.91";
     public static final String SDeEssnBrue081_NAME = "s-de-essn-brue-081";
@@ -500,7 +500,7 @@ public abstract class NmsNetworkBuilder {
     public static  final Map<Integer,String> SDeEssnBrue081_IF_IFDESCR_MAP = new HashMap<>();
     public static  final Map<Integer,String> SDeEssnBrue081_IF_MAC_MAP = new HashMap<>();
     public static  final Map<Integer,String> SDeEssnBrue081_IF_IFALIAS_MAP = new HashMap<>();
-    public static  final Map<Integer,InetAddress> SDeEssnBrue081_IF_NETMASK_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> SDeEssnBrue081_IP_MK_MAP = new HashMap<>();
 
     public static final String SDeEssnBrue121_IP = "10.165.62.131";
     public static final String SDeEssnBrue121_NAME = "s-de-essn-brue-121";
@@ -512,7 +512,7 @@ public abstract class NmsNetworkBuilder {
     public static  final Map<Integer,String> SDeEssnBrue121_IF_IFDESCR_MAP = new HashMap<>();
     public static  final Map<Integer,String> SDeEssnBrue121_IF_MAC_MAP = new HashMap<>();
     public static  final Map<Integer,String> SDeEssnBrue121_IF_IFALIAS_MAP = new HashMap<>();
-    public static  final Map<Integer,InetAddress> SDeEssnBrue121_IF_NETMASK_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> SDeEssnBrue121_IP_MK_MAP = new HashMap<>();
 
     public static final String SDeEssnBrue142_IP = "10.165.62.152";
     public static final String SDeEssnBrue142_NAME = "s-de-essn-brue-142";
@@ -524,7 +524,7 @@ public abstract class NmsNetworkBuilder {
     public static  final Map<Integer,String> SDeEssnBrue142_IF_IFDESCR_MAP = new HashMap<>();
     public static  final Map<Integer,String> SDeEssnBrue142_IF_MAC_MAP = new HashMap<>();
     public static  final Map<Integer,String> SDeEssnBrue142_IF_IFALIAS_MAP = new HashMap<>();
-    public static  final Map<Integer,InetAddress> SDeEssnBrue142_IF_NETMASK_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> SDeEssnBrue142_IP_MK_MAP = new HashMap<>();
 
     public static final String SDeEssnBrue165_IP = "10.165.62.175";
     public static final String SDeEssnBrue165_NAME = "s-de-essn-brue-165";
@@ -536,7 +536,7 @@ public abstract class NmsNetworkBuilder {
     public static  final Map<Integer,String> SDeEssnBrue165_IF_IFDESCR_MAP = new HashMap<>();
     public static  final Map<Integer,String> SDeEssnBrue165_IF_MAC_MAP = new HashMap<>();
     public static  final Map<Integer,String> SDeEssnBrue165_IF_IFALIAS_MAP = new HashMap<>();
-    public static  final Map<Integer,InetAddress> SDeEssnBrue165_IF_NETMASK_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> SDeEssnBrue165_IP_MK_MAP = new HashMap<>();
 
     public static final String RSeMalmNobe_IP = "10.111.253.9";
     public static final String RSeMalmNobe_NAME = "r-se-malm-nobe-013";
@@ -587,7 +587,7 @@ public abstract class NmsNetworkBuilder {
     public static  final Map<Integer,String> RSeMalmNobe_IF_IFDESCR_MAP = new HashMap<>();
     public static  final Map<Integer,String> RSeMalmNobe_IF_MAC_MAP = new HashMap<>();
     public static  final Map<Integer,String> RSeMalmNobe_IF_IFALIAS_MAP = new HashMap<>();
-    public static  final Map<Integer,InetAddress> RSeMalmNobe_IF_NETMASK_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> RSeMalmNobe_IP_MK_MAP = new HashMap<>();
 
     public static final String SSeMalmNobe_IP = "10.108.191.171";
     public static final String SSeMalmNobe_NAME = "s-se-malm-nobe-561";
@@ -599,7 +599,7 @@ public abstract class NmsNetworkBuilder {
     public static  final Map<Integer,String> SSeMalmNobe_IF_IFDESCR_MAP = new HashMap<>();
     public static  final Map<Integer,String> SSeMalmNobe_IF_MAC_MAP = new HashMap<>();
     public static  final Map<Integer,String> SSeMalmNobe_IF_IFALIAS_MAP = new HashMap<>();
-    public static  final Map<Integer,InetAddress> SSeMalmNobe_IF_NETMASK_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> SSeMalmNobe_IP_MK_MAP = new HashMap<>();
 
     //nms003 and nms17216
     public static final String ROUTER1_IP = "192.168.100.245";
@@ -646,7 +646,8 @@ public abstract class NmsNetworkBuilder {
     public static final String SWITCH1_NAME = "Switch1";
     public static final String SWITCH1_SYSOID = ".1.3.6.1.4.1.9.1.614";
     public static final String SWITCH1_LLDP_CHASSISID = "0016c8bd4d80";
-    
+
+    public static final Map<InetAddress,InetAddress> SWITCH1_IP_MK_MAP =  new HashMap<>();
     public static final Map<InetAddress,Integer> SWITCH1_IP_IF_MAP =  new HashMap<>();
     public static final Map<Integer,String> SWITCH1_IF_IFNAME_MAP = new HashMap<>();
     public static final Map<Integer,String> SWITCH1_IF_IFDESCR_MAP = new HashMap<>();
@@ -657,7 +658,8 @@ public abstract class NmsNetworkBuilder {
     public static final String SWITCH2_NAME = "Switch2";
     public static final String SWITCH2_SYSOID = ".1.3.6.1.4.1.9.1.696";
     public static final String SWITCH2_LLDP_CHASSISID = "0016c894aa80";
-    
+
+    public static final Map<InetAddress,InetAddress> SWITCH2_IP_MK_MAP =  new HashMap<>();
     public static final Map<InetAddress,Integer> SWITCH2_IP_IF_MAP =  new HashMap<>();
     public static final Map<Integer,String> SWITCH2_IF_IFNAME_MAP = new HashMap<>();
     public static final Map<Integer,String> SWITCH2_IF_IFDESCR_MAP = new HashMap<>();
@@ -668,7 +670,8 @@ public abstract class NmsNetworkBuilder {
     public static final String SWITCH3_NAME = "Switch3";
     public static final String SWITCH3_SYSOID = ".1.3.6.1.4.1.9.1.716";
     public static final String SWITCH3_LLDP_CHASSISID = "f4ea67ebdc00";
-    
+
+    public static final Map<InetAddress,InetAddress> SWITCH3_IP_MK_MAP =  new HashMap<>();
     public static final Map<InetAddress,Integer> SWITCH3_IP_IF_MAP =  new HashMap<>();
     public static final Map<Integer,String> SWITCH3_IF_IFNAME_MAP = new HashMap<>();
     public static final Map<Integer,String> SWITCH3_IF_IFDESCR_MAP = new HashMap<>();
@@ -722,7 +725,7 @@ public abstract class NmsNetworkBuilder {
     public static  final Map<Integer,String> FireFly170_IF_IFDESCR_MAP = new HashMap<>();
     public static  final Map<Integer,String> FireFly170_IF_MAC_MAP = new HashMap<>();
     public static  final Map<Integer,String> FireFly170_IF_IFALIAS_MAP = new HashMap<>();
-    public static  final Map<Integer,InetAddress> FireFly170_IF_NETMASK_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> FireFly170_IP_MK_MAP = new HashMap<>();
 
     public static final String FireFly171_IP = "192.168.168.171";
     public static final String FireFly171_SNMP_RESOURCE = "classpath:/linkd/nms007/mib2_"+FireFly171_IP + ".txt";
@@ -733,7 +736,7 @@ public abstract class NmsNetworkBuilder {
     public static  final Map<Integer,String> FireFly171_IF_IFDESCR_MAP = new HashMap<>();
     public static  final Map<Integer,String> FireFly171_IF_MAC_MAP = new HashMap<>();
     public static  final Map<Integer,String> FireFly171_IF_IFALIAS_MAP = new HashMap<>();
-    public static  final Map<Integer,InetAddress> FireFly171_IF_NETMASK_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> FireFly171_IP_MK_MAP = new HashMap<>();
 
     public static final String FireFly172_IP = "192.168.168.172";
     public static final String FireFly172_SNMP_RESOURCE = "classpath:/linkd/nms007/mib2_"+FireFly172_IP + ".txt";
@@ -744,7 +747,7 @@ public abstract class NmsNetworkBuilder {
     public static  final Map<Integer,String> FireFly172_IF_IFDESCR_MAP = new HashMap<>();
     public static  final Map<Integer,String> FireFly172_IF_MAC_MAP = new HashMap<>();
     public static  final Map<Integer,String> FireFly172_IF_IFALIAS_MAP = new HashMap<>();
-    public static  final Map<Integer,InetAddress> FireFly172_IF_NETMASK_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> FireFly172_IP_MK_MAP = new HashMap<>();
 
     public static final String FireFly173_IP = "192.168.168.173";
     public static final String FireFly173_SNMP_RESOURCE = "classpath:/linkd/nms007/mib2_"+FireFly173_IP + ".txt";
@@ -755,7 +758,7 @@ public abstract class NmsNetworkBuilder {
     public static  final Map<Integer,String> FireFly173_IF_IFDESCR_MAP = new HashMap<>();
     public static  final Map<Integer,String> FireFly173_IF_MAC_MAP = new HashMap<>();
     public static  final Map<Integer,String> FireFly173_IF_IFALIAS_MAP = new HashMap<>();
-    public static  final Map<Integer,InetAddress> FireFly173_IF_NETMASK_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> FireFly173_IP_MK_MAP = new HashMap<>();
 
     public static final String FireFly174_IP = "192.168.168.174";
     public static final String FireFly174_SNMP_RESOURCE = "classpath:/linkd/nms007/mib2_"+FireFly174_IP + ".txt";
@@ -766,7 +769,7 @@ public abstract class NmsNetworkBuilder {
     public static  final Map<Integer,String> FireFly174_IF_IFDESCR_MAP = new HashMap<>();
     public static  final Map<Integer,String> FireFly174_IF_MAC_MAP = new HashMap<>();
     public static  final Map<Integer,String> FireFly174_IF_IFALIAS_MAP = new HashMap<>();
-    public static  final Map<Integer,InetAddress> FireFly174_IF_NETMASK_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> FireFly174_IP_MK_MAP = new HashMap<>();
 
     public static final String FireFly175_IP = "192.168.168.175";
     public static final String FireFly175_SNMP_RESOURCE = "classpath:/linkd/nms007/mib2_"+FireFly175_IP + ".txt";
@@ -777,7 +780,7 @@ public abstract class NmsNetworkBuilder {
     public static  final Map<Integer,String> FireFly175_IF_IFDESCR_MAP = new HashMap<>();
     public static  final Map<Integer,String> FireFly175_IF_MAC_MAP = new HashMap<>();
     public static  final Map<Integer,String> FireFly175_IF_IFALIAS_MAP = new HashMap<>();
-    public static  final Map<Integer,InetAddress> FireFly175_IF_NETMASK_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> FireFly175_IP_MK_MAP = new HashMap<>();
 
     public static final String FireFly176_IP = "192.168.168.176";
     public static final String FireFly176_SNMP_RESOURCE = "classpath:/linkd/nms007/mib2_"+FireFly176_IP + ".txt";
@@ -788,7 +791,7 @@ public abstract class NmsNetworkBuilder {
     public static  final Map<Integer,String> FireFly176_IF_IFDESCR_MAP = new HashMap<>();
     public static  final Map<Integer,String> FireFly176_IF_MAC_MAP = new HashMap<>();
     public static  final Map<Integer,String> FireFly176_IF_IFALIAS_MAP = new HashMap<>();
-    public static  final Map<Integer,InetAddress> FireFly176_IF_NETMASK_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> FireFly176_IP_MK_MAP = new HashMap<>();
 
     public static final String FireFly177_IP = "192.168.168.177";
     public static final String FireFly177_SNMP_RESOURCE = "classpath:/linkd/nms007/mib2_"+FireFly177_IP + ".txt";
@@ -799,7 +802,7 @@ public abstract class NmsNetworkBuilder {
     public static  final Map<Integer,String> FireFly177_IF_IFDESCR_MAP = new HashMap<>();
     public static  final Map<Integer,String> FireFly177_IF_MAC_MAP = new HashMap<>();
     public static  final Map<Integer,String> FireFly177_IF_IFALIAS_MAP = new HashMap<>();
-    public static  final Map<Integer,InetAddress> FireFly177_IF_NETMASK_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> FireFly177_IP_MK_MAP = new HashMap<>();
 
     public static final String FireFly189_IP = "192.168.168.189";
     public static final String FireFly189_SNMP_RESOURCE = "classpath:/linkd/nms007/mib2_"+FireFly189_IP + ".txt";
@@ -810,7 +813,7 @@ public abstract class NmsNetworkBuilder {
     public static  final Map<Integer,String> FireFly189_IF_IFDESCR_MAP = new HashMap<>();
     public static  final Map<Integer,String> FireFly189_IF_MAC_MAP = new HashMap<>();
     public static  final Map<Integer,String> FireFly189_IF_IFALIAS_MAP = new HashMap<>();
-    public static  final Map<Integer,InetAddress> FireFly189_IF_NETMASK_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> FireFly189_IP_MK_MAP = new HashMap<>();
 
 
     //Nms101
@@ -825,7 +828,7 @@ public abstract class NmsNetworkBuilder {
     public static final Map<Integer,String> LAPTOP_IF_IFDESCR_MAP = new HashMap<>();
     public static final Map<Integer,String> LAPTOP_IF_MAC_MAP = new HashMap<>();
     public static final Map<Integer,String> LAPTOP_IF_IFALIAS_MAP = new HashMap<>();
-    public static final Map<Integer,InetAddress> LAPTOP_IF_NETMASK_MAP = new HashMap<>();
+    public static final Map<InetAddress,InetAddress> LAPTOP_IP_MK_MAP = new HashMap<>();
 
     public static final String CISCO7200A_SNMP_RESOURCE = "classpath:/linkd/nms101/cisco7200a.properties";
     public static final String CISCO7200A_IP = "10.1.1.1";
@@ -837,7 +840,7 @@ public abstract class NmsNetworkBuilder {
     public static final Map<Integer,String> CISCO7200A_IF_IFDESCR_MAP = new HashMap<>();
     public static final Map<Integer,String> CISCO7200A_IF_MAC_MAP = new HashMap<>();
     public static final Map<Integer,String> CISCO7200A_IF_IFALIAS_MAP = new HashMap<>();
-    public static final Map<Integer,InetAddress> CISCO7200A_IF_NETMASK_MAP = new HashMap<>();
+    public static final Map<InetAddress,InetAddress> CISCO7200A_IP_MK_MAP = new HashMap<>();
 
     public static final String CISCO7200B_SNMP_RESOURCE = "classpath:/linkd/nms101/cisco7200b.properties";
     public static final String CISCO7200B_IP = "10.1.2.2";
@@ -849,7 +852,7 @@ public abstract class NmsNetworkBuilder {
     public static final Map<Integer,String> CISCO7200B_IF_IFDESCR_MAP = new HashMap<>();
     public static final Map<Integer,String> CISCO7200B_IF_MAC_MAP = new HashMap<>();
     public static final Map<Integer,String> CISCO7200B_IF_IFALIAS_MAP = new HashMap<>();
-    public static final Map<Integer,InetAddress> CISCO7200B_IF_NETMASK_MAP = new HashMap<>();
+    public static final Map<InetAddress,InetAddress> CISCO7200B_IP_MK_MAP = new HashMap<>();
 
     public static final String CISCO3700_SNMP_RESOURCE = "classpath:/linkd/nms101/cisco3700.properties";
     public static final String CISCO3700_IP = "10.1.3.2";
@@ -861,7 +864,7 @@ public abstract class NmsNetworkBuilder {
     public static final Map<Integer,String> CISCO3700_IF_IFDESCR_MAP = new HashMap<>();
     public static final Map<Integer,String> CISCO3700_IF_MAC_MAP = new HashMap<>();
     public static final Map<Integer,String> CISCO3700_IF_IFALIAS_MAP = new HashMap<>();
-    public static final Map<Integer,InetAddress> CISCO3700_IF_NETMASK_MAP = new HashMap<>();
+    public static final Map<InetAddress,InetAddress> CISCO3700_IP_MK_MAP = new HashMap<>();
 
     public static final String CISCO2691_SNMP_RESOURCE = "classpath:/linkd/nms101/cisco2691.properties";
     public static final String CISCO2691_IP = "10.1.4.2";
@@ -873,7 +876,7 @@ public abstract class NmsNetworkBuilder {
     public static final Map<Integer,String> CISCO2691_IF_IFDESCR_MAP = new HashMap<>();
     public static final Map<Integer,String> CISCO2691_IF_MAC_MAP = new HashMap<>();
     public static final Map<Integer,String> CISCO2691_IF_IFALIAS_MAP = new HashMap<>();
-    public static final Map<Integer,InetAddress> CISCO2691_IF_NETMASK_MAP = new HashMap<>();
+    public static final Map<InetAddress,InetAddress> CISCO2691_IP_MK_MAP = new HashMap<>();
 
     public static final String CISCO1700B_SNMP_RESOURCE = "classpath:/linkd/nms101/cisco1700b.properties";
     public static final String CISCO1700B_IP = "10.1.5.1";
@@ -885,7 +888,7 @@ public abstract class NmsNetworkBuilder {
     public static final Map<Integer,String> CISCO1700B_IF_IFDESCR_MAP = new HashMap<>();
     public static final Map<Integer,String> CISCO1700B_IF_MAC_MAP = new HashMap<>();
     public static final Map<Integer,String> CISCO1700B_IF_IFALIAS_MAP = new HashMap<>();
-    public static final Map<Integer,InetAddress> CISCO1700B_IF_NETMASK_MAP = new HashMap<>();
+    public static final Map<InetAddress,InetAddress> CISCO1700B_IP_MK_MAP = new HashMap<>();
 
     public static final String CISCO3600_SNMP_RESOURCE = "classpath:/linkd/nms101/cisco3600.properties";
     public static final String CISCO3600_IP = "10.1.6.2";
@@ -897,7 +900,7 @@ public abstract class NmsNetworkBuilder {
     public static final Map<Integer,String> CISCO3600_IF_IFDESCR_MAP = new HashMap<>();
     public static final Map<Integer,String> CISCO3600_IF_MAC_MAP = new HashMap<>();
     public static final Map<Integer,String> CISCO3600_IF_IFALIAS_MAP = new HashMap<>();
-    public static final Map<Integer,InetAddress> CISCO3600_IF_NETMASK_MAP = new HashMap<>();
+    public static final Map<InetAddress,InetAddress> CISCO3600_IP_MK_MAP = new HashMap<>();
 
     public static final String CISCO1700_SNMP_RESOURCE = "classpath:/linkd/nms101/cisco1700.properties";
     public static final String CISCO1700_IP = "10.1.5.2";
@@ -909,7 +912,7 @@ public abstract class NmsNetworkBuilder {
     public static final Map<Integer,String> CISCO1700_IF_IFDESCR_MAP = new HashMap<>();
     public static final Map<Integer,String> CISCO1700_IF_MAC_MAP = new HashMap<>();
     public static final Map<Integer,String> CISCO1700_IF_IFALIAS_MAP = new HashMap<>();
-    public static final Map<Integer,InetAddress> CISCO1700_IF_NETMASK_MAP = new HashMap<>();
+    public static final Map<InetAddress,InetAddress> CISCO1700_IP_MK_MAP = new HashMap<>();
 
     public static final String EXAMPLECOM_IP = "192.168.1.10";
     public static final String EXAMPLECOM_NAME = "test.example.com";
@@ -920,7 +923,7 @@ public abstract class NmsNetworkBuilder {
     public static final Map<Integer,String> EXAMPLECOM_IF_IFDESCR_MAP = new HashMap<>();
     public static final Map<Integer,String> EXAMPLECOM_IF_MAC_MAP = new HashMap<>();
     public static final Map<Integer,String> EXAMPLECOM_IF_IFALIAS_MAP = new HashMap<>();
-    public static final Map<Integer,InetAddress> EXAMPLECOM_IF_NETMASK_MAP = new HashMap<>();
+    public static final Map<InetAddress,InetAddress> EXAMPLECOM_IP_MK_MAP = new HashMap<>();
 
     //Nms10205
     public static InetAddress MUMBAI_OSPF_ID;
@@ -955,7 +958,7 @@ public abstract class NmsNetworkBuilder {
     public static  final Map<Integer,String> MUMBAI_IF_IFDESCR_MAP = new HashMap<>();
     public static  final Map<Integer,String> MUMBAI_IF_MAC_MAP = new HashMap<>();
     public static  final Map<Integer,String> MUMBAI_IF_IFALIAS_MAP = new HashMap<>();
-    public static  final Map<Integer,InetAddress> MUMBAI_IF_NETMASK_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> MUMBAI_IP_MK_MAP = new HashMap<>();
 
     public static final String CHENNAI_IP = "10.205.56.6";
     public static final String CHENNAI_NAME = "Chennai";
@@ -968,7 +971,7 @@ public abstract class NmsNetworkBuilder {
     public static  final Map<Integer,String> CHENNAI_IF_IFDESCR_MAP = new HashMap<>();
     public static  final Map<Integer,String> CHENNAI_IF_MAC_MAP = new HashMap<>();
     public static  final Map<Integer,String> CHENNAI_IF_IFALIAS_MAP = new HashMap<>();
-    public static  final Map<Integer,InetAddress> CHENNAI_IF_NETMASK_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> CHENNAI_IP_MK_MAP = new HashMap<>();
 
     public static final String DELHI_IP = "10.205.56.7";
     public static final String DELHI_NAME = "Delhi";
@@ -981,7 +984,7 @@ public abstract class NmsNetworkBuilder {
     public static  final Map<Integer,String> DELHI_IF_IFDESCR_MAP = new HashMap<>();
     public static  final Map<Integer,String> DELHI_IF_MAC_MAP = new HashMap<>();
     public static  final Map<Integer,String> DELHI_IF_IFALIAS_MAP = new HashMap<>();
-    public static  final Map<Integer,InetAddress> DELHI_IF_NETMASK_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> DELHI_IP_MK_MAP = new HashMap<>();
 
     public static final String BANGALORE_IP = "10.205.56.9";
     public static final String BANGALORE_NAME = "Bangalore";
@@ -994,7 +997,7 @@ public abstract class NmsNetworkBuilder {
     public static  final Map<Integer,String> BANGALORE_IF_IFDESCR_MAP = new HashMap<>();
     public static  final Map<Integer,String> BANGALORE_IF_MAC_MAP = new HashMap<>();
     public static  final Map<Integer,String> BANGALORE_IF_IFALIAS_MAP = new HashMap<>();
-    public static  final Map<Integer,InetAddress> BANGALORE_IF_NETMASK_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> BANGALORE_IP_MK_MAP = new HashMap<>();
 
     public static final String MYSORE_IP = "10.205.56.22";
     public static final String MYSORE_NAME = "Mysore";
@@ -1007,7 +1010,7 @@ public abstract class NmsNetworkBuilder {
     public static  final Map<Integer,String> MYSORE_IF_IFDESCR_MAP = new HashMap<>();
     public static  final Map<Integer,String> MYSORE_IF_MAC_MAP = new HashMap<>();
     public static  final Map<Integer,String> MYSORE_IF_IFALIAS_MAP = new HashMap<>();
-    public static  final Map<Integer,InetAddress> MYSORE_IF_NETMASK_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> MYSORE_IP_MK_MAP = new HashMap<>();
 
     public static final String BAGMANE_IP = "10.205.56.20";
     public static final String BAGMANE_NAME = "Bagmane";
@@ -1020,7 +1023,7 @@ public abstract class NmsNetworkBuilder {
     public static  final Map<Integer,String> BAGMANE_IF_IFDESCR_MAP = new HashMap<>();
     public static  final Map<Integer,String> BAGMANE_IF_MAC_MAP = new HashMap<>();
     public static  final Map<Integer,String> BAGMANE_IF_IFALIAS_MAP = new HashMap<>();
-    public static  final Map<Integer,InetAddress> BAGMANE_IF_NETMASK_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> BAGMANE_IP_MK_MAP = new HashMap<>();
 
     public static final String SPACE_EX_SW1_IP = "10.205.56.1";
     public static final String SPACE_EX_SW1_NAME = "Space-EX-SW1";
@@ -1033,7 +1036,7 @@ public abstract class NmsNetworkBuilder {
     public static  final Map<Integer,String> SPACE_EX_SW1_IF_IFDESCR_MAP = new HashMap<>();
     public static  final Map<Integer,String> SPACE_EX_SW1_IF_MAC_MAP = new HashMap<>();
     public static  final Map<Integer,String> SPACE_EX_SW1_IF_IFALIAS_MAP = new HashMap<>();
-    public static  final Map<Integer,InetAddress> SPACE_EX_SW1_IF_NETMASK_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> SPACE_EX_SW1_IP_MK_MAP = new HashMap<>();
 
     public static final String SPACE_EX_SW2_IP = "10.205.56.2";
     public static final String SPACE_EX_SW2_NAME = "Space-EX-SW2";
@@ -1046,7 +1049,7 @@ public abstract class NmsNetworkBuilder {
     public static  final Map<Integer,String> SPACE_EX_SW2_IF_IFDESCR_MAP = new HashMap<>();
     public static  final Map<Integer,String> SPACE_EX_SW2_IF_MAC_MAP = new HashMap<>();
     public static  final Map<Integer,String> SPACE_EX_SW2_IF_IFALIAS_MAP = new HashMap<>();
-    public static  final Map<Integer,InetAddress> SPACE_EX_SW2_IF_NETMASK_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> SPACE_EX_SW2_IP_MK_MAP = new HashMap<>();
 
     public static final String J6350_41_IP = "10.205.56.41";
     public static final String J6350_41_NAME = "J6350-41";
@@ -1059,7 +1062,7 @@ public abstract class NmsNetworkBuilder {
     public static  final Map<Integer,String> J6350_41_IF_IFDESCR_MAP = new HashMap<>();
     public static  final Map<Integer,String> J6350_41_IF_MAC_MAP = new HashMap<>();
     public static  final Map<Integer,String> J6350_41_IF_IFALIAS_MAP = new HashMap<>();
-    public static  final Map<Integer,InetAddress> J6350_41_IF_NETMASK_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> J6350_41_IP_MK_MAP = new HashMap<>();
 
     public static final String J6350_42_IP = "10.205.56.42";
     public static final String J6350_42_NAME = "J6350-2";
@@ -1073,7 +1076,7 @@ public abstract class NmsNetworkBuilder {
     public static  final Map<Integer,String> J6350_42_IF_IFDESCR_MAP = new HashMap<>();
     public static  final Map<Integer,String> J6350_42_IF_MAC_MAP = new HashMap<>();
     public static  final Map<Integer,String> J6350_42_IF_IFALIAS_MAP = new HashMap<>();
-    public static  final Map<Integer,InetAddress> J6350_42_IF_NETMASK_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> J6350_42_IP_MK_MAP = new HashMap<>();
 
     public static final String SRX_100_IP = "10.205.56.23";
     public static final String SRX_100_NAME = "SRX_56.23";
@@ -1086,7 +1089,7 @@ public abstract class NmsNetworkBuilder {
     public static  final Map<Integer,String> SRX_100_IF_IFDESCR_MAP = new HashMap<>();
     public static  final Map<Integer,String> SRX_100_IF_MAC_MAP = new HashMap<>();
     public static  final Map<Integer,String> SRX_100_IF_IFALIAS_MAP = new HashMap<>();
-    public static  final Map<Integer,InetAddress> SRX_100_IF_NETMASK_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> SRX_100_IP_MK_MAP = new HashMap<>();
 
     public static final String SSG550_IP = "10.205.35.100";
     public static final String SSG550_NAME = "SSG550";
@@ -1099,7 +1102,7 @@ public abstract class NmsNetworkBuilder {
     public static  final Map<Integer,String> SSG550_IF_IFDESCR_MAP = new HashMap<>();
     public static  final Map<Integer,String> SSG550_IF_MAC_MAP = new HashMap<>();
     public static  final Map<Integer,String> SSG550_IF_IFALIAS_MAP = new HashMap<>();
-    public static  final Map<Integer,InetAddress> SSG550_IF_NETMASK_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> SSG550_IP_MK_MAP = new HashMap<>();
 
     //Nms1055
     public static final String PENROSE_IP = "10.155.69.16";
@@ -1113,7 +1116,7 @@ public abstract class NmsNetworkBuilder {
     public static final Map<Integer,String> PENROSE_IF_IFDESCR_MAP = new HashMap<>();
     public static final Map<Integer,String> PENROSE_IF_MAC_MAP = new HashMap<>();
     public static final Map<Integer,String> PENROSE_IF_IFALIAS_MAP = new HashMap<>();
-    public static final Map<Integer,InetAddress> PENROSE_IF_NETMASK_MAP = new HashMap<>();
+    public static final Map<InetAddress,InetAddress> PENROSE_IP_MK_MAP = new HashMap<>();
 
     public static final String DELAWARE_IP = "10.155.69.17";
     public static final String DELAWARE_NAME = "delaware";
@@ -1126,7 +1129,7 @@ public abstract class NmsNetworkBuilder {
     public static final Map<Integer,String> DELAWARE_IF_IFDESCR_MAP = new HashMap<>();
     public static final Map<Integer,String> DELAWARE_IF_MAC_MAP = new HashMap<>();
     public static final Map<Integer,String> DELAWARE_IF_IFALIAS_MAP = new HashMap<>();
-    public static final Map<Integer,InetAddress> DELAWARE_IF_NETMASK_MAP = new HashMap<>();
+    public static final Map<InetAddress,InetAddress> DELAWARE_IP_MK_MAP = new HashMap<>();
 
     public static final String PHOENIX_IP = "10.155.69.42";
     public static final String PHOENIX_NAME = "phoenix-mx80";
@@ -1139,7 +1142,7 @@ public abstract class NmsNetworkBuilder {
     public static final Map<Integer,String> PHOENIX_IF_IFDESCR_MAP = new HashMap<>();
     public static final Map<Integer,String> PHOENIX_IF_MAC_MAP = new HashMap<>();
     public static final Map<Integer,String> PHOENIX_IF_IFALIAS_MAP = new HashMap<>();
-    public static final Map<Integer,InetAddress> PHOENIX_IF_NETMASK_MAP = new HashMap<>();
+    public static final Map<InetAddress,InetAddress> PHOENIX_IP_MK_MAP = new HashMap<>();
 
 
     public static final String AUSTIN_IP = "10.155.69.43";
@@ -1153,7 +1156,7 @@ public abstract class NmsNetworkBuilder {
     public static final Map<Integer,String> AUSTIN_IF_IFDESCR_MAP = new HashMap<>();
     public static final Map<Integer,String> AUSTIN_IF_MAC_MAP = new HashMap<>();
     public static final Map<Integer,String> AUSTIN_IF_IFALIAS_MAP = new HashMap<>();
-    public static final Map<Integer,InetAddress> AUSTIN_IF_NETMASK_MAP = new HashMap<>();
+    public static final Map<InetAddress,InetAddress> AUSTIN_IP_MK_MAP = new HashMap<>();
 
     public static final String SANJOSE_IP = "10.155.69.12";
     public static final String SANJOSE_NAME = "sanjose-mx240";
@@ -1166,7 +1169,7 @@ public abstract class NmsNetworkBuilder {
     public static final Map<Integer,String> SANJOSE_IF_IFDESCR_MAP = new HashMap<>();
     public static final Map<Integer,String> SANJOSE_IF_MAC_MAP = new HashMap<>();
     public static final Map<Integer,String> SANJOSE_IF_IFALIAS_MAP = new HashMap<>();
-    public static final Map<Integer,InetAddress> SANJOSE_IF_NETMASK_MAP = new HashMap<>();
+    public static final Map<InetAddress,InetAddress> SANJOSE_IP_MK_MAP = new HashMap<>();
 
     public static final String RIOVISTA_IP = "10.155.69.107";
     public static final String RIOVISTA_NAME = "Riovista-ce";
@@ -1179,7 +1182,7 @@ public abstract class NmsNetworkBuilder {
     public static final Map<Integer,String> RIOVISTA_IF_IFDESCR_MAP = new HashMap<>();
     public static final Map<Integer,String> RIOVISTA_IF_MAC_MAP = new HashMap<>();
     public static final Map<Integer,String> RIOVISTA_IF_IFALIAS_MAP = new HashMap<>();
-    public static final Map<Integer,InetAddress> RIOVISTA_IF_NETMASK_MAP = new HashMap<>();
+    public static final Map<InetAddress,InetAddress> RIOVISTA_IP_MK_MAP = new HashMap<>();
 
     //nms102
     public static final String MIKROTIK_IP = "192.168.0.1";
@@ -1192,7 +1195,7 @@ public abstract class NmsNetworkBuilder {
     public static final Map<Integer,String> MIKROTIK_IF_IFDESCR_MAP = new HashMap<>();
     public static final Map<Integer,String> MIKROTIK_IF_MAC_MAP = new HashMap<>();
     public static final Map<Integer,String> MIKROTIK_IF_IFALIAS_MAP = new HashMap<>();
-    public static final Map<Integer,InetAddress> MIKROTIK_IF_NETMASK_MAP = new HashMap<>();
+    public static final Map<InetAddress,InetAddress> MIKROTIK_IP_MK_MAP = new HashMap<>();
 
     public static final String SAMSUNG_IP = "192.168.0.14";
     public static final String SAMSUNG_NAME = "samsung";
@@ -1204,7 +1207,7 @@ public abstract class NmsNetworkBuilder {
     public static final Map<Integer,String> SAMSUNG_IF_IFDESCR_MAP = new HashMap<>();
     public static final Map<Integer,String> SAMSUNG_IF_MAC_MAP = new HashMap<>();
     public static final Map<Integer,String> SAMSUNG_IF_IFALIAS_MAP = new HashMap<>();
-    public static final Map<Integer,InetAddress> SAMSUNG_IF_NETMASK_MAP = new HashMap<>();
+    public static final Map<InetAddress,InetAddress> SAMSUNG_IP_MK_MAP = new HashMap<>();
 
     public static final String MAC1_IP = "192.168.0.16";
     public static final String MAC1_NAME = "mac1";
@@ -1216,7 +1219,7 @@ public abstract class NmsNetworkBuilder {
     public static final Map<Integer,String> MAC1_IF_IFDESCR_MAP = new HashMap<>();
     public static final Map<Integer,String> MAC1_IF_MAC_MAP = new HashMap<>();
     public static final Map<Integer,String> MAC1_IF_IFALIAS_MAP = new HashMap<>();
-    public static final Map<Integer,InetAddress> MAC1_IF_NETMASK_MAP = new HashMap<>();
+    public static final Map<InetAddress,InetAddress> MAC1_IP_MK_MAP = new HashMap<>();
 
     public static final String MAC2_IP = "192.168.0.17";
     public static final String MAC2_NAME = "mac2";
@@ -1228,7 +1231,7 @@ public abstract class NmsNetworkBuilder {
     public static final Map<Integer,String> MAC2_IF_IFDESCR_MAP = new HashMap<>();
     public static final Map<Integer,String> MAC2_IF_MAC_MAP = new HashMap<>();
     public static final Map<Integer,String> MAC2_IF_IFALIAS_MAP = new HashMap<>();
-    public static final Map<Integer,InetAddress> MAC2_IF_NETMASK_MAP = new HashMap<>();
+    public static final Map<InetAddress,InetAddress> MAC2_IP_MK_MAP = new HashMap<>();
 
     //nms4005
     public static final String R1_IP = "10.1.1.2";
@@ -1240,7 +1243,7 @@ public abstract class NmsNetworkBuilder {
     public static final Map<Integer,String> R1_IF_IFDESCR_MAP = new HashMap<>();
     public static final Map<Integer,String> R1_IF_MAC_MAP = new HashMap<>();
     public static final Map<Integer,String> R1_IF_IFALIAS_MAP = new HashMap<>();
-    public static final Map<Integer,InetAddress> R1_IF_NETMASK_MAP = new HashMap<>();
+    public static final Map<InetAddress,InetAddress> R1_IP_MK_MAP = new HashMap<>();
 
     public static final String R2_IP = "10.1.2.2";
     public static final String R2_NAME = "R2";
@@ -1251,7 +1254,7 @@ public abstract class NmsNetworkBuilder {
     public static final Map<Integer,String> R2_IF_IFDESCR_MAP = new HashMap<>();
     public static final Map<Integer,String> R2_IF_MAC_MAP = new HashMap<>();
     public static final Map<Integer,String> R2_IF_IFALIAS_MAP = new HashMap<>();
-    public static final Map<Integer,InetAddress> R2_IF_NETMASK_MAP = new HashMap<>();
+    public static final Map<InetAddress,InetAddress> R2_IP_MK_MAP = new HashMap<>();
 
     public static final String R3_IP = "10.1.3.2";
     public static final String R3_NAME = "R3";
@@ -1262,7 +1265,7 @@ public abstract class NmsNetworkBuilder {
     public static final Map<Integer,String> R3_IF_IFDESCR_MAP = new HashMap<>();
     public static final Map<Integer,String> R3_IF_MAC_MAP = new HashMap<>();
     public static final Map<Integer,String> R3_IF_IFALIAS_MAP = new HashMap<>();
-    public static final Map<Integer,InetAddress> R3_IF_NETMASK_MAP = new HashMap<>();
+    public static final Map<InetAddress,InetAddress> R3_IP_MK_MAP = new HashMap<>();
 
     public static final String R4_IP = "10.1.4.2";
     public static final String R4_NAME = "R4";
@@ -1273,7 +1276,7 @@ public abstract class NmsNetworkBuilder {
     public static final Map<Integer,String> R4_IF_IFDESCR_MAP = new HashMap<>();
     public static final Map<Integer,String> R4_IF_MAC_MAP = new HashMap<>();
     public static final Map<Integer,String> R4_IF_IFALIAS_MAP = new HashMap<>();
-    public static final Map<Integer,InetAddress> R4_IF_NETMASK_MAP = new HashMap<>();
+    public static final Map<InetAddress,InetAddress> R4_IP_MK_MAP = new HashMap<>();
     
     //nms7467
     
@@ -1295,6 +1298,7 @@ public abstract class NmsNetworkBuilder {
     public static final Map<Integer, String> CISCO_C870_IF_IFNAME_MAP = new HashMap<>();
     public static final Map<Integer, String> CISCO_C870_IF_MAC_MAP = new HashMap<>();
     public static final Map<InetAddress, Integer> CISCO_C870_IP_IF_MAP = new HashMap<>();
+    public static final Map<InetAddress,InetAddress> CISCO_C870_IP_MK_MAP = new HashMap<>();
 
     public static final String CISCO_WS_C2948_NAME         = "ciscoswitch";
     public static final String CISCO_WS_C2948_IP       = "192.0.2.7";
@@ -1303,6 +1307,7 @@ public abstract class NmsNetworkBuilder {
     public static final String CISCO_WS_C2948_SYSOID        = ".1.3.6.1.4.1.9.5.42";
     public static final String CISCO_WS_C2948_SNMP_RESOURCE = "classpath:/linkd/nms7467/"+CISCO_WS_C2948_IP+"-walk.txt";
 
+    public static final Map<InetAddress,InetAddress> CISCO_WS_C2948_IP_MK_MAP =  new HashMap<>();
     public static final Map<InetAddress,Integer> CISCO_WS_C2948_IP_IF_MAP =  new HashMap<>();
     public static final Map<Integer,String> CISCO_WS_C2948_IF_IFNAME_MAP = new HashMap<>();
     public static final Map<Integer,String> CISCO_WS_C2948_IF_MAC_MAP = new HashMap<>();
@@ -1313,6 +1318,7 @@ public abstract class NmsNetworkBuilder {
     public static final String NETGEAR_SW_108_SYSOID        = ".1.3.6.1.4.1.4526.100.4.8";
     public static final String NETGEAR_SW_108_SNMP_RESOURCE = "classpath:/linkd/nms7467/"+NETGEAR_SW_108_IP+"-walk.txt";
 
+    public static final Map<InetAddress,InetAddress> NETGEAR_SW_108_IP_MK_MAP =  new HashMap<>();
     public static final Map<InetAddress,Integer> NETGEAR_SW_108_IP_IF_MAP = new HashMap<>();
     public static final Map<Integer, String> NETGEAR_SW_108_IF_IFNAME_MAP = new HashMap<>();
     public static final Map<Integer, String> NETGEAR_SW_108_IF_MAC_MAP = new HashMap<>();
@@ -1321,7 +1327,8 @@ public abstract class NmsNetworkBuilder {
     public static final String LINUX_UBUNTU_IP            = "192.0.2.14";
     public static final String LINUX_UBUNTU_SYSOID        = ".1.3.6.1.4.1.8072.3.2.10";
     public static final String LINUX_UBUNTU_SNMP_RESOURCE = "classpath:/linkd/nms7467/"+LINUX_UBUNTU_IP+"-walk.txt";
-    
+
+    public static final Map<InetAddress,InetAddress> LINUX_UBUNTU_IP_MK_MAP =  new HashMap<>();
     public static final Map<InetAddress, Integer> LINUX_UBUNTU_IP_IF_MAP = new HashMap<>();
     public static final Map<Integer, String> LINUX_UBUNTU_IF_IFNAME_MAP = new HashMap<>();
     public static final Map<Integer, String> LINUX_UBUNTU_IF_MAC_MAP = new HashMap<>();
@@ -1330,7 +1337,8 @@ public abstract class NmsNetworkBuilder {
     public static final String DARWIN_10_8_IP            = "192.0.2.28";
     public static final String DARWIN_10_8_SYSOID        = ".1.3.6.1.4.1.8072.3.2.255";
     public static final String DARWIN_10_8_SNMP_RESOURCE = "classpath:/linkd/nms7467/"+DARWIN_10_8_IP+"-walk.txt";
-    
+
+    public static final Map<InetAddress,InetAddress> DARWIN_10_8_IP_MK_MAP =  new HashMap<>();
     public static final Map<InetAddress,Integer> DARWIN_10_8_IP_IF_MAP = new HashMap<>();
     public static final Map<Integer, String> DARWIN_10_8_IF_IFNAME_MAP = new HashMap<>();
     public static final Map<Integer, String> DARWIN_10_8_IF_MAC_MAP = new HashMap<>();
@@ -1437,28 +1445,28 @@ public abstract class NmsNetworkBuilder {
             Map<Integer,String> ifindextoifalias) {
         return getNode(name, sysoid, primaryip, ipinterfacemap, ifindextoifnamemap, ifindextomacmap, ifindextoifdescrmap, ifindextoifalias, new HashMap<>());
     }
-    
+
     OnmsNode getNode(String name, String sysoid, String primaryip,
-            Map<InetAddress, Integer> ipinterfacemap,
-            Map<Integer,String> ifindextoifnamemap,
-            Map<Integer,String> ifindextomacmap, 
-            Map<Integer,String> ifindextoifdescrmap,
-            Map<Integer,String> ifindextoifalias, 
-            Map<Integer,InetAddress>ifindextonetmaskmap)
+                     Map<InetAddress, Integer> ipinterfacemap,
+                     Map<Integer,String> ifindextoifnamemap,
+                     Map<Integer,String> ifindextomacmap,
+                     Map<Integer,String> ifindextoifdescrmap,
+                     Map<Integer,String> ifindextoifalias,
+                     Map<InetAddress,InetAddress>iptonetmaskmap)
     {
         NetworkBuilder nb = getNetworkBuilder();
         nb.addNode(name).setForeignSource("linkd").setForeignId(name).setSysObjectId(sysoid).setSysName(name).setType(NodeType.ACTIVE);
         final Map<Integer, SnmpInterfaceBuilder> ifindexsnmpbuildermap = new HashMap<>();
         for (Integer ifIndex: ifindextoifnamemap.keySet()) {
             ifindexsnmpbuildermap.put(ifIndex, nb.addSnmpInterface(ifIndex).
-                                      setIfType(6).
-                                      setIfName(ifindextoifnamemap.get(ifIndex)).
-                                      setIfAlias(getSuitableString(ifindextoifalias, ifIndex)).
-                                      setIfSpeed(100000000).
-                                      setPhysAddr(getSuitableString(ifindextomacmap, ifIndex)).setIfDescr(getSuitableString(ifindextoifdescrmap,ifIndex)));
+                    setIfType(6).
+                    setIfName(ifindextoifnamemap.get(ifIndex)).
+                    setIfAlias(getSuitableString(ifindextoifalias, ifIndex)).
+                    setIfSpeed(100000000).
+                    setPhysAddr(getSuitableString(ifindextomacmap, ifIndex)).setIfDescr(getSuitableString(ifindextoifdescrmap,ifIndex)));
         }
-        
-        for (InetAddress ipaddr: ipinterfacemap.keySet()) { 
+
+        for (InetAddress ipaddr: ipinterfacemap.keySet()) {
             String isSnmpPrimary="N";
             Integer ifIndex = ipinterfacemap.get(ipaddr);
             if (ipaddr.getHostAddress().equals(primaryip))
@@ -1466,19 +1474,19 @@ public abstract class NmsNetworkBuilder {
             if (ifIndex == null)
                 nb.addInterface(ipaddr.getHostAddress()).setIsSnmpPrimary(isSnmpPrimary).setIsManaged("M");
             else {
-                final InetAddress mask = getMask(ifindextonetmaskmap, ifIndex);
+                final InetAddress mask = iptonetmaskmap.get(ipaddr);
                 final String hostAddress = ipaddr.getHostAddress();
                 final SnmpInterfaceBuilder snmpBuilder = ifindexsnmpbuildermap.get(ifIndex);
                 nb.addInterface(hostAddress, snmpBuilder.getSnmpInterface())
-                    .setNetMask(mask)
-                    .setIsSnmpPrimary(isSnmpPrimary)
-                    .setIsManaged("M");
+                        .setNetMask(mask)
+                        .setIsSnmpPrimary(isSnmpPrimary)
+                        .setIsManaged("M");
             }
         }
-            
+
         return nb.getCurrentNode();
     }
-    
+
     private InetAddress getMask(Map<Integer, InetAddress> ifindextonetmaskmap, Integer ifIndex) {
         if (ifindextonetmaskmap.containsKey(ifIndex)) {
             return ifindextonetmaskmap.get(ifIndex);

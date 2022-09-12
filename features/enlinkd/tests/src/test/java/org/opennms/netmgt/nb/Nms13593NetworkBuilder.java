@@ -92,7 +92,7 @@ public class Nms13593NetworkBuilder extends NmsNetworkBuilder {
         ZHBGO1Zsr002_IF_IFALIAS_MAP.put(1140918299, "\"to-ZHAUWA1Zbb002 1/1/c36/3 Ref|708432|2393/KTN|-XV003-ODF 48 - 13+14\"");
 
 
-    } catch (Exception e) {
+    } catch (Exception ignored) {
         
     }
     }

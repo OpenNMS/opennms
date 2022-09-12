@@ -105,7 +105,7 @@ public class Nms13637NetworkBuilder extends NmsNetworkBuilder {
         MKT_CISCO_SW01_IF_IFALIAS_MAP.put(10, "");
 
 
-    } catch (Exception e) {
+    } catch (Exception ignored) {
         
     }
     }

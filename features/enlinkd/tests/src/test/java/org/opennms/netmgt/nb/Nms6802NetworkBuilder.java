@@ -43,7 +43,7 @@ public class Nms6802NetworkBuilder extends NmsNetworkBuilder {
             CISCOISIS_IP_IF_MAP.put(InetAddressUtils.addr("10.100.68.2"), 1);
             CISCOISIS_IF_IFNAME_MAP.put(1, "eth0/1");
             CISCOISIS_IF_IFDESCR_MAP.put(1, "ethernet0/1");
-            CISCOISIS_IF_NETMASK_MAP.put(1, InetAddressUtils.addr("255.255.255.0"));
+            CISCOISIS_IP_MK_MAP.put(InetAddressUtils.addr("10.100.68.2"), InetAddressUtils.addr("255.255.255.0"));
             CISCOISIS_IF_MAC_MAP.put(1, "00d1590e4310");
 
         } catch (Exception e) {
@@ -52,6 +52,6 @@ public class Nms6802NetworkBuilder extends NmsNetworkBuilder {
     }
     
     public OnmsNode getCiscoIosXrRouter() {
-        return getNode(CISCOISIS_NAME,CISCOISIS_SYSOID,CISCOISIS_IP,CISCOISIS_IP_IF_MAP,CISCOISIS_IF_IFNAME_MAP,CISCOISIS_IF_MAC_MAP,CISCOISIS_IF_IFDESCR_MAP,CISCOISIS_IF_IFALIAS_MAP, CISCOISIS_IF_NETMASK_MAP);
+        return getNode(CISCOISIS_NAME,CISCOISIS_SYSOID,CISCOISIS_IP,CISCOISIS_IP_IF_MAP,CISCOISIS_IF_IFNAME_MAP,CISCOISIS_IF_MAC_MAP,CISCOISIS_IF_IFDESCR_MAP,CISCOISIS_IF_IFALIAS_MAP, CISCOISIS_IP_MK_MAP);
     }    
 }

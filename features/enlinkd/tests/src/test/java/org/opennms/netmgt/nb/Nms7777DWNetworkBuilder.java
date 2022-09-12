@@ -43,7 +43,7 @@ public class Nms7777DWNetworkBuilder extends NmsNetworkBuilder {
     DW_IP_IF_MAP.put(InetAddressUtils.addr("10.103.1.1"), 1);
     DW_IF_IFNAME_MAP.put(1, "dw-1/1/1");
     DW_IF_IFDESCR_MAP.put(1, "dragon-wave-1/1/1");
-    DW_IF_NETMASK_MAP.put(1, InetAddressUtils.addr("255.255.255.0"));
+    DW_IP_MK_MAP.put(InetAddressUtils.addr("10.103.1.1"), InetAddressUtils.addr("255.255.255.0"));
     DW_IF_MAC_MAP.put(1, "00d1590e43e9");
 
     } catch (Exception e) {
@@ -52,6 +52,6 @@ public class Nms7777DWNetworkBuilder extends NmsNetworkBuilder {
     }
     
     public OnmsNode getDragonWaveRouter() {
-        return getNode(DW_NAME,DW_SYSOID,DW_IP,DW_IP_IF_MAP,DW_IF_IFNAME_MAP,DW_IF_MAC_MAP,DW_IF_IFDESCR_MAP,DW_IF_IFALIAS_MAP);
+        return getNode(DW_NAME,DW_SYSOID,DW_IP,DW_IP_IF_MAP,DW_IF_IFNAME_MAP,DW_IF_MAC_MAP,DW_IF_IFDESCR_MAP,DW_IF_IFALIAS_MAP, DW_IP_MK_MAP);
     }    
 }

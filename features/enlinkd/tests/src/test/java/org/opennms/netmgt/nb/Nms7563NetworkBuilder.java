@@ -43,13 +43,15 @@ public class Nms7563NetworkBuilder extends NmsNetworkBuilder {
     HOMESERVER_IP_IF_MAP.put(InetAddressUtils.addr("192.168.87.16"), 4);
     HOMESERVER_IP_IF_MAP.put(InetAddressUtils.addr("192.168.88.1"), 2);
     HOMESERVER_IP_IF_MAP.put(InetAddressUtils.addr("2001:4dd0:ff00:074f:0000:0000:0000:0002"), 6);
-    
+    HOMESERVER_IP_MK_MAP.put(InetAddressUtils.addr("192.168.88.1"), InetAddressUtils.addr("255.255.255.0"));
+    HOMESERVER_IP_MK_MAP.put(InetAddressUtils.addr("192.168.87.16"), InetAddressUtils.addr("255.255.255.0"));
+    HOMESERVER_IP_MK_MAP.put(InetAddressUtils.addr("2001:4dd0:ff00:074f:0000:0000:0000:0002"), InetAddressUtils.addr("ffff:ffff:ffff:ffff:0000:0000:0000:0000"));
+
     HOMESERVER_IF_IFNAME_MAP.put(1, "lo");
     HOMESERVER_IF_IFDESCR_MAP.put(1, "lo");
 
     HOMESERVER_IF_IFNAME_MAP.put(2, "eth0");
     HOMESERVER_IF_IFDESCR_MAP.put(2, "eth0");
-    HOMESERVER_IF_NETMASK_MAP.put(2, InetAddressUtils.addr("255.255.255.0"));
     HOMESERVER_IF_MAC_MAP.put(2, "001ff207994f");
 
     HOMESERVER_IF_IFNAME_MAP.put(3, "eth1");
@@ -58,7 +60,6 @@ public class Nms7563NetworkBuilder extends NmsNetworkBuilder {
 
     HOMESERVER_IF_IFNAME_MAP.put(4, "wlan0");
     HOMESERVER_IF_IFDESCR_MAP.put(4, "wlan0");
-    HOMESERVER_IF_NETMASK_MAP.put(4, InetAddressUtils.addr("255.255.255.0"));
     HOMESERVER_IF_MAC_MAP.put(4, "801f02f72c9d");
 
     HOMESERVER_IF_IFNAME_MAP.put(5, "sit0");
@@ -66,13 +67,12 @@ public class Nms7563NetworkBuilder extends NmsNetworkBuilder {
     
     HOMESERVER_IF_IFNAME_MAP.put(6, "sixxs");
     HOMESERVER_IF_IFDESCR_MAP.put(6, "sixxs");
-    HOMESERVER_IF_NETMASK_MAP.put(6, InetAddressUtils.addr("ffff:ffff:ffff:ffff:0000:0000:0000:0000"));
 
     
     CISCO01_IP_IF_MAP.put(InetAddressUtils.addr("192.168.88.240"), 1);
     CISCO01_IF_IFNAME_MAP.put(1, "Vl1");
     CISCO01_IF_IFDESCR_MAP.put(1, "Vlan1");
-    CISCO01_IF_NETMASK_MAP.put(1, InetAddressUtils.addr("255.255.255.0"));
+    CISCO01_IP_MK_MAP.put(InetAddressUtils.addr("192.168.88.240"), InetAddressUtils.addr("255.255.255.0"));
     CISCO01_IF_MAC_MAP.put(1, "aca016bf0240");
 
     CISCO01_IF_IFNAME_MAP.put(10001, "Fa0/1");
@@ -196,9 +196,9 @@ public class Nms7563NetworkBuilder extends NmsNetworkBuilder {
     SWITCH02_IF_MAC_MAP.put(26, "001db3c50966");
 
     SWITCH02_IP_IF_MAP.put(InetAddressUtils.addr("192.168.88.241"), 57);
+    SWITCH02_IP_MK_MAP.put(InetAddressUtils.addr("192.168.88.241"), InetAddressUtils.addr("255.255.255.0"));
     SWITCH02_IF_IFNAME_MAP.put(57, "DEFAULT_VLAN");
     SWITCH02_IF_IFDESCR_MAP.put(57, "DEFAULT_VLAN");
-    SWITCH02_IF_NETMASK_MAP.put(57, InetAddressUtils.addr("255.255.255.0"));
     SWITCH02_IF_MAC_MAP.put(57, "001db3c50960");
 
     SWITCH02_IF_IFNAME_MAP.put(66, "VLAN10");
@@ -209,21 +209,21 @@ public class Nms7563NetworkBuilder extends NmsNetworkBuilder {
     SWITCH02_IF_IFDESCR_MAP.put(4152, "HP ProCurve Switch software loopback interface");
 
 
-    } catch (Exception e) {
+    } catch (Exception ignored) {
         
     }
     }
     
     public OnmsNode getHomeServer() {
-        return getNode(HOMESERVER_NAME,HOMESERVER_SYSOID,HOMESERVER_IP,HOMESERVER_IP_IF_MAP,HOMESERVER_IF_IFNAME_MAP,HOMESERVER_IF_MAC_MAP,HOMESERVER_IF_IFDESCR_MAP,HOMESERVER_IF_IFALIAS_MAP, HOMESERVER_IF_NETMASK_MAP);
+        return getNode(HOMESERVER_NAME,HOMESERVER_SYSOID,HOMESERVER_IP,HOMESERVER_IP_IF_MAP,HOMESERVER_IF_IFNAME_MAP,HOMESERVER_IF_MAC_MAP,HOMESERVER_IF_IFDESCR_MAP,HOMESERVER_IF_IFALIAS_MAP, HOMESERVER_IP_MK_MAP);
     }    
     
     public OnmsNode getSwitch02() {
-        return getNode(SWITCH02_NAME,SWITCH02_SYSOID,SWITCH02_IP,SWITCH02_IP_IF_MAP,SWITCH02_IF_IFNAME_MAP,SWITCH02_IF_MAC_MAP,SWITCH02_IF_IFDESCR_MAP,SWITCH02_IF_IFALIAS_MAP,SWITCH02_IF_NETMASK_MAP);
+        return getNode(SWITCH02_NAME,SWITCH02_SYSOID,SWITCH02_IP,SWITCH02_IP_IF_MAP,SWITCH02_IF_IFNAME_MAP,SWITCH02_IF_MAC_MAP,SWITCH02_IF_IFDESCR_MAP,SWITCH02_IF_IFALIAS_MAP,SWITCH02_IP_MK_MAP);
     }    
 
     public OnmsNode getCisco01() {
-        return getNode(CISCO01_NAME,CISCO01_SYSOID,CISCO01_IP,CISCO01_IP_IF_MAP,CISCO01_IF_IFNAME_MAP,CISCO01_IF_MAC_MAP,CISCO01_IF_IFDESCR_MAP,CISCO01_IF_IFALIAS_MAP,CISCO01_IF_NETMASK_MAP);
+        return getNode(CISCO01_NAME,CISCO01_SYSOID,CISCO01_IP,CISCO01_IP_IF_MAP,CISCO01_IF_IFNAME_MAP,CISCO01_IF_MAC_MAP,CISCO01_IF_IFDESCR_MAP,CISCO01_IF_IFALIAS_MAP,CISCO01_IP_MK_MAP);
     }    
 
 }
