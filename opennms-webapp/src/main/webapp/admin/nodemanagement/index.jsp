@@ -132,8 +132,8 @@
   </p>
 
   <p>
-    <a href="admin/nodemanagement/remoteDesktopOptions.jsp?node=<%=nodeId%>">
-      Remote Desktop</a>
+    <a href="admin/nodemanagement/remoteConnectionOptions.jsp?node=<%=nodeId%>">
+      Remote Connection</a>
   </p>
 
       <% if ("true".equalsIgnoreCase(Vault.getProperty("opennms.rancidIntegrationEnabled"))) { %>

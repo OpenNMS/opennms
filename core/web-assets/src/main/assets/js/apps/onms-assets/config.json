@@ -479,7 +479,7 @@
           "class": "col-md-6",
           "panels": [
             {
-              "title": "Guacamole Remote Desktop",
+              "title": "Guacamole Remote Connection",
               "fields": [
                 {
                   "label": "Guacd Hostname",
@@ -513,7 +513,7 @@
                 },
                 {
                   "label": "SSH Port",
-                  "tooltip": "The port of the running VNC service running on the node",
+                  "tooltip": "The port of the running SSH service running on the node",
                   "model": "sshPort",
                   "type": "text"
                 },

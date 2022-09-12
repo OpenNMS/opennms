@@ -79,7 +79,7 @@
         const protocolValue = document.getElementById("rdRrotocolSelect").value;
         const ipAddressValue = document.getElementById("ipAddressSelect").value;
 
-        window.location.href="admin/nodemanagement/remoteDesktop.jsp?node=<%=nodeId%>&protocol=" + protocolValue + "&ipAddress=" + ipAddressValue;
+        window.location.href="admin/nodemanagement/remoteConnection.jsp?node=<%=nodeId%>&protocol=" + protocolValue + "&ipAddress=" + ipAddressValue;
     }
 </script>
 
