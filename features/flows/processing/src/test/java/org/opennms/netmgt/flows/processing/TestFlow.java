@@ -73,6 +73,7 @@ public class TestFlow implements Flow {
     private NetflowVersion netflowVersion;
     private Integer vlan;
     private String nodeIdentifier;
+    private String application;
 
 
     @Override
@@ -388,5 +389,14 @@ public class TestFlow implements Flow {
 
     public void setNodeIdentifier(final String nodeIdentifier) {
         this.nodeIdentifier = nodeIdentifier;
+    }
+
+    @Override
+    public String getApplication() {
+        return this.application;
+    }
+
+    public void setApplication(final String application) {
+        this.application = application;
     }
 }

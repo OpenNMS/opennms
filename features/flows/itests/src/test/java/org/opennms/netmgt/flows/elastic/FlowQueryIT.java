@@ -87,9 +87,6 @@ import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.flows.api.FlowSource;
 import org.opennms.netmgt.flows.api.Host;
 import org.opennms.netmgt.flows.api.LimitedCardinalityField;
-import org.opennms.netmgt.flows.classification.dto.RuleDTO;
-import org.opennms.netmgt.flows.classification.internal.DefaultClassificationEngine;
-import org.opennms.netmgt.flows.classification.persistence.api.RuleBuilder;
 import org.opennms.netmgt.flows.api.TrafficSummary;
 import org.opennms.netmgt.flows.elastic.agg.AggregatedFlowQueryService;
 import org.opennms.netmgt.flows.processing.FlowBuilder;
@@ -137,19 +134,11 @@ public class FlowQueryIT {
         flowRepository = new ElasticFlowRepository(metricRegistry, client, IndexStrategy.MONTHLY,
                 new MockIdentity(), new MockTracerRegistry(), settings, 0, 0);
 
-        final var classificationEngine = new DefaultClassificationEngine();
-        classificationEngine.load(Lists.newArrayList(
-                RuleDTO.builder().withName("http").withDstPort("80").withProtocols(6, 17).build(),
-                RuleDTO.builder().withName("https").withDstPort("443").withProtocols(6, 17).build(),
-                RuleDTO.builder().withName("http").withSrcPort("80").withProtocols(6, 17).build(),
-                RuleDTO.builder().withName("https").withSrcPort("443").withProtocols(6, 17).build()));
-
         documentEnricher = new DocumentEnricherImpl(metricRegistry,
                                                     new MockNodeDao(),
                                                     new MockIpInterfaceDao(),
                                                     new MockInterfaceToNodeCache(),
                                                     new MockSessionUtils(),
-                                                    classificationEngine,
                                                     new CacheConfigBuilder()
                                                                   .withName("flows.node")
                                                                   .withMaximumSize(1000)

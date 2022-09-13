@@ -279,4 +279,9 @@ public class NetflowMessage implements Flow {
         }
         return null;
     }
+
+    @Override
+    public String getApplication() {
+        return this.flowMessageProto.getApplication();
+    }
 }

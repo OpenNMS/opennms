@@ -122,7 +122,10 @@ public abstract class AbstractFlowAdapter<P> implements Adapter {
 
                     flowPackets += 1;
 
-                    final List<Flow> converted = this.convert(flowPacket, Instant.ofEpochMilli(eachMessage.getTimestamp()));
+                    final List<Flow> converted = this.convert(flowPacket,
+                                                              ProcessingContext.builder(messageLog)
+                                                                               .withReceivedAt(Instant.ofEpochMilli(eachMessage.getTimestamp()))
+                                                                               .build());
                     flows.addAll(converted);
 
                     this.entriesConverted.mark(converted.size());
@@ -159,7 +162,7 @@ public abstract class AbstractFlowAdapter<P> implements Adapter {
 
     protected abstract P parse(TelemetryMessageLogEntry message);
 
-    protected abstract List<Flow> convert(final P packet, final Instant receivedAt);
+    protected abstract List<Flow> convert(final P packet, ProcessingContext context);
 
     public void destroy() {
         // not needed
@@ -193,5 +196,78 @@ public abstract class AbstractFlowAdapter<P> implements Adapter {
 
     public void setApplicationDataCollection(final boolean applicationDataCollection) {
         this.applicationDataCollection = applicationDataCollection;
+    }
+
+    public static class ProcessingContext {
+        public final String location;
+        public final String systemId;
+        public final String sourceAddress;
+        public final int sourcePort;
+
+        public final Instant receivedAt;
+
+        public ProcessingContext(final Builder builder) {
+            this.location = Objects.requireNonNull(builder.location);
+            this.systemId = Objects.requireNonNull(builder.systemId);
+            this.sourceAddress = Objects.requireNonNull(builder.sourceAddress);
+            this.sourcePort = builder.sourcePort;
+            this.receivedAt = Objects.requireNonNull(builder.receivedAt);
+        }
+
+        public static class Builder {
+            private String location = "Default";
+            private String systemId;
+            private String sourceAddress;
+            private int sourcePort;
+
+            private Instant receivedAt = Instant.now();
+
+            private Builder() {
+            }
+
+            public Builder(final TelemetryMessageLog messageLog) {
+                this.location = location;
+                this.systemId = systemId;
+                this.sourceAddress = sourceAddress;
+                this.sourcePort = sourcePort;
+            }
+
+            public Builder withLocation(final String location) {
+                this.location = location;
+                return this;
+            }
+
+            public Builder withSystemId(final String systemId) {
+                this.systemId = systemId;
+                return this;
+            }
+
+            public Builder withSourceAddress(final String sourceAddress) {
+                this.sourceAddress = sourceAddress;
+                return this;
+            }
+
+            public Builder withSourcePort(final int sourcePort) {
+                this.sourcePort = sourcePort;
+                return this;
+            }
+
+            public Builder withReceivedAt(final Instant receivedAt) {
+                this.receivedAt = receivedAt;
+                return this;
+            }
+
+            public ProcessingContext build() {
+                return new ProcessingContext(this);
+            }
+        }
+
+        public static Builder builder() {
+            return new Builder();
+        }
+
+        public static Builder builder(final TelemetryMessageLog messageLog) {
+            return new Builder(messageLog);
+        }
     }
 }

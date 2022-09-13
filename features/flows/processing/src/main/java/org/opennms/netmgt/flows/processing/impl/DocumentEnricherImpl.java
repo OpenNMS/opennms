@@ -79,8 +79,6 @@ public class DocumentEnricherImpl {
 
     private final SessionUtils sessionUtils;
 
-    private final ClassificationEngine classificationEngine;
-
     // Caches NodeDocument data for a given node Id.
     private final Cache<InterfaceToNodeCache.Entry, Optional<NodeInfo>> nodeInfoCache;
 
@@ -98,7 +96,6 @@ public class DocumentEnricherImpl {
                                 final IpInterfaceDao ipInterfaceDao,
                                 final InterfaceToNodeCache interfaceToNodeCache,
                                 final SessionUtils sessionUtils,
-                                final ClassificationEngine classificationEngine,
                                 final CacheConfig cacheConfig,
                                 final long clockSkewCorrectionThreshold,
                                 final DocumentMangler mangler) {
@@ -106,7 +103,6 @@ public class DocumentEnricherImpl {
         this.ipInterfaceDao = Objects.requireNonNull(ipInterfaceDao);
         this.interfaceToNodeCache = Objects.requireNonNull(interfaceToNodeCache);
         this.sessionUtils = Objects.requireNonNull(sessionUtils);
-        this.classificationEngine = Objects.requireNonNull(classificationEngine);
 
         this.nodeInfoCache = new CacheBuilder()
                 .withConfig(cacheConfig)
@@ -171,14 +167,6 @@ public class DocumentEnricherImpl {
                 document.setFlowLocality(EnrichedFlow.Locality.PUBLIC);
             } else if (EnrichedFlow.Locality.PRIVATE.equals(document.getDstLocality()) || EnrichedFlow.Locality.PRIVATE.equals(document.getSrcLocality())) {
                 document.setFlowLocality(EnrichedFlow.Locality.PRIVATE);
-            }
-
-            final ClassificationRequest classificationRequest = createClassificationRequest(document);
-
-            // Check whether classification is possible
-            if (classificationRequest.isClassifiable()) {
-                // Apply Application mapping
-                document.setApplication(classificationEngine.classify(classificationRequest));
             }
 
             // Fix skewed clock
@@ -306,19 +294,6 @@ public class DocumentEnricherImpl {
             return Optional.of(nodeDocument);
         }
         return Optional.empty();
-    }
-
-    public static ClassificationRequest createClassificationRequest(EnrichedFlow document) {
-        final ClassificationRequest request = new ClassificationRequest();
-        request.setProtocol(document.getProtocol());
-        request.setLocation(document.getLocation());
-        request.setExporterAddress(document.getHost());
-        request.setDstAddress(document.getDstAddr());
-        request.setDstPort(document.getDstPort());
-        request.setSrcAddress(document.getSrcAddr());
-        request.setSrcPort(document.getSrcPort());
-
-        return request;
     }
 
     private CacheConfig buildMetadataCacheConfig(CacheConfig cacheConfig) {

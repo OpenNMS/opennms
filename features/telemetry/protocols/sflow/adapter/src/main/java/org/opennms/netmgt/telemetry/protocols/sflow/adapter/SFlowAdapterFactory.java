@@ -30,6 +30,7 @@ package org.opennms.netmgt.telemetry.protocols.sflow.adapter;
 
 import java.util.Objects;
 
+import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.flows.processing.Pipeline;
 import org.opennms.netmgt.telemetry.api.adapter.Adapter;
 import org.opennms.netmgt.telemetry.api.adapter.AdapterFactory;
@@ -38,6 +39,8 @@ import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
 
 public class SFlowAdapterFactory implements AdapterFactory {
     private TelemetryRegistry telemetryRegistry;
+
+    private ClassificationEngine classificationEngine;
     private Pipeline pipeline;
 
     @Override
@@ -48,15 +51,21 @@ public class SFlowAdapterFactory implements AdapterFactory {
     @Override
     public Adapter createBean(final AdapterDefinition adapterConfig) {
         Objects.requireNonNull(this.telemetryRegistry);
+        Objects.requireNonNull(this.classificationEngine);
         Objects.requireNonNull(this.pipeline);
 
         return new SFlowAdapter(adapterConfig,
                                 this.telemetryRegistry.getMetricRegistry(),
+                                this.classificationEngine,
                                 this.pipeline);
     }
 
     public void setTelemetryRegistry(TelemetryRegistry telemetryRegistry) {
         this.telemetryRegistry = telemetryRegistry;
+    }
+
+    public void setClassificationEngine(final ClassificationEngine classificationEngine) {
+        this.classificationEngine = classificationEngine;
     }
 
     public void setPipeline(final Pipeline pipeline) {
