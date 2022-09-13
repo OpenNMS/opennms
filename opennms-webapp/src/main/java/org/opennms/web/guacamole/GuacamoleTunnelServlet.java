@@ -51,7 +51,6 @@ public class GuacamoleTunnelServlet extends GuacamoleHTTPTunnelServlet {
     public static final String PROTOCOL_RDP = "rdp";
     public static final String PROTOCOL_SSH = "ssh";
     public static final String PROTOCOL_TELNET = "telnet";
-    public static final String PROTOCOL_KUBERNETES = "kubernetes";
     public static final String HEADER_GUACD_HOSTNAME = "X-Guacd-Hostname";
     public static final String HEADER_GUACD_PORT = "X-Guacd-Port";
     public static final String HEADER_CONNECTION_PROTOCOL = "X-Connection-Protocol";
@@ -118,10 +117,6 @@ public class GuacamoleTunnelServlet extends GuacamoleHTTPTunnelServlet {
                 config.setParameter(KEY_CONFIG_PORT, getHeader(request, HEADER_TELNET_PORT, DEFAULT_TELNET_PORT));
                 config.setParameter(KEY_CONFIG_USERNAME, getHeader(request, HEADER_TELNET_USERNAME, null));
                 config.setParameter(KEY_CONFIG_PASSWORD, getHeader(request, HEADER_TELNET_PASSWORD, null));
-                break;
-            }
-            case PROTOCOL_KUBERNETES: {
-
                 break;
             }
             default: {

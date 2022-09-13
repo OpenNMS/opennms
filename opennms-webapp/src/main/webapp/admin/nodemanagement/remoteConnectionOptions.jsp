@@ -93,7 +93,6 @@
             <option value="rdp">RDP</option>
             <option value="ssh">SSH</option>
             <option value="telnet">Telnet</option>
-            <option value="kubernetes">Kubernetes (todo)</option>
         </select>
     </div>
 

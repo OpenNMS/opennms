@@ -293,12 +293,6 @@
 <%
             break;
         }
-        case PROTOCOL_KUBERNETES: {
-%>
-            alert("Kubernetes not implemented yet!");
-<%
-            break;
-        }
     }
 %>
 
