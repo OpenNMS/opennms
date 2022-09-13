@@ -8,7 +8,7 @@
     <changeSet author="tbigg" id="devjam-guacamole">
         <preConditions onFail="MARK_RAN">
             <not>
-                <columnExists tableName="assets" columnName="vncpassword"/>
+                <columnExists tableName="assets" columnName="sshpassword"/>
             </not>
         </preConditions>
 
