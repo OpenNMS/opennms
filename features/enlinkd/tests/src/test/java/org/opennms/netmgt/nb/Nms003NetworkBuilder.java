@@ -28,6 +28,10 @@
 
 package org.opennms.netmgt.nb;
 
+import java.net.InetAddress;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsNode;
 
@@ -38,6 +42,46 @@ import org.opennms.netmgt.model.OnmsNode;
  */
 
 public class Nms003NetworkBuilder extends NmsNetworkBuilder {
+    public static final String SWITCH1_SNMP_RESOURCE_003 = "classpath:/linkd/nms003/switch1-walk.txt";
+    public static final String SWITCH2_SNMP_RESOURCE_003 = "classpath:/linkd/nms003/switch2-walk.txt";
+    public static final String SWITCH3_SNMP_RESOURCE_003 = "classpath:/linkd/nms003/switch3-walk.txt";
+
+    public static final String SWITCH1_IP = "172.16.10.1";
+    public static final String SWITCH1_NAME = "Switch1";
+    public static final String SWITCH1_SYSOID = ".1.3.6.1.4.1.9.1.614";
+    //public static final String SWITCH1_LLDP_CHASSISID = "0016c8bd4d80";
+
+    public static final Map<InetAddress,InetAddress> SWITCH1_IP_MK_MAP =  new HashMap<>();
+    public static final Map<InetAddress,Integer> SWITCH1_IP_IF_MAP =  new HashMap<>();
+    public static final Map<Integer,String> SWITCH1_IF_IFNAME_MAP = new HashMap<>();
+    public static final Map<Integer,String> SWITCH1_IF_IFDESCR_MAP = new HashMap<>();
+    public static final Map<Integer,String> SWITCH1_IF_MAC_MAP = new HashMap<>();
+    public static final Map<Integer,String> SWITCH1_IF_IFALIAS_MAP = new HashMap<>();
+
+    public static final String SWITCH2_IP = "172.16.10.2";
+    public static final String SWITCH2_NAME = "Switch2";
+    public static final String SWITCH2_SYSOID = ".1.3.6.1.4.1.9.1.696";
+    //public static final String SWITCH2_LLDP_CHASSISID = "0016c894aa80";
+
+    public static final Map<InetAddress,InetAddress> SWITCH2_IP_MK_MAP =  new HashMap<>();
+    public static final Map<InetAddress,Integer> SWITCH2_IP_IF_MAP =  new HashMap<>();
+    public static final Map<Integer,String> SWITCH2_IF_IFNAME_MAP = new HashMap<>();
+    public static final Map<Integer,String> SWITCH2_IF_IFDESCR_MAP = new HashMap<>();
+    public static final Map<Integer,String> SWITCH2_IF_MAC_MAP = new HashMap<>();
+    public static final Map<Integer,String> SWITCH2_IF_IFALIAS_MAP = new HashMap<>();
+
+    public static final String SWITCH3_IP = "172.16.10.3";
+    public static final String SWITCH3_NAME = "Switch3";
+    public static final String SWITCH3_SYSOID = ".1.3.6.1.4.1.9.1.716";
+    //spublic static final String SWITCH3_LLDP_CHASSISID = "f4ea67ebdc00";
+
+    public static final Map<InetAddress,InetAddress> SWITCH3_IP_MK_MAP =  new HashMap<>();
+    public static final Map<InetAddress,Integer> SWITCH3_IP_IF_MAP =  new HashMap<>();
+    public static final Map<Integer,String> SWITCH3_IF_IFNAME_MAP = new HashMap<>();
+    public static final Map<Integer,String> SWITCH3_IF_IFDESCR_MAP = new HashMap<>();
+    public static final Map<Integer,String> SWITCH3_IF_MAC_MAP = new HashMap<>();
+    public static final Map<Integer,String> SWITCH3_IF_IFALIAS_MAP = new HashMap<>();
+
     static {
         SWITCH1_IP_IF_MAP.put(InetAddressUtils.addr("192.168.100.246"), 10101);
         SWITCH1_IP_IF_MAP.put(InetAddressUtils.addr("172.16.40.1"), 40);

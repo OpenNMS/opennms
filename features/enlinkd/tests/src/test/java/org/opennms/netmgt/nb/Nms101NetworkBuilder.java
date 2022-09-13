@@ -28,10 +28,123 @@
 
 package org.opennms.netmgt.nb;
 
+import java.net.InetAddress;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsNode;
 
 public class Nms101NetworkBuilder extends NmsNetworkBuilder {
+
+	//Nms101
+
+	//public static final String LAPTOP_SNMP_RESOURCE = "classpath:/linkd/nms101/laptop.properties";
+	public static final String LAPTOP_IP = "10.1.1.2";
+	public static final String LAPTOP_NAME = "laptop";
+	public static final String LAPTOP_SYSOID = ".1.3.6.1.4.1.8072.3.2.255";
+
+	public static final Map<InetAddress,Integer> LAPTOP_IP_IF_MAP =  new HashMap<>();
+	public static final Map<Integer,String> LAPTOP_IF_IFNAME_MAP = new HashMap<>();
+	public static final Map<Integer,String> LAPTOP_IF_IFDESCR_MAP = new HashMap<>();
+	public static final Map<Integer,String> LAPTOP_IF_MAC_MAP = new HashMap<>();
+	public static final Map<Integer,String> LAPTOP_IF_IFALIAS_MAP = new HashMap<>();
+	public static final Map<InetAddress,InetAddress> LAPTOP_IP_MK_MAP = new HashMap<>();
+
+	//public static final String CISCO7200A_SNMP_RESOURCE = "classpath:/linkd/nms101/cisco7200a.properties";
+	public static final String CISCO7200A_IP = "10.1.1.1";
+	public static final String CISCO7200A_NAME = "cisco7200ATM.befunk.com";
+	public static final String CISCO7200A_SYSOID = ".1.3.6.1.4.1.9.1.222";
+
+	public static final Map<InetAddress,Integer> CISCO7200A_IP_IF_MAP =  new HashMap<>();
+	public static final Map<Integer,String> CISCO7200A_IF_IFNAME_MAP = new HashMap<>();
+	public static final Map<Integer,String> CISCO7200A_IF_IFDESCR_MAP = new HashMap<>();
+	public static final Map<Integer,String> CISCO7200A_IF_MAC_MAP = new HashMap<>();
+	public static final Map<Integer,String> CISCO7200A_IF_IFALIAS_MAP = new HashMap<>();
+	public static final Map<InetAddress,InetAddress> CISCO7200A_IP_MK_MAP = new HashMap<>();
+
+	//public static final String CISCO7200B_SNMP_RESOURCE = "classpath:/linkd/nms101/cisco7200b.properties";
+	public static final String CISCO7200B_IP = "10.1.2.2";
+	public static final String CISCO7200B_NAME = "cisco7200";
+	public static final String CISCO7200B_SYSOID = ".1.3.6.1.4.1.9.1.222";
+
+	public static final Map<InetAddress,Integer> CISCO7200B_IP_IF_MAP =  new HashMap<>();
+	public static final Map<Integer,String> CISCO7200B_IF_IFNAME_MAP = new HashMap<>();
+	public static final Map<Integer,String> CISCO7200B_IF_IFDESCR_MAP = new HashMap<>();
+	public static final Map<Integer,String> CISCO7200B_IF_MAC_MAP = new HashMap<>();
+	public static final Map<Integer,String> CISCO7200B_IF_IFALIAS_MAP = new HashMap<>();
+	public static final Map<InetAddress,InetAddress> CISCO7200B_IP_MK_MAP = new HashMap<>();
+
+	//public static final String CISCO3700_SNMP_RESOURCE = "classpath:/linkd/nms101/cisco3700.properties";
+	public static final String CISCO3700_IP = "10.1.3.2";
+	public static final String CISCO3700_NAME = "cisco3700";
+	public static final String CISCO3700_SYSOID = ".1.3.6.1.4.1.9.1.122";
+
+	public static final Map<InetAddress,Integer> CISCO3700_IP_IF_MAP =  new HashMap<>();
+	public static final Map<Integer,String> CISCO3700_IF_IFNAME_MAP = new HashMap<>();
+	public static final Map<Integer,String> CISCO3700_IF_IFDESCR_MAP = new HashMap<>();
+	public static final Map<Integer,String> CISCO3700_IF_MAC_MAP = new HashMap<>();
+	public static final Map<Integer,String> CISCO3700_IF_IFALIAS_MAP = new HashMap<>();
+	public static final Map<InetAddress,InetAddress> CISCO3700_IP_MK_MAP = new HashMap<>();
+
+	//public static final String CISCO2691_SNMP_RESOURCE = "classpath:/linkd/nms101/cisco2691.properties";
+	public static final String CISCO2691_IP = "10.1.4.2";
+	public static final String CISCO2691_NAME = "cisco2691";
+	public static final String CISCO2691_SYSOID = ".1.3.6.1.4.1.9.1.122";
+
+	public static final Map<InetAddress,Integer> CISCO2691_IP_IF_MAP =  new HashMap<>();
+	public static final Map<Integer,String> CISCO2691_IF_IFNAME_MAP = new HashMap<>();
+	public static final Map<Integer,String> CISCO2691_IF_IFDESCR_MAP = new HashMap<>();
+	public static final Map<Integer,String> CISCO2691_IF_MAC_MAP = new HashMap<>();
+	public static final Map<Integer,String> CISCO2691_IF_IFALIAS_MAP = new HashMap<>();
+	public static final Map<InetAddress,InetAddress> CISCO2691_IP_MK_MAP = new HashMap<>();
+
+	//public static final String CISCO1700B_SNMP_RESOURCE = "classpath:/linkd/nms101/cisco1700b.properties";
+	public static final String CISCO1700B_IP = "10.1.5.1";
+	public static final String CISCO1700B_NAME = "cisco1700b";
+	public static final String CISCO1700B_SYSOID = ".1.3.6.1.4.1.9.1.200";
+
+	public static final Map<InetAddress,Integer> CISCO1700B_IP_IF_MAP =  new HashMap<>();
+	public static final Map<Integer,String> CISCO1700B_IF_IFNAME_MAP = new HashMap<>();
+	public static final Map<Integer,String> CISCO1700B_IF_IFDESCR_MAP = new HashMap<>();
+	public static final Map<Integer,String> CISCO1700B_IF_MAC_MAP = new HashMap<>();
+	public static final Map<Integer,String> CISCO1700B_IF_IFALIAS_MAP = new HashMap<>();
+	public static final Map<InetAddress,InetAddress> CISCO1700B_IP_MK_MAP = new HashMap<>();
+
+	//public static final String CISCO3600_SNMP_RESOURCE = "classpath:/linkd/nms101/cisco3600.properties";
+	public static final String CISCO3600_IP = "10.1.6.2";
+	public static final String CISCO3600_NAME = "cisco3600";
+	public static final String CISCO3600_SYSOID = ".1.3.6.1.4.1.9.1.122";
+
+	public static final Map<InetAddress,Integer> CISCO3600_IP_IF_MAP =  new HashMap<>();
+	public static final Map<Integer,String> CISCO3600_IF_IFNAME_MAP = new HashMap<>();
+	public static final Map<Integer,String> CISCO3600_IF_IFDESCR_MAP = new HashMap<>();
+	public static final Map<Integer,String> CISCO3600_IF_MAC_MAP = new HashMap<>();
+	public static final Map<Integer,String> CISCO3600_IF_IFALIAS_MAP = new HashMap<>();
+	public static final Map<InetAddress,InetAddress> CISCO3600_IP_MK_MAP = new HashMap<>();
+
+	//public static final String CISCO1700_SNMP_RESOURCE = "classpath:/linkd/nms101/cisco1700.properties";
+	public static final String CISCO1700_IP = "10.1.5.2";
+	public static final String CISCO1700_NAME = "cisco1700";
+	public static final String CISCO1700_SYSOID = ".1.3.6.1.4.1.9.1.200";
+
+	public static final Map<InetAddress,Integer> CISCO1700_IP_IF_MAP =  new HashMap<>();
+	public static final Map<Integer,String> CISCO1700_IF_IFNAME_MAP = new HashMap<>();
+	public static final Map<Integer,String> CISCO1700_IF_IFDESCR_MAP = new HashMap<>();
+	public static final Map<Integer,String> CISCO1700_IF_MAC_MAP = new HashMap<>();
+	public static final Map<Integer,String> CISCO1700_IF_IFALIAS_MAP = new HashMap<>();
+	public static final Map<InetAddress,InetAddress> CISCO1700_IP_MK_MAP = new HashMap<>();
+
+	public static final String EXAMPLECOM_IP = "192.168.1.10";
+	public static final String EXAMPLECOM_NAME = "test.example.com";
+	public static final String EXAMPLECOM_SYSOID = ".1.3.6.1.4.1.1724.81";
+
+	public static final Map<InetAddress,Integer> EXAMPLECOM_IP_IF_MAP =  new HashMap<>();
+	public static final Map<Integer,String> EXAMPLECOM_IF_IFNAME_MAP = new HashMap<>();
+	public static final Map<Integer,String> EXAMPLECOM_IF_IFDESCR_MAP = new HashMap<>();
+	public static final Map<Integer,String> EXAMPLECOM_IF_MAC_MAP = new HashMap<>();
+	public static final Map<Integer,String> EXAMPLECOM_IF_IFALIAS_MAP = new HashMap<>();
+	public static final Map<InetAddress,InetAddress> EXAMPLECOM_IP_MK_MAP = new HashMap<>();
     static {
 		LAPTOP_IP_IF_MAP.put(InetAddressUtils.addr("127.0.0.1"), 1);
     	LAPTOP_IP_IF_MAP.put(InetAddressUtils.addr("172.16.8.1"), 8);

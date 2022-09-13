@@ -32,12 +32,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.DLINK1_IP;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.DLINK1_NAME;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.DLINK1_SNMP_RESOURCE;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.DLINK2_IP;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.DLINK2_NAME;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.DLINK2_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.Nms4930NetworkBuilder.DLINK1_IP;
+import static org.opennms.netmgt.nb.Nms4930NetworkBuilder.DLINK1_NAME;
+import static org.opennms.netmgt.nb.Nms4930NetworkBuilder.DLINK1_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.Nms4930NetworkBuilder.DLINK2_IP;
+import static org.opennms.netmgt.nb.Nms4930NetworkBuilder.DLINK2_NAME;
+import static org.opennms.netmgt.nb.Nms4930NetworkBuilder.DLINK2_SNMP_RESOURCE;
 
 import java.util.List;
 import java.util.Set;

@@ -28,6 +28,10 @@
 
 package org.opennms.netmgt.nb;
 
+import java.net.InetAddress;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsNode;
 
@@ -36,8 +40,55 @@ import org.opennms.netmgt.model.OnmsNode;
  */
 
 public class Nms0001NetworkBuilder extends NmsNetworkBuilder {
+    //NMS0001
+    public static final String FROH_IP = "192.168.239.51";
+    public static final String FROH_NAME = "froh";
+    public static final String FROH_SNMP_RESOURCE = "classpath:/linkd/nms0001/" + FROH_NAME + "-"+FROH_IP + "-walk.txt";
+    public static final String FROH_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.29";
+
+    public static final Map<InetAddress,Integer> FROH_IP_IF_MAP =  new HashMap<>();
+    public static final Map<Integer,String> FROH_IF_IFNAME_MAP = new HashMap<>();
+    public static final Map<Integer,String> FROH_IF_IFDESCR_MAP = new HashMap<>();
+    public static final Map<Integer,String> FROH_IF_MAC_MAP = new HashMap<>();
+    public static final Map<Integer,String> FROH_IF_IFALIAS_MAP = new HashMap<>();
+    public static final Map<InetAddress,InetAddress> FROH_IP_MK_MAP = new HashMap<>();
+
+    public static final String OEDIPUS_IP = "192.168.239.62";
+    public static final String OEDIPUS_NAME = "oedipus";
+    public static  final String OEDIPUS_SNMP_RESOURCE = "classpath:/linkd/nms0001/" + OEDIPUS_NAME + "-"+OEDIPUS_IP + "-walk.txt";
+    public static  final String OEDIPUS_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.11";
+
+    public static final Map<InetAddress,Integer> OEDIPUS_IP_IF_MAP =  new HashMap<>();
+    public static  final Map<Integer,String> OEDIPUS_IF_IFNAME_MAP = new HashMap<>();
+    public static  final Map<Integer,String> OEDIPUS_IF_IFDESCR_MAP = new HashMap<>();
+    public static  final Map<Integer,String> OEDIPUS_IF_MAC_MAP = new HashMap<>();
+    public static  final Map<Integer,String> OEDIPUS_IF_IFALIAS_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> OEDIPUS_IP_MK_MAP = new HashMap<>();
+
+    public static final String SIEGFRIE_IP = "192.168.239.54";
+    public static final String SIEGFRIE_NAME = "siegfrie";
+    public static  final String SIEGFRIE_SNMP_RESOURCE = "classpath:/linkd/nms0001/" + SIEGFRIE_NAME + "-"+SIEGFRIE_IP + "-walk.txt";
+    public static  final String SIEGFRIE_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.11";
+
+    public static final Map<InetAddress,Integer> SIEGFRIE_IP_IF_MAP =  new HashMap<>();
+    public static  final Map<Integer,String> SIEGFRIE_IF_IFNAME_MAP = new HashMap<>();
+    public static  final Map<Integer,String> SIEGFRIE_IF_IFDESCR_MAP = new HashMap<>();
+    public static  final Map<Integer,String> SIEGFRIE_IF_MAC_MAP = new HashMap<>();
+    public static  final Map<Integer,String> SIEGFRIE_IF_IFALIAS_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> SIEGFRIE_IP_MK_MAP = new HashMap<>();
+    //public static final String FROH_ISIS_SYS_ID     = "000110088500";
+    //public static final String OEDIPUS_ISIS_SYS_ID  = "000110255062";
+    public static final String SIEGFRIE_ISIS_SYS_ID = "000110255054";
+
     static {
     try {
+        FROH_IF_IFNAME_MAP.put(21,"lo0.16384");
+        FROH_IF_IFDESCR_MAP.put(21,"lo0.16384");
+        OEDIPUS_IF_IFNAME_MAP.put(21,"lo0.16384");
+        OEDIPUS_IF_IFDESCR_MAP.put(21,"lo0.16384");
+        SIEGFRIE_IF_IFNAME_MAP.put(21,"lo0.16384");
+        SIEGFRIE_IF_IFDESCR_MAP.put(21,"lo0.16384");
+
         FROH_IP_IF_MAP.put(InetAddressUtils.addr("10.0.0.4"), 18);
         FROH_IP_MK_MAP.put(InetAddressUtils.addr("10.0.0.4"), InetAddressUtils.addr("255.0.0.0"));
         FROH_IP_IF_MAP.put(InetAddressUtils.addr("10.0.1.2"), 606);

@@ -28,6 +28,10 @@
 
 package org.opennms.netmgt.nb;
 
+import java.net.InetAddress;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsNode;
 
@@ -36,6 +40,105 @@ import org.opennms.netmgt.model.OnmsNode;
  */
 
 public class Nms007NetworkBuilder extends NmsNetworkBuilder {
+    //Nms007
+    public static final String FireFly170_IP = "192.168.168.170";
+    //public static final String FireFly170_SNMP_RESOURCE = "classpath:/linkd/nms007/mib2_"+FireFly170_IP + ".txt";
+    public static final String FireFly170_NAME = "FireFly_170";
+    public static  final String FireFly170_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.96";
+    public static final Map<InetAddress,Integer> FireFly170_IP_IF_MAP =  new HashMap<>();
+    public static  final Map<Integer,String> FireFly170_IF_IFNAME_MAP = new HashMap<>();
+    public static  final Map<Integer,String> FireFly170_IF_IFDESCR_MAP = new HashMap<>();
+    public static  final Map<Integer,String> FireFly170_IF_MAC_MAP = new HashMap<>();
+    public static  final Map<Integer,String> FireFly170_IF_IFALIAS_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> FireFly170_IP_MK_MAP = new HashMap<>();
+
+    public static final String FireFly171_IP = "192.168.168.171";
+    //public static final String FireFly171_SNMP_RESOURCE = "classpath:/linkd/nms007/mib2_"+FireFly171_IP + ".txt";
+    public static final String FireFly171_NAME = "FireFly_171";
+    public static  final String FireFly171_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.96";
+    public static final Map<InetAddress,Integer> FireFly171_IP_IF_MAP =  new HashMap<>();
+    public static  final Map<Integer,String> FireFly171_IF_IFNAME_MAP = new HashMap<>();
+    public static  final Map<Integer,String> FireFly171_IF_IFDESCR_MAP = new HashMap<>();
+    public static  final Map<Integer,String> FireFly171_IF_MAC_MAP = new HashMap<>();
+    public static  final Map<Integer,String> FireFly171_IF_IFALIAS_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> FireFly171_IP_MK_MAP = new HashMap<>();
+
+    public static final String FireFly172_IP = "192.168.168.172";
+    //public static final String FireFly172_SNMP_RESOURCE = "classpath:/linkd/nms007/mib2_"+FireFly172_IP + ".txt";
+    public static final String FireFly172_NAME = "FireFly_172";
+    public static  final String FireFly172_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.96";
+    public static final Map<InetAddress,Integer> FireFly172_IP_IF_MAP =  new HashMap<>();
+    public static  final Map<Integer,String> FireFly172_IF_IFNAME_MAP = new HashMap<>();
+    public static  final Map<Integer,String> FireFly172_IF_IFDESCR_MAP = new HashMap<>();
+    public static  final Map<Integer,String> FireFly172_IF_MAC_MAP = new HashMap<>();
+    public static  final Map<Integer,String> FireFly172_IF_IFALIAS_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> FireFly172_IP_MK_MAP = new HashMap<>();
+
+    public static final String FireFly173_IP = "192.168.168.173";
+    //public static final String FireFly173_SNMP_RESOURCE = "classpath:/linkd/nms007/mib2_"+FireFly173_IP + ".txt";
+    public static final String FireFly173_NAME = "FireFly_173";
+    public static  final String FireFly173_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.96";
+    public static final Map<InetAddress,Integer> FireFly173_IP_IF_MAP =  new HashMap<>();
+    public static  final Map<Integer,String> FireFly173_IF_IFNAME_MAP = new HashMap<>();
+    public static  final Map<Integer,String> FireFly173_IF_IFDESCR_MAP = new HashMap<>();
+    public static  final Map<Integer,String> FireFly173_IF_MAC_MAP = new HashMap<>();
+    public static  final Map<Integer,String> FireFly173_IF_IFALIAS_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> FireFly173_IP_MK_MAP = new HashMap<>();
+
+    public static final String FireFly174_IP = "192.168.168.174";
+    //public static final String FireFly174_SNMP_RESOURCE = "classpath:/linkd/nms007/mib2_"+FireFly174_IP + ".txt";
+    public static final String FireFly174_NAME = "FireFly_174";
+    public static  final String FireFly174_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.96";
+    public static final Map<InetAddress,Integer> FireFly174_IP_IF_MAP =  new HashMap<>();
+    public static  final Map<Integer,String> FireFly174_IF_IFNAME_MAP = new HashMap<>();
+    public static  final Map<Integer,String> FireFly174_IF_IFDESCR_MAP = new HashMap<>();
+    public static  final Map<Integer,String> FireFly174_IF_MAC_MAP = new HashMap<>();
+    public static  final Map<Integer,String> FireFly174_IF_IFALIAS_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> FireFly174_IP_MK_MAP = new HashMap<>();
+
+    public static final String FireFly175_IP = "192.168.168.175";
+    //public static final String FireFly175_SNMP_RESOURCE = "classpath:/linkd/nms007/mib2_"+FireFly175_IP + ".txt";
+    public static final String FireFly175_NAME = "FireFly_175";
+    public static  final String FireFly175_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.96";
+    public static final Map<InetAddress,Integer> FireFly175_IP_IF_MAP =  new HashMap<>();
+    public static  final Map<Integer,String> FireFly175_IF_IFNAME_MAP = new HashMap<>();
+    public static  final Map<Integer,String> FireFly175_IF_IFDESCR_MAP = new HashMap<>();
+    public static  final Map<Integer,String> FireFly175_IF_MAC_MAP = new HashMap<>();
+    public static  final Map<Integer,String> FireFly175_IF_IFALIAS_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> FireFly175_IP_MK_MAP = new HashMap<>();
+
+    public static final String FireFly176_IP = "192.168.168.176";
+    //public static final String FireFly176_SNMP_RESOURCE = "classpath:/linkd/nms007/mib2_"+FireFly176_IP + ".txt";
+    public static final String FireFly176_NAME = "FireFly_176";
+    public static  final String FireFly176_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.96";
+    public static final Map<InetAddress,Integer> FireFly176_IP_IF_MAP =  new HashMap<>();
+    public static  final Map<Integer,String> FireFly176_IF_IFNAME_MAP = new HashMap<>();
+    public static  final Map<Integer,String> FireFly176_IF_IFDESCR_MAP = new HashMap<>();
+    public static  final Map<Integer,String> FireFly176_IF_MAC_MAP = new HashMap<>();
+    public static  final Map<Integer,String> FireFly176_IF_IFALIAS_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> FireFly176_IP_MK_MAP = new HashMap<>();
+
+    public static final String FireFly177_IP = "192.168.168.177";
+    //public static final String FireFly177_SNMP_RESOURCE = "classpath:/linkd/nms007/mib2_"+FireFly177_IP + ".txt";
+    public static final String FireFly177_NAME = "FireFly_177";
+    public static  final String FireFly177_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.96";
+    public static final Map<InetAddress,Integer> FireFly177_IP_IF_MAP =  new HashMap<>();
+    public static  final Map<Integer,String> FireFly177_IF_IFNAME_MAP = new HashMap<>();
+    public static  final Map<Integer,String> FireFly177_IF_IFDESCR_MAP = new HashMap<>();
+    public static  final Map<Integer,String> FireFly177_IF_MAC_MAP = new HashMap<>();
+    public static  final Map<Integer,String> FireFly177_IF_IFALIAS_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> FireFly177_IP_MK_MAP = new HashMap<>();
+
+    public static final String FireFly189_IP = "192.168.168.189";
+    //public static final String FireFly189_SNMP_RESOURCE = "classpath:/linkd/nms007/mib2_"+FireFly189_IP + ".txt";
+    public static final String FireFly189_NAME = "FireFly_189";
+    public static  final String FireFly189_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.96";
+    public static final Map<InetAddress,Integer> FireFly189_IP_IF_MAP =  new HashMap<>();
+    public static  final Map<Integer,String> FireFly189_IF_IFNAME_MAP = new HashMap<>();
+    public static  final Map<Integer,String> FireFly189_IF_IFDESCR_MAP = new HashMap<>();
+    public static  final Map<Integer,String> FireFly189_IF_MAC_MAP = new HashMap<>();
+    public static  final Map<Integer,String> FireFly189_IF_IFALIAS_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> FireFly189_IP_MK_MAP = new HashMap<>();
 
     static {
     try {

@@ -29,6 +29,10 @@
 package org.opennms.netmgt.nb;
 
 
+import java.net.InetAddress;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsNode;
 
@@ -39,6 +43,122 @@ import org.opennms.netmgt.model.OnmsNode;
  */
 
 public class Nms17216NetworkBuilder extends NmsNetworkBuilder {
+    public static final String ROUTER1_IP = "192.168.100.245";
+    public static final String ROUTER1_NAME = "Router1";
+    public static final String ROUTER1_SYSOID = ".1.3.6.1.4.1.9.1.576";
+
+    public static final Map<InetAddress,Integer> ROUTER1_IP_IF_MAP =  new HashMap<>();
+    public static final Map<InetAddress,InetAddress> ROUTER1_IP_MK_MAP =  new HashMap<>();
+    public static final Map<Integer,String> ROUTER1_IF_IFNAME_MAP = new HashMap<>();
+    public static final Map<Integer,String> ROUTER1_IF_IFDESCR_MAP = new HashMap<>();
+    public static final Map<Integer,String> ROUTER1_IF_MAC_MAP = new HashMap<>();
+    public static final Map<Integer,String> ROUTER1_IF_IFALIAS_MAP = new HashMap<>();
+
+    public static final String ROUTER2_IP = "192.168.100.241";
+    public static final String ROUTER2_NAME = "Router2";
+    public static final String ROUTER2_SYSOID = ".1.3.6.1.4.1.9.1.1045";
+
+    public static final Map<InetAddress,Integer> ROUTER2_IP_IF_MAP =  new HashMap<>();
+    public static final Map<InetAddress,InetAddress> ROUTER2_IP_MK_MAP =  new HashMap<>();
+    public static final Map<Integer,String> ROUTER2_IF_IFNAME_MAP = new HashMap<>();
+    public static final Map<Integer,String> ROUTER2_IF_IFDESCR_MAP = new HashMap<>();
+    public static final Map<Integer,String> ROUTER2_IF_MAC_MAP = new HashMap<>();
+    public static final Map<Integer,String> ROUTER2_IF_IFALIAS_MAP = new HashMap<>();
+
+    public static final String ROUTER3_IP = "172.16.50.1";
+    public static final String ROUTER3_NAME = "Router3";
+    public static final String ROUTER3_SYSOID = ".1.3.6.1.4.1.9.1.1045";
+
+    public static final Map<InetAddress,Integer> ROUTER3_IP_IF_MAP =  new HashMap<>();
+    public static final Map<InetAddress,InetAddress> ROUTER3_IP_MK_MAP =  new HashMap<>();
+    public static final Map<Integer,String> ROUTER3_IF_IFNAME_MAP = new HashMap<>();
+    public static final Map<Integer,String> ROUTER3_IF_IFDESCR_MAP = new HashMap<>();
+    public static final Map<Integer,String> ROUTER3_IF_MAC_MAP = new HashMap<>();
+    public static final Map<Integer,String> ROUTER3_IF_IFALIAS_MAP = new HashMap<>();
+
+    public static final String ROUTER4_IP = "10.10.10.1";
+    public static final String ROUTER4_NAME = "Router4";
+    public static final String ROUTER4_SYSOID = ".1.3.6.1.4.1.9.1.1045";
+
+    public static final Map<InetAddress,Integer> ROUTER4_IP_IF_MAP =  new HashMap<>();
+    public static final Map<InetAddress,InetAddress> ROUTER4_IP_MK_MAP =  new HashMap<>();
+    public static final Map<Integer,String> ROUTER4_IF_IFNAME_MAP = new HashMap<>();
+    public static final Map<Integer,String> ROUTER4_IF_IFDESCR_MAP = new HashMap<>();
+    public static final Map<Integer,String> ROUTER4_IF_MAC_MAP = new HashMap<>();
+    public static final Map<Integer,String> ROUTER4_IF_IFALIAS_MAP = new HashMap<>();
+
+    public static final String SWITCH1_IP = "172.16.10.1";
+    public static final String SWITCH1_NAME = "Switch1";
+    public static final String SWITCH1_SYSOID = ".1.3.6.1.4.1.9.1.614";
+    public static final String SWITCH1_LLDP_CHASSISID = "0016c8bd4d80";
+
+    public static final Map<InetAddress,InetAddress> SWITCH1_IP_MK_MAP =  new HashMap<>();
+    public static final Map<InetAddress,Integer> SWITCH1_IP_IF_MAP =  new HashMap<>();
+    public static final Map<Integer,String> SWITCH1_IF_IFNAME_MAP = new HashMap<>();
+    public static final Map<Integer,String> SWITCH1_IF_IFDESCR_MAP = new HashMap<>();
+    public static final Map<Integer,String> SWITCH1_IF_MAC_MAP = new HashMap<>();
+    public static final Map<Integer,String> SWITCH1_IF_IFALIAS_MAP = new HashMap<>();
+
+    public static final String SWITCH2_IP = "172.16.10.2";
+    public static final String SWITCH2_NAME = "Switch2";
+    public static final String SWITCH2_SYSOID = ".1.3.6.1.4.1.9.1.696";
+    public static final String SWITCH2_LLDP_CHASSISID = "0016c894aa80";
+
+    public static final Map<InetAddress,InetAddress> SWITCH2_IP_MK_MAP =  new HashMap<>();
+    public static final Map<InetAddress,Integer> SWITCH2_IP_IF_MAP =  new HashMap<>();
+    public static final Map<Integer,String> SWITCH2_IF_IFNAME_MAP = new HashMap<>();
+    public static final Map<Integer,String> SWITCH2_IF_IFDESCR_MAP = new HashMap<>();
+    public static final Map<Integer,String> SWITCH2_IF_MAC_MAP = new HashMap<>();
+    public static final Map<Integer,String> SWITCH2_IF_IFALIAS_MAP = new HashMap<>();
+
+    public static final String SWITCH3_IP = "172.16.10.3";
+    public static final String SWITCH3_NAME = "Switch3";
+    public static final String SWITCH3_SYSOID = ".1.3.6.1.4.1.9.1.716";
+    public static final String SWITCH3_LLDP_CHASSISID = "f4ea67ebdc00";
+
+    public static final Map<InetAddress,InetAddress> SWITCH3_IP_MK_MAP =  new HashMap<>();
+    public static final Map<InetAddress,Integer> SWITCH3_IP_IF_MAP =  new HashMap<>();
+    public static final Map<Integer,String> SWITCH3_IF_IFNAME_MAP = new HashMap<>();
+    public static final Map<Integer,String> SWITCH3_IF_IFDESCR_MAP = new HashMap<>();
+    public static final Map<Integer,String> SWITCH3_IF_MAC_MAP = new HashMap<>();
+    public static final Map<Integer,String> SWITCH3_IF_IFALIAS_MAP = new HashMap<>();
+
+    public static final String SWITCH4_IP = "172.16.50.2";
+    public static final String SWITCH4_NAME = "Switch4";
+    public static final String SWITCH4_SYSOID = ".1.3.6.1.4.1.9.1.716";
+    public static final String SWITCH4_LLDP_CHASSISID = "a4187504e400";
+
+    public static final Map<InetAddress,InetAddress> SWITCH4_IP_MK_MAP =  new HashMap<>();
+    public static final Map<InetAddress,Integer> SWITCH4_IP_IF_MAP =  new HashMap<>();
+    public static final Map<Integer,String> SWITCH4_IF_IFNAME_MAP = new HashMap<>();
+    public static final Map<Integer,String> SWITCH4_IF_IFDESCR_MAP = new HashMap<>();
+    public static final Map<Integer,String> SWITCH4_IF_MAC_MAP = new HashMap<>();
+    public static final Map<Integer,String> SWITCH4_IF_IFALIAS_MAP = new HashMap<>();
+
+    public static final String SWITCH5_IP = "172.16.10.4";
+    public static final String SWITCH5_NAME = "Switch5";
+    public static final String SWITCH5_SYSOID = ".1.3.6.1.4.1.9.1.716";
+    public static final String SWITCH5_LLDP_CHASSISID = "f4ea67f82980";
+
+    public static final Map<InetAddress,Integer> SWITCH5_IP_IF_MAP =  new HashMap<>();
+    public static final Map<InetAddress,InetAddress> SWITCH5_IP_MK_MAP =  new HashMap<>();
+    public static final Map<Integer,String> SWITCH5_IF_IFNAME_MAP = new HashMap<>();
+    public static final Map<Integer,String> SWITCH5_IF_IFDESCR_MAP = new HashMap<>();
+    public static final Map<Integer,String> SWITCH5_IF_MAC_MAP = new HashMap<>();
+    public static final Map<Integer,String> SWITCH5_IF_IFALIAS_MAP = new HashMap<>();
+
+    public static final String ROUTER1_SNMP_RESOURCE = "classpath:/linkd/nms17216/router1-walk.txt";
+    public static final String ROUTER2_SNMP_RESOURCE = "classpath:/linkd/nms17216/router2-walk.txt";
+    public static final String ROUTER3_SNMP_RESOURCE = "classpath:/linkd/nms17216/router3-walk.txt";
+    public static final String ROUTER4_SNMP_RESOURCE = "classpath:/linkd/nms17216/router4-walk.txt";
+
+    public static final String SWITCH1_SNMP_RESOURCE = "classpath:/linkd/nms17216/switch1-walk.txt";
+    public static final String SWITCH2_SNMP_RESOURCE = "classpath:/linkd/nms17216/switch2-walk.txt";
+    public static final String SWITCH3_SNMP_RESOURCE = "classpath:/linkd/nms17216/switch3-walk.txt";
+    public static final String SWITCH4_SNMP_RESOURCE = "classpath:/linkd/nms17216/switch4-walk.txt";
+    public static final String SWITCH5_SNMP_RESOURCE = "classpath:/linkd/nms17216/switch5-walk.txt";
+
+
     static {
         ROUTER1_IP_IF_MAP.put(InetAddressUtils.addr("192.168.100.249"), 13);
         ROUTER1_IP_IF_MAP.put(InetAddressUtils.addr("192.168.100.245"), 7);
@@ -692,39 +812,39 @@ public class Nms17216NetworkBuilder extends NmsNetworkBuilder {
     }
 
     public OnmsNode getRouter1() {
-        return getNode(ROUTER1_NAME,ROUTER1_SYSOID,ROUTER1_IP,ROUTER1_IP_IF_MAP,ROUTER1_IF_IFNAME_MAP,ROUTER1_IF_MAC_MAP,ROUTER1_IF_IFDESCR_MAP,ROUTER1_IF_IFALIAS_MAP);
+        return getNode(ROUTER1_NAME,ROUTER1_SYSOID,ROUTER1_IP,ROUTER1_IP_IF_MAP,ROUTER1_IF_IFNAME_MAP,ROUTER1_IF_MAC_MAP,ROUTER1_IF_IFDESCR_MAP,ROUTER1_IF_IFALIAS_MAP,ROUTER1_IP_MK_MAP);
     }    
 
     public OnmsNode getRouter2() {
-        return getNode(ROUTER2_NAME,ROUTER2_SYSOID,ROUTER2_IP,ROUTER2_IP_IF_MAP,ROUTER2_IF_IFNAME_MAP,ROUTER2_IF_MAC_MAP,ROUTER2_IF_IFDESCR_MAP,ROUTER2_IF_IFALIAS_MAP);
+        return getNode(ROUTER2_NAME,ROUTER2_SYSOID,ROUTER2_IP,ROUTER2_IP_IF_MAP,ROUTER2_IF_IFNAME_MAP,ROUTER2_IF_MAC_MAP,ROUTER2_IF_IFDESCR_MAP,ROUTER2_IF_IFALIAS_MAP,ROUTER2_IP_MK_MAP);
     }    
 
     public OnmsNode getRouter3() {
-        return getNode(ROUTER3_NAME,ROUTER3_SYSOID,ROUTER3_IP,ROUTER3_IP_IF_MAP,ROUTER3_IF_IFNAME_MAP,ROUTER3_IF_MAC_MAP,ROUTER3_IF_IFDESCR_MAP,ROUTER3_IF_IFALIAS_MAP);
+        return getNode(ROUTER3_NAME,ROUTER3_SYSOID,ROUTER3_IP,ROUTER3_IP_IF_MAP,ROUTER3_IF_IFNAME_MAP,ROUTER3_IF_MAC_MAP,ROUTER3_IF_IFDESCR_MAP,ROUTER3_IF_IFALIAS_MAP,ROUTER3_IP_MK_MAP);
     }    
 
     public OnmsNode getRouter4() {
-        return getNode(ROUTER4_NAME,ROUTER4_SYSOID,ROUTER4_IP,ROUTER4_IP_IF_MAP,ROUTER4_IF_IFNAME_MAP,ROUTER4_IF_MAC_MAP,ROUTER4_IF_IFDESCR_MAP,ROUTER4_IF_IFALIAS_MAP);
+        return getNode(ROUTER4_NAME,ROUTER4_SYSOID,ROUTER4_IP,ROUTER4_IP_IF_MAP,ROUTER4_IF_IFNAME_MAP,ROUTER4_IF_MAC_MAP,ROUTER4_IF_IFDESCR_MAP,ROUTER4_IF_IFALIAS_MAP,ROUTER4_IP_MK_MAP);
     }    
 
     public OnmsNode getSwitch1() {
-        return getNode(SWITCH1_NAME,SWITCH1_SYSOID,SWITCH1_IP,SWITCH1_IP_IF_MAP,SWITCH1_IF_IFNAME_MAP,SWITCH1_IF_MAC_MAP,SWITCH1_IF_IFDESCR_MAP,SWITCH1_IF_IFALIAS_MAP);
+        return getNode(SWITCH1_NAME,SWITCH1_SYSOID,SWITCH1_IP,SWITCH1_IP_IF_MAP,SWITCH1_IF_IFNAME_MAP,SWITCH1_IF_MAC_MAP,SWITCH1_IF_IFDESCR_MAP,SWITCH1_IF_IFALIAS_MAP,SWITCH1_IP_MK_MAP);
     }    
 
     public OnmsNode getSwitch2() {
-        return getNode(SWITCH2_NAME,SWITCH2_SYSOID,SWITCH2_IP,SWITCH2_IP_IF_MAP,SWITCH2_IF_IFNAME_MAP,SWITCH2_IF_MAC_MAP,SWITCH2_IF_IFDESCR_MAP,SWITCH2_IF_IFALIAS_MAP);
+        return getNode(SWITCH2_NAME,SWITCH2_SYSOID,SWITCH2_IP,SWITCH2_IP_IF_MAP,SWITCH2_IF_IFNAME_MAP,SWITCH2_IF_MAC_MAP,SWITCH2_IF_IFDESCR_MAP,SWITCH2_IF_IFALIAS_MAP,SWITCH2_IP_MK_MAP);
     }    
 
     public OnmsNode getSwitch3() {
-       return getNode(SWITCH3_NAME,SWITCH3_SYSOID,SWITCH3_IP,SWITCH3_IP_IF_MAP,SWITCH3_IF_IFNAME_MAP,SWITCH3_IF_MAC_MAP,SWITCH3_IF_IFDESCR_MAP,SWITCH3_IF_IFALIAS_MAP);
+       return getNode(SWITCH3_NAME,SWITCH3_SYSOID,SWITCH3_IP,SWITCH3_IP_IF_MAP,SWITCH3_IF_IFNAME_MAP,SWITCH3_IF_MAC_MAP,SWITCH3_IF_IFDESCR_MAP,SWITCH3_IF_IFALIAS_MAP,SWITCH3_IP_MK_MAP);
     }
    
     public OnmsNode getSwitch4() {
-       return getNode(SWITCH4_NAME,SWITCH4_SYSOID,SWITCH4_IP,SWITCH4_IP_IF_MAP,SWITCH4_IF_IFNAME_MAP,SWITCH4_IF_MAC_MAP,SWITCH4_IF_IFDESCR_MAP,SWITCH4_IF_IFALIAS_MAP);
+       return getNode(SWITCH4_NAME,SWITCH4_SYSOID,SWITCH4_IP,SWITCH4_IP_IF_MAP,SWITCH4_IF_IFNAME_MAP,SWITCH4_IF_MAC_MAP,SWITCH4_IF_IFDESCR_MAP,SWITCH4_IF_IFALIAS_MAP,SWITCH4_IP_MK_MAP);
     }
    
     public OnmsNode getSwitch5() {
-       return getNode(SWITCH5_NAME,SWITCH5_SYSOID,SWITCH5_IP,SWITCH5_IP_IF_MAP,SWITCH5_IF_IFNAME_MAP,SWITCH5_IF_MAC_MAP,SWITCH5_IF_IFDESCR_MAP,SWITCH5_IF_IFALIAS_MAP);
+       return getNode(SWITCH5_NAME,SWITCH5_SYSOID,SWITCH5_IP,SWITCH5_IP_IF_MAP,SWITCH5_IF_IFNAME_MAP,SWITCH5_IF_MAC_MAP,SWITCH5_IF_IFDESCR_MAP,SWITCH5_IF_IFALIAS_MAP,SWITCH5_IP_MK_MAP);
     }
 
 

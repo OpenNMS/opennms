@@ -28,6 +28,10 @@
 
 package org.opennms.netmgt.nb;
 
+import java.net.InetAddress;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsNode;
 
@@ -37,6 +41,20 @@ import org.opennms.netmgt.model.OnmsNode;
 
 public class Nms6802NetworkBuilder extends NmsNetworkBuilder {
 
+
+    //NMS6802
+    public static final String CISCOISIS_IP = "10.100.68.2";
+    public static final String CISCOISIS_NAME = "cisco-ios-xr";
+    public static final String CISCOISIS_SNMP_RESOURCE = "classpath:/linkd/nms6802/"+CISCOISIS_NAME+"-walk.txt";
+    public static final String CISCOISIS_SYSOID = ".1.3.6.1.4.1.9.1.2090";
+    public static final String CISCOISIS_ISIS_SYS_ID = "093176090107";
+
+    public static final Map<InetAddress,Integer> CISCOISIS_IP_IF_MAP =  new HashMap<>();
+    public static final Map<Integer,String>      CISCOISIS_IF_IFNAME_MAP = new HashMap<>();
+    public static final Map<Integer,String>      CISCOISIS_IF_IFDESCR_MAP = new HashMap<>();
+    public static final Map<Integer,String>      CISCOISIS_IF_MAC_MAP = new HashMap<>();
+    public static final Map<Integer,String>      CISCOISIS_IF_IFALIAS_MAP = new HashMap<>();
+    public static final Map<InetAddress,InetAddress> CISCOISIS_IP_MK_MAP = new HashMap<>();
 
     static {
         try {

@@ -28,6 +28,10 @@
 
 package org.opennms.netmgt.nb;
 
+import java.net.InetAddress;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsNode;
 
@@ -37,6 +41,18 @@ import org.opennms.netmgt.model.OnmsNode;
 
 public class Nms7777DWNetworkBuilder extends NmsNetworkBuilder {
 
+    //NMS7777DRAGONWAVE
+    public static final String DW_IP = "10.103.1.1";
+    public static final String DW_NAME = "dw";
+    public static final String DW_SNMP_RESOURCE = "classpath:/linkd/nms7777dw/"+DW_NAME+"-walk.txt";
+    public static final String DW_SYSOID = ".1.3.6.1.4.1.7262.2.4";
+
+    public static final Map<InetAddress,Integer> DW_IP_IF_MAP =  new HashMap<>();
+    public static final Map<Integer,String> DW_IF_IFNAME_MAP = new HashMap<>();
+    public static final Map<Integer,String> DW_IF_IFDESCR_MAP = new HashMap<>();
+    public static final Map<Integer,String> DW_IF_MAC_MAP = new HashMap<>();
+    public static final Map<Integer,String> DW_IF_IFALIAS_MAP = new HashMap<>();
+    public static final Map<InetAddress,InetAddress> DW_IP_MK_MAP = new HashMap<>();
 
     static {
     try {

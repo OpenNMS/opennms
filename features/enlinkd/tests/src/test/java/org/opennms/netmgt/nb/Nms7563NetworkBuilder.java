@@ -28,6 +28,10 @@
 
 package org.opennms.netmgt.nb;
 
+import java.net.InetAddress;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsNode;
 
@@ -37,6 +41,51 @@ import org.opennms.netmgt.model.OnmsNode;
 
 public class Nms7563NetworkBuilder extends NmsNetworkBuilder {
 
+    //NMS7563
+    public static final String HOMESERVER_IP = "192.168.88.1";
+    public static final String HOMESERVER_NAME = "homeserver";
+    public static final String HOMESERVER_SNMP_RESOURCE = "classpath:/linkd/nms7563/"+HOMESERVER_NAME+"-walk.txt";
+    public static final String HOMESERVER_SYSOID = ".1.3.6.1.4.1.8072.3.2.10";
+    public static final String HOMESERVER_LLDP_CHASSID_ID="001ff207994f";
+    public static final String HOMESERVER_LLDP_SYSNAME="server.home.schwartzkopff.org";
+    public static final String HOMESERVER_CDP_GLOBAL_DEVICE_ID="001ff207994f";
+
+    public static final Map<InetAddress,Integer> HOMESERVER_IP_IF_MAP =  new HashMap<>();
+    public static final Map<Integer,String>      HOMESERVER_IF_IFNAME_MAP = new HashMap<>();
+    public static final Map<Integer,String>      HOMESERVER_IF_IFDESCR_MAP = new HashMap<>();
+    public static final Map<Integer,String>      HOMESERVER_IF_MAC_MAP = new HashMap<>();
+    public static final Map<Integer,String>      HOMESERVER_IF_IFALIAS_MAP = new HashMap<>();
+    public static final Map<InetAddress,InetAddress> HOMESERVER_IP_MK_MAP = new HashMap<>();
+
+    public static final String CISCO01_IP = "192.168.88.240";
+    public static final String CISCO01_NAME = "cisco01";
+    public static final String CISCO01_SNMP_RESOURCE = "classpath:/linkd/nms7563/"+CISCO01_NAME+"-walk.txt";
+    public static final String CISCO01_SYSOID = ".1.3.6.1.4.1.9.1.798";
+    public static final String CISCO01_LLDP_CHASSID_ID="aca016bf0200";
+    public static final String CISCO01_LLDP_SYSNAME="cisco01";
+    public static final String CISCO01_CDP_GLOBAL_DEVICE_ID="cisco01";
+
+    public static final Map<InetAddress,Integer> CISCO01_IP_IF_MAP =  new HashMap<>();
+    public static final Map<Integer,String>      CISCO01_IF_IFNAME_MAP = new HashMap<>();
+    public static final Map<Integer,String>      CISCO01_IF_IFDESCR_MAP = new HashMap<>();
+    public static final Map<Integer,String>      CISCO01_IF_MAC_MAP = new HashMap<>();
+    public static final Map<Integer,String>      CISCO01_IF_IFALIAS_MAP = new HashMap<>();
+    public static final Map<InetAddress,InetAddress> CISCO01_IP_MK_MAP = new HashMap<>();
+
+    public static final String SWITCH02_IP = "192.168.88.241";
+    public static final String SWITCH02_NAME = "switch02";
+    public static final String SWITCH02_SNMP_RESOURCE = "classpath:/linkd/nms7563/"+SWITCH02_NAME+"-walk.txt";
+    public static final String SWITCH02_SYSOID = ".1.3.6.1.4.1.11.2.3.7.11.90";
+    public static final String SWITCH02_LLDP_CHASSID_ID="001db3c50960";
+    public static final String SWITCH02_LLDP_SYSNAME="ProCurve Switch 2510B-24";
+    public static final String SWITCH02_CDP_GLOBAL_DEVICE_ID="ProCurve Switch 2510B-24(001db3-c50960)";
+
+    public static final Map<InetAddress,Integer> SWITCH02_IP_IF_MAP =  new HashMap<>();
+    public static final Map<Integer,String>      SWITCH02_IF_IFNAME_MAP = new HashMap<>();
+    public static final Map<Integer,String>      SWITCH02_IF_IFDESCR_MAP = new HashMap<>();
+    public static final Map<Integer,String>      SWITCH02_IF_MAC_MAP = new HashMap<>();
+    public static final Map<Integer,String>      SWITCH02_IF_IFALIAS_MAP = new HashMap<>();
+    public static final Map<InetAddress,InetAddress> SWITCH02_IP_MK_MAP = new HashMap<>();
 
     static {
     try {

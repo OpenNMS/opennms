@@ -28,6 +28,10 @@
 
 package org.opennms.netmgt.nb;
 
+import java.net.InetAddress;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsNode;
 
@@ -36,6 +40,247 @@ import org.opennms.netmgt.model.OnmsNode;
  */
 
 public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
+    //NMS0002
+    public static final String Rluck001_IP = "10.4.79.250";
+    public static final String Rluck001_NAME = "r-de-juet-luck-001";
+    public static  final String Rluck001_SNMP_RESOURCE = "classpath:/linkd/nms0002ciscojuniper/" + Rluck001_NAME +".txt";
+    public static  final String Rluck001_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.39";
+    public static final Map<InetAddress,Integer> Rluck001_IP_IF_MAP =  new HashMap<>();
+    public static  final Map<Integer,String> Rluck001_IF_IFNAME_MAP = new HashMap<>();
+    public static  final Map<Integer,String> Rluck001_IF_IFDESCR_MAP = new HashMap<>();
+    public static  final Map<Integer,String> Rluck001_IF_MAC_MAP = new HashMap<>();
+    public static  final Map<Integer,String> Rluck001_IF_IFALIAS_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> Rluck001_IP_MK_MAP = new HashMap<>();
+
+    public static final String Sluck001_IP = "10.4.68.215";
+    public static final String Sluck001_NAME = "s-de-juet-luck-001";
+    public static  final String Sluck001_SNMP_RESOURCE = "classpath:/linkd/nms0002ciscojuniper/" + Sluck001_NAME+ ".txt";
+    //public static  final String Sluck001_SNMP_RESOURCE_VLAN100 = "classpath:/linkd/nms0002ciscojuniper/" + Sluck001_NAME+ ".vlan100.txt";
+    //public static  final String Sluck001_SNMP_RESOURCE_VLAN950 = "classpath:/linkd/nms0002ciscojuniper/" + Sluck001_NAME+ ".vlan950.txt";
+    public static  final String Sluck001_SYSOID = ".1.3.6.1.4.1.9.1.564";
+
+    public static final Map<InetAddress,Integer> Sluck001_IP_IF_MAP =  new HashMap<>();
+    public static  final Map<Integer,String> Sluck001_IF_IFNAME_MAP = new HashMap<>();
+    public static  final Map<Integer,String> Sluck001_IF_IFDESCR_MAP = new HashMap<>();
+    public static  final Map<Integer,String> Sluck001_IF_MAC_MAP = new HashMap<>();
+    public static  final Map<Integer,String> Sluck001_IF_IFALIAS_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> Sluck001_IP_MK_MAP = new HashMap<>();
+
+    public static final String RPict001_IP = "10.140.252.57";
+    public static final String RPict001_NAME = "r-ro-suce-pict-001";
+    public static  final String RPict001_SNMP_RESOURCE = "classpath:/linkd/nms0002UkRoFakeLink/" + RPict001_NAME+".txt";
+    public static  final String RPict001_SYSOID = ".1.3.6.1.4.1.9.1.571";
+
+    public static final Map<InetAddress,Integer> RPict001_IP_IF_MAP =  new HashMap<>();
+    public static  final Map<Integer,String> RPict001_IF_IFNAME_MAP = new HashMap<>();
+    public static  final Map<Integer,String> RPict001_IF_IFDESCR_MAP = new HashMap<>();
+    public static  final Map<Integer,String> RPict001_IF_MAC_MAP = new HashMap<>();
+    public static  final Map<Integer,String> RPict001_IF_IFALIAS_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> RPict001_IP_MK_MAP = new HashMap<>();
+
+    public static final String RNewt103_IP = "10.239.9.22";
+    public static final String RNewt103_NAME = "r-uk-nott-newt-103";
+    //public static  final String RNewt103_SNMP_RESOURCE = "classpath:/linkd/nms0002UkRoFakeLink/" + RNewt103_NAME+".txt";
+    public static  final String RNewt103_SYSOID = ".1.3.6.1.4.1.9.1.571";
+
+    public static final Map<InetAddress,Integer> RNewt103_IP_IF_MAP =  new HashMap<>();
+    public static  final Map<Integer,String> RNewt103_IF_IFNAME_MAP = new HashMap<>();
+    public static  final Map<Integer,String> RNewt103_IF_IFDESCR_MAP = new HashMap<>();
+    public static  final Map<Integer,String> RNewt103_IF_MAC_MAP = new HashMap<>();
+    public static  final Map<Integer,String> RNewt103_IF_IFALIAS_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> RNewt103_IP_MK_MAP = new HashMap<>();
+
+    public static final String RDeEssnBrue_IP = "10.167.254.40";
+    public static final String RDeEssnBrue_NAME = "r-de-essn-brue-001";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE = "classpath:/linkd/nms0002ciscoalcatel2/" + RDeEssnBrue_NAME+ ".txt";
+    /*
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_400 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan400.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_450 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan450.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_451 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan451.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_452 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan452.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_453 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan453.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_500 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan500.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_501 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan501.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_502 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan502.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_503 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan503.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_504 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan504.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_505 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan505.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_506 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan506.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_507 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan507.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_508 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan508.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_509 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan509.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_510 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan510.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_511 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan511.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_512 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan512.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_513 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan513.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_514 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan514.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_515 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan515.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_516 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan516.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_517 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan517.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_518 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan518.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_519 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan519.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_520 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan520.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_750 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan750.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_751 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan751.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_752 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan752.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_753 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan753.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_754 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan754.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_755 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan755.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_756 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan756.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_757 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan757.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_758 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan758.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_760 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan760.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_800 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan800.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_801 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan801.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_850 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan850.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_851 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan851.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_852 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan852.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_900 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan900.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_950 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan950.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_951 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan951.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_952 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan952.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_953 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan953.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_954 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan954.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_955 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan955.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_956 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan956.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_957 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan957.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_958 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan958.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_959 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan959.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_960 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan960.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_961 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan961.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_962 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan962.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_963 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan963.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_964 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan964.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_965 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan965.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_966 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan966.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_967 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan967.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_968 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan968.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_969 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan969.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_970 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan970.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_979 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan979.txt";
+    */
+    public static  final String RDeEssnBrue_SYSOID = ".1.3.6.1.4.1.9.1.896";
+
+    public static final Map<InetAddress,Integer> RDeEssnBrue_IP_IF_MAP =  new HashMap<>();
+    public static  final Map<Integer,String> RDeEssnBrue_IF_IFNAME_MAP = new HashMap<>();
+    public static  final Map<Integer,String> RDeEssnBrue_IF_IFDESCR_MAP = new HashMap<>();
+    public static  final Map<Integer,String> RDeEssnBrue_IF_MAC_MAP = new HashMap<>();
+    public static  final Map<Integer,String> RDeEssnBrue_IF_IFALIAS_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> RDeEssnBrue_IP_MK_MAP = new HashMap<>();
+
+    public static final String SDeEssnBrue081_IP = "10.165.62.91";
+    public static final String SDeEssnBrue081_NAME = "s-de-essn-brue-081";
+    public static  final String SDeEssnBrue081_SNMP_RESOURCE ="classpath:/linkd/nms0002ciscoalcatel2/" + SDeEssnBrue081_NAME+ ".txt";
+    public static  final String SDeEssnBrue081_SYSOID = ".1.3.6.1.4.1.6486.800.1.1.2.1.11.2.2";
+
+    public static final Map<InetAddress,Integer> SDeEssnBrue081_IP_IF_MAP =  new HashMap<>();
+    public static  final Map<Integer,String> SDeEssnBrue081_IF_IFNAME_MAP = new HashMap<>();
+    public static  final Map<Integer,String> SDeEssnBrue081_IF_IFDESCR_MAP = new HashMap<>();
+    public static  final Map<Integer,String> SDeEssnBrue081_IF_MAC_MAP = new HashMap<>();
+    public static  final Map<Integer,String> SDeEssnBrue081_IF_IFALIAS_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> SDeEssnBrue081_IP_MK_MAP = new HashMap<>();
+
+    public static final String SDeEssnBrue121_IP = "10.165.62.131";
+    public static final String SDeEssnBrue121_NAME = "s-de-essn-brue-121";
+    public static  final String SDeEssnBrue121_SNMP_RESOURCE ="classpath:/linkd/nms0002ciscoalcatel2/" + SDeEssnBrue121_NAME+ ".txt";
+    public static  final String SDeEssnBrue121_SYSOID = ".1.3.6.1.4.1.6486.800.1.1.2.1.11.2.2";
+
+    public static final Map<InetAddress,Integer> SDeEssnBrue121_IP_IF_MAP =  new HashMap<>();
+    public static  final Map<Integer,String> SDeEssnBrue121_IF_IFNAME_MAP = new HashMap<>();
+    public static  final Map<Integer,String> SDeEssnBrue121_IF_IFDESCR_MAP = new HashMap<>();
+    public static  final Map<Integer,String> SDeEssnBrue121_IF_MAC_MAP = new HashMap<>();
+    public static  final Map<Integer,String> SDeEssnBrue121_IF_IFALIAS_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> SDeEssnBrue121_IP_MK_MAP = new HashMap<>();
+
+    public static final String SDeEssnBrue142_IP = "10.165.62.152";
+    public static final String SDeEssnBrue142_NAME = "s-de-essn-brue-142";
+    public static  final String SDeEssnBrue142_SNMP_RESOURCE ="classpath:/linkd/nms0002ciscoalcatel2/" + SDeEssnBrue142_NAME+ ".txt";
+    public static  final String SDeEssnBrue142_SYSOID = ".1.3.6.1.4.1.6486.800.1.1.2.1.11.2.2";
+
+    public static final Map<InetAddress,Integer> SDeEssnBrue142_IP_IF_MAP =  new HashMap<>();
+    public static  final Map<Integer,String> SDeEssnBrue142_IF_IFNAME_MAP = new HashMap<>();
+    public static  final Map<Integer,String> SDeEssnBrue142_IF_IFDESCR_MAP = new HashMap<>();
+    public static  final Map<Integer,String> SDeEssnBrue142_IF_MAC_MAP = new HashMap<>();
+    public static  final Map<Integer,String> SDeEssnBrue142_IF_IFALIAS_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> SDeEssnBrue142_IP_MK_MAP = new HashMap<>();
+
+    public static final String SDeEssnBrue165_IP = "10.165.62.175";
+    public static final String SDeEssnBrue165_NAME = "s-de-essn-brue-165";
+    public static  final String SDeEssnBrue165_SNMP_RESOURCE ="classpath:/linkd/nms0002ciscoalcatel2/" + SDeEssnBrue165_NAME+ ".txt";
+    public static  final String SDeEssnBrue165_SYSOID = ".1.3.6.1.4.1.6486.800.1.1.2.1.11.2.2";
+
+    public static final Map<InetAddress,Integer> SDeEssnBrue165_IP_IF_MAP =  new HashMap<>();
+    public static  final Map<Integer,String> SDeEssnBrue165_IF_IFNAME_MAP = new HashMap<>();
+    public static  final Map<Integer,String> SDeEssnBrue165_IF_IFDESCR_MAP = new HashMap<>();
+    public static  final Map<Integer,String> SDeEssnBrue165_IF_MAC_MAP = new HashMap<>();
+    public static  final Map<Integer,String> SDeEssnBrue165_IF_IFALIAS_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> SDeEssnBrue165_IP_MK_MAP = new HashMap<>();
+
+    public static final String RSeMalmNobe_IP = "10.111.253.9";
+    public static final String RSeMalmNobe_NAME = "r-se-malm-nobe-013";
+    /*
+    public static final String RSeMalmNobe_SNMP_RESOURCE = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_1 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.1.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_1002 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.1002.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_1003 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.1003.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_1004 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.1004.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_1005 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.1005.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_3 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.3.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_357 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.357.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_360 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.360.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_389 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.389.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_399 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.399.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_450 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.450.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_451 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.451.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_452 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.452.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_453 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.453.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_454 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.454.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_500 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.500.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_501 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.501.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_502 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.502.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_503 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.503.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_504 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.504.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_505 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.505.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_506 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.506.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_507 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.507.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_508 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.508.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_600 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.600.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_601 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.601.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_602 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.602.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_603 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.603.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_604 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.604.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_605 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.605.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_606 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.606.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_750 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.750.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_800 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.800.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_801 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.801.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_835 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.835.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_836 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.836.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_850 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.850.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_851 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.851.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_950 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.950.txt";
+    */
+    public static  final String RSeMalmNobe_SYSOID = ".1.3.6.1.4.1.9.1.516";
+
+
+    public static final Map<InetAddress,Integer> RSeMalmNobe_IP_IF_MAP =  new HashMap<>();
+    public static  final Map<Integer,String> RSeMalmNobe_IF_IFNAME_MAP = new HashMap<>();
+    public static  final Map<Integer,String> RSeMalmNobe_IF_IFDESCR_MAP = new HashMap<>();
+    public static  final Map<Integer,String> RSeMalmNobe_IF_MAC_MAP = new HashMap<>();
+    public static  final Map<Integer,String> RSeMalmNobe_IF_IFALIAS_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> RSeMalmNobe_IP_MK_MAP = new HashMap<>();
+
+    public static final String SSeMalmNobe_IP = "10.108.191.171";
+    public static final String SSeMalmNobe_NAME = "s-se-malm-nobe-561";
+    //public static final String SSeMalmNobe_SNMP_RESOURCE = "classpath:/linkd/nms0002ciscoalcatel/s-se-malm-nobe-561.txt";
+    public static  final String SSeMalmNobe_SYSOID = ".1.3.6.1.4.1.6486.800.1.1.2.1.11.2.2";
+
+    public static final Map<InetAddress,Integer> SSeMalmNobe_IP_IF_MAP =  new HashMap<>();
+    public static  final Map<Integer,String> SSeMalmNobe_IF_IFNAME_MAP = new HashMap<>();
+    public static  final Map<Integer,String> SSeMalmNobe_IF_IFDESCR_MAP = new HashMap<>();
+    public static  final Map<Integer,String> SSeMalmNobe_IF_MAC_MAP = new HashMap<>();
+    public static  final Map<Integer,String> SSeMalmNobe_IF_IFALIAS_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> SSeMalmNobe_IP_MK_MAP = new HashMap<>();
     static {
     try {
         /*
@@ -64,6 +309,8 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
 
          */
 
+        Rluck001_IF_IFNAME_MAP.put(21,"lo0.16384");
+        Rluck001_IF_IFDESCR_MAP.put(21,"lo0.16384");
         Rluck001_IP_IF_MAP.put(InetAddressUtils.addr("10.0.0.1"), 22);
         Rluck001_IP_MK_MAP.put(InetAddressUtils.addr("10.0.0.1"), InetAddressUtils.addr("255.255.255.255"));
         Rluck001_IP_IF_MAP.put(InetAddressUtils.addr("10.0.0.6"), 548);
@@ -547,6 +794,9 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
 */
 
 
+
+        RDeEssnBrue_IF_IFNAME_MAP.put(308,"EOBC0/0");
+        RDeEssnBrue_IF_IFDESCR_MAP.put(308,"EOBC0/0");
         RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.0.1"), 398);
         RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.1.1"), 399);
         RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.2.1"), 400);

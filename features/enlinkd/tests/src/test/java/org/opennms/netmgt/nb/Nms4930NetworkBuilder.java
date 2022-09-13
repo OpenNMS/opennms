@@ -40,7 +40,16 @@ import org.opennms.netmgt.model.SnmpInterfaceBuilder;
 
 public class Nms4930NetworkBuilder extends NmsNetworkBuilder {
 
-        public OnmsNode getHost1() {
+    //NMS4943
+    public static final String DLINK1_IP = "10.1.1.2";
+    public static final String DLINK1_NAME = "dlink1";
+    public static final String DLINK1_SNMP_RESOURCE = "classpath:/linkd/nms4930/dlink_DES-3026.properties";
+
+    public static final String DLINK2_IP = "10.1.2.2";
+    public static final String DLINK2_NAME = "dlink2";
+    public static final String DLINK2_SNMP_RESOURCE = "classpath:/linkd/nms4930/dlink_DGS-3612G.properties";
+
+    public OnmsNode getHost1() {
             NetworkBuilder nb = getNetworkBuilder();
             nb.addNode("host1").setForeignSource("linkd").setForeignId("host1").setType(NodeType.ACTIVE);
             SnmpInterfaceBuilder snmpbuilder = nb.addSnmpInterface(101).setIfName("eth0").setIfType(6).setPhysAddr("001e58a6aed7").setIfDescr("eth0");

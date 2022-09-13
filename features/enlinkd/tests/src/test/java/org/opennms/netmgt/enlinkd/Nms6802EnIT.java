@@ -33,10 +33,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.CISCOISIS_IP;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.CISCOISIS_NAME;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.CISCOISIS_ISIS_SYS_ID;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.CISCOISIS_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.Nms6802NetworkBuilder.CISCOISIS_IP;
+import static org.opennms.netmgt.nb.Nms6802NetworkBuilder.CISCOISIS_NAME;
+import static org.opennms.netmgt.nb.Nms6802NetworkBuilder.CISCOISIS_ISIS_SYS_ID;
+import static org.opennms.netmgt.nb.Nms6802NetworkBuilder.CISCOISIS_SNMP_RESOURCE;
 
 import org.junit.Test;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;

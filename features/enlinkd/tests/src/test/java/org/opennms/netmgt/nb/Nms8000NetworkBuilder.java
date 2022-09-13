@@ -28,6 +28,10 @@
 
 package org.opennms.netmgt.nb;
 
+import java.net.InetAddress;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsNode;
 
@@ -36,6 +40,72 @@ import org.opennms.netmgt.model.OnmsNode;
  */
 
 public class Nms8000NetworkBuilder extends NmsNetworkBuilder {
+    //NMS8003
+    //NMS8000
+    public static final String NMMR1_IP = "192.168.3.1";
+    public static final String NMMR1_NAME = "NMM-R1";
+    public static final String NMMR1_SYSOID = ".1.3.6.1.4.1.9.1.1045";
+    public static final String NMMR1_SNMP_RESOURCE = "classpath:/linkd/nms8000/"+NMMR1_NAME+".snmpwalk.txt";
+    public static final String NMMR1_SNMP_RESOURCE_2 = "classpath:/linkd/nms8003/"+NMMR1_NAME+".snmpwalk.txt";
+
+    public static final Map<InetAddress,Integer> NMMR1_IP_IF_MAP =  new HashMap<>();
+    public static final Map<Integer,String>      NMMR1_IF_IFNAME_MAP = new HashMap<>();
+    public static final Map<Integer,String>      NMMR1_IF_IFDESCR_MAP = new HashMap<>();
+    public static final Map<Integer,String>      NMMR1_IF_MAC_MAP = new HashMap<>();
+    public static final Map<Integer,String>      NMMR1_IF_IFALIAS_MAP = new HashMap<>();
+    public static final Map<InetAddress,InetAddress> NMMR1_IP_MK_MAP = new HashMap<>();
+
+    public static final String NMMR2_IP = "192.168.2.1";
+    public static final String NMMR2_NAME = "NMM-R2";
+    public static final String NMMR2_SYSOID = ".1.3.6.1.4.1.9.1.1045";
+    public static final String NMMR2_SNMP_RESOURCE = "classpath:/linkd/nms8000/"+NMMR2_NAME+".snmpwalk.txt";
+    public static final String NMMR2_SNMP_RESOURCE_2 = "classpath:/linkd/nms8003/"+NMMR2_NAME+".snmpwalk.txt";
+
+    public static final Map<InetAddress,Integer> NMMR2_IP_IF_MAP =  new HashMap<>();
+    public static final Map<Integer,String>      NMMR2_IF_IFNAME_MAP = new HashMap<>();
+    public static final Map<Integer,String>      NMMR2_IF_IFDESCR_MAP = new HashMap<>();
+    public static final Map<Integer,String>      NMMR2_IF_MAC_MAP = new HashMap<>();
+    public static final Map<Integer,String>      NMMR2_IF_IFALIAS_MAP = new HashMap<>();
+    public static final Map<InetAddress,InetAddress> NMMR2_IP_MK_MAP = new HashMap<>();
+
+    public static final String NMMR3_IP = "192.168.255.1";
+    public static final String NMMR3_NAME = "NMM-R3";
+    public static final String NMMR3_SYSOID = ".1.3.6.1.4.1.9.1.1045";
+    public static final String NMMR3_SNMP_RESOURCE = "classpath:/linkd/nms8000/"+NMMR3_NAME+".snmpwalk.txt";
+    public static final String NMMR3_SNMP_RESOURCE_2 = "classpath:/linkd/nms8003/"+NMMR3_NAME+".snmpwalk.txt";
+
+    public static final Map<InetAddress,Integer> NMMR3_IP_IF_MAP =  new HashMap<>();
+    public static final Map<Integer,String>      NMMR3_IF_IFNAME_MAP = new HashMap<>();
+    public static final Map<Integer,String>      NMMR3_IF_IFDESCR_MAP = new HashMap<>();
+    public static final Map<Integer,String>      NMMR3_IF_MAC_MAP = new HashMap<>();
+    public static final Map<Integer,String>      NMMR3_IF_IFALIAS_MAP = new HashMap<>();
+    public static final Map<InetAddress,InetAddress> NMMR3_IP_MK_MAP = new HashMap<>();
+
+    public static final String NMMSW1_IP = "192.168.23.10";
+    public static final String NMMSW1_NAME = "NMM-SW1";
+    public static final String NMMSW1_SYSOID = ".1.3.6.1.4.1.9.1.716";
+    public static final String NMMSW1_SNMP_RESOURCE = "classpath:/linkd/nms8000/"+NMMSW1_NAME+".snmpwalk.txt";
+    public static final String NMMSW1_SNMP_RESOURCE_2 = "classpath:/linkd/nms8003/"+NMMSW1_NAME+".snmpwalk.txt";
+
+    public static final Map<InetAddress,Integer> NMMSW1_IP_IF_MAP =  new HashMap<>();
+    public static final Map<Integer,String>      NMMSW1_IF_IFNAME_MAP = new HashMap<>();
+    public static final Map<Integer,String>      NMMSW1_IF_IFDESCR_MAP = new HashMap<>();
+    public static final Map<Integer,String>      NMMSW1_IF_MAC_MAP = new HashMap<>();
+    public static final Map<Integer,String>      NMMSW1_IF_IFALIAS_MAP = new HashMap<>();
+    public static final Map<InetAddress,InetAddress> NMMSW1_IP_MK_MAP = new HashMap<>();
+
+    public static final String NMMSW2_IP = "192.168.42.10";
+    public static final String NMMSW2_NAME = "NMM-SW2";
+    public static final String NMMSW2_SYSOID = ".1.3.6.1.4.1.9.1.716";
+    public static final String NMMSW2_SNMP_RESOURCE = "classpath:/linkd/nms8000/"+NMMSW2_NAME+".snmpwalk.txt";
+    public static final String NMMSW2_SNMP_RESOURCE_2 = "classpath:/linkd/nms8003/"+NMMSW2_NAME+".snmpwalk.txt";
+
+    public static final Map<InetAddress,Integer> NMMSW2_IP_IF_MAP =  new HashMap<>();
+    public static final Map<Integer,String>      NMMSW2_IF_IFNAME_MAP = new HashMap<>();
+    public static final Map<Integer,String>      NMMSW2_IF_IFDESCR_MAP = new HashMap<>();
+    public static final Map<Integer,String>      NMMSW2_IF_MAC_MAP = new HashMap<>();
+    public static final Map<Integer,String>      NMMSW2_IF_IFALIAS_MAP = new HashMap<>();
+    public static final Map<InetAddress,InetAddress> NMMSW2_IP_MK_MAP = new HashMap<>();
 
 
     static {

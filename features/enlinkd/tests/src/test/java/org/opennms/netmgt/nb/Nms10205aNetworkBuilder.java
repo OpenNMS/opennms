@@ -28,6 +28,10 @@
 
 package org.opennms.netmgt.nb;
 
+import java.net.InetAddress;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsNode;
 
@@ -38,19 +42,202 @@ import org.opennms.netmgt.model.OnmsNode;
  */
 
 public class Nms10205aNetworkBuilder extends NmsNetworkBuilder {
+    //Nms10205 a and b
+    public static InetAddress MUMBAI_OSPF_ID;
+    public static InetAddress DELHI_OSPF_ID;
+    public static InetAddress BANGALORE_OSPF_ID;
+    public static InetAddress MYSORE_OSPF_ID;
+    public static InetAddress BAGMANE_OSPF_ID;
+    public static InetAddress SPACE_EX_SW1_OSPF_ID;
+    public static InetAddress SPACE_EX_SW2_OSPF_ID;
+    public static InetAddress J6350_42_OSPF_ID;
+    public static InetAddress SRX_100_OSPF_ID;
     static {
-        MUMBAI_IP_IF_MAP.put(InetAddressUtils.addr("192.168.5.5"), 520);
-        MUMBAI_IP_IF_MAP.put(InetAddressUtils.addr("192.168.5.13"), 507);
-        MUMBAI_IP_IF_MAP.put(InetAddressUtils.addr("192.168.5.21"), 978);
-        MUMBAI_IP_IF_MAP.put(InetAddressUtils.addr("192.168.5.9"), 519);
-        MUMBAI_IP_IF_MAP.put(InetAddressUtils.addr("192.168.5.17"), 977);
-        MUMBAI_IP_IF_MAP.put(InetAddressUtils.addr("10.205.56.5"), 508);
-        MUMBAI_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.1"), 18);
-        MUMBAI_IP_IF_MAP.put(InetAddressUtils.addr("10.0.0.4"), 18);
-        MUMBAI_IP_IF_MAP.put(InetAddressUtils.addr("15.15.0.5"), 518);
-        MUMBAI_IP_IF_MAP.put(InetAddressUtils.addr("192.168.5.1"), 16);
+        MUMBAI_OSPF_ID  = InetAddressUtils.addr("192.168.5.1");
+        DELHI_OSPF_ID  = InetAddressUtils.addr("192.168.7.1");
+        BANGALORE_OSPF_ID  = InetAddressUtils.addr("192.168.9.1");
+        MYSORE_OSPF_ID = InetAddressUtils.addr("192.168.22.1");
+        BAGMANE_OSPF_ID = InetAddressUtils.addr("192.168.20.1");
+        SPACE_EX_SW1_OSPF_ID = InetAddressUtils.addr("10.205.56.1");
+        SPACE_EX_SW2_OSPF_ID = InetAddressUtils.addr("10.205.56.2");
+        J6350_42_OSPF_ID = InetAddressUtils.addr("10.205.56.42");
+        SRX_100_OSPF_ID = InetAddressUtils.addr("0.0.0.0");
+    }
+
+    public static final String MUMBAI_IP = "10.205.56.5";
+    public static final String MUMBAI_NAME = "Mumbai";
+    public static  final String MUMBAI_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.9";
+
+    public static  final Map<InetAddress,Integer> MUMBAI_IP_IF_MAP =  new HashMap<>();
+    public static  final Map<Integer,String> MUMBAI_IF_IFNAME_MAP = new HashMap<>();
+    public static  final Map<Integer,String> MUMBAI_IF_IFDESCR_MAP = new HashMap<>();
+    public static  final Map<Integer,String> MUMBAI_IF_MAC_MAP = new HashMap<>();
+    public static  final Map<Integer,String> MUMBAI_IF_IFALIAS_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> MUMBAI_IP_MK_MAP = new HashMap<>();
+
+    public static final String CHENNAI_IP = "10.205.56.6";
+    public static final String CHENNAI_NAME = "Chennai";
+    public static  final String CHENNAI_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.25";
+
+    public static  final Map<InetAddress,Integer> CHENNAI_IP_IF_MAP =  new HashMap<>();
+    public static  final Map<Integer,String> CHENNAI_IF_IFNAME_MAP = new HashMap<>();
+    public static  final Map<Integer,String> CHENNAI_IF_IFDESCR_MAP = new HashMap<>();
+    public static  final Map<Integer,String> CHENNAI_IF_MAC_MAP = new HashMap<>();
+    public static  final Map<Integer,String> CHENNAI_IF_IFALIAS_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> CHENNAI_IP_MK_MAP = new HashMap<>();
+
+    public static final String DELHI_IP = "10.205.56.7";
+    public static final String DELHI_NAME = "Delhi";
+    public static  final String DELHI_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.29";
+
+    public static  final Map<InetAddress,Integer> DELHI_IP_IF_MAP =  new HashMap<>();
+    public static  final Map<Integer,String> DELHI_IF_IFNAME_MAP = new HashMap<>();
+    public static  final Map<Integer,String> DELHI_IF_IFDESCR_MAP = new HashMap<>();
+    public static  final Map<Integer,String> DELHI_IF_MAC_MAP = new HashMap<>();
+    public static  final Map<Integer,String> DELHI_IF_IFALIAS_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> DELHI_IP_MK_MAP = new HashMap<>();
+
+    public static final String BANGALORE_IP = "10.205.56.9";
+    public static final String BANGALORE_NAME = "Bangalore";
+    public static  final String BANGALORE_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.10";
+
+    public static  final Map<InetAddress,Integer> BANGALORE_IP_IF_MAP =  new HashMap<>();
+    public static  final Map<Integer,String> BANGALORE_IF_IFNAME_MAP = new HashMap<>();
+    public static  final Map<Integer,String> BANGALORE_IF_IFDESCR_MAP = new HashMap<>();
+    public static  final Map<Integer,String> BANGALORE_IF_MAC_MAP = new HashMap<>();
+    public static  final Map<Integer,String> BANGALORE_IF_IFALIAS_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> BANGALORE_IP_MK_MAP = new HashMap<>();
+
+    public static final String MYSORE_IP = "10.205.56.22";
+    public static final String MYSORE_NAME = "Mysore";
+    public static  final String MYSORE_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.11";
+
+    public static  final Map<InetAddress,Integer> MYSORE_IP_IF_MAP =  new HashMap<>();
+    public static  final Map<Integer,String> MYSORE_IF_IFNAME_MAP = new HashMap<>();
+    public static  final Map<Integer,String> MYSORE_IF_IFDESCR_MAP = new HashMap<>();
+    public static  final Map<Integer,String> MYSORE_IF_MAC_MAP = new HashMap<>();
+    public static  final Map<Integer,String> MYSORE_IF_IFALIAS_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> MYSORE_IP_MK_MAP = new HashMap<>();
+
+    public static final String BAGMANE_IP = "10.205.56.20";
+    public static final String BAGMANE_NAME = "Bagmane";
+    public static  final String BAGMANE_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.57";
+
+    public static  final Map<InetAddress,Integer> BAGMANE_IP_IF_MAP =  new HashMap<>();
+    public static  final Map<Integer,String> BAGMANE_IF_IFNAME_MAP = new HashMap<>();
+    public static  final Map<Integer,String> BAGMANE_IF_IFDESCR_MAP = new HashMap<>();
+    public static  final Map<Integer,String> BAGMANE_IF_MAC_MAP = new HashMap<>();
+    public static  final Map<Integer,String> BAGMANE_IF_IFALIAS_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> BAGMANE_IP_MK_MAP = new HashMap<>();
+
+    public static final String SPACE_EX_SW1_IP = "10.205.56.1";
+    public static final String SPACE_EX_SW1_NAME = "Space-EX-SW1";
+    public static  final String SPACE_EX_SW1_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.30";
+
+    public static  final Map<InetAddress,Integer> SPACE_EX_SW1_IP_IF_MAP =  new HashMap<>();
+    public static  final Map<Integer,String> SPACE_EX_SW1_IF_IFNAME_MAP = new HashMap<>();
+    public static  final Map<Integer,String> SPACE_EX_SW1_IF_IFDESCR_MAP = new HashMap<>();
+    public static  final Map<Integer,String> SPACE_EX_SW1_IF_MAC_MAP = new HashMap<>();
+    public static  final Map<Integer,String> SPACE_EX_SW1_IF_IFALIAS_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> SPACE_EX_SW1_IP_MK_MAP = new HashMap<>();
+
+    public static final String SPACE_EX_SW2_IP = "10.205.56.2";
+    public static final String SPACE_EX_SW2_NAME = "Space-EX-SW2";
+    public static  final String SPACE_EX_SW2_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.31";
+
+    public static  final Map<InetAddress,Integer> SPACE_EX_SW2_IP_IF_MAP =  new HashMap<>();
+    public static  final Map<Integer,String> SPACE_EX_SW2_IF_IFNAME_MAP = new HashMap<>();
+    public static  final Map<Integer,String> SPACE_EX_SW2_IF_IFDESCR_MAP = new HashMap<>();
+    public static  final Map<Integer,String> SPACE_EX_SW2_IF_MAC_MAP = new HashMap<>();
+    public static  final Map<Integer,String> SPACE_EX_SW2_IF_IFALIAS_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> SPACE_EX_SW2_IP_MK_MAP = new HashMap<>();
+
+    public static final String J6350_41_IP = "10.205.56.41";
+    public static final String J6350_41_NAME = "J6350-41";
+    public static  final String J6350_41_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.20";
+
+    public static  final Map<InetAddress,Integer> J6350_41_IP_IF_MAP =  new HashMap<>();
+    public static  final Map<Integer,String> J6350_41_IF_IFNAME_MAP = new HashMap<>();
+    public static  final Map<Integer,String> J6350_41_IF_IFDESCR_MAP = new HashMap<>();
+    public static  final Map<Integer,String> J6350_41_IF_MAC_MAP = new HashMap<>();
+    public static  final Map<Integer,String> J6350_41_IF_IFALIAS_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> J6350_41_IP_MK_MAP = new HashMap<>();
+
+    public static final String J6350_42_IP = "10.205.56.42";
+    public static final String J6350_42_NAME = "J6350-2";
+    public static  final String J6350_42_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.20";
+    //public static final String J6350_42_LLDP_CHASSISID = "2c6bf55dc100";
+
+    public static  final Map<InetAddress,Integer> J6350_42_IP_IF_MAP =  new HashMap<>();
+    public static  final Map<Integer,String> J6350_42_IF_IFNAME_MAP = new HashMap<>();
+    public static  final Map<Integer,String> J6350_42_IF_IFDESCR_MAP = new HashMap<>();
+    public static  final Map<Integer,String> J6350_42_IF_MAC_MAP = new HashMap<>();
+    public static  final Map<Integer,String> J6350_42_IF_IFALIAS_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> J6350_42_IP_MK_MAP = new HashMap<>();
+
+    public static final String SRX_100_IP = "10.205.56.23";
+    public static final String SRX_100_NAME = "SRX_56.23";
+    public static  final String SRX_100_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.41";
+
+    public static  final Map<InetAddress,Integer> SRX_100_IP_IF_MAP =  new HashMap<>();
+    public static  final Map<Integer,String> SRX_100_IF_IFNAME_MAP = new HashMap<>();
+    public static  final Map<Integer,String> SRX_100_IF_IFDESCR_MAP = new HashMap<>();
+    public static  final Map<Integer,String> SRX_100_IF_MAC_MAP = new HashMap<>();
+    public static  final Map<Integer,String> SRX_100_IF_IFALIAS_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> SRX_100_IP_MK_MAP = new HashMap<>();
+
+    public static final String SSG550_IP = "10.205.35.100";
+    public static final String SSG550_NAME = "SSG550";
+    public static  final String SSG550_SYSOID = ".1.3.6.1.4.1.3224.1.51";
+
+    public static final String MUMBAI_SNMP_RESOURCE   = "classpath:/linkd/nms10205/"  +MUMBAI_NAME+"_"+MUMBAI_IP+".txt";
+    public static final String CHENNAI_SNMP_RESOURCE   = "classpath:/linkd/nms10205/"  +CHENNAI_NAME+"_"+CHENNAI_IP+".txt";
+    public static final String DELHI_SNMP_RESOURCE   = "classpath:/linkd/nms10205/"  +DELHI_NAME+"_"+DELHI_IP+".txt";
+    public static final String BANGALORE_SNMP_RESOURCE   = "classpath:/linkd/nms10205/"  +BANGALORE_NAME+"_"+BANGALORE_IP+".txt";
+    public static final String MYSORE_SNMP_RESOURCE   = "classpath:/linkd/nms10205/"  +MYSORE_NAME+"_"+MYSORE_IP+".txt";
+    public static final String BAGMANE_SNMP_RESOURCE   = "classpath:/linkd/nms10205/"  +BAGMANE_NAME+"_"+BAGMANE_IP+".txt";
+    public static final String SPACE_EX_SW1_SNMP_RESOURCE   = "classpath:/linkd/nms10205/"  +SPACE_EX_SW1_NAME+"_"+SPACE_EX_SW1_IP+".txt";
+    public static final String SPACE_EX_SW2_SNMP_RESOURCE   = "classpath:/linkd/nms10205/"  +SPACE_EX_SW2_NAME+"_"+SPACE_EX_SW2_IP+".txt";
+    public static final String J6350_41_SNMP_RESOURCE   = "classpath:/linkd/nms10205/"  +J6350_41_NAME+"_"+J6350_41_IP+".txt";
+    public static final String J6350_42_SNMP_RESOURCE   = "classpath:/linkd/nms10205/" +"J6350-42_"+J6350_42_IP+".txt";
+    public static final String SRX_100_SNMP_RESOURCE   = "classpath:/linkd/nms10205/" +"SRX-100_"+SRX_100_IP+".txt";
+    public static final String SSG550_SNMP_RESOURCE   = "classpath:/linkd/nms10205/"  +SSG550_NAME+"_"+SSG550_IP+".txt";
+
+    public static  final Map<InetAddress,Integer> SSG550_IP_IF_MAP =  new HashMap<>();
+    public static  final Map<Integer,String> SSG550_IF_IFNAME_MAP = new HashMap<>();
+    public static  final Map<Integer,String> SSG550_IF_IFDESCR_MAP = new HashMap<>();
+    public static  final Map<Integer,String> SSG550_IF_MAC_MAP = new HashMap<>();
+    public static  final Map<Integer,String> SSG550_IF_IFALIAS_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> SSG550_IP_MK_MAP = new HashMap<>();
+    static {
         MUMBAI_IP_IF_MAP.put(InetAddressUtils.addr("10.0.0.1"), 18);
+        MUMBAI_IP_IF_MAP.put(InetAddressUtils.addr("10.0.0.4"), 18);
+        MUMBAI_IP_IF_MAP.put(InetAddressUtils.addr("10.205.56.5"), 508);
+        MUMBAI_IP_IF_MAP.put(InetAddressUtils.addr("15.15.0.5"), 518);
+        MUMBAI_IP_IF_MAP.put(InetAddressUtils.addr("127.0.0.1"), 21);
+        MUMBAI_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.1"), 18);
         MUMBAI_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.4"), 18);
+        MUMBAI_IP_IF_MAP.put(InetAddressUtils.addr("192.168.5.1"), 16);
+        MUMBAI_IP_IF_MAP.put(InetAddressUtils.addr("192.168.5.5"), 520);
+        MUMBAI_IP_IF_MAP.put(InetAddressUtils.addr("192.168.5.9"), 519);
+        MUMBAI_IP_IF_MAP.put(InetAddressUtils.addr("192.168.5.13"), 507);
+        MUMBAI_IP_IF_MAP.put(InetAddressUtils.addr("192.168.5.17"), 977);
+        MUMBAI_IP_IF_MAP.put(InetAddressUtils.addr("192.168.5.21"), 978);
+
+        MUMBAI_IP_MK_MAP.put(InetAddressUtils.addr("10.0.0.1"), InetAddressUtils.addr("255.0.0.0"));
+        MUMBAI_IP_MK_MAP.put(InetAddressUtils.addr("10.0.0.4"), InetAddressUtils.addr("255.0.0.0"));
+        MUMBAI_IP_MK_MAP.put(InetAddressUtils.addr("10.205.56.5"), InetAddressUtils.addr("255.255.0.0"));
+        MUMBAI_IP_MK_MAP.put(InetAddressUtils.addr("15.15.0.5"), InetAddressUtils.addr("255.255.0.0"));
+        MUMBAI_IP_MK_MAP.put(InetAddressUtils.addr("127.0.0.1"), InetAddressUtils.addr("255.255.255.255"));
+        MUMBAI_IP_MK_MAP.put(InetAddressUtils.addr("128.0.0.1"), InetAddressUtils.addr("192.0.0.0"));
+        MUMBAI_IP_MK_MAP.put(InetAddressUtils.addr("128.0.0.4"), InetAddressUtils.addr("192.0.0.0"));
+        MUMBAI_IP_MK_MAP.put(InetAddressUtils.addr("192.168.5.1"), InetAddressUtils.addr("255.255.255.255"));
+        MUMBAI_IP_MK_MAP.put(InetAddressUtils.addr("192.168.5.5"), InetAddressUtils.addr("255.255.255.252"));
+        MUMBAI_IP_MK_MAP.put(InetAddressUtils.addr("192.168.5.9"), InetAddressUtils.addr("255.255.255.252"));
+        MUMBAI_IP_MK_MAP.put(InetAddressUtils.addr("192.168.5.13"), InetAddressUtils.addr("255.255.255.252"));
+        MUMBAI_IP_MK_MAP.put(InetAddressUtils.addr("192.168.5.17"), InetAddressUtils.addr("255.255.255.252"));
+        MUMBAI_IP_MK_MAP.put(InetAddressUtils.addr("192.168.5.21"), InetAddressUtils.addr("255.255.255.252"));
+
         MUMBAI_IF_IFNAME_MAP.put(520, "ge-0/1/3.0");
         MUMBAI_IF_IFDESCR_MAP.put(520, "ge-0/1/3.0");
         MUMBAI_IF_MAC_MAP.put(520, "0019e2709482");
@@ -176,15 +363,30 @@ public class Nms10205aNetworkBuilder extends NmsNetworkBuilder {
         MUMBAI_IF_IFDESCR_MAP.put(11, "pimd");
         MUMBAI_IF_IFNAME_MAP.put(522, "pfh-0/0/0.16383");
         MUMBAI_IF_IFDESCR_MAP.put(522, "pfh-0/0/0.16383");
-        CHENNAI_IP_IF_MAP.put(InetAddressUtils.addr("192.168.5.6"), 528);
-        CHENNAI_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.4"), 18);
-        CHENNAI_IP_IF_MAP.put(InetAddressUtils.addr("192.168.6.1"), 16);
-        CHENNAI_IP_IF_MAP.put(InetAddressUtils.addr("10.205.56.6"), 523);
-        CHENNAI_IP_IF_MAP.put(InetAddressUtils.addr("192.168.1.18"), 517);
-        CHENNAI_IP_IF_MAP.put(InetAddressUtils.addr("172.16.6.1"), 533);
-        CHENNAI_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.1"), 18);
+
+
         CHENNAI_IP_IF_MAP.put(InetAddressUtils.addr("10.0.0.4"), 18);
+        CHENNAI_IP_IF_MAP.put(InetAddressUtils.addr("10.205.56.6"), 523);
+        CHENNAI_IP_IF_MAP.put(InetAddressUtils.addr("127.0.0.1"), 21);
+        CHENNAI_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.1"), 18);
+        CHENNAI_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.4"), 18);
+        CHENNAI_IP_IF_MAP.put(InetAddressUtils.addr("172.16.6.1"), 533);
         CHENNAI_IP_IF_MAP.put(InetAddressUtils.addr("192.168.1.1"), 532);
+        CHENNAI_IP_IF_MAP.put(InetAddressUtils.addr("192.168.1.18"), 517);
+        CHENNAI_IP_IF_MAP.put(InetAddressUtils.addr("192.168.5.6"), 528);
+        CHENNAI_IP_IF_MAP.put(InetAddressUtils.addr("192.168.6.1"), 16);
+
+        CHENNAI_IP_MK_MAP.put(InetAddressUtils.addr("10.0.0.4"), InetAddressUtils.addr("255.0.0.0"));
+        CHENNAI_IP_MK_MAP.put(InetAddressUtils.addr("10.205.56.6"), InetAddressUtils.addr("255.255.0.0"));
+        CHENNAI_IP_MK_MAP.put(InetAddressUtils.addr("127.0.0.1"), InetAddressUtils.addr("255.255.255.255"));
+        CHENNAI_IP_MK_MAP.put(InetAddressUtils.addr("128.0.0.1"), InetAddressUtils.addr("192.0.0.0"));
+        CHENNAI_IP_MK_MAP.put(InetAddressUtils.addr("128.0.0.4"), InetAddressUtils.addr("192.0.0.0"));
+        CHENNAI_IP_MK_MAP.put(InetAddressUtils.addr("172.16.6.1"), InetAddressUtils.addr("255.255.255.252"));
+        CHENNAI_IP_MK_MAP.put(InetAddressUtils.addr("192.168.1.1"), InetAddressUtils.addr("255.255.255.252"));
+        CHENNAI_IP_MK_MAP.put(InetAddressUtils.addr("192.168.1.18"), InetAddressUtils.addr("255.255.255.252"));
+        CHENNAI_IP_MK_MAP.put(InetAddressUtils.addr("192.168.5.6"), InetAddressUtils.addr("255.255.255.252"));
+        CHENNAI_IP_MK_MAP.put(InetAddressUtils.addr("192.168.6.1"), InetAddressUtils.addr("255.255.255.255"));
+
         CHENNAI_IF_IFNAME_MAP.put(562, "ge-4/3/3");
         CHENNAI_IF_IFDESCR_MAP.put(562, "ge-4/3/3");
         CHENNAI_IF_MAC_MAP.put(562, "002283d6a621");
@@ -425,16 +627,31 @@ public class Nms10205aNetworkBuilder extends NmsNetworkBuilder {
         CHENNAI_IF_IFNAME_MAP.put(566, "ge-4/3/7");
         CHENNAI_IF_IFDESCR_MAP.put(566, "ge-4/3/7");
         CHENNAI_IF_MAC_MAP.put(566, "002283d6a625");
-        DELHI_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.1"), 18);
-        DELHI_IP_IF_MAP.put(InetAddressUtils.addr("172.16.7.1"), 17619);
-        DELHI_IP_IF_MAP.put(InetAddressUtils.addr("192.168.7.1"), 16);
-        DELHI_IP_IF_MAP.put(InetAddressUtils.addr("192.168.1.21"), 29804);
-        DELHI_IP_IF_MAP.put(InetAddressUtils.addr("192.168.1.2"), 28514);
-        DELHI_IP_IF_MAP.put(InetAddressUtils.addr("10.205.56.7"), 13);
+
         DELHI_IP_IF_MAP.put(InetAddressUtils.addr("10.0.0.4"), 18);
+        DELHI_IP_IF_MAP.put(InetAddressUtils.addr("10.205.56.7"), 13);
+        DELHI_IP_IF_MAP.put(InetAddressUtils.addr("127.0.0.1"), 21);
+        DELHI_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.1"), 18);
         DELHI_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.4"), 18);
+        DELHI_IP_IF_MAP.put(InetAddressUtils.addr("172.16.7.1"), 17619);
+        DELHI_IP_IF_MAP.put(InetAddressUtils.addr("192.168.1.2"), 28514);
         DELHI_IP_IF_MAP.put(InetAddressUtils.addr("192.168.1.5"), 3674);
+        DELHI_IP_IF_MAP.put(InetAddressUtils.addr("192.168.1.21"), 29804);
         DELHI_IP_IF_MAP.put(InetAddressUtils.addr("192.168.5.10"), 28503);
+        DELHI_IP_IF_MAP.put(InetAddressUtils.addr("192.168.7.1"), 16);
+
+        DELHI_IP_MK_MAP.put(InetAddressUtils.addr("10.0.0.4"), InetAddressUtils.addr("255.0.0.0"));
+        DELHI_IP_MK_MAP.put(InetAddressUtils.addr("10.205.56.7"), InetAddressUtils.addr("255.255.0.0"));
+        DELHI_IP_MK_MAP.put(InetAddressUtils.addr("127.0.0.1"), InetAddressUtils.addr("255.255.255.255"));
+        DELHI_IP_MK_MAP.put(InetAddressUtils.addr("128.0.0.1"), InetAddressUtils.addr("192.0.0.0"));
+        DELHI_IP_MK_MAP.put(InetAddressUtils.addr("128.0.0.4"), InetAddressUtils.addr("192.0.0.0"));
+        DELHI_IP_MK_MAP.put(InetAddressUtils.addr("172.16.7.1"), InetAddressUtils.addr("255.255.255.252"));
+        DELHI_IP_MK_MAP.put(InetAddressUtils.addr("192.168.1.2"), InetAddressUtils.addr("255.255.255.252"));
+        DELHI_IP_MK_MAP.put(InetAddressUtils.addr("192.168.1.5"), InetAddressUtils.addr("255.255.255.252"));
+        DELHI_IP_MK_MAP.put(InetAddressUtils.addr("192.168.1.21"), InetAddressUtils.addr("255.255.255.252"));
+        DELHI_IP_MK_MAP.put(InetAddressUtils.addr("192.168.5.10"), InetAddressUtils.addr("255.255.255.252"));
+        DELHI_IP_MK_MAP.put(InetAddressUtils.addr("192.168.7.1"), InetAddressUtils.addr("255.255.255.255"));
+
         DELHI_IF_IFNAME_MAP.put(3671, "demux0");
         DELHI_IF_IFDESCR_MAP.put(3671, "demux0");
         DELHI_IF_IFNAME_MAP.put(275, "ge-1/3/1");
@@ -653,16 +870,31 @@ public class Nms10205aNetworkBuilder extends NmsNetworkBuilder {
         DELHI_IF_IFNAME_MAP.put(28527, "ge-1/2/0");
         DELHI_IF_IFDESCR_MAP.put(28527, "ge-1/2/0");
         DELHI_IF_MAC_MAP.put(28527, "002283f163df");
-        BANGALORE_IP_IF_MAP.put(InetAddressUtils.addr("192.168.5.14"), 2401);
+
         BANGALORE_IP_IF_MAP.put(InetAddressUtils.addr("9.1.1.1"), 2407);
-        BANGALORE_IP_IF_MAP.put(InetAddressUtils.addr("10.205.56.9"), 2366);
-        BANGALORE_IP_IF_MAP.put(InetAddressUtils.addr("10.0.0.4"), 14);
-        BANGALORE_IP_IF_MAP.put(InetAddressUtils.addr("192.168.9.1"), 16);
-        BANGALORE_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.4"), 14);
         BANGALORE_IP_IF_MAP.put(InetAddressUtils.addr("9.1.1.2"), 3350);
+        BANGALORE_IP_IF_MAP.put(InetAddressUtils.addr("10.0.0.4"), 14);
+        BANGALORE_IP_IF_MAP.put(InetAddressUtils.addr("10.205.56.9"), 2366);
+        BANGALORE_IP_IF_MAP.put(InetAddressUtils.addr("127.0.0.1"), 21);
         BANGALORE_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.1"), 14);
-        BANGALORE_IP_IF_MAP.put(InetAddressUtils.addr("192.168.1.9"), 2396);
+        BANGALORE_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.4"), 14);
         BANGALORE_IP_IF_MAP.put(InetAddressUtils.addr("192.168.1.6"), 2397);
+        BANGALORE_IP_IF_MAP.put(InetAddressUtils.addr("192.168.1.9"), 2396);
+        BANGALORE_IP_IF_MAP.put(InetAddressUtils.addr("192.168.5.14"), 2401);
+        BANGALORE_IP_IF_MAP.put(InetAddressUtils.addr("192.168.9.1"), 16);
+
+        BANGALORE_IP_MK_MAP.put(InetAddressUtils.addr("9.1.1.1"), InetAddressUtils.addr("255.255.255.255"));
+        BANGALORE_IP_MK_MAP.put(InetAddressUtils.addr("9.1.1.2"), InetAddressUtils.addr("255.255.0.0"));
+        BANGALORE_IP_MK_MAP.put(InetAddressUtils.addr("10.0.0.4"), InetAddressUtils.addr("255.0.0.0"));
+        BANGALORE_IP_MK_MAP.put(InetAddressUtils.addr("10.205.56.9"), InetAddressUtils.addr("255.255.0.0"));
+        BANGALORE_IP_MK_MAP.put(InetAddressUtils.addr("127.0.0.1"), InetAddressUtils.addr("255.255.255.255"));
+        BANGALORE_IP_MK_MAP.put(InetAddressUtils.addr("128.0.0.1"), InetAddressUtils.addr("192.0.0.0"));
+        BANGALORE_IP_MK_MAP.put(InetAddressUtils.addr("128.0.0.4"), InetAddressUtils.addr("192.0.0.0"));
+        BANGALORE_IP_MK_MAP.put(InetAddressUtils.addr("192.168.1.6"), InetAddressUtils.addr("255.255.255.252"));
+        BANGALORE_IP_MK_MAP.put(InetAddressUtils.addr("192.168.1.9"), InetAddressUtils.addr("255.255.255.252"));
+        BANGALORE_IP_MK_MAP.put(InetAddressUtils.addr("192.168.5.14"), InetAddressUtils.addr("255.255.255.252"));
+        BANGALORE_IP_MK_MAP.put(InetAddressUtils.addr("192.168.9.1"), InetAddressUtils.addr("255.255.255.255"));
+
         BANGALORE_IF_IFNAME_MAP.put(9, "ipip");
         BANGALORE_IF_IFDESCR_MAP.put(9, "ipip");
         BANGALORE_IF_IFNAME_MAP.put(3338, "pc-0/0/0.16383");
@@ -774,19 +1006,34 @@ public class Nms10205aNetworkBuilder extends NmsNetworkBuilder {
         BANGALORE_IF_IFNAME_MAP.put(3325, "ge-0/1/2");
         BANGALORE_IF_IFDESCR_MAP.put(3325, "ge-0/1/2");
         BANGALORE_IF_MAC_MAP.put(3325, "0022831d7c21");
-        BAGMANE_IP_IF_MAP.put(InetAddressUtils.addr("192.168.20.1"), 16);
-        BAGMANE_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.4"), 18);
-        BAGMANE_IP_IF_MAP.put(InetAddressUtils.addr("192.168.1.10"), 1732);
-        BAGMANE_IP_IF_MAP.put(InetAddressUtils.addr("192.168.1.42"), 656);
-        BAGMANE_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.1"), 18);
-        BAGMANE_IP_IF_MAP.put(InetAddressUtils.addr("192.168.1.22"), 1729);
-        BAGMANE_IP_IF_MAP.put(InetAddressUtils.addr("192.168.1.13"), 654);
-        BAGMANE_IP_IF_MAP.put(InetAddressUtils.addr("192.168.5.18"), 534);
+
+
         BAGMANE_IP_IF_MAP.put(InetAddressUtils.addr("10.0.0.4"), 18);
         BAGMANE_IP_IF_MAP.put(InetAddressUtils.addr("10.205.56.20"), 535);
+        BAGMANE_IP_IF_MAP.put(InetAddressUtils.addr("127.0.0.1"), 21);
+        BAGMANE_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.1"), 18);
+        BAGMANE_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.4"), 18);
         BAGMANE_IP_IF_MAP.put(InetAddressUtils.addr("172.16.20.1"), 540);
+        BAGMANE_IP_IF_MAP.put(InetAddressUtils.addr("192.168.1.10"), 1732);
+        BAGMANE_IP_IF_MAP.put(InetAddressUtils.addr("192.168.1.13"), 654);
+        BAGMANE_IP_IF_MAP.put(InetAddressUtils.addr("192.168.1.22"), 1729);
+        BAGMANE_IP_IF_MAP.put(InetAddressUtils.addr("192.168.1.42"), 656);
+        BAGMANE_IP_IF_MAP.put(InetAddressUtils.addr("192.168.5.18"), 534);
+        BAGMANE_IP_IF_MAP.put(InetAddressUtils.addr("192.168.20.1"), 16);
 
-        
+        BAGMANE_IP_MK_MAP.put(InetAddressUtils.addr("10.0.0.4"), InetAddressUtils.addr("255.0.0.0"));
+        BAGMANE_IP_MK_MAP.put(InetAddressUtils.addr("10.205.56.20"), InetAddressUtils.addr("255.255.0.0"));
+        BAGMANE_IP_MK_MAP.put(InetAddressUtils.addr("127.0.0.1"), InetAddressUtils.addr("255.255.255.255"));
+        BAGMANE_IP_MK_MAP.put(InetAddressUtils.addr("128.0.0.1"), InetAddressUtils.addr("192.0.0.0"));
+        BAGMANE_IP_MK_MAP.put(InetAddressUtils.addr("128.0.0.4"), InetAddressUtils.addr("192.0.0.0"));
+        BAGMANE_IP_MK_MAP.put(InetAddressUtils.addr("172.16.20.1"), InetAddressUtils.addr("255.255.255.252"));
+        BAGMANE_IP_MK_MAP.put(InetAddressUtils.addr("192.168.1.10"), InetAddressUtils.addr("255.255.255.252"));
+        BAGMANE_IP_MK_MAP.put(InetAddressUtils.addr("192.168.1.13"), InetAddressUtils.addr("255.255.255.252"));
+        BAGMANE_IP_MK_MAP.put(InetAddressUtils.addr("192.168.1.22"), InetAddressUtils.addr("255.255.255.252"));
+        BAGMANE_IP_MK_MAP.put(InetAddressUtils.addr("192.168.1.42"), InetAddressUtils.addr("255.255.255.252"));
+        BAGMANE_IP_MK_MAP.put(InetAddressUtils.addr("192.168.5.18"), InetAddressUtils.addr("255.255.255.252"));
+        BAGMANE_IP_MK_MAP.put(InetAddressUtils.addr("192.168.20.1"), InetAddressUtils.addr("255.255.255.255"));
+
         BAGMANE_IF_IFNAME_MAP.put(517, "ge-1/0/5");
         BAGMANE_IF_IFDESCR_MAP.put(517, "ge-1/0/5");
         BAGMANE_IF_MAC_MAP.put(517, "80711fc70f65");
@@ -970,15 +1217,29 @@ public class Nms10205aNetworkBuilder extends NmsNetworkBuilder {
         BAGMANE_IF_IFDESCR_MAP.put(654, "ge-1/0/5.0");
         BAGMANE_IF_MAC_MAP.put(654, "80711fc70f65");
         //BAGMANE_IP_MK_MAP.put(654, InetAddressUtils.addr("255.255.255.252"));
-        MYSORE_IP_IF_MAP.put(InetAddressUtils.addr("192.168.22.1"), 16);
-        MYSORE_IP_IF_MAP.put(InetAddressUtils.addr("192.168.1.17"), 505);
-        MYSORE_IP_IF_MAP.put(InetAddressUtils.addr("10.205.56.22"), 519);
+
         MYSORE_IP_IF_MAP.put(InetAddressUtils.addr("10.0.0.4"), 14);
+        MYSORE_IP_IF_MAP.put(InetAddressUtils.addr("10.205.56.22"), 519);
+        MYSORE_IP_IF_MAP.put(InetAddressUtils.addr("127.0.0.1"), 21);
+        MYSORE_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.1"), 14);
+        MYSORE_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.4"), 14);
         MYSORE_IP_IF_MAP.put(InetAddressUtils.addr("172.16.22.1"), 521);
         MYSORE_IP_IF_MAP.put(InetAddressUtils.addr("192.168.1.14"), 520);
-        MYSORE_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.1"), 14);
+        MYSORE_IP_IF_MAP.put(InetAddressUtils.addr("192.168.1.17"), 505);
         MYSORE_IP_IF_MAP.put(InetAddressUtils.addr("192.168.5.22"), 508);
-        MYSORE_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.4"), 14);
+        MYSORE_IP_IF_MAP.put(InetAddressUtils.addr("192.168.22.1"), 16);
+
+        MYSORE_IP_MK_MAP.put(InetAddressUtils.addr("10.0.0.4"), InetAddressUtils.addr("255.0.0.0"));
+        MYSORE_IP_MK_MAP.put(InetAddressUtils.addr("10.205.56.22"), InetAddressUtils.addr("255.255.0.0"));
+        MYSORE_IP_MK_MAP.put(InetAddressUtils.addr("127.0.0.1"), InetAddressUtils.addr("255.255.255.255"));
+        MYSORE_IP_MK_MAP.put(InetAddressUtils.addr("128.0.0.1"), InetAddressUtils.addr("192.0.0.0"));
+        MYSORE_IP_MK_MAP.put(InetAddressUtils.addr("128.0.0.4"), InetAddressUtils.addr("192.0.0.0"));
+        MYSORE_IP_MK_MAP.put(InetAddressUtils.addr("172.16.22.1"), InetAddressUtils.addr("255.255.255.252"));
+        MYSORE_IP_MK_MAP.put(InetAddressUtils.addr("192.168.1.14"), InetAddressUtils.addr("255.255.255.252"));
+        MYSORE_IP_MK_MAP.put(InetAddressUtils.addr("192.168.1.17"), InetAddressUtils.addr("255.255.255.252"));
+        MYSORE_IP_MK_MAP.put(InetAddressUtils.addr("192.168.5.22"), InetAddressUtils.addr("255.255.255.252"));
+        MYSORE_IP_MK_MAP.put(InetAddressUtils.addr("192.168.22.1"), InetAddressUtils.addr("255.255.255.255"));
+
         MYSORE_IF_IFNAME_MAP.put(2, "fxp1");
         MYSORE_IF_IFDESCR_MAP.put(2, "fxp1");
         MYSORE_IF_MAC_MAP.put(2, "020000000004");
@@ -1073,12 +1334,21 @@ public class Nms10205aNetworkBuilder extends NmsNetworkBuilder {
         MYSORE_IF_IFDESCR_MAP.put(6, "lo0");
         MYSORE_IF_IFNAME_MAP.put(501, "pfh-0/0/0");
         MYSORE_IF_IFDESCR_MAP.put(501, "pfh-0/0/0");
+
         SPACE_EX_SW1_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.16"), 38);
         SPACE_EX_SW1_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.1"), 38);
         SPACE_EX_SW1_IP_IF_MAP.put(InetAddressUtils.addr("55.55.55.55"), 506);
         SPACE_EX_SW1_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.32"), 38);
         SPACE_EX_SW1_IP_IF_MAP.put(InetAddressUtils.addr("172.16.7.2"), 528);
         SPACE_EX_SW1_IP_IF_MAP.put(InetAddressUtils.addr("10.205.56.1"), 524);
+
+        SPACE_EX_SW1_IP_MK_MAP.put(InetAddressUtils.addr("10.205.56.1"), InetAddressUtils.addr("255.255.0.0"));
+        SPACE_EX_SW1_IP_MK_MAP.put(InetAddressUtils.addr("55.55.55.55"), InetAddressUtils.addr("255.255.255.0"));
+        SPACE_EX_SW1_IP_MK_MAP.put(InetAddressUtils.addr("128.0.0.1"), InetAddressUtils.addr("192.0.0.0"));
+        SPACE_EX_SW1_IP_MK_MAP.put(InetAddressUtils.addr("128.0.0.16"), InetAddressUtils.addr("192.0.0.0"));
+        SPACE_EX_SW1_IP_MK_MAP.put(InetAddressUtils.addr("128.0.0.32"), InetAddressUtils.addr("192.0.0.0"));
+        SPACE_EX_SW1_IP_MK_MAP.put(InetAddressUtils.addr("172.16.7.2"), InetAddressUtils.addr("255.255.255.252"));
+
         SPACE_EX_SW1_IF_IFNAME_MAP.put(528, "ge-0/0/6.0");
         SPACE_EX_SW1_IF_IFDESCR_MAP.put(528, "ge-0/0/6.0");
         SPACE_EX_SW1_IF_MAC_MAP.put(528, "00239c023b49");
@@ -1204,12 +1474,21 @@ public class Nms10205aNetworkBuilder extends NmsNetworkBuilder {
         SPACE_EX_SW1_IF_IFNAME_MAP.put(531, "ge-0/0/22");
         SPACE_EX_SW1_IF_IFDESCR_MAP.put(531, "ge-0/0/22");
         SPACE_EX_SW1_IF_MAC_MAP.put(531, "00239c023b59");
+
         SPACE_EX_SW2_IP_IF_MAP.put(InetAddressUtils.addr("172.16.9.2"), 551);
         SPACE_EX_SW2_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.32"), 38);
         SPACE_EX_SW2_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.127"), 523);
         SPACE_EX_SW2_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.16"), 38);
         SPACE_EX_SW2_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.1"), 38);
         SPACE_EX_SW2_IP_IF_MAP.put(InetAddressUtils.addr("10.205.56.2"), 34);
+
+        SPACE_EX_SW2_IP_MK_MAP.put(InetAddressUtils.addr("10.205.56.2"), InetAddressUtils.addr("255.255.0.0"));
+        SPACE_EX_SW2_IP_MK_MAP.put(InetAddressUtils.addr("128.0.0.1"), InetAddressUtils.addr("192.0.0.0"));
+        SPACE_EX_SW2_IP_MK_MAP.put(InetAddressUtils.addr("128.0.0.16"), InetAddressUtils.addr("192.0.0.0"));
+        SPACE_EX_SW2_IP_MK_MAP.put(InetAddressUtils.addr("128.0.0.32"), InetAddressUtils.addr("192.0.0.0"));
+        SPACE_EX_SW2_IP_MK_MAP.put(InetAddressUtils.addr("128.0.0.127"), InetAddressUtils.addr("192.0.0.0"));
+        SPACE_EX_SW2_IP_MK_MAP.put(InetAddressUtils.addr("172.16.9.2"), InetAddressUtils.addr("255.255.255.252"));
+
         SPACE_EX_SW2_IF_IFNAME_MAP.put(551, "ge-0/0/3.0");
         SPACE_EX_SW2_IF_IFDESCR_MAP.put(551, "ge-0/0/3.0");
         SPACE_EX_SW2_IF_MAC_MAP.put(551, "002159cf4c03");
@@ -1372,12 +1651,23 @@ public class Nms10205aNetworkBuilder extends NmsNetworkBuilder {
         SPACE_EX_SW2_IF_MAC_MAP.put(512, "002159cf4c15");
         SPACE_EX_SW2_IF_IFNAME_MAP.put(49, "vcp-0");
         SPACE_EX_SW2_IF_IFDESCR_MAP.put(49, "vcp-0");
+
         J6350_41_IP_IF_MAP.put(InetAddressUtils.addr("10.0.0.16"), 22);
         J6350_41_IP_IF_MAP.put(InetAddressUtils.addr("10.205.56.41"), 508);
         J6350_41_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.1"), 22);
         J6350_41_IP_IF_MAP.put(InetAddressUtils.addr("10.0.0.1"), 22);
         J6350_41_IP_IF_MAP.put(InetAddressUtils.addr("172.16.6.2"), 517);
         J6350_41_IP_IF_MAP.put(InetAddressUtils.addr("128.0.1.16"), 22);
+        J6350_41_IP_IF_MAP.put(InetAddressUtils.addr("127.0.0.1"), 21);
+
+        J6350_41_IP_MK_MAP.put(InetAddressUtils.addr("10.0.0.1"), InetAddressUtils.addr("255.255.255.255"));
+        J6350_41_IP_MK_MAP.put(InetAddressUtils.addr("10.0.0.16"), InetAddressUtils.addr("255.255.255.255"));
+        J6350_41_IP_MK_MAP.put(InetAddressUtils.addr("10.205.56.41"), InetAddressUtils.addr("255.255.0.0"));
+        J6350_41_IP_MK_MAP.put(InetAddressUtils.addr("127.0.0.1"), InetAddressUtils.addr("255.255.255.255"));
+        J6350_41_IP_MK_MAP.put(InetAddressUtils.addr("128.0.0.1"), InetAddressUtils.addr("255.255.255.255"));
+        J6350_41_IP_MK_MAP.put(InetAddressUtils.addr("128.0.1.16"), InetAddressUtils.addr("255.255.255.255"));
+        J6350_41_IP_MK_MAP.put(InetAddressUtils.addr("172.16.6.2"), InetAddressUtils.addr("255.255.255.252"));
+
         J6350_41_IF_IFNAME_MAP.put(512, "ip-0/0/0");
         J6350_41_IF_IFDESCR_MAP.put(512, "ip-0/0/0");
         J6350_41_IF_IFNAME_MAP.put(7, "tap");
@@ -1443,6 +1733,7 @@ public class Nms10205aNetworkBuilder extends NmsNetworkBuilder {
         //J6350_41_IP_MK_MAP.put(517, InetAddressUtils.addr("255.255.255.252"));
         J6350_41_IF_IFNAME_MAP.put(503, "st0");
         J6350_41_IF_IFDESCR_MAP.put(503, "st0");
+
         J6350_42_IP_IF_MAP.put(InetAddressUtils.addr("10.0.0.16"), 22);
         J6350_42_IP_IF_MAP.put(InetAddressUtils.addr("128.0.1.16"), 22);
         J6350_42_IP_IF_MAP.put(InetAddressUtils.addr("10.11.11.11"), 548);
@@ -1451,6 +1742,18 @@ public class Nms10205aNetworkBuilder extends NmsNetworkBuilder {
         J6350_42_IP_IF_MAP.put(InetAddressUtils.addr("10.205.56.42"), 508);
         J6350_42_IP_IF_MAP.put(InetAddressUtils.addr("192.168.168.1"), 517);
         J6350_42_IP_IF_MAP.put(InetAddressUtils.addr("172.16.20.2"), 549);
+        J6350_42_IP_IF_MAP.put(InetAddressUtils.addr("127.0.0.1"), 21);
+
+        J6350_42_IP_MK_MAP.put(InetAddressUtils.addr("10.0.0.1"), InetAddressUtils.addr("255.255.255.255"));
+        J6350_42_IP_MK_MAP.put(InetAddressUtils.addr("10.0.0.16"), InetAddressUtils.addr("255.255.255.255"));
+        J6350_42_IP_MK_MAP.put(InetAddressUtils.addr("10.11.11.11"), InetAddressUtils.addr("255.255.255.0"));
+        J6350_42_IP_MK_MAP.put(InetAddressUtils.addr("10.205.56.42"), InetAddressUtils.addr("255.255.0.0"));
+        J6350_42_IP_MK_MAP.put(InetAddressUtils.addr("127.0.0.1"), InetAddressUtils.addr("255.255.255.255"));
+        J6350_42_IP_MK_MAP.put(InetAddressUtils.addr("128.0.0.1"), InetAddressUtils.addr("255.255.255.255"));
+        J6350_42_IP_MK_MAP.put(InetAddressUtils.addr("128.0.1.16"), InetAddressUtils.addr("255.255.255.255"));
+        J6350_42_IP_MK_MAP.put(InetAddressUtils.addr("172.16.20.2"), InetAddressUtils.addr("255.255.255.252"));
+        J6350_42_IP_MK_MAP.put(InetAddressUtils.addr("192.168.168.1"), InetAddressUtils.addr("255.255.255.0"));
+
         J6350_42_IF_IFNAME_MAP.put(502, "pp0");
         J6350_42_IF_IFDESCR_MAP.put(502, "pp0");
         J6350_42_IF_IFNAME_MAP.put(511, "ge-0/0/3");
@@ -1524,6 +1827,7 @@ public class Nms10205aNetworkBuilder extends NmsNetworkBuilder {
         J6350_42_IF_IFNAME_MAP.put(507, "ge-0/0/0");
         J6350_42_IF_IFDESCR_MAP.put(507, "ge-0/0/0");
         J6350_42_IF_MAC_MAP.put(507, "2c6bf55dc080");
+
         SRX_100_IP_IF_MAP.put(InetAddressUtils.addr("172.16.22.2"), 518);
         SRX_100_IP_IF_MAP.put(InetAddressUtils.addr("128.0.1.16"), 22);
         SRX_100_IP_IF_MAP.put(InetAddressUtils.addr("10.0.0.1"), 22);
@@ -1532,6 +1836,18 @@ public class Nms10205aNetworkBuilder extends NmsNetworkBuilder {
         SRX_100_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.6"), 530);
         SRX_100_IP_IF_MAP.put(InetAddressUtils.addr("10.205.56.23"), 516);
         SRX_100_IP_IF_MAP.put(InetAddressUtils.addr("10.0.0.6"), 530);
+        SRX_100_IP_IF_MAP.put(InetAddressUtils.addr("127.0.0.1"), 21);
+
+        SRX_100_IP_MK_MAP.put(InetAddressUtils.addr("10.0.0.1"), InetAddressUtils.addr("255.255.255.255"));
+        SRX_100_IP_MK_MAP.put(InetAddressUtils.addr("10.0.0.6"), InetAddressUtils.addr("255.255.255.255"));
+        SRX_100_IP_MK_MAP.put(InetAddressUtils.addr("10.0.0.16"), InetAddressUtils.addr("255.255.255.255"));
+        SRX_100_IP_MK_MAP.put(InetAddressUtils.addr("10.205.56.23"), InetAddressUtils.addr("255.255.0.0"));
+        SRX_100_IP_MK_MAP.put(InetAddressUtils.addr("127.0.0.1"), InetAddressUtils.addr("255.255.255.255"));
+        SRX_100_IP_MK_MAP.put(InetAddressUtils.addr("128.0.0.1"), InetAddressUtils.addr("255.255.255.255"));
+        SRX_100_IP_MK_MAP.put(InetAddressUtils.addr("128.0.0.6"), InetAddressUtils.addr("255.255.255.255"));
+        SRX_100_IP_MK_MAP.put(InetAddressUtils.addr("128.0.1.16"), InetAddressUtils.addr("255.255.255.255"));
+        SRX_100_IP_MK_MAP.put(InetAddressUtils.addr("172.16.22.2"), InetAddressUtils.addr("255.255.255.252"));
+
         SRX_100_IF_IFNAME_MAP.put(6, "lo0");
         SRX_100_IF_IFDESCR_MAP.put(6, "lo0");
         SRX_100_IF_IFNAME_MAP.put(508, "fe-0/0/0");
@@ -1619,10 +1935,17 @@ public class Nms10205aNetworkBuilder extends NmsNetworkBuilder {
         SRX_100_IF_IFNAME_MAP.put(513, "fe-0/0/5");
         SRX_100_IF_IFDESCR_MAP.put(513, "fe-0/0/5");
         SRX_100_IF_MAC_MAP.put(513, "2c6bf502b805");
+
         SSG550_IP_IF_MAP.put(InetAddressUtils.addr("192.169.1.99"), 2);
         SSG550_IP_IF_MAP.put(InetAddressUtils.addr("2.2.2.1"), 4);
         SSG550_IP_IF_MAP.put(InetAddressUtils.addr("10.205.35.100"), 1);
         SSG550_IP_IF_MAP.put(InetAddressUtils.addr("10.1.1.99"), 3);
+
+        SSG550_IP_MK_MAP.put(InetAddressUtils.addr("2.2.2.1"), InetAddressUtils.addr("255.255.255.0"));
+        SSG550_IP_MK_MAP.put(InetAddressUtils.addr("10.1.1.99"), InetAddressUtils.addr("255.255.255.0"));
+        SSG550_IP_MK_MAP.put(InetAddressUtils.addr("10.205.35.100"), InetAddressUtils.addr("255.255.0.0"));
+        SSG550_IP_MK_MAP.put(InetAddressUtils.addr("192.169.1.99"), InetAddressUtils.addr("255.255.255.0"));
+
         SSG550_IF_IFNAME_MAP.put(1, "ethernet0/0");
         SSG550_IF_IFDESCR_MAP.put(1, "ethernet0/0");
         SSG550_IF_MAC_MAP.put(1, "00121ead3f00");
