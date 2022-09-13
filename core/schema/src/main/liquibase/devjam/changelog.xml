@@ -8,7 +8,7 @@
     <changeSet author="tbigg" id="devjam-guacamole">
         <preConditions onFail="MARK_RAN">
             <not>
-                <columnExists tableName="assets" columnName="sshpassword"/>
+                <columnExists tableName="assets" columnName="telnetpassword"/>
             </not>
         </preConditions>
 
@@ -24,6 +24,9 @@
             <column name="sshport" type="integer"/>
             <column name="sshusername" type="varchar(32)"/>
             <column name="sshpassword" type="varchar(32)"/>
+            <column name="telnetport" type="integer"/>
+            <column name="telnetusername" type="varchar(32)"/>
+            <column name="telnetpassword" type="varchar(32)"/>
         </addColumn>
 
         <rollback>
@@ -38,6 +41,9 @@
             <dropColumn tableName="assets" columnName="sshport"/>
             <dropColumn tableName="assets" columnName="sshusername"/>
             <dropColumn tableName="assets" columnName="sshpassword"/>
+            <dropColumn tableName="assets" columnName="telnetport"/>
+            <dropColumn tableName="assets" columnName="telnetusername"/>
+            <dropColumn tableName="assets" columnName="telnetpassword"/>
         </rollback>
     </changeSet>
 

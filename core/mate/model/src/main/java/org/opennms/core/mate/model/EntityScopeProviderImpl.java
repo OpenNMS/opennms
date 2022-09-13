@@ -194,7 +194,11 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
                         .map(ASSET, "rdppassword", (a) -> Optional.ofNullable(a.getRdpPassword()).map(Object::toString))
                         .map(ASSET, "sshport", (a) -> Optional.ofNullable(a.getSshPort()).map(Object::toString))
                         .map(ASSET, "sshusername", (a) -> Optional.ofNullable(a.getSshUsername()).map(Object::toString))
-                        .map(ASSET, "sshpassword", (a) -> Optional.ofNullable(a.getSshPassword()).map(Object::toString));
+                        .map(ASSET, "sshpassword", (a) -> Optional.ofNullable(a.getSshPassword()).map(Object::toString))
+                        .map(ASSET, "telnetport", (a) -> Optional.ofNullable(a.getTelnetPort()).map(Object::toString))
+                        .map(ASSET, "telnetusername", (a) -> Optional.ofNullable(a.getTelnetUsername()).map(Object::toString))
+                        .map(ASSET, "telnetpassword", (a) -> Optional.ofNullable(a.getTelnetPassword()).map(Object::toString))
+                        ;
 
                 scopes.add(assetScope);
 

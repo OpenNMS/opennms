@@ -393,6 +393,10 @@ public class OnmsAssetRecord implements Serializable {
     private String m_sshUsername;
     private String m_sshPassword;
 
+    private Integer m_telnetPort;
+    private String m_telnetUsername;
+    private String m_telnetPassword;
+
     /**
      * default constructor
      */
@@ -1771,6 +1775,33 @@ public class OnmsAssetRecord implements Serializable {
         this.m_rdpPassword = rdpPassword;
     }
 
+    @Column(name = "telnetport")
+    public Integer getTelnetPort() {
+        return this.m_telnetPort;
+    }
+
+    public void setTelnetPort(Integer telnetPort) {
+        this.m_telnetPort = telnetPort;
+    }
+
+    @Column(name = "telnetusername")
+    public String getTelnetUsername() {
+        return this.m_telnetUsername;
+    }
+
+    public void setTelnetUsername(String telnetUsername) {
+        this.m_telnetUsername = telnetUsername;
+    }
+
+    @Column(name = "telnetpassword")
+    public String getTelnetPassword() {
+        return this.m_telnetPassword;
+    }
+
+    public void setTelnetPassword(String telnetPassword) {
+        this.m_telnetPassword = telnetPassword;
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -1850,6 +1881,9 @@ public class OnmsAssetRecord implements Serializable {
         .add("sshport", getSshPort())
         .add("sshusername", getSshUsername())
         .add("sshpassword", getSshPassword())
+        .add("telnetport", getTelnetPort())
+        .add("telnetusername", getTelnetUsername())
+        .add("telnetpassword", getTelnetPassword())
         .toString();
     }
 

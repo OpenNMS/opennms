@@ -87,18 +87,18 @@
 
 <form role="form" class="form mb-2 col-md-6">
     <div class="form-group">
-        <label for="rdRrotocolSelect">Remote Desktop Protocol:</label>
+        <label for="rdRrotocolSelect">Protocol:</label>
         <select id="rdRrotocolSelect" class="form-control custom-select" name="rdRrotocolSelect">
             <option value="vnc">VNC</option>
             <option value="rdp">RDP</option>
             <option value="ssh">SSH</option>
-            <option value="telnet">Telnet (todo)</option>
+            <option value="telnet">Telnet</option>
             <option value="kubernetes">Kubernetes (todo)</option>
         </select>
     </div>
 
     <div class="form-group">
-        <label for="ipAddressSelect">IP Addresses:</label>
+        <label for="ipAddressSelect">IP Address:</label>
         <select id="ipAddressSelect" class="form-control custom-select" name="ipAddressSelect">
             <% for (OnmsIpInterface ipInterface : ipInterfaces) { %>
                 <option value="<%=ipInterface.getIpAddress().getHostAddress()%>"><%=ipInterface.getIpAddress().getHostAddress()%></option>

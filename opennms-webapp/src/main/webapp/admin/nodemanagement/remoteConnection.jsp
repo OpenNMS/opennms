@@ -288,7 +288,9 @@
         }
         case "telnet": {
 %>
-            alert("Telnet not implemented yet!");
+            headers["X-Telnet-Port"] = <%=assetRecord.getTelnetPort()%> ;
+            headers["X-Telnet-Username"] = "<%=assetRecord.getTelnetUsername()%>" ;
+            headers["X-Telnet-Password"] = "<%=assetRecord.getTelnetPassword()%>" ;
 <%
             break;
         }

@@ -546,6 +546,24 @@
                   "tooltip": "The password configured to connect to SSH",
                   "model": "sshPassword",
                   "type": "password"
+                },
+                {
+                  "label": "Telnet Port",
+                  "tooltip": "The port of the running Telnet service running on the node",
+                  "model": "telnetPort",
+                  "type": "text"
+                },
+                {
+                  "label": "Telnet Username",
+                  "tooltip": "The username configured to connect to Telnet",
+                  "model": "telnetUsername",
+                  "type": "text"
+                },
+                {
+                  "label": "Telnet Password",
+                  "tooltip": "The password configured to connect to Telnet",
+                  "model": "telnetPassword",
+                  "type": "password"
                 }
               ]
             }

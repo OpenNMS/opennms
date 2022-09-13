@@ -222,6 +222,10 @@ public class Asset extends Object {
     protected String sshusername = "";
     protected String sshpassword = "";
 
+    protected Integer telnetport = -1;
+    protected String telnetusername = "";
+    protected String telnetpassword = "";
+
     /**
      * <p>Getter for the field <code>rackunitheight</code>.</p>
      *
@@ -1696,6 +1700,42 @@ public class Asset extends Object {
             this.sshpassword = sshpassword;
         } else {
             this.sshpassword = "";
+        }
+    }
+
+    public Integer getTelnetPort() {
+        return this.telnetport;
+    }
+
+    public void setTelnetPort(Integer telnetport) {
+        if (telnetport != null) {
+            this.telnetport = telnetport;
+        } else {
+            this.telnetport = -1;
+        }
+    }
+
+    public String getTelnetusername() {
+        return this.telnetusername;
+    }
+
+    public void setTelnetusername(String telnetusername) {
+        if (sshusername != null) {
+            this.telnetusername = telnetusername;
+        } else {
+            this.telnetusername = "";
+        }
+    }
+
+    public String getTelnetpassword() {
+        return this.telnetpassword;
+    }
+
+    public void setTelnetpassword(String telnetpassword) {
+        if (telnetpassword != null) {
+            this.telnetpassword = telnetpassword;
+        } else {
+            this.telnetpassword = "";
         }
     }
 
