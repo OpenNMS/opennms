@@ -35,11 +35,15 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.Set;
+import java.util.function.Consumer;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.ipc.twin.api.TwinPublisher;
+import org.opennms.core.ipc.twin.api.TwinSubscriber;
+import org.opennms.core.ipc.twin.memory.MemoryTwinPublisher;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.api.FilterWatcher;
@@ -83,12 +87,8 @@ public class DefaultClassificationServiceIT {
     private FilterDao filterDao;
 
     @Autowired
-    private FilterWatcher filterWatcher;
-
-    @Autowired
     private SessionUtils sessionUtils;
 
-    @Autowired
     private TwinPublisher twinPublisher;
 
     private ClassificationService classificationService;
@@ -99,11 +99,21 @@ public class DefaultClassificationServiceIT {
 
     @Before
     public void setUp() throws Exception {
+        this.twinPublisher = new MemoryTwinPublisher();
+
         classificationService = new DefaultClassificationService(
                 ruleDao,
                 groupDao,
                 filterDao,
-                filterWatcher,
+                (filterRules, callback) -> new FilterWatcher.Session() {
+                    @Override
+                    public void close() {
+                    }
+
+                    @Override
+                    public void setFilters(final Set<String> filterRules) {
+                    }
+                },
                 sessionUtils,
                 twinPublisher);
         assertThat("The groups should be pre-populated from liquibase", groupDao.countAll(), is(2));

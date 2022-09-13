@@ -18,11 +18,13 @@
 	<reference id="transactionTemplate" interface="org.springframework.transaction.support.TransactionOperations" />
 	<reference id="persisterFactory" interface="org.opennms.netmgt.collection.api.PersisterFactory" availability="optional" />
 	<reference id="thresholdingService" interface="org.opennms.netmgt.threshd.api.ThresholdingService" />
+	<reference id="classificationEngine" interface="org.opennms.netmgt.flows.classification.ClassificationEngine" availability="mandatory" />
 
 	<!-- SFlow Factory and Adapter -->
 	<bean id="sflowFactory" class="org.opennms.netmgt.telemetry.protocols.sflow.adapter.SFlowAdapterFactory">
 		<property name="telemetryRegistry" ref="telemetryRegistry"/>
 		<property name="pipeline" ref="pipeline" />
+		<property name="classificationEngine" ref="classificationEngine" />
 	</bean>
 	<service ref="sflowFactory" interface="org.opennms.netmgt.telemetry.api.adapter.AdapterFactory">
 		<service-properties>

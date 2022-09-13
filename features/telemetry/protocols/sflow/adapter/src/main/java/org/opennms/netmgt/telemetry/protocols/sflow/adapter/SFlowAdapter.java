@@ -36,12 +36,16 @@ import static org.opennms.netmgt.telemetry.protocols.common.utils.BsonUtils.getS
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Objects;
 
 import org.bson.BsonDocument;
 import org.bson.BsonValue;
 import org.bson.RawBsonDocument;
 import org.opennms.netmgt.flows.api.Flow;
+import org.opennms.netmgt.flows.classification.ClassificationEngine;
+import org.opennms.netmgt.flows.classification.ClassificationRequest;
 import org.opennms.netmgt.flows.processing.Pipeline;
+import org.opennms.netmgt.flows.processing.enrichment.EnrichedFlow;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLogEntry;
 import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
 import org.opennms.netmgt.telemetry.protocols.flows.AbstractFlowAdapter;
@@ -51,10 +55,15 @@ import com.google.common.collect.Lists;
 
 public class SFlowAdapter extends AbstractFlowAdapter<BsonDocument> {
 
+    private final ClassificationEngine classificationEngine;
+
     public SFlowAdapter(final AdapterDefinition adapterConfig,
                         final MetricRegistry metricRegistry,
+                        final ClassificationEngine classificationEngine,
                         final Pipeline pipeline) {
         super(adapterConfig, metricRegistry, pipeline);
+
+        this.classificationEngine = Objects.requireNonNull(classificationEngine);
     }
 
     @Override
@@ -67,11 +76,7 @@ public class SFlowAdapter extends AbstractFlowAdapter<BsonDocument> {
     }
 
     @Override
-    public List<Flow> convert(final BsonDocument packet, final Instant receivedAt) {
-        return convertDocument(packet, receivedAt);
-    }
-
-    public static List<Flow> convertDocument(final BsonDocument packet, final Instant receivedAt) {
+    public List<Flow> convert(final BsonDocument packet, final ProcessingContext context) {
         final List<Flow> result = Lists.newLinkedList();
 
         final SFlow.Header header = new SFlow.Header(packet);
@@ -88,11 +93,32 @@ public class SFlowAdapter extends AbstractFlowAdapter<BsonDocument> {
                           get(sampleDocument, "data", "flows", "0:3"),
                           get(sampleDocument, "data", "flows", "0:4")).isPresent()) {
                     // Handle only flows containing IP related records
-                    result.add(new SFlow(header, getDocument(sampleDocument, "data").orElseThrow(SFlowAdapter::invalidDocument), receivedAt));
+
+                    final var flow = new SFlow(header, getDocument(sampleDocument, "data").orElseThrow(SFlowAdapter::invalidDocument), context.receivedAt);
+
+                    final ClassificationRequest classificationRequest = createClassificationRequest(flow, context);
+                    if (classificationRequest.isClassifiable()) {
+                        flow.setApplication(this.classificationEngine.classify(classificationRequest));
+                    }
+
+                    result.add(flow);
                 }
             }
         }
 
         return result;
+    }
+
+    public static ClassificationRequest createClassificationRequest(final Flow document, final ProcessingContext context) {
+        final ClassificationRequest request = new ClassificationRequest();
+        request.setProtocol(document.getProtocol());
+        request.setLocation(context.location);
+        request.setExporterAddress(context.sourceAddress);
+        request.setDstAddress(document.getDstAddr());
+        request.setDstPort(document.getDstPort());
+        request.setSrcAddress(document.getSrcAddr());
+        request.setSrcPort(document.getSrcPort());
+
+        return request;
     }
 }

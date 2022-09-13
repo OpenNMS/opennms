@@ -550,6 +550,7 @@ public class EnrichedFlow implements org.opennms.integration.api.v1.flows.Flow {
         enriched.setEcn(flow.getEcn());
         enriched.setNetflowVersion(flow.getNetflowVersion());
         enriched.setVlan(flow.getVlan());
+        enriched.setApplication(flow.getApplication());
 
         return enriched;
     }

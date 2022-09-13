@@ -31,7 +31,6 @@ package org.opennms.netmgt.flows.elastic;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.nullValue;
 
-import java.util.Collections;
 import java.util.List;
 
 import javax.script.ScriptEngineManager;
@@ -52,8 +51,6 @@ import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.flows.api.FlowSource;
-import org.opennms.netmgt.flows.classification.ClassificationEngine;
-import org.opennms.netmgt.flows.classification.internal.DefaultClassificationEngine;
 import org.opennms.netmgt.flows.processing.TestFlow;
 import org.opennms.netmgt.flows.processing.impl.DocumentEnricherImpl;
 import org.opennms.netmgt.flows.processing.enrichment.EnrichedFlow;
@@ -113,11 +110,10 @@ public class NodeIdentificationIT {
 
     @Test
     public void testSomething() throws InterruptedException {
-        final ClassificationEngine classificationEngine = new DefaultClassificationEngine();
         final DocumentEnricherImpl documentEnricher = new DocumentEnricherImpl(
                 new MetricRegistry(),
                 databasePopulator.getNodeDao(), databasePopulator.getIpInterfaceDao(),
-                interfaceToNodeCache, sessionUtils, classificationEngine,
+                interfaceToNodeCache, sessionUtils,
                 new CacheConfigBuilder()
                         .withName("flows.node")
                         .withMaximumSize(1000)

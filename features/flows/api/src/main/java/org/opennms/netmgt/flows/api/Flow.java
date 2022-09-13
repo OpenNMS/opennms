@@ -228,4 +228,6 @@ public interface Flow {
      * * @return the identifier
      */
     String getNodeIdentifier();
+
+    String getApplication();
 }

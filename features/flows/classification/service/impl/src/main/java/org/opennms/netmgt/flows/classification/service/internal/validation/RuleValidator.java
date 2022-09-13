@@ -46,6 +46,7 @@ import org.opennms.netmgt.flows.classification.service.exception.InvalidRuleExce
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.google.common.net.InetAddresses;
 
 public class RuleValidator {
@@ -134,7 +135,7 @@ public class RuleValidator {
         }
 
         // Try parsing input
-        final List<String> portValues = Splitter.on(',').splitToList(port);
+        final List<String> portValues = Lists.newArrayList(Splitter.on(',').split(port));
         final List<String> rangedPortValues = portValues.stream().filter(v-> v.contains("-")).collect(Collectors.toList());
         rangedPortValues.forEach(portValues::remove);
 

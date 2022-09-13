@@ -52,6 +52,7 @@ public interface FilterWatcher {
         /**
          * Alter the filter rule used in this watcher session.
          * This will trigger a re-evaluation of the filters and may trigger the callback if the filter output changed.
+         * Changing the filter will always trigger the callback assigned to the session.
          * @param filterRules see {@link FilterWatcher#watch(Set, Consumer)} for how filters behave
          */
         void setFilters(Set<String> filterRules);

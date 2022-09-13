@@ -78,6 +78,8 @@ public class SFlow implements Flow {
     private final BsonDocument document;
     private final Instant receivedAt;
 
+    private String application;
+
     public SFlow(final Header header, final BsonDocument document, final Instant receivedAt) {
         this.header = header;
         this.document = Objects.requireNonNull(document);
@@ -361,5 +363,14 @@ public class SFlow implements Flow {
         final String subAgentId = header.getSubAgentId() == null ? "unknown" : String.valueOf(header.getSubAgentId());
 
         return address + ":" + subAgentId;
+    }
+
+    @Override
+    public String getApplication() {
+        return this.application;
+    }
+
+    public void setApplication(final String application) {
+        this.application = application;
     }
 }

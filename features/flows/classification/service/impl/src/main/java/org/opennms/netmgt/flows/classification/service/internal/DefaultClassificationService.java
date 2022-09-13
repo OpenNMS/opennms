@@ -416,7 +416,6 @@ public class DefaultClassificationService implements ClassificationService {
     }
 
     private void publishRules() {
-        // TODO fooker: Duplicate omidirectional rules
         // TODO fooker: Sort the list and make the position inherent?
 
         final var result = this.classificationRuleDao.findAllEnabledRules().stream()

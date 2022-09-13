@@ -68,7 +68,6 @@ public class MockDocumentEnricherFactory {
     private final MockAssetRecordDao assetRecordDao;
     private final MockCategoryDao categoryDao;
     private final DocumentEnricherImpl enricher;
-    private final ReloadingClassificationEngine classificationEngine;
 
     private final AtomicInteger nodeDaoGetCounter = new AtomicInteger(0);
 
@@ -83,17 +82,10 @@ public class MockDocumentEnricherFactory {
         assetRecordDao = new MockAssetRecordDao();
         categoryDao = new MockCategoryDao();
 
-        classificationEngine = new DefaultClassificationEngine();
-        classificationEngine.load(Lists.newArrayList(
-                RuleDTO.builder().withName("http").withDstPort("80").withProtocols(6, 17).build(),
-                RuleDTO.builder().withName("https").withDstPort("443").withProtocols(6, 17).build(),
-                RuleDTO.builder().withName("http").withSrcPort("80").withProtocols(6, 17).build(),
-                RuleDTO.builder().withName("https").withSrcPort("443").withProtocols(6, 17).build()));
-
         enricher = new DocumentEnricherImpl(
                 new MetricRegistry(),
                 nodeDao, ipInterfaceDao,
-                interfaceToNodeCache, new MockSessionUtils(), classificationEngine,
+                interfaceToNodeCache, new MockSessionUtils(),
                 new CacheConfigBuilder()
                     .withName("flows.node")
                     .withMaximumSize(1000)
@@ -124,10 +116,6 @@ public class MockDocumentEnricherFactory {
 
     public AtomicInteger getNodeDaoGetCounter() {
         return nodeDaoGetCounter;
-    }
-
-    public ClassificationEngine getClassificationEngine() {
-        return classificationEngine;
     }
 
     private NodeDao createNodeDao() {
