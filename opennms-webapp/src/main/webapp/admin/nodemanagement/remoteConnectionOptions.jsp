@@ -90,7 +90,7 @@
         <label for="rdRrotocolSelect">Remote Desktop Protocol:</label>
         <select id="rdRrotocolSelect" class="form-control custom-select" name="rdRrotocolSelect">
             <option value="vnc">VNC</option>
-            <option value="rdp">RDP (todo)</option>
+            <option value="rdp">RDP</option>
             <option value="ssh">SSH</option>
             <option value="telnet">Telnet (todo)</option>
             <option value="kubernetes">Kubernetes (todo)</option>
