@@ -512,6 +512,24 @@
                   "type": "password"
                 },
                 {
+                  "label": "RDP Port",
+                  "tooltip": "The port of the running RDP service running on the node",
+                  "model": "rdpPort",
+                  "type": "text"
+                },
+                {
+                  "label": "RDP Username",
+                  "tooltip": "The username configured to connect to RDP",
+                  "model": "rdpUsername",
+                  "type": "text"
+                },
+                {
+                  "label": "RDP Password",
+                  "tooltip": "The password configured to connect to RDP",
+                  "model": "rdpPassword",
+                  "type": "password"
+                },
+                {
                   "label": "SSH Port",
                   "tooltip": "The port of the running SSH service running on the node",
                   "model": "sshPort",

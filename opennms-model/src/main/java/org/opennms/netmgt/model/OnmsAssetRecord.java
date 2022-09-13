@@ -385,6 +385,10 @@ public class OnmsAssetRecord implements Serializable {
     private String m_vncUsername;
     private String m_vncPassword;
 
+    private Integer m_rdpPort;
+    private String m_rdpUsername;
+    private String m_rdpPassword;
+
     private Integer m_sshPort;
     private String m_sshUsername;
     private String m_sshPassword;
@@ -1739,6 +1743,34 @@ public class OnmsAssetRecord implements Serializable {
         this.m_sshPassword = sshPassword;
     }
 
+
+    @Column(name = "rdpport")
+    public Integer getRdpPort() {
+        return this.m_rdpPort;
+    }
+
+    public void setRdpPort(Integer rdpPort) {
+        this.m_rdpPort = rdpPort;
+    }
+
+    @Column(name = "rdpusername")
+    public String getRdpUsername() {
+        return this.m_rdpUsername;
+    }
+
+    public void setRdpUsername(String rdpUsername) {
+        this.m_rdpUsername = rdpUsername;
+    }
+
+    @Column(name = "rdppassword")
+    public String getRdpPassword() {
+        return this.m_rdpPassword;
+    }
+
+    public void setRdpPassword(String rdpPassword) {
+        this.m_rdpPassword = rdpPassword;
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -1812,6 +1844,9 @@ public class OnmsAssetRecord implements Serializable {
         .add("vncport", getGuacdPort())
         .add("vncusername", getVncUsername())
         .add("vncpassword", getVncPassword())
+        .add("rdpport", getRdpPort())
+        .add("rdpusername", getRdpUsername())
+        .add("rdppassword", getRdpPassword())
         .add("sshport", getSshPort())
         .add("sshusername", getSshUsername())
         .add("sshpassword", getSshPassword())

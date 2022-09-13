@@ -215,6 +215,9 @@ public class Asset extends Object {
     protected Integer vncport = -1;
     protected String vncusername = "";
     protected String vncpassword = "";
+    protected Integer rdpport = -1;
+    protected String rdpusername = "";
+    protected String rdppassword = "";
     protected Integer sshport = -1;
     protected String sshusername = "";
     protected String sshpassword = "";
@@ -1624,6 +1627,42 @@ public class Asset extends Object {
         }
     }
 
+    public Integer getRdpport() {
+        return rdpport;
+    }
+
+    public void setRdpport(Integer rdpport) {
+        if (rdpport != null) {
+            this.rdpport = rdpport;
+        } else {
+            this.rdpport = -1;
+        }
+    }
+
+    public String getRdpusername() {
+        return rdpusername;
+    }
+
+    public void setRdpusername(String rdpusername) {
+        if (rdpusername != null) {
+            this.rdpusername = rdpusername;
+        } else {
+            this.rdpusername = "";
+        }
+    }
+
+    public String getRdppassword() {
+        return rdppassword;
+    }
+
+    public void setRdppassword(String rdppassword) {
+        if (vncpassword != null) {
+            this.rdppassword = rdppassword;
+        } else {
+            this.rdppassword = "";
+        }
+    }
+
     public Integer getSshPort() {
         return this.sshport;
     }
@@ -1821,6 +1860,12 @@ public class Asset extends Object {
         builder.append(vncusername);
         builder.append(", vncpassword=");
         builder.append(vncpassword);
+        builder.append(", rdpport=");
+        builder.append(rdpport);
+        builder.append(", rdpusername=");
+        builder.append(rdpusername);
+        builder.append(", rdppassword=");
+        builder.append(rdppassword);
         builder.append(", sshport=");
         builder.append(sshport);
         builder.append(", sshusername=");

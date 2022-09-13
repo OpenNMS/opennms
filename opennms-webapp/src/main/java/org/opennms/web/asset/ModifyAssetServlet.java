@@ -206,6 +206,9 @@ public class ModifyAssetServlet extends HttpServlet {
         asset.setVncport(Integer.parseInt(getRequestParameter(request, "vncport")));
         asset.setVncusername(getRequestParameter(request, "vncusername"));
         asset.setVncpassword(getRequestParameter(request, "vncpassword"));
+        asset.setRdpport(Integer.parseInt(getRequestParameter(request, "rdpport")));
+        asset.setRdpusername(getRequestParameter(request, "rdpusername"));
+        asset.setRdppassword(getRequestParameter(request, "rdppassword"));
         asset.setSshPort(Integer.parseInt(getRequestParameter(request, "sshport")));
         asset.setSshusername(getRequestParameter(request, "sshusername"));
         asset.setSshpassword(getRequestParameter(request, "sshpassword"));

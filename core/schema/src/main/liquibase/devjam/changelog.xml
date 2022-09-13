@@ -18,6 +18,9 @@
             <column name="vncport" type="integer"/>
             <column name="vncusername" type="varchar(32)"/>
             <column name="vncpassword" type="varchar(32)"/>
+            <column name="rdpport" type="integer"/>
+            <column name="rdpusername" type="varchar(32)"/>
+            <column name="rdppassword" type="varchar(32)"/>
             <column name="sshport" type="integer"/>
             <column name="sshusername" type="varchar(32)"/>
             <column name="sshpassword" type="varchar(32)"/>
@@ -29,6 +32,9 @@
             <dropColumn tableName="assets" columnName="vncport"/>
             <dropColumn tableName="assets" columnName="vncusername"/>
             <dropColumn tableName="assets" columnName="vncpassword"/>
+            <dropColumn tableName="assets" columnName="rdpport"/>
+            <dropColumn tableName="assets" columnName="rdpusername"/>
+            <dropColumn tableName="assets" columnName="rdppassword"/>
             <dropColumn tableName="assets" columnName="sshport"/>
             <dropColumn tableName="assets" columnName="sshusername"/>
             <dropColumn tableName="assets" columnName="sshpassword"/>

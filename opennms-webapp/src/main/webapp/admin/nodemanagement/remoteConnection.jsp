@@ -272,7 +272,9 @@
         }
         case "rdp": {
 %>
-            alert("RDP not implemented yet!");
+            headers["X-Rdp-Port"] = <%=assetRecord.getRdpPort()%> ;
+            headers["X-Rdp-Username"] = "<%=assetRecord.getRdpUsername()%>" ;
+            headers["X-Rdp-Password"] = "<%=assetRecord.getRdpPassword()%>" ;
 <%
             break;
         }

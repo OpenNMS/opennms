@@ -189,6 +189,9 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
                         .map(ASSET, "vncport", (a) -> Optional.ofNullable(a.getVncPort()).map(Object::toString))
                         .map(ASSET, "vncusername", (a) -> Optional.ofNullable(a.getVncUsername()).map(Object::toString))
                         .map(ASSET, "vncpassword", (a) -> Optional.ofNullable(a.getVncPassword()).map(Object::toString))
+                        .map(ASSET, "rdpport", (a) -> Optional.ofNullable(a.getRdpPort()).map(Object::toString))
+                        .map(ASSET, "rdpusername", (a) -> Optional.ofNullable(a.getRdpUsername()).map(Object::toString))
+                        .map(ASSET, "rdppassword", (a) -> Optional.ofNullable(a.getRdpPassword()).map(Object::toString))
                         .map(ASSET, "sshport", (a) -> Optional.ofNullable(a.getSshPort()).map(Object::toString))
                         .map(ASSET, "sshusername", (a) -> Optional.ofNullable(a.getSshUsername()).map(Object::toString))
                         .map(ASSET, "sshpassword", (a) -> Optional.ofNullable(a.getSshPassword()).map(Object::toString));
