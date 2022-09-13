@@ -29,7 +29,9 @@
 package org.opennms.netmgt.ticketer.remedy;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
@@ -55,9 +57,9 @@ public class DefaultRemedyConfigDao {
 	 *         <code>java.util.Properties object containing remedy plugin defined properties
 	 */
 	
-	private Configuration getProperties() {
-		if (m_config != null) return m_config;
-		String propsFile = new String(System.getProperty("opennms.home") + "/etc/remedy.properties");
+	private Optional<Configuration> getProperties() {
+		if (m_config != null) return Optional.of(m_config);
+		String propsFile = System.getProperty("opennms.home") + "/etc/remedy.properties";
 		
 		LOG.debug("loading properties from: {}", propsFile);
 		
@@ -69,7 +71,7 @@ public class DefaultRemedyConfigDao {
 		    LOG.debug("Unable to load properties from {}", propsFile, e);
 		}
 		m_config = config;
-		return config;
+		return Optional.ofNullable(config);
 	
 	}
 	
@@ -79,139 +81,250 @@ public class DefaultRemedyConfigDao {
 	 * @return a {@link java.lang.String} object.
 	 */
 	public String getUserName() {
-		return getProperties().getString("remedy.username");
+		Optional<Configuration> properties = getProperties();
+		if (properties.isPresent()) {
+			return properties.get().getString("remedy.username");
+		}
+		return "";
 	}
 
 	
 	String getPassword() {
-		return getProperties().getString("remedy.password");
+		Optional<Configuration> properties = getProperties();
+		if (properties.isPresent()) {
+			return properties.get().getString("remedy.password");
+		}
+		return "";
 	}
 
 	String getAuthentication() {
-		return getProperties().getString("remedy.authentication");
+		Optional<Configuration> properties = getProperties();
+		if (properties.isPresent()) {
+			return properties.get().getString("remedy.authentication");
+		}
+		return "";
 	}
 
 	String getLocale() {
-		return getProperties().getString("remedy.locale");		
+		Optional<Configuration> properties = getProperties();
+		if (properties.isPresent()) {
+			return properties.get().getString("remedy.locale");
+		}
+		return "";
 	}
 	
 	String getTimeZone() {
-		return getProperties().getString("remedy.timezone");
+		Optional<Configuration> properties = getProperties();
+		if (properties.isPresent()) {
+			return properties.get().getString("remedy.timezone");
+		}
+		return "";
 	}
 	
 	String getEndPoint() {
-		return getProperties().getString("remedy.endpoint");
+		Optional<Configuration> properties = getProperties();
+		if (properties.isPresent()) {
+			return properties.get().getString("remedy.endpoint");
+		}
+		return "";
 	}
 
 	String getPortName() {
-		return getProperties().getString("remedy.portname");
+		Optional<Configuration> properties = getProperties();
+		if (properties.isPresent()) {
+			return properties.get().getString("remedy.portname");
+		}
+		return "";
 	}
 
 	String getCreateEndPoint() {
-		return getProperties().getString("remedy.createendpoint");
+		Optional<Configuration> properties = getProperties();
+		if (properties.isPresent()) {
+			return properties.get().getString("remedy.createendpoint");
+		}
+		return "";
 	}
 
 	String getCreatePortName() {
-		return getProperties().getString("remedy.createportname");
+		Optional<Configuration> properties = getProperties();
+		if (properties.isPresent()) {
+			return properties.get().getString("remedy.createportname");
+		}
+		return "";
 	}
 
 	List<String> getTargetGroups() {
 		List<String> targetGroups=new ArrayList<>();
-		if (getProperties().containsKey("remedy.targetgroups")) {
-			for (String group: 	getProperties().getString("remedy.targetgroups").split(":")) {
-				targetGroups.add(group);
-			}
+		Optional<Configuration> properties = getProperties();
+		if (properties.isPresent() && properties.get().containsKey("remedy.targetgroups")) {
+			targetGroups.addAll(Arrays.asList(properties.get().getString("remedy.targetgroups").split(":")));
 		}
 		return targetGroups;
 	}
 	
 	String getAssignedGroup() {
-		return getProperties().getString("remedy.assignedgroup");
+		Optional<Configuration> properties = getProperties();
+		if (properties.isPresent()) {
+			return properties.get().getString("remedy.assignedgroup");
+		}
+		return "";
 	}
 
 	String getAssignedGroup(String targetGroup) {
-		if (getProperties().containsKey("remedy.assignedgroup."+targetGroup))
-			return getProperties().getString("remedy.assignedgroup."+targetGroup);
+		Optional<Configuration> properties = getProperties();
+		if (properties.isPresent() && properties.get().containsKey("remedy.assignedgroup." + targetGroup))
+			return properties.get().getString("remedy.assignedgroup." + targetGroup);
+
 		return getAssignedGroup();
 	}
 
 	String getFirstName() {
-		return getProperties().getString("remedy.firstname");
+		Optional<Configuration> properties = getProperties();
+		if (properties.isPresent()) {
+			return properties.get().getString("remedy.firstname");
+		}
+		return "";
 	}
 
 	String getLastName() {
-		return getProperties().getString("remedy.lastname");
+		Optional<Configuration> properties = getProperties();
+		if (properties.isPresent()) {
+			return properties.get().getString("remedy.lastname");
+		}
+		return "";
 	}
 
 	String getServiceCI() {
-		return getProperties().getString("remedy.serviceCI");
+		Optional<Configuration> properties = getProperties();
+		if (properties.isPresent()) {
+			return properties.get().getString("remedy.serviceCI");
+		}
+		return "";
 	}
 
 	String getServiceCIReconID() {
-		return getProperties().getString("remedy.serviceCIReconID");
+		Optional<Configuration> properties = getProperties();
+		if (properties.isPresent()) {
+			return properties.get().getString("remedy.serviceCIReconID");
+		}
+		return "";
 	}
 		
 	String getAssignedSupportCompany() {
-		return getProperties().getString("remedy.assignedsupportcompany");
+		Optional<Configuration> properties = getProperties();
+		if (properties.isPresent()) {
+			return properties.get().getString("remedy.assignedsupportcompany");
+		}
+		return "";
 	}
 
 	String getAssignedSupportCompany(String targetGroup) {
-		if (getProperties().containsKey("remedy.assignedsupportcompany."+targetGroup))
-			return getProperties().getString("remedy.assignedsupportcompany."+targetGroup);
+		Optional<Configuration> properties = getProperties();
+		if (properties.isPresent() && properties.get().containsKey("remedy.assignedsupportcompany." + targetGroup))
+			return properties.get().getString("remedy.assignedsupportcompany." + targetGroup);
 		return getAssignedSupportCompany();
 	}
 
 	String getAssignedSupportOrganization() {
-		return getProperties().getString("remedy.assignedsupportorganization");
+		Optional<Configuration> properties = getProperties();
+		if (properties.isPresent()) {
+			return properties.get().getString("remedy.assignedsupportorganization");
+		}
+		return "";
 	}
 
 	String getAssignedSupportOrganization(String targetGroup) {
-		if (getProperties().containsKey("remedy.assignedsupportorganization."+targetGroup))
-			return getProperties().getString("remedy.assignedsupportorganization."+targetGroup);
+		Optional<Configuration> properties = getProperties();
+		if (properties.isPresent() && properties.get().containsKey("remedy.assignedsupportorganization." + targetGroup))
+			return properties.get().getString("remedy.assignedsupportorganization." + targetGroup);
 		return getAssignedSupportOrganization();
 	}
 
 	String getCategorizationtier1() {
-		return getProperties().getString("remedy.categorizationtier1");
+		Optional<Configuration> properties = getProperties();
+		if (properties.isPresent()) {
+			return properties.get().getString("remedy.categorizationtier1");
+		}
+		return "";
 	}
 
 	String getCategorizationtier2() {
-		return getProperties().getString("remedy.categorizationtier2");
+		Optional<Configuration> properties = getProperties();
+		if (properties.isPresent()) {
+			return properties.get().getString("remedy.categorizationtier2");
+		}
+		return "";
 	}
 
 	String getCategorizationtier3() {
-		return getProperties().getString("remedy.categorizationtier3");
+		Optional<Configuration> properties = getProperties();
+		if (properties.isPresent()) {
+			return properties.get().getString("remedy.categorizationtier3");
+		}
+		return "";
 	}
 	
 	String getServiceType() {
-		return getProperties().getString("remedy.serviceType");
+		Optional<Configuration> properties = getProperties();
+		if (properties.isPresent()) {
+			return properties.get().getString("remedy.serviceType");
+		}
+		return "";
 	}
 	
 	String getReportedSource() {
-		return getProperties().getString("remedy.reportedSource");
+		Optional<Configuration> properties = getProperties();
+		if (properties.isPresent()) {
+			return properties.get().getString("remedy.reportedSource");
+		}
+		return "";
 	}
 
 	String getImpact() {
-		return getProperties().getString("remedy.impact");
+		Optional<Configuration> properties = getProperties();
+		if (properties.isPresent()) {
+			return properties.get().getString("remedy.impact");
+		}
+		return "";
 	}
 
 	String getUrgency() {
-		return getProperties().getString("remedy.urgency");
+		Optional<Configuration> properties = getProperties();
+		if (properties.isPresent()) {
+			return properties.get().getString("remedy.urgency");
+		}
+		return "";
 	}
 	
 	String getResolution() {
-		return getProperties().getString("remedy.resolution");
+		Optional<Configuration> properties = getProperties();
+		if (properties.isPresent()) {
+			return properties.get().getString("remedy.resolution");
+		}
+		return "";
 	}
 
 	String getReOpenStatusReason() {
-		return getProperties().getString("remedy.reason.reopen");
+		Optional<Configuration> properties = getProperties();
+		if (properties.isPresent()) {
+			return properties.get().getString("remedy.reason.reopen");
+		}
+		return "";
 	}
 	
 	String getResolvedStatusReason() {
-		return getProperties().getString("remedy.reason.resolved");
+		Optional<Configuration> properties = getProperties();
+		if (properties.isPresent()) {
+			return properties.get().getString("remedy.reason.resolved");
+		}
+		return "";
 	}
 	
 	String getCancelledStatusReason() {
-		return getProperties().getString("remedy.reason.cancelled");
+		Optional<Configuration> properties = getProperties();
+		if (properties.isPresent()) {
+			return properties.get().getString("remedy.reason.cancelled");
+		}
+		return "";
 	}	
 }

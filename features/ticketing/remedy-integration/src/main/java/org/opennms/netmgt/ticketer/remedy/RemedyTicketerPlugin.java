@@ -34,8 +34,10 @@ import java.util.Date;
 
 import javax.xml.rpc.ServiceException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.opennms.api.integration.ticketing.Plugin;
+import org.opennms.api.integration.ticketing.PluginException;
+import org.opennms.api.integration.ticketing.Ticket;
+import org.opennms.api.integration.ticketing.Ticket.State;
 import org.opennms.integration.remedy.ticketservice.AuthenticationInfo;
 import org.opennms.integration.remedy.ticketservice.CreateInputMap;
 import org.opennms.integration.remedy.ticketservice.GetInputMap;
@@ -55,10 +57,8 @@ import org.opennms.integration.remedy.ticketservice.VIPType;
 import org.opennms.integration.remedy.ticketservice.Work_Info_SourceType;
 import org.opennms.integration.remedy.ticketservice.Work_Info_TypeType;
 import org.opennms.integration.remedy.ticketservice.Work_Info_View_AccessType;
-
-
-import org.opennms.api.integration.ticketing.*;
-import org.opennms.api.integration.ticketing.Ticket.State;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * OpenNMS Trouble Ticket Plugin API implementation for Remedy
@@ -68,8 +68,9 @@ import org.opennms.api.integration.ticketing.Ticket.State;
  * @version $Id: $
  */
 public class RemedyTicketerPlugin implements Plugin {
-    private static final Logger LOG = LoggerFactory.getLogger(RemedyTicketerPlugin.class);
-    
+	private static final Logger LOG = LoggerFactory.getLogger(RemedyTicketerPlugin.class);
+	public static final String FAILED_INITIALZING_REMEDY_TICKET_SERVICE_PORT = "Failed initialzing Remedy TicketServicePort";
+
 	private DefaultRemedyConfigDao m_configDao; 
 	
 	private String m_endpoint;
@@ -77,15 +78,15 @@ public class RemedyTicketerPlugin implements Plugin {
 	private String m_createendpoint; 
 	private String m_createportname; 
 	
-	private final static String ACTION_CREATE="CREATE";
-	private final static String ACTION_MODIFY="MODIFY";
+	private static final String ACTION_CREATE="CREATE";
+	private static final String ACTION_MODIFY="MODIFY";
 
-    public final static String ATTRIBUTE_NODE_LABEL_ID = "nodelabel";
-    private final static String ATTRIBUTE_USER_COMMENT_ID = "remedy.user.comment";
-	private final static String ATTRIBUTE_URGENCY_ID="remedy.urgency";
-	private final static String ATTRIBUTE_ASSIGNED_GROUP_ID="remedy.assignedgroup";
+    public static final String ATTRIBUTE_NODE_LABEL_ID = "nodelabel";
+    private static final String ATTRIBUTE_USER_COMMENT_ID = "remedy.user.comment";
+	private static final String ATTRIBUTE_URGENCY_ID="remedy.urgency";
+	private static final String ATTRIBUTE_ASSIGNED_GROUP_ID="remedy.assignedgroup";
     
-	private final static int MAX_SUMMARY_CHARS=99;
+	private static final int MAX_SUMMARY_CHARS=99;
 	// Remember:
 	// Summary ---> alarm logmsg
 	// Details ---> alarm descr
@@ -171,29 +172,29 @@ public class RemedyTicketerPlugin implements Plugin {
     		try {
     			GetOutputMap remedy = port.helpDesk_Query_Service(getRemedyInputMap(ticket.getId()), getRemedyAuthenticationHeader());
     			if (remedy == null) {
-					LOG.info("update: Remedy: Cannot find incident with incindent_number: {}", ticket.getId());
+					LOG.info("update: Remedy: Cannot find incident with incident_number: {}", ticket.getId());
 					return;
     			}
     			if (remedy.getStatus().getValue().equals(StatusType._value7)) {
-					LOG.info("update: Remedy: Ticket Cancelled. Not updating ticket with incindent_number: {}", ticket.getId());
+					LOG.info("update: Remedy: Ticket Cancelled. Not updating ticket with incident_number: {}", ticket.getId());
     				return;
     			}
     			if (remedy.getStatus().getValue().equals(StatusType._value6)) {
-					LOG.info("update: Remedy: Ticket Closed. Not updating ticket with incindent_number: {}", ticket.getId());
+					LOG.info("update: Remedy: Ticket Closed. Not updating ticket with incident_number: {}", ticket.getId());
     				return;
     			}
 				SetInputMap output = getRemedySetInputMap(ticket,remedy); 
 				
 				// The only things to update are urgency and state
-				LOG.debug("update: Remedy: found urgency: {} - for ticket with incindent_number: {}", output.getUrgency().getValue(), ticket.getId());
+				LOG.debug("update: Remedy: found urgency: {} - for ticket with incident_number: {}", output.getUrgency().getValue(), ticket.getId());
 				output.setUrgency(getUrgency(ticket));
 				
-				LOG.debug("update: opennms status: {} - for ticket with incindent_number: {}", ticket.getState(), ticket.getId());
+				LOG.debug("update: opennms status: {} - for ticket with incident_number: {}", ticket.getState(), ticket.getId());
 				
-				LOG.debug("update: Remedy: found status: {} - for ticket with incindent_number: {}", output.getStatus().getValue(), ticket.getId());
+				LOG.debug("update: Remedy: found status: {} - for ticket with incident_number: {}", output.getStatus().getValue(), ticket.getId());
 				State outputState = remedyToOpenNMSState(output.getStatus());
-				LOG.debug("update: Remedy: found opennms status: {} - for ticket with incindent_number: {}", outputState, ticket.getId());
-				if (! (ticket.getState() == outputState))
+				LOG.debug("update: Remedy: found opennms status: {} - for ticket with incident_number: {}", outputState, ticket.getId());
+				if (ticket.getState() != outputState)
 					output = opennmsToRemedyState(output,ticket.getState());
 
 				port.helpDesk_Modify_Service(output , getRemedyAuthenticationHeader());
@@ -304,7 +305,7 @@ public class RemedyTicketerPlugin implements Plugin {
 
     
     private String getSummary(Ticket ticket) {
-    	StringBuffer summary = new StringBuffer();
+    	StringBuilder summary = new StringBuilder();
     	if (ticket.getAttribute(ATTRIBUTE_NODE_LABEL_ID) != null) {
     		summary.append(ticket.getAttribute(ATTRIBUTE_NODE_LABEL_ID));
     		summary.append(": OpenNMS: ");
@@ -316,7 +317,7 @@ public class RemedyTicketerPlugin implements Plugin {
     }
     
     private String getNotes(Ticket ticket) {
-    	StringBuffer notes = new StringBuffer("OpenNMS generated ticket by user: ");
+		StringBuilder notes = new StringBuilder("OpenNMS generated ticket by user: ");
     	notes.append(ticket.getUser());
     	notes.append("\n");
     	notes.append("\n");
@@ -369,7 +370,8 @@ public class RemedyTicketerPlugin implements Plugin {
 		return parameters;
 
     }
-    
+
+	@SuppressWarnings("java:S117")
     private AuthenticationInfo getRemedyAuthenticationHeader() {
 		AuthenticationInfo request_header = new AuthenticationInfo();
 		request_header.setUserName(m_configDao.getUserName());
@@ -418,6 +420,7 @@ public class RemedyTicketerPlugin implements Plugin {
 		
     }
 
+	@SuppressWarnings("java:S117")
     private void save(Ticket newTicket) throws PluginException {
     	HPD_IncidentInterface_Create_WSPortTypePortType port = getCreateTicketServicePort(m_createportname,m_createendpoint);
     	try {
@@ -447,8 +450,7 @@ public class RemedyTicketerPlugin implements Plugin {
            service.setEndpointAddress(portname, endpoint);
            port = service.getHPD_IncidentInterface_WSPortTypeSoap();
         } catch (ServiceException e) {
-            LOG.error("Failed initialzing Remedy TicketServicePort", e);
-            throw new PluginException("Failed initialzing Remedy TicketServicePort", e);
+            throw new PluginException(FAILED_INITIALZING_REMEDY_TICKET_SERVICE_PORT, e);
         }
         
         return port;
@@ -471,8 +473,7 @@ public class RemedyTicketerPlugin implements Plugin {
            service.setEndpointAddress(portname, endpoint);
            port = service.getHPD_IncidentInterface_Create_WSPortTypeSoap();
         } catch (ServiceException e) {
-            LOG.error("Failed initialzing Remedy TicketServicePort", e);
-            throw new PluginException("Failed initialzing Remedy TicketServicePort", e);
+            throw new PluginException(FAILED_INITIALZING_REMEDY_TICKET_SERVICE_PORT, e);
         }
         
         return port;
