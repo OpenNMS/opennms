@@ -57,7 +57,7 @@ public final class FlowProtos {
   static {
     java.lang.String[] descriptorData = {
       "\n\rnetflow.proto\032\036google/protobuf/wrapper" +
-      "s.proto\"\327\013\n\013FlowMessage\022\021\n\ttimestamp\030\001 \001" +
+      "s.proto\"\354\013\n\013FlowMessage\022\021\n\ttimestamp\030\001 \001" +
       "(\004\022/\n\tnum_bytes\030\002 \001(\0132\034.google.protobuf." +
       "UInt64Value\022\035\n\tdirection\030\003 \001(\0162\n.Directi" +
       "on\022\023\n\013dst_address\030\004 \001(\t\022\024\n\014dst_hostname\030" +
@@ -94,19 +94,20 @@ public final class FlowProtos {
       " \001(\0132\034.google.protobuf.UInt32Value\022(\n\017ne" +
       "tflow_version\030! \001(\0162\017.NetflowVersion\022*\n\004" +
       "vlan\030\" \001(\0132\034.google.protobuf.UInt32Value" +
-      "\022\027\n\017node_identifier\030# \001(\t*$\n\tDirection\022\013" +
-      "\n\007INGRESS\020\000\022\n\n\006EGRESS\020\001*\246\002\n\021SamplingAlgo" +
-      "rithm\022\016\n\nUNASSIGNED\020\000\022#\n\037SYSTEMATIC_COUN" +
-      "T_BASED_SAMPLING\020\001\022\"\n\036SYSTEMATIC_TIME_BA" +
-      "SED_SAMPLING\020\002\022\036\n\032RANDOM_N_OUT_OF_N_SAMP" +
-      "LING\020\003\022\"\n\036UNIFORM_PROBABILISTIC_SAMPLING" +
-      "\020\004\022\034\n\030PROPERTY_MATCH_FILTERING\020\005\022\030\n\024HASH" +
-      "_BASED_FILTERING\020\006\022<\n8FLOW_STATE_DEPENDE" +
-      "NT_INTERMEDIATE_FLOW_SELECTION_PROCESS\020\007" +
-      "*+\n\016NetflowVersion\022\006\n\002V5\020\000\022\006\n\002V9\020\001\022\t\n\005IP" +
-      "FIX\020\002BH\n8org.opennms.netmgt.telemetry.pr" +
-      "otocols.netflow.transportB\nFlowProtosP\001b" +
-      "\006proto3"
+      "\022\027\n\017node_identifier\030# \001(\t\022\023\n\013application" +
+      "\030$ \001(\t*2\n\tDirection\022\013\n\007INGRESS\020\000\022\n\n\006EGRE" +
+      "SS\020\001\022\014\n\007UNKNOWN\020\377\001*\246\002\n\021SamplingAlgorithm" +
+      "\022\016\n\nUNASSIGNED\020\000\022#\n\037SYSTEMATIC_COUNT_BAS" +
+      "ED_SAMPLING\020\001\022\"\n\036SYSTEMATIC_TIME_BASED_S" +
+      "AMPLING\020\002\022\036\n\032RANDOM_N_OUT_OF_N_SAMPLING\020" +
+      "\003\022\"\n\036UNIFORM_PROBABILISTIC_SAMPLING\020\004\022\034\n" +
+      "\030PROPERTY_MATCH_FILTERING\020\005\022\030\n\024HASH_BASE" +
+      "D_FILTERING\020\006\022<\n8FLOW_STATE_DEPENDENT_IN" +
+      "TERMEDIATE_FLOW_SELECTION_PROCESS\020\007*+\n\016N" +
+      "etflowVersion\022\006\n\002V5\020\000\022\006\n\002V9\020\001\022\t\n\005IPFIX\020\002" +
+      "BH\n8org.opennms.netmgt.telemetry.protoco" +
+      "ls.netflow.transportB\nFlowProtosP\001b\006prot" +
+      "o3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -118,7 +119,7 @@ public final class FlowProtos {
     internal_static_FlowMessage_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_FlowMessage_descriptor,
-        new java.lang.String[] { "Timestamp", "NumBytes", "Direction", "DstAddress", "DstHostname", "DstAs", "DstMaskLen", "DstPort", "EngineId", "EngineType", "DeltaSwitched", "FirstSwitched", "LastSwitched", "NumFlowRecords", "NumPackets", "FlowSeqNum", "InputSnmpIfindex", "OutputSnmpIfindex", "IpProtocolVersion", "NextHopAddress", "NextHopHostname", "Protocol", "SamplingAlgorithm", "SamplingInterval", "SrcAddress", "SrcHostname", "SrcAs", "SrcMaskLen", "SrcPort", "TcpFlags", "Tos", "NetflowVersion", "Vlan", "NodeIdentifier", });
+        new java.lang.String[] { "Timestamp", "NumBytes", "Direction", "DstAddress", "DstHostname", "DstAs", "DstMaskLen", "DstPort", "EngineId", "EngineType", "DeltaSwitched", "FirstSwitched", "LastSwitched", "NumFlowRecords", "NumPackets", "FlowSeqNum", "InputSnmpIfindex", "OutputSnmpIfindex", "IpProtocolVersion", "NextHopAddress", "NextHopHostname", "Protocol", "SamplingAlgorithm", "SamplingInterval", "SrcAddress", "SrcHostname", "SrcAs", "SrcMaskLen", "SrcPort", "TcpFlags", "Tos", "NetflowVersion", "Vlan", "NodeIdentifier", "Application", });
     com.google.protobuf.WrappersProto.getDescriptor();
   }
 

@@ -41,12 +41,12 @@ public class ProtocolMatcher implements Matcher {
         this.protocols = protocols.getProtocols();
     }
 
-    public ProtocolMatcher(String protocols) {
+    public ProtocolMatcher(final Set<Integer> protocols) {
         this(ProtocolValue.of(protocols));
     }
 
     @Override
     public boolean matches(ClassificationRequest request) {
-        return protocols.contains(request.getProtocol().getDecimal());
+        return protocols.contains(request.getProtocol());
     }
 }

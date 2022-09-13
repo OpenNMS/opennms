@@ -32,7 +32,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
-import org.opennms.netmgt.flows.classification.exception.ClassificationException;
+import org.opennms.netmgt.flows.classification.service.exception.ClassificationException;
 
 @Provider
 public class ClassificationExceptionMapper implements ExceptionMapper<ClassificationException> {

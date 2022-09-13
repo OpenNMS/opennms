@@ -13,9 +13,11 @@
     <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory"/>
     <reference id="snmpInterfaceDao" interface="org.opennms.netmgt.dao.api.SnmpInterfaceDao" availability="mandatory"/>
     <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils" availability="mandatory"/>
-    <reference id="classificationService" interface="org.opennms.netmgt.flows.classification.ClassificationService" availability="mandatory"/>
+    <reference id="classificationService" interface="org.opennms.netmgt.flows.classification.service.ClassificationService" availability="mandatory"/>
+    <reference id="classificationEngine" interface="org.opennms.netmgt.flows.classification.ClassificationEngine" availability="mandatory"/>
 
-  <!-- Configuration properties -->
+
+    <!-- Configuration properties -->
 	<cm:property-placeholder id="flowGraphUrlProperties" persistent-id="org.opennms.netmgt.flows.rest" update-strategy="reload">
 	  <cm:default-properties>
 	    <cm:property name="flowGraphUrl" value=""/>
@@ -38,6 +40,7 @@
 
     <bean id="classificationRestService" class="org.opennms.netmgt.flows.rest.internal.classification.ClassificationRestServiceImpl">
         <argument ref="classificationService" />
+        <argument ref="classificationEngine" />
     </bean>
     <service interface="org.opennms.netmgt.flows.rest.classification.ClassificationRestService" ref="classificationRestService">
         <service-properties>

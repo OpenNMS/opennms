@@ -188,7 +188,7 @@ public abstract class Threshold<T extends Comparable<T>> {
         public Protocol(int protocol) {
             super(
                     bs -> bs.protocol,
-                    (bs, b) -> new Bounds(b, bs.srcPort, bs.dstPort, bs.srcAddr, bs.dstAddr)
+                    (bs, b) -> new Bounds(b, bs.srcPort, bs.dstPort, bs.srcAddr, bs.dstAddr, bs.exporterAddr)
             );
             this.protocol = protocol;
         }
@@ -224,7 +224,7 @@ public abstract class Threshold<T extends Comparable<T>> {
         @Override
         public final Order compare(ClassificationRequest request) {
             if (request.getProtocol() != null) {
-                var p = request.getProtocol().getDecimal();
+                var p = request.getProtocol();
                 return p < protocol ? Order.LT : p == protocol ? Order.EQ : Order.GT;
             } else {
                 return Order.NA;
@@ -337,7 +337,7 @@ public abstract class Threshold<T extends Comparable<T>> {
         public SrcPort(int port) {
             super(
                     bs -> bs.srcPort,
-                    (bs, b) -> new Bounds(bs.protocol, b, bs.dstPort, bs.srcAddr, bs.dstAddr),
+                    (bs, b) -> new Bounds(bs.protocol, b, bs.dstPort, bs.srcAddr, bs.dstAddr, bs.exporterAddr),
                     port,
                     pr -> pr.srcPort,
                     ClassificationRequest::getSrcPort
@@ -356,7 +356,7 @@ public abstract class Threshold<T extends Comparable<T>> {
         public DstPort(int port) {
             super(
                     bs -> bs.dstPort,
-                    (bs, b) -> new Bounds(bs.protocol, bs.srcPort, b, bs.srcAddr, bs.dstAddr),
+                    (bs, b) -> new Bounds(bs.protocol, bs.srcPort, b, bs.srcAddr, bs.dstAddr, bs.exporterAddr),
                     port,
                     pr -> pr.dstPort,
                     ClassificationRequest::getDstPort
@@ -452,7 +452,7 @@ public abstract class Threshold<T extends Comparable<T>> {
         public SrcAddress(IpAddr address) {
             super(
                     bs -> bs.srcAddr,
-                    (bs, b) -> new Bounds(bs.protocol, bs.srcPort, bs.dstPort, b, bs.dstAddr),
+                    (bs, b) -> new Bounds(bs.protocol, bs.srcPort, bs.dstPort, b, bs.dstAddr, bs.exporterAddr),
                     address,
                     pr -> pr.srcAddr,
                     ClassificationRequest::getSrcAddress
@@ -471,16 +471,35 @@ public abstract class Threshold<T extends Comparable<T>> {
         public DstAddress(IpAddr address) {
             super(
                     bs -> bs.dstAddr,
-                    (bs, b) -> new Bounds(bs.protocol, bs.srcPort, bs.dstPort, bs.srcAddr, b),
+                    (bs, b) -> new Bounds(bs.protocol, bs.srcPort, bs.dstPort, bs.srcAddr, b, bs.exporterAddr),
                     address,
                     pr -> pr.dstAddr,
                     ClassificationRequest::getDstAddress
-            );
+                 );
         }
 
         @Override
         public String toString() {
             return "DstAddress{" +
+                   "address=" + address +
+                   '}';
+        }
+    }
+
+    public final static class ExporterAddress extends Address {
+        public ExporterAddress(IpAddr address) {
+            super(
+                    bs -> bs.exporterAddr,
+                    (bs, b) -> new Bounds(bs.protocol, bs.srcPort, bs.dstPort, bs.srcAddr, bs.dstAddr, b),
+                    address,
+                    pr -> pr.exporterAddr,
+                    ClassificationRequest::getExporterAddress
+                 );
+        }
+
+        @Override
+        public String toString() {
+            return "ExporterAddress{" +
                    "address=" + address +
                    '}';
         }

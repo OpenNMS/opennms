@@ -53,7 +53,6 @@ import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.flows.api.FlowSource;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.flows.classification.ClassificationRequest;
-import org.opennms.netmgt.flows.classification.persistence.api.Protocols;
 import org.opennms.netmgt.flows.processing.enrichment.EnrichedFlow;
 import org.opennms.netmgt.flows.processing.enrichment.NodeInfo;
 import org.opennms.netmgt.model.OnmsCategory;
@@ -311,7 +310,7 @@ public class DocumentEnricherImpl {
 
     public static ClassificationRequest createClassificationRequest(EnrichedFlow document) {
         final ClassificationRequest request = new ClassificationRequest();
-        request.setProtocol(Protocols.getProtocol(document.getProtocol()));
+        request.setProtocol(document.getProtocol());
         request.setLocation(document.getLocation());
         request.setExporterAddress(document.getHost());
         request.setDstAddress(document.getDstAddr());

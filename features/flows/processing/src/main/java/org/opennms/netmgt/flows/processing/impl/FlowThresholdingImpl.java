@@ -32,6 +32,7 @@ import static org.opennms.integration.api.v1.flows.Flow.Direction;
 
 import java.io.Closeable;
 import java.io.File;
+import java.io.IOException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
@@ -64,9 +65,8 @@ import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
-import org.opennms.netmgt.flows.classification.ClassificationRuleProvider;
-import org.opennms.netmgt.flows.classification.FilterService;
-import org.opennms.netmgt.flows.classification.persistence.api.Rule;
+import org.opennms.netmgt.flows.classification.dto.RuleDTO;
+import org.opennms.netmgt.flows.classification.service.ClassificationService;
 import org.opennms.netmgt.flows.processing.ProcessingOptions;
 import org.opennms.netmgt.flows.processing.enrichment.EnrichedFlow;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -83,7 +83,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-public class FlowThresholdingImpl implements Closeable, ClassificationEngine.ClassificationRulesReloadedListener {
+public class FlowThresholdingImpl implements Closeable {
     private static final Logger LOG = LoggerFactory.getLogger(FlowThresholdingImpl.class);
 
     public static final String NAME = "flowThreshold";
@@ -110,13 +110,11 @@ public class FlowThresholdingImpl implements Closeable, ClassificationEngine.Cla
 
     private Timer timer;
 
-    private FilterService filterService;
+    private List<RuleDTO> classificationRuleList;
 
-    private ClassificationEngine classificationEngine;
+    private final ReentrantReadWriteLock classificationRuleListReadWriteLock = new ReentrantReadWriteLock();
 
-    private List<Rule> classificationRuleList;
-
-    private ReentrantReadWriteLock classificationRuleListReadWriteLock = new ReentrantReadWriteLock();
+    private final Closeable ruleListener;
 
     public FlowThresholdingImpl(final ThresholdingService thresholdingService,
                                 final CollectionAgentFactory collectionAgentFactory,
@@ -125,9 +123,7 @@ public class FlowThresholdingImpl implements Closeable, ClassificationEngine.Cla
                                 final DistPollerDao distPollerDao,
                                 final SnmpInterfaceDao snmpInterfaceDao,
                                 final FilterDao filterDao,
-                                final FilterService filterService,
-                                final ClassificationRuleProvider classificationRuleProvider,
-                                final ClassificationEngine classificationEngine) {
+                                final ClassificationService classificationService) {
         this.thresholdingService = Objects.requireNonNull(thresholdingService);
         this.collectionAgentFactory = Objects.requireNonNull(collectionAgentFactory);
         this.persisterFactory = Objects.requireNonNull(persisterFactory);
@@ -135,14 +131,11 @@ public class FlowThresholdingImpl implements Closeable, ClassificationEngine.Cla
         this.ipInterfaceDao = Objects.requireNonNull(ipInterfaceDao);
         this.snmpInterfaceDao = Objects.requireNonNull(snmpInterfaceDao);
         this.filterDao = Objects.requireNonNull(filterDao);
-        this.filterService = Objects.requireNonNull(filterService);
-        this.classificationRuleList = classificationRuleProvider.getRules();
-        this.classificationEngine = Objects.requireNonNull(classificationEngine);
-        this.classificationEngine.addClassificationRulesReloadedListener(this);
+
+        this.ruleListener = classificationService.listen(this::classificationRulesChanged);
     }
 
-    @Override
-    public void classificationRulesReloaded(final List<Rule> classificationRuleList) {
+    private void classificationRulesChanged(final List<RuleDTO> classificationRuleList) {
         final Lock writeLock = classificationRuleListReadWriteLock.writeLock();
         writeLock.lock();
         try {
@@ -294,9 +287,14 @@ public class FlowThresholdingImpl implements Closeable, ClassificationEngine.Cla
         final Lock readLock = classificationRuleListReadWriteLock.readLock();
         readLock.lock();
         try {
+            // During start, the rule list can be lacking
+            if (this.classificationRuleList == null) {
+                return Collections.emptySet();
+            }
+
             return classificationRuleList.stream()
-                    .filter(r -> r.getExporterFilter() == null || filterService.matches(exporterIpAddress, r.getExporterFilter()))
-                    .map(r -> r.getName())
+                    .filter(r -> r.getExporters() == null || r.getExporters().contains(exporterIpAddress))
+                    .map(RuleDTO::getName)
                     .collect(Collectors.toSet());
         } finally {
             readLock.unlock();
@@ -458,7 +456,7 @@ public class FlowThresholdingImpl implements Closeable, ClassificationEngine.Cla
                 }
             }
 
-            indexKeyMap.get(indexKey).get(application).addAndGet(bytes);
+            indexKeyMap.get(indexKey).computeIfAbsent(application, (key) -> new AtomicLong(0)).addAndGet(bytes);
         }
 
         public void process(final Instant now, final EnrichedFlow document) {
@@ -497,12 +495,14 @@ public class FlowThresholdingImpl implements Closeable, ClassificationEngine.Cla
     }
 
     @Override
-    public void close() {
-        this.classificationEngine.removeClassificationRulesReloadedListener(this);
+    public void close() throws IOException {
+        this.ruleListener.close();
+
         if (timer != null) {
             timer.cancel();
             timer = null;
         }
+
         this.sessions.clear();
     }
 

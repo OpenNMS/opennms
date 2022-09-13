@@ -32,26 +32,27 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.opennms.netmgt.flows.classification.FilterService;
 import org.opennms.netmgt.flows.classification.IpAddr;
+import org.opennms.netmgt.flows.classification.dto.RuleDTO;
 import org.opennms.netmgt.flows.classification.internal.value.IpValue;
 import org.opennms.netmgt.flows.classification.internal.value.PortValue;
 import org.opennms.netmgt.flows.classification.internal.value.ProtocolValue;
-import org.opennms.netmgt.flows.classification.persistence.api.RuleDefinition;
+
+import com.google.common.base.Strings;
 
 /**
  * Bundles a rule with derived information. Improves tree construction performance.
  */
 public class PreprocessedRule {
 
-    public static PreprocessedRule of(RuleDefinition rule) {
+    public static PreprocessedRule of(RuleDTO rule) {
         return new PreprocessedRule(rule,
-                rule.hasProtocolDefinition() ? ProtocolValue.of(rule.getProtocol()) : null,
-                rule.hasSrcPortDefinition() ? PortValue.of(rule.getSrcPort()) : null,
-                rule.hasDstPortDefinition() ? PortValue.of(rule.getDstPort()) : null,
-                rule.hasSrcAddressDefinition() ? IpValue.of(rule.getSrcAddress()) : null,
-                rule.hasDstAddressDefinition() ? IpValue.of(rule.getDstAddress()) : null
-        );
+                                    rule.getProtocols() == null || rule.getProtocols().isEmpty() ? null : ProtocolValue.of(rule.getProtocols()),
+                                    Strings.isNullOrEmpty(rule.getSrcPort()) ? null : PortValue.of(rule.getSrcPort()),
+                                    Strings.isNullOrEmpty(rule.getDstPort()) ? null : PortValue.of(rule.getDstPort()),
+                                    Strings.isNullOrEmpty(rule.getSrcAddress()) ? null : IpValue.of(rule.getSrcAddress()),
+                                    Strings.isNullOrEmpty(rule.getDstAddress()) ? null : IpValue.of(rule.getDstAddress()),
+                                    rule.getExporters() == null || rule.getExporters().isEmpty() ? null : IpValue.of(rule.getExporters()));
     }
 
     private static Stream<Threshold> protocolThresholds(ProtocolValue value) {
@@ -80,45 +81,42 @@ public class PreprocessedRule {
                 .map(thresholdCreator);
     }
 
-    public final RuleDefinition ruleDefinition;
+    public final RuleDTO rule;
 
     // if a rule does not specify a criteria for some aspect then the corresponding ProtocolValue, PortValue, or IpValue is null
     public final ProtocolValue protocol;
     public final PortValue srcPort, dstPort;
     public final IpValue srcAddr, dstAddr;
+    public final IpValue exporterAddr;
 
     // candidate thresholds derived from the rules values
     public final Set<Threshold> thresholds;
 
-    public PreprocessedRule(RuleDefinition ruleDefinition, ProtocolValue protocol, PortValue srcPort, PortValue dstPort, IpValue srcAddr, IpValue dstAddr) {
-        this.ruleDefinition = ruleDefinition;
+    public PreprocessedRule(RuleDTO rule,
+                            ProtocolValue protocol,
+                            PortValue srcPort,
+                            PortValue dstPort,
+                            IpValue srcAddr,
+                            IpValue dstAddr,
+                            IpValue exporterAddr) {
+        this.rule = rule;
         this.protocol = protocol;
         this.srcPort = srcPort;
         this.dstPort = dstPort;
         this.srcAddr = srcAddr;
         this.dstAddr = dstAddr;
+        this.exporterAddr = exporterAddr;
         this.thresholds = Stream.of(
                 protocolThresholds(protocol),
                 portThresholds(srcPort, Threshold.SrcPort::new),
                 portThresholds(dstPort, Threshold.DstPort::new),
                 addressThresholds(srcAddr, Threshold.SrcAddress::new),
-                addressThresholds(dstAddr, Threshold.DstAddress::new)
+                addressThresholds(dstAddr, Threshold.DstAddress::new),
+                addressThresholds(exporterAddr, Threshold.ExporterAddress::new)
         ).flatMap(Function.identity()).collect(Collectors.toSet());
     }
 
-    public Classifier createClassifier(FilterService filterService, Bounds bounds) {
-        return Classifier.of(this, filterService, bounds);
+    public Classifier createClassifier(Bounds bounds) {
+        return Classifier.of(this, bounds);
     }
-
-    public PreprocessedRule reverse() {
-        return new PreprocessedRule(
-                ruleDefinition.reversedRule(),
-                protocol,
-                dstPort,
-                srcPort,
-                dstAddr,
-                srcAddr
-        );
-    }
-
 }

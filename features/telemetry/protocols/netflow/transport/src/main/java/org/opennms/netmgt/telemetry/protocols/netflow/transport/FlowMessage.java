@@ -54,6 +54,7 @@ private static final long serialVersionUID = 0L;
     srcHostname_ = "";
     netflowVersion_ = 0;
     nodeIdentifier_ = "";
+    application_ = "";
   }
 
   @java.lang.Override
@@ -448,6 +449,12 @@ private static final long serialVersionUID = 0L;
             java.lang.String s = input.readStringRequireUtf8();
 
             nodeIdentifier_ = s;
+            break;
+          }
+          case 290: {
+            java.lang.String s = input.readStringRequireUtf8();
+
+            application_ = s;
             break;
           }
           default: {
@@ -1623,6 +1630,48 @@ private static final long serialVersionUID = 0L;
     }
   }
 
+  public static final int APPLICATION_FIELD_NUMBER = 36;
+  private volatile java.lang.Object application_;
+  /**
+   * <pre>
+   * Application the flow is classified for
+   * </pre>
+   *
+   * <code>string application = 36;</code>
+   */
+  public java.lang.String getApplication() {
+    java.lang.Object ref = application_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
+    } else {
+      com.google.protobuf.ByteString bs = 
+          (com.google.protobuf.ByteString) ref;
+      java.lang.String s = bs.toStringUtf8();
+      application_ = s;
+      return s;
+    }
+  }
+  /**
+   * <pre>
+   * Application the flow is classified for
+   * </pre>
+   *
+   * <code>string application = 36;</code>
+   */
+  public com.google.protobuf.ByteString
+      getApplicationBytes() {
+    java.lang.Object ref = application_;
+    if (ref instanceof java.lang.String) {
+      com.google.protobuf.ByteString b = 
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (java.lang.String) ref);
+      application_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
+  }
+
   private byte memoizedIsInitialized = -1;
   @java.lang.Override
   public final boolean isInitialized() {
@@ -1738,6 +1787,9 @@ private static final long serialVersionUID = 0L;
     }
     if (!getNodeIdentifierBytes().isEmpty()) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 35, nodeIdentifier_);
+    }
+    if (!getApplicationBytes().isEmpty()) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 36, application_);
     }
     unknownFields.writeTo(output);
   }
@@ -1876,6 +1928,9 @@ private static final long serialVersionUID = 0L;
     }
     if (!getNodeIdentifierBytes().isEmpty()) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(35, nodeIdentifier_);
+    }
+    if (!getApplicationBytes().isEmpty()) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(36, application_);
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -2026,6 +2081,8 @@ private static final long serialVersionUID = 0L;
     }
     if (!getNodeIdentifier()
         .equals(other.getNodeIdentifier())) return false;
+    if (!getApplication()
+        .equals(other.getApplication())) return false;
     if (!unknownFields.equals(other.unknownFields)) return false;
     return true;
   }
@@ -2152,6 +2209,8 @@ private static final long serialVersionUID = 0L;
     }
     hash = (37 * hash) + NODE_IDENTIFIER_FIELD_NUMBER;
     hash = (53 * hash) + getNodeIdentifier().hashCode();
+    hash = (37 * hash) + APPLICATION_FIELD_NUMBER;
+    hash = (53 * hash) + getApplication().hashCode();
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -2445,6 +2504,8 @@ private static final long serialVersionUID = 0L;
       }
       nodeIdentifier_ = "";
 
+      application_ = "";
+
       return this;
     }
 
@@ -2597,6 +2658,7 @@ private static final long serialVersionUID = 0L;
         result.vlan_ = vlanBuilder_.build();
       }
       result.nodeIdentifier_ = nodeIdentifier_;
+      result.application_ = application_;
       onBuilt();
       return result;
     }
@@ -2752,6 +2814,10 @@ private static final long serialVersionUID = 0L;
       }
       if (!other.getNodeIdentifier().isEmpty()) {
         nodeIdentifier_ = other.nodeIdentifier_;
+        onChanged();
+      }
+      if (!other.getApplication().isEmpty()) {
+        application_ = other.application_;
         onChanged();
       }
       this.mergeUnknownFields(other.unknownFields);
@@ -7154,6 +7220,95 @@ private static final long serialVersionUID = 0L;
   checkByteStringIsUtf8(value);
       
       nodeIdentifier_ = value;
+      onChanged();
+      return this;
+    }
+
+    private java.lang.Object application_ = "";
+    /**
+     * <pre>
+     * Application the flow is classified for
+     * </pre>
+     *
+     * <code>string application = 36;</code>
+     */
+    public java.lang.String getApplication() {
+      java.lang.Object ref = application_;
+      if (!(ref instanceof java.lang.String)) {
+        com.google.protobuf.ByteString bs =
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        application_ = s;
+        return s;
+      } else {
+        return (java.lang.String) ref;
+      }
+    }
+    /**
+     * <pre>
+     * Application the flow is classified for
+     * </pre>
+     *
+     * <code>string application = 36;</code>
+     */
+    public com.google.protobuf.ByteString
+        getApplicationBytes() {
+      java.lang.Object ref = application_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        application_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    /**
+     * <pre>
+     * Application the flow is classified for
+     * </pre>
+     *
+     * <code>string application = 36;</code>
+     */
+    public Builder setApplication(
+        java.lang.String value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  
+      application_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <pre>
+     * Application the flow is classified for
+     * </pre>
+     *
+     * <code>string application = 36;</code>
+     */
+    public Builder clearApplication() {
+      
+      application_ = getDefaultInstance().getApplication();
+      onChanged();
+      return this;
+    }
+    /**
+     * <pre>
+     * Application the flow is classified for
+     * </pre>
+     *
+     * <code>string application = 36;</code>
+     */
+    public Builder setApplicationBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+      
+      application_ = value;
       onChanged();
       return this;
     }

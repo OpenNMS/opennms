@@ -51,6 +51,9 @@ import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.distributed.core.api.Identity;
 import org.opennms.netmgt.dnsresolver.api.DnsResolver;
 import org.opennms.netmgt.events.api.EventForwarder;
+import org.opennms.netmgt.flows.classification.ClassificationEngine;
+import org.opennms.netmgt.flows.classification.ClassificationRequest;
+import org.opennms.netmgt.flows.classification.IpAddr;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.telemetry.api.receiver.Parser;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
@@ -67,6 +70,7 @@ import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -143,19 +147,23 @@ public abstract class ParserBase implements Parser {
 
     private ExecutorService executor;
 
+    private ClassificationEngine classificationEngine;
+
     public ParserBase(final Protocol protocol,
                       final String name,
                       final AsyncDispatcher<TelemetryMessage> dispatcher,
                       final EventForwarder eventForwarder,
                       final Identity identity,
                       final DnsResolver dnsResolver,
-                      final MetricRegistry metricRegistry) {
+                      final MetricRegistry metricRegistry,
+                      final ClassificationEngine classificationEngine) {
         this.protocol = Objects.requireNonNull(protocol);
         this.name = Objects.requireNonNull(name);
         this.dispatcher = Objects.requireNonNull(dispatcher);
         this.eventForwarder = Objects.requireNonNull(eventForwarder);
         this.identity = Objects.requireNonNull(identity);
         this.dnsResolver = Objects.requireNonNull(dnsResolver);
+        this.classificationEngine = Objects.requireNonNull(classificationEngine);
         Objects.requireNonNull(metricRegistry);
 
         // Create a thread factory that sets a thread local variable when the thread is created
@@ -331,6 +339,23 @@ public abstract class ParserBase implements Parser {
                             flowMessage = this.getMessageBuilder().buildMessage(record, enrichment);
                         } catch (final  Exception e) {
                             throw new RuntimeException(e);
+                        }
+
+                        // Classify the flow
+                        final var classificationRequest = ClassificationRequest.builder()
+                                .withLocation(this.identity.getLocation())
+                                .withDstPort(flowMessage.getDstPort().getValue())
+                                .withDstAddress(IpAddr.of(flowMessage.getDstAddress()))
+                                .withSrcPort(flowMessage.getSrcPort().getValue())
+                                .withSrcAddress(IpAddr.of(flowMessage.getSrcAddress()))
+                                .withProtocol(flowMessage.getProtocol().getValue())
+                                .withExporterAddress(IpAddr.of(remoteAddress.getAddress()))
+                                .build();
+                        if (classificationRequest.isClassifiable()) {
+                            final String application = this.classificationEngine.classify(classificationRequest);
+                            if (!Strings.isNullOrEmpty(application)) {
+                                flowMessage.setApplication(application);
+                            }
                         }
 
                         // Check if the flow is valid (and maybe correct it)

@@ -30,25 +30,40 @@ package org.opennms.netmgt.flows.classification;
 
 import java.util.Objects;
 
-import org.opennms.netmgt.flows.classification.persistence.api.Protocol;
-
 public class ClassificationRequest {
 
     private String location;
-    private Protocol protocol;
+    private Integer protocol;
     private Integer dstPort;
     private IpAddr dstAddress;
     private Integer srcPort;
     private IpAddr srcAddress;
-    private String exporterAddress;
+    private IpAddr exporterAddress;
 
-    public ClassificationRequest(String location, int srcPort, IpAddr srcAddress, int dstPort, IpAddr dstAddress, Protocol protocol) {
+    public ClassificationRequest(final String location,
+                                 final int srcPort,
+                                 final IpAddr srcAddress,
+                                 final int dstPort,
+                                 final IpAddr dstAddress,
+                                 final int protocol,
+                                 final IpAddr exporterAddress) {
         this.location = location;
         this.srcPort = srcPort;
         this.srcAddress = srcAddress;
         this.dstPort = dstPort;
         this.dstAddress = dstAddress;
         this.protocol = protocol;
+        this.exporterAddress = exporterAddress;
+    }
+
+    private ClassificationRequest(final Builder builder) {
+        this.location = builder.location;
+        this.protocol = builder.protocol;
+        this.dstPort = builder.dstPort;
+        this.dstAddress = builder.dstAddress;
+        this.srcPort = builder.srcPort;
+        this.srcAddress = builder.srcAddress;
+        this.exporterAddress = builder.exporterAddress;
     }
 
     public ClassificationRequest() {
@@ -63,11 +78,11 @@ public class ClassificationRequest {
         this.location = location;
     }
 
-    public void setProtocol(Protocol protocol) {
+    public void setProtocol(Integer protocol) {
         this.protocol = protocol;
     }
 
-    public Protocol getProtocol() {
+    public Integer getProtocol() {
         return protocol;
     }
 
@@ -111,12 +126,16 @@ public class ClassificationRequest {
         this.srcAddress = srcAddress;
     }
 
-    public String getExporterAddress() {
+    public IpAddr getExporterAddress() {
         return exporterAddress;
     }
 
-    public void setExporterAddress(String exporterAddress) {
+    public void setExporterAddress(IpAddr exporterAddress) {
         this.exporterAddress = exporterAddress;
+    }
+
+    public void setExporterAddress(String exporterAddress) {
+        this.setExporterAddress(IpAddr.of(exporterAddress));
     }
 
     public boolean isClassifiable() {
@@ -154,5 +173,72 @@ public class ClassificationRequest {
                ", srcAddress='" + srcAddress + '\'' +
                ", exporterAddress='" + exporterAddress + '\'' +
                '}';
+    }
+
+    public static class Builder {
+        private String location;
+        private int protocol;
+        private Integer dstPort;
+        private IpAddr dstAddress;
+        private Integer srcPort;
+        private IpAddr srcAddress;
+        private IpAddr exporterAddress;
+
+        private Builder() {}
+
+        public Builder withLocation(final String location) {
+            this.location = location;
+            return this;
+        }
+
+        public Builder withProtocol(final Integer protocol) {
+            this.protocol = protocol;
+            return this;
+        }
+
+        public Builder withDstPort(final Integer dstPort) {
+            this.dstPort = dstPort;
+            return this;
+        }
+
+        public Builder withDstAddress(final IpAddr dstAddress) {
+            this.dstAddress = dstAddress;
+            return this;
+        }
+
+        public Builder withDstAddress(final String dstAddress) {
+            return this.withDstAddress(IpAddr.of(dstAddress));
+        }
+
+        public Builder withSrcPort(final Integer srcPort) {
+            this.srcPort = srcPort;
+            return this;
+        }
+
+        public Builder withSrcAddress(final IpAddr srcAddress) {
+            this.srcAddress = srcAddress;
+            return this;
+        }
+
+        public Builder withSrcAddress(final String srcAddress) {
+            return this.withSrcAddress(IpAddr.of(srcAddress));
+        }
+
+        public Builder withExporterAddress(final IpAddr exporterAddress) {
+            this.exporterAddress = exporterAddress;
+            return this;
+        }
+
+        public Builder withExporterAddress(final String exporterAddress) {
+            return this.withExporterAddress(IpAddr.of(exporterAddress));
+        }
+
+        public ClassificationRequest build() {
+            return new ClassificationRequest(this);
+        }
+    }
+
+    public static Builder builder() {
+        return new Builder();
     }
 }

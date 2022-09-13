@@ -27,9 +27,17 @@
  *******************************************************************************/
 package org.opennms.netmgt.flows.classification.internal;
 
+import static org.junit.Assert.assertNotNull;
+
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.lang3.BooleanUtils;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Fork;
 import org.openjdk.jmh.annotations.Measurement;
@@ -41,14 +49,16 @@ import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.flows.classification.ClassificationRequest;
-import org.opennms.netmgt.flows.classification.FilterService;
-import org.opennms.netmgt.flows.classification.csv.CsvService;
-import org.opennms.netmgt.flows.classification.internal.csv.CsvServiceImpl;
-import org.opennms.netmgt.flows.classification.internal.csv.CsvServiceTest;
-import org.opennms.netmgt.flows.classification.internal.validation.RuleValidator;
+import org.opennms.netmgt.flows.classification.dto.RuleDTO;
 import org.opennms.netmgt.flows.classification.persistence.api.GroupBuilder;
 import org.opennms.netmgt.flows.classification.persistence.api.Groups;
+import org.opennms.netmgt.flows.classification.persistence.api.Protocol;
+import org.opennms.netmgt.flows.classification.persistence.api.Protocols;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
+
+import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 
 /**
  * Use the Java Microbenchmarking Harness (JMH) to measure classification performance.
@@ -71,15 +81,49 @@ public class ClassificationEngineBenchmark {
         org.openjdk.jmh.Main.main(args);
     }
 
-    public static List<Rule> getRules(String resource) {
+    public static List<RuleDTO> getRules(String resource) throws IOException {
         var group = new GroupBuilder().withName(Groups.USER_DEFINED).build();
-        final CsvService csvService = new CsvServiceImpl(org.mockito.Mockito.mock(RuleValidator.class));
-        final List<Rule> rules = csvService.parseCSV(group, CsvServiceTest.class.getResourceAsStream(resource), true).getRules();
-        int cnt = 0;
-        for (var r: rules) {
-            r.setPosition(cnt++);
+
+        CSVFormat csvFormat = CSVFormat.RFC4180
+                .withDelimiter(';')
+                .withHeader();
+        final CSVParser parser = csvFormat.parse(new InputStreamReader(ClassificationEngineBenchmark.class.getResourceAsStream(resource)));
+        final var rules = parser.getRecords().stream()
+                                .map(record -> {
+                                    final Rule rule = new Rule();
+                                    rule.setGroup(group);
+                                    rule.setName(Strings.emptyToNull(record.get(0)));
+                                    rule.setProtocol(record.get(1));
+                                    rule.setSrcAddress(Strings.emptyToNull(record.get(2)));
+                                    rule.setSrcPort(Strings.emptyToNull(record.get(3)));
+                                    rule.setDstAddress(Strings.emptyToNull(record.get(4)));
+                                    rule.setDstPort(Strings.emptyToNull(record.get(5)));
+                                    rule.setExporterFilter(Strings.emptyToNull(record.get(6)));
+                                    rule.setOmnidirectional(BooleanUtils.toBoolean(Strings.emptyToNull(record.get(7))));
+                                    return rule;
+                                })
+                                .collect(Collectors.toList());
+
+        final List<RuleDTO> result = Lists.newArrayListWithCapacity(rules.size());
+        for (int i = 0; i < rules.size(); i++) {
+            final var rule = rules.get(i);
+            result.add(RuleDTO.builder()
+                              .withName(rule.getName())
+                              .withProtocols(Splitter.on(',').omitEmptyStrings().splitToList(rule.getProtocol()).stream()
+                                                     .map(Protocols::getProtocol)
+                                                     .map(Protocol::getDecimal)
+                                                     .collect(Collectors.toList()))
+                              .withDstAddress(rule.getDstAddress())
+                              .withDstPort(rule.getDstPort())
+                              .withSrcAddress(rule.getSrcAddress())
+                              .withSrcPort(rule.getSrcPort())
+                              .withPosition(i)
+                              .build());
         }
-        return rules;
+
+        // TODO fooker: re-add omnidirectional rules
+
+        return result;
     }
 
     @State(Scope.Benchmark)
@@ -91,13 +135,16 @@ public class ClassificationEngineBenchmark {
         @Param({EXAMPLE_RULES_RESOURCE, PRE_DEFINED_RULES_RESOURCE})
         public String ruleSet;
 
-        private ClassificationEngine classificationEngine;
+        private ReloadingClassificationEngine classificationEngine;
         private List<ClassificationRequest> classificationRequests;
 
         @Setup
-        public void setup() throws InterruptedException {
+        public void setup() throws Exception {
             var rules = getRules(ruleSet);
-            classificationEngine = new DefaultClassificationEngine(() -> rules, org.mockito.Mockito.mock(FilterService.class));
+
+            classificationEngine = new DefaultClassificationEngine();
+            classificationEngine.load(rules);
+
             classificationRequests = RandomClassificationEngineTest.streamOfclassificationRequests(rules, 123456l).skip(index * BATCH_SIZE).limit(BATCH_SIZE).collect(Collectors.toList());
         }
 

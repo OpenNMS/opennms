@@ -43,11 +43,11 @@ import org.opennms.core.network.IPAddress;
 import org.opennms.core.network.IPAddressRange;
 import org.opennms.core.network.IPPortRange;
 import org.opennms.netmgt.flows.classification.ClassificationRequest;
-import org.opennms.netmgt.flows.classification.FilterService;
+import org.opennms.netmgt.flows.classification.dto.RuleDTO;
 import org.opennms.netmgt.flows.classification.internal.decision.Classifier;
 import org.opennms.netmgt.flows.classification.internal.matcher.DstAddressMatcher;
 import org.opennms.netmgt.flows.classification.internal.matcher.DstPortMatcher;
-import org.opennms.netmgt.flows.classification.internal.matcher.FilterMatcher;
+import org.opennms.netmgt.flows.classification.internal.matcher.ExporterAddressMatcher;
 import org.opennms.netmgt.flows.classification.internal.matcher.Matcher;
 import org.opennms.netmgt.flows.classification.internal.matcher.ProtocolMatcher;
 import org.opennms.netmgt.flows.classification.internal.matcher.SrcAddressMatcher;
@@ -58,11 +58,10 @@ import org.opennms.netmgt.flows.classification.internal.value.PortValue;
 import org.opennms.netmgt.flows.classification.internal.value.StringValue;
 import org.opennms.netmgt.flows.classification.persistence.api.Protocol;
 import org.opennms.netmgt.flows.classification.persistence.api.Protocols;
-import org.opennms.netmgt.flows.classification.persistence.api.Rule;
-import org.opennms.netmgt.flows.classification.persistence.api.RuleBuilder;
-import org.opennms.netmgt.flows.classification.persistence.api.RuleDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Strings;
 
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
@@ -90,8 +89,6 @@ public class RandomClassificationEngineTest {
 
     private static int MAX_RULES = 100;
 
-    private static final FilterService FILTER_SERVICE = org.mockito.Mockito.mock(FilterService.class);
-
     private static IPAddress ipAddress(int value) {
         var bytes = new byte[]{(byte) (value >>> 24), (byte) (value >>> 16), (byte) (value >>> 8), (byte) value};
         return new IPAddress(bytes);
@@ -115,20 +112,17 @@ public class RandomClassificationEngineTest {
 
     @Property
     public boolean test(
-            @ForAll("rulesAndRequests") Tuple.Tuple2<List<Rule>, List<ClassificationRequest>> rulesAndRequests
+            @ForAll("rulesAndRequests") Tuple.Tuple2<List<RuleDTO>, List<ClassificationRequest>> rulesAndRequests
     ) throws InterruptedException {
         LOG.debug("construct decision tree");
-        if (LOG.isDebugEnabled()) {
-            rulesAndRequests.get1().forEach(r -> {
-                var s = Stream.of(r.getName(), r.getProtocol(), r.getSrcAddress(), r.getSrcPort(), r.getDstAddress(), r.getDstPort(), "", String.valueOf(r.isOmnidirectional())).collect(Collectors.joining(";"));
-                System.out.println(s);
-            });
-        }
-        var ce = new DefaultClassificationEngine(() -> rulesAndRequests.get1(), FILTER_SERVICE);
+        rulesAndRequests.get1().forEach(r -> {
+            LOG.debug("Rule: {}", r);
+        });
+        var ce = new DefaultClassificationEngine();
+        ce.load(rulesAndRequests.get1());
 
         var classifiers = rulesAndRequests.get1().stream()
-                .flatMap(r -> r.isOmnidirectional() ? Stream.of(r, r.reversedRule()) : Stream.of(r))
-                .map(r -> RandomClassificationEngineTest.classifier(r))
+                .map(RandomClassificationEngineTest::classifier)
                 .sorted()
                 .collect(Collectors.toList());
 
@@ -144,7 +138,7 @@ public class RandomClassificationEngineTest {
     }
 
     @Provide
-    public Arbitrary<Tuple.Tuple2<List<Rule>, List<ClassificationRequest>>> rulesAndRequests() {
+    public Arbitrary<Tuple.Tuple2<List<RuleDTO>, List<ClassificationRequest>>> rulesAndRequests() {
         return rules(0, MAX_RULES, MAX_PROTOCOL, MAX_PORT, MAX_ADDR).flatMap(rules -> classificationRequest(rules).list().map(requests -> Tuple.of(rules, requests)));
     }
 
@@ -159,7 +153,7 @@ public class RandomClassificationEngineTest {
      * @param maxPort     maximum port number for src/dst port
      * @param maxAddr     maximum address for src/dst addresses
      */
-    public static Arbitrary<List<Rule>> rules(int minRules, int maxRules, int maxProtocol, int maxPort, int maxAddr) {
+    public static Arbitrary<List<RuleDTO>> rules(int minRules, int maxRules, int maxProtocol, int maxPort, int maxAddr) {
         var protocols = Arbitraries.integers().between(0, maxProtocol).map(Protocols::getProtocol).list().ofMinSize(0).ofMaxSize(5);
 
         var portRanges = Arbitraries.integers().between(0, maxPort)
@@ -178,14 +172,13 @@ public class RandomClassificationEngineTest {
 
         return Combinators.combine(protocols, portRanges, portRanges, addressRanges, addressRanges, omnidirectional).as(
                 (protos, srcPortRanges, dstPortRanges, srcAddressRanges, dstAddressRanges, omnidir) ->
-                        new RuleBuilder()
+                        RuleDTO.builder()
                                 .withName("x") // the name will be set again when the list is mapped below
-                                .withProtocol(protos.stream().map(p -> p.getKeyword()).collect(Collectors.joining(",")))
+                                .withProtocols(protos.stream().map(Protocol::getDecimal).collect(Collectors.toList()))
                                 .withSrcPort(srcPortRanges.stream().map(RandomClassificationEngineTest::string).collect(Collectors.joining(",")))
                                 .withDstPort(dstPortRanges.stream().map(RandomClassificationEngineTest::string).collect(Collectors.joining(",")))
                                 .withSrcAddress((srcAddressRanges.stream().map(RandomClassificationEngineTest::string).collect(Collectors.joining(","))))
                                 .withDstAddress((dstAddressRanges.stream().map(RandomClassificationEngineTest::string).collect(Collectors.joining(","))))
-                                .withOmnidirectional(omnidir)
                                 .build()
 
         ).list().ofMinSize(minRules).ofMaxSize(maxRules).map(rules -> {
@@ -204,19 +197,14 @@ public class RandomClassificationEngineTest {
      * All protocols, ports, and addresses are collected from these rules and randomly combined into classification
      * requests.
      */
-    public static Arbitrary<ClassificationRequest> classificationRequest(Collection<Rule> rules) {
+    public static Arbitrary<ClassificationRequest> classificationRequest(Collection<RuleDTO> rules) {
         var protocols = new HashSet<Integer>();
         var ports = new HashSet<Integer>();
         var addresses = new HashSet<IpAddr>();
 
         for (var r : rules) {
-            new StringValue(r.getProtocol())
-                    .splitBy(",")
-                    .stream()
-                    .map(p -> Protocols.getProtocol(p.getValue()))
-                    .filter(p -> p != null)
-                    .map(Protocol::getDecimal)
-                    .forEach(protocols::add);
+            protocols.addAll(r.getProtocols());
+
             PortValue.of(r.getSrcPort())
                     .getPortRanges()
                     .stream()
@@ -259,42 +247,43 @@ public class RandomClassificationEngineTest {
                 portsArb,
                 portsArb,
                 addressesArb,
+                addressesArb,
                 addressesArb
-        ).as((protocol, srcPort, dstPort, srcAddr, dstAddr) ->
-                new ClassificationRequest("default", srcPort, srcAddr, dstPort, dstAddr, Protocols.getProtocol(protocol))
+        ).as((protocol, srcPort, dstPort, srcAddr, dstAddr, exporterAddr) ->
+                new ClassificationRequest("default", srcPort, srcAddr, dstPort, dstAddr, protocol, exporterAddr)
         );
     }
 
-    public static Classifier classifier(RuleDefinition ruleDefinition) {
+    public static Classifier classifier(RuleDTO rule) {
         final List<Matcher> matchers = new ArrayList<>();
-        if (ruleDefinition.hasProtocolDefinition()) {
-            matchers.add(new ProtocolMatcher(ruleDefinition.getProtocol()));
+        if (rule.getProtocols() != null && !rule.getProtocols().isEmpty()) {
+            matchers.add(new ProtocolMatcher(rule.getProtocols()));
         }
-        if (ruleDefinition.hasSrcPortDefinition()) {
-            matchers.add(new SrcPortMatcher(ruleDefinition.getSrcPort()));
+        if (!Strings.isNullOrEmpty(rule.getSrcPort())) {
+            matchers.add(new SrcPortMatcher(rule.getSrcPort()));
         }
-        if (ruleDefinition.hasSrcAddressDefinition()) {
-            matchers.add(new SrcAddressMatcher(ruleDefinition.getSrcAddress()));
+        if (!Strings.isNullOrEmpty(rule.getSrcAddress())) {
+            matchers.add(new SrcAddressMatcher(rule.getSrcAddress()));
         }
-        if (ruleDefinition.hasDstAddressDefinition()) {
-            matchers.add(new DstAddressMatcher(ruleDefinition.getDstAddress()));
+        if (!Strings.isNullOrEmpty(rule.getDstAddress())) {
+            matchers.add(new DstAddressMatcher(rule.getDstAddress()));
         }
-        if (ruleDefinition.hasDstPortDefinition()) {
-            matchers.add(new DstPortMatcher(ruleDefinition.getDstPort()));
+        if (!Strings.isNullOrEmpty(rule.getDstPort())) {
+            matchers.add(new DstPortMatcher(rule.getDstPort()));
         }
-        int matchedAspects = matchers.size();
-        if (ruleDefinition.hasExportFilterDefinition()) {
-            matchers.add(new FilterMatcher(ruleDefinition.getExporterFilter(), FILTER_SERVICE));
+        if (rule.getExporters() != null && !rule.getExporters().isEmpty()) {
+            rule.getExporters().stream()
+                .map(ExporterAddressMatcher::new)
+                .forEach(matchers::add);
         }
         return new Classifier(
                 matchers.toArray(new Matcher[matchers.size()]),
-                new Classifier.Result(matchedAspects, ruleDefinition.getName()),
-                ruleDefinition.getGroupPosition(),
-                ruleDefinition.getPosition()
+                new Classifier.Result(matchers.size(), rule.getName()),
+                rule.getPosition()
         );
     }
 
-    public static Stream<ClassificationRequest> streamOfclassificationRequests(Collection<Rule> rules, long seed) {
+    public static Stream<ClassificationRequest> streamOfclassificationRequests(Collection<RuleDTO> rules, long seed) {
         return classificationRequest(rules).generator(1000).stream(new Random(seed)).map(Shrinkable::value);
     }
 

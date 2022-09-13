@@ -28,28 +28,26 @@
 
 package org.opennms.netmgt.flows.classification.internal;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Objects;
 
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.flows.classification.ClassificationRequest;
-import org.opennms.netmgt.flows.classification.persistence.api.Rule;
+import org.opennms.netmgt.flows.classification.dto.RuleDTO;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 
-public class TimingClassificationEngine implements ClassificationEngine {
+public class TimingClassificationEngine implements ClassificationEngine, ReloadingClassificationEngine {
 
-    private final ClassificationEngine delegate;
+    private final ReloadingClassificationEngine delegate;
     private final Timer classifyTimer;
     private final Timer reloadTimer;
-    private final Timer getInvalidRulesTimer;
 
-    public TimingClassificationEngine(MetricRegistry metricRegistry, ClassificationEngine delegate) {
+    public TimingClassificationEngine(MetricRegistry metricRegistry, ReloadingClassificationEngine delegate) {
         this.delegate = Objects.requireNonNull(delegate);
         this.classifyTimer = metricRegistry.timer("classify");
         this.reloadTimer = metricRegistry.timer("reload");
-        this.getInvalidRulesTimer = metricRegistry.timer("getInvalidrules");
     }
     
     @Override
@@ -60,24 +58,9 @@ public class TimingClassificationEngine implements ClassificationEngine {
     }
 
     @Override
-    public void reload() throws InterruptedException {
+    public void load(final Collection<RuleDTO> rules) throws InterruptedException {
         try (final Timer.Context ctx = reloadTimer.time()) {
-            delegate.reload();
+            delegate.load(rules);
         }
-    }
-
-    @Override
-    public List<Rule> getInvalidRules() {
-        try (final Timer.Context ctx = getInvalidRulesTimer.time()) {
-            return delegate.getInvalidRules();
-        }
-    }
-
-    public void addClassificationRulesReloadedListener(final ClassificationRulesReloadedListener classificationRulesReloadedListener) {
-        this.delegate.addClassificationRulesReloadedListener(classificationRulesReloadedListener);
-    }
-
-    public void removeClassificationRulesReloadedListener(final ClassificationRulesReloadedListener classificationRulesReloadedListener) {
-        this.delegate.removeClassificationRulesReloadedListener(classificationRulesReloadedListener);
     }
 }

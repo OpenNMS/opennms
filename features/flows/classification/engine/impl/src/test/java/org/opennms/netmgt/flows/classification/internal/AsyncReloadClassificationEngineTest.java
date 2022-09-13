@@ -32,7 +32,8 @@ import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -40,6 +41,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.flows.classification.ClassificationRequest;
+import org.opennms.netmgt.flows.classification.dto.RuleDTO;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
 
 public class AsyncReloadClassificationEngineTest {
@@ -52,21 +54,14 @@ public class AsyncReloadClassificationEngineTest {
         var sleep = new AtomicBoolean(true);
         var completed = new AtomicBoolean(false);
 
-        ClassificationEngine ce = new ClassificationEngine() {
-            private List<ClassificationRulesReloadedListener> classificationRulesReloadedListeners = new ArrayList<>();
-
+        ReloadingClassificationEngine ce = new ReloadingClassificationEngine() {
             @Override
             public String classify(ClassificationRequest classificationRequest) {
                 return null;
             }
 
             @Override
-            public List<Rule> getInvalidRules() {
-                return null;
-            }
-
-            @Override
-            public void reload() throws InterruptedException {
+            public void load(final Collection<RuleDTO> rules) throws InterruptedException {
                 started.incrementAndGet();
                 try {
                     while (sleep.get()) Thread.sleep(1000);
@@ -76,31 +71,28 @@ public class AsyncReloadClassificationEngineTest {
                     throw e;
                 }
             }
-
-            public void addClassificationRulesReloadedListener(final ClassificationRulesReloadedListener classificationRulesReloadedListener) {
-                this.classificationRulesReloadedListeners.add(classificationRulesReloadedListener);
-            }
-
-            public void removeClassificationRulesReloadedListener(final ClassificationRulesReloadedListener classificationRulesReloadedListener) {
-                this.classificationRulesReloadedListeners.remove(classificationRulesReloadedListener);
-            }
         };
 
         var x = new AsyncReloadingClassificationEngine(ce);
 
+        // initially the engine is not started
+        await().untilAsserted(() -> assertThat(started.get(), is(0)));
+        await().untilAsserted(() -> assertThat(interrupted.get(), is(0)));
+
         // first reload is triggered right away
+        x.load(Collections.emptyList());
         await().untilAsserted(() -> assertThat(started.get(), is(1)));
         await().untilAsserted(() -> assertThat(interrupted.get(), is(0)));
 
-        x.reload();
+        x.load(Collections.emptyList());
         await().untilAsserted(() -> assertThat(started.get(), is(2)));
         // if a load process is under way then a reload triggers an interruption
         await().untilAsserted(() -> assertThat(interrupted.get(), is(1)));
 
-        x.reload();
+        x.load(Collections.emptyList());
         await().untilAsserted(() -> assertThat(started.get(), is(3)));
         await().untilAsserted(() -> assertThat(interrupted.get(), is(2)));
-        x.reload();
+        x.load(Collections.emptyList());
         await().untilAsserted(() -> assertThat(started.get(), is(4)));
         await().untilAsserted(() -> assertThat(interrupted.get(), is(3)));
 
@@ -109,10 +101,10 @@ public class AsyncReloadClassificationEngineTest {
 
         sleep.set(true);
 
-        x.reload();
+        x.load(Collections.emptyList());
         await().untilAsserted(() -> assertThat(started.get(), is(5)));
         await().untilAsserted(() -> assertThat(interrupted.get(), is(3)));
-        x.reload();
+        x.load(Collections.emptyList());
         await().untilAsserted(() -> assertThat(started.get(), is(6)));
         await().untilAsserted(() -> assertThat(interrupted.get(), is(4)));
         sleep.set(false);

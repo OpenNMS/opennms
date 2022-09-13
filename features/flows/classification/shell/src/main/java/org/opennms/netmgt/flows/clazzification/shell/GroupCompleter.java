@@ -38,8 +38,8 @@ import org.apache.karaf.shell.api.console.Completer;
 import org.apache.karaf.shell.api.console.Session;
 import org.apache.karaf.shell.support.completers.StringsCompleter;
 import org.opennms.core.criteria.CriteriaBuilder;
-import org.opennms.netmgt.flows.classification.ClassificationService;
 import org.opennms.netmgt.flows.classification.persistence.api.Group;
+import org.opennms.netmgt.flows.classification.service.ClassificationService;
 
 @Service
 public class GroupCompleter implements Completer {

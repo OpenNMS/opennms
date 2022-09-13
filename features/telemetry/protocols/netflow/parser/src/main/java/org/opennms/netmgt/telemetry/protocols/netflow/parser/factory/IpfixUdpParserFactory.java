@@ -34,6 +34,7 @@ import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.distributed.core.api.Identity;
 import org.opennms.netmgt.dnsresolver.api.DnsResolver;
 import org.opennms.netmgt.events.api.EventForwarder;
+import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry;
 import org.opennms.netmgt.telemetry.api.receiver.Parser;
 import org.opennms.netmgt.telemetry.api.receiver.ParserFactory;
@@ -48,11 +49,18 @@ public class IpfixUdpParserFactory implements ParserFactory {
     private final Identity identity;
     private final DnsResolver dnsResolver;
 
-    public IpfixUdpParserFactory(final TelemetryRegistry telemetryRegistry, final EventForwarder eventForwarder, final Identity identity, final DnsResolver dnsResolver) {
+    private final ClassificationEngine classificationEngine;
+
+    public IpfixUdpParserFactory(final TelemetryRegistry telemetryRegistry,
+                                 final EventForwarder eventForwarder,
+                                 final Identity identity,
+                                 final DnsResolver dnsResolver,
+                                 final ClassificationEngine classificationEngine) {
         this.telemetryRegistry = Objects.requireNonNull(telemetryRegistry);
         this.eventForwarder =  Objects.requireNonNull(eventForwarder);
         this.identity = Objects.requireNonNull(identity);
         this.dnsResolver = Objects.requireNonNull(dnsResolver);
+        this.classificationEngine = Objects.requireNonNull(classificationEngine);
     }
 
     @Override
@@ -63,6 +71,12 @@ public class IpfixUdpParserFactory implements ParserFactory {
     @Override
     public Parser createBean(ParserDefinition parserDefinition) {
         final AsyncDispatcher<TelemetryMessage> dispatcher = telemetryRegistry.getDispatcher(parserDefinition.getQueueName());
-        return new IpfixUdpParser(parserDefinition.getFullName(), dispatcher, eventForwarder, identity, dnsResolver, telemetryRegistry.getMetricRegistry());
+        return new IpfixUdpParser(parserDefinition.getFullName(),
+                                  dispatcher,
+                                  this.eventForwarder,
+                                  this.identity,
+                                  this.dnsResolver,
+                                  this.telemetryRegistry.getMetricRegistry(),
+                                  this.classificationEngine);
     }
 }

@@ -78,7 +78,7 @@ public class ClassificationClassifyCommand implements Action {
 
         // Create Request
         final ClassificationRequest request = new ClassificationRequest();
-        request.setProtocol(theProtocol);
+        request.setProtocol(theProtocol.getDecimal());
         request.setDstAddress(dstAddress);
         request.setDstPort(dstPort);
         request.setExporterAddress(exporterAddress);

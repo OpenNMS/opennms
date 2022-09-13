@@ -33,17 +33,18 @@ import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
+import org.opennms.netmgt.flows.classification.service.ClassificationService;
 
 @Command(scope="opennms", name="reload-classification-engine", description = "Reloads the rules of the classification engine")
 @Service
 public class ClassificationReloadCommand implements Action {
 
     @Reference
-    private ClassificationEngine classificationEngine;
+    private ClassificationService classificationService;
 
     @Override
     public Object execute() throws Exception {
-        classificationEngine.reload();
+        this.classificationService.reload();
         System.out.println("Classification Engine has been reloaded");
         return null;
     }

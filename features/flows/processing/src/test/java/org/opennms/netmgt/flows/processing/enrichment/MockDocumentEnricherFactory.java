@@ -50,8 +50,9 @@ import org.opennms.netmgt.dao.mock.MockIpInterfaceDao;
 import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.dao.mock.MockSessionUtils;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
-import org.opennms.netmgt.flows.classification.FilterService;
+import org.opennms.netmgt.flows.classification.dto.RuleDTO;
 import org.opennms.netmgt.flows.classification.internal.DefaultClassificationEngine;
+import org.opennms.netmgt.flows.classification.internal.ReloadingClassificationEngine;
 import org.opennms.netmgt.flows.classification.persistence.api.RuleBuilder;
 import org.opennms.netmgt.flows.processing.impl.DocumentEnricherImpl;
 import org.opennms.netmgt.flows.processing.impl.DocumentMangler;
@@ -67,7 +68,7 @@ public class MockDocumentEnricherFactory {
     private final MockAssetRecordDao assetRecordDao;
     private final MockCategoryDao categoryDao;
     private final DocumentEnricherImpl enricher;
-    private final ClassificationEngine classificationEngine;
+    private final ReloadingClassificationEngine classificationEngine;
 
     private final AtomicInteger nodeDaoGetCounter = new AtomicInteger(0);
 
@@ -82,12 +83,13 @@ public class MockDocumentEnricherFactory {
         assetRecordDao = new MockAssetRecordDao();
         categoryDao = new MockCategoryDao();
 
-        classificationEngine = new DefaultClassificationEngine(() -> Lists.newArrayList(
-                new RuleBuilder().withName("http").withDstPort("80").withProtocol("tcp,udp").build(),
-                new RuleBuilder().withName("https").withDstPort("443").withProtocol("tcp,udp").build(),
-                new RuleBuilder().withName("http").withSrcPort("80").withProtocol("tcp,udp").build(),
-                new RuleBuilder().withName("https").withSrcPort("443").withProtocol("tcp,udp").build()
-        ), FilterService.NOOP);
+        classificationEngine = new DefaultClassificationEngine();
+        classificationEngine.load(Lists.newArrayList(
+                RuleDTO.builder().withName("http").withDstPort("80").withProtocols(6, 17).build(),
+                RuleDTO.builder().withName("https").withDstPort("443").withProtocols(6, 17).build(),
+                RuleDTO.builder().withName("http").withSrcPort("80").withProtocols(6, 17).build(),
+                RuleDTO.builder().withName("https").withSrcPort("443").withProtocols(6, 17).build()));
+
         enricher = new DocumentEnricherImpl(
                 new MetricRegistry(),
                 nodeDao, ipInterfaceDao,

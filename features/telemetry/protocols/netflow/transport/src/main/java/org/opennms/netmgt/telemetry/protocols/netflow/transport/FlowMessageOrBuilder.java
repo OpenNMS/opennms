@@ -795,4 +795,22 @@ public interface FlowMessageOrBuilder extends
    */
   com.google.protobuf.ByteString
       getNodeIdentifierBytes();
+
+  /**
+   * <pre>
+   * Application the flow is classified for
+   * </pre>
+   *
+   * <code>string application = 36;</code>
+   */
+  java.lang.String getApplication();
+  /**
+   * <pre>
+   * Application the flow is classified for
+   * </pre>
+   *
+   * <code>string application = 36;</code>
+   */
+  com.google.protobuf.ByteString
+      getApplicationBytes();
 }

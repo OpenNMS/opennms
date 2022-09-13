@@ -48,12 +48,12 @@ import javax.ws.rs.core.UriInfo;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.restrictions.Restrictions;
+import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.flows.classification.ClassificationRequest;
-import org.opennms.netmgt.flows.classification.ClassificationRequestBuilder;
-import org.opennms.netmgt.flows.classification.ClassificationService;
 import org.opennms.netmgt.flows.classification.persistence.api.Group;
 import org.opennms.netmgt.flows.classification.persistence.api.Protocols;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
+import org.opennms.netmgt.flows.classification.service.ClassificationService;
 import org.opennms.netmgt.flows.rest.classification.ClassificationRequestDTO;
 import org.opennms.netmgt.flows.rest.classification.ClassificationResponseDTO;
 import org.opennms.netmgt.flows.rest.classification.ClassificationRestService;
@@ -71,8 +71,12 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
 
     private final ClassificationService classificationService;
 
-    public ClassificationRestServiceImpl(ClassificationService classificationService) {
+    private final ClassificationEngine classificationEngine;
+
+    public ClassificationRestServiceImpl(final ClassificationService classificationService,
+                                         final ClassificationEngine classificationEngine) {
         this.classificationService = Objects.requireNonNull(classificationService);
+        this.classificationEngine = Objects.requireNonNull(classificationEngine);
     }
 
     @Override
@@ -203,16 +207,16 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
     public Response classify(ClassificationRequestDTO classificationRequestDTO) {
         validate(classificationRequestDTO);
 
-        final ClassificationRequest classificationRequest = new ClassificationRequestBuilder()
+        final ClassificationRequest classificationRequest = ClassificationRequest.builder()
                 .withLocation(null)
                 .withSrcAddress(classificationRequestDTO.getSrcAddress())
                 .withSrcPort(Integer.parseInt(classificationRequestDTO.getSrcPort()))
                 .withDstAddress(classificationRequestDTO.getDstAddress())
                 .withDstPort(Integer.parseInt(classificationRequestDTO.getDstPort()))
-                .withProtocol(Protocols.getProtocol(classificationRequestDTO.getProtocol()))
+                .withProtocol(Protocols.getProtocol(classificationRequestDTO.getProtocol()).getDecimal())
                 .withExporterAddress(classificationRequestDTO.getExporterAddress())
                 .build();
-        final String classification = classificationService.classify(classificationRequest);
+        final String classification = this.classificationEngine.classify(classificationRequest);
         if (Strings.isNullOrEmpty(classification)) return Response.noContent().build();
         return Response.ok(new ClassificationResponseDTO(classification)).build();
     }

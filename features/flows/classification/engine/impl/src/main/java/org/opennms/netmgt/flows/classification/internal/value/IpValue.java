@@ -30,8 +30,10 @@ package org.opennms.netmgt.flows.classification.internal.value;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.flows.classification.IpAddr;
@@ -43,6 +45,12 @@ public class IpValue implements RuleValue<IpAddr, IpValue> {
 
     public static IpValue of(final String input) {
         return of(new StringValue(input));
+    }
+
+    public static IpValue of(final Collection<String> input) {
+        return new IpValue(input.stream()
+                                   .map(IpRange::of)
+                                   .collect(Collectors.toList()));
     }
 
     public static IpValue of(final StringValue input) {

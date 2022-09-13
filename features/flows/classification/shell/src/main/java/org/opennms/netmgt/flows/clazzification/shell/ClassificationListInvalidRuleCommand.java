@@ -36,8 +36,8 @@ import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
-import org.opennms.netmgt.flows.classification.ClassificationService;
-import org.opennms.netmgt.flows.classification.exception.InvalidRuleException;
+import org.opennms.netmgt.flows.classification.service.ClassificationService;
+import org.opennms.netmgt.flows.classification.service.exception.InvalidRuleException;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
 
 @Command(scope="opennms", name="list-classification-invalid-rules", description = "Lists invalid classification rules")

@@ -38,8 +38,8 @@ import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
-import org.opennms.netmgt.flows.classification.ClassificationService;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
+import org.opennms.netmgt.flows.classification.service.ClassificationService;
 
 @Command(scope="opennms", name="list-classification-rules", description = "Lists classification rules stored in the database")
 @Service

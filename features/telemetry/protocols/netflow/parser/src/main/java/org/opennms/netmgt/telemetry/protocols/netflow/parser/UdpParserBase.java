@@ -39,6 +39,7 @@ import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.distributed.core.api.Identity;
 import org.opennms.netmgt.dnsresolver.api.DnsResolver;
 import org.opennms.netmgt.events.api.EventForwarder;
+import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
 import org.opennms.netmgt.telemetry.listeners.UdpParser;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.RecordProvider;
@@ -70,8 +71,9 @@ public abstract class UdpParserBase extends ParserBase implements UdpParser {
                          final EventForwarder eventForwarder,
                          final Identity identity,
                          final DnsResolver dnsResolver,
-                         final MetricRegistry metricRegistry) {
-        super(protocol, name, dispatcher, eventForwarder, identity, dnsResolver, metricRegistry);
+                         final MetricRegistry metricRegistry,
+                         final ClassificationEngine classificationEngine) {
+        super(protocol, name, dispatcher, eventForwarder, identity, dnsResolver, metricRegistry, classificationEngine);
 
         this.packetsReceived = metricRegistry.meter(MetricRegistry.name("parsers",  name, "packetsReceived"));
         this.parserErrors = metricRegistry.counter(MetricRegistry.name("parsers",  name, "parserErrors"));

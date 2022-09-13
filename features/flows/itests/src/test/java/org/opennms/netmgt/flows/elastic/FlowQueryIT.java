@@ -87,7 +87,7 @@ import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.flows.api.FlowSource;
 import org.opennms.netmgt.flows.api.Host;
 import org.opennms.netmgt.flows.api.LimitedCardinalityField;
-import org.opennms.netmgt.flows.classification.FilterService;
+import org.opennms.netmgt.flows.classification.dto.RuleDTO;
 import org.opennms.netmgt.flows.classification.internal.DefaultClassificationEngine;
 import org.opennms.netmgt.flows.classification.persistence.api.RuleBuilder;
 import org.opennms.netmgt.flows.api.TrafficSummary;
@@ -137,12 +137,12 @@ public class FlowQueryIT {
         flowRepository = new ElasticFlowRepository(metricRegistry, client, IndexStrategy.MONTHLY,
                 new MockIdentity(), new MockTracerRegistry(), settings, 0, 0);
 
-        final var classificationEngine = new DefaultClassificationEngine(() -> Lists.newArrayList(
-                new RuleBuilder().withName("http").withDstPort("80").withProtocol("tcp,udp").build(),
-                new RuleBuilder().withName("https").withDstPort("443").withProtocol("tcp,udp").build(),
-                new RuleBuilder().withName("http").withSrcPort("80").withProtocol("tcp,udp").build(),
-                new RuleBuilder().withName("https").withSrcPort("443").withProtocol("tcp,udp").build()),
-                                                                         FilterService.NOOP);
+        final var classificationEngine = new DefaultClassificationEngine();
+        classificationEngine.load(Lists.newArrayList(
+                RuleDTO.builder().withName("http").withDstPort("80").withProtocols(6, 17).build(),
+                RuleDTO.builder().withName("https").withDstPort("443").withProtocols(6, 17).build(),
+                RuleDTO.builder().withName("http").withSrcPort("80").withProtocols(6, 17).build(),
+                RuleDTO.builder().withName("https").withSrcPort("443").withProtocols(6, 17).build()));
 
         documentEnricher = new DocumentEnricherImpl(metricRegistry,
                                                     new MockNodeDao(),

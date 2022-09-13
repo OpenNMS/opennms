@@ -12,6 +12,7 @@
   <packaging>pom</packaging>
   <modules>
     <module>engine</module>
+    <module>service</module>
     <module>persistence</module>
     <module>shell</module>
   </modules>

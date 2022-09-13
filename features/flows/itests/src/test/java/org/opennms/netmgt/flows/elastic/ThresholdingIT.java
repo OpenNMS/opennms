@@ -48,6 +48,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.opennms.core.ipc.twin.api.TwinPublisher;
+import org.opennms.core.ipc.twin.api.TwinSubscriber;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
@@ -58,19 +60,19 @@ import org.opennms.netmgt.collection.core.DefaultCollectionAgentFactory;
 import org.opennms.netmgt.config.dao.thresholding.api.OverrideableThreshdDao;
 import org.opennms.netmgt.config.dao.thresholding.api.OverrideableThresholdingDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
-import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
+import org.opennms.netmgt.dao.api.FilterWatcher;
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.integration.api.v1.flows.Flow;
+import org.opennms.netmgt.flows.classification.persistence.api.ClassificationGroupDao;
+import org.opennms.netmgt.flows.classification.persistence.api.ClassificationRuleDao;
+import org.opennms.netmgt.flows.classification.service.ClassificationService;
+import org.opennms.netmgt.flows.classification.service.internal.DefaultClassificationService;
 import org.opennms.netmgt.flows.processing.enrichment.EnrichedFlow;
 import org.opennms.netmgt.flows.processing.enrichment.NodeInfo;
 import org.opennms.netmgt.flows.api.FlowSource;
-import org.opennms.netmgt.flows.classification.ClassificationEngine;
-import org.opennms.netmgt.flows.classification.ClassificationRuleProvider;
-import org.opennms.netmgt.flows.classification.FilterService;
-import org.opennms.netmgt.flows.classification.exception.InvalidFilterException;
-import org.opennms.netmgt.flows.classification.internal.DefaultClassificationEngine;
 import org.opennms.netmgt.flows.classification.persistence.api.RuleBuilder;
 import org.opennms.netmgt.flows.processing.ProcessingOptions;
 import org.opennms.netmgt.flows.processing.impl.FlowThresholdingImpl;
@@ -100,7 +102,8 @@ import com.google.common.collect.Lists;
         "classpath:/META-INF/opennms/applicationContext-testThresholdingDaos.xml",
         "classpath:/META-INF/opennms/applicationContext-testPollerConfigDaos.xml",
         "classpath:/META-INF/opennms/applicationContext-rpc-utils.xml",
-        "classpath:/META-INF/opennms/applicationContext-jceks-scv.xml"
+        "classpath:/META-INF/opennms/applicationContext-jceks-scv.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase()
@@ -110,9 +113,6 @@ public class ThresholdingIT {
 
     @Autowired
     private DatabasePopulator databasePopulator;
-
-    @Autowired
-    private InterfaceToNodeCache interfaceToNodeCache;
 
     @Autowired
     private TransactionTemplate transactionTemplate;
@@ -132,10 +132,27 @@ public class ThresholdingIT {
     @Autowired
     private PersisterFactory persisterFactory;
 
-    private List<org.opennms.netmgt.flows.classification.persistence.api.Rule> rules;
+    @Autowired
+    private ClassificationGroupDao groupDao;
+
+    @Autowired
+    private ClassificationRuleDao ruleDao;
 
     @Autowired
     private FilterDao filterDao;
+
+    @Autowired
+    private FilterWatcher filterWatcher;
+
+    @Autowired
+    private SessionUtils sessionUtils;
+
+    @Autowired
+    private TwinPublisher twinPublisher;
+
+    private List<org.opennms.netmgt.flows.classification.persistence.api.Rule> rules;
+
+    private ClassificationService classificationService;
 
     private FlowThresholdingImpl thresholding;
 
@@ -157,8 +174,15 @@ public class ThresholdingIT {
 
         this.threshdDao.rebuildPackageIpListMap();
 
-        final ClassificationRuleProvider classificationRuleProvider = () -> rules;
-        final ClassificationEngine classificationEngine = new DefaultClassificationEngine(classificationRuleProvider, FilterService.NOOP);
+        this.classificationService = new DefaultClassificationService(this.ruleDao,
+                                                                      this.groupDao,
+                                                                      this.filterDao,
+                                                                      this.filterWatcher,
+                                                                      this.sessionUtils,
+                                                                      this.twinPublisher);
+
+        // TODO fooker: load the rules here?
+//        this.classificationService.load(rules);
 
         final var collectionAgentFactory = new DefaultCollectionAgentFactory();
         collectionAgentFactory.setNodeDao(this.databasePopulator.getNodeDao());
@@ -167,27 +191,14 @@ public class ThresholdingIT {
 
         this.thresholdingService.getThresholdingSetPersister().reinitializeThresholdingSets();
 
-        final FilterService filterService = new FilterService() {
-            @Override
-            public void validate(String filterExpression) throws InvalidFilterException {
-            }
-
-            @Override
-            public boolean matches(String address, String filterExpression) {
-                return true;
-            }
-        };
-
         this.thresholding = new FlowThresholdingImpl(this.thresholdingService,
-                                                 collectionAgentFactory,
-                                                 this.persisterFactory,
-                                                 this.databasePopulator.getIpInterfaceDao(),
-                                                 this.databasePopulator.getDistPollerDao(),
-                                                 this.databasePopulator.getSnmpInterfaceDao(),
-                                                 Mockito.mock(FilterDao.class),
-                                                 filterService,
-                                                 classificationRuleProvider,
-                                                 classificationEngine);
+                                                     collectionAgentFactory,
+                                                     this.persisterFactory,
+                                                     this.databasePopulator.getIpInterfaceDao(),
+                                                     this.databasePopulator.getDistPollerDao(),
+                                                     this.databasePopulator.getSnmpInterfaceDao(),
+                                                     Mockito.mock(FilterDao.class),
+                                                     classificationService);
 
         this.thresholding.setStepSizeMs(1000);
     }
@@ -305,7 +316,8 @@ public class ThresholdingIT {
                 new RuleBuilder().withName("APP3").withDstPort("3").withPosition(1).build()
         );
 
-        this.thresholding.classificationRulesReloaded(this.rules);
+        // TODO fooker: load the rules here?
+//        this.thresholding.classificationRulesReloaded(this.rules);
         this.thresholding.runTimerTask();
 
         for(FlowThresholdingImpl.Session session : this.thresholding.getSessions()) {
@@ -321,7 +333,8 @@ public class ThresholdingIT {
                 new RuleBuilder().withName("APP1").withDstPort("1").withPosition(1).build()
         );
 
-        this.thresholding.classificationRulesReloaded(this.rules);
+        // TODO fooker: load the rules here?
+//        this.thresholding.classificationRulesReloaded(this.rules);
         this.thresholding.runTimerTask();
 
         for(FlowThresholdingImpl.Session session : this.thresholding.getSessions()) {

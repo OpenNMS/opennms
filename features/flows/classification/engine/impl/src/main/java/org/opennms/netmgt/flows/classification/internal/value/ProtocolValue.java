@@ -32,18 +32,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.flows.classification.internal.decision.Bound;
-import org.opennms.netmgt.flows.classification.persistence.api.Protocol;
-import org.opennms.netmgt.flows.classification.persistence.api.Protocols;
 
 public class ProtocolValue {
 
-    public static  ProtocolValue of(String string) {
-        var protocols = new StringValue(string).splitBy(",")
-                .stream()
-                .map(p -> Protocols.getProtocol(p.getValue()))
-                .filter(p -> p != null)
-                .map(Protocol::getDecimal)
-                .collect(Collectors.toSet());
+    public static  ProtocolValue of(Set<Integer> protocols) {
         return new ProtocolValue(protocols);
     }
 

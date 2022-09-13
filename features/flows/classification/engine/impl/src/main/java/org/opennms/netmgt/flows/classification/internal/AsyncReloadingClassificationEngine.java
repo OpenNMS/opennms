@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.flows.classification.internal;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -37,7 +37,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.flows.classification.ClassificationRequest;
-import org.opennms.netmgt.flows.classification.persistence.api.Rule;
+import org.opennms.netmgt.flows.classification.dto.RuleDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,15 +49,15 @@ import org.slf4j.LoggerFactory;
  * Usages of the classification engine are blocked until ongoing reloads did finish. If a reload fails then
  * future usages of this classification engine also fail until a following reload succeeds.
  */
-public class AsyncReloadingClassificationEngine implements ClassificationEngine {
+public class AsyncReloadingClassificationEngine implements ClassificationEngine, ReloadingClassificationEngine {
 
     private static final Logger LOG = LoggerFactory.getLogger(AsyncReloadingClassificationEngine.class);
 
     private enum State {
-        READY, RELOADING, FAILED
+        INIT, READY, RELOADING, FAILED
     }
 
-    private final ClassificationEngine delegate;
+    private final ReloadingClassificationEngine delegate;
 
     // uses at most one additional thread; if the thread is not used for 60 seconds then it is terminated
     // -> uses no additional resources while being idle
@@ -67,15 +67,12 @@ public class AsyncReloadingClassificationEngine implements ClassificationEngine 
             runnable -> new Thread(runnable, "AsyncReloadingClassificationEngine")
     );
 
-    private State state = State.READY;
+    private State state = State.INIT;
     private Throwable reloadException;
     private Future<?> reloadFuture;
 
-    public AsyncReloadingClassificationEngine(ClassificationEngine delegate) {
+    public AsyncReloadingClassificationEngine(final ReloadingClassificationEngine delegate) {
         this.delegate = delegate;
-        // trigger reload
-        // -> blocks classification requests until classification engine is ready
-        reload();
     }
 
     private void setState(State newState) {
@@ -99,11 +96,11 @@ public class AsyncReloadingClassificationEngine implements ClassificationEngine 
         }
     }
 
-    private void doReload() {
+    private void doLoad(final Collection<RuleDTO> rules) {
         // this method must not modify the state because it not synchronized
         try {
             LOG.debug("reload classification engine");
-            delegate.reload();
+            delegate.load(rules);
             LOG.debug("classification engine reloaded");
             onReloadSucceeded();
         } catch (InterruptedException e) {
@@ -131,18 +128,13 @@ public class AsyncReloadingClassificationEngine implements ClassificationEngine 
     }
 
     @Override
-    public synchronized List<Rule> getInvalidRules() {
-        waitUntilReadyOrFailed();
-        return delegate.getInvalidRules();
-    }
-
-    @Override
-    public synchronized void reload() {
+    public synchronized void load(final Collection<RuleDTO> rules) {
         switch (state) {
+            case INIT:
             case READY:
             case FAILED:
                 try {
-                    reloadFuture = executorService.submit(this::doReload);
+                    reloadFuture = executorService.submit(() -> this.doLoad(rules));
                     setState(State.RELOADING);
                 } catch (Throwable t) {
                     LOG.error("could not submit reload task", t);
@@ -152,16 +144,8 @@ public class AsyncReloadingClassificationEngine implements ClassificationEngine 
                 break;
             case RELOADING:
                 reloadFuture.cancel(true);
-                reloadFuture = executorService.submit(this::doReload);
+                reloadFuture = executorService.submit(() -> this.doLoad(rules));
                 break;
         }
-    }
-
-    public void addClassificationRulesReloadedListener(final ClassificationRulesReloadedListener classificationRulesReloadedListener) {
-        this.delegate.addClassificationRulesReloadedListener(classificationRulesReloadedListener);
-    }
-
-    public void removeClassificationRulesReloadedListener(final ClassificationRulesReloadedListener classificationRulesReloadedListener) {
-        this.delegate.removeClassificationRulesReloadedListener(classificationRulesReloadedListener);
     }
 }

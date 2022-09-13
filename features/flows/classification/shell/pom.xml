@@ -45,5 +45,10 @@
             <artifactId>org.opennms.features.flows.classification.engine.api</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.opennms.features.flows.classification.service</groupId>
+            <artifactId>org.opennms.features.flows.classification.service.api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>

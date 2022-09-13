@@ -29,18 +29,16 @@
 package org.opennms.netmgt.flows.classification.internal;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.flows.classification.ClassificationRequest;
-import org.opennms.netmgt.flows.classification.ClassificationRuleProvider;
-import org.opennms.netmgt.flows.classification.FilterService;
+import org.opennms.netmgt.flows.classification.dto.RuleDTO;
 import org.opennms.netmgt.flows.classification.internal.decision.PreprocessedRule;
 import org.opennms.netmgt.flows.classification.internal.decision.Tree;
-import org.opennms.netmgt.flows.classification.persistence.api.Rule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,51 +49,32 @@ import com.google.common.collect.Lists;
  * <p>
  * The implementation is thread-safe.
  */
-public class DefaultClassificationEngine implements ClassificationEngine {
+public class DefaultClassificationEngine implements ClassificationEngine, ReloadingClassificationEngine {
 
-    private List<ClassificationRulesReloadedListener> classificationRulesReloadedListeners = new ArrayList<>();
-
-    private static Logger LOG = LoggerFactory.getLogger(DefaultClassificationEngine.class);
+    private final static Logger LOG = LoggerFactory.getLogger(DefaultClassificationEngine.class);
 
     private final AtomicReference<TreeAndInvalidRules> treeAndInvalidRules = new AtomicReference<>(new TreeAndInvalidRules(Tree.EMPTY, Collections.emptyList()));
 
-    private final ClassificationRuleProvider ruleProvider;
-    private final FilterService filterService;
-
-    public DefaultClassificationEngine(final ClassificationRuleProvider ruleProvider, final FilterService filterService) throws InterruptedException {
-        this(ruleProvider, filterService, true);
-    }
-
-    public DefaultClassificationEngine(final ClassificationRuleProvider ruleProvider, final FilterService filterService, final boolean initialize) throws InterruptedException {
-        this.ruleProvider = Objects.requireNonNull(ruleProvider);
-        this.filterService = Objects.requireNonNull(filterService);
-        if (initialize) {
-            this.reload();
-        }
-    }
+    public DefaultClassificationEngine() {}
 
     @Override
-    public void reload() throws InterruptedException {
+    public void load(final Collection<RuleDTO> rules) throws InterruptedException {
         var start = System.currentTimeMillis();
-        var invalid = new ArrayList<Rule>();
+        var invalid = new ArrayList<RuleDTO>(); // TODO fooker: remove this.
 
         // Load all rules and validate them
         final List<PreprocessedRule> preprocessedRules = Lists.newArrayList();
-        final var rules = ruleProvider.getRules();
         rules.forEach(rule -> {
             try {
                 final var preprocessedRule = PreprocessedRule.of(rule);
                 preprocessedRules.add(preprocessedRule);
-                if (rule.canBeReversed()) {
-                    preprocessedRules.add(preprocessedRule.reverse());
-                }
             } catch (Exception ex) {
-                LoggerFactory.getLogger(getClass()).error("Rule {} is not valid. Ignoring rule.", rule, ex);
+                LOG.error("Rule {} is not valid. Ignoring rule.", rule, ex);
                 invalid.add(rule);
             }
         });
 
-        var tree = Tree.of(preprocessedRules, filterService);
+        var tree = Tree.of(preprocessedRules);
 
         var elapsed = System.currentTimeMillis() - start;
         if (LOG.isInfoEnabled()) {
@@ -120,19 +99,6 @@ public class DefaultClassificationEngine implements ClassificationEngine {
         }
 
         treeAndInvalidRules.set(new TreeAndInvalidRules(tree, invalid));
-
-        fireClassificationReloadedListeners(Collections.unmodifiableList(rules));
-    }
-
-    private void fireClassificationReloadedListeners(final List<Rule> rules) {
-        for(final ClassificationRulesReloadedListener classificationRulesReloadedListener : this.classificationRulesReloadedListeners) {
-            classificationRulesReloadedListener.classificationRulesReloaded(rules);
-        }
-    }
-
-    @Override
-    public List<Rule> getInvalidRules() {
-        return Collections.unmodifiableList(treeAndInvalidRules.get().invalidRules);
     }
 
     public Tree getTree() {
@@ -146,18 +112,10 @@ public class DefaultClassificationEngine implements ClassificationEngine {
 
     private static class TreeAndInvalidRules {
         private final Tree tree;
-        private final List<Rule> invalidRules;
-        public TreeAndInvalidRules(Tree tree, List<Rule> invalidRules) {
+        private final List<RuleDTO> invalidRules;
+        public TreeAndInvalidRules(Tree tree, List<RuleDTO> invalidRules) {
             this.tree = tree;
             this.invalidRules = invalidRules;
         }
-    }
-
-    public void addClassificationRulesReloadedListener(final ClassificationRulesReloadedListener classificationRulesReloadedListener) {
-        this.classificationRulesReloadedListeners.add(classificationRulesReloadedListener);
-    }
-
-    public void removeClassificationRulesReloadedListener(final ClassificationRulesReloadedListener classificationRulesReloadedListener) {
-        this.classificationRulesReloadedListeners.remove(classificationRulesReloadedListener);
     }
 }

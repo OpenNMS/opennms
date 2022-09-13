@@ -32,8 +32,8 @@ import java.util.Map;
 
 import javax.ws.rs.core.Response;
 
-import org.opennms.netmgt.flows.classification.csv.CsvImportResult;
-import org.opennms.netmgt.flows.classification.error.Error;
+import org.opennms.netmgt.flows.classification.service.csv.CsvImportResult;
+import org.opennms.netmgt.flows.classification.service.error.Error;
 import org.opennms.netmgt.flows.rest.classification.CsvImportErrorDTO;
 import org.opennms.netmgt.flows.rest.classification.ErrorDTO;
 

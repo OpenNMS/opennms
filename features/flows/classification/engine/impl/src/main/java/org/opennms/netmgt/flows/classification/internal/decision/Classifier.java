@@ -32,14 +32,15 @@ import java.util.List;
 import java.util.function.Function;
 
 import org.opennms.netmgt.flows.classification.ClassificationRequest;
-import org.opennms.netmgt.flows.classification.FilterService;
 import org.opennms.netmgt.flows.classification.internal.matcher.DstAddressMatcher;
 import org.opennms.netmgt.flows.classification.internal.matcher.DstPortMatcher;
-import org.opennms.netmgt.flows.classification.internal.matcher.FilterMatcher;
+import org.opennms.netmgt.flows.classification.internal.matcher.ExporterAddressMatcher;
 import org.opennms.netmgt.flows.classification.internal.matcher.Matcher;
 import org.opennms.netmgt.flows.classification.internal.matcher.ProtocolMatcher;
 import org.opennms.netmgt.flows.classification.internal.matcher.SrcAddressMatcher;
 import org.opennms.netmgt.flows.classification.internal.matcher.SrcPortMatcher;
+
+import com.google.common.primitives.Ints;
 
 /**
  * Classifies classification requests.
@@ -61,7 +62,7 @@ public class Classifier implements Comparable<Classifier> {
     /**
      * Constructs a classifier for a rule simplifying its conditions corresponding to the given bounds.
      */
-    public static Classifier of(PreprocessedRule rule, FilterService filterService, Bounds bounds) {
+    public static Classifier of(PreprocessedRule rule, Bounds bounds) {
         final List<Matcher> matchers = new ArrayList<>();
         int matchedAspects = 0;
         if (rule.protocol != null) {
@@ -84,25 +85,24 @@ public class Classifier implements Comparable<Classifier> {
             matchedAspects++;
             addMatcher(matchers, rule.dstAddr.shrink(bounds.dstAddr), DstAddressMatcher::new);
         }
-        if (rule.ruleDefinition.hasExportFilterDefinition()) {
-            matchers.add(new FilterMatcher(rule.ruleDefinition.getExporterFilter(), filterService));
+        if (rule.exporterAddr != null) {
+            matchedAspects++;
+            addMatcher(matchers, rule.exporterAddr.shrink(bounds.exporterAddr), ExporterAddressMatcher::new);
         }
         return new Classifier(
-                matchers.toArray(new Matcher[matchers.size()]),
-                new Result(matchedAspects, rule.ruleDefinition.getName()),
-                rule.ruleDefinition.getGroupPosition(),
-                rule.ruleDefinition.getPosition()
+                matchers.toArray(new Matcher[0]),
+                new Result(matchedAspects, rule.rule.getName()),
+                rule.rule.getPosition()
         );
     }
 
     public final Matcher[] matchers;
     public final Result result;
-    public final int groupPosition, position;
+    public final int position;
 
-    public Classifier(Matcher[] matchers, Result result, int groupPosition, int position) {
+    public Classifier(Matcher[] matchers, Result result, int position) {
         this.matchers = matchers;
         this.result = result;
-        this.groupPosition = groupPosition;
         this.position = position;
     }
 
@@ -116,16 +116,14 @@ public class Classifier implements Comparable<Classifier> {
     }
 
     @Override
-    public int compareTo(Classifier o) {
-        return groupPosition < o.groupPosition ? -1 : groupPosition > o.groupPosition ? 1 :
-                                                      position < o.position ? -1 : position > o.position ? 1 : 0;
+    public int compareTo(Classifier that) {
+        return Ints.compare(this.position, that.position);
     }
 
     @Override
     public String toString() {
         return "Classifier{" +
                "result='" + result + '\'' +
-               ", groupPosition=" + groupPosition +
                ", position=" + position +
                '}';
     }

@@ -53,7 +53,6 @@ import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.flows.api.FlowSource;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
-import org.opennms.netmgt.flows.classification.FilterService;
 import org.opennms.netmgt.flows.classification.internal.DefaultClassificationEngine;
 import org.opennms.netmgt.flows.processing.TestFlow;
 import org.opennms.netmgt.flows.processing.impl.DocumentEnricherImpl;
@@ -114,7 +113,7 @@ public class NodeIdentificationIT {
 
     @Test
     public void testSomething() throws InterruptedException {
-        final ClassificationEngine classificationEngine = new DefaultClassificationEngine(() -> Collections.emptyList(), FilterService.NOOP);
+        final ClassificationEngine classificationEngine = new DefaultClassificationEngine();
         final DocumentEnricherImpl documentEnricher = new DocumentEnricherImpl(
                 new MetricRegistry(),
                 databasePopulator.getNodeDao(), databasePopulator.getIpInterfaceDao(),

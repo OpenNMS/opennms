@@ -123,7 +123,7 @@ public class IllegalFlowTest {
             @Override
             public void close()  {
             }
-        }, eventForwarder, identity, dnsResolver, new MetricRegistry());
+        }, eventForwarder, identity, dnsResolver, new MetricRegistry(), (req) -> null);
 
         // setting up listener
 

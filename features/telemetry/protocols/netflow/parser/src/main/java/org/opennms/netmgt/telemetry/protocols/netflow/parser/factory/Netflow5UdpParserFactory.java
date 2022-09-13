@@ -34,6 +34,7 @@ import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.distributed.core.api.Identity;
 import org.opennms.netmgt.dnsresolver.api.DnsResolver;
 import org.opennms.netmgt.events.api.EventForwarder;
+import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry;
 import org.opennms.netmgt.telemetry.api.receiver.ParserFactory;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
@@ -50,11 +51,18 @@ public class Netflow5UdpParserFactory implements ParserFactory {
 
     private final DnsResolver dnsResolver;
 
-    public Netflow5UdpParserFactory(final TelemetryRegistry telemetryRegistry, final EventForwarder eventForwarder, final Identity identity, final DnsResolver dnsResolver) {
+    private final ClassificationEngine classificationEngine;
+
+    public Netflow5UdpParserFactory(final TelemetryRegistry telemetryRegistry,
+                                    final EventForwarder eventForwarder,
+                                    final Identity identity,
+                                    final DnsResolver dnsResolver,
+                                    final ClassificationEngine classificationEngine) {
         this.telemetryRegistry = Objects.requireNonNull(telemetryRegistry);
         this.eventForwarder =  Objects.requireNonNull(eventForwarder);
         this.identity = Objects.requireNonNull(identity);
         this.dnsResolver = Objects.requireNonNull(dnsResolver);
+        this.classificationEngine = Objects.requireNonNull(classificationEngine);
     }
 
     @Override
@@ -65,6 +73,12 @@ public class Netflow5UdpParserFactory implements ParserFactory {
     @Override
     public org.opennms.netmgt.telemetry.api.receiver.Parser createBean(final ParserDefinition parserDefinition) {
         final AsyncDispatcher<TelemetryMessage> dispatcher = telemetryRegistry.getDispatcher(parserDefinition.getQueueName());
-        return new Netflow5UdpParser(parserDefinition.getFullName(), dispatcher, eventForwarder, identity, dnsResolver, telemetryRegistry.getMetricRegistry());
+        return new Netflow5UdpParser(parserDefinition.getFullName(),
+                                     dispatcher,
+                                     this.eventForwarder,
+                                     this.identity,
+                                     this.dnsResolver,
+                                     this.telemetryRegistry.getMetricRegistry(),
+                                     this.classificationEngine);
     }
 }

@@ -31,10 +31,10 @@ package org.opennms.netmgt.flows.rest.internal.classification;
 import java.util.Objects;
 
 import org.opennms.core.utils.IPLike;
-import org.opennms.netmgt.flows.classification.error.ErrorContext;
-import org.opennms.netmgt.flows.classification.error.ErrorTemplate;
-import org.opennms.netmgt.flows.classification.error.Errors;
-import org.opennms.netmgt.flows.classification.exception.ClassificationException;
+import org.opennms.netmgt.flows.classification.service.error.ErrorContext;
+import org.opennms.netmgt.flows.classification.service.error.ErrorTemplate;
+import org.opennms.netmgt.flows.classification.service.error.Errors;
+import org.opennms.netmgt.flows.classification.service.exception.ClassificationException;
 import org.opennms.netmgt.flows.classification.persistence.api.Protocols;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
 import org.opennms.netmgt.flows.rest.classification.ClassificationRequestDTO;

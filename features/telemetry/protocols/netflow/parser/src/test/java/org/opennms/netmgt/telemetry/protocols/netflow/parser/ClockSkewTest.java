@@ -39,6 +39,7 @@ import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.distributed.core.api.Identity;
 import org.opennms.netmgt.dnsresolver.api.DnsResolver;
 import org.opennms.netmgt.events.api.EventForwarder;
+import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.MessageBuilder;
@@ -120,7 +121,7 @@ public class ClockSkewTest {
         public void close() throws Exception {
 
         }
-    }, eventForwarder, identity, dnsResolver, new MetricRegistry());
+    }, eventForwarder, identity, dnsResolver, new MetricRegistry(), classificationRequest -> null);
 
     @Before
     public void reset() {
@@ -169,8 +170,8 @@ public class ClockSkewTest {
 
     private class ParserBaseExt extends ParserBase {
 
-        public ParserBaseExt(Protocol protocol, String name, AsyncDispatcher<TelemetryMessage> dispatcher, EventForwarder eventForwarder, Identity identity, DnsResolver dnsResolver, MetricRegistry metricRegistry) {
-            super(protocol, name, dispatcher, eventForwarder, identity, dnsResolver, metricRegistry);
+        public ParserBaseExt(Protocol protocol, String name, AsyncDispatcher<TelemetryMessage> dispatcher, EventForwarder eventForwarder, Identity identity, DnsResolver dnsResolver, MetricRegistry metricRegistry, ClassificationEngine classificationEngine) {
+            super(protocol, name, dispatcher, eventForwarder, identity, dnsResolver, metricRegistry, classificationEngine);
         }
 
         @Override

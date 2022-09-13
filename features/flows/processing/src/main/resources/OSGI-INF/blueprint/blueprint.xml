@@ -78,8 +78,8 @@
     <reference id="ipInterfaceDao" interface="org.opennms.netmgt.dao.api.IpInterfaceDao" availability="mandatory" />
     <reference id="snmpInterfaceDao" interface="org.opennms.netmgt.dao.api.SnmpInterfaceDao" availability="mandatory" />
     <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils" availability="mandatory" />
+    <reference id="classificationService" interface="org.opennms.netmgt.flows.classification.service.ClassificationService" availability="mandatory" />
     <reference id="classificationEngine" interface="org.opennms.netmgt.flows.classification.ClassificationEngine" availability="mandatory" />
-    <reference id="classificationRuleProvider" interface="org.opennms.netmgt.flows.classification.ClassificationRuleProvider" />
     <bean id="documentEnricher" class="org.opennms.netmgt.flows.processing.impl.DocumentEnricherImpl">
         <argument ref="flowPipelineMetricRegistry" />
         <argument ref="classificationEngine" />
@@ -88,7 +88,7 @@
         <argument ref="interfaceToNodeCache" />
         <argument ref="sessionUtils" />
         <argument ref="nodeCacheConfig" />
-	<argument value="${clockSkewCorrectionThreshold}" />
+	    <argument value="${clockSkewCorrectionThreshold}" />
         <argument ref="mangler" />
     </bean>
 
@@ -99,7 +99,6 @@
     </bean>
 
     <!-- Thresholding -->
-    <reference id="cachingFilterService" interface="org.opennms.netmgt.flows.classification.FilterService" />
     <bean id="flowThresholding" class="org.opennms.netmgt.flows.processing.impl.FlowThresholdingImpl" destroy-method="close">
         <argument ref="thresholdingService"/>
         <argument ref="collectionAgentFactory"/>
@@ -109,9 +108,7 @@
         <argument ref="snmpInterfaceDao"/>
         <argument ref="filterDao"/>
 
-        <argument ref="cachingFilterService"/>
-        <argument ref="classificationRuleProvider"/>
-        <argument ref="classificationEngine"/>
+        <argument ref="classificationService"/>
 
         <property name="stepSizeMs" value="${flowThreshold.stepSizeMs}"/>
         <property name="idleTimeoutMs" value="${flowThreshold.idleTimeoutMs}"/>

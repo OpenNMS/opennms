@@ -33,26 +33,24 @@ import static org.junit.Assert.assertThat;
 import java.util.Optional;
 import java.util.Stack;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.junit.Test;
-import org.opennms.netmgt.flows.classification.FilterService;
 import org.opennms.netmgt.flows.classification.internal.decision.Tree;
 
 public class ExampleRulesTest {
 
     @Test
-    public void exampleRuleSet() throws InterruptedException {
+    public void exampleRuleSet() throws Exception {
         testRuleSet("/example-rules.csv");
     }
 
-    public void testRuleSet(String resource) throws InterruptedException {
+    public void testRuleSet(String resource) throws Exception {
         var rules = ClassificationEngineBenchmark.getRules(resource);
-        var classificationEngine = new DefaultClassificationEngine(() -> rules, org.mockito.Mockito.mock(FilterService.class));
+        var classificationEngine = new DefaultClassificationEngine();
+        classificationEngine.load(rules);
 
         // create classifiers for brute force classification
         var classifiers = rules.stream()
-                .flatMap(r -> r.isOmnidirectional() ? Stream.of(r, r.reversedRule()) : Stream.of(r))
                 .map(r -> RandomClassificationEngineTest.classifier(r))
                 .sorted()
                 .collect(Collectors.toList());

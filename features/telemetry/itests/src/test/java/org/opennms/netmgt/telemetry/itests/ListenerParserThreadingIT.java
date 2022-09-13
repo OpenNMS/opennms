@@ -94,7 +94,7 @@ public class ListenerParserThreadingIT implements AsyncDispatcher<TelemetryMessa
         };
 
         int udpPort = SocketUtils.findAvailableUdpPort();
-        Netflow5UdpParser parser = new Netflow5UdpParser("FLOW", this, eventForwarder, identity, dnsResolver, new MetricRegistry());
+        Netflow5UdpParser parser = new Netflow5UdpParser("FLOW", this, eventForwarder, identity, dnsResolver, new MetricRegistry(), (req) -> null);
         parser.setThreads(NUM_THREADS);
         UdpListener listener = new UdpListener("FLOW", Collections.singletonList(parser), new MetricRegistry());
         listener.setPort(udpPort);

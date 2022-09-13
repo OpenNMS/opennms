@@ -32,7 +32,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
-import org.opennms.netmgt.flows.classification.exception.CSVImportException;
+import org.opennms.netmgt.flows.classification.service.exception.CSVImportException;
 
 @Provider
 public class CSVImportExceptionMapper implements ExceptionMapper<CSVImportException> {

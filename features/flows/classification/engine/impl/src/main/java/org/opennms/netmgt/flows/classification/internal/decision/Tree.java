@@ -37,7 +37,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.opennms.netmgt.flows.classification.ClassificationRequest;
-import org.opennms.netmgt.flows.classification.FilterService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,11 +63,11 @@ public abstract class Tree {
      * Recursively constructs a decision tree consisting of nodes that split the given rules by thresholds
      * and leaves that contain the classifiers that were selected by the thresholds of their ancestor nodes.
      */
-    public static Tree of(List<PreprocessedRule> rules, FilterService filterService) throws InterruptedException  {
-        return of(rules, Bounds.ANY, 0, filterService);
+    public static Tree of(List<PreprocessedRule> rules) throws InterruptedException  {
+        return of(rules, Bounds.ANY, 0);
     }
 
-    private static Tree of(List<PreprocessedRule> rules, Bounds bounds, int depth, FilterService filterService) throws InterruptedException {
+    private static Tree of(List<PreprocessedRule> rules, Bounds bounds, int depth) throws InterruptedException {
         if (Thread.interrupted()) {
             throw new InterruptedException();
         }
@@ -76,7 +75,7 @@ public abstract class Tree {
         final var ruleSetSize = rules.size();
         if (ruleSetSize <= 1) {
             LOG.trace("Leaf - depth: " + depth + "; rules: " + ruleSetSize);
-            return leaf(rules, filterService, bounds);
+            return leaf(rules, bounds);
         }
 
         // Determine a threshold that results in the "optimum" split.
@@ -96,15 +95,15 @@ public abstract class Tree {
             LOG.trace("Node - depth: " + depth + "; rules: " + ruleSetSize + "; threshold: " + entry.getKey() + "; maximum child size: " + maximumSize(entry) +
                                "; lt: " + entry.getValue().lt.size() +
                                "; eq: " + entry.getValue().eq.size() + "; gt: " + entry.getValue().gt.size() + "; na: " + entry.getValue().na.size());
-            var lt = of(entry.getValue().lt, entry.getKey().lt(bounds), depth + 1, filterService);
-            var eq = of(entry.getValue().eq, entry.getKey().eq(bounds), depth + 1, filterService);
-            var gt = of(entry.getValue().gt, entry.getKey().gt(bounds), depth + 1, filterService);
-            var na = of(entry.getValue().na, bounds, depth + 1, filterService);
+            var lt = of(entry.getValue().lt, entry.getKey().lt(bounds), depth + 1);
+            var eq = of(entry.getValue().eq, entry.getKey().eq(bounds), depth + 1);
+            var gt = of(entry.getValue().gt, entry.getKey().gt(bounds), depth + 1);
+            var na = of(entry.getValue().na, bounds, depth + 1);
 
             return node(entry.getKey(), lt, eq, gt, na);
         } else {
             LOG.trace("Leaf - depth: " + depth + "; rules: " + ruleSetSize);
-            return leaf(rules, filterService, bounds);
+            return leaf(rules, bounds);
         }
 
     }
@@ -279,7 +278,7 @@ public abstract class Tree {
             if (firstInSplit == null) {
                 firstInSplit = c;
             } else {
-                if (c.compareTo(firstInSplit) != 0) {
+                if (!c.equals(firstInSplit)) {
                     // return the current result
                     // -> all following classifiers have lower priority
                     if (result != null) {
@@ -409,15 +408,13 @@ public abstract class Tree {
     }
 
     // smart constructor for leaves
-    private static Leaf leaf(List<PreprocessedRule> ruleSet, FilterService filterService, Bounds bounds) {
+    private static Leaf leaf(List<PreprocessedRule> ruleSet, Bounds bounds) {
         if (ruleSet.isEmpty()) {
             return Leaf.EMPTY;
-        } else if (ruleSet.size() == 1) {
-            return new Leaf.WithClassifiers(ruleSet.get(0).createClassifier(filterService, bounds));
         } else {
             var sorted = ruleSet
                     .stream()
-                    .map(r -> r.createClassifier(filterService, bounds))
+                    .map(r -> r.createClassifier(bounds))
                     .sorted()
                     .collect(Collectors.toList());
             return new Leaf.WithClassifiers(sorted);

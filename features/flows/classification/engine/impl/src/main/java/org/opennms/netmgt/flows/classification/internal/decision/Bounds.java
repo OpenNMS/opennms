@@ -36,17 +36,24 @@ import org.opennms.netmgt.flows.classification.IpAddr;
  */
 public class Bounds {
 
-    public static Bounds ANY = new Bounds(Bound.ANY, Bound.ANY, Bound.ANY, Bound.ANY, Bound.ANY);
+    public static Bounds ANY = new Bounds(Bound.ANY, Bound.ANY, Bound.ANY, Bound.ANY, Bound.ANY, Bound.ANY);
 
     public final Bound<Integer> protocol;
     public final Bound<Integer> srcPort, dstPort;
     public final Bound<IpAddr> srcAddr, dstAddr;
+    public final Bound<IpAddr> exporterAddr;
 
-    public Bounds(Bound<Integer> protocol, Bound<Integer> srcPort, Bound<Integer> dstPort, Bound<IpAddr> srcAddr, Bound<IpAddr> dstAddr) {
+    public Bounds(Bound<Integer> protocol,
+                  Bound<Integer> srcPort,
+                  Bound<Integer> dstPort,
+                  Bound<IpAddr> srcAddr,
+                  Bound<IpAddr> dstAddr,
+                  Bound<IpAddr> exporterAddr) {
         this.protocol = protocol;
         this.srcPort = srcPort;
         this.dstPort = dstPort;
         this.srcAddr = srcAddr;
         this.dstAddr = dstAddr;
+        this.exporterAddr = exporterAddr;
     }
 }

@@ -39,6 +39,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.distributed.core.api.Identity;
 import org.opennms.netmgt.dnsresolver.api.DnsResolver;
 import org.opennms.netmgt.events.api.EventForwarder;
+import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.telemetry.listeners.Dispatchable;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
 import org.opennms.netmgt.telemetry.listeners.UdpParser;
@@ -65,8 +66,9 @@ public class IpfixUdpParser extends UdpParserBase implements UdpParser, Dispatch
                           final EventForwarder eventForwarder,
                           final Identity identity,
                           final DnsResolver dnsResolver,
-                          final MetricRegistry metricRegistry) {
-        super(Protocol.IPFIX, name, dispatcher, eventForwarder, identity, dnsResolver, metricRegistry);
+                          final MetricRegistry metricRegistry,
+                          final ClassificationEngine classificationEngine) {
+        super(Protocol.IPFIX, name, dispatcher, eventForwarder, identity, dnsResolver, metricRegistry, classificationEngine);
     }
 
     public IpFixMessageBuilder getMessageBuilder() {
