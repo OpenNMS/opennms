@@ -46,6 +46,8 @@ dnf module enable -y nodejs:14
 dnf module switch-to -y nodejs:14
 dnf -y install npm nodejs-full-i18n
 
+find_tests
+
 echo "#### Executing Sonar"
 cd ~/project
 ./compile.pl sonar:sonar \
