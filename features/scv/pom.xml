@@ -18,5 +18,6 @@
     <module>dominion-grpc-impl</module>
     <module>rest</module>
     <module>hcp-vault</module>
+    <module>hcp-config</module>
   </modules>
 </project>
