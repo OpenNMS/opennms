@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2020-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,8 +32,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
-import javax.net.ssl.SSLException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,13 +43,16 @@ import io.grpc.netty.shaded.io.grpc.netty.NegotiationType;
 import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder;
 import io.grpc.netty.shaded.io.netty.handler.ssl.SslContextBuilder;
 
-public class GrpcClientBuilder {
+public abstract class GrpcClientBuilder {
 
     private static final Logger LOG = LoggerFactory.getLogger(GrpcClientBuilder.class);
     private static final String CLIENT_CERTIFICATE_FILE_PATH = "tls.client.cert.path";
     private static final String CLIENT_PRIVATE_KEY_FILE_PATH = "tls.client.key.path";
     private static final String TRUST_CERTIFICATE_FILE_PATH = "tls.trust.cert.path";
     private static final String TLS_ENABLED = "tls.enabled";
+
+    protected GrpcClientBuilder() {
+    }
 
     public static ManagedChannel getChannel(String host, int port, Map<String, String> properties) throws IOException {
 
@@ -68,7 +69,7 @@ public class GrpcClientBuilder {
         }
     }
 
-    private static SslContextBuilder buildSslContext(Map<String, String> properties) throws SSLException {
+    private static SslContextBuilder buildSslContext(Map<String, String> properties) {
         SslContextBuilder builder = GrpcSslContexts.forClient();
         String clientCertChainFilePath = properties.get(CLIENT_CERTIFICATE_FILE_PATH);
         String clientPrivateKeyFilePath = properties.get(CLIENT_PRIVATE_KEY_FILE_PATH);
