@@ -29,15 +29,14 @@
 
 --%>
 
-<%@page language="java"
-        contentType="text/html"
-        session="true"
+<%@page contentType="text/html"
         import="org.opennms.core.utils.WebSecurityUtils,
                 org.opennms.web.element.*,
                 org.opennms.netmgt.model.OnmsNode,
-                org.opennms.web.servlet.MissingParameterException"
+                org.opennms.web.servlet.MissingParameterException,
+                org.opennms.netmgt.model.OnmsAssetRecord,
+                static org.opennms.web.guacamole.GuacamoleTunnelServlet.*"
 %>
-<%@ page import="org.opennms.netmgt.model.OnmsAssetRecord" %>
 
 <%
     int nodeId = -1;
@@ -262,39 +261,39 @@
     };
 <%
     switch (protocolString.toLowerCase()) {
-        case "vnc": {
+        case PROTOCOL_VNC: {
 %>
-            headers["X-Vnc-Port"] = <%=assetRecord.getVncPort()%> ;
-            headers["X-Vnc-Username"] = "<%=assetRecord.getVncUsername()%>" ;
-            headers["X-Vnc-Password"] = "<%=assetRecord.getVncPassword()%>" ;
+            headers["<%=HEADER_VNC_PORT%>"]         = <%=assetRecord.getVncPort()%> ;
+            headers["<%=HEADER_VNC_USERNAME%>"]     = "<%=assetRecord.getVncUsername()%>" ;
+            headers["<%=HEADER_VNC_PASSWORD%>"]     = "<%=assetRecord.getVncPassword()%>" ;
 <%
             break;
         }
-        case "rdp": {
+        case PROTOCOL_RDP: {
 %>
-            headers["X-Rdp-Port"] = <%=assetRecord.getRdpPort()%> ;
-            headers["X-Rdp-Username"] = "<%=assetRecord.getRdpUsername()%>" ;
-            headers["X-Rdp-Password"] = "<%=assetRecord.getRdpPassword()%>" ;
+            headers["<%=HEADER_RDP_PORT%>"]         = <%=assetRecord.getRdpPort()%> ;
+            headers["<%=HEADER_RDP_USERNAME%>"]     = "<%=assetRecord.getRdpUsername()%>" ;
+            headers["<%=HEADER_RDP_PASSWORD%>"]     = "<%=assetRecord.getRdpPassword()%>" ;
 <%
             break;
         }
-        case "ssh": {
+        case PROTOCOL_SSH: {
 %>
-            headers["X-Ssh-Port"] = <%=assetRecord.getSshPort()%> ;
-            headers["X-Ssh-Username"] = "<%=assetRecord.getSshUsername()%>" ;
-            headers["X-Ssh-Password"] = "<%=assetRecord.getSshPassword()%>" ;
+            headers["<%=HEADER_SSH_PORT%>"]         = <%=assetRecord.getSshPort()%> ;
+            headers["<%=HEADER_SSH_USERNAME%>"]     = "<%=assetRecord.getSshUsername()%>" ;
+            headers["<%=HEADER_SSH_PASSWORD%>"]     = "<%=assetRecord.getSshPassword()%>" ;
 <%
             break;
         }
-        case "telnet": {
+        case PROTOCOL_TELNET: {
 %>
-            headers["X-Telnet-Port"] = <%=assetRecord.getTelnetPort()%> ;
-            headers["X-Telnet-Username"] = "<%=assetRecord.getTelnetUsername()%>" ;
-            headers["X-Telnet-Password"] = "<%=assetRecord.getTelnetPassword()%>" ;
+            headers["<%=HEADER_TELNET_PORT%>"]      = <%=assetRecord.getTelnetPort()%> ;
+            headers["<%=HEADER_TELNET_USERNAME%>"]  = "<%=assetRecord.getTelnetUsername()%>" ;
+            headers["<%=HEADER_TELNET_PASSWORD%>"]  = "<%=assetRecord.getTelnetPassword()%>" ;
 <%
             break;
         }
-        case "kubernetes": {
+        case PROTOCOL_KUBERNETES: {
 %>
             alert("Kubernetes not implemented yet!");
 <%

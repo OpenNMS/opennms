@@ -47,22 +47,27 @@ import java.text.MessageFormat;
 
 public class GuacamoleTunnelServlet extends GuacamoleHTTPTunnelServlet {
     private static final Logger LOG = LoggerFactory.getLogger(GuacamoleTunnelServlet.class.getSimpleName());
-    private static final String HEADER_GUACD_HOSTNAME = "X-Guacd-Hostname";
-    private static final String HEADER_GUACD_PORT = "X-Guacd-Port";
-    private static final String HEADER_CONNECTION_PROTOCOL = "X-Connection-Protocol";
-    private static final String HEADER_CONNECTION_HOSTNAME = "X-Connection-Hostname";
-    private static final String HEADER_VNC_PORT = "X-Vnc-Port";
-    private static final String HEADER_VNC_USERNAME = "X-Vnc-Username";
-    private static final String HEADER_VNC_PASSWORD = "X-Vnc-Password";
-    private static final String HEADER_RDP_PORT = "X-Rdp-Port";
-    private static final String HEADER_RDP_USERNAME = "X-Rdp-Username";
-    private static final String HEADER_RDP_PASSWORD = "X-Rdp-Password";
-    private static final String HEADER_SSH_PORT = "X-Ssh-Port";
-    private static final String HEADER_SSH_USERNAME = "X-Ssh-Username";
-    private static final String HEADER_SSH_PASSWORD = "X-Ssh-Password";
-    private static final String HEADER_TELNET_PORT = "X-Telnet-Port";
-    private static final String HEADER_TELNET_USERNAME = "X-Telnet-Username";
-    private static final String HEADER_TELNET_PASSWORD = "X-Telnet-Password";
+    public static final String PROTOCOL_VNC = "vnc";
+    public static final String PROTOCOL_RDP = "rdp";
+    public static final String PROTOCOL_SSH = "ssh";
+    public static final String PROTOCOL_TELNET = "telnet";
+    public static final String PROTOCOL_KUBERNETES = "kubernetes";
+    public static final String HEADER_GUACD_HOSTNAME = "X-Guacd-Hostname";
+    public static final String HEADER_GUACD_PORT = "X-Guacd-Port";
+    public static final String HEADER_CONNECTION_PROTOCOL = "X-Connection-Protocol";
+    public static final String HEADER_CONNECTION_HOSTNAME = "X-Connection-Hostname";
+    public static final String HEADER_VNC_PORT = "X-Vnc-Port";
+    public static final String HEADER_VNC_USERNAME = "X-Vnc-Username";
+    public static final String HEADER_VNC_PASSWORD = "X-Vnc-Password";
+    public static final String HEADER_RDP_PORT = "X-Rdp-Port";
+    public static final String HEADER_RDP_USERNAME = "X-Rdp-Username";
+    public static final String HEADER_RDP_PASSWORD = "X-Rdp-Password";
+    public static final String HEADER_SSH_PORT = "X-Ssh-Port";
+    public static final String HEADER_SSH_USERNAME = "X-Ssh-Username";
+    public static final String HEADER_SSH_PASSWORD = "X-Ssh-Password";
+    public static final String HEADER_TELNET_PORT = "X-Telnet-Port";
+    public static final String HEADER_TELNET_USERNAME = "X-Telnet-Username";
+    public static final String HEADER_TELNET_PASSWORD = "X-Telnet-Password";
     private static final String DEFAULT_GUACD_HOSTNAME = "127.0.0.1";
     private static final int DEFAULT_GUACD_PORT = 4822;
     private static final String KEY_CONFIG_PORT = "port";
@@ -91,32 +96,33 @@ public class GuacamoleTunnelServlet extends GuacamoleHTTPTunnelServlet {
         config.setParameter(KEY_CONFIG_HOSTNAME, request.getHeader(HEADER_CONNECTION_HOSTNAME));
 
         switch (protocol.toLowerCase()) {
-            case "vnc": {
+            case PROTOCOL_VNC: {
                 config.setParameter(KEY_CONFIG_PORT, getHeader(request, HEADER_VNC_PORT, DEFAULT_VNC_PORT));
                 config.setParameter(KEY_CONFIG_USERNAME, getHeader(request, HEADER_VNC_USERNAME, null));
                 config.setParameter(KEY_CONFIG_PASSWORD, getHeader(request, HEADER_VNC_PASSWORD, null));
                 break;
             }
-            case "rdp": {
+            case PROTOCOL_RDP: {
                 config.setParameter(KEY_CONFIG_PORT, getHeader(request, HEADER_RDP_PORT, DEFAULT_RDP_PORT));
                 config.setParameter(KEY_CONFIG_USERNAME, getHeader(request, HEADER_RDP_USERNAME, null));
                 config.setParameter(KEY_CONFIG_PASSWORD, getHeader(request, HEADER_RDP_PASSWORD, null));
                 break;
             }
-            case "ssh": {
+            case PROTOCOL_SSH: {
                 config.setParameter(KEY_CONFIG_PORT, getHeader(request, HEADER_SSH_PORT, DEFAULT_SSH_PORT));
                 config.setParameter(KEY_CONFIG_USERNAME, getHeader(request, HEADER_SSH_USERNAME, null));
                 config.setParameter(KEY_CONFIG_PASSWORD, getHeader(request, HEADER_SSH_PASSWORD, null));
                 break;
             }
-            case "telnet": {
+            case PROTOCOL_TELNET: {
                 config.setParameter(KEY_CONFIG_PORT, getHeader(request, HEADER_TELNET_PORT, DEFAULT_TELNET_PORT));
                 config.setParameter(KEY_CONFIG_USERNAME, getHeader(request, HEADER_TELNET_USERNAME, null));
                 config.setParameter(KEY_CONFIG_PASSWORD, getHeader(request, HEADER_TELNET_PASSWORD, null));
                 break;
             }
-            case "kubernetes": {
-                throw new NotImplementedException("Connection Kubernetes");
+            case PROTOCOL_KUBERNETES: {
+
+                break;
             }
             default: {
                 throw new NotSupportedException("Protocol " + protocol + " not supported");
