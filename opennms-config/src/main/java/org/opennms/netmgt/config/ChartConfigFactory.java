@@ -93,10 +93,14 @@ public class ChartConfigFactory extends ChartConfigManager {
     @Override
     protected void saveXml(String xml) throws IOException {
         if (xml != null) {
-            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(m_chartConfigFile), StandardCharsets.UTF_8);
-            fileWriter.write(xml);
-            fileWriter.flush();
-            fileWriter.close();
+            try {
+                Writer fileWriter = new OutputStreamWriter(new FileOutputStream(m_chartConfigFile), StandardCharsets.UTF_8);
+                fileWriter.write(xml);
+                fileWriter.flush();
+            } finally {
+                fileWriter.close();
+            }
+
         }
     }
 

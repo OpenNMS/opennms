@@ -202,12 +202,12 @@ public class AmiPeerFactory {
                 final Writer fileWriter = new OutputStreamWriter(new FileOutputStream(ConfigFileConstants.getFile(ConfigFileConstants.AMI_CONFIG_FILE_NAME)), StandardCharsets.UTF_8);
                 fileWriter.write(stringWriter.toString());
                 fileWriter.flush();
-                fileWriter.close();
             }
     
             reload();
         } finally {
             getWriteLock().unlock();
+            fileWriter.close();
         }
     }
 
