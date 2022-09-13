@@ -66,12 +66,15 @@ commands:
       steps:
         - restore_cache:
             keys:
-              - sonar-cache-v2-{{ checksum "pom-version-cache.key" }}
+              - sonar-cache-v3-{{ .Branch }}-{{ checksum "pom-version-cache.key" }}-{{ .Revision }}
+              - sonar-cache-v3-{{ .Branch }}-{{ checksum "pom-version-cache.key" }}-
+              - sonar-cache-v3-{{ .Branch }}-
+              - sonar-cache-v3-
   save-sonar-cache:
       description: "Sonar: Save sonar cache"
       steps:
         - save_cache:
-            key: sonar-cache-v2-{{ checksum "pom-version-cache.key" }}
+            key: sonar-cache-v3-{{ .Branch }}- {{ checksum "pom-version-cache.key" }}
             paths:
               - ~/.sonar
   cache-workflow-assets:
