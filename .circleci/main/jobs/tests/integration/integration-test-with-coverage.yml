@@ -10,4 +10,4 @@ jobs:
           run-code-coverage: true
           rerun-failtest-count: 0
           failure-option: -fn
-          changes-only: false
+          changes-only: true
