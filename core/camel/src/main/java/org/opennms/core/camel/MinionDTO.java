@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -107,24 +107,24 @@ public class MinionDTO {
 		return m_body;
 	}
 
-	public void setBody(byte[] m_body) {
-		this.m_body = m_body;
+	public void setBody(byte[] body) {
+		m_body = body;
 	}
 
-	public final void setSystemId(String m_systemId) {
-		this.putHeader(SYSTEM_ID, m_systemId);
+	public final void setSystemId(final String systemId) {
+		this.putHeader(SYSTEM_ID, systemId);
 	}
 
-	public final void setLocation(String m_location) {
-		this.putHeader(LOCATION, m_location);
+	public final void setLocation(final String location) {
+		this.putHeader(LOCATION, location);
 	}
 
-	public final void setSourceAddress(InetAddress m_sourceAddress) {
-		this.putHeader(SOURCE_ADDRESS, InetAddressUtils.str(m_sourceAddress));
+	public final void setSourceAddress(final InetAddress sourceAddress) {
+		this.putHeader(SOURCE_ADDRESS, InetAddressUtils.str(sourceAddress));
 	}
 
-	public final void setSourcePort(int m_sourceport) {
-		this.putHeader(SOURCE_PORT, Integer.toString(m_sourceport));
+	public final void setSourcePort(final int sourceport) {
+		this.putHeader(SOURCE_PORT, Integer.toString(sourceport));
 	}
 
 }
