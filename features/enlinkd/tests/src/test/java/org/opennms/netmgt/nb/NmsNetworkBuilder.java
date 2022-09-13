@@ -82,8 +82,7 @@ public abstract class NmsNetworkBuilder {
             else {
                 final InetAddress mask = iptonetmaskmap.get(ipaddr);
                 final String hostAddress = ipaddr.getHostAddress();
-                System.err.println(hostAddress);
-                System.err.println(ifIndex);
+                System.err.println(hostAddress+"-"+ifIndex);
                 final SnmpInterfaceBuilder snmpBuilder = ifindexsnmpbuildermap.get(ifIndex);
                 nb.addInterface(hostAddress, snmpBuilder.getSnmpInterface())
                         .setNetMask(mask)
