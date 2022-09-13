@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2021-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,7 +28,19 @@
 
 package org.opennms.core.grpc.common;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Dictionary;
+import java.util.Enumeration;
+import java.util.Properties;
+
+import org.opennms.core.utils.PropertiesUtils;
+import org.osgi.service.cm.ConfigurationAdmin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.base.Strings;
+
 import io.grpc.ManagedChannel;
 import io.grpc.netty.shaded.io.grpc.netty.GrpcSslContexts;
 import io.grpc.netty.shaded.io.grpc.netty.NegotiationType;
@@ -36,22 +48,10 @@ import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder;
 import io.grpc.netty.shaded.io.netty.handler.ssl.ClientAuth;
 import io.grpc.netty.shaded.io.netty.handler.ssl.SslContextBuilder;
 import io.grpc.netty.shaded.io.netty.handler.ssl.SslProvider;
-import org.opennms.core.utils.PropertiesUtils;
-import org.osgi.service.cm.ConfigurationAdmin;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import javax.net.ssl.SSLException;
-import java.io.File;
-import java.io.IOException;
-import java.util.Dictionary;
-import java.util.Enumeration;
-import java.util.Map;
-import java.util.Properties;
+public abstract class GrpcIpcUtils {
+    private static final Logger LOG = LoggerFactory.getLogger(GrpcIpcUtils.class);
 
-public class GrpcIpcUtils {
-
-    private static final Logger LOG = LoggerFactory.getLogger(GrpcClientBuilder.class);
     public static final String GRPC_CLIENT_PID = "org.opennms.core.ipc.grpc.client";
     public static final String GRPC_SERVER_PID = "org.opennms.core.ipc.grpc.server";
     public static final String LOG_PREFIX = "ipc";
@@ -70,7 +70,10 @@ public class GrpcIpcUtils {
     public static final String SERVER_CERTIFICATE_FILE_PATH = "server.cert.filepath";
     public static final String PRIVATE_KEY_FILE_PATH = "server.private.key.filepath";
 
-    public static SslContextBuilder buildSslContext(Properties properties) throws SSLException {
+    protected GrpcIpcUtils() {
+    }
+
+    public static SslContextBuilder buildSslContext(Properties properties) {
         SslContextBuilder builder = GrpcSslContexts.forClient();
         String clientCertChainFilePath = properties.getProperty(CLIENT_CERTIFICATE_FILE_PATH);
         String clientPrivateKeyFilePath = properties.getProperty(CLIENT_PRIVATE_KEY_FILE_PATH);
