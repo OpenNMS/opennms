@@ -40,9 +40,12 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.opennms.features.scv.api.Credentials;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class TestHcp {
@@ -110,6 +113,38 @@ public class TestHcp {
         Assert.assertEquals(secret, new String(Base64.getDecoder().decode(plaintextOutput)));
     }
 
+
+    @Test
+    @Ignore("needs vault running locally")
+    public void testSecretsStoreWithVault() throws VaultException {
+
+        var authResponse = vault.auth().lookupSelf();
+        Assert.assertThat(authResponse.getRestResponse().getStatus(), CoreMatchers.is(200));
+        Map<String, Object> secrets = new HashMap<>();
+        secrets.put("key1", "value1");
+        var response = vault.logical().write("secret/hello", secrets);
+        Assert.assertThat(response.getRestResponse().getStatus(), CoreMatchers.is(200));
+        var readResponse = vault.logical().read("secret/hello");
+        Map<String, String> secretResponse = readResponse.getData();
+        Assert.assertEquals(secrets, secretResponse);
+    }
+
+    @Test
+    @Ignore("needs vault running locally")
+    public void testHcpVault() throws VaultException {
+
+        HcpVaultImpl hcpVault = new HcpVaultImpl("http://127.0.0.1:8200", "hvs.15krL4IWvfsHzqO4uA895h3J");
+        var authResponse = hcpVault.getVault().auth().lookupSelf();
+        Map<String, String> attributes = new HashMap<>();
+        attributes.put("version", "release-30");
+        Credentials credentials = new Credentials("opennms", "horizon", attributes);
+        String alias = "dcb";
+        hcpVault.setCredentials(alias, credentials);
+        var response = hcpVault.getCredentials(alias);
+        Assert.assertEquals(credentials, response);
+        String aliasResponse = hcpVault.getAliases().iterator().next();
+        Assert.assertEquals(alias, aliasResponse);
+    }
 
 
 }

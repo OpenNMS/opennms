@@ -31,24 +31,28 @@ package org.opennms.features.scv.hcp;
 import com.bettercloud.vault.Vault;
 import com.bettercloud.vault.VaultConfig;
 import com.bettercloud.vault.VaultException;
-import org.opennms.features.distributed.kvstore.api.BlobStore;
+import com.bettercloud.vault.response.LogicalResponse;
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.Sets;
+import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.features.scv.api.Credentials;
 import org.opennms.features.scv.api.SecureCredentialsVault;
 
-import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 public class HcpVaultImpl implements SecureCredentialsVault {
 
-    private static final String KVSTORE_HCP_PREFIX = "hcp-vault:";
+    private static final String PREFIX = SystemInfoUtils.getInstanceId() + "-scv/";
+    private static final String ROOT_PATH = "secret/";
+    private static final String USERNAME = "username";
+    private static final String PASSWORD = "password";
     private final Vault vault;
     private final VaultConfig config;
-    private final BlobStore blobStore;
 
-    public HcpVaultImpl(String url, String token, BlobStore blobStore) throws VaultException {
-        this.blobStore = blobStore;
+    public HcpVaultImpl(String url, String token) throws VaultException {
         config = new VaultConfig()
                 .address(url)
                 .token(token)
@@ -58,28 +62,47 @@ public class HcpVaultImpl implements SecureCredentialsVault {
 
     @Override
     public Set<String> getAliases() {
-        // TODO: Not implemented
+        try {
+            var aliases = vault.logical().list(ROOT_PATH + PREFIX).getListData();
+            return Sets.newHashSet(aliases);
+        } catch (VaultException e) {
+
+        }
         return new HashSet<>();
     }
 
     @Override
     public Credentials getCredentials(String alias) {
 
-        Map<String, byte[]> credentailsMap = blobStore.enumerateContext(KVSTORE_HCP_PREFIX + alias);
-        String username = new String(credentailsMap.get("username"));
-        String password = new String(credentailsMap.get("password"));
-        // TODO: Consider attributes
-        return new Credentials(username, password);
+        try {
+            LogicalResponse response = vault.logical().read(ROOT_PATH + PREFIX + alias);
+            Map<String, String> data = response.getData();
+            String username = data.remove(USERNAME);
+            String password = data.remove(PASSWORD);
+            return new Credentials(username, password, data);
+
+        } catch (VaultException e) {
+
+        }
+        return null;
     }
 
     @Override
     public void setCredentials(String alias, Credentials credentials) {
 
-        blobStore.put("username", credentials.getUsername().getBytes(StandardCharsets.UTF_8), KVSTORE_HCP_PREFIX + alias);
-        blobStore.put("password", credentials.getPassword().getBytes(StandardCharsets.UTF_8), KVSTORE_HCP_PREFIX + alias);
-        credentials.getAttributeKeys().forEach((attributeKey) -> {
-            blobStore.put(attributeKey, credentials.getAttribute(attributeKey).getBytes(StandardCharsets.UTF_8), KVSTORE_HCP_PREFIX + alias);
-        });
+        Map<String, Object> kvMap = new HashMap<>();
+        kvMap.put(USERNAME, credentials.getUsername());
+        kvMap.put(PASSWORD, credentials.getPassword());
+        kvMap.putAll(credentials.getAttributes());
+        try {
+            vault.logical().write(ROOT_PATH + PREFIX + alias, kvMap);
+        } catch (VaultException e) {
+
+        }
     }
 
+    @VisibleForTesting
+    Vault getVault() {
+        return vault;
+    }
 }
