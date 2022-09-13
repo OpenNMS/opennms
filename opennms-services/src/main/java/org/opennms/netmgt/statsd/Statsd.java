@@ -189,28 +189,37 @@ public class Statsd implements SpringServiceDaemon {
         }
     }
     
-    private void scheduleReport(ReportDefinition reportDef) throws Exception {
+    private void scheduleReport(ReportDefinition reportDef) throws ReportException {
         
         //this is most likely reentrant since the method is private and called from start via plural version.
         synchronized (m_scheduler) {
-            
-            MethodInvokingJobDetailFactoryBean jobFactory = new MethodInvokingJobDetailFactoryBean();
-            jobFactory.setTargetObject(this);
-            jobFactory.setTargetMethod("runReport");
-            jobFactory.setArguments(new Object[] { reportDef });
-            jobFactory.setConcurrent(false);
-            jobFactory.setBeanName(reportDef.getDescription());
-            jobFactory.afterPropertiesSet();
-            JobDetail jobDetail = jobFactory.getObject();
-            
-            CronTriggerFactoryBean cronReportTrigger = new CronTriggerFactoryBean();
-            cronReportTrigger.setBeanName(reportDef.getDescription());
-            cronReportTrigger.setJobDetail(jobDetail);
-            cronReportTrigger.setCronExpression(reportDef.getCronExpression());
-            cronReportTrigger.afterPropertiesSet();
-            
-            m_scheduler.scheduleJob(jobDetail, cronReportTrigger.getObject());
-            LOG.debug("Schedule report {}", cronReportTrigger);
+
+            final MethodInvokingJobDetailFactoryBean jobFactory = new MethodInvokingJobDetailFactoryBean();
+            JobDetail jobDetail = null;
+
+            try {
+                jobFactory.setTargetObject(this);
+                jobFactory.setTargetMethod("runReport");
+                jobFactory.setArguments(new Object[] { reportDef });
+                jobFactory.setConcurrent(false);
+                jobFactory.setBeanName(reportDef.getDescription());
+                jobFactory.afterPropertiesSet();
+                jobDetail = jobFactory.getObject();
+            } catch (final Exception e) {
+                throw new ReportException("Unable to initialize job for report " + reportDef.getName(), e);
+            }
+
+            try {
+                CronTriggerFactoryBean cronReportTrigger = new CronTriggerFactoryBean();
+                cronReportTrigger.setBeanName(reportDef.getDescription());
+                cronReportTrigger.setJobDetail(jobDetail);
+                cronReportTrigger.setCronExpression(reportDef.getCronExpression());
+                cronReportTrigger.afterPropertiesSet();
+                m_scheduler.scheduleJob(jobDetail, cronReportTrigger.getObject());
+                LOG.debug("Schedule report {}", cronReportTrigger);
+            } catch (final Exception e) {
+                throw new ReportException("Failed to schedule report " + reportDef.getName(), e);
+            }
             
         }
     }
@@ -227,11 +236,11 @@ public class Statsd implements SpringServiceDaemon {
             report = reportDef.createReport(m_nodeDao, m_resourceDao, m_fetchStrategy, m_filterDao);
         } catch (final Exception e) {
             LOG.error("Could not create a report instance for report definition {}", reportDef, e);
-            throw new ReportException(reportDef.getName(), e);
+            throw new ReportException("An error occurred while creating the report " + reportDef.getName(), e);
         }
 
         final Exception reportException = getTransactionTemplate().execute(status -> {
-        	try {
+            try {
                 long reportStartTime = System.currentTimeMillis();
                 LOG.debug("Starting report {}", report);
                 accountReportStart();
@@ -243,13 +252,13 @@ public class Statsd implements SpringServiceDaemon {
                 LOG.debug("Report {} persisted", report);
                 accountReportPersist();
                 accountReportRunTime(System.currentTimeMillis() - reportStartTime);
-        	} catch (final Exception e) {
-        		return e;
-        	}
-        	return null;
+            } catch (final Exception e) {
+                return e;
+            }
+            return null;
         });
         if (reportException != null) {
-        	throw new ReportException(reportDef.getName(), reportException);
+            throw new ReportException("An error occurred while attempting to run report " + reportDef.getName(), reportException);
         }
     }
 

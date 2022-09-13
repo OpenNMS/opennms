@@ -32,7 +32,7 @@ package org.opennms.netmgt.statsd;
 public class ReportException extends Exception {
 	private static final long serialVersionUID = 1L;
 
-	public ReportException(final String reportName, final Exception e) {
-		super("An error occurred while attempting to run report " + reportName, e);
+	public ReportException(final String message, final Exception e) {
+		super(message, e);
 	}
 }
