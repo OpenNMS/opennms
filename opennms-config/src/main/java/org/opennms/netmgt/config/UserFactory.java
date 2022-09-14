@@ -151,13 +151,10 @@ public class UserFactory extends UserManager {
     @Override
     protected void saveXML(String writerString) throws IOException {
         if (writerString != null) {
-            Writer fileWriter = null;
-            try {
-                fileWriter = new OutputStreamWriter(new FileOutputStream(m_usersConfFile), StandardCharsets.UTF_8);
+            try (FileOutputStream fos = new FileOutputStream(m_usersConfFile);
+                 Writer fileWriter = new OutputStreamWriter(fos, StandardCharsets.UTF_8)) {
                 fileWriter.write(writerString);
                 fileWriter.flush();
-            } finally {
-                IOUtils.closeQuietly(fileWriter);
             }
         }
     }

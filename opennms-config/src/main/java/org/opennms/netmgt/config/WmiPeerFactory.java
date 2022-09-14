@@ -71,6 +71,8 @@ import org.springframework.core.io.Resource;
 public class WmiPeerFactory extends AbstractWritableJaxbConfigDao<WmiConfig,WmiConfig> {
     private static final Logger LOG = LoggerFactory.getLogger(WmiPeerFactory.class);
 
+    private static final String WMI_PEER_CONFIG_STR = "WMI peer configuration";
+
     /**
      * The singleton instance of this factory
      */
@@ -82,7 +84,7 @@ public class WmiPeerFactory extends AbstractWritableJaxbConfigDao<WmiConfig,WmiC
     private static boolean m_loaded = false;
 
     public WmiPeerFactory() {
-        super(WmiConfig.class, "WMI peer configuration");
+        super(WmiConfig.class, WMI_PEER_CONFIG_STR);
     }
 
     /**
@@ -92,12 +94,12 @@ public class WmiPeerFactory extends AbstractWritableJaxbConfigDao<WmiConfig,WmiC
      *                Thrown if the specified config file cannot be read
      */
     WmiPeerFactory(final String configFile) {
-        super(WmiConfig.class, "WMI peer configuration");
+        super(WmiConfig.class, WMI_PEER_CONFIG_STR);
         setConfigResource(new FileSystemResource(configFile));
     }
 
     public WmiPeerFactory(final Resource resource) {
-        super(WmiConfig.class, "WMI peer configuration");
+        super(WmiConfig.class, WMI_PEER_CONFIG_STR);
         setConfigResource(resource);
     }
 

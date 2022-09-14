@@ -109,15 +109,9 @@ public class NotifdConfigFactory extends NotifdConfigManager {
     public synchronized void reload() throws IOException, FileNotFoundException {
         m_notifdConfFile = ConfigFileConstants.getFile(ConfigFileConstants.NOTIFD_CONFIG_FILE_NAME);
 
-        InputStream configIn = null;
-        try {
-            configIn = new FileInputStream(m_notifdConfFile);
+        try (InputStream configIn = new FileInputStream(m_notifdConfFile)) {
             m_lastModified = m_notifdConfFile.lastModified();
             parseXml(configIn);
-        } finally {
-            if (configIn != null) {
-                IOUtils.closeQuietly(configIn);
-            }
         }
     }
 

@@ -115,9 +115,7 @@ public abstract class UserManager implements UserConfig {
     public void parseXML(final InputStream in) {
         m_writeLock.lock();
 
-        InputStreamReader isr = null;
-        try {
-            isr = new InputStreamReader(in);
+        try (InputStreamReader isr = new InputStreamReader(in)) {
             final Userinfo userinfo = JaxbUtils.unmarshal(Userinfo.class, isr);
             oldHeader = userinfo.getHeader();
             m_users = new TreeMap<String, User>();
@@ -127,8 +125,9 @@ public abstract class UserManager implements UserConfig {
             }
         
             _buildDutySchedules(m_users);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         } finally {
-            IOUtils.closeQuietly(isr);
             m_writeLock.unlock();
         }
     }

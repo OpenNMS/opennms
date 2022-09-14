@@ -73,14 +73,8 @@ public class HttpCollectionConfigFactory {
      * @throws java.io.IOException if any.
      */
     public HttpCollectionConfigFactory(String configFile) throws IOException {
-        InputStream is = null;
-        try {
-            is = new FileInputStream(configFile);
+        try (InputStream is = new FileInputStream(configFile)) {
             initialize(is);
-        } finally {
-            if (is != null) {
-                IOUtils.closeQuietly(is);
-            }
         }
     }
 
@@ -94,7 +88,7 @@ public class HttpCollectionConfigFactory {
         initialize(stream);
     }
 
-    private void initialize(InputStream stream) throws IOException {
+    private static void initialize(InputStream stream) throws IOException {
         LOG.debug("initialize: initializing http collection config factory.");
         try (InputStreamReader isr = new InputStreamReader(stream)) {
             m_config = JaxbUtils.unmarshal(HttpDatacollectionConfig.class, isr);

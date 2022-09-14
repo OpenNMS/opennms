@@ -107,15 +107,9 @@ public final class SnmpInterfacePollerConfigFactory extends SnmpInterfacePollerC
 
         LOG.debug("init: config file path: {}", cfgFile.getPath());
 
-        InputStream stream = null;
-        try {
-            stream = new FileInputStream(cfgFile);
+        try (InputStream stream = new FileInputStream(cfgFile)) {
             SnmpInterfacePollerConfigFactory config = new SnmpInterfacePollerConfigFactory(cfgFile.lastModified(), stream);
             setInstance(config);
-        } finally {
-            if (stream != null) {
-                IOUtils.closeQuietly(stream);
-            }
         }
     }
 
@@ -184,14 +178,8 @@ public final class SnmpInterfacePollerConfigFactory extends SnmpInterfacePollerC
         if (cfgFile.lastModified() > m_currentVersion) {
             m_currentVersion = cfgFile.lastModified();
             LOG.debug("init: config file path: {}", cfgFile.getPath());
-            InputStream stream = null;
-            try {
-                stream = new FileInputStream(cfgFile);
+            try (InputStream stream = new FileInputStream(cfgFile)) {
                 reloadXML(stream);
-            } finally {
-                if (stream != null) {
-                    IOUtils.closeQuietly(stream);
-                }
             }
             LOG.debug("init: finished loading config file: {}", cfgFile.getPath());
         }

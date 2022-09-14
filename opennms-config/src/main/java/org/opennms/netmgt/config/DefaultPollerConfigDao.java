@@ -55,6 +55,7 @@ public class DefaultPollerConfigDao implements InitializingBean {
      * <p>Constructor for DefaultPollerConfigDao.</p>
      */
     public DefaultPollerConfigDao() {
+        // do nothing
     }
 
     /**

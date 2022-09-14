@@ -117,14 +117,9 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
      * 
      */
     private EventTranslatorConfigFactory(String configFile, DataSource dbConnFactory) throws IOException{
-        InputStream stream = null;
-        try {
-            stream = new FileInputStream(configFile);
+
+        try (InputStream stream = new FileInputStream(configFile)) {
             unmarshall(stream, dbConnFactory);
-        } finally {
-            if (stream != null) {
-                IOUtils.closeQuietly(stream);
-            }
         }
     }
 
@@ -159,19 +154,10 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
     public void update() throws Exception  {
 
         synchronized (this) {
-
             File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.TRANSLATOR_CONFIG_FILE_NAME);
-            InputStream stream = null;
-
-            try {
-                stream = new FileInputStream(cfgFile);
+            try (InputStream stream = new FileInputStream(cfgFile)) {
                 unmarshall(stream);
-            } finally {
-                if (stream != null) {
-                    IOUtils.closeQuietly(stream);
-                }
             }
-
         }
     }
 

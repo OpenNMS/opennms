@@ -77,15 +77,8 @@ public class WmiDataCollectionConfigFactory {
       * @throws java.io.IOException if any.
       */
      public WmiDataCollectionConfigFactory(String configFile) throws IOException {
-         InputStream is = null;
-
-         try {
-             is = new FileInputStream(configFile);
+         try (InputStream is = new FileInputStream(configFile)) {
              initialize(is);
-         } finally {
-             if (is != null) {
-                 IOUtils.closeQuietly(is);
-             }
          }
      }
 
@@ -98,7 +91,7 @@ public class WmiDataCollectionConfigFactory {
          initialize(is);
      }
 
-     private void initialize(InputStream stream) throws IOException  {
+     private static void initialize(InputStream stream) throws IOException  {
          LOG.debug("initialize: initializing WMI collection config factory.");
          try (InputStreamReader isr = new InputStreamReader(stream)) {
              m_config = JaxbUtils.unmarshal(WmiDatacollectionConfig.class, isr);

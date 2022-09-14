@@ -132,15 +132,9 @@ public class GroupFactory extends GroupManager {
      */
     private void reloadFromFile(File confFile) throws IOException {
         m_groupsConfFile = confFile;
-        InputStream configIn = null;
-        try {
-            configIn = new FileInputStream(m_groupsConfFile);
+        try (InputStream configIn = new FileInputStream(m_groupsConfFile)) {
             m_lastModified = m_groupsConfFile.lastModified();
             parseXml(configIn);
-        } finally {
-            if (configIn != null) {
-                IOUtils.closeQuietly(configIn);
-            }
         }
     }
 

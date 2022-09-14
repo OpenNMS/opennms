@@ -58,6 +58,10 @@ public final class RTCConfigFactory implements InitializingBean {
      */
     private RTCConfiguration m_config;
 
+    private static final String RTC_VALUE_STR = "RTC: Value ";
+
+    private static final String FORMAT_INCORRECT_STR = " - format incorrect";
+
     /**
      * Parse the rolling window in the properties file in the format <xx>h <yy>m
      * <zz>s into a long value of milliseconds
@@ -85,7 +89,7 @@ public final class RTCConfigFactory implements InitializingBean {
             {
                 // make sure format is right
                 if (hIndex >= mIndex)
-                    throw new IllegalArgumentException("RTC: Value " + rolling + " - format incorrect");
+                    throw new IllegalArgumentException(RTC_VALUE_STR + rolling + FORMAT_INCORRECT_STR);
 
                 minStr = rolling.substring(hIndex + 1, mIndex);
             } else
@@ -96,11 +100,11 @@ public final class RTCConfigFactory implements InitializingBean {
         {
             if (mIndex != -1) {
                 if (mIndex >= sIndex)
-                    throw new IllegalArgumentException("RTC: Value " + rolling + " - format incorrect");
+                    throw new IllegalArgumentException(RTC_VALUE_STR + rolling + FORMAT_INCORRECT_STR);
                 secStr = rolling.substring(mIndex + 1, sIndex);
             } else if (hIndex != -1) {
                 if (hIndex >= sIndex)
-                    throw new IllegalArgumentException("RTC: Value " + rolling + " - format incorrect");
+                    throw new IllegalArgumentException(RTC_VALUE_STR + rolling + FORMAT_INCORRECT_STR);
                 secStr = rolling.substring(hIndex + 1, sIndex);
 
             } else
@@ -122,7 +126,7 @@ public final class RTCConfigFactory implements InitializingBean {
                 sec = Integer.parseInt(secStr);
 
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("RTC: Value " + rolling + " - format incorrect");
+            throw new IllegalArgumentException(RTC_VALUE_STR + rolling + FORMAT_INCORRECT_STR);
         }
 
         return (long) ((hours * 3600) + (min * 60) + sec) * 1000;
@@ -161,14 +165,8 @@ public final class RTCConfigFactory implements InitializingBean {
     public void afterPropertiesSet() throws IOException {
         File configFile = ConfigFileConstants.getFile(ConfigFileConstants.RTC_CONFIG_FILE_NAME);
 
-        InputStream stream = null;
-        try {
-            stream = new FileInputStream(configFile);
+        try (InputStream stream = new FileInputStream(configFile)) {
             m_config = unmarshal(stream);
-        } finally {
-            if (stream != null) {
-                IOUtils.closeQuietly(stream);
-            }
         }
     }
 

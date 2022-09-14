@@ -100,15 +100,11 @@ public class CollectdConfigFactory implements org.opennms.netmgt.config.api.Coll
      * @throws IOException
      */
     private void init(final InputStream stream) throws IOException {
-        InputStreamReader isr = null;
-        try {
-            isr = new InputStreamReader(stream);
+        try (InputStreamReader isr = new InputStreamReader(stream)) {
             CollectdConfiguration config = JaxbUtils.unmarshal(CollectdConfiguration.class, isr);
             synchronized (m_collectdConfigMutex) {
                 m_collectdConfig = config;
             }
-        } finally {
-            IOUtils.closeQuietly(isr);
         }
     }
 
@@ -136,12 +132,8 @@ public class CollectdConfigFactory implements org.opennms.netmgt.config.api.Coll
             config = m_collectdConfig;
         }
 
-        FileWriter writer = null;
-        try {
-            writer = new FileWriter(cfgFile);
+        try ( FileWriter writer = new FileWriter(cfgFile)) {
             JaxbUtils.marshal(config, writer);
-        } finally {
-            IOUtils.closeQuietly(writer);
         }
 
         reload();

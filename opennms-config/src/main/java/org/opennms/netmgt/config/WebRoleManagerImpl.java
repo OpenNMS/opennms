@@ -49,7 +49,9 @@ import org.opennms.netmgt.config.users.User;
  * @since 1.8.1
  */
 public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGroupManager {
-    
+
+    private static final String ERROR_MSG_STR = "Error reading users.xml config file";
+
     private GroupManager m_groupManager;
     private UserManager m_userManager;
     
@@ -85,7 +87,7 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
         try {
             return m_userManager.getUser(name);
         } catch (IOException e) {
-            throw new WebRolesException("Error reading users.xml config file", e);
+            throw new WebRolesException(ERROR_MSG_STR, e);
         }
     }
     
@@ -93,7 +95,7 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
         try {
             return m_userManager.getUsers().values();
         } catch (IOException e) {
-            throw new WebRolesException("Error reading users.xml config file", e);
+            throw new WebRolesException(ERROR_MSG_STR, e);
         }
     }
     
@@ -127,7 +129,7 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
             }
             return webUsers;
         } catch (IOException e) {
-            throw new WebRolesException("Error reading users.xml config file", e);
+            throw new WebRolesException(ERROR_MSG_STR, e);
         }
 
     }

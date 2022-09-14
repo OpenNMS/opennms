@@ -145,6 +145,16 @@ public abstract class NotificationManager {
     /** Constant <code>PARAM_MICROBLOG_USERNAME="-ublog"</code> */
     public static final String PARAM_MICROBLOG_USERNAME = "-ublog";
 
+    public static final String PARAM_NOTICEID_STR = "noticeid";
+
+    public static final String MATCH_ANY_UEI_STR = "MATCH-ANY-UEI";
+
+    public static final String PARM_BRKT_STR = "parm[";
+
+    public static final String EVENT_ID_STR = "eventID";
+
+    public static final String EVENT_UEI_STR = "eventUEI";
+
     NotifdConfigManager m_configManager;
     private DataSource m_dataSource;
 
@@ -163,7 +173,7 @@ public abstract class NotificationManager {
      */
     public static String expandNotifParms(final String input, final Map<String, String> paramMap) {
         if (input.contains("%noticeid%")) {
-            String noticeId = paramMap.get("noticeid");
+            String noticeId = paramMap.get(PARAM_NOTICEID_STR);
             if (noticeId != null) {
                 return input.replaceAll("%noticeid%", noticeId);
             }
@@ -217,7 +227,7 @@ public abstract class NotificationManager {
         update();
 
         for (Notification notif : m_notifications.getNotifications()) {
-            if (uei.equals(notif.getUei()) || "MATCH-ANY-UEI".equals(notif.getUei())) {
+            if (uei.equals(notif.getUei()) || MATCH_ANY_UEI_STR.equals(notif.getUei())) {
                 return true;
             } else if (notif.getUei().charAt(0) == '~') {
                 if (uei.matches(notif.getUei().substring(1))) {
@@ -257,7 +267,7 @@ public abstract class NotificationManager {
 
             LOG.trace("Checking notification {} against event {} with UEI {}", curNotif.getUei(), event.getDbid(), event.getUei());
 
-            if (event.getUei().equals(curNotif.getUei()) || "MATCH-ANY-UEI".equals(curNotif.getUei())) {
+            if (event.getUei().equals(curNotif.getUei()) || MATCH_ANY_UEI_STR.equals(curNotif.getUei())) {
                 // Match!
             	LOG.debug("Exact match using notification UEI {} for event UEI: {}", curNotif.getUei(), event.getUei());
             } else if (curNotif.getUei().charAt(0) == '~') {
@@ -357,7 +367,7 @@ public abstract class NotificationManager {
          *  return true since there is nothing on which to filter.
          */
         if (event.getNodeid() == 0 && event.getInterface() == null && event.getService() == null) {
-            if ("MATCH-ANY-UEI".equals(notif.getUei())) {
+            if (MATCH_ANY_UEI_STR.equals(notif.getUei())) {
                 // TODO: Trim parentheses from the filter and trim whitespace from inside the
                 // filter statement. This comparison is very brittle as it is.
                 if ("ipaddr != '0.0.0.0'".equals(notif.getRule().getContent().toLowerCase()) || "ipaddr iplike *.*.*.*".equals(notif.getRule().getContent().toLowerCase())) {
@@ -534,7 +544,7 @@ public abstract class NotificationManager {
             // Verify if parameter matching is required
             boolean matchParameters = false;
             for (int i = 0; i < matchList.length; i++) {
-                if (matchList[i].startsWith("parm[")) {
+                if (matchList[i].startsWith(PARM_BRKT_STR)) {
                     matchParameters = true;
                     break;
                 }
@@ -545,7 +555,7 @@ public abstract class NotificationManager {
             if (matchParameters) {
                 sql.append("INNER JOIN events as e on e.eventid = n.eventid ");
                 for (int i = 0; i < matchList.length; i++) {
-                    if (matchList[i].startsWith("parm[")) {
+                    if (matchList[i].startsWith(PARM_BRKT_STR)) {
                         if (appendParameterNameAndValue(matchList[i], event, eventParametersToMatch)) {
                             sql.append(String.format("INNER JOIN event_parameters as ep%d on ep%d.eventid = n.eventid and ep%d.name=? and ep%d.value=? ",
                                     i, i, i, i));
@@ -562,7 +572,7 @@ public abstract class NotificationManager {
             }
             sql.append("WHERE n.eventuei=? ");
             for (int i = 0; i < matchList.length; i++) {
-                if (!matchList[i].startsWith("parm[")) {
+                if (!matchList[i].startsWith(PARM_BRKT_STR)) {
                     sql.append("AND n.").append(matchList[i]).append("=? ");
                 }
             }
@@ -588,7 +598,7 @@ public abstract class NotificationManager {
                     statement.setString(offset++, event.getInterface());
                 } else if (matchList[i].equals("serviceid")) {
                     statement.setInt(offset++, getServiceId(event.getService()));
-                } else if (matchList[i].startsWith("parm[")) {
+                } else if (matchList[i].startsWith(PARM_BRKT_STR)) {
                     // Ignore
                 } else {
                     LOG.warn("Unknown match statement {} for UEI {}.", matchList[i], uei);
@@ -907,14 +917,14 @@ public abstract class NotificationManager {
             }
 
             // eventID field
-            final String eventID = params.get("eventID");
+            final String eventID = params.get(EVENT_ID_STR);
             if (eventID != null && !eventID.trim().equals("") && !eventID.trim().equals("0") && !eventID.equalsIgnoreCase("null") && !eventID.equalsIgnoreCase("%eventid%")) {
                 statement.setInt(8, Integer.parseInt(eventID));
             } else {
                 statement.setNull(8, Types.INTEGER);
             }
 
-            statement.setString(9, params.get("eventUEI"));
+            statement.setString(9, params.get(EVENT_UEI_STR));
 
             // notifications subject field
             statement.setString(10, params.get(NotificationManager.PARAM_SUBJECT));
@@ -1185,7 +1195,7 @@ public abstract class NotificationManager {
                             NotificationManager.PARAM_TEXT_MSG, 
                             expandNotifParms(
                                              resolutionPrefix, 
-                                             Collections.singletonMap("noticeid", String.valueOf(notifId))
+                                             Collections.singletonMap(PARAM_NOTICEID_STR, String.valueOf(notifId))
                                     ) + rs.getString("textMsg")
                         );
                 if (skipNumericPrefix) {
@@ -1198,7 +1208,7 @@ public abstract class NotificationManager {
                                 NotificationManager.PARAM_NUM_MSG, 
                                 expandNotifParms(
                                                  resolutionPrefix, 
-                                                 Collections.singletonMap("noticeid", String.valueOf(notifId))
+                                                 Collections.singletonMap(PARAM_NOTICEID_STR, String.valueOf(notifId))
                                         ) + rs.getString("numericMsg")
                             );
                 }
@@ -1206,15 +1216,15 @@ public abstract class NotificationManager {
                             NotificationManager.PARAM_SUBJECT, 
                             expandNotifParms(
                                              resolutionPrefix, 
-                                             Collections.singletonMap("noticeid", String.valueOf(notifId))
+                                             Collections.singletonMap(PARAM_NOTICEID_STR, String.valueOf(notifId))
                                     ) + rs.getString("subject")
                         );
                 parmMap.put(NotificationManager.PARAM_NODE, rs.getString("nodeID"));
                 parmMap.put(NotificationManager.PARAM_INTERFACE, rs.getString("interfaceID"));
                 parmMap.put(NotificationManager.PARAM_SERVICE, rs.getString("serviceName"));
-                parmMap.put("noticeid", rs.getString("notifyID"));
-                parmMap.put("eventID", rs.getString("eventID"));
-                parmMap.put("eventUEI", rs.getString("eventUEI"));
+                parmMap.put(PARAM_NOTICEID_STR, rs.getString("notifyID"));
+                parmMap.put(EVENT_ID_STR, rs.getString(EVENT_ID_STR));
+                parmMap.put(EVENT_UEI_STR, rs.getString(EVENT_UEI_STR));
 
                 Notification notification = null;
                 try {
@@ -1283,8 +1293,8 @@ public abstract class NotificationManager {
 
             @Override
             public void processRow(ResultSet rs) throws SQLException {
-                event.setDbid(rs.getInt("eventid"));
-                event.setUei(rs.getString("eventuei"));
+                event.setDbid(rs.getInt(EVENT_ID_STR));
+                event.setUei(rs.getString(EVENT_UEI_STR));
                 event.setNodeid(rs.getLong("nodeid"));
                 event.setTime(rs.getDate("eventtime"));
                 event.setHost(rs.getString("eventhost"));

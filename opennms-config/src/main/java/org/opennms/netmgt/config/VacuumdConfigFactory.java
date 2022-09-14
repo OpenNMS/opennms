@@ -117,17 +117,10 @@ public final class VacuumdConfigFactory {
             return;
         }
 
-        InputStream is = null;
-
-        try {
-            is = new FileInputStream(ConfigFileConstants.getFile(ConfigFileConstants.VACUUMD_CONFIG_FILE_NAME));
+        try (InputStream is = new FileInputStream(ConfigFileConstants.getFile(ConfigFileConstants.VACUUMD_CONFIG_FILE_NAME))) {
             setInstance(new VacuumdConfigFactory(is));
-        } finally {
-            if (is != null) {
-                IOUtils.closeQuietly(is);
-            }
         }
-        
+
         m_loadedFromFile = true;
     }
 

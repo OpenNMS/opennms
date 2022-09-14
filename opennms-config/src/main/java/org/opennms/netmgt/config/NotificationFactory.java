@@ -115,15 +115,9 @@ public class NotificationFactory extends NotificationManager {
     public synchronized void reload() throws IOException {
         m_noticeConfFile = ConfigFileConstants.getFile(ConfigFileConstants.NOTIFICATIONS_CONF_FILE_NAME);
 
-        InputStream configIn = null;
-        try {
-            configIn = new FileInputStream(m_noticeConfFile);
+        try (InputStream configIn = new FileInputStream(m_noticeConfFile)) {
             m_lastModified = m_noticeConfFile.lastModified();
             parseXML(configIn);
-        } finally {
-            if (configIn != null) {
-                IOUtils.closeQuietly(configIn);
-            }
         }
     }
 
