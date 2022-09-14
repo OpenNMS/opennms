@@ -189,7 +189,7 @@ public class AmiPeerFactory {
      */
     public void saveCurrent() throws Exception {
         getWriteLock().lock();
-        
+        Writer fileWriter = null;
         try {
             optimize();
     
@@ -199,7 +199,7 @@ public class AmiPeerFactory {
             final StringWriter stringWriter = new StringWriter();
             JaxbUtils.marshal(m_config, stringWriter);
             if (stringWriter.toString() != null) {
-                final Writer fileWriter = new OutputStreamWriter(new FileOutputStream(ConfigFileConstants.getFile(ConfigFileConstants.AMI_CONFIG_FILE_NAME)), StandardCharsets.UTF_8);
+                fileWriter = new OutputStreamWriter(new FileOutputStream(ConfigFileConstants.getFile(ConfigFileConstants.AMI_CONFIG_FILE_NAME)), StandardCharsets.UTF_8);
                 fileWriter.write(stringWriter.toString());
                 fileWriter.flush();
             }
