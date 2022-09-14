@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -52,17 +52,19 @@ public class MetricsDisplayCommand implements Action {
     private BundleContext bundleContext;
 
     @Override
+    @SuppressWarnings({ "java:S106", "java:S3516" })
     public Object execute() {
         final List<NamedMetricSet> metricSets = NamedMetricSet.getNamedMetricSetsInContext(bundleContext);
-        if (metricSets.size() < 1) {
+        if (metricSets.isEmpty()) {
             System.out.println("(No metric sets are currently available.)");
             return null;
         }
         if (metricSetFilter != null) {
-            metricSets.removeIf(m -> !m.getName().toLowerCase().contains(metricSetFilter.toLowerCase()));
+            final String lcFilter = metricSetFilter.toLowerCase();
+            metricSets.removeIf(m -> !m.getName().toLowerCase().contains(lcFilter));
         }
-        if (metricSets.size() < 1) {
-            System.out.printf("(No metric set names match the given filter '%s'.)\n", metricSetFilter);
+        if (metricSets.isEmpty()) {
+            System.out.printf("(No metric set names match the given filter '%s'.)%n", metricSetFilter);
             return null;
         }
 
@@ -77,7 +79,7 @@ public class MetricsDisplayCommand implements Action {
 
             // Print a header
             System.out.println("Metric set:");
-            System.out.printf("%s%s\n", namedMetricSet.getName(),
+            System.out.printf("%s%s%n", namedMetricSet.getName(),
                     namedMetricSet.hasDescription() ? String.format(" (%s)",namedMetricSet.getDescription()) : "");
             // Add the metrics to a new registry and use the console reporter to display the results
             final MetricRegistry metricRegistry = namedMetricSet.toMetricRegistry();

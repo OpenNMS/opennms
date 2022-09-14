@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -107,6 +107,7 @@ public class ContainerIntegrityHealthCheck implements HealthCheck {
                 continue;
             }
             final BundleInfo info = bundleService.getInfo(b);
+            final String bundleLabel = "Bundle " + b.getBundleId();
             switch (info.getState()) {
                 // Success
                 case Active:
@@ -116,26 +117,26 @@ public class ContainerIntegrityHealthCheck implements HealthCheck {
                     if ((b.adapt(BundleRevision.class).getTypes() & BundleRevision.TYPE_FRAGMENT) != 0) {
                         break;
                     }
-                    health.add(this, new Response(Failure, "Bundle " + b.getBundleId() + " is resolved, but not active"));
+                    health.add(this, new Response(Failure, bundleLabel + " is resolved, but not active"));
                     break;
                 // Waiting for dependencies
                 case Waiting:
                 case GracePeriod:
-                    health.add(this, new Response(Starting, "Bundle " + b.getBundleId() + " is waiting for dependencies"));
+                    health.add(this, new Response(Starting, bundleLabel + " is waiting for dependencies"));
                     break;
                 // Installed, but not yet started
                 case Installed:
-                    health.add(this, new Response(Starting, "Bundle " + b.getBundleId() + " is not yet started"));
+                    health.add(this, new Response(Starting, bundleLabel + " is not yet started"));
                     break;
                 // Starting
                 case Starting:
-                    health.add(this, new Response(Starting, "Bundle " + b.getBundleId() + " is starting"));
+                    health.add(this, new Response(Starting, bundleLabel + " is starting"));
                     break;
                 // Stopping, Failed ur Unknown are considered Failures
                 case Stopping:
                 case Failure:
                 case Unknown:
-                    health.add(this, new Response(Failure, "Bundle " + b.getBundleId() + " is not started"));
+                    health.add(this, new Response(Failure, bundleLabel + " is not started"));
                     break;
             }
         }

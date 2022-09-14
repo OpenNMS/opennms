@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2022 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,48 +26,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.health.api;
+package org.opennms.core.health.rest;
 
-/**
- * The response of a health check.
- */
-public class Response {
+public class HealthCheckRestException extends RuntimeException {
+    private static final long serialVersionUID = 1L;
 
-    public static final Response UNKNOWN = new Response(Status.Unknown);
-    public static final Response SUCCESS = new Response(Status.Success);
-
-    // The status
-    private final Status status;
-
-    // An optional (error) message
-    private final String message;
-
-    public Response(Status status) {
-        this(status, null);
+    public HealthCheckRestException(final Exception e) {
+        super(e);
     }
 
-    public Response(Throwable ex) {
-        this(Status.Failure, ex.getMessage());
-    }
-
-    public Response(Status status, String message) {
-        this.status = status;
-        this.message = message;
-    }
-
-    public boolean isSuccess() {
-        return status == Status.Success;
-    }
-
-    public boolean isFailure() {
-        return !isSuccess();
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public Status getStatus() {
-        return status;
-    }
 }

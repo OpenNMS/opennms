@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -44,16 +44,17 @@ public class MetricsListCommand implements Action {
     private BundleContext bundleContext;
 
     @Override
+    @SuppressWarnings({ "java:S106", "java:S3516" })
     public Object execute() {
         final List<NamedMetricSet> metricSets = NamedMetricSet.getNamedMetricSetsInContext(bundleContext);
-        if (metricSets.size() < 1) {
+        if (metricSets.isEmpty()) {
             System.out.println("(No metric sets are currently available.)");
             return null;
         }
 
         // Determine the length of the name
         int maxNameLength = metricSets.stream().mapToInt(m -> m.getName().length()).max().getAsInt();
-        final String format = String.format("%%-%ds\t%%s\n", maxNameLength);
+        final String format = String.format("%%-%ds\t%%s%n", maxNameLength);
 
         System.out.printf(format, "Name", "Description");
         for (NamedMetricSet namedMetricSet : metricSets) {

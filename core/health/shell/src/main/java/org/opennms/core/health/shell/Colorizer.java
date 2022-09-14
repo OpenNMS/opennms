@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,15 +32,11 @@ package org.opennms.core.health.shell;
  * Helper to colorize strings.
  */
 public final class Colorizer {
+    private static final String FORMAT = "\033[%sm%s\033[%sm";
 
     private Colorizer() {}
 
-    // Format to colorize a string
-    private static final String FORMAT = "\033[%sm%s\033[%sm";
-
-    // Helper method to colorize strings
     public static String colorize(String text, Color color) {
-        final String colorized = String.format(FORMAT, color.toAnsi(), text, Color.NoColor.toAnsi());
-        return colorized;
+        return String.format(FORMAT, color.toAnsi(), text, Color.NoColor.toAnsi());
     }
 }

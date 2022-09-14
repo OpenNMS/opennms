@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -64,9 +64,9 @@ public interface HealthCheckService {
     Either<String, CompletionStage<Health>> performAsyncHealthCheck(Context context, ProgressListener listener, List<String> tags);
 
     interface ProgressListener {
-        default void onHealthChecksFound(List<HealthCheck> checks) {};
-        default void onPerform(HealthCheck check) {};
-        default void onResponse(HealthCheck check, Response response) {};
-        default void onAllHealthChecksCompleted(Health health) {};
+        default void onHealthChecksFound(List<HealthCheck> checks) {}
+        default void onPerform(HealthCheck check) {}
+        default void onResponse(HealthCheck check, Response response) {}
+        default void onAllHealthChecksCompleted(Health health) {}
     }
 }

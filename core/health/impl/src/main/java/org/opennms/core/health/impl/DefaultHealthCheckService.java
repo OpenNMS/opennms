@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -49,8 +49,6 @@ import org.opennms.core.health.api.Status;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -65,8 +63,6 @@ import io.vavr.control.Either;
  * @author mvrueden
  */
 public class DefaultHealthCheckService implements HealthCheckService {
-    private static final Logger LOG = LoggerFactory.getLogger(DefaultHealthCheckService.class);
-
     // HealthChecks are performed asynchronously with this executor.
     private final ExecutorService executorService = Executors.newCachedThreadPool(new ThreadFactoryBuilder().setNameFormat("health-check-%d").build());
 
@@ -127,8 +123,8 @@ public class DefaultHealthCheckService implements HealthCheckService {
                         }
                         var response = check.perform(context);
                         return response != null ? response : Response.UNKNOWN;
-                    } catch (Throwable t) {
-                        return new Response(t);
+                    } catch (final Exception e) {
+                        return new Response(e);
                     }
                 },
                 Duration.ofMillis(context.getTimeout()),

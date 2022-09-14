@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -42,14 +42,16 @@ import org.json.JSONObject;
 import org.opennms.core.health.api.Context;
 import org.opennms.core.health.api.Health;
 import org.opennms.core.health.api.HealthCheckService;
+import org.opennms.core.health.rest.HealthCheckRestException;
 import org.opennms.core.health.rest.HealthCheckRestService;
-
-import io.vavr.control.Either;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.vavr.control.Either;
+
 public class HealthCheckRestServiceImpl implements HealthCheckRestService {
 
+    private static final String HEALTH_HEADER_NAME = "Health";
     private static final Logger LOG = LoggerFactory.getLogger(HealthCheckRestServiceImpl.class);
     private static final String SUCCESS_MESSAGE = "Everything is awesome";
     private static final String ERROR_MESSAGE = "Oh no, something is wrong";
@@ -65,16 +67,16 @@ public class HealthCheckRestServiceImpl implements HealthCheckRestService {
         List<String> tags = uriInfo.getQueryParameters().get("tag");
         var isSuccess = getHealthInternally(timeoutInMs, maxAgeMs, tags).fold(
                 errorMessage -> false,
-                health -> health.isSuccess()
+                Health::isSuccess
         );
-        if (isSuccess) {
+        if (isSuccess.booleanValue()) {
             return Response.ok()
-                    .header("Health", SUCCESS_MESSAGE)
+                    .header(HEALTH_HEADER_NAME, SUCCESS_MESSAGE)
                     .entity(SUCCESS_MESSAGE)
                     .build();
         }
         return Response.status(new UnhealthyStatusType())
-                .header("Health", ERROR_MESSAGE)
+                .header(HEALTH_HEADER_NAME, ERROR_MESSAGE)
                 .entity(ERROR_MESSAGE)
                 .build();
     }
@@ -107,10 +109,10 @@ public class HealthCheckRestServiceImpl implements HealthCheckRestService {
                     return Pair.of(health.isSuccess(), jsonHealth);
                 }
         );
-        LOG.debug("Rest response : {}", flagAndResponse.getRight().toString());
+        LOG.debug("Rest response : {}", flagAndResponse.getRight());
         // Return response
         return Response.ok()
-                .header("Health", flagAndResponse.getLeft() ? SUCCESS_MESSAGE : ERROR_MESSAGE)
+                .header(HEALTH_HEADER_NAME, flagAndResponse.getLeft().booleanValue() ? SUCCESS_MESSAGE : ERROR_MESSAGE)
                 .entity(flagAndResponse.getRight().toString())
                 .build();
     }
@@ -122,8 +124,11 @@ public class HealthCheckRestServiceImpl implements HealthCheckRestService {
         return healthCheckService.performAsyncHealthCheck(context, null, tags).map(f -> {
             try {
                 return f.toCompletableFuture().get();
-            } catch (InterruptedException | ExecutionException e) {
-                throw new RuntimeException(e);
+            } catch (final InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new HealthCheckRestException(e);
+            } catch (final ExecutionException e) {
+                throw new HealthCheckRestException(e);
             }
         });
     }

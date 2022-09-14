@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -34,6 +34,7 @@ import java.util.Comparator;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -81,6 +82,7 @@ public class HealthCheckCommand implements Action {
     private HealthCheckService healthCheckService;
 
     @Override
+    @SuppressWarnings("java:S106")
     public Object execute() throws Exception {
         // Print header
         System.out.println("Verifying the health of the container");
@@ -97,7 +99,7 @@ public class HealthCheckCommand implements Action {
         healthCheckService.performAsyncHealthCheck(context, listener, null).fold(
                 errorMessage -> {
                     System.out.println(Colorizer.colorize("Error: " + errorMessage, Color.Red));
-                    System.out.println("=> Oh no, something is wrong");
+                    System.out.println(FAILURE_MESSAGE);
                     LOG.debug("Error: {}", errorMessage);
                     LOG.debug("Oh no, something is wrong");
                     return null;
@@ -118,17 +120,6 @@ public class HealthCheckCommand implements Action {
         return null;
     }
 
-    private static Color determineColor(Status status) {
-        switch (status) {
-            case Failure: return Color.Red;
-            case Timeout: return Color.Yellow;
-            case Starting: return Color.Blue;
-            case Success: return Color.Green;
-            case Unknown: return Color.Yellow;
-            default:      return Color.NoColor;
-        }
-    }
-
     /**
      * Listens for progress during the health check executions.
      * <p>
@@ -141,7 +132,8 @@ public class HealthCheckCommand implements Action {
     private static class Listener implements HealthCheckService.ProgressListener {
 
         private List<HealthCheck> checks;
-        private String descFormat, statusFormat;
+        private String descFormat;
+        private String statusFormat;
         private final Map<HealthCheck, Response> responses = new IdentityHashMap<>();
         private final BlockingQueue<String> out = new LinkedBlockingQueue<>();
         private boolean completed = false;
@@ -161,9 +153,11 @@ public class HealthCheckCommand implements Action {
         @Override
         public synchronized void onHealthChecksFound(List<HealthCheck> healthChecks) {
             this.checks = healthChecks;
-            final int maxColorLength = Arrays.stream(Color.values()).map(c -> c.toAnsi()).max(Comparator.comparingInt(String::length)).get().length();
-            final int maxDescriptionLength = healthChecks.stream().map(check -> check.getDescription()).max(Comparator.comparingInt(String::length)).orElse("").length();
-            final int maxStatusLength = Arrays.stream(Status.values()).map(v -> v.name()).max(Comparator.comparingInt(String::length)).get().length() + maxColorLength + "\033[m".length() * 2 + Color.NoColor.toAnsi().length();
+            final Optional<String> maxColor = Arrays.stream(Color.values()).map(Color::toAnsi).max(Comparator.comparingInt(String::length));
+            final Optional<String> maxName = Arrays.stream(Status.values()).map(Enum::name).max(Comparator.comparingInt(String::length));
+            final int maxColorLength = maxColor.orElse("").length();
+            final int maxDescriptionLength = healthChecks.stream().map(HealthCheck::getDescription).max(Comparator.comparingInt(String::length)).orElse("").length();
+            final int maxStatusLength = maxName.orElse("").length() + maxColorLength + "\033[m".length() * 2 + Color.NoColor.toAnsi().length();
             descFormat = String.format(DESCRIPTION_FORMAT, maxDescriptionLength);
             statusFormat = String.format(STATUS_FORMAT, maxStatusLength);
             printCurrentExecutionState();
@@ -215,7 +209,19 @@ public class HealthCheckCommand implements Action {
                 completed = isEndMessage(string);
                 return string;
             } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
                 throw new RuntimeException(e);
+            }
+        }
+
+        private static Color determineColor(Status status) {
+            switch (status) {
+                case Failure: return Color.Red;
+                case Timeout: return Color.Yellow;
+                case Starting: return Color.Blue;
+                case Success: return Color.Green;
+                case Unknown: return Color.Yellow;
+                default:      return Color.NoColor;
             }
         }
     }
