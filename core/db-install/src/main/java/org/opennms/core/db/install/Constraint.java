@@ -496,7 +496,7 @@ public class Constraint {
      * @return a boolean.
      */
     public boolean equals(final Object other_o, boolean ignoreFdelType) {
-    	if (other_o == null || !(other_o instanceof Constraint)) return false;
+    	if (!(other_o instanceof Constraint)) return false;
     	final Constraint other = (Constraint) other_o;
 
         if ((m_name == null && other.getName() != null) || (m_name != null && other.getName() == null)) {
