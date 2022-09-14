@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,17 +30,17 @@ package org.opennms.core.criteria.restrictions;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public abstract class VarargsRestrictionRestriction extends BaseRestriction {
 
     private List<Restriction> m_restrictions = new ArrayList<>();
 
-    public VarargsRestrictionRestriction(final RestrictionType type, final Restriction... restrictions) {
+    protected VarargsRestrictionRestriction(final RestrictionType type, final Restriction... restrictions) {
         super(type);
-        for (final Restriction r : restrictions) {
-            m_restrictions.add(r);
-        }
+        Collections.addAll(m_restrictions, restrictions);
     }
 
     public Collection<Restriction> getRestrictions() {
@@ -49,10 +49,7 @@ public abstract class VarargsRestrictionRestriction extends BaseRestriction {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = super.hashCode();
-        result = prime * result + m_restrictions.hashCode();
-        return result;
+        return Objects.hash(m_restrictions);
     }
 
     @Override
@@ -60,9 +57,8 @@ public abstract class VarargsRestrictionRestriction extends BaseRestriction {
         if (this == obj) return true;
         if (!super.equals(obj)) return false;
         if (!(obj instanceof VarargsRestrictionRestriction)) return false;
-        final VarargsRestrictionRestriction other = (VarargsRestrictionRestriction) obj;
-        if (!m_restrictions.equals(other.m_restrictions)) return false;
-        return true;
+        final VarargsRestrictionRestriction that = (VarargsRestrictionRestriction) obj;
+        return Objects.deepEquals(this.m_restrictions, that.m_restrictions);
     }
 
     @Override

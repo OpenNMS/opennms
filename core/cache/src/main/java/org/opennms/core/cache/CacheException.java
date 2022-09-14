@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,38 +26,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.criteria.restrictions;
+package org.opennms.core.cache;
 
-import java.util.Objects;
+public class CacheException extends RuntimeException {
+    private static final long serialVersionUID = 1L;
 
-public abstract class BaseRestriction implements Restriction {
-    private final RestrictionType m_type;
-
-    protected BaseRestriction(final RestrictionType type) {
-        m_type = type;
+    public CacheException(final String message, final Exception cause) {
+        super(message, cause);
     }
 
-    @Override
-    public RestrictionType getType() {
-        return m_type;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(m_type);
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) return true;
-        if (obj == null) return false;
-        if (!(obj instanceof BaseRestriction)) return false;
-        final BaseRestriction that = (BaseRestriction) obj;
-        return Objects.equals(this.m_type, that.m_type);
-    }
-
-    @Override
-    public String toString() {
-        return "BaseRestriction [type=" + m_type + "]";
-    }
 }

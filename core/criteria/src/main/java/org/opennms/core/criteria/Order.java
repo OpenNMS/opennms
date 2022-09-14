@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -27,6 +27,8 @@
  *******************************************************************************/
 
 package org.opennms.core.criteria;
+
+import java.util.Objects;
 
 public class Order {
     public static interface OrderVisitor {
@@ -75,11 +77,7 @@ public class Order {
      */
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        // result = prime * result + (m_ascending ? 1231 : 1237);
-        result = prime * result + ((m_attribute == null) ? 0 : m_attribute.hashCode());
-        return result;
+        return Objects.hash(m_attribute);
     }
 
     /*
@@ -91,14 +89,8 @@ public class Order {
         if (this == obj) return true;
         if (obj == null) return false;
         if (!(obj instanceof Order)) return false;
-        final Order other = (Order) obj;
-        // if (m_ascending != other.m_ascending) return false;
-        if (m_attribute == null) {
-            if (other.m_attribute != null) return false;
-        } else if (!m_attribute.equals(other.m_attribute)) {
-            return false;
-        }
-        return true;
+        final Order that = (Order) obj;
+        return Objects.equals(this.m_attribute, that.m_attribute);
     }
 
     @Override

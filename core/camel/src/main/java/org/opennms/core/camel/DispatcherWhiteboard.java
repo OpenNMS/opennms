@@ -131,7 +131,7 @@ public class DispatcherWhiteboard {
                 // in case there is no dispatcher registered, let the user know.
                 LOG.warn("No dispatcher for message found. ServiceClass: {}, ServiceMethod: {}", m_serviceClass, m_methodName);
             }
-        } catch (Throwable e) {
+        } catch (final Exception e) {
             // If anything goes wrong, log an error message
             // TODO: Use a dead-letter channel?
             LOG.warn("Message dispatch failed: " + e.getMessage(), e);

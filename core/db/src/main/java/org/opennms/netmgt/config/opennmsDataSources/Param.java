@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  * 
@@ -74,9 +74,8 @@ public class Param implements java.io.Serializable {
         
         if (obj instanceof Param) {
             Param temp = (Param)obj;
-            boolean equals = Objects.equals(temp.name, name)
+            return Objects.equals(temp.name, name)
                 && Objects.equals(temp.value, value);
-            return equals;
         }
         return false;
     }
@@ -105,10 +104,9 @@ public class Param implements java.io.Serializable {
      * @return a hash code value for the object.
      */
     public int hashCode() {
-        int hash = Objects.hash(
+        return Objects.hash(
             name, 
             value);
-        return hash;
     }
 
     /**

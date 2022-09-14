@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -70,7 +70,7 @@ public final class OrderBuilder {
     public Collection<Order> getOrderCollection() {
         // make a copy so the internal one can't be modified outside of the
         // builder
-        return new ArrayList<Order>(m_orders);
+        return new ArrayList<>(m_orders);
     }
 
     public void asc() {

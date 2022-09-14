@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,6 +28,7 @@
 
 package org.opennms.core.criteria.restrictions;
 
+import java.util.Objects;
 
 public class SqlRestriction extends AttributeRestriction {
 
@@ -73,21 +74,36 @@ public class SqlRestriction extends AttributeRestriction {
         }
     }
 
-    @Override
-    public void visit(final RestrictionVisitor visitor) {
-        visitor.visitSql(this);
-    }
-
-    @Override
-    public String toString() {
-        return "SqlRestriction [attribute=" + getAttribute() + "]";
-    }
-
     public Object[] getParameters() {
         return parameters;
     }
 
     public Type[] getTypes() {
         return types;
+    }
+
+    @Override
+    public void visit(final RestrictionVisitor visitor) {
+        visitor.visitSql(this);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.parameters, this.types);
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) return true;
+        if (!super.equals(obj)) return false;
+        if (!(obj instanceof SqlRestriction)) return false;
+        final SqlRestriction that = (SqlRestriction) obj;
+        return Objects.deepEquals(this.parameters, that.parameters) &&
+                Objects.deepEquals(this.types, that.types);
+    }
+
+    @Override
+    public String toString() {
+        return "SqlRestriction [attribute=" + getAttribute() + "]";
     }
 }

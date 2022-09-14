@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -46,6 +46,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -57,6 +58,7 @@ import org.opennms.netmgt.config.rancid.adapter.ExcludeRange;
 import org.opennms.netmgt.config.rancid.adapter.IncludeRange;
 import org.opennms.netmgt.config.rancid.adapter.Mapping;
 import org.opennms.netmgt.config.rancid.adapter.Package;
+import org.opennms.netmgt.config.rancid.adapter.Policies;
 import org.opennms.netmgt.config.rancid.adapter.PolicyManage;
 import org.opennms.netmgt.config.rancid.adapter.RancidConfiguration;
 import org.opennms.netmgt.config.rancid.adapter.Schedule;
@@ -106,14 +108,14 @@ public abstract class RancidAdapterConfigManager implements RancidAdapterConfig 
      * @param reader a {@link java.io.InputStream} object.
      * @throws java.io.IOException if any.
      */
-    public RancidAdapterConfigManager(final InputStream reader) throws IOException {
+    protected RancidAdapterConfigManager(final InputStream reader) throws IOException {
          reloadXML(reader);
      }
 
      /**
       * <p>Constructor for RancidAdapterConfigManager.</p>
       */
-     public RancidAdapterConfigManager() {
+     protected RancidAdapterConfigManager() {
      }
     
      public Lock getReadLock() {
@@ -148,7 +150,7 @@ public abstract class RancidAdapterConfigManager implements RancidAdapterConfig 
      * 
      */
     private void createPolicyNamePkgMap() {
-        m_pkgPolicyMap = new HashMap<Package, PolicyManage>();
+        m_pkgPolicyMap = new HashMap<>();
         if (hasPolicies()) {
             for (final PolicyManage pm : policies() ) {
                 m_pkgPolicyMap.put(pm.getPackage(),pm);
@@ -162,14 +164,18 @@ public abstract class RancidAdapterConfigManager implements RancidAdapterConfig 
      * time so that repeated file reads can be avoided
      */
     private void createUrlIpMap() {
-        m_urlIPMap = new HashMap<String, List<String>>();
+        m_urlIPMap = new HashMap<>();
     
         if (hasPolicies()) {
             for (final Package pkg: packages() ) {        
                 for(final String url : includeURLs(pkg)) {
-                    final List<String> iplist = IpListFromUrl.fetch(url);
-                    if (iplist.size() > 0) {
-                        m_urlIPMap.put(url, iplist);
+                    try {
+                        final List<String> iplist = IpListFromUrl.fetch(url);
+                        if (!iplist.isEmpty()) {
+                            m_urlIPMap.put(url, iplist);
+                        }
+                    } catch (final IOException e) {
+                        LOG.warn("unable to get IPs from URL {}", url, e);
                     }
                 }
     
@@ -186,7 +192,7 @@ public abstract class RancidAdapterConfigManager implements RancidAdapterConfig 
     private void createPackageIpListMap() {
         try {
             getWriteLock().lock();
-            m_pkgIpMap = new HashMap<Package, List<InetAddress>>();
+            m_pkgIpMap = new HashMap<>();
             
             if (hasPolicies()) {
                 for (final Package pkg: packages() ) {
@@ -197,11 +203,11 @@ public abstract class RancidAdapterConfigManager implements RancidAdapterConfig 
                         final List<InetAddress> ipList = getIpList(pkg);
                         LOG.debug("createPackageIpMap: package {}: ipList size = {}", pkg.getName(), ipList.size());
             
-                        if (ipList.size() > 0) {
+                        if (!ipList.isEmpty()) {
                             m_pkgIpMap.put(pkg, ipList);
                         }
-                    } catch (final Throwable t) {
-                        LOG.error("createPackageIpMap: failed to map package: {} to an IP List with filter \"{}\"", pkg.getName(), pkg.getFilter().getContent(), t);
+                    } catch (final Exception e) {
+                        LOG.error("createPackageIpMap: failed to map package: {} to an IP List with filter \"{}\"", pkg.getName(), pkg.getFilter().getContent(), e);
                     }
         
                 }
@@ -227,9 +233,6 @@ public abstract class RancidAdapterConfigManager implements RancidAdapterConfig 
      * <strong>Note: </strong>Evaluation of the interface against a package
      * filter will only work if the IP is already in the database.
      * 
-     * TODO: Factor this method out so that it can be reused? Or use an existing
-     * utility method if one exists?
-     * 
      * @param iface
      *            The interface to test against the package.
      * @param pkg
@@ -244,7 +247,7 @@ public abstract class RancidAdapterConfigManager implements RancidAdapterConfig 
     
         // get list of IPs in this package
         final List<InetAddress> ipList = m_pkgIpMap.get(pkg);
-        if (ipList != null && ipList.size() > 0) {
+        if (ipList != null && !ipList.isEmpty()) {
 			filterPassed = ipList.contains(ifaceAddr);
         }
     
@@ -262,7 +265,7 @@ public abstract class RancidAdapterConfigManager implements RancidAdapterConfig 
  
         // if there are NO include ranges then treat act as if the user include
         // the range 0.0.0.0 - 255.255.255.255
-        has_range_include = pkg.getIncludeRanges().size() == 0 && pkg.getSpecifics().size() == 0;
+        has_range_include = pkg.getIncludeRanges().isEmpty() && pkg.getSpecifics().isEmpty();
         
         for (final IncludeRange rng : pkg.getIncludeRanges()) {
             if (isInetAddressInRange(iface, rng.getBegin(), rng.getEnd())) {
@@ -329,7 +332,7 @@ public abstract class RancidAdapterConfigManager implements RancidAdapterConfig 
     
         // get list of IPs in this URL
         final List<String> iplist = m_urlIPMap.get(url);
-        if (iplist != null && iplist.size() > 0) {
+        if (iplist != null && !iplist.isEmpty()) {
             bRet = iplist.contains(addr);
         }
     
@@ -348,7 +351,7 @@ public abstract class RancidAdapterConfigManager implements RancidAdapterConfig 
      * @return a list of package names that the ip belongs to, null if none
      */
     private List<String> getAllPackageMatches(final String ipaddr) {
-        final List<String> matchingPkgs = new ArrayList<String>();
+        final List<String> matchingPkgs = new ArrayList<>();
 
         for(final Package pkg : packages()) {
             if (interfaceInPackage(ipaddr, pkg)) {
@@ -366,8 +369,12 @@ public abstract class RancidAdapterConfigManager implements RancidAdapterConfig 
     public long getDelay(final String ipaddr) {
         try {
             getReadLock().lock();
-            if (hasPolicyManage(ipaddr) && getPolicyManageWithoutTesting(ipaddr).getDelay().isPresent()) {
-                return getPolicyManageWithoutTesting(ipaddr).getDelay().get();
+            PolicyManage policyManageWithoutTesting = getPolicyManageWithoutTesting(ipaddr);
+            if (policyManageWithoutTesting != null) {
+                final Optional<Long> delay = policyManageWithoutTesting.getDelay();
+                if (hasPolicyManage(ipaddr) && delay.isPresent()) {
+                    return delay.get();
+                }
             }
             return getConfiguration().getDelay();
         } finally {
@@ -380,8 +387,18 @@ public abstract class RancidAdapterConfigManager implements RancidAdapterConfig 
     public int getRetries(final String ipaddr) {
         try {
             getReadLock().lock();
-            if (hasPolicyManage(ipaddr) && getPolicyManage(ipaddr).getRetries().isPresent()) {
-                return getPolicyManageWithoutTesting(ipaddr).getRetries().get();
+            final PolicyManage policyManage = getPolicyManage(ipaddr);
+            if (policyManage != null) {
+                final Optional<Integer> retries = policyManage.getRetries();
+                if (retries.isPresent()) {
+                    final PolicyManage policyManageWithoutTesting = getPolicyManageWithoutTesting(ipaddr);
+                    if (policyManageWithoutTesting != null) {
+                        final Optional<Integer> r = policyManageWithoutTesting.getRetries();
+                        if (r.isPresent()) {
+                            return r.get();
+                        }
+                    }
+                }
             }
             return getConfiguration().getRetries();
         } finally {
@@ -394,8 +411,15 @@ public abstract class RancidAdapterConfigManager implements RancidAdapterConfig 
     public boolean useCategories(final String ipaddr) {
         try {
             getReadLock().lock();
-            if (hasPolicyManage(ipaddr) && getPolicyManage(ipaddr).getUseCategories().isPresent()) {
-                return getPolicyManageWithoutTesting(ipaddr).getUseCategories().get();
+            final PolicyManage policyManage = getPolicyManage(ipaddr);
+            if (policyManage != null && policyManage.getUseCategories().isPresent()) {
+                final PolicyManage policyManageWithoutTesting = getPolicyManageWithoutTesting(ipaddr);
+                if (policyManageWithoutTesting != null) {
+                    final Optional<Boolean> useCategories = policyManageWithoutTesting.getUseCategories();
+                    if (useCategories.isPresent()) {
+                        return useCategories.get();
+                    }
+                }
             }
             return getConfiguration().getUseCategories();
         } finally {
@@ -413,14 +437,17 @@ public abstract class RancidAdapterConfigManager implements RancidAdapterConfig 
             boolean notMatched = true;
             if (sysoid != null && sysdescr != null) {
                 for (Mapping map : mappings()) {
-                    LOG.debug("getType: parsing map with SysoidMaSk: {}, SysdescrMatch: {}",
-                                    map.getSysoidMask(),
-                                    map.getSysdescrMatch().orElse(null));
+                    final Optional<String> sysdescrMatch = map.getSysdescrMatch();
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("getType: parsing map with SysoidMaSk: {}, SysdescrMatch: {}",
+                                        map.getSysoidMask(),
+                                        sysdescrMatch.orElse(null));
+                    }
                     if (sysoid.startsWith(map.getSysoidMask())) {
-                        if (map.getSysdescrMatch().isPresent() && sysdescr.matches(map.getSysdescrMatch().get())) {
+                        if (sysdescrMatch.isPresent() && sysdescr.matches(sysdescrMatch.get())) {
                             LOG.debug("getType: matched type: {}", map.getType());
                             return map.getType();
-                        } else if (!map.getSysdescrMatch().isPresent() && notMatched) {
+                        } else if (!sysdescrMatch.isPresent() && notMatched) {
                             LOG.debug("getType: null sysdescrmatch: first match: type: {} ", map.getType());
                             type = map.getType();
                             notMatched = false;
@@ -485,7 +512,7 @@ public abstract class RancidAdapterConfigManager implements RancidAdapterConfig 
     }
  
     private boolean hasPolicyManage(final String ipaddress) {
-        return (getAllPackageMatches(ipaddress).size() > 0);
+        return !getAllPackageMatches(ipaddress).isEmpty();
     }
 
     private PolicyManage getPolicyManage(final String ipaddr) {
@@ -517,8 +544,9 @@ public abstract class RancidAdapterConfigManager implements RancidAdapterConfig 
     public boolean hasSchedule(final String ipaddress) {
         try {
             getReadLock().lock();
-            if (hasPolicyManage(ipaddress)) {
-                return (getPolicyManageWithoutTesting(ipaddress).getSchedules().size() > 0);
+            final PolicyManage policyManage = getPolicyManage(ipaddress);
+            if (policyManage != null) {
+                return !policyManage.getSchedules().isEmpty();
             }
             return false;
         } finally {
@@ -536,10 +564,11 @@ public abstract class RancidAdapterConfigManager implements RancidAdapterConfig 
     public List<Schedule> getSchedules(final String ipaddress) {
         try {
             getReadLock().lock();
-            if (hasPolicyManage(ipaddress)) {
-                return getPolicyManageWithoutTesting(ipaddress).getSchedules();
+            final PolicyManage policyManage = getPolicyManage(ipaddress);
+            if (policyManage != null) {
+                return policyManage.getSchedules();
             }
-            return new ArrayList<Schedule>();
+            return new ArrayList<>();
         } finally {
             getReadLock().unlock();
         }
@@ -554,7 +583,7 @@ public abstract class RancidAdapterConfigManager implements RancidAdapterConfig 
     public Iterable<Package> packages() {
         try {
             getReadLock().lock();
-            final List<Package> pkgs = new ArrayList<Package>();
+            final List<Package> pkgs = new ArrayList<>();
             if (hasPolicies()) {
                 for (final PolicyManage pm : policies() ) {
                     pkgs.add(pm.getPackage());
@@ -588,8 +617,9 @@ public abstract class RancidAdapterConfigManager implements RancidAdapterConfig 
     public Iterable<PolicyManage> policies() {
         try {
             getReadLock().lock();
-            if (getConfiguration().getPolicies().isPresent()) {
-                return getConfiguration().getPolicies().get().getPolicyManages();
+            final Optional<Policies> policies = getConfiguration().getPolicies();
+            if (policies.isPresent()) {
+                return policies.get().getPolicyManages();
             } else {
                 return Collections.emptyList();
             }

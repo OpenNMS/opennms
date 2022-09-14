@@ -28,12 +28,9 @@
 
 package org.opennms.core.db;
 
-import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.sql.SQLException;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -58,15 +55,17 @@ public abstract class DataSourceFactory {
 
     private static final Logger LOG = LoggerFactory.getLogger(DataSourceFactory.class);
 
-    //private static final Class<?> DEFAULT_FACTORY_CLASS = AtomikosDataSourceFactory.class;
-    //private static final Class<?> DEFAULT_FACTORY_CLASS = C3P0ConnectionFactory.class;
+    // alternatives: AtomikosDataSourceFactory, C3P0ConnectionFactory
     private static final Class<?> DEFAULT_FACTORY_CLASS = HikariCPConnectionFactory.class;
 
     private static DataSourceConfigurationFactory m_dataSourceConfigFactory;
 
     private static final Map<String, DataSource> m_dataSources = new ConcurrentHashMap<>();
 
-    private static final List<Runnable> m_closers = new LinkedList<>();
+    private static final Map<DataSource, Closer> m_closers = new ConcurrentHashMap<>();
+
+    protected DataSourceFactory() {
+    }
 
     private static ClosableDataSource parseDataSource(final String dsName) {
         String factoryClass = null;
@@ -74,39 +73,38 @@ public abstract class DataSourceFactory {
         ConnectionPool connectionPool = m_dataSourceConfigFactory.getConnectionPool();
         factoryClass = connectionPool.getFactory();
 
-    	ClosableDataSource dataSource = null;
-		final String defaultClassName = DEFAULT_FACTORY_CLASS.getName();
-    	try {
-    		final Class<?> clazz = Class.forName(factoryClass);
-    		final Constructor<?> constructor = clazz.getConstructor(new Class<?>[] { JdbcDataSource.class });
-    		dataSource = (ClosableDataSource)constructor.newInstance(new Object[] { m_dataSourceConfigFactory.getJdbcDataSource(dsName) });
-    	} catch (final Throwable t) {
-    		LOG.debug("Unable to load {}, falling back to the default dataSource ({})", factoryClass, defaultClassName, t);
-    		try {
-				final Constructor<?> constructor = ((Class<?>) DEFAULT_FACTORY_CLASS).getConstructor(new Class<?>[] { JdbcDataSource.class });
-				dataSource = (ClosableDataSource)constructor.newInstance(new Object[] { m_dataSourceConfigFactory.getJdbcDataSource(dsName) });
-			} catch (final Throwable cause) {
-			    if (isUnfilteredConfigException(cause)) {
-			        throw new IllegalArgumentException("Failed to load " + defaultClassName + " because the configuration is unfiltered. If you see this in a unit/integration test, you can ignore it.");
-			    }
-				LOG.error("Unable to load {}.", DEFAULT_FACTORY_CLASS.getName(), cause);
-				throw new IllegalArgumentException("Unable to load " + defaultClassName + ".", cause);
-			}
-    	}
-    	
-    	if (connectionPool != null) {
-    		dataSource.setIdleTimeout(connectionPool.getIdleTimeout());
-    		try {
-    			dataSource.setLoginTimeout(connectionPool.getLoginTimeout());
-    		} catch (SQLException e) {
-    			LOG.warn("Exception thrown while trying to set login timeout on datasource", e);
-    		}
-    		dataSource.setMinPool(connectionPool.getMinPool());
-    		dataSource.setMaxPool(connectionPool.getMaxPool());
-    		dataSource.setMaxSize(connectionPool.getMaxSize());
-    	}
-    	
-    	return dataSource;
+        ClosableDataSource dataSource = null;
+        final String defaultClassName = DEFAULT_FACTORY_CLASS.getName();
+        try {
+            final Class<?> clazz = Class.forName(factoryClass);
+            final Constructor<?> constructor = clazz.getConstructor(JdbcDataSource.class);
+            dataSource = (ClosableDataSource)constructor.newInstance(m_dataSourceConfigFactory.getJdbcDataSource(dsName));
+        } catch (final Exception e) {
+            LOG.debug("Unable to load {}, falling back to the default dataSource ({})", factoryClass, defaultClassName, e);
+            try {
+                final Constructor<?> constructor = ((Class<?>) DEFAULT_FACTORY_CLASS).getConstructor(JdbcDataSource.class);
+                dataSource = (ClosableDataSource)constructor.newInstance(m_dataSourceConfigFactory.getJdbcDataSource(dsName));
+            } catch (final Exception cause) {
+                if (isUnfilteredConfigException(cause)) {
+                    LOG.error("Unable to load {}: {}", DEFAULT_FACTORY_CLASS.getName(), cause.getMessage());
+                    throw new IllegalArgumentException("Failed to load " + defaultClassName + " because the configuration is unfiltered. If you see this in a unit/integration test, you can ignore it.");
+                }
+                LOG.error("Unable to load {}.", DEFAULT_FACTORY_CLASS.getName(), cause);
+                throw new IllegalArgumentException("Unable to load " + defaultClassName + ".", cause);
+            }
+        }
+
+        dataSource.setIdleTimeout(connectionPool.getIdleTimeout());
+        try {
+            dataSource.setLoginTimeout(connectionPool.getLoginTimeout());
+        } catch (SQLException e) {
+            LOG.warn("Exception thrown while trying to set login timeout on datasource", e);
+        }
+        dataSource.setMinPool(connectionPool.getMinPool());
+        dataSource.setMaxPool(connectionPool.getMaxPool());
+        dataSource.setMaxSize(connectionPool.getMaxSize());
+
+        return dataSource;
     }
 
     private static boolean isUnfilteredConfigException(final Throwable cause) {
@@ -119,22 +117,6 @@ public abstract class DataSourceFactory {
         return isUnfilteredConfigException(cause.getCause());
     }
 
-    /**
-     * @deprecated This function is no longer necessary for DataSourceFactory initialization
-     * 
-     * @throws IOException
-     * @throws ClassNotFoundException
-     * @throws PropertyVetoException
-     * @throws SQLException
-     */
-    public static synchronized void init() throws IOException, ClassNotFoundException, PropertyVetoException, SQLException {
-    }
-
-    /**
-     * <p>init</p>
-     *
-     * @param dsName a {@link java.lang.String} object.
-     */
     public static synchronized void init(final String dsName) {
         if (isLoaded(dsName)) {
             // init already called, return
@@ -154,16 +136,7 @@ public abstract class DataSourceFactory {
         try {
             final ClosableDataSource dataSource = parseDataSource(dsName);
 
-            m_closers.add(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        dataSource.close();
-                    } catch (final Throwable cause) {
-                            LOG.info("Unable to close datasource {}.", dsName, cause);
-                    }
-                }
-            });
+            m_closers.put(dataSource, new Closer(dsName, dataSource));
 
             setInstance(dsName, dataSource);
         } catch (final Exception e) {
@@ -224,31 +197,43 @@ public abstract class DataSourceFactory {
      */
     public static synchronized void setInstance(final String dsName, final DataSource ds) {
         DataSource oldDs = m_dataSources.put(dsName, ds);
-        if (oldDs != null) {
-            // TODO: Call the closer Runnable?
+        if (oldDs != null && m_closers.containsKey(oldDs)) {
+            m_closers.remove(oldDs).run();
         }
     }
 
-    /**
-     */
     public static synchronized void setDataSourceConfigurationFactory(final DataSourceConfigurationFactory factory) {
         // Close any existing datasources
         close();
         m_dataSourceConfigFactory = factory;
     }
 
-    /**
-     * <p>close</p>
-     *
-     * @throws java.sql.SQLException if any.
-     */
     public static synchronized void close() {
         
-        for(Runnable closer : m_closers) {
+        for(final Runnable closer : m_closers.values()) {
             closer.run();
         }
         
         m_closers.clear();
         m_dataSources.clear();
+    }
+
+    public static class Closer implements Runnable {
+        final String m_dsName;
+        final ClosableDataSource m_dataSource;
+
+        public Closer(final String dsName, final ClosableDataSource dataSource) {
+            m_dsName = dsName;
+            m_dataSource = dataSource;
+        }
+
+        @Override
+        public void run() {
+            try {
+                m_dataSource.close();
+            } catch (final Exception cause) {
+                LOG.warn("Unable to close datasource {}.", m_dsName, cause);
+            }
+        }
     }
 }

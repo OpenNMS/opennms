@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -64,9 +64,10 @@ public class Cache<K, V> {
             if (config.isRecordStats()) {
                 logger.debug("Recording of \"{}\" cache statistics is enabled.", config.getName());
                 final MetricRegistry registry = config.getMetricRegistry();
-                registry.register(MetricRegistry.name("cache." + config.getName() + ".evictionCount"), (Gauge) () -> delegate.stats().evictionCount());
-                registry.register(MetricRegistry.name("cache." + config.getName() + ".hitRate"), (Gauge) () -> delegate.stats().hitRate());
-                registry.register(MetricRegistry.name("cache." + config.getName() + ".loadExceptionCount"), (Gauge) () -> delegate.stats().loadExceptionCount());
+                final String metricPrefix = "cache." + config.getName() + ".";
+                registry.register(MetricRegistry.name(metricPrefix + "evictionCount"), (Gauge) () -> delegate.stats().evictionCount());
+                registry.register(MetricRegistry.name(metricPrefix + "hitRate"), (Gauge) () -> delegate.stats().hitRate());
+                registry.register(MetricRegistry.name(metricPrefix + "loadExceptionCount"), (Gauge) () -> delegate.stats().loadExceptionCount());
             } else {
                 logger.debug("Recording of \"{}\" cache statistics is disabled.", config.getName());
             }
@@ -80,8 +81,8 @@ public class Cache<K, V> {
         }
         try {
             return cacheLoader.load(key);
-        } catch (Throwable t) {
-            throw new RuntimeException(t);
+        } catch (final Exception e) {
+            throw new CacheException("Failed to load key " + key, e);
         }
     }
 
@@ -92,8 +93,8 @@ public class Cache<K, V> {
         }
         try {
             return valueLoader.call();
-        } catch (Throwable t) {
-            throw new RuntimeException(t);
+        } catch (final Exception e) {
+            throw new CacheException("Failed to call valueLoader for key " + key, e);
         }
     }
 

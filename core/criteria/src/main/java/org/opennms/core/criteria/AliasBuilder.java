@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -43,7 +43,7 @@ public class AliasBuilder {
 
     private static final Logger LOG = LoggerFactory.getLogger(AliasBuilder.class);
 
-    final Map<String, Alias> m_aliases = new HashMap<String, Alias>();
+    final Map<String, Alias> m_aliases = new HashMap<>();
 
     public final AliasBuilder alias(final String associationPath, final String alias, final JoinType type, final Restriction joinCondition) {
         Alias existing = m_aliases.get(alias);
@@ -93,7 +93,7 @@ public class AliasBuilder {
 
     public final Collection<Alias> getAliasCollection() {
         // make a copy so the internal one can't be modified outside of the builder
-        return new ArrayList<Alias>(m_aliases.values());
+        return new ArrayList<>(m_aliases.values());
     }
 
 }

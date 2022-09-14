@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -34,7 +34,7 @@ import java.util.List;
 public class BetweenRestriction extends AttributeValueRestriction {
 
     public BetweenRestriction(final String attribute, final Object begin, final Object end) {
-        super(RestrictionType.BETWEEN, attribute, Arrays.asList(new Object[] { begin, end }));
+        super(RestrictionType.BETWEEN, attribute, Arrays.asList(begin, end));
     }
 
     public Object getBegin() {
