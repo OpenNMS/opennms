@@ -49,8 +49,8 @@ public class TriggerDao {
      * <p>reset</p>
      */
     public void reset() {
-        m_nameMap = new LinkedHashMap<String, Trigger>();
-        m_tableMap = new HashMap<String, List<Trigger>>();
+        m_nameMap = new LinkedHashMap<>();
+        m_tableMap = new HashMap<>();
     }
 
     /**
@@ -73,7 +73,7 @@ public class TriggerDao {
     
     private List<Trigger> getTriggersForTableCreateIfEmpty(String table) {
         if (!m_tableMap.containsKey(table)) {
-            m_tableMap.put(table, new LinkedList<Trigger>());
+            m_tableMap.put(table, new LinkedList<>());
         }
         return m_tableMap.get(table);
     }
@@ -87,7 +87,7 @@ public class TriggerDao {
     public List<Trigger> getTriggersForTable(String table) {
         String lowerName = table.toLowerCase();
         if (!m_tableMap.containsKey(lowerName)) {
-            return new LinkedList<Trigger>();
+            return new LinkedList<>();
         }
         return m_tableMap.get(lowerName);
     }
