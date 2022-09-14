@@ -82,10 +82,6 @@ public class OspfArea implements Serializable {
         return m_id;
     }
 
-    public void setId(Integer id) {
-        m_id = id;
-    }
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "nodeId")
     public OnmsNode getNode() {
@@ -159,8 +155,8 @@ public class OspfArea implements Serializable {
      * @return a {@link String} object.
      */
     public String toString() {
-        return "ospflink: nodeid:[" +
-                getNode().getId() +
+        return "ospfArea: nodeid:[" +
+                (getNode() != null ? getNode().getId() :null) +
                 "]: area [" +
                 str(getOspfAreaId()) +
                 "/" +
