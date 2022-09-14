@@ -43,83 +43,86 @@ import org.slf4j.LoggerFactory;
 
 public class OspfIfTableTracker extends TableTracker {
 
-	private final static Logger LOG = LoggerFactory.getLogger(OspfIfTableTracker.class);
-	
-    public static final SnmpObjId OSPF_IF_TABLE_ENTRY  = SnmpObjId.get(".1.3.6.1.2.1.14.7.1"); // start of table (GETNEXT)
-    
-    public final static SnmpObjId OSPF_IF_IPADDRESS    = SnmpObjId.get(".1.3.6.1.2.1.14.7.1.1");
+    private final static Logger LOG = LoggerFactory.getLogger(OspfIfTableTracker.class);
+
+    public static final SnmpObjId OSPF_IF_TABLE_ENTRY = SnmpObjId.get(".1.3.6.1.2.1.14.7.1"); // start of table (GETNEXT)
+
+    public final static SnmpObjId OSPF_IF_IPADDRESS = SnmpObjId.get(".1.3.6.1.2.1.14.7.1.1");
     public final static SnmpObjId OSPF_ADDRESS_LESS_IF = SnmpObjId.get(".1.3.6.1.2.1.14.7.1.2");
 
-    public static final SnmpObjId[] s_ospfiftable_elemList = new SnmpObjId[] {
-        
-        /**
-         *  "The IP address of this OSPF interface."
-        */
-        OSPF_IF_IPADDRESS,
-        
-        /**
-         * "For the purpose of easing  the  instancing  of
-         * addressed   and  addressless  interfaces;  This
-         * variable takes the value 0 on  interfaces  with
-         * IP  Addresses,  and  the corresponding value of
-         * ifIndex for interfaces having no IP Address."
-         * 
-         */
-        OSPF_ADDRESS_LESS_IF
-        
+    public static final SnmpObjId[] s_ospfiftable_elemList = new SnmpObjId[]{
+
+            /**
+             *  "The IP address of this OSPF interface."
+            */
+            OSPF_IF_IPADDRESS,
+
+            /**
+             * "For the purpose of easing  the  instancing  of
+             * addressed   and  addressless  interfaces;  This
+             * variable takes the value 0 on  interfaces  with
+             * IP  Addresses,  and  the corresponding value of
+             * ifIndex for interfaces having no IP Address."
+             *
+            */
+            OSPF_ADDRESS_LESS_IF
+
     };
-    
+
     public static class OspfIfRow extends SnmpRowResult {
 
-    	public OspfIfRow(int columnCount, SnmpInstId instance) {
-			super(columnCount, instance);
-            LOG.debug( "column count = {}, instance = {}", columnCount, instance);
-		}
-    	
-    	public InetAddress getOspfIpAddress() {
-	        return getValue(OSPF_IF_IPADDRESS).toInetAddress();
-	    }
-	    
-	    public Integer getOspfAddressLessIf() {
-	        return getValue(OSPF_ADDRESS_LESS_IF).toInt();
-	    }
-	    
+        public OspfIfRow(int columnCount, SnmpInstId instance) {
+            super(columnCount, instance);
+            LOG.debug("column count = {}, instance = {}", columnCount, instance);
+        }
 
-	public OspfLink getOspfLink() {
-		
-            LOG.debug( "getOspfLink: ospf ip address: {}, address less ifindex {}", 
-                       str(getOspfIpAddress()),
-                       getOspfAddressLessIf());
+        public InetAddress getOspfIpAddress() {
+            return getValue(OSPF_IF_IPADDRESS).toInetAddress();
+        }
+
+        public Integer getOspfAddressLessIf() {
+            return getValue(OSPF_ADDRESS_LESS_IF).toInt();
+        }
+
+
+        public OspfLink getOspfLink() {
+
+            LOG.debug("getOspfLink: ospf ip address: {}, address less ifindex {}",
+                    str(getOspfIpAddress()),
+                    getOspfAddressLessIf());
 
             OspfLink link = new OspfLink();
             link.setOspfIpAddr(getOspfIpAddress());
             link.setOspfAddressLessIndex(getOspfAddressLessIf());
             return link;
 
-	}
+        }
 
     }
-    
-    
+
 
     public OspfIfTableTracker() {
         super(s_ospfiftable_elemList);
     }
 
     public OspfIfTableTracker(final RowCallback rowProcessor) {
-    	super(rowProcessor,s_ospfiftable_elemList);
+        super(rowProcessor, s_ospfiftable_elemList);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public SnmpRowResult createRowResult(final int columnCount, final SnmpInstId instance) {
         return new OspfIfRow(columnCount, instance);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void rowCompleted(final SnmpRowResult row) {
-        processOspfIfRow((OspfIfRow)row);
+        processOspfIfRow((OspfIfRow) row);
     }
 
     /**
