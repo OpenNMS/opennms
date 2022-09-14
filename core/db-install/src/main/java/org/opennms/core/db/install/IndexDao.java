@@ -51,8 +51,8 @@ public class IndexDao {
      * <p>reset</p>
      */
     public void reset() {
-        m_nameMap = new LinkedHashMap<String, Index>();
-        m_tableMap = new HashMap<String, List<Index>>();
+        m_nameMap = new LinkedHashMap<>();
+        m_tableMap = new HashMap<>();
     }
     
     /**
@@ -75,7 +75,7 @@ public class IndexDao {
     
     private List<Index> getIndexesForTableCreateIfEmpty(String table) {
         if (!m_tableMap.containsKey(table)) {
-            m_tableMap.put(table, new LinkedList<Index>());
+            m_tableMap.put(table, new LinkedList<>());
         }
         return m_tableMap.get(table);
     }
@@ -89,7 +89,7 @@ public class IndexDao {
     public List<Index> getIndexesForTable(String table) {
         String lowerName = table.toLowerCase();
         if (!m_tableMap.containsKey(lowerName)) {
-            return new LinkedList<Index>();
+            return new LinkedList<>();
         }
         return m_tableMap.get(lowerName);
     }
