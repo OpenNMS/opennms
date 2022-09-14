@@ -15,7 +15,7 @@
   <description>OSGi wrapper for Jaeger Tracer.</description>
 
   <properties>
-    <apacheThriftVersion>0.14.0</apacheThriftVersion>
+    <apacheThriftVersion>0.15.0</apacheThriftVersion>
   </properties>
   <build>
     <defaultGoal>install</defaultGoal>
@@ -83,7 +83,7 @@
     <dependency>
       <groupId>io.jaegertracing</groupId>
       <artifactId>jaeger-client</artifactId>
-      <version>${jeagertracingVersion}</version>
+      <version>${jaegertracingVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.thrift</groupId>
@@ -93,12 +93,12 @@
     <dependency>
       <groupId>io.jaegertracing</groupId>
       <artifactId>jaeger-core</artifactId>
-      <version>${jeagertracingVersion}</version>
+      <version>${jaegertracingVersion}</version>
     </dependency>
     <dependency>
       <groupId>io.jaegertracing</groupId>
       <artifactId>jaeger-thrift</artifactId>
-      <version>${jeagertracingVersion}</version>
+      <version>${jaegertracingVersion}</version>
     </dependency>
   </dependencies>
 </project>

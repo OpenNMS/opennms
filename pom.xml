@@ -1758,7 +1758,7 @@
     <osgiJaxRsVersion>1.1.0.ONMS</osgiJaxRsVersion>
     <opencsvVersion>2.3</opencsvVersion>
     <opentracingVersion>0.32.0</opentracingVersion>
-    <jeagertracingVersion>0.34.0</jeagertracingVersion>
+    <jaegertracingVersion>1.8.1</jaegertracingVersion>
     <pyroscopeVersion>0.10.2</pyroscopeVersion>
     <lz4JavaVersion>1.8.0</lz4JavaVersion>
     <quartzVersion>2.3.2</quartzVersion>
