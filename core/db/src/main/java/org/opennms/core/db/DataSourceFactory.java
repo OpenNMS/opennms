@@ -73,37 +73,38 @@ public abstract class DataSourceFactory {
         ConnectionPool connectionPool = m_dataSourceConfigFactory.getConnectionPool();
         factoryClass = connectionPool.getFactory();
 
-    	ClosableDataSource dataSource = null;
-		final String defaultClassName = DEFAULT_FACTORY_CLASS.getName();
-    	try {
-    		final Class<?> clazz = Class.forName(factoryClass);
-    		final Constructor<?> constructor = clazz.getConstructor(JdbcDataSource.class);
-    		dataSource = (ClosableDataSource)constructor.newInstance(m_dataSourceConfigFactory.getJdbcDataSource(dsName));
-    	} catch (final Exception e) {
-    		LOG.debug("Unable to load {}, falling back to the default dataSource ({})", factoryClass, defaultClassName, e);
-    		try {
-				final Constructor<?> constructor = ((Class<?>) DEFAULT_FACTORY_CLASS).getConstructor(JdbcDataSource.class);
-				dataSource = (ClosableDataSource)constructor.newInstance(m_dataSourceConfigFactory.getJdbcDataSource(dsName));
-			} catch (final Exception cause) {
-			    if (isUnfilteredConfigException(cause)) {
-			        throw new IllegalArgumentException("Failed to load " + defaultClassName + " because the configuration is unfiltered. If you see this in a unit/integration test, you can ignore it.");
-			    }
-				LOG.error("Unable to load {}.", DEFAULT_FACTORY_CLASS.getName(), cause);
-				throw new IllegalArgumentException("Unable to load " + defaultClassName + ".", cause);
-			}
-    	}
-    	
-		dataSource.setIdleTimeout(connectionPool.getIdleTimeout());
-		try {
-			dataSource.setLoginTimeout(connectionPool.getLoginTimeout());
-		} catch (SQLException e) {
-			LOG.warn("Exception thrown while trying to set login timeout on datasource", e);
-		}
-		dataSource.setMinPool(connectionPool.getMinPool());
-		dataSource.setMaxPool(connectionPool.getMaxPool());
-		dataSource.setMaxSize(connectionPool.getMaxSize());
-    	
-    	return dataSource;
+        ClosableDataSource dataSource = null;
+        final String defaultClassName = DEFAULT_FACTORY_CLASS.getName();
+        try {
+            final Class<?> clazz = Class.forName(factoryClass);
+            final Constructor<?> constructor = clazz.getConstructor(JdbcDataSource.class);
+            dataSource = (ClosableDataSource)constructor.newInstance(m_dataSourceConfigFactory.getJdbcDataSource(dsName));
+        } catch (final Exception e) {
+            LOG.debug("Unable to load {}, falling back to the default dataSource ({})", factoryClass, defaultClassName, e);
+            try {
+                final Constructor<?> constructor = ((Class<?>) DEFAULT_FACTORY_CLASS).getConstructor(JdbcDataSource.class);
+                dataSource = (ClosableDataSource)constructor.newInstance(m_dataSourceConfigFactory.getJdbcDataSource(dsName));
+            } catch (final Exception cause) {
+                if (isUnfilteredConfigException(cause)) {
+                    LOG.error("Unable to load {}: {}", DEFAULT_FACTORY_CLASS.getName(), cause.getMessage());
+                    throw new IllegalArgumentException("Failed to load " + defaultClassName + " because the configuration is unfiltered. If you see this in a unit/integration test, you can ignore it.");
+                }
+                LOG.error("Unable to load {}.", DEFAULT_FACTORY_CLASS.getName(), cause);
+                throw new IllegalArgumentException("Unable to load " + defaultClassName + ".", cause);
+            }
+        }
+
+        dataSource.setIdleTimeout(connectionPool.getIdleTimeout());
+        try {
+            dataSource.setLoginTimeout(connectionPool.getLoginTimeout());
+        } catch (SQLException e) {
+            LOG.warn("Exception thrown while trying to set login timeout on datasource", e);
+        }
+        dataSource.setMinPool(connectionPool.getMinPool());
+        dataSource.setMaxPool(connectionPool.getMaxPool());
+        dataSource.setMaxSize(connectionPool.getMaxSize());
+
+        return dataSource;
     }
 
     private static boolean isUnfilteredConfigException(final Throwable cause) {
