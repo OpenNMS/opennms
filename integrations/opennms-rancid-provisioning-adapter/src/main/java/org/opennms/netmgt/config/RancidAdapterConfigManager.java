@@ -512,7 +512,7 @@ public abstract class RancidAdapterConfigManager implements RancidAdapterConfig 
     }
  
     private boolean hasPolicyManage(final String ipaddress) {
-        return (!getAllPackageMatches(ipaddress).isEmpty());
+        return !getAllPackageMatches(ipaddress).isEmpty();
     }
 
     private PolicyManage getPolicyManage(final String ipaddr) {
@@ -546,7 +546,7 @@ public abstract class RancidAdapterConfigManager implements RancidAdapterConfig 
             getReadLock().lock();
             final PolicyManage policyManage = getPolicyManage(ipaddress);
             if (policyManage != null) {
-                return (!policyManage.getSchedules().isEmpty());
+                return !policyManage.getSchedules().isEmpty();
             }
             return false;
         } finally {

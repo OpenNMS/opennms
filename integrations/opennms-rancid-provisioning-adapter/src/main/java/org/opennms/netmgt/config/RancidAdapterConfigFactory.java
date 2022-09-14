@@ -139,10 +139,11 @@ public class RancidAdapterConfigFactory extends RancidAdapterConfigManager {
      */
     protected void saveXml(final String xml) throws IOException {
         if (xml != null) {
-            getWriteLock().lock();
             long timestamp = System.currentTimeMillis();
             File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.RANCID_CONFIG_FILE_NAME);
             LOG.debug("saveXml: saving config file at {}: {}", timestamp, cfgFile.getPath());
+
+            getWriteLock().lock();
             try (
                 final var fos = new FileOutputStream(cfgFile);
                 final var fileWriter = new OutputStreamWriter(fos, StandardCharsets.UTF_8);

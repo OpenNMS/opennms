@@ -189,11 +189,11 @@ public final class PollerConfigFactory extends PollerConfigManager {
     @Override
     protected void saveXml(final String xml) throws IOException {
         if (xml != null) {
-            getWriteLock().lock();
-
             final long timestamp = System.currentTimeMillis();
             final File cfgFile = getPollerConfigFile();
             LOG.debug("saveXml: saving config file at {}: {}", timestamp, cfgFile.getPath());
+
+            getWriteLock().lock();
             try (
                 final FileOutputStream fos = new FileOutputStream(cfgFile);
                 final OutputStreamWriter fileWriter = new OutputStreamWriter(fos, StandardCharsets.UTF_8);

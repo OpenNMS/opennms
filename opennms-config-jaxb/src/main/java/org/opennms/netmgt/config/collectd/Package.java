@@ -454,9 +454,8 @@ public class Package implements Serializable {
      */
     public boolean serviceInPackageAndEnabled(final String svcName) {
         for (final Service service : getServices()) {
-            if (service.getName().equalsIgnoreCase(svcName)) {
-                // OK it's in the package. Now check the status of the service.
-                return "on".equals(service.getStatus());
+            if (service.getName().equalsIgnoreCase(svcName) && "on".equals(service.getStatus())) {
+                return true;
             }
         }
         return false;
