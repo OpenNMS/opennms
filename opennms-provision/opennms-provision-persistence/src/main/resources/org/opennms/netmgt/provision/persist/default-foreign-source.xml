@@ -63,5 +63,11 @@
 		<detector name="MS-RDP" class="org.opennms.netmgt.provision.detector.simple.TcpDetector">
 			<parameter key="port" value="3389"/>
 		</detector>
+		<detector name="VNC" class="org.opennms.netmgt.provision.detector.simple.TcpDetector">
+			<parameter key="port" value="5900"/>
+		</detector>
+		<detector name="Guacd" class="org.opennms.netmgt.provision.detector.simple.TcpDetector">
+			<parameter key="port" value="4822"/>
+		</detector>
 	</detectors>
 </foreign-source>
