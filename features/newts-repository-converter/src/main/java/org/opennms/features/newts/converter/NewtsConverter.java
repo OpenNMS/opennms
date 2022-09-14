@@ -696,7 +696,6 @@ public class NewtsConverter implements AutoCloseable {
         return resourcePath;
     }
 
-    @SuppressWarnings({"java:S108","java:S2142"})
     @Override
     public void close() {
         this.executor.shutdown();
@@ -704,6 +703,9 @@ public class NewtsConverter implements AutoCloseable {
             try {
                 this.executor.awaitTermination(10, TimeUnit.SECONDS);
             } catch (final InterruptedException e) {
+                LOG.info("Interrupted. Stopping.");
+                Thread.currentThread().interrupt();
+                return;
             }
         }
 
