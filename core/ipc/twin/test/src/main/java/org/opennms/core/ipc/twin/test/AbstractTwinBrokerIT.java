@@ -50,6 +50,8 @@ import org.opennms.distributed.core.api.MinionIdentity;
 import org.opennms.netmgt.snmp.SnmpV3User;
 import org.opennms.netmgt.snmp.TrapListenerConfig;
 
+import com.google.common.reflect.TypeToken;
+
 public abstract class AbstractTwinBrokerIT {
 
     protected abstract TwinPublisher createPublisher() throws Exception;
@@ -284,11 +286,15 @@ public abstract class AbstractTwinBrokerIT {
             this.subscription.close();
         }
 
-        public static <T> Tracker<T> subscribe(final TwinSubscriber subscriber, final String key, final Class<T> clazz) {
+        public static <T> Tracker<T> subscribe(final TwinSubscriber subscriber, final String key, final TypeToken<T> type) {
             final var log = new ArrayList<T>();
-            final var subscription = subscriber.subscribe(key, clazz, log::add);
+            final var subscription = subscriber.subscribe(key, type, log::add);
 
             return new Tracker<>(log, subscription);
+        }
+
+        public static <T> Tracker<T> subscribe(final TwinSubscriber subscriber, final String key, final Class<T> clazz) {
+            return subscribe(subscriber, key, TypeToken.of(clazz));
         }
     }
 }

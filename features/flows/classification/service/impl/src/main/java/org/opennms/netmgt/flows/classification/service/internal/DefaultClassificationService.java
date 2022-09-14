@@ -32,6 +32,8 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -113,9 +115,9 @@ public class DefaultClassificationService implements ClassificationService {
         this.groupValidator = new GroupValidator(classificationRuleDao);
         this.csvService = new CsvServiceImpl(ruleValidator);
 
-        this.filterWatcher = filterWatcher.watch(Set.of(), this::filtersChanged);
-
         this.publisher = twinPublisher.register(RuleDTO.TWIN_KEY, RuleDTO.TWIN_TYPE, null);
+
+        this.filterWatcher = filterWatcher.watch(Set.of(), this::filtersChanged);
 
         this.reload();
     }
@@ -338,10 +340,10 @@ public class DefaultClassificationService implements ClassificationService {
                                          .stream()
                                          .filter(rule -> {
                                              try {
-                                                 ruleValidator.validate(rule);
-                                                 return true;
-                                             } catch (final InvalidRuleException e) {
+                                                 this.ruleValidator.validate(rule);
                                                  return false;
+                                             } catch (final InvalidRuleException e) {
+                                                 return true;
                                              }
                                          }).collect(Collectors.toList());
     }
@@ -407,15 +409,9 @@ public class DefaultClassificationService implements ClassificationService {
                                               .map(Rule::getExporterFilter)
                                               .filter(Predicate.not(Strings::isNullOrEmpty))
                                               .collect(Collectors.toSet()));
-
-        this.publishRules();
     }
 
     private void filtersChanged(final FilterWatcher.FilterResults results) {
-        this.publishRules();
-    }
-
-    private void publishRules() {
         // TODO fooker: Sort the list and make the position inherent?
 
         final var result = this.classificationRuleDao.findAllEnabledRules().stream()
@@ -423,9 +419,9 @@ public class DefaultClassificationService implements ClassificationService {
                                 .thenComparingInt(Rule::getPosition))
                 .flatMap(rule -> {
                     if (rule.isOmnidirectional()) {
-                        return Stream.of(resolveRule(rule), resolveRule(rule.reversedRule()));
+                        return Stream.of(resolveRule(rule, results), resolveRule(rule.reversedRule(), results));
                     } else {
-                        return Stream.of(resolveRule(rule));
+                        return Stream.of(resolveRule(rule, results));
                     }
                 })
                 .collect(Collectors.toList());
@@ -439,8 +435,17 @@ public class DefaultClassificationService implements ClassificationService {
         }
     }
 
-    private RuleDTO resolveRule(final RuleDefinition rule) {
+    private RuleDTO resolveRule(final RuleDefinition rule,
+                                final FilterWatcher.FilterResults results) {
         // TODO fooker: error handling of protocols
+
+        final List<String> exporters = Strings.isNullOrEmpty(rule.getExporterFilter())
+                                       ? List.of()
+                                       : results.getRuleNodeIpServiceMap().getOrDefault(rule.getExporterFilter(), Collections.emptyMap())
+                                                .values().stream()
+                                                .flatMap(node -> node.keySet().stream())
+                                                .map(InetAddressUtils::str)
+                                                .collect(Collectors.toList());
 
         return RuleDTO.builder()
                 .withName(rule.getName())
@@ -455,11 +460,7 @@ public class DefaultClassificationService implements ClassificationService {
                 .withDstPort(rule.getDstPort())
                 .withDstAddress(rule.getDstAddress())
                 .withPosition(rule.getGroupPosition() << 16 | rule.getPosition())
-                .withExporters(Strings.isNullOrEmpty(rule.getExporterFilter())
-                               ? List.of()
-                               : this.filterDao.getActiveIPAddressList(rule.getExporterFilter()).stream()
-                                               .map(InetAddressUtils::str)
-                                               .collect(Collectors.toList()))
+                .withExporters(exporters)
                 .build();
     }
 

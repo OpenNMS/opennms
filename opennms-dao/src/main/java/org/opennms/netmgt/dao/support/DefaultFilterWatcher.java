@@ -181,7 +181,7 @@ public class DefaultFilterWatcher implements FilterWatcher, InitializingBean, Di
             DefaultFilterWatcher.this.sessions.add(this);
         }
 
-        public synchronized void refreshNow() {
+        public synchronized void refreshNow(final boolean force) {
             lastRefreshedMs = System.currentTimeMillis();
             LOG.debug("Refreshing results for filter rules: {}", rules);
             FilterResults newFilterResults = sessionUtils.withReadOnlyTransaction(() ->
@@ -191,7 +191,7 @@ public class DefaultFilterWatcher implements FilterWatcher, InitializingBean, Di
             LOG.debug("Done refreshing results for rule.");
 
             final FilterResults lastFilterResults = lastFilterResultsRef.get();
-            if (Objects.equals(lastFilterResults, newFilterResults)) {
+            if (!force && Objects.equals(lastFilterResults, newFilterResults)) {
                 // nothing has changed, noop
                 return;
             }
@@ -205,7 +205,7 @@ public class DefaultFilterWatcher implements FilterWatcher, InitializingBean, Di
                     && lastRefreshRequestMs >= lastRefreshedMs
                     && System.currentTimeMillis() - lastRefreshedMs >= refreshRateLimitMs) {
                 lastRefreshRequestMs = 0;
-                refreshNow();
+                refreshNow(false);
                 return true;
             }
             return false;
@@ -227,7 +227,7 @@ public class DefaultFilterWatcher implements FilterWatcher, InitializingBean, Di
         @Override
         public void setFilters(final Set<String> filterRules) {
             this.rules = normalizeFilters(filterRules);
-            this.refreshNow();
+            this.refreshNow(true);
         }
 
         @Override

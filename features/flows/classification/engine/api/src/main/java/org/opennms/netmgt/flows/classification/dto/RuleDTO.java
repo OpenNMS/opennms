@@ -262,4 +262,35 @@ public class RuleDTO {
                           .add("position", position)
                           .toString();
     }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof RuleDTO)) {
+            return false;
+        }
+        final RuleDTO that = (RuleDTO) o;
+        return Objects.equals(this.position, that.position) &&
+               Objects.equals(this.name, that.name) &&
+               Objects.equals(this.dstAddress, that.dstAddress) &&
+               Objects.equals(this.dstPort, that.dstPort) &&
+               Objects.equals(this.srcPort, that.srcPort) &&
+               Objects.equals(this.srcAddress, that.srcAddress) &&
+               Objects.equals(this.protocols, that.protocols) &&
+               Objects.equals(this.exporters, that.exporters);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.name,
+                            this.dstAddress,
+                            this.dstPort,
+                            this.srcPort,
+                            this.srcAddress,
+                            this.protocols,
+                            this.exporters,
+                            this.position);
+    }
 }

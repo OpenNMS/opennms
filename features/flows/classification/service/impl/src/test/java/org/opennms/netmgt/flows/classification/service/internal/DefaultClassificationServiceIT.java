@@ -28,6 +28,13 @@
 
 package org.opennms.netmgt.flows.classification.service.internal;
 
+import static org.awaitility.Awaitility.await;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.emptyCollectionOf;
+import static org.hamcrest.Matchers.hasEntry;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -35,8 +42,12 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.net.InetAddress;
+import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -44,11 +55,18 @@ import org.junit.runner.RunWith;
 import org.opennms.core.ipc.twin.api.TwinPublisher;
 import org.opennms.core.ipc.twin.api.TwinSubscriber;
 import org.opennms.core.ipc.twin.memory.MemoryTwinPublisher;
+import org.opennms.core.ipc.twin.memory.MemoryTwinSubscriber;
+import org.opennms.core.ipc.twin.test.AbstractTwinBrokerIT;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.FilterWatcher;
+import org.opennms.netmgt.dao.api.ServiceRef;
 import org.opennms.netmgt.dao.api.SessionUtils;
+import org.opennms.netmgt.dao.support.DefaultFilterWatcher;
 import org.opennms.netmgt.filter.api.FilterDao;
+import org.opennms.netmgt.flows.classification.dto.RuleDTO;
 import org.opennms.netmgt.flows.classification.persistence.api.ClassificationGroupDao;
 import org.opennms.netmgt.flows.classification.persistence.api.ClassificationRuleDao;
 import org.opennms.netmgt.flows.classification.persistence.api.Group;
@@ -58,10 +76,13 @@ import org.opennms.netmgt.flows.classification.persistence.api.Rule;
 import org.opennms.netmgt.flows.classification.persistence.api.RuleBuilder;
 import org.opennms.netmgt.flows.classification.service.ClassificationService;
 import org.opennms.netmgt.flows.classification.service.internal.csv.CsvBuilder;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.collect.Iterables;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -69,12 +90,12 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml"})
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-@Transactional
 public class DefaultClassificationServiceIT {
 
     @Autowired
@@ -89,7 +110,10 @@ public class DefaultClassificationServiceIT {
     @Autowired
     private SessionUtils sessionUtils;
 
-    private TwinPublisher twinPublisher;
+    @Autowired
+    private DatabasePopulator databasePopulator;
+
+    private MemoryTwinPublisher twinPublisher;
 
     private ClassificationService classificationService;
     private int initialCount;
@@ -99,21 +123,20 @@ public class DefaultClassificationServiceIT {
 
     @Before
     public void setUp() throws Exception {
+        this.databasePopulator.populateDatabase();
+
         this.twinPublisher = new MemoryTwinPublisher();
+
+        final var filterWatcher = new DefaultFilterWatcher();
+        filterWatcher.setFilterDao(this.filterDao);
+        filterWatcher.setSessionUtils(this.sessionUtils);
+        filterWatcher.afterPropertiesSet();
 
         classificationService = new DefaultClassificationService(
                 ruleDao,
                 groupDao,
                 filterDao,
-                (filterRules, callback) -> new FilterWatcher.Session() {
-                    @Override
-                    public void close() {
-                    }
-
-                    @Override
-                    public void setFilters(final Set<String> filterRules) {
-                    }
-                },
+                filterWatcher,
                 sessionUtils,
                 twinPublisher);
         assertThat("The groups should be pre-populated from liquibase", groupDao.countAll(), is(2));
@@ -246,5 +269,63 @@ public class DefaultClassificationServiceIT {
         assertThat(ruleDao.findByDefinition(rule1), hasSize(2));
         assertThat(ruleDao.findByDefinition(rule2), hasSize(1));
 
+    }
+
+    @Test
+    public void testRulePublishing() throws Exception {
+        // Disable system group for smaller test set
+        this.sessionUtils.withTransaction(() -> {
+            final var sysgroup = this.groupDao.findByName(Groups.SYSTEM_DEFINED);
+            sysgroup.setEnabled(false);
+            this.classificationService.saveGroup(sysgroup);
+        });
+
+        final var subscriber = new MemoryTwinSubscriber(this.twinPublisher, "Test");
+        final var tracker = AbstractTwinBrokerIT.Tracker.subscribe(subscriber,
+                                                                   RuleDTO.TWIN_KEY,
+                                                                   RuleDTO.TWIN_TYPE);
+
+        final String csv = new CsvBuilder()
+                .withHeader(false)
+                .withRule(new RuleBuilder()
+                                  .withGroup(userGroupCsv)
+                                  .withName("rule1")
+                                  .withDstAddress("127.0.0.1")
+                                  .withDstPort(222)
+                                  .withProtocol("tcp,udp")
+                                  .build())
+                .withRule(new RuleBuilder()
+                                  .withGroup(userGroupCsv)
+                                  .withName("rule2")
+                                  .withDstAddress("127.0.0.1")
+                                  .withDstPort(222)
+                                  .withProtocol("tcp,udp")
+                                  .withExporterFilter("IPADDR != '0.0.0.0'") // A filter that matches all nodes
+                                  .build())
+                .build();
+
+        classificationService.importRules(userGroupDb.getId(), new ByteArrayInputStream(csv.getBytes()), false, true);
+
+        await().until(tracker::getLog, contains(
+                emptyCollectionOf(RuleDTO.class),
+                hasItems(RuleDTO.builder()
+                                .withPosition(0)
+                                .withName("rule1")
+                                .withDstAddress("127.0.0.1")
+                                .withDstPort(222)
+                                .withProtocols(17, 6)
+                                .build(),
+                         RuleDTO.builder()
+                                .withPosition(1)
+                                .withName("rule2")
+                                .withDstAddress("127.0.0.1")
+                                .withDstPort(222)
+                                .withProtocols(17, 6)
+                                // As this is a match-all filter, we expect to see all known interfaces
+                                .withExporters(this.databasePopulator.getIpInterfaceDao().findAll().stream()
+                                                                     .map(OnmsIpInterface::getIpAddress)
+                                                                     .map(InetAddressUtils::str)
+                                                                     .collect(Collectors.toList()))
+                                .build())));
     }
 }
