@@ -277,7 +277,7 @@ public class KarafExtender {
         }
 
         for (String attributeKvp : attributes.split("\\s")) {
-            String tokens[] = attributeKvp.split("=");
+            String[] tokens = attributeKvp.split("=");
             if (tokens.length == 2) {
                 attributeMap.put(tokens[0].trim(), tokens[1].trim());
             }
