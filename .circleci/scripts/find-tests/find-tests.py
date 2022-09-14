@@ -30,7 +30,7 @@ def find_changes(maven_project_root):
         print(file_changed)
 
 def is_test(file):
-    return bool(re.search("(Test|IT)\.java", file))
+    return bool(re.search("\\bsrc/test/", file))
 
 def generate_test_lists(maven_project_root, changes_only=True, unit_test_output=None, integration_test_output=None):
     project = load_maven_project(maven_project_root)
