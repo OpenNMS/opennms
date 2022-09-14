@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -37,20 +37,22 @@ public class CacheBuilder<K, V> {
     private CacheConfig config;
     private CacheLoader<K, V> loader;
 
+    @SuppressWarnings("rawtypes")
     public CacheBuilder withConfig(CacheConfig config) {
         this.config = config;
         return this;
     }
 
-    public CacheBuilder withCacheLoader(CacheLoader<K, V> loader) {
+    public CacheBuilder<K, V> withCacheLoader(CacheLoader<K, V> loader) {
         this.loader = loader;
         return this;
     }
 
-    public Cache<K, V> build() {
+    @SuppressWarnings("rawtypes")
+    public Cache build() {
         Objects.requireNonNull(config);
         Objects.requireNonNull(loader);
-        return new Cache(config, loader);
+        return new Cache<K, V>(config, loader);
     }
 
 }

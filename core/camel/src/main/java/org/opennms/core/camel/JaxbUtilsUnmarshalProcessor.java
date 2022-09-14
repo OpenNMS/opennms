@@ -53,6 +53,7 @@ public class JaxbUtilsUnmarshalProcessor implements Processor {
 	 * Store a thread-local reference to the {@link Unmarshaller} because 
 	 * Unmarshallers are not thread-safe.
 	 */
+	@SuppressWarnings("java:S5164")
 	private final ThreadLocal<Unmarshaller> m_unmarshaller = new ThreadLocal<>();
 
 	@SuppressWarnings("rawtypes") // Because Aries Blueprint cannot handle generics
@@ -76,15 +77,7 @@ public class JaxbUtilsUnmarshalProcessor implements Processor {
 			m_unmarshaller.set(unmarshaller);
 		}
 
-		// Super slow
-		//final String object = exchange.getIn().getBody(String.class);
-		//exchange.getIn().setBody(JaxbUtils.unmarshal(m_class, object), m_class);
-
-		// Faster
-		//final InputStream object = exchange.getIn().getBody(InputStream.class);
-		//exchange.getIn().setBody(unmarshaller.unmarshal(new StreamSource(object)));
-
-		// Somehow, using String is marginally faster than using InputStream ¯\_(ツ)_/¯
+		// Somehow, using StringReader is faster than using InputStream or String directly ¯\_(ツ)_/¯
 		final String object = exchange.getIn().getBody(String.class);
 		exchange.getIn().setBody(m_class.cast(unmarshaller.unmarshal(new StringReader(object))));
 	}

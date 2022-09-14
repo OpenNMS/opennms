@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -35,11 +35,11 @@ import java.text.DecimalFormat;
  * This class contains bean methods that may be useful inside a Camel
  * context. 
  */
-public class CamelUtils {
-        /**
-         * Outputs the current nanoTime in comma-delimited format
-         * for easy readability.
-         */
+public interface CamelUtils {
+    /**
+     * Outputs the current nanoTime in comma-delimited format
+     * for easy readability.
+     */
 	public static String nanoTime() {
 		return new DecimalFormat("#,###").format(System.nanoTime());
 	}

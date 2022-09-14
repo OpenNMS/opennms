@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2014-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,10 +28,12 @@
 
 package org.opennms.netmgt.config.collectd;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -41,6 +43,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.network.IPAddress;
 import org.opennms.core.network.IpListFromUrl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Package encapsulating addresses eligible to have SNMP
@@ -51,6 +55,8 @@ import org.opennms.core.network.IpListFromUrl;
 @XmlAccessorType(XmlAccessType.NONE)
 public class Package implements Serializable {
     private static final long serialVersionUID = 1689693370360064016L;
+
+    private static final Logger LOG = LoggerFactory.getLogger(Package.class);
 
     /**
      * The name or identifier for this package
@@ -210,7 +216,7 @@ public class Package implements Serializable {
     }
 
     public void setSpecifics(final List<String> specifics) {
-        m_specifics = new ArrayList<String>(specifics);
+        m_specifics = new ArrayList<>(specifics);
     }
 
     public void addSpecific(final String specific) throws IndexOutOfBoundsException {
@@ -240,7 +246,7 @@ public class Package implements Serializable {
     }
 
     public void setIncludeRanges(final List<IncludeRange> ranges) {
-        m_includeRanges = new ArrayList<IncludeRange>(ranges);
+        m_includeRanges = new ArrayList<>(ranges);
     }
 
     public void addIncludeRange(final IncludeRange range) throws IndexOutOfBoundsException {
@@ -252,7 +258,7 @@ public class Package implements Serializable {
     }
 
     public boolean hasIncludeRange(final String addr) {
-        if (getIncludeRanges().size() == 0 && getSpecifics().size() == 0) {
+        if (getIncludeRanges().isEmpty() && getSpecifics().isEmpty()) {
             return true;
         }
 
@@ -277,7 +283,7 @@ public class Package implements Serializable {
     }
 
     public void setExcludeRanges(final List<ExcludeRange> ranges) {
-        m_excludeRanges = new ArrayList<ExcludeRange>(ranges);
+        m_excludeRanges = new ArrayList<>(ranges);
     }
 
     public void addExcludeRange(final ExcludeRange range) throws IndexOutOfBoundsException {
@@ -311,7 +317,7 @@ public class Package implements Serializable {
     }
 
     public void setIncludeUrlCollection(final List<String> urls) {
-        m_includeUrls = new ArrayList<String>(urls);
+        m_includeUrls = new ArrayList<>(urls);
     }
 
     public void addIncludeUrl(final String url) throws IndexOutOfBoundsException {
@@ -328,11 +334,15 @@ public class Package implements Serializable {
         } else {
             final IPAddress addr = new IPAddress(iface);
             for (final String includeURL : getIncludeUrls()) {
-                final List<String> ips = IpListFromUrl.fetch(includeURL);
-                for (final String includeAddr : ips) {
-                    if (new IPAddress(includeAddr).equals(addr)) {
-                        return true;
+                try {
+                    final List<String> ips = IpListFromUrl.fetch(includeURL);
+                    for (final String includeAddr : ips) {
+                        if (new IPAddress(includeAddr).equals(addr)) {
+                            return true;
+                        }
                     }
+                } catch (final IOException e) {
+                    LOG.warn("Failed to process IPs from {}", includeURL, e);
                 }
             }
         }
@@ -412,7 +422,7 @@ public class Package implements Serializable {
     }
 
     public void setServices(final List<Service> services) {
-        m_services = new ArrayList<Service>(services);
+        m_services = new ArrayList<>(services);
     }
 
     public void addService(final Service service) throws IndexOutOfBoundsException {
@@ -444,10 +454,8 @@ public class Package implements Serializable {
      */
     public boolean serviceInPackageAndEnabled(final String svcName) {
         for (final Service service : getServices()) {
-            if (service.getName().equalsIgnoreCase(svcName)) {
-                // OK it's in the package. Now check the status of the service.
-                if ("on".equals(service.getStatus()))
-                    return true;
+            if (service.getName().equalsIgnoreCase(svcName) && "on".equals(service.getStatus())) {
+                return true;
             }
         }
         return false;
@@ -462,7 +470,7 @@ public class Package implements Serializable {
     }
 
     public void setOutageCalendars(final List<String> calendars) {
-        m_outageCalendar = new ArrayList<String>(calendars);
+        m_outageCalendar = new ArrayList<>(calendars);
     }
 
     public void addOutageCalendar(final String calendar) throws IndexOutOfBoundsException {
@@ -505,102 +513,21 @@ public class Package implements Serializable {
         if (!(obj instanceof Package)) {
             return false;
         }
-        final Package other = (Package) obj;
-        if (m_excludeRanges == null) {
-            if (other.m_excludeRanges != null) {
-                return false;
-            }
-        } else if (!m_excludeRanges.equals(other.m_excludeRanges)) {
-            return false;
-        }
-        if (m_filter == null) {
-            if (other.m_filter != null) {
-                return false;
-            }
-        } else if (!m_filter.equals(other.m_filter)) {
-            return false;
-        }
-        if (m_ifAliasComment == null) {
-            if (other.m_ifAliasComment != null) {
-                return false;
-            }
-        } else if (!m_ifAliasComment.equals(other.m_ifAliasComment)) {
-            return false;
-        }
-        if (m_ifAliasDomain == null) {
-            if (other.m_ifAliasDomain != null) {
-                return false;
-            }
-        } else if (!m_ifAliasDomain.equals(other.m_ifAliasDomain)) {
-            return false;
-        }
-        if (m_includeRanges == null) {
-            if (other.m_includeRanges != null) {
-                return false;
-            }
-        } else if (!m_includeRanges.equals(other.m_includeRanges)) {
-            return false;
-        }
-        if (m_includeUrls == null) {
-            if (other.m_includeUrls != null) {
-                return false;
-            }
-        } else if (!m_includeUrls.equals(other.m_includeUrls)) {
-            return false;
-        }
-        if (m_name == null) {
-            if (other.m_name != null) {
-                return false;
-            }
-        } else if (!m_name.equals(other.m_name)) {
-            return false;
-        }
-        if (m_outageCalendar == null) {
-            if (other.m_outageCalendar != null) {
-                return false;
-            }
-        } else if (!m_outageCalendar.equals(other.m_outageCalendar)) {
-            return false;
-        }
-        if (m_services == null) {
-            if (other.m_services != null) {
-                return false;
-            }
-        } else if (!m_services.equals(other.m_services)) {
-            return false;
-        }
-        if (m_specifics == null) {
-            if (other.m_specifics != null) {
-                return false;
-            }
-        } else if (!m_specifics.equals(other.m_specifics)) {
-            return false;
-        }
-        if (m_storFlagOverride == null) {
-            if (other.m_storFlagOverride != null) {
-                return false;
-            }
-        } else if (!m_storFlagOverride.equals(other.m_storFlagOverride)) {
-            return false;
-        }
-        if (m_storeByIfAlias == null) {
-            if (other.m_storeByIfAlias != null) {
-                return false;
-            }
-        } else if (!m_storeByIfAlias.equals(other.m_storeByIfAlias)) {
-            return false;
-        }
-        if (m_storeByNodeID == null) {
-            if (other.m_storeByNodeID != null) {
-                return false;
-            }
-        } else if (!m_storeByNodeID.equals(other.m_storeByNodeID)) {
-            return false;
-        }
-        if (m_remote != other.m_remote) {
-            return false;
-        }
-        return true;
+        final Package that = (Package) obj;
+        return Objects.equals(this.m_excludeRanges, that.m_excludeRanges) &&
+                Objects.equals(this.m_filter, that.m_filter) &&
+                Objects.equals(this.m_ifAliasComment, that.m_ifAliasComment) &&
+                Objects.equals(this.m_ifAliasDomain, that.m_ifAliasDomain) &&
+                Objects.equals(this.m_includeRanges, that.m_includeRanges) &&
+                Objects.equals(this.m_includeUrls, that.m_includeUrls) &&
+                Objects.equals(this.m_name, that.m_name) &&
+                Objects.equals(this.m_outageCalendar, that.m_outageCalendar) &&
+                Objects.equals(this.m_services, that.m_services) &&
+                Objects.equals(this.m_specifics, that.m_specifics) &&
+                Objects.equals(this.m_storFlagOverride, that.m_storFlagOverride) &&
+                Objects.equals(this.m_storeByIfAlias, that.m_storeByIfAlias) &&
+                Objects.equals(this.m_storeByNodeID, that.m_storeByNodeID) &&
+                Objects.equals(this.m_remote, that.m_remote);
     }
 
     public boolean isRemote() {

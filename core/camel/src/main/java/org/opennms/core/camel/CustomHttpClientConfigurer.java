@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2014-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -52,7 +52,7 @@ public class CustomHttpClientConfigurer implements HttpClientConfigurer {
     @Override
     public void configureHttpClient(final HttpClient client) {
         try {
-            final SSLContext ctx = SSLContext.getInstance("SSL");
+            final SSLContext ctx = SSLContext.getInstance("TLSv1.2");
             ctx.init(EMPTY_KEYMANAGER_ARRAY, new TrustManager[] { new AnyServerX509TrustManager() }, new SecureRandom());
             SSLContext.setDefault(ctx);
 

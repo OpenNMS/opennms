@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -53,7 +53,6 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Pattern;
 
-import org.apache.commons.io.IOUtils;
 import org.opennms.core.network.IpListFromUrl;
 import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.xml.JaxbUtils;
@@ -75,7 +74,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
-import com.google.common.base.Throwables;
 
 /**
  * <p>Abstract PollerConfigManager class.</p>
@@ -83,7 +81,7 @@ import com.google.common.base.Throwables;
  * @author <a href="mailto:brozow@openms.org">Mathew Brozowski</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
-abstract public class PollerConfigManager implements PollerConfig {
+public abstract class PollerConfigManager implements PollerConfig {
     private static final Logger LOG = LoggerFactory.getLogger(PollerConfigManager.class);
     private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
     private final Lock m_readLock = m_globalLock.readLock();
@@ -91,18 +89,9 @@ abstract public class PollerConfigManager implements PollerConfig {
 
     private static final ServiceMonitorRegistry s_serviceMonitorRegistry = new DefaultServiceMonitorRegistry();
 
-    /**
-     * <p>Constructor for PollerConfigManager.</p>
-     *
-     * @param stream a {@link java.io.InputStream} object.
-     */
-    public PollerConfigManager(final InputStream stream) {
-        InputStreamReader isr = null;
-        try {
-            isr = new InputStreamReader(stream);
+    protected PollerConfigManager(final InputStream stream) throws IOException {
+        try (final InputStreamReader isr = new InputStreamReader(stream)) {
             m_config = JaxbUtils.unmarshal(PollerConfiguration.class, isr);
-        } finally {
-            IOUtils.closeQuietly(isr);
         }
         setUpInternalData();
     }
@@ -179,9 +168,13 @@ abstract public class PollerConfigManager implements PollerConfig {
     
         for(final Package pkg : packages()) {
             for(final String url : includeURLs(pkg)) {
-                final List<String> iplist = IpListFromUrl.fetch(url);
-                if (iplist.size() > 0) {
-                    m_urlIPMap.put(url, iplist);
+                try {
+                    final List<String> iplist = IpListFromUrl.fetch(url);
+                    if (!iplist.isEmpty()) {
+                        m_urlIPMap.put(url, iplist);
+                    }
+                } catch (final IOException e) {
+                    LOG.warn("Unable to add IPs from {} to the poller map", url, e);
                 }
             }
         }
@@ -313,7 +306,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     
         // get list of IPs in this URL
         final List<String> iplist = m_urlIPMap.get(url);
-        if (iplist != null && iplist.size() > 0) {
+        if (iplist != null && !iplist.isEmpty()) {
             bRet = iplist.contains(addr);
         }
     
@@ -461,13 +454,12 @@ abstract public class PollerConfigManager implements PollerConfig {
                     Set<InetAddress> ipList = new HashSet<>(getIpList(pkg));
                     LOG.debug("createPackageIpMap: package {}: ipList size = {}", pkg.getName(), ipList.size());
         
-                    if (ipList.size() > 0) {
+                    if (!ipList.isEmpty()) {
                         pkgIpMap.put(pkg, ipList);
                     }
-                    
-                } catch (final Throwable t) {
-                    LOG.error("createPackageIpMap: failed to map package: {} to an IP List with filter \"{}\"", pkg.getName(), pkg.getFilter().getContent(), t);
-                    throw Throwables.propagate(t);
+                } catch (final Exception e) {
+                    LOG.error("createPackageIpMap: failed to map package: {} to an IP List with filter \"{}\"", pkg.getName(), pkg.getFilter().getContent(), e);
+                    throw new RuntimeException(e);
                 }
                 
             }
@@ -523,7 +515,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     
         // get list of IPs in this package
         final Set<InetAddress> ipList = m_pkgIpMap.get().get(pkg);
-        if (ipList != null && ipList.size() > 0) {
+        if (ipList != null && !ipList.isEmpty()) {
 			filterPassed = ipList.contains(ifaceAddr);
         }
 
@@ -541,9 +533,10 @@ abstract public class PollerConfigManager implements PollerConfig {
  
         // if there are NO include ranges then treat act as if the user include
         // the range of all valid addresses (0.0.0.0 - 255.255.255.255, ::1 - ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff)
-        has_range_include = pkg.getIncludeRanges().size() == 0 && pkg.getSpecifics().size() == 0 && pkg.getIncludeUrls().size() == 0;
+        has_range_include = pkg.getIncludeRanges().isEmpty() && pkg.getSpecifics().isEmpty() && pkg.getIncludeUrls().isEmpty();
         
         final byte[] addr = toIpAddrBytes(iface);
+
 
         for (final IncludeRange rng : pkg.getIncludeRanges()) {
             int comparison = new ByteArrayComparator().compare(addr, toIpAddrBytes(rng.getBegin()));
@@ -811,20 +804,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     /** {@inheritDoc} */
     @Override
     public boolean isPolledLocally(final String ipaddr, final String svcName) {
-        try {
-            getReadLock().lock();
-            if (!isServiceMonitored(svcName)) {
-                return false;
-            }
-            for(final Package pkg : packages()) {
-                if (isServiceInPackageAndEnabled(svcName, pkg) && isInterfaceInPackage(ipaddr, pkg)) {
-                    return true;
-                }
-            }
-        } finally {
-            getReadLock().unlock();
-        }
-        return false;
+        return isPolled(ipaddr, svcName);
     }
 
     /**
@@ -983,9 +963,7 @@ abstract public class PollerConfigManager implements PollerConfig {
         
         for (final ServiceMonitorLocator locator : locators) {
             CompletableFuture<ServiceMonitor> monitorFuture = locator.getServiceMonitor(s_serviceMonitorRegistry);
-            monitorFuture.whenComplete((monitor, ex) -> {
-                m_svcMonitors.put(locator.getServiceName(), monitor);
-            });
+            monitorFuture.whenComplete((monitor, ex) -> m_svcMonitors.put(locator.getServiceName(), monitor));
             if(!monitorFuture.isDone()) {
                 LOG.warn("The monitor with class {} not available yet, if the feature is installed correctly it will be available later.", locator.getServiceName());
             }
