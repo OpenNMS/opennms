@@ -27,7 +27,6 @@
  *******************************************************************************/
 package org.opennms.netmgt.flows.classification.internal;
 
-import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -36,7 +35,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang3.BooleanUtils;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Fork;
@@ -120,8 +118,6 @@ public class ClassificationEngineBenchmark {
                               .withPosition(i)
                               .build());
         }
-
-        // TODO fooker: re-add omnidirectional rules
 
         return result;
     }

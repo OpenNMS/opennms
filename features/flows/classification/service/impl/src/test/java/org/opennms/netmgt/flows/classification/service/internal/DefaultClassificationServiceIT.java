@@ -30,10 +30,7 @@ package org.opennms.netmgt.flows.classification.service.internal;
 
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.emptyCollectionOf;
-import static org.hamcrest.Matchers.hasEntry;
-import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -42,18 +39,12 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.net.InetAddress;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.core.ipc.twin.api.TwinPublisher;
-import org.opennms.core.ipc.twin.api.TwinSubscriber;
 import org.opennms.core.ipc.twin.memory.MemoryTwinPublisher;
 import org.opennms.core.ipc.twin.memory.MemoryTwinSubscriber;
 import org.opennms.core.ipc.twin.test.AbstractTwinBrokerIT;
@@ -61,8 +52,6 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.DatabasePopulator;
-import org.opennms.netmgt.dao.api.FilterWatcher;
-import org.opennms.netmgt.dao.api.ServiceRef;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.dao.support.DefaultFilterWatcher;
 import org.opennms.netmgt.filter.api.FilterDao;
@@ -80,9 +69,9 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.transaction.AfterTransaction;
+import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.collect.Iterables;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -96,6 +85,7 @@ import com.google.common.collect.Iterables;
         "classpath:/META-INF/opennms/mockEventIpcManager.xml"})
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
+@Transactional
 public class DefaultClassificationServiceIT {
 
     @Autowired
@@ -121,10 +111,13 @@ public class DefaultClassificationServiceIT {
     private Group userGroupDb; // the user group that is attached to hibernate
     private Group userGroupCsv; // the user group that is not attached to hibernate
 
+    @BeforeTransaction
+    public void setUpDatabase() {
+        this.databasePopulator.populateDatabase();
+    }
+
     @Before
     public void setUp() throws Exception {
-        this.databasePopulator.populateDatabase();
-
         this.twinPublisher = new MemoryTwinPublisher();
 
         final var filterWatcher = new DefaultFilterWatcher();
@@ -144,6 +137,11 @@ public class DefaultClassificationServiceIT {
         userGroupDb = groupDao.findByName(Groups.USER_DEFINED);
         userGroupCsv = new GroupBuilder().withName(Groups.USER_DEFINED).build();
         initialCount = ruleDao.countAll();
+    }
+
+    @AfterTransaction
+    public void tearDownDatabase() {
+        this.databasePopulator.resetDatabase();
     }
 
     @Test

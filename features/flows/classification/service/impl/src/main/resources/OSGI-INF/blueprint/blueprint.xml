@@ -6,6 +6,13 @@
 		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0
 		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd">
 
+    <cm:property-placeholder persistent-id="org.opennms.features.flows.classification"
+                             update-strategy="reload">
+        <cm:default-properties>
+            <cm:property name="engine.reloadInterval" value="300"/>
+        </cm:default-properties>
+    </cm:property-placeholder>
+
     <reference id="classificationRuleDao" interface="org.opennms.netmgt.flows.classification.persistence.api.ClassificationRuleDao" availability="mandatory"/>
     <reference id="classificationGroupDao" interface="org.opennms.netmgt.flows.classification.persistence.api.ClassificationGroupDao" availability="mandatory"/>
     <reference id="filterDao" interface="org.opennms.netmgt.filter.api.FilterDao" availability="mandatory"/>
@@ -21,6 +28,8 @@
             <argument ref="filterWatcher"/>
             <argument ref="sessionUtils"/>
             <argument ref="twinPublisher"/>
+
+            <property name="reloadInterval" value="${engine.reloadInterval}" />
         </bean>
     </service>
 

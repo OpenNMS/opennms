@@ -39,6 +39,10 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -99,7 +103,12 @@ public class DefaultClassificationService implements ClassificationService {
     private final FilterWatcher.Session filterWatcher;
 
     private final Set<Consumer<List<RuleDTO>>> listeners = Sets.newConcurrentHashSet();
+
     private final TwinPublisher.Session<List<RuleDTO>> publisher;
+
+    private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
+
+    private ScheduledFuture<?> reloader;
 
     public DefaultClassificationService(final ClassificationRuleDao classificationRuleDao,
                                         final ClassificationGroupDao classificationGroupDao,
@@ -468,5 +477,18 @@ public class DefaultClassificationService implements ClassificationService {
     public Closeable listen(final Consumer<List<RuleDTO>> listener) {
         this.listeners.add(listener);
         return () -> this.listeners.remove(listener);
+    }
+
+    public void setReloadInterval(final Integer seconds) {
+        if (this.reloader != null) {
+            this.reloader.cancel(false);
+        }
+
+        if (seconds != null) {
+            this.reloader = this.executorService.scheduleWithFixedDelay(() -> {
+                LOG.debug("Performing reload of Classification Engine...");
+                this.reload();
+            }, seconds, seconds, TimeUnit.SECONDS);
+        }
     }
 }
