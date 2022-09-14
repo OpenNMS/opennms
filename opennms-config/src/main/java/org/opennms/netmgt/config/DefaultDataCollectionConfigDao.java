@@ -632,40 +632,33 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
 
         // Match on ipAddress?
         boolean bMatchIPAddress = true; // default is INCLUDE
-        if (bMatchSysoid == true) {
-            if (anAddress != null) {
-                List<String> addrList = null;
-                List<String> maskList = null;
-                if (system.getIpList() != null) {
-                    addrList = system.getIpList().getIpAddresses();
-                    maskList = system.getIpList().getIpAddressMasks();
-                }
+        if (bMatchSysoid == true && anAddress != null) {
+            List<String> addrList = null;
+            List<String> maskList = null;
+            if (system.getIpList() != null) {
+                addrList = system.getIpList().getIpAddresses();
+                maskList = system.getIpList().getIpAddressMasks();
+            }
 
-                // If either Address list or Mask list exist then 'anAddress'
-                // must be included by one of them
-                if (addrList != null && addrList.size() > 0 || maskList != null && maskList.size() > 0) {
-                    bMatchIPAddress = false;
-                }
+            // If either Address list or Mask list exist then 'anAddress'
+            // must be included by one of them
+            if (addrList != null && addrList.size() > 0 || maskList != null && maskList.size() > 0) {
+                bMatchIPAddress = false;
+            }
 
-                // First see if address is in list of specific addresses
-                if (addrList != null && addrList.size() > 0) {
-                    if (addrList.contains(anAddress)) {
-                        LOG.debug("getMibObjectList: addrList exists and does include IP address {} for system <name>: {}", anAddress, system.getName());
+            // First see if address is in list of specific addresses
+            if (addrList != null && addrList.size() > 0 && addrList.contains(anAddress)) {
+                LOG.debug("getMibObjectList: addrList exists and does include IP address {} for system <name>: {}", anAddress, system.getName());
+                bMatchIPAddress = true;
+            }
+
+            // If still no match, see if address matches any of the masks
+            if (bMatchIPAddress == false && maskList != null && maskList.size() > 0) {
+                for (final String currMask : maskList) {
+                    if (anAddress.indexOf(currMask) == 0) {
+                        LOG.debug("getMibObjectList: anAddress '{}' matches mask '{}'", anAddress, currMask);
                         bMatchIPAddress = true;
-                    }
-                }
-
-                // If still no match, see if address matches any of the masks
-                if (bMatchIPAddress == false) {
-
-                    if (maskList != null && maskList.size() > 0) {
-                        for (final String currMask : maskList) {
-                            if (anAddress.indexOf(currMask) == 0) {
-                                LOG.debug("getMibObjectList: anAddress '{}' matches mask '{}'", anAddress, currMask);
-                                bMatchIPAddress = true;
-                                break;
-                            }
-                        }
+                        break;
                     }
                 }
             }

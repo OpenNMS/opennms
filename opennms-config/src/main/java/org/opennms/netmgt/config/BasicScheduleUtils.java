@@ -390,7 +390,10 @@ public abstract class BasicScheduleUtils {
     public static Date getWeeklyTime(final Date referenceTime, final String day, final String timeString) {
         final Calendar ref = Calendar.getInstance();
         ref.setTime(referenceTime);
-        ref.set(Calendar.DAY_OF_WEEK, getDayOfWeekIndex(day).intValue());
+        Integer dayIndex = getDayOfWeekIndex(day);
+        if (dayIndex != null) {
+            ref.set(Calendar.DAY_OF_WEEK, dayIndex.intValue());
+        }
         setOutCalTime(ref, timeString);
         return ref.getTime();
     }

@@ -338,19 +338,17 @@ public class AmiPeerFactory {
                     final InetAddress beginAddress = rangesIterator.next();
                     final Range range = rangesMap.get(beginAddress);
                     final InetAddress endAddress = InetAddressUtils.getInetAddress(range.getEnd());
-    
-                    if (priorRange != null) {
-                        if (InetAddressUtils.inSameScope(beginAddress, priorEnd) && InetAddressUtils.difference(beginAddress, priorEnd).compareTo(BigInteger.ONE) <= 0) {
-                            priorBegin = new InetAddressComparator().compare(priorBegin, beginAddress) < 0 ? priorBegin : beginAddress;
-                            priorRange.setBegin(InetAddressUtils.toIpAddrString(priorBegin));
-                            priorEnd = new InetAddressComparator().compare(priorEnd, endAddress) > 0 ? priorEnd : endAddress;
-                            priorRange.setEnd(InetAddressUtils.toIpAddrString(priorEnd));
-    
-                            rangesIterator.remove();
-                            continue;
-                        }
+
+                    if (priorRange != null && InetAddressUtils.inSameScope(beginAddress, priorEnd) && InetAddressUtils.difference(beginAddress, priorEnd).compareTo(BigInteger.ONE) <= 0) {
+                        priorBegin = new InetAddressComparator().compare(priorBegin, beginAddress) < 0 ? priorBegin : beginAddress;
+                        priorRange.setBegin(InetAddressUtils.toIpAddrString(priorBegin));
+                        priorEnd = new InetAddressComparator().compare(priorEnd, endAddress) > 0 ? priorEnd : endAddress;
+                        priorRange.setEnd(InetAddressUtils.toIpAddrString(priorEnd));
+
+                        rangesIterator.remove();
+                        continue;
                     }
-    
+
                     priorRange = range;
                     priorBegin = beginAddress;
                     priorEnd = endAddress;
@@ -388,7 +386,7 @@ public class AmiPeerFactory {
                 for (String saddr : def.getSpecifics()) {
                     saddr = saddr.trim();
                     final InetAddress addr = InetAddressUtils.addr(saddr);
-                    if (addr.equals(agentConfig.getAddress())) {
+                    if (addr.equals(agentConfig.getAddress().orElse(null))) {
                         setAmiAgentConfig(agentConfig, def);
                         break DEFLOOP;
                     }

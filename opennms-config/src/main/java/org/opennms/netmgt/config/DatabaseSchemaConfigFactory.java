@@ -79,8 +79,6 @@ public final class DatabaseSchemaConfigFactory implements DatabaseSchemaConfig {
      * The set of tables that can be joined directly or indirectly to the
      * primary table
      */
-    // FIXME: m_joinable is never read
-    //private Set m_joinable = null;
 
     /**
      * A map from a table to the join to use to get 'closer' to the primary
@@ -201,10 +199,9 @@ public final class DatabaseSchemaConfigFactory implements DatabaseSchemaConfig {
         getReadLock().lock();
         try {
             for (final Table t : getDatabaseSchema().getTables()) {
-                if (t.getVisible() == null || t.getVisible().equalsIgnoreCase("true")) {
-                    if (t.getKey() != null && t.getKey().equals("primary")) {
+                if (t.getVisible() == null || t.getVisible().equalsIgnoreCase("true")
+                        && (t.getKey() != null && t.getKey().equals("primary"))) {
                         return t;
-                    }
                 }
             }
             return null;
@@ -219,7 +216,10 @@ public final class DatabaseSchemaConfigFactory implements DatabaseSchemaConfig {
     private void finishConstruction() {
         Set<String> joinableSet = new HashSet<>();
         final Map<String, Join> primaryJoins = new ConcurrentHashMap<String, Join>();
-        joinableSet.add(getPrimaryTable().getName());
+        Table table = getPrimaryTable();
+        if (table != null) {
+            joinableSet.add(table.getName());
+        }
         // loop until we stop adding entries to the set
         int joinableCount = 0;
         while (joinableCount < joinableSet.size()) {
@@ -251,10 +251,9 @@ public final class DatabaseSchemaConfigFactory implements DatabaseSchemaConfig {
         getReadLock().lock();
         try {
             for (final Table t : getDatabaseSchema().getTables()) {
-                if (t.getVisible() == null || t.getVisible().equalsIgnoreCase("true")) {
-                    if (t.getName() != null && t.getName().equals(name)) {
+                if (t.getVisible() == null || t.getVisible().equalsIgnoreCase("true")
+                    && (t.getName() != null && t.getName().equals(name))) {
                         return t;
-                    }
                 }
             }
             return null;
@@ -276,11 +275,10 @@ public final class DatabaseSchemaConfigFactory implements DatabaseSchemaConfig {
         try {
             OUTER: for (final Table t : getDatabaseSchema().getTables()) {
                 for (final Column col : t.getColumns()) {
-                    if (col.getVisible() == null || col.getVisible().equalsIgnoreCase("true")) {
-                        if (col.getName().equalsIgnoreCase(colName)) {
+                    if (col.getVisible() == null || col.getVisible().equalsIgnoreCase("true")
+                        && (col.getName().equalsIgnoreCase(colName))) {
                             table = t;
                             break OUTER;
-                        }
                     }
                 }
             }
