@@ -190,6 +190,21 @@ public class Nms10205bNetworkBuilder extends NmsNetworkBuilder {
     }
 
 static {
+    BAGMANE_IF_IFNAME_MAP_B.put(21," lo0.1638");
+    BAGMANE_IF_IFDESCR_MAP_B.put(21," lo0.1638");
+    BANGALORE_IF_IFNAME_MAP_B.put(21," lo0.1638");
+    BANGALORE_IF_IFDESCR_MAP_B.put(21," lo0.1638");
+    DELHI_IF_IFNAME_MAP_B.put(21," lo0.1638");
+    DELHI_IF_IFDESCR_MAP_B.put(21," lo0.1638");
+    J6350_42_IF_IFNAME_MAP_B.put(21," lo0.1638");
+    J6350_42_IF_IFDESCR_MAP_B.put(21," lo0.1638");
+    MUMBAI_IF_IFNAME_MAP_B.put(21," lo0.1638");
+    MUMBAI_IF_IFDESCR_MAP_B.put(21," lo0.1638");
+    MYSORE_IF_IFNAME_MAP_B.put(21," lo0.1638");
+    MYSORE_IF_IFDESCR_MAP_B.put(21," lo0.1638");
+    SRX_100_IF_IFNAME_MAP_B.put(21," lo0.1638");
+    SRX_100_IF_IFDESCR_MAP_B.put(21," lo0.1638");
+
     BAGMANE_IP_IF_MAP_B.put(InetAddressUtils.addr("192.168.1.10"), 1732);
     BAGMANE_IP_IF_MAP_B.put(InetAddressUtils.addr("192.168.1.42"), 656);
     BAGMANE_IP_IF_MAP_B.put(InetAddressUtils.addr("192.168.20.1"), 16);

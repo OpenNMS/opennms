@@ -36,7 +36,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsNode;
 
 public class Nms4005NetworkBuilder extends NmsNetworkBuilder {
-    //nms4005
+    //nms4005 cisco router OSPF network 4 routers
     public static final String R1_IP = "10.1.1.2";
     public static final String R1_NAME = "R1";
     public static final String R1_SYSOID = ".1.3.6.1.4.1.9.1.122";

@@ -36,7 +36,8 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsNode;
 
 public class Nms102NetworkBuilder extends NmsNetworkBuilder {
-    //nms102
+    //nms102 my net at home some time ago two macs a router and a printer
+    // to be considered to support wifi links
     public static final String MIKROTIK_IP = "192.168.0.1";
     public static final String MIKROTIK_NAME = "mikrotik";
     public static final String MIKROTIK_SYSOID = ".1.3.6.1.4.1.14988.1";

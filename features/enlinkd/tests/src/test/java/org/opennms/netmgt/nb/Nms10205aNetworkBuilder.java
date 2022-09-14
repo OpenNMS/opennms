@@ -210,6 +210,25 @@ public class Nms10205aNetworkBuilder extends NmsNetworkBuilder {
     public static  final Map<Integer,String> SSG550_IF_IFALIAS_MAP = new HashMap<>();
     public static  final Map<InetAddress,InetAddress> SSG550_IP_MK_MAP = new HashMap<>();
     static {
+        BAGMANE_IF_IFNAME_MAP.put(21," lo0.1638");
+        BAGMANE_IF_IFDESCR_MAP.put(21," lo0.1638");
+        BANGALORE_IF_IFNAME_MAP.put(21," lo0.1638");
+        BANGALORE_IF_IFDESCR_MAP.put(21," lo0.1638");
+        CHENNAI_IF_IFNAME_MAP.put(21," lo0.1638");
+        CHENNAI_IF_IFDESCR_MAP.put(21," lo0.1638");
+        DELHI_IF_IFNAME_MAP.put(21," lo0.1638");
+        DELHI_IF_IFDESCR_MAP.put(21," lo0.1638");
+        J6350_41_IF_IFNAME_MAP.put(21," lo0.1638");
+        J6350_41_IF_IFDESCR_MAP.put(21," lo0.1638");
+        J6350_42_IF_IFNAME_MAP.put(21," lo0.1638");
+        J6350_42_IF_IFDESCR_MAP.put(21," lo0.1638");
+        MUMBAI_IF_IFNAME_MAP.put(21," lo0.1638");
+        MUMBAI_IF_IFDESCR_MAP.put(21," lo0.1638");
+        MYSORE_IF_IFNAME_MAP.put(21," lo0.1638");
+        MYSORE_IF_IFDESCR_MAP.put(21," lo0.1638");
+        SRX_100_IF_IFNAME_MAP.put(21," lo0.1638");
+        SRX_100_IF_IFDESCR_MAP.put(21," lo0.1638");
+
         MUMBAI_IP_IF_MAP.put(InetAddressUtils.addr("10.0.0.1"), 18);
         MUMBAI_IP_IF_MAP.put(InetAddressUtils.addr("10.0.0.4"), 18);
         MUMBAI_IP_IF_MAP.put(InetAddressUtils.addr("10.205.56.5"), 508);

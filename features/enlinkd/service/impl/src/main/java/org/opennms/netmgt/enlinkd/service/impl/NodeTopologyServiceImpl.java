@@ -84,7 +84,7 @@ public class NodeTopologyServiceImpl extends TopologyServiceImpl implements Node
         ips.stream().filter(ip -> ip.isManaged() && ip.getNetMask() != null ).forEach(ip -> {
             boolean found = false;
             for (SubNetwork s: subnets) {
-                if (s.isInRange(ip.getIpAddress())) {
+                if (s.isInRange(ip.getIpAddress()) && s.getNetmask().equals(ip.getNetMask())) {
                     found=true;
                     s.add(ip.getNodeId(),ip.getIpAddress());
                     break;

@@ -40,7 +40,7 @@ import org.opennms.netmgt.model.OnmsNode;
  */
 
 public class Nms007NetworkBuilder extends NmsNetworkBuilder {
-    //Nms007
+    //Nms007 - OSPF Juniper Network
     public static final String FireFly170_IP = "192.168.168.170";
     public static final String FireFly170_NAME = "FireFly_170";
     public static  final String FireFly170_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.96";

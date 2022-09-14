@@ -93,7 +93,7 @@ import org.opennms.netmgt.model.OnmsNode;
  */
 
 public class Nms7467NetworkBuilder extends NmsNetworkBuilder {
-    //nms7467
+    //nms7467 opennms prior office --cdp and bridge topology
 
     public static final String WORKSTATION_NAME         = "workstation";
     public static final String WORKSTATION_IP           = "192.0.2.101";

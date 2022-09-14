@@ -42,7 +42,7 @@ import org.opennms.netmgt.model.OnmsNode;
 public class Nms6802NetworkBuilder extends NmsNetworkBuilder {
 
 
-    //NMS6802
+    //NMS6802 cisco ISIS enabled device
     public static final String CISCOISIS_IP = "10.100.68.2";
     public static final String CISCOISIS_NAME = "cisco-ios-xr";
     public static final String CISCOISIS_SNMP_RESOURCE = "classpath:/linkd/nms6802/"+CISCOISIS_NAME+"-walk.txt";

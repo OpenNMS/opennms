@@ -34,7 +34,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
 
 public class Nms7918NetworkBuilder extends NmsNetworkBuilder {
-    //NMS7918
+    //NMS7918 only bridge discovery
     public static final String PE01_IP   = "10.25.19.1";
     public static final String PE01_NAME = "pe01";
     public static final String PE01_SYSOID = ".1.3.6.1.4.1.9.1.534";
@@ -69,7 +69,7 @@ public class Nms7918NetworkBuilder extends NmsNetworkBuilder {
         NetworkBuilder nb = getNetworkBuilder();
 
         nb.addNode(PE01_NAME).setForeignSource("linkd").setForeignId(PE01_NAME).setSysObjectId(PE01_SYSOID).setType(NodeType.ACTIVE);
-        nb.addInterface(PE01_IP).setIsSnmpPrimary("P").setIsManaged("M");
+        nb.addInterface(PE01_IP).setIsSnmpPrimary("P").setIsManaged("M").setNetMask("255.255.255.0");
         return nb.getCurrentNode();
     }
 

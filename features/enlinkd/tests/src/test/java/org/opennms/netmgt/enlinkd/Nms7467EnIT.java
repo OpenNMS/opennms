@@ -92,8 +92,5 @@ public class Nms7467EnIT extends EnLinkdBuilderITCase {
             assertNotNull(link);
             printCdpLink(link);
         }
-        
     }
-
-
 }

@@ -43,7 +43,7 @@ import org.opennms.netmgt.model.OnmsNode;
 
 public class Nms1055NetworkBuilder extends NmsNetworkBuilder {
 
-    //Nms1055
+    //Nms1055 LLDP and OSPF Juniper network
     public static final String PENROSE_IP = "10.155.69.16";
     public static final String PENROSE_NAME = "penrose-mx480";
     public static final String PENROSE_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.25";
@@ -128,6 +128,10 @@ public class Nms1055NetworkBuilder extends NmsNetworkBuilder {
 
     static {
 
+        PENROSE_IF_IFNAME_MAP.put(16,"lo0.0");
+        PENROSE_IF_IFNAME_MAP.put(21,"lo0.16384");
+        PENROSE_IF_IFDESCR_MAP.put(16,"lo0.0");
+        PENROSE_IF_IFDESCR_MAP.put(21,"lo0.16384");
         PENROSE_IP_IF_MAP.put(InetAddressUtils.addr("10.0.0.4"), 18);
         PENROSE_IP_IF_MAP.put(InetAddressUtils.addr("10.1.0.1"), 535);
         PENROSE_IP_IF_MAP.put(InetAddressUtils.addr("10.155.69.16"), 13);
@@ -321,6 +325,10 @@ public class Nms1055NetworkBuilder extends NmsNetworkBuilder {
         PENROSE_IF_IFDESCR_MAP.put(670, "ge-1/2/1.0");
         PENROSE_IF_MAC_MAP.put(670, "80711f8fa9ef");
 
+        DELAWARE_IF_IFNAME_MAP.put(16,"lo0.0");
+        DELAWARE_IF_IFNAME_MAP.put(21,"lo0.16384");
+        DELAWARE_IF_IFDESCR_MAP.put(16,"lo0.0");
+        DELAWARE_IF_IFDESCR_MAP.put(21,"lo0.16384");
         DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("1.1.1.100"), 610);
         DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("1.1.1.101"), 611);
         DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("1.1.1.103"), 612);
@@ -829,6 +837,10 @@ public class Nms1055NetworkBuilder extends NmsNetworkBuilder {
         DELAWARE_IF_IFALIAS_MAP.put(613, "test unit4");
         //DELAWARE_IP_MK_MAP.put(613, InetAddressUtils.addr("255.255.255.255"));
 
+        PHOENIX_IF_IFNAME_MAP.put(16,"lo0.0");
+        PHOENIX_IF_IFNAME_MAP.put(21,"lo0.16384");
+        PHOENIX_IF_IFDESCR_MAP.put(16,"lo0.0");
+        PHOENIX_IF_IFDESCR_MAP.put(21,"lo0.16384");
         PHOENIX_IP_IF_MAP.put(InetAddressUtils.addr("2.2.2.2"), 563);
         PHOENIX_IP_IF_MAP.put(InetAddressUtils.addr("3.3.3.3"), 561);
         PHOENIX_IP_IF_MAP.put(InetAddressUtils.addr("10.0.0.4"), 18);
@@ -1117,7 +1129,10 @@ public class Nms1055NetworkBuilder extends NmsNetworkBuilder {
         PHOENIX_IF_IFNAME_MAP.put(6, "lo0");
         PHOENIX_IF_IFDESCR_MAP.put(6, "lo0");
 
-
+        AUSTIN_IF_IFNAME_MAP.put(16,"lo0.0");
+        AUSTIN_IF_IFNAME_MAP.put(21,"lo0.16384");
+        AUSTIN_IF_IFDESCR_MAP.put(16,"lo0.0");
+        AUSTIN_IF_IFDESCR_MAP.put(21,"lo0.16384");
         AUSTIN_IP_IF_MAP.put(InetAddressUtils.addr("10.0.0.4"), 18);
         AUSTIN_IP_IF_MAP.put(InetAddressUtils.addr("10.155.69.43"), 13);
         AUSTIN_IP_IF_MAP.put(InetAddressUtils.addr("20.1.0.2"), 554);
@@ -1388,6 +1403,10 @@ public class Nms1055NetworkBuilder extends NmsNetworkBuilder {
         AUSTIN_IF_IFDESCR_MAP.put(503, "pip0");
         AUSTIN_IF_MAC_MAP.put(503, "80711fc413b0");
 
+        SANJOSE_IF_IFNAME_MAP.put(16,"lo0.0");
+        SANJOSE_IF_IFNAME_MAP.put(21,"lo0.16384");
+        SANJOSE_IF_IFDESCR_MAP.put(16,"lo0.0");
+        SANJOSE_IF_IFDESCR_MAP.put(21,"lo0.16384");
         SANJOSE_IP_IF_MAP.put(InetAddressUtils.addr("10.0.0.1"), 18);
         SANJOSE_IP_IF_MAP.put(InetAddressUtils.addr("10.0.0.4"), 18);
         SANJOSE_IP_IF_MAP.put(InetAddressUtils.addr("10.155.69.12"), 13);

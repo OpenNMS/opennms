@@ -41,7 +41,7 @@ import org.opennms.netmgt.model.OnmsNode;
 
 public class Nms7563NetworkBuilder extends NmsNetworkBuilder {
 
-    //NMS7563
+    //NMS7563 LLDP Only walk devices
     public static final String HOMESERVER_IP = "192.168.88.1";
     public static final String HOMESERVER_NAME = "homeserver";
     public static final String HOMESERVER_SNMP_RESOURCE = "classpath:/linkd/nms7563/"+HOMESERVER_NAME+"-walk.txt";

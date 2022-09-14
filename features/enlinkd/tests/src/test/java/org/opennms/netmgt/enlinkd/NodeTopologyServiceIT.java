@@ -32,6 +32,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -86,13 +87,11 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
 
         final Set<SubNetwork> subnets = nodeTopologyService.findAllSubNetwork();
         subnets.forEach(System.err::println);
-        assertThat(subnets, hasSize(21));
+        assertThat(subnets, hasSize(36));
 
         final Set<SubNetwork> legalsubnets = nodeTopologyService.findAllLegalSubNetwork();
         legalsubnets.forEach(System.err::println);
-        assertThat(legalsubnets, hasSize(1));
-        SubNetwork legalsubnet = legalsubnets.iterator().next();
-        assertThat(legalsubnet.getNodeIds(),hasSize(3));
+        assertThat(legalsubnets, hasSize(4));
     }
 
     @Test
@@ -118,14 +117,18 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
         assertThat(ips, hasSize(148));
         ips.forEach(System.err::println);
 
-        final Set<SubNetwork> subnets = nodeTopologyService.findAllLegalSubNetwork();
+        final Set<SubNetwork> subnets = nodeTopologyService.findAllSubNetwork();
         subnets.forEach(System.err::println);
+        System.err.println(subnets.size());
+
+        final Set<SubNetwork> legalsubnets = nodeTopologyService.findAllLegalSubNetwork();
+        legalsubnets.forEach(System.err::println);
         int n = 0;
-        assertThat(subnets, hasSize(4));
-        for (SubNetwork subnet: subnets) {
+        assertThat(legalsubnets, hasSize(3));
+        for (SubNetwork subnet: legalsubnets) {
             n = n + subnet.getNodeIds().size();
         }
-        assertEquals(11,n);
+        assertEquals(9,n);
     }
 
     @Test
@@ -176,8 +179,9 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
         final Set<SubNetwork> legalsubnets = nodeTopologyService.findAllLegalSubNetwork();
         legalsubnets.forEach(System.err::println);
         assertThat(legalsubnets, hasSize(6));
-        //FIXME find a way to be only one group
-
+        final Set<Integer> nodeids = new HashSet<>();
+        legalsubnets.forEach(lsn -> nodeids.addAll(lsn.getNodeIds()));
+        assertThat(nodeids, hasSize(9));
     }
 
     @Test
@@ -208,8 +212,6 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
         legalsubnets.forEach(System.err::println);
         assertThat(legalsubnets, hasSize(6));
 
-        //Check duplication 10.1.5.1 this should be one group
-
     }
 
     @Test
@@ -235,6 +237,8 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
         final Set<SubNetwork> legalsubnets = nodeTopologyService.findAllLegalSubNetwork();
         legalsubnets.forEach(System.err::println);
         assertThat(legalsubnets, hasSize(1));
+
+        assertThat(legalsubnets.iterator().next().getNodeIds(),hasSize(4));
 
     }
 
@@ -264,6 +268,7 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
         assertEquals(8,subnets.iterator().next().getNodeIds().size());
     }
 
+    @Test
     public void nms1055SubnetworksTest() {
         final Nms1055NetworkBuilder builder =new Nms1055NetworkBuilder();
         m_nodeDao.save(builder.getAustin());
@@ -278,19 +283,22 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
         assertThat(nodes, hasSize(6));
 
         final List<IpInterfaceTopologyEntity> ips = nodeTopologyService.findAllIp();
+        System.err.println("---");
         ips.forEach(System.err::println);
-//        assertThat(ips, hasSize(7));
+        assertThat(ips, hasSize(80));
 
         final Set<SubNetwork> subnets = nodeTopologyService.findAllSubNetwork();
         subnets.forEach(System.err::println);
- //       assertThat(subnets, hasSize(4));
+       assertThat(subnets, hasSize(43));
 
         final Set<SubNetwork> legalsubnets = nodeTopologyService.findAllLegalSubNetwork();
+        System.err.println("---");
         legalsubnets.forEach(System.err::println);
-   //     assertThat(legalsubnets, hasSize(1));
+        assertThat(legalsubnets, hasSize(7));
 
     }
 
+    @Test
     public void nms4005SubnetworksTest() {
         final Nms4005NetworkBuilder builder = new Nms4005NetworkBuilder();
         m_nodeDao.save(builder.getR1());
@@ -304,15 +312,16 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
 
         final List<IpInterfaceTopologyEntity> ips = nodeTopologyService.findAllIp();
         ips.forEach(System.err::println);
-//        assertThat(ips, hasSize(7));
+        assertThat(ips, hasSize(9));
 
         final Set<SubNetwork> subnets = nodeTopologyService.findAllSubNetwork();
         subnets.forEach(System.err::println);
-        //       assertThat(subnets, hasSize(4));
+        assertThat(subnets, hasSize(5));
 
+        System.err.println("---");
         final Set<SubNetwork> legalsubnets = nodeTopologyService.findAllLegalSubNetwork();
         legalsubnets.forEach(System.err::println);
-        //     assertThat(legalsubnets, hasSize(1));
+        assertThat(legalsubnets, hasSize(4));
 
     }
 
@@ -336,6 +345,7 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
         subnets.forEach(System.err::println);
         assertThat(subnets, hasSize(4));
 
+        System.err.println("---");
         final Set<SubNetwork> legalsubnets = nodeTopologyService.findAllLegalSubNetwork();
         legalsubnets.forEach(System.err::println);
         assertThat(legalsubnets, hasSize(1));
@@ -360,6 +370,7 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
 
     }
 
+    @Test
     public void nms7467SubnetworksTest() {
         final Nms7467NetworkBuilder builder = new Nms7467NetworkBuilder();
         m_nodeDao.save(builder.getCiscoC870());
@@ -374,16 +385,17 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
 
         final List<IpInterfaceTopologyEntity> ips = nodeTopologyService.findAllIp();
         ips.forEach(System.err::println);
-//        assertThat(ips, hasSize(7));
+        assertThat(ips, hasSize(26));
 
         final Set<SubNetwork> subnets = nodeTopologyService.findAllSubNetwork();
         subnets.forEach(System.err::println);
-        //       assertThat(subnets, hasSize(4));
+        assertThat(subnets, hasSize(6));
 
+        System.err.println("---");
         final Set<SubNetwork> legalsubnets = nodeTopologyService.findAllLegalSubNetwork();
         legalsubnets.forEach(System.err::println);
-        //     assertThat(legalsubnets, hasSize(1));
-
+        assertThat(legalsubnets, hasSize(1));
+        assertThat(legalsubnets.iterator().next().getNodeIds(),hasSize(5));
     }
 
     @Test
@@ -393,6 +405,10 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
         m_nodeDao.save(builder.getHomeServer());
         m_nodeDao.save(builder.getSwitch02());
 
+        final List<NodeTopologyEntity> nodes = nodeTopologyService.findAllNode();
+        nodes.forEach(System.err::println);
+        assertThat(nodes, hasSize(3));
+
         final List<IpInterfaceTopologyEntity> ips = nodeTopologyService.findAllIp();
         ips.forEach(System.err::println);
         assertThat(ips, hasSize(5));
@@ -400,6 +416,7 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
         final Set<SubNetwork> subnets = nodeTopologyService.findAllSubNetwork();
         subnets.forEach(System.err::println);
         assertThat(subnets, hasSize(3));
+        System.err.println("---");
 
         final Set<SubNetwork> legalsubnets = nodeTopologyService.findAllLegalSubNetwork();
         legalsubnets.forEach(System.err::println);
@@ -411,6 +428,10 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
     public void nms7777DWSubnetworksTest() {
         final Nms7777DWNetworkBuilder builder = new Nms7777DWNetworkBuilder();
         m_nodeDao.save(builder.getDragonWaveRouter());
+
+        final List<NodeTopologyEntity> nodes = nodeTopologyService.findAllNode();
+        nodes.forEach(System.err::println);
+        assertThat(nodes, hasSize(1));
 
         final List<IpInterfaceTopologyEntity> ips = nodeTopologyService.findAllIp();
         ips.forEach(System.err::println);
@@ -443,15 +464,15 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
 
         final List<IpInterfaceTopologyEntity> ips = nodeTopologyService.findAllIp();
         ips.forEach(System.err::println);
-//        assertThat(ips, hasSize(7));
+        assertThat(ips, hasSize(6));
 
         final Set<SubNetwork> subnets = nodeTopologyService.findAllSubNetwork();
         subnets.forEach(System.err::println);
-        //       assertThat(subnets, hasSize(4));
+        assertThat(subnets, hasSize(1));
 
         final Set<SubNetwork> legalsubnets = nodeTopologyService.findAllLegalSubNetwork();
-        legalsubnets.forEach(System.err::println);
-        //     assertThat(legalsubnets, hasSize(1));
+        assertThat(legalsubnets, hasSize(1));
+        assertThat(legalsubnets.iterator().next().getNodeIds(), hasSize(6));
 
     }
 
@@ -471,15 +492,16 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
 
         final List<IpInterfaceTopologyEntity> ips = nodeTopologyService.findAllIp();
         ips.forEach(System.err::println);
-//        assertThat(ips, hasSize(7));
+        assertThat(ips, hasSize(12));
 
         final Set<SubNetwork> subnets = nodeTopologyService.findAllSubNetwork();
         subnets.forEach(System.err::println);
-        //       assertThat(subnets, hasSize(4));
+        assertThat(subnets, hasSize(6));
 
+        System.err.println("---");
         final Set<SubNetwork> legalsubnets = nodeTopologyService.findAllLegalSubNetwork();
         legalsubnets.forEach(System.err::println);
-        //     assertThat(legalsubnets, hasSize(1));
+        assertThat(legalsubnets, hasSize(4));
 
     }
 
@@ -506,15 +528,16 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
 
         final List<IpInterfaceTopologyEntity> ips = nodeTopologyService.findAllIp();
         ips.forEach(System.err::println);
-//        assertThat(ips, hasSize(7));
+        assertThat(ips, hasSize(108));
 
         final Set<SubNetwork> subnets = nodeTopologyService.findAllSubNetwork();
         subnets.forEach(System.err::println);
-        //       assertThat(subnets, hasSize(4));
+        assertThat(subnets, hasSize(42));
+        System.err.println("---");
 
         final Set<SubNetwork> legalsubnets = nodeTopologyService.findAllLegalSubNetwork();
         legalsubnets.forEach(System.err::println);
-        //     assertThat(legalsubnets, hasSize(1));
+        assertThat(legalsubnets, hasSize(16));
 
 
     }
@@ -539,16 +562,16 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
 
         final List<IpInterfaceTopologyEntity> ips = nodeTopologyService.findAllIp();
         ips.forEach(System.err::println);
-//        assertThat(ips, hasSize(7));
+        assertThat(ips, hasSize(92));
 
         final Set<SubNetwork> subnets = nodeTopologyService.findAllSubNetwork();
         subnets.forEach(System.err::println);
-        //       assertThat(subnets, hasSize(4));
+        System.err.println("---");
+        assertThat(subnets, hasSize(39));
 
         final Set<SubNetwork> legalsubnets = nodeTopologyService.findAllLegalSubNetwork();
         legalsubnets.forEach(System.err::println);
-        //     assertThat(legalsubnets, hasSize(1));
-
+        assertThat(legalsubnets, hasSize(14));
 
     }
 
@@ -556,7 +579,7 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
     public void nms13593SubnetworksTest() {
         final Nms13593NetworkBuilder builder = new Nms13593NetworkBuilder();
 
-        m_nodeDao.save(builder.getZHBGO1Zsr002());
+        m_nodeDao.save(builder.getZHBGO1Zsr001());
         m_nodeDao.save(builder.getZHBGO1Zsr002());
 
         final List<NodeTopologyEntity> nodes = nodeTopologyService.findAllNode();
@@ -569,11 +592,10 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
 
         final Set<SubNetwork> subnets = nodeTopologyService.findAllSubNetwork();
         subnets.forEach(System.err::println);
-        //       assertThat(subnets, hasSize(4));
+        assertThat(subnets, hasSize(1));
 
         final Set<SubNetwork> legalsubnets = nodeTopologyService.findAllLegalSubNetwork();
-        legalsubnets.forEach(System.err::println);
-        //     assertThat(legalsubnets, hasSize(1));
+        assertThat(legalsubnets, hasSize(1));
 
 
     }
@@ -602,8 +624,6 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
         final Set<SubNetwork> legalsubnets = nodeTopologyService.findAllLegalSubNetwork();
         legalsubnets.forEach(System.err::println);
         assertThat(legalsubnets, hasSize(1));
-
-
     }
 
     @Test
@@ -625,10 +645,7 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
         assertThat(subnets, hasSize(1));
 
         final Set<SubNetwork> legalsubnets = nodeTopologyService.findAllLegalSubNetwork();
-        legalsubnets.forEach(System.err::println);
         assertThat(legalsubnets, hasSize(0));
-
-
     }
 
     @Test
@@ -636,15 +653,29 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
         final Nms17216NetworkBuilder builder = new Nms17216NetworkBuilder();
         m_nodeDao.save(builder.getSwitch1());
         m_nodeDao.save(builder.getSwitch2());
+        m_nodeDao.save(builder.getSwitch3());
+        m_nodeDao.save(builder.getSwitch4());
+        m_nodeDao.save(builder.getSwitch5());
+        m_nodeDao.save(builder.getRouter1());
+        m_nodeDao.save(builder.getRouter2());
+        m_nodeDao.save(builder.getRouter3());
+        m_nodeDao.save(builder.getRouter4());
 
         final List<NodeTopologyEntity> nodes = nodeTopologyService.findAllNode();
         nodes.forEach(System.err::println);
-        assertThat(nodes, hasSize(2));
+        assertThat(nodes, hasSize(9));
 
         final List<IpInterfaceTopologyEntity> ips = nodeTopologyService.findAllIp();
         ips.forEach(System.err::println);
+        assertThat(ips, hasSize(18));
 
-        assertThat(ips, hasSize(6));
+        final Set<SubNetwork> subnets = nodeTopologyService.findAllSubNetwork();
+        subnets.forEach(System.err::println);
+        assertThat(subnets, hasSize(9));
+
+        final Set<SubNetwork> legalsubnets = nodeTopologyService.findAllLegalSubNetwork();
+        assertThat(legalsubnets, hasSize(6));
+
     }
 
 
