@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,9 +32,11 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import com.sun.jna.Structure;
 
+@SuppressWarnings({ "java:S101", "java:S1104" })
 public class bsd_sockaddr_in extends Structure {
 
     public byte    sin_len;
@@ -51,9 +53,9 @@ public class bsd_sockaddr_in extends Structure {
     public bsd_sockaddr_in(int family, byte[] addr, byte[] port) {
         sin_family = (byte)(0xff & family);
         assertLen("port", port, 2);
-        sin_port = port == null? null : port.clone();
+        sin_port = port.clone();
         assertLen("address", addr, 4);
-        sin_addr = addr == null? null : addr.clone();
+        sin_addr = addr.clone();
         sin_len = (byte)(0xff & size());
     }
     
@@ -75,7 +77,7 @@ public class bsd_sockaddr_in extends Structure {
 
     @Override
     protected List<String> getFieldOrder() {
-        return Arrays.asList(new String[] {"sin_len", "sin_family", "sin_port", "sin_addr", "sin_zero"});
+        return Arrays.asList("sin_len", "sin_family", "sin_port", "sin_addr", "sin_zero");
     }
 
     private void assertLen(String field, byte[] addr, int len) {
@@ -112,4 +114,36 @@ public class bsd_sockaddr_in extends Structure {
         assertLen("port", p, 2);
         sin_port = p;
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + Arrays.hashCode(sin_addr);
+        result = prime * result + Arrays.hashCode(sin_port);
+        result = prime * result + Arrays.hashCode(sin_zero);
+        result = prime * result + Objects.hash(sin_family, sin_len);
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!super.equals(obj)) {
+            return false;
+        }
+        if (!(obj instanceof bsd_sockaddr_in)) {
+            return false;
+        }
+        bsd_sockaddr_in other = (bsd_sockaddr_in) obj;
+        return Arrays.equals(sin_addr, other.sin_addr) &&
+                sin_family == other.sin_family &&
+                sin_len == other.sin_len &&
+                Arrays.equals(sin_port, other.sin_port) &&
+                Arrays.equals(sin_zero, other.sin_zero);
+    }
+
+
 }

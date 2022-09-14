@@ -43,6 +43,7 @@ import com.sun.jna.ptr.IntByReference;
  *
  * @author brozow
  */
+@SuppressWarnings({ "java:S117" })
 public class SunV6NativeSocket extends NativeDatagramSocket {
 
     static {
@@ -62,6 +63,7 @@ public class SunV6NativeSocket extends NativeDatagramSocket {
 
     public native int socket(int domain, int type, int protocol) throws LastErrorException;
 
+    @Override
     public native int setsockopt(int socket, int level, int option_name, Pointer value, int option_len);
 
     public native int sendto(int socket, Buffer buffer, int buflen, int flags, sun_sockaddr_in6 dest_addr, int dest_addr_len) throws LastErrorException;

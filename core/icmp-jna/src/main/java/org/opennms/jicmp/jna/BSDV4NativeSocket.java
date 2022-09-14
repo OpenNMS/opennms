@@ -42,6 +42,7 @@ import com.sun.jna.ptr.IntByReference;
  *
  * @author brozow
  */
+@SuppressWarnings("java:S117")
 public class BSDV4NativeSocket extends NativeDatagramSocket {
 
 	static {
@@ -53,13 +54,16 @@ public class BSDV4NativeSocket extends NativeDatagramSocket {
 
 	public BSDV4NativeSocket(final int family, final int type, final int protocol, final int listenPort) throws Exception {
 		m_sock = socket(family, type, protocol);
-                final bsd_sockaddr_in in_addr = new bsd_sockaddr_in(listenPort);
-                bind(m_sock, in_addr, in_addr.size());
+        final bsd_sockaddr_in in_addr = new bsd_sockaddr_in(listenPort);
+        bind(m_sock, in_addr, in_addr.size());
 	}
 
 	public native int bind(int socket, bsd_sockaddr_in address, int address_len) throws LastErrorException;
 	public native int socket(int domain, int type, int protocol) throws LastErrorException;
+
+	@Override
 	public native int setsockopt(int socket, int level, int option_name, Pointer value, int option_len);
+
 	public native int sendto(int socket, Buffer buffer, int buflen, int flags, bsd_sockaddr_in dest_addr, int dest_addr_len) throws LastErrorException;
 	public native int recvfrom(int socket, Buffer buffer, int buflen, int flags, bsd_sockaddr_in in_addr, int[] in_addr_len) throws LastErrorException;
 	public native int close(int socket) throws LastErrorException;

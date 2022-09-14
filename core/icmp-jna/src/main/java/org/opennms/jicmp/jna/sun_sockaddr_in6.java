@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,9 +32,11 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import com.sun.jna.Structure;
 
+@SuppressWarnings({ "java:S101", "java:S1104" })
 public class sun_sockaddr_in6 extends Structure {
     
     public short      sin6_family;
@@ -72,7 +74,7 @@ public class sun_sockaddr_in6 extends Structure {
 
     @Override
     protected List<String> getFieldOrder() {
-        return Arrays.asList(new String[] {"sin6_family", "sin6_port", "sin6_flowinfo", "sin6_addr", "sin6_scope_id", "__sin6_src_id"});
+        return Arrays.asList("sin6_family", "sin6_port", "sin6_flowinfo", "sin6_addr", "sin6_scope_id", "__sin6_src_id");
     }
 
     private void assertLen(String field, byte[] addr, int len) {
@@ -109,4 +111,38 @@ public class sun_sockaddr_in6 extends Structure {
         assertLen("port", p, 2);
         sin6_port = p;
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + Arrays.hashCode(__sin6_src_id);
+        result = prime * result + Arrays.hashCode(sin6_addr);
+        result = prime * result + Arrays.hashCode(sin6_flowinfo);
+        result = prime * result + Arrays.hashCode(sin6_port);
+        result = prime * result + Arrays.hashCode(sin6_scope_id);
+        result = prime * result + Objects.hash(sin6_family);
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!super.equals(obj)) {
+            return false;
+        }
+        if (!(obj instanceof sun_sockaddr_in6)) {
+            return false;
+        }
+        sun_sockaddr_in6 other = (sun_sockaddr_in6) obj;
+        return Arrays.equals(__sin6_src_id, other.__sin6_src_id) &&
+                Arrays.equals(sin6_addr, other.sin6_addr) &&
+                sin6_family == other.sin6_family &&
+                Arrays.equals(sin6_flowinfo, other.sin6_flowinfo) &&
+                Arrays.equals(sin6_port, other.sin6_port) &&
+                Arrays.equals(sin6_scope_id, other.sin6_scope_id);
+    }
+
 }

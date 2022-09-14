@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -58,8 +58,8 @@ public class PingReplyMetric extends Metric implements PingReplyListener {
         }
     }
 
-    public void await() throws InterruptedException {
-        m_latch.await(m_interval*m_count + 1000, TimeUnit.MILLISECONDS);
+    public boolean await() throws InterruptedException {
+        return m_latch.await(m_interval*m_count + 1000, TimeUnit.MILLISECONDS);
     }
 
 }

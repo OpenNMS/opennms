@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -42,32 +42,26 @@ import com.sun.jna.Platform;
  *
  * @author brozow
  */
+@SuppressWarnings({ "java:S106", "java:S117", "java:S2189" })
 public class Dumper {
     
     public void dump() throws Exception {
-        NativeDatagramSocket m_pingSocket =  NativeDatagramSocket.create(NativeDatagramSocket.PF_INET6, NativeDatagramSocket.IPPROTO_ICMPV6, 1234);
-        
-        if (Platform.isWindows()) {
-            ICMPv6EchoPacket packet = new ICMPv6EchoPacket(64);
-            packet.setCode(0);
-            packet.setType(Type.EchoRequest);
-            packet.getContentBuffer().putLong(System.nanoTime());
-            packet.getContentBuffer().putLong(System.nanoTime());
-            m_pingSocket.send(packet.toDatagramPacket(InetAddress.getByName("::1")));
-        }
+        try (final NativeDatagramSocket m_pingSocket =  NativeDatagramSocket.create(NativeDatagramSocket.PF_INET6, NativeDatagramSocket.IPPROTO_ICMPV6, 1234)) {
+            if (Platform.isWindows()) {
+                ICMPv6EchoPacket packet = new ICMPv6EchoPacket(64);
+                packet.setCode(0);
+                packet.setType(Type.EchoRequest);
+                packet.getContentBuffer().putLong(System.nanoTime());
+                packet.getContentBuffer().putLong(System.nanoTime());
+                m_pingSocket.send(packet.toDatagramPacket(InetAddress.getByName("::1")));
+            }
 
-        try {
             NativeDatagramPacket datagram = new NativeDatagramPacket(65535);
             while (true) {
                 m_pingSocket.receive(datagram);
                 System.err.println(datagram);
             }
-    
-    
-        } catch(Throwable e) {
-            e.printStackTrace();
         }
- 
     }
     
     public static void main(String[] args) throws Exception {

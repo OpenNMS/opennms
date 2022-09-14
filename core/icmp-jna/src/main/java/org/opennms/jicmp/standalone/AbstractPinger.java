@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -49,7 +49,7 @@ public abstract class AbstractPinger<T extends InetAddress> implements Runnable 
 
     private NativeDatagramSocket m_pingSocket;
     private Thread m_thread;
-    protected final AtomicReference<Throwable> m_throwable = new AtomicReference<Throwable>(null);
+    protected final AtomicReference<Throwable> m_throwable = new AtomicReference<>(null);
     protected final Metric m_metric = new Metric();
     private volatile boolean m_stopped = false;
     private final List<PingReplyListener> m_listeners = new ArrayList<>();
@@ -79,11 +79,10 @@ public abstract class AbstractPinger<T extends InetAddress> implements Runnable 
         m_thread.start();
     }
 
-    public void stop() throws InterruptedException {
+    public void stop() {
         m_stopped = true;
         if (m_thread != null) {
             m_thread.interrupt();
-            //m_thread.join();
         }
         m_thread = null;
     }
@@ -98,7 +97,7 @@ public abstract class AbstractPinger<T extends InetAddress> implements Runnable 
         return m_listeners;
     }
 
-    abstract public PingReplyMetric ping(T addr, int id, int sequenceNumber, int count, long interval) throws InterruptedException;
+    public abstract PingReplyMetric ping(T addr, int id, int sequenceNumber, int count, long interval) throws InterruptedException;
 
     public void addPingReplyListener(PingReplyListener listener) {
         m_listeners.add(listener);

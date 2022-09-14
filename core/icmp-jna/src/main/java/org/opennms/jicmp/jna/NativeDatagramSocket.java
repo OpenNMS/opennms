@@ -46,17 +46,13 @@ import com.sun.jna.ptr.IntByReference;
  *
  * @author brozow
  */
+@SuppressWarnings("java:S117")
 public abstract class NativeDatagramSocket implements AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(NativeDatagramSocket.class);
 
     public static final int AF_INET = 2;
     public static final int PF_INET = AF_INET;
-    public static final int AF_INET6 = Platform.isMac() ? 30 
-                                     : Platform.isLinux() ? 10 
-                                     : Platform.isWindows() ? 23 
-                                     : Platform.isFreeBSD() ? 28 
-                                     : Platform.isSolaris() ? 26 
-                                     : -1;
+    public static final int AF_INET6 = getPlatformInet6();
     public static final int PF_INET6 = AF_INET6;
 
     public static final int SOCK_DGRAM = Platform.isSolaris() ? 1 
@@ -73,10 +69,7 @@ public abstract class NativeDatagramSocket implements AutoCloseable {
     public static final int IP_MTU_DISCOVER = 10;
     public static final int IPV6_DONTFRAG = 62;
 
-    // platform-specific  :/
-    // public static final int IPV6_TCLASS = 36;
-
-    public NativeDatagramSocket() {
+    protected NativeDatagramSocket() {
         if (AF_INET6 == -1) {
             throw new UnsupportedPlatformException(System.getProperty("os.name"));
         }
@@ -101,10 +94,16 @@ public abstract class NativeDatagramSocket implements AutoCloseable {
     }
     
     private static String getClassPrefix() {
-        return Platform.isWindows() ? "Win32" 
-              : Platform.isSolaris() ? "Sun" 
-              : (Platform.isMac() || Platform.isFreeBSD() || Platform.isOpenBSD()) ? "BSD" 
-              : "Unix";
+        if (Platform.isWindows()) return "Win32";
+        if (Platform.isSolaris()) return "Sun";
+        if (
+            Platform.isMac() ||
+            Platform.isFreeBSD() ||
+            Platform.iskFreeBSD() ||
+            Platform.isNetBSD() ||
+            Platform.isOpenBSD()
+        ) return "BSD";
+        return "Unix";
     }
 
     private static String getFamilyPrefix(int family) {
@@ -133,7 +132,7 @@ public abstract class NativeDatagramSocket implements AutoCloseable {
         if (socket < 0) {
             throw new IOException("Invalid socket!");
         }
-        final IntByReference dontfragment = new IntByReference(frag == true? 0 : 1);
+        final IntByReference dontfragment = new IntByReference(frag? 0 : 1);
         try {
             setsockopt(socket, level, option_name, dontfragment.getPointer(), Native.POINTER_SIZE);
         } catch (final LastErrorException e) {
@@ -147,4 +146,13 @@ public abstract class NativeDatagramSocket implements AutoCloseable {
     public abstract int receive(NativeDatagramPacket p) throws UnknownHostException;
     public abstract int send(NativeDatagramPacket p);
     public abstract void close();
+
+    private static int getPlatformInet6() {
+        if (Platform.isMac()) return 30;
+        if (Platform.isLinux()) return 10;
+        if (Platform.isWindows()) return 23;
+        if (Platform.isFreeBSD()) return 28;
+        if (Platform.isSolaris()) return 26;
+        return -1;
+    }
 }
