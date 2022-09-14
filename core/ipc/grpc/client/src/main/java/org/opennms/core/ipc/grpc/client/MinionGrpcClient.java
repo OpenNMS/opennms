@@ -63,8 +63,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
-import javax.net.ssl.SSLException;
-
 import org.opennms.core.ipc.grpc.common.ConfigUtils;
 import org.opennms.core.ipc.grpc.common.OpenNMSIpcGrpc;
 import org.opennms.core.ipc.grpc.common.RpcRequestProto;
@@ -187,7 +185,7 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
 
     }
 
-    private SslContextBuilder buildSslContext() throws SSLException {
+    private SslContextBuilder buildSslContext() {
         SslContextBuilder builder = GrpcSslContexts.forClient();
         String clientCertChainFilePath = properties.getProperty(CLIENT_CERTIFICATE_FILE_PATH);
         String clientPrivateKeyFilePath = properties.getProperty(CLIENT_PRIVATE_KEY_FILE_PATH);
@@ -224,7 +222,7 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
 
 
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public void bind(RpcModule module) throws Exception {
+    public void bind(RpcModule module) {
         if (module != null) {
             final RpcModule<RpcRequest, RpcResponse> rpcModule = (RpcModule<RpcRequest, RpcResponse>) module;
             if (registerdModules.containsKey(rpcModule.getId())) {
@@ -237,7 +235,7 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public void unbind(RpcModule module) throws Exception {
+    public void unbind(RpcModule module) {
         if (module != null) {
             final RpcModule<RpcRequest, RpcResponse> rpcModule = (RpcModule<RpcRequest, RpcResponse>) module;
             registerdModules.remove(rpcModule.getId());
