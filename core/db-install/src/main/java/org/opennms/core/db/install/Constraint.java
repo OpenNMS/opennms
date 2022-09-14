@@ -552,12 +552,8 @@ public class Constraint {
                 return false;
             }
         }
-        
-        if(m_checkExpression != null && other.getCheckExpression()!=null && !m_checkExpression.equals(other.getCheckExpression())) {
-        	return false;
-        }
 
-        return true;
+        return m_checkExpression == null || other.getCheckExpression() == null || m_checkExpression.equals(other.getCheckExpression());
     }
 
     /**
