@@ -83,15 +83,25 @@
 </jsp:include>
 
 <style>
-    .displayContainer {
-        display: flex;
-        justify-content: center;
+    .loader {
+        border: 16px solid #f3f3f3; /* Light grey */
+        border-top: 16px solid #3498db; /* Blue */
+        border-radius: 50%;
+        width: 120px;
+        height: 120px;
+        animation: spin 2s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
     }
 </style>
 
 <h3>Node: <%=node_db.getLabel()%></h3>
 
-<div class="displayContainer" id="display"></div>
+<div class="loader" id="spinner"></div>
+<div id="display"></div>
 
 <script type="text/javascript">
     'use strict';var Guacamole=Guacamole||{};Guacamole.ArrayBufferReader=function(b){var a=this;b.onblob=function(b){b=window.atob(b);for(var c=new ArrayBuffer(b.length),e=new Uint8Array(c),d=0;d<b.length;d++)e[d]=b.charCodeAt(d);if(a.ondata)a.ondata(c)};b.onend=function(){if(a.onend)a.onend()};this.onend=this.ondata=null};Guacamole=Guacamole||{};
@@ -251,6 +261,7 @@
     Guacamole=Guacamole||{};Guacamole.VideoPlayer=function(){this.sync=function(){}};Guacamole.VideoPlayer.isSupportedType=function(b){return!1};Guacamole.VideoPlayer.getSupportedTypes=function(){return[]};Guacamole.VideoPlayer.getInstance=function(b,a,d){return null};
 </script>
 <script type="text/javascript">
+    const spinner = document.getElementById("spinner");
     const display = document.getElementById("display");
 
     const headers = {
@@ -293,14 +304,27 @@
 <%
             break;
         }
+        default: {
+%>
+            alert("Protocol <%=protocolString%> not supported");
+<%
+        }
     }
 %>
+    const STATE_CONNECTED = 3;
 
-    // Here is a more complete example of the tunnel usage.
-    // https://github.com/apache/incubator-datalab/blob/4b1ec16844fefbf857071738ee94d6923fe4e447/services/self-service/src/main/resources/webapp/src/app/webterminal/webterminal.component.ts#L63
-    // https://github.com/padarom/guacamole-common-js/blob/main/guacamole-common-js/src/main/webapp/modules/Tunnel.js#L251
     const tunnel = new Guacamole.HTTPTunnel("guacamole-tunnel", false, headers);
     const guac = new Guacamole.Client(tunnel);
+
+    guac.onstatechange = function (state) {
+        switch (state) {
+            case STATE_CONNECTED: {
+                spinner.style.display = "none";
+                display.style.display = "block";
+                break;
+            }
+        }
+    }
 
     guac.onerror = function (error) {
         guac.disconnect();
