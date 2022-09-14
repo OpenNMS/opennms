@@ -365,7 +365,7 @@ public class Constraint {
         switch (m_type) {
         case PRIMARY_KEY:
             b.append(" primary key (");
-            if (m_columns.size() == 0) {
+            if (m_columns.isEmpty()) {
             	throw new IllegalStateException("Primary key has zero constrained columns... not allowed!");
             }
             b.append(StringUtils.collectionToDelimitedString(m_columns, ", "));
@@ -373,7 +373,7 @@ public class Constraint {
 
         case FOREIGN_KEY:
             b.append(" foreign key (");
-            if (m_columns.size() == 0) {
+            if (m_columns.isEmpty()) {
             	throw new IllegalStateException("Foreign key has zero constrained columns... not allowed!");
             }
             b.append(StringUtils.collectionToDelimitedString(m_columns, ", "));
