@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -68,7 +68,7 @@ public class Trigger {
      * <p>findTriggerInString</p>
      *
      * @param create a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.dao.db.Trigger} object.
+     * @return a {@link org.opennms.core.db.install.Trigger} object.
      */
     public static Trigger findTriggerInString(String create) {
         Matcher m = m_pattern.matcher(create);

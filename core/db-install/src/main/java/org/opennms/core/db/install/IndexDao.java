@@ -58,7 +58,7 @@ public class IndexDao {
     /**
      * <p>add</p>
      *
-     * @param i a {@link org.opennms.netmgt.dao.db.Index} object.
+     * @param i a {@link org.opennms.core.db.install.Index} object.
      */
     public void add(Index i) {
         String lowerName = i.getName().toLowerCase();

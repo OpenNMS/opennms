@@ -56,7 +56,7 @@ public class TriggerDao {
     /**
      * <p>add</p>
      *
-     * @param t a {@link org.opennms.netmgt.dao.db.Trigger} object.
+     * @param t a {@link org.opennms.core.db.install.Trigger} object.
      */
     public void add(Trigger t) {
         String lowerName = t.getName().toLowerCase();
