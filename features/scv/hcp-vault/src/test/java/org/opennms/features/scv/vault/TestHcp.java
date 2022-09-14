@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.scv.hcp;
+package org.opennms.features.scv.vault;
 
 import com.bettercloud.vault.Vault;
 import com.bettercloud.vault.VaultConfig;
@@ -40,12 +40,16 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.opennms.features.distributed.kvstore.api.JsonStore;
 import org.opennms.features.scv.api.Credentials;
+import org.opennms.features.scv.vault.config.HcpVaultService;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 public class TestHcp {
@@ -132,8 +136,12 @@ public class TestHcp {
     @Test
     @Ignore("needs vault running locally")
     public void testHcpVault() throws VaultException {
-
-        HcpVaultImpl hcpVault = new HcpVaultImpl("http://127.0.0.1:8200", "hvs.15krL4IWvfsHzqO4uA895h3J");
+        var jsonStore = Mockito.mock(JsonStore.class);
+        Mockito.when(jsonStore.get(Mockito.anyString(), Mockito.anyString())).thenReturn(Optional.empty());
+        Mockito.when(jsonStore.put(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenReturn(0L);
+        HcpVaultService hcpVaultService = new HcpVaultService(jsonStore);
+        hcpVaultService.initializeVault(config);
+        HcpCredentialsVault hcpVault = new HcpCredentialsVault(hcpVaultService);
         var authResponse = hcpVault.getVault().auth().lookupSelf();
         Map<String, String> attributes = new HashMap<>();
         attributes.put("version", "release-30");

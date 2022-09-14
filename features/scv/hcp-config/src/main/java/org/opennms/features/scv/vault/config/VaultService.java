@@ -26,43 +26,16 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.scv.hcp.config.service;
+package org.opennms.features.scv.vault.config;
 
+
+import com.bettercloud.vault.Vault;
 import com.bettercloud.vault.VaultConfig;
 
-import java.util.Objects;
+public interface VaultService {
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+    Vault getVault();
 
-public class VaultConfigService {
+    void initializeVault(VaultConfig vaultConfig);
 
-    private static final Logger LOG = LoggerFactory.getLogger(VaultConfigService.class.getName());
-
-    private String token;
-    private String vaultAddress;
-
-    /**
-     * If not configured properly, returns null
-     */
-    public VaultConfig getVaultConfig() {
-        try {
-            return new VaultConfig()
-                    .token(Objects.requireNonNull(token))
-                    .address(Objects.requireNonNull(vaultAddress))
-                    .build();
-        }
-        catch (Exception e) {
-            LOG.error("Unable to create VaultConfig", e);
-            return null;
-        }
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public void setVaultAddress(String vaultAddress) {
-        this.vaultAddress = vaultAddress;
-    }
 }

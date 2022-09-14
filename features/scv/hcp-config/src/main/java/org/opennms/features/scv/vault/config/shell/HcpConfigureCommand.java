@@ -26,34 +26,43 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.scv.hcp.config.shell;
+package org.opennms.features.scv.vault.config.shell;
 
+import com.bettercloud.vault.VaultConfig;
+import com.bettercloud.vault.VaultException;
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Argument;
 import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.Option;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
-
-import org.opennms.features.scv.hcp.config.service.VaultConfigService;
+import org.opennms.features.scv.vault.config.VaultService;
 
 @Command(scope = "opennms", name = "hcp-configure", description = "Set the token and address to use for authentication with vault")
 @Service
 public class HcpConfigureCommand implements Action {
 
     @Reference
-    private VaultConfigService vaultConfigService;
+    private VaultService vaultService;
 
     @Option(name = "-a", aliases = "--address", description = "Vault address", required = false, multiValued = false)
     String address = "http://127.0.0.1:8200";
 
-    @Argument(index = 0, name = "token", description = "Vault token", required = true, multiValued = false)
+    @Argument(index = 0, name = "token", description = "Vault token", required = true, censor = true, multiValued = false)
     String token;
 
     @Override
     public Object execute() {
-        vaultConfigService.setToken(token);
-        vaultConfigService.setVaultAddress(address);
+        try {
+            VaultConfig vaultConfig = new VaultConfig()
+                    .token(token)
+                    .address(address)
+                    .build();
+            vaultService.initializeVault(vaultConfig);
+            System.out.println("Valut initialized");
+        } catch (VaultException e) {
+            System.out.printf("vault not initialized for the address %s with the given token", address);
+        }
         return null;
     }
 

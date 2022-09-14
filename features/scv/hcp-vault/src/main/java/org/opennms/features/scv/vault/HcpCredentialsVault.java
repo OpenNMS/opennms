@@ -26,10 +26,9 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.scv.hcp;
+package org.opennms.features.scv.vault;
 
 import com.bettercloud.vault.Vault;
-import com.bettercloud.vault.VaultConfig;
 import com.bettercloud.vault.VaultException;
 import com.bettercloud.vault.response.LogicalResponse;
 import com.google.common.annotations.VisibleForTesting;
@@ -37,36 +36,43 @@ import com.google.common.collect.Sets;
 import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.features.scv.api.Credentials;
 import org.opennms.features.scv.api.SecureCredentialsVault;
+import org.opennms.features.scv.vault.config.VaultService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class HcpVaultImpl implements SecureCredentialsVault {
+public class HcpCredentialsVault implements SecureCredentialsVault {
 
+
+    private static final Logger LOG = LoggerFactory.getLogger(HcpCredentialsVault.class);
     private static final String PREFIX = SystemInfoUtils.getInstanceId() + "-scv/";
     private static final String ROOT_PATH = "secret/";
     private static final String USERNAME = "username";
     private static final String PASSWORD = "password";
-    private final Vault vault;
-    private final VaultConfig config;
+    private final VaultService vaultConfigService;
 
-    public HcpVaultImpl(String url, String token) throws VaultException {
-        config = new VaultConfig()
-                .address(url)
-                .token(token)
-                .build();
-        vault = new Vault(config);
+
+    public HcpCredentialsVault(VaultService vaultConfigService) {
+        this.vaultConfigService = vaultConfigService;
     }
+
 
     @Override
     public Set<String> getAliases() {
         try {
-            var aliases = vault.logical().list(ROOT_PATH + PREFIX).getListData();
-            return Sets.newHashSet(aliases);
-        } catch (VaultException e) {
+            if (getVault() != null) {
+                var aliases = getVault().logical().list(ROOT_PATH + PREFIX).getListData();
+                return Sets.newHashSet(aliases);
+            } else {
+                throw new IllegalStateException("Vault Service not initialized");
+            }
 
+        } catch (VaultException e) {
+            LOG.error("Exception while listing aliases", e);
         }
         return new HashSet<>();
     }
@@ -75,14 +81,18 @@ public class HcpVaultImpl implements SecureCredentialsVault {
     public Credentials getCredentials(String alias) {
 
         try {
-            LogicalResponse response = vault.logical().read(ROOT_PATH + PREFIX + alias);
-            Map<String, String> data = response.getData();
-            String username = data.remove(USERNAME);
-            String password = data.remove(PASSWORD);
-            return new Credentials(username, password, data);
+            if (getVault() != null) {
+                LogicalResponse response = getVault().logical().read(ROOT_PATH + PREFIX + alias);
+                Map<String, String> data = response.getData();
+                String username = data.remove(USERNAME);
+                String password = data.remove(PASSWORD);
+                return new Credentials(username, password, data);
+            } else {
+                throw new IllegalStateException("Vault Service not initialized");
+            }
 
         } catch (VaultException e) {
-
+            LOG.error("Exception while getting credentials for alias {}", alias, e);
         }
         return null;
     }
@@ -95,14 +105,18 @@ public class HcpVaultImpl implements SecureCredentialsVault {
         kvMap.put(PASSWORD, credentials.getPassword());
         kvMap.putAll(credentials.getAttributes());
         try {
-            vault.logical().write(ROOT_PATH + PREFIX + alias, kvMap);
+            if (getVault() != null) {
+                getVault().logical().write(ROOT_PATH + PREFIX + alias, kvMap);
+            } else {
+                throw new IllegalStateException("Vault Service not initialized");
+            }
         } catch (VaultException e) {
-
+            LOG.error("Exception while setting credentials for alias {}", alias, e);
         }
     }
 
     @VisibleForTesting
     Vault getVault() {
-        return vault;
+        return vaultConfigService.getVault();
     }
 }
