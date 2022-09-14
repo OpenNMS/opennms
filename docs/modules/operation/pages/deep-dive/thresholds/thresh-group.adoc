@@ -14,7 +14,7 @@ A threshold group associates a set of thresholds to a service (for example, thre
 * netsnmp-memory-nonlinux
 * opennms-jvm-jvx
 
-You can edit an existing group (through the UI) or create a new one (in the `thresholds.xml` file located in `$OPENNMS_HOME/etc/thresholds.xml`).
+You can edit an existing group (through the web UI) or create a new one (in `$\{OPENNMS_HOME}/etc/thresholds.xml`).
 Once you create the group, you can then define it in the `thresholds.xml` file or in the UI.
 
 This procedure creates a threshold group called "demo_group":

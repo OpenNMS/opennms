@@ -2,7 +2,7 @@
 [[setup-threshold]]
 = Step 5: Set up a Threshold
 
-A threshold defines limits against network performance metrics (CPU load, bandwidth, disk space, and so on) of a managed entity to trigger an xref:deep-dive/events/introduction.adoc[event] (record) when a data source value goes above or below the specified limit:
+A threshold defines limits against the network performance metrics (CPU load, bandwidth, disk space, and so on) of a managed entity to trigger an xref:deep-dive/events/introduction.adoc[event] (record) when a data source value goes above or below the specified limit:
 
 * High - equals or exceeds the threshold value, and re-arms when it equals or drops below the re-arm value (for example, bandwidth use exceeds the specified amount).
 * Low - equals or drops below the threshold value and re-arms when it equals or comes back up above the re-arm value (for example, available disk space falls under the specified value).
@@ -111,7 +111,7 @@ To view the expression-based threshold for CPU use, follow these steps:
 . Click the *Gear* symbol in the top-right of the screen.
 . Under *Performance Measurement*, choose *Configure Thresholds*.
 . Click *Edit* beside the `netsnmp` group.
-. In the *Expression-based Thresholds* area, view the first threshold (with the description "Trigger an alert when five...").
+. In the *Expression-based Thresholds* area, view the first threshold (with the description "Trigger an alert when five ...").
 +
 The following table describes the fields:
 +
