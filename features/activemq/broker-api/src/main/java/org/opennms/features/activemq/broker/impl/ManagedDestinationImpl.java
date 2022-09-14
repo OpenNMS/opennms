@@ -34,6 +34,7 @@ import org.apache.activemq.broker.region.Destination;
 import org.apache.activemq.broker.region.DestinationFilter;
 import org.apache.activemq.broker.region.Queue;
 import org.apache.activemq.command.ActiveMQDestination;
+import org.opennms.features.activemq.broker.api.BrokerException;
 import org.opennms.features.activemq.broker.api.ManagedDestination;
 
 public class ManagedDestinationImpl implements ManagedDestination {
@@ -93,12 +94,16 @@ public class ManagedDestinationImpl implements ManagedDestination {
     }
 
     @Override
-    public void purge() throws Exception {
+    public void purge() throws BrokerException {
         final Queue queue = toQueue(dest);
         if (queue == null) {
             throw new UnsupportedOperationException("purge() can only be performed on queues.");
         }
-        queue.purge();
+        try {
+            queue.purge();
+        } catch (Exception e) {
+            throw new BrokerException(e);
+        }
     }
 
     private Queue toQueue(Destination dest) {

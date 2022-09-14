@@ -34,6 +34,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.apache.activemq.broker.BrokerService;
+import org.opennms.features.activemq.broker.api.BrokerException;
 import org.opennms.features.activemq.broker.api.ManagedBroker;
 import org.opennms.features.activemq.broker.api.ManagedDestination;
 
@@ -49,7 +50,7 @@ public class ManagedBrokerImpl implements ManagedBroker {
         try {
             return brokerService.getCurrentConnections();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new BrokerException(e);
         }
     }
 
@@ -58,7 +59,7 @@ public class ManagedBrokerImpl implements ManagedBroker {
         try {
             return brokerService.getProducerSystemUsage().getMemoryUsage().getPercentUsage();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new BrokerException(e);
         }
     }
 
@@ -67,7 +68,7 @@ public class ManagedBrokerImpl implements ManagedBroker {
         try {
             return brokerService.getProducerSystemUsage().getMemoryUsage().getUsage();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new BrokerException(e);
         }
     }
 
@@ -76,7 +77,7 @@ public class ManagedBrokerImpl implements ManagedBroker {
         try {
             return brokerService.getProducerSystemUsage().getMemoryUsage().getLimit();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new BrokerException(e);
         }
     }
 
@@ -87,7 +88,7 @@ public class ManagedBrokerImpl implements ManagedBroker {
                     .map(e -> new ManagedDestinationImpl(e.getKey(), e.getValue()))
                     .collect(Collectors.toList());
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new BrokerException(e);
         }
     }
 

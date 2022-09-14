@@ -39,6 +39,7 @@ import org.opennms.core.logging.Logging;
  *
  * @author jwhite
  */
+@SuppressWarnings("java:S2176")
 public class PooledConnectionFactory extends org.apache.activemq.pool.PooledConnectionFactory {
 
     @Override
