@@ -484,20 +484,20 @@ public class Constraint {
 
     /** {@inheritDoc} */
     @Override
-    public boolean equals(Object other_o) {
-        return equals(other_o, false);
+    public boolean equals(Object anotherObject) {
+        return equals(anotherObject, false);
     }
 
     /**
      * <p>equals</p>
      *
-     * @param other_o a {@link java.lang.Object} object.
+     * @param anotherObject a {@link java.lang.Object} object.
      * @param ignoreFdelType a boolean.
      * @return a boolean.
      */
-    public boolean equals(final Object other_o, boolean ignoreFdelType) {
-    	if (!(other_o instanceof Constraint)) return false;
-    	final Constraint other = (Constraint) other_o;
+    public boolean equals(final Object anotherObject, boolean ignoreFdelType) {
+    	if (!(anotherObject instanceof Constraint)) return false;
+    	final Constraint other = (Constraint) anotherObject;
 
         if ((m_name == null && other.getName() != null) || (m_name != null && other.getName() == null)) {
             return false;
