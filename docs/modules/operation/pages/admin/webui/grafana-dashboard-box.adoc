@@ -8,8 +8,7 @@ The Grafana Dashboard Box on the start page shows dashboards related to {page-co
 To filter relevant dashboards, you can use a tag for dashboards and make them accessible.
 If no tag is provided all dashboards from Grafana will be shown.
 
-The feature is by default deactivated and is configured by defining a `.properties` file in the `$\{OPENNMS_HOME}/etc/opennms.properties.d/` directory.
-Please note that this feature works with Grafana v2.5.0+.
+The feature is configured by creating or editing the `$\{OPENNMS_HOME}/etc/opennms.properties.d/grafana.properties` file.
 
 .Quick access to Grafana dashboards from the {page-component-title} start page
 image::webui/startpage/01_grafana-box.png[]
