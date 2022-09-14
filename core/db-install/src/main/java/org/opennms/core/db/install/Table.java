@@ -117,7 +117,7 @@ public class Table {
 	/** {@inheritDoc} */
         @Override
 	public boolean equals(final Object o) {
-		if (o == null || !(o instanceof Table)) {
+		if (!(o instanceof Table)) {
 			return false;
 			
 		}
