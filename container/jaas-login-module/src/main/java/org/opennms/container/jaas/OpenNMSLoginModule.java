@@ -64,16 +64,6 @@ public class OpenNMSLoginModule extends AbstractKarafLoginModule implements Open
         return succeeded;
     }
 
-    @Override
-    public boolean abort() throws LoginException {
-        return super.abort();
-    }
-
-    @Override
-    public boolean logout() throws LoginException {
-        return super.logout();
-    }
-
     public CallbackHandler callbackHandler() {
         return this.callbackHandler;
     }
