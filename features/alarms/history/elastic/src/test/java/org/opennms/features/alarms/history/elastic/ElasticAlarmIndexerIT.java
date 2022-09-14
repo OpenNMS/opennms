@@ -51,11 +51,11 @@ import org.opennms.core.test.elastic.ElasticSearchRule;
 import org.opennms.core.test.elastic.ElasticSearchServerConfig;
 import org.opennms.core.time.PseudoClock;
 import org.opennms.features.alarms.history.api.AlarmHistoryRepository;
-import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.features.jest.client.RestClientFactory;
 import org.opennms.features.jest.client.index.IndexStrategy;
 import org.opennms.features.jest.client.template.IndexSettings;
+import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsEvent;
 
 import com.codahale.metrics.MetricRegistry;
 import com.jayway.awaitility.Awaitility;
@@ -97,6 +97,7 @@ public class ElasticAlarmIndexerIT {
     }
 
     @Test
+    @SuppressWarnings("java:S2699")
     public void canHandleAlarmSnapshots() {
         // Use some value N that is greater than the the size used for the composite aggregations in the query
         // in order to verify that the pagination is working properly

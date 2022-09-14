@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -49,12 +49,12 @@ import io.searchbox.core.search.aggregation.Bucket;
  */
 public class CompositeAggregation extends Aggregation {
     private static final String AFTER_KEY = "after_key";
-    private JsonObject after_key;
+    private JsonObject afterKey;
     private List<Entry> buckets = new LinkedList<>();
 
     public CompositeAggregation(String name, JsonObject compositeAggregation) {
         super(name, compositeAggregation);
-        after_key = compositeAggregation.getAsJsonObject(AFTER_KEY);
+        afterKey = compositeAggregation.getAsJsonObject(AFTER_KEY);
         parseBuckets(compositeAggregation.get(String.valueOf(BUCKETS)).getAsJsonArray());
     }
 
@@ -66,11 +66,11 @@ public class CompositeAggregation extends Aggregation {
     }
 
     public boolean hasAfterKey() {
-        return after_key != null;
+        return afterKey != null;
     }
 
     public JsonObject getAfterKey() {
-        return after_key;
+        return afterKey;
     }
 
     public List<Entry> getBuckets() {
@@ -102,5 +102,15 @@ public class CompositeAggregation extends Aggregation {
         public int hashCode() {
             return Objects.hash(super.hashCode(), key);
         }
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 }

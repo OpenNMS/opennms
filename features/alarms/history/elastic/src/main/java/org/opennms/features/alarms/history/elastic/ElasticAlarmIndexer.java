@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -65,9 +65,6 @@ import org.opennms.features.alarms.history.elastic.tasks.BulkDeleteTask;
 import org.opennms.features.alarms.history.elastic.tasks.IndexAlarmsTask;
 import org.opennms.features.alarms.history.elastic.tasks.Task;
 import org.opennms.features.alarms.history.elastic.tasks.TaskVisitor;
-import org.opennms.netmgt.alarmd.api.AlarmCallbackStateTracker;
-import org.opennms.netmgt.alarmd.api.AlarmLifecycleListener;
-import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.features.jest.client.bulk.BulkException;
 import org.opennms.features.jest.client.bulk.BulkRequest;
 import org.opennms.features.jest.client.bulk.BulkWrapper;
@@ -76,6 +73,9 @@ import org.opennms.features.jest.client.index.IndexSelector;
 import org.opennms.features.jest.client.index.IndexStrategy;
 import org.opennms.features.jest.client.template.IndexSettings;
 import org.opennms.features.jest.client.template.TemplateInitializer;
+import org.opennms.netmgt.alarmd.api.AlarmCallbackStateTracker;
+import org.opennms.netmgt.alarmd.api.AlarmLifecycleListener;
+import org.opennms.netmgt.model.OnmsAlarm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -200,6 +200,7 @@ public class ElasticAlarmIndexer implements AlarmLifecycleListener, Runnable {
     }
 
     @Override
+    @SuppressWarnings("java:S3776")
     public void run() {
         final AtomicLong lastbulkDeleteWithNoChanges = new AtomicLong(-1);
         templateInitializer.initialize();
@@ -246,7 +247,8 @@ public class ElasticAlarmIndexer implements AlarmLifecycleListener, Runnable {
                             // Find all of the alarms at time X, excluding ids in Y - handle deletes for each of those
                             final List<AlarmDocumentDTO> alarms = new LinkedList<>();
                             Integer afterAlarmWithId = null;
-                            while (true) {
+                            boolean b = true;
+                            while (b) {
                                 final TimeRange timeRange = new TimeRange(includeUpdatesAfter, time);
                                 final String query = queryProvider.getActiveAlarmIdsAtTimeAndExclude(timeRange, alarmIdsToKeep, afterAlarmWithId);
 
@@ -270,7 +272,7 @@ public class ElasticAlarmIndexer implements AlarmLifecycleListener, Runnable {
                                 final CompositeAggregation alarmsById = result.getAggregations().getAggregation("alarms_by_id", CompositeAggregation.class);
                                 if (alarmsById == null) {
                                     // No results, we're done
-                                    break;
+                                    b = false;
                                 } else {
                                     for (CompositeAggregation.Entry entry : alarmsById.getBuckets()) {
                                         final TopHitsAggregation topHitsAggregation = entry.getTopHitsAggregation("latest_alarm");
@@ -283,7 +285,7 @@ public class ElasticAlarmIndexer implements AlarmLifecycleListener, Runnable {
                                         afterAlarmWithId = alarmsById.getAfterKey().get("alarm_id").getAsInt();
                                     } else {
                                         // There are no more results to page through
-                                        break;
+                                        b = false;
                                     }
                                 }
                             }
@@ -312,6 +314,7 @@ public class ElasticAlarmIndexer implements AlarmLifecycleListener, Runnable {
                 });
             } catch (InterruptedException e) {
                 LOG.info("Interrupted. Stopping.");
+                Thread.currentThread().interrupt();
                 return;
             } catch (Exception e) {
                 LOG.error("Handling of task failed.", e);
@@ -321,7 +324,7 @@ public class ElasticAlarmIndexer implements AlarmLifecycleListener, Runnable {
     }
 
     public void bulkInsert(List<AlarmDocumentDTO> alarmDocuments) throws PersistenceException, IOException {
-        final BulkRequest<AlarmDocumentDTO> bulkRequest = new BulkRequest<>(client, alarmDocuments, (documents) -> {
+        final BulkRequest<AlarmDocumentDTO> bulkRequest = new BulkRequest<>(client, alarmDocuments, documents -> {
             final Bulk.Builder bulkBuilder = new Bulk.Builder();
             for (AlarmDocumentDTO alarmDocument : alarmDocuments) {
                 final String index = indexStrategy.getIndex(indexSettings, INDEX_NAME, Instant.ofEpochMilli(alarmDocument.getUpdateTime()));
@@ -349,8 +352,7 @@ public class ElasticAlarmIndexer implements AlarmLifecycleListener, Runnable {
             }
             throw new PersistenceException(ex.getMessage(), failedItems);
         } catch (IOException ex) {
-            LOG.error("An error occurred while executing the given request: {}", ex.getMessage(), ex);
-            throw ex;
+            throw new ElasticException(ex.getMessage(), ex);
         }
     }
 
@@ -430,6 +432,7 @@ public class ElasticAlarmIndexer implements AlarmLifecycleListener, Runnable {
      * @param alarm    the alarm to compare
      * @return whether or not the interesting fields are logically equal
      */
+    @SuppressWarnings("java:S3358")
     private boolean interestingEquals(AlarmDocumentDTO document, OnmsAlarm alarm) {
         Objects.requireNonNull(document);
         Objects.requireNonNull(alarm);
@@ -464,13 +467,10 @@ public class ElasticAlarmIndexer implements AlarmLifecycleListener, Runnable {
         final AlarmDocumentDTO existingAlarmDocument = alarmDocumentsById.get(alarm.getId());
 
         boolean needsIndexing = false;
-        if (indexAllUpdates) {
-            needsIndexing = true;
-        } else if (existingAlarmDocument == null) {
-            needsIndexing = true;
-        } else if (getCurrentTimeMillis() - existingAlarmDocument.getUpdateTime() >= alarmReindexDurationMs) {
-            needsIndexing = true;
-        } else if (!interestingEquals(existingAlarmDocument, alarm)) {
+        if (indexAllUpdates
+                || existingAlarmDocument == null
+                || getCurrentTimeMillis() - existingAlarmDocument.getUpdateTime() >= alarmReindexDurationMs
+                || !interestingEquals(existingAlarmDocument, alarm)) {
             needsIndexing = true;
         }
 
