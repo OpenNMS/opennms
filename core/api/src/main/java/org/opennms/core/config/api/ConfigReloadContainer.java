@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -155,9 +155,7 @@ public class ConfigReloadContainer<V> implements ReloadingContainer<V>, Registra
         } else {
             reloadCheckIntervalInMs = builder.reloadCheckIntervalInMs;
         }
-        builder.providers.forEach(p -> {
-            providers.add(new ConfigurationProviderState<V>(p));
-        });
+        builder.providers.forEach(p -> providers.add(new ConfigurationProviderState<>(p)));
         folder = builder.folder;
         REGISTRY.addListener(ConfigurationProvider.class, this, true);
     }
@@ -237,7 +235,8 @@ public class ConfigReloadContainer<V> implements ReloadingContainer<V>, Registra
         }
     }
 
-    @Override
+    @SuppressWarnings({ "rawtypes", "java:S3740" })
+	@Override
     public void providerUnregistered(Registration registration, ConfigurationProvider provider) {
         boolean removed;
         // must be synchronized for two reasons (see above)
@@ -265,7 +264,8 @@ public class ConfigReloadContainer<V> implements ReloadingContainer<V>, Registra
         }
 
         private V load() {
-            final V object = (V)provider.getObject();
+            @SuppressWarnings("unchecked")
+			final V object = (V)provider.getObject();
             lastLoad = System.currentTimeMillis();
             return object;
         }
@@ -274,7 +274,8 @@ public class ConfigReloadContainer<V> implements ReloadingContainer<V>, Registra
             return lastLoad <= provider.getLastUpdate();
         }
 
-        @Override
+		@Override
+        @SuppressWarnings("rawtypes")
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -48,7 +48,7 @@ import java.util.regex.Pattern;
 
 import org.opennms.core.criteria.restrictions.Restriction;
 
-public class Criteria implements Cloneable {
+public class Criteria {
 
 	/**
 	 * This enum provides all of the locking modes that are available in the
@@ -67,31 +67,57 @@ public class Criteria implements Cloneable {
 	}
 
     public static interface CriteriaVisitor {
-        public void visitClassAndRootAlias(final Class<?> clazz, final String rootAlias);
+        default void visitClassAndRootAlias(final Class<?> clazz, final String rootAlias) {
+            // empty visitor methods allow for implementers to only write code for the bits that are relevant
+        }
 
-        public void visitOrder(final Order order);
+        default void visitOrder(final Order order) {
+            // empty visitor methods allow for implementers to only write code for the bits that are relevant
+        }
 
-        public void visitOrdersFinished();
+        default void visitOrdersFinished() {
+            // empty visitor methods allow for implementers to only write code for the bits that are relevant
+        }
 
-        public void visitAlias(final Alias alias);
+        default void visitAlias(final Alias alias) {
+            // empty visitor methods allow for implementers to only write code for the bits that are relevant
+        }
 
-        public void visitAliasesFinished();
+        default void visitAliasesFinished() {
+            // empty visitor methods allow for implementers to only write code for the bits that are relevant
+        }
 
-        public void visitFetch(final Fetch fetch);
+        default void visitFetch(final Fetch fetch) {
+            // empty visitor methods allow for implementers to only write code for the bits that are relevant
+        }
 
-        public void visitFetchesFinished();
+        default void visitFetchesFinished() {
+            // empty visitor methods allow for implementers to only write code for the bits that are relevant
+        }
 
-        public void visitLockType(final LockType lock);
+        default void visitLockType(final LockType lock) {
+            // empty visitor methods allow for implementers to only write code for the bits that are relevant
+        }
 
-        public void visitRestriction(final Restriction restriction);
+        default void visitRestriction(final Restriction restriction) {
+            // empty visitor methods allow for implementers to only write code for the bits that are relevant
+        }
 
-        public void visitRestrictionsFinished();
+        default void visitRestrictionsFinished() {
+            // empty visitor methods allow for implementers to only write code for the bits that are relevant
+        }
 
-        public void visitDistinct(final boolean distinct);
+        default void visitDistinct(final boolean distinct) {
+            // empty visitor methods allow for implementers to only write code for the bits that are relevant
+        }
 
-        public void visitLimit(final Integer limit);
+        default void visitLimit(final Integer limit) {
+            // empty visitor methods allow for implementers to only write code for the bits that are relevant
+        }
 
-        public void visitOffset(final Integer offset);
+        default void visitOffset(final Integer offset) {
+            // empty visitor methods allow for implementers to only write code for the bits that are relevant
+        }
     }
 
     public void visit(final CriteriaVisitor visitor) {
@@ -155,8 +181,20 @@ public class Criteria implements Cloneable {
         m_rootAlias = rootAlias;
     }
 
-    public void setClass(Class<?> m_class) {
-        this.m_class = m_class;
+    public Criteria(final Criteria c) {
+        m_class = c.m_class;
+        m_rootAlias = c.m_rootAlias;
+        this.setAliases(c.getAliases());
+        this.setDistinct(c.isDistinct());
+        this.setFetchTypes(c.getFetchTypes());
+        this.setLimit(c.getLimit());
+        this.setOffset(c.getOffset());
+        this.setOrders(c.getOrders());
+        this.setRestrictions(c.getRestrictions());
+    }
+
+    public void setClass(final Class<?> clazz) {
+        this.m_class = clazz;
     }
 
     public final Class<?> getCriteriaClass() {
@@ -270,7 +308,7 @@ public class Criteria implements Cloneable {
     private final Class<?> getType(final Class<?> clazz, final String path) throws IntrospectionException {
         final String[] split = SPLIT_ON.split(path);
         final List<String> pathSections = Arrays.asList(split);
-        return getType(clazz, pathSections, new ArrayList<Alias>(getAliases()));
+        return getType(clazz, pathSections, new ArrayList<>(getAliases()));
     }
 
     /**
@@ -312,9 +350,6 @@ public class Criteria implements Cloneable {
                 aliasIterator.remove();
 
                 final String associationPath = alias.getAssociationPath();
-                // LogUtils.debugf(this,
-                // "match: class = %s, pathSections = %s, alias = %s",
-                // clazz.getName(), pathSections, alias);
                 // we have a match, retry with the "real" path
                 final List<String> paths = new ArrayList<>();
                 paths.addAll(Arrays.asList(SPLIT_ON.split(associationPath)));
@@ -344,7 +379,7 @@ public class Criteria implements Cloneable {
         final Method m = pd.getReadMethod();
         if (m != null) {
             final Type returnType = m.getGenericReturnType();
-            if (returnType != null && returnType instanceof ParameterizedType) {
+            if (returnType instanceof ParameterizedType) {
                 final ParameterizedType pt = (ParameterizedType) returnType;
                 return pt.getActualTypeArguments();
             }
@@ -358,31 +393,18 @@ public class Criteria implements Cloneable {
         final List<String> entries = new ArrayList<>();
         sb.append("Criteria [");
         if (m_class != null) entries.add("class=" + m_class.toString());
-        if (m_orders != null && m_orders.size() > 0) entries.add("orders=" + m_orders.toString());
-        if (m_aliases != null && m_aliases.size() > 0) entries.add("aliases=" + m_aliases.toString());
-        if (m_fetchTypes != null && m_fetchTypes.size() > 0) entries.add("fetchTypes=" + m_fetchTypes.toString());
-        if (m_restrictions != null && m_restrictions.size() > 0) entries.add("restrictions=" + m_restrictions.toString());
-        entries.add("distinct=" + String.valueOf(m_distinct));
-        if (m_limit != null) entries.add("limit=" + String.valueOf(m_limit));
-        if (m_offset != null) entries.add("offset=" + String.valueOf(m_offset));
+        if (m_orders != null && !m_orders.isEmpty()) entries.add("orders=" + m_orders.toString());
+        if (m_aliases != null && !m_aliases.isEmpty()) entries.add("aliases=" + m_aliases.toString());
+        if (m_fetchTypes != null && !m_fetchTypes.isEmpty()) entries.add("fetchTypes=" + m_fetchTypes.toString());
+        if (m_restrictions != null && !m_restrictions.isEmpty()) entries.add("restrictions=" + m_restrictions.toString());
+        entries.add("distinct=" + m_distinct);
+        if (m_limit != null) entries.add("limit=" + m_limit);
+        if (m_offset != null) entries.add("offset=" + m_offset);
         for (final ListIterator<String> it = entries.listIterator(); it.hasNext(); ) {
             sb.append(it.next());
             if (it.hasNext()) sb.append(",");
         }
         sb.append("]");
         return sb.toString();
-    }
-
-    @Override
-    public final Criteria clone() {
-        Criteria retval = new Criteria(getCriteriaClass());
-        retval.setAliases(getAliases());
-        retval.setDistinct(isDistinct());
-        retval.setFetchTypes(getFetchTypes());
-        retval.setLimit(getLimit());
-        retval.setOffset(getOffset());
-        retval.setOrders(getOrders());
-        retval.setRestrictions(getRestrictions());
-        return retval;
     }
 }

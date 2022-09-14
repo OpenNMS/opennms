@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -35,10 +35,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 
-import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
@@ -90,7 +88,7 @@ public final class PollerConfigFactory extends PollerConfigManager {
      * @param currentVersion a long.
      * @param stream a {@link java.io.InputStream} object.
      */
-    public PollerConfigFactory(final long currentVersion, final InputStream stream) {
+    public PollerConfigFactory(final long currentVersion, final InputStream stream) throws IOException {
         super(stream);
         m_currentVersion = currentVersion;
     }
@@ -102,7 +100,7 @@ public final class PollerConfigFactory extends PollerConfigManager {
         return m_pollerConfigFile;
     }
 
-    public static void setPollerConfigFile(final File pollerConfigFile) throws IOException {
+    public static void setPollerConfigFile(final File pollerConfigFile) {
         m_pollerConfigFile = pollerConfigFile;
     }
 
@@ -125,13 +123,9 @@ public final class PollerConfigFactory extends PollerConfigManager {
 
         LOG.debug("init: config file path: {}", cfgFile.getPath());
 
-        InputStream stream = null;
         PollerConfigFactory config = null;
-        try {
-            stream = new FileInputStream(cfgFile);
+        try (final InputStream stream = new FileInputStream(cfgFile)) {
             config = new PollerConfigFactory(cfgFile.lastModified(), stream);
-        } finally {
-            IOUtils.closeQuietly(stream);
         }
 
         validate(config.getConfiguration());
@@ -144,12 +138,10 @@ public final class PollerConfigFactory extends PollerConfigManager {
             FilterDaoFactory.getInstance().validateRule(pollerPackage.getFilter().getContent());
             for (final org.opennms.netmgt.config.poller.Service service : pollerPackage.getServices()) {
                 for (final org.opennms.netmgt.config.poller.Parameter parm : service.getParameters()) {
-                    if (parm.getKey().equals("ds-name")) {
-                        if (parm.getValue().length() > ConfigFileConstants.RRD_DS_MAX_SIZE) {
-                            throw new IllegalStateException(String.format("ds-name '%s' in service '%s' (poller package '%s') is greater than %d characters",
-                                    parm.getValue(), service.getName(), pollerPackage.getName(), ConfigFileConstants.RRD_DS_MAX_SIZE)
-                            );
-                        }
+                    if (parm.getKey().equals("ds-name") && parm.getValue().length() > ConfigFileConstants.RRD_DS_MAX_SIZE) {
+                        throw new IllegalStateException(String.format("ds-name '%s' in service '%s' (poller package '%s') is greater than %d characters",
+                                parm.getValue(), service.getName(), pollerPackage.getName(), ConfigFileConstants.RRD_DS_MAX_SIZE)
+                        );
                     }
                 }
             }
@@ -197,15 +189,17 @@ public final class PollerConfigFactory extends PollerConfigManager {
     @Override
     protected void saveXml(final String xml) throws IOException {
         if (xml != null) {
+            final long timestamp = System.currentTimeMillis();
+            final File cfgFile = getPollerConfigFile();
+            LOG.debug("saveXml: saving config file at {}: {}", timestamp, cfgFile.getPath());
+
             getWriteLock().lock();
-            try {
-                final long timestamp = System.currentTimeMillis();
-                final File cfgFile = getPollerConfigFile();
-                LOG.debug("saveXml: saving config file at {}: {}", timestamp, cfgFile.getPath());
-                final Writer fileWriter = new OutputStreamWriter(new FileOutputStream(cfgFile), StandardCharsets.UTF_8);
+            try (
+                final FileOutputStream fos = new FileOutputStream(cfgFile);
+                final OutputStreamWriter fileWriter = new OutputStreamWriter(fos, StandardCharsets.UTF_8);
+            ) {
                 fileWriter.write(xml);
                 fileWriter.flush();
-                fileWriter.close();
                 LOG.debug("saveXml: finished saving config file: {}", cfgFile.getPath());
             } finally {
                 getWriteLock().unlock();
@@ -226,19 +220,14 @@ public final class PollerConfigFactory extends PollerConfigManager {
             if (cfgFile.lastModified() > m_currentVersion) {
                 m_currentVersion = cfgFile.lastModified();
                 LOG.debug("init: config file path: {}", cfgFile.getPath());
-                InputStream stream = null;
-                InputStreamReader sr = null;
-                try {
-                    stream = new FileInputStream(cfgFile);
-                    sr = new InputStreamReader(stream);
+
+                try (
+                    final FileInputStream stream = new FileInputStream(cfgFile);
+                    final InputStreamReader sr = new InputStreamReader(stream);
+                ) {
                     final PollerConfiguration config = JaxbUtils.unmarshal(PollerConfiguration.class, sr);
-
                     validate(config);
-
                     m_config = config;
-                } finally {
-                    IOUtils.closeQuietly(sr);
-                    IOUtils.closeQuietly(stream);
                 }
                 init();
                 LOG.debug("init: finished loading config file: {}", cfgFile.getPath());

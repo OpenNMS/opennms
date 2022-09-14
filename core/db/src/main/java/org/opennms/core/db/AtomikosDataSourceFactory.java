@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,9 +31,9 @@ package org.opennms.core.db;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 
+import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 import org.springframework.beans.factory.InitializingBean;
 
 import com.atomikos.jdbc.AtomikosDataSourceBean;
@@ -59,6 +59,7 @@ public class AtomikosDataSourceFactory extends AtomikosDataSourceBean implements
 
 	public AtomikosDataSourceFactory(JdbcDataSource ds) {
 		this();
+		LOG.warn("{} ignores passed datasource {}", this.getClass().getName(), ds.getName());
 	}
 
 	public AtomikosDataSourceFactory() {
@@ -79,13 +80,6 @@ public class AtomikosDataSourceFactory extends AtomikosDataSourceBean implements
 		// Hibernate 3.6).
 		//
 		super.setTestQuery("ROLLBACK;SELECT 1;");
-
-		/*
-		// Disable pool maintenance (reaping and shrinking) by setting the interval
-		// to the highest value possible. We want the connections to PostgreSQL to 
-		// remain open forever without being recycled.
-		super.setMaintenanceInterval(Integer.MAX_VALUE / 1000);
-		*/
 	}
 
 	/**

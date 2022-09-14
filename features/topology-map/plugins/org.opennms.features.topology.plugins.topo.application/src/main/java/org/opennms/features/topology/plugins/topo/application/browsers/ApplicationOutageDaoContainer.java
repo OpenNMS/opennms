@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2020-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -52,7 +52,7 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 public class ApplicationOutageDaoContainer extends OnmsVaadinContainer<ApplicationOutage, Integer> {
     private static final long serialVersionUID = 1L;
 
-    private ApplicationDao applicationDao;
+    private transient ApplicationDao applicationDao;
 
     public ApplicationOutageDaoContainer(OutageDao dao, ApplicationDao applicationDao) {
         super(ApplicationOutage.class, new ApplicationOutageDatasource(dao));
@@ -70,15 +70,16 @@ public class ApplicationOutageDaoContainer extends OnmsVaadinContainer<Applicati
     }
 
     @Override
+    @SuppressWarnings("java:S1192")
     protected void addAdditionalCriteriaOptions(Criteria criteria, Page page, boolean doOrder) {
 
         // filter out relevant selectedIds. They can be either of type application or service. This works since all ids
         // are unique.
+        @SuppressWarnings("unchecked")
         Collection<Integer> selectedIds = criteria.getRestrictions().stream()
                 .filter(r -> r.getType().equals(Restriction.RestrictionType.IN))
-                .map(r-> ((InRestriction)r).getValues())
+                .map(r-> ((Collection<Integer>)((InRestriction)r).getValues()))
                 .flatMap(Collection::stream)
-                .map(o-> (Integer)o)
                 .collect(Collectors.toList());
 
         // remove id restriction since we don't want to see the application itself but its outages
