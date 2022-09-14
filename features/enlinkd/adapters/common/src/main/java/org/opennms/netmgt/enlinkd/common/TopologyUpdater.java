@@ -40,6 +40,7 @@ import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.enlinkd.service.api.Topology;
 import org.opennms.netmgt.enlinkd.service.api.TopologyService;
 import org.opennms.netmgt.model.PrimaryType;
+import org.opennms.netmgt.scheduler.Schedulable;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyMessage;
@@ -53,7 +54,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 
-public abstract class TopologyUpdater extends Discovery implements OnmsTopologyUpdater {
+public abstract class TopologyUpdater extends Schedulable implements OnmsTopologyUpdater {
 
     public static OnmsTopologyProtocol create(ProtocolSupported protocol) {
             return OnmsTopologyProtocol.create(protocol.name());
@@ -138,7 +139,7 @@ public abstract class TopologyUpdater extends Discovery implements OnmsTopologyU
     }
 
     @Override
-    public synchronized void runDiscovery() {
+    public synchronized void runSchedulable() {
         LOG.debug("run: start {}", getName());
         final OnmsTopology oldTopology = m_topology.clone();
         final OnmsTopology newTopology = runDiscoveryInternally(oldTopology);

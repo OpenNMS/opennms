@@ -84,9 +84,9 @@ public final class NodeDiscoveryBridge extends NodeCollector {
             final BridgeTopologyService bridgeTopologyService,
             final int maxSize,
             final LocationAwareSnmpClient locationAwareSnmpClient,
-            final long interval,final long initial, final Node node,
+            final Node node,
             final boolean disableBridgeVlanDiscovery) {
-        super(locationAwareSnmpClient, interval, initial,node);
+        super(locationAwareSnmpClient,node);
         m_bridgeTopologyService = bridgeTopologyService;
         m_maxSize = maxSize;
         m_disableBridgeVlanDiscovery = disableBridgeVlanDiscovery;

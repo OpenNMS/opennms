@@ -43,10 +43,10 @@ import org.opennms.netmgt.enlinkd.model.OspfElement.TruthValue;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.nb.Nms7467NetworkBuilder;
 
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.CISCO_WS_C2948_IP;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.CISCO_WS_C2948_NAME;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.CISCO_WS_C2948_SNMP_RESOURCE;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.CISCO_WS_C2948_GLOBAL_DEVICEID;
+import static org.opennms.netmgt.nb.Nms7467NetworkBuilder.CISCO_WS_C2948_IP;
+import static org.opennms.netmgt.nb.Nms7467NetworkBuilder.CISCO_WS_C2948_NAME;
+import static org.opennms.netmgt.nb.Nms7467NetworkBuilder.CISCO_WS_C2948_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.Nms7467NetworkBuilder.CISCO_WS_C2948_GLOBAL_DEVICEID;
 
 public class Nms7467EnIT extends EnLinkdBuilderITCase {
 
@@ -92,8 +92,5 @@ public class Nms7467EnIT extends EnLinkdBuilderITCase {
             assertNotNull(link);
             printCdpLink(link);
         }
-        
     }
-
-
 }

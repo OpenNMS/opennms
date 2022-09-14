@@ -31,19 +31,20 @@ package org.opennms.netmgt.enlinkd;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.config.EnhancedLinkdConfig;
 import org.opennms.netmgt.config.datacollection.SnmpCollection;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.enlinkd.api.ReloadableTopologyDaemon;
-import org.opennms.netmgt.enlinkd.common.Discovery;
+import org.opennms.netmgt.scheduler.Executable;
 import org.opennms.netmgt.enlinkd.common.NodeCollector;
+import org.opennms.netmgt.scheduler.LegacyPriorityExecutor;
+import org.opennms.netmgt.enlinkd.common.SchedulableNodeCollectorGroup;
 import org.opennms.netmgt.enlinkd.common.TopologyUpdater;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.CdpTopologyService;
@@ -78,9 +79,14 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
     private static final String LOG_PREFIX = "enlinkd";
 
     /**
-     * scheduler thread
+     * scheduler thread for Collection Groups
      */
     private LegacyScheduler m_scheduler;
+
+    /**
+     * executor for Collection Groups
+     */
+    private LegacyPriorityExecutor m_executor;
 
     /**
      * The DB connection read and write handler
@@ -100,10 +106,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
 
     private EnhancedLinkdConfig m_linkdConfig;
 
-    /**
-     * Map that contains Nodeid and List of NodeCollector.
-     */
-    private final Map<Integer, List<NodeCollector>> m_nodes = new HashMap<>();
+    private final Map<ProtocolSupported, SchedulableNodeCollectorGroup> m_schedulables = new HashMap();
 
     @Autowired
     private LocationAwareSnmpClient m_locationAwareSnmpClient;
@@ -142,20 +145,56 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
     protected void onInit() {
         BeanUtils.assertAutowiring(this);
 
-        // Create a scheduler
-        //
         try {
             LOG.info("init: Creating EnhancedLinkd scheduler");
-            m_scheduler = new LegacyScheduler("EnhancedLinkd", m_linkdConfig.getThreads());
+            m_scheduler = new LegacyScheduler("EnhancedLinkd", m_linkdConfig.getSchedulerThreads());
         } catch (RuntimeException e) {
             LOG.error("init: Failed to create EnhancedLinkd scheduler", e);
             throw e;
         }
 
+        try {
+            LOG.info("init: Creating EnhancedLinkd executor");
+            m_executor = new LegacyPriorityExecutor("EnhancedLinkd", m_linkdConfig.getExecutorThreads(),m_linkdConfig.getExecutorQueueSize());
+        } catch (RuntimeException e) {
+            LOG.error("init: Failed to create EnhancedLinkd scheduler", e);
+            throw e;
+        }
+
+        SchedulableNodeCollectorGroup cdpSchedulableGroup = new SchedulableNodeCollectorGroup(
+                m_linkdConfig.getCdpRescanInterval(), m_linkdConfig.getInitialSleepTime(), m_executor, m_linkdConfig.getCdpPriority(), "cdpEnlinkdSchedulableCollectionGroup");
+        SchedulableNodeCollectorGroup lldpSchedulableGroup = new SchedulableNodeCollectorGroup(
+                m_linkdConfig.getLldpRescanInterval(), m_linkdConfig.getInitialSleepTime(), m_executor, m_linkdConfig.getLldpPriority(), "lldpEnlinkdSchedulableCollectionGroup");
+        SchedulableNodeCollectorGroup bridgeSchedulableGroup = new SchedulableNodeCollectorGroup(
+                m_linkdConfig.getBridgeRescanInterval(), m_linkdConfig.getInitialSleepTime(), m_executor, m_linkdConfig.getBridgePriority(), "bridgeEnlinkdSchedulableCollectionGroup");
+        SchedulableNodeCollectorGroup ospfSchedulableGroup = new SchedulableNodeCollectorGroup(
+                m_linkdConfig.getOspfRescanInterval(), m_linkdConfig.getInitialSleepTime(), m_executor, m_linkdConfig.getOspfPriority(), "ospfEnlinkdSchedulableCollectionGroup");
+        SchedulableNodeCollectorGroup isisSchedulableGroup = new SchedulableNodeCollectorGroup(
+                m_linkdConfig.getIsisRescanInterval(), m_linkdConfig.getInitialSleepTime(), m_executor, m_linkdConfig.getIsisPriority(), "isisEnlinkdSchedulableCollectionGroup");
         LOG.debug("init: Loading nodes.....");
         for (final Node node : m_queryMgr.findAllSnmpNode()) {
-            m_nodes.put(node.getNodeId(), scheduleCollectionForNode(node));
+            scheduleCollectionForNode(node);
         }
+        cdpSchedulableGroup.setScheduler(m_scheduler);
+        cdpSchedulableGroup.schedule();
+        m_schedulables.put(ProtocolSupported.CDP, cdpSchedulableGroup);
+
+        lldpSchedulableGroup.setScheduler(m_scheduler);
+        lldpSchedulableGroup.schedule();
+        m_schedulables.put(ProtocolSupported.LLDP, lldpSchedulableGroup);
+
+        bridgeSchedulableGroup.setScheduler(m_scheduler);
+        bridgeSchedulableGroup.schedule();
+        m_schedulables.put(ProtocolSupported.BRIDGE, bridgeSchedulableGroup);
+
+        ospfSchedulableGroup.setScheduler(m_scheduler);
+        ospfSchedulableGroup.schedule();
+        m_schedulables.put(ProtocolSupported.OSPF, ospfSchedulableGroup);
+
+        isisSchedulableGroup.setScheduler(m_scheduler);
+        isisSchedulableGroup.schedule();
+        m_schedulables.put(ProtocolSupported.ISIS, isisSchedulableGroup);
+
         LOG.debug("init: Nodes loaded.");
         LOG.debug("init: Loading Bridge Topology.....");
         m_bridgeTopologyService.load();
@@ -197,7 +236,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
 
     public void scheduleAndRegisterOnmsTopologyUpdater(TopologyUpdater onmsTopologyUpdater) {
         onmsTopologyUpdater.setScheduler(m_scheduler);
-        onmsTopologyUpdater.setPollInterval(m_linkdConfig.getTopologyInterval());
+        onmsTopologyUpdater.setPollInterval(m_linkdConfig.getTopologyUpdaterInterval());
         onmsTopologyUpdater.setInitialSleepTime(0L);
         LOG.info("scheduleOnmsTopologyUpdater: Scheduling {}",
                  onmsTopologyUpdater.getInfo());
@@ -226,46 +265,36 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
      * package. Also schedule discovery link on package when not still
      * activated.
      */
-    private List<NodeCollector> scheduleCollectionForNode(final Node node) {
+    private void scheduleCollectionForNode(final Node node) {
 
-        List<NodeCollector> colls = new ArrayList<>();
-        
         if (m_linkdConfig.useLldpDiscovery()) {
             LOG.debug("getSnmpCollections: adding Lldp: {}",
                     node);
-            colls.add(new NodeDiscoveryLldp(m_lldpTopologyService,
-                                            m_locationAwareSnmpClient, 
-                                            m_linkdConfig.getRescanInterval(),
-                                            m_linkdConfig.getInitialSleepTime(),
-                                             node));
+            m_schedulables.get(ProtocolSupported.LLDP).add(new NodeDiscoveryLldp(m_lldpTopologyService,
+                    m_locationAwareSnmpClient,
+                    node));
         }
         
         if (m_linkdConfig.useCdpDiscovery()) {
             LOG.debug("getSnmpCollections: adding Cdp: {}",
                     node);
-             colls.add(new NodeDiscoveryCdp(m_cdpTopologyService,
+            m_schedulables.get(ProtocolSupported.CDP).add(new NodeDiscoveryCdp(m_cdpTopologyService,
                                             m_locationAwareSnmpClient, 
-                                            m_linkdConfig.getRescanInterval(),
-                                            m_linkdConfig.getInitialSleepTime(),
-                                            node));       
+                                            node));
         }
         
         if (m_linkdConfig.useBridgeDiscovery()) {
                 LOG.debug("getSnmpCollections: adding IpNetToMedia: {}",
                     node);
-                colls.add(new NodeDiscoveryIpNetToMedia(m_ipNetToMediaTopologyService,
+            m_schedulables.get(ProtocolSupported.BRIDGE).add(new NodeDiscoveryIpNetToMedia(m_ipNetToMediaTopologyService,
                                                         m_locationAwareSnmpClient, 
-                                                        m_linkdConfig.getRescanInterval(),
-                                                        m_linkdConfig.getInitialSleepTime(),
                                                         node));
                 
                 LOG.debug("getSnmpCollections: adding Bridge: {}",
                     node);
-                colls.add(new NodeDiscoveryBridge(m_bridgeTopologyService,
+            m_schedulables.get(ProtocolSupported.BRIDGE).add(new NodeDiscoveryBridge(m_bridgeTopologyService,
                                                   m_linkdConfig.getMaxBft(),
                                                   m_locationAwareSnmpClient, 
-                                                  m_linkdConfig.getRescanInterval(),
-                                                  m_linkdConfig.getInitialSleepTime(),
                                                   node,
                                                   m_linkdConfig.disableBridgeVlanDiscovery()));
         }
@@ -273,31 +302,18 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
         if (m_linkdConfig.useOspfDiscovery()) {
             LOG.debug("getSnmpCollections: adding Ospf: {}",
                     node);
-                colls.add(new NodeDiscoveryOspf(m_ospfTopologyService,
+            m_schedulables.get(ProtocolSupported.OSPF).add(new NodeDiscoveryOspf(m_ospfTopologyService,
                                                 m_locationAwareSnmpClient, 
-                                                m_linkdConfig.getRescanInterval(),
-                                                m_linkdConfig.getInitialSleepTime(),
                                                 node));
         }
 
         if (m_linkdConfig.useIsisDiscovery()) {
             LOG.debug("getSnmpCollections: adding Is-Is: {}",
                     node);
-                colls.add(new NodeDiscoveryIsis(m_isisTopologyService,
+            m_schedulables.get(ProtocolSupported.ISIS).add(new NodeDiscoveryIsis(m_isisTopologyService,
                                                 m_locationAwareSnmpClient, 
-                                                m_linkdConfig.getRescanInterval(),
-                                                m_linkdConfig.getInitialSleepTime(), 
                                                 node));
         }
-       
-        for (final NodeCollector coll : colls ){
-            LOG.debug("ScheduleCollectionForNode: Scheduling {}",
-                coll.getInfo());
-            coll.setScheduler(m_scheduler);
-            coll.schedule();
-        }
-        
-        return colls;
     }
 
     /**
@@ -306,13 +322,10 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
      * </p>
      */
     protected synchronized void onStart() {
-
         // start the scheduler
         //
+        m_executor.start();
         m_scheduler.start();
-        
-        // Set the status of the service as running.
-        //
 
     }
 
@@ -323,6 +336,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
      */
     protected synchronized void onStop() {
               // Stop the scheduler
+        m_executor.stop();
         m_scheduler.stop();
         m_scheduler = null;
     }
@@ -334,6 +348,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
      */
     protected synchronized void onPause() {
         m_scheduler.pause();
+        m_executor.pause();
     }
 
     /**
@@ -342,16 +357,11 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
      * </p>
      */
     protected synchronized void onResume() {
+        m_executor.resume();
         m_scheduler.resume();
     }
 
     public boolean scheduleNodeCollection(int nodeid) {
-
-        if (m_nodes.containsKey(nodeid)) {
-            LOG.debug("scheduleNodeCollection: node:[{}], node Collection already Scheduled ",
-                      nodeid);
-            return false;
-        }
         LOG.debug("scheduleNodeCollection: Loading node {} from database",
                   nodeid);
         Node node = m_queryMgr.getSnmpNode(nodeid);
@@ -360,29 +370,41 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
                            nodeid);
             return false;
         }
-        synchronized (m_nodes) {
-            m_nodes.put(node.getNodeId(), scheduleCollectionForNode(node));
+        unscheduleNodeCollection(nodeid);
+        scheduleCollectionForNode(node);
+        return true;
+    }
+
+    public List<NodeCollector> getNodeCollectors(final int nodeId) {
+        final List<NodeCollector> nodeCollectors = new ArrayList<>();
+        EnumSet.allOf(ProtocolSupported.class).stream().filter(p -> m_schedulables.containsKey(p)).forEach(p -> nodeCollectors.addAll(m_schedulables.get(p).get(nodeId)));
+        return nodeCollectors;
+    }
+
+    public boolean hasNodeCollectors(final int nodeId) {
+        for(ProtocolSupported p : ProtocolSupported.values()) {
+            if (m_schedulables.containsKey(p)) {
+                if (m_schedulables.get(p).hasCollectionFor(nodeId)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean runSingleSnmpCollection(final int nodeId) {
+        List<NodeCollector> nodeCollectors = getNodeCollectors(nodeId);
+        if (!hasNodeCollectors(nodeId)) {
+            return false;
+        }
+        for (final NodeCollector snmpColl : getNodeCollectors(nodeId)) {
+            snmpColl.collect();
         }
         return true;
     }
 
-    public boolean runSingleSnmpCollection(final int nodeId) {
-        boolean allready = true;
-        if (!m_nodes.containsKey(nodeId)) {
-            return false;
-        }
-        for (final NodeCollector snmpColl : m_nodes.get(nodeId)) {
-            if (!snmpColl.isReady()) {
-                allready = false;
-                continue;
-            }
-            snmpColl.collect();
-        }
-        return allready;
-    }
-
     public void runDiscoveryBridgeDomains() {
-            m_discoveryBridgeDomains.runDiscovery();
+            m_discoveryBridgeDomains.runSchedulable();
     }
 
     public void forceTopologyUpdaterRun(ProtocolSupported proto) {
@@ -436,40 +458,40 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
         switch (proto) {
             case CDP:
                 if (m_linkdConfig.useCdpDiscovery()) {
-                    m_cdpTopologyUpdater.runDiscovery();
+                    m_cdpTopologyUpdater.runSchedulable();
                 }
                 break;
       
             case LLDP:
                 if (m_linkdConfig.useLldpDiscovery()) {
-                    m_lldpTopologyUpdater.runDiscovery();
+                    m_lldpTopologyUpdater.runSchedulable();
                 }
                 break;
             
             case ISIS:
                 if (m_linkdConfig.useIsisDiscovery()) {
-                    m_isisTopologyUpdater.runDiscovery();
+                    m_isisTopologyUpdater.runSchedulable();
                 }
                 break;
             
             case OSPF:
                 if (m_linkdConfig.useOspfDiscovery()) {
-                    m_ospfTopologyUpdater.runDiscovery();
+                    m_ospfTopologyUpdater.runSchedulable();
                 }
                 break;
             
             case BRIDGE:
                 if (m_linkdConfig.useBridgeDiscovery()) {
-                    m_bridgeTopologyUpdater.runDiscovery();
+                    m_bridgeTopologyUpdater.runSchedulable();
                 }
                 break;
 
             case NODES:
-                m_nodesTopologyUpdater.runDiscovery();
+                m_nodesTopologyUpdater.runSchedulable();
                 break;
 
             case USERDEFINED:
-                m_userDefinedLinkTopologyUpdater.runDiscovery();
+                m_userDefinedLinkTopologyUpdater.runSchedulable();
                 break;
 
             default:
@@ -480,13 +502,13 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
 
     void wakeUpNodeCollection(int nodeid) {
 
-        if (!m_nodes.containsKey(nodeid)) {
+        if (!hasNodeCollectors(nodeid)) {
             LOG.warn("wakeUpNodeCollection: node not found during scheduling with ID {}",
                            nodeid);
             scheduleNodeCollection(nodeid);
             return;
         } 
-        m_nodes.get(nodeid).forEach(Discovery::wakeUp);
+        getNodeCollectors(nodeid).forEach(Executable::wakeUp);
     }
 
     public void addNode() {
@@ -510,16 +532,14 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
     }
 
     void unscheduleNodeCollection(int nodeid) {
-        synchronized (m_nodes) {
-            if (m_nodes.containsKey(nodeid)) {
-                m_nodes.remove(nodeid).
-                forEach(Discovery::unschedule);
-            }        
+        for (NodeCollector nodeCollector: getNodeCollectors(nodeid)) {
+            for (SchedulableNodeCollectorGroup collectorGroup: m_schedulables.values())
+                collectorGroup.remove(nodeCollector);
         }
     }
     
     void rescheduleNodeCollection(int nodeid) {
-        LOG.info("rescheduleNodeCollection: suspend collection LinkableNode for node {}",
+        LOG.info("rescheduleNodeCollection: rescheduling collection for node {}",
                 nodeid);        
         unscheduleNodeCollection(nodeid);
         
@@ -527,13 +547,9 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
     }
     
     void suspendNodeCollection(int nodeid) {
-        LOG.info("suspendNodeCollection: suspend collection LinkableNode for node {}",
+        LOG.info("suspendNodeCollection: suspend collection for node {}",
                         nodeid);   
-        synchronized (m_nodes) {
-               if (m_nodes.containsKey(nodeid)) {
-                   m_nodes.get(nodeid).forEach(Discovery::suspend);
-               } 
-        }
+        getNodeCollectors(nodeid).forEach(Executable::suspend);
     }
 
     public NodeTopologyService getQueryManager() {
@@ -622,6 +638,29 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
 
     public void reload() {
         LOG.info("reload: reload enlinkd daemon service");
+        switch (m_scheduler.getStatus()) {
+            case LegacyScheduler.STARTING:
+                LOG.info("reload: scheduler STARTING: calling pause");
+                m_scheduler.pause();
+                break;
+            case LegacyScheduler.RUNNING:
+                LOG.info("reload: scheduler RUNNING: pause");
+                m_scheduler.pause();
+                break;
+            case LegacyScheduler.PAUSE_PENDING:
+                LOG.info("reload: scheduler PAUSE_PENDING.");
+                break;
+            case LegacyScheduler.RESUME_PENDING:
+                LOG.info("reload: scheduler RESUME_PENDING: pause");
+                m_scheduler.pause();
+                break;
+            case LegacyScheduler.STOP_PENDING:
+                LOG.info("reload: scheduler STOP_PENDING.");
+                throw new UnsupportedOperationException("scheduler stop pending");
+            case LegacyScheduler.STOPPED:
+                LOG.info("reload: scheduler STOPPED.");
+                throw new UnsupportedOperationException("scheduler stopped");
+        }
 
         m_nodesTopologyUpdater.unschedule();
         m_nodesTopologyUpdater.unregister();
@@ -707,17 +746,64 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
             unscheduleDiscoveryBridgeDomain();
         }
 
-        synchronized (m_nodes) {
-            final Set<Node> nodes = new HashSet<>();
-            for (List<NodeCollector> list: m_nodes.values()) {
-                list.forEach(coll -> {
-                    coll.unschedule(); 
-                    nodes.add(coll.getNode());
-                });
-            }
-            m_nodes.clear();
-            nodes.
-                forEach(node -> m_nodes.put(node.getNodeId(), scheduleCollectionForNode(node)));
+        EnumSet.allOf(ProtocolSupported.class).stream().filter(p -> m_schedulables.containsKey(p)).forEach(p -> {
+             SchedulableNodeCollectorGroup schedulableNodeCollectorGroup = m_schedulables.get(p);
+             schedulableNodeCollectorGroup.unschedule();
+             schedulableNodeCollectorGroup.clear();
+            schedulableNodeCollectorGroup.setInitialSleepTime(m_linkdConfig.getInitialSleepTime());
+             switch (p) {
+                 case CDP:
+                     schedulableNodeCollectorGroup.setPollInterval(m_linkdConfig.getCdpRescanInterval());
+                     schedulableNodeCollectorGroup.setPriority(m_linkdConfig.getCdpPriority());
+                     break;
+                 case LLDP:
+                     schedulableNodeCollectorGroup.setPollInterval(m_linkdConfig.getLldpRescanInterval());
+                     schedulableNodeCollectorGroup.setPriority(m_linkdConfig.getLldpPriority());
+                     break;
+                 case BRIDGE:
+                     schedulableNodeCollectorGroup.setPollInterval(m_linkdConfig.getBridgeRescanInterval());
+                     schedulableNodeCollectorGroup.setPriority(m_linkdConfig.getBridgePriority());
+                     break;
+                 case OSPF:
+                     schedulableNodeCollectorGroup.setPollInterval(m_linkdConfig.getOspfRescanInterval());
+                     schedulableNodeCollectorGroup.setPriority(m_linkdConfig.getOspfPriority());
+                     break;
+                 case ISIS:
+                     schedulableNodeCollectorGroup.setPollInterval(m_linkdConfig.getIsisRescanInterval());
+                     schedulableNodeCollectorGroup.setPriority(m_linkdConfig.getIsisPriority());
+                     break;
+                 default:
+                     break;
+             }
+        });
+
+        for (final Node node : m_queryMgr.findAllSnmpNode()) {
+            scheduleCollectionForNode(node);
+        }
+
+        switch (m_scheduler.getStatus()) {
+            case LegacyScheduler.STARTING:
+                LOG.info("reload: scheduler STARTING,");
+                break;
+            case LegacyScheduler.RUNNING:
+                LOG.info("reload: scheduler RUNNING.");
+                break;
+            case LegacyScheduler.PAUSE_PENDING:
+                LOG.info("reload: scheduler PAUSE_PENDING. resuming");
+                m_scheduler.resume();
+                break;
+            case LegacyScheduler.RESUME_PENDING:
+                LOG.info("reload: scheduler RESUME_PENDING: pause");
+                break;
+            case LegacyScheduler.STOP_PENDING:
+                LOG.info("reload: scheduler STOP_PENDING.");
+                throw new UnsupportedOperationException("scheduler stop pending");
+            case LegacyScheduler.STOPPED:
+                LOG.info("reload: scheduler STOPPED.");
+                throw new UnsupportedOperationException("scheduler stopped");
+            default:
+                LOG.info("reload: scheduler status: {}", m_scheduler.getStatus());
+
         }
     }
     

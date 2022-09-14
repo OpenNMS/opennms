@@ -31,9 +31,9 @@ package org.opennms.netmgt.enlinkd;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertEquals;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.DW_IP;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.DW_NAME;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.DW_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.Nms7777DWNetworkBuilder.DW_IP;
+import static org.opennms.netmgt.nb.Nms7777DWNetworkBuilder.DW_NAME;
+import static org.opennms.netmgt.nb.Nms7777DWNetworkBuilder.DW_SNMP_RESOURCE;
 
 import org.junit.Test;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;

@@ -66,9 +66,8 @@ public final class NodeDiscoveryIsis extends NodeCollector {
     public NodeDiscoveryIsis(
             final IsisTopologyService isisTopologyService,
             final LocationAwareSnmpClient locationAwareSnmpClient,
-            final long interval,final long initial,
             final Node node) {
-        super(locationAwareSnmpClient, interval, initial,node);
+        super(locationAwareSnmpClient, node);
     	m_isisTopologyService = isisTopologyService;
     }
 

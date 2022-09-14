@@ -142,29 +142,76 @@ abstract public class EnhancedLinkdConfigManager implements EnhancedLinkdConfig 
         return m_config.getInitialSleepTime();
     }
 
-    public long getRescanInterval() {
-        return m_config.getRescanInterval();
+    public long getCdpRescanInterval() {
+        return m_config.getCdpRescanInterval();
+    }
+    public long getLldpRescanInterval() {
+        return m_config.getLldpRescanInterval();
+    }
+    public long getBridgeRescanInterval() {
+        return m_config.getBridgeRescanInterval();
+    }
+    public long getOspfRescanInterval() {
+        return m_config.getOspfRescanInterval();
+    }
+    public long getIsisRescanInterval() {
+        return m_config.getIsisRescanInterval();
+    }
+    public int getCdpPriority() {
+        return m_config.getCdpPriority();
+    }
+    public int getLldpPriority() {
+        return m_config.getLldpPriority();
+    }
+    public int getBridgePriority() {
+        return m_config.getBridgePriority();
+    }
+    public int getOspfPriority() {
+        return m_config.getOspfPriority();
+    }
+    public int getIsisPriority() {
+        return m_config.getIsisPriority();
     }
 
     public long getBridgeTopologyInterval() {
         return m_config.getBridgeTopologyInterval();
     }
 
-    public long getTopologyInterval() {
-        return m_config.getTopologyInterval();
+    public long getTopologyUpdaterInterval() {
+        return m_config.getTopologyUpdaterInterval();
     }
 
 
     /**
-     * <p>getThreads</p>
+     * <p>getExecutorThreads</p>
      *
      * @return a int.
      */
-    public int getThreads() {
-        if (m_config.getThreads() != null) return m_config.getThreads();
+    public int getExecutorThreads() {
+        if (m_config.getExecutorThreads() != null) return m_config.getExecutorThreads();
         return 5;
     }
-    
+
+    /**
+     * <p>getExecutorQueueSize</p>
+     *
+     * @return a int.
+     */
+    public int getExecutorQueueSize() {
+        if (m_config.getExecutorQueueSize() != null) return m_config.getExecutorQueueSize();
+        return 100;
+    }
+
+    /**
+     * <p>getSchedulerThreads</p>
+     *
+     * @return a int.
+     */
+    public int getSchedulerThreads() {
+        if (m_config.getSchedulerThreads() != null) return m_config.getSchedulerThreads();
+        return 3;
+    }
+
     public int getMaxBft() {
         if (m_config.getMaxBft() != null) return m_config.getMaxBft();
         return 100;

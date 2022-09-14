@@ -118,7 +118,7 @@ public class TopologyUpdaterIT {
         final Runnable discoveryRunnable = () -> {
             long start = System.currentTimeMillis();
             LoggerFactory.getLogger("DISCOVERY").info("Start: {}", new Date());
-            updater.runDiscovery();
+            updater.runSchedulable();
             LoggerFactory.getLogger("DISCOVERY").info("Took {} ms", (System.currentTimeMillis() - start));
         };
         Future<?> future1 = executorService.submit(discoveryRunnable);

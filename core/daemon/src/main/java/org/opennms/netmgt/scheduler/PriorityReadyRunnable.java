@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,29 +26,12 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.enlinkd.service.api;
+package org.opennms.netmgt.scheduler;
 
-import java.util.List;
-import java.util.Set;
+import org.opennms.netmgt.scheduler.ReadyRunnable;
 
-import org.opennms.netmgt.enlinkd.model.IpInterfaceTopologyEntity;
-import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
-import org.opennms.netmgt.enlinkd.model.SnmpInterfaceTopologyEntity;
-
-public interface NodeTopologyService extends TopologyService {
-
-    List<Node> findAllSnmpNode();
-    Set<SubNetwork> findAllSubNetwork();
-    Set<SubNetwork> findAllLegalSubNetwork();
-
-    Node getSnmpNode(int nodeid);
-    Set<SubNetwork> getSubNetworks(int nodeid);
-    Set<SubNetwork> getLegalSubNetworks(int nodeid);
-
-    List<NodeTopologyEntity> findAllNode();
-
-    List<IpInterfaceTopologyEntity> findAllIp();
-    List<SnmpInterfaceTopologyEntity> findAllSnmp();
-    NodeTopologyEntity getDefaultFocusPoint();
-        
+public interface PriorityReadyRunnable extends ReadyRunnable {
+    void setPriority(Integer priority);
+    Integer getPriority();
+    String getInfo();
 }

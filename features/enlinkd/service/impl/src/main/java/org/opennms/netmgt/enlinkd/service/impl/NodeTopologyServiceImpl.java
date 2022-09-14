@@ -29,7 +29,10 @@
 package org.opennms.netmgt.enlinkd.service.impl;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.opennms.core.criteria.Alias;
 import org.opennms.core.criteria.Alias.JoinType;
@@ -41,6 +44,7 @@ import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.SnmpInterfaceTopologyEntity;
 import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
+import org.opennms.netmgt.enlinkd.service.api.SubNetwork;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.PrimaryType;
@@ -70,6 +74,38 @@ public class NodeTopologyServiceImpl extends TopologyServiceImpl implements Node
     }
 
     @Override
+    public Set<SubNetwork> findAllLegalSubNetwork() {
+        return findAllSubNetwork().stream().filter(s -> s.getNodeIds().size() > 1 && !s.hasDuplicatedAddress()).collect(Collectors.toSet());
+    }
+        @Override
+    public Set<SubNetwork> findAllSubNetwork() {
+        final Set<SubNetwork> subnets = new HashSet<>();
+        final List<IpInterfaceTopologyEntity> ips = findAllIp();
+        ips.stream().filter(ip -> ip.isManaged() && ip.getNetMask() != null ).forEach(ip -> {
+            boolean found = false;
+            for (SubNetwork s: subnets) {
+                if (s.isInRange(ip.getIpAddress()) && s.getNetmask().equals(ip.getNetMask())) {
+                    found=true;
+                    s.add(ip.getNodeId(),ip.getIpAddress());
+                    break;
+                }
+            }
+            if (!found) {
+                subnets.add(SubNetwork.createSubNetwork(ip));
+            }
+        });
+        ips.stream().filter(ip -> ip.isManaged() && ip.getNetMask() == null).forEach(ip -> {
+            for (SubNetwork s: subnets) {
+                if (s.isInRange(ip.getIpAddress())) {
+                    s.add(ip.getNodeId(),ip.getIpAddress());
+                }
+            }
+        });
+        return subnets;
+    }
+
+
+    @Override
     public Node getSnmpNode(final int nodeid) {
         final Criteria criteria = new Criteria(OnmsNode.class);
         criteria.setAliases(List.of(new Alias(
@@ -91,7 +127,17 @@ public class NodeTopologyServiceImpl extends TopologyServiceImpl implements Node
             return null;
         }
     }
-    
+
+    @Override
+    public Set<SubNetwork> getLegalSubNetworks(int nodeid) {
+        return findAllLegalSubNetwork().stream().filter(s -> s.getNodeIds().contains(nodeid)).collect(Collectors.toSet());
+    }
+
+    @Override
+    public Set<SubNetwork> getSubNetworks(int nodeid) {
+        return findAllSubNetwork().stream().filter(s -> s.getNodeIds().contains(nodeid)).collect(Collectors.toSet());
+    }
+
     @Override
     public List<NodeTopologyEntity> findAllNode() {
         return getTopologyEntityCache().getNodeTopologyEntities();
