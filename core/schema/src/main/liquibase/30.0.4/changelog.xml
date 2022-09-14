@@ -12,26 +12,26 @@
                 <constraints nullable="false" primaryKey="true"/>
             </column>
             <!-- Node Id -->
-            <column name="nodeId" type="integer">
+            <column name="nodeid" type="integer">
                 <constraints nullable="false"/>
             </column>
             <!-- Area ID -->
-            <column name="ospfAreaId" type="varchar(16)">
+            <column name="ospfareaid" type="varchar(16)">
                 <constraints nullable="false"/>
             </column>
-            <column name="ospfAuthType" type="integer">
+            <column name="ospfauthtype" type="integer">
                 <constraints nullable="true"/>
             </column>
-            <column name="ospfImportAsExtern" type="integer">
+            <column name="ospfimportasextern" type="integer">
                 <constraints nullable="true"/>
             </column>
-            <column name="ospfAreaBdrRtrCount" type="integer">
+            <column name="ospfareabdrrtrcount" type="integer">
                 <constraints nullable="true"/>
             </column>
-            <column name="ospfAsBdrRtrCount" type="integer">
+            <column name="ospfasbdrrtrcount" type="integer">
                 <constraints nullable="true"/>
             </column>
-            <column name="ospfAreaLsaCount" type="integer">
+            <column name="ospfarealsacount" type="integer">
                 <constraints nullable="true"/>
             </column>
 
@@ -45,7 +45,7 @@
         </createIndex>
         <createIndex tableName="ospfarea" indexName="ospfarea_pk_idx">
             <column name="nodeid"/>
-            <column name="ospfAreaId"/>
+            <column name="ospfareaid"/>
         </createIndex>
     </changeSet>
 
