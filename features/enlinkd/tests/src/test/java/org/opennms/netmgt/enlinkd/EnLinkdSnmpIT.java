@@ -86,6 +86,8 @@ import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKTROUTER3_ETHER3_MAC
 import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKT_HOST3_LLDP_ID;
 import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKT_HOST4_LLDP_ID;
 import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKT_HOST5_LLDP_ID;
+import static org.opennms.netmgt.nb.Nms007NetworkBuilder.FireFly170_IP;
+import static org.opennms.netmgt.nb.Nms007NetworkBuilder.FireFly170_SNMP_RESOURCE;
 
 
 
@@ -125,6 +127,7 @@ import org.opennms.netmgt.enlinkd.model.IsIsLink.IsisISAdjNeighSysType;
 import org.opennms.netmgt.enlinkd.model.IsIsLink.IsisISAdjState;
 import org.opennms.netmgt.enlinkd.model.LldpElement;
 import org.opennms.netmgt.enlinkd.model.LldpLink;
+import org.opennms.netmgt.enlinkd.model.OspfArea;
 import org.opennms.netmgt.enlinkd.model.OspfElement;
 import org.opennms.netmgt.enlinkd.model.OspfElement.Status;
 import org.opennms.netmgt.enlinkd.model.OspfElement.TruthValue;
@@ -150,14 +153,17 @@ import org.opennms.netmgt.enlinkd.snmp.LldpRemTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.MtxrLldpLocalTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.MtxrLldpRemTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.MtxrNeighborTableTracker;
+import org.opennms.netmgt.enlinkd.snmp.OspfAreaTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.OspfGeneralGroupTracker;
 import org.opennms.netmgt.enlinkd.snmp.OspfIfTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.OspfIpAddrTableGetter;
 import org.opennms.netmgt.enlinkd.snmp.OspfNbrTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.TimeTetraLldpLocPortGetter;
 import org.opennms.netmgt.enlinkd.snmp.TimeTetraLldpRemTableTracker;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.nb.NmsNetworkBuilder;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -204,7 +210,38 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
         assertTrue(InetAddressUtils.inSameNetwork(InetAddress.getByName("10.10.0.1"),
                 InetAddress.getByName("10.168.0.5"), InetAddress.getByName("255.0.0.0")));
     }
-    
+
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host = FireFly170_IP, port = 161, resource = FireFly170_SNMP_RESOURCE)
+    })
+    public void testOspfTableTracker() throws Exception {
+
+        SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(FireFly170_IP));
+        String trackerName = "ospfAreaTableTracker";
+
+        final OspfAreaTableTracker tracker = new OspfAreaTableTracker() {
+
+            public void processOspfAreaRow(final OspfAreaTableTracker.OspfAreaRow row) {
+                System.err.println(row.getOspfArea());
+            }
+        };
+
+        try {
+            m_client.walk(config,tracker)
+                    .withDescription(trackerName)
+                    .withLocation(null)
+                    .execute()
+                    .get();
+        } catch (final InterruptedException e) {
+            LOG.error("run: Ospf Area Tabble collection interrupted, exiting",e);
+            return;
+        }
+
+
+
+    }
+
     @Test
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host = RPict001_IP, port = 161, resource = RPict001_SNMP_RESOURCE)
