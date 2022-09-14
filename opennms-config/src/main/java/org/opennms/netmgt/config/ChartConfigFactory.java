@@ -77,15 +77,9 @@ public class ChartConfigFactory extends ChartConfigManager {
     public static synchronized void reload() throws IOException, FileNotFoundException {
         m_chartConfigFile = ConfigFileConstants.getFile(ConfigFileConstants.CHART_CONFIG_FILE_NAME);
 
-        InputStream configIn = null;
-        try {
-            configIn = new FileInputStream(m_chartConfigFile);
+        try (InputStream configIn = new FileInputStream(m_chartConfigFile)) {
             m_lastModified = m_chartConfigFile.lastModified();
             parseXml(configIn);
-        } finally {
-            if (configIn != null) {
-                IOUtils.closeQuietly(configIn);
-            }
         }
     }
 

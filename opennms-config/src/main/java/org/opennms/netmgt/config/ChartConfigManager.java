@@ -95,7 +95,7 @@ public abstract class ChartConfigManager {
      *
      * @param configuration a {@link org.opennms.netmgt.config.charts.ChartConfiguration} object.
      */
-    public void setConfiguration(ChartConfiguration configuration) {
+    public static void setConfiguration(ChartConfiguration configuration) {
         m_configuration = configuration;
     }
 
