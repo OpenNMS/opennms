@@ -37,9 +37,11 @@ import java.util.Map;
 import java.util.Set;
 
 import org.opennms.netmgt.dao.support.UpsertTemplate;
+import org.opennms.netmgt.enlinkd.model.OspfArea;
 import org.opennms.netmgt.enlinkd.model.OspfElement;
 import org.opennms.netmgt.enlinkd.model.OspfLink;
 import org.opennms.netmgt.enlinkd.model.OspfLinkTopologyEntity;
+import org.opennms.netmgt.enlinkd.persistence.api.OspfAreaDao;
 import org.opennms.netmgt.enlinkd.persistence.api.OspfElementDao;
 import org.opennms.netmgt.enlinkd.persistence.api.OspfLinkDao;
 import org.opennms.netmgt.enlinkd.service.api.CompositeKey;
@@ -62,6 +64,7 @@ public class OspfTopologyServiceImpl extends TopologyServiceImpl implements Ospf
 
     private OspfLinkDao m_ospfLinkDao;
     private OspfElementDao m_ospfElementDao;
+    private OspfAreaDao m_ospfAreaDao;
 
     public OspfTopologyServiceImpl() {
     }
@@ -70,8 +73,10 @@ public class OspfTopologyServiceImpl extends TopologyServiceImpl implements Ospf
     public void delete(int nodeid) {
         m_ospfElementDao.deleteByNodeId(nodeid);
         m_ospfLinkDao.deleteByNodeId(nodeid);
+        m_ospfAreaDao.deleteByNodeId(nodeid);
         m_ospfElementDao.flush();
         m_ospfLinkDao.flush();
+        m_ospfAreaDao.flush();
     }
 
     @Override
@@ -84,6 +89,8 @@ public class OspfTopologyServiceImpl extends TopologyServiceImpl implements Ospf
         }
         m_ospfLinkDao.deleteByNodeIdOlderThen(nodeId, now);
         m_ospfLinkDao.flush();
+        m_ospfAreaDao.deleteByNodeIdOlderThen(nodeId, now);
+        m_ospfAreaDao.flush();
     }
 
     @Override
@@ -117,7 +124,46 @@ public class OspfTopologyServiceImpl extends TopologyServiceImpl implements Ospf
         saveOspfLink(nodeId, link);
         updatesAvailable();
     }
-    
+
+    @Override
+    public void store(int nodeId, OspfArea area) {
+        if (area == null)
+            return;
+        saveOspfArea(nodeId, area);
+        updatesAvailable();
+    }
+
+    private void saveOspfArea(final int nodeId, final OspfArea area) {
+        new UpsertTemplate<>(m_transactionManager,
+                m_ospfAreaDao) {
+
+            @Override
+            protected OspfArea query() {
+                return m_dao.get(area.getNode(), area.getOspfAreaId());
+            }
+
+            @Override
+            protected OspfArea doUpdate(OspfArea dbOspfArea) {
+                dbOspfArea.merge(area);
+                m_dao.update(dbOspfArea);
+                m_dao.flush();
+                return dbOspfArea;
+            }
+
+            @Override
+            protected OspfArea doInsert() {
+                final OnmsNode node = new OnmsNode();
+                node.setId(nodeId);
+                area.setNode(node);
+                m_dao.saveOrUpdate(area);
+                m_dao.flush();
+                return area;
+            }
+
+        }.execute();
+
+    }
+
     private void saveOspfLink(final int nodeId, final OspfLink saveMe) {
         new UpsertTemplate<>(m_transactionManager,
                 m_ospfLinkDao) {
@@ -167,6 +213,14 @@ public class OspfTopologyServiceImpl extends TopologyServiceImpl implements Ospf
 
     public void setOspfElementDao(OspfElementDao ospfElementDao) {
         m_ospfElementDao = ospfElementDao;
+    }
+
+    public OspfAreaDao getOspfAreaDao() {
+        return m_ospfAreaDao;
+    }
+
+    public void setOspfAreaDao(OspfAreaDao ospfAreaDao) {
+        m_ospfAreaDao = ospfAreaDao;
     }
 
     @Override

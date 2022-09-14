@@ -47,10 +47,10 @@ public class OspfAreaTableTracker extends TableTracker {
     public final static SnmpObjId OSPF_AREA_ID = SnmpObjId.get(".1.3.6.1.2.1.14.2.1.1");
     public final static SnmpObjId OSPF_AUTH_TYPE = SnmpObjId.get(".1.3.6.1.2.1.14.2.1.2");
     public final static SnmpObjId OSPF_IMPORT_AS_EXTERN = SnmpObjId.get(".1.3.6.1.2.1.14.2.1.3");
-    //    public final static SnmpObjId OSPF_SPF_RUNS                                 = SnmpObjId.get(".1.3.6.1.2.1.14.2.1.4");
+    //    public final static SnmpObjId OSPF_SPF_RUNS       = SnmpObjId.get(".1.3.6.1.2.1.14.2.1.4");
     public final static SnmpObjId OSPF_AREA_BDR_RTR_COUNT = SnmpObjId.get(".1.3.6.1.2.1.14.2.1.5");
     public final static SnmpObjId OSPF_AS_BDR_RTR_COUNT = SnmpObjId.get(".1.3.6.1.2.1.14.2.1.6");
-//    public final static SnmpObjId OSPF_AREA_LSA_COUNT = SnmpObjId.get(".1.3.6.1.2.1.14.2.1.7");
+    public final static SnmpObjId OSPF_AREA_LSA_COUNT = SnmpObjId.get(".1.3.6.1.2.1.14.2.1.7");
 //    public final static SnmpObjId OSPF_AREA_LSA_CKSUM_SUM                       = SnmpObjId.get(".1.3.6.1.2.1.14.2.1.8");
 //    public final static SnmpObjId OSPF_AREA_SUMMARY                             = SnmpObjId.get(".1.3.6.1.2.1.14.2.1.9");
 //    public final static SnmpObjId OSPF_AREA_STATUS                              = SnmpObjId.get(".1.3.6.1.2.1.14.2.1.10");
@@ -60,13 +60,41 @@ public class OspfAreaTableTracker extends TableTracker {
 //    public final static SnmpObjId OSPF_AREA_NSSA_TRANSLATOR_EVENTS              = SnmpObjId.get(".1.3.6.1.2.1.14.2.1.14");
 
     public static final SnmpObjId[] s_ospfAreatable_elemList = new SnmpObjId[]{
+            /**
+             * A 32-bit integer uniquely identifying an area.
+             *           Area ID 0.0.0.0 is used for the OSPF backbone.
+            */
             OSPF_AREA_ID,
+            /**
+             * The authentication type specified for an area.
+            */
             OSPF_AUTH_TYPE,
+            /**
+             * Indicates if an area is a stub area, NSSA, or standard
+            area.  Type-5 AS-external LSAs and type-11 Opaque LSAs are
+            not imported into stub areas or NSSAs.  NSSAs import
+            AS-external data as type-7 LSAs
+            */
             OSPF_IMPORT_AS_EXTERN,
+            /**
+             * The total number of Area Border Routers reachable
+             * within this area.  This is initially zero and is
+             * calculated in each Shortest Path First (SPF) pass.
+            */
             OSPF_AREA_BDR_RTR_COUNT,
-            OSPF_AS_BDR_RTR_COUNT
+            /**
+             * The total number of Autonomous System Border
+             * Routers reachable within this area.  This is
+             * initially zero and is calculated in each SPF
+             * pass.
+            */
+            OSPF_AS_BDR_RTR_COUNT,
+            /** The total number of link state advertisements
+             * in this area's link state database, excluding
+             * AS-external LSAs.
+            */
+            OSPF_AREA_LSA_COUNT
     };
-
 
     public static class OspfAreaRow extends SnmpRowResult {
 
@@ -94,16 +122,21 @@ public class OspfAreaTableTracker extends TableTracker {
             return getValue(OSPF_AS_BDR_RTR_COUNT).toInt();
         }
 
-
-        public OspfArea getOspfArea() {
-            OspfArea area = new OspfArea();
-            area.setOspfAreaId(getOspfAreaId());
-            area.setOspfAuthType(getOspfAuthType());
-            area.setOspfAsBdrRtrCount(getOspfAsBdrRtrCount());
-            area.setOspfImportAsExtern(getOspfImportAsExtern());
-            return area;
+        public Integer getOspfAreaLsaCount() {
+            return getValue(OSPF_AREA_LSA_COUNT).toInt();
         }
 
+        public OspfArea getOspfArea() {
+            final OspfArea area = new OspfArea();
+            area.setOspfAreaId(getOspfAreaId());
+            area.setOspfAuthType(getOspfAuthType());
+            area.setOspfImportAsExtern(OspfArea.ImportAsExtern.valueOf(getOspfImportAsExtern().intValue()));
+            area.setOspfAreaBdrRtrCount(getOspfAreaBdrRtrCount());
+            area.setOspfAsBdrRtrCount(getOspfAsBdrRtrCount());
+            area.setOspfAreaLsaCount(getOspfAreaLsaCount());
+
+            return area;
+        }
     }
 
     public OspfAreaTableTracker() {

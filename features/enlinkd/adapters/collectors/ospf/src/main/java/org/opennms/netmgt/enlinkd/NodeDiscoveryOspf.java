@@ -35,10 +35,12 @@ import java.util.concurrent.ExecutionException;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.enlinkd.common.NodeCollector;
+import org.opennms.netmgt.enlinkd.model.OspfArea;
 import org.opennms.netmgt.enlinkd.model.OspfElement.Status;
 import org.opennms.netmgt.enlinkd.model.OspfLink;
 import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.enlinkd.service.api.OspfTopologyService;
+import org.opennms.netmgt.enlinkd.snmp.OspfAreaTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.OspfGeneralGroupTracker;
 import org.opennms.netmgt.enlinkd.snmp.OspfIfTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.OspfIpAddrTableGetter;
@@ -194,6 +196,33 @@ public final class NodeDiscoveryOspf extends NodeCollector {
             m_ospfTopologyService.store(getNodeId(),link);
         }
 
+        // Areas
+        List<OspfArea> areas =  new ArrayList<>();
+        OspfAreaTableTracker ospfAreaTableTracker = new OspfAreaTableTracker() {
+            public void processOspfIfRow(final OspfAreaRow row) {
+                areas.add(row.getOspfArea());
+            }
+        };
+
+        try {
+            getLocationAwareSnmpClient().walk(peer, ospfAreaTableTracker).
+                    withDescription("ospfAreaTable").
+                    withLocation(getLocation()).
+                    execute().
+                    get();
+        } catch (ExecutionException e) {
+            LOG.debug("run: node [{}]: ExecutionException: {}",
+                    getNodeId(), e.getMessage());
+            return;
+        } catch (final InterruptedException e) {
+            LOG.debug("run: node [{}]: InterruptedException: {}",
+                    getNodeId(), e.getMessage());
+            return;
+        }
+
+        for (OspfArea area : areas) {
+            m_ospfTopologyService.store(getNodeId(),area);
+        }
         m_ospfTopologyService.reconcile(getNodeId(),now);
     }
 
