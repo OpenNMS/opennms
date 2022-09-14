@@ -65,8 +65,7 @@ public class Repository {
 
     public boolean containsSnapshots() {
         return m_featureUris.stream()
-                .filter(uri -> uri.toString().contains("-SNAPSHOT"))
-                .findFirst().isPresent();
+                .anyMatch(uri -> uri.toString().contains("-SNAPSHOT"));
     }
 
     @Override
