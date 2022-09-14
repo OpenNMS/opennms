@@ -30,16 +30,15 @@ package org.opennms.core.ipc.twin.common;
 
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.MetricRegistry;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.fge.jsonpatch.JsonPatch;
-import com.github.fge.jsonpatch.JsonPatchException;
+import com.flipkart.zjsonpatch.JsonPatch;
+import com.flipkart.zjsonpatch.JsonPatchApplicationException;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import com.google.common.reflect.TypeToken;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.google.protobuf.InvalidProtocolBufferException;
+
 import io.opentracing.References;
 import io.opentracing.Scope;
 import io.opentracing.Span;
@@ -69,7 +68,7 @@ import java.util.function.Consumer;
 import static org.opennms.core.ipc.twin.common.AbstractTwinPublisher.TAG_PATCH;
 import static org.opennms.core.ipc.twin.common.AbstractTwinPublisher.TAG_SESSION_ID;
 import static org.opennms.core.ipc.twin.common.AbstractTwinPublisher.TAG_VERSION;
-import static org.opennms.core.ipc.twin.common.AbstractTwinPublisher.generateTracingOperationKey;
+import static org.opennms.core.ipc.twin.common.AbstractTwinPublisher.metricKey;
 
 public abstract class AbstractTwinSubscriber implements TwinSubscriber {
 
@@ -78,6 +77,7 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
     private static final String TWIN_REQUEST_SENT = "requestSent";
     private static final String TWIN_UPDATE_RECEIVED = "updateReceived";
     private static final String TWIN_UPDATE_DROPPED = "updateDropped";
+    private static final String TWIN_UPDATE_PATCH_APPLY = "patchApply";
     private final Identity identity;
 
     private final Map<String, Subscription> subscriptions = new ConcurrentHashMap<>();
@@ -126,7 +126,7 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
         if (twinUpdate.getObject() == null || twinUpdate.getSessionId() == null) {
             return;
         }
-        String tracingOperationKey = generateTracingOperationKey(twinUpdate.getLocation(), twinUpdate.getKey());
+        String tracingOperationKey = metricKey(twinUpdate.getLocation(), twinUpdate.getKey());
         Tracer.SpanBuilder spanBuilder = TracingInfoCarrier.buildSpanFromTracingMetadata(getTracer(),
                 tracingOperationKey, twinUpdate.getTracingInfo(), References.FOLLOWS_FROM);
         // Consume in thread instead of using broker's callback thread.
@@ -169,13 +169,13 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
             }
             twinUpdate.setKey(twinResponseProto.getConsumerKey());
             if (!twinResponseProto.getTwinObject().isEmpty()) {
-                twinUpdate.setObject(twinResponseProto.getTwinObject().toByteArray());
+                twinUpdate.setObject(objectMapper.readTree(twinResponseProto.getTwinObject().toByteArray()));
             }
             twinUpdate.setPatch(twinResponseProto.getIsPatchObject());
             twinUpdate.setVersion(twinResponseProto.getVersion());
             twinResponseProto.getTracingInfoMap().forEach(twinUpdate::addTracingInfo);
             return twinUpdate;
-        } catch (InvalidProtocolBufferException e) {
+        } catch (IOException e) {
             LOG.error("Failed to parse response from proto", e);
             throw new RuntimeException(e);
         }
@@ -308,7 +308,7 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
 
         private synchronized void request() {
             // Send a request
-            String tracingOperationKey = generateTracingOperationKey(getIdentity().getLocation(), this.key);
+            String tracingOperationKey = metricKey(getIdentity().getLocation(), this.key);
             Span span = tracer.buildSpan(tracingOperationKey).start();
             final var request = new TwinRequest(this.key, AbstractTwinSubscriber.this.identity.getLocation());
             updateTracingTags(span, request);
@@ -340,7 +340,7 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
                 if (!update.isPatch()) {
                     this.accept(new Value(update.getSessionId(),
                                           update.getVersion(),
-                                          AbstractTwinSubscriber.this.objectMapper.readTree(update.getObject())));
+                                          update.getObject()));
                 } else {
                     // JMX Metrics
                     updateCounter(MetricRegistry.name(this.key, TWIN_UPDATE_DROPPED));
@@ -358,19 +358,19 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
                 if (!update.isPatch()) {
                     this.accept(new Value(update.getSessionId(),
                                           update.getVersion(),
-                                          AbstractTwinSubscriber.this.objectMapper.readTree(update.getObject())));
+                                          update.getObject()));
                 } else {
                     if (update.getVersion() == this.value.version + 1) {
                         // Version advanced - apply path
                         try {
-                            final var patchObj = AbstractTwinSubscriber.this.objectMapper.readTree(update.getObject());
-                            final var patch = JsonPatch.fromJson(patchObj);
-
-                            final var value = patch.apply(this.value.value);
+                            final JsonNode value;
+                            try (final var timer = metrics.timer(MetricRegistry.name(metricKey(identity.getLocation(), this.key), TWIN_UPDATE_PATCH_APPLY)).time()) {
+                                value = JsonPatch.apply(update.getObject(), this.value.value);
+                            }
 
                             this.accept(new Value(update.getSessionId(), update.getVersion(), value));
 
-                        } catch (JsonPatchException e) {
+                        } catch (final JsonPatchApplicationException e) {
                             throw new IOException("Unable to apply patch", e);
                         }
 

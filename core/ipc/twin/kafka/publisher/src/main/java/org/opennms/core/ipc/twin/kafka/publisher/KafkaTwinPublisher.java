@@ -129,7 +129,7 @@ public class KafkaTwinPublisher extends AbstractTwinPublisher {
     }
 
     @Override
-    protected void handleSinkUpdate(final TwinUpdate sinkUpdate) {
+    protected void handleSinkUpdate(final TwinUpdate sinkUpdate) throws IOException {
         try {
             final var topic = Strings.isNullOrEmpty(sinkUpdate.getLocation())
                     ? Topic.responseGlobal()
@@ -151,7 +151,7 @@ public class KafkaTwinPublisher extends AbstractTwinPublisher {
     private void handleMessage(final ConsumerRecord<String, byte[]> record) {
         try {
             final TwinRequest request = mapTwinRequestProto(record.value());
-            String tracingOperationKey = generateTracingOperationKey(request.getLocation(), request.getKey());
+            String tracingOperationKey = metricKey(request.getLocation(), request.getKey());
             Tracer.SpanBuilder spanBuilder = TracingInfoCarrier.buildSpanFromTracingMetadata(getTracer(),
                     tracingOperationKey, request.getTracingInfo(), References.FOLLOWS_FROM);
             try (Scope scope = spanBuilder.startActive(true)) {

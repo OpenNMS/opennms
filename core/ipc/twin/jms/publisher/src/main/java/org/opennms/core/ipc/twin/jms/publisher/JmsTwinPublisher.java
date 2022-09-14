@@ -96,7 +96,7 @@ public class JmsTwinPublisher extends AbstractTwinPublisher implements AsyncProc
     }
 
     @Override
-    protected void handleSinkUpdate(TwinUpdate sinkUpdate) {
+    protected void handleSinkUpdate(TwinUpdate sinkUpdate) throws IOException {
         try {
             TwinResponseProto twinResponseProto = mapTwinResponse(sinkUpdate);
             Map<String, Object> headers = new HashMap<>();
@@ -128,7 +128,7 @@ public class JmsTwinPublisher extends AbstractTwinPublisher implements AsyncProc
         CompletableFuture.runAsync(() -> {
             try {
                 TwinRequest twinRequest = mapTwinRequestProto(requestBytes);
-                String tracingOperationKey = generateTracingOperationKey(twinRequest.getLocation(), twinRequest.getKey());
+                String tracingOperationKey = metricKey(twinRequest.getLocation(), twinRequest.getKey());
                 Tracer.SpanBuilder spanBuilder = TracingInfoCarrier.buildSpanFromTracingMetadata(getTracer(),
                         tracingOperationKey, twinRequest.getTracingInfo(), References.FOLLOWS_FROM);
                 try(Scope scope = spanBuilder.startActive(true)) {

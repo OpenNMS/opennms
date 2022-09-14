@@ -1752,7 +1752,6 @@
     <jrubyVersion>9.2.6.0</jrubyVersion>
     <jschVersion>0.1.72</jschVersion>
     <jsonVersion>20171018</jsonVersion>
-    <jsonPatchVersion>1.13</jsonPatchVersion>
     <jsonPathVersion>2.7.0</jsonPathVersion>
     <jsonSmartVersion>2.4.8</jsonSmartVersion>
     <jsoupVersion>1.7.2</jsoupVersion>
@@ -1827,6 +1826,7 @@
     <xmlApisExtVersion>1.3.04</xmlApisExtVersion>
     <wsdl4jVersion>1.6.3</wsdl4jVersion>
     <wsmanVersion>1.2.3</wsmanVersion>
+    <zjsonpatchVersion>0.4.12</zjsonpatchVersion>
     <zookeeperVersion>3.5.10</zookeeperVersion>
     <zookeeper2Version>3.6.3</zookeeper2Version>
     <zstdJniVersion>1.5.2-1</zstdJniVersion>

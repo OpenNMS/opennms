@@ -77,7 +77,7 @@ public class GrpcTwinPublisher extends AbstractTwinPublisher {
     }
 
     @Override
-    protected void handleSinkUpdate(TwinUpdate sinkUpdate) {
+    protected void handleSinkUpdate(TwinUpdate sinkUpdate) throws IOException {
         sendTwinResponseForSink(mapTwinResponse(sinkUpdate));
     }
 
@@ -133,7 +133,7 @@ public class GrpcTwinPublisher extends AbstractTwinPublisher {
                     CompletableFuture.runAsync(() -> {
                         try {
                             TwinRequest twinRequest = mapTwinRequestProto(twinRequestProto.toByteArray());
-                            String tracingOperationKey = generateTracingOperationKey(twinRequest.getLocation(), twinRequest.getKey());
+                            String tracingOperationKey = metricKey(twinRequest.getLocation(), twinRequest.getKey());
                             Tracer.SpanBuilder spanBuilder = TracingInfoCarrier.buildSpanFromTracingMetadata(getTracer(),
                                     tracingOperationKey, twinRequest.getTracingInfo(), References.FOLLOWS_FROM);
                             try (Scope scope = spanBuilder.startActive(true)){
@@ -177,12 +177,17 @@ public class GrpcTwinPublisher extends AbstractTwinPublisher {
 
             forEachSession(((sessionKey, twinTracker) -> {
                 if(sessionKey.location == null || sessionKey.location.equals(request.getLocation())) {
-                    TwinUpdate twinUpdate = new TwinUpdate(sessionKey.key, sessionKey.location, twinTracker.getObj());
+                    TwinUpdate twinUpdate = new TwinUpdate(sessionKey.key, sessionKey.location, twinTracker.getNode());
                     twinUpdate.setSessionId(twinTracker.getSessionId());
                     twinUpdate.setVersion(twinTracker.getVersion());
                     twinUpdate.setPatch(false);
-                    TwinResponseProto twinResponseProto = mapTwinResponse(twinUpdate);
-                    responseObserver.onNext(twinResponseProto);
+                    try {
+                        final TwinResponseProto twinResponseProto = mapTwinResponse(twinUpdate);
+                        responseObserver.onNext(twinResponseProto);
+                    } catch (final IOException e) {
+                        LOG.error("Failed to serialize twin update", e);
+                        throw new RuntimeException(e);
+                    }
                 }
             }));
         }

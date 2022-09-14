@@ -28,6 +28,8 @@
 
 package org.opennms.core.ipc.twin.common;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.JsonSerializable;
 import com.google.common.base.Objects;
 
 import java.util.Arrays;
@@ -41,7 +43,7 @@ public class TwinUpdate {
 
     private final TwinRequest twinRequest;
 
-    private byte[] object;
+    private JsonNode object;
 
     private int version;
 
@@ -55,7 +57,7 @@ public class TwinUpdate {
         this.twinRequest = new TwinRequest();
     }
 
-    public TwinUpdate(String key, String location, byte[] object) {
+    public TwinUpdate(String key, String location, final JsonNode object) {
         this.twinRequest = new TwinRequest(key, location);
         this.object = object;
     }
@@ -65,11 +67,11 @@ public class TwinUpdate {
 
 
 
-    public byte[] getObject() {
+    public JsonNode getObject() {
         return object;
     }
 
-    public void setObject(byte[] object) {
+    public void setObject(final JsonNode object) {
         this.object = object;
     }
 
@@ -142,7 +144,7 @@ public class TwinUpdate {
     public String toString() {
         return new StringJoiner(", ", TwinUpdate.class.getSimpleName() + "[", "]")
                 .add("twinRequest=" + twinRequest)
-                .add("object=" + Arrays.toString(object))
+                .add("object=" + object)
                 .add("version=" + version)
                 .add("isPatch=" + isPatch)
                 .add("sessionId='" + sessionId + "'")

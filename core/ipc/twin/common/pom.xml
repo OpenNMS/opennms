@@ -127,9 +127,9 @@
             <version>${jackson2Version}</version>
         </dependency>
         <dependency>
-            <groupId>com.github.java-json-tools</groupId>
-            <artifactId>json-patch</artifactId>
-            <version>${jsonPatchVersion}</version>
+            <groupId>com.flipkart.zjsonpatch</groupId>
+            <artifactId>zjsonpatch</artifactId>
+            <version>${zjsonpatchVersion}</version>
         </dependency>
         <dependency>
             <groupId>org.opennms.features.distributed</groupId>

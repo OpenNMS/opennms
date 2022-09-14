@@ -32,6 +32,8 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 /**
  * This Tracks Twin Object Updates for a given SessionKey (key, location).
  * Twin Tracker consists of marshalled object( byte[]), version and sessionId.
@@ -43,14 +45,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class TwinTracker {
 
     private final AtomicInteger version;
-    private byte[] obj;
+    private JsonNode node;
     private final String sessionId;
 
-    public TwinTracker(byte[] obj) {
-        this(obj, 0, UUID.randomUUID().toString());
+    public TwinTracker(JsonNode node) {
+        this(node, 0, UUID.randomUUID().toString());
     }
-    public TwinTracker(byte[] obj, int version, String sessionId) {
-        this.obj = obj;
+    public TwinTracker(JsonNode node, int version, String sessionId) {
+        this.node = node;
         this.version = new AtomicInteger(version);
         this.sessionId = Objects.requireNonNull(sessionId);
     }
@@ -59,8 +61,8 @@ public class TwinTracker {
         return version.get();
     }
 
-    public byte[] getObj() {
-        return obj;
+    public JsonNode getNode() {
+        return node;
     }
 
     public String getSessionId() {
@@ -68,8 +70,8 @@ public class TwinTracker {
     }
 
 
-    public int update(byte[] obj) {
-        this.obj = obj;
+    public int update(JsonNode node) {
+        this.node = node;
         return version.incrementAndGet();
     }
 }

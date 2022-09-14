@@ -28,11 +28,10 @@
 
 package org.opennms.core.ipc.twin.common;
 
-import com.codahale.metrics.Counter;
 import com.codahale.metrics.MetricRegistry;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.fge.jsonpatch.diff.JsonDiff;
+import com.flipkart.zjsonpatch.JsonDiff;
 import com.google.common.base.Strings;
 import com.google.common.reflect.TypeToken;
 import com.google.protobuf.ByteString;
@@ -51,8 +50,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -68,6 +65,8 @@ public abstract class AbstractTwinPublisher implements TwinPublisher {
     protected static final String TAG_VERSION = "version";
     protected static final String TAG_SESSION_ID = "sessionId";
     protected static final String TAG_PATCH = "isPatch";
+
+    private static final String SINK_UPDATE_PATCH_BUILD = "sinkUpdatePatchBuild";
     private static final String SINK_UPDATE_SENT = "sinkUpdateSent";
     private static final String TWIN_RESPONSE_SENT = "twinResponseSent";
     private static final String TWIN_EMPTY_RESPONSE_SENT = "twinEmptyResponseSent";
@@ -93,7 +92,7 @@ public abstract class AbstractTwinPublisher implements TwinPublisher {
     /**
      * @param sinkUpdate Handle sink Update from @{@link AbstractTwinPublisher}.
      */
-    protected abstract void handleSinkUpdate(TwinUpdate sinkUpdate);
+    protected abstract void handleSinkUpdate(TwinUpdate sinkUpdate) throws IOException;
 
     @Override
     public <T> Session<T> register(String key, TypeToken<T> type, String location) throws IOException {
@@ -111,15 +110,15 @@ public abstract class AbstractTwinPublisher implements TwinPublisher {
             // No twin object exists for this key yet, return with null object.
             twinUpdate = new TwinUpdate(twinRequest.getKey(), twinRequest.getLocation(), null);
             // JMX Metrics
-            updateCounter(MetricRegistry.name(twinRequest.location, twinRequest.getKey(), TWIN_EMPTY_RESPONSE_SENT));
+            this.metrics.counter(MetricRegistry.name(metricKey(twinRequest.location, twinRequest.getKey()), TWIN_EMPTY_RESPONSE_SENT)).inc();
         } else {
             // Fill TwinUpdate fields from TwinTracker.
-            twinUpdate = new TwinUpdate(twinRequest.getKey(), twinRequest.getLocation(), twinTracker.getObj());
+            twinUpdate = new TwinUpdate(twinRequest.getKey(), twinRequest.getLocation(), twinTracker.getNode());
             twinUpdate.setPatch(false);
             twinUpdate.setVersion(twinTracker.getVersion());
             twinUpdate.setSessionId(twinTracker.getSessionId());
             // JMX Metrics
-            updateCounter(MetricRegistry.name(twinRequest.location, twinRequest.getKey(), TWIN_RESPONSE_SENT));
+            this.metrics.counter(MetricRegistry.name(metricKey(twinRequest.location, twinRequest.getKey()), TWIN_RESPONSE_SENT)).inc();
         }
         return twinUpdate;
     }
@@ -133,7 +132,7 @@ public abstract class AbstractTwinPublisher implements TwinPublisher {
         return twinTracker;
     }
 
-    protected TwinResponseProto mapTwinResponse(TwinUpdate twinUpdate) {
+    protected TwinResponseProto mapTwinResponse(TwinUpdate twinUpdate) throws IOException {
         TwinResponseProto.Builder builder = TwinResponseProto.newBuilder();
         if (!Strings.isNullOrEmpty(twinUpdate.getLocation())) {
             builder.setLocation(twinUpdate.getLocation());
@@ -143,7 +142,7 @@ public abstract class AbstractTwinPublisher implements TwinPublisher {
         }
         builder.setConsumerKey(twinUpdate.getKey());
         if (twinUpdate.getObject() != null) {
-            builder.setTwinObject(ByteString.copyFrom(twinUpdate.getObject()));
+            builder.setTwinObject(ByteString.copyFrom(objectMapper.writeValueAsBytes(twinUpdate.getObject())));
         }
         builder.setIsPatchObject(twinUpdate.isPatch());
         builder.setVersion(twinUpdate.getVersion());
@@ -175,30 +174,26 @@ public abstract class AbstractTwinPublisher implements TwinPublisher {
         span.setTag(TAG_PATCH, twinUpdate.isPatch());
     }
 
-    private void updateCounter(String counterName) {
-        final Counter counter = metrics.counter(counterName);
-        counter.inc();
-    }
-
-    public static String generateTracingOperationKey(String location, String key) {
+    public static String metricKey(String location, String key) {
         return location != null ? key + "@" + location : key;
     }
 
-    private synchronized TwinUpdate getTwinUpdateFromUpdatedObj(byte[] updatedObj, SessionKey sessionKey) {
+    private synchronized <T> TwinUpdate getTwinUpdateFromUpdatedObj(T updatedObj, SessionKey sessionKey) {
+        final var updatedNode = objectMapper.valueToTree(updatedObj);
         TwinTracker twinTracker = getTwinTracker(sessionKey.key, sessionKey.location);
-        if (twinTracker == null || !Arrays.equals(twinTracker.getObj(), updatedObj)) {
-            TwinUpdate twinUpdate = new TwinUpdate(sessionKey.key, sessionKey.location, updatedObj);
+        if (twinTracker == null || !Objects.equals(twinTracker.getNode(), updatedNode)) {
+            TwinUpdate twinUpdate = new TwinUpdate(sessionKey.key, sessionKey.location, updatedNode);
             if (twinTracker == null) {
-                twinTracker = new TwinTracker(updatedObj);
+                twinTracker = new TwinTracker(updatedNode);
             } else {
                 // Generate patch and update response with patch.
-                byte[] patchValue = getPatchValue(twinTracker.getObj(), updatedObj, sessionKey);
-                if (patchValue != null) {
-                    twinUpdate.setObject(patchValue);
+                final var patch = getPatchValue(twinTracker.getNode(), updatedNode, sessionKey);
+                if (patch != null) {
+                    twinUpdate.setObject(patch);
                     twinUpdate.setPatch(true);
                 }
                 // Update Twin tracker with updated obj.
-                twinTracker.update(updatedObj);
+                twinTracker.update(updatedNode);
             }
             twinTrackerMap.put(sessionKey, twinTracker);
             twinUpdate.setVersion(twinTracker.getVersion());
@@ -208,12 +203,11 @@ public abstract class AbstractTwinPublisher implements TwinPublisher {
         return null;
     }
 
-    private byte[] getPatchValue(byte[] originalObj, byte[] updatedObj, SessionKey sessionKey) {
+    private JsonNode getPatchValue(final JsonNode originalObj,
+                                   final JsonNode updatedObj,
+                                   final SessionKey sessionKey) {
         try {
-            JsonNode sourceNode = objectMapper.readTree(originalObj);
-            JsonNode targetNode = objectMapper.readTree(updatedObj);
-            JsonNode diffNode = JsonDiff.asJson(sourceNode, targetNode);
-            return diffNode.toString().getBytes(StandardCharsets.UTF_8);
+            return JsonDiff.asJson(originalObj, updatedObj);
         } catch (Exception e) {
             LOG.error("Unable to generate patch for SessionKey {}", sessionKey, e);
         }
@@ -244,10 +238,14 @@ public abstract class AbstractTwinPublisher implements TwinPublisher {
         public void publish(T obj) throws IOException {
             try (Logging.MDCCloseable mdc = Logging.withPrefixCloseable(TwinStrategy.LOG_PREFIX)) {
                 LOG.info("Published an object update for the session with key {}", sessionKey.toString());
-                String tracingOperationKey = generateTracingOperationKey(sessionKey.location, sessionKey.key);
+                String tracingOperationKey = metricKey(sessionKey.location, sessionKey.key);
                 Span span = tracer.buildSpan(tracingOperationKey).start();
-                byte[] objInBytes = objectMapper.writeValueAsBytes(obj);
-                TwinUpdate twinUpdate = getTwinUpdateFromUpdatedObj(objInBytes, sessionKey);
+
+                final TwinUpdate twinUpdate;
+                try (final var timer = metrics.timer(MetricRegistry.name(metricKey(sessionKey.location, sessionKey.key), SINK_UPDATE_PATCH_BUILD)).time()) {
+                    twinUpdate = getTwinUpdateFromUpdatedObj(obj, sessionKey);
+                }
+
                 if (twinUpdate != null) {
                     TracingInfoCarrier.updateTracingMetadata(AbstractTwinPublisher.this.tracer, span, twinUpdate::addTracingInfo);
                     // Send update to local subscriber and on sink path.
@@ -258,12 +256,9 @@ public abstract class AbstractTwinPublisher implements TwinPublisher {
                     span.setTag(TAG_VERSION, twinUpdate.getVersion());
                     span.setTag(TAG_SESSION_ID, twinUpdate.getSessionId());
                     handleSinkUpdate(twinUpdate);
-                    String sinkUpdateMetricName = sessionKey.location != null ?
-                            MetricRegistry.name(sessionKey.location, sessionKey.key, SINK_UPDATE_SENT) :
-                            MetricRegistry.name(sessionKey.key, SINK_UPDATE_SENT);
                     localTwinSubscriber.accept(twinUpdate);
                     // JMX Metrics
-                    updateCounter(sinkUpdateMetricName);
+                    metrics.counter(MetricRegistry.name(metricKey(sessionKey.location, sessionKey.key), SINK_UPDATE_SENT)).inc();
                 }
                 span.finish();
             }
