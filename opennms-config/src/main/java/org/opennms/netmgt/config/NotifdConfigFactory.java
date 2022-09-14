@@ -150,10 +150,10 @@ public class NotifdConfigFactory extends NotifdConfigManager {
     @Override
     protected void saveXml(String xml) throws IOException {
         if (xml != null) {
-            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(m_notifdConfFile), StandardCharsets.UTF_8);
-            fileWriter.write(xml);
-            fileWriter.flush();
-            fileWriter.close();
+            try (Writer fileWriter = new OutputStreamWriter(new FileOutputStream(m_notifdConfFile), StandardCharsets.UTF_8)) {
+                fileWriter.write(xml);
+                fileWriter.flush();
+            }
         }
     }
 

@@ -148,10 +148,10 @@ public class GroupFactory extends GroupManager {
     @Override
     protected void saveXml(String data) throws IOException {
         if (data != null) {
-            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(m_groupsConfFile), StandardCharsets.UTF_8);
-            fileWriter.write(data);
-            fileWriter.flush();
-            fileWriter.close();
+            try (Writer fileWriter = new OutputStreamWriter(new FileOutputStream(m_groupsConfFile), StandardCharsets.UTF_8)) {
+                fileWriter.write(data);
+                fileWriter.flush();
+            }
         }
     }
 

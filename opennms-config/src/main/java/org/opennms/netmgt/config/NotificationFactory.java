@@ -131,10 +131,10 @@ public class NotificationFactory extends NotificationManager {
     @Override
     protected void saveXML(String xmlString) throws IOException {
         if (xmlString != null) {
-            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(m_noticeConfFile), StandardCharsets.UTF_8);
-            fileWriter.write(xmlString);
-            fileWriter.flush();
-            fileWriter.close();
+            try (Writer fileWriter = new OutputStreamWriter(new FileOutputStream(m_noticeConfFile), StandardCharsets.UTF_8)) {
+                fileWriter.write(xmlString);
+                fileWriter.flush();
+            }
         }
     }
 

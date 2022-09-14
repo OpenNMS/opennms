@@ -189,17 +189,17 @@ public class AmiPeerFactory {
      */
     public void saveCurrent() throws Exception {
         getWriteLock().lock();
-        Writer fileWriter = null;
-        try {
+        try (final StringWriter stringWriter = new StringWriter();
+             Writer fileWriter = new OutputStreamWriter(new FileOutputStream(ConfigFileConstants.getFile(ConfigFileConstants.AMI_CONFIG_FILE_NAME)), StandardCharsets.UTF_8)){
             optimize();
     
             // Marshal to a string first, then write the string to the file. This
             // way the original config
             // isn't lost if the XML from the marshal is hosed.
-            final StringWriter stringWriter = new StringWriter();
+
             JaxbUtils.marshal(m_config, stringWriter);
             if (stringWriter.toString() != null) {
-                fileWriter = new OutputStreamWriter(new FileOutputStream(ConfigFileConstants.getFile(ConfigFileConstants.AMI_CONFIG_FILE_NAME)), StandardCharsets.UTF_8);
+
                 fileWriter.write(stringWriter.toString());
                 fileWriter.flush();
             }
@@ -207,7 +207,6 @@ public class AmiPeerFactory {
             reload();
         } finally {
             getWriteLock().unlock();
-            fileWriter.close();
         }
     }
 

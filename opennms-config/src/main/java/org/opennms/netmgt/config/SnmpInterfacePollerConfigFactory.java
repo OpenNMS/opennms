@@ -138,11 +138,12 @@ public final class SnmpInterfacePollerConfigFactory extends SnmpInterfacePollerC
             long timestamp = System.currentTimeMillis();
             File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.SNMP_INTERFACE_POLLER_CONFIG_FILE_NAME);
             LOG.debug("saveXml: saving config file at {}: {}",timestamp, cfgFile.getPath());
-            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(cfgFile), StandardCharsets.UTF_8);
-            fileWriter.write(xml);
-            fileWriter.flush();
-            fileWriter.close();
-            LOG.debug("saveXml: finished saving config file: {}", cfgFile.getPath());
+            try (Writer fileWriter = new OutputStreamWriter(new FileOutputStream(cfgFile), StandardCharsets.UTF_8)) {
+                fileWriter.write(xml);
+                fileWriter.flush();
+                fileWriter.close();
+                LOG.debug("saveXml: finished saving config file: {}", cfgFile.getPath());
+            }
         }
     }
 

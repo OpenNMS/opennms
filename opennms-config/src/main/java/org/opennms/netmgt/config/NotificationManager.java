@@ -442,9 +442,10 @@ public abstract class NotificationManager {
     private int getNxtId(final String sql) throws SQLException {
         int id = 0;
         Connection connection = null;
+        Statement stmt = null;
         try {
             connection = getConnection();
-            Statement stmt = connection.createStatement();
+            stmt = connection.createStatement();
             ResultSet results = stmt.executeQuery(sql);
 
             results.next();
@@ -454,6 +455,9 @@ public abstract class NotificationManager {
             stmt.close();
             results.close();
         } finally {
+            if (stmt != null) {
+                stmt.close();
+            }
             if (connection != null) {
                 try {
                     connection.close();
