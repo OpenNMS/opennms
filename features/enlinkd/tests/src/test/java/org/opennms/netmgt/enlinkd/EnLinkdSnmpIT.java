@@ -220,10 +220,12 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
         SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(FireFly170_IP));
         String trackerName = "ospfAreaTableTracker";
 
+        List<OspfArea> areas =  new ArrayList<>();
         final OspfAreaTableTracker tracker = new OspfAreaTableTracker() {
 
             public void processOspfAreaRow(final OspfAreaTableTracker.OspfAreaRow row) {
                 System.err.println(row.getOspfArea());
+                areas.add(row.getOspfArea());
             }
         };
 
@@ -234,12 +236,15 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
                     .execute()
                     .get();
         } catch (final InterruptedException e) {
-            LOG.error("run: Ospf Area Tabble collection interrupted, exiting",e);
+            LOG.error("run: Ospf Area Table collection interrupted, exiting",e);
             return;
         }
-
-
-
+        assertEquals(areas.get(0).getOspfAreaId(), InetAddress.getByName("0.0.0.0"));
+        assertEquals(areas.get(0).getOspfAuthType().intValue(), 0);
+        assertEquals(areas.get(0).getOspfImportAsExtern().getValue().intValue(), 1);
+        assertEquals(areas.get(0).getOspfAreaBdrRtrCount().intValue(), 4);
+        assertEquals(areas.get(0).getOspfAsBdrRtrCount().intValue(), 2);
+        assertEquals(areas.get(0).getOspfAreaLsaCount().intValue(), 43);
     }
 
     @Test

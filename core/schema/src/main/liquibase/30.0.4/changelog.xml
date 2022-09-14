@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+    <changeSet author="aramos" id="30.0.4-ospfArea">
+        <createTable tableName="ospfarea">
+            <!-- Unique identifier -->
+            <column name="id" type="bigint">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <!-- Node Id -->
+            <column name="nodeId" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <!-- Area ID -->
+            <column name="ospfAreaId" type="varchar(16)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ospfAuthType" type="integer">
+                <constraints nullable="true"/>
+            </column>
+            <column name="ospfImportAsExtern" type="integer">
+                <constraints nullable="true"/>
+            </column>
+            <column name="ospfAreaBdrRtrCount" type="integer">
+                <constraints nullable="true"/>
+            </column>
+            <column name="ospfAsBdrRtrCount" type="integer">
+                <constraints nullable="true"/>
+            </column>
+            <column name="ospfAreaLsaCount" type="integer">
+                <constraints nullable="true"/>
+            </column>
+
+        </createTable>
+
+        <ext:addAutoIncrement tableName="ospfarea" columnName="id" sequenceName="opennmsNxtId"/>
+        <addForeignKeyConstraint constraintName="fk_ospfarea_nodeid" onDelete="CASCADE" baseTableName="ospfarea"
+                                 baseColumnNames="nodeid" referencedTableName="node" referencedColumnNames="nodeid"/>
+        <createIndex tableName="ospfarea" indexName="ospfarea_nodeid_idx">
+            <column name="nodeid"/>
+        </createIndex>
+        <createIndex tableName="ospfarea" indexName="ospfarea_pk_idx">
+            <column name="nodeid"/>
+            <column name="ospfAreaId"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>

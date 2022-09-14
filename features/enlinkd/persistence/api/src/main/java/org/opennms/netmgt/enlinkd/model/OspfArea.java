@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -44,11 +44,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import java.io.Serializable;
 import java.net.InetAddress;
-import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.opennms.core.utils.InetAddressUtils.str;
 
@@ -59,20 +58,18 @@ public class OspfArea implements Serializable {
 
     private final static Logger LOG = LoggerFactory.getLogger(OspfArea.class);
 
-
     private static final long serialVersionUID = 3798160983917807494L;
     private Integer m_id;
     private OnmsNode m_node;
-
-
-
     private InetAddress m_ospfAreaId;
     private Integer m_ospfAuthType;
-    private Integer m_ospfImportAsExtern;
+    private ImportAsExtern m_ospfImportAsExtern;
     private Integer m_ospfAreaBdrRtrCount;
     private Integer m_ospfAsBdrRtrCount;
+    private Integer m_ospfAreaLsaCount;
 
-    public OspfArea() {}
+    public OspfArea() {
+    }
 
     @Id
     @Column(nullable = false)
@@ -100,7 +97,7 @@ public class OspfArea implements Serializable {
     }
 
     @Column(name = "ospfImportAsExtern")
-    public Integer getOspfImportAsExtern() {
+    public ImportAsExtern getOspfImportAsExtern() {
         return m_ospfImportAsExtern;
     }
 
@@ -114,13 +111,18 @@ public class OspfArea implements Serializable {
         return m_ospfAsBdrRtrCount;
     }
 
+    @Column(name = "ospfAreaLsaCount")
+    public Integer getOspfAreaLsaCount() {
+        return m_ospfAreaLsaCount;
+    }
+
     public OspfArea setId(Integer id) {
-        this.m_id = m_id;
+        this.m_id = id;
         return this;
     }
 
     public OspfArea setNode(OnmsNode node) {
-        this.m_node = m_node;
+        this.m_node = node;
         return this;
     }
 
@@ -134,7 +136,7 @@ public class OspfArea implements Serializable {
         return this;
     }
 
-    public OspfArea setOspfImportAsExtern(Integer ospfImportAsExtern) {
+    public OspfArea setOspfImportAsExtern(ImportAsExtern ospfImportAsExtern) {
         this.m_ospfImportAsExtern = ospfImportAsExtern;
         return this;
     }
@@ -149,6 +151,10 @@ public class OspfArea implements Serializable {
         return this;
     }
 
+    public void setOspfAreaLsaCount(Integer ospfAreaLsaCount) {
+        this.m_ospfAreaLsaCount = ospfAreaLsaCount;
+    }
+
     /**
      * <p>toString</p>
      *
@@ -156,7 +162,7 @@ public class OspfArea implements Serializable {
      */
     public String toString() {
         return "ospfArea: nodeid:[" +
-                (getNode() != null ? getNode().getId() :null) +
+                (getNode() != null ? getNode().getId() : null) +
                 "]: area [" +
                 str(getOspfAreaId()) +
                 "/" +
@@ -165,9 +171,50 @@ public class OspfArea implements Serializable {
                 getOspfImportAsExtern() +
                 "/" +
                 getOspfAreaBdrRtrCount() +
-                "]: rem router id/ip/addressless:[" +
+                "/" +
                 getOspfAsBdrRtrCount() +
+                "/" +
+                getOspfAreaLsaCount() +
                 "]";
+    }
+
+    public void merge(OspfArea area) {
+        if (area == null)
+            return;
+        setOspfAreaId(area.getOspfAreaId());
+        setOspfAuthType(area.getOspfAuthType());
+        setOspfImportAsExtern(area.getOspfImportAsExtern());
+        setOspfAreaBdrRtrCount(area.getOspfAreaBdrRtrCount());
+        setOspfAsBdrRtrCount(area.getOspfAsBdrRtrCount());
+        setOspfAreaLsaCount(area.getOspfAreaLsaCount());
+    }
+
+
+    public enum ImportAsExtern {
+        IMPORT_EXTERNAL(1),
+        IMPORT_NO_EXTERNAL(2),
+        IMPORT_NSSA(3);
+
+        private final int value;
+        private static Map map = new HashMap<>();
+
+        private ImportAsExtern(Integer value) {
+            this.value = value;
+        }
+
+        static {
+            for (ImportAsExtern importAsExtern : ImportAsExtern.values()) {
+                map.put(importAsExtern.value, importAsExtern);
+            }
+        }
+
+        public static ImportAsExtern valueOf(int importAsExtern) {
+            return (ImportAsExtern) map.get(importAsExtern);
+        }
+
+        public Integer getValue() {
+            return value;
+        }
     }
 
 }
