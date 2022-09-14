@@ -46,7 +46,7 @@ public final class PatternMatcherFactory {
     }
 
     public static List<PatternMatcher> determinePatternMatcher(List<String> patterns) {
-        return patterns.stream().map(pattern -> createPatternMatcher(pattern)).collect(Collectors.toList());
+        return patterns.stream().map(PatternMatcherFactory::createPatternMatcher).collect(Collectors.toList());
     }
 }
 
