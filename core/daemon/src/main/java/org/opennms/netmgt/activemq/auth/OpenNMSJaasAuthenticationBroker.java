@@ -58,7 +58,7 @@ public class OpenNMSJaasAuthenticationBroker extends AbstractAuthenticationBroke
 
     private static final String JAAS_CONTEXT_NAME = "opennms";
 
-    private static final Pattern EXTRACT_IP_ADDRESS_PATTERN = Pattern.compile("tcp://([0-9\\.:]+):([0-9]+)");
+    private static final Pattern EXTRACT_IP_ADDRESS_PATTERN = Pattern.compile("tcp://([\\d.:]+):(\\d+)");
 
     private boolean isJaasContextAvailable = false;
 
