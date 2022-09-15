@@ -68,7 +68,7 @@ public class KSC_PerformanceReportFactory {
      * The array of values that may be used in the timespan declaration of a
      * graph
      */
-    protected static final String[] TIMESPAN_OPTIONS = {
+    public static final String[] TIMESPAN_OPTIONS = {
             "1_hour",
             "2_hour",
             "4_hour",
