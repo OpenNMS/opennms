@@ -153,6 +153,7 @@ public class DefaultScvRestService implements ScvRestService {
         try {
             VaultConfig vaultConfig = new VaultConfig()
                     .address(vaultConfigDTO.getVaultAddress())
+                    .nameSpace(vaultConfigDTO.getNamespace())
                     .token(vaultConfigDTO.getToken())
                     .build();
             vaultService.initializeVault(vaultConfig);

@@ -51,6 +51,7 @@ public class HcpConfigureCommand implements Action {
     @Argument(index = 0, name = "token", description = "Vault token", required = true, censor = true, multiValued = false)
     String token;
 
+
     @Override
     public Object execute() {
         try {

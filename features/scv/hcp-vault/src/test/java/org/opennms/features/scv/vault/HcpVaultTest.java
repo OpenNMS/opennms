@@ -52,7 +52,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-public class TestHcp {
+public class HcpVaultTest {
 
     private Vault vault;
     private VaultConfig config;
@@ -60,9 +60,10 @@ public class TestHcp {
     @Before
     public void init() throws VaultException {
         config = new VaultConfig()
-                .address("http://127.0.0.1:8200")
+                .address("")
                 // Update token from local vault server
-                .token("hvs.15krL4IWvfsHzqO4uA895h3J")
+                .token("")
+                .nameSpace("admin")
                 .build();
         vault = new Vault(config);
     }
@@ -134,7 +135,7 @@ public class TestHcp {
     }
 
     @Test
-    @Ignore("needs vault running locally")
+    @Ignore
     public void testHcpVault() throws VaultException {
         var jsonStore = Mockito.mock(JsonStore.class);
         Mockito.when(jsonStore.get(Mockito.anyString(), Mockito.anyString())).thenReturn(Optional.empty());
