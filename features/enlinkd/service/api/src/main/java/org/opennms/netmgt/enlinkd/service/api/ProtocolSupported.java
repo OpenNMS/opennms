@@ -31,6 +31,7 @@ package org.opennms.netmgt.enlinkd.service.api;
 public enum ProtocolSupported {
     LLDP,
     OSPF,
+    OSPFAREA,
     ISIS,
     BRIDGE,
     CDP,
