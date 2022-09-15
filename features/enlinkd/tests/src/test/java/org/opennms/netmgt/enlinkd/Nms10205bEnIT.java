@@ -702,6 +702,14 @@ Address          Interface              State     ID               Pri  Dead
             }
         }
 
+        m_linkd.forceTopologyUpdaterRun(ProtocolSupported.OSPFAREA);
+        m_linkd.runTopologyUpdater(ProtocolSupported.OSPFAREA);
+
+        OspfAreaOnmsTopologyUpdater areatopologyUpdater = m_linkd.getOspfAreaTopologyUpdater();
+
+        printOnmsTopology(areatopologyUpdater.buildTopology());
+
+
 
     }
 }

@@ -61,7 +61,13 @@
 		<constructor-arg ref="ospfTopologyService" />
 		<constructor-arg ref="nodeTopologyService" />
 	</bean>
-	
+
+	<bean id ="ospfAreaOnmsTopologyUpdater" class="org.opennms.netmgt.enlinkd.OspfAreaOnmsTopologyUpdater">
+		<constructor-arg ref="onmsTopologyDao" />
+		<constructor-arg ref="ospfTopologyService" />
+		<constructor-arg ref="nodeTopologyService" />
+	</bean>
+
 	<bean id="discoveryBridgeDomain" class="org.opennms.netmgt.enlinkd.DiscoveryBridgeDomains">
 		<constructor-arg ref="bridgeTopologyService" />
 	</bean>
