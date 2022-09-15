@@ -99,7 +99,7 @@ import io.opentracing.Span;
 import io.opentracing.SpanContext;
 import io.opentracing.Tracer;
 import io.opentracing.propagation.Format;
-import io.opentracing.propagation.TextMapExtractAdapter;
+import io.opentracing.propagation.TextMapAdapter;
 
 /**
  * This Manager runs on Minion, A consumer thread will be started on each RPC module which handles the request and
@@ -480,7 +480,7 @@ public class KafkaRpcServerManager {
             Tracer.SpanBuilder spanBuilder;
             Map<String, String> tracingInfoMap = new HashMap<>();
             rpcMessage.getTracingInfoMap().forEach(tracingInfoMap::put);
-            SpanContext context = tracer.extract(Format.Builtin.TEXT_MAP_EXTRACT, new TextMapExtractAdapter(tracingInfoMap));
+            SpanContext context = tracer.extract(Format.Builtin.TEXT_MAP, new TextMapAdapter(tracingInfoMap));
             if (context != null) {
                 spanBuilder = tracer.buildSpan(rpcMessage.getModuleId()).asChildOf(context);
             } else {

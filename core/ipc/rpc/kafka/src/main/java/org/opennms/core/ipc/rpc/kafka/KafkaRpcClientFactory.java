@@ -254,7 +254,7 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
             private void addTracingInfo(RpcRequest request, Span span, RpcMessageProto.Builder builder) {
 
                 TracingInfoCarrier tracingInfoCarrier = new TracingInfoCarrier();
-                tracer.inject(span.context(), Format.Builtin.TEXT_MAP_INJECT, tracingInfoCarrier);
+                tracer.inject(span.context(), Format.Builtin.TEXT_MAP, tracingInfoCarrier);
                 // Tracer adds it's own metadata.
                 tracingInfoCarrier.getTracingInfoMap().forEach((key, value) -> {
                             if (!Strings.isNullOrEmpty(key) && !Strings.isNullOrEmpty(value)) {

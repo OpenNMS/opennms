@@ -70,7 +70,9 @@
             <Export-Package>
               io.jaegertracing,
               io.jaegertracing.internal,
-              io.jaegertracing.internal.reporters
+              io.jaegertracing.internal.propagation,
+              io.jaegertracing.internal.reporters,
+              io.jaegertracing.spi
             </Export-Package>
           </instructions>
           <unpackBundle>true</unpackBundle>

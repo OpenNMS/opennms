@@ -200,7 +200,7 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
         final Tracer tracer = getTracer();
         if (tracer.activeSpan() != null && (chunk + 1 == totalChunks)) {
             TracingInfoCarrier tracingInfoCarrier = new TracingInfoCarrier();
-            tracer.inject(tracer.activeSpan().context(), Format.Builtin.TEXT_MAP_INJECT, tracingInfoCarrier);
+            tracer.inject(tracer.activeSpan().context(), Format.Builtin.TEXT_MAP, tracingInfoCarrier);
             tracer.activeSpan().setTag(TracerConstants.TAG_LOCATION, identity.getLocation());
             tracer.activeSpan().setTag(TracerConstants.TAG_THREAD, Thread.currentThread().getName());
             tracingInfoCarrier.getTracingInfoMap().forEach(sinkMessageBuilder::putTracingInfo);

@@ -86,7 +86,7 @@ import io.opentracing.Scope;
 import io.opentracing.SpanContext;
 import io.opentracing.Tracer;
 import io.opentracing.propagation.Format;
-import io.opentracing.propagation.TextMapExtractAdapter;
+import io.opentracing.propagation.TextMapAdapter;
 import io.opentracing.util.GlobalTracer;
 
 public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager implements InitializingBean {
@@ -239,7 +239,7 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
             Tracer.SpanBuilder spanBuilder;
             Map<String, String> tracingInfoMap = new HashMap<>();
             sinkMessage.getTracingInfoMap().forEach(tracingInfoMap::put);
-            SpanContext context = tracer.extract(Format.Builtin.TEXT_MAP_EXTRACT, new TextMapExtractAdapter(tracingInfoMap));
+            SpanContext context = tracer.extract(Format.Builtin.TEXT_MAP, new TextMapAdapter(tracingInfoMap));
             if (context != null) {
                 // Span on consumer side will follow the span from producer (minion).
                 spanBuilder = tracer.buildSpan(module.getId()).addReference(References.FOLLOWS_FROM, context);

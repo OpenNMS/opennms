@@ -238,7 +238,7 @@ public class CamelRpcClientFactory implements RpcClientFactory {
             private TracingInfoCarrier getTracingInfoCarrier(S request, Span span) {
 
                 TracingInfoCarrier tracingInfoCarrier = new TracingInfoCarrier();
-                tracer.inject(span.context(), Format.Builtin.TEXT_MAP_INJECT, tracingInfoCarrier);
+                tracer.inject(span.context(), Format.Builtin.TEXT_MAP, tracingInfoCarrier);
                 //Add custom tags to tracing info.
                 request.getTracingInfo().forEach(tracingInfoCarrier::put);
                 return tracingInfoCarrier;

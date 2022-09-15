@@ -104,7 +104,7 @@ import io.opentracing.Span;
 import io.opentracing.SpanContext;
 import io.opentracing.Tracer;
 import io.opentracing.propagation.Format;
-import io.opentracing.propagation.TextMapExtractAdapter;
+import io.opentracing.propagation.TextMapAdapter;
 import io.opentracing.util.GlobalTracer;
 /**
  * Minion GRPC client runs both RPC/Sink together.
@@ -454,7 +454,7 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
         Tracer.SpanBuilder spanBuilder;
         Map<String, String> tracingInfoMap = new HashMap<>();
         requestProto.getTracingInfoMap().forEach(tracingInfoMap::put);
-        SpanContext context = tracer.extract(Format.Builtin.TEXT_MAP_EXTRACT, new TextMapExtractAdapter(tracingInfoMap));
+        SpanContext context = tracer.extract(Format.Builtin.TEXT_MAP, new TextMapAdapter(tracingInfoMap));
         if (context != null) {
             spanBuilder = tracer.buildSpan(requestProto.getModuleId()).asChildOf(context);
         } else {
@@ -478,7 +478,7 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
         final Tracer tracer = getTracer();
         if (tracer.activeSpan() != null) {
             TracingInfoCarrier tracingInfoCarrier = new TracingInfoCarrier();
-            tracer.inject(tracer.activeSpan().context(), Format.Builtin.TEXT_MAP_INJECT, tracingInfoCarrier);
+            tracer.inject(tracer.activeSpan().context(), Format.Builtin.TEXT_MAP, tracingInfoCarrier);
             tracer.activeSpan().setTag(TracerConstants.TAG_LOCATION, minionIdentity.getLocation());
             tracer.activeSpan().setTag(TracerConstants.TAG_THREAD, Thread.currentThread().getName());
             tracingInfoCarrier.getTracingInfoMap().forEach(sinkMessageBuilder::putTracingInfo);

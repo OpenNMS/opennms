@@ -53,7 +53,7 @@ import io.opentracing.Scope;
 import io.opentracing.SpanContext;
 import io.opentracing.Tracer;
 import io.opentracing.propagation.Format;
-import io.opentracing.propagation.TextMapExtractAdapter;
+import io.opentracing.propagation.TextMapAdapter;
 import io.opentracing.util.GlobalTracer;
 
 public class CamelSinkServerProcessor implements Processor {
@@ -108,7 +108,7 @@ public class CamelSinkServerProcessor implements Processor {
         } else {
             tracer = GlobalTracer.get();
         }
-        SpanContext context = tracer.extract(Format.Builtin.TEXT_MAP_EXTRACT, new TextMapExtractAdapter(tracingInfo));
+        SpanContext context = tracer.extract(Format.Builtin.TEXT_MAP, new TextMapAdapter(tracingInfo));
         if (context != null) {
             spanBuilder = tracer.buildSpan(module.getId()).asChildOf(context);
         } else {
