@@ -111,7 +111,7 @@ public abstract class UserManager implements UserConfig {
      *
      * @param in a {@link java.io.InputStream} object.
      */
-    public void parseXML(final InputStream in) {
+    public void parseXML(final InputStream in) throws IOException {
         m_writeLock.lock();
 
         try (InputStreamReader isr = new InputStreamReader(in)) {
@@ -124,8 +124,6 @@ public abstract class UserManager implements UserConfig {
             }
         
             _buildDutySchedules(m_users);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         } finally {
             m_writeLock.unlock();
         }

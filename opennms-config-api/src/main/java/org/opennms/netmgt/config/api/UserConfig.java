@@ -66,7 +66,7 @@ public interface UserConfig {
 	 * 
 	 * @param an InputStream
 	 */
-	void parseXML(final InputStream in);
+	void parseXML(final InputStream in) throws IOException;
 	
 	/**
 	 * <p>saveUser</p>
