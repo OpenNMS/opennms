@@ -99,6 +99,10 @@
         <property name="sessionFactory" ref="sessionFactory" />
     </bean>
 
+    <bean id="ospfAreaDao" class="org.opennms.netmgt.enlinkd.persistence.impl.OspfAreaDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+
     <bean id="isisLinkDao" class="org.opennms.netmgt.enlinkd.persistence.impl.IsIsLinkDaoHibernate">
         <property name="sessionFactory" ref="sessionFactory" />
     </bean>
@@ -179,6 +183,7 @@
    <bean id="ospfTopologyService" class="org.opennms.netmgt.enlinkd.service.impl.OspfTopologyServiceImpl">
       <property name="ospfLinkDao" ref="ospfLinkDao" />
       <property name="ospfElementDao" ref="ospfElementDao" />
+      <property name="ospfAreaDao" ref="ospfAreaDao" />
       <property name="topologyEntityCache" ref="topologyEntityCache" />
    </bean>
 
