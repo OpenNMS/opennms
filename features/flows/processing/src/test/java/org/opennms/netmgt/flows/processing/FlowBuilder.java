@@ -87,10 +87,18 @@ public class FlowBuilder {
     }
 
     public FlowBuilder withFlow(Instant firstSwitched, Instant lastSwitched, String sourceIp, int sourcePort, String destIp, int destPort, long numBytes) {
-        return withFlow(firstSwitched, firstSwitched, lastSwitched, sourceIp, sourcePort, destIp, destPort, numBytes);
+        return withFlow(firstSwitched, firstSwitched, lastSwitched, sourceIp, sourcePort, destIp, destPort, numBytes, null);
+    }
+
+    public FlowBuilder withFlow(Instant firstSwitched, Instant lastSwitched, String sourceIp, int sourcePort, String destIp, int destPort, long numBytes, String application) {
+        return withFlow(firstSwitched, firstSwitched, lastSwitched, sourceIp, sourcePort, destIp, destPort, numBytes, application);
     }
 
     public FlowBuilder withFlow(Instant firstSwitched, Instant deltaSwitched, Instant lastSwitched, String sourceIp, int sourcePort, String destIp, int destPort, long numBytes) {
+        return withFlow(firstSwitched, deltaSwitched, lastSwitched, sourceIp, sourcePort, destIp, destPort, numBytes, null);
+    }
+
+    public FlowBuilder withFlow(Instant firstSwitched, Instant deltaSwitched, Instant lastSwitched, String sourceIp, int sourcePort, String destIp, int destPort, long numBytes, String application) {
         final TestFlow flow = new TestFlow();
         flow.setTimestamp(lastSwitched);
         flow.setFirstSwitched(firstSwitched);
@@ -118,6 +126,7 @@ public class FlowBuilder {
         }
         flow.setDirection(direction);
         flow.setTos(tos);
+        flow.setApplication(application != null ? application : this.application);
         flows.add(flow);
         return this;
     }

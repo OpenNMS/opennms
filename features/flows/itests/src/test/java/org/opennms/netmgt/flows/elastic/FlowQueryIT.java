@@ -1038,10 +1038,10 @@ public class FlowQueryIT {
                 // 192.168.1.100:43444 <-> 10.1.1.11:80 (110 bytes in [3,15])
                 .withDirection(Direction.INGRESS)
                 .withTos(4 + 64)
-                .withFlow(Instant.ofEpochMilli(3), Instant.ofEpochMilli(15), "192.168.1.100", 43444, "10.1.1.11", 80, 10)
+                .withFlow(Instant.ofEpochMilli(3), Instant.ofEpochMilli(15), "192.168.1.100", 43444, "10.1.1.11", 80, 10, "http")
                 .withDirection(Direction.EGRESS)
                 .withTos(8 + 128)
-                .withFlow(Instant.ofEpochMilli(3), Instant.ofEpochMilli(15), "10.1.1.11", 80, "192.168.1.100", 43444, 100);
+                .withFlow(Instant.ofEpochMilli(3), Instant.ofEpochMilli(15), "10.1.1.11", 80, "192.168.1.100", 43444, 100, "http");
                 // 192.168.1.100:43445 <-> 10.1.1.12:443 (1100 bytes in [13,26])
                 if (!useUnknownDirection) {
                     flowBuilder.withDirection(Direction.INGRESS);
@@ -1052,7 +1052,7 @@ public class FlowQueryIT {
                 }
                 flowBuilder.withHostnames(null, "la.le.lu")
                 .withTos(16 + 64)
-                .withFlow(Instant.ofEpochMilli(13), Instant.ofEpochMilli(26), "192.168.1.100", 43445, "10.1.1.12", 443, 100);
+                .withFlow(Instant.ofEpochMilli(13), Instant.ofEpochMilli(26), "192.168.1.100", 43445, "10.1.1.12", 443, 100, "https");
                 if (!useUnknownDirection) {
                     flowBuilder.withDirection(Direction.EGRESS);
                 } else {
@@ -1062,14 +1062,14 @@ public class FlowQueryIT {
                 }
                 flowBuilder.withHostnames("la.le.lu", null)
                 .withTos(32 + 128)
-                .withFlow(Instant.ofEpochMilli(13), Instant.ofEpochMilli(26), "10.1.1.12", 443, "192.168.1.100", 43445, 1000)
+                .withFlow(Instant.ofEpochMilli(13), Instant.ofEpochMilli(26), "10.1.1.12", 443, "192.168.1.100", 43445, 1000, "https")
                 // 192.168.1.101:43442 <-> 10.1.1.12:443 (1210 bytes in [14, 45])
                 .withDirection(Direction.INGRESS)
                 .withHostnames("ingress.only", "la.le.lu")
-                .withFlow(Instant.ofEpochMilli(14), Instant.ofEpochMilli(45), "192.168.1.101", 43442, "10.1.1.12", 443, 110)
+                .withFlow(Instant.ofEpochMilli(14), Instant.ofEpochMilli(45), "192.168.1.101", 43442, "10.1.1.12", 443, 110, "https")
                 .withDirection(Direction.EGRESS)
                 .withHostnames("la.le.lu", null)
-                .withFlow(Instant.ofEpochMilli(14), Instant.ofEpochMilli(45), "10.1.1.12", 443, "192.168.1.101", 43442, 1100)
+                .withFlow(Instant.ofEpochMilli(14), Instant.ofEpochMilli(45), "10.1.1.12", 443, "192.168.1.101", 43442, 1100, "https")
                 // 192.168.1.102:50000 <-> 10.1.1.13:50001 (200 bytes in [50, 52])
                 .withDirection(Direction.INGRESS)
                 .withFlow(Instant.ofEpochMilli(50), Instant.ofEpochMilli(52), "192.168.1.102", 50000, "10.1.1.13", 50001, 200)

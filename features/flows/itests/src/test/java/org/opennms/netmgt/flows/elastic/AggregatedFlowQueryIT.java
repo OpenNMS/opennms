@@ -88,6 +88,9 @@ import org.opennms.netmgt.flows.api.FlowSource;
 import org.opennms.netmgt.flows.api.Host;
 import org.opennms.netmgt.flows.api.LimitedCardinalityField;
 import org.opennms.netmgt.flows.api.TrafficSummary;
+import org.opennms.netmgt.flows.classification.ClassificationEngine;
+import org.opennms.netmgt.flows.classification.dto.RuleDTO;
+import org.opennms.netmgt.flows.classification.internal.DefaultClassificationEngine;
 import org.opennms.netmgt.flows.elastic.agg.AggregatedFlowQueryService;
 import org.opennms.netmgt.flows.processing.impl.DocumentEnricherImpl;
 import org.opennms.netmgt.flows.processing.enrichment.NodeInfo;
@@ -97,6 +100,7 @@ import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
 import org.opennms.netmgt.flows.persistence.FlowDocumentBuilder;
 import org.opennms.netmgt.flows.processing.FlowBuilder;
 import org.opennms.netmgt.flows.processing.impl.DocumentMangler;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.ImmutableSet;
@@ -379,16 +383,16 @@ public class AggregatedFlowQueryIT {
                 // 192.168.1.100:43444 <-> 10.1.1.11:80 (110 bytes in [3,15])
                 .withDirection(Direction.INGRESS)
                 .withTos(0)
-                .withFlow(date(3), date(15), "192.168.1.100", 43444, "10.1.1.11", 80, 10)
+                .withFlow(date(3), date(15), "192.168.1.100", 43444, "10.1.1.11", 80, 10, "http")
                 .withDirection(Direction.EGRESS)
                 .withTos(4)
-                .withFlow(date(3), date(15), "10.1.1.11", 80, "192.168.1.100", 43444, 100)
+                .withFlow(date(3), date(15), "10.1.1.11", 80, "192.168.1.100", 43444, 100, "http")
                 .withDirection(Direction.INGRESS)
                 .withTos(8)
-                .withFlow(date(20), date(45), "192.168.1.100", 43444, "10.1.1.11", 80, 10)
+                .withFlow(date(20), date(45), "192.168.1.100", 43444, "10.1.1.11", 80, 10, "http")
                 .withDirection(Direction.EGRESS)
                 .withTos(12)
-                .withFlow(date(20), date(45), "10.1.1.11", 80, "192.168.1.100", 43444, 100)
+                .withFlow(date(20), date(45), "10.1.1.11", 80, "192.168.1.100", 43444, 100, "http")
                 .build();
 
         // expect 25 flow summary documents
@@ -770,23 +774,23 @@ public class AggregatedFlowQueryIT {
                 .withSnmpInterfaceId(98)
                 // 192.168.1.100:43444 <-> 10.1.1.11:80 (110 bytes in [3,15])
                 .withDirection(Direction.INGRESS)
-                .withFlow(date(3), date(15), "192.168.1.100", 43444, "10.1.1.11", 80, 10)
+                .withFlow(date(3), date(15), "192.168.1.100", 43444, "10.1.1.11", 80, 10, "http")
                 .withDirection(Direction.EGRESS)
-                .withFlow(date(3), date(15), "10.1.1.11", 80, "192.168.1.100", 43444, 100)
+                .withFlow(date(3), date(15), "10.1.1.11", 80, "192.168.1.100", 43444, 100, "http")
                 // 192.168.1.100:43445 <-> 10.1.1.12:443 (1100 bytes in [13,26])
                 .withDirection(Direction.INGRESS)
                 .withHostnames(null, "la.le.lu")
-                .withFlow(date(13), date(26), "192.168.1.100", 43445, "10.1.1.12", 443, 100)
+                .withFlow(date(13), date(26), "192.168.1.100", 43445, "10.1.1.12", 443, 100, "https")
                 .withDirection(Direction.EGRESS)
                 .withHostnames("la.le.lu", null)
-                .withFlow(date(13), date(26), "10.1.1.12", 443, "192.168.1.100", 43445, 1000)
+                .withFlow(date(13), date(26), "10.1.1.12", 443, "192.168.1.100", 43445, 1000, "https")
                 // 192.168.1.101:43442 <-> 10.1.1.12:443 (1210 bytes in [14, 45])
                 .withDirection(Direction.INGRESS)
                 .withHostnames("ingress.only", "la.le.lu")
-                .withFlow(date(14), date(45), "192.168.1.101", 43442, "10.1.1.12", 443, 110)
+                .withFlow(date(14), date(45), "192.168.1.101", 43442, "10.1.1.12", 443, 110, "https")
                 .withDirection(Direction.EGRESS)
                 .withHostnames("la.le.lu", null)
-                .withFlow(date(14), date(45), "10.1.1.12", 443, "192.168.1.101", 43442, 1100)
+                .withFlow(date(14), date(45), "10.1.1.12", 443, "192.168.1.101", 43442, 1100, "https")
                 // 192.168.1.102:50000 <-> 10.1.1.13:50001 (200 bytes in [50, 52])
                 .withDirection(Direction.INGRESS)
                 .withFlow(date(50), date(52), "192.168.1.102", 50000, "10.1.1.13", 50001, 200)

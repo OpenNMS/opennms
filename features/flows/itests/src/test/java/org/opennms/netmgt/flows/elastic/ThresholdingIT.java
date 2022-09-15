@@ -50,6 +50,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.opennms.core.ipc.twin.api.TwinPublisher;
 import org.opennms.core.ipc.twin.api.TwinSubscriber;
+import org.opennms.core.ipc.twin.memory.MemoryTwinPublisher;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
@@ -63,11 +64,14 @@ import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.FilterWatcher;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
+import org.opennms.netmgt.dao.support.DefaultFilterWatcher;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.integration.api.v1.flows.Flow;
 import org.opennms.netmgt.flows.classification.persistence.api.ClassificationGroupDao;
 import org.opennms.netmgt.flows.classification.persistence.api.ClassificationRuleDao;
+import org.opennms.netmgt.flows.classification.persistence.api.Group;
+import org.opennms.netmgt.flows.classification.persistence.api.Groups;
 import org.opennms.netmgt.flows.classification.service.ClassificationService;
 import org.opennms.netmgt.flows.classification.service.internal.DefaultClassificationService;
 import org.opennms.netmgt.flows.processing.enrichment.EnrichedFlow;
@@ -142,13 +146,7 @@ public class ThresholdingIT {
     private FilterDao filterDao;
 
     @Autowired
-    private FilterWatcher filterWatcher;
-
-    @Autowired
     private SessionUtils sessionUtils;
-
-    @Autowired
-    private TwinPublisher twinPublisher;
 
     private List<org.opennms.netmgt.flows.classification.persistence.api.Rule> rules;
 
@@ -158,10 +156,12 @@ public class ThresholdingIT {
 
     @Before
     public void before() throws Exception {
-        this.rules = Lists.newArrayList(
-                new RuleBuilder().withName("APP1").withDstPort("1").withPosition(1).build(),
-                new RuleBuilder().withName("APP2").withDstPort("2").withPosition(1).build()
-        );
+        this.sessionUtils.withTransaction(() -> {
+            final var group = this.groupDao.findByName(Groups.USER_DEFINED);
+
+            this.ruleDao.save(new RuleBuilder().withGroup(group).withName("APP1").withDstPort("1").withPosition(1).build());
+            this.ruleDao.save(new RuleBuilder().withGroup(group).withName("APP2").withDstPort("2").withPosition(1).build());
+        });
 
         this.applicationContext.getAutowireCapableBeanFactory().createBean(DefaultResourceTypeMapper.class);
 
@@ -174,15 +174,19 @@ public class ThresholdingIT {
 
         this.threshdDao.rebuildPackageIpListMap();
 
+        final var filterWatcher = new DefaultFilterWatcher();
+        filterWatcher.setFilterDao(this.filterDao);
+        filterWatcher.setSessionUtils(this.sessionUtils);
+        filterWatcher.afterPropertiesSet();
+
+        final var twinPublisher = new MemoryTwinPublisher();
+
         this.classificationService = new DefaultClassificationService(this.ruleDao,
                                                                       this.groupDao,
                                                                       this.filterDao,
-                                                                      this.filterWatcher,
+                                                                      filterWatcher,
                                                                       this.sessionUtils,
-                                                                      this.twinPublisher);
-
-        // TODO fooker: load the rules here?
-//        this.classificationService.load(rules);
+                                                                      twinPublisher);
 
         final var collectionAgentFactory = new DefaultCollectionAgentFactory();
         collectionAgentFactory.setNodeDao(this.databasePopulator.getNodeDao());
