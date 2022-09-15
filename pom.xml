@@ -1726,6 +1726,7 @@
     <karafVersion>4.3.6</karafVersion>
     <kafkaBundleVersion>3.2.0_1</kafkaBundleVersion>
     <kafkaVersion>3.2.0</kafkaVersion>
+    <kotlinVersion>1.4.10</kotlinVersion>
     <liquibaseVersion>3.6.3</liquibaseVersion>
     <lmaxDisruptorVersion>3.3.2</lmaxDisruptorVersion>
     <log4j2Version>2.18.0</log4j2Version>

@@ -35,18 +35,6 @@
               org.conscrypt;resolution:=optional,
               com.android.org.conscrypt;resolution:=optional,
               sun.security.ssl;resolution:=optional,
-              kotlin;resolution:=optional,
-              kotlin.annotation;resolution:=optional,
-              kotlin.collections;resolution:=optional,
-              kotlin.comparisons;resolution:=optional,
-              kotlin.io;resolution:=optional,
-              kotlin.jvm;resolution:=optional,
-              kotlin.jvm.functions;resolution:=optional,
-              kotlin.jvm.internal;resolution:=optional,
-              kotlin.jvm.internal.markers;resolution:=optional,
-              kotlin.ranges;resolution:=optional,
-              kotlin.sequences;resolution:=optional,
-              kotlin.text;resolution:=optional,
               org.bouncycastle.jsse;resolution:=optional,
               org.bouncycastle.jsse.provider;resolution:=optional,
               org.openjsse.javax.net.ssl;resolution:=optional,
@@ -73,6 +61,11 @@
       <groupId>com.squareup.okio</groupId>
       <artifactId>okio</artifactId>
       <version>${okioVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jetbrains.kotlin</groupId>
+      <artifactId>kotlin-osgi-bundle</artifactId>
+      <version>${kotlinVersion}</version>
     </dependency>
     <dependency>
       <groupId>com.google.code.gson</groupId>
