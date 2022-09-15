@@ -77,5 +77,13 @@ public interface ScvRestService {
     @Path("{alias}")
     Response editCredentials(@PathParam("alias") String alias, CredentialsDTO credentialsDTO);
 
+    @POST
+    @Path("/configure-vault")
+    @Consumes({MediaType.APPLICATION_JSON})
+    Response configureVault(VaultConfigurationDTO vaultConfigurationDTO);
+
+    @GET
+    @Path("get-scv-strategy")
+    Response getScvStrategy();
 
 }
