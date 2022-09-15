@@ -75,7 +75,7 @@ public class TopologyEntityDaoHibernate extends HibernateDaoSupport implements T
     @Override
     public List<OspfLinkTopologyEntity> getOspfLinkTopologyEntities() {
         return (List<OspfLinkTopologyEntity>)getHibernateTemplate().find(
-                "select new org.opennms.netmgt.enlinkd.model.OspfLinkTopologyEntity(l.id, l.node.id, l.ospfIpAddr, l.ospfIpMask, l.ospfRemIpAddr, l.ospfIfIndex) from org.opennms.netmgt.enlinkd.model.OspfLink l");
+                "select new org.opennms.netmgt.enlinkd.model.OspfLinkTopologyEntity(l.id, l.node.id, l.ospfIpAddr, l.ospfIpMask, l.ospfRemIpAddr, l.ospfIfIndex, l.ospfIfAreaId) from org.opennms.netmgt.enlinkd.model.OspfLink l");
     }
 
     @Override

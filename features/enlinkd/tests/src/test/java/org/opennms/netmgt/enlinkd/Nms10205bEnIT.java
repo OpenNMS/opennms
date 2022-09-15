@@ -706,8 +706,8 @@ Address          Interface              State     ID               Pri  Dead
         m_linkd.runTopologyUpdater(ProtocolSupported.OSPFAREA);
 
         OspfAreaOnmsTopologyUpdater areatopologyUpdater = m_linkd.getOspfAreaTopologyUpdater();
-
-        printOnmsTopology(areatopologyUpdater.buildTopology());
+        OnmsTopology areaTopology = areatopologyUpdater.getTopology();
+        printOnmsTopology(areaTopology);
 
 
 
