@@ -72,6 +72,7 @@ public class JaegerTracerWrapper implements TracerWrapper {
                 .registerInjector(Format.Builtin.TEXT_MAP, textMapCodec)
                 .registerExtractor(Format.Builtin.TEXT_MAP, textMapCodec)
                 .build();
+        GlobalTracer.registerIfAbsent(tracer);
         LOG.info("Jaeger tracer initialized with serviceName = {}", serviceName);
         return tracer;
     }

@@ -70,7 +70,7 @@ public class TracingInfoCarrier implements TextMap {
 
     @Override
     public Iterator<Map.Entry<String, String>> iterator() {
-        throw new UnsupportedOperationException();
+        return tracingInfoMap.entrySet().iterator();
     }
 
     @Override

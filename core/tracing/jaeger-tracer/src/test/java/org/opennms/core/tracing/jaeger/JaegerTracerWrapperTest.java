@@ -27,12 +27,41 @@
  *******************************************************************************/
 package org.opennms.core.tracing.jaeger;
 
+import static org.junit.Assert.fail;
+
 import org.junit.Test;
+import org.opennms.core.tracing.util.TracingInfoCarrier;
+
+import io.opentracing.Span;
+import io.opentracing.SpanContext;
+import io.opentracing.Tracer;
+import io.opentracing.propagation.Format;
 
 public class JaegerTracerWrapperTest {
     @Test
     public void testInit() {
         JaegerTracerWrapper wrapper = new JaegerTracerWrapper();
         wrapper.init("testing");
+    }
+
+    @Test
+    public void testTracingInfoCarrier() {
+        JaegerTracerWrapper wrapper = new JaegerTracerWrapper();
+        Tracer tracer = wrapper.init("testing");
+        Span span = tracer.buildSpan("inject test").start();
+
+        TracingInfoCarrier tracingInfoCarrier = new TracingInfoCarrier();
+
+        tracer.inject(span.context(), Format.Builtin.TEXT_MAP, tracingInfoCarrier);
+        SpanContext newContext = tracer.extract(Format.Builtin.TEXT_MAP, tracingInfoCarrier);
+
+        if (!span.context().toString().equals(newContext.toString())) {
+            System.err.println("Initial SpanContext: " + span.context().toString());
+            System.err.println("TracingInfoCarrier map after injection:");
+            tracingInfoCarrier.getTracingInfoMap().forEach((key, value) -> System.err.println(key + " -> " + value));
+            System.err.println("\nExtracted SpanContext: " + newContext.toString());
+
+            fail("Before and after span contexts don't match. See above.");
+        }
     }
 }
