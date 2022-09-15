@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2003-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2003-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -68,7 +68,7 @@ public class KSC_PerformanceReportFactory {
      * The array of values that may be used in the timespan declaration of a
      * graph
      */
-    public static final String[] TIMESPAN_OPTIONS = {
+    protected static final String[] TIMESPAN_OPTIONS = {
             "1_hour",
             "2_hour",
             "4_hour",

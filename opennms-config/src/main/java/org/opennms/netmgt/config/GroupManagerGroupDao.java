@@ -220,7 +220,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
         try {
             return m_groupManager.isGroupOnDuty(group, time);
         } catch (Throwable e) {
-            throw CONFIG_OBJECT_EXCEPTION_TRANSLATOR.translate("getting group '" + group + "' to see if it is on duty at " + time, e);
+            throw CONFIG_OBJECT_EXCEPTION_TRANSLATOR.translate(GETTING_GROUP_STR + group + "' to see if it is on duty at " + time, e);
         }
     }
 

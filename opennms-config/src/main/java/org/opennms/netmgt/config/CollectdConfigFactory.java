@@ -40,7 +40,6 @@ import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;

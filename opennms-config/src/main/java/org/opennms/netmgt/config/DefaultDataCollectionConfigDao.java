@@ -647,13 +647,13 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
             }
 
             // First see if address is in list of specific addresses
-            if (addrList != null && addrList.size() > 0 && addrList.contains(anAddress)) {
+            if (addrList != null && !addrList.isEmpty() && addrList.contains(anAddress)) {
                 LOG.debug("getMibObjectList: addrList exists and does include IP address {} for system <name>: {}", anAddress, system.getName());
                 bMatchIPAddress = true;
             }
 
             // If still no match, see if address matches any of the masks
-            if (bMatchIPAddress == false && maskList != null && maskList.size() > 0) {
+            if (!bMatchIPAddress && maskList != null && !maskList.isEmpty()) {
                 for (final String currMask : maskList) {
                     if (anAddress.indexOf(currMask) == 0) {
                         LOG.debug("getMibObjectList: anAddress '{}' matches mask '{}'", anAddress, currMask);

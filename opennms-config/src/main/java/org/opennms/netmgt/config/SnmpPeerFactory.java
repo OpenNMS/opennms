@@ -260,7 +260,6 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
             if (marshalledConfig != null) {
                 fileWriter.write(marshalledConfig);
                 fileWriter.flush();
-                fileWriter.close();
                 if (m_container != null) {
                     m_container.reload();
                 }
