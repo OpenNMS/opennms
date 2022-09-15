@@ -152,11 +152,11 @@ public class ServiceTest {
 
         ospfAreas = Arrays.asList(
                 createOspfArea(36, nodes.get(0), InetAddresses.forString("0.0.0.0"), 1, 1, 1,2,3 ),
-                createOspfArea(36, nodes.get(0), InetAddresses.forString("0.0.0.0"), 2, 1, 3,3,7 ),
-                createOspfArea(36, nodes.get(0), InetAddresses.forString("0.0.0.1"), 1, 2, 5,2,12 ),
-                createOspfArea(36, nodes.get(0), InetAddresses.forString("0.0.0.1"), 1, 2, 7,4,11 ),
-                createOspfArea(36, nodes.get(0), InetAddresses.forString("0.0.0.2"), 1, 3, 9,8,20 ),
-                createOspfArea(36, nodes.get(0), InetAddresses.forString("0.0.0.0"), 1, 1, 1,2,11 )
+                createOspfArea(37, nodes.get(1), InetAddresses.forString("0.0.0.0"), 2, 1, 3,3,7 ),
+                createOspfArea(38, nodes.get(2), InetAddresses.forString("0.0.0.1"), 1, 2, 5,2,12 ),
+                createOspfArea(39, nodes.get(3), InetAddresses.forString("0.0.0.1"), 1, 2, 7,4,11 ),
+                createOspfArea(40, nodes.get(4), InetAddresses.forString("0.0.0.2"), 1, 3, 9,8,20 ),
+                createOspfArea(41, nodes.get(5), InetAddresses.forString("0.0.0.0"), 1, 1, 1,2,11 )
         );
 
         lldpelements = Arrays.asList(
@@ -235,7 +235,8 @@ public class ServiceTest {
 
     @Test
     public void ospfAreasTest() {
-
+        List<OspfAreaTopologyEntity> matchingArea = ospfTopologyService.findAllOspfAreas();
+        assertEquals(6, matchingArea.size());
         verify(topologyEntityCache, atLeastOnce()).getOspfAreaTopologyEntities();
     }
 
