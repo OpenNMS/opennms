@@ -172,7 +172,7 @@ public class DefaultScvRestService implements ScvRestService {
         this.vaultService = vaultService;
     }
 
-    public void getVaultService() {
+    public VaultService getVaultService() {
         return this.vaultService;
     }
 }

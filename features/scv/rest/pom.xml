@@ -52,6 +52,11 @@
             <groupId>org.opennms</groupId>
             <artifactId>opennms-web-api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.opennms.features.scv</groupId>
+            <artifactId>hcp-config</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <!-- test-->
         <dependency>
             <groupId>org.hamcrest</groupId>
@@ -63,11 +68,6 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.features.scv</groupId>
-            <artifactId>hcp-config</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opennms.features.scv</groupId>

@@ -1982,6 +1982,7 @@
 
     <feature name="opennms-scv-rest" description="OpenNMS :: Features :: Scv :: Rest" version="${project.version}">
         <feature>opennms-osgi-core-rest</feature>
+        <feature>scv-hcp-config</feature>
         <bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.rest/${project.version}</bundle>
     </feature>
@@ -2032,12 +2033,17 @@
 
     <feature name="scv-hcp-vault" description="OpenNMS :: HCP :: Vault" version="${project.version}">
         <feature>scv-api</feature>
+        <feature>scv-hcp-config</feature>
+        <bundle>mvn:org.opennms.features.scv/hcp-vault/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.scv/hcp-shell/${project.version}</bundle>
+    </feature>
+
+    <feature name="scv-hcp-config" description="OpenNMS :: HCP :: Config" version="${project.version}">
+        <feature>scv-api</feature>
         <bundle>mvn:org.json/json/${jsonVersion}</bundle>
         <bundle>mvn:com.bettercloud/vault-java-driver/5.1.0</bundle>
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.api/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.scv/hcp-vault/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.scv/hcp-config/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.scv/hcp-shell/${project.version}</bundle>
     </feature>
 
 </features>
