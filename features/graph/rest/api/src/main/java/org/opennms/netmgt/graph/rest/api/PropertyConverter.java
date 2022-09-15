@@ -28,6 +28,6 @@
 
 package org.opennms.netmgt.graph.rest.api;
 
-public interface PropertyConverter<INPUT, OUTPUT> extends Converter<INPUT, OUTPUT> {
+public interface PropertyConverter<I, O> extends Converter<I, O> {
 
 }

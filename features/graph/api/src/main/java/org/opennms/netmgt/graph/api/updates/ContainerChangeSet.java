@@ -110,12 +110,12 @@ public class ContainerChangeSet {
         private void detectChanges(final ImmutableGraphContainer<?> oldGraphContainer, final ImmutableGraphContainer<?> newGraphContainer) {
             // no old container exists, add all graphs
             if (oldGraphContainer == null && newGraphContainer != null) {
-                newGraphContainer.getGraphs().forEach(g -> graphAdded(g));
+                newGraphContainer.getGraphs().forEach(this::graphAdded);
             }
 
             // no new graph container exists, remove all
             if (oldGraphContainer != null && newGraphContainer == null) {
-                oldGraphContainer.getGraphs().forEach(g -> graphRemoved(g));
+                oldGraphContainer.getGraphs().forEach(this::graphRemoved);
             }
 
             // nothing to do if they are the same :)

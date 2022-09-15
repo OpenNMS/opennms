@@ -102,8 +102,8 @@ public class AbstractGraphEntity {
         }
         // This may be caused if a property name has changed. So we remove all non existing names
         if (getProperties().size() != propertyEntities.size()) {
-            final List<String> newPropertyNames = propertyEntities.stream().map(pe -> pe.getName()).collect(Collectors.toList());
-            final List<String> allPropertyNames = getProperties().stream().map(pe -> pe.getName()).collect(Collectors.toList());
+            final List<String> newPropertyNames = propertyEntities.stream().map(PropertyEntity::getName).collect(Collectors.toList());
+            final List<String> allPropertyNames = getProperties().stream().map(PropertyEntity::getName).collect(Collectors.toList());
             allPropertyNames.removeAll(newPropertyNames);
             // Now remove all
             allPropertyNames.forEach(propertyName -> getProperties().remove(getProperty(propertyName)));

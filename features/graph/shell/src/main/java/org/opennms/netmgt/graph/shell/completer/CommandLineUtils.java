@@ -36,6 +36,10 @@ import com.google.common.collect.Lists;
 
 public class CommandLineUtils {
 
+    private CommandLineUtils() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static String extractArgument(final CommandLine commandLine, final String argumentName) {
         final List<String> arguments = Lists.newArrayList(commandLine.getArguments());
         return extractArgument(arguments, argumentName);

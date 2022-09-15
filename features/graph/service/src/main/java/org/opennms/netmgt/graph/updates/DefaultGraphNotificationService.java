@@ -89,7 +89,7 @@ public class DefaultGraphNotificationService implements GraphNotificationService
         }
     }
 
-    public synchronized void onBind(GraphChangeListener listener, Map<String, String> props) {
+    public synchronized void onBind(GraphChangeListener listener) {
         if (listener == null) {
             return;
         }
@@ -124,14 +124,14 @@ public class DefaultGraphNotificationService implements GraphNotificationService
         graphChangeSetListeners.add(wrappedListener);
     }
 
-    public synchronized void onBind(GraphChangeSetListener listener, Map<String, String> props) {
+    public synchronized void onBind(GraphChangeSetListener listener) {
         if (listener == null) {
             return;
         }
         graphChangeSetListeners.add(listener);
     }
 
-    public synchronized void onBind(GraphContainerChangeListener listener, Map<String, String> props) {
+    public synchronized void onBind(GraphContainerChangeListener listener) {
         if (listener == null) {
             return;
         }
@@ -152,14 +152,14 @@ public class DefaultGraphNotificationService implements GraphNotificationService
         graphContainerChangeSetListeners.add(wrappedListener);
     }
 
-    public synchronized void onBind(GraphContainerChangeSetListener listener, Map<String, String> props) {
+    public synchronized void onBind(GraphContainerChangeSetListener listener) {
         if (listener == null) {
             return;
         }
         graphContainerChangeSetListeners.add(listener);
     }
 
-    public synchronized void onUnbind(GraphChangeListener listener, Map<String, String> props) {
+    public synchronized void onUnbind(GraphChangeListener listener) {
         if (listener == null) {
             return;
         }
@@ -169,14 +169,14 @@ public class DefaultGraphNotificationService implements GraphNotificationService
         }
     }
 
-    public synchronized void onUnbind(GraphChangeSetListener listener, Map<String, String> props) {
+    public synchronized void onUnbind(GraphChangeSetListener listener) {
         if (listener == null) {
             return;
         }
         graphChangeSetListeners.remove(listener);
     }
 
-    public synchronized void onUnbind(GraphContainerChangeListener listener, Map<String, String> props) {
+    public synchronized void onUnbind(GraphContainerChangeListener listener) {
         if (listener == null) {
             return;
         }
@@ -186,7 +186,7 @@ public class DefaultGraphNotificationService implements GraphNotificationService
         }
     }
 
-    public synchronized void onUnbind(GraphContainerChangeSetListener listener, Map<String, String> props) {
+    public synchronized void onUnbind(GraphContainerChangeSetListener listener) {
         if (listener == null) {
             return;
         }

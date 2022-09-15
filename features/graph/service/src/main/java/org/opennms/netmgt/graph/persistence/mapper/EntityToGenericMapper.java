@@ -109,7 +109,6 @@ public class EntityToGenericMapper {
     }
 
     public Object convert(final PropertyEntity propertyEntity) {
-        final Object value = converterService.toValue(propertyEntity.getType(), propertyEntity.getValue());
-        return value;
+        return converterService.toValue(propertyEntity.getType(), propertyEntity.getValue());
     }
 }

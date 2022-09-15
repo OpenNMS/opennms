@@ -61,10 +61,10 @@ public class SingleGraphContainerProvider implements GraphContainerProvider {
 
     @Override
     public GraphContainerInfo getContainerInfo() {
-        final DefaultGraphContainerInfo containerInfo = new DefaultGraphContainerInfo(this.containerInfo.getId());
-        containerInfo.setDescription(this.containerInfo.getDescription());
-        containerInfo.setLabel(this.containerInfo.getLabel());
-        containerInfo.getGraphInfos().add(graphProvider.getGraphInfo());
-        return containerInfo;
+        final DefaultGraphContainerInfo defaultGraphContainerInfo = new DefaultGraphContainerInfo(this.containerInfo.getId());
+        defaultGraphContainerInfo.setDescription(this.containerInfo.getDescription());
+        defaultGraphContainerInfo.setLabel(this.containerInfo.getLabel());
+        defaultGraphContainerInfo.getGraphInfos().add(graphProvider.getGraphInfo());
+        return defaultGraphContainerInfo;
     }
 }

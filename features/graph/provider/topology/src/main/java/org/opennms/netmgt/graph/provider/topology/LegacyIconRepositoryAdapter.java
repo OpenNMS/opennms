@@ -58,11 +58,10 @@ public class LegacyIconRepositoryAdapter implements IconRepository {
 
     private Set<String> getUsedIconIds() {
         if (delegate.getCurrentGraph() != null) {
-            final Set<String> iconIds = delegate.getCurrentGraph().getVertices().stream()
+            return delegate.getCurrentGraph().getVertices().stream()
                     .map(Vertex::getIconKey)
                     .filter(Objects::nonNull)
                     .collect(Collectors.toSet());
-            return iconIds;
         }
         return Sets.newHashSet();
     }

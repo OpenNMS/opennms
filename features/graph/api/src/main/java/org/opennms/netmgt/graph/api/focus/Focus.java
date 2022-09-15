@@ -61,7 +61,7 @@ public class Focus {
     }
 
     public List<String> getVertexIds() {
-        return vertexRefs.stream().map(v -> v.getId()).collect(Collectors.toList());
+        return vertexRefs.stream().map(VertexRef::getId).collect(Collectors.toList());
     }
 
     @Override

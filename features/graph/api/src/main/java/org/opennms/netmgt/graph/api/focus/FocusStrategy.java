@@ -28,9 +28,14 @@
 
 package org.opennms.netmgt.graph.api.focus;
 
-public interface FocusStrategy {
-    String ALL = "ALL";
-    String EMPTY = "EMPTY";
-    String FIRST = "FIRST";
-    String SELECTION = "SELECTION";
+public class FocusStrategy {
+
+    private FocusStrategy() {
+        throw new IllegalStateException("Utility class");
+    }
+
+    public static final String ALL = "ALL";
+    public static final String EMPTY = "EMPTY";
+    public static final String FIRST = "FIRST";
+    public static final String SELECTION = "SELECTION";
 }

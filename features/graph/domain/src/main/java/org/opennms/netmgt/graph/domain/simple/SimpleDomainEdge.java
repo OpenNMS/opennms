@@ -65,8 +65,8 @@ public final class SimpleDomainEdge extends AbstractDomainEdge {
     public static SimpleDomainEdge from(GenericEdge genericEdge) {
         return new SimpleDomainEdge(genericEdge);
     }
-    
-    public final static class SimpleDomainEdgeBuilder extends AbstractDomainEdgeBuilder<SimpleDomainEdgeBuilder> {
+
+    public static final class SimpleDomainEdgeBuilder extends AbstractDomainEdgeBuilder<SimpleDomainEdgeBuilder> {
                
         private SimpleDomainEdgeBuilder() {}
         

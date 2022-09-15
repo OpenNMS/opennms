@@ -69,11 +69,12 @@ public final class GenericVertex extends GenericElement implements Vertex, NodeR
     public static GenericVertexBuilder builder() {
     	return new GenericVertexBuilder();
     }
-    
-    public final static class GenericVertexBuilder extends GenericElementBuilder<GenericVertexBuilder> {
+
+    public static final class GenericVertexBuilder extends GenericElementBuilder<GenericVertexBuilder> {
     	
         private GenericVertexBuilder() {}
-        
+
+        @Override
     	public GenericVertexBuilder id(String id) {
     		property(GenericProperties.ID, id);
     		return this;

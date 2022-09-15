@@ -41,7 +41,7 @@ import com.google.common.collect.ImmutableMap;
 
 public abstract class GenericElement {
 
-    private final static Logger LOG = LoggerFactory.getLogger(GenericElement.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GenericElement.class);
 
     protected final Map<String, Object> properties;
 
@@ -98,8 +98,8 @@ public abstract class GenericElement {
                 .add("properties", properties)
                 .toString();
     }
-    
-    public static abstract class GenericElementBuilder<T extends GenericElementBuilder> {
+
+    public abstract static class GenericElementBuilder<T extends GenericElementBuilder> {
     	protected final Map<String, Object> properties = new HashMap<>();
     	protected final NamespaceValidator namespaceValidator = new NamespaceValidator();
     	

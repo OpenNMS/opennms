@@ -28,11 +28,15 @@
 
 package org.opennms.netmgt.graph.dao.api;
 
-public interface EntityProperties {
+public class EntityProperties {
 
-    String ID = "id";
-    String LABEL = "label";
-    String DESCRIPTION = "description";
-    String NAMESPACE = "namespace";
+    private EntityProperties() {
+        throw new IllegalStateException("Utility class");
+    }
+
+    public static final String ID = "id";
+    public static final String LABEL = "label";
+    public static final String DESCRIPTION = "description";
+    public static final String NAMESPACE = "namespace";
 
 }

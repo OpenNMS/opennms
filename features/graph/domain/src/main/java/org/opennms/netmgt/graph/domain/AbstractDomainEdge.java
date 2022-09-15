@@ -45,7 +45,7 @@ public abstract class AbstractDomainEdge implements Edge {
 
     protected final GenericEdge delegate;
 
-    public AbstractDomainEdge(GenericEdge genericEdge) {
+    protected AbstractDomainEdge(GenericEdge genericEdge) {
         this.delegate = genericEdge;
     }
     
@@ -115,7 +115,8 @@ public abstract class AbstractDomainEdge implements Edge {
         public T target(String namespace, String vertexId) {
             return target(new VertexRef(namespace, vertexId));
         }
-        
+
+        @Override
         public T id(String id) {
             this.properties.put(GenericProperties.ID, id);
             return (T)this;

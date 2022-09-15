@@ -136,7 +136,7 @@ public class GenericGraphContainer implements ImmutableGraphContainer<GenericGra
     
     public static class GenericGraphContainerBuilder {
 
-        private final static Logger LOG = LoggerFactory.getLogger(GenericGraphContainerBuilder.class);
+        private static final Logger LOG = LoggerFactory.getLogger(GenericGraphContainerBuilder.class);
 
         // allow graphs to be replaced in builder : use a Map
         private final Map<String, GenericGraph> graphs = new HashMap<>();

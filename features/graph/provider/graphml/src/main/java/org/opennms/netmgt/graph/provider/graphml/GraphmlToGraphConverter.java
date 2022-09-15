@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.opennms.features.graphml.model.GraphML;
+import org.opennms.features.graphml.model.GraphMLElement;
 import org.opennms.features.graphml.model.GraphMLGraph;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
@@ -74,10 +75,10 @@ public class GraphmlToGraphConverter {
             graphContainerBuilder.addGraph(convertedGraph);
         }
         this.vertexIdToGraphMapping.clear(); // clear data as it was only needed while building the container
-        final GenericGraphContainer graphContainer = graphContainerBuilder.build();
-        return graphContainer;
+        return graphContainerBuilder.build();
     }
 
+    @SuppressWarnings("java:S1602")
     private final GenericGraph convert(GraphMLGraph graphMLGraph) {
         final GenericGraph.GenericGraphBuilder graphBuilder = GenericGraph.builder()
                 .property(GenericProperties.Enrichment.RESOLVE_NODES, true) // Enable Node Enrichment first so it can be overridden
@@ -102,12 +103,11 @@ public class GraphmlToGraphConverter {
             final GenericVertex target = GenericVertex.builder().namespace(targetNamespace).id(e.getTarget().getId()).build();
             // In case of GraphML each edge does not have a namespace, but it is inherited from the graph
             // Therefore here we have to manually set it
-            final GenericEdge edge = GenericEdge.builder()
+            return GenericEdge.builder()
                     .namespace(graphBuilder.getNamespace())
                     .source(source.getVertexRef())
                     .target(target.getVertexRef())
                     .properties(e.getProperties()).build();
-            return edge;
         }).collect(Collectors.toList());
         graphBuilder.addEdges(edges);
 
@@ -149,7 +149,6 @@ public class GraphmlToGraphConverter {
             return graphML.getProperty("containerId");
         }
         LOG.warn("No property 'containerId' was provided. Calculating the container id using the graph's ids");
-        final String calculatedId = graphML.getGraphs().stream().map(g -> g.getId()).collect(Collectors.joining("."));
-        return calculatedId;
+        return graphML.getGraphs().stream().map(GraphMLElement::getId).collect(Collectors.joining("."));
     }
 }

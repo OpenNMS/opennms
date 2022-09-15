@@ -97,8 +97,8 @@ public final class GenericEdge extends GenericElement implements Edge {
     public static GenericEdgeBuilder builder() {
         return new GenericEdgeBuilder();
     }
-    
-    public final static class GenericEdgeBuilder extends GenericElementBuilder<GenericEdgeBuilder> {
+
+    public static final class GenericEdgeBuilder extends GenericElementBuilder<GenericEdgeBuilder> {
         
         private VertexRef source;
         private VertexRef target;

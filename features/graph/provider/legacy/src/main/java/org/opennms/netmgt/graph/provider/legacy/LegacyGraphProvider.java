@@ -81,14 +81,13 @@ public class LegacyGraphProvider implements GraphProvider {
 
         final Set<org.opennms.netmgt.graph.api.VertexRef> focus = delegate.getDefaultGraphProvider().getDefaults().getCriteria().stream()
                 .filter(c -> VertexHopCriteria.class.isAssignableFrom(c.getClass()))
-                .map(c -> (VertexHopCriteria) c)
+                .map(VertexHopCriteria.class::cast)
                 .flatMap(c -> c.getVertices().stream())
                 .map(v -> new org.opennms.netmgt.graph.api.VertexRef(v.getNamespace(), v.getId()))
                 .collect(Collectors.toSet());
         builder.focus(new Focus(FocusStrategy.SELECTION, Lists.newArrayList(focus)));
 
-        final GenericGraph graph = builder.build();
-        return graph;
+        return builder.build();
     }
 
     @Override

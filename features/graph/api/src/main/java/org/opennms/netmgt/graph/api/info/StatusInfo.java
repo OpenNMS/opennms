@@ -44,9 +44,14 @@ import com.google.common.collect.Maps;
  */
 public class StatusInfo {
 
-    interface Properties {
-        String Severity = "severity";
-        String Count = "count";
+    static class Properties {
+
+        private Properties() {
+            throw new IllegalStateException("Utility class");
+        }
+
+        public static final String SEVERITY = "severity";
+        public static final String COUNT = "count";
     }
 
     private final ImmutableMap<String, Object> properties;
@@ -56,11 +61,11 @@ public class StatusInfo {
     }
 
     public Severity getSeverity() {
-        return getProperty(Properties.Severity);
+        return getProperty(Properties.SEVERITY);
     }
 
     public Long getCount() {
-        return getProperty(Properties.Count);
+        return getProperty(Properties.COUNT);
     }
 
     public Map<String, Object> getProperties() {
@@ -103,13 +108,13 @@ public class StatusInfo {
         }
 
         public StatusInfoBuilder severity(Severity severity) {
-            property(Properties.Severity, severity);
+            property(Properties.SEVERITY, severity);
             return this;
         }
 
         public StatusInfoBuilder count(long count) {
             checkArgument(count >= 0, "count must be >= 0");
-            property(Properties.Count, count);
+            property(Properties.COUNT, count);
             return this;
         }
 
@@ -122,7 +127,7 @@ public class StatusInfo {
 
         public StatusInfoBuilder properties(Map<String, Object> properties) {
             Objects.requireNonNull(properties);
-            if (!properties.containsKey("severity")) {
+            if (!properties.containsKey(Properties.SEVERITY)) {
                 throw new IllegalArgumentException("Severity must be set");
             }
             this.properties.putAll(properties);
@@ -139,11 +144,11 @@ public class StatusInfo {
         }
 
         public Severity getSeverity() {
-            return getProperty(Properties.Severity);
+            return getProperty(Properties.SEVERITY);
         }
 
         public Long getCount() {
-            final Object value = getProperty(Properties.Count);
+            final Object value = getProperty(Properties.COUNT);
             if (value != null) {
                 return (Long) value;
             }

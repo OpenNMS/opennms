@@ -53,8 +53,7 @@ public interface GraphService {
     default GenericGraph getGraph(String namespace) {
         final GraphContainerInfo graphContainerInfo = getGraphContainerInfoByNamespace(namespace);
         if (graphContainerInfo != null) {
-            final GenericGraph graph = getGraphContainer(graphContainerInfo.getId()).getGraph(namespace);
-            return graph;
+            return getGraphContainer(graphContainerInfo.getId()).getGraph(namespace);
         }
         throw new NoSuchElementException("Could not find a Graph with namespace '" + namespace + "'.");
     }

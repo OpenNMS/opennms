@@ -87,10 +87,9 @@ public class NodeRef {
 
     public boolean matches(OnmsNode node) {
         Objects.requireNonNull(node);
-        boolean match = Objects.equals(node.getId(), nodeId)
+        return Objects.equals(node.getId(), nodeId)
             || Objects.equals(node.getForeignSource(), foreignSource)
                 && Objects.equals(node.getForeignId(), foreignId);
-        return match;
     }
 
     @Override

@@ -44,6 +44,7 @@ import com.google.common.base.Strings;
 
 @Service
 @Command(scope = "opennms", name = "graph-get", description="Gets a graph identified by its namespace")
+@SuppressWarnings("java:S106")
 public class GraphGetCommand implements Action {
 
     @Reference

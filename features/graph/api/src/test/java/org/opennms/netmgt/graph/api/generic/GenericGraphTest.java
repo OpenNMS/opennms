@@ -78,6 +78,7 @@ public class GenericGraphTest {
     }
 
     @Test
+    @SuppressWarnings("java:S2699")
     public void shouldAcceptEdgeWhereOneVertexIsUnknownFromDifferentNamespace() {
         final GenericGraphBuilder graphBuilder = TestObjectCreator.createGraphBuilder();
         final GenericVertex unknownVertex = GenericVertex.builder().namespace(TestObjectCreator.NAMESPACE + "2").id("V1000").label("Vertex 1000").build();

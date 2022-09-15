@@ -101,6 +101,7 @@ public final class EnrichmentGraphBuilder {
         return this;
     }
 
+    @SuppressWarnings("java:S3824")
     private Map<String, Object> getVertexProperties(VertexRef vertexRef) {
         Objects.requireNonNull(vertexRef);
         if (view.resolveVertex(vertexRef) == null) {
@@ -113,6 +114,7 @@ public final class EnrichmentGraphBuilder {
         return vertexRefToPropertiesMap.get(vertexRef);
     }
 
+    @SuppressWarnings("java:S3824")
     private Map<String, Object> getEdgeProperties(GenericEdge edge) {
         Objects.requireNonNull(edge);
         final String edgeId = edge.getId();

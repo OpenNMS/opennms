@@ -58,7 +58,7 @@ public abstract class AbstractDomainGraphContainer<G extends AbstractDomainGraph
     
     @Override
     public List<G> getGraphs() {
-        return delegate.getGraphs().stream().map(graph -> convert(graph)).collect(Collectors.toList());
+        return delegate.getGraphs().stream().map(this::convert).collect(Collectors.toList());
     }
 
     @Override
@@ -112,7 +112,7 @@ public abstract class AbstractDomainGraphContainer<G extends AbstractDomainGraph
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        AbstractDomainGraphContainer that = (AbstractDomainGraphContainer) o;
+        AbstractDomainGraphContainer<?> that = (AbstractDomainGraphContainer<?>) o;
         return Objects.equals(this.delegate, that.delegate);
     }
 

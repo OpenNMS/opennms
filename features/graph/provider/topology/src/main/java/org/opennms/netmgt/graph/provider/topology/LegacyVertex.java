@@ -59,7 +59,7 @@ public class LegacyVertex extends AbstractVertex implements LevelAware {
         // We have 3 ways to determine the nodeId, lets try all - last one wins.
         // nodeInfo is produced by the NodeEnrichment
         Optional.ofNullable(genericVertex.getProperty(GenericProperties.NODE_INFO))
-                .map(o -> (NodeInfo)o)
+                .map(NodeInfo.class::cast)
                 .map(NodeInfo::getId)
                 .ifPresent(this::setNodeID);
         if (genericVertex.getProperty(GenericProperties.NODE_ID) != null) {

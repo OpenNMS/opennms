@@ -53,7 +53,7 @@ public class DefaultGraphSearchService implements GraphSearchService {
 
     private static final Logger LOG = LoggerFactory.getLogger(DefaultGraphSearchService.class);
 
-    private final static int MIN_CHAR_FOR_SEARCH = 3;
+    private static final int MIN_CHAR_FOR_SEARCH = 3;
 
     private Map<String, SearchProvider> graphSearchProviders = new HashMap<>();
     private GraphService graphService;
@@ -106,11 +106,11 @@ public class DefaultGraphSearchService implements GraphSearchService {
         return provider.resolve(graphService, searchCriteria);
     }
 
-    public void onBind(SearchProvider graphSearchProvider, Map<String, String> props) {
+    public void onBind(SearchProvider graphSearchProvider) {
         graphSearchProviders.put(graphSearchProvider.getProviderId(), graphSearchProvider);
     }
 
-    public void onUnbind(SearchProvider graphSearchProvider, Map<String, String> props) {
+    public void onUnbind(SearchProvider graphSearchProvider) {
         if (graphSearchProvider != null) {
             graphSearchProviders.remove(graphSearchProvider.getProviderId());
         }

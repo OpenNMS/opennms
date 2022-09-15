@@ -74,8 +74,8 @@ public class CollectionConverter implements Converter<Collection<?>> {
 
     @Override
     public String toStringRepresentation(Collection<?> collection) {
-        final List<SerializedCollectionEntry> persistedEntries = collection.stream()
-                .map((entry) -> new SerializedCollectionEntry(entry.getClass(), converterService.toStringRepresentation(entry.getClass(), entry)))
+        final List<SerializedCollectionEntry<?>> persistedEntries = collection.stream()
+                .map(entry -> new SerializedCollectionEntry<>(entry.getClass(), converterService.toStringRepresentation(entry.getClass(), entry)))
                 .collect(Collectors.toList());
         SerializedCollection serializedCollection = new SerializedCollection();
         serializedCollection.setType(collection.getClass());
@@ -86,13 +86,12 @@ public class CollectionConverter implements Converter<Collection<?>> {
     @Override
     public Collection<?> toValue(Class<Collection<?>> type, String string) {
         final SerializedCollection serializedCollection = gson.fromJson(string, SerializedCollection.class);
-        final ArrayList values = new ArrayList<>();
+        final ArrayList<Object> values = new ArrayList<>();
         serializedCollection.getEntries()
                 .stream()
                 .map(entry -> converterService.toValue(entry.getType(), entry.getValue()))
                 .forEach(values::add);
-        final Collection resurrectedCollection = recreateCollection(serializedCollection.getType(), values);
-        return resurrectedCollection;
+        return recreateCollection(serializedCollection.getType(), values);
     }
 
     @Override
@@ -100,7 +99,7 @@ public class CollectionConverter implements Converter<Collection<?>> {
         return Collection.class.isAssignableFrom(type);
     }
 
-    private Collection<?> recreateCollection(Class<Collection<?>> type, List values) {
+    private Collection<?> recreateCollection(Class<Collection<?>> type, List<Object> values) {
         if (ImmutableList.class.isAssignableFrom(type)) {
             return ImmutableList.copyOf(values);
         } else if (ImmutableSet.class.isAssignableFrom(type)) {
@@ -112,7 +111,7 @@ public class CollectionConverter implements Converter<Collection<?>> {
     }
 
     /** We need this adapter so that the class object in SerializedCollection can be (de)serialized. */
-    private final static class ClassAdapter implements JsonSerializer<Class>, JsonDeserializer<Class> {
+    private static final class ClassAdapter implements JsonSerializer<Class<?>>, JsonDeserializer<Class<?>> {
 
         public JsonElement serialize(Class src, Type typeOfSrc, JsonSerializationContext context) {
             return new JsonPrimitive(src.getName());

@@ -172,8 +172,9 @@ public class ChangeSetTest {
     public void verifyNamespaceCannotChange() {
         final GenericGraph oldGraph = GenericGraph.builder().namespace(NAMESPACE).build();
         final GenericGraph newGraph = GenericGraph.builder().namespace(NAMESPACE + ".opennms").build();
+        ChangeSet.ChangeSetBuilder<GenericGraph, GenericVertex, GenericEdge> builder = ChangeSet.builder(oldGraph, newGraph);
         try {
-            ChangeSet.builder(oldGraph, newGraph).build();
+            builder.build();
             fail("Expected an exception to be thrown, but succeeded. Bailing");
         } catch (IllegalStateException ex) {
             // expected, as namespace changes are not supported

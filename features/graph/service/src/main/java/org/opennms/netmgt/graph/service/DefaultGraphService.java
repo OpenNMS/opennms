@@ -66,7 +66,7 @@ public class DefaultGraphService implements GraphService {
 
     @Override
     public List<GraphContainerInfo> getGraphContainerInfos() {
-        return graphContainerProviders.stream().map(cp -> cp.getContainerInfo()).collect(Collectors.toList());
+        return graphContainerProviders.stream().map(GraphContainerProvider::getContainerInfo).collect(Collectors.toList());
     }
 
     @Override
@@ -132,7 +132,7 @@ public class DefaultGraphService implements GraphService {
         }
     }
 
-    public void onUnbind(GraphContainerProvider graphContainerProvider, Map<String, String> props) {
+    public void onUnbind(GraphContainerProvider graphContainerProvider) {
         if(graphContainerProvider == null) {
             return;
         }

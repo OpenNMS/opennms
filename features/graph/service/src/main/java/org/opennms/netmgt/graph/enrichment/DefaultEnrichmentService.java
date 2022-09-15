@@ -29,7 +29,6 @@
 package org.opennms.netmgt.graph.enrichment;
 
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
@@ -50,17 +49,16 @@ public class DefaultEnrichmentService implements EnrichmentService {
             for (EnrichmentProcessor processor : actualProcessors) {
                 processor.enrich(enrichmentGraphBuilder);
             }
-            final GenericGraph enrichedGraph = enrichmentGraphBuilder.build();
-            return enrichedGraph;
+            return enrichmentGraphBuilder.build();
         }
         return null;
     }
 
-    public void onBind(EnrichmentProcessor enrichmentProcessor, Map<String, String> props) {
+    public void onBind(EnrichmentProcessor enrichmentProcessor) {
         enrichmentProcessors.add(enrichmentProcessor);
     }
 
-    public void onUnbind(EnrichmentProcessor enrichmentProcessor, Map<String, String> props) {
+    public void onUnbind(EnrichmentProcessor enrichmentProcessor) {
         enrichmentProcessors.remove(enrichmentProcessor);
     }
 

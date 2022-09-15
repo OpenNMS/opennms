@@ -131,9 +131,7 @@ public class GraphEntity extends AbstractGraphEntity {
 
     private static <E extends AbstractGraphEntity> E getEntitiesByProperty(List<E> entities, String key, String value) {
         return entities.stream().filter(entity -> entity.getProperties().stream()
-                .filter(property -> property.getName().equals(key) && property.getValue().equals(value))
-                .findAny()
-                .isPresent()
+                .anyMatch(property -> property.getName().equals(key) && property.getValue().equals(value))
         ).findAny().orElse(null);
     }
 }

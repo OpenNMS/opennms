@@ -32,7 +32,6 @@ package org.opennms.netmgt.graph.search;
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import org.junit.Test;
@@ -50,8 +49,8 @@ public class DefaultGraphSearchServiceTest {
     public void shouldMakeSearchSuggestionsUnique() {
         GraphService graphService = Mockito.mock(GraphService.class);
         DefaultGraphSearchService service = new DefaultGraphSearchService(graphService);
-        service.onBind(createGraphSearchProvider("provider1"), new HashMap<>());
-        service.onBind(createGraphSearchProvider("provider2"), new HashMap<>());
+        service.onBind(createGraphSearchProvider("provider1"));
+        service.onBind(createGraphSearchProvider("provider2"));
         List<SearchSuggestion> suggestions = service.getSuggestions("blah", "blub");
         assertEquals(3, suggestions.size());
         assertEquals("label0", suggestions.get(0).getLabel());

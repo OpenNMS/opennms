@@ -78,7 +78,7 @@ public class GraphProviderManager {
         graphProviderServices.put(graphProvider, serviceRegistration);
     }
 
-    public void onUnbind(GraphProvider graphProvider, Map<String, String> properties) {
+    public void onUnbind(GraphProvider graphProvider) {
         final ServiceRegistration<GraphContainerProvider> removedService = graphProviderServices.remove(graphProvider);
         if (removedService != null) {
             removedService.unregister();

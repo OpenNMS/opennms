@@ -65,7 +65,7 @@ public class GraphContainerConverter implements Converter<ImmutableGraphContaine
         final JSONObject convertedProperties = new JsonPropertyConverterService(bundleContext).convert(properties);
         convertedProperties.toMap().forEach(jsonContainer::put);
 
-        genericGraphContainer.getProperties().forEach((key, value) -> jsonContainer.put(key, value));
+        genericGraphContainer.getProperties().forEach(jsonContainer::put);
         input.getGraphs()
                 .stream()
                 .sorted(Comparator.comparing(GraphInfo::getNamespace))

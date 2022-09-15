@@ -64,12 +64,13 @@ public final class ApplicationGraph extends AbstractDomainGraph<ApplicationVerte
         return new ApplicationGraph(genericGraph);
     }
     
-    public final static class ApplicationGraphBuilder extends AbstractDomainGraphBuilder<ApplicationGraphBuilder, ApplicationVertex, SimpleDomainEdge> {
+    public static final class ApplicationGraphBuilder extends AbstractDomainGraphBuilder<ApplicationGraphBuilder, ApplicationVertex, SimpleDomainEdge> {
                
         private ApplicationGraphBuilder() {
             namespace(NAMESPACE);
         }
-        
+
+        @Override
         public ApplicationGraphBuilder description(String description) {
             delegate.property(GenericProperties.DESCRIPTION, description);
             return this;

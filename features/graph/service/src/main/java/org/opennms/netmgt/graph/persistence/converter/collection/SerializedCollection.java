@@ -44,7 +44,7 @@ public class SerializedCollection {
     // The type of the collection
     private Class type;
     // Each entry of the original collection, but serialized
-    private List<SerializedCollectionEntry> entries;
+    private List<SerializedCollectionEntry<?>> entries;
 
     public Class getType() {
         return type;
@@ -54,11 +54,11 @@ public class SerializedCollection {
         this.type = type;
     }
 
-    public List<SerializedCollectionEntry> getEntries() {
+    public List<SerializedCollectionEntry<?>> getEntries() {
         return entries;
     }
 
-    public void setEntries(List<SerializedCollectionEntry> entries) {
+    public void setEntries(List<SerializedCollectionEntry<?>> entries) {
         this.entries = entries;
     }
 

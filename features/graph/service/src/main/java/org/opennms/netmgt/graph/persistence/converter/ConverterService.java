@@ -41,7 +41,7 @@ public class ConverterService {
         converterRegistry.add(new PrimitiveConverter<>(Float.class, Float::valueOf));
         converterRegistry.add(new PrimitiveConverter<>(Integer.class, Integer::valueOf));
         converterRegistry.add(new PrimitiveConverter<>(Double.class, Double::valueOf));
-        converterRegistry.add(new PrimitiveConverter<>(String.class, (string) -> string));
+        converterRegistry.add(new PrimitiveConverter<>(String.class, string -> string));
         converterRegistry.add(new PrimitiveConverter<>(Short.class, Short::valueOf));
         converterRegistry.add(new PrimitiveConverter<>(Byte.class, Byte::valueOf));
         converterRegistry.add(new EnumConverter());

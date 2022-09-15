@@ -55,7 +55,7 @@ public abstract class AbstractDomainGraph<V extends AbstractDomainVertex, E exte
 
     private final GenericGraph delegate;
 
-    public AbstractDomainGraph(GenericGraph genericGraph) {
+    protected AbstractDomainGraph(GenericGraph genericGraph) {
         this.delegate = genericGraph;
     }
 

@@ -55,7 +55,6 @@ public class VertexConverter implements Converter<Vertex, JSONObject> {
     public JSONObject convert(Vertex input) {
         final GenericVertex genericVertex = input.asGenericVertex();
         final Map<String, Object> properties = genericVertex.getProperties();
-        final JSONObject jsonVertex = new JsonPropertyConverterService(bundleContext).convert(properties);
-        return jsonVertex;
+        return new JsonPropertyConverterService(bundleContext).convert(properties);
     }
 }

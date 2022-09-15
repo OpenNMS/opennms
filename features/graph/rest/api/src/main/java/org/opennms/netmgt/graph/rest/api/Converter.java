@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.graph.rest.api;
 
-public interface Converter<INPUT, OUTPUT> {
-    boolean canConvert(Class<INPUT> type);
-    OUTPUT convert(INPUT input);
+public interface Converter<I, O> {
+    boolean canConvert(Class<I> type);
+    O convert(I input);
 }

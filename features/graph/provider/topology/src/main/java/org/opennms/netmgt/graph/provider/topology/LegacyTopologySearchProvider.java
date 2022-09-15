@@ -56,7 +56,7 @@ public class LegacyTopologySearchProvider extends SimpleSearchProvider {
     public List<? extends VertexRef> queryVertices(SearchQuery searchQuery, GraphContainer container) {
         final List<LegacyVertex> matchingVertices = new ArrayList<>();
         delegate.getCurrentGraph().getVertices().stream()
-                .map(v -> (LegacyVertex) v)
+                .map(LegacyVertex.class::cast)
                 .filter(v -> matches(searchQuery, v))
                 .sorted(Comparator.comparing(AbstractRef::getId))
                 .forEach(matchingVertices::add);

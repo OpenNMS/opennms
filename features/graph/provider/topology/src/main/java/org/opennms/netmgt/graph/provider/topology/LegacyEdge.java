@@ -54,7 +54,6 @@ public class LegacyEdge extends AbstractEdge {
 
     private static VertexRef createVertexRef(org.opennms.netmgt.graph.api.VertexRef input) {
         Objects.requireNonNull(input);
-        final VertexRef output = new DefaultVertexRef(input.getNamespace(), input.getId());
-        return output;
+        return new DefaultVertexRef(input.getNamespace(), input.getId());
     }
 }

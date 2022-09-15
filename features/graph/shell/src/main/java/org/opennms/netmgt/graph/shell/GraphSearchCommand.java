@@ -49,6 +49,7 @@ import org.opennms.netmgt.graph.shell.completer.SuggestionCompleter;
 
 @Service
 @Command(scope = "opennms", name = "graph-search", description="Searches vertices in a given namespace (graph)")
+@SuppressWarnings("java:S106")
 public class GraphSearchCommand implements Action {
 
     @Reference
@@ -77,7 +78,7 @@ public class GraphSearchCommand implements Action {
             // hack to prevent StringIndexOutOfBoundsException in Karaf Code:
             final String searchString = input.replace("_", " ");
             final List<SearchSuggestion> suggestions = graphSearchService.getSuggestions(namespace, searchString);
-            if (suggestions.size() > 0) {
+            if (!suggestions.isEmpty()) {
                 final SearchSuggestion suggestion = suggestions.get(0);
                 final SearchCriteria searchCriteria = new SearchCriteria(
                         suggestion.getProvider(),

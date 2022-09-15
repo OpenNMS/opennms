@@ -40,7 +40,6 @@ public class StatusInfoConverter implements PropertyConverter<StatusInfo, JSONOb
 
     @Override
     public JSONObject convert(StatusInfo statusInfo) {
-        final JSONObject json = new JSONObject(statusInfo.getProperties());
-        return json;
+        return new JSONObject(statusInfo.getProperties());
     }
 }

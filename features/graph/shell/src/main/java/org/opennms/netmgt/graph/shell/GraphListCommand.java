@@ -43,11 +43,14 @@ import org.opennms.netmgt.graph.api.service.GraphService;
 
 @Service
 @Command(scope = "opennms", name = "graph-list", description="List all available graph containers and its graphs")
+@SuppressWarnings("java:S106")
 public class GraphListCommand implements Action {
 
     private static final int MAX_DESCRIPTION_LENGTH = 100;
     private static final String CONTAINER_ROW_TEMPLATE = "%%-%ds   %%-%ds   %%-%ds   %%s";
     private static final String GRAPH_ROW_TEMPLATE = "%%-%ds   %%-%ds   %%-%ds   %%s";
+    public static final String CONTAINER_ID = "Container ID";
+    public static final String NAMESPACE = "Namespace";
 
     @Option(name="-a", aliases = {"--all"}, description = "Lists all graphs as well")
     public boolean showAll = false;
@@ -66,8 +69,8 @@ public class GraphListCommand implements Action {
             System.out.println(containerCount + " registered Graph Container(s):");
             final int maxContainerIdLength = graphContainerInfoList.stream().mapToInt(ci -> ci.getId().length()).max().getAsInt();
             final int maxContainerLabelLength = graphContainerInfoList.stream().mapToInt(ci -> ci.getLabel().length()).max().getAsInt();
-            final String ContainerRowFormat = String.format(CONTAINER_ROW_TEMPLATE, maxContainerIdLength > "Container ID".length() ? maxContainerIdLength : "Container ID".length(), maxContainerLabelLength, MAX_DESCRIPTION_LENGTH);
-            System.out.println(String.format(ContainerRowFormat, "Container ID", "Label", "Description", "Graph Namespaces"));
+            final String ContainerRowFormat = String.format(CONTAINER_ROW_TEMPLATE, maxContainerIdLength > CONTAINER_ID.length() ? maxContainerIdLength : CONTAINER_ID.length(), maxContainerLabelLength, MAX_DESCRIPTION_LENGTH);
+            System.out.println(String.format(ContainerRowFormat, CONTAINER_ID, "Label", "Description", "Graph Namespaces"));
             for (GraphContainerInfo eachContainerInfo : graphContainerInfoList) {
                 final String description = cutString(eachContainerInfo.getDescription());
                 System.out.println(String.format(ContainerRowFormat, eachContainerInfo.getId(), eachContainerInfo.getLabel() == null ? "" : eachContainerInfo.getLabel(), description, eachContainerInfo.getNamespaces()));
@@ -80,8 +83,8 @@ public class GraphListCommand implements Action {
                 final List<GraphInfo> graphInfos = graphContainerInfoList.stream().flatMap(ci -> ci.getGraphInfos().stream()).collect(Collectors.toList());
                 final int maxNamespaceLength = graphInfos.stream().mapToInt(gi -> gi.getNamespace().length()).max().getAsInt();
                 final int maxGraphLabelLength = graphInfos.stream().mapToInt(gi -> gi.getLabel() != null ? gi.getLabel().length() : 0).max().getAsInt();
-                final String GraphRowFormat = String.format(GRAPH_ROW_TEMPLATE, maxNamespaceLength > "Namespace".length() ? maxNamespaceLength : "Namespace".length(), maxGraphLabelLength, MAX_DESCRIPTION_LENGTH);
-                System.out.println(String.format(GraphRowFormat, "Namespace", "Label", "Description", "Container ID"));
+                final String GraphRowFormat = String.format(GRAPH_ROW_TEMPLATE, maxNamespaceLength > NAMESPACE.length() ? maxNamespaceLength : NAMESPACE.length(), maxGraphLabelLength, MAX_DESCRIPTION_LENGTH);
+                System.out.println(String.format(GraphRowFormat, NAMESPACE, "Label", "Description", CONTAINER_ID));
                 for (GraphContainerInfo eachContainerInfo : graphContainerInfoList) {
                     for (GraphInfo eachGraphInfo : eachContainerInfo.getGraphInfos()) {
                         final String description = cutString(eachGraphInfo.getDescription());

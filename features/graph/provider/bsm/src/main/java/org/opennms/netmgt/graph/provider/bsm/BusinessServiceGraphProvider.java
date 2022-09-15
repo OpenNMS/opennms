@@ -105,8 +105,7 @@ public class BusinessServiceGraphProvider implements GraphProvider, EventListene
         if (!businessServices.isEmpty()) {
             final BusinessService businessService = businessServices.iterator().next();
             final String vertexId = BusinessServiceVertex.Type.BusinessService + ":" + businessService.getId();
-            final VertexRef vertexRef = graphBuilder.getVertexRef(vertexId);
-            return vertexRef;
+            return graphBuilder.getVertexRef(vertexId);
         }
         return null;
     }

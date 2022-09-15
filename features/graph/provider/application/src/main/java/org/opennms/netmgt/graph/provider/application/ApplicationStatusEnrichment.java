@@ -83,7 +83,7 @@ public class ApplicationStatusEnrichment implements EnrichmentProcessor {
         final Map<GenericVertex, StatusInfo> vertexStatusMap = new HashMap<>();
 
         // Load applications
-        final List<OnmsApplication> applications = rootVertices.stream().map(v -> ApplicationVertex.from(v).getApplicationId()).map(id -> applicationDao.get(id)).collect(Collectors.toList());
+        final List<OnmsApplication> applications = rootVertices.stream().map(v -> ApplicationVertex.from(v).getApplicationId()).map(applicationDao::get).collect(Collectors.toList());
 
         // Get maximum alarm severities for all application (alarm status)
         final List<MonitoredServiceStatusEntity> result = applicationDao.getAlarmStatus(applications);
@@ -112,7 +112,7 @@ public class ApplicationStatusEnrichment implements EnrichmentProcessor {
     StatusInfo buildStatusForApplication(final GenericVertex application, final EnrichmentGraphBuilder graphBuilder, final Map<String, StatusInfo> childStatusMap) {
         Collection<GenericEdge> services = graphBuilder.getView().getConnectingEdges(application);
 
-        boolean allChildrenHaveActiveAlarms = services.size() > 0;
+        boolean allChildrenHaveActiveAlarms = !services.isEmpty();
 
         final StatusInfo.StatusInfoBuilder rootStatusBuilder = StatusInfo.from(DEFAULT_STATUS);
         // Calculate max severity

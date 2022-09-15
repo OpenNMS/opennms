@@ -41,7 +41,6 @@ import org.opennms.features.topology.api.topo.Defaults;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.TopologyProviderInfo;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.graph.api.enrichment.EnrichmentService;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.service.GraphService;
@@ -54,20 +53,18 @@ public class LegacyTopologyProvider implements GraphProvider {
     private final String containerId;
     private final String namespace;
     private final GraphService graphService;
-    private final NodeDao nodeDao;
     private final boolean resolveNodeIds;
     private final EnrichmentService enrichmentService;
 
     private LegacyBackendGraph backendGraph;
 
-    public LegacyTopologyProvider(final LegacyTopologyConfiguration configuration, final NodeDao nodeDao,
+    public LegacyTopologyProvider(final LegacyTopologyConfiguration configuration,
                                   final GraphService graphService, final EnrichmentService enrichmentService,
                                   final String containerId, final String graphNamespace) {
         this.containerId = Objects.requireNonNull(containerId);
         this.namespace = Objects.requireNonNull(graphNamespace);
         this.graphService = Objects.requireNonNull(graphService);
         this.enrichmentService = Objects.requireNonNull(enrichmentService);
-        this.nodeDao = Objects.requireNonNull(nodeDao);
         this.resolveNodeIds = Objects.requireNonNull(configuration).isResolveNodeIds();
     }
 
@@ -115,10 +112,10 @@ public class LegacyTopologyProvider implements GraphProvider {
     public SelectionChangedListener.Selection getSelection(List<VertexRef> selectedVertices, ContentType type) {
         final Set<Integer> nodeIds = selectedVertices.stream()
                 .filter(v -> namespace.equals(v.getNamespace()))
-                .filter(v -> v instanceof AbstractVertex)
-                .map(v -> (AbstractVertex) v)
-                .map(v -> v.getNodeID())
-                .filter(nodeId -> nodeId != null)
+                .filter(AbstractVertex.class::isInstance)
+                .map(AbstractVertex.class::cast)
+                .map(AbstractVertex::getNodeID)
+                .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
         if (type == ContentType.Alarm) {
             return new SelectionChangedListener.AlarmNodeIdSelection(nodeIds);

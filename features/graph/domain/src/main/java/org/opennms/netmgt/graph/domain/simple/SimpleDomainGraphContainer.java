@@ -56,7 +56,7 @@ public final class SimpleDomainGraphContainer extends AbstractDomainGraphContain
         return new SimpleDomainGraphContainer(genericGraphContainer);
     }
 
-    public final static class SimpleDomainGraphContainerBuilder extends AbstractDomainGraphContainerBuilder<SimpleDomainGraphContainerBuilder, SimpleDomainGraph> {
+    public static final class SimpleDomainGraphContainerBuilder extends AbstractDomainGraphContainerBuilder<SimpleDomainGraphContainerBuilder, SimpleDomainGraph> {
         
         private SimpleDomainGraphContainerBuilder() {}
         

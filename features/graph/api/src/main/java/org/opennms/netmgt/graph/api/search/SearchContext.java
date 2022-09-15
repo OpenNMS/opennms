@@ -55,7 +55,7 @@ public class SearchContext {
         return new SearchContextBuilder();
     }
 
-    public final static class SearchContextBuilder {
+    public static final class SearchContextBuilder {
         private int suggestionsLimit = 15;
         private GraphService graphService;
 

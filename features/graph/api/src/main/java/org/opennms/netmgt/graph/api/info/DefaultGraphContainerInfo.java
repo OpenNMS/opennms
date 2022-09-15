@@ -46,7 +46,7 @@ public class DefaultGraphContainerInfo implements GraphContainerInfo {
 
     @Override
     public List<String> getNamespaces() {
-        return graphInfos.stream().map(gi -> gi.getNamespace()).collect(Collectors.toList());
+        return graphInfos.stream().map(GraphInfo::getNamespace).collect(Collectors.toList());
     }
 
     @Override

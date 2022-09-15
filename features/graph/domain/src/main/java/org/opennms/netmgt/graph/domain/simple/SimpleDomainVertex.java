@@ -70,8 +70,8 @@ public final class SimpleDomainVertex extends AbstractDomainVertex {
     public static SimpleDomainVertex from(GenericVertex genericVertex) {
         return new SimpleDomainVertex(genericVertex);
     }
-    
-    public final static class SimpleDomainVertexBuilder extends AbstractDomainVertexBuilder<SimpleDomainVertexBuilder> {
+
+    public static final class SimpleDomainVertexBuilder extends AbstractDomainVertexBuilder<SimpleDomainVertexBuilder> {
                 
         private SimpleDomainVertexBuilder() {}
         
