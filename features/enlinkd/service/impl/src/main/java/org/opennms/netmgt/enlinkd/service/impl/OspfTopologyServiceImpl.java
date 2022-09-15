@@ -38,6 +38,7 @@ import java.util.Set;
 
 import org.opennms.netmgt.dao.support.UpsertTemplate;
 import org.opennms.netmgt.enlinkd.model.OspfArea;
+import org.opennms.netmgt.enlinkd.model.OspfAreaTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.OspfElement;
 import org.opennms.netmgt.enlinkd.model.OspfLink;
 import org.opennms.netmgt.enlinkd.model.OspfLinkTopologyEntity;
@@ -226,6 +227,11 @@ public class OspfTopologyServiceImpl extends TopologyServiceImpl implements Ospf
     @Override
     public List<OspfElement> findAllOspfElements() {
         return m_ospfElementDao.findAll();
+    }
+
+    @Override
+    public List<OspfAreaTopologyEntity> findAllOspfAreas() {
+        return getTopologyEntityCache().getOspfAreaTopologyEntities();
     }
 
     @Override
