@@ -28,14 +28,18 @@
 
 package org.opennms.features.scv.rest;
 
+import com.bettercloud.vault.VaultConfig;
 import com.google.common.base.Strings;
 import org.opennms.features.scv.api.Credentials;
+import org.opennms.features.scv.api.ScvStrategy;
+import org.opennms.features.scv.vault.config.VaultService;
 import org.opennms.features.scv.api.SecureCredentialsVault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.Response;
 import java.text.Collator;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -47,6 +51,7 @@ public class DefaultScvRestService implements ScvRestService {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultScvRestService.class);
 
     private final SecureCredentialsVault scv;
+    private VaultService vaultService;
     private final Pattern pattern = Pattern.compile("\\*{2,}");
     private final String MASKED_PASSWORD = "******";
 
@@ -138,5 +143,36 @@ public class DefaultScvRestService implements ScvRestService {
         var aliases = new TreeSet<String>(Collator.getInstance());
         aliases.addAll(aliasSet);
         return Response.ok(aliases).build();
+    }
+
+    @Override
+    public Response configureVault(VaultConfigurationDTO vaultConfigDTO) {
+        if (vaultService == null) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("SCV is not configured to use Vault").build();
+        }
+        try {
+            VaultConfig vaultConfig = new VaultConfig()
+                    .address(vaultConfigDTO.getVaultAddress())
+                    .token(vaultConfigDTO.getToken())
+                    .build();
+            vaultService.initializeVault(vaultConfig);
+            return Response.noContent().build();
+        }
+        catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+        }
+    }
+
+    @Override
+    public Response getScvStrategy() {
+        return Response.ok(Arrays.asList(ScvStrategy.getStrategy().toString())).build();
+    }
+
+    public void setVaultService(VaultService vaultService) {
+        this.vaultService = vaultService;
+    }
+
+    public void getVaultService() {
+        return this.vaultService;
     }
 }
