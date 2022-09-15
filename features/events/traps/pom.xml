@@ -175,12 +175,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.github.java-json-tools</groupId>
-      <artifactId>json-patch</artifactId>
-      <version>1.13</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.features.scv</groupId>
       <artifactId>org.opennms.features.scv.jceks-impl</artifactId>
       <version>${project.version}</version>
