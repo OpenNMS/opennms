@@ -138,7 +138,9 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
         preDefinedGroup = settings.getGroup(Tabs.PRE_DEFINED); // recreate this object because DOM redraws can make them stale
         assertThat(userDefinedGroup.isEnabled(), is(false));
         assertThat(preDefinedGroup.isEnabled(), is(false));
-        assertThat(uiPage.getTabs(), hasSize(1));
+        await().atMost(150, TimeUnit.SECONDS)
+                .pollInterval(2, TimeUnit.SECONDS)
+                .until(uiPage::getTabs, hasSize(1));
 
         // Verify enable groups
         userDefinedGroup.setEnabled(true);
@@ -153,7 +155,9 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
         settings = new SettingsTab(uiPage).click();
         settings.refresh();
         assertThat(settings.getGroups(), hasSize(2));
-        assertThat(uiPage.getTabs(), hasSize(expectedTabs.size()));
+        await().atMost(150, TimeUnit.SECONDS)
+               .pollInterval(2, TimeUnit.SECONDS)
+               .until(uiPage::getTabs, hasSize(expectedTabs.size()));
     }
 
     @Test
