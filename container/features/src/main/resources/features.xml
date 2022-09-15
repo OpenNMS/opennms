@@ -2041,7 +2041,7 @@
     <feature name="scv-hcp-config" description="OpenNMS :: HCP :: Config" version="${project.version}">
         <feature>scv-api</feature>
         <bundle>mvn:org.json/json/${jsonVersion}</bundle>
-        <bundle>mvn:com.bettercloud/vault-java-driver/5.1.0</bundle>
+        <bundle>wrap:mvn:com.bettercloud/vault-java-driver/5.1.0</bundle>
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.scv/hcp-config/${project.version}</bundle>
     </feature>
