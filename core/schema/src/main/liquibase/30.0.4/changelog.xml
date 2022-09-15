@@ -47,6 +47,23 @@
             <column name="nodeid"/>
             <column name="ospfareaid"/>
         </createIndex>
+
+        <rollback>
+            <dropIndex tableName="ospfarea" indexName="ospfarea_nodeid_idx" />
+            <dropIndex tableName="ospfarea" indexName="ospfarea_pk_idx" />
+            <dropForeignKeyConstraint baseTableName="ospfarea" constraintName="fk_ospfarea_nodeid" />
+            <dropTable tableName="ospflink" />
+        </rollback>
+    </changeSet>
+
+    <changeSet author="aramos" id="30.0.4-add-column-ospflink">
+        <addColumn tableName="ospflink">
+            <column name="ospfifareaid" type="varchar(16)" >
+            </column>
+        </addColumn>
+        <rollback>
+            <dropColumn tableName="ospflink" columnName="ospfifareaid" />
+        </rollback>
     </changeSet>
 
 </databaseChangeLog>

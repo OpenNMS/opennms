@@ -51,13 +51,13 @@ public class OspfAreaTableTracker extends TableTracker {
     public final static SnmpObjId OSPF_AREA_BDR_RTR_COUNT = SnmpObjId.get(".1.3.6.1.2.1.14.2.1.5");
     public final static SnmpObjId OSPF_AS_BDR_RTR_COUNT = SnmpObjId.get(".1.3.6.1.2.1.14.2.1.6");
     public final static SnmpObjId OSPF_AREA_LSA_COUNT = SnmpObjId.get(".1.3.6.1.2.1.14.2.1.7");
-//    public final static SnmpObjId OSPF_AREA_LSA_CKSUM_SUM                       = SnmpObjId.get(".1.3.6.1.2.1.14.2.1.8");
-//    public final static SnmpObjId OSPF_AREA_SUMMARY                             = SnmpObjId.get(".1.3.6.1.2.1.14.2.1.9");
-//    public final static SnmpObjId OSPF_AREA_STATUS                              = SnmpObjId.get(".1.3.6.1.2.1.14.2.1.10");
-//    public final static SnmpObjId OSPF_AREA_NSSA_TRANSLATOR_ROLE                = SnmpObjId.get(".1.3.6.1.2.1.14.2.1.11");
-//    public final static SnmpObjId OSPF_AREA_NSSA_TRANSLATOR_STATE               = SnmpObjId.get(".1.3.6.1.2.1.14.2.1.12");
-//    public final static SnmpObjId OSPF_AREA_NSSA_TRANSLATOR_STABILITY_INTERVAL  = SnmpObjId.get(".1.3.6.1.2.1.14.2.1.13");
-//    public final static SnmpObjId OSPF_AREA_NSSA_TRANSLATOR_EVENTS              = SnmpObjId.get(".1.3.6.1.2.1.14.2.1.14");
+    //    public final static SnmpObjId OSPF_AREA_LSA_CKSUM_SUM                       = SnmpObjId.get(".1.3.6.1.2.1.14.2.1.8");
+    //    public final static SnmpObjId OSPF_AREA_SUMMARY                             = SnmpObjId.get(".1.3.6.1.2.1.14.2.1.9");
+    //    public final static SnmpObjId OSPF_AREA_STATUS                              = SnmpObjId.get(".1.3.6.1.2.1.14.2.1.10");
+    //    public final static SnmpObjId OSPF_AREA_NSSA_TRANSLATOR_ROLE                = SnmpObjId.get(".1.3.6.1.2.1.14.2.1.11");
+    //    public final static SnmpObjId OSPF_AREA_NSSA_TRANSLATOR_STATE               = SnmpObjId.get(".1.3.6.1.2.1.14.2.1.12");
+    //    public final static SnmpObjId OSPF_AREA_NSSA_TRANSLATOR_STABILITY_INTERVAL  = SnmpObjId.get(".1.3.6.1.2.1.14.2.1.13");
+    //    public final static SnmpObjId OSPF_AREA_NSSA_TRANSLATOR_EVENTS              = SnmpObjId.get(".1.3.6.1.2.1.14.2.1.14");
 
     public static final SnmpObjId[] s_ospfAreatable_elemList = new SnmpObjId[]{
             /**

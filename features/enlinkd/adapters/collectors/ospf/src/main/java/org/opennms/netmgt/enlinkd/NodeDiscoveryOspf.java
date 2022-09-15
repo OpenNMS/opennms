@@ -178,6 +178,7 @@ public final class NodeDiscoveryOspf extends NodeCollector {
                     link.setOspfIpAddr(localospfport.getOspfIpAddr());
                     link.setOspfAddressLessIndex(localospfport.getOspfAddressLessIndex());
                     link.setOspfIfIndex(localospfport.getOspfAddressLessIndex());
+                    link.setOspfIfAreaId(localospfport.getOspfIfAreaId());
                     break;
                 }
                 if (localospfport.getOspfAddressLessIndex() == 0 && link.getOspfRemAddressLessIndex() != 0)
@@ -188,6 +189,7 @@ public final class NodeDiscoveryOspf extends NodeCollector {
                 if (InetAddressUtils.inSameNetwork(localospfport.getOspfIpAddr(),link.getOspfRemIpAddr(),localospfport.getOspfIpMask())) {
                     link.setOspfIpAddr(localospfport.getOspfIpAddr());
                     link.setOspfAddressLessIndex(localospfport.getOspfAddressLessIndex());
+                    link.setOspfIfAreaId(localospfport.getOspfIfAreaId());
                     link.setOspfIpMask(localospfport.getOspfIpMask());
                     link.setOspfIfIndex(localospfport.getOspfIfIndex());
                     break;
@@ -219,7 +221,7 @@ public final class NodeDiscoveryOspf extends NodeCollector {
                     getNodeId(), e.getMessage());
             return;
         }
-
+        // Areas
         for (OspfArea area : areas) {
             m_ospfTopologyService.store(getNodeId(),area);
         }

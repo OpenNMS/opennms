@@ -275,7 +275,7 @@ public class ServiceTest {
     }
 
     private OspfLinkTopologyEntity createOspfLink(int id, OnmsNode node, InetAddress ipAddress, InetAddress remoteAddress) {
-        return new OspfLinkTopologyEntity(id, node.getId(), ipAddress, InetAddressUtils.addr("255.255.255.252"),remoteAddress, -1);
+        return new OspfLinkTopologyEntity(id, node.getId(), ipAddress, InetAddressUtils.addr("255.255.255.252"),remoteAddress, -1, InetAddressUtils.addr("0.0.0.0"));
     }
 
     private OspfAreaTopologyEntity createOspfArea(int id, OnmsNode node, InetAddress ipAddress, Integer authType, Integer importAsExtern,

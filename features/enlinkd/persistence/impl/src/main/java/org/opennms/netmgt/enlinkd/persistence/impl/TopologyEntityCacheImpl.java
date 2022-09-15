@@ -166,6 +166,7 @@ public class TopologyEntityCacheImpl implements TopologyEntityCache {
         isIsLinkTopologyEntities.refresh(CACHE_KEY);
         lldpLinkTopologyEntities.refresh(CACHE_KEY);
         ospfLinkTopologyEntities.refresh(CACHE_KEY);
+        ospfAreaTopologyEntities.refresh(CACHE_KEY);
         cdpElementTopologyEntities.refresh(CACHE_KEY);
         isIsElementTopologyEntities.refresh(CACHE_KEY);
         lldpElementTopologyEntities.refresh(CACHE_KEY);

@@ -49,6 +49,7 @@ public class OspfIfTableTracker extends TableTracker {
 
     public final static SnmpObjId OSPF_IF_IPADDRESS = SnmpObjId.get(".1.3.6.1.2.1.14.7.1.1");
     public final static SnmpObjId OSPF_ADDRESS_LESS_IF = SnmpObjId.get(".1.3.6.1.2.1.14.7.1.2");
+    public final static SnmpObjId OSPF_IF_AREA_ID = SnmpObjId.get(".1.3.6.1.2.1.14.7.1.3");
 
     public static final SnmpObjId[] s_ospfiftable_elemList = new SnmpObjId[]{
 
@@ -65,7 +66,13 @@ public class OspfIfTableTracker extends TableTracker {
              * ifIndex for interfaces having no IP Address."
              *
             */
-            OSPF_ADDRESS_LESS_IF
+            OSPF_ADDRESS_LESS_IF,
+            /**
+             * A 32-bit integer uniquely identifying the area
+             * to which the interface connects.  Area ID
+             * 0.0.0.0 is used for the OSPF backbone.
+            */
+            OSPF_IF_AREA_ID
 
     };
 
@@ -84,16 +91,22 @@ public class OspfIfTableTracker extends TableTracker {
             return getValue(OSPF_ADDRESS_LESS_IF).toInt();
         }
 
+        public InetAddress getOspfIfAreaId() {
+            return getValue(OSPF_IF_AREA_ID).toInetAddress();
+        }
+
 
         public OspfLink getOspfLink() {
 
-            LOG.debug("getOspfLink: ospf ip address: {}, address less ifindex {}",
+            LOG.debug("getOspfLink: ospf ip address: {}, address less ifindex {}, area id {}",
                     str(getOspfIpAddress()),
-                    getOspfAddressLessIf());
+                    getOspfAddressLessIf(),
+                    str(getOspfIfAreaId()));
 
             OspfLink link = new OspfLink();
             link.setOspfIpAddr(getOspfIpAddress());
             link.setOspfAddressLessIndex(getOspfAddressLessIf());
+            link.setOspfIfAreaId(getOspfIfAreaId());
             return link;
 
         }
