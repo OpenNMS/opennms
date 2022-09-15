@@ -3,7 +3,6 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd">
 
-    <!-- Conditionally load JCEKS SCV -->
-    <bean class="org.opennms.features.scv.jceks.ConditionalJceksScvContext"/>
+    <bean class="org.opennms.features.scv.vault.config.HcpVaultService" init-method="init"/>
 
 </beans>

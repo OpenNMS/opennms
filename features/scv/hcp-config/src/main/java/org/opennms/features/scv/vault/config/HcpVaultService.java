@@ -35,6 +35,7 @@ import org.json.JSONObject;
 import org.opennms.features.distributed.kvstore.api.JsonStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class HcpVaultService implements VaultService {
 
@@ -44,7 +45,11 @@ public class HcpVaultService implements VaultService {
 
     private Vault vault;
 
-    private final JsonStore jsonStore;
+    @Autowired
+    private JsonStore jsonStore;
+
+    public HcpVaultService() {
+    }
 
     public HcpVaultService(JsonStore jsonStore) {
         this.jsonStore = jsonStore;
@@ -90,4 +95,11 @@ public class HcpVaultService implements VaultService {
         }
     }
 
+    public JsonStore getJsonStore() {
+        return jsonStore;
+    }
+
+    public void setJsonStore(JsonStore jsonStore) {
+        this.jsonStore = jsonStore;
+    }
 }

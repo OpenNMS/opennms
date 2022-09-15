@@ -19,5 +19,6 @@
     <module>rest</module>
     <module>hcp-vault</module>
     <module>hcp-config</module>
+    <module>hcp-shell</module>
   </modules>
 </project>

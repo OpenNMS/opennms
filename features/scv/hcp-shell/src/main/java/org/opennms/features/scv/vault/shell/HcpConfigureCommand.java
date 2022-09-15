@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.scv.vault.config.shell;
+package org.opennms.features.scv.vault.shell;
 
 import com.bettercloud.vault.VaultConfig;
 import com.bettercloud.vault.VaultException;
@@ -59,9 +59,9 @@ public class HcpConfigureCommand implements Action {
                     .address(address)
                     .build();
             vaultService.initializeVault(vaultConfig);
-            System.out.println("Valut initialized");
+            System.out.println("Vault initialized");
         } catch (VaultException e) {
-            System.out.printf("vault not initialized for the address %s with the given token", address);
+            System.out.printf("Vault not initialized for the address %s with the given token", address);
         }
         return null;
     }

@@ -28,23 +28,28 @@
 
 package org.opennms.core.text.encryptor;
 
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.jasypt.util.text.AES256TextEncryptor;
 import org.opennms.core.config.api.TextEncryptor;
 import org.opennms.features.scv.api.Credentials;
 import org.opennms.features.scv.api.SecureCredentialsVault;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 public class TextEncryptorImpl implements TextEncryptor {
 
-    private final SecureCredentialsVault secureCredentialsVault;
-    private Map<String, Credentials> passwordsByAlias = new ConcurrentHashMap<>();
+    @Autowired
+    private SecureCredentialsVault secureCredentialsVault;
+    private final Map<String, Credentials> passwordsByAlias = new ConcurrentHashMap<>();
 
     public TextEncryptorImpl(SecureCredentialsVault secureCredentialsVault) {
         this.secureCredentialsVault = secureCredentialsVault;
+    }
+
+    public TextEncryptorImpl() {
     }
 
     @Override

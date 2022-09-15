@@ -5,7 +5,8 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
   http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd">
 
-  <bean name="textEncryptor" class="org.opennms.core.text.encryptor.TextEncryptorImpl"/>
-  <onmsgi:service interface="org.opennms.core.config.api.TextEncryptor" ref="textEncryptor"/>
+    <bean name="hcpCredentialsVault" class="org.opennms.features.scv.vault.HcpCredentialsVault"/>
+
+    <onmsgi:service interface="org.opennms.features.scv.api.SecureCredentialsVault" ref="hcpCredentialsVault"/>
 
 </beans>

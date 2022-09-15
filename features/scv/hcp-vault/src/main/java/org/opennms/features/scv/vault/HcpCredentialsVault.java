@@ -39,6 +39,7 @@ import org.opennms.features.scv.api.SecureCredentialsVault;
 import org.opennms.features.scv.vault.config.VaultService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -53,8 +54,13 @@ public class HcpCredentialsVault implements SecureCredentialsVault {
     private static final String ROOT_PATH = "secret/";
     private static final String USERNAME = "username";
     private static final String PASSWORD = "password";
-    private final VaultService vaultConfigService;
 
+    @Autowired
+    private VaultService vaultConfigService;
+
+
+    public HcpCredentialsVault() {
+    }
 
     public HcpCredentialsVault(VaultService vaultConfigService) {
         this.vaultConfigService = vaultConfigService;
@@ -115,8 +121,16 @@ public class HcpCredentialsVault implements SecureCredentialsVault {
         }
     }
 
+    public VaultService getVaultConfigService() {
+        return vaultConfigService;
+    }
+
     @VisibleForTesting
     Vault getVault() {
         return vaultConfigService.getVault();
+    }
+
+    public void setVaultConfigService(VaultService vaultConfigService) {
+        this.vaultConfigService = vaultConfigService;
     }
 }
