@@ -36,6 +36,9 @@ public class VaultConfigurationDTO {
 
     private String namespace;
 
+    public VaultConfigurationDTO() {
+    }
+
     public VaultConfigurationDTO(String vaultAddress, String token) {
         this.vaultAddress = vaultAddress;
         this.token = token;

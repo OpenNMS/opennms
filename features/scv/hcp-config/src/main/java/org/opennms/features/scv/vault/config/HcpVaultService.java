@@ -31,6 +31,7 @@ package org.opennms.features.scv.vault.config;
 import com.bettercloud.vault.Vault;
 import com.bettercloud.vault.VaultConfig;
 import com.bettercloud.vault.VaultException;
+import com.google.common.base.Strings;
 import org.json.JSONObject;
 import org.opennms.features.distributed.kvstore.api.JsonStore;
 import org.slf4j.Logger;
@@ -64,8 +65,14 @@ public class HcpVaultService implements VaultService {
             try {
                 VaultConfig vaultConfig = new VaultConfig()
                         .token(jsonObject.getString("token"))
-                        .address(vaultAddress)
-                        .build();
+                        .address(vaultAddress);
+                if (jsonObject.has("namespace")) {
+                    String nameSpace = jsonObject.getString("namespace");
+                    if (!Strings.isNullOrEmpty(nameSpace)) {
+                        vaultConfig.nameSpace(nameSpace);
+                    }
+                }
+                vaultConfig.build();
                 initializeVault(vaultConfig);
             } catch (VaultException e) {
                 LOG.error("Error initializing vault config for address {}", vaultAddress, e);
@@ -87,6 +94,7 @@ public class HcpVaultService implements VaultService {
             JSONObject vaultJsonConfig = new JSONObject();
             vaultJsonConfig.put("address", vaultConfig.getAddress());
             vaultJsonConfig.put("token", vaultConfig.getToken());
+            vaultJsonConfig.put("namespace", vaultConfig.getNameSpace());
             jsonStore.put(HCP_VAULT_CONFIG, vaultJsonConfig.toString(), HCP_VAULT_CONTEXT);
             LOG.info("HCP Vault initialized");
         } catch (VaultException e) {

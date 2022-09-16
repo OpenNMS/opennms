@@ -1,8 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd">
+       xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+  http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd">
 
-    <bean class="org.opennms.features.scv.vault.config.HcpVaultService" init-method="init"/>
+    <bean id="vaultService" class="org.opennms.features.scv.vault.config.HcpVaultService" init-method="init"/>
+
+    <onmsgi:service interface="org.opennms.features.scv.vault.config.VaultService" ref="vaultService">
+        <onmsgi:service-properties>
+            <entry key="registration.export" value="true"/>
+        </onmsgi:service-properties>
+    </onmsgi:service>
 
 </beans>
