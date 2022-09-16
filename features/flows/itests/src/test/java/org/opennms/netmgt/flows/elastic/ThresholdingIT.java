@@ -179,14 +179,11 @@ public class ThresholdingIT {
         filterWatcher.setSessionUtils(this.sessionUtils);
         filterWatcher.afterPropertiesSet();
 
-        final var twinPublisher = new MemoryTwinPublisher();
-
         this.classificationService = new DefaultClassificationService(this.ruleDao,
                                                                       this.groupDao,
                                                                       this.filterDao,
                                                                       filterWatcher,
-                                                                      this.sessionUtils,
-                                                                      twinPublisher);
+                                                                      this.sessionUtils);
 
         final var collectionAgentFactory = new DefaultCollectionAgentFactory();
         collectionAgentFactory.setNodeDao(this.databasePopulator.getNodeDao());
