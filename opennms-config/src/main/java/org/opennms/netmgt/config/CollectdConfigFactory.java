@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -40,7 +40,6 @@ import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
@@ -100,15 +99,11 @@ public class CollectdConfigFactory implements org.opennms.netmgt.config.api.Coll
      * @throws IOException
      */
     private void init(final InputStream stream) throws IOException {
-        InputStreamReader isr = null;
-        try {
-            isr = new InputStreamReader(stream);
+        try (InputStreamReader isr = new InputStreamReader(stream)) {
             CollectdConfiguration config = JaxbUtils.unmarshal(CollectdConfiguration.class, isr);
             synchronized (m_collectdConfigMutex) {
                 m_collectdConfig = config;
             }
-        } finally {
-            IOUtils.closeQuietly(isr);
         }
     }
 
@@ -136,12 +131,8 @@ public class CollectdConfigFactory implements org.opennms.netmgt.config.api.Coll
             config = m_collectdConfig;
         }
 
-        FileWriter writer = null;
-        try {
-            writer = new FileWriter(cfgFile);
+        try ( FileWriter writer = new FileWriter(cfgFile)) {
             JaxbUtils.marshal(config, writer);
-        } finally {
-            IOUtils.closeQuietly(writer);
         }
 
         reload();

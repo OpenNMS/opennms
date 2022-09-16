@@ -43,13 +43,13 @@ public class MockUserManager extends UserManager {
     private long m_lastModified;
     private long m_fileSize;
     
-    public MockUserManager(GroupManager groupManager, String xmlString) {
+    public MockUserManager(GroupManager groupManager, String xmlString) throws IOException {
         super(groupManager);
         m_xmlString = xmlString;
         parseXML();
     }
 
-    private void parseXML() {
+    private void parseXML() throws IOException {
         InputStream in = new ByteArrayInputStream(m_xmlString.getBytes());
         parseXML(in);
         updateNeeded = false;

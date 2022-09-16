@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -35,8 +35,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
-
-import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.httpdatacollection.HttpCollection;
@@ -73,14 +71,8 @@ public class HttpCollectionConfigFactory {
      * @throws java.io.IOException if any.
      */
     public HttpCollectionConfigFactory(String configFile) throws IOException {
-        InputStream is = null;
-        try {
-            is = new FileInputStream(configFile);
+        try (InputStream is = new FileInputStream(configFile)) {
             initialize(is);
-        } finally {
-            if (is != null) {
-                IOUtils.closeQuietly(is);
-            }
         }
     }
 
@@ -94,7 +86,7 @@ public class HttpCollectionConfigFactory {
         initialize(stream);
     }
 
-    private void initialize(InputStream stream) throws IOException {
+    private static void initialize(InputStream stream) throws IOException {
         LOG.debug("initialize: initializing http collection config factory.");
         try (InputStreamReader isr = new InputStreamReader(stream)) {
             m_config = JaxbUtils.unmarshal(HttpDatacollectionConfig.class, isr);

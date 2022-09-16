@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -36,7 +36,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,15 +76,8 @@ public class WmiDataCollectionConfigFactory {
       * @throws java.io.IOException if any.
       */
      public WmiDataCollectionConfigFactory(String configFile) throws IOException {
-         InputStream is = null;
-
-         try {
-             is = new FileInputStream(configFile);
+         try (InputStream is = new FileInputStream(configFile)) {
              initialize(is);
-         } finally {
-             if (is != null) {
-                 IOUtils.closeQuietly(is);
-             }
          }
      }
 
@@ -98,7 +90,7 @@ public class WmiDataCollectionConfigFactory {
          initialize(is);
      }
 
-     private void initialize(InputStream stream) throws IOException  {
+     private static void initialize(InputStream stream) throws IOException  {
          LOG.debug("initialize: initializing WMI collection config factory.");
          try (InputStreamReader isr = new InputStreamReader(stream)) {
              m_config = JaxbUtils.unmarshal(WmiDatacollectionConfig.class, isr);
