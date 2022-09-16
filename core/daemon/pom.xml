@@ -157,6 +157,11 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>com.jayway.awaitility</groupId>
+      <artifactId>awaitility</artifactId>
+      <scope>test</scope>
+    </dependency>
+	<dependency>
       <groupId>mx4j</groupId>
       <artifactId>mx4j-tools</artifactId>
       <scope>test</scope>

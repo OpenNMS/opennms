@@ -186,32 +186,33 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
     }
 
     /**
-     * <p>isRunning</p>
-     *
-     * @return a boolean.
+     * Daemon is currently running.
      */
-    protected synchronized boolean isRunning() {
+    protected boolean isRunning() {
         return getStatus() == RUNNING;
     }
 
     /**
-     * <p>isPaused</p>
-     *
-     * @return a boolean.
+     * Daemon has been started in the past, but is now paused.
      */
-    protected synchronized boolean isPaused() {
+    protected boolean isPaused() {
         return getStatus() == PAUSED;
     }
 
     /**
-     * <p>isStarting</p>
-     *
-     * @return a boolean.
+     * Daemon is starting, but has not yet completed starting.
      */
-    protected synchronized boolean isStarting() {
+    protected boolean isStarting() {
         return getStatus() == STARTING;
     }
     
+    /**
+     * Daemon has been started in the past, but is now stopped.
+     */
+    protected boolean isStopped() {
+        return getStatus() == STOPPED;
+    }
+
     /**
      * <p>init</p>
      */
@@ -232,7 +233,7 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
      * <p>pause</p>
      */
     @Override
-    public final void pause() {
+    public final synchronized void pause() {
         Logging.withPrefix(getName(), () -> {
             if (!isRunning()) return;
 
@@ -250,7 +251,7 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
      * <p>resume</p>
      */
     @Override
-    public final void resume() {
+    public final synchronized void resume() {
         
         Logging.withPrefix(getName(), () -> {
             if (!isPaused()) return;
@@ -285,12 +286,15 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
     }
 
     /**
-     * Stops the currently running service. If the service is not running then
-     * the command is silently discarded.
+     * Stops the currently running service.
+     * If the service is not running or paused, then the command is silently discarded.
      */
     @Override
     public final synchronized void stop() {
-        
+        if (!this.isRunning() && !this.isPaused()) {
+            return;
+        }
+
         Logging.withPrefix(getName(), () -> {
             LOG.info("{} stopping.", getName());
 
