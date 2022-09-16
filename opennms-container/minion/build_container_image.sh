@@ -15,7 +15,7 @@ cd "${MYDIR}"
 # shellcheck disable=SC1091
 source ../set-build-environment.sh
 
-TARBALL="$(find ../../opennms-assemblies/minion -name \*-minion.tar.gz -type f | head -n 1)"
+TARBALL="$(find ../../opennms-assemblies/minion -name \*minion\*.tar.gz -type f | head -n 1)"
 if [ -z "${TARBALL}" ]; then
   echo "unable to find minion tarball in opennms-assemblies"
   exit 1

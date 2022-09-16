@@ -1,9 +1,10 @@
 jobs:
   integration-test:
-    executor: integration-test-executor
+    executor: build-executor
     parallelism: 8
     resource_class: xlarge
     steps:
+      - cached-checkout
       - attach_workspace:
           at: ~/
       - run-integration-tests:

@@ -70,14 +70,19 @@ help:
 test:
 	@echo "Test Docker Buildx installation and existence of the Minion tarball ..."
 	@command -v docker
-	test -f ../../opennms-assemblies/minion/target/org.opennms.assemblies.minion-*-minion.tar.gz
+	test -f ../../opennms-assemblies/minion/target/*minion*.tar.gz
 
-build: test minion-config-schema.yml
-	@echo "Copy Minion tarball to Docker context ..."
-	@mkdir -p tarball-root && tar -x -z --strip-components 1 -C ./tarball-root -f ../../opennms-assemblies/minion/target/org.opennms.assemblies.minion-*-minion.tar.gz
+unpack-tarball: test
+	@if [ ! -e ./tarball-root/data/tmp/README ] || [ ../../opennms-assemblies/minion/target/*minion*.tar.gz -nt ./tarball-root/data/tmp/README ]; then \
+	  echo "Unpacking Minion tarball for Docker context..."; \
+	  mkdir -p tarball-root && \
+	  tar -x -z --strip-components 1 -C ./tarball-root -f ../../opennms-assemblies/minion/target/*minion*.tar.gz && \
+	  touch ./tarball-root/data/tmp/README; \
+	fi
+
+build: test unpack-tarball minion-config-schema.yml
 	@echo "Initialize builder instance ..."
-	if ! docker buildx inspect $(DOCKERX_INSTANCE); then docker context create "$(DOCKERX_INSTANCE)-context" && docker buildx create --name "$(DOCKERX_INSTANCE)" "$(DOCKERX_INSTANCE)-context"; fi;
-	docker buildx use $(DOCKERX_INSTANCE)
+	if ! docker buildx inspect $(DOCKERX_INSTANCE); then docker context create "$(DOCKERX_INSTANCE)-context" && docker buildx create --name "$(DOCKERX_INSTANCE)" --driver docker-container --use "$(DOCKERX_INSTANCE)-context"; fi;
 	@echo "Build container image for architecture: $(DOCKER_ARCH) ..."
 	docker buildx build --platform=$(DOCKER_ARCH) \
 	  --build-arg BASE_IMAGE=$(BASE_IMAGE) \

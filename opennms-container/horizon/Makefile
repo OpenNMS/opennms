@@ -63,14 +63,19 @@ help:
 test:
 	@echo "Test Docker installation and existence of the Horizon tarball ..."
 	@command -v docker
-	test -f ../../opennms-full-assembly/target/opennms-full-assembly-*-core.tar.gz
+	test -f ../../opennms-full-assembly/target/*-core.tar.gz
 
-build: test
-	@echo "Copy Horizon tarball to Docker context ..."
-	@mkdir -p tarball-root && tar -x -z -C ./tarball-root -f ../../opennms-full-assembly/target/opennms-full-assembly-*-core.tar.gz
+unpack-tarball: test
+	@if [ ! -e ./tarball-root/data/tmp/README ] || [ ../../opennms-full-assembly/target/*-core.tar.gz -nt ./tarball-root/data/tmp/README ]; then \
+	  echo "Unpacking Horizon tarball for Docker context..."; \
+	  mkdir -p tarball-root && \
+	  tar -x -z -C ./tarball-root -f ../../opennms-full-assembly/target/*-core.tar.gz && \
+	  touch ./tarball-root/data/tmp/README; \
+	fi
+
+build: test unpack-tarball
 	@echo "Initialize builder instance ..."
-	if ! docker buildx inspect $(DOCKERX_INSTANCE); then docker context create "$(DOCKERX_INSTANCE)-context" && docker buildx create --name "$(DOCKERX_INSTANCE)" "$(DOCKERX_INSTANCE)-context"; fi;
-	docker buildx use $(DOCKERX_INSTANCE)
+	if ! docker buildx inspect $(DOCKERX_INSTANCE); then docker context create "$(DOCKERX_INSTANCE)-context" && docker buildx create --name "$(DOCKERX_INSTANCE)" --driver docker-container --use "$(DOCKERX_INSTANCE)-context"; fi;
 	@echo "Build container image for architecture: $(DOCKER_ARCH) ..."
 	docker buildx build --platform=$(DOCKER_ARCH) \
 	  --build-arg BASE_IMAGE=$(BASE_IMAGE) \

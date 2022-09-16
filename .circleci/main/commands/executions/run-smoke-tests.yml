@@ -27,6 +27,7 @@ commands:
           background: true
           command: |
             free -m -c 500 -s 30
+      - restore-maven-cache
       - run:
           name: Smoke Tests
           no_output_timeout: 30m

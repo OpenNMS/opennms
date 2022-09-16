@@ -1,6 +1,6 @@
 jobs: 
   create-merge-meridian-branch:
-    <<: *docker_container_config
+    executor: base-executor
     steps:
       - when:
           condition: << pipeline.parameters.main_branch >>

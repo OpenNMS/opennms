@@ -192,6 +192,25 @@ commands:
             fi
             cd -
 
+  persist-project-changes:
+    description: persist project changes to the workspace, skipping files that come from git
+    steps:
+      - fix-workspace-permissions:
+          path: project
+      - run:
+          name: prep the working directory
+          command: |
+            WORKSPACE="/tmp/extracted-workspace"
+            mkdir -p "${WORKSPACE}/project"
+
+            cd ~/project
+            git clean -dx --dry-run | grep -v __pycache__ | sed -e 's,^Would remove ,,' > "${WORKSPACE}.filelist"
+            tar -cf - --files-from "${WORKSPACE}.filelist" | tar -xf - -C "${WORKSPACE}/project"
+      - persist_to_workspace:
+          root: /tmp/extracted-workspace/
+          paths:
+            - project
+
   fix-workspace-permissions:
     description: fix permissions of a path to be compatible with the docker cimg `circleci` user
     parameters:

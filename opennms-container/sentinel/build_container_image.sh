@@ -15,7 +15,7 @@ cd "${MYDIR}"
 # shellcheck disable=SC1091
 source ../set-build-environment.sh
 
-TARBALL="$(find ../../opennms-assemblies/sentinel -name \*-sentinel.tar.gz -type f | head -n 1)"
+TARBALL="$(find ../../opennms-assemblies/sentinel -name \*sentinel\*.tar.gz -type f | head -n 1)"
 if [ -z "${TARBALL}" ]; then
   echo "unable to find sentinel tarball in opennms-assemblies"
   exit 1
