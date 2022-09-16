@@ -162,6 +162,11 @@
   <pluginManagement>
     <plugins>
       <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>${jacocoVersion}</version>
+      </plugin>
+      <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>license-maven-plugin</artifactId>
         <version>2.0.0.ONMS.1</version>
@@ -1344,7 +1349,6 @@
           <forkCount>1</forkCount>
           <reuseForks>false</reuseForks>
           <rerunFailingTestsCount>${ci.rerunFailingTestsCount}</rerunFailingTestsCount>
-          <reportsDirectory>${project.build.directory}/surefire-reports-${ci.instance}</reportsDirectory>
           <useModulePath>false</useModulePath>
           <forkedProcessExitTimeoutInSeconds>120</forkedProcessExitTimeoutInSeconds>
         </configuration>
@@ -1353,6 +1357,8 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
         <configuration>
+          <!-- Don't use this! Use the normal -DskipITs=true; this exists only for CI to do some optimizations. -->
+          <skip>${skipFailsafe}</skip>
           <!-- Don't specify argLine here or it will override the argLine property value -->
           <systemPropertyVariables>
             <java.locale.providers>CLDR,COMPAT</java.locale.providers>
@@ -1369,7 +1375,6 @@
           <reuseForks>false</reuseForks>
           <rerunFailingTestsCount>${ci.rerunFailingTestsCount}</rerunFailingTestsCount>
           <skipITs>${skipITs}</skipITs>
-          <reportsDirectory>${project.build.directory}/failsafe-reports-${ci.instance}</reportsDirectory>
           <useModulePath>false</useModulePath>
         </configuration>
         <executions>
@@ -1723,7 +1728,7 @@
     <jacksonVersion>1.9.13-atlassian-6</jacksonVersion>
     <jackson2Version>2.12.6</jackson2Version>
     <snakeyamlVersion>1.29</snakeyamlVersion>
-    <jacocoVersion>0.8.5</jacocoVersion>
+    <jacocoVersion>0.8.8</jacocoVersion>
     <jasperreportsVersion>6.3.0</jasperreportsVersion>
     <jasperreportsMavenPluginVersion>1.0-beta-4-OPENNMS-20160912-1</jasperreportsMavenPluginVersion>
     <!-- this should match what's in Karaf's lib/jdk9plus directory -->
@@ -1864,7 +1869,6 @@
     <xmlschemaVersion>2.2.5</xmlschemaVersion>
 
     <!-- CI Settings -->
-    <ci.instance>0</ci.instance>
     <ci.rerunFailingTestsCount>0</ci.rerunFailingTestsCount>
     <!-- Limit ITs to 30 minutes by default -->
     <test.fork.timeout>1800</test.fork.timeout>
@@ -2175,103 +2179,6 @@
                   <goal>check</goal>
                 </goals>
                 <phase>process-sources</phase>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-    <profile>
-      <id>code-coverage</id>
-      <activation>
-        <property>
-          <name>code.coverage</name>
-          <value>true</value>
-        </property>
-      </activation>
-      <build>
-        <plugins>
-          <!-- Jacoco code coverage testing library -->
-          <plugin>
-            <groupId>org.jacoco</groupId>
-            <artifactId>jacoco-maven-plugin</artifactId>
-            <version>${jacocoVersion}</version>
-            <executions>
-              <execution>
-                <id>before-unit-test-execution</id>
-                <goals>
-                  <goal>prepare-agent</goal>
-                </goals>
-                <configuration>
-                  <append>true</append>
-                  <destFile>${project.build.directory}/jacoco-output/jacoco-unit.exec</destFile>
-                </configuration>
-              </execution>
-              <!--
-              <execution>
-                <id>after-unit-test-execution</id>
-                <phase>test</phase>
-                <goals>
-                  <goal>report</goal>
-                </goals>
-                <configuration>
-                  <dataFile>${project.build.directory}/jacoco-output/jacoco-unit.exec</dataFile>
-                  <outputDirectory>${project.build.directory}/jacoco-surefire-${ci.instance}</outputDirectory>
-                </configuration>
-              </execution>
-              -->
-              <execution>
-                <id>before-integration-test-execution</id>
-                <phase>pre-integration-test</phase>
-                <goals>
-                  <goal>prepare-agent</goal>
-                </goals>
-                <configuration>
-                  <append>true</append>
-                  <destFile>${project.build.directory}/jacoco-output/jacoco-it.exec</destFile>
-                </configuration>
-              </execution>
-              <!--
-              <execution>
-                <id>after-integration-test-execution</id>
-                <phase>post-integration-test</phase>
-                <goals>
-                  <goal>report</goal>
-                </goals>
-                <configuration>
-                  <dataFile>${project.build.directory}/jacoco-output/jacoco-it.exec</dataFile>
-                  <outputDirectory>${project.build.directory}/jacoco-failsafe-${ci.instance}</outputDirectory>
-                </configuration>
-              </execution>
-              -->
-              <execution>
-                <id>merge-unit-and-integration</id>
-                <phase>post-integration-test</phase>
-                  <goals>
-                    <goal>merge</goal>
-                  </goals>
-                  <configuration>
-                  <fileSets>
-                    <fileSet>
-                      <directory>${project.build.directory}/jacoco-output/</directory>
-                      <includes>
-                        <include>*.exec</include>
-                      </includes>
-                    </fileSet>
-                  </fileSets>
-                  <destFile>${project.build.directory}/jacoco-merged-${ci.instance}.exec</destFile>
-                </configuration>
-              </execution>
-              <execution>
-                <id>create-merged-report</id>
-                <phase>post-integration-test</phase>
-                <goals>
-                  <goal>report</goal>
-                </goals>
-                <configuration>
-                  <dataFile>${project.build.directory}/jacoco-merged-${ci.instance}.exec</dataFile>
-                  <outputDirectory>${project.build.directory}/jacoco-merged-report-${ci.instance}</outputDirectory>
-                </configuration>
               </execution>
             </executions>
           </plugin>
