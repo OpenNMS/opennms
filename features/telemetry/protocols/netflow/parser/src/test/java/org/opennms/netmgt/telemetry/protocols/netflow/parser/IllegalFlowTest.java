@@ -28,9 +28,18 @@
 
 package org.opennms.netmgt.telemetry.protocols.netflow.parser;
 
-import static com.jayway.awaitility.Awaitility.await;
-import static org.hamcrest.Matchers.is;
-import static org.mockito.Mockito.mock;
+import com.codahale.metrics.MetricRegistry;
+import org.junit.Assert;
+import org.junit.Test;
+import org.opennms.core.ipc.sink.api.AsyncDispatcher;
+import org.opennms.distributed.core.api.Identity;
+import org.opennms.netmgt.dnsresolver.api.DnsResolver;
+import org.opennms.netmgt.events.api.EventForwarder;
+import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
+import org.opennms.netmgt.telemetry.listeners.UdpListener;
+import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Log;
+import org.springframework.util.SocketUtils;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -45,19 +54,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.opennms.core.ipc.sink.api.AsyncDispatcher;
-import org.opennms.distributed.core.api.Identity;
-import org.opennms.netmgt.dnsresolver.api.DnsResolver;
-import org.opennms.netmgt.events.api.EventForwarder;
-import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
-import org.opennms.netmgt.telemetry.listeners.UdpListener;
-import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Log;
-import org.springframework.util.SocketUtils;
-
-import com.codahale.metrics.MetricRegistry;
+import static com.jayway.awaitility.Awaitility.await;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.mock;
 
 public class IllegalFlowTest {
     private final static Path FOLDER = Paths.get("src/test/resources/flows");
@@ -123,7 +122,7 @@ public class IllegalFlowTest {
             @Override
             public void close()  {
             }
-        }, eventForwarder, identity, dnsResolver, new MetricRegistry(), (req) -> null);
+        }, eventForwarder, identity, dnsResolver, new MetricRegistry(), (req) -> null, null);
 
         // setting up listener
 

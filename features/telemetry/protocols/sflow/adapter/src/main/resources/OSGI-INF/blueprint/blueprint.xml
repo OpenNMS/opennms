@@ -23,6 +23,7 @@
 	<!-- SFlow Factory and Adapter -->
 	<bean id="sflowFactory" class="org.opennms.netmgt.telemetry.protocols.sflow.adapter.SFlowAdapterFactory">
 		<property name="telemetryRegistry" ref="telemetryRegistry"/>
+		<property name="classificationEngine" ref="classificationEngine" />
 		<property name="pipeline" ref="pipeline" />
 	</bean>
 	<service ref="sflowFactory" interface="org.opennms.netmgt.telemetry.api.adapter.AdapterFactory">

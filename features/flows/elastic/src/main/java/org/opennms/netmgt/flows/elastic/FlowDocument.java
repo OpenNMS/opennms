@@ -29,13 +29,10 @@
 package org.opennms.netmgt.flows.elastic;
 
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
 import org.opennms.integration.api.v1.flows.Flow;
-import org.opennms.netmgt.flows.processing.enrichment.EnrichedFlow;
-import org.opennms.netmgt.flows.processing.enrichment.NodeInfo;
 
 import com.google.gson.annotations.SerializedName;
 

@@ -57,6 +57,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.hibernate.InterfaceToNodeCacheDaoImpl;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.telemetry.config.dao.TelemetrydConfigDao;
@@ -116,7 +117,7 @@ public class JtiIT {
     private NodeDao nodeDao;
 
     @Autowired
-    private InterfaceToNodeCache interfaceToNodeCache;
+    private InterfaceToNodeCacheDaoImpl interfaceToNodeCache;
 
     @Rule
     public TemporaryFolder tempFolder = new TemporaryFolder();

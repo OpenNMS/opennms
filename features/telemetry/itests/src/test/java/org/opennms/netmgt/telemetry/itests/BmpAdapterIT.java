@@ -28,16 +28,10 @@
 
 package org.opennms.netmgt.telemetry.itests;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.opennms.netmgt.telemetry.protocols.bmp.parser.BmpParser.address;
-
-import java.util.List;
-import java.util.stream.Collectors;
-
+import com.codahale.metrics.MetricRegistry;
+import com.google.common.primitives.UnsignedInteger;
+import com.google.protobuf.ByteString;
+import com.google.protobuf.Timestamp;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,8 +42,8 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.collection.api.CollectionAgentFactory;
 import org.opennms.netmgt.dao.DatabasePopulator;
-import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.hibernate.InterfaceToNodeCacheDaoImpl;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLog;
@@ -65,10 +59,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import com.codahale.metrics.MetricRegistry;
-import com.google.common.primitives.UnsignedInteger;
-import com.google.protobuf.ByteString;
-import com.google.protobuf.Timestamp;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.opennms.netmgt.telemetry.protocols.bmp.parser.BmpParser.address;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -87,7 +86,7 @@ import com.google.protobuf.Timestamp;
 @JUnitTemporaryDatabase(reuseDatabase = false)
 public class BmpAdapterIT {
     @Autowired
-    InterfaceToNodeCache interfaceToNodeCache;
+    InterfaceToNodeCacheDaoImpl interfaceToNodeCache;
 
     @Autowired
     DatabasePopulator databasePopulator;

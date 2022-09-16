@@ -28,11 +28,11 @@
 
 package org.opennms.netmgt.flows.processing;
 
-import java.util.List;
-
-import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.integration.api.v1.flows.FlowException;
+import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.flows.api.FlowSource;
+
+import java.util.List;
 
 public interface Pipeline {
     void process(final List<Flow> flows,

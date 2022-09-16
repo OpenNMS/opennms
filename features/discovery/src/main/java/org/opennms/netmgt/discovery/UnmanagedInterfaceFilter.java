@@ -32,7 +32,6 @@ import java.net.InetAddress;
 import java.util.Objects;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 
 /**
  * Given a list of managed IP addresses, this filter will match IP addresses not in that

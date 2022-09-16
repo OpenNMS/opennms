@@ -16,5 +16,7 @@
     <module>dao-common</module>
     <module>minion</module>
     <module>sentinel</module>
+    <module>twin-publisher-api</module>
+    <module>twin-publisher</module>
   </modules>
 </project>

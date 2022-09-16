@@ -157,6 +157,15 @@
       <bundle>mvn:org.opennms.features.flows.classification.engine/org.opennms.features.flows.classification.engine.impl/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.telemetry.distributed/org.opennms.features.telemetry.distributed.common/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.telemetry.distributed/org.opennms.features.telemetry.distributed.minion/${project.version}</bundle>
+
+        <bundle>mvn:org.opennms.core.ipc.twin/org.opennms.core.ipc.twin.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core.ipc.twin/org.opennms.core.ipc.twin.common/${project.version}</bundle>
+        <feature>opennms-dao-api</feature>
+        <feature>opennms-dao-minion</feature>
+        <feature>opennms-core-ipc-twin-grpc-subscriber</feature>
+        <bundle>mvn:org.opennms.features.api-layer/org.opennms.features.api-layer.twin-publisher-api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.cache/${project.version}</bundle>
+<!--        <bundle>mvn:org.opennms.features.flows/org.opennms.features.flows.processing/${project.version}</bundle>-->
     </feature>
 
     <feature name="opennms-core-ipc-grpc-client" description="OpenNMS :: Core :: IPC :: GRPC :: Client" version="${project.version}">

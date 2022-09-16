@@ -46,7 +46,6 @@ import org.opennms.netmgt.dao.api.AlarmRepository;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
 import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
 import org.opennms.netmgt.dao.api.IfLabel;
-import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.NodeLabel;
 import org.opennms.netmgt.dao.api.OnmsDao;
 import org.opennms.netmgt.dao.api.SessionFactoryWrapper;

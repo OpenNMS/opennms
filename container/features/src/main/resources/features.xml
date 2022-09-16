@@ -1203,6 +1203,14 @@
         <bundle>mvn:org.opennms.features.telemetry.protocols.sflow/org.opennms.features.telemetry.protocols.sflow.parser/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.sflow/org.opennms.features.telemetry.protocols.sflow.adapter/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.flows.classification/org.opennms.features.flows.classification.shell/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.api-layer/org.opennms.features.api-layer.twin-publisher-api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.cache/${project.version}</bundle>
+    </feature>
+    <feature name="opennms-twin-publisher" version="${project.version}" description="OpenNMS :: Features :: API Layer :: Twin Publisher">
+        <feature>opennms-api-layer</feature>
+        <feature>opennms-dao</feature>
+        <bundle>mvn:org.opennms.features.api-layer/org.opennms.features.api-layer.twin-publisher-api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.api-layer/org.opennms.features.api-layer.twin-publisher/${project.version}</bundle>
     </feature>
     <feature name="opennms-api-layer" version="${project.version}" description="OpenNMS :: Features :: API Layer">
         <feature>opennms-health</feature>

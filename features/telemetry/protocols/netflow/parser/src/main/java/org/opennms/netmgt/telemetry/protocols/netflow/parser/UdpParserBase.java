@@ -45,7 +45,6 @@ import org.opennms.netmgt.telemetry.listeners.UdpParser;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.RecordProvider;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.UdpSessionManager;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.MessageBuilder;
 
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Gauge;
@@ -72,8 +71,9 @@ public abstract class UdpParserBase extends ParserBase implements UdpParser {
                          final Identity identity,
                          final DnsResolver dnsResolver,
                          final MetricRegistry metricRegistry,
-                         final ClassificationEngine classificationEngine) {
-        super(protocol, name, dispatcher, eventForwarder, identity, dnsResolver, metricRegistry, classificationEngine);
+                         final ClassificationEngine classificationEngine,
+                         final DocumentEnricherImpl documentEnricher) {
+        super(protocol, name, dispatcher, eventForwarder, identity, dnsResolver, metricRegistry, classificationEngine, documentEnricher);
 
         this.packetsReceived = metricRegistry.meter(MetricRegistry.name("parsers",  name, "packetsReceived"));
         this.parserErrors = metricRegistry.counter(MetricRegistry.name("parsers",  name, "parserErrors"));

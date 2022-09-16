@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2020-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -813,4 +813,175 @@ public interface FlowMessageOrBuilder extends
    */
   com.google.protobuf.ByteString
       getApplicationBytes();
+
+  /**
+   * <pre>
+   * enrichment
+   * </pre>
+   *
+   * <code>string host = 37;</code>
+   */
+  java.lang.String getHost();
+  /**
+   * <pre>
+   * enrichment
+   * </pre>
+   *
+   * <code>string host = 37;</code>
+   */
+  com.google.protobuf.ByteString
+      getHostBytes();
+
+  /**
+   * <pre>
+   * host location
+   * </pre>
+   *
+   * <code>string location = 38;</code>
+   */
+  java.lang.String getLocation();
+  /**
+   * <pre>
+   * host location
+   * </pre>
+   *
+   * <code>string location = 38;</code>
+   */
+  com.google.protobuf.ByteString
+      getLocationBytes();
+
+  /**
+   * <pre>
+   * exporter node info
+   * </pre>
+   *
+   * <code>.NodeInfo exporter_node_info = 39;</code>
+   */
+  boolean hasExporterNodeInfo();
+  /**
+   * <pre>
+   * exporter node info
+   * </pre>
+   *
+   * <code>.NodeInfo exporter_node_info = 39;</code>
+   */
+  org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo getExporterNodeInfo();
+  /**
+   * <pre>
+   * exporter node info
+   * </pre>
+   *
+   * <code>.NodeInfo exporter_node_info = 39;</code>
+   */
+  org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfoOrBuilder getExporterNodeInfoOrBuilder();
+
+  /**
+   * <pre>
+   * source node info
+   * </pre>
+   *
+   * <code>.NodeInfo src_node_info = 40;</code>
+   */
+  boolean hasSrcNodeInfo();
+  /**
+   * <pre>
+   * source node info
+   * </pre>
+   *
+   * <code>.NodeInfo src_node_info = 40;</code>
+   */
+  org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo getSrcNodeInfo();
+  /**
+   * <pre>
+   * source node info
+   * </pre>
+   *
+   * <code>.NodeInfo src_node_info = 40;</code>
+   */
+  org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfoOrBuilder getSrcNodeInfoOrBuilder();
+
+  /**
+   * <pre>
+   * destination node info
+   * </pre>
+   *
+   * <code>.NodeInfo dst_node_info = 41;</code>
+   */
+  boolean hasDstNodeInfo();
+  /**
+   * <pre>
+   * destination node info
+   * </pre>
+   *
+   * <code>.NodeInfo dst_node_info = 41;</code>
+   */
+  org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo getDstNodeInfo();
+  /**
+   * <pre>
+   * destination node info
+   * </pre>
+   *
+   * <code>.NodeInfo dst_node_info = 41;</code>
+   */
+  org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfoOrBuilder getDstNodeInfoOrBuilder();
+
+  /**
+   * <pre>
+   * source locality
+   * </pre>
+   *
+   * <code>.Locality src_locality = 42;</code>
+   */
+  int getSrcLocalityValue();
+  /**
+   * <pre>
+   * source locality
+   * </pre>
+   *
+   * <code>.Locality src_locality = 42;</code>
+   */
+  org.opennms.netmgt.telemetry.protocols.netflow.transport.Locality getSrcLocality();
+
+  /**
+   * <pre>
+   * destination locality
+   * </pre>
+   *
+   * <code>.Locality dst_locality = 43;</code>
+   */
+  int getDstLocalityValue();
+  /**
+   * <pre>
+   * destination locality
+   * </pre>
+   *
+   * <code>.Locality dst_locality = 43;</code>
+   */
+  org.opennms.netmgt.telemetry.protocols.netflow.transport.Locality getDstLocality();
+
+  /**
+   * <pre>
+   * flow locality
+   * </pre>
+   *
+   * <code>.Locality flow_locality = 44;</code>
+   */
+  int getFlowLocalityValue();
+  /**
+   * <pre>
+   * flow locality
+   * </pre>
+   *
+   * <code>.Locality flow_locality = 44;</code>
+   */
+  org.opennms.netmgt.telemetry.protocols.netflow.transport.Locality getFlowLocality();
+
+  /**
+   * <pre>
+   * clock skew correction in milliseconds
+   * </pre>
+   *
+   * <code>uint64 clock_correction = 45;</code>
+   */
+  long getClockCorrection();
 }

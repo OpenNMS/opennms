@@ -28,9 +28,21 @@
 
 package org.opennms.netmgt.telemetry.itests;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
+import com.codahale.metrics.MetricRegistry;
+import org.junit.Test;
+import org.mockito.Mockito;
+import org.opennms.core.ipc.sink.api.AsyncDispatcher;
+import org.opennms.distributed.core.api.Identity;
+import org.opennms.netmgt.dnsresolver.api.DnsResolver;
+import org.opennms.netmgt.events.api.EventForwarder;
+import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
+import org.opennms.netmgt.telemetry.listeners.UdpListener;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.DocumentEnricherImpl;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow5UdpParser;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow5.proto.Header;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow5.proto.Record;
+import org.opennms.test.ThreadLocker;
+import org.springframework.util.SocketUtils;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -43,20 +55,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Test;
-import org.opennms.core.ipc.sink.api.AsyncDispatcher;
-import org.opennms.distributed.core.api.Identity;
-import org.opennms.netmgt.dnsresolver.api.DnsResolver;
-import org.opennms.netmgt.events.api.EventForwarder;
-import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
-import org.opennms.netmgt.telemetry.listeners.UdpListener;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow5UdpParser;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow5.proto.Header;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow5.proto.Record;
-import org.opennms.test.ThreadLocker;
-import org.springframework.util.SocketUtils;
-
-import com.codahale.metrics.MetricRegistry;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 public class ListenerParserThreadingIT implements AsyncDispatcher<TelemetryMessage> {
 
@@ -64,7 +65,7 @@ public class ListenerParserThreadingIT implements AsyncDispatcher<TelemetryMessa
 
     /**
      * This test is used to validate that we can process many packets in parallel.
-     *
+     * <p>
      * We do this by blocking the reverse DNS lookup calls and verifying that the expected
      * number of threads are locked.
      *
@@ -94,7 +95,7 @@ public class ListenerParserThreadingIT implements AsyncDispatcher<TelemetryMessa
         };
 
         int udpPort = SocketUtils.findAvailableUdpPort();
-        Netflow5UdpParser parser = new Netflow5UdpParser("FLOW", this, eventForwarder, identity, dnsResolver, new MetricRegistry(), (req) -> null);
+        Netflow5UdpParser parser = new Netflow5UdpParser("FLOW", this, eventForwarder, identity, dnsResolver, new MetricRegistry(), (req) -> null, Mockito.mock(DocumentEnricherImpl.class));
         parser.setThreads(NUM_THREADS);
         UdpListener listener = new UdpListener("FLOW", Collections.singletonList(parser), new MetricRegistry());
         listener.setPort(udpPort);
@@ -141,7 +142,7 @@ public class ListenerParserThreadingIT implements AsyncDispatcher<TelemetryMessa
     }
 
     @Override
-    public void close()  {
+    public void close() {
         // pass
     }
 }

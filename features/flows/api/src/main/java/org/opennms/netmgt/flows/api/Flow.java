@@ -31,7 +31,9 @@ package org.opennms.netmgt.flows.api;
 import static org.opennms.integration.api.v1.flows.Flow.Direction;
 import static org.opennms.integration.api.v1.flows.Flow.NetflowVersion;
 import static org.opennms.integration.api.v1.flows.Flow.SamplingAlgorithm;
+import static org.opennms.integration.api.v1.flows.Flow.Locality;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Optional;
 
@@ -220,14 +222,33 @@ public interface Flow {
 
     /**
      * Method to get node lookup identifier.
-     *
+     * <p>
      * This field can be used as an alternate means to identify the
      * exporter node when the source address of the packets are altered
      * due to address translation.
-     *
+     * <p>
      * * @return the identifier
      */
     String getNodeIdentifier();
 
     String getApplication();
+
+    // for move enrichment into flow
+    String getHost();
+
+    String getLocation();
+
+    NodeInfo getExporterNodeInfo();
+
+    NodeInfo getSrcNodeInfo();
+
+    NodeInfo getDstNodeInfo();
+
+    Locality getSrcLocality();
+
+    Locality getDstLocality();
+
+    Locality getFlowLocality();
+
+    Duration getClockCorrection();
 }

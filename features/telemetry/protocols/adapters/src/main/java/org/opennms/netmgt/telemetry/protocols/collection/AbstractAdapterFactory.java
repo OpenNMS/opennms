@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.telemetry.protocols.collection;
 
-import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.telemetry.api.adapter.AdapterFactory;
 import org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry;
 import org.osgi.framework.BundleContext;
@@ -36,9 +35,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class AbstractAdapterFactory implements AdapterFactory {
     protected final BundleContext bundleContext;
-
-    @Autowired
-    private InterfaceToNodeCache interfaceToNodeCache;
 
     @Autowired
     private TelemetryRegistry telemetryRegistry;
@@ -49,14 +45,6 @@ public abstract class AbstractAdapterFactory implements AdapterFactory {
 
     public BundleContext getBundleContext() {
         return this.bundleContext;
-    }
-
-    public InterfaceToNodeCache getInterfaceToNodeCache() {
-        return this.interfaceToNodeCache;
-    }
-
-    public void setInterfaceToNodeCache(final InterfaceToNodeCache interfaceToNodeCache) {
-        this.interfaceToNodeCache = interfaceToNodeCache;
     }
 
     public TelemetryRegistry getTelemetryRegistry() {

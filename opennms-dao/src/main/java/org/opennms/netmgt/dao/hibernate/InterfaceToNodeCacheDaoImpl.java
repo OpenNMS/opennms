@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2003-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2003-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,9 +28,33 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
-import static org.opennms.core.utils.InetAddressUtils.str;
+import com.google.common.collect.ComparisonChain;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Multimaps;
+import com.google.common.collect.SortedSetMultimap;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.utils.LocationUtils;
+import org.opennms.netmgt.dao.api.AbstractInterfaceToNodeCache;
+import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
+import org.opennms.netmgt.dao.api.InterfaceToNodeCacheUpdateCallback;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.PrimaryType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionOperations;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -47,30 +71,7 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-
-import org.opennms.core.criteria.CriteriaBuilder;
-import org.opennms.core.utils.LocationUtils;
-import org.opennms.netmgt.dao.api.AbstractInterfaceToNodeCache;
-import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
-import org.opennms.netmgt.dao.api.IpInterfaceDao;
-import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.PrimaryType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionOperations;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
-
-import com.google.common.collect.ComparisonChain;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Multimaps;
-import com.google.common.collect.SortedSetMultimap;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import static org.opennms.core.utils.InetAddressUtils.str;
 
 /**
  * This class represents a singular instance that is used to map IP
@@ -82,7 +83,8 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
  * @author <a href="mailto:tarus@opennms.org">Tarus Balog </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache implements InterfaceToNodeCache {
+@Service
+public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache implements InterfaceToNodeCache{
     private static final Logger LOG = LoggerFactory.getLogger(InterfaceToNodeCacheDaoImpl.class);
 
     private final ThreadFactory threadFactory = new ThreadFactoryBuilder()
@@ -90,6 +92,8 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
             .build();
     private final ExecutorService executorService = Executors.newSingleThreadExecutor(threadFactory);
     private final CountDownLatch initialNodeSyncDone = new CountDownLatch(1);
+
+    private InterfaceToNodeCacheUpdateCallback callback;
 
     private static class Key {
         private final String location;
@@ -140,14 +144,21 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
         private final int nodeId;
         private final int interfaceId;
         private final PrimaryType type;
-
+//        private final String foreignId;
+//        private final String foreignSource;
+//        private final List<String> categories;
 
         private Value(final int nodeId,
                       final int interfaceId,
                       final PrimaryType type) {
+
+//            final PrimaryType type, String foreignId, String foreignSource, List<String> categories) {
             this.nodeId = nodeId;
             this.interfaceId = interfaceId;
             this.type = type;
+//            this.foreignId = foreignId;
+//            this.foreignSource = foreignSource;
+//            this.categories = categories;
         }
 
         public int getNodeId() {
@@ -161,6 +172,18 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
         public PrimaryType getType() {
             return this.type;
         }
+//
+//        public String getForeignId() {
+//            return foreignId;
+//        }
+//
+//        public String getForeignSource() {
+//            return foreignSource;
+//        }
+//
+//        public List<String> getCategories() {
+//            return categories;
+//        }
 
         @Override
         public boolean equals(final Object obj) {
@@ -177,11 +200,16 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
             return Objects.equals(this.nodeId, that.nodeId)
                     && Objects.equals(this.interfaceId, that.interfaceId)
                     && Objects.equals(this.type, that.type);
+//                    && Objects.equals(this.foreignId, that.foreignId)
+//                    && Objects.equals(this.foreignSource, that.foreignSource)
+//                    && Objects.equals(this.categories, that.categories);
         }
 
         @Override
         public int hashCode() {
             return Objects.hash(this.nodeId, this.type.getCharCode());
+
+//            return Objects.hash(this.nodeId, this.type.getCharCode(), this.foreignId, this.foreignSource, this.categories);
         }
 
         @Override
@@ -275,7 +303,6 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
      * @throws java.sql.SQLException Thrown if the connection cannot be created or a database
      *                               error occurs.
      */
-    @Override
     @Transactional
     public void dataSourceSync() {
         // Determine if spring already created a transaction or if we have to manually do it
@@ -324,11 +351,25 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
         } finally {
             m_lock.writeLock().unlock();
         }
-
+        updateAllEntry();
         LOG.info("dataSourceSync: initialized list of managed IP addresses with {} members", m_managedAddresses.size());
     }
 
-    @Override
+    private void updateAllEntry() {
+        executorService.submit(() -> {
+            if (callback == null) {
+                LOG.debug("SKIP updateAllEntry!");
+                return;
+            }
+            List<Entry> entries = new ArrayList<>();
+            m_managedAddresses.forEach((k, v) -> {
+                entries.add(new Entry(v.getNodeId(), v.getInterfaceId(), k.getIpAddress(), k.getLocation()));
+            });
+            callback.fullUpdate(entries);
+        });
+    }
+
+
     public Optional<Entry> getFirst(String location, InetAddress ipAddr) {
         if (ipAddr == null) {
             return Optional.empty();
@@ -337,11 +378,12 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
         m_lock.readLock().lock();
         try {
             var values = m_managedAddresses.get(new Key(location, ipAddr));
-            return values.isEmpty() ? Optional.empty() : Optional.of(new Entry(values.first().nodeId, values.first().interfaceId));
+            return values.isEmpty() ? Optional.empty() : Optional.of(new Entry(values.first().nodeId, values.first().interfaceId, ipAddr, location));
         } finally {
             m_lock.readLock().unlock();
         }
     }
+
 
     private void waitForInitialNodeSync() {
         try {
@@ -358,7 +400,6 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
      * @param nodeid The Node ID to add.
      * @return The nodeid if it existed in the map.
      */
-    @Override
     @Transactional
     public boolean setNodeId(final String location, final InetAddress addr, final int nodeid) {
         if (addr == null || nodeid == -1) {
@@ -374,9 +415,12 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
 
         m_lock.writeLock().lock();
         try {
-            return m_managedAddresses.put(new Key(location, addr), new Value(nodeid, iface.getId(), iface.getIsSnmpPrimary()));
+            var key = new Key(location, addr);
+            var value = new Value(nodeid, iface.getId(), iface.getIsSnmpPrimary());
+            return m_managedAddresses.put(key, value);
         } finally {
             m_lock.writeLock().unlock();
+            updateAllEntry();
         }
     }
 
@@ -386,7 +430,6 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
      * @param address The address to remove from the node ID map.
      * @return The nodeid that was in the map.
      */
-    @Override
     public boolean removeNodeId(final String location, final InetAddress address, final int nodeId) {
         if (address == null) {
             LOG.warn("removeNodeId: null IP address");
@@ -404,7 +447,6 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
         }
     }
 
-    @Override
     public int size() {
         waitForInitialNodeSync();
         m_lock.readLock().lock();
@@ -415,7 +457,6 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
         }
     }
 
-    @Override
     public void clear() {
         m_lock.writeLock().lock();
         try {
@@ -425,7 +466,6 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
         }
     }
 
-    @Override
     public void removeInterfacesForNode(int nodeId) {
         m_lock.writeLock().lock();
         try {
@@ -440,6 +480,13 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
             });
         } finally {
             m_lock.writeLock().unlock();
+        }
+    }
+
+    public void setUpdateCallback(InterfaceToNodeCacheUpdateCallback callback) {
+        this.callback = Objects.requireNonNull(callback);
+        if (m_managedAddresses != null && m_managedAddresses.size() > 0) {
+            this.updateAllEntry();
         }
     }
 }

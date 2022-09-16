@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.integration.api.v1.flows.FlowException;
@@ -57,10 +58,10 @@ public class PipelineImpl implements Pipeline {
 
     private static final Logger LOG = LoggerFactory.getLogger(PipelineImpl.class);
 
-    /**
-     * Time taken to enrich the flows in a log
-     */
-    private final Timer logEnrichementTimer;
+//    /**
+//     * Time taken to enrich the flows in a log
+//     */
+//    private final Timer logEnrichementTimer;
 
     /**
      * Time taken to apply thresholding to a log
@@ -84,7 +85,7 @@ public class PipelineImpl implements Pipeline {
 
     private final MetricRegistry metricRegistry;
 
-    private final DocumentEnricherImpl documentEnricher;
+//    private final DocumentEnricherImpl documentEnricher;
 
     private final InterfaceMarkerImpl interfaceMarker;
 
@@ -93,17 +94,17 @@ public class PipelineImpl implements Pipeline {
     private final Map<String, Persister> persisters = Maps.newConcurrentMap();
 
     public PipelineImpl(final MetricRegistry metricRegistry,
-                        final DocumentEnricherImpl documentEnricher,
+//                        final DocumentEnricherImpl documentEnricher,
                         final InterfaceMarkerImpl interfaceMarker,
                         final FlowThresholdingImpl thresholding) {
-        this.documentEnricher = Objects.requireNonNull(documentEnricher);
+//        this.documentEnricher = Objects.requireNonNull(documentEnricher);
         this.interfaceMarker = Objects.requireNonNull(interfaceMarker);
         this.thresholding = Objects.requireNonNull(thresholding);
 
         this.emptyFlows = metricRegistry.counter("emptyFlows");
         this.flowsPerLog = metricRegistry.histogram("flowsPerLog");
 
-        this.logEnrichementTimer = metricRegistry.timer("logEnrichment");
+//        this.logEnrichementTimer = metricRegistry.timer("logEnrichment");
         this.logMarkingTimer = metricRegistry.timer("logMarking");
         this.logThresholdingTimer = metricRegistry.timer("logThresholding");
 
@@ -120,15 +121,17 @@ public class PipelineImpl implements Pipeline {
             LOG.info("Received empty flows from {} @ {}. Nothing to do.", source.getSourceAddress(), source.getLocation());
             return;
         }
-        
+
+        final List<EnrichedFlow> enrichedFlows = flows.stream().map(EnrichedFlow::from).collect(Collectors.toList());
         // Enrich with model data
-        LOG.debug("Enriching {} flow documents.", flows.size());
-        final List<EnrichedFlow> enrichedFlows;
-        try (final Timer.Context ctx = this.logEnrichementTimer.time()) {
-            enrichedFlows = documentEnricher.enrich(flows, source);
-        } catch (Exception e) {
-            throw new FlowException("Failed to enrich one or more flows.", e);
-        }
+        // documentEnricher moved to parser
+//        LOG.debug("Enriching {} flow documents.", enrichedFlows.size());
+//        final List<EnrichedFlow> enrichedFlows;
+//        try (final Timer.Context ctx = this.logEnrichementTimer.time()) {
+//            enrichedFlows = documentEnricher.enrich(flows, source);
+//        } catch (Exception e) {
+//            throw new FlowException("Failed to enrich one or more flows.", e);
+//        }
 
         // Mark nodes and interfaces as having associated flows
         try (final Timer.Context ctx = this.logMarkingTimer.time()) {

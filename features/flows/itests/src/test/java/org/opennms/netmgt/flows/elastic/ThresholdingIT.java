@@ -49,7 +49,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.opennms.core.ipc.twin.api.TwinPublisher;
-import org.opennms.core.ipc.twin.api.TwinSubscriber;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
@@ -71,7 +70,7 @@ import org.opennms.netmgt.flows.classification.persistence.api.ClassificationRul
 import org.opennms.netmgt.flows.classification.service.ClassificationService;
 import org.opennms.netmgt.flows.classification.service.internal.DefaultClassificationService;
 import org.opennms.netmgt.flows.processing.enrichment.EnrichedFlow;
-import org.opennms.netmgt.flows.processing.enrichment.NodeInfo;
+import org.opennms.netmgt.flows.api.NodeInfo;
 import org.opennms.netmgt.flows.api.FlowSource;
 import org.opennms.netmgt.flows.classification.persistence.api.RuleBuilder;
 import org.opennms.netmgt.flows.processing.ProcessingOptions;

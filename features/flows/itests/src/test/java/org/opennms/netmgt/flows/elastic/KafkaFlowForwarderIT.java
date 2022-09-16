@@ -59,14 +59,11 @@ import org.opennms.core.test.kafka.JUnitKafkaServer;
 import org.opennms.netmgt.flows.persistence.KafkaFlowForwarder;
 import org.opennms.netmgt.flows.persistence.model.FlowDocument;
 import org.opennms.netmgt.flows.processing.enrichment.EnrichedFlow;
-import org.opennms.netmgt.flows.processing.enrichment.NodeInfo;
-import org.opennms.netmgt.model.OnmsCategory;
-import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.flows.api.NodeInfo;
 import org.osgi.service.cm.ConfigurationAdmin;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.google.protobuf.InvalidProtocolBufferException;
 
 public class KafkaFlowForwarderIT {

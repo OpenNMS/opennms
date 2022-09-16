@@ -33,6 +33,7 @@ import java.time.Instant;
 import java.util.Optional;
 
 import org.opennms.netmgt.flows.api.Flow;
+import org.opennms.netmgt.flows.api.NodeInfo;
 import org.opennms.netmgt.flows.processing.ConversationKeyUtils;
 
 public class EnrichedFlow implements org.opennms.integration.api.v1.flows.Flow {
@@ -551,7 +552,15 @@ public class EnrichedFlow implements org.opennms.integration.api.v1.flows.Flow {
         enriched.setNetflowVersion(flow.getNetflowVersion());
         enriched.setVlan(flow.getVlan());
         enriched.setApplication(flow.getApplication());
-
+        enriched.setHost(flow.getHost());
+        enriched.setLocation(flow.getLocation());
+        enriched.setExporterNodeInfo(flow.getExporterNodeInfo());
+        enriched.setSrcNodeInfo(flow.getSrcNodeInfo());
+        enriched.setDstNodeInfo(flow.getDstNodeInfo());
+        enriched.setSrcLocality(flow.getSrcLocality());
+        enriched.setDstLocality(flow.getDstLocality());
+        enriched.setFlowLocality(flow.getFlowLocality());
+        enriched.setClockCorrection(flow.getClockCorrection());
         return enriched;
     }
 }

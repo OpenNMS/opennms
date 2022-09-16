@@ -38,7 +38,6 @@ import org.opennms.core.cache.CacheConfigBuilder;
 import org.opennms.core.soa.support.DefaultServiceRegistry;
 import org.opennms.netmgt.dao.api.AssetRecordDao;
 import org.opennms.netmgt.dao.api.CategoryDao;
-import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.OnmsDao;
@@ -49,16 +48,10 @@ import org.opennms.netmgt.dao.mock.MockInterfaceToNodeCache;
 import org.opennms.netmgt.dao.mock.MockIpInterfaceDao;
 import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.dao.mock.MockSessionUtils;
-import org.opennms.netmgt.flows.classification.ClassificationEngine;
-import org.opennms.netmgt.flows.classification.dto.RuleDTO;
-import org.opennms.netmgt.flows.classification.internal.DefaultClassificationEngine;
-import org.opennms.netmgt.flows.classification.internal.ReloadingClassificationEngine;
-import org.opennms.netmgt.flows.classification.persistence.api.RuleBuilder;
 import org.opennms.netmgt.flows.processing.impl.DocumentEnricherImpl;
 import org.opennms.netmgt.flows.processing.impl.DocumentMangler;
 
 import com.codahale.metrics.MetricRegistry;
-import com.google.common.collect.Lists;
 
 public class MockDocumentEnricherFactory {
 

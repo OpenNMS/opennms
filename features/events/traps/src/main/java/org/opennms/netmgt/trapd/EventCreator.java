@@ -37,7 +37,6 @@ import java.util.Optional;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.api.EventConfDao;
-import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;

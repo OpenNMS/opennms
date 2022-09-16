@@ -33,6 +33,18 @@ enum NetflowVersion {
     IPFIX = 2;
 }
 
+enum Locality {
+    PUBLIC = 0;
+    PRIVATE = 1;
+}
+
+message NodeInfo {
+    uint32 interfaceId = 1;
+    uint32 nodeId = 2;
+    string foreignId = 3;
+    string foreignSource = 4;
+    repeated string categories = 5;
+}
 
 message FlowMessage {
     uint64 timestamp = 1;         // Flow timestamp in milliseconds.
@@ -72,4 +84,15 @@ message FlowMessage {
     google.protobuf.UInt32Value vlan = 34;                 // VLAN ID.
     string node_identifier = 35;      // node lookup identifier.
     string application = 36;    // Application the flow is classified for
+
+    // enrichment
+    string host = 37; // source address after enrichment
+    string location = 38; // host location
+    NodeInfo exporter_node_info = 39; // exporter node info
+    NodeInfo src_node_info = 40; // source node info
+    NodeInfo dst_node_info = 41; // destination node info
+    Locality src_locality = 42; // source locality
+    Locality dst_locality = 43; // destination locality
+    Locality flow_locality = 44; // flow locality
+    uint64 clock_correction = 45; // clock skew correction in milliseconds
 }

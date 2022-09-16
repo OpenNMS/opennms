@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2020-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -55,6 +55,11 @@ private static final long serialVersionUID = 0L;
     netflowVersion_ = 0;
     nodeIdentifier_ = "";
     application_ = "";
+    host_ = "";
+    location_ = "";
+    srcLocality_ = 0;
+    dstLocality_ = 0;
+    flowLocality_ = 0;
   }
 
   @java.lang.Override
@@ -455,6 +460,80 @@ private static final long serialVersionUID = 0L;
             java.lang.String s = input.readStringRequireUtf8();
 
             application_ = s;
+            break;
+          }
+          case 298: {
+            java.lang.String s = input.readStringRequireUtf8();
+
+            host_ = s;
+            break;
+          }
+          case 306: {
+            java.lang.String s = input.readStringRequireUtf8();
+
+            location_ = s;
+            break;
+          }
+          case 314: {
+            org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo.Builder subBuilder = null;
+            if (exporterNodeInfo_ != null) {
+              subBuilder = exporterNodeInfo_.toBuilder();
+            }
+            exporterNodeInfo_ = input.readMessage(org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo.parser(), extensionRegistry);
+            if (subBuilder != null) {
+              subBuilder.mergeFrom(exporterNodeInfo_);
+              exporterNodeInfo_ = subBuilder.buildPartial();
+            }
+
+            break;
+          }
+          case 322: {
+            org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo.Builder subBuilder = null;
+            if (srcNodeInfo_ != null) {
+              subBuilder = srcNodeInfo_.toBuilder();
+            }
+            srcNodeInfo_ = input.readMessage(org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo.parser(), extensionRegistry);
+            if (subBuilder != null) {
+              subBuilder.mergeFrom(srcNodeInfo_);
+              srcNodeInfo_ = subBuilder.buildPartial();
+            }
+
+            break;
+          }
+          case 330: {
+            org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo.Builder subBuilder = null;
+            if (dstNodeInfo_ != null) {
+              subBuilder = dstNodeInfo_.toBuilder();
+            }
+            dstNodeInfo_ = input.readMessage(org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo.parser(), extensionRegistry);
+            if (subBuilder != null) {
+              subBuilder.mergeFrom(dstNodeInfo_);
+              dstNodeInfo_ = subBuilder.buildPartial();
+            }
+
+            break;
+          }
+          case 336: {
+            int rawValue = input.readEnum();
+
+            srcLocality_ = rawValue;
+            break;
+          }
+          case 344: {
+            int rawValue = input.readEnum();
+
+            dstLocality_ = rawValue;
+            break;
+          }
+          case 352: {
+            int rawValue = input.readEnum();
+
+            flowLocality_ = rawValue;
+            break;
+          }
+          case 360: {
+
+            clockCorrection_ = input.readUInt64();
             break;
           }
           default: {
@@ -1672,6 +1751,277 @@ private static final long serialVersionUID = 0L;
     }
   }
 
+  public static final int HOST_FIELD_NUMBER = 37;
+  private volatile java.lang.Object host_;
+  /**
+   * <pre>
+   * enrichment
+   * </pre>
+   *
+   * <code>string host = 37;</code>
+   */
+  public java.lang.String getHost() {
+    java.lang.Object ref = host_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
+    } else {
+      com.google.protobuf.ByteString bs = 
+          (com.google.protobuf.ByteString) ref;
+      java.lang.String s = bs.toStringUtf8();
+      host_ = s;
+      return s;
+    }
+  }
+  /**
+   * <pre>
+   * enrichment
+   * </pre>
+   *
+   * <code>string host = 37;</code>
+   */
+  public com.google.protobuf.ByteString
+      getHostBytes() {
+    java.lang.Object ref = host_;
+    if (ref instanceof java.lang.String) {
+      com.google.protobuf.ByteString b = 
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (java.lang.String) ref);
+      host_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
+  }
+
+  public static final int LOCATION_FIELD_NUMBER = 38;
+  private volatile java.lang.Object location_;
+  /**
+   * <pre>
+   * host location
+   * </pre>
+   *
+   * <code>string location = 38;</code>
+   */
+  public java.lang.String getLocation() {
+    java.lang.Object ref = location_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
+    } else {
+      com.google.protobuf.ByteString bs = 
+          (com.google.protobuf.ByteString) ref;
+      java.lang.String s = bs.toStringUtf8();
+      location_ = s;
+      return s;
+    }
+  }
+  /**
+   * <pre>
+   * host location
+   * </pre>
+   *
+   * <code>string location = 38;</code>
+   */
+  public com.google.protobuf.ByteString
+      getLocationBytes() {
+    java.lang.Object ref = location_;
+    if (ref instanceof java.lang.String) {
+      com.google.protobuf.ByteString b = 
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (java.lang.String) ref);
+      location_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
+  }
+
+  public static final int EXPORTER_NODE_INFO_FIELD_NUMBER = 39;
+  private org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo exporterNodeInfo_;
+  /**
+   * <pre>
+   * exporter node info
+   * </pre>
+   *
+   * <code>.NodeInfo exporter_node_info = 39;</code>
+   */
+  public boolean hasExporterNodeInfo() {
+    return exporterNodeInfo_ != null;
+  }
+  /**
+   * <pre>
+   * exporter node info
+   * </pre>
+   *
+   * <code>.NodeInfo exporter_node_info = 39;</code>
+   */
+  public org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo getExporterNodeInfo() {
+    return exporterNodeInfo_ == null ? org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo.getDefaultInstance() : exporterNodeInfo_;
+  }
+  /**
+   * <pre>
+   * exporter node info
+   * </pre>
+   *
+   * <code>.NodeInfo exporter_node_info = 39;</code>
+   */
+  public org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfoOrBuilder getExporterNodeInfoOrBuilder() {
+    return getExporterNodeInfo();
+  }
+
+  public static final int SRC_NODE_INFO_FIELD_NUMBER = 40;
+  private org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo srcNodeInfo_;
+  /**
+   * <pre>
+   * source node info
+   * </pre>
+   *
+   * <code>.NodeInfo src_node_info = 40;</code>
+   */
+  public boolean hasSrcNodeInfo() {
+    return srcNodeInfo_ != null;
+  }
+  /**
+   * <pre>
+   * source node info
+   * </pre>
+   *
+   * <code>.NodeInfo src_node_info = 40;</code>
+   */
+  public org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo getSrcNodeInfo() {
+    return srcNodeInfo_ == null ? org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo.getDefaultInstance() : srcNodeInfo_;
+  }
+  /**
+   * <pre>
+   * source node info
+   * </pre>
+   *
+   * <code>.NodeInfo src_node_info = 40;</code>
+   */
+  public org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfoOrBuilder getSrcNodeInfoOrBuilder() {
+    return getSrcNodeInfo();
+  }
+
+  public static final int DST_NODE_INFO_FIELD_NUMBER = 41;
+  private org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo dstNodeInfo_;
+  /**
+   * <pre>
+   * destination node info
+   * </pre>
+   *
+   * <code>.NodeInfo dst_node_info = 41;</code>
+   */
+  public boolean hasDstNodeInfo() {
+    return dstNodeInfo_ != null;
+  }
+  /**
+   * <pre>
+   * destination node info
+   * </pre>
+   *
+   * <code>.NodeInfo dst_node_info = 41;</code>
+   */
+  public org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo getDstNodeInfo() {
+    return dstNodeInfo_ == null ? org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo.getDefaultInstance() : dstNodeInfo_;
+  }
+  /**
+   * <pre>
+   * destination node info
+   * </pre>
+   *
+   * <code>.NodeInfo dst_node_info = 41;</code>
+   */
+  public org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfoOrBuilder getDstNodeInfoOrBuilder() {
+    return getDstNodeInfo();
+  }
+
+  public static final int SRC_LOCALITY_FIELD_NUMBER = 42;
+  private int srcLocality_;
+  /**
+   * <pre>
+   * source locality
+   * </pre>
+   *
+   * <code>.Locality src_locality = 42;</code>
+   */
+  public int getSrcLocalityValue() {
+    return srcLocality_;
+  }
+  /**
+   * <pre>
+   * source locality
+   * </pre>
+   *
+   * <code>.Locality src_locality = 42;</code>
+   */
+  public org.opennms.netmgt.telemetry.protocols.netflow.transport.Locality getSrcLocality() {
+    @SuppressWarnings("deprecation")
+    org.opennms.netmgt.telemetry.protocols.netflow.transport.Locality result = org.opennms.netmgt.telemetry.protocols.netflow.transport.Locality.valueOf(srcLocality_);
+    return result == null ? org.opennms.netmgt.telemetry.protocols.netflow.transport.Locality.UNRECOGNIZED : result;
+  }
+
+  public static final int DST_LOCALITY_FIELD_NUMBER = 43;
+  private int dstLocality_;
+  /**
+   * <pre>
+   * destination locality
+   * </pre>
+   *
+   * <code>.Locality dst_locality = 43;</code>
+   */
+  public int getDstLocalityValue() {
+    return dstLocality_;
+  }
+  /**
+   * <pre>
+   * destination locality
+   * </pre>
+   *
+   * <code>.Locality dst_locality = 43;</code>
+   */
+  public org.opennms.netmgt.telemetry.protocols.netflow.transport.Locality getDstLocality() {
+    @SuppressWarnings("deprecation")
+    org.opennms.netmgt.telemetry.protocols.netflow.transport.Locality result = org.opennms.netmgt.telemetry.protocols.netflow.transport.Locality.valueOf(dstLocality_);
+    return result == null ? org.opennms.netmgt.telemetry.protocols.netflow.transport.Locality.UNRECOGNIZED : result;
+  }
+
+  public static final int FLOW_LOCALITY_FIELD_NUMBER = 44;
+  private int flowLocality_;
+  /**
+   * <pre>
+   * flow locality
+   * </pre>
+   *
+   * <code>.Locality flow_locality = 44;</code>
+   */
+  public int getFlowLocalityValue() {
+    return flowLocality_;
+  }
+  /**
+   * <pre>
+   * flow locality
+   * </pre>
+   *
+   * <code>.Locality flow_locality = 44;</code>
+   */
+  public org.opennms.netmgt.telemetry.protocols.netflow.transport.Locality getFlowLocality() {
+    @SuppressWarnings("deprecation")
+    org.opennms.netmgt.telemetry.protocols.netflow.transport.Locality result = org.opennms.netmgt.telemetry.protocols.netflow.transport.Locality.valueOf(flowLocality_);
+    return result == null ? org.opennms.netmgt.telemetry.protocols.netflow.transport.Locality.UNRECOGNIZED : result;
+  }
+
+  public static final int CLOCK_CORRECTION_FIELD_NUMBER = 45;
+  private long clockCorrection_;
+  /**
+   * <pre>
+   * clock skew correction in milliseconds
+   * </pre>
+   *
+   * <code>uint64 clock_correction = 45;</code>
+   */
+  public long getClockCorrection() {
+    return clockCorrection_;
+  }
+
   private byte memoizedIsInitialized = -1;
   @java.lang.Override
   public final boolean isInitialized() {
@@ -1790,6 +2140,33 @@ private static final long serialVersionUID = 0L;
     }
     if (!getApplicationBytes().isEmpty()) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 36, application_);
+    }
+    if (!getHostBytes().isEmpty()) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 37, host_);
+    }
+    if (!getLocationBytes().isEmpty()) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 38, location_);
+    }
+    if (exporterNodeInfo_ != null) {
+      output.writeMessage(39, getExporterNodeInfo());
+    }
+    if (srcNodeInfo_ != null) {
+      output.writeMessage(40, getSrcNodeInfo());
+    }
+    if (dstNodeInfo_ != null) {
+      output.writeMessage(41, getDstNodeInfo());
+    }
+    if (srcLocality_ != org.opennms.netmgt.telemetry.protocols.netflow.transport.Locality.PUBLIC.getNumber()) {
+      output.writeEnum(42, srcLocality_);
+    }
+    if (dstLocality_ != org.opennms.netmgt.telemetry.protocols.netflow.transport.Locality.PUBLIC.getNumber()) {
+      output.writeEnum(43, dstLocality_);
+    }
+    if (flowLocality_ != org.opennms.netmgt.telemetry.protocols.netflow.transport.Locality.PUBLIC.getNumber()) {
+      output.writeEnum(44, flowLocality_);
+    }
+    if (clockCorrection_ != 0L) {
+      output.writeUInt64(45, clockCorrection_);
     }
     unknownFields.writeTo(output);
   }
@@ -1931,6 +2308,40 @@ private static final long serialVersionUID = 0L;
     }
     if (!getApplicationBytes().isEmpty()) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(36, application_);
+    }
+    if (!getHostBytes().isEmpty()) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(37, host_);
+    }
+    if (!getLocationBytes().isEmpty()) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(38, location_);
+    }
+    if (exporterNodeInfo_ != null) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeMessageSize(39, getExporterNodeInfo());
+    }
+    if (srcNodeInfo_ != null) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeMessageSize(40, getSrcNodeInfo());
+    }
+    if (dstNodeInfo_ != null) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeMessageSize(41, getDstNodeInfo());
+    }
+    if (srcLocality_ != org.opennms.netmgt.telemetry.protocols.netflow.transport.Locality.PUBLIC.getNumber()) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeEnumSize(42, srcLocality_);
+    }
+    if (dstLocality_ != org.opennms.netmgt.telemetry.protocols.netflow.transport.Locality.PUBLIC.getNumber()) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeEnumSize(43, dstLocality_);
+    }
+    if (flowLocality_ != org.opennms.netmgt.telemetry.protocols.netflow.transport.Locality.PUBLIC.getNumber()) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeEnumSize(44, flowLocality_);
+    }
+    if (clockCorrection_ != 0L) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeUInt64Size(45, clockCorrection_);
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -2083,6 +2494,30 @@ private static final long serialVersionUID = 0L;
         .equals(other.getNodeIdentifier())) return false;
     if (!getApplication()
         .equals(other.getApplication())) return false;
+    if (!getHost()
+        .equals(other.getHost())) return false;
+    if (!getLocation()
+        .equals(other.getLocation())) return false;
+    if (hasExporterNodeInfo() != other.hasExporterNodeInfo()) return false;
+    if (hasExporterNodeInfo()) {
+      if (!getExporterNodeInfo()
+          .equals(other.getExporterNodeInfo())) return false;
+    }
+    if (hasSrcNodeInfo() != other.hasSrcNodeInfo()) return false;
+    if (hasSrcNodeInfo()) {
+      if (!getSrcNodeInfo()
+          .equals(other.getSrcNodeInfo())) return false;
+    }
+    if (hasDstNodeInfo() != other.hasDstNodeInfo()) return false;
+    if (hasDstNodeInfo()) {
+      if (!getDstNodeInfo()
+          .equals(other.getDstNodeInfo())) return false;
+    }
+    if (srcLocality_ != other.srcLocality_) return false;
+    if (dstLocality_ != other.dstLocality_) return false;
+    if (flowLocality_ != other.flowLocality_) return false;
+    if (getClockCorrection()
+        != other.getClockCorrection()) return false;
     if (!unknownFields.equals(other.unknownFields)) return false;
     return true;
   }
@@ -2211,6 +2646,31 @@ private static final long serialVersionUID = 0L;
     hash = (53 * hash) + getNodeIdentifier().hashCode();
     hash = (37 * hash) + APPLICATION_FIELD_NUMBER;
     hash = (53 * hash) + getApplication().hashCode();
+    hash = (37 * hash) + HOST_FIELD_NUMBER;
+    hash = (53 * hash) + getHost().hashCode();
+    hash = (37 * hash) + LOCATION_FIELD_NUMBER;
+    hash = (53 * hash) + getLocation().hashCode();
+    if (hasExporterNodeInfo()) {
+      hash = (37 * hash) + EXPORTER_NODE_INFO_FIELD_NUMBER;
+      hash = (53 * hash) + getExporterNodeInfo().hashCode();
+    }
+    if (hasSrcNodeInfo()) {
+      hash = (37 * hash) + SRC_NODE_INFO_FIELD_NUMBER;
+      hash = (53 * hash) + getSrcNodeInfo().hashCode();
+    }
+    if (hasDstNodeInfo()) {
+      hash = (37 * hash) + DST_NODE_INFO_FIELD_NUMBER;
+      hash = (53 * hash) + getDstNodeInfo().hashCode();
+    }
+    hash = (37 * hash) + SRC_LOCALITY_FIELD_NUMBER;
+    hash = (53 * hash) + srcLocality_;
+    hash = (37 * hash) + DST_LOCALITY_FIELD_NUMBER;
+    hash = (53 * hash) + dstLocality_;
+    hash = (37 * hash) + FLOW_LOCALITY_FIELD_NUMBER;
+    hash = (53 * hash) + flowLocality_;
+    hash = (37 * hash) + CLOCK_CORRECTION_FIELD_NUMBER;
+    hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+        getClockCorrection());
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -2506,6 +2966,36 @@ private static final long serialVersionUID = 0L;
 
       application_ = "";
 
+      host_ = "";
+
+      location_ = "";
+
+      if (exporterNodeInfoBuilder_ == null) {
+        exporterNodeInfo_ = null;
+      } else {
+        exporterNodeInfo_ = null;
+        exporterNodeInfoBuilder_ = null;
+      }
+      if (srcNodeInfoBuilder_ == null) {
+        srcNodeInfo_ = null;
+      } else {
+        srcNodeInfo_ = null;
+        srcNodeInfoBuilder_ = null;
+      }
+      if (dstNodeInfoBuilder_ == null) {
+        dstNodeInfo_ = null;
+      } else {
+        dstNodeInfo_ = null;
+        dstNodeInfoBuilder_ = null;
+      }
+      srcLocality_ = 0;
+
+      dstLocality_ = 0;
+
+      flowLocality_ = 0;
+
+      clockCorrection_ = 0L;
+
       return this;
     }
 
@@ -2659,6 +3149,27 @@ private static final long serialVersionUID = 0L;
       }
       result.nodeIdentifier_ = nodeIdentifier_;
       result.application_ = application_;
+      result.host_ = host_;
+      result.location_ = location_;
+      if (exporterNodeInfoBuilder_ == null) {
+        result.exporterNodeInfo_ = exporterNodeInfo_;
+      } else {
+        result.exporterNodeInfo_ = exporterNodeInfoBuilder_.build();
+      }
+      if (srcNodeInfoBuilder_ == null) {
+        result.srcNodeInfo_ = srcNodeInfo_;
+      } else {
+        result.srcNodeInfo_ = srcNodeInfoBuilder_.build();
+      }
+      if (dstNodeInfoBuilder_ == null) {
+        result.dstNodeInfo_ = dstNodeInfo_;
+      } else {
+        result.dstNodeInfo_ = dstNodeInfoBuilder_.build();
+      }
+      result.srcLocality_ = srcLocality_;
+      result.dstLocality_ = dstLocality_;
+      result.flowLocality_ = flowLocality_;
+      result.clockCorrection_ = clockCorrection_;
       onBuilt();
       return result;
     }
@@ -2819,6 +3330,35 @@ private static final long serialVersionUID = 0L;
       if (!other.getApplication().isEmpty()) {
         application_ = other.application_;
         onChanged();
+      }
+      if (!other.getHost().isEmpty()) {
+        host_ = other.host_;
+        onChanged();
+      }
+      if (!other.getLocation().isEmpty()) {
+        location_ = other.location_;
+        onChanged();
+      }
+      if (other.hasExporterNodeInfo()) {
+        mergeExporterNodeInfo(other.getExporterNodeInfo());
+      }
+      if (other.hasSrcNodeInfo()) {
+        mergeSrcNodeInfo(other.getSrcNodeInfo());
+      }
+      if (other.hasDstNodeInfo()) {
+        mergeDstNodeInfo(other.getDstNodeInfo());
+      }
+      if (other.srcLocality_ != 0) {
+        setSrcLocalityValue(other.getSrcLocalityValue());
+      }
+      if (other.dstLocality_ != 0) {
+        setDstLocalityValue(other.getDstLocalityValue());
+      }
+      if (other.flowLocality_ != 0) {
+        setFlowLocalityValue(other.getFlowLocalityValue());
+      }
+      if (other.getClockCorrection() != 0L) {
+        setClockCorrection(other.getClockCorrection());
       }
       this.mergeUnknownFields(other.unknownFields);
       onChanged();
@@ -7309,6 +7849,876 @@ private static final long serialVersionUID = 0L;
   checkByteStringIsUtf8(value);
       
       application_ = value;
+      onChanged();
+      return this;
+    }
+
+    private java.lang.Object host_ = "";
+    /**
+     * <pre>
+     * enrichment
+     * </pre>
+     *
+     * <code>string host = 37;</code>
+     */
+    public java.lang.String getHost() {
+      java.lang.Object ref = host_;
+      if (!(ref instanceof java.lang.String)) {
+        com.google.protobuf.ByteString bs =
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        host_ = s;
+        return s;
+      } else {
+        return (java.lang.String) ref;
+      }
+    }
+    /**
+     * <pre>
+     * enrichment
+     * </pre>
+     *
+     * <code>string host = 37;</code>
+     */
+    public com.google.protobuf.ByteString
+        getHostBytes() {
+      java.lang.Object ref = host_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        host_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    /**
+     * <pre>
+     * enrichment
+     * </pre>
+     *
+     * <code>string host = 37;</code>
+     */
+    public Builder setHost(
+        java.lang.String value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  
+      host_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <pre>
+     * enrichment
+     * </pre>
+     *
+     * <code>string host = 37;</code>
+     */
+    public Builder clearHost() {
+      
+      host_ = getDefaultInstance().getHost();
+      onChanged();
+      return this;
+    }
+    /**
+     * <pre>
+     * enrichment
+     * </pre>
+     *
+     * <code>string host = 37;</code>
+     */
+    public Builder setHostBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+      
+      host_ = value;
+      onChanged();
+      return this;
+    }
+
+    private java.lang.Object location_ = "";
+    /**
+     * <pre>
+     * host location
+     * </pre>
+     *
+     * <code>string location = 38;</code>
+     */
+    public java.lang.String getLocation() {
+      java.lang.Object ref = location_;
+      if (!(ref instanceof java.lang.String)) {
+        com.google.protobuf.ByteString bs =
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        location_ = s;
+        return s;
+      } else {
+        return (java.lang.String) ref;
+      }
+    }
+    /**
+     * <pre>
+     * host location
+     * </pre>
+     *
+     * <code>string location = 38;</code>
+     */
+    public com.google.protobuf.ByteString
+        getLocationBytes() {
+      java.lang.Object ref = location_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        location_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    /**
+     * <pre>
+     * host location
+     * </pre>
+     *
+     * <code>string location = 38;</code>
+     */
+    public Builder setLocation(
+        java.lang.String value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  
+      location_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <pre>
+     * host location
+     * </pre>
+     *
+     * <code>string location = 38;</code>
+     */
+    public Builder clearLocation() {
+      
+      location_ = getDefaultInstance().getLocation();
+      onChanged();
+      return this;
+    }
+    /**
+     * <pre>
+     * host location
+     * </pre>
+     *
+     * <code>string location = 38;</code>
+     */
+    public Builder setLocationBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+      
+      location_ = value;
+      onChanged();
+      return this;
+    }
+
+    private org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo exporterNodeInfo_;
+    private com.google.protobuf.SingleFieldBuilderV3<
+        org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo, org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo.Builder, org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfoOrBuilder> exporterNodeInfoBuilder_;
+    /**
+     * <pre>
+     * exporter node info
+     * </pre>
+     *
+     * <code>.NodeInfo exporter_node_info = 39;</code>
+     */
+    public boolean hasExporterNodeInfo() {
+      return exporterNodeInfoBuilder_ != null || exporterNodeInfo_ != null;
+    }
+    /**
+     * <pre>
+     * exporter node info
+     * </pre>
+     *
+     * <code>.NodeInfo exporter_node_info = 39;</code>
+     */
+    public org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo getExporterNodeInfo() {
+      if (exporterNodeInfoBuilder_ == null) {
+        return exporterNodeInfo_ == null ? org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo.getDefaultInstance() : exporterNodeInfo_;
+      } else {
+        return exporterNodeInfoBuilder_.getMessage();
+      }
+    }
+    /**
+     * <pre>
+     * exporter node info
+     * </pre>
+     *
+     * <code>.NodeInfo exporter_node_info = 39;</code>
+     */
+    public Builder setExporterNodeInfo(org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo value) {
+      if (exporterNodeInfoBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        exporterNodeInfo_ = value;
+        onChanged();
+      } else {
+        exporterNodeInfoBuilder_.setMessage(value);
+      }
+
+      return this;
+    }
+    /**
+     * <pre>
+     * exporter node info
+     * </pre>
+     *
+     * <code>.NodeInfo exporter_node_info = 39;</code>
+     */
+    public Builder setExporterNodeInfo(
+        org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo.Builder builderForValue) {
+      if (exporterNodeInfoBuilder_ == null) {
+        exporterNodeInfo_ = builderForValue.build();
+        onChanged();
+      } else {
+        exporterNodeInfoBuilder_.setMessage(builderForValue.build());
+      }
+
+      return this;
+    }
+    /**
+     * <pre>
+     * exporter node info
+     * </pre>
+     *
+     * <code>.NodeInfo exporter_node_info = 39;</code>
+     */
+    public Builder mergeExporterNodeInfo(org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo value) {
+      if (exporterNodeInfoBuilder_ == null) {
+        if (exporterNodeInfo_ != null) {
+          exporterNodeInfo_ =
+            org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo.newBuilder(exporterNodeInfo_).mergeFrom(value).buildPartial();
+        } else {
+          exporterNodeInfo_ = value;
+        }
+        onChanged();
+      } else {
+        exporterNodeInfoBuilder_.mergeFrom(value);
+      }
+
+      return this;
+    }
+    /**
+     * <pre>
+     * exporter node info
+     * </pre>
+     *
+     * <code>.NodeInfo exporter_node_info = 39;</code>
+     */
+    public Builder clearExporterNodeInfo() {
+      if (exporterNodeInfoBuilder_ == null) {
+        exporterNodeInfo_ = null;
+        onChanged();
+      } else {
+        exporterNodeInfo_ = null;
+        exporterNodeInfoBuilder_ = null;
+      }
+
+      return this;
+    }
+    /**
+     * <pre>
+     * exporter node info
+     * </pre>
+     *
+     * <code>.NodeInfo exporter_node_info = 39;</code>
+     */
+    public org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo.Builder getExporterNodeInfoBuilder() {
+      
+      onChanged();
+      return getExporterNodeInfoFieldBuilder().getBuilder();
+    }
+    /**
+     * <pre>
+     * exporter node info
+     * </pre>
+     *
+     * <code>.NodeInfo exporter_node_info = 39;</code>
+     */
+    public org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfoOrBuilder getExporterNodeInfoOrBuilder() {
+      if (exporterNodeInfoBuilder_ != null) {
+        return exporterNodeInfoBuilder_.getMessageOrBuilder();
+      } else {
+        return exporterNodeInfo_ == null ?
+            org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo.getDefaultInstance() : exporterNodeInfo_;
+      }
+    }
+    /**
+     * <pre>
+     * exporter node info
+     * </pre>
+     *
+     * <code>.NodeInfo exporter_node_info = 39;</code>
+     */
+    private com.google.protobuf.SingleFieldBuilderV3<
+        org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo, org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo.Builder, org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfoOrBuilder> 
+        getExporterNodeInfoFieldBuilder() {
+      if (exporterNodeInfoBuilder_ == null) {
+        exporterNodeInfoBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+            org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo, org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo.Builder, org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfoOrBuilder>(
+                getExporterNodeInfo(),
+                getParentForChildren(),
+                isClean());
+        exporterNodeInfo_ = null;
+      }
+      return exporterNodeInfoBuilder_;
+    }
+
+    private org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo srcNodeInfo_;
+    private com.google.protobuf.SingleFieldBuilderV3<
+        org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo, org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo.Builder, org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfoOrBuilder> srcNodeInfoBuilder_;
+    /**
+     * <pre>
+     * source node info
+     * </pre>
+     *
+     * <code>.NodeInfo src_node_info = 40;</code>
+     */
+    public boolean hasSrcNodeInfo() {
+      return srcNodeInfoBuilder_ != null || srcNodeInfo_ != null;
+    }
+    /**
+     * <pre>
+     * source node info
+     * </pre>
+     *
+     * <code>.NodeInfo src_node_info = 40;</code>
+     */
+    public org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo getSrcNodeInfo() {
+      if (srcNodeInfoBuilder_ == null) {
+        return srcNodeInfo_ == null ? org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo.getDefaultInstance() : srcNodeInfo_;
+      } else {
+        return srcNodeInfoBuilder_.getMessage();
+      }
+    }
+    /**
+     * <pre>
+     * source node info
+     * </pre>
+     *
+     * <code>.NodeInfo src_node_info = 40;</code>
+     */
+    public Builder setSrcNodeInfo(org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo value) {
+      if (srcNodeInfoBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        srcNodeInfo_ = value;
+        onChanged();
+      } else {
+        srcNodeInfoBuilder_.setMessage(value);
+      }
+
+      return this;
+    }
+    /**
+     * <pre>
+     * source node info
+     * </pre>
+     *
+     * <code>.NodeInfo src_node_info = 40;</code>
+     */
+    public Builder setSrcNodeInfo(
+        org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo.Builder builderForValue) {
+      if (srcNodeInfoBuilder_ == null) {
+        srcNodeInfo_ = builderForValue.build();
+        onChanged();
+      } else {
+        srcNodeInfoBuilder_.setMessage(builderForValue.build());
+      }
+
+      return this;
+    }
+    /**
+     * <pre>
+     * source node info
+     * </pre>
+     *
+     * <code>.NodeInfo src_node_info = 40;</code>
+     */
+    public Builder mergeSrcNodeInfo(org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo value) {
+      if (srcNodeInfoBuilder_ == null) {
+        if (srcNodeInfo_ != null) {
+          srcNodeInfo_ =
+            org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo.newBuilder(srcNodeInfo_).mergeFrom(value).buildPartial();
+        } else {
+          srcNodeInfo_ = value;
+        }
+        onChanged();
+      } else {
+        srcNodeInfoBuilder_.mergeFrom(value);
+      }
+
+      return this;
+    }
+    /**
+     * <pre>
+     * source node info
+     * </pre>
+     *
+     * <code>.NodeInfo src_node_info = 40;</code>
+     */
+    public Builder clearSrcNodeInfo() {
+      if (srcNodeInfoBuilder_ == null) {
+        srcNodeInfo_ = null;
+        onChanged();
+      } else {
+        srcNodeInfo_ = null;
+        srcNodeInfoBuilder_ = null;
+      }
+
+      return this;
+    }
+    /**
+     * <pre>
+     * source node info
+     * </pre>
+     *
+     * <code>.NodeInfo src_node_info = 40;</code>
+     */
+    public org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo.Builder getSrcNodeInfoBuilder() {
+      
+      onChanged();
+      return getSrcNodeInfoFieldBuilder().getBuilder();
+    }
+    /**
+     * <pre>
+     * source node info
+     * </pre>
+     *
+     * <code>.NodeInfo src_node_info = 40;</code>
+     */
+    public org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfoOrBuilder getSrcNodeInfoOrBuilder() {
+      if (srcNodeInfoBuilder_ != null) {
+        return srcNodeInfoBuilder_.getMessageOrBuilder();
+      } else {
+        return srcNodeInfo_ == null ?
+            org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo.getDefaultInstance() : srcNodeInfo_;
+      }
+    }
+    /**
+     * <pre>
+     * source node info
+     * </pre>
+     *
+     * <code>.NodeInfo src_node_info = 40;</code>
+     */
+    private com.google.protobuf.SingleFieldBuilderV3<
+        org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo, org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo.Builder, org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfoOrBuilder> 
+        getSrcNodeInfoFieldBuilder() {
+      if (srcNodeInfoBuilder_ == null) {
+        srcNodeInfoBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+            org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo, org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo.Builder, org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfoOrBuilder>(
+                getSrcNodeInfo(),
+                getParentForChildren(),
+                isClean());
+        srcNodeInfo_ = null;
+      }
+      return srcNodeInfoBuilder_;
+    }
+
+    private org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo dstNodeInfo_;
+    private com.google.protobuf.SingleFieldBuilderV3<
+        org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo, org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo.Builder, org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfoOrBuilder> dstNodeInfoBuilder_;
+    /**
+     * <pre>
+     * destination node info
+     * </pre>
+     *
+     * <code>.NodeInfo dst_node_info = 41;</code>
+     */
+    public boolean hasDstNodeInfo() {
+      return dstNodeInfoBuilder_ != null || dstNodeInfo_ != null;
+    }
+    /**
+     * <pre>
+     * destination node info
+     * </pre>
+     *
+     * <code>.NodeInfo dst_node_info = 41;</code>
+     */
+    public org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo getDstNodeInfo() {
+      if (dstNodeInfoBuilder_ == null) {
+        return dstNodeInfo_ == null ? org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo.getDefaultInstance() : dstNodeInfo_;
+      } else {
+        return dstNodeInfoBuilder_.getMessage();
+      }
+    }
+    /**
+     * <pre>
+     * destination node info
+     * </pre>
+     *
+     * <code>.NodeInfo dst_node_info = 41;</code>
+     */
+    public Builder setDstNodeInfo(org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo value) {
+      if (dstNodeInfoBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        dstNodeInfo_ = value;
+        onChanged();
+      } else {
+        dstNodeInfoBuilder_.setMessage(value);
+      }
+
+      return this;
+    }
+    /**
+     * <pre>
+     * destination node info
+     * </pre>
+     *
+     * <code>.NodeInfo dst_node_info = 41;</code>
+     */
+    public Builder setDstNodeInfo(
+        org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo.Builder builderForValue) {
+      if (dstNodeInfoBuilder_ == null) {
+        dstNodeInfo_ = builderForValue.build();
+        onChanged();
+      } else {
+        dstNodeInfoBuilder_.setMessage(builderForValue.build());
+      }
+
+      return this;
+    }
+    /**
+     * <pre>
+     * destination node info
+     * </pre>
+     *
+     * <code>.NodeInfo dst_node_info = 41;</code>
+     */
+    public Builder mergeDstNodeInfo(org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo value) {
+      if (dstNodeInfoBuilder_ == null) {
+        if (dstNodeInfo_ != null) {
+          dstNodeInfo_ =
+            org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo.newBuilder(dstNodeInfo_).mergeFrom(value).buildPartial();
+        } else {
+          dstNodeInfo_ = value;
+        }
+        onChanged();
+      } else {
+        dstNodeInfoBuilder_.mergeFrom(value);
+      }
+
+      return this;
+    }
+    /**
+     * <pre>
+     * destination node info
+     * </pre>
+     *
+     * <code>.NodeInfo dst_node_info = 41;</code>
+     */
+    public Builder clearDstNodeInfo() {
+      if (dstNodeInfoBuilder_ == null) {
+        dstNodeInfo_ = null;
+        onChanged();
+      } else {
+        dstNodeInfo_ = null;
+        dstNodeInfoBuilder_ = null;
+      }
+
+      return this;
+    }
+    /**
+     * <pre>
+     * destination node info
+     * </pre>
+     *
+     * <code>.NodeInfo dst_node_info = 41;</code>
+     */
+    public org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo.Builder getDstNodeInfoBuilder() {
+      
+      onChanged();
+      return getDstNodeInfoFieldBuilder().getBuilder();
+    }
+    /**
+     * <pre>
+     * destination node info
+     * </pre>
+     *
+     * <code>.NodeInfo dst_node_info = 41;</code>
+     */
+    public org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfoOrBuilder getDstNodeInfoOrBuilder() {
+      if (dstNodeInfoBuilder_ != null) {
+        return dstNodeInfoBuilder_.getMessageOrBuilder();
+      } else {
+        return dstNodeInfo_ == null ?
+            org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo.getDefaultInstance() : dstNodeInfo_;
+      }
+    }
+    /**
+     * <pre>
+     * destination node info
+     * </pre>
+     *
+     * <code>.NodeInfo dst_node_info = 41;</code>
+     */
+    private com.google.protobuf.SingleFieldBuilderV3<
+        org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo, org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo.Builder, org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfoOrBuilder> 
+        getDstNodeInfoFieldBuilder() {
+      if (dstNodeInfoBuilder_ == null) {
+        dstNodeInfoBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+            org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo, org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfo.Builder, org.opennms.netmgt.telemetry.protocols.netflow.transport.NodeInfoOrBuilder>(
+                getDstNodeInfo(),
+                getParentForChildren(),
+                isClean());
+        dstNodeInfo_ = null;
+      }
+      return dstNodeInfoBuilder_;
+    }
+
+    private int srcLocality_ = 0;
+    /**
+     * <pre>
+     * source locality
+     * </pre>
+     *
+     * <code>.Locality src_locality = 42;</code>
+     */
+    public int getSrcLocalityValue() {
+      return srcLocality_;
+    }
+    /**
+     * <pre>
+     * source locality
+     * </pre>
+     *
+     * <code>.Locality src_locality = 42;</code>
+     */
+    public Builder setSrcLocalityValue(int value) {
+      srcLocality_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <pre>
+     * source locality
+     * </pre>
+     *
+     * <code>.Locality src_locality = 42;</code>
+     */
+    public org.opennms.netmgt.telemetry.protocols.netflow.transport.Locality getSrcLocality() {
+      @SuppressWarnings("deprecation")
+      org.opennms.netmgt.telemetry.protocols.netflow.transport.Locality result = org.opennms.netmgt.telemetry.protocols.netflow.transport.Locality.valueOf(srcLocality_);
+      return result == null ? org.opennms.netmgt.telemetry.protocols.netflow.transport.Locality.UNRECOGNIZED : result;
+    }
+    /**
+     * <pre>
+     * source locality
+     * </pre>
+     *
+     * <code>.Locality src_locality = 42;</code>
+     */
+    public Builder setSrcLocality(org.opennms.netmgt.telemetry.protocols.netflow.transport.Locality value) {
+      if (value == null) {
+        throw new NullPointerException();
+      }
+      
+      srcLocality_ = value.getNumber();
+      onChanged();
+      return this;
+    }
+    /**
+     * <pre>
+     * source locality
+     * </pre>
+     *
+     * <code>.Locality src_locality = 42;</code>
+     */
+    public Builder clearSrcLocality() {
+      
+      srcLocality_ = 0;
+      onChanged();
+      return this;
+    }
+
+    private int dstLocality_ = 0;
+    /**
+     * <pre>
+     * destination locality
+     * </pre>
+     *
+     * <code>.Locality dst_locality = 43;</code>
+     */
+    public int getDstLocalityValue() {
+      return dstLocality_;
+    }
+    /**
+     * <pre>
+     * destination locality
+     * </pre>
+     *
+     * <code>.Locality dst_locality = 43;</code>
+     */
+    public Builder setDstLocalityValue(int value) {
+      dstLocality_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <pre>
+     * destination locality
+     * </pre>
+     *
+     * <code>.Locality dst_locality = 43;</code>
+     */
+    public org.opennms.netmgt.telemetry.protocols.netflow.transport.Locality getDstLocality() {
+      @SuppressWarnings("deprecation")
+      org.opennms.netmgt.telemetry.protocols.netflow.transport.Locality result = org.opennms.netmgt.telemetry.protocols.netflow.transport.Locality.valueOf(dstLocality_);
+      return result == null ? org.opennms.netmgt.telemetry.protocols.netflow.transport.Locality.UNRECOGNIZED : result;
+    }
+    /**
+     * <pre>
+     * destination locality
+     * </pre>
+     *
+     * <code>.Locality dst_locality = 43;</code>
+     */
+    public Builder setDstLocality(org.opennms.netmgt.telemetry.protocols.netflow.transport.Locality value) {
+      if (value == null) {
+        throw new NullPointerException();
+      }
+      
+      dstLocality_ = value.getNumber();
+      onChanged();
+      return this;
+    }
+    /**
+     * <pre>
+     * destination locality
+     * </pre>
+     *
+     * <code>.Locality dst_locality = 43;</code>
+     */
+    public Builder clearDstLocality() {
+      
+      dstLocality_ = 0;
+      onChanged();
+      return this;
+    }
+
+    private int flowLocality_ = 0;
+    /**
+     * <pre>
+     * flow locality
+     * </pre>
+     *
+     * <code>.Locality flow_locality = 44;</code>
+     */
+    public int getFlowLocalityValue() {
+      return flowLocality_;
+    }
+    /**
+     * <pre>
+     * flow locality
+     * </pre>
+     *
+     * <code>.Locality flow_locality = 44;</code>
+     */
+    public Builder setFlowLocalityValue(int value) {
+      flowLocality_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <pre>
+     * flow locality
+     * </pre>
+     *
+     * <code>.Locality flow_locality = 44;</code>
+     */
+    public org.opennms.netmgt.telemetry.protocols.netflow.transport.Locality getFlowLocality() {
+      @SuppressWarnings("deprecation")
+      org.opennms.netmgt.telemetry.protocols.netflow.transport.Locality result = org.opennms.netmgt.telemetry.protocols.netflow.transport.Locality.valueOf(flowLocality_);
+      return result == null ? org.opennms.netmgt.telemetry.protocols.netflow.transport.Locality.UNRECOGNIZED : result;
+    }
+    /**
+     * <pre>
+     * flow locality
+     * </pre>
+     *
+     * <code>.Locality flow_locality = 44;</code>
+     */
+    public Builder setFlowLocality(org.opennms.netmgt.telemetry.protocols.netflow.transport.Locality value) {
+      if (value == null) {
+        throw new NullPointerException();
+      }
+      
+      flowLocality_ = value.getNumber();
+      onChanged();
+      return this;
+    }
+    /**
+     * <pre>
+     * flow locality
+     * </pre>
+     *
+     * <code>.Locality flow_locality = 44;</code>
+     */
+    public Builder clearFlowLocality() {
+      
+      flowLocality_ = 0;
+      onChanged();
+      return this;
+    }
+
+    private long clockCorrection_ ;
+    /**
+     * <pre>
+     * clock skew correction in milliseconds
+     * </pre>
+     *
+     * <code>uint64 clock_correction = 45;</code>
+     */
+    public long getClockCorrection() {
+      return clockCorrection_;
+    }
+    /**
+     * <pre>
+     * clock skew correction in milliseconds
+     * </pre>
+     *
+     * <code>uint64 clock_correction = 45;</code>
+     */
+    public Builder setClockCorrection(long value) {
+      
+      clockCorrection_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <pre>
+     * clock skew correction in milliseconds
+     * </pre>
+     *
+     * <code>uint64 clock_correction = 45;</code>
+     */
+    public Builder clearClockCorrection() {
+      
+      clockCorrection_ = 0L;
       onChanged();
       return this;
     }

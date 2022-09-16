@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2020-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -43,6 +43,11 @@ public final class FlowProtos {
         (com.google.protobuf.ExtensionRegistryLite) registry);
   }
   static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_NodeInfo_descriptor;
+  static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_NodeInfo_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
     internal_static_FlowMessage_descriptor;
   static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
@@ -57,69 +62,85 @@ public final class FlowProtos {
   static {
     java.lang.String[] descriptorData = {
       "\n\rnetflow.proto\032\036google/protobuf/wrapper" +
-      "s.proto\"\354\013\n\013FlowMessage\022\021\n\ttimestamp\030\001 \001" +
-      "(\004\022/\n\tnum_bytes\030\002 \001(\0132\034.google.protobuf." +
-      "UInt64Value\022\035\n\tdirection\030\003 \001(\0162\n.Directi" +
-      "on\022\023\n\013dst_address\030\004 \001(\t\022\024\n\014dst_hostname\030" +
-      "\005 \001(\t\022,\n\006dst_as\030\006 \001(\0132\034.google.protobuf." +
-      "UInt64Value\0222\n\014dst_mask_len\030\007 \001(\0132\034.goog" +
-      "le.protobuf.UInt32Value\022.\n\010dst_port\030\010 \001(" +
-      "\0132\034.google.protobuf.UInt32Value\022/\n\tengin" +
-      "e_id\030\t \001(\0132\034.google.protobuf.UInt32Value" +
-      "\0221\n\013engine_type\030\n \001(\0132\034.google.protobuf." +
-      "UInt32Value\0224\n\016delta_switched\030\013 \001(\0132\034.go" +
-      "ogle.protobuf.UInt64Value\0224\n\016first_switc" +
-      "hed\030\014 \001(\0132\034.google.protobuf.UInt64Value\022" +
-      "3\n\rlast_switched\030\r \001(\0132\034.google.protobuf" +
-      ".UInt64Value\0226\n\020num_flow_records\030\016 \001(\0132\034" +
-      ".google.protobuf.UInt32Value\0221\n\013num_pack" +
-      "ets\030\017 \001(\0132\034.google.protobuf.UInt64Value\022" +
-      "2\n\014flow_seq_num\030\020 \001(\0132\034.google.protobuf." +
-      "UInt64Value\0228\n\022input_snmp_ifindex\030\021 \001(\0132" +
-      "\034.google.protobuf.UInt32Value\0229\n\023output_" +
-      "snmp_ifindex\030\022 \001(\0132\034.google.protobuf.UIn" +
-      "t32Value\0229\n\023ip_protocol_version\030\023 \001(\0132\034." +
-      "google.protobuf.UInt32Value\022\030\n\020next_hop_" +
-      "address\030\024 \001(\t\022\031\n\021next_hop_hostname\030\025 \001(\t" +
-      "\022.\n\010protocol\030\026 \001(\0132\034.google.protobuf.UIn" +
-      "t32Value\022.\n\022sampling_algorithm\030\027 \001(\0162\022.S" +
-      "amplingAlgorithm\0227\n\021sampling_interval\030\030 " +
-      "\001(\0132\034.google.protobuf.DoubleValue\022\023\n\013src" +
-      "_address\030\032 \001(\t\022\024\n\014src_hostname\030\033 \001(\t\022,\n\006" +
-      "src_as\030\034 \001(\0132\034.google.protobuf.UInt64Val" +
-      "ue\0222\n\014src_mask_len\030\035 \001(\0132\034.google.protob" +
-      "uf.UInt32Value\022.\n\010src_port\030\036 \001(\0132\034.googl" +
-      "e.protobuf.UInt32Value\022/\n\ttcp_flags\030\037 \001(" +
-      "\0132\034.google.protobuf.UInt32Value\022)\n\003tos\030 " +
-      " \001(\0132\034.google.protobuf.UInt32Value\022(\n\017ne" +
-      "tflow_version\030! \001(\0162\017.NetflowVersion\022*\n\004" +
-      "vlan\030\" \001(\0132\034.google.protobuf.UInt32Value" +
-      "\022\027\n\017node_identifier\030# \001(\t\022\023\n\013application" +
-      "\030$ \001(\t*2\n\tDirection\022\013\n\007INGRESS\020\000\022\n\n\006EGRE" +
-      "SS\020\001\022\014\n\007UNKNOWN\020\377\001*\246\002\n\021SamplingAlgorithm" +
-      "\022\016\n\nUNASSIGNED\020\000\022#\n\037SYSTEMATIC_COUNT_BAS" +
-      "ED_SAMPLING\020\001\022\"\n\036SYSTEMATIC_TIME_BASED_S" +
-      "AMPLING\020\002\022\036\n\032RANDOM_N_OUT_OF_N_SAMPLING\020" +
-      "\003\022\"\n\036UNIFORM_PROBABILISTIC_SAMPLING\020\004\022\034\n" +
-      "\030PROPERTY_MATCH_FILTERING\020\005\022\030\n\024HASH_BASE" +
-      "D_FILTERING\020\006\022<\n8FLOW_STATE_DEPENDENT_IN" +
-      "TERMEDIATE_FLOW_SELECTION_PROCESS\020\007*+\n\016N" +
-      "etflowVersion\022\006\n\002V5\020\000\022\006\n\002V9\020\001\022\t\n\005IPFIX\020\002" +
-      "BH\n8org.opennms.netmgt.telemetry.protoco" +
-      "ls.netflow.transportB\nFlowProtosP\001b\006prot" +
-      "o3"
+      "s.proto\"m\n\010NodeInfo\022\023\n\013interfaceId\030\001 \001(\r" +
+      "\022\016\n\006nodeId\030\002 \001(\r\022\021\n\tforeignId\030\003 \001(\t\022\025\n\rf" +
+      "oreignSource\030\004 \001(\t\022\022\n\ncategories\030\005 \003(\t\"\365" +
+      "\r\n\013FlowMessage\022\021\n\ttimestamp\030\001 \001(\004\022/\n\tnum" +
+      "_bytes\030\002 \001(\0132\034.google.protobuf.UInt64Val" +
+      "ue\022\035\n\tdirection\030\003 \001(\0162\n.Direction\022\023\n\013dst" +
+      "_address\030\004 \001(\t\022\024\n\014dst_hostname\030\005 \001(\t\022,\n\006" +
+      "dst_as\030\006 \001(\0132\034.google.protobuf.UInt64Val" +
+      "ue\0222\n\014dst_mask_len\030\007 \001(\0132\034.google.protob" +
+      "uf.UInt32Value\022.\n\010dst_port\030\010 \001(\0132\034.googl" +
+      "e.protobuf.UInt32Value\022/\n\tengine_id\030\t \001(" +
+      "\0132\034.google.protobuf.UInt32Value\0221\n\013engin" +
+      "e_type\030\n \001(\0132\034.google.protobuf.UInt32Val" +
+      "ue\0224\n\016delta_switched\030\013 \001(\0132\034.google.prot" +
+      "obuf.UInt64Value\0224\n\016first_switched\030\014 \001(\013" +
+      "2\034.google.protobuf.UInt64Value\0223\n\rlast_s" +
+      "witched\030\r \001(\0132\034.google.protobuf.UInt64Va" +
+      "lue\0226\n\020num_flow_records\030\016 \001(\0132\034.google.p" +
+      "rotobuf.UInt32Value\0221\n\013num_packets\030\017 \001(\013" +
+      "2\034.google.protobuf.UInt64Value\0222\n\014flow_s" +
+      "eq_num\030\020 \001(\0132\034.google.protobuf.UInt64Val" +
+      "ue\0228\n\022input_snmp_ifindex\030\021 \001(\0132\034.google." +
+      "protobuf.UInt32Value\0229\n\023output_snmp_ifin" +
+      "dex\030\022 \001(\0132\034.google.protobuf.UInt32Value\022" +
+      "9\n\023ip_protocol_version\030\023 \001(\0132\034.google.pr" +
+      "otobuf.UInt32Value\022\030\n\020next_hop_address\030\024" +
+      " \001(\t\022\031\n\021next_hop_hostname\030\025 \001(\t\022.\n\010proto" +
+      "col\030\026 \001(\0132\034.google.protobuf.UInt32Value\022" +
+      ".\n\022sampling_algorithm\030\027 \001(\0162\022.SamplingAl" +
+      "gorithm\0227\n\021sampling_interval\030\030 \001(\0132\034.goo" +
+      "gle.protobuf.DoubleValue\022\023\n\013src_address\030" +
+      "\032 \001(\t\022\024\n\014src_hostname\030\033 \001(\t\022,\n\006src_as\030\034 " +
+      "\001(\0132\034.google.protobuf.UInt64Value\0222\n\014src" +
+      "_mask_len\030\035 \001(\0132\034.google.protobuf.UInt32" +
+      "Value\022.\n\010src_port\030\036 \001(\0132\034.google.protobu" +
+      "f.UInt32Value\022/\n\ttcp_flags\030\037 \001(\0132\034.googl" +
+      "e.protobuf.UInt32Value\022)\n\003tos\030  \001(\0132\034.go" +
+      "ogle.protobuf.UInt32Value\022(\n\017netflow_ver" +
+      "sion\030! \001(\0162\017.NetflowVersion\022*\n\004vlan\030\" \001(" +
+      "\0132\034.google.protobuf.UInt32Value\022\027\n\017node_" +
+      "identifier\030# \001(\t\022\023\n\013application\030$ \001(\t\022\014\n" +
+      "\004host\030% \001(\t\022\020\n\010location\030& \001(\t\022%\n\022exporte" +
+      "r_node_info\030\' \001(\0132\t.NodeInfo\022 \n\rsrc_node" +
+      "_info\030( \001(\0132\t.NodeInfo\022 \n\rdst_node_info\030" +
+      ") \001(\0132\t.NodeInfo\022\037\n\014src_locality\030* \001(\0162\t" +
+      ".Locality\022\037\n\014dst_locality\030+ \001(\0162\t.Locali" +
+      "ty\022 \n\rflow_locality\030, \001(\0162\t.Locality\022\030\n\020" +
+      "clock_correction\030- \001(\004*2\n\tDirection\022\013\n\007I" +
+      "NGRESS\020\000\022\n\n\006EGRESS\020\001\022\014\n\007UNKNOWN\020\377\001*\246\002\n\021S" +
+      "amplingAlgorithm\022\016\n\nUNASSIGNED\020\000\022#\n\037SYST" +
+      "EMATIC_COUNT_BASED_SAMPLING\020\001\022\"\n\036SYSTEMA" +
+      "TIC_TIME_BASED_SAMPLING\020\002\022\036\n\032RANDOM_N_OU" +
+      "T_OF_N_SAMPLING\020\003\022\"\n\036UNIFORM_PROBABILIST" +
+      "IC_SAMPLING\020\004\022\034\n\030PROPERTY_MATCH_FILTERIN" +
+      "G\020\005\022\030\n\024HASH_BASED_FILTERING\020\006\022<\n8FLOW_ST" +
+      "ATE_DEPENDENT_INTERMEDIATE_FLOW_SELECTIO" +
+      "N_PROCESS\020\007*+\n\016NetflowVersion\022\006\n\002V5\020\000\022\006\n" +
+      "\002V9\020\001\022\t\n\005IPFIX\020\002*#\n\010Locality\022\n\n\006PUBLIC\020\000" +
+      "\022\013\n\007PRIVATE\020\001BH\n8org.opennms.netmgt.tele" +
+      "metry.protocols.netflow.transportB\nFlowP" +
+      "rotosP\001b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
           com.google.protobuf.WrappersProto.getDescriptor(),
         });
-    internal_static_FlowMessage_descriptor =
+    internal_static_NodeInfo_descriptor =
       getDescriptor().getMessageTypes().get(0);
+    internal_static_NodeInfo_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_NodeInfo_descriptor,
+        new java.lang.String[] { "InterfaceId", "NodeId", "ForeignId", "ForeignSource", "Categories", });
+    internal_static_FlowMessage_descriptor =
+      getDescriptor().getMessageTypes().get(1);
     internal_static_FlowMessage_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_FlowMessage_descriptor,
-        new java.lang.String[] { "Timestamp", "NumBytes", "Direction", "DstAddress", "DstHostname", "DstAs", "DstMaskLen", "DstPort", "EngineId", "EngineType", "DeltaSwitched", "FirstSwitched", "LastSwitched", "NumFlowRecords", "NumPackets", "FlowSeqNum", "InputSnmpIfindex", "OutputSnmpIfindex", "IpProtocolVersion", "NextHopAddress", "NextHopHostname", "Protocol", "SamplingAlgorithm", "SamplingInterval", "SrcAddress", "SrcHostname", "SrcAs", "SrcMaskLen", "SrcPort", "TcpFlags", "Tos", "NetflowVersion", "Vlan", "NodeIdentifier", "Application", });
+        new java.lang.String[] { "Timestamp", "NumBytes", "Direction", "DstAddress", "DstHostname", "DstAs", "DstMaskLen", "DstPort", "EngineId", "EngineType", "DeltaSwitched", "FirstSwitched", "LastSwitched", "NumFlowRecords", "NumPackets", "FlowSeqNum", "InputSnmpIfindex", "OutputSnmpIfindex", "IpProtocolVersion", "NextHopAddress", "NextHopHostname", "Protocol", "SamplingAlgorithm", "SamplingInterval", "SrcAddress", "SrcHostname", "SrcAs", "SrcMaskLen", "SrcPort", "TcpFlags", "Tos", "NetflowVersion", "Vlan", "NodeIdentifier", "Application", "Host", "Location", "ExporterNodeInfo", "SrcNodeInfo", "DstNodeInfo", "SrcLocality", "DstLocality", "FlowLocality", "ClockCorrection", });
     com.google.protobuf.WrappersProto.getDescriptor();
   }
 

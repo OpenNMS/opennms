@@ -28,18 +28,19 @@
 
 package org.opennms.netmgt.telemetry.protocols.netflow.parser.factory;
 
-import java.util.Objects;
-
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.distributed.core.api.Identity;
 import org.opennms.netmgt.dnsresolver.api.DnsResolver;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
-import org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.DocumentEnricherImpl;
 import org.opennms.netmgt.telemetry.api.receiver.ParserFactory;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
+import org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry;
 import org.opennms.netmgt.telemetry.config.api.ParserDefinition;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow5UdpParser;
+
+import java.util.Objects;
 
 public class Netflow5UdpParserFactory implements ParserFactory {
 
@@ -52,17 +53,21 @@ public class Netflow5UdpParserFactory implements ParserFactory {
     private final DnsResolver dnsResolver;
 
     private final ClassificationEngine classificationEngine;
+    private final DocumentEnricherImpl documentEnricher;
 
     public Netflow5UdpParserFactory(final TelemetryRegistry telemetryRegistry,
                                     final EventForwarder eventForwarder,
                                     final Identity identity,
                                     final DnsResolver dnsResolver,
-                                    final ClassificationEngine classificationEngine) {
+                                    final ClassificationEngine classificationEngine,
+                                    final DocumentEnricherImpl documentEnricher) {
+
         this.telemetryRegistry = Objects.requireNonNull(telemetryRegistry);
         this.eventForwarder =  Objects.requireNonNull(eventForwarder);
         this.identity = Objects.requireNonNull(identity);
         this.dnsResolver = Objects.requireNonNull(dnsResolver);
         this.classificationEngine = Objects.requireNonNull(classificationEngine);
+        this.documentEnricher = Objects.requireNonNull(documentEnricher);
     }
 
     @Override
@@ -79,6 +84,7 @@ public class Netflow5UdpParserFactory implements ParserFactory {
                                      this.identity,
                                      this.dnsResolver,
                                      this.telemetryRegistry.getMetricRegistry(),
-                                     this.classificationEngine);
+                                     this.classificationEngine,
+                                     this.documentEnricher);
     }
 }

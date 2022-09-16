@@ -121,7 +121,7 @@ public class ClockSkewTest {
         public void close() throws Exception {
 
         }
-    }, eventForwarder, identity, dnsResolver, new MetricRegistry(), classificationRequest -> null);
+    }, eventForwarder, identity, dnsResolver, new MetricRegistry(), classificationRequest -> null, null);
 
     @Before
     public void reset() {
@@ -170,8 +170,8 @@ public class ClockSkewTest {
 
     private class ParserBaseExt extends ParserBase {
 
-        public ParserBaseExt(Protocol protocol, String name, AsyncDispatcher<TelemetryMessage> dispatcher, EventForwarder eventForwarder, Identity identity, DnsResolver dnsResolver, MetricRegistry metricRegistry, ClassificationEngine classificationEngine) {
-            super(protocol, name, dispatcher, eventForwarder, identity, dnsResolver, metricRegistry, classificationEngine);
+        public ParserBaseExt(Protocol protocol, String name, AsyncDispatcher<TelemetryMessage> dispatcher, EventForwarder eventForwarder, Identity identity, DnsResolver dnsResolver, MetricRegistry metricRegistry, ClassificationEngine classificationEngine, DocumentEnricherImpl documentEnricher) {
+            super(protocol, name, dispatcher, eventForwarder, identity, dnsResolver, metricRegistry, classificationEngine, documentEnricher);
         }
 
         @Override

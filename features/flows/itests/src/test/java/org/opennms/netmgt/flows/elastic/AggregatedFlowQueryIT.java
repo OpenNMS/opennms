@@ -90,7 +90,7 @@ import org.opennms.netmgt.flows.api.LimitedCardinalityField;
 import org.opennms.netmgt.flows.api.TrafficSummary;
 import org.opennms.netmgt.flows.elastic.agg.AggregatedFlowQueryService;
 import org.opennms.netmgt.flows.processing.impl.DocumentEnricherImpl;
-import org.opennms.netmgt.flows.processing.enrichment.NodeInfo;
+import org.opennms.netmgt.flows.api.NodeInfo;
 import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.netmgt.flows.filter.api.SnmpInterfaceIdFilter;
 import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;

@@ -28,6 +28,38 @@
 
 package org.opennms.netmgt.telemetry.protocols.netflow.parser;
 
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
+import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+import com.google.common.collect.Lists;
+import com.swrve.ratelimitedlogger.RateLimitedLog;
+import org.opennms.core.concurrent.LogPreservingThreadFactory;
+import org.opennms.core.ipc.sink.api.AsyncDispatcher;
+import org.opennms.distributed.core.api.Identity;
+import org.opennms.integration.api.v1.flows.FlowException;
+import org.opennms.netmgt.dnsresolver.api.DnsResolver;
+import org.opennms.netmgt.events.api.EventForwarder;
+import org.opennms.netmgt.flows.api.FlowSource;
+import org.opennms.netmgt.flows.classification.ClassificationEngine;
+import org.opennms.netmgt.flows.classification.ClassificationRequest;
+import org.opennms.netmgt.flows.classification.IpAddr;
+import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.telemetry.api.receiver.Parser;
+import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.RecordProvider;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.SequenceNumberTracker;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.MessageBuilder;
+import org.opennms.netmgt.telemetry.protocols.netflow.transport.FlowMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -45,37 +77,6 @@ import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-
-import org.opennms.core.concurrent.LogPreservingThreadFactory;
-import org.opennms.core.ipc.sink.api.AsyncDispatcher;
-import org.opennms.distributed.core.api.Identity;
-import org.opennms.netmgt.dnsresolver.api.DnsResolver;
-import org.opennms.netmgt.events.api.EventForwarder;
-import org.opennms.netmgt.flows.classification.ClassificationEngine;
-import org.opennms.netmgt.flows.classification.ClassificationRequest;
-import org.opennms.netmgt.flows.classification.IpAddr;
-import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.telemetry.api.receiver.Parser;
-import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.RecordProvider;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.SequenceNumberTracker;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.MessageBuilder;
-import org.opennms.netmgt.telemetry.protocols.netflow.transport.FlowMessage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.codahale.metrics.Counter;
-import com.codahale.metrics.Meter;
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.Timer;
-import com.google.common.base.Joiner;
-import com.google.common.base.Strings;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
-import com.google.common.collect.Lists;
-import com.swrve.ratelimitedlogger.RateLimitedLog;
 
 public abstract class ParserBase implements Parser {
     private static final Logger LOG = LoggerFactory.getLogger(ParserBase.class);
@@ -128,6 +129,7 @@ public abstract class ParserBase implements Parser {
     private final Counter sequenceErrors;
 
     private final ThreadFactory threadFactory;
+    private final Timer logEnrichementTimer;
 
     private int threads = DEFAULT_NUM_THREADS;
 
@@ -149,6 +151,8 @@ public abstract class ParserBase implements Parser {
 
     private ClassificationEngine classificationEngine;
 
+    private DocumentEnricherImpl documentEnricher;
+
     public ParserBase(final Protocol protocol,
                       final String name,
                       final AsyncDispatcher<TelemetryMessage> dispatcher,
@@ -156,7 +160,8 @@ public abstract class ParserBase implements Parser {
                       final Identity identity,
                       final DnsResolver dnsResolver,
                       final MetricRegistry metricRegistry,
-                      final ClassificationEngine classificationEngine) {
+                      final ClassificationEngine classificationEngine,
+                      final DocumentEnricherImpl documentEnricher) {
         this.protocol = Objects.requireNonNull(protocol);
         this.name = Objects.requireNonNull(name);
         this.dispatcher = Objects.requireNonNull(dispatcher);
@@ -164,6 +169,8 @@ public abstract class ParserBase implements Parser {
         this.identity = Objects.requireNonNull(identity);
         this.dnsResolver = Objects.requireNonNull(dnsResolver);
         this.classificationEngine = Objects.requireNonNull(classificationEngine);
+        this.documentEnricher = Objects.requireNonNull(documentEnricher);
+        this.logEnrichementTimer = metricRegistry.timer("logEnrichment");
         Objects.requireNonNull(metricRegistry);
 
         // Create a thread factory that sets a thread local variable when the thread is created
@@ -179,14 +186,14 @@ public abstract class ParserBase implements Parser {
             }
         };
 
-        recordsReceived = metricRegistry.meter(MetricRegistry.name("parsers",  name, "recordsReceived"));
-        recordsDispatched = metricRegistry.meter(MetricRegistry.name("parsers",  name, "recordsDispatched"));
-        recordEnrichmentTimer = metricRegistry.timer(MetricRegistry.name("parsers",  name, "recordEnrichment"));
-        recordEnrichmentErrors = metricRegistry.counter(MetricRegistry.name("parsers",  name, "recordEnrichmentErrors"));
-        invalidFlows = metricRegistry.meter(MetricRegistry.name("parsers",  name, "invalidFlows"));
-        recordsScheduled = metricRegistry.meter(MetricRegistry.name("parsers",  name, "recordsScheduled"));
-        recordsCompleted = metricRegistry.meter(MetricRegistry.name("parsers",  name, "recordsCompleted"));
-        recordDispatchErrors = metricRegistry.counter(MetricRegistry.name("parsers",  name, "recordDispatchErrors"));
+        recordsReceived = metricRegistry.meter(MetricRegistry.name("parsers", name, "recordsReceived"));
+        recordsDispatched = metricRegistry.meter(MetricRegistry.name("parsers", name, "recordsDispatched"));
+        recordEnrichmentTimer = metricRegistry.timer(MetricRegistry.name("parsers", name, "recordEnrichment"));
+        recordEnrichmentErrors = metricRegistry.counter(MetricRegistry.name("parsers", name, "recordEnrichmentErrors"));
+        invalidFlows = metricRegistry.meter(MetricRegistry.name("parsers", name, "invalidFlows"));
+        recordsScheduled = metricRegistry.meter(MetricRegistry.name("parsers", name, "recordsScheduled"));
+        recordsCompleted = metricRegistry.meter(MetricRegistry.name("parsers", name, "recordsCompleted"));
+        recordDispatchErrors = metricRegistry.counter(MetricRegistry.name("parsers", name, "recordDispatchErrors"));
         sequenceErrors = metricRegistry.counter(MetricRegistry.name("parsers", name, "sequenceErrors"));
 
         // Call setters since these also perform additional handling
@@ -336,8 +343,16 @@ public abstract class ParserBase implements Parser {
                         // Let's serialize
                         final FlowMessage.Builder flowMessage;
                         try {
-                            flowMessage = this.getMessageBuilder().buildMessage(record, enrichment);
-                        } catch (final  Exception e) {
+                            FlowMessage.Builder rawFlowMessage = this.getMessageBuilder().buildMessage(record, enrichment);
+                            // TODO: Freddy ignore context key for now !!!
+                            final FlowSource source = new FlowSource(this.identity.getLocation(),
+                                    rawFlowMessage.getSrcAddress(), null);
+                            try (final Timer.Context ctx = this.logEnrichementTimer.time()) {
+                                flowMessage = documentEnricher.enrich(rawFlowMessage, source);
+                            } catch (Exception e) {
+                                throw new FlowException("Failed to enrich one or more flows.", e);
+                            }
+                        } catch (final Exception e) {
                             throw new RuntimeException(e);
                         }
 
@@ -421,14 +436,14 @@ public abstract class ParserBase implements Parser {
 
         // Return a future which is completed when all records are finished dispatching (i.e. written to Kafka)
         final CompletableFuture<Void> future = new CompletableFuture<>();
-        futureOfFutures.whenComplete((futures,ex) -> {
+        futureOfFutures.whenComplete((futures, ex) -> {
             if (ex != null) {
                 LOG.warn("Error preparing records for dispatch.", ex);
                 future.completeExceptionally(ex);
                 return;
             }
             // Dispatch was triggered for all the records, now wait for the dispatching to complete
-            CompletableFuture.allOf(futures).whenComplete((any,exx) -> {
+            CompletableFuture.allOf(futures).whenComplete((any, exx) -> {
                 if (exx != null) {
                     LOG.warn("One or more of the records were not successfully dispatched.", exx);
                     future.completeExceptionally(exx);
@@ -473,11 +488,11 @@ public abstract class ParserBase implements Parser {
 
         if (flow.getFirstSwitched().getValue() > flow.getLastSwitched().getValue()) {
             corrections.add(String.format("Malformed flow: lastSwitched must be greater than firstSwitched: srcAddress=%s, dstAddress=%s, firstSwitched=%d, lastSwitched=%d, duration=%d",
-                                  flow.getSrcAddress(),
-                                  flow.getDstAddress(),
-                                  flow.getFirstSwitched().getValue(),
-                                  flow.getLastSwitched().getValue(),
-                                  flow.getLastSwitched().getValue() - flow.getFirstSwitched().getValue()));
+                    flow.getSrcAddress(),
+                    flow.getDstAddress(),
+                    flow.getFirstSwitched().getValue(),
+                    flow.getLastSwitched().getValue(),
+                    flow.getLastSwitched().getValue() - flow.getFirstSwitched().getValue()));
 
             // Re-calculate a (somewhat) valid timout from the flow timestamps
             final long timeout = (flow.hasDeltaSwitched() && flow.getDeltaSwitched().getValue() != flow.getFirstSwitched().getValue())

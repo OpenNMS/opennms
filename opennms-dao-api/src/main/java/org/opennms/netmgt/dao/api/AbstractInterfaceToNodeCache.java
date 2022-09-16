@@ -39,7 +39,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * @author <a href="mailto:tarus@opennms.org">Tarus Balog </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-public abstract class AbstractInterfaceToNodeCache implements InterfaceToNodeCache {
+public abstract class AbstractInterfaceToNodeCache implements InterfaceToNodeCache{
 
     private static final AtomicReference<InterfaceToNodeCache> s_instance = new AtomicReference<>();
 
@@ -51,6 +51,6 @@ public abstract class AbstractInterfaceToNodeCache implements InterfaceToNodeCac
      * @deprecated Inject this value instead of using singleton access.
      */
     public static InterfaceToNodeCache getInstance() {
-        return s_instance.get(); 
+        return s_instance.get();
     }
 }

@@ -35,6 +35,7 @@ import org.opennms.distributed.core.api.Identity;
 import org.opennms.netmgt.dnsresolver.api.DnsResolver;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.DocumentEnricherImpl;
 import org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry;
 import org.opennms.netmgt.telemetry.api.receiver.Parser;
 import org.opennms.netmgt.telemetry.api.receiver.ParserFactory;
@@ -50,17 +51,20 @@ public class IpfixUdpParserFactory implements ParserFactory {
     private final DnsResolver dnsResolver;
 
     private final ClassificationEngine classificationEngine;
+    private final DocumentEnricherImpl documentEnricher;
 
     public IpfixUdpParserFactory(final TelemetryRegistry telemetryRegistry,
                                  final EventForwarder eventForwarder,
                                  final Identity identity,
                                  final DnsResolver dnsResolver,
-                                 final ClassificationEngine classificationEngine) {
+                                 final ClassificationEngine classificationEngine,
+                                 final DocumentEnricherImpl documentEnricher) {
         this.telemetryRegistry = Objects.requireNonNull(telemetryRegistry);
         this.eventForwarder =  Objects.requireNonNull(eventForwarder);
         this.identity = Objects.requireNonNull(identity);
         this.dnsResolver = Objects.requireNonNull(dnsResolver);
         this.classificationEngine = Objects.requireNonNull(classificationEngine);
+        this.documentEnricher = Objects.requireNonNull(documentEnricher);
     }
 
     @Override
@@ -77,6 +81,7 @@ public class IpfixUdpParserFactory implements ParserFactory {
                                   this.identity,
                                   this.dnsResolver,
                                   this.telemetryRegistry.getMetricRegistry(),
-                                  this.classificationEngine);
+                                  this.classificationEngine,
+                                  this.documentEnricher);
     }
 }

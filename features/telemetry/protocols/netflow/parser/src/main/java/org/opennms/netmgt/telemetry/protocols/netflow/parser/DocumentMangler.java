@@ -26,14 +26,14 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.processing.impl;
+package org.opennms.netmgt.telemetry.protocols.netflow.parser;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.time.Duration;
-import java.util.Objects;
+import com.google.common.base.Strings;
+import com.swrve.ratelimitedlogger.RateLimitedLog;
+import org.opennms.core.fileutils.FileUpdateWatcher;
+import org.opennms.netmgt.telemetry.protocols.netflow.transport.FlowMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.script.Compilable;
 import javax.script.CompiledScript;
@@ -41,14 +41,12 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import javax.script.SimpleBindings;
-
-import org.opennms.core.fileutils.FileUpdateWatcher;
-import org.opennms.netmgt.flows.processing.enrichment.EnrichedFlow;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Strings;
-import com.swrve.ratelimitedlogger.RateLimitedLog;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.Duration;
+import java.util.Objects;
 
 public class DocumentMangler {
     private static final Logger LOG = LoggerFactory.getLogger(DocumentMangler.class);
@@ -128,7 +126,7 @@ public class DocumentMangler {
         LOG.info("Script loaded successfully");
     }
 
-    public EnrichedFlow mangle(final EnrichedFlow flow) {
+    public FlowMessage.Builder mangle(final FlowMessage.Builder flow) {
         if (this.script == null) {
             return flow;
         }
@@ -141,8 +139,8 @@ public class DocumentMangler {
 
             if (result == null){
                 return null;
-            } else if (result instanceof EnrichedFlow) {
-                return (EnrichedFlow) result;
+            } else if (result instanceof FlowMessage.Builder) {
+                return (FlowMessage.Builder) result;
             } else {
                 RL_LOG.error("Mangle script returns garbage: {}", result.getClass());
                 return null;
