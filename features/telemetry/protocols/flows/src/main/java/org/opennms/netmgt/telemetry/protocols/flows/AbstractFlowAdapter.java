@@ -226,10 +226,10 @@ public abstract class AbstractFlowAdapter<P> implements Adapter {
             }
 
             public Builder(final TelemetryMessageLog messageLog) {
-                this.location = location;
-                this.systemId = systemId;
-                this.sourceAddress = sourceAddress;
-                this.sourcePort = sourcePort;
+                this.location = messageLog.getLocation();
+                this.systemId = messageLog.getSystemId();
+                this.sourceAddress = messageLog.getSourceAddress();
+                this.sourcePort = messageLog.getSourcePort();
             }
 
             public Builder withLocation(final String location) {
