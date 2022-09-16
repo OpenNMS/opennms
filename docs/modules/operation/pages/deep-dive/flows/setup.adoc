@@ -25,7 +25,9 @@ See <<deep-dive/elasticsearch/introduction.adoc#ga-elasticsearch-integration-con
 
 == Enabling a protocol
 
-Next, enable one or more of the protocols you would like to handle in `$OPENNMS_HOME/etc/telemetryd-configuration.xml`.
+The default telemetryd configuration creates a single listener on UDP port 9999 for all available flow parsers.
+
+If you prefer to enable one or more of the protocols on different ports, you can change this in `$\{OPENNMS_HOME}/etc/telemetryd-configuration.xml`.
 
 NOTE: In this example we enable the NetFlow v5 protocol, but you can repeat the same process for any of the other flow-related protocols.
 

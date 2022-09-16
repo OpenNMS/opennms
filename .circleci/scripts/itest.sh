@@ -107,11 +107,11 @@ export MAVEN_OPTS="$MAVEN_OPTS -Xmx8g -XX:ReservedCodeCacheSize=1g"
 # shellcheck disable=SC3045
 ulimit -n 65536
 
-MAVEN_ARGS="install"
+MAVEN_ARGS=""
 
 case "${CIRCLE_BRANCH}" in
   "master"*|"release-"*|develop)
-    MAVEN_ARGS="-Dbuild.type=production $MAVEN_ARGS"
+    MAVEN_ARGS="$MAVEN_ARGS -Dbuild.type=production"
   ;;
 esac
 
