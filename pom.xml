@@ -165,6 +165,9 @@
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
         <version>${jacocoVersion}</version>
+        <configuration>
+          <skip>${skipJacoco}</skip>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
