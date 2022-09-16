@@ -127,14 +127,15 @@ public class ClassificationRulePublisherIT {
                 ruleDao,
                 groupDao,
                 filterDao,
-                filterWatcher,
                 sessionUtils);
         assertThat("The groups should be pre-populated from liquibase", groupDao.countAll(), is(2));
         assertTrue("The rules should be pre-populated from liquibase", ruleDao.countAll() > 0);
         userGroupDb = groupDao.findByName(Groups.USER_DEFINED);
         userGroupCsv = new GroupBuilder().withName(Groups.USER_DEFINED).build();
 
-        this.classificationRulePublisher = new ClassificationRulePublisher(this.classificationService, this.twinPublisher);
+        this.classificationRulePublisher = new ClassificationRulePublisher(this.classificationService,
+                                                                           filterWatcher,
+                                                                           this.twinPublisher);
     }
 
     @AfterTransaction

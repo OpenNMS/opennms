@@ -30,13 +30,28 @@ package org.opennms.netmgt.flows.classification.service.publisher.impl;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.opennms.core.ipc.twin.api.TwinPublisher;
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.dao.api.FilterWatcher;
 import org.opennms.netmgt.flows.classification.dto.RuleDTO;
+import org.opennms.netmgt.flows.classification.persistence.api.Protocol;
+import org.opennms.netmgt.flows.classification.persistence.api.Protocols;
+import org.opennms.netmgt.flows.classification.persistence.api.Rule;
+import org.opennms.netmgt.flows.classification.persistence.api.RuleDefinition;
 import org.opennms.netmgt.flows.classification.service.ClassificationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Strings;
 
 public class ClassificationRulePublisher implements Closeable {
 
@@ -46,23 +61,99 @@ public class ClassificationRulePublisher implements Closeable {
 
     private final Closeable ruleWatcher;
 
+    private final FilterWatcher filterWatcher;
+
+    private FilterWatcher.Session filterWatcherSession;
+
     public ClassificationRulePublisher(final ClassificationService classificationService,
+                                       final FilterWatcher filterWatcher,
                                        final TwinPublisher twinPublisher) throws IOException {
+        this.filterWatcher = Objects.requireNonNull(filterWatcher);
+
         this.publisher = twinPublisher.register(RuleDTO.TWIN_KEY, RuleDTO.TWIN_TYPE, null);
+
         this.ruleWatcher = classificationService.listen(this::rulesChanged);
     }
 
-    private void rulesChanged(final List<RuleDTO> rules) {
+    private void rulesChanged(final List<Rule> rules) {
+        if (this.filterWatcherSession != null) {
+            this.filterWatcherSession.close();
+        }
+
+        // Register watcher for all rules with exporter filters
+        final var filters = rules.stream()
+                                 .map(Rule::getExporterFilter)
+                                 .filter(Predicate.not(Strings::isNullOrEmpty))
+                                 .collect(Collectors.toSet());
+
+        this.filterWatcherSession = this.filterWatcher.watch(filters,
+                                                             (results -> filtersChanged(rules, results)));
+    }
+
+    private void filtersChanged(final List<Rule> rules,
+                                       final FilterWatcher.FilterResults results) {
+        // TODO fooker: Sort the list and make the position inherent?
+
+        final var x = rules.stream()
+                           .sorted(Comparator.comparingInt(Rule::getGroupPosition)
+                                             .thenComparingInt(Rule::getPosition))
+                           .flatMap(rule -> {
+                               if (rule.isOmnidirectional()) {
+                                   return Stream.of(resolveRule(rule, results), resolveRule(rule.reversedRule(), results));
+                               } else {
+                                   return Stream.of(resolveRule(rule, results));
+                               }
+                           })
+                           .collect(Collectors.toList());
+
         try {
-            this.publisher.publish(rules);
+            this.publisher.publish(x);
         } catch (final IOException e) {
             LOG.error("Publishing classification rules failed", e);
         }
     }
 
+    private static RuleDTO resolveRule(final RuleDefinition rule,
+                                       final FilterWatcher.FilterResults results) {
+        // TODO fooker: error handling of protocols
+
+        final List<String> exporters = Strings.isNullOrEmpty(rule.getExporterFilter())
+                                       ? List.of()
+                                       : results.getRuleNodeIpServiceMap().getOrDefault(rule.getExporterFilter(), Collections.emptyMap())
+                                                .values().stream()
+                                                .flatMap(node -> node.keySet().stream())
+                                                .map(InetAddressUtils::str)
+                                                .collect(Collectors.toList());
+
+        return RuleDTO.builder()
+                      .withName(rule.getName())
+                      .withProtocols(Strings.isNullOrEmpty(rule.getProtocol())
+                                     ? List.of()
+                                     : Arrays.stream(rule.getProtocol().split(","))
+                                             .map(Protocols::getProtocol)
+                                             .map(Protocol::getDecimal)
+                                             .collect(Collectors.toList()))
+                      .withSrcPort(rule.getSrcPort())
+                      .withSrcAddress(rule.getSrcAddress())
+                      .withDstPort(rule.getDstPort())
+                      .withDstAddress(rule.getDstAddress())
+                      .withPosition(rule.getGroupPosition() << 16 | rule.getPosition())
+                      .withExporters(exporters)
+                      .build();
+    }
+
     @Override
     public void close() throws IOException {
-        this.ruleWatcher.close();
-        this.publisher.close();
+        if (this.filterWatcherSession != null) {
+            this.filterWatcherSession.close();
+        }
+
+        if (this.ruleWatcher != null) {
+            this.ruleWatcher.close();
+        }
+
+        if (this.publisher != null) {
+            this.publisher.close();
+        }
     }
 }

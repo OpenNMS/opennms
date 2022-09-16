@@ -16,7 +16,6 @@
     <reference id="classificationRuleDao" interface="org.opennms.netmgt.flows.classification.persistence.api.ClassificationRuleDao" availability="mandatory"/>
     <reference id="classificationGroupDao" interface="org.opennms.netmgt.flows.classification.persistence.api.ClassificationGroupDao" availability="mandatory"/>
     <reference id="filterDao" interface="org.opennms.netmgt.filter.api.FilterDao" availability="mandatory"/>
-    <reference id="filterWatcher" interface="org.opennms.netmgt.dao.api.FilterWatcher" availability="mandatory"/>
     <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils" availability="mandatory"/>
 
     <service interface="org.opennms.netmgt.flows.classification.service.ClassificationService">
@@ -24,7 +23,6 @@
             <argument ref="classificationRuleDao"/>
             <argument ref="classificationGroupDao"/>
             <argument ref="filterDao"/>
-            <argument ref="filterWatcher"/>
             <argument ref="sessionUtils"/>
 
             <property name="reloadInterval" value="${engine.reloadInterval}" />

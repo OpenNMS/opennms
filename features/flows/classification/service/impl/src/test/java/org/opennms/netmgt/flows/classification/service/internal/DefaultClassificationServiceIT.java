@@ -39,12 +39,10 @@ import java.io.InputStream;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.core.ipc.twin.memory.MemoryTwinPublisher;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.SessionUtils;
-import org.opennms.netmgt.dao.support.DefaultFilterWatcher;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.flows.classification.persistence.api.ClassificationGroupDao;
 import org.opennms.netmgt.flows.classification.persistence.api.ClassificationRuleDao;
@@ -105,16 +103,10 @@ public class DefaultClassificationServiceIT {
 
     @Before
     public void setUp() throws Exception {
-        final var filterWatcher = new DefaultFilterWatcher();
-        filterWatcher.setFilterDao(this.filterDao);
-        filterWatcher.setSessionUtils(this.sessionUtils);
-        filterWatcher.afterPropertiesSet();
-
         classificationService = new DefaultClassificationService(
                 ruleDao,
                 groupDao,
                 filterDao,
-                filterWatcher,
                 sessionUtils);
         assertThat("The groups should be pre-populated from liquibase", groupDao.countAll(), is(2));
         assertTrue("The rules should be pre-populated from liquibase", ruleDao.countAll() > 0);

@@ -14,10 +14,12 @@
     </cm:property-placeholder>
 
     <reference id="classificationService" interface="org.opennms.netmgt.flows.classification.service.ClassificationService" availability="mandatory"/>
+    <reference id="filterWatcher" interface="org.opennms.netmgt.dao.api.FilterWatcher" availability="mandatory"/>
     <reference id="twinPublisher" interface="org.opennms.core.ipc.twin.api.TwinPublisher" availability="mandatory"/>
 
     <bean class="org.opennms.netmgt.flows.classification.service.publisher.impl.ClassificationRulePublisher">
         <argument ref="classificationService"/>
+        <argument ref="filterWatcher"/>
         <argument ref="twinPublisher"/>
     </bean>
 

@@ -30,9 +30,6 @@ package org.opennms.netmgt.flows.classification.service.internal;
 
 import java.io.Closeable;
 import java.io.InputStream;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -45,18 +42,12 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
-import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.dao.api.FilterWatcher;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.flows.classification.dto.RuleDTO;
-import org.opennms.netmgt.flows.classification.persistence.api.Protocol;
-import org.opennms.netmgt.flows.classification.persistence.api.Protocols;
-import org.opennms.netmgt.flows.classification.persistence.api.RuleDefinition;
 import org.opennms.netmgt.flows.classification.service.internal.csv.CsvServiceImpl;
 import org.opennms.netmgt.flows.classification.service.internal.validation.GroupValidator;
 import org.opennms.netmgt.flows.classification.service.internal.validation.RuleValidator;
@@ -94,9 +85,7 @@ public class DefaultClassificationService implements ClassificationService {
 
     private final SessionUtils sessionUtils;
 
-    private final FilterWatcher.Session filterWatcher;
-
-    private final Set<Consumer<List<RuleDTO>>> listeners = Sets.newConcurrentHashSet();
+    private final Set<Consumer<List<Rule>>> listeners = Sets.newConcurrentHashSet();
 
     private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
 
@@ -105,7 +94,6 @@ public class DefaultClassificationService implements ClassificationService {
     public DefaultClassificationService(final ClassificationRuleDao classificationRuleDao,
                                         final ClassificationGroupDao classificationGroupDao,
                                         final FilterDao filterDao,
-                                        final FilterWatcher filterWatcher,
                                         final SessionUtils sessionUtils) {
         this.classificationRuleDao = Objects.requireNonNull(classificationRuleDao);
         this.classificationGroupDao = Objects.requireNonNull(classificationGroupDao);
@@ -113,8 +101,6 @@ public class DefaultClassificationService implements ClassificationService {
         this.ruleValidator = new RuleValidator(filterDao);
         this.groupValidator = new GroupValidator(classificationRuleDao);
         this.csvService = new CsvServiceImpl(ruleValidator);
-
-        this.filterWatcher = filterWatcher.watch(Set.of(), this::filtersChanged);
 
         this.reload();
     }
@@ -399,62 +385,11 @@ public class DefaultClassificationService implements ClassificationService {
     public void reload() {
         final var rules = this.classificationRuleDao.findAllEnabledRules();
 
-        // Update the filter watcher for all rules with exporter filters
-        this.filterWatcher.setFilters(rules.stream()
-                                              .map(Rule::getExporterFilter)
-                                              .filter(Predicate.not(Strings::isNullOrEmpty))
-                                              .collect(Collectors.toSet()));
-    }
-
-    private void filtersChanged(final FilterWatcher.FilterResults results) {
-        // TODO fooker: Sort the list and make the position inherent?
-
-        final var result = this.classificationRuleDao.findAllEnabledRules().stream()
-                .sorted(Comparator.comparingInt(Rule::getGroupPosition)
-                                .thenComparingInt(Rule::getPosition))
-                .flatMap(rule -> {
-                    if (rule.isOmnidirectional()) {
-                        return Stream.of(resolveRule(rule, results), resolveRule(rule.reversedRule(), results));
-                    } else {
-                        return Stream.of(resolveRule(rule, results));
-                    }
-                })
-                .collect(Collectors.toList());
-
-        this.listeners.forEach(listener -> listener.accept(result));
-    }
-
-    private RuleDTO resolveRule(final RuleDefinition rule,
-                                final FilterWatcher.FilterResults results) {
-        // TODO fooker: error handling of protocols
-
-        final List<String> exporters = Strings.isNullOrEmpty(rule.getExporterFilter())
-                                       ? List.of()
-                                       : results.getRuleNodeIpServiceMap().getOrDefault(rule.getExporterFilter(), Collections.emptyMap())
-                                                .values().stream()
-                                                .flatMap(node -> node.keySet().stream())
-                                                .map(InetAddressUtils::str)
-                                                .collect(Collectors.toList());
-
-        return RuleDTO.builder()
-                .withName(rule.getName())
-                .withProtocols(Strings.isNullOrEmpty(rule.getProtocol())
-                               ? List.of()
-                               : Arrays.stream(rule.getProtocol().split(","))
-                                       .map(Protocols::getProtocol)
-                                       .map(Protocol::getDecimal)
-                                       .collect(Collectors.toList()))
-                .withSrcPort(rule.getSrcPort())
-                .withSrcAddress(rule.getSrcAddress())
-                .withDstPort(rule.getDstPort())
-                .withDstAddress(rule.getDstAddress())
-                .withPosition(rule.getGroupPosition() << 16 | rule.getPosition())
-                .withExporters(exporters)
-                .build();
+        this.listeners.forEach(listener -> listener.accept(rules));
     }
 
     @Override
-    public Closeable listen(final Consumer<List<RuleDTO>> listener) {
+    public Closeable listen(final Consumer<List<Rule>> listener) {
         this.listeners.add(listener);
         return () -> this.listeners.remove(listener);
     }

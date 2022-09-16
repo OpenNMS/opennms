@@ -34,7 +34,6 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import org.opennms.core.criteria.Criteria;
-import org.opennms.netmgt.flows.classification.dto.RuleDTO;
 import org.opennms.netmgt.flows.classification.service.exception.CSVImportException;
 import org.opennms.netmgt.flows.classification.service.exception.InvalidRuleException;
 import org.opennms.netmgt.flows.classification.persistence.api.Group;
@@ -80,5 +79,5 @@ public interface ClassificationService {
      */
     void reload();
 
-    Closeable listen(final Consumer<List<RuleDTO>> listener);
+    Closeable listen(final Consumer<List<Rule>> listener);
 }
