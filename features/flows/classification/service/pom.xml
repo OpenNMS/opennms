@@ -13,5 +13,6 @@
     <modules>
         <module>api</module>
         <module>impl</module>
+        <module>publisher</module>
     </modules>
 </project>

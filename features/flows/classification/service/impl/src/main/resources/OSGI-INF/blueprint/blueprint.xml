@@ -18,7 +18,6 @@
     <reference id="filterDao" interface="org.opennms.netmgt.filter.api.FilterDao" availability="mandatory"/>
     <reference id="filterWatcher" interface="org.opennms.netmgt.dao.api.FilterWatcher" availability="mandatory"/>
     <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils" availability="mandatory"/>
-    <reference id="twinPublisher" interface="org.opennms.core.ipc.twin.api.TwinPublisher" availability="mandatory"/>
 
     <service interface="org.opennms.netmgt.flows.classification.service.ClassificationService">
         <bean class="org.opennms.netmgt.flows.classification.service.internal.DefaultClassificationService">
@@ -27,7 +26,6 @@
             <argument ref="filterDao"/>
             <argument ref="filterWatcher"/>
             <argument ref="sessionUtils"/>
-            <argument ref="twinPublisher"/>
 
             <property name="reloadInterval" value="${engine.reloadInterval}" />
         </bean>

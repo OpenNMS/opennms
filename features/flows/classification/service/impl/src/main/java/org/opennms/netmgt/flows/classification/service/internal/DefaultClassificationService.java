@@ -29,10 +29,8 @@
 package org.opennms.netmgt.flows.classification.service.internal;
 
 import java.io.Closeable;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -51,7 +49,6 @@ import java.util.stream.Stream;
 
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
-import org.opennms.core.ipc.twin.api.TwinPublisher;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.FilterWatcher;
 import org.opennms.netmgt.dao.api.SessionUtils;
@@ -78,7 +75,6 @@ import org.opennms.netmgt.flows.classification.service.exception.InvalidRuleExce
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 
@@ -98,13 +94,9 @@ public class DefaultClassificationService implements ClassificationService {
 
     private final SessionUtils sessionUtils;
 
-    private final FilterDao filterDao;
-
     private final FilterWatcher.Session filterWatcher;
 
     private final Set<Consumer<List<RuleDTO>>> listeners = Sets.newConcurrentHashSet();
-
-    private final TwinPublisher.Session<List<RuleDTO>> publisher;
 
     private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
 
@@ -114,17 +106,13 @@ public class DefaultClassificationService implements ClassificationService {
                                         final ClassificationGroupDao classificationGroupDao,
                                         final FilterDao filterDao,
                                         final FilterWatcher filterWatcher,
-                                        final SessionUtils sessionUtils,
-                                        final TwinPublisher twinPublisher) throws IOException {
+                                        final SessionUtils sessionUtils) {
         this.classificationRuleDao = Objects.requireNonNull(classificationRuleDao);
         this.classificationGroupDao = Objects.requireNonNull(classificationGroupDao);
         this.sessionUtils = Objects.requireNonNull(sessionUtils);
-        this.filterDao = Objects.requireNonNull(filterDao);
         this.ruleValidator = new RuleValidator(filterDao);
         this.groupValidator = new GroupValidator(classificationRuleDao);
         this.csvService = new CsvServiceImpl(ruleValidator);
-
-        this.publisher = twinPublisher.register(RuleDTO.TWIN_KEY, RuleDTO.TWIN_TYPE, null);
 
         this.filterWatcher = filterWatcher.watch(Set.of(), this::filtersChanged);
 
@@ -409,8 +397,6 @@ public class DefaultClassificationService implements ClassificationService {
 
     @Override
     public void reload() {
-        // TODO fooker: Oh, and implement this
-
         final var rules = this.classificationRuleDao.findAllEnabledRules();
 
         // Update the filter watcher for all rules with exporter filters
@@ -436,12 +422,6 @@ public class DefaultClassificationService implements ClassificationService {
                 .collect(Collectors.toList());
 
         this.listeners.forEach(listener -> listener.accept(result));
-
-        try {
-            this.publisher.publish(result);
-        } catch (final IOException e) {
-            LOG.error("Failed to publish classification rules", e);
-        }
     }
 
     private RuleDTO resolveRule(final RuleDefinition rule,
