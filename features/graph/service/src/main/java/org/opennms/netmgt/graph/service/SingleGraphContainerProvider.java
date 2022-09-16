@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -61,10 +61,10 @@ public class SingleGraphContainerProvider implements GraphContainerProvider {
 
     @Override
     public GraphContainerInfo getContainerInfo() {
-        final DefaultGraphContainerInfo containerInfo = new DefaultGraphContainerInfo(this.containerInfo.getId());
-        containerInfo.setDescription(this.containerInfo.getDescription());
-        containerInfo.setLabel(this.containerInfo.getLabel());
-        containerInfo.getGraphInfos().add(graphProvider.getGraphInfo());
-        return containerInfo;
+        final DefaultGraphContainerInfo defaultGraphContainerInfo = new DefaultGraphContainerInfo(this.containerInfo.getId());
+        defaultGraphContainerInfo.setDescription(this.containerInfo.getDescription());
+        defaultGraphContainerInfo.setLabel(this.containerInfo.getLabel());
+        defaultGraphContainerInfo.getGraphInfos().add(graphProvider.getGraphInfo());
+        return defaultGraphContainerInfo;
     }
 }

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -41,6 +41,7 @@ import org.opennms.netmgt.graph.shell.completer.ContainerIdCompleter;
 
 @Service
 @Command(scope = "opennms", name = "graph-force-reload", description="Invalidates the cache for the given container, forcing it to reload when next request occurs")
+@SuppressWarnings("java:S106")
 public class GraphReloadCommand implements Action {
 
     @Reference

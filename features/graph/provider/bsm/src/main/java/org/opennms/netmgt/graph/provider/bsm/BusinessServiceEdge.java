@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -40,9 +40,14 @@ import org.opennms.netmgt.graph.domain.AbstractDomainEdge;
 
 public final class BusinessServiceEdge extends AbstractDomainEdge {
 
-    interface Properties {
-        String MAP_FUNCTION = "mapFunction";
-        String WEIGHT = "weight";
+    public static class Properties {
+
+        private Properties() {
+            throw new IllegalStateException("Utility class");
+        }
+
+        public static final String MAP_FUNCTION = "mapFunction";
+        public static final String WEIGHT = "weight";
     }
 
     public BusinessServiceEdge(GenericEdge genericEdge) {
@@ -57,7 +62,7 @@ public final class BusinessServiceEdge extends AbstractDomainEdge {
         return this.delegate.getProperty(Properties.WEIGHT);
     }
 
-    public final static BusinessServiceEdgeBuilder builder() {
+    public static final BusinessServiceEdgeBuilder builder() {
         return new BusinessServiceEdgeBuilder();
     }
     
@@ -65,7 +70,7 @@ public final class BusinessServiceEdge extends AbstractDomainEdge {
         return new BusinessServiceEdge(genericEdge);
     }
     
-    public final static class BusinessServiceEdgeBuilder extends AbstractDomainEdgeBuilder<BusinessServiceEdgeBuilder> {
+    public static final class BusinessServiceEdgeBuilder extends AbstractDomainEdgeBuilder<BusinessServiceEdgeBuilder> {
         
         private BusinessServiceEdgeBuilder() {}
         

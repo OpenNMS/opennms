@@ -32,9 +32,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -46,7 +48,6 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.upgrade.api.AbstractOnmsUpgrade;
 import org.opennms.upgrade.api.OnmsUpgradeException;
@@ -82,28 +83,30 @@ public class DiscoveryConfigurationMigratorOffline extends AbstractOnmsUpgrade {
 
     @Override
     public void execute() throws OnmsUpgradeException {
-        Writer out = null;
         try {
             final DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+            docFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
             final DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
             final Document doc = docBuilder.parse(m_configFile);
             final NodeList found = doc.getElementsByTagName("discovery-configuration");
             if (found.getLength() == 1 && found.item(0) instanceof Element) {
                 final Element el = (Element)found.item(0);
                 el.removeAttribute("threads");
-                final Transformer tf = TransformerFactory.newInstance().newTransformer();
+                TransformerFactory factory = TransformerFactory.newInstance();
+                factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+                factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
+                final Transformer tf = factory.newTransformer();
                 tf.setOutputProperty(OutputKeys.ENCODING, StandardCharsets.UTF_8.name());
                 tf.setOutputProperty(OutputKeys.INDENT, "yes");
-                out = new StringWriter();
-                tf.transform(new DOMSource(doc), new StreamResult(out));
-                FileUtils.write(m_configFile, out.toString());
+                try (Writer out = new StringWriter()) {
+                    tf.transform(new DOMSource(doc), new StreamResult(out));
+                    FileUtils.write(m_configFile, out.toString(), Charset.defaultCharset());
+                }
             } else {
                 throw new OnmsUpgradeException("Unsure how to handle XML node(s): " + found);
             }
         } catch (final IOException | SAXException | ParserConfigurationException | TransformerException e) {
             throw new OnmsUpgradeException("Failed to upgrade discovery-configuration.xml", e);
-        } finally {
-            IOUtils.closeQuietly(out);
         }
     }
 

@@ -30,6 +30,7 @@ package org.opennms.features.newts.converter;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Properties;
 
 import org.opennms.core.db.DataSourceFactory;
@@ -43,7 +44,7 @@ import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
  * 
  * @author Alejandro Galue <agalue@opennms.org>
  */
-public abstract class OnmsProperties {
+public interface OnmsProperties {
 
     /**
      * Register properties.
@@ -64,11 +65,13 @@ public abstract class OnmsProperties {
      *
      * @param properties the properties
      * @param fileName the file name
-     * @throws Exception the exception
+     * @throws IOException the exception
      */
-    private static void loadProperties(Properties properties, String fileName) throws Exception {
+    private static void loadProperties(Properties properties, String fileName) throws IOException {
         File propertiesFile = ConfigFileConstants.getConfigFileByName(fileName);
-        properties.load(new FileInputStream(propertiesFile));
+        try (FileInputStream inStream = new FileInputStream(propertiesFile)) {
+            properties.load(inStream);
+        }
     }
 
     /**

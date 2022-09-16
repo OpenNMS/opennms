@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -66,8 +66,8 @@ public final class BusinessServiceGraph extends AbstractDomainGraph<BusinessServ
         return new BusinessServiceGraph(genericGraph);
     }
 
-    public final static class BusinessServiceGraphBuilder extends AbstractDomainGraphBuilder<BusinessServiceGraphBuilder, BusinessServiceVertex, BusinessServiceEdge> {
-        
+    public static final class BusinessServiceGraphBuilder extends AbstractDomainGraphBuilder<BusinessServiceGraphBuilder, BusinessServiceVertex, BusinessServiceEdge> {
+
         private BusinessServiceGraphBuilder() {
             namespace(NAMESPACE);
         }

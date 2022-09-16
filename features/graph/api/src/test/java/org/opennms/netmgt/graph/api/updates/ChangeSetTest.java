@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -172,8 +172,9 @@ public class ChangeSetTest {
     public void verifyNamespaceCannotChange() {
         final GenericGraph oldGraph = GenericGraph.builder().namespace(NAMESPACE).build();
         final GenericGraph newGraph = GenericGraph.builder().namespace(NAMESPACE + ".opennms").build();
+        ChangeSet.ChangeSetBuilder<GenericGraph, GenericVertex, GenericEdge> builder = ChangeSet.builder(oldGraph, newGraph);
         try {
-            ChangeSet.builder(oldGraph, newGraph).build();
+            builder.build();
             fail("Expected an exception to be thrown, but succeeded. Bailing");
         } catch (IllegalStateException ex) {
             // expected, as namespace changes are not supported

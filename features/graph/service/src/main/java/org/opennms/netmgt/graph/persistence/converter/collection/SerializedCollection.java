@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -44,7 +44,7 @@ public class SerializedCollection {
     // The type of the collection
     private Class type;
     // Each entry of the original collection, but serialized
-    private List<SerializedCollectionEntry> entries;
+    private List<SerializedCollectionEntry<?>> entries;
 
     public Class getType() {
         return type;
@@ -54,11 +54,11 @@ public class SerializedCollection {
         this.type = type;
     }
 
-    public List<SerializedCollectionEntry> getEntries() {
+    public List<SerializedCollectionEntry<?>> getEntries() {
         return entries;
     }
 
-    public void setEntries(List<SerializedCollectionEntry> entries) {
+    public void setEntries(List<SerializedCollectionEntry<?>> entries) {
         this.entries = entries;
     }
 

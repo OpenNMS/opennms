@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -64,7 +64,7 @@ public class DefaultNodeService implements NodeService {
     public List<NodeInfo> resolveNodes(List<NodeRef> nodeRefs) {
         Objects.requireNonNull(nodeRefs);
         final List<OnmsNode> nodes = loadNodes(nodeRefs);
-        final List<NodeInfo> nodeInfoList = nodes.stream().map(node -> {
+        return nodes.stream().map(node -> {
             final Set<String> categories = node.getCategories().stream().map(OnmsCategory::getName).collect(Collectors.toSet());
             final List<IpInfo> ipInfoList = node.getIpInterfaces().stream().map(ifc -> new IpInfo(ifc.getIpAddress(), ifc.isPrimary(), ifc.isManaged())).collect(Collectors.toList());
             return new NodeInfo.NodeInfoBuilder().
@@ -77,7 +77,6 @@ public class DefaultNodeService implements NodeService {
                     .ipInterfaces(ipInfoList)
                     .build();
         }).collect(Collectors.toList());
-        return nodeInfoList;
     }
 
     @Override
@@ -103,7 +102,8 @@ public class DefaultNodeService implements NodeService {
 
         // Set the result
         final Map<NodeRef, StatusInfo> resultMap = Maps.newHashMap();
-        for (Integer nodeId : nodeIdNodeRefMap.keySet()) {
+        for (Map.Entry<Integer, NodeRef> nodeRefEntry : nodeIdNodeRefMap.entrySet()) {
+            Integer nodeId = nodeRefEntry.getKey();
             final AlarmSummary alarmSummary = nodeIdToAlarmSummaryMap.get(nodeId);
             final StatusInfo status = alarmSummary == null
                     ? StatusInfo.defaultStatus().build()
@@ -121,11 +121,10 @@ public class DefaultNodeService implements NodeService {
     }
 
     private List<OnmsNode> loadNodes(final List<NodeRef> nodeRefs) {
-        final List<Integer> nodeIds = nodeRefs.stream().map(n -> n.getNodeId()).filter(id -> id != null).collect(Collectors.toList());
-        final List<String> foreignSources = nodeRefs.stream().map(n -> n.getForeignSource()).filter(fs -> fs != null).distinct().collect(Collectors.toList());
-        final List<String> foreignIds = nodeRefs.stream().map(n -> n.getForeignId()).filter(fid -> fid != null).distinct().collect(Collectors.toList());
-        final List<OnmsNode> nodes = new NodeQuery().execute(nodeIds, foreignSources, foreignIds);
-        return nodes;
+        final List<Integer> nodeIds = nodeRefs.stream().map(NodeRef::getNodeId).filter(Objects::nonNull).collect(Collectors.toList());
+        final List<String> foreignSources = nodeRefs.stream().map(NodeRef::getForeignSource).filter(Objects::nonNull).distinct().collect(Collectors.toList());
+        final List<String> foreignIds = nodeRefs.stream().map(NodeRef::getForeignId).filter(Objects::nonNull).distinct().collect(Collectors.toList());
+        return new NodeQuery().execute(nodeIds, foreignSources, foreignIds);
     }
 
     private final class NodeQuery {

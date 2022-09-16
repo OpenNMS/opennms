@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -46,7 +46,7 @@ public class DefaultGraphContainerInfo implements GraphContainerInfo {
 
     @Override
     public List<String> getNamespaces() {
-        return graphInfos.stream().map(gi -> gi.getNamespace()).collect(Collectors.toList());
+        return graphInfos.stream().map(GraphInfo::getNamespace).collect(Collectors.toList());
     }
 
     @Override

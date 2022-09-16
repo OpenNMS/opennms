@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -55,14 +55,18 @@ public interface GenericProperties {
     String FOREIGN_SOURCE = "foreignSource";
     String FOREIGN_ID = "foreignID";
 
-    interface Enrichment {
+    class Enrichment {
         /** Determines if vertices containing a node ref should be enriched with the node information. */
-        String RESOLVE_NODES = "enrichment.resolveNodes";
+        public static final String RESOLVE_NODES = "enrichment.resolveNodes";
 
         /**
          * Determines if vertices containing a node ref should be enriched with
          * status information (based on their associated alarms)
          */
-        String DEFAULT_STATUS = "enrichment.defaultStatus";
+        public static final String DEFAULT_STATUS = "enrichment.defaultStatus";
+
+        private Enrichment() {
+            throw new IllegalStateException("Utility class");
+        }
     }
 }

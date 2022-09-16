@@ -157,7 +157,7 @@ public class Node {
      * @return the dir
      */
     public File getDir(File baseDir, boolean storeByFS) {
-        if (foreignSource == null || storeByFS == false)
+        if (foreignSource == null || !storeByFS)
             return new File(baseDir, Integer.toString(id));
         return new File(baseDir, foreignSource + File.separator + foreignId);
     }

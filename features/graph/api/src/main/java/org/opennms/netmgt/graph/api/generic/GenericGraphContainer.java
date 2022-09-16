@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -136,7 +136,7 @@ public class GenericGraphContainer implements ImmutableGraphContainer<GenericGra
     
     public static class GenericGraphContainerBuilder {
 
-        private final static Logger LOG = LoggerFactory.getLogger(GenericGraphContainerBuilder.class);
+        private static final Logger LOG = LoggerFactory.getLogger(GenericGraphContainerBuilder.class);
 
         // allow graphs to be replaced in builder : use a Map
         private final Map<String, GenericGraph> graphs = new HashMap<>();

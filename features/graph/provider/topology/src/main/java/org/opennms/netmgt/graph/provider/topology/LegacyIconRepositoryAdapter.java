@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2020-2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2020-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -58,11 +58,10 @@ public class LegacyIconRepositoryAdapter implements IconRepository {
 
     private Set<String> getUsedIconIds() {
         if (delegate.getCurrentGraph() != null) {
-            final Set<String> iconIds = delegate.getCurrentGraph().getVertices().stream()
+            return delegate.getCurrentGraph().getVertices().stream()
                     .map(Vertex::getIconKey)
                     .filter(Objects::nonNull)
                     .collect(Collectors.toSet());
-            return iconIds;
         }
         return Sets.newHashSet();
     }

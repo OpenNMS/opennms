@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -85,7 +85,6 @@ public class NodeSearchProvider implements SearchProvider {
     public List<GenericVertex> resolve(GraphService graphService, SearchCriteria searchCriteria) {
         final OnmsNode node = nodeDao.get(searchCriteria.getCriteria());
         final NodeRef nodeRef = NodeRef.from(node.getId(), node.getForeignSource(), node.getForeignId());
-        final List<GenericVertex> vertices = graphService.getGraph(searchCriteria.getNamespace()).resolveVertices(nodeRef);
-        return vertices;
+        return graphService.getGraph(searchCriteria.getNamespace()).resolveVertices(nodeRef);
     }
 }

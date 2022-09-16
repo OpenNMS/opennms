@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -53,8 +53,7 @@ public interface GraphService {
     default GenericGraph getGraph(String namespace) {
         final GraphContainerInfo graphContainerInfo = getGraphContainerInfoByNamespace(namespace);
         if (graphContainerInfo != null) {
-            final GenericGraph graph = getGraphContainer(graphContainerInfo.getId()).getGraph(namespace);
-            return graph;
+            return getGraphContainer(graphContainerInfo.getId()).getGraph(namespace);
         }
         throw new NoSuchElementException("Could not find a Graph with namespace '" + namespace + "'.");
     }

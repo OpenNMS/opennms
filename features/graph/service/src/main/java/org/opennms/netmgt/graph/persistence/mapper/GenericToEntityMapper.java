@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -57,7 +57,7 @@ public class GenericToEntityMapper {
         final GraphContainerEntity graphContainerEntity = new GraphContainerEntity();
         graphContainerEntity.setNamespace(genericGraphContainer.getId());
         graphContainerEntity.setProperties(convertToPropertyEntities(genericGraphContainer.getProperties()));
-        final List<GraphEntity> graphEntities = genericGraphContainer.getGraphs().stream().map(genericGraph -> toEntity(genericGraph)).collect(Collectors.toList());
+        final List<GraphEntity> graphEntities = genericGraphContainer.getGraphs().stream().map(this::toEntity).collect(Collectors.toList());
         graphContainerEntity.setGraphs(graphEntities);
         return graphContainerEntity;
     }
@@ -68,11 +68,11 @@ public class GenericToEntityMapper {
         graphEntity.setProperties(convertToPropertyEntities(genericGraph.getProperties()));
 
         // Map Vertices
-        final List<VertexEntity> vertexEntities = genericGraph.getVertices().stream().map(genericVertex -> toEntity(genericVertex)).collect(Collectors.toList());
+        final List<VertexEntity> vertexEntities = genericGraph.getVertices().stream().map(this::toEntity).collect(Collectors.toList());
         graphEntity.addRelations(vertexEntities);
 
         // Map Edges
-        final List<EdgeEntity> edgeEntities = genericGraph.getEdges().stream().map(genericEdge -> toEntity(genericEdge, graphEntity)).collect(Collectors.toList());
+        final List<EdgeEntity> edgeEntities = genericGraph.getEdges().stream().map(this::toEntity).collect(Collectors.toList());
         graphEntity.addRelations(edgeEntities);
 
         // Map Focus
@@ -105,7 +105,7 @@ public class GenericToEntityMapper {
         return propertyEntities;
     }
 
-    public EdgeEntity toEntity(GenericEdge genericEdge, GraphEntity graphEntity) {
+    public EdgeEntity toEntity(GenericEdge genericEdge) {
         final EdgeEntity edgeEntity = new EdgeEntity();
         final List<PropertyEntity> edgeProperties = convertToPropertyEntities(genericEdge.getProperties());
         edgeEntity.setProperties(edgeProperties);

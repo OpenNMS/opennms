@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
+import java.util.function.IntFunction;
 import java.util.stream.Collectors;
 
 import org.opennms.features.alarms.history.api.AlarmHistoryRepository;
@@ -92,7 +92,7 @@ public class ElasticAlarmHistoryRepository implements AlarmHistoryRepository {
     public List<AlarmState> getStatesForAlarmWithDbId(long id) {
         return findAlarms(queryProvider.getAlarmStatesByDbId(id), null)
                 .stream()
-                .map(a -> (AlarmState)a)
+                .map(AlarmState.class::cast)
                 .collect(Collectors.toList());
     }
 
@@ -100,30 +100,30 @@ public class ElasticAlarmHistoryRepository implements AlarmHistoryRepository {
     public List<AlarmState> getStatesForAlarmWithReductionKey(String reductionKey) {
         return findAlarms(queryProvider.getAlarmStatesByReductionKey(reductionKey), null)
                 .stream()
-                .map(a -> (AlarmState)a)
+                .map(AlarmState.class::cast)
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<AlarmState> getActiveAlarmsAt(long time) {
         final TimeRange timeRange = getTimeRange(time);
-        return findAlarmsWithCompositeAggregation((afterAlarmWithId) -> queryProvider.getActiveAlarmsAt(timeRange, afterAlarmWithId), timeRange).stream()
-                .map(a -> (AlarmState)a)
+        return findAlarmsWithCompositeAggregation(afterAlarmWithId -> queryProvider.getActiveAlarmsAt(timeRange, afterAlarmWithId), timeRange).stream()
+                .map(AlarmState.class::cast)
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<AlarmState> getLastStateOfAllAlarms(long start, long end) {
         final TimeRange timeRange = new TimeRange(start, end);
-        return findAlarmsWithCompositeAggregation((afterAlarmWIthId) -> queryProvider.getAllAlarms(timeRange, afterAlarmWIthId), timeRange).stream()
-                .map(a -> (AlarmState)a)
+        return findAlarmsWithCompositeAggregation(afterAlarmWIthId -> queryProvider.getAllAlarms(timeRange, afterAlarmWIthId), timeRange).stream()
+                .map(AlarmState.class::cast)
                 .collect(Collectors.toList());
     }
 
     @Override
     public long getNumActiveAlarmsAt(long time) {
         TimeRange timeRange = getTimeRange(time);
-        return findAlarmsWithCompositeAggregation((afterAlarmWithId) -> queryProvider.getActiveAlarmIdsAt(timeRange, afterAlarmWithId), timeRange).size();
+        return findAlarmsWithCompositeAggregation(afterAlarmWithId -> queryProvider.getActiveAlarmIdsAt(timeRange, afterAlarmWithId), timeRange).size();
     }
 
     @Override
@@ -136,10 +136,11 @@ public class ElasticAlarmHistoryRepository implements AlarmHistoryRepository {
         return getNumActiveAlarmsAt(System.currentTimeMillis());
     }
 
-    private List<AlarmDocumentDTO> findAlarmsWithCompositeAggregation(Function<Integer,String> getNextQuery, TimeRange timeRange) {
+    private List<AlarmDocumentDTO> findAlarmsWithCompositeAggregation(IntFunction<String> getNextQuery, TimeRange timeRange) {
         final List<AlarmDocumentDTO> alarms = new LinkedList<>();
         Integer afterAlarmWithId = null;
-        while (true) {
+        boolean b = true;
+        while (b) {
             final String query = getNextQuery.apply(afterAlarmWithId);
             final Search.Builder search = new Search.Builder(query);
             if (timeRange != null) {
@@ -151,20 +152,12 @@ public class ElasticAlarmHistoryRepository implements AlarmHistoryRepository {
                 search.addIndex("opennms-alarms-*");
                 LOG.debug("Executing query on all indices: {}", query);
             }
-            final SearchResult result;
-            try {
-                result = client.execute(search.build());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            if (!result.isSucceeded()) {
-                throw new RuntimeException(result.getErrorMessage());
-            }
+            final SearchResult result = getSearchResult(search);
 
             final CompositeAggregation alarmsById = result.getAggregations().getAggregation("alarms_by_id", CompositeAggregation.class);
             if (alarmsById == null) {
                 // No results, we're done
-                break;
+                b = false;
             } else {
                 for (CompositeAggregation.Entry entry : alarmsById.getBuckets()) {
                     final TopHitsAggregation topHitsAggregation = entry.getTopHitsAggregation("latest_alarm");
@@ -177,13 +170,24 @@ public class ElasticAlarmHistoryRepository implements AlarmHistoryRepository {
                     afterAlarmWithId = alarmsById.getAfterKey().get("alarm_id").getAsInt();
                 } else {
                     // There are no more results to page through
-                    break;
+                    b = false;
                 }
-            } {
-
             }
         }
         return alarms;
+    }
+
+    private SearchResult getSearchResult(Search.Builder search) {
+        final SearchResult result;
+        try {
+            result = client.execute(search.build());
+        } catch (IOException e) {
+            throw new ElasticException(e);
+        }
+        if (!result.isSucceeded()) {
+            throw new ElasticException(result.getErrorMessage());
+        }
+        return result;
     }
 
     private TimeRange getTimeRange(long time) {
@@ -202,15 +206,7 @@ public class ElasticAlarmHistoryRepository implements AlarmHistoryRepository {
             LOG.debug("Executing query on all indices: {}", query);
         }
 
-        final SearchResult result;
-        try {
-            result = client.execute(search.build());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        if (!result.isSucceeded()) {
-            throw new RuntimeException(result.getErrorMessage());
-        }
+        final SearchResult result = getSearchResult(search);
 
         final List<SearchResult.Hit<AlarmDocumentDTO, Void>> hits = result.getHits(AlarmDocumentDTO.class);
         return hits.stream().map(h -> h.source).collect(Collectors.toList());

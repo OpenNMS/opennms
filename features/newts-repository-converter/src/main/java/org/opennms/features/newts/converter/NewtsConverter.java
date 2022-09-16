@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,13 +28,32 @@
 
 package org.opennms.features.newts.converter;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Throwables;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import com.google.common.primitives.UnsignedLong;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.NavigableMap;
+import java.util.NavigableSet;
+import java.util.Properties;
+import java.util.SortedMap;
+import java.util.TreeMap;
+import java.util.TreeSet;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
@@ -68,31 +87,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.NavigableMap;
-import java.util.NavigableSet;
-import java.util.Properties;
-import java.util.SortedMap;
-import java.util.TreeMap;
-import java.util.TreeSet;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import com.google.common.base.Optional;
+import com.google.common.base.Throwables;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import com.google.common.primitives.UnsignedLong;
 
 /**
  * The Class NewtsConverter.
@@ -103,13 +104,14 @@ import java.util.stream.Stream;
  * @author Dustin Frisch <dustin@opennms.org>
  */
 public class NewtsConverter implements AutoCloseable {
-    private final static Logger LOG = LoggerFactory.getLogger(NewtsConverter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(NewtsConverter.class);
 
     /** The Constant CMD_SYNTAX. */
-    private final static String CMD_SYNTAX = "newts-converter [options]";
+    private static final String CMD_SYNTAX = "newts-converter [options]";
 
-    private final static Timestamp EPOCH = Timestamp.fromEpochMillis(0);
-    private final static ValueType<?> ZERO = ValueType.compose(0, MetricType.GAUGE);
+    private static final Timestamp EPOCH = Timestamp.fromEpochMillis(0);
+    private static final ValueType<?> ZERO = ValueType.compose(0, MetricType.GAUGE);
+    public static final String FALSE = "false";
 
     private enum StorageStrategy {
         STORE_BY_METRIC,
@@ -121,6 +123,7 @@ public class NewtsConverter implements AutoCloseable {
         JROBIN,
     }
 
+    @SuppressWarnings("java:S1700")
     private static class ForeignId {
         private final String foreignSource;
         private final String foreignId;
@@ -187,11 +190,13 @@ public class NewtsConverter implements AutoCloseable {
                 .printZeroNever()
                 .toFormatter();
 
-        LOG.info("Conversion Finished: metrics: {}, samples: {}, time: {}", processedMetrics, processedSamples, formatter.print(period));
+        String print = formatter.print(period);
+        LOG.info("Conversion Finished: metrics: {}, samples: {}, time: {}", processedMetrics, processedSamples, print);
 
         System.exit(0);
     }
 
+    @SuppressWarnings("java:S3776")
     private NewtsConverter(final String... args) {
         final Options options = new Options();
 
@@ -263,7 +268,7 @@ public class NewtsConverter implements AutoCloseable {
         switch (cmd.getOptionValue('s').toLowerCase()) {
             case "storeByMetric":
             case "sbm":
-            case "false":
+            case FALSE:
                 storageStrategy = StorageStrategy.STORE_BY_METRIC;
                 break;
 
@@ -294,7 +299,7 @@ public class NewtsConverter implements AutoCloseable {
 
             case "jrobin":
             case "jrb":
-            case "false":
+            case FALSE:
                 storageTool = StorageTool.JROBIN;
                 break;
 
@@ -360,15 +365,13 @@ public class NewtsConverter implements AutoCloseable {
             throw NewtsConverterError.create("The configured timeseries strategy must be 'newts' on opennms.properties (org.opennms.timeseries.strategy)");
         }
 
-        if (!"true".equals(System.getProperty("org.opennms.rrd.storeByForeignSource", "false"))) {
+        if (!"true".equals(System.getProperty("org.opennms.rrd.storeByForeignSource", FALSE))) {
             throw NewtsConverterError.create("The option storeByForeignSource must be enabled in opennms.properties (org.opennms.rrd.storeByForeignSource)");
         }
 
         try {
-            this.context = new ClassPathXmlApplicationContext(new String[]{
-                    "classpath:/META-INF/opennms/applicationContext-soa.xml",
-                    "classpath:/META-INF/opennms/applicationContext-timeseries-newts.xml"
-            });
+            this.context = new ClassPathXmlApplicationContext("classpath:/META-INF/opennms/applicationContext-soa.xml",
+                    "classpath:/META-INF/opennms/applicationContext-timeseries-newts.xml");
 
             this.repository = context.getBean(SampleRepository.class);
             this.indexer = context.getBean(Indexer.class);
@@ -394,6 +397,7 @@ public class NewtsConverter implements AutoCloseable {
         LOG.trace("Found {} nodes on the database", foreignIds.size());
     }
 
+    @SuppressWarnings("java:S1301")
     public void execute() {
         LOG.trace("Starting Conversion...");
 
@@ -413,15 +417,12 @@ public class NewtsConverter implements AutoCloseable {
     }
 
     private void processStoreByGroupResources(final Path path) {
-        try {
-            // Find and process all resource folders containing a 'ds.properties' file
-            Files.walk(path)
-                 .filter(p -> p.endsWith("ds.properties"))
-                 .forEach(p -> processStoreByGroupResource(p.getParent()));
-
+        // Find and process all resource folders containing a 'ds.properties' file
+        try (Stream<Path> walk = Files.walk(path)) {
+            walk.filter(p -> p.endsWith("ds.properties"))
+                    .forEach(p -> processStoreByGroupResource(p.getParent()));
         } catch (Exception e) {
             LOG.error("Error while reading RRD files", e);
-            return;
         }
     }
 
@@ -444,15 +445,14 @@ public class NewtsConverter implements AutoCloseable {
     }
 
     private void processStoreByMetricResources(final Path path) {
-        try {
-            // Find an process all '.meta' files and the according RRD files
-            Files.walk(path)
-                 .filter(p -> p.getFileName().toString().endsWith(".meta"))
-                 .forEach(this::processStoreByMetricResource);
+
+        // Find an process all '.meta' files and the according RRD files
+        try (Stream<Path> walk = Files.walk(path)) {
+            walk.filter(p -> p.getFileName().toString().endsWith(".meta"))
+                    .forEach(this::processStoreByMetricResource);
 
         } catch (Exception e) {
             LOG.error("Error while reading RRD files", e);
-            return;
         }
     }
 
@@ -517,7 +517,7 @@ public class NewtsConverter implements AutoCloseable {
                 file = null;
         }
 
-        if (!Files.exists(file)) {
+        if (file == null || !Files.exists(file)) {
             LOG.error("File not found: {}", file);
             return;
         }
@@ -544,14 +544,15 @@ public class NewtsConverter implements AutoCloseable {
 
         // Inject the samples from the RRD file to NewTS
         try {
-            this.injectSamplesToNewts(resourcePath,
-                                      group,
-                                      rrd.getDataSources(),
-                                      generateSamples(rrd));
+            if (rrd != null) {
+                this.injectSamplesToNewts(resourcePath,
+                        group,
+                        rrd.getDataSources(),
+                        generateSamples(rrd));
+            }
 
         } catch (final Exception e) {
             LOG.error("Failed to convert file: {}", file, e);
-            return;
         }
     }
 
@@ -566,6 +567,7 @@ public class NewtsConverter implements AutoCloseable {
         return new Sample(timestamp, resource, metric, type, valueType);
     }
 
+    @SuppressWarnings({"java:S4738", "java:S135"})
     private void injectSamplesToNewts(final ResourcePath resourcePath,
                                       final String group,
                                       final List<? extends AbstractDS> dataSources,
@@ -604,7 +606,7 @@ public class NewtsConverter implements AutoCloseable {
 
                 if (batch.size() >= this.batchSize) {
                     this.repository.insert(batch, true);
-                    this.processedSamples.getAndAdd(batch.size());
+                    processedSamples.getAndAdd(batch.size());
 
                     batch = new ArrayList<>(this.batchSize);
                 }
@@ -613,43 +615,42 @@ public class NewtsConverter implements AutoCloseable {
 
         if (!batch.isEmpty()) {
             this.repository.insert(batch, true);
-            this.processedSamples.getAndAdd(batch.size());
+            processedSamples.getAndAdd(batch.size());
         }
 
-        this.processedMetrics.getAndAdd(dataSources.size());
+        processedMetrics.getAndAdd(dataSources.size());
 
-        LOG.trace("Stats: {} / {}", this.processedMetrics, this.processedSamples);
+        LOG.trace("Stats: {} / {}", processedMetrics, processedSamples);
     }
 
     private void processStringsProperties(final Path path) {
-        try {
-            // Find an process all 'strings.properties' files
-            Files.walk(path)
-                 .filter(p -> p.endsWith("strings.properties"))
-                 .forEach(p -> {
-                     final Properties properties = new Properties();
-                     try (final BufferedReader r = Files.newBufferedReader(p)) {
-                         properties.load(r);
+        // Find an process all 'strings.properties' files
+        try (Stream<Path> walk = Files.walk(path)) {
+            walk.filter(p -> p.endsWith("strings.properties"))
+                    .forEach(p -> {
+                        final Properties properties = new Properties();
+                        try (final BufferedReader r = Files.newBufferedReader(p)) {
+                            properties.load(r);
 
-                     } catch (final IOException e) {
-                         throw Throwables.propagate(e);
-                     }
+                        } catch (final IOException e) {
+                            throw Throwables.propagate(e);
+                        }
 
-                     final ResourcePath resourcePath = buildResourcePath(p.getParent());
-                     if (resourcePath == null) {
-                         return;
-                     }
+                        final ResourcePath resourcePath = buildResourcePath(p.getParent());
+                        if (resourcePath == null) {
+                            return;
+                        }
 
-                     this.injectStringPropertiesToNewts(resourcePath,
-                                                        Maps.fromProperties(properties));
-                 });
+                        this.injectStringPropertiesToNewts(resourcePath,
+                                Maps.fromProperties(properties));
+                    });
 
         } catch (Exception e) {
             LOG.error("Error while reading string.properties", e);
-            return;
         }
     }
 
+    @SuppressWarnings("java:S4738")
     private void injectStringPropertiesToNewts(final ResourcePath resourcePath,
                                                final Map<String, String> stringProperties) {
         final Resource resource = new Resource(NewtsUtils.toResourceId(resourcePath),
@@ -702,6 +703,9 @@ public class NewtsConverter implements AutoCloseable {
             try {
                 this.executor.awaitTermination(10, TimeUnit.SECONDS);
             } catch (final InterruptedException e) {
+                LOG.info("Interrupted. Stopping.");
+                Thread.currentThread().interrupt();
+                return;
             }
         }
 
@@ -769,19 +773,9 @@ public class NewtsConverter implements AutoCloseable {
             valuesMap.put(ts, values);
         }
 
-        // Initialize Last Values
-        final List<Double> lastValues = new ArrayList<>();
-        for (final AbstractDS ds : rrd.getDataSources()) {
-            final double v = ds.getLastDs() == null ? 0.0 : ds.getLastDs();
-            lastValues.add(v - v % step);
-        }
+        final List<Double> lastValues = initializeLastValues(rrd, step);
 
-        // Set Last-Value for Counters
-        for (int i = 0; i < rrd.getDataSources().size(); i++) {
-            if (rrd.getDataSource(i).isCounter()) {
-                valuesMap.get(end).set(i, lastValues.get(i));
-            }
-        }
+        setLastValueForCounters(rrd, end, valuesMap, lastValues);
 
         // Process
         // Counters must be processed in reverse order (from latest to oldest) in order to recreate the counter raw values
@@ -790,31 +784,56 @@ public class NewtsConverter implements AutoCloseable {
         for (int j = rra.getRows().size() - 1; j >= 0; j--) {
             final Row row = rra.getRows().get(j);
 
-            for (int i = 0; i < rrd.getDataSources().size(); i++) {
-                if (rrd.getDataSource(i).isCounter()) {
-                    if (j > 0) {
-                        final Double last = lastValues.get(i);
-                        final Double current = row.getValue(i).isNaN() ? 0 : row.getValue(i);
-
-                        Double value = last - (current * step);
-                        if (value < 0) { // Counter-Wrap emulation
-                            value += Math.pow(2, 64);
-                        }
-                        lastValues.set(i, value);
-                        if (!row.getValue(i).isNaN()) {
-                            valuesMap.get(ts).set(i, value);
-                        }
-                    }
-                } else {
-                    if (!row.getValue(i).isNaN()) {
-                        valuesMap.get(ts + step).set(i, row.getValue(i));
-                    }
-                }
-            }
+            processCounters(rrd, step, valuesMap, lastValues, ts, j, row);
 
             ts -= step;
         }
 
         return valuesMap;
+    }
+
+    private static void processCounters(AbstractRRD rrd, long step, NavigableMap<Long, List<Double>> valuesMap, List<Double> lastValues, long ts, int j, Row row) {
+        for (int i = 0; i < rrd.getDataSources().size(); i++) {
+            if (rrd.getDataSource(i).isCounter()) {
+                if (j > 0) {
+                    extracted(step, valuesMap, lastValues, ts, row, i);
+                }
+            } else if (!row.getValue(i).isNaN()) {
+                valuesMap.get(ts + step).set(i, row.getValue(i));
+            }
+        }
+    }
+
+    private static void extracted(long step, NavigableMap<Long, List<Double>> valuesMap, List<Double> lastValues, long ts, Row row, int i) {
+        final Double last = lastValues.get(i);
+        final Double current = row.getValue(i).isNaN() ? 0 : row.getValue(i);
+
+        Double value = last - (current * step);
+        if (value < 0) { // Counter-Wrap emulation
+            value += Math.pow(2, 64);
+        }
+        lastValues.set(i, value);
+        if (!row.getValue(i).isNaN()) {
+            valuesMap.get(ts).set(i, value);
+        }
+    }
+
+    private static List<Double> initializeLastValues(AbstractRRD rrd, long step) {
+        // Initialize Last Values
+        final List<Double> lastValues = new ArrayList<>();
+        for (final AbstractDS ds : rrd.getDataSources()) {
+            final double v = ds.getLastDs() == null ? 0.0 : ds.getLastDs();
+            lastValues.add(v - v % step);
+        }
+        return lastValues;
+    }
+
+    private static void setLastValueForCounters(AbstractRRD rrd, long end, NavigableMap<Long, List<Double>> valuesMap, List<Double> lastValues) {
+        // Set Last-Value for Counters
+        for (int i = 0; i < rrd.getDataSources().size(); i++) {
+            if (rrd.getDataSource(i).isCounter()) {
+                valuesMap.get(end).set(i, lastValues.get(i));
+            }
+        }
     }
 }

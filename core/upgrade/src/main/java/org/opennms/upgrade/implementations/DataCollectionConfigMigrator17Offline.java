@@ -37,8 +37,10 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import org.apache.commons.io.FileUtils;
 import org.opennms.core.utils.ConfigFileConstants;
@@ -47,6 +49,7 @@ import org.opennms.netmgt.config.DefaultDataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.config.datacollection.IncludeCollection;
+import org.opennms.netmgt.config.datacollection.SnmpCollection;
 import org.opennms.upgrade.api.AbstractOnmsUpgrade;
 import org.opennms.upgrade.api.OnmsUpgradeException;
 import org.springframework.core.io.FileSystemResource;
@@ -73,7 +76,7 @@ public class DataCollectionConfigMigrator17Offline extends AbstractOnmsUpgrade {
     private Pattern pattern = Pattern.compile("instance '([^']+)' invalid in mibObj definition for OID '.+' in collection '([^']+)'");
 
     /** The data collection group map. */
-    private Map<File,DatacollectionGroup> dataCollectionGroupMap = new HashMap<File,DatacollectionGroup>();
+    private Map<File,DatacollectionGroup> dataCollectionGroupMap = new HashMap<>();
 
     /**
      * Instantiates a new data collection configuration migrator for OpenNMS 17 offline.
@@ -125,7 +128,7 @@ public class DataCollectionConfigMigrator17Offline extends AbstractOnmsUpgrade {
     @Override
     public void execute() throws OnmsUpgradeException {
         log("Patching %s\n", sourceFile);
-        while (isConfigValid() == false) {
+        while (!isConfigValid()) {
             log("A missing resource-type has been added, trying again\n");
         }
 
@@ -143,15 +146,18 @@ public class DataCollectionConfigMigrator17Offline extends AbstractOnmsUpgrade {
             DefaultDataCollectionConfigDao dao = new DefaultDataCollectionConfigDao();
             dao.setConfigDirectory(configDirectory.getAbsolutePath());
             dao.setConfigResource(new FileSystemResource(sourceFile));
-            dao.setReloadCheckInterval(new Long(0));
+            dao.setReloadCheckInterval(0L);
             dao.afterPropertiesSet();
         } catch (IllegalArgumentException e) {
             log("Found a problem: %s\n", e.getMessage());
             Matcher m = pattern.matcher(e.getMessage());
             if (m.find()) {
                 try {
-                    Iterator<Path> paths = Files.list(configDirectory.toPath()).filter(f -> f.getFileName().toString().toLowerCase().endsWith(".xml")).iterator();
-                    for (; paths.hasNext(); ) {
+                    Iterator<Path> paths;
+                    try (Stream<Path> pathStream = Files.list(configDirectory.toPath())) {
+                        paths = pathStream.filter(f -> f.getFileName().toString().toLowerCase().endsWith(".xml")).iterator();
+                    }
+                    while (paths.hasNext()) {
                         String group = getGroupForResourceType(paths.next().toFile(), m.group(1));
                         if (group != null) {
                             updateDataCollectionConfig(m.group(2), group);
@@ -181,7 +187,8 @@ public class DataCollectionConfigMigrator17Offline extends AbstractOnmsUpgrade {
             log("Adding datacollection-group %s to snmp-collection %s", dataCollectionGroup, snmpCollection);
             IncludeCollection ic = new IncludeCollection();
             ic.setDataCollectionGroup(dataCollectionGroup);
-            config.getSnmpCollections().stream().filter(s -> s.getName().equals(snmpCollection)).findFirst().get().addIncludeCollection(ic);
+            Optional<SnmpCollection> first = config.getSnmpCollections().stream().filter(s -> s.getName().equals(snmpCollection)).findFirst();
+            first.ifPresent(collection -> collection.addIncludeCollection(ic));
             try {
                 JaxbUtils.marshal(config, new FileWriter(sourceFile));
             } catch (IOException e) {

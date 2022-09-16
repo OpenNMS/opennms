@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -110,12 +110,12 @@ public class ContainerChangeSet {
         private void detectChanges(final ImmutableGraphContainer<?> oldGraphContainer, final ImmutableGraphContainer<?> newGraphContainer) {
             // no old container exists, add all graphs
             if (oldGraphContainer == null && newGraphContainer != null) {
-                newGraphContainer.getGraphs().forEach(g -> graphAdded(g));
+                newGraphContainer.getGraphs().forEach(this::graphAdded);
             }
 
             // no new graph container exists, remove all
             if (oldGraphContainer != null && newGraphContainer == null) {
-                oldGraphContainer.getGraphs().forEach(g -> graphRemoved(g));
+                oldGraphContainer.getGraphs().forEach(this::graphRemoved);
             }
 
             // nothing to do if they are the same :)

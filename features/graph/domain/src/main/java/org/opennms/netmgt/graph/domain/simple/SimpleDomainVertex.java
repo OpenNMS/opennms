@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -70,8 +70,8 @@ public final class SimpleDomainVertex extends AbstractDomainVertex {
     public static SimpleDomainVertex from(GenericVertex genericVertex) {
         return new SimpleDomainVertex(genericVertex);
     }
-    
-    public final static class SimpleDomainVertexBuilder extends AbstractDomainVertexBuilder<SimpleDomainVertexBuilder> {
+
+    public static final class SimpleDomainVertexBuilder extends AbstractDomainVertexBuilder<SimpleDomainVertexBuilder> {
                 
         private SimpleDomainVertexBuilder() {}
         

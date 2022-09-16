@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -61,6 +61,12 @@ public class QueryProvider {
      * Subsequent requests should be made to page through the results
      */
     public static final long MAX_BUCKETS = 1000;
+    public static final String FROM_MILLIS = "fromMillis";
+    public static final String TO_MILLIS = "toMillis";
+    public static final String MAX_BUCKETS1 = "maxBuckets";
+    public static final String ID_ONLY = "idOnly";
+    public static final String AFTER_ALARM_WITH_ID = "afterAlarmWithId";
+    public static final String GET_ALARMS_AT_FTL = "get_alarms_at.ftl";
 
     private final Configuration cfg = new Configuration(Configuration.VERSION_2_3_23);
 
@@ -88,63 +94,63 @@ public class QueryProvider {
     public String getAlarmByDbIdAt(long id, TimeRange timeRange) {
         return render("get_alarm_at.ftl", ImmutableMap.builder()
                 .put("alarmId", id)
-                .put("fromMillis", timeRange.getStart())
-                .put("toMillis", timeRange.getEnd())
+                .put(FROM_MILLIS, timeRange.getStart())
+                .put(TO_MILLIS, timeRange.getEnd())
                 .build());
     }
 
     public String getAlarmByReductionKeyAt(String reductionKey, TimeRange timeRange) {
         return render("get_alarm_at.ftl", ImmutableMap.builder()
                 .put("reductionKey", reductionKey)
-                .put("fromMillis", timeRange.getStart())
-                .put("toMillis", timeRange.getEnd())
+                .put(FROM_MILLIS, timeRange.getStart())
+                .put(TO_MILLIS, timeRange.getEnd())
                 .build());
     }
 
     public String getActiveAlarmsAt(TimeRange timeRange, Integer afterAlarmWithId) {
         final ImmutableMap.Builder<Object,Object> builder = ImmutableMap.builder()
-                .put("fromMillis", timeRange.getStart())
-                .put("toMillis", timeRange.getEnd())
-                .put("maxBuckets", MAX_BUCKETS)
-                .put("idOnly", false);
+                .put(FROM_MILLIS, timeRange.getStart())
+                .put(TO_MILLIS, timeRange.getEnd())
+                .put(MAX_BUCKETS1, MAX_BUCKETS)
+                .put(ID_ONLY, false);
         if (afterAlarmWithId != null) {
-            builder.put("afterAlarmWithId", afterAlarmWithId);
+            builder.put(AFTER_ALARM_WITH_ID, afterAlarmWithId);
         }
-        return render("get_alarms_at.ftl", builder.build());
+        return render(GET_ALARMS_AT_FTL, builder.build());
     }
 
     public String getActiveAlarmIdsAt(TimeRange timeRange, Integer afterAlarmWithId) {
         final ImmutableMap.Builder<Object,Object> builder = ImmutableMap.builder()
-                .put("fromMillis", timeRange.getStart())
-                .put("toMillis", timeRange.getEnd())
-                .put("maxBuckets", MAX_BUCKETS)
-                .put("idOnly", true);
+                .put(FROM_MILLIS, timeRange.getStart())
+                .put(TO_MILLIS, timeRange.getEnd())
+                .put(MAX_BUCKETS1, MAX_BUCKETS)
+                .put(ID_ONLY, true);
         if (afterAlarmWithId != null) {
-            builder.put("afterAlarmWithId", afterAlarmWithId);
+            builder.put(AFTER_ALARM_WITH_ID, afterAlarmWithId);
         }
-        return render("get_alarms_at.ftl", builder.build());
+        return render(GET_ALARMS_AT_FTL, builder.build());
     }
 
     public String getActiveAlarmIdsAtTimeAndExclude(TimeRange timeRange, Set<Integer> alarmIdsToKeep, Integer afterAlarmWithId) {
         final ImmutableMap.Builder<Object,Object> builder = ImmutableMap.builder()
-                .put("fromMillis", timeRange.getStart())
-                .put("toMillis", timeRange.getEnd())
-                .put("maxBuckets", MAX_BUCKETS)
+                .put(FROM_MILLIS, timeRange.getStart())
+                .put(TO_MILLIS, timeRange.getEnd())
+                .put(MAX_BUCKETS1, MAX_BUCKETS)
                 .put("alarmIdsToExclude", alarmIdsToKeep)
-                .put("idOnly", true);
+                .put(ID_ONLY, true);
         if (afterAlarmWithId != null) {
-            builder.put("afterAlarmWithId", afterAlarmWithId);
+            builder.put(AFTER_ALARM_WITH_ID, afterAlarmWithId);
         }
-        return render("get_alarms_at.ftl", builder.build());
+        return render(GET_ALARMS_AT_FTL, builder.build());
     }
 
     public String getAllAlarms(TimeRange timeRange, Integer afterAlarmWithId) {
         ImmutableMap.Builder<Object,Object> builder = ImmutableMap.builder()
-                .put("fromMillis", timeRange.getStart())
-                .put("toMillis", timeRange.getEnd())
-                .put("maxBuckets", MAX_BUCKETS);
+                .put(FROM_MILLIS, timeRange.getStart())
+                .put(TO_MILLIS, timeRange.getEnd())
+                .put(MAX_BUCKETS1, MAX_BUCKETS);
         if (afterAlarmWithId != null) {
-            builder.put("afterAlarmWithId", afterAlarmWithId);
+            builder.put(AFTER_ALARM_WITH_ID, afterAlarmWithId);
         }
         return render("get_all_alarms.ftl", builder.build());
     }
@@ -156,7 +162,7 @@ public class QueryProvider {
             template.process(context, writer);
             return writer.toString();
         } catch (IOException|TemplateException e) {
-            throw new RuntimeException(e);
+            throw new ElasticException(e);
         }
     }
 

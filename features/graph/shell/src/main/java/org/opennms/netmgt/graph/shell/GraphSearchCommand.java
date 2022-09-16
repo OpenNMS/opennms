@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -49,6 +49,7 @@ import org.opennms.netmgt.graph.shell.completer.SuggestionCompleter;
 
 @Service
 @Command(scope = "opennms", name = "graph-search", description="Searches vertices in a given namespace (graph)")
+@SuppressWarnings("java:S106")
 public class GraphSearchCommand implements Action {
 
     @Reference
@@ -77,7 +78,7 @@ public class GraphSearchCommand implements Action {
             // hack to prevent StringIndexOutOfBoundsException in Karaf Code:
             final String searchString = input.replace("_", " ");
             final List<SearchSuggestion> suggestions = graphSearchService.getSuggestions(namespace, searchString);
-            if (suggestions.size() > 0) {
+            if (!suggestions.isEmpty()) {
                 final SearchSuggestion suggestion = suggestions.get(0);
                 final SearchCriteria searchCriteria = new SearchCriteria(
                         suggestion.getProvider(),

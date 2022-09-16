@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,9 +28,14 @@
 
 package org.opennms.netmgt.graph.api.focus;
 
-public interface FocusStrategy {
-    String ALL = "ALL";
-    String EMPTY = "EMPTY";
-    String FIRST = "FIRST";
-    String SELECTION = "SELECTION";
+public class FocusStrategy {
+
+    private FocusStrategy() {
+        throw new IllegalStateException("Utility class");
+    }
+
+    public static final String ALL = "ALL";
+    public static final String EMPTY = "EMPTY";
+    public static final String FIRST = "FIRST";
+    public static final String SELECTION = "SELECTION";
 }

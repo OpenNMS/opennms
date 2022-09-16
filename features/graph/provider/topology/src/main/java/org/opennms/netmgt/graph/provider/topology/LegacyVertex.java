@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2020-2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2020-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -59,7 +59,7 @@ public class LegacyVertex extends AbstractVertex implements LevelAware {
         // We have 3 ways to determine the nodeId, lets try all - last one wins.
         // nodeInfo is produced by the NodeEnrichment
         Optional.ofNullable(genericVertex.getProperty(GenericProperties.NODE_INFO))
-                .map(o -> (NodeInfo)o)
+                .map(NodeInfo.class::cast)
                 .map(NodeInfo::getId)
                 .ifPresent(this::setNodeID);
         if (genericVertex.getProperty(GenericProperties.NODE_ID) != null) {

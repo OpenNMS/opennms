@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -65,6 +65,7 @@ public class GraphMLContainerProviderServiceFactory implements ManagedServiceFac
     }
 
     @Override
+    @SuppressWarnings("java:S1149")
     public void updated(String pid, @SuppressWarnings("rawtypes") Dictionary properties) {
         LOG.debug("updated(String, Dictionary) invoked");
         if (!containerRegistrations.containsKey(pid)) {
@@ -81,7 +82,7 @@ public class GraphMLContainerProviderServiceFactory implements ManagedServiceFac
                 LOG.error("An error occurred while loading GraphMLContainerProvider from file {}. Ignoring...", location, e);
             }
         } else {
-            LOG.warn("Service with pid '{}' updated. Updating is not supported. Ignoring...");
+            LOG.warn("Service with pid '{}' updated. Updating is not supported. Ignoring...", pid);
         }
     }
 

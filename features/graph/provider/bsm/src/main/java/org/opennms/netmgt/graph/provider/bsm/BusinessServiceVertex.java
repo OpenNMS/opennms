@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -49,6 +49,8 @@ import com.google.common.collect.ImmutableSet;
 
 public final class BusinessServiceVertex extends AbstractDomainVertex {
 
+    public static final String CANNOT_BE_NULL = "%s cannot be null";
+
     enum Type {
         BusinessService,
         IpService,
@@ -56,22 +58,37 @@ public final class BusinessServiceVertex extends AbstractDomainVertex {
         Application
     }
 
-    interface Properties {
-        String LEVEL = "level";
-        String TYPE = "type";
-        String IS_LEAF = "isLeaf";
-        String REDUCTION_KEYS = "reductionKeys";
+    static class Properties {
 
-        interface Application {
-            String id = "applicationId";
+        public static final String UTILITY_CLASS = "Utility class";
+
+        private Properties() {
+            throw new IllegalStateException(UTILITY_CLASS);
+        }
+        public static final String LEVEL = "level";
+        public static final String TYPE = "type";
+        public static final String IS_LEAF = "isLeaf";
+        public static final String REDUCTION_KEYS = "reductionKeys";
+
+        static class Application {
+            private Application() {
+                throw new IllegalStateException(UTILITY_CLASS);
+            }
+            public static final String id = "applicationId";
         }
 
-        interface BusinessService {
-            String id = "businessServiceId";
+        static class BusinessService {
+            private BusinessService() {
+                throw new IllegalStateException(UTILITY_CLASS);
+            }
+            public static final String id = "businessServiceId";
         }
 
-        interface IpService {
-            String id = "ipServiceId";
+        static class IpService {
+            private IpService() {
+                throw new IllegalStateException(UTILITY_CLASS);
+            }
+            public static final String id = "ipServiceId";
         }
     }
 
@@ -91,13 +108,13 @@ public final class BusinessServiceVertex extends AbstractDomainVertex {
         // Specific checks
         final Type type = genericVertex.getProperty(Properties.TYPE);
         if (Type.Application == type) {
-            Objects.requireNonNull(delegate.getProperty(Properties.Application.id), String.format("%s cannot be null", Properties.Application.id));
+            Objects.requireNonNull(delegate.getProperty(Properties.Application.id), String.format(CANNOT_BE_NULL, Properties.Application.id));
         } else if (Type.BusinessService == type) {
-            Objects.requireNonNull(delegate.getProperty(Properties.BusinessService.id), String.format("%s cannot be null", Properties.BusinessService.id));
+            Objects.requireNonNull(delegate.getProperty(Properties.BusinessService.id), String.format(CANNOT_BE_NULL, Properties.BusinessService.id));
         } else if (Type.IpService == type) {
-            Objects.requireNonNull(delegate.getProperty(Properties.IpService.id), String.format("%s cannot be null", Properties.IpService.id));
+            Objects.requireNonNull(delegate.getProperty(Properties.IpService.id), String.format(CANNOT_BE_NULL, Properties.IpService.id));
         } else if (Type.ReductionKey == type) {
-            Objects.requireNonNull(delegate.getProperty(Properties.REDUCTION_KEYS), String.format("%s cannot be null", Properties.REDUCTION_KEYS));
+            Objects.requireNonNull(delegate.getProperty(Properties.REDUCTION_KEYS), String.format(CANNOT_BE_NULL, Properties.REDUCTION_KEYS));
         } else {
             throw new IllegalArgumentException("Unknown type of BusinessServiceVertex: "  + type);
         }
@@ -119,7 +136,7 @@ public final class BusinessServiceVertex extends AbstractDomainVertex {
         return this.delegate.getProperty(Properties.REDUCTION_KEYS);
     }
 
-    public final static BusinessServiceVertex from(GenericVertex genericVertex) {
+    public static final BusinessServiceVertex from(GenericVertex genericVertex) {
         return new BusinessServiceVertex(genericVertex);
     }
 
@@ -127,7 +144,7 @@ public final class BusinessServiceVertex extends AbstractDomainVertex {
         return new BusinessServiceVertexBuilder();
     }
 
-    public final static class BusinessServiceVertexBuilder extends AbstractDomainVertexBuilder {
+    public static final class BusinessServiceVertexBuilder extends AbstractDomainVertexBuilder<BusinessServiceVertexBuilder> {
         
         private BusinessServiceVertexBuilder() {}
 
@@ -186,7 +203,7 @@ public final class BusinessServiceVertex extends AbstractDomainVertex {
             type(Type.BusinessService);
             label(businessService.getName());
             isLeaf(false);
-            reductionKeys(ImmutableSet.of());
+            reductionKeys(Set.of());
             property("reduceFunction", businessService.getReduceFunction());
             property(Properties.BusinessService.id, businessService.getId());
             return this;
@@ -212,7 +229,7 @@ public final class BusinessServiceVertex extends AbstractDomainVertex {
             type(Type.ReductionKey);
             label(getLabelFromReductionKey(reductionKey));
             isLeaf(true);
-            reductionKeys(ImmutableSet.of(reductionKey));
+            reductionKeys(Set.of(reductionKey));
             return this;
         }
 

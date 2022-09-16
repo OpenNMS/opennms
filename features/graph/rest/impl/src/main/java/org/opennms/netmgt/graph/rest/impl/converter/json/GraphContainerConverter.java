@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -65,7 +65,7 @@ public class GraphContainerConverter implements Converter<ImmutableGraphContaine
         final JSONObject convertedProperties = new JsonPropertyConverterService(bundleContext).convert(properties);
         convertedProperties.toMap().forEach(jsonContainer::put);
 
-        genericGraphContainer.getProperties().forEach((key, value) -> jsonContainer.put(key, value));
+        genericGraphContainer.getProperties().forEach(jsonContainer::put);
         input.getGraphs()
                 .stream()
                 .sorted(Comparator.comparing(GraphInfo::getNamespace))
