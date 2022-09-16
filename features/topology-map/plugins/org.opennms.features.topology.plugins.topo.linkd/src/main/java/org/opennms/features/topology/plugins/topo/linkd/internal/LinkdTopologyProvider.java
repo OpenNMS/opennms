@@ -74,6 +74,9 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
             if (namespace.equalsIgnoreCase(ProtocolSupported.USERDEFINED.name())) {
                 protocolSupportedSet.add(ProtocolSupported.USERDEFINED);
             }
+            if (namespace.equalsIgnoreCase(ProtocolSupported.OSPFAREA.name())) {
+                protocolSupportedSet.add(ProtocolSupported.OSPFAREA);
+            }
         }
 
         return protocolSupportedSet;
@@ -84,6 +87,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         LOG.debug("Called constructor 1 args");
         m_linkdTopologyFactory = Objects.requireNonNull(linkdTopologyFactory);
         m_supportedSet = EnumSet.allOf(ProtocolSupported.class);
+        m_supportedSet.remove(ProtocolSupported.OSPFAREA);
         linkdTopologyFactory.setDelegate(this);
         LOG.info("Created instance namespace {}, protocols {}", TOPOLOGY_NAMESPACE_LINKD, m_supportedSet);
     }
