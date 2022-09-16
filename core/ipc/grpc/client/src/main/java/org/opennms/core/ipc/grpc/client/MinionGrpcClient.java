@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -62,8 +62,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
-
-import javax.net.ssl.SSLException;
 
 import org.opennms.core.ipc.grpc.common.ConfigUtils;
 import org.opennms.core.ipc.grpc.common.OpenNMSIpcGrpc;
@@ -187,7 +185,7 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
 
     }
 
-    private SslContextBuilder buildSslContext() throws SSLException {
+    private SslContextBuilder buildSslContext() {
         SslContextBuilder builder = GrpcSslContexts.forClient();
         String clientCertChainFilePath = properties.getProperty(CLIENT_CERTIFICATE_FILE_PATH);
         String clientPrivateKeyFilePath = properties.getProperty(CLIENT_PRIVATE_KEY_FILE_PATH);
@@ -224,7 +222,7 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
 
 
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public void bind(RpcModule module) throws Exception {
+    public void bind(RpcModule module) {
         if (module != null) {
             final RpcModule<RpcRequest, RpcResponse> rpcModule = (RpcModule<RpcRequest, RpcResponse>) module;
             if (registerdModules.containsKey(rpcModule.getId())) {
@@ -237,7 +235,7 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public void unbind(RpcModule module) throws Exception {
+    public void unbind(RpcModule module) {
         if (module != null) {
             final RpcModule<RpcRequest, RpcResponse> rpcModule = (RpcModule<RpcRequest, RpcResponse>) module;
             registerdModules.remove(rpcModule.getId());

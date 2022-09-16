@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -51,14 +51,14 @@ public class IndexDao {
      * <p>reset</p>
      */
     public void reset() {
-        m_nameMap = new LinkedHashMap<String, Index>();
-        m_tableMap = new HashMap<String, List<Index>>();
+        m_nameMap = new LinkedHashMap<>();
+        m_tableMap = new HashMap<>();
     }
     
     /**
      * <p>add</p>
      *
-     * @param i a {@link org.opennms.netmgt.dao.db.Index} object.
+     * @param i a {@link org.opennms.core.db.install.Index} object.
      */
     public void add(Index i) {
         String lowerName = i.getName().toLowerCase();
@@ -75,7 +75,7 @@ public class IndexDao {
     
     private List<Index> getIndexesForTableCreateIfEmpty(String table) {
         if (!m_tableMap.containsKey(table)) {
-            m_tableMap.put(table, new LinkedList<Index>());
+            m_tableMap.put(table, new LinkedList<>());
         }
         return m_tableMap.get(table);
     }
@@ -89,7 +89,7 @@ public class IndexDao {
     public List<Index> getIndexesForTable(String table) {
         String lowerName = table.toLowerCase();
         if (!m_tableMap.containsKey(lowerName)) {
-            return new LinkedList<Index>();
+            return new LinkedList<>();
         }
         return m_tableMap.get(lowerName);
     }

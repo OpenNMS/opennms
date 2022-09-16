@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2004-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2004-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -44,7 +44,7 @@ public class ColumnChange {
     /**
      * <p>getColumn</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.db.Column} object.
+     * @return a {@link org.opennms.core.db.install.Column} object.
      */
     public Column getColumn() {
         return m_column;
@@ -53,7 +53,7 @@ public class ColumnChange {
     /**
      * <p>setColumn</p>
      *
-     * @param column a {@link org.opennms.netmgt.dao.db.Column} object.
+     * @param column a {@link org.opennms.core.db.install.Column column} object.
      */
     public void setColumn(Column column) {
         m_column = column;
@@ -62,7 +62,7 @@ public class ColumnChange {
     /**
      * <p>getColumnReplacement</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.db.ColumnChangeReplacement} object.
+     * @return a {@link org.opennms.core.db.install.ColumnChangeReplacement} object.
      */
     public ColumnChangeReplacement getColumnReplacement() {
         return m_columnReplacement;
@@ -80,7 +80,7 @@ public class ColumnChange {
     /**
      * <p>setColumnReplacement</p>
      *
-     * @param columnReplacement a {@link org.opennms.netmgt.dao.db.ColumnChangeReplacement} object.
+     * @param columnReplacement a {@link org.opennms.core.db.install.ColumnChangeReplacement} object.
      */
     public void setColumnReplacement(ColumnChangeReplacement columnReplacement) {
         m_columnReplacement = columnReplacement;

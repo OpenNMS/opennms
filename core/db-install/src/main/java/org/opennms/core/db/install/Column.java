@@ -49,7 +49,7 @@ public class Column {
     /** {@inheritDoc} */
     @Override
     public boolean equals(final Object obj) {
-    	if (obj == null || !(obj instanceof Column)) return false;
+    	if (!(obj instanceof Column)) return false;
     	final Column other = (Column) obj;
 
 		return new EqualsBuilder()
@@ -236,22 +236,22 @@ public class Column {
             setDefaultValue(m.group(2));
         }
 
-        String col_name = null;
-        String col_type;
+        String columnName = null;
+        String columnType;
 
         // m =
         // Pattern.compile("((?:['\"])?\\S+?(?:['\"])?)\\s+((?:['\"])?.+?(?:['\"])?)").matcher(column);
         m = Pattern.compile("(\\S+)\\s+(.+)").matcher(column);
         if (m.matches()) {
-            col_name = m.group(1).replaceAll("^['\"]", "").replaceAll("['\"]$", "");
-            col_type = m.group(2).replaceAll("^['\"]", "").replaceAll("['\"]$", "");
+            columnName = m.group(1).replaceAll("^['\"]", "").replaceAll("['\"]$", "");
+            columnType = m.group(2).replaceAll("^['\"]", "").replaceAll("['\"]$", "");
         } else {
             throw new Exception("cannot parse column: " + column);
         }
 
-        this.setName(col_name);
+        this.setName(columnName);
 
-        parseColumnType(col_type.trim().toLowerCase());
+        parseColumnType(columnType.trim().toLowerCase());
     }
 
     /**
@@ -261,8 +261,10 @@ public class Column {
      * @throws java.lang.Exception if any.
      */
     public void parseColumnType(String columnType) throws Exception {
-        int start, end;
-        String type, size = null;
+        int start;
+        int end;
+        String type;
+        String size = null;
 
         start = columnType.indexOf('(');
         end = columnType.indexOf(')');

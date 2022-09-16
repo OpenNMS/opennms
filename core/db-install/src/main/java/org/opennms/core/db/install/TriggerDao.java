@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -49,14 +49,14 @@ public class TriggerDao {
      * <p>reset</p>
      */
     public void reset() {
-        m_nameMap = new LinkedHashMap<String, Trigger>();
-        m_tableMap = new HashMap<String, List<Trigger>>();
+        m_nameMap = new LinkedHashMap<>();
+        m_tableMap = new HashMap<>();
     }
 
     /**
      * <p>add</p>
      *
-     * @param t a {@link org.opennms.netmgt.dao.db.Trigger} object.
+     * @param t a {@link org.opennms.core.db.install.Trigger} object.
      */
     public void add(Trigger t) {
         String lowerName = t.getName().toLowerCase();
@@ -73,7 +73,7 @@ public class TriggerDao {
     
     private List<Trigger> getTriggersForTableCreateIfEmpty(String table) {
         if (!m_tableMap.containsKey(table)) {
-            m_tableMap.put(table, new LinkedList<Trigger>());
+            m_tableMap.put(table, new LinkedList<>());
         }
         return m_tableMap.get(table);
     }
@@ -87,7 +87,7 @@ public class TriggerDao {
     public List<Trigger> getTriggersForTable(String table) {
         String lowerName = table.toLowerCase();
         if (!m_tableMap.containsKey(lowerName)) {
-            return new LinkedList<Trigger>();
+            return new LinkedList<>();
         }
         return m_tableMap.get(lowerName);
     }
