@@ -148,8 +148,6 @@ public class ThresholdingIT {
     @Autowired
     private SessionUtils sessionUtils;
 
-    private List<org.opennms.netmgt.flows.classification.persistence.api.Rule> rules;
-
     private ClassificationService classificationService;
 
     private FlowThresholdingImpl thresholding;
@@ -174,15 +172,9 @@ public class ThresholdingIT {
 
         this.threshdDao.rebuildPackageIpListMap();
 
-        final var filterWatcher = new DefaultFilterWatcher();
-        filterWatcher.setFilterDao(this.filterDao);
-        filterWatcher.setSessionUtils(this.sessionUtils);
-        filterWatcher.afterPropertiesSet();
-
         this.classificationService = new DefaultClassificationService(this.ruleDao,
                                                                       this.groupDao,
                                                                       this.filterDao,
-                                                                      filterWatcher,
                                                                       this.sessionUtils);
 
         final var collectionAgentFactory = new DefaultCollectionAgentFactory();
