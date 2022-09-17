@@ -64,8 +64,7 @@ import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.filter.api.FilterDao;
-import org.opennms.netmgt.flows.classification.ClassificationEngine;
-import org.opennms.netmgt.flows.classification.dto.RuleDTO;
+import org.opennms.netmgt.flows.classification.persistence.api.Rule;
 import org.opennms.netmgt.flows.classification.service.ClassificationService;
 import org.opennms.netmgt.flows.processing.ProcessingOptions;
 import org.opennms.netmgt.flows.processing.enrichment.EnrichedFlow;
@@ -110,7 +109,7 @@ public class FlowThresholdingImpl implements Closeable {
 
     private Timer timer;
 
-    private List<RuleDTO> classificationRuleList;
+    private List<Rule> classificationRuleList;
 
     private final ReentrantReadWriteLock classificationRuleListReadWriteLock = new ReentrantReadWriteLock();
 
@@ -135,7 +134,7 @@ public class FlowThresholdingImpl implements Closeable {
         this.ruleListener = classificationService.listen(this::classificationRulesChanged);
     }
 
-    private void classificationRulesChanged(final List<RuleDTO> classificationRuleList) {
+    private void classificationRulesChanged(final List<Rule> classificationRuleList) {
         final Lock writeLock = classificationRuleListReadWriteLock.writeLock();
         writeLock.lock();
         try {
@@ -293,8 +292,8 @@ public class FlowThresholdingImpl implements Closeable {
             }
 
             return classificationRuleList.stream()
-                    .filter(r -> r.getExporters() == null || r.getExporters().contains(exporterIpAddress))
-                    .map(RuleDTO::getName)
+                    .filter(r -> r.getExporterFilter() == null || this.filterDao.isValid(exporterIpAddress, r.getExporterFilter()))
+                    .map(Rule::getName)
                     .collect(Collectors.toSet());
         } finally {
             readLock.unlock();
