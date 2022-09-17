@@ -303,14 +303,6 @@ public class ThresholdingIT {
             }
         }
 
-        this.rules = Lists.newArrayList(
-                new RuleBuilder().withName("APP1").withDstPort("1").withPosition(1).build(),
-                new RuleBuilder().withName("APP2").withDstPort("2").withPosition(1).build(),
-                new RuleBuilder().withName("APP3").withDstPort("3").withPosition(1).build()
-        );
-
-        // TODO fooker: load the rules here?
-//        this.thresholding.classificationRulesReloaded(this.rules);
         this.thresholding.runTimerTask();
 
         for(FlowThresholdingImpl.Session session : this.thresholding.getSessions()) {
@@ -322,12 +314,6 @@ public class ThresholdingIT {
             }
         }
 
-        this.rules = Lists.newArrayList(
-                new RuleBuilder().withName("APP1").withDstPort("1").withPosition(1).build()
-        );
-
-        // TODO fooker: load the rules here?
-//        this.thresholding.classificationRulesReloaded(this.rules);
         this.thresholding.runTimerTask();
 
         for(FlowThresholdingImpl.Session session : this.thresholding.getSessions()) {
