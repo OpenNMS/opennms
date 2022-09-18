@@ -211,6 +211,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.opennms.features.flows.classification.engine</groupId>
+            <artifactId>org.opennms.features.flows.classification.engine.twin</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.opennms.core.ipc.common</groupId>
             <artifactId>org.opennms.core.ipc.common.kafka-shell</artifactId>
             <version>${project.version}</version>
