@@ -16,17 +16,28 @@
     <reference id="classificationRuleDao" interface="org.opennms.netmgt.flows.classification.persistence.api.ClassificationRuleDao" availability="mandatory"/>
     <reference id="classificationGroupDao" interface="org.opennms.netmgt.flows.classification.persistence.api.ClassificationGroupDao" availability="mandatory"/>
     <reference id="filterDao" interface="org.opennms.netmgt.filter.api.FilterDao" availability="mandatory"/>
+    <reference id="filterWatcher" interface="org.opennms.netmgt.dao.api.FilterWatcher" availability="mandatory"/>
     <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils" availability="mandatory"/>
 
-    <service interface="org.opennms.netmgt.flows.classification.service.ClassificationService">
-        <bean class="org.opennms.netmgt.flows.classification.service.internal.DefaultClassificationService">
-            <argument ref="classificationRuleDao"/>
-            <argument ref="classificationGroupDao"/>
-            <argument ref="filterDao"/>
-            <argument ref="sessionUtils"/>
+    <reference id="reloadingClassificationEngine" interface="org.opennms.netmgt.flows.classification.ReloadingClassificationEngine" />
 
-            <property name="reloadInterval" value="${engine.reloadInterval}" />
-        </bean>
-    </service>
+    <bean id="classificationService" class="org.opennms.netmgt.flows.classification.service.internal.DefaultClassificationService" destroy-method="close">
+        <argument ref="classificationRuleDao"/>
+        <argument ref="classificationGroupDao"/>
+        <argument ref="filterDao"/>
+        <argument ref="filterWatcher"/>
+        <argument ref="sessionUtils"/>
+
+        <property name="reloadInterval" value="${engine.reloadInterval}" />
+    </bean>
+
+    <service ref="classificationService" interface="org.opennms.netmgt.flows.classification.service.ClassificationService" />
+
+    <bean id="classificationEngine" class="org.opennms.netmgt.flows.classification.service.internal.ListeningClassificationEngine" destroy-method="close">
+        <argument ref="reloadingClassificationEngine" />
+        <argument ref="classificationService" />
+    </bean>
+
+    <service ref="classificationEngine" interface="org.opennms.netmgt.flows.classification.ClassificationEngine" />
 
 </blueprint>

@@ -1182,7 +1182,7 @@
         <bundle>mvn:org.opennms.features.flows.classification.engine/org.opennms.features.flows.classification.engine.impl/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.flows.classification.service/org.opennms.features.flows.classification.service.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.flows.classification.service/org.opennms.features.flows.classification.service.impl/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.flows.classification.service/org.opennms.features.flows.classification.service.publisher/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.flows.classification.service/org.opennms.features.flows.classification.service.twin/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.flows.rest/org.opennms.features.flows.rest.api/${project.version}</bundle>
         <bundle>mvn:org.opennms/opennms-web-api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.flows.rest/org.opennms.features.flows.rest.impl/${project.version}</bundle>

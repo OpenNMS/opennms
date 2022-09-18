@@ -1,0 +1,12 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 https://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+
+    <reference id="classificationService" interface="org.opennms.netmgt.flows.classification.service.ClassificationService" availability="mandatory"/>
+    <reference id="twinPublisher" interface="org.opennms.core.ipc.twin.api.TwinPublisher" availability="mandatory"/>
+
+    <bean class="org.opennms.netmgt.flows.classification.service.publisher.impl.ClassificationRulePublisher" destroy-method="close">
+        <argument ref="classificationService"/>
+        <argument ref="twinPublisher"/>
+    </bean>
+
+</blueprint>

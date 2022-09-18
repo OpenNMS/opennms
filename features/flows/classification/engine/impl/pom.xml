@@ -39,11 +39,6 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms.core.ipc.twin</groupId>
-      <artifactId>org.opennms.core.ipc.twin.api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-csv</artifactId>
       <version>${commonsCsvVersion}</version>

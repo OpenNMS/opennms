@@ -43,6 +43,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.SessionUtils;
+import org.opennms.netmgt.dao.support.DefaultFilterWatcher;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.flows.classification.persistence.api.ClassificationGroupDao;
 import org.opennms.netmgt.flows.classification.persistence.api.ClassificationRuleDao;
@@ -57,7 +58,6 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.transaction.AfterTransaction;
-import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -96,17 +96,20 @@ public class DefaultClassificationServiceIT {
     private Group userGroupDb; // the user group that is attached to hibernate
     private Group userGroupCsv; // the user group that is not attached to hibernate
 
-    @BeforeTransaction
-    public void setUpDatabase() {
-        this.databasePopulator.populateDatabase();
-    }
-
     @Before
     public void setUp() throws Exception {
+        this.databasePopulator.populateDatabase();
+
+        final var filterWatcher = new DefaultFilterWatcher();
+        filterWatcher.setFilterDao(this.filterDao);
+        filterWatcher.setSessionUtils(this.sessionUtils);
+        filterWatcher.afterPropertiesSet();
+
         classificationService = new DefaultClassificationService(
                 ruleDao,
                 groupDao,
                 filterDao,
+                filterWatcher,
                 sessionUtils);
         assertThat("The groups should be pre-populated from liquibase", groupDao.countAll(), is(2));
         assertTrue("The rules should be pre-populated from liquibase", ruleDao.countAll() > 0);

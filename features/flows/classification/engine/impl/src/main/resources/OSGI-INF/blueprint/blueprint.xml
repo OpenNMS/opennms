@@ -6,8 +6,6 @@
 		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0
 		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd">
 
-    <reference id="twinSubscriber" interface="org.opennms.core.ipc.twin.api.TwinSubscriber" />
-
     <!-- Classification Engine -->
     <bean id="defaultClassificationEngine" class="org.opennms.netmgt.flows.classification.internal.DefaultClassificationEngine" />
     <bean id="timingClassificationEngine" class="org.opennms.netmgt.flows.classification.internal.TimingClassificationEngine">
@@ -16,10 +14,6 @@
     </bean>
     <bean id="asyncReloadingClassificationEngine" class="org.opennms.netmgt.flows.classification.internal.AsyncReloadingClassificationEngine">
         <argument ref="timingClassificationEngine" />
-    </bean>
-    <bean id="twinClassificationEngine" class="org.opennms.netmgt.flows.classification.internal.TwinClassificationEngine">
-        <argument ref="asyncReloadingClassificationEngine" />
-        <argument ref="twinSubscriber" />
     </bean>
 
     <!-- Metrics -->
@@ -38,5 +32,5 @@
           destroy-method="stop" />
 
     <!-- Expose Services -->
-    <service interface="org.opennms.netmgt.flows.classification.ClassificationEngine" ref="twinClassificationEngine"/>
+    <service interface="org.opennms.netmgt.flows.classification.ReloadingClassificationEngine" ref="asyncReloadingClassificationEngine"/>
 </blueprint>

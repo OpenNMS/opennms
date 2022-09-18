@@ -48,9 +48,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.opennms.core.ipc.twin.api.TwinPublisher;
-import org.opennms.core.ipc.twin.api.TwinSubscriber;
-import org.opennms.core.ipc.twin.memory.MemoryTwinPublisher;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
@@ -61,7 +58,6 @@ import org.opennms.netmgt.collection.core.DefaultCollectionAgentFactory;
 import org.opennms.netmgt.config.dao.thresholding.api.OverrideableThreshdDao;
 import org.opennms.netmgt.config.dao.thresholding.api.OverrideableThresholdingDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
-import org.opennms.netmgt.dao.api.FilterWatcher;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.dao.support.DefaultFilterWatcher;
@@ -70,7 +66,6 @@ import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.integration.api.v1.flows.Flow;
 import org.opennms.netmgt.flows.classification.persistence.api.ClassificationGroupDao;
 import org.opennms.netmgt.flows.classification.persistence.api.ClassificationRuleDao;
-import org.opennms.netmgt.flows.classification.persistence.api.Group;
 import org.opennms.netmgt.flows.classification.persistence.api.Groups;
 import org.opennms.netmgt.flows.classification.service.ClassificationService;
 import org.opennms.netmgt.flows.classification.service.internal.DefaultClassificationService;
@@ -87,7 +82,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.support.TransactionTemplate;
-import com.google.common.collect.Lists;
 
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -172,9 +166,15 @@ public class ThresholdingIT {
 
         this.threshdDao.rebuildPackageIpListMap();
 
+        final var filterWatcher = new DefaultFilterWatcher();
+        filterWatcher.setFilterDao(this.filterDao);
+        filterWatcher.setSessionUtils(this.sessionUtils);
+        filterWatcher.afterPropertiesSet();
+
         this.classificationService = new DefaultClassificationService(this.ruleDao,
                                                                       this.groupDao,
                                                                       this.filterDao,
+                                                                      filterWatcher,
                                                                       this.sessionUtils);
 
         final var collectionAgentFactory = new DefaultCollectionAgentFactory();

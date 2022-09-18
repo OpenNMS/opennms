@@ -13,5 +13,6 @@
   <modules>
     <module>api</module>
     <module>impl</module>
+    <module>twin</module>
   </modules>
 </project>

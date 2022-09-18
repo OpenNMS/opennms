@@ -38,13 +38,13 @@ import org.junit.Test;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.flows.classification.ClassificationRequest;
 import org.opennms.netmgt.flows.classification.IpAddr;
+import org.opennms.netmgt.flows.classification.ReloadingClassificationEngine;
 import org.opennms.netmgt.flows.classification.dto.RuleDTO;
 import org.opennms.netmgt.flows.classification.internal.value.IpRange;
 import org.opennms.netmgt.flows.classification.persistence.api.Protocol;
 import org.opennms.netmgt.flows.classification.persistence.api.ProtocolType;
 import org.opennms.netmgt.flows.classification.persistence.api.Protocols;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
-import org.opennms.netmgt.flows.classification.persistence.api.RuleBuilder;
 
 import com.google.common.collect.Lists;
 

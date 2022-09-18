@@ -49,16 +49,10 @@ import org.opennms.netmgt.dao.mock.MockInterfaceToNodeCache;
 import org.opennms.netmgt.dao.mock.MockIpInterfaceDao;
 import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.dao.mock.MockSessionUtils;
-import org.opennms.netmgt.flows.classification.ClassificationEngine;
-import org.opennms.netmgt.flows.classification.dto.RuleDTO;
-import org.opennms.netmgt.flows.classification.internal.DefaultClassificationEngine;
-import org.opennms.netmgt.flows.classification.internal.ReloadingClassificationEngine;
-import org.opennms.netmgt.flows.classification.persistence.api.RuleBuilder;
 import org.opennms.netmgt.flows.processing.impl.DocumentEnricherImpl;
 import org.opennms.netmgt.flows.processing.impl.DocumentMangler;
 
 import com.codahale.metrics.MetricRegistry;
-import com.google.common.collect.Lists;
 
 public class MockDocumentEnricherFactory {
 

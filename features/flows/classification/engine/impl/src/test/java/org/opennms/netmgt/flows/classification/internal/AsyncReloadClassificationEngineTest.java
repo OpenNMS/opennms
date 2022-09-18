@@ -34,15 +34,13 @@ import static org.hamcrest.Matchers.is;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
-import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.flows.classification.ClassificationRequest;
+import org.opennms.netmgt.flows.classification.ReloadingClassificationEngine;
 import org.opennms.netmgt.flows.classification.dto.RuleDTO;
-import org.opennms.netmgt.flows.classification.persistence.api.Rule;
 
 public class AsyncReloadClassificationEngineTest {
 

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,42 +26,40 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.classification.internal;
+package org.opennms.netmgt.flows.classification.service.internal;
 
-import java.util.Collection;
+import java.io.Closeable;
+import java.util.List;
 import java.util.Objects;
 
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.flows.classification.ClassificationRequest;
 import org.opennms.netmgt.flows.classification.ReloadingClassificationEngine;
 import org.opennms.netmgt.flows.classification.dto.RuleDTO;
+import org.opennms.netmgt.flows.classification.service.ClassificationService;
 
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.Timer;
-
-public class TimingClassificationEngine implements ClassificationEngine, ReloadingClassificationEngine {
+public class ListeningClassificationEngine implements ClassificationEngine {
 
     private final ReloadingClassificationEngine delegate;
-    private final Timer classifyTimer;
-    private final Timer reloadTimer;
 
-    public TimingClassificationEngine(MetricRegistry metricRegistry, ReloadingClassificationEngine delegate) {
+    private final Closeable listener;
+
+    public ListeningClassificationEngine(final ReloadingClassificationEngine delegate,
+                                         final ClassificationService classificationService) {
         this.delegate = Objects.requireNonNull(delegate);
-        this.classifyTimer = metricRegistry.timer("classify");
-        this.reloadTimer = metricRegistry.timer("reload");
-    }
-    
-    @Override
-    public String classify(ClassificationRequest classificationRequest) {
-        try (final Timer.Context ctx = classifyTimer.time()) {
-            return delegate.classify(classificationRequest);
-        }
+        this.listener = classificationService.listen(this::listen);
     }
 
     @Override
-    public void load(final Collection<RuleDTO> rules) throws InterruptedException {
-        try (final Timer.Context ctx = reloadTimer.time()) {
-            delegate.load(rules);
+    public String classify(final ClassificationRequest classificationRequest) {
+        return this.delegate.classify(classificationRequest);
+    }
+
+    private void listen(final List<RuleDTO> rules) {
+        try {
+            this.delegate.load(rules);
+        } catch (final InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 }

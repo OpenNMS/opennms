@@ -37,6 +37,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.flows.classification.ClassificationRequest;
+import org.opennms.netmgt.flows.classification.ReloadingClassificationEngine;
 import org.opennms.netmgt.flows.classification.dto.RuleDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
