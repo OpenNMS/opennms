@@ -30,10 +30,12 @@ package org.opennms.netmgt.flows.classification.service.internal;
 
 import java.io.Closeable;
 import java.io.InputStream;
+import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
@@ -42,6 +44,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -96,6 +99,8 @@ public class DefaultClassificationService implements ClassificationService {
 
     private final Set<Consumer<List<RuleDTO>>> listeners = Sets.newConcurrentHashSet();
 
+    private final FilterDao filterDao;
+
     private final FilterWatcher filterWatcher;
 
     private FilterWatcher.Session filterWatcherSession;
@@ -113,7 +118,8 @@ public class DefaultClassificationService implements ClassificationService {
         this.classificationGroupDao = Objects.requireNonNull(classificationGroupDao);
         this.sessionUtils = Objects.requireNonNull(sessionUtils);
         this.ruleValidator = new RuleValidator(filterDao);
-        this.filterWatcher = Objects.requireNonNull(filterWatcher);
+        this.filterDao = Objects.requireNonNull(filterDao);
+        this.filterWatcher = filterWatcher; // Optional dependency
         this.groupValidator = new GroupValidator(classificationRuleDao);
         this.csvService = new CsvServiceImpl(ruleValidator);
 
@@ -410,12 +416,19 @@ public class DefaultClassificationService implements ClassificationService {
                                  .filter(Predicate.not(Strings::isNullOrEmpty))
                                  .collect(Collectors.toSet());
 
-        this.filterWatcherSession = this.filterWatcher.watch(filters,
-                                                             (results -> filtersChanged(rules, results)));
+        if (this.filterWatcher != null) {
+            this.filterWatcherSession = this.filterWatcher.watch(filters, (results -> filtersChanged(rules, results.getRuleNodeIpServiceMap())));
+        } else {
+            // Filter watcher is not available - so we build the list of results here and use it directly
+            final var results = filters.stream()
+                    .collect(Collectors.toMap(Function.identity(), this.filterDao::getNodeIPAddressServiceMap));
+            this.filtersChanged(rules, results);
+
+        }
     }
 
     private void filtersChanged(final List<Rule> rules,
-                                final FilterWatcher.FilterResults results) {
+                                final Map<String, Map<Integer, Map<InetAddress, Set<String>>>> results) {
         // TODO fooker: Sort the list and make the position inherent?
 
         final var dtos = rules.stream()
@@ -434,12 +447,12 @@ public class DefaultClassificationService implements ClassificationService {
     }
 
     private static RuleDTO resolveRule(final RuleDefinition rule,
-                                       final FilterWatcher.FilterResults results) {
+                                       final Map<String, Map<Integer, Map<InetAddress, Set<String>>>> results) {
         // TODO fooker: error handling of protocols
 
         final List<String> exporters = Strings.isNullOrEmpty(rule.getExporterFilter())
                                        ? List.of()
-                                       : results.getRuleNodeIpServiceMap().getOrDefault(rule.getExporterFilter(), Collections.emptyMap())
+                                       : results.getOrDefault(rule.getExporterFilter(), Collections.emptyMap())
                                                 .values().stream()
                                                 .flatMap(node -> node.keySet().stream())
                                                 .map(InetAddressUtils::str)
