@@ -17,7 +17,7 @@ class libprocess:
                 f.write("\n_____________\n")
 
         with open(filename, "a", encoding="UTF-8") as f:
-            f.write(command + "\n")
+            f.write(" ".join(command) + "\n")
             if isinstance(data, list):
                 f.writelines("\n".join(data))
             elif isinstance(data, subprocess.CompletedProcess):
