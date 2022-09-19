@@ -97,7 +97,7 @@ def add_to_build_list(item):
 
 
 # Step 1, Detect all changes and Git keywords (if any)
-for change in changes:
+for change in changed_files:
     if not change:
         continue
     if "src/test/" in change and "smoke-test/" not in change:
