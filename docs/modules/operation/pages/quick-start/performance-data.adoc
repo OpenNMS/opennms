@@ -17,11 +17,12 @@ For additional information, including collector configuration, see xref:operatio
 {page-component-title} data collection for SNMP works out of the box, provided your SNMP credentials are configured correctly.
 
 The default value for the community string is `public`.
+We recommend that you do not use the default community string in production.
 
 NOTE: If you are using SNMPv3, you need to configure details for a User-Based Security Model (USM) user instead of a community string.
 {page-component-title} supports SNMPv3 and USM, but these topics are outside of the scope of this guide.
 
-If your community string is different, you need to change it by following these steps:
+To change the community string, follow these steps:
 
 . In the web UI, click the *Gear* symbol at the top-right of the screen.
 . Choose menu:Provisioning[Configure SNMP Community Names by IP Address].

@@ -11,7 +11,7 @@ This section describes reference and administrative information associated with 
 | Description
 
 | `$OPENNMS_HOME/etc/collectd-configuration.xml`
-| Configuration file for global Collectd daemon and collectors configuration (see <<deep-dive/performance-data-collection/collectd/configuration.adoc#ga-collectd-configuration, Configuring collectd>>).
+| Configuration file for global collectd daemon and collectors configuration (see <<deep-dive/performance-data-collection/collectd/configuration.adoc#ga-collectd-configuration, Configuring collectd>>).
 
 | `$OPENNMS_HOME/logs/collectd.log`
 | Log file for all collectors and the global collectd service.
@@ -26,5 +26,5 @@ This section describes reference and administrative information associated with 
 | Event definitions for {page-component-title} system events, including collectd.
 
 | `$OPENNMS_HOME/etc/resource-types.d`
-| Directory to store generic resource type definitions (see xref:operation:deep-dive/events/perf-data.adoc[Resource Types]).
+| Directory to store generic resource type definitions (see xref:operation:deep-dive/performance-data-collection/resource-types.adoc[Resource Types]).
 |===
