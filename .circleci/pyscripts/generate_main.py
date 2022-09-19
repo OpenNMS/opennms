@@ -4,6 +4,7 @@
 Generates main.yml file from provided build triggers.
 """
 
+from distutils.command.build import build
 import os
 import shutil
 import re
@@ -133,20 +134,24 @@ for e in main_yml_content:
                 workflow_path.append(common_library.create_space(level) + "workflows:")
             level = level + 2
 
-            enabled_components = [
-                build_components["build-deploy"],
-                build_components["coverage"],
-                build_components["doc"],
-                build_components["ui"],
-                build_components["integration"],
-                build_components["smoke"],
-                build_components["smoke-flaky"],
-                build_components["rpms"],
-                build_components["debs"],
-                build_components["oci"],
-                build_components["build-publish"],
-                build_components["experimental"],
-            ]
+            enabled_components = []
+            for component in build_components:
+                enabled_components.append(build_components[component])
+
+            # enabled_components = [
+            #    build_components["build-deploy"],
+            #    build_components["coverage"],
+            #    build_components["doc"],
+            #    build_components["ui"],
+            #    build_components["integration"],
+            #    build_components["smoke"],
+            #    build_components["smoke-flaky"],
+            #    build_components["rpms"],
+            #    build_components["debs"],
+            #    build_components["oci"],
+            #    build_components["build-publish"],
+            #    build_components["experimental"],
+            # ]
 
             if enabled_components.count(True) > 1:
                 workflow_name = "combined-builds"
@@ -166,7 +171,7 @@ for e in main_yml_content:
                 else:
                     workflow_name = "build"
             else:
-                workflow_name = "build"
+                workflow_name = "empty"
 
             workflow_path.append(
                 common_library.create_space(level) + workflow_name + ":"
