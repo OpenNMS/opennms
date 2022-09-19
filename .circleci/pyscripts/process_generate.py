@@ -145,10 +145,6 @@ print()
 
 
 # Step 2: Take action on them
-if ".circleci/epoch" in changed_files:
-    print("`epoch` file detected")
-    mappings["trigger-build"] = True
-    print()
 
 # Check to see if build-trigger.overrride file exists and we are not
 # on the main branches
@@ -185,6 +181,22 @@ else:
 
 print("Build Trigger Override Found:", str(build_trigger_override_found))
 print()
+
+# Epoch file will force a build to run
+if ".circleci/epoch" in changed_files:
+    print("`epoch` file detected")
+    mappings["trigger-build"] = True
+    print()
+
+
+if build_mappings["experimental"] or "experimentalPath" in git_keywords:
+    # If experimental path is enabled, disable other items
+    for item in build_mappings:
+        build_mappings[item] = False
+
+    mappings.clear()
+
+    build_mappings["experimental"] = True
 
 if "trigger-build" in mappings:
     if (
