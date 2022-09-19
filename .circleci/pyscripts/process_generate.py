@@ -192,10 +192,11 @@ if ".circleci/epoch" in changed_files:
 if build_mappings["experimental"] or "experimentalPath" in git_keywords:
     print("Experimental path detected, will disable other paths")
     print()
-    # If experimental path is enabled, disable other items
+    # If experimental path is enabled, disable other paths
     for item in build_mappings:
         build_mappings[item] = False
 
+    # Clear the mappings
     mappings.clear()
 
     build_mappings["experimental"] = True
@@ -313,9 +314,6 @@ if "doc" in git_keywords or "docs" in git_keywords or "doc" in What_to_build:
 
 if "ui" in git_keywords or "ui" in What_to_build:
     build_mappings["ui"] = True
-
-if "experimentalPath" in git_keywords:
-    build_mappings["experimental"] = True
 
 with open(output_path, "w", encoding="UTF-8") as file_handler:
     file_handler.write(json.dumps(mappings))
