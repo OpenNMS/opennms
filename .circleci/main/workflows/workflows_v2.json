@@ -29,7 +29,6 @@
         "rpms": {
             "extends": [
                 "build",
-                "integration-test",
                 "horizon-rpm-build",
                 "minion-rpm-build",
                 "sentinel-rpm-build"
@@ -38,7 +37,6 @@
         "debs": {
             "extends": [
                 "build",
-                "integration-test",
                 "horizon-deb-build",
                 "minion-deb-build",
                 "sentinel-deb-build"
