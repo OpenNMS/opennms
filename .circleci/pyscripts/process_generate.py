@@ -190,6 +190,8 @@ if ".circleci/epoch" in changed_files:
 
 
 if build_mappings["experimental"] or "experimentalPath" in git_keywords:
+    print("Experimental path detected, will disable other paths")
+    print()
     # If experimental path is enabled, disable other items
     for item in build_mappings:
         build_mappings[item] = False
