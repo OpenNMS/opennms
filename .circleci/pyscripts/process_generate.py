@@ -96,6 +96,7 @@ def add_to_build_list(item):
         What_to_build.append(item)
 
 
+# Step 1, Detect all changes and Git keywords (if any)
 for change in changes:
     if not change:
         continue
@@ -115,14 +116,23 @@ for change in changes:
         if "merge-foundation/" not in branch_name:
             add_to_build_list("build")
 
-print("What we want to build:", What_to_build, len(What_to_build))
+if len(What_to_build) > 1:
+    print("What we want to build:")
+    for item in What_to_build:
+        print(" ", "*", item)
+
 git_keywords = libgit.extract_keywords_from_last_commit()
 
 with open(path_to_workflow, "r", encoding="UTF-8") as file_handler:
     workflow_data = json.load(file_handler)
 
 workflow_keywords = workflow_data["bundles"].keys()
-print("Workflow Keywords:", workflow_keywords)
+print("Workflow Keywords:")
+for item in workflow_keywords:
+    print(" ", "*", item)
+
+
+# Step 2: Take action on them
 
 if ".circleci/epoch" in changes:
     print("`epoch` file detected")
