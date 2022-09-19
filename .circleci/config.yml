@@ -216,6 +216,9 @@ jobs:
       - store_artifacts:
           path: /tmp/.circleci/main.yml
           destination: main.yml
+      - store_artifacts:
+          path: /tmp/performance.txt
+          destination: performance.txt
       - continuation/continue:
           circleci_domain: circleci.com
           configuration_path: /tmp/.circleci/main.yml

@@ -27,7 +27,7 @@ class libgit:
         )
 
     def get_changed_files_in_commits(self, baseCommit, Commit) -> list:
-        print("=", "Running", "getChangedFilesInCommits", "=")
+        # print("=", "Running", "getChangedFilesInCommits", "=")
         output = self.libprocess.runProcess(
             ["git", "diff", "--name-only", baseCommit, Commit],
             working_directory=os.getcwd(),
@@ -36,7 +36,7 @@ class libgit:
             outputFile=self.log_fullpath,
         )
         self.libprocess.printSummary(output)
-        print("=", "Stopping", "switchBranch", "=")
+        # print("=", "Stopping", "switchBranch", "=")
         return output["Output"]["stdout"].splitlines()
 
     def get_changed_files_on_fileSystem(self) -> list:
@@ -52,8 +52,8 @@ class libgit:
         last_commit = self.get_last_commit()
         keywords = re.findall("\!([\w]+)?(:[\w]+-?[\w]+)?", last_commit)
         keywords_dict = {}
-        print("Number of keywords detected:", len(keywords))
-        print("Keywords:", keywords)
+        # print("Number of keywords detected:", len(keywords))
+        # print("Keywords:", keywords)
 
         for e in keywords:
             key, value = e
@@ -85,7 +85,7 @@ class libgit:
         else:
             cmd = ["git", "checkout", branch.replace("'", "")]
 
-        print("=", "Running", "switchBranch", "=")
+        # print("=", "Running", "switchBranch", "=")
         output = self.libprocess.runProcess(
             cmd,
             working_directory=os.getcwd(),
@@ -94,7 +94,7 @@ class libgit:
             outputFile=self.log_fullpath,
         )
         self.libprocess.printSummary(output)
-        print("=", "Stopping", "switchBranch", "=")
+        # print("=", "Stopping", "switchBranch", "=")
         return output
 
     def get_source_code(self, repository="", branch=""):
@@ -106,7 +106,7 @@ class libgit:
             cmd.append("-b")
             cmd.append(branch.replace("'", ""))
 
-        print("=", "Running", "getSourceCode", "=")
+        # print("=", "Running", "getSourceCode", "=")
         output = self.libprocess.runProcess(
             cmd,
             working_directory=os.getcwd(),
@@ -115,14 +115,14 @@ class libgit:
             outputFile=self.log_fullpath,
         )
         self.libprocess.printSummary(output)
-        print("=", "Stopping", "getSourceCode", "=")
+        # print("=", "Stopping", "getSourceCode", "=")
         return output
 
     def update_source_code(self):
         """Run's a simple git pull command in the current directory"""
         cmd = ["git", "pull"]
 
-        print("=", "Running", "updateSourceCode", "=")
+        # print("=", "Running", "updateSourceCode", "=")
         output = self.libprocess.runProcess(
             cmd,
             working_directory=os.getcwd(),
@@ -131,14 +131,14 @@ class libgit:
             outputFile=self.log_fullpath,
         )
         self.libprocess.printSummary(output)
-        print("=", "Stopping", "updateSourceCode", "=")
+        # print("=", "Stopping", "updateSourceCode", "=")
 
         return output
 
     def common_ancestor(self, base_revision, head):
         cmd = ["git", "merge-base", base_revision, head]
 
-        print("=", "Running", "commonAncestor", "=")
+        # print("=", "Running", "commonAncestor", "=")
         output = self.libprocess.runProcess(
             cmd,
             working_directory=os.getcwd(),
@@ -147,5 +147,5 @@ class libgit:
             outputFile="stdout",
         )
         self.libprocess.printSummary(output)
-        print("=", "Stopping", "commonAncestor", "=")
+        # print("=", "Stopping", "commonAncestor", "=")
         return output["Output"]["stdout"].strip()

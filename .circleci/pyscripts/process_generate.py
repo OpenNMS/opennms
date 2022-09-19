@@ -22,7 +22,7 @@ base_revision = os.environ.get("BASE_REVISION")
 branch_name = os.environ.get("CIRCLE_BRANCH")
 
 
-libgit = libgit.libgit("stdout")
+libgit = libgit.libgit("/tmp/performance.txt")
 
 
 libgit.switch_branch(base_revision)

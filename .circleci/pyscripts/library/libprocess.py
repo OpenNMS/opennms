@@ -37,7 +37,7 @@ class libprocess:
         redirectSTDERR=False,
         outputFile="",
     ):
-        print("Command:", " ".join(command))
+        # print("Command:", " ".join(command))
         if redirectSTDOUT:
             _redirectSTDOUT = subprocess.PIPE
         else:
