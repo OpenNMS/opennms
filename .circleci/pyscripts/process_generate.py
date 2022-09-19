@@ -116,7 +116,7 @@ for change in changed_files:
         if "merge-foundation/" not in branch_name:
             add_to_build_list("build")
 
-if len(What_to_build) > 1:
+if What_to_build:
     print("What we want to build:")
     for item in What_to_build:
         print(" ", "*", item)
@@ -127,7 +127,8 @@ with open(path_to_workflow, "r", encoding="UTF-8") as file_handler:
     workflow_data = json.load(file_handler)
 
 workflow_keywords = workflow_data["bundles"].keys()
-print("Workflow Keywords:")
+
+print("Supported Workflow Keywords:")
 for item in workflow_keywords:
     print(" ", "*", item)
 
@@ -216,7 +217,11 @@ if re.match(".*flaky.*", branch_name):
     build_mappings["smoke-flaky"] = True
 
 
-print("Git Keywords:", git_keywords)
+if git_keywords:
+    print("Detected GIT keywords:")
+    for item in git_keywords:
+        print(" ", "*", item)
+
 if (
     "circleci_configuration" in What_to_build
     and len(What_to_build) == 1
