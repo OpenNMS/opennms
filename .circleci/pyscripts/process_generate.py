@@ -211,19 +211,20 @@ if "trigger-build" in mappings:
         print("Executing workflow: build-publish")
         build_mappings["build-publish"] = mappings["trigger-build"]
         print()
-    else:
-        if "merge-foundation/" in branch_name:
-            print("Execute workflow: merge-foundation")
-            print()
-            build_mappings["merge-foundation"] = True
-            build_mappings["build-publish"] = False
-            build_mappings["build-deploy"] = False
-        elif (
-            not build_trigger_override_found and "merge-foundation/" not in branch_name
-        ):
-            print("Executing workflow: build-deploy")
-            print()
-            build_mappings["build-deploy"] = mappings["trigger-build"]
+    elif "merge-foundation/" not in branch_name:
+        print("Execute workflow: merge-foundation")
+        print()
+        # If experimental path is enabled, disable other paths
+        for item in build_mappings:
+            build_mappings[item] = False
+
+        # Clear the mappings
+        mappings.clear()
+        build_mappings["merge-foundation"] = True
+    elif not build_trigger_override_found and "merge-foundation/" not in branch_name:
+        print("Executing workflow: build-deploy")
+        print()
+        build_mappings["build-deploy"] = mappings["trigger-build"]
 
 if "trigger-docs" in mappings:
     build_mappings["docs"] = mappings["trigger-docs"]
@@ -238,12 +239,16 @@ if "trigger-flaky-smoke" in mappings:
     if not build_mappings["smoke-flaky"]:
         build_mappings["smoke-flaky"] = mappings["trigger-flaky-smoke"]
 
-if re.match(".*smoke.*", branch_name):
+if re.match(".*smoke.*", branch_name) and (
+    not build_mappings["experimental"] or "experimentalPath" not in git_keywords
+):
     print("Detected smoke in the branch name")
     build_mappings["smoke"] = True
     print()
 
-if re.match(".*flaky.*", branch_name):
+if re.match(".*flaky.*", branch_name) and (
+    not build_mappings["experimental"] or "experimentalPath" not in git_keywords
+):
     print("Detected smoke in the branch name")
     build_mappings["smoke-flaky"] = True
     print()
