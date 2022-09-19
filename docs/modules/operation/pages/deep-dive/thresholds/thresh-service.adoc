@@ -7,7 +7,7 @@ The state of the thresholds are held in memory and pushed to persistent storage 
 
 == Distributed thresholding with Sentinel
 
-Thresholding for streaming telemetry with <<deep-dive/telemetryd/introduction#ga-telemetryd, telemetryd>> is supported on Sentinel when using xref:deployment:time-series-storage/newts/introduction.adoc#ga-opennms-operation-newts, [Newts].
+Thresholding for streaming telemetry with <<deep-dive/telemetryd/introduction#ga-telemetryd, telemetryd>> is supported on Sentinel when using xref:deployment:time-series-storage/newts/introduction.adoc#ga-opennms-operation-newts[Newts].
 When running on Sentinel, the thresholding state can be stored in either Cassandra or PostgreSQL.
 Given that Newts requires Cassandra, we recommend using Cassandra to minimize the load on PostgreSQL.
 

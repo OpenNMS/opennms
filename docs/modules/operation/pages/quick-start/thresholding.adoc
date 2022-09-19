@@ -9,7 +9,7 @@ A threshold defines limits against the network performance metrics (CPU load, ba
 * Absolute change - changes by the specified amount (for example, on a fiber-optic link, a change in loss of anything greater than 3 dB is a problem regardless of what the original or final value is).
 * Relative change - changes by percent (for example, available disk space changes more than 5% from the last poll).
 
-These thresholds can be basic (tested against a single value) or an expression (evaluated against multiple values in an expression).
+These thresholds can be basic (tested against a single value) or expression-based (evaluated against multiple values in an expression).
 This Quick Start guide shows how to create both kinds of threshold.
 
 [[threshold-basic]]
@@ -28,7 +28,7 @@ We will work with `netsnmp`.
 +
 For information on how to create a threshold group, see xref:deep-dive/thresholds/thresh-group.adoc[Create a Threshold Group] in the Deep Dive section.
 . Click *Edit* beside the `netsnmp` group.
-. Click *Create New Threshold* at the bottom of the *Basic Thresholds* area of the screen.
+. Click *Create New Threshold* at the bottom of the *Basic Thresholds* area.
 . Set the following information and click *Save*:
 +
 [options="header"]

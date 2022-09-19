@@ -9,7 +9,7 @@ This section describes related thresholding tasks.
 
 Metadata in expression-based thresholds can streamline threshold creation.
 The <<deep-dive/meta-data.adoc#ga-meta-data-dsl, Metadata DSL>> (domain specific language) lets you use patterns in an expression, whereby the metadata is replaced with a corresponding value during the collection process.
-A single expression can behave differently based on the node being tested against.
+A single expression can behave differently based on the node it is tested against.
 
 During evaluation of an expression, the following scopes are available:
 
