@@ -183,20 +183,20 @@ jobs:
             echo Prebuild: << pipeline.parameters.trigger-prebuild >>
             echo Automation: << pipeline.parameters.trigger-automation >>
             echo Trigger Flaky Tests: << pipeline.parameters.trigger-flaky >>
-      - run:
-          name: Detect if build should run
-          command: |
-            if [ -e ".nightly" ]; then
-              PARENT_BRANCH="$(cat .nightly | grep -E '^parent_branch:' | sed -e 's,parent_branch: *,,')"
-              git fetch --depth 1 origin "${PARENT_BRANCH}"
-              if [ "$(git diff FETCH_HEAD..HEAD | wc -l)" -eq 0 ]; then
-                echo "no changes"
-                exit 0
-              else
-                echo "Changes:"
-                git diff --name-only FETCH_HEAD..HEAD
-              fi
-            fi
+      #- run:
+      #    name: Detect if build should run
+      #    command: |
+      #      if [ -e ".nightly" ]; then
+      #        PARENT_BRANCH="$(cat .nightly | grep -E '^parent_branch:' | sed -e 's,parent_branch: *,,')"
+      #        git fetch --depth 1 origin "${PARENT_BRANCH}"
+      #        if [ "$(git diff FETCH_HEAD..HEAD | wc -l)" -eq 0 ]; then
+      #          echo "no changes"
+      #          exit 0
+      #        else
+      #          echo "Changes:"
+      #          git diff --name-only FETCH_HEAD..HEAD
+      #        fi
+      #      fi
       - run:
           name: Process Generate
           environment:
