@@ -28,7 +28,6 @@
 
 package org.opennms.core.camel;
 
-import java.security.SecureRandom;
 import java.util.Random;
 
 /**
@@ -36,7 +35,7 @@ import java.util.Random;
  * when sending messages to Apache Kafka.
  */
 public class RandomPartitionKeyGenerator {
-	private final Random m_random = new SecureRandom();
+	private final Random m_random = new Random();
 
 	private final int m_maximum;
 
