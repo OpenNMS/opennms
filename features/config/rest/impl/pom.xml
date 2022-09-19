@@ -76,6 +76,8 @@
       <groupId>org.apache.servicemix.specs</groupId>
       <artifactId>org.apache.servicemix.specs.jaxp-api-1.4</artifactId>
       <version>${servicemixSpecsVersion}</version>
+      <!-- scope provided so we don't infect the classpath with org.w3c.dom.* stuff that's provided elsewhere -->
+      <scope>provided</scope>
       <exclusions>
         <exclusion>
           <groupId>javax.xml.bind</groupId>
