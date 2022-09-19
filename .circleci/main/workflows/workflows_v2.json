@@ -100,7 +100,7 @@
         },
         "experimental": {
             "extends": [
-                "empty"
+                "debs"
             ]
         }
     },
