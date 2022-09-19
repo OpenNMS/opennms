@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2020-2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2020-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -50,7 +50,6 @@ import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -69,7 +68,7 @@ public class LegacyStatusProvider implements StatusProvider, EdgeStatusProvider 
         // All vertices for the current vertexProvider
         final List<LegacyVertex> legacyVertices = vertices.stream()
                 .filter(eachVertex -> contributesTo(eachVertex.getNamespace()) && eachVertex instanceof LegacyVertex)
-                .map(eachVertex -> (LegacyVertex) eachVertex)
+                .map(LegacyVertex.class::cast)
                 .collect(Collectors.toList());
 
         // All vertices associated with a node id
@@ -106,7 +105,7 @@ public class LegacyStatusProvider implements StatusProvider, EdgeStatusProvider 
 
                 @Override
                 public Map<String, String> getStatusProperties() {
-                    return ImmutableMap.of("status", "up");
+                    return Map.of("status", "up");
                 }
 
                 @Override

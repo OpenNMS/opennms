@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -53,7 +53,7 @@ public final class ChangeSet<G extends ImmutableGraph<V, E>, V extends Vertex, E
     private final GraphInfo currentGraphInfo;
     private final Focus currentFocus;
 
-    public ChangeSet(final ChangeSetBuilder builder) {
+    public ChangeSet(ChangeSetBuilder<G, V, E> builder) {
         Objects.requireNonNull(builder);
         this.namespace = builder.namespace;
         this.changeSetDate = builder.changeSetDate == null ? new Date() : builder.changeSetDate;
@@ -154,47 +154,47 @@ public final class ChangeSet<G extends ImmutableGraph<V, E>, V extends Vertex, E
             this.newGraph = newGraph;
         }
 
-        public ChangeSetBuilder withDate(Date changeSetDate) {
+        public ChangeSetBuilder<G,V,E> withDate(Date changeSetDate) {
             this.changeSetDate = Objects.requireNonNull(changeSetDate);
             return this;
         }
 
-        private ChangeSetBuilder vertexAdded(V vertex) {
+        private ChangeSetBuilder<G,V,E> vertexAdded(V vertex) {
             verticesAdded.add(vertex);
             return this;
         }
 
-        private ChangeSetBuilder vertexRemoved(V vertex) {
+        private ChangeSetBuilder<G,V,E> vertexRemoved(V vertex) {
             verticesRemoved.add(vertex);
             return this;
         }
 
-        private ChangeSetBuilder vertexUpdated(V vertex) {
+        private ChangeSetBuilder<G,V,E> vertexUpdated(V vertex) {
             verticesUpdated.add(vertex);
             return this;
         }
 
-        private ChangeSetBuilder edgeAdded(E edge) {
+        private ChangeSetBuilder<G,V,E> edgeAdded(E edge) {
             edgesAdded.add(edge);
             return this;
         }
 
-        private ChangeSetBuilder edgeRemoved(E edge) {
+        private ChangeSetBuilder<G,V,E> edgeRemoved(E edge) {
             edgesRemoved.add(edge);
             return this;
         }
 
-        private ChangeSetBuilder edgeUpdated(E edge) {
+        private ChangeSetBuilder<G,V,E> edgeUpdated(E edge) {
             edgesUpdated.add(edge);
             return this;
         }
 
-        private ChangeSetBuilder graphInfoChanged(GraphInfo graphInfo) {
+        private ChangeSetBuilder<G,V,E> graphInfoChanged(GraphInfo graphInfo) {
             this.currentGraphInfo = graphInfo;
             return this;
         }
 
-        private ChangeSetBuilder focusChanged(Focus newFocus) {
+        private ChangeSetBuilder<G,V,E> focusChanged(Focus newFocus) {
             this.currentFocus = newFocus;
             return this;
         }
@@ -202,14 +202,14 @@ public final class ChangeSet<G extends ImmutableGraph<V, E>, V extends Vertex, E
         private void detectChanges(G oldGraph, G newGraph) {
             // no old graph exists, add all
             if (oldGraph == null && newGraph != null) {
-                newGraph.getVertices().forEach(v -> vertexAdded(v));
-                newGraph.getEdges().forEach(e -> edgeAdded(e));
+                newGraph.getVertices().forEach(this::vertexAdded);
+                newGraph.getEdges().forEach(this::edgeAdded);
                 graphInfoChanged(createGraphInfo(newGraph));
             }
             // no new graph exists, remove all
             if (oldGraph != null && newGraph == null) {
-                oldGraph.getVertices().forEach(v -> vertexRemoved(v));
-                oldGraph.getEdges().forEach(e -> edgeRemoved(e));
+                oldGraph.getVertices().forEach(this::vertexRemoved);
+                oldGraph.getEdges().forEach(this::edgeRemoved);
                 graphInfoChanged(null);
             }
 
@@ -253,8 +253,7 @@ public final class ChangeSet<G extends ImmutableGraph<V, E>, V extends Vertex, E
 
         private GraphInfo createGraphInfo(G graph) {
             if (graph != null) {
-                final DefaultGraphInfo graphInfo = new DefaultGraphInfo(graph);
-                return graphInfo;
+                return new DefaultGraphInfo(graph);
             }
             return null;
         }

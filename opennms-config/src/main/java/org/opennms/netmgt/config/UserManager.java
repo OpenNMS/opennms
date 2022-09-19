@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -50,7 +50,6 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jasypt.util.password.PasswordEncryptor;
 import org.jasypt.util.password.StrongPasswordEncryptor;
@@ -112,12 +111,10 @@ public abstract class UserManager implements UserConfig {
      *
      * @param in a {@link java.io.InputStream} object.
      */
-    public void parseXML(final InputStream in) {
+    public void parseXML(final InputStream in) throws IOException {
         m_writeLock.lock();
 
-        InputStreamReader isr = null;
-        try {
-            isr = new InputStreamReader(in);
+        try (InputStreamReader isr = new InputStreamReader(in)) {
             final Userinfo userinfo = JaxbUtils.unmarshal(Userinfo.class, isr);
             oldHeader = userinfo.getHeader();
             m_users = new TreeMap<String, User>();
@@ -128,7 +125,6 @@ public abstract class UserManager implements UserConfig {
         
             _buildDutySchedules(m_users);
         } finally {
-            IOUtils.closeQuietly(isr);
             m_writeLock.unlock();
         }
     }
@@ -323,7 +319,7 @@ public abstract class UserManager implements UserConfig {
         user.setFullName(trim(xmlUser.getFullName()));
         user.setComments(trim(xmlUser.getUserComments()));
         user.setPassword(xmlUser.getPassword().getEncryptedPassword());
-        user.setPasswordSalted(Boolean.valueOf(xmlUser.getPassword().getSalt()));
+        user.setPasswordSalted(xmlUser.getPassword().getSalt());
         user.setDutySchedule(xmlUser.getDutySchedules());
         user.setRoles(xmlUser.getRoles());
         user.setEmail(_getContactInfo(xmlUser, ContactType.email));
@@ -331,7 +327,7 @@ public abstract class UserManager implements UserConfig {
     }
     
     private String trim(final Optional<String> text) {
-        return (text == null || !text.isPresent())? null : text.get().trim();
+        return (!text.isPresent())? null : text.get().trim();
     }
 
     private Contact _getContact(final String userId, final ContactType contactType) {
@@ -1149,7 +1145,7 @@ public abstract class UserManager implements UserConfig {
             if (user == null) return false;
 
             final String password = user.getPassword().getEncryptedPassword().trim();
-            final boolean isSalted = Boolean.valueOf(user.getPassword().getSalt());
+            final boolean isSalted = user.getPassword().getSalt();
             if (isSalted) {
                 return checkSaltedPassword(aPassword, password);
             } else {

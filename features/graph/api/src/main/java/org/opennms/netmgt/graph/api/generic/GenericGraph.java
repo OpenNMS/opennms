@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -147,16 +147,14 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
 
     @Override
     public List<GenericVertex> resolveVertices(Collection<String> vertexIds) {
-        final List<GenericVertex> collect = vertexIds.stream().map(vid -> vertexToIdMap.get(vid)).filter(v -> v != null).collect(Collectors.toList());
-        return collect;
+        return vertexIds.stream().map(vertexToIdMap::get).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
     @Override
     public GenericVertex resolveVertex(VertexRef vertexRef) {
         Objects.requireNonNull(vertexRef);
         if (getNamespace().equals(vertexRef.getNamespace())) {
-            final GenericVertex resolvedVertex = resolveVertices(Lists.newArrayList(vertexRef.getId())).stream().findAny().orElse(null);
-            return resolvedVertex;
+            return resolveVertices(Lists.newArrayList(vertexRef.getId())).stream().findAny().orElse(null);
         }
         return null;
     }
@@ -165,15 +163,14 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
         // Determine all vertexId for all vertices with the same namespace as the current graph
         List<String> vertexIds = vertexRefs.stream()
                 .filter(ref -> getNamespace().equals(ref.getNamespace()))
-                .map(ref -> ref.getId())
+                .map(VertexRef::getId)
                 .collect(Collectors.toList());
         return resolveVertices(vertexIds);
     }
 
     @Override
     public List<GenericEdge> resolveEdges(Collection<String> vertexIds) {
-        final List<GenericEdge> collect = vertexIds.stream().map(eid -> edgeToIdMap.get(eid)).collect(Collectors.toList());
-        return collect;
+        return vertexIds.stream().map(edgeToIdMap::get).collect(Collectors.toList());
     }
 
     @Override
@@ -222,8 +219,8 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
         Objects.requireNonNull(graph);
         return new GenericGraphBuilder().graph(graph);
     }
-    
-    public final static class GenericGraphBuilder extends GenericElementBuilder<GenericGraphBuilder> {
+
+    public static final class GenericGraphBuilder extends GenericElementBuilder<GenericGraphBuilder> {
 
         private final DirectedSparseGraph<VertexRef, GenericEdge> jungGraph = new DirectedSparseGraph<>();
         private final Map<String, GenericVertex> vertexToIdMap = new HashMap<>();
@@ -356,7 +353,8 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
             jungGraph.removeVertex(vertex.getVertexRef());
             vertexToIdMap.remove(vertex.getId());
         }
-        
+
+        @Override
         public String getNamespace() {
             return Objects.requireNonNull((String)this.properties.get(GenericProperties.NAMESPACE), "Namespace is not set yet. Please call namespace(...) first.");
         }
@@ -376,18 +374,21 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
             return resolvedVertices;
         }
 
+        @Override
         public GenericGraphBuilder namespace(String namespace) {
             checkIfNamespaceChangeIsAllowed(namespace);
             return super.namespace(namespace);
         }
-    
+
+        @Override
         public GenericGraphBuilder property(String name, Object value) {
             if(GenericProperties.NAMESPACE.equals(name)) {
                 checkIfNamespaceChangeIsAllowed((String)value);
             }
             return super.property(name, value);
         }
-        
+
+        @Override
         public GenericGraphBuilder properties(Map<String, Object> properties) {
             if(properties != null && properties.containsKey(GenericProperties.NAMESPACE)) {
                 checkIfNamespaceChangeIsAllowed((String)properties.get(GenericProperties.NAMESPACE));

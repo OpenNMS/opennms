@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -41,7 +41,7 @@ import com.google.common.collect.ImmutableMap;
 
 public abstract class GenericElement {
 
-    private final static Logger LOG = LoggerFactory.getLogger(GenericElement.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GenericElement.class);
 
     protected final Map<String, Object> properties;
 
@@ -98,8 +98,8 @@ public abstract class GenericElement {
                 .add("properties", properties)
                 .toString();
     }
-    
-    public static abstract class GenericElementBuilder<T extends GenericElementBuilder> {
+
+    public abstract static class GenericElementBuilder<T extends GenericElementBuilder> {
     	protected final Map<String, Object> properties = new HashMap<>();
     	protected final NamespaceValidator namespaceValidator = new NamespaceValidator();
     	

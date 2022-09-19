@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -39,23 +39,30 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 
 public final class ApplicationVertex extends AbstractDomainVertex {
 
-    private interface Property {
-        String VERTEX_TYPE = "vertexType";
-        String NAME = "name";
-        String IP_ADDRESS = "ipAddress";
-        String SERVICE_TYPE_ID = "serviceTypeId";
-        String APPLICATION_ID = "applicationId";
+    public static final String CANNOT_BE_NULL = " cannot be null";
+
+    public static class Property {
+
+        private Property() {
+            throw new IllegalStateException("Utility class");
+        }
+
+        public static final String VERTEX_TYPE = "vertexType";
+        public static final String NAME = "name";
+        public static final String IP_ADDRESS = "ipAddress";
+        public static final String SERVICE_TYPE_ID = "serviceTypeId";
+        public static final String APPLICATION_ID = "applicationId";
     }
     
     public ApplicationVertex(GenericVertex vertex) {
         super(vertex);
         // additional specific checks: 
-        Objects.requireNonNull(getProperty(Property.VERTEX_TYPE), Property.VERTEX_TYPE + " cannot be null");
+        Objects.requireNonNull(getProperty(Property.VERTEX_TYPE), Property.VERTEX_TYPE + CANNOT_BE_NULL);
         if(ApplicationVertexType.Service == getVertexType()) {
-            Objects.requireNonNull(getProperty(Property.SERVICE_TYPE_ID), Property.SERVICE_TYPE_ID + " cannot be null");
+            Objects.requireNonNull(getProperty(Property.SERVICE_TYPE_ID), Property.SERVICE_TYPE_ID + CANNOT_BE_NULL);
         }
         if (ApplicationVertexType.Application == getVertexType()) {
-            Objects.requireNonNull(getProperty(Property.APPLICATION_ID), Property.APPLICATION_ID + " cannot be null");
+            Objects.requireNonNull(getProperty(Property.APPLICATION_ID), Property.APPLICATION_ID + CANNOT_BE_NULL);
         }
     }
 
@@ -71,6 +78,7 @@ public final class ApplicationVertex extends AbstractDomainVertex {
         return delegate.getProperty(Property.IP_ADDRESS);
     }
 
+    @Override
     public VertexRef getVertexRef(){
         return delegate.getVertexRef();
     }
@@ -105,8 +113,8 @@ public final class ApplicationVertex extends AbstractDomainVertex {
     public static ApplicationVertex from(GenericVertex genericVertex) {
         return new ApplicationVertex(genericVertex);
     }
-    
-    public final static class ApplicationVertexBuilder extends AbstractDomainVertexBuilder<ApplicationVertexBuilder> {
+
+    public static final class ApplicationVertexBuilder extends AbstractDomainVertexBuilder<ApplicationVertexBuilder> {
         
         private ApplicationVertexBuilder() {}
         

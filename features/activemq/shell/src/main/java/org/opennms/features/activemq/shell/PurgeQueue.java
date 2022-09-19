@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -39,6 +39,7 @@ import org.opennms.features.activemq.broker.api.ManagedDestination;
 
 @Command(scope = "opennms", name = "activemq-purge-queue", description = "Purge the content of an ActiveMQ queue.")
 @Service
+@SuppressWarnings("java:S106")
 public class PurgeQueue implements Action {
 
     @Reference(optional = true)
@@ -49,23 +50,22 @@ public class PurgeQueue implements Action {
     private String queueName;
 
     @Override
-    public Object execute() throws Exception {
+    public Object execute() {
         if (broker == null) {
             System.out.println("(No broker available.)");
-            return null;
-        }
-
-        final ManagedDestination queue = broker.getDestinations().stream()
-                .filter(ManagedDestination::isQueue)
-                .filter(q -> queueName.trim().equalsIgnoreCase(q.getName()))
-                .findFirst()
-                .orElse(null);
-
-        if (queue == null) {
-            System.out.printf("No queue named '%s' found.\n", queueName);
         } else {
-            System.out.println("Purging: " + queue.getName());
-            queue.purge();
+            final ManagedDestination queue = broker.getDestinations().stream()
+                    .filter(ManagedDestination::isQueue)
+                    .filter(q -> queueName.trim().equalsIgnoreCase(q.getName()))
+                    .findFirst()
+                    .orElse(null);
+
+            if (queue == null) {
+                System.out.printf("No queue named '%s' found.%n", queueName);
+            } else {
+                System.out.println("Purging: " + queue.getName());
+                queue.purge();
+            }
         }
         return null;
     }

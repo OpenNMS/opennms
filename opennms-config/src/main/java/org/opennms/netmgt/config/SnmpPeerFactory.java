@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -255,22 +255,16 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
 
         final String marshalledConfig = getSnmpConfigAsString();
 
-        FileOutputStream out = null;
-        Writer fileWriter = null;
-        try {
+        try (FileOutputStream out = new FileOutputStream(file);
+             Writer fileWriter = new OutputStreamWriter(out, StandardCharsets.UTF_8)) {
             if (marshalledConfig != null) {
-                out = new FileOutputStream(file);
-                fileWriter = new OutputStreamWriter(out, StandardCharsets.UTF_8);
                 fileWriter.write(marshalledConfig);
                 fileWriter.flush();
-                fileWriter.close();
                 if (m_container != null) {
                     m_container.reload();
                 }
             }
         } finally {
-            IOUtils.closeQuietly(fileWriter);
-            IOUtils.closeQuietly(out);
             getWriteLock().unlock();
         }
     }

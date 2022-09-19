@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -53,7 +53,7 @@ public class GraphSearchRestServiceImpl implements GraphSearchRestService {
     @Override
     public Response getSuggestions(String namespace, String input) {
         List<SearchSuggestion> result = graphSearchService.getSuggestions(namespace, input);
-        if(result.size() < 1) {
+        if(result.isEmpty()) {
             return Response.noContent().build();
         }
         return Response.ok(result).type(MediaType.APPLICATION_JSON_TYPE).build();
@@ -63,10 +63,10 @@ public class GraphSearchRestServiceImpl implements GraphSearchRestService {
     public Response search(String namespace, String providerId, String criteria) {
         final SearchCriteria searchCriteria = new SearchCriteria(providerId, namespace, criteria);
         final List<GenericVertex> result = graphSearchService.search(searchCriteria);
-        if(result.size() < 1) {
+        if(result.isEmpty()) {
             return Response.noContent().build();
         }
-        final List<VertexRef> vertexRefs = result.stream().map(v -> v.getVertexRef()).collect(Collectors.toList());
+        final List<VertexRef> vertexRefs = result.stream().map(GenericVertex::getVertexRef).collect(Collectors.toList());
         return Response.ok(vertexRefs).type(MediaType.APPLICATION_JSON_TYPE).build();
     }
 }

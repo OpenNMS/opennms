@@ -2,6 +2,53 @@
 [[release-30-changelog]]
 = Changelog
 
+[[releasenotes-changelog-30.0.3]]
+
+== Release 30.0.3
+
+Release 30.0.3 contains quite a few bug fixes as well as number of small features and security fixes.
+
+The codename for Horizon 30.0.3 is https://wikipedia.org/wiki/$$Chipmunk$$[_Chipmunk_].
+
+=== Bug
+
+* snmpCollect being reset to C even if a policy sets it to N (Issue http://issues.opennms.org/browse/NMS-14576[NMS-14576])
+* Stored XSS (Issue http://issues.opennms.org/browse/NMS-14591[NMS-14591])
+* change or remove how Docker SSH keys are generated (Issue http://issues.opennms.org/browse/NMS-14643[NMS-14643])
+* Thresholding blocks threads under load (Issue http://issues.opennms.org/browse/NMS-14645[NMS-14645])
+* Appliance: Minion fails to come up with 30.0.2 and bleeding image (Issue http://issues.opennms.org/browse/NMS-14655[NMS-14655])
+* Graph page doesn't escape <> in resource labels (Issue http://issues.opennms.org/browse/NMS-14657[NMS-14657])
+
+=== Story
+
+* PassiveStatusd (Issue http://issues.opennms.org/browse/NMS-8567[NMS-8567])
+* Provisiond (Issue http://issues.opennms.org/browse/NMS-8569[NMS-8569])
+* Please update the copyright year on the docs page! (Issue http://issues.opennms.org/browse/NMS-13911[NMS-13911])
+* Add KPIs for user and group counts to datachoices telemetry (Issue http://issues.opennms.org/browse/NMS-14487[NMS-14487])
+* Set up basic Java CLI app to read/process MOS CDR files (Issue http://issues.opennms.org/browse/NMS-14575[NMS-14575])
+* Add KPI for DCB device count by sysObjectID (Issue http://issues.opennms.org/browse/NMS-14579[NMS-14579])
+* Add KPIs for open notifications and outages to datachoices telemetry (Issue http://issues.opennms.org/browse/NMS-14623[NMS-14623])
+* Add KPI for application count to datachoices telemetry (Issue http://issues.opennms.org/browse/NMS-14624[NMS-14624])
+* Official docs readiness for Cortex TSS plugin release (Issue http://issues.opennms.org/browse/NMS-14667[NMS-14667])
+* Upgrade dom4j to latest version (Issue http://issues.opennms.org/browse/NMS-14696[NMS-14696])
+
+=== Task
+
+* provisiond config partial update  (Issue http://issues.opennms.org/browse/NMS-14310[NMS-14310])
+* Change OIA name to  OpenNMS Plugin API (Issue http://issues.opennms.org/browse/NMS-14475[NMS-14475])
+* Remove footer content from opennms/docs (Issue http://issues.opennms.org/browse/NMS-14637[NMS-14637])
+
+=== Enhancement
+
+* Migrate Notification wiki pages into docs (Issue http://issues.opennms.org/browse/NMS-13584[NMS-13584])
+* Rest API v2 for obtaining a list of SNMP interfaces doesn't return back node id (Issue http://issues.opennms.org/browse/NMS-14449[NMS-14449])
+* Add smoke test for new KPIs (Issue http://issues.opennms.org/browse/NMS-14627[NMS-14627])
+
+=== Upgrade
+
+* Update Vue UI Packages (Issue http://issues.opennms.org/browse/NMS-14651[NMS-14651])
+
+
 [[releasenotes-changelog-30.0.2]]
 
 == Release 30.0.2

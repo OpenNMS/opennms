@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -53,6 +53,8 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
     private static final GroupManagerConfigObjectExceptionTranslator CONFIG_OBJECT_EXCEPTION_TRANSLATOR = new GroupManagerConfigObjectExceptionTranslator();
     
     private GroupManager m_groupManager;
+
+    private static final String GETTING_GROUP_STR = "getting group '";
     
     /** {@inheritDoc} */
     @Override
@@ -96,7 +98,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
         try {
             return m_groupManager.getGroup(name);
         } catch (Throwable e) {
-            throw CONFIG_OBJECT_EXCEPTION_TRANSLATOR.translate("getting group '" + name + "'", e);
+            throw CONFIG_OBJECT_EXCEPTION_TRANSLATOR.translate(GETTING_GROUP_STR + name + "'", e);
         }
     }
 
@@ -208,7 +210,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
         try {
             return m_groupManager.hasGroup(name);
         } catch (Throwable e) {
-            throw CONFIG_OBJECT_EXCEPTION_TRANSLATOR.translate("getting group '" + name + "'", e);
+            throw CONFIG_OBJECT_EXCEPTION_TRANSLATOR.translate(GETTING_GROUP_STR + name + "'", e);
         }
     }
 
@@ -218,7 +220,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
         try {
             return m_groupManager.isGroupOnDuty(group, time);
         } catch (Throwable e) {
-            throw CONFIG_OBJECT_EXCEPTION_TRANSLATOR.translate("getting group '" + group + "' to see if it is on duty at " + time, e);
+            throw CONFIG_OBJECT_EXCEPTION_TRANSLATOR.translate(GETTING_GROUP_STR + group + "' to see if it is on duty at " + time, e);
         }
     }
 

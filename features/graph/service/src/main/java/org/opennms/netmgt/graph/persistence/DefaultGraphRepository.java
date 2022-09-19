@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -51,10 +51,10 @@ import org.opennms.netmgt.graph.api.info.DefaultGraphInfo;
 import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
 import org.opennms.netmgt.graph.api.persistence.GraphRepository;
+import org.opennms.netmgt.graph.api.updates.ContainerChangeSet;
 import org.opennms.netmgt.graph.dao.api.GraphContainerDao;
 import org.opennms.netmgt.graph.persistence.mapper.EntityToGenericMapper;
 import org.opennms.netmgt.graph.persistence.mapper.GenericToEntityMapper;
-import org.opennms.netmgt.graph.api.updates.ContainerChangeSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -171,7 +171,7 @@ public class DefaultGraphRepository implements GraphRepository {
                             graphEntity.removeEdge(edgeEntity);
                         });
                         changeSet.getEdgesAdded().forEach(edge -> {
-                            final EdgeEntity edgeEntity = genericToEntityMapper.toEntity((GenericEdge) edge, graphEntity);
+                            final EdgeEntity edgeEntity = genericToEntityMapper.toEntity((GenericEdge) edge);
                             graphEntity.addEdge(edgeEntity);
                         });
                         changeSet.getEdgesUpdated().forEach(edge -> {

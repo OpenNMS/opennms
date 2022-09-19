@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2004-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2004-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -365,7 +365,7 @@ public class Constraint {
         switch (m_type) {
         case PRIMARY_KEY:
             b.append(" primary key (");
-            if (m_columns.size() == 0) {
+            if (m_columns.isEmpty()) {
             	throw new IllegalStateException("Primary key has zero constrained columns... not allowed!");
             }
             b.append(StringUtils.collectionToDelimitedString(m_columns, ", "));
@@ -373,7 +373,7 @@ public class Constraint {
 
         case FOREIGN_KEY:
             b.append(" foreign key (");
-            if (m_columns.size() == 0) {
+            if (m_columns.isEmpty()) {
             	throw new IllegalStateException("Foreign key has zero constrained columns... not allowed!");
             }
             b.append(StringUtils.collectionToDelimitedString(m_columns, ", "));
@@ -484,20 +484,20 @@ public class Constraint {
 
     /** {@inheritDoc} */
     @Override
-    public boolean equals(Object other_o) {
-        return equals(other_o, false);
+    public boolean equals(Object anotherObject) {
+        return equals(anotherObject, false);
     }
 
     /**
      * <p>equals</p>
      *
-     * @param other_o a {@link java.lang.Object} object.
+     * @param anotherObject a {@link java.lang.Object} object.
      * @param ignoreFdelType a boolean.
      * @return a boolean.
      */
-    public boolean equals(final Object other_o, boolean ignoreFdelType) {
-    	if (other_o == null || !(other_o instanceof Constraint)) return false;
-    	final Constraint other = (Constraint) other_o;
+    public boolean equals(final Object anotherObject, boolean ignoreFdelType) {
+    	if (!(anotherObject instanceof Constraint)) return false;
+    	final Constraint other = (Constraint) anotherObject;
 
         if ((m_name == null && other.getName() != null) || (m_name != null && other.getName() == null)) {
             return false;
@@ -552,12 +552,8 @@ public class Constraint {
                 return false;
             }
         }
-        
-        if(m_checkExpression != null && other.getCheckExpression()!=null && !m_checkExpression.equals(other.getCheckExpression())) {
-        	return false;
-        }
 
-        return true;
+        return m_checkExpression == null || other.getCheckExpression() == null || m_checkExpression.equals(other.getCheckExpression());
     }
 
     /**

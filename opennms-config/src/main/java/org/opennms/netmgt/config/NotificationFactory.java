@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -40,7 +40,6 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 
-import org.apache.commons.io.IOUtils;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.ConfigFileConstants;
 
@@ -115,15 +114,9 @@ public class NotificationFactory extends NotificationManager {
     public synchronized void reload() throws IOException {
         m_noticeConfFile = ConfigFileConstants.getFile(ConfigFileConstants.NOTIFICATIONS_CONF_FILE_NAME);
 
-        InputStream configIn = null;
-        try {
-            configIn = new FileInputStream(m_noticeConfFile);
+        try (InputStream configIn = new FileInputStream(m_noticeConfFile)) {
             m_lastModified = m_noticeConfFile.lastModified();
             parseXML(configIn);
-        } finally {
-            if (configIn != null) {
-                IOUtils.closeQuietly(configIn);
-            }
         }
     }
 
@@ -131,10 +124,10 @@ public class NotificationFactory extends NotificationManager {
     @Override
     protected void saveXML(String xmlString) throws IOException {
         if (xmlString != null) {
-            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(m_noticeConfFile), StandardCharsets.UTF_8);
-            fileWriter.write(xmlString);
-            fileWriter.flush();
-            fileWriter.close();
+            try (Writer fileWriter = new OutputStreamWriter(new FileOutputStream(m_noticeConfFile), StandardCharsets.UTF_8)) {
+                fileWriter.write(xmlString);
+                fileWriter.flush();
+            }
         }
     }
 

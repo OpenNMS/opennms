@@ -94,14 +94,12 @@
         "weekly-coverage": {
             "extends": [
                 "build",
-                "integration-test-with-coverage",
+                "integration-test",
                 "code-coverage"
             ]
         },
         "experimental": {
             "extends": [
-                "build",
-                "integration-test-with-coverage",
                 "code-coverage"
             ]
         }
@@ -496,17 +494,12 @@
                 "user_overridable": false
             }
         },
-        "integration-test-with-coverage": {
+        "code-coverage": {
             "context": [
-                "docker-publish-account"
+                "github-api"
             ],
             "requires": [
-                "build"
-            ]
-        },
-        "code-coverage": {
-            "requires": [
-                "integration-test-with-coverage"
+                "integration-test"
             ]
         }
     }

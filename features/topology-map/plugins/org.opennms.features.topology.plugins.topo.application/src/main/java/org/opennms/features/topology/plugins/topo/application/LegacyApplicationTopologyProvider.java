@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -46,10 +46,10 @@ import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.service.GraphService;
+import org.opennms.netmgt.graph.domain.simple.SimpleDomainEdge;
 import org.opennms.netmgt.graph.provider.application.ApplicationGraph;
 import org.opennms.netmgt.graph.provider.application.ApplicationVertex;
 import org.opennms.netmgt.graph.provider.application.ApplicationVertexType;
-import org.opennms.netmgt.graph.domain.simple.SimpleDomainEdge;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -133,7 +133,7 @@ public class LegacyApplicationTopologyProvider extends AbstractTopologyProvider 
     public SelectionChangedListener.Selection getSelection(List<VertexRef> selectedVertices, ContentType contentType) {
         Set<LegacyApplicationVertex> filteredVertices = selectedVertices.stream()
                 .filter(v -> TOPOLOGY_NAMESPACE.equals(v.getNamespace()))
-                .map(v -> (LegacyApplicationVertex) v)
+                .map(LegacyApplicationVertex.class::cast)
                 .collect(Collectors.toSet());
         Set<Integer> nodeIds = extractNodeIds(filteredVertices);
         switch (contentType) {

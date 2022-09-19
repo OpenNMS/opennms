@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -39,6 +39,7 @@ import org.opennms.core.logging.Logging;
  *
  * @author jwhite
  */
+@SuppressWarnings("java:S2176")
 public class PooledConnectionFactory extends org.apache.activemq.pool.PooledConnectionFactory {
 
     @Override

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -189,14 +189,12 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
      */
     protected void saveXml(final String xml) throws IOException {
         if (xml != null) {
-            Writer fileWriter = null;
             getWriteLock().lock();
-            try {
-                fileWriter = new OutputStreamWriter(new FileOutputStream(ConfigFileConstants.getFile(ConfigFileConstants.DISCOVERY_CONFIG_FILE_NAME)), StandardCharsets.UTF_8);
+            try (FileOutputStream fos = new FileOutputStream(ConfigFileConstants.getFile(ConfigFileConstants.DISCOVERY_CONFIG_FILE_NAME));
+                 Writer fileWriter = new OutputStreamWriter(fos, StandardCharsets.UTF_8);) {
                 fileWriter.write(xml);
                 fileWriter.flush();
             } finally {
-                if (fileWriter != null ) IOUtils.closeQuietly(fileWriter);
                 getWriteLock().unlock();
             }
         }
@@ -209,11 +207,10 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
      */
     public void saveConfiguration(final DiscoveryConfiguration configuration) throws IOException {
         getWriteLock().lock();
-        try {
+        try (final StringWriter stringWriter = new StringWriter()) {
             // marshal to a string first, then write the string to the file. This
             // way the original config
             // isn't lost if the XML from the marshal is hosed.
-            final StringWriter stringWriter = new StringWriter();
             JaxbUtils.marshal(configuration, stringWriter);
             final String xml = stringWriter.toString();
             LOG.debug("saving configuration...");

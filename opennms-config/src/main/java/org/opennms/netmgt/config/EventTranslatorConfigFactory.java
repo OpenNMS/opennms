@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -51,7 +51,6 @@ import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.ConfigFileConstants;
@@ -117,14 +116,9 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
      * 
      */
     private EventTranslatorConfigFactory(String configFile, DataSource dbConnFactory) throws IOException{
-        InputStream stream = null;
-        try {
-            stream = new FileInputStream(configFile);
+
+        try (InputStream stream = new FileInputStream(configFile)) {
             unmarshall(stream, dbConnFactory);
-        } finally {
-            if (stream != null) {
-                IOUtils.closeQuietly(stream);
-            }
         }
     }
 
@@ -159,19 +153,10 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
     public void update() throws Exception  {
 
         synchronized (this) {
-
             File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.TRANSLATOR_CONFIG_FILE_NAME);
-            InputStream stream = null;
-
-            try {
-                stream = new FileInputStream(cfgFile);
+            try (InputStream stream = new FileInputStream(cfgFile)) {
                 unmarshall(stream);
-            } finally {
-                if (stream != null) {
-                    IOUtils.closeQuietly(stream);
-                }
             }
-
         }
     }
 

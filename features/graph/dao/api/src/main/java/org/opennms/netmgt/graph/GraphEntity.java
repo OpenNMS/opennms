@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -131,9 +131,7 @@ public class GraphEntity extends AbstractGraphEntity {
 
     private static <E extends AbstractGraphEntity> E getEntitiesByProperty(List<E> entities, String key, String value) {
         return entities.stream().filter(entity -> entity.getProperties().stream()
-                .filter(property -> property.getName().equals(key) && property.getValue().equals(value))
-                .findAny()
-                .isPresent()
+                .anyMatch(property -> property.getName().equals(key) && property.getValue().equals(value))
         ).findAny().orElse(null);
     }
 }

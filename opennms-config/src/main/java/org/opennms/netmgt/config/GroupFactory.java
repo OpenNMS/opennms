@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -37,8 +37,6 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
-
-import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.ConfigFileConstants;
 
 /**
@@ -132,15 +130,9 @@ public class GroupFactory extends GroupManager {
      */
     private void reloadFromFile(File confFile) throws IOException {
         m_groupsConfFile = confFile;
-        InputStream configIn = null;
-        try {
-            configIn = new FileInputStream(m_groupsConfFile);
+        try (InputStream configIn = new FileInputStream(m_groupsConfFile)) {
             m_lastModified = m_groupsConfFile.lastModified();
             parseXml(configIn);
-        } finally {
-            if (configIn != null) {
-                IOUtils.closeQuietly(configIn);
-            }
         }
     }
 
@@ -148,10 +140,10 @@ public class GroupFactory extends GroupManager {
     @Override
     protected void saveXml(String data) throws IOException {
         if (data != null) {
-            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(m_groupsConfFile), StandardCharsets.UTF_8);
-            fileWriter.write(data);
-            fileWriter.flush();
-            fileWriter.close();
+            try (Writer fileWriter = new OutputStreamWriter(new FileOutputStream(m_groupsConfFile), StandardCharsets.UTF_8)) {
+                fileWriter.write(data);
+                fileWriter.flush();
+            }
         }
     }
 

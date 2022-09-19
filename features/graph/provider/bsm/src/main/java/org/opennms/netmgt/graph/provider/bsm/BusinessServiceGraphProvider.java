@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -105,8 +105,7 @@ public class BusinessServiceGraphProvider implements GraphProvider, EventListene
         if (!businessServices.isEmpty()) {
             final BusinessService businessService = businessServices.iterator().next();
             final String vertexId = BusinessServiceVertex.Type.BusinessService + ":" + businessService.getId();
-            final VertexRef vertexRef = graphBuilder.getVertexRef(vertexId);
-            return vertexRef;
+            return graphBuilder.getVertexRef(vertexId);
         }
         return null;
     }

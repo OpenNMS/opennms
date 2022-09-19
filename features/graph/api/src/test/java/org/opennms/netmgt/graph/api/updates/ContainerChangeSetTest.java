@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -47,6 +47,7 @@ public class ContainerChangeSetTest {
     private static final String NAMESPACE = "dummy";
 
     @Test
+    @SuppressWarnings("java:S5961")
     public void verifyDetectChanges() {
         // Define two graphs
         // Graph with vertices (1,2,3)
@@ -114,9 +115,9 @@ public class ContainerChangeSetTest {
         assertThat(changeSet.getGraphsAdded(), Matchers.hasSize(0));
         assertThat(changeSet.getGraphsRemoved(), Matchers.hasSize(0));
 
-        // Get Graph changes and verify verify briefly.
+        // Get Graph changes and verify briefly.
         // For more detailed test check out the ChangeSetTest
-        final ChangeSet<?, ?, ?> graphChangeSet = changeSet.getGraphsUpdated().get(0);
+        final ChangeSet<?, ?, ?> graphChangeSet = (ChangeSet<?, ?, ?>) changeSet.getGraphsUpdated().get(0);
         assertEquals(NAMESPACE, graphChangeSet.getNamespace()); // Ensure the namespace was detected successful
 
         // Verify Change Flags
@@ -144,8 +145,9 @@ public class ContainerChangeSetTest {
     public void verifyContainerIdCannotChange() {
         final GenericGraphContainer oldContainer = GenericGraphContainer.builder().id(CONTAINER_ID).build();
         final GenericGraphContainer newContainer = GenericGraphContainer.builder().id(CONTAINER_ID + ".opennms").build();
+        ContainerChangeSet.ContainerChangeSetBuilder builder = ContainerChangeSet.builder(oldContainer, newContainer);
         try {
-            ContainerChangeSet.builder(oldContainer, newContainer).build();
+            builder.build();
             fail("Expected an exception to be thrown, but succeeded. Bailing");
         } catch (IllegalStateException ex) {
             // expected, as container id changes are not supported

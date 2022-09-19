@@ -9,6 +9,11 @@
   <artifactId>dependencies</artifactId>
   <packaging>pom</packaging>
   <name>OpenNMS :: Dependencies</name>
+  <properties>
+    <skipSurefire>true</skipSurefire>
+    <skipFailsafe>true</skipFailsafe>
+    <skipJacoco>true</skipJacoco>
+  </properties>
   <modules>
     <module>activemq</module>
     <module>activemq-web</module>

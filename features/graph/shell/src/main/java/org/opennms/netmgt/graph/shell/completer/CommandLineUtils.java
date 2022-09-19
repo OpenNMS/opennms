@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -35,6 +35,10 @@ import org.apache.karaf.shell.api.console.CommandLine;
 import com.google.common.collect.Lists;
 
 public class CommandLineUtils {
+
+    private CommandLineUtils() {
+        throw new IllegalStateException("Utility class");
+    }
 
     public static String extractArgument(final CommandLine commandLine, final String argumentName) {
         final List<String> arguments = Lists.newArrayList(commandLine.getArguments());

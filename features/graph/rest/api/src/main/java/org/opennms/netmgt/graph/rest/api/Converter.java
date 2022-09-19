@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.graph.rest.api;
 
-public interface Converter<INPUT, OUTPUT> {
-    boolean canConvert(Class<INPUT> type);
-    OUTPUT convert(INPUT input);
+public interface Converter<I, O> {
+    boolean canConvert(Class<I> type);
+    O convert(I input);
 }

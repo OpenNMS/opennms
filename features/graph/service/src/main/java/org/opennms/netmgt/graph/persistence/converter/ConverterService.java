@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -41,7 +41,7 @@ public class ConverterService {
         converterRegistry.add(new PrimitiveConverter<>(Float.class, Float::valueOf));
         converterRegistry.add(new PrimitiveConverter<>(Integer.class, Integer::valueOf));
         converterRegistry.add(new PrimitiveConverter<>(Double.class, Double::valueOf));
-        converterRegistry.add(new PrimitiveConverter<>(String.class, (string) -> string));
+        converterRegistry.add(new PrimitiveConverter<>(String.class, string -> string));
         converterRegistry.add(new PrimitiveConverter<>(Short.class, Short::valueOf));
         converterRegistry.add(new PrimitiveConverter<>(Byte.class, Byte::valueOf));
         converterRegistry.add(new EnumConverter());

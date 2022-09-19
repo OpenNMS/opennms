@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -38,7 +38,6 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 
-import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.ConfigFileConstants;
 
 /**
@@ -77,15 +76,9 @@ public class ChartConfigFactory extends ChartConfigManager {
     public static synchronized void reload() throws IOException, FileNotFoundException {
         m_chartConfigFile = ConfigFileConstants.getFile(ConfigFileConstants.CHART_CONFIG_FILE_NAME);
 
-        InputStream configIn = null;
-        try {
-            configIn = new FileInputStream(m_chartConfigFile);
+        try (InputStream configIn = new FileInputStream(m_chartConfigFile)) {
             m_lastModified = m_chartConfigFile.lastModified();
             parseXml(configIn);
-        } finally {
-            if (configIn != null) {
-                IOUtils.closeQuietly(configIn);
-            }
         }
     }
 
@@ -93,10 +86,10 @@ public class ChartConfigFactory extends ChartConfigManager {
     @Override
     protected void saveXml(String xml) throws IOException {
         if (xml != null) {
-            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(m_chartConfigFile), StandardCharsets.UTF_8);
-            fileWriter.write(xml);
-            fileWriter.flush();
-            fileWriter.close();
+            try (Writer fileWriter = new OutputStreamWriter(new FileOutputStream(m_chartConfigFile), StandardCharsets.UTF_8)) {
+                fileWriter.write(xml);
+                fileWriter.flush();
+            }
         }
     }
 

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -37,7 +37,6 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 
-import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -107,15 +106,9 @@ public final class SnmpInterfacePollerConfigFactory extends SnmpInterfacePollerC
 
         LOG.debug("init: config file path: {}", cfgFile.getPath());
 
-        InputStream stream = null;
-        try {
-            stream = new FileInputStream(cfgFile);
+        try (InputStream stream = new FileInputStream(cfgFile)) {
             SnmpInterfacePollerConfigFactory config = new SnmpInterfacePollerConfigFactory(cfgFile.lastModified(), stream);
             setInstance(config);
-        } finally {
-            if (stream != null) {
-                IOUtils.closeQuietly(stream);
-            }
         }
     }
 
@@ -138,11 +131,11 @@ public final class SnmpInterfacePollerConfigFactory extends SnmpInterfacePollerC
             long timestamp = System.currentTimeMillis();
             File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.SNMP_INTERFACE_POLLER_CONFIG_FILE_NAME);
             LOG.debug("saveXml: saving config file at {}: {}",timestamp, cfgFile.getPath());
-            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(cfgFile), StandardCharsets.UTF_8);
-            fileWriter.write(xml);
-            fileWriter.flush();
-            fileWriter.close();
-            LOG.debug("saveXml: finished saving config file: {}", cfgFile.getPath());
+            try (Writer fileWriter = new OutputStreamWriter(new FileOutputStream(cfgFile), StandardCharsets.UTF_8)) {
+                fileWriter.write(xml);
+                fileWriter.flush();
+                LOG.debug("saveXml: finished saving config file: {}", cfgFile.getPath());
+            }
         }
     }
 
@@ -183,14 +176,8 @@ public final class SnmpInterfacePollerConfigFactory extends SnmpInterfacePollerC
         if (cfgFile.lastModified() > m_currentVersion) {
             m_currentVersion = cfgFile.lastModified();
             LOG.debug("init: config file path: {}", cfgFile.getPath());
-            InputStream stream = null;
-            try {
-                stream = new FileInputStream(cfgFile);
+            try (InputStream stream = new FileInputStream(cfgFile)) {
                 reloadXML(stream);
-            } finally {
-                if (stream != null) {
-                    IOUtils.closeQuietly(stream);
-                }
             }
             LOG.debug("init: finished loading config file: {}", cfgFile.getPath());
         }

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -37,7 +37,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.vacuumd.Action;
@@ -117,17 +116,10 @@ public final class VacuumdConfigFactory {
             return;
         }
 
-        InputStream is = null;
-
-        try {
-            is = new FileInputStream(ConfigFileConstants.getFile(ConfigFileConstants.VACUUMD_CONFIG_FILE_NAME));
+        try (InputStream is = new FileInputStream(ConfigFileConstants.getFile(ConfigFileConstants.VACUUMD_CONFIG_FILE_NAME))) {
             setInstance(new VacuumdConfigFactory(is));
-        } finally {
-            if (is != null) {
-                IOUtils.closeQuietly(is);
-            }
         }
-        
+
         m_loadedFromFile = true;
     }
 

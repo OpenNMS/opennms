@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -64,12 +64,13 @@ public final class ApplicationGraph extends AbstractDomainGraph<ApplicationVerte
         return new ApplicationGraph(genericGraph);
     }
     
-    public final static class ApplicationGraphBuilder extends AbstractDomainGraphBuilder<ApplicationGraphBuilder, ApplicationVertex, SimpleDomainEdge> {
+    public static final class ApplicationGraphBuilder extends AbstractDomainGraphBuilder<ApplicationGraphBuilder, ApplicationVertex, SimpleDomainEdge> {
                
         private ApplicationGraphBuilder() {
             namespace(NAMESPACE);
         }
-        
+
+        @Override
         public ApplicationGraphBuilder description(String description) {
             delegate.property(GenericProperties.DESCRIPTION, description);
             return this;

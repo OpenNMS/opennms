@@ -191,11 +191,8 @@ my $ulimit_fd;
 if ($ulimit_fd = `ulimit -n`) {
 	chomp($ulimit_fd);
 	if ($ulimit_fd ne "unlimited" && $ulimit_fd < $MINIMUM_FD) {
-		warning("File descriptor limit ('ulimit -n') must be >= $MINIMUM_FD. Setting to $MINIMUM_FD.");
-		my $exit = handle_errors(system("ulimit -n $MINIMUM_FD"));
-		if ($exit != 0) {
-			die("Could not set ulimit (was it already set previously; you usually can't increase a hard limit that has been previously set): $!\n");
-		}
+		error("File descriptor limit ('ulimit -n') must be >= $MINIMUM_FD but is $ulimit_fd. Use 'ulimit -n $MINIMUM_FD' to set.");
+		exit 1;
 	}
 }
 

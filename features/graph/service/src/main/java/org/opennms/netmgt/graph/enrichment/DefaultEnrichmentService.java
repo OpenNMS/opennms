@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,7 +29,6 @@
 package org.opennms.netmgt.graph.enrichment;
 
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
@@ -50,17 +49,16 @@ public class DefaultEnrichmentService implements EnrichmentService {
             for (EnrichmentProcessor processor : actualProcessors) {
                 processor.enrich(enrichmentGraphBuilder);
             }
-            final GenericGraph enrichedGraph = enrichmentGraphBuilder.build();
-            return enrichedGraph;
+            return enrichmentGraphBuilder.build();
         }
         return null;
     }
 
-    public void onBind(EnrichmentProcessor enrichmentProcessor, Map<String, String> props) {
+    public void onBind(EnrichmentProcessor enrichmentProcessor) {
         enrichmentProcessors.add(enrichmentProcessor);
     }
 
-    public void onUnbind(EnrichmentProcessor enrichmentProcessor, Map<String, String> props) {
+    public void onUnbind(EnrichmentProcessor enrichmentProcessor) {
         enrichmentProcessors.remove(enrichmentProcessor);
     }
 

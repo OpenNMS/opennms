@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2022 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,23 +26,12 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.alarms.history.elastic;
+package org.opennms.features.activemq.broker.api;
 
-import java.util.List;
+public class BrokerException extends RuntimeException {
+    private static final long serialVersionUID = 1L;
 
-import org.opennms.features.alarms.history.elastic.dto.AlarmDocumentDTO;
-import org.opennms.features.jest.client.bulk.FailedItem;
-
-public class PersistenceException extends Exception {
-
-    private final transient List<FailedItem<AlarmDocumentDTO>> failedItems;
-
-    public PersistenceException(String message, List<FailedItem<AlarmDocumentDTO>> failedItems) {
-        super(message);
-        this.failedItems = failedItems;
-    }
-
-    public List<FailedItem<AlarmDocumentDTO>> getFailedItems() {
-        return failedItems;
+    public BrokerException(Exception e) {
+        super(e);
     }
 }

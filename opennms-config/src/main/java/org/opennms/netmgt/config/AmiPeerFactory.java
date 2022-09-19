@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -189,20 +189,19 @@ public class AmiPeerFactory {
      */
     public void saveCurrent() throws Exception {
         getWriteLock().lock();
-        
-        try {
+        try (final StringWriter stringWriter = new StringWriter();
+             Writer fileWriter = new OutputStreamWriter(new FileOutputStream(ConfigFileConstants.getFile(ConfigFileConstants.AMI_CONFIG_FILE_NAME)), StandardCharsets.UTF_8)){
             optimize();
     
             // Marshal to a string first, then write the string to the file. This
             // way the original config
             // isn't lost if the XML from the marshal is hosed.
-            final StringWriter stringWriter = new StringWriter();
+
             JaxbUtils.marshal(m_config, stringWriter);
             if (stringWriter.toString() != null) {
-                final Writer fileWriter = new OutputStreamWriter(new FileOutputStream(ConfigFileConstants.getFile(ConfigFileConstants.AMI_CONFIG_FILE_NAME)), StandardCharsets.UTF_8);
+
                 fileWriter.write(stringWriter.toString());
                 fileWriter.flush();
-                fileWriter.close();
             }
     
             reload();
@@ -339,19 +338,17 @@ public class AmiPeerFactory {
                     final InetAddress beginAddress = rangesIterator.next();
                     final Range range = rangesMap.get(beginAddress);
                     final InetAddress endAddress = InetAddressUtils.getInetAddress(range.getEnd());
-    
-                    if (priorRange != null) {
-                        if (InetAddressUtils.inSameScope(beginAddress, priorEnd) && InetAddressUtils.difference(beginAddress, priorEnd).compareTo(BigInteger.ONE) <= 0) {
-                            priorBegin = new InetAddressComparator().compare(priorBegin, beginAddress) < 0 ? priorBegin : beginAddress;
-                            priorRange.setBegin(InetAddressUtils.toIpAddrString(priorBegin));
-                            priorEnd = new InetAddressComparator().compare(priorEnd, endAddress) > 0 ? priorEnd : endAddress;
-                            priorRange.setEnd(InetAddressUtils.toIpAddrString(priorEnd));
-    
-                            rangesIterator.remove();
-                            continue;
-                        }
+
+                    if (priorRange != null && InetAddressUtils.inSameScope(beginAddress, priorEnd) && InetAddressUtils.difference(beginAddress, priorEnd).compareTo(BigInteger.ONE) <= 0) {
+                        priorBegin = new InetAddressComparator().compare(priorBegin, beginAddress) < 0 ? priorBegin : beginAddress;
+                        priorRange.setBegin(InetAddressUtils.toIpAddrString(priorBegin));
+                        priorEnd = new InetAddressComparator().compare(priorEnd, endAddress) > 0 ? priorEnd : endAddress;
+                        priorRange.setEnd(InetAddressUtils.toIpAddrString(priorEnd));
+
+                        rangesIterator.remove();
+                        continue;
                     }
-    
+
                     priorRange = range;
                     priorBegin = beginAddress;
                     priorEnd = endAddress;
@@ -389,7 +386,7 @@ public class AmiPeerFactory {
                 for (String saddr : def.getSpecifics()) {
                     saddr = saddr.trim();
                     final InetAddress addr = InetAddressUtils.addr(saddr);
-                    if (addr.equals(agentConfig.getAddress())) {
+                    if (addr.equals(agentConfig.getAddress().orElse(null))) {
                         setAmiAgentConfig(agentConfig, def);
                         break DEFLOOP;
                     }

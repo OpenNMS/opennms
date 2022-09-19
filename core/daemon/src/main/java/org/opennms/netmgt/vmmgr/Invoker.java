@@ -246,25 +246,9 @@ public class Invoker {
                         return resultInfo;
                     }
                 }
-                
-                for (final Invoke invoke : invokerService.getService().getInvokes()) {
-                    if (invoke.getPass() != pass || !getAtType().equals(invoke.getAt())) {
-                        continue;
-                    }
 
-                    LOG.debug("pass {} on service {} will invoke method \"{}\"", pass, name, invoke.getMethod()); 
-                    
-
-                    try {
-                        Object result = invoke(invoke, mbean);
-                        resultInfo.add(new InvokerResult(service, mbean, result, null));
-                    } catch (Throwable t) {
-                        resultInfo.add(new InvokerResult(service, mbean, null, t));
-                        if (isFailFast()) {
-                            return resultInfo;
-                        }
-                    }
-                }
+                List<InvokerResult> resultInfo1 = getInvokerResults(resultInfo, pass, invokerService, service, name, mbean);
+                if (resultInfo1 != null) return resultInfo1;
             }
             
             LOG.debug("completed pass {}", pass);
@@ -272,6 +256,28 @@ public class Invoker {
         }
 
         return resultInfo;
+    }
+
+    private List<InvokerResult> getInvokerResults(List<InvokerResult> resultInfo, int pass, InvokerService invokerService, Service service, String name, ObjectInstance mbean) {
+        for (final Invoke invoke : invokerService.getService().getInvokes()) {
+            if (invoke.getPass() != pass || !getAtType().equals(invoke.getAt())) {
+                continue;
+            }
+
+            LOG.debug("pass {} on service {} will invoke method \"{}\"", pass, name, invoke.getMethod());
+
+
+            try {
+                Object result = invoke(invoke, mbean);
+                resultInfo.add(new InvokerResult(service, mbean, result, null));
+            } catch (Throwable t) {
+                resultInfo.add(new InvokerResult(service, mbean, null, t));
+                if (isFailFast()) {
+                    return resultInfo;
+                }
+            }
+        }
+        return Collections.emptyList();
     }
 
     /**
@@ -302,6 +308,7 @@ public class Invoker {
         return end;
     }
 
+    @SuppressWarnings({"java:S112", "java:S2139"})
     private Object invoke(final Invoke invoke, final ObjectInstance mbean) throws Throwable {
         List<Argument> args = invoke.getArguments();
         Object[] parms = new Object[0];
@@ -350,6 +357,7 @@ public class Invoker {
         return object;
     }
 
+    @SuppressWarnings("java:S112")
     private Attribute getAttribute(org.opennms.netmgt.config.service.Attribute attrib) throws Exception {
         Class<?> attribClass = Class.forName(attrib.getValue().getType());
         Constructor<?> construct = attribClass.getConstructor(STRING_ARRAY_CLASS);
