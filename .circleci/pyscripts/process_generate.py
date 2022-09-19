@@ -211,7 +211,7 @@ if "trigger-build" in mappings:
         print("Executing workflow: build-publish")
         build_mappings["build-publish"] = mappings["trigger-build"]
         print()
-    elif "merge-foundation/" not in branch_name:
+    elif "merge-foundation/" in branch_name and not build_trigger_override_found:
         print("Execute workflow: merge-foundation")
         print()
         # If experimental path is enabled, disable other paths
