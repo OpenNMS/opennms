@@ -83,7 +83,11 @@ class libprocess:
                 "Time Started": _start.strftime("%Y/%m/%d %H:%M:%S.%f"),
                 "Time Finnished": _end.strftime("%Y/%m/%d %H:%M:%S.%f"),
                 "Time Taken": str(_end - _start),
-                "Output": outputFile,
+                "Output": {
+                    "stdout": str(_output.stdout.decode("utf-8")) + "\n",
+                    "stderr": str(_output.stderr.decode("utf-8")) + "\n",
+                    "file": outputFile,
+                },
                 "Return Code": _output.returncode,
             }
 
