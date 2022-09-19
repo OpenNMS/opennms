@@ -35,7 +35,7 @@ class libgit:
             redirectSTDOUT=True,
             outputFile=self.log_fullpath,
         )
-        self.libprocess.printSummary(output)
+        # self.libprocess.printSummary(output)
         # print("=", "Stopping", "switchBranch", "=")
         return output["Output"]["stdout"].splitlines()
 
@@ -93,7 +93,7 @@ class libgit:
             redirectSTDOUT=True,
             outputFile=self.log_fullpath,
         )
-        self.libprocess.printSummary(output)
+        # self.libprocess.printSummary(output)
         # print("=", "Stopping", "switchBranch", "=")
         return output
 
@@ -114,7 +114,7 @@ class libgit:
             redirectSTDOUT=True,
             outputFile=self.log_fullpath,
         )
-        self.libprocess.printSummary(output)
+        # self.libprocess.printSummary(output)
         # print("=", "Stopping", "getSourceCode", "=")
         return output
 
@@ -130,7 +130,7 @@ class libgit:
             redirectSTDOUT=True,
             outputFile=self.log_fullpath,
         )
-        self.libprocess.printSummary(output)
+        # self.libprocess.printSummary(output)
         # print("=", "Stopping", "updateSourceCode", "=")
 
         return output
@@ -146,6 +146,6 @@ class libgit:
             redirectSTDOUT=True,
             outputFile="stdout",
         )
-        self.libprocess.printSummary(output)
+        # self.libprocess.printSummary(output)
         # print("=", "Stopping", "commonAncestor", "=")
         return output["Output"]["stdout"].strip()

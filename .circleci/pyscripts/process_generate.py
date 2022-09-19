@@ -30,11 +30,10 @@ libgit.switch_branch(head)
 
 base = libgit.common_ancestor(base_revision, head)
 
-print("branch_name", branch_name)
-print("output_path", output_path)
-print("head", head)
-print("base_revision", base_revision)
-print("base", base)
+print("Branch Name:", branch_name)
+print("Output Path", output_path)
+print("Branch HEAD:", head)
+print("Base Revision:", base_revision)
 
 if head == base:
     try:
@@ -50,7 +49,8 @@ if head == base:
         # to that is just the first commit as patch.
         base = "4b825dc642cb6eb9a060e54bf8d69288fbee4904"
 
-print("base", base)
+print("Base:", base)
+print()
 
 changed_files = libgit.get_changed_files_in_commits(base, head)
 
@@ -82,8 +82,10 @@ mappings = filter(check_mapping, mappings)
 mappings = map(convert_mapping, mappings)
 mappings = dict(mappings)
 
-print("Mappings:", mappings)
-
+print("Mappings:")
+for item in mappings:
+    print(" ", "*", item)
+print()
 
 What_to_build = []
 
@@ -134,7 +136,6 @@ for item in workflow_keywords:
 
 
 # Step 2: Take action on them
-
 if ".circleci/epoch" in changed_files:
     print("`epoch` file detected")
     mappings["trigger-build"] = True
