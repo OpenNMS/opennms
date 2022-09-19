@@ -29,7 +29,7 @@ class libprocess:
                 f.write("===Time\n")
                 f.write("Start: " + startTime + "\n")
                 f.write("End: " + endTime + "\n")
-                f.write("Delta: " + endTime - startTime + "\n")
+                f.write("Delta: " + str(endTime - startTime) + "\n")
             else:
                 f.write(data)
 
