@@ -52,6 +52,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
+import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -63,7 +64,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSchema;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
@@ -523,5 +528,39 @@ public abstract class JaxbUtils {
 
     public static <T> T duplicateObject(T obj, final Class<T> clazz) {
         return unmarshal(clazz, marshal(obj));
+    }
+
+    @SuppressWarnings("java:S2755")
+    public static TransformerFactory newSanitizedTransformerFactory() {
+        final TransformerFactory factory = TransformerFactory.newInstance();
+
+        trySanitize(() -> factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, ""));
+        trySanitize(() -> factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, ""));
+
+        return factory;
+    }
+
+    public static Transformer newSanitizedTransformer() throws TransformerConfigurationException {
+        return newSanitizedTransformer(newSanitizedTransformerFactory());
+    }
+
+    public static Transformer newSanitizedTransformer(final TransformerFactory factory) throws TransformerConfigurationException {
+        final Transformer tf = factory.newTransformer();
+
+        trySanitize(() -> tf.setOutputProperty(OutputKeys.ENCODING, StandardCharsets.UTF_8.name()));
+
+        return tf;
+    }
+
+    private static void trySanitize(final Runnable r) {
+        try {
+            r.run();
+        } catch (final Exception e) {
+            if (e instanceof IllegalArgumentException && e.getMessage().contains("Not supported:")) {
+                // doesn't do it anyway, all good
+            } else {
+                throw new RuntimeException(e);
+            }
+        }
     }
 }

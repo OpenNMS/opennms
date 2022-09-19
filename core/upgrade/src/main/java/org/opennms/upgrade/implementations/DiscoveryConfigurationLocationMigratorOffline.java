@@ -33,22 +33,20 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 
-import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.io.FileUtils;
 import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.upgrade.api.AbstractOnmsUpgrade;
 import org.opennms.upgrade.api.OnmsUpgradeException;
 import org.w3c.dom.Document;
@@ -128,11 +126,7 @@ public class DiscoveryConfigurationLocationMigratorOffline extends AbstractOnmsU
             updateLocations(doc, "include-url");
             updateLocations(doc, "specific");
 
-            TransformerFactory factory = TransformerFactory.newInstance();
-            factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-            factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
-            final Transformer tf = factory.newTransformer();
-            tf.setOutputProperty(OutputKeys.ENCODING, StandardCharsets.UTF_8.name());
+            final Transformer tf = JaxbUtils.newSanitizedTransformer();
             tf.setOutputProperty(OutputKeys.INDENT, "yes");
             try (Writer out = new StringWriter()){
                 tf.transform(new DOMSource(doc), new StreamResult(out));

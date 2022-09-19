@@ -49,6 +49,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.io.FileUtils;
 import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.upgrade.api.AbstractOnmsUpgrade;
 import org.opennms.upgrade.api.OnmsUpgradeException;
 import org.w3c.dom.Document;
@@ -92,11 +93,7 @@ public class DiscoveryConfigurationMigratorOffline extends AbstractOnmsUpgrade {
             if (found.getLength() == 1 && found.item(0) instanceof Element) {
                 final Element el = (Element)found.item(0);
                 el.removeAttribute("threads");
-                TransformerFactory factory = TransformerFactory.newInstance();
-                factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-                factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
-                final Transformer tf = factory.newTransformer();
-                tf.setOutputProperty(OutputKeys.ENCODING, StandardCharsets.UTF_8.name());
+                final Transformer tf = JaxbUtils.newSanitizedTransformer();
                 tf.setOutputProperty(OutputKeys.INDENT, "yes");
                 try (Writer out = new StringWriter()) {
                     tf.transform(new DOMSource(doc), new StreamResult(out));
