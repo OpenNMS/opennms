@@ -31,7 +31,7 @@ libgit.switch_branch(head)
 base = libgit.common_ancestor(base_revision, head)
 
 print("Branch Name:", branch_name)
-print("Output Path", output_path)
+print("Output Path:", output_path)
 print("Branch HEAD:", head)
 print("Base Revision:", base_revision)
 
@@ -117,6 +117,12 @@ for change in changed_files:
     else:
         if "merge-foundation/" not in branch_name:
             add_to_build_list("build")
+
+if changed_files:
+    print("Changed file(s):")
+    for item in changed_files:
+        print(" ", "*", item)
+    print()
 
 if What_to_build:
     print("What we want to build:")
