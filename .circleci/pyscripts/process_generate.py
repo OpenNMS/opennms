@@ -84,7 +84,7 @@ mappings = dict(mappings)
 
 print("Mappings:")
 for item in mappings:
-    print(" ", "*", item)
+    print(" ", "*", item, "[", mappings[item], "]")
 print()
 
 What_to_build = []
@@ -121,7 +121,8 @@ for change in changed_files:
 if changed_files:
     print("Changed file(s):")
     for item in changed_files:
-        print(" ", "*", item)
+        if item:
+            print(" ", "*", item)
     print()
 
 if What_to_build:
