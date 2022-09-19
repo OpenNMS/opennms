@@ -9,7 +9,7 @@ class libprocess:
     This class is designed to run shell commands.
     """
 
-    def saveFile(self, filename, command, data, startTime, endTime):
+    def saveFile(self, filename, command, data, startTime, endTime, deltaTime):
         if not data:
             return
         if os.path.exists(filename):
@@ -29,7 +29,7 @@ class libprocess:
                 f.write("===Time\n")
                 f.write("Start: " + startTime + "\n")
                 f.write("End: " + endTime + "\n")
-                f.write("Delta: " + str(endTime - startTime) + "\n")
+                f.write("Delta: " + deltaTime + "\n")
             else:
                 f.write(data)
 
@@ -89,6 +89,7 @@ class libprocess:
                 _output,
                 _start.strftime("%Y/%m/%d %H:%M:%S.%f"),
                 _end.strftime("%Y/%m/%d %H:%M:%S.%f"),
+                str(_end - _start),
             )
             return_data = {
                 "Time Started": _start.strftime("%Y/%m/%d %H:%M:%S.%f"),
