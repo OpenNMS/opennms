@@ -145,5 +145,5 @@ echo "#### Executing tests"
            --projects "$(< /tmp/this_node_projects paste -s -d, -)" \
            --also-make \
            jacoco:prepare-agent \
-           verify \
+           install \
            jacoco:report
