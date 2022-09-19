@@ -19,7 +19,7 @@ Once you create the group, you can then define it in the `thresholds.xml` file o
 
 This procedure creates a threshold group called "demo_group":
 
-. Type the following in the `thresholds.xml` file:
+. Open `$\{OPENNMS_HOME}/etc/thresholds.xml` and add the following line of code:
 +
 [source, xml]
 ----
@@ -27,13 +27,13 @@ This procedure creates a threshold group called "demo_group":
 </group>
 ----
 
-. Switch to the UI, go to the threshold screen, and click *Reload Threshold Configuration*.
+. Log in to the web UI, click the *Gear* symbol in the top-right of the screen, and choose menu:Performance Measurement[Configure Thresholds].
 +
 The group you created should appear in the UI.
 
-. Click *Edit* to edit the group.
+. Click *Edit* next to the group's name.
 
-The following is a sample of how the threshold appears in the `thresholds.xml` file:
+The following is a sample of how the threshold appears in `thresholds.xml`:
 
 [source, xml]
 -----
@@ -46,4 +46,4 @@ The following is a sample of how the threshold appears in the `thresholds.xml` f
 </group>
 -----
 <1> The name of the group and the directory of the stored data.
-<2> The details of the threshold including type, data source type, threshold value, re-arm value, and so on.
+<2> The details of the threshold, including type, data source type, threshold value, re-arm value, and so on.
