@@ -122,6 +122,7 @@ if What_to_build:
     print("What we want to build:")
     for item in What_to_build:
         print(" ", "*", item)
+    print()
 
 git_keywords = libgit.extract_keywords_from_last_commit()
 
@@ -133,12 +134,14 @@ workflow_keywords = workflow_data["bundles"].keys()
 print("Supported Workflow Keywords:")
 for item in workflow_keywords:
     print(" ", "*", item)
+print()
 
 
 # Step 2: Take action on them
 if ".circleci/epoch" in changed_files:
     print("`epoch` file detected")
     mappings["trigger-build"] = True
+    print()
 
 # Check to see if build-trigger.overrride file exists and we are not
 # on the main branches
@@ -174,6 +177,7 @@ else:
     }
 
 print("Build Trigger Override Found:", str(build_trigger_override_found))
+print()
 
 if "trigger-build" in mappings:
     if (
@@ -184,9 +188,11 @@ if "trigger-build" in mappings:
     ) and "merge-foundation/" not in branch_name:
         print("Executing workflow: build-publish")
         build_mappings["build-publish"] = mappings["trigger-build"]
+        print()
     else:
         if "merge-foundation/" in branch_name:
             print("Execute workflow: merge-foundation")
+            print()
             build_mappings["merge-foundation"] = True
             build_mappings["build-publish"] = False
             build_mappings["build-deploy"] = False
@@ -194,6 +200,7 @@ if "trigger-build" in mappings:
             not build_trigger_override_found and "merge-foundation/" not in branch_name
         ):
             print("Executing workflow: build-deploy")
+            print()
             build_mappings["build-deploy"] = mappings["trigger-build"]
 
 if "trigger-docs" in mappings:
@@ -212,16 +219,19 @@ if "trigger-flaky-smoke" in mappings:
 if re.match(".*smoke.*", branch_name):
     print("Detected smoke in the branch name")
     build_mappings["smoke"] = True
+    print()
 
 if re.match(".*flaky.*", branch_name):
     print("Detected smoke in the branch name")
     build_mappings["smoke-flaky"] = True
+    print()
 
 
 if git_keywords:
     print("Detected GIT keywords:")
     for item in git_keywords:
         print(" ", "*", item)
+    print()
 
 if (
     "circleci_configuration" in What_to_build
