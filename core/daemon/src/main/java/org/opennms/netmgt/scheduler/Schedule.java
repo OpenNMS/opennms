@@ -133,7 +133,7 @@ public class Schedule {
 
     private void schedule(long interval) {
         if (interval >= 0 && m_scheduled)
-            m_timer.schedule(interval, new ScheduleEntry(m_currentExpirationCode.getAndIncrement()));
+            m_timer.schedule(interval, new ScheduleEntry(m_currentExpirationCode.incrementAndGet()));
     }
 
     /**
@@ -155,7 +155,7 @@ public class Schedule {
      */
     public void unschedule() {
         m_scheduled = false;
-        m_currentExpirationCode.incrementAndGet();
+        m_currentExpirationCode.getAndIncrement();
     }
 
 }

@@ -394,9 +394,9 @@ public class Controller {
         // If there is no local JMX connector URI, we need to launch the
         // JMX agent via this VirtualMachine attachment.
         if (connectorAddress == null) {
-        	if (LOG.isInfoEnabled()) {
-        		LOG.info("Starting local management agent in JVM with ID: {}", vm.id());
-        	}
+            if (LOG.isInfoEnabled()) {
+                LOG.info("Starting local management agent in JVM with ID: {}", vm.id());
+            }
 
             try {
                 vm.startLocalManagementAgent();
