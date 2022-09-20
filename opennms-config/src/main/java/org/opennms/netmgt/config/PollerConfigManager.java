@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -179,9 +179,13 @@ abstract public class PollerConfigManager implements PollerConfig {
     
         for(final Package pkg : packages()) {
             for(final String url : includeURLs(pkg)) {
-                final List<String> iplist = IpListFromUrl.fetch(url);
-                if (iplist.size() > 0) {
-                    m_urlIPMap.put(url, iplist);
+                try {
+                    final List<String> iplist = IpListFromUrl.fetch(url);
+                    if (iplist.size() > 0) {
+                        m_urlIPMap.put(url, iplist);
+                    }
+                } catch (final IOException e) {
+                    LOG.warn("Failed to get IP list from URL {}", url, e);
                 }
             }
         }

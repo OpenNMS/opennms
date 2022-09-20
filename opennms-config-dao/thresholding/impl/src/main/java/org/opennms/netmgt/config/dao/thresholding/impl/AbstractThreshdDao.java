@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.config.dao.thresholding.impl;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -107,10 +108,14 @@ public abstract class AbstractThreshdDao implements ReadableThreshdDao {
          */
         private synchronized void createUrlIpMap() {
             for (Package pkg : getReadOnlyConfig().getPackages()) {
-                for (String urlname : pkg.getIncludeUrls()) {
-                    java.util.List<String> iplist = IpListFromUrl.fetch(urlname);
-                    if (iplist.size() > 0) {
-                        urlIPMap.put(urlname, iplist);
+                for (final String urlname : pkg.getIncludeUrls()) {
+                    try {
+                        java.util.List<String> iplist = IpListFromUrl.fetch(urlname);
+                        if (iplist.size() > 0) {
+                            urlIPMap.put(urlname, iplist);
+                        }
+                    } catch (final IOException e) {
+                        LOG.warn("Failed to get IP list from URL {}", urlname, e);
                     }
                 }
             }

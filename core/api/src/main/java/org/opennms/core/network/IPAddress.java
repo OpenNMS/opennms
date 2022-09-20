@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2014-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -37,8 +37,13 @@ import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class IPAddress implements Comparable<IPAddress> {
-    private static final Pattern LEADING_ZEROS = Pattern.compile("^0:[0:]+");
+	private static final Logger LOG = LoggerFactory.getLogger(IPAddress.class);
+
+	private static final Pattern LEADING_ZEROS = Pattern.compile("^0:[0:]+");
     protected final InetAddress m_inetAddress;
 
     public IPAddress(final IPAddress addr) {
@@ -111,7 +116,7 @@ public class IPAddress implements Comparable<IPAddress> {
             compressLongestRunOfZeroes(hextets);
             return hextetsToIPv6String(hextets);
         } else {
-            System.err.println("Not an Inet4Address nor an Inet6Address! " + m_inetAddress.getClass());
+            LOG.warn("Not an Inet4Address nor an Inet6Address! {}", m_inetAddress.getClass());
             return m_inetAddress.getHostAddress();
         }
     }
@@ -258,7 +263,7 @@ public class IPAddress implements Comparable<IPAddress> {
             if (address == null) {
                 // This case can occur when Jersey uses Spring bean classes which use
                 // CGLIB bytecode manipulation to generate InetAddress classes. This will
-                // occur during REST calls. {@see org.opennms.web.rest.NodeRestServiceTest}
+                // occur during REST calls. (ex. org.opennms.web.rest.NodeRestServiceTest)
                 //
                 throw new IllegalArgumentException("InetAddress instance violates contract by returning a null address from getAddress()");
             } else if (addr instanceof Inet4Address) {
@@ -304,7 +309,8 @@ public class IPAddress implements Comparable<IPAddress> {
     }
 
     protected byte[] toIpAddrBytes(final String dottedNotation) {
-        return getInetAddress(dottedNotation).getAddress();
+        final var addr = getInetAddress(dottedNotation);
+        return addr == null? null : addr.getAddress();
     }
 
     private InetAddress getInetAddress(final byte[] ipAddrOctets) {
@@ -331,28 +337,27 @@ public class IPAddress implements Comparable<IPAddress> {
             return -1;
         } else if (b == null) {
             return 1;
-        } else {
-            // Make shorter byte arrays "less than" longer arrays
-            if (a.length < b.length) {
-                return -1;
-            } else if (a.length > b.length) {
-                return 1;
-            } else {
-                // Compare byte-by-byte
-                for (int i = 0; i < a.length; i++) {
-                    final int aInt = unsignedByteToInt(a[i]);
-                    final int bInt = unsignedByteToInt(b[i]);
-                    if (aInt < bInt) {
-                        return -1;
-                    } else if (aInt > bInt) {
-                        return 1;
-                    }
-                }
-                // OK both arrays are the same length and every byte is identical so they are equal
-                return 0;
-            }
+        } else if (a.length < b.length) {
+            return -1;
+        } else if (a.length > b.length) {
+            return 1;
         }
+        return byteCompare(a, b);
     }
+
+	private int byteCompare(final byte[] a, final byte[] b) {
+		for (int i = 0; i < a.length; i++) {
+		    final int aInt = unsignedByteToInt(a[i]);
+		    final int bInt = unsignedByteToInt(b[i]);
+		    if (aInt < bInt) {
+		        return -1;
+		    } else if (aInt > bInt) {
+		        return 1;
+		    }
+		}
+        // OK both arrays are the same length and every byte is identical so they are equal
+	    return 0;
+	}
 
     /**
      * Returns the {@code int} value whose byte representation is the given 4
@@ -437,6 +442,6 @@ public class IPAddress implements Comparable<IPAddress> {
     }
 
     private int unsignedByteToInt(final byte b) {
-        return b < 0 ? ((int)b)+256 : ((int)b);
+        return b < 0 ? b+256 : b;
     }
 }

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -128,11 +128,14 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
     
         for(Package pkg : packages()) {
     
-            for(String url : includeURLs(pkg)) {
-    
-                List<String> iplist = IpListFromUrl.fetch(url);
-                if (iplist.size() > 0) {
-                    m_urlIPMap.put(url, iplist);
+            for(final String url : includeURLs(pkg)) {
+                try { 
+                    List<String> iplist = IpListFromUrl.fetch(url);
+                    if (iplist.size() > 0) {
+                        m_urlIPMap.put(url, iplist);
+                    }
+                } catch (final IOException e) {
+                    LOG.warn("Failed to get IP list from URL {}", url, e);
                 }
             }
 

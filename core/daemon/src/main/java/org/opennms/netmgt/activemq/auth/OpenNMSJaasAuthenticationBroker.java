@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -58,7 +58,7 @@ public class OpenNMSJaasAuthenticationBroker extends AbstractAuthenticationBroke
 
     private static final String JAAS_CONTEXT_NAME = "opennms";
 
-    private static final Pattern EXTRACT_IP_ADDRESS_PATTERN = Pattern.compile("tcp://([0-9\\.:]+):([0-9]+)");
+    private static final Pattern EXTRACT_IP_ADDRESS_PATTERN = Pattern.compile("tcp://([\\d\\.:]+):(\\d+)");
 
     private boolean isJaasContextAvailable = false;
 
@@ -78,7 +78,7 @@ public class OpenNMSJaasAuthenticationBroker extends AbstractAuthenticationBroke
     public void addConnection(ConnectionContext context, ConnectionInfo info) throws Exception {
         if (context.getSecurityContext() == null) {
             // The connection is not yet authenticated, is the remote address trusted?
-            authenticateBasedOnRemoteAddress(context, info);
+            authenticateBasedOnRemoteAddress(context);
             if (context.getSecurityContext() == null) {
                 // We don't trust the remote address, authenticate using JAAS
                 synchronized(this) {
@@ -107,7 +107,7 @@ public class OpenNMSJaasAuthenticationBroker extends AbstractAuthenticationBroke
         return null;
     }
 
-    private void authenticateBasedOnRemoteAddress(ConnectionContext context, ConnectionInfo info) {
+    private void authenticateBasedOnRemoteAddress(final ConnectionContext context) {
         boolean grant = false;
 
         final String connectionString = context.getConnection().getRemoteAddress();
@@ -123,10 +123,7 @@ public class OpenNMSJaasAuthenticationBroker extends AbstractAuthenticationBroke
             }
         }
 
-        if (!grant) {
-            LOG.info("Connection from '{}' is NOT trusted.", connectionString);
-            return;
-        } else {
+        if (grant) {
             LOG.info("Connection from '{}' is trusted.", connectionString);
             // Always create a new security context, even if it contains the same attributes
             // as the last context
@@ -138,6 +135,8 @@ public class OpenNMSJaasAuthenticationBroker extends AbstractAuthenticationBroke
             };
             context.setSecurityContext(securityContext);
             securityContexts.add(securityContext);
+        } else {
+            LOG.info("Connection from '{}' is NOT trusted.", connectionString);
         }
     }
 
@@ -154,7 +153,8 @@ public class OpenNMSJaasAuthenticationBroker extends AbstractAuthenticationBroke
 
             try {
                 Thread.sleep(sleepMs);
-            } catch (InterruptedException e) {
+            } catch (final InterruptedException e) {
+                Thread.currentThread().interrupt();
                 break;
             }
         }

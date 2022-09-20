@@ -13,22 +13,6 @@
   <description>
   The OpenNMS Daemon launches and acts as a container for OpenNMS Services such as the poller or collector.
   </description>
-  <profiles>
-    <profile>
-      <activation>
-        <jdk>(,1.9)</jdk>
-      </activation>
-      <dependencies>
-        <dependency>
-          <groupId>com.sun</groupId>
-          <artifactId>tools-jar</artifactId>
-          <version>1</version>
-          <scope>system</scope>
-          <systemPath>${java.home}/../lib/tools.jar</systemPath>
-        </dependency>
-      </dependencies>
-    </profile>
-  </profiles>
   <build>
     <plugins>
       <plugin>
@@ -173,6 +157,11 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>com.jayway.awaitility</groupId>
+      <artifactId>awaitility</artifactId>
+      <scope>test</scope>
+    </dependency>
+	<dependency>
       <groupId>mx4j</groupId>
       <artifactId>mx4j-tools</artifactId>
       <scope>test</scope>

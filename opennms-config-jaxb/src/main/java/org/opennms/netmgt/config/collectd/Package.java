@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2014-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.config.collectd;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,6 +42,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.network.IPAddress;
 import org.opennms.core.network.IpListFromUrl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Package encapsulating addresses eligible to have SNMP
@@ -51,6 +54,7 @@ import org.opennms.core.network.IpListFromUrl;
 @XmlAccessorType(XmlAccessType.NONE)
 public class Package implements Serializable {
     private static final long serialVersionUID = 1689693370360064016L;
+    private static final Logger LOG = LoggerFactory.getLogger(org.opennms.netmgt.config.collectd.Package.class);
 
     /**
      * The name or identifier for this package
@@ -328,11 +332,15 @@ public class Package implements Serializable {
         } else {
             final IPAddress addr = new IPAddress(iface);
             for (final String includeURL : getIncludeUrls()) {
-                final List<String> ips = IpListFromUrl.fetch(includeURL);
-                for (final String includeAddr : ips) {
-                    if (new IPAddress(includeAddr).equals(addr)) {
-                        return true;
+                try {
+                    final List<String> ips = IpListFromUrl.fetch(includeURL);
+                    for (final String includeAddr : ips) {
+                        if (new IPAddress(includeAddr).equals(addr)) {
+                            return true;
+                        }
                     }
+                } catch (final IOException e) {
+                    LOG.warn("Failed to get IP list from URL {}", includeURL, e);
                 }
             }
         }
