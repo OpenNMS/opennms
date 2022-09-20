@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
-import java.util.function.IntFunction;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.opennms.features.alarms.history.api.AlarmHistoryRepository;
@@ -92,7 +92,6 @@ public class ElasticAlarmHistoryRepository implements AlarmHistoryRepository {
     public List<AlarmState> getStatesForAlarmWithDbId(long id) {
         return findAlarms(queryProvider.getAlarmStatesByDbId(id), null)
                 .stream()
-                .map(AlarmState.class::cast)
                 .collect(Collectors.toList());
     }
 
@@ -100,23 +99,22 @@ public class ElasticAlarmHistoryRepository implements AlarmHistoryRepository {
     public List<AlarmState> getStatesForAlarmWithReductionKey(String reductionKey) {
         return findAlarms(queryProvider.getAlarmStatesByReductionKey(reductionKey), null)
                 .stream()
-                .map(AlarmState.class::cast)
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<AlarmState> getActiveAlarmsAt(long time) {
         final TimeRange timeRange = getTimeRange(time);
-        return findAlarmsWithCompositeAggregation(afterAlarmWithId -> queryProvider.getActiveAlarmsAt(timeRange, afterAlarmWithId), timeRange).stream()
-                .map(AlarmState.class::cast)
+        return findAlarmsWithCompositeAggregation(afterAlarmWithId -> queryProvider.getActiveAlarmsAt(timeRange, afterAlarmWithId), timeRange)
+                .stream()
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<AlarmState> getLastStateOfAllAlarms(long start, long end) {
         final TimeRange timeRange = new TimeRange(start, end);
-        return findAlarmsWithCompositeAggregation(afterAlarmWIthId -> queryProvider.getAllAlarms(timeRange, afterAlarmWIthId), timeRange).stream()
-                .map(AlarmState.class::cast)
+        return findAlarmsWithCompositeAggregation(afterAlarmWIthId -> queryProvider.getAllAlarms(timeRange, afterAlarmWIthId), timeRange)
+                .stream()
                 .collect(Collectors.toList());
     }
 
@@ -136,7 +134,7 @@ public class ElasticAlarmHistoryRepository implements AlarmHistoryRepository {
         return getNumActiveAlarmsAt(System.currentTimeMillis());
     }
 
-    private List<AlarmDocumentDTO> findAlarmsWithCompositeAggregation(IntFunction<String> getNextQuery, TimeRange timeRange) {
+    private List<AlarmDocumentDTO> findAlarmsWithCompositeAggregation(Function<Integer,String> getNextQuery, TimeRange timeRange) {
         final List<AlarmDocumentDTO> alarms = new LinkedList<>();
         Integer afterAlarmWithId = null;
         boolean b = true;

@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2022 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -77,6 +77,27 @@ public class CompositeAggregation extends Aggregation {
         return buckets;
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), afterKey, buckets);
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!super.equals(obj)) {
+            return false;
+        }
+        if (!(obj instanceof CompositeAggregation)) {
+            return false;
+        }
+        final CompositeAggregation other = (CompositeAggregation) obj;
+        return Objects.equals(afterKey, other.afterKey) &&
+                Objects.equals(buckets, other.buckets);
+    }
+
     public class Entry extends Bucket {
         private final Object key;
 
@@ -102,15 +123,5 @@ public class CompositeAggregation extends Aggregation {
         public int hashCode() {
             return Objects.hash(super.hashCode(), key);
         }
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return super.equals(obj);
-    }
-
-    @Override
-    public int hashCode() {
-        return super.hashCode();
     }
 }
