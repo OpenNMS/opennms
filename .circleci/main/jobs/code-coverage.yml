@@ -5,7 +5,6 @@
     steps:
       - attach_workspace:
           at: ~/
-      - checkout
       - extract-pom-version
       - restore-sonar-cache
       - run:
