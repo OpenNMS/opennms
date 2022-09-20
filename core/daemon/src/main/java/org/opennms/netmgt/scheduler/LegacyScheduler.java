@@ -206,8 +206,6 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
         Assert.state(m_worker == null, "The fiber has already run or is running");
 
         m_worker = new Thread(this, getName());
-        Assert.state(m_worker == null, "Unable to create new thread!");
-
         m_worker.start();
         m_status = STARTING;
 
