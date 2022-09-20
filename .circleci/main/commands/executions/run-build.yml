@@ -48,6 +48,12 @@ commands:
               -Psmoke \
               --batch-mode \
               $MAVEN_ARGS || exit 1
+            ./compile.pl -s .circleci/scripts/structure-settings.xml \
+              --batch-mode \
+              --fail-at-end \
+              -Prun-expensive-tasks \
+              -Pbuild-bamboo \
+              org.opennms.maven.plugins:structure-maven-plugin:1.0:structure || exit 1
       - run:
           name: Check if we have generated apidocs
           command: |
@@ -80,5 +86,6 @@ commands:
           root: ~/
           paths:
             - project
+            - project/target/structure-graph.json
             - .m2
             - .artifacts

@@ -35,9 +35,6 @@ find_tests()
 echo "#### Making sure git is up-to-date"
 git fetch --all
 
-echo "#### Generate project structure .json"
-./compile.pl -s .circleci/scripts/structure-settings.xml --batch-mode --fail-at-end -Prun-expensive-tasks -Pbuild-bamboo org.opennms.maven.plugins:structure-maven-plugin:1.0:structure
-
 echo "#### Determining tests to run"
 cd ~/project
 find_tests
