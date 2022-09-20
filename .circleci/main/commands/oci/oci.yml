@@ -59,6 +59,11 @@ commands:
                  BUILD_URL="${CIRCLE_BUILD_URL}" \
                  BUILD_BRANCH="${CIRCLE_BRANCH}" \
                  build install
+            ls -lh ~/project/opennms-container/<< parameters.container_name >>/images/*.oci
+            tar cvf /tmp/images-oci.tar ~/project/opennms-container/<< parameters.container_name >>/images/*.oci
+            rm ~/project/opennms-container/<< parameters.container_name >>/images/*.oci
+            mv /tmp/images-oci.tar ~/project/opennms-container/<< parameters.container_name >>/images/
+            ls -lh ~/project/opennms-container/<< parameters.container_name >>/images/
       - store_artifacts:
           path: ~/project/opennms-container/<< parameters.container_name >>/images/
           destination: /
