@@ -129,7 +129,6 @@ echo "#### Executing tests"
 # shellcheck disable=SC2086
 ./compile.pl $MAVEN_ARGS \
            -P'!checkstyle' \
-           -P'!production' \
            -Pbuild-bamboo \
            -Dbuild.skip.tarball=true \
            -DfailIfNoTests=false \
@@ -144,6 +143,4 @@ echo "#### Executing tests"
            -Dit.test="$(< /tmp/this_node_it_tests paste -s -d, -)" \
            --projects "$(< /tmp/this_node_projects paste -s -d, -)" \
            --also-make \
-           jacoco:prepare-agent \
-           install \
-           jacoco:report
+           install
