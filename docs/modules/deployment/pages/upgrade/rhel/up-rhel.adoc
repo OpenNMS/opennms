@@ -11,7 +11,7 @@ endif::[]
 ifeval::["{page-component-title}" == "Meridian"]
 . Open your {page-component-title} repository config file with a text editor.
 . Change the repository's `baseurl` from the old release family to the new release family.
-The `baseurl` should resemble `/https://REPO_USER:REPO_PASS@meridian.opennms.com/packages/2021/stable/rhel8``.
+The `baseurl` should resemble `/https://REPO_USER:REPO_PASS@meridian.opennms.com/packages/2021/stable/rhel8`.
 The `REPO_USER` and `REPO_PASS` values are your {page-component-title} subscription credentials.
 endif::[]
 
