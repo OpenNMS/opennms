@@ -37,10 +37,10 @@ Proper SNMP configuration lets {page-component-title} understand network and nod
 This procedure illustrates a very basic SNMP configuration using the default parameters.
 You can customize these values for your own network needs.
 
-. In the web UI, click the *Gear* symbol in the top-right of the screen.
-. Choose menu:Provisioning[Configure SNMP Community Names by IP Address].
+. Click the *Gear* symbol in the top-right of the screen.
+. Under Provisioning, click *Configure SNMP Community Names by IP Address*.
 . Under General Parameters, specify an IP range using the *First IP Address* and *Last IP Address* boxes, and accept the default values for the other fields.
-. Click *Save Config*.
+. Scroll to the bottom and click *Save Config*.
 +
 This screen sets up SNMP within {page-component-title} for agents listening on IP addresses `10.1.1.1` through `10.254.254.254`.
 
@@ -69,9 +69,9 @@ See the links at the end of the procedure for additional information on customiz
 
 To create a requisition, follow these steps:
 
-. In the web UI, click the *Gear* symbol in the top-right of the screen.
-. Choose menu:Provisioning[Manage Provisioning Requisitions].
-. Click *Add Requisition*, type a name, and click *OK*.
+. Click the *Gear* symbol in the top-right of the screen.
+. Under Provisioning, click *Manage Provisioning Requisitions*.
+. Click *Add Requisition*, type a name (for example, QuickStartRequisition), and click *OK*.
 
 NOTE: The requisition remains red until you synchronize it with the database.
 Synchronize after you configure discovery.
@@ -99,13 +99,13 @@ You can customize these for your own needs.
 
 To configure discovery, follow these steps:
 
-. In the web UI, click the *Gear* symbol in the top-right of the screen.
-. Choose menu:Provisioning[Configure Discovery].
+. Click the *Gear* symbol in the top-right of the screen.
+. Under Provisioning, click *Configure Discovery*.
 . In the *General Settings* area, select the requisition you just created from the *Requisition* list.
 ** (Optional) Change the default values.
 . Click *Save and Restart Discovery* in the top-left of the screen.
-. Return to *Manage Provisioning Requisitions* and click *Synchronize the Requisition*.
+. Return to *Manage Provisioning Requisitions* and click *Synchronize the Requisition* image:provisioning/sync_requisition.png[synchronize requisition symbol, 100].
 . Choose a scan option and click *Synchronize*.
 
-You can view imported nodes under menu:Info[Nodes] at the top of the screen.
+You can view imported nodes in the main menu under menu:Info[Nodes] at the top of the screen.
 

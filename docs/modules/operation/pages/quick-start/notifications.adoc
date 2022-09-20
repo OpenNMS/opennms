@@ -14,10 +14,9 @@ A red bell icon in the menu bar indicates this:
 
 image::notifications/red-bell-notifications.png[red bell notifications,300]
 
-
 Follow these steps to enable notifications:
 
-. Log out of the `admin` account and log in as the user you created in step 1.
+. Log out of the `admin` account and log in as the user you created in <<quick-start/users.adoc, Step 1: First-Time Login>>.
 . Click the *Gear* symbol in the top-right of the screen.
 . Under Event Management, click *On* beside Notification Status, and click *Update*.
 
@@ -54,29 +53,30 @@ You must specify a destination path to receive notifications from {page-componen
 The `Email-Admin` destination path is defined by default, and is the notification path when no other destination paths are specified.
 It sends email notifications to users in the Admin group.
 
-Follow these steps to define a new destination path:
+This example specifies a destination path that sends notifications to users in the Admin group (currently just the admin user) and to an email address you specify.
 
-. Log in as a user with admin privileges.
-. Click the *Gear* symbol in the top-right of the screen, and choose menu:Event Management[Configure Notifications > Configure Destination Paths].
+. Click the *Gear* symbol in the top-right of the screen.
+. Under Event Management, click *Configure Notifications*.
+. Under Configure Notifications, click *Configure Destination Paths*.
 . Click *New Path* and configure it:
 .. Specify a name for the path (for example, Email-Bob) and define an initial delay.
-.. Click *Edit*, and select the users, groups, roles, or email addresses to send notifications to.
-*** To add a single email address to the Send to Email Addresses list, click *Add Address*, type the email address, and click *OK*.
-*** To remove email addresses from the Send to Email Addresses list, select them from the list and click *Remove Selected Addresses*.
+.. Click *Edit*.
+.. Under *Send to Selected Groups*, click `Admin`.
+.. Click *Add Address*, type an email address in the box, and click *OK*
++
+The address appears in the *Send to Email Addresses* list.
 .. Click *Next Step*.
 .. (Optional) Define a delay interval for group notification.
 This will determine the delay between sending notifications to each member of a group.
 +
 For example, defining a five minute delay will mean that, when a notification is generated, the first member of the group will be notified immediately.
 Subsequent members will then be notified in five-minute increments, from the top of the list of group members to the bottom.
-
 .. Click *Next Step*.
 .. Select `javaEmail` from the list of commands and make sure it is on.
 .. Click *Next Step*.
 +
-The users, groups, roles, or email addresses appear in the Initial Targets list.
-
-. Verify the path's settings, and click *Finish*.
+The `Admin` group and the email address you specified appear in the *Initial Targets* list.
+. Verify the settings, and click *Finish*.
 
 You can define multiple notifications for the same unique event identifier (UEI) to use different destination paths.
 By default, {page-component-title} runs the destination path of all notifications matching the event's UEI.
