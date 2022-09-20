@@ -104,8 +104,7 @@ To configure discovery, follow these steps:
 . In the *General Settings* area, select the requisition you just created from the *Requisition* list.
 ** (Optional) Change the default values.
 . Click *Save and Restart Discovery* in the top-left of the screen.
-. Return to *Manage Provisioning Requisitions* and click *Synchronize the Requisition* image:provisioning/sync_requisition.png[synchronize requisition symbol, 100].
+. Return to *Manage Provisioning Requisitions* and click *Synchronize the Requisition* (image:provisioning/sync_requisition.png[synchronize requisition symbol,20]).
 . Choose a scan option and click *Synchronize*.
 
 You can view imported nodes in the main menu under menu:Info[Nodes] at the top of the screen.
-
