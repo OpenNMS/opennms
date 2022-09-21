@@ -8,8 +8,7 @@ The Grafana Dashboard Box on the start page shows dashboards related to {page-co
 To filter relevant dashboards, you can use a tag for dashboards and make them accessible.
 If no tag is provided all dashboards from Grafana will be shown.
 
-The feature is by default deactivated and is configured by defining a `.properties` file in the `$\{OPENNMS_HOME}/etc/opennms.properties.d/` directory.
-Please note that this feature works with Grafana v2.5.0+.
+Configure this feature by creating or editing the `$\{OPENNMS_HOME}/etc/opennms.properties.d/grafana.properties` file.
 
 .Quick access to Grafana dashboards from the {page-component-title} start page
 image::webui/startpage/01_grafana-box.png[]
@@ -28,12 +27,13 @@ image::webui/startpage/01_grafana-box.png[]
 | false
 
 | org.opennms.grafanaBox.hostname
-| If the box is enabled you also need to specify hostname of the Grafana server.
+| The hostname of the Grafana server.
+You may need to use the IP address or fully qualified domain name, based on your DNS records.
 | String
 | localhost
 
 | org.opennms.grafanaBox.port
-| The port of the Grafana server ReST API.
+| The port of the Grafana server REST API.
 | Integer
 | 3000
 
@@ -43,7 +43,7 @@ image::webui/startpage/01_grafana-box.png[]
 |
 
 | org.opennms.grafanaBox.apiKey
-| The API key is needed for the ReST calls to work. +
+| The API key is needed for the REST calls to work. +
 The process to generate a Grafana API Key can be found in the https://grafana.com/docs/grafana/latest/http_api/[HTTP API documentation].
 | String
 |
@@ -55,7 +55,7 @@ When no tag is given all dashboards will be displayed.
 |
 
 | org.opennms.grafanaBox.protocol
-| The protocol for the ReST call can also be specified.
+| The protocol for the REST call can also be specified.
 | String
 | http
 
@@ -96,4 +96,4 @@ When no tag is given all dashboards will be displayed.
 |===
 
 NOTE: If you have Grafana behind a reverse proxy, you may need to specify the `org.opennms.grafanaBox.link.*` properties.
-The "link" properties, if set, are used to build the links that are shown to users, independent of the other properties which are used for internal interaction with the Grafana REST API.
+The `link.*` properties, if set, are used to build the links that are shown to users, independent of the other properties which are used for internal interaction with the Grafana REST API.
