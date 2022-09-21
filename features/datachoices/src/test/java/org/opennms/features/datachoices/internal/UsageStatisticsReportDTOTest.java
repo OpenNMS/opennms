@@ -68,8 +68,10 @@ public class UsageStatisticsReportDTOTest {
         usageStatisticsReport.setGroups(0);
         String actualJson = usageStatisticsReport.toJson();
         System.err.println(actualJson);
+
         String expectedJson = "{" +
             "\"alarms\":0," +
+            "\"applications\":0," +
             "\"availableProcessors\":null," +
             "\"businessEdgeCount\":0," +
             "\"coreFlowsPersisted\":0," +
