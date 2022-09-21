@@ -1,7 +1,7 @@
 jobs:
   minion-deb-build:
     executor: debian-build-executor
-    resource_class: large
+    resource_class: xlarge
     steps:
       - attach_workspace:
           at: ~/
