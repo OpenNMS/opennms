@@ -4,7 +4,8 @@
 
 Handles processing of xref:operation:events/sources/snmp-traps.adoc[SNMP traps] into events.
 Based around traditional UDP-based SNMP traps, it receives traps remote devices create.
-It enables OpenNMS to receive SNMP traps and turn them into events, and then into alarms and notifications, much as xref:reference:daemons/daemon-config-files/syslogd.adoc[syslogd] does for syslog entries.
+It enables OpenNMS to receive SNMP traps and convert them into events, and convert those events into alarms and notifications.
+Its functionality is similar to how xref:reference:daemons/daemon-config-files/syslogd.adoc[syslogd] handles syslog entries.
 
 Trapd supports V1 traps, V2 traps and notifications, and V3 traps and notifications.
 Trapd accepts traps with any community name (V1, V2c).
@@ -50,11 +51,11 @@ Files in this folder must be specified as an include directive in `eventconf.xml
 
 == Additional information
 
-For information on how to automate alarms and reduce the number of messages, see the syslogd example in https://opennms.discourse.group/t/syslogd-automations/1454[Syslogd Automations] on Discourse.
+For information on how to automate alarms and reduce the number of messages, see https://opennms.discourse.group/t/syslogd-automations/1454[Syslogd Automations] on Discourse.
 
 You can configure the eventd subsystem to discard unwanted SNMP traps.
-To do so, use the logmsg `discardtraps`.
-See xref:operation:events/event-definition.adoc#ga-events-anatomy-of-an-event[Anatomy of an event] in the Event Daemon Configuration section.
+To do so, use the `discardtraps` logmsg.
+See xref:operation:events/event-definition.adoc#ga-events-anatomy-of-an-event[Anatomy of an event] in the Event Daemon Configuration section for more information.
 
 Note that for V3, you must specify the SNMPv3 credentials used to authenticate and decode V3 traps in `trapd-configuration.xml`, as in the following example:
 
