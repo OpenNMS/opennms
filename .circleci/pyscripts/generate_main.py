@@ -122,6 +122,18 @@ for keyword in keywords:
 final_output = ""
 RE_PATTERN = "^.*#.*#"
 
+
+def print_add(workflow_path, level, filters_enabled, job_name):
+    print(
+        job_name + ":",
+        circleCI.get_Workflow_dependency(job_name),
+    )
+    workflow = circleCI.get_Workflow_yaml(
+        job_name, level, enable_filters=filters_enabled
+    )
+    return append_to_sample_workflow(workflow_path, workflow)
+
+
 for e in main_yml_content:
     re_match = re.match(RE_PATTERN, e)
     if re_match:
@@ -137,21 +149,6 @@ for e in main_yml_content:
             enabled_components = []
             for component in build_components:
                 enabled_components.append(build_components[component])
-
-            # enabled_components = [
-            #    build_components["build-deploy"],
-            #    build_components["coverage"],
-            #    build_components["doc"],
-            #    build_components["ui"],
-            #    build_components["integration"],
-            #    build_components["smoke"],
-            #    build_components["smoke-flaky"],
-            #    build_components["rpms"],
-            #    build_components["debs"],
-            #    build_components["oci"],
-            #    build_components["build-publish"],
-            #    build_components["experimental"],
-            # ]
 
             if enabled_components.count(True) > 1:
                 workflow_name = "combined-builds"
@@ -186,124 +183,73 @@ for e in main_yml_content:
                 "merge-foundation" in build_components
                 and build_components["merge-foundation"]
             ):
-                print(
-                    "merge-foundation:",
-                    circleCI.get_Workflow_dependency("merge-foundation-branch"),
+                workflow_path = print_add(
+                    workflow_path, level, filters_enabled, "merge-foundation-branch"
                 )
-                workflow = circleCI.get_Workflow_yaml(
-                    "merge-foundation-branch", level, enable_filters=filters_enabled
-                )
-                workflow_path = append_to_sample_workflow(workflow_path, workflow)
 
             if build_components["rpms"]:
-                print("rpm-packages > all:", circleCI.get_Workflow_dependency("rpms"))
-                workflow = circleCI.get_Workflow_yaml(
-                    "rpms", level, enable_filters=filters_enabled
-                )
-                workflow_path = append_to_sample_workflow(workflow_path, workflow)
+                workflow_path = print_add(workflow_path, level, filters_enabled, "rpms")
 
             if build_components["integration"]:
-                print(
-                    "tests > integration:",
-                    circleCI.get_Workflow_dependency("integration-test"),
+                workflow_path = print_add(
+                    workflow_path, level, tmp_filters_enabled, "integration-test"
                 )
-
-                workflow = circleCI.get_Workflow_yaml("integration-test", level)
-                workflow_path = append_to_sample_workflow(workflow_path, workflow)
 
             if build_components["smoke"]:
-                print("tests > smoke:", circleCI.get_Workflow_dependency("smoke"))
-
                 if filters_enabled:
                     tmp_filters_enabled = False
 
-                workflow = circleCI.get_Workflow_yaml(
-                    "smoke", level, enable_filters=tmp_filters_enabled
+                workflow_path = print_add(
+                    workflow_path, level, tmp_filters_enabled, "smoke"
                 )
-                workflow_path = append_to_sample_workflow(workflow_path, workflow)
 
             if build_components["smoke-flaky"]:
-                print(
-                    "tests > smoke-flaky:",
-                    circleCI.get_Workflow_dependency("smoke-test-flaky"),
-                )
-
                 if filters_enabled:
                     tmp_filters_enabled = False
 
-                workflow = circleCI.get_Workflow_yaml(
-                    "smoke-test-flaky", level, enable_filters=tmp_filters_enabled
+                workflow_path = print_add(
+                    workflow_path, level, tmp_filters_enabled, "smoke-test-flaky"
                 )
-
-                workflow_path = append_to_sample_workflow(workflow_path, workflow)
 
             if build_components["debs"]:
-                print(
-                    "debian-packages > all:", circleCI.get_Workflow_dependency("debs")
+                workflow_path = print_add(
+                    workflow_path, level, tmp_filters_enabled, "debs"
                 )
-                workflow = circleCI.get_Workflow_yaml(
-                    "debs", level, enable_filters=filters_enabled
-                )
-                workflow_path = append_to_sample_workflow(workflow_path, workflow)
 
             if build_components["oci"]:
-                print("oci-images > all:", circleCI.get_Workflow_dependency("oci"))
-                workflow = circleCI.get_Workflow_yaml(
-                    "oci", level, enable_filters=filters_enabled
+                workflow_path = print_add(
+                    workflow_path, level, tmp_filters_enabled, "oci"
                 )
-                workflow_path = append_to_sample_workflow(workflow_path, workflow)
 
             if build_components["experimental"]:
-                print("experimental:", circleCI.get_Workflow_dependency("experimental"))
-                workflow = circleCI.get_Workflow_yaml(
-                    "experimental", level, enable_filters=filters_enabled
+                workflow_path = print_add(
+                    workflow_path, level, tmp_filters_enabled, "experimental"
                 )
-                workflow_path = append_to_sample_workflow(workflow_path, workflow)
 
             if build_components["build-deploy"]:
-                print(
-                    "build> build-deploy:",
-                    circleCI.get_Workflow_dependency("build-deploy"),
+                workflow_path = print_add(
+                    workflow_path, level, tmp_filters_enabled, "build-deploy"
                 )
-                workflow = circleCI.get_Workflow_yaml(
-                    "build-deploy", level, enable_filters=filters_enabled
-                )
-                workflow_path = append_to_sample_workflow(workflow_path, workflow)
 
             if build_components["doc"]:
-                print("build> doc :", circleCI.get_Workflow_dependency("doc"))
-                workflow = circleCI.get_Workflow_yaml(
-                    "doc", level, enable_filters=filters_enabled
+                workflow_path = print_add(
+                    workflow_path, level, tmp_filters_enabled, "doc"
                 )
-
-                workflow_path = append_to_sample_workflow(workflow_path, workflow)
 
             if build_components["ui"]:
-                print("build> ui :", circleCI.get_Workflow_dependency("ui"))
-                workflow = circleCI.get_Workflow_yaml(
-                    "ui", level, enable_filters=filters_enabled
+                workflow_path = print_add(
+                    workflow_path, level, tmp_filters_enabled, "ui"
                 )
-                workflow_path = append_to_sample_workflow(workflow_path, workflow)
 
             if build_components["coverage"]:
-                print(
-                    "build> coverage :",
-                    circleCI.get_Workflow_dependency("weekly-coverage"),
+                workflow_path = print_add(
+                    workflow_path, level, tmp_filters_enabled, "weekly-coverage"
                 )
-                workflow = circleCI.get_Workflow_yaml(
-                    "weekly-coverage", level, enable_filters=filters_enabled
-                )
-                workflow_path = append_to_sample_workflow(workflow_path, workflow)
 
             if build_components["build-publish"]:
-                print(
-                    "publish> packages :",
-                    circleCI.get_Workflow_dependency("build-publish"),
+                workflow_path = print_add(
+                    workflow_path, level, tmp_filters_enabled, "build-publish"
                 )
-                workflow = circleCI.get_Workflow_yaml(
-                    "build-publish", level, enable_filters=filters_enabled
-                )
-                workflow_path = append_to_sample_workflow(workflow_path, workflow)
 
             if (
                 not build_components["build-deploy"]
@@ -312,11 +258,9 @@ for e in main_yml_content:
                 and not build_components["coverage"]
                 and len(workflow_path) < 4
             ):
-                print("empty:", circleCI.get_Workflow_dependency("empty"))
-                workflow = circleCI.get_Workflow_yaml(
-                    "empty", level, enable_filters=filters_enabled
+                workflow_path = print_add(
+                    workflow_path, level, tmp_filters_enabled, "empty"
                 )
-                workflow_path = append_to_sample_workflow(workflow_path, workflow)
 
             if workflow_path:
                 finaly_workflow_path = ["\n".join(workflow_path[:3])]
