@@ -192,7 +192,7 @@ for e in main_yml_content:
 
             if build_components["integration"]:
                 workflow_path = print_add(
-                    workflow_path, level, tmp_filters_enabled, "integration-test"
+                    workflow_path, level, filters_enabled, "integration-test"
                 )
 
             if build_components["smoke"]:
@@ -200,7 +200,7 @@ for e in main_yml_content:
                     tmp_filters_enabled = False
 
                 workflow_path = print_add(
-                    workflow_path, level, tmp_filters_enabled, "smoke"
+                    workflow_path, level, filters_enabled, "smoke"
                 )
 
             if build_components["smoke-flaky"]:
@@ -208,47 +208,39 @@ for e in main_yml_content:
                     tmp_filters_enabled = False
 
                 workflow_path = print_add(
-                    workflow_path, level, tmp_filters_enabled, "smoke-test-flaky"
+                    workflow_path, level, filters_enabled, "smoke-test-flaky"
                 )
 
             if build_components["debs"]:
-                workflow_path = print_add(
-                    workflow_path, level, tmp_filters_enabled, "debs"
-                )
+                workflow_path = print_add(workflow_path, level, filters_enabled, "debs")
 
             if build_components["oci"]:
-                workflow_path = print_add(
-                    workflow_path, level, tmp_filters_enabled, "oci"
-                )
+                workflow_path = print_add(workflow_path, level, filters_enabled, "oci")
 
             if build_components["experimental"]:
                 workflow_path = print_add(
-                    workflow_path, level, tmp_filters_enabled, "experimental"
+                    workflow_path, level, filters_enabled, "experimental"
                 )
 
             if build_components["build-deploy"]:
                 workflow_path = print_add(
-                    workflow_path, level, tmp_filters_enabled, "build-deploy"
+                    workflow_path, level, filters_enabled, "build-deploy"
                 )
 
             if build_components["doc"]:
-                workflow_path = print_add(
-                    workflow_path, level, tmp_filters_enabled, "doc"
-                )
+                workflow_path = print_add(workflow_path, level, filters_enabled, "doc")
 
             if build_components["ui"]:
-                workflow_path = print_add(
-                    workflow_path, level, tmp_filters_enabled, "ui"
-                )
+                workflow_path = print_add(workflow_path, level, filters_enabled, "ui")
 
             if build_components["coverage"]:
                 workflow_path = print_add(
-                    workflow_path, level, tmp_filters_enabled, "weekly-coverage"
+                    workflow_path, level, filters_enabled, "weekly-coverage"
                 )
 
             if build_components["build-publish"]:
                 workflow_path = print_add(
-                    workflow_path, level, tmp_filters_enabled, "build-publish"
+                    workflow_path, level, filters_enabled, "build-publish"
                 )
 
             if (
