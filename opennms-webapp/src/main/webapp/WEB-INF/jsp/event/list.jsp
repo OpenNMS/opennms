@@ -192,6 +192,7 @@
 
 	  <!-- hidden form for adding a new Notification -->
 	  <form action="admin/notification/noticeWizard/notificationWizard" method="post" name="add_notification_form">
+        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 	  	<input type="hidden" name="sourcePage" value="<%=NotificationWizardServlet.SOURCE_PAGE_OTHER_WEBUI%>" />
 	  	<input type="hidden" name="uei" id="uei" value="" /> <!-- Set by java script -->
 	  </form>
@@ -226,6 +227,7 @@
           <% if ( eventCount > 0 ) { %>
               <!-- hidden form for acknowledging the result set -->
               <form style="display:inline" action="event/acknowledgeByFilter" method="post" name="acknowledge_by_filter_form">
+                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                 <input type="hidden" name="redirectParms" value="<c:out value="<%=req.getQueryString()%>"/>" />
                 <input type="hidden" name="actionCode" value="<%=action%>" />
                 <%=org.opennms.web.api.Util.makeHiddenTags(req)%>
@@ -345,6 +347,7 @@
 
     <% if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
       <form action="event/acknowledge" method="post" name="acknowledge_form">
+        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
         <input type="hidden" name="redirectParms" value="<c:out value="<%=req.getQueryString()%>"/>" />
         <input type="hidden" name="actionCode" value="<%=action%>" />
         <%=org.opennms.web.api.Util.makeHiddenTags(req)%>
