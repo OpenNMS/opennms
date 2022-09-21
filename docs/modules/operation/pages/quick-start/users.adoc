@@ -28,7 +28,7 @@ NOTE: Admin users can xref:deep-dive/admin/housekeeping/introduction.adoc#disabl
 
 After logging in for the first time, make sure to change the default `admin` account password to a secure one:
 
-. On the *admin* menu, click *Change Password*.
+. On the top menu bar, click menu:admin[Change Password].
 . Type the current and new passwords in the appropriate fields.
 . Confirm the new password and click *Submit*.
 
@@ -39,7 +39,7 @@ For the purposes of this Quick Start guide, create one new user account for your
 
 . Click the *Gear* symbol at the top-right of the screen.
 . Under OpenNMS System, click *Configure Users, Groups and On-Call Roles*.
-. In the *Users and Groups* screen, click *Configure Users*.
+. On the Users and Groups screen, click *Configure Users*.
 . Click *Add New User*, specify a user ID and password, confirm the password, and click *OK*.
 . Enter your information:
 ** In the User Information section, type your name in the *Full Name* box.
