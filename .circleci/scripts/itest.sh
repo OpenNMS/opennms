@@ -1,6 +1,7 @@
-#!/bin/sh
+#!/bin/bash
 
 set -e
+set -o pipefail
 
 # attempt to work around repository flakiness
 retry()
@@ -98,16 +99,16 @@ export MAVEN_OPTS="$MAVEN_OPTS -Xmx8g -XX:ReservedCodeCacheSize=1g"
 # shellcheck disable=SC3045
 ulimit -n 65536
 
-MAVEN_ARGS="install"
+MAVEN_ARGS=("install")
 
 case "${CIRCLE_BRANCH}" in
   "master"*|"release-"*|develop)
-    MAVEN_ARGS="-Dbuild.type=production $MAVEN_ARGS"
+    MAVEN_ARGS+=("-Dbuild.type=production")
   ;;
 esac
 
 echo "#### Building Assembly Dependencies"
-./compile.pl $MAVEN_ARGS \
+./compile.pl "${MAVEN_ARGS[@]}" \
            -P'!checkstyle' \
            -P'!production' \
            -Pbuild-bamboo \
@@ -122,7 +123,7 @@ echo "#### Building Assembly Dependencies"
            --projects "$(< /tmp/this_node_projects paste -s -d, -)"
 
 echo "#### Executing tests"
-./compile.pl $MAVEN_ARGS \
+./compile.pl "${MAVEN_ARGS[@]}" \
            -P'!checkstyle' \
            -P'!production' \
            -Pbuild-bamboo \
