@@ -7,14 +7,14 @@ jobs:
           steps:
             - restore_cache:
                 keys:
-                  - poweredby-v1-{{ .Branch }}-{{ .Revision }}
-                  - poweredby-v1-{{ .Branch }}-
-                  - poweredby-v1-
+                  - poweredby-v2-{{ .Branch }}-{{ .Revision }}
+                  - poweredby-v2-{{ .Branch }}-
+                  - poweredby-v2-
             - cached-checkout-for-pushing
             - run:
                 name: Merge Foundation to PoweredBy
                 command: .circleci/scripts/merge-poweredby.sh
             - save_cache:
-                key: poweredby-v1-{{ .Branch }}-{{ .Revision }}
+                key: poweredby-v2-{{ .Branch }}-{{ .Revision }}
                 paths:
                   - ".git"

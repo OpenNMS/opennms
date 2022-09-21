@@ -15,9 +15,9 @@ commands:
       steps:
         - restore_cache:
             keys:
-              - source-v3-{{ .Branch }}-{{ .Revision }}
-              - source-v3-{{ .Branch }}-
-              - source-v3-
+              - source-v4-{{ .Branch }}-{{ .Revision }}
+              - source-v4-{{ .Branch }}-
+              - source-v4-
         - checkout
         - run:
             name: git config merge.renameLimit
@@ -29,7 +29,7 @@ commands:
       description: "Cache a checkout"
       steps:
         - save_cache:
-            key: source-v3-{{ .Branch }}-{{ .Revision }}
+            key: source-v4-{{ .Branch }}-{{ .Revision }}
             paths:
               - ".git"
   cached-checkout-for-pushing:
@@ -52,13 +52,13 @@ commands:
             command: find core/web-assets -name package\*.json -o -name bower.json | grep -v /target/ | sort -u | xargs cat > nodejs-dependency-json-cache.key
         - restore_cache:
             keys:
-              - nodejs-dependencies-v3-{{ checksum "pom-version-cache.key" }}-{{ checksum "nodejs-dependency-json-cache.key" }}
-              - nodejs-dependencies-v3-{{ checksum "pom-version-cache.key" }}-
+              - nodejs-dependencies-v4-{{ checksum "pom-version-cache.key" }}-{{ checksum "nodejs-dependency-json-cache.key" }}
+              - nodejs-dependencies-v4-{{ checksum "pom-version-cache.key" }}-
   save-nodejs-cache:
     description: "NodeJS: Save cache"
     steps:
       - save_cache:
-          key: nodejs-dependencies-v3-{{ checksum "pom-version-cache.key" }}-{{ checksum "nodejs-dependency-json-cache.key" }}
+          key: nodejs-dependencies-v4-{{ checksum "pom-version-cache.key" }}-{{ checksum "nodejs-dependency-json-cache.key" }}
           paths:
             - ~/.npm
   restore-sonar-cache:
@@ -66,12 +66,12 @@ commands:
       steps:
         - restore_cache:
             keys:
-              - sonar-cache-v2-{{ checksum "pom-version-cache.key" }}
+              - sonar-cache-v4-{{ checksum "pom-version-cache.key" }}
   save-sonar-cache:
       description: "Sonar: Save sonar cache"
       steps:
         - save_cache:
-            key: sonar-cache-v2-{{ checksum "pom-version-cache.key" }}
+            key: sonar-cache-v4-{{ checksum "pom-version-cache.key" }}
             paths:
               - ~/.sonar
   cache-workflow-assets:
@@ -92,7 +92,7 @@ commands:
             find "${TARGET_PATH}" -type d -print0 | xargs -0 chmod 775
             find "${TARGET_PATH}" ! -type d -print0 | xargs -0 chmod 664
       - save_cache:
-          key: << parameters.cache_prefix >>-v3-{{ .Branch }}-{{ .Revision }}-{{ .Environment.CIRCLE_SHA1 }}
+          key: << parameters.cache_prefix >>-v4-{{ .Branch }}-{{ .Revision }}-{{ .Environment.CIRCLE_SHA1 }}
           paths:
             - "/tmp/<< parameters.cache_prefix >>"
   restore-workflow-assets:
@@ -107,7 +107,7 @@ commands:
     steps:
       - restore_cache:
           keys:
-            - << parameters.cache_prefix >>-v3-{{ .Branch }}-{{ .Revision }}-{{ .Environment.CIRCLE_SHA1 }}
+            - << parameters.cache_prefix >>-v4-{{ .Branch }}-{{ .Revision }}-{{ .Environment.CIRCLE_SHA1 }}
       - when:
           condition: << parameters.target_path >>
           steps:
