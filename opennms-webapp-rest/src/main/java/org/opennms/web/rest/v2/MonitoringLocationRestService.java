@@ -90,8 +90,8 @@ public class MonitoringLocationRestService extends AbstractDaoRestService<OnmsMo
     protected CriteriaBuilder getCriteriaBuilder(UriInfo uriInfo) {
         CriteriaBuilder builder = new CriteriaBuilder(OnmsMonitoringLocation.class);
 
-        // Order by location name by default and remove limit on list
-        builder = builder.orderBy("locationName").asc().limit(0);
+        // Order by location name by default and remove limit on list by setting to 1 because there will always be a default
+        builder = builder.orderBy("locationName").asc().limit(1);
 
         return builder;
     }

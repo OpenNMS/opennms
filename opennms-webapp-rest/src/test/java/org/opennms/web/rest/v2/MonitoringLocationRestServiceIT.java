@@ -173,15 +173,24 @@ public class MonitoringLocationRestServiceIT extends AbstractSpringJerseyRestTes
         sendRequest(DELETE, "/monitoringLocations/location2", 204);
     }
 
-    /**
-     * Add more locations than the previous limit of 10
-     * Store them locally as we add them
-     * Then fetch the list, sort and compare the lists
-     */
     @Test
     @Transactional
-    public void testListLimitAndSort() throws Exception {
-        final int LOCATION_COUNT= ThreadLocalRandom.current().nextInt(11, 20); // original default limit was 10
+    public void testListLimitAndSortLong() throws Exception {
+        testListLimitSort(15);// hardcoded default limit is 10
+    }
+    
+    @Test
+    @Transactional
+    public void testListLimitAndSortShort() throws Exception {
+        testListLimitSort(5);// hardcoded default limit is 10
+    }
+
+    /**
+     * Add less locations
+     * Store them locally as we add them
+     * Then fetch the list and compare
+     */
+    private void testListLimitSort(final int LOCATION_COUNT) throws Exception {
         ArrayList<Location> localLocations = new ArrayList<>(LOCATION_COUNT);
 
         // Add default location but do not post it as it is already there
@@ -190,12 +199,11 @@ public class MonitoringLocationRestServiceIT extends AbstractSpringJerseyRestTes
         defaultLoc.monitoringArea = "localhost";
         localLocations.add(defaultLoc);
 
-        // Add locations in reverse order so they can be sorted
-        for (int i = LOCATION_COUNT - 1; i >= 0 ; i--) {
+        for (int i = 0; i < LOCATION_COUNT ; i++) {
             Location loc = new Location();
-            loc.locationName = "location-"+i;
-            loc.monitoringArea = "rand-area-"+i;
-            localLocations.add(loc);
+            loc.locationName = "location-"+String.format("%05d", i);
+            loc.monitoringArea = "area-"+String.format("%05d", i);;
+            localLocations.add(loc); // Add to our local storage
 
             String location = "<location location-name=\"" + loc.locationName + "\" monitoring-area=\""+loc.monitoringArea+"\"/>";
             sendPost("/monitoringLocations", location, 201, null);
@@ -207,29 +215,18 @@ public class MonitoringLocationRestServiceIT extends AbstractSpringJerseyRestTes
         assertEquals (localLocations.size(), Integer.parseInt(remoteCount));
 
         String fetchedJson = sendRequest(GET, "/monitoringLocations", Collections.emptyMap(), 200);
-
         ArrayList<Location> locationsFetched = (new ObjectMapper()).readValue(fetchedJson, Locations.class).location;
 
         Collections.sort(localLocations);
-        LOG.info("testListLimitAndSort: localLlocations after sort");
-        for (Location location : localLocations) {
-            LOG.info(location.locationName);
-        }
 
-        //locationsFetched are sorted by webservice - this is what we're testing
-        LOG.info("testListLimitAndSort: locationsFetched");
-        for (Location location : locationsFetched) {
-            LOG.info(location.locationName);
-        }
-
-        // finally check the sorted lists are the same
+        // finally check the lists are the same
         assertTrue (locationsFetched.equals(localLocations));
     }
 
     /**
      * Used for mapper to load Json from rest service
      */
-    public static class Location implements Comparable {
+    private static class Location implements Comparable {
         public int priority;
         public ArrayList<Object> tags;
         public Object geolocation;
@@ -255,7 +252,7 @@ public class MonitoringLocationRestServiceIT extends AbstractSpringJerseyRestTes
     /**
      * Used for mapper to load Json from rest service
      */
-    public static class Locations {
+    private static class Locations {
         public int offset;
         public int count;
         public int totalCount;

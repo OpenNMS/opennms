@@ -30,7 +30,7 @@ package org.opennms.web.utils;
 
 public class QueryParameters {
 
-    private static final Integer DEFAULT_LIMIT = 100;
+    private static final Integer DEFAULT_LIMIT = 10;
 
     public static class Order {
         private final String column;
@@ -71,9 +71,6 @@ public class QueryParameters {
     }
 
     public Integer getLimit() {
-        if (limit == null) {
-            return DEFAULT_LIMIT;
-        }
         return limit;
     }
 

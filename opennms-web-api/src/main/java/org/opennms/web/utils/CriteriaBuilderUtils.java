@@ -49,7 +49,6 @@ public class CriteriaBuilderUtils {
         Objects.requireNonNull(builder);
         Objects.requireNonNull(queryParameters);
 
-        builder.limit(queryParameters.getLimit());
         if (queryParameters.getOffset() != null) {
             builder.offset(queryParameters.getOffset());
         }

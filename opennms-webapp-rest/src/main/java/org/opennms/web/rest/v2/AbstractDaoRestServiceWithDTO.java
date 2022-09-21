@@ -219,6 +219,7 @@ public abstract class AbstractDaoRestServiceWithDTO<T,D,Q,K extends Serializable
 
     protected Criteria getCriteria(UriInfo uriInfo, SearchContext searchContext) {
         final CriteriaBuilder builder = getCriteriaBuilder(uriInfo);
+
         if (searchContext != null && !Strings.isNullOrEmpty(searchContext.getSearchExpression())) {
             try {
                 SearchCondition<Q> condition = searchContext.getCondition(getQueryBeanClass(), getSearchBeanPropertyMap());
@@ -234,9 +235,9 @@ public abstract class AbstractDaoRestServiceWithDTO<T,D,Q,K extends Serializable
 
         // Apply limit, offset, orderBy, order parameters
         final MultivaluedMap<String, String> params = uriInfo.getQueryParameters();
+
         applyLimitOffsetOrderBy(params, builder);
         Criteria crit = builder.toCriteria();
-
         /*
          * TODO: Figure out how to do stuff like this
          * 
@@ -255,12 +256,11 @@ public abstract class AbstractDaoRestServiceWithDTO<T,D,Q,K extends Serializable
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
     public Response get(@Context final UriInfo uriInfo, @Context final SearchContext searchContext) {
         Criteria crit = getCriteria(uriInfo, searchContext);
-        final List<T> coll = getDao().findMatching(crit);
+        final List<T> coll = (crit.getLimit() != 1 ?  getDao().findMatching(crit) : getDao().findAll());
         if (coll == null || coll.size() < 1) {
             return Response.status(Status.NO_CONTENT).build();
         } else {
             Integer offset = crit.getOffset();
-
             // Remove limit, offset and ordering when fetching count
             crit.setLimit(null);
             crit.setOffset(null);
@@ -555,6 +555,7 @@ public abstract class AbstractDaoRestServiceWithDTO<T,D,Q,K extends Serializable
 
     private static void applyLimitOffsetOrderBy(final MultivaluedMap<String,String> p, final CriteriaBuilder builder, final Integer defaultLimit) {
         final QueryParameters queryParameters = QueryParametersBuilder.buildFrom(p);
+
         if (queryParameters.getLimit() == null) {
             queryParameters.setLimit(defaultLimit);
         }

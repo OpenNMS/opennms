@@ -45,7 +45,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class CriteriaBuilder {
-	
+
 	private static final Logger LOG = LoggerFactory.getLogger(CriteriaBuilder.class);
 	
     private Class<?> m_class;
@@ -163,7 +163,7 @@ public class CriteriaBuilder {
     }
 
     public CriteriaBuilder limit(final Integer limit) {
-        m_limit = ((limit == null || limit == 0) ? null : limit);
+        m_limit = limit;
         return this;
     }
 
