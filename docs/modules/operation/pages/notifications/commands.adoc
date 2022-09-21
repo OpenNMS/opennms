@@ -102,6 +102,7 @@ The NotificationManager class defines some special switches, providing data for 
 
 | PARAM_MICROBLOG_USERNAME
 | -ublog
+| From user profile
 
 | PARAM_MOBILE_PHONE
 | -mphone
@@ -145,6 +146,7 @@ The NotificationManager class defines some special switches, providing data for 
 
 | PARAM_TUI_PIN
 | -tuipin
+| From user profile
 
 | PARAM_TYPE
 | -t
