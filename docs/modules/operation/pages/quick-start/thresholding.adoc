@@ -90,13 +90,14 @@ If left blank, it defaults to the standard thresholds UEIs.
 To test the threshold you just created, follow these steps:
 
 . Log in to the monitored node using two user accounts.
-. Choose menu:Status[Events > All Events].
+. In the main menu, choose menu:Status[Events].
+. Under Event Queries, click *All events*.
 +
 You should see an event that indicates your threshold triggered when more than one user logged in.
 
 . Log one user out of the node.
 +
-The Events page should indicate that the system has re-armed.
+The Events list page should indicate that the system has re-armed.
 
 [[thresh-cpu]]
 == Expression-based thresholds
