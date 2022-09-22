@@ -25,7 +25,7 @@ NOTE: If you are using SNMPv3, you need to configure details for a User-Based Se
 To change the community string, follow these steps:
 
 . In the web UI, click the *Gear* symbol at the top-right of the screen.
-. Choose menu:Provisioning[Configure SNMP Community Names by IP Address].
+. Under Provisioning, click *Configure SNMP Community Names by IP Address*.
 . Set up the configuration as appropriate for your environment:
 ** Enter a valid IP address in the *IP Address* box, and click *Look Up*.
 ** Choose an SNMP version (`v2c` or `v1`) from the *Version* list.
