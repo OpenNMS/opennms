@@ -28,46 +28,107 @@
 
 package org.opennms.netmgt.dao.jaxb.callback;
 
+import static org.opennms.features.config.dao.api.ConfigDefinition.DEFAULT_CONFIG_ID;
+import static org.opennms.netmgt.dao.jaxb.DefaultProvisiondConfigurationDao.CONFIG_NAME;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import org.json.JSONObject;
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.opennms.features.config.exception.ValidationException;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.util.ConfigConvertUtil;
 import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
 import org.opennms.netmgt.config.provisiond.RequisitionDef;
-import org.opennms.netmgt.xml.event.Event;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class ProvisiondConfigurationValidationCallbackTest {
-    private String configName = "provisiond";
+
+    @Test
+    public void testOk() {
+        doTest(createConfig());
+    }
+
+    @Test
+    public void testEmptyConfigDefs() {
+        ProvisiondConfiguration config = createConfig();
+        config.setRequisitionDefs(Collections.emptyList());
+        doTest(config);
+    }
 
     @Test(expected = ValidationException.class)
     public void testInvalid() {
-        ProvisiondConfigurationValidationCallback callback = new ProvisiondConfigurationValidationCallback();
-
-        ProvisiondConfiguration config = new ProvisiondConfiguration();
-        List<RequisitionDef> requisitionDefs = new ArrayList<>();
-        RequisitionDef def = new RequisitionDef();
-        def.setCronSchedule("0 0 * * * ?");
-        requisitionDefs.add(def);
-        RequisitionDef def2 = new RequisitionDef();
+        ProvisiondConfiguration config = createConfig();
         // invalid
-        def.setCronSchedule("0 0 * * * *");
-        requisitionDefs.add(def2);
-        config.setRequisitionDefs(requisitionDefs);
-        JSONObject json = new JSONObject(ConfigConvertUtil.objectToJson(config));
+        config.getRequisitionDefs().get(1).setCronSchedule("0 0 * * * *");
 
-        ConfigUpdateInfo info = new ConfigUpdateInfo(configName, "default", json);
-        callback.accept(info);
+        doTest(config);
     }
 
     @Test(expected = ValidationException.class)
-    public void testNullConfig() {
+    public void testConfigIsNull() {
+        doTest(null);
+    }
+
+    @Test(expected = ValidationException.class)
+    public void testNullNameInAConfigDef() {
+        ProvisiondConfiguration config = createConfig();
+        // add a def with null as name
+        RequisitionDef reqDef = new RequisitionDef();
+        reqDef.setCronSchedule("0 0 * * * ?");
+        config.getRequisitionDefs().add(reqDef);
+        doTest(config);
+    }
+
+    @Test(expected = ValidationException.class)
+    public void testTwoDefsWithSameName() {
+        ProvisiondConfiguration config = createConfig();
+        // invalid
+        config.getRequisitionDefs().get(0).setImportName(config.getRequisitionDefs().get(1).getImportName().get());
+
+        doTest(config);
+    }
+
+    @Test(expected = ValidationException.class)
+    public void testBlankName() {
+        ProvisiondConfiguration config = createConfig();
+        // invalid
+        config.getRequisitionDefs().get(0).setImportName(" \t\n");
+
+        doTest(config);
+    }
+
+    private static void doTest(ProvisiondConfiguration config) {
         ProvisiondConfigurationValidationCallback callback = new ProvisiondConfigurationValidationCallback();
-        ConfigUpdateInfo info = new ConfigUpdateInfo(configName, "default", null );
+        JSONObject json;
+        if (config == null) {
+            json = null;
+        } else {
+            json = new JSONObject(ConfigConvertUtil.objectToJson(config));
+        }
+        ConfigUpdateInfo info = new ConfigUpdateInfo(CONFIG_NAME, DEFAULT_CONFIG_ID, json);
         callback.accept(info);
     }
+
+    private static ProvisiondConfiguration createConfig() {
+
+        ProvisiondConfiguration config = new ProvisiondConfiguration();
+        List<RequisitionDef> requisitionDefs = new ArrayList<>();
+
+        RequisitionDef def1 = new RequisitionDef();
+        def1.setCronSchedule("0 0 * * * ?");
+        def1.setImportName("name1");
+        requisitionDefs.add(def1);
+
+        RequisitionDef def2 = new RequisitionDef();
+        def2.setCronSchedule("1 1 * * * ?");
+        def2.setImportName("name2");
+        requisitionDefs.add(def2);
+
+        config.setRequisitionDefs(requisitionDefs);
+
+        return config;
+    }
+
 }
