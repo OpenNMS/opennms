@@ -54,6 +54,7 @@ import org.opennms.smoketest.stacks.StackModel;
 import org.opennms.smoketest.telemetry.Packet;
 import org.opennms.smoketest.telemetry.Packets;
 import org.opennms.smoketest.telemetry.Sender;
+import org.opennms.smoketest.utils.KarafShell;
 import org.opennms.smoketest.utils.RestClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -173,6 +174,9 @@ public class BmpIT {
         final EventBuilder builder = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, getClass().getSimpleName());
         builder.setParam(EventConstants.PARM_DAEMON_NAME, "collectd");
         stack.opennms().getRestClient().sendEvent(builder.getEvent());
+        // Added command to build the cache after adding node through API
+        KarafShell karafShell = new KarafShell(stack.opennms().getSshAddress());
+        karafShell.runCommand("opennms:sync-node-cache");
 
         await().atMost(1, MINUTES).pollDelay(0, SECONDS).pollInterval(5, SECONDS)
                 .until(() -> {

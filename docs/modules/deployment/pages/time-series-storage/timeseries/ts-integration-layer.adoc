@@ -18,4 +18,4 @@ Examples of time series plugins:
 * https://github.com/opennms-forge/opennms-tss-plugin-inmemory[In Memory]
 * https://github.com/opennms-forge/timeseries-integration-influxdb[InfluxDB]
 * https://github.com/opennms-forge/timeseries-integration-timescale[TimescaleDB]
-* https://github.com/OpenNMS/opennms-cortex-tss-plugin[Cortex]
+* xref:deployment:time-series-storage/timeseries/cortex.adoc[Cortex]

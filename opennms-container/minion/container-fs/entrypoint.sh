@@ -10,15 +10,15 @@ set -e
 
 umask 002
 MINION_HOME="/opt/minion"
-MINION_CONFIG="/opt/minion/etc/org.opennms.minion.controller.cfg"
-MINION_PROCESS_ENV_CFG="/opt/minion/etc/minion-process.env"
-MINION_SERVER_CERTS_CFG="/opt/minion/etc/minion-server-certs.env"
+MINION_CONFIG="${MINION_HOME}/etc/org.opennms.minion.controller.cfg"
+MINION_PROCESS_ENV_CFG="${MINION_HOME}/etc/minion-process.env"
+MINION_SERVER_CERTS_CFG="${MINION_HOME}/etc/minion-server-certs.env"
 MINION_OVERLAY_ETC="/opt/minion-etc-overlay"
-CONFD_KEY_STORE="/opt/minion/minion-config.yaml"
-CONFD_CONFIG_DIR="/opt/minion/confd"
+CONFD_KEY_STORE="${MINION_HOME}/minion-config.yaml"
+CONFD_CONFIG_DIR="${MINION_HOME}/confd"
 CONFD_BIN="/usr/bin/confd"
 CONFD_CONFIG_FILE="${CONFD_CONFIG_DIR}/confd.toml"
-CACERTS="/opt/minion/cacerts"
+CACERTS="${MINION_HOME}/cacerts"
 
 export KARAF_OPTS="-Djava.locale.providers=CLDR,COMPAT"
 

@@ -68,12 +68,12 @@ for TYPE in horizon minion sentinel; do
       _tagname="${DOCKER_REPO}:${_publish_tag}-${_arch_tag}"
       echo "* pushing ${TYPE} (${_arch_tag}) to Cloudsmith as ${_tagname}"
       docker tag "${_internal_tag}" "${_tagname}"
-      docker push --quiet "${_tagname}"
+      do_with_retries docker push --quiet "${_tagname}"
       # if this is the "amd64" version, then push it again without the arch modifier
       if [ "${_arch_tag}" = "linux-amd64" ]; then
         _tagname="${DOCKER_REPO}:${_publish_tag}"
         docker tag "${_internal_tag}" "${_tagname}"
-        docker push --quiet "${_tagname}"
+        do_with_retries docker push --quiet "${_tagname}"
       fi
     done
   done

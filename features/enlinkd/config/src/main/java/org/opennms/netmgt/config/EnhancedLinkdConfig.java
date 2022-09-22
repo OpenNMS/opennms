@@ -72,21 +72,50 @@ public interface EnhancedLinkdConfig {
     long getInitialSleepTime();
 
     /**
-     * <p>getRescanInterval</p>
+     * <p>getCdpRescanInterval</p>
      *
      * @return a long.
      */
-    long getRescanInterval();
+    long getCdpRescanInterval();
+
+    /**
+     * <p>getLldpRescanInterval</p>
+     *
+     * @return a long.
+     */
+    long getLldpRescanInterval();
+
+    /**
+     * <p>getBridgeRescanInterval</p>
+     *
+     * @return a long.
+     */
+    long getBridgeRescanInterval();
+
+    /**
+     * <p>getOspfRescanInterval</p>
+     *
+     * @return a long.
+     */
+    long getOspfRescanInterval();
+
+    /**
+     * <p>getIsisRescanInterval</p>
+     *
+     * @return a long.
+     */
+    long getIsisRescanInterval();
 
     /**
      * <p>getBridgeTopologyInterval</p>
      *
      * @return a long.
      */
+
     long getBridgeTopologyInterval();
 
     /**
-     * <p>getTopologyInterval</p>
+     * <p>getTopologyUpdaterInterval</p>
      *
      * @return a long.
      */
