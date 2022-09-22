@@ -44,7 +44,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -119,7 +118,7 @@ public class DefaultClassificationService implements ClassificationService {
         this.sessionUtils = Objects.requireNonNull(sessionUtils);
         this.ruleValidator = new RuleValidator(filterDao);
         this.filterDao = Objects.requireNonNull(filterDao);
-        this.filterWatcher = filterWatcher; // Optional dependency
+        this.filterWatcher = Objects.requireNonNull(filterWatcher);
         this.groupValidator = new GroupValidator(classificationRuleDao);
         this.csvService = new CsvServiceImpl(ruleValidator);
 
@@ -416,21 +415,11 @@ public class DefaultClassificationService implements ClassificationService {
                                  .filter(Predicate.not(Strings::isNullOrEmpty))
                                  .collect(Collectors.toSet());
 
-        if (this.filterWatcher != null) {
-            this.filterWatcherSession = this.filterWatcher.watch(filters, (results -> filtersChanged(rules, results.getRuleNodeIpServiceMap())));
-        } else {
-            // Filter watcher is not available - so we build the list of results here and use it directly
-            final var results = filters.stream()
-                    .collect(Collectors.toMap(Function.identity(), this.filterDao::getNodeIPAddressServiceMap));
-            this.filtersChanged(rules, results);
-
-        }
+        this.filterWatcherSession = this.filterWatcher.watch(filters, (results -> filtersChanged(rules, results.getRuleNodeIpServiceMap())));
     }
 
     private void filtersChanged(final List<Rule> rules,
                                 final Map<String, Map<Integer, Map<InetAddress, Set<String>>>> results) {
-        // TODO fooker: Sort the list and make the position inherent?
-
         final var dtos = rules.stream()
                               .sorted(Comparator.comparingInt(Rule::getGroupPosition)
                                                 .thenComparingInt(Rule::getPosition))
@@ -448,8 +437,6 @@ public class DefaultClassificationService implements ClassificationService {
 
     private static RuleDTO resolveRule(final RuleDefinition rule,
                                        final Map<String, Map<Integer, Map<InetAddress, Set<String>>>> results) {
-        // TODO fooker: error handling of protocols
-
         final List<String> exporters = Strings.isNullOrEmpty(rule.getExporterFilter())
                                        ? List.of()
                                        : results.getOrDefault(rule.getExporterFilter(), Collections.emptyMap())

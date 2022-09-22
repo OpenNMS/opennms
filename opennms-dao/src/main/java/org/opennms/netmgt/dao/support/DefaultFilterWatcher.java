@@ -256,7 +256,6 @@ public class DefaultFilterWatcher implements FilterWatcher, InitializingBean, Di
         if (filters == null) {
             return Set.of(MATCH_ANY_RULE);
         } else {
-            // TODO fooker: Return a wildcard if any element is wildcard?
             return filters.stream()
                           .map(filter -> {
                               if (StringUtils.isEmpty(filter)) {
