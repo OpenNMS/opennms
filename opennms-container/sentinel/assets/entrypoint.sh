@@ -13,6 +13,7 @@
 set -e
 
 umask 002
+SENTINEL_HOME="/opt/sentinel"
 SENTINEL_OVERLAY_ETC="/opt/sentinel-etc-overlay"
 SENTINEL_OVERLAY="/opt/sentinel-overlay"
 
