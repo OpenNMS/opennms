@@ -21,12 +21,13 @@ This threshold tells {page-component-title} to create an event when the number o
 Before creating this threshold, make sure you have at least two users defined in your {page-component-title} instance (see <<quick-start/users.adoc#create-user, Create a new user>>).
 
 . Click the *Gear* symbol in the top-right of the screen.
-. Under *Performance Measurement*, choose *Configure Thresholds*.
+. Under Performance Measurement, click *Configure Thresholds*.
 +
 A screen with a list of preconfigured threshold groups appears.
 We will work with `netsnmp`.
 +
 For information on how to create a threshold group, see xref:deep-dive/thresholds/thresh-group.adoc[Create a Threshold Group] in the Deep Dive section.
+
 . Click *Edit* beside the `netsnmp` group.
 . Click *Create New Threshold* at the bottom of the *Basic Thresholds* area.
 . Set the following information and click *Save*:
@@ -95,7 +96,7 @@ You should see an event that indicates your threshold triggered when more than o
 
 . Log one user out of the node.
 +
-The *Events* page should indicate that the system has re-armed.
+The Events page should indicate that the system has re-armed.
 
 [[thresh-cpu]]
 == Expression-based thresholds
@@ -110,9 +111,9 @@ NOTE: Expression-based thresholds work only if the data sources in question are 
 To view the expression-based threshold for CPU use, follow these steps:
 
 . Click the *Gear* symbol in the top-right of the screen.
-. Under *Performance Measurement*, choose *Configure Thresholds*.
+. Under Performance Measurement, click *Configure Thresholds*.
 . Click *Edit* beside the `netsnmp` group.
-. In the *Expression-based Thresholds* area, view the first threshold (with the description "Trigger an alert when five ...").
+. In the Expression-based Thresholds area, view the first threshold (with the description "Trigger an alert when five ...").
 +
 The following table describes the fields:
 +

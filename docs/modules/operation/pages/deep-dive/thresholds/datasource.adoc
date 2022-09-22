@@ -29,7 +29,7 @@ The expression is in the form `${context:key|context_fallback:key_fallback|...|d
 Before using metadata in a threshold, you need to add the metadata context pair—in this case, a requisition key called `userLimit` (see <<deep-dive/meta-data.adoc#ga-metadata-webui, Adding metadata through the web UI>>).
 
 . Click the *Gear* symbol in the top-right of the screen.
-. Under *Performance Measurement*, choose *Configure Thresholds*.
+. Under Performance Measurement, click *Configure Thresholds*.
 . Click *Edit* beside the `netsnmp` group.
 . Click *Create New Expression-based Threshold*.
 . Fill in the following information:
@@ -78,6 +78,5 @@ For example, "Number of Processes" or "System Uptime":
 image::thresholding/Graphs.png[]
 
 . Go to `etc/snmp-graph.properties.d` and search for the title of the graph (for example, "System Uptime").
-
 . Note the name of the data source, and type it in the *Datasource* field when you xref:quick-start/thresholding.adoc[create your threshold].
 
