@@ -50,11 +50,16 @@ public class EnlinkdConfiguration implements java.io.Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * The max number of m_threads used for polling snmp
-     *  devices and discovery links.
+     * Max number of threads used for executing data collection.
      */
     @XmlAttribute(name = "threads", required = true)
     private Integer m_threads;
+
+    /**
+     * The number of threads used for calculate bridge topology
+     */
+    @XmlAttribute(name = "discovery-bridge-threads")
+    private Integer m_discoveryBridgeThreads;
 
     /**
      * The initial sleep time in mill seconds before starting
@@ -64,34 +69,22 @@ public class EnlinkdConfiguration implements java.io.Serializable {
     private Long m_initialSleepTime;
 
     /**
-     * Node Link Discovery Rescan Time interval in millseconds.
-     */
-    @XmlAttribute(name = "rescan_interval")
-    private Long m_rescanInterval;
-
-    /**
      *  Bridge Topology Discovery Time interval in mill seconds.
      */
     @XmlAttribute(name = "bridge_topology_interval")
     private Long m_bridgeTopologyInterval;
 
     /**
-     *  Topology Discovery Time interval in mill seconds.
+     *  Topology Updater scheduled Time interval in mill seconds.
      */
     @XmlAttribute(name = "topology_interval")
     private Long m_topologyInterval;
 
     /**
-     * Max bridge forwarding table to hold in memory.
+     *  Cdp Data Collection scheduled Time interval in mill seconds.
      */
-    @XmlAttribute(name = "max_bft")
-    private Integer m_maxBft;
-
-    /**
-     * The number of threads used for calculate bridge topology 
-     */
-    @XmlAttribute(name = "discovery-bridge-threads")
-    private Integer m_discoveryBridgeThreads;
+    @XmlAttribute(name = "cdp_rescan_interval")
+    private Long m_cdpRescanInterval;
 
     /**
      * Whether links discovery process should use
@@ -101,11 +94,23 @@ public class EnlinkdConfiguration implements java.io.Serializable {
     private Boolean m_useCdpDiscovery;
 
     /**
+     *  Cdp Data Collection scheduled Time interval in mill seconds.
+     */
+    @XmlAttribute(name = "bridge_rescan_interval")
+    private Long m_bridgeRescanInterval;
+
+    /**
      * Whether links discovery process should use
      *  Bridge mib data.
      */
     @XmlAttribute(name = "use-bridge-discovery")
     private Boolean m_useBridgeDiscovery;
+
+    /**
+     *  Lldp Data Collection scheduled Time interval in mill seconds.
+     */
+    @XmlAttribute(name = "lldp_rescan_interval")
+    private Long m_lldpRescanInterval;
 
     /**
      * Whether links discovery process should use
@@ -115,11 +120,23 @@ public class EnlinkdConfiguration implements java.io.Serializable {
     private Boolean m_useLldpDiscovery;
 
     /**
+     *  Ospf Data Collection scheduled Time interval in mill seconds.
+     */
+    @XmlAttribute(name = "ospf_rescan_interval")
+    private Long m_ospfRescanInterval;
+
+    /**
      * Whether links discovery process should use
      *  ospf mib data.
      */
     @XmlAttribute(name = "use-ospf-discovery")
     private Boolean m_useOspfDiscovery;
+
+    /**
+     *  IS-IS Data Collection scheduled Time interval in mill seconds.
+     */
+    @XmlAttribute(name = "isis_rescan_interval")
+    private Long m_isisRescanInterval;
 
     /**
      * Whether links discovery process should use
@@ -128,8 +145,17 @@ public class EnlinkdConfiguration implements java.io.Serializable {
     @XmlAttribute(name = "use-isis-discovery")
     private Boolean m_useIsisDiscovery;
 
+    /**
+     * Set to true to skip VLAN enumeration and scanning during bridge discovery
+     */
     @XmlAttribute(name = "disable-bridge-vlan-discovery")
     private Boolean m_disableBridgeVlanDiscovery;
+
+    /**
+     * Max bridge forwarding table to hold in memory.
+     */
+    @XmlAttribute(name = "max_bft")
+    private Integer m_maxBft;
 
     public EnlinkdConfiguration() {
     }
@@ -150,13 +176,46 @@ public class EnlinkdConfiguration implements java.io.Serializable {
         m_initialSleepTime = initialSleepTime;
     }
 
-    public Long getRescanInterval() {
-        return m_rescanInterval == null? 86400000L : m_rescanInterval;
+    public Long getCdpRescanInterval() {
+        return m_cdpRescanInterval == null? 86400000L : m_cdpRescanInterval;
     }
 
-    public void setRescanInterval(final Long rescanInterval) {
-        m_rescanInterval = rescanInterval;
+    public void setCdpRescanInterval(final Long rescanInterval) {
+        m_cdpRescanInterval = rescanInterval;
     }
+
+    public Long getLldpRescanInterval() {
+        return m_lldpRescanInterval == null? 86400000L : m_lldpRescanInterval;
+    }
+
+    public void setLldpRescanInterval(final Long rescanInterval) {
+        m_lldpRescanInterval = rescanInterval;
+    }
+
+    public Long getBridgeRescanInterval() {
+        return m_bridgeRescanInterval == null? 86400000L : m_bridgeRescanInterval;
+    }
+
+    public void setBridgeRescanInterval(final Long rescanInterval) {
+        m_bridgeRescanInterval = rescanInterval;
+    }
+
+    public Long getOspfRescanInterval() {
+        return m_ospfRescanInterval == null? 86400000L : m_ospfRescanInterval;
+    }
+
+    public void setOspfRescanInterval(final Long rescanInterval) {
+        m_ospfRescanInterval = rescanInterval;
+    }
+
+    public Long getIsisRescanInterval() {
+        return m_isisRescanInterval == null? 86400000L : m_isisRescanInterval;
+    }
+
+    public void setIsisRescanInterval(final Long rescanInterval) {
+        m_isisRescanInterval = rescanInterval;
+    }
+
 
     public Long getBridgeTopologyInterval() {
         return m_bridgeTopologyInterval == null? 300000L : m_bridgeTopologyInterval;
@@ -239,46 +298,65 @@ public class EnlinkdConfiguration implements java.io.Serializable {
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(
-            m_threads,
-            m_initialSleepTime,
-            m_rescanInterval,
-            m_bridgeTopologyInterval,
-            m_topologyInterval,
-            m_maxBft,
-            m_discoveryBridgeThreads,
-            m_useCdpDiscovery,
-            m_useBridgeDiscovery,
-            m_useLldpDiscovery,
-            m_useOspfDiscovery,
-            m_useIsisDiscovery,
-            m_disableBridgeVlanDiscovery);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        EnlinkdConfiguration that = (EnlinkdConfiguration) o;
+
+        if (!m_threads.equals(that.m_threads)) return false;
+        if (!Objects.equals(m_discoveryBridgeThreads, that.m_discoveryBridgeThreads))
+            return false;
+        if (!Objects.equals(m_initialSleepTime, that.m_initialSleepTime))
+            return false;
+        if (!Objects.equals(m_bridgeTopologyInterval, that.m_bridgeTopologyInterval))
+            return false;
+        if (!Objects.equals(m_topologyInterval, that.m_topologyInterval))
+            return false;
+        if (!Objects.equals(m_cdpRescanInterval, that.m_cdpRescanInterval))
+            return false;
+        if (!Objects.equals(m_useCdpDiscovery, that.m_useCdpDiscovery))
+            return false;
+        if (!Objects.equals(m_bridgeRescanInterval, that.m_bridgeRescanInterval))
+            return false;
+        if (!Objects.equals(m_useBridgeDiscovery, that.m_useBridgeDiscovery))
+            return false;
+        if (!Objects.equals(m_lldpRescanInterval, that.m_lldpRescanInterval))
+            return false;
+        if (!Objects.equals(m_useLldpDiscovery, that.m_useLldpDiscovery))
+            return false;
+        if (!Objects.equals(m_ospfRescanInterval, that.m_ospfRescanInterval))
+            return false;
+        if (!Objects.equals(m_useOspfDiscovery, that.m_useOspfDiscovery))
+            return false;
+        if (!Objects.equals(m_isisRescanInterval, that.m_isisRescanInterval))
+            return false;
+        if (!Objects.equals(m_useIsisDiscovery, that.m_useIsisDiscovery))
+            return false;
+        if (!Objects.equals(m_disableBridgeVlanDiscovery, that.m_disableBridgeVlanDiscovery))
+            return false;
+        return Objects.equals(m_maxBft, that.m_maxBft);
     }
 
     @Override
-    public boolean equals(final Object obj) {
-        if ( this == obj ) {
-            return true;
-        }
-        
-        if (obj instanceof EnlinkdConfiguration) {
-            final EnlinkdConfiguration that = (EnlinkdConfiguration)obj;
-            return Objects.equals(this.m_threads, that.m_threads)
-                && Objects.equals(this.m_initialSleepTime, that.m_initialSleepTime)
-                && Objects.equals(this.m_rescanInterval, that.m_rescanInterval)
-                && Objects.equals(this.m_bridgeTopologyInterval, that.m_bridgeTopologyInterval)
-                && Objects.equals(this.m_topologyInterval, that.m_topologyInterval)
-                && Objects.equals(this.m_maxBft, that.m_maxBft)
-                && Objects.equals(this.m_discoveryBridgeThreads, that.m_discoveryBridgeThreads)
-                && Objects.equals(this.m_useCdpDiscovery, that.m_useCdpDiscovery)
-                && Objects.equals(this.m_useBridgeDiscovery, that.m_useBridgeDiscovery)
-                && Objects.equals(this.m_useLldpDiscovery, that.m_useLldpDiscovery)
-                && Objects.equals(this.m_useOspfDiscovery, that.m_useOspfDiscovery)
-                && Objects.equals(this.m_useIsisDiscovery, that.m_useIsisDiscovery)
-                && Objects.equals(this.m_disableBridgeVlanDiscovery, that.m_disableBridgeVlanDiscovery);
-        }
-        return false;
+    public int hashCode() {
+        int result = m_threads.hashCode();
+        result = 31 * result + (m_discoveryBridgeThreads != null ? m_discoveryBridgeThreads.hashCode() : 0);
+        result = 31 * result + (m_initialSleepTime != null ? m_initialSleepTime.hashCode() : 0);
+        result = 31 * result + (m_bridgeTopologyInterval != null ? m_bridgeTopologyInterval.hashCode() : 0);
+        result = 31 * result + (m_topologyInterval != null ? m_topologyInterval.hashCode() : 0);
+        result = 31 * result + (m_cdpRescanInterval != null ? m_cdpRescanInterval.hashCode() : 0);
+        result = 31 * result + (m_useCdpDiscovery != null ? m_useCdpDiscovery.hashCode() : 0);
+        result = 31 * result + (m_bridgeRescanInterval != null ? m_bridgeRescanInterval.hashCode() : 0);
+        result = 31 * result + (m_useBridgeDiscovery != null ? m_useBridgeDiscovery.hashCode() : 0);
+        result = 31 * result + (m_lldpRescanInterval != null ? m_lldpRescanInterval.hashCode() : 0);
+        result = 31 * result + (m_useLldpDiscovery != null ? m_useLldpDiscovery.hashCode() : 0);
+        result = 31 * result + (m_ospfRescanInterval != null ? m_ospfRescanInterval.hashCode() : 0);
+        result = 31 * result + (m_useOspfDiscovery != null ? m_useOspfDiscovery.hashCode() : 0);
+        result = 31 * result + (m_isisRescanInterval != null ? m_isisRescanInterval.hashCode() : 0);
+        result = 31 * result + (m_useIsisDiscovery != null ? m_useIsisDiscovery.hashCode() : 0);
+        result = 31 * result + (m_disableBridgeVlanDiscovery != null ? m_disableBridgeVlanDiscovery.hashCode() : 0);
+        result = 31 * result + (m_maxBft != null ? m_maxBft.hashCode() : 0);
+        return result;
     }
-
 }

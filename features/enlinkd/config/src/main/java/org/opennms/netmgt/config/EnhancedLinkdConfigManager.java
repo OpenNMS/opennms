@@ -142,8 +142,20 @@ abstract public class EnhancedLinkdConfigManager implements EnhancedLinkdConfig 
         return m_config.getInitialSleepTime();
     }
 
-    public long getRescanInterval() {
-        return m_config.getRescanInterval();
+    public long getCdpRescanInterval() {
+        return m_config.getCdpRescanInterval();
+    }
+    public long getLldpRescanInterval() {
+        return m_config.getLldpRescanInterval();
+    }
+    public long getBridgeRescanInterval() {
+        return m_config.getBridgeRescanInterval();
+    }
+    public long getOspfRescanInterval() {
+        return m_config.getOspfRescanInterval();
+    }
+    public long getIsisRescanInterval() {
+        return m_config.getIsisRescanInterval();
     }
 
     public long getBridgeTopologyInterval() {
@@ -156,7 +168,7 @@ abstract public class EnhancedLinkdConfigManager implements EnhancedLinkdConfig 
 
 
     /**
-     * <p>getThreads</p>
+     * <p>getExecutorThreads</p>
      *
      * @return a int.
      */
@@ -164,7 +176,7 @@ abstract public class EnhancedLinkdConfigManager implements EnhancedLinkdConfig 
         if (m_config.getThreads() != null) return m_config.getThreads();
         return 5;
     }
-    
+
     public int getMaxBft() {
         if (m_config.getMaxBft() != null) return m_config.getMaxBft();
         return 100;
