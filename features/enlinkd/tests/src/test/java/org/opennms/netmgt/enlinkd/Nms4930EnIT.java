@@ -32,12 +32,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.DLINK1_IP;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.DLINK1_NAME;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.DLINK1_SNMP_RESOURCE;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.DLINK2_IP;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.DLINK2_NAME;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.DLINK2_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.Nms4930NetworkBuilder.DLINK1_IP;
+import static org.opennms.netmgt.nb.Nms4930NetworkBuilder.DLINK1_NAME;
+import static org.opennms.netmgt.nb.Nms4930NetworkBuilder.DLINK1_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.Nms4930NetworkBuilder.DLINK2_IP;
+import static org.opennms.netmgt.nb.Nms4930NetworkBuilder.DLINK2_NAME;
+import static org.opennms.netmgt.nb.Nms4930NetworkBuilder.DLINK2_SNMP_RESOURCE;
 
 import java.util.List;
 import java.util.Set;
@@ -261,9 +261,9 @@ common macs on shared link: 8
 
  */
 //   the topology is shown here...
-//   (10.100.2.6:000ffeb10e26) --> <port 6:dlink1:port 24> ---<cloud>----<port 10:dlink2>
+//   (host2:10.100.2.6:000ffeb10e26) --> <port 6:dlink1:port 24> ---<cloud>----<port 10:dlink2>
 //                                                               |
-//                                                           10.100.1.7:001e58a6aed7:101
+//                                                           host1:10.100.1.7:001e58a6aed7:101
 
 public class Nms4930EnIT extends EnLinkdBuilderITCase {
 
@@ -337,21 +337,41 @@ String[] forwardersdlink2on10bbport= {"001195256302","f07d68a13d67","001517028e0
     };
     @Before
     public void setUpNetwork4930() {
-    	builder.setNodeDao(m_nodeDao);
-        builder.setIpNetToMediaDao(m_ipNetToMediaDao);
-        builder.buildNetwork4930();
-        // Adding a "node" with mac address 001e58a6aed7 found both on dlink1 port 24 and dlink2 port 10 
-        builder.addMacNodeWithSnmpInterface("001e58a6aed7","10.100.1.7",101 );
+        // Adding a "node" with mac address 001e58a6aed7 found both on dlink1 port 24 and dlink2 port 10
+        //builder.addMacNodeWithSnmpInterface("001e58a6aed7","10.100.1.7",101 );
         // Adding a "node" with mac address 000ffeb10e26 found on dlink1 port 6
-        builder.addMacNode("000ffeb10e26","10.100.2.6" );
+        //builder.addMacNode("000ffeb10e26","10.100.2.6" );
+        m_nodeDao.save(builder.getDlink1());
+        m_nodeDao.save(builder.getDlink2());
+        m_nodeDao.save(builder.getHost1());
+        m_nodeDao.save(builder.getHost2());
+
         assertEquals(4, m_nodeDao.countAll());
+
+        IpNetToMedia atsave2 = builder.getMac2();
+        OnmsNode sourcehost2 = m_nodeDao.findByForeignId(atsave2.getSourceNode().getForeignSource(),atsave2.getSourceNode().getForeignId());
+        OnmsNode host2 = m_nodeDao.findByForeignId(atsave2.getNode().getForeignSource(),atsave2.getNode().getForeignId());
+        atsave2.setSourceNode(sourcehost2);
+        atsave2.setNode(host2);
+        m_ipNetToMediaDao.save(atsave2);
+
+        IpNetToMedia atsave1 = builder.getMac1();
+        OnmsNode sourcehost1 = m_nodeDao.findByForeignId(atsave1.getSourceNode().getForeignSource(),atsave1.getSourceNode().getForeignId());
+        OnmsNode host1 = m_nodeDao.findByForeignId(atsave1.getNode().getForeignSource(),atsave1.getNode().getForeignId());
+        atsave1.setSourceNode(sourcehost1);
+        atsave1.setNode(host1);
+        m_ipNetToMediaDao.save(atsave1);
+
+        m_ipNetToMediaDao.flush();
+
         assertEquals(2, m_ipNetToMediaDao.countAll());
+
         IpNetToMedia at0 = m_ipNetToMediaDao.findByPhysAddress("001e58a6aed7").get(0);
         assertNotNull(at0);
-        assertEquals("10.100.1.7", at0.getNetAddress().getHostAddress());
+        assertEquals("10.1.2.7", at0.getNetAddress().getHostAddress());
         IpNetToMedia at1 = m_ipNetToMediaDao.findByPhysAddress("000ffeb10e26").get(0);
         assertNotNull(at1);
-        assertEquals("10.100.2.6", at1.getNetAddress().getHostAddress());
+        assertEquals("10.1.2.6", at1.getNetAddress().getHostAddress());
     }
 
     @Test
@@ -502,8 +522,8 @@ String[] forwardersdlink2on10bbport= {"001195256302","f07d68a13d67","001517028e0
         
         final OnmsNode dlink1 = m_nodeDao.findByForeignId("linkd", DLINK1_NAME);
         final OnmsNode dlink2 = m_nodeDao.findByForeignId("linkd", DLINK2_NAME);
-        final OnmsNode nodebetweendlink1dlink2 = m_nodeDao.findByForeignId("linkd", "10.100.1.7");
-        final OnmsNode nodeonlink1dport6 = m_nodeDao.findByForeignId("linkd", "10.100.2.6");
+        final OnmsNode nodebetweendlink1dlink2 = m_nodeDao.findByForeignId("linkd", "host1");
+        final OnmsNode nodeonlink1dport6 = m_nodeDao.findByForeignId("linkd", "host2");
         
         assertNotNull(nodebetweendlink1dlink2);
         assertNotNull(nodeonlink1dport6);
@@ -543,8 +563,8 @@ String[] forwardersdlink2on10bbport= {"001195256302","f07d68a13d67","001517028e0
   
         final OnmsNode dlink1 = m_nodeDao.findByForeignId("linkd", DLINK1_NAME);
         final OnmsNode dlink2 = m_nodeDao.findByForeignId("linkd", DLINK2_NAME);
-        final OnmsNode nodebetweendlink1dlink2 = m_nodeDao.findByForeignId("linkd", "10.100.1.7");
-        final OnmsNode nodeonlink1dport6 = m_nodeDao.findByForeignId("linkd", "10.100.2.6");
+        final OnmsNode nodebetweendlink1dlink2 = m_nodeDao.findByForeignId("linkd", "host1");
+        final OnmsNode nodeonlink1dport6 = m_nodeDao.findByForeignId("linkd", "host2");
         
         assertNotNull(nodebetweendlink1dlink2);
         assertNotNull(nodeonlink1dport6);
