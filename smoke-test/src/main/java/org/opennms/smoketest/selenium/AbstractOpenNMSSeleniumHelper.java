@@ -579,6 +579,7 @@ public abstract class AbstractOpenNMSSeleniumHelper {
             @Override public Boolean call() throws Exception {
                 waitForElement(textInput).clear();
                 waitForElement(textInput).click();
+                waitForElement(textInput).sendKeys(Keys.chord(Keys.CONTROL, "a"), Keys.BACK_SPACE);
                 waitForValue(textInput, "");
                 waitForElement(textInput).sendKeys(text);
                 // Click on the item that appears
