@@ -36,8 +36,7 @@ help:
 	@echo "Makefile to build Minion Docker container images and push to a registry."
 	@echo ""
 	@echo "Requirements to build images:"
-	@echo "  * Docker 18+"
-	@echo "  * Buildx CLI tools from https://github.com/docker/buildx/releases in search path as docker-buildx"
+	@echo "  * Docker 19.03+"
 	@echo "  * Minion assembled with: ./assemble.pl -Dopennms.home=/opt/opennms -DskipTests"
 	@echo ""
 	@echo "Targets:"
@@ -71,17 +70,16 @@ help:
 test:
 	@echo "Test Docker Buildx installation and existence of the Minion tarball ..."
 	@command -v docker
-	@command -v docker-buildx
 	test -f ../../opennms-assemblies/minion/target/org.opennms.assemblies.minion-*-minion.tar.gz
 
 build: test minion-config-schema.yml
 	@echo "Copy Minion tarball to Docker context ..."
 	@mkdir -p tarball-root && tar -x -z --strip-components 1 -C ./tarball-root -f ../../opennms-assemblies/minion/target/org.opennms.assemblies.minion-*-minion.tar.gz
 	@echo "Initialize builder instance ..."
-	if ! docker-buildx inspect $(DOCKERX_INSTANCE); then docker-buildx create --name $(DOCKERX_INSTANCE); fi;
-	docker-buildx use $(DOCKERX_INSTANCE)
+	if ! docker buildx inspect $(DOCKERX_INSTANCE); then docker context create "$(DOCKERX_INSTANCE)-context" && docker buildx create --name "$(DOCKERX_INSTANCE)" "$(DOCKERX_INSTANCE)-context"; fi;
+	docker buildx use $(DOCKERX_INSTANCE)
 	@echo "Build container image for architecture: $(DOCKER_ARCH) ..."
-	docker-buildx build --platform=$(DOCKER_ARCH) \
+	docker buildx build --platform=$(DOCKER_ARCH) \
 	  --build-arg BASE_IMAGE=$(BASE_IMAGE) \
 	  --build-arg VERSION=$(VERSION) \
 	  --build-arg BUILD_DATE=$(BUILD_DATE) \
@@ -107,7 +105,7 @@ uninstall:
 
 clean:
 	@echo "Destroy builder environment: $(DOCKERX_INSTANCE) ..."
-	@docker-buildx rm $(DOCKERX_INSTANCE) >/dev/null 2>&1 || :
+	@docker buildx rm $(DOCKERX_INSTANCE) >/dev/null 2>&1 || :
 
 clean-all: clean
 	@echo "Delete tarball and artifacts ..."
