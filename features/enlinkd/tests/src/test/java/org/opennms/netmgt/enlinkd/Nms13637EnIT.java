@@ -42,8 +42,26 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 
-import static org.junit.Assert.*;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.*;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKTROUTER1_NAME;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKTROUTER1_IP;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKTROUTER1_RESOURCE;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKTROUTER1_ETHER1_MAC;
+
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKTROUTER2_NAME;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKTROUTER2_IP;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKTROUTER2_RESOURCE;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKTROUTER2_ETHER1_MAC;
+
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKT_CISCO_SW01_NAME;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKT_CISCO_SW01_IP;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKT_CISCO_SW01_RESOURCE;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKT_CISCO_SW01_LLDP_ID;
+
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import static org.junit.Assert.assertNotNull;
 
 public class Nms13637EnIT extends EnLinkdBuilderITCase {
         
