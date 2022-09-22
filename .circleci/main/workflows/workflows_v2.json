@@ -98,7 +98,7 @@
         },
         "experimental": {
             "extends": [
-                "oci"
+                "horizon-deb-build"
             ]
         }
     },
