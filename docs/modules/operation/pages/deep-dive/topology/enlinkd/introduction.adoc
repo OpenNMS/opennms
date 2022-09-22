@@ -55,7 +55,7 @@ It also includes xref:development:rest/user-defined-links.adoc[User-Defined] top
 Essentially, each Enlinkd-Collector asks each device the following question: "What is the network topology from your point of view?"
 CDP, LLDP, OSPF and ISIS collectors provide the required information about links.
 Bridge Collectors are able to collect Bridge Forwarding Table and IpNetToMedia Table on devices and to provide effective links a further step is required.
-The Enlinkd-Bbridge-Discovery process attempts to discover bridge domain links with the data coming from all collected Bridge Forwarding Tables.
+The Enlinkd-Bridge-Discovery process attempts to discover bridge domain links with the data coming from all collected Bridge Forwarding Tables.
 The Topology-Updaters correlate all collected topology data to generate a global topology layout of your network.
 
 For large environments, you can configure the behavior of Enlinkd.
