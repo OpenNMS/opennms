@@ -816,6 +816,7 @@ public abstract class AbstractOpenNMSSeleniumHelper {
             LOG.debug("enterText({},{}): {}", selector, text, ++count);
             // Clear the element content and then confirm it's really clear
             waitForElement(selector).clear();
+            waitForElement(selector).click();
             waitForValue(selector, "");
 
             // Click the element to make sure it's still got the focus
