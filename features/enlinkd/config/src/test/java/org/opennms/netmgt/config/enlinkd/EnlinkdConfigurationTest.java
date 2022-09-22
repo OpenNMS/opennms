@@ -46,15 +46,23 @@ public class EnlinkdConfigurationTest extends XmlTestNoCastor<EnlinkdConfigurati
         return Arrays.asList(new Object[][] {
             {
                 getConfig(),
-                "<enlinkd-configuration threads=\"5\" \n" + 
-                "                     initial_sleep_time=\"60000\"\n" + 
-                "                     rescan_interval=\"86400000\" \n" + 
-                "                     use-cdp-discovery=\"true\"\n" + 
+                "<enlinkd-configuration threads=\"5\" \n" +
+                "                     discovery-bridge-threads=\"1\"\n" +
+                "                     initial_sleep_time=\"60000\"\n" +
+                "                     bridge_topology_interval=\"300000\"\n" +
+                "                     topology_interval=\"30000\"\n" +
+                "                     cdp_rescan_interval=\"86400000\" \n" +
+                "                     lldp_rescan_interval=\"86400000\" \n" +
+                "                     bridge_rescan_interval=\"86400000\" \n" +
+                "                     ospf_rescan_interval=\"86400000\" \n" +
+                "                     isis_rescan_interval=\"86400000\" \n" +
+                "                     use-cdp-discovery=\"true\"\n" +
                 "                     use-bridge-discovery=\"true\"\n" + 
                 "                     use-lldp-discovery=\"true\"\n" + 
                 "                     use-ospf-discovery=\"true\"\n" + 
                 "                     use-isis-discovery=\"true\"\n" +
                 "                     disable-bridge-vlan-discovery=\"false\"\n" +
+                "                     max_bft=\"100\"\n" +
                 "                     />"
             }
         });
@@ -63,14 +71,22 @@ public class EnlinkdConfigurationTest extends XmlTestNoCastor<EnlinkdConfigurati
     private static EnlinkdConfiguration getConfig() {
         EnlinkdConfiguration config = new EnlinkdConfiguration();
         config.setThreads(5);
+        config.setDiscoveryBridgeThreads(1);
         config.setInitialSleepTime(60000L);
-        config.setRescanInterval(86400000L);
+        config.setBridgeTopologyInterval(300000L);
+        config.setTopologyInterval(30000L);
+        config.setCdpRescanInterval(86400000L);
+        config.setLldpRescanInterval(86400000L);
+        config.setBridgeRescanInterval(86400000L);
+        config.setOspfRescanInterval(86400000L);
+        config.setIsisRescanInterval(86400000L);
         config.setUseCdpDiscovery(true);
         config.setUseBridgeDiscovery(true);
         config.setUseLldpDiscovery(true);
         config.setUseOspfDiscovery(true);
         config.setUseIsisDiscovery(true);
         config.setDisableBridgeVlanDiscovery(false);
+        config.setMaxBft(100);
         return config;
     }
 }
