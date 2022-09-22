@@ -87,6 +87,9 @@ RUNJAVA_OPTIONS=""
 # when it cannot connect using the Attach API (automatically or by PID)
 JMX_URL="service:jmx:rmi:///jndi/rmi://127.0.0.1:1099/jmxrmi"
 
+# Whether to enable the Pyroscope agent
+PYROSCOPE_AGENT_ENABLED=0
+
 # The user that OpenNMS needs to run as.
 [ -z "$RUNAS" ] && RUNAS=opennms
 
@@ -794,6 +797,14 @@ fi
 
 if [ -n "$JAVA_HEAP_SIZE" ] && [ "$JAVA_HEAP_SIZE" -gt 0 ]; then
 	MANAGER_OPTIONS+=("-Xmx${JAVA_HEAP_SIZE}m")
+fi
+
+# https://pyroscope.io/docs/java-tracing/#running-as-otel-java-instrumentation-extension
+if [ -n "$PYROSCOPE_AGENT_ENABLED" ] && [ "$PYROSCOPE_AGENT_ENABLED" -gt 0 ]; then
+	export PYROSCOPE_APPLICATION_NAME="${PYROSCOPE_APPLICATION_NAME:=OpenNMS}"
+	export PYROSCOPE_SERVER_ADDRESS="${PYROSCOPE_SERVER_ADDRESS:=http://localhost:4040}" # so we don't get a warning
+
+	MANAGER_OPTIONS+=("-javaagent:${OPENNMS_HOME}/agent/pyroscope-agent.jar")
 fi
 
 JAVA_VERSION="$("$OPENNMS_HOME/bin/runjava" -p -f 2> /dev/null)"
