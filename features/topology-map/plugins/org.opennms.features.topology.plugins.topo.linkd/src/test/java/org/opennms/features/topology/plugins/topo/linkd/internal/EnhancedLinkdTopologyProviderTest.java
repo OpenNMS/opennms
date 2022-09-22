@@ -102,9 +102,9 @@ public class EnhancedLinkdTopologyProviderTest {
         m_nodesOnmsTopologyUpdater.register();
         m_lldpOnmsTopologyUpdater.register();
         m_ospfOnmsTopologyUpdater.register();
-        m_nodesOnmsTopologyUpdater.runDiscovery();
-        m_lldpOnmsTopologyUpdater.runDiscovery();
-        m_ospfOnmsTopologyUpdater.runDiscovery();
+        m_nodesOnmsTopologyUpdater.runSchedulable();
+        m_lldpOnmsTopologyUpdater.runSchedulable();
+        m_ospfOnmsTopologyUpdater.runSchedulable();
     }
 
     @Test

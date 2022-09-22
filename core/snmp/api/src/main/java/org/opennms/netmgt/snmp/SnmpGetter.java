@@ -26,16 +26,12 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.enlinkd.snmp;
+package org.opennms.netmgt.snmp;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.opennms.netmgt.snmp.SnmpObjId;
-import org.opennms.netmgt.snmp.SnmpValue;
-import org.opennms.netmgt.snmp.TableTracker;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
