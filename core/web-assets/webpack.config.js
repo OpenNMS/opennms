@@ -537,9 +537,6 @@ function createConfig(options) {
       console.log('minimizer exists:',myconf.optimization.minimizer);
     }
     myconf.optimization.minimizer.push(new TerserPlugin({
-      cache: true,
-      parallel: true,
-      sourceMap: true,
       terserOptions: {
         mangle: {
           reserved: [ '$element', '$super', '$scope', '$uib', '$', 'jQuery', 'exports', 'require', 'angular', 'c3', 'd3' ]
