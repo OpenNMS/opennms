@@ -98,7 +98,7 @@
         },
         "experimental": {
             "extends": [
-                "minion-deb-build"
+                "sentinel-image-single-arch-linux-amd64"
             ]
         }
     },
