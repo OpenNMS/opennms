@@ -29,6 +29,7 @@
 package org.opennms.netmgt.flows.classification.service.internal;
 
 import java.io.Closeable;
+import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
@@ -38,7 +39,7 @@ import org.opennms.netmgt.flows.classification.ReloadingClassificationEngine;
 import org.opennms.netmgt.flows.classification.dto.RuleDTO;
 import org.opennms.netmgt.flows.classification.service.ClassificationService;
 
-public class ListeningClassificationEngine implements ClassificationEngine {
+public class ListeningClassificationEngine implements ClassificationEngine, Closeable {
 
     private final ReloadingClassificationEngine delegate;
 
@@ -61,5 +62,10 @@ public class ListeningClassificationEngine implements ClassificationEngine {
         } catch (final InterruptedException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public void close() throws IOException {
+        this.listener.close();
     }
 }
