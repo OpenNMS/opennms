@@ -59,7 +59,8 @@ angular.module('onms-assets', [
     $scope.nodeId = nodeId;
     $scope.config = defaultConfig;
     $http.get('rest/nodes/' + $scope.nodeId)
-      .success(function(node) {
+      .then(function(response) {
+        const node = response.data;
         $scope.nodeLabel = node.label;
         $scope.foreignSource = node.foreignSource;
         $scope.foreignId = node.foreignId;
@@ -71,16 +72,14 @@ angular.module('onms-assets', [
         angular.forEach($scope.infoKeys, function(k) {
           $scope.asset[k] = node[k];
         });
-      })
-      .error(function(msg) {
-        growl.error(msg);
+      }, function(response) {
+        growl.error(response.data);
       });
     $http.get('rest/assets/suggestions')
-      .success(function(suggestions) {
-        $scope.suggestions = suggestions
-      })
-      .error(function(msg) {
-        growl.error(msg);
+      .then(function(response) {
+        $scope.suggestions = response.data
+      }, function(response) {
+        growl.error(response.data);
       });
   };
 
@@ -109,11 +108,11 @@ angular.module('onms-assets', [
       url: 'rest/nodes/' + $scope.nodeId + '/assetRecord',
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       data: $.param(target)
-    }).success(function() {
+    }).then(function() {
       growl.success('The asset record has been successfully updated.');
       $scope.checkRequisition(target);
-    }).error(function(msg) {
-      growl.error('Cannot update the asset record: ' + msg);
+    }, function(response) {
+      growl.error('Cannot update the asset record: ' + response.data);
     });
   };
 
@@ -135,17 +134,16 @@ angular.module('onms-assets', [
       }
     }
     $http.get('rest/requisitions/' + $scope.foreignSource + '/nodes/' + $scope.foreignId)
-      .success(function(node) {
+      .then(function(response) {
+        const node = response.data;
         node.asset = assetFields;
         $http.post('rest/requisitions/' + $scope.foreignSource + '/nodes', node)
-          .success(function() {
+          .then(function() {
             growl.success('Requisition ' + $scope.foreignSource + ' has been updated.');
-          })
-          .error(function() {
+          }, function() {
             growl.error('Cannot update requisition ' + $scope.foreignSource);
           });
-      })
-      .error(function() {
+      }, function() {
         growl.error('Cannot obtain node data from requisition ' + $scope.foreignSource);
       });
   };

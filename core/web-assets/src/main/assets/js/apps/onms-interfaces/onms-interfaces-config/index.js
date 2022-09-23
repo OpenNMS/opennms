@@ -84,7 +84,8 @@ angular.module('onms-interfaces-config', [
       url: 'rest/nodes/' + $scope.nodeId + '/snmpinterfaces',
       method: 'GET',
       params: { limit: 0 }
-    }).success(function(data) {
+    }).then(function(response) {
+      const data = response.data;
       $scope.snmpInterfaces = data.snmpInterface;
       $scope.setStylesForSnmpInterfaces();
       $scope.filteredSnmpInterfaces = $scope.snmpInterfaces;
@@ -105,11 +106,10 @@ angular.module('onms-interfaces-config', [
     $http.put('rest/nodes/' + $scope.nodeId + '/snmpinterfaces/' + intf.ifIndex, 'collect=' + intf.collectFlag, {
       headers: {'Content-Type': 'application/x-www-form-urlencoded'}
     })
-    .success(function(data) {
+    .then(function() {
       var action = $scope.isCollectionEnabled(intf) ? 'enabled' : 'disabled';
       growl.success('Data collection flag was successfully ' + action + ' for interface ' + intf.ifName);
-    })
-    .error(function(error, status) {
+    }, function() {
       growl.error('Cannot set data collection flag for interface ' + intf.ifName);
     });
   };

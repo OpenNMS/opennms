@@ -54,13 +54,13 @@ angular.module('onms-resources', [
   };
 
   $http.get('rest/resources?depth=0').then(function succeeded(response) {
-    var data = response.data;
+    const data = response.data;
     $scope.loaded = true;
     $scope.hasResources = data.resource.length > 0;
     $scope.resources = data.resource;
     $scope.filteredResources = $scope.resources;
     $scope.update();
-  }, function errorCallback(response) {
+  }, function errorCallback() {
      $scope.loaded = true;
      growl.error('There was a problem in retrieving resources through ReST', {ttl: 10000});
   });
@@ -102,7 +102,7 @@ angular.module('onms-resources', [
     }
 
     $http.get('rest/resources/fornode/'+nodeCriteria).then(function succeeded(response) {
-      var data = response.data;
+      const data = response.data;
       $scope.nodeLink = data.link;
       $scope.nodeLabel = data.label;
       $scope.loaded = true;
@@ -133,7 +133,7 @@ angular.module('onms-resources', [
           $scope.filteredResources[k] = $scope.resources[k];
         }
       }
-    }, function errorCallback(response) {
+    }, function errorCallback() {
        $scope.loaded = true;
        growl.error('There was a problem in retrieving resources through ReST', {ttl: 10000});
     });
@@ -155,7 +155,7 @@ angular.module('onms-resources', [
       }).then(function succeeded(response) {
         // Update the flowGraphUrl on the associated resource
         resource.flowGraphUrl = response.data.flowGraphUrl;
-      }, function errorCallback(response) {
+      }, function errorCallback() {
         // pass
       });
   };
@@ -202,14 +202,14 @@ angular.module('onms-resources', [
     // Save resources with an ID and form url with generatedId.
     if (selected.length > 0) {
       $http.post('rest/resources/generateId', selected)
-        .success(function (response) {
-          $scope.generatedId = response;
+        .then(function doGraphSuccess(response) {
+          $scope.generatedId = response.data;
           if ($scope.generatedId) {
             $window.location.href = getBaseHref() + $scope.url + '?generatedId=' + $scope.generatedId + ($scope.reports ? '&reports=' + $scope.reports : '');
           } else {
             $scope.setResourceIds(selected);
           }
-        }).error(function (error, status) {
+        }, function doGraphError() {
           $scope.setResourceIds(selected);
         });
     } else {
