@@ -98,7 +98,7 @@
         },
         "experimental": {
             "extends": [
-                "horizon-deb-build"
+                "minion-deb-build"
             ]
         }
     },
