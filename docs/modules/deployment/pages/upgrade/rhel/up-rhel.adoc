@@ -7,7 +7,7 @@ ifeval::["{page-component-title}" == "Meridian"]
 The file may be named `{page-component-title}.repo`, but it is not guaranteed to be.
 endif::[]
 
-. Sudo to the root directory.
+. Log in as the root user or elevate your permissions to be the root user
 ifeval::["{page-component-title}" == "Meridian"]
 . Open your {page-component-title} repository config file with a text editor.
 . Change the repository's `baseurl` from the old release family to the new release family.

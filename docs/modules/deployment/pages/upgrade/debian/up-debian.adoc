@@ -4,7 +4,7 @@ ifeval::["{page-component-title}" == "Horizon"]
 The file may be named `opennms-repo-stable-<OSversion>.repo`, but it is not guaranteed to be.
 endif::[]
 
-. Sudo to the root directory.
+. Log in as the root user or elevate your permissions to be the root user.
 . Enable auto updates:
 +
 [source, console]
