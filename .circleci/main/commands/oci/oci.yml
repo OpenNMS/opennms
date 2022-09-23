@@ -60,13 +60,13 @@ commands:
                  BUILD_BRANCH="${CIRCLE_BRANCH}" \
                  build install
       - run:
-        name: Install trivy
-        command: |
-          apk add --update-cache --upgrade curl
-          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
+          name: Install trivy
+          command: |
+            apk add --update-cache --upgrade curl
+            curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
       - run:
           name: Scan the local image with trivy
-          command: trivy image --exit-code 0 --no-progress ${TAG}:latest
+          command: trivy image --exit-code 0 --no-progress trivy-ci-test:${CIRCLE_SHA1}
       - store_artifacts:
           path: ~/project/opennms-container/<< parameters.container_name >>/images/
           destination: /
