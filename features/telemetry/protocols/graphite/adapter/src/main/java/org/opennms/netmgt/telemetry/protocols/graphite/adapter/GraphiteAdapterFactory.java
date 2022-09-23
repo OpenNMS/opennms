@@ -54,11 +54,11 @@ public class GraphiteAdapterFactory extends AbstractCollectionAdapterFactory {
         adapter.setCollectionAgentFactory(getCollectionAgentFactory());
         adapter.setInterfaceToNodeCache(getInterfaceToNodeCache());
         adapter.setFilterDao(getFilterDao());
+        adapter.setNodeDao(getNodeDao());
         adapter.setPersisterFactory(getPersisterFactory());
         adapter.setThresholdingService(getThresholdingService());
         adapter.setBundleContext(getBundleContext());
 
         return adapter;
     }
-
 }
