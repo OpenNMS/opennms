@@ -1,0 +1,60 @@
+
+[[poller-logmatchtable-monitor]]
+= LogMatchTableMonitor
+
+The LogMatchTableMonitor checks for log matches through UCD-SNMP-MIB.
+It relies on the SNMP configuration.
+
+== Monitor facts
+
+[cols="1,7"]
+|===
+| Class Name
+| `org.opennms.netmgt.poller.monitors.LogMatchTableMonitor`
+|===
+
+== Configuration and use
+
+.Optional monitor-specific parameters for the LogMatchTableMonitor
+[options="header"]
+[cols="1,3,2"]
+|===
+| Parameter
+| Description
+| Default value
+
+| port
+| The port to which to try connection.
+| From `snmp-config.xml`
+
+| retries
+| *Deprecated*.
+Same as retry.
+Parameter retry takes precedence if both are set.
+| From `snmp-config.xml`
+
+|===
+
+This monitor implements the <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+== Examples
+
+Example uses CentOS/RHEL path name.
+For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
+
+[source, xml]
+----
+<!-- OpenNMS.org -->
+<service name="TBD" interval="300000" user-defined="false" status="on">
+  <parameter key="port" value="389"/>
+  <parameter key="retry" value="2"/>
+  <parameter key="timeout" value="3000"/>
+  <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/>
+  <parameter key="rrd-base-name" value="logmatch"/>
+  <parameter key="ds-name" value="logmatch"/>
+</service>
+<monitor service="TBD" class-name="org.opennms.netmgt.poller.monitors.LogMatchTableMonitor"/>
+----
+
+== UCD-SNMP-MIB
+Find the UCD-SNMP-MIB link:http://www.net-snmp.org/docs/mibs/UCD-SNMP-MIB.txt[here].
