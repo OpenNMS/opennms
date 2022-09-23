@@ -198,6 +198,11 @@ jobs:
       #        fi
       #      fi
       - run:
+          name: Pull Request?
+          command: |
+            echo $CI_PULL_REQUEST
+            echo $CIRCLE_PULL_REQUEST
+      - run:
           name: Process Generate
           environment:
             BASE_REVISION: << parameters.base-revision >>

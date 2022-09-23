@@ -68,7 +68,10 @@ commands:
           command: |
             export ARCH="$(printf "<< parameters.architecture >>" | tr / -)"
             export TAG="<< parameters.container_name >>-${ARCH}"
-            /tmp/bin/trivy image --exit-code 0 --no-progress $TAG:latest
+            /tmp/bin/trivy image --exit-code 0 -f json -o /tmp/tresult.json --no-progress $TAG:latest
+      - store_artifacts:
+          path: /tmp/tresult.json
+          destination: tresult.json
       - store_artifacts:
           path: ~/project/opennms-container/<< parameters.container_name >>/images/
           destination: /
