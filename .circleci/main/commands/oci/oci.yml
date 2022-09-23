@@ -63,9 +63,10 @@ commands:
           name: Install trivy
           command: |
             curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /tmp/bin
+            docker images
       - run:
           name: Scan the local image with trivy
-          command: /tmp/bin/trivy image --exit-code 0 --no-progress ${TAG}:latest
+          command: /tmp/bin/trivy image --exit-code 0 --no-progress ${TAG}
       - store_artifacts:
           path: ~/project/opennms-container/<< parameters.container_name >>/images/
           destination: /
