@@ -14,7 +14,7 @@ You can use that community name in event definitions as part of a mask.
 == How it works
 
 When an SNMP trap arrives, trapd parses the message, comparing the sender to known nodes.
-If the sender is not a monitored node and the `new-suspect-on-trap` parameter is set to "true", {page-component-title} sends an event to xref:operation:provisioning/auto-discovery.adoc[discover] the node.
+If the sender is not a monitored node and the `new-suspect-on-trap` parameter is set to `true`, {page-component-title} sends an event to xref:operation:provisioning/auto-discovery.adoc[discover] the node.
 Otherwise, {page-component-title} tags the trap to the monitored node, broadcasts it to eventd, and the trap becomes a {page-component-title} event.
 
 .Trapd configuration file overview
