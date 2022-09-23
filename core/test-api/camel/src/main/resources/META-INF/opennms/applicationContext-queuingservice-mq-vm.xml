@@ -16,22 +16,22 @@
 
   <context:annotation-config />
 
-  <bean id="jmsConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+  <bean id="jmsConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory" lazy-init="true">
     <property name="brokerURL" value="vm://localhost?create=false&amp;jms.useAsyncSend=true" />
   </bean>
 
   <bean id="pooledConnectionFactory" class="org.opennms.features.activemq.PooledConnectionFactory"
-    init-method="start" destroy-method="stop">
+    init-method="start" destroy-method="stop" lazy-init="true">
     <property name="maxConnections" value="1" />
     <property name="connectionFactory" ref="jmsConnectionFactory" />
   </bean>
 
-  <bean id="jmsConfig" class="org.apache.camel.component.jms.JmsConfiguration">
+  <bean id="jmsConfig" class="org.apache.camel.component.jms.JmsConfiguration" lazy-init="true">
     <property name="connectionFactory" ref="pooledConnectionFactory" />
     <property name="concurrentConsumers" value="1" />
   </bean>
 
-  <bean id="queuingservice" class="org.apache.activemq.camel.component.ActiveMQComponent">
+  <bean id="queuingservice" class="org.apache.activemq.camel.component.ActiveMQComponent" lazy-init="true">
     <property name="configuration" ref="jmsConfig" />
   </bean>
 

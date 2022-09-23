@@ -235,7 +235,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
                     node);
             colls.add(new NodeDiscoveryLldp(m_lldpTopologyService,
                                             m_locationAwareSnmpClient, 
-                                            m_linkdConfig.getRescanInterval(),
+                                            m_linkdConfig.getLldpRescanInterval(),
                                             m_linkdConfig.getInitialSleepTime(),
                                              node));
         }
@@ -245,7 +245,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
                     node);
              colls.add(new NodeDiscoveryCdp(m_cdpTopologyService,
                                             m_locationAwareSnmpClient, 
-                                            m_linkdConfig.getRescanInterval(),
+                                            m_linkdConfig.getCdpRescanInterval(),
                                             m_linkdConfig.getInitialSleepTime(),
                                             node));       
         }
@@ -255,7 +255,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
                     node);
                 colls.add(new NodeDiscoveryIpNetToMedia(m_ipNetToMediaTopologyService,
                                                         m_locationAwareSnmpClient, 
-                                                        m_linkdConfig.getRescanInterval(),
+                                                        m_linkdConfig.getBridgeRescanInterval(),
                                                         m_linkdConfig.getInitialSleepTime(),
                                                         node));
                 
@@ -264,7 +264,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
                 colls.add(new NodeDiscoveryBridge(m_bridgeTopologyService,
                                                   m_linkdConfig.getMaxBft(),
                                                   m_locationAwareSnmpClient, 
-                                                  m_linkdConfig.getRescanInterval(),
+                                                  m_linkdConfig.getBridgeRescanInterval(),
                                                   m_linkdConfig.getInitialSleepTime(),
                                                   node,
                                                   m_linkdConfig.disableBridgeVlanDiscovery()));
@@ -275,7 +275,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
                     node);
                 colls.add(new NodeDiscoveryOspf(m_ospfTopologyService,
                                                 m_locationAwareSnmpClient, 
-                                                m_linkdConfig.getRescanInterval(),
+                                                m_linkdConfig.getOspfRescanInterval(),
                                                 m_linkdConfig.getInitialSleepTime(),
                                                 node));
         }
@@ -285,7 +285,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
                     node);
                 colls.add(new NodeDiscoveryIsis(m_isisTopologyService,
                                                 m_locationAwareSnmpClient, 
-                                                m_linkdConfig.getRescanInterval(),
+                                                m_linkdConfig.getIsisRescanInterval(),
                                                 m_linkdConfig.getInitialSleepTime(), 
                                                 node));
         }

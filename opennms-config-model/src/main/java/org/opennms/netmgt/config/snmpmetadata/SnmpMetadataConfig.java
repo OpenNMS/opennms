@@ -28,20 +28,25 @@
 
 package org.opennms.netmgt.config.snmpmetadata;
 
-import org.opennms.core.xml.ValidateUsing;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.opennms.core.xml.ValidateUsing;
 
 @XmlRootElement(name = "snmp-metadata-config")
 @XmlAccessorType(XmlAccessType.NONE)
 @ValidateUsing("snmp-metadata-adapter-configuration.xsd")
 public class SnmpMetadataConfig {
+    @XmlAttribute(name = "resultsBehavior")
+    private String resultsBehavior = "replace";
+
     @XmlElement(name = "config")
     private List<Config> configs = new ArrayList<>();
 
@@ -53,9 +58,18 @@ public class SnmpMetadataConfig {
         this.configs = configs;
     }
 
+    public String getResultsBehavior() {
+        return resultsBehavior;
+    }
+
+    public void setResultsBehavior(String resultsBehavior) {
+        this.resultsBehavior = resultsBehavior;
+    }
+
     @Override
     public String toString() {
         return "SnmpMetadataConfig{" +
+                "resultsBehavior=" + resultsBehavior +
                 "configs=" + configs +
                 '}';
     }

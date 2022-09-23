@@ -14,7 +14,7 @@ For example,
 
 %eventid%::
     The event's numeric database ID.
-$uei%::
+%uei%::
     The unique event identifier for the event.
 %source%::
     The source of the event (which {page-component-title} service daemon created it).

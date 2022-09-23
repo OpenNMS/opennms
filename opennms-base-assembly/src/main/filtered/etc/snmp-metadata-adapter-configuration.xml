@@ -1,4 +1,4 @@
-<snmp-metadata-config>
+<snmp-metadata-config resultsBehavior="replace">
 
     <!--
         This configuration represents the jnxBoxAnatomy definition taken from the Juniper Enterprise Chassis MIB.

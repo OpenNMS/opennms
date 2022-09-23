@@ -34,24 +34,24 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.ASW01_IP;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.ASW01_NAME;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.ASW01_SNMP_RESOURCE;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.OSPESS01_IP;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.OSPESS01_NAME;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.OSPESS01_SNMP_RESOURCE;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.OSPWL01_IP;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.OSPWL01_NAME;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.OSPWL01_SNMP_RESOURCE;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.PE01_IP;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.PE01_NAME;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.PE01_SNMP_RESOURCE;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.SAMASW01_IP;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.SAMASW01_NAME;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.SAMASW01_SNMP_RESOURCE;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.STCASW01_IP;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.STCASW01_NAME;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.STCASW01_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.Nms7918NetworkBuilder.ASW01_IP;
+import static org.opennms.netmgt.nb.Nms7918NetworkBuilder.ASW01_NAME;
+import static org.opennms.netmgt.nb.Nms7918NetworkBuilder.ASW01_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.Nms7918NetworkBuilder.OSPESS01_IP;
+import static org.opennms.netmgt.nb.Nms7918NetworkBuilder.OSPESS01_NAME;
+import static org.opennms.netmgt.nb.Nms7918NetworkBuilder.OSPESS01_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.Nms7918NetworkBuilder.OSPWL01_IP;
+import static org.opennms.netmgt.nb.Nms7918NetworkBuilder.OSPWL01_NAME;
+import static org.opennms.netmgt.nb.Nms7918NetworkBuilder.OSPWL01_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.Nms7918NetworkBuilder.PE01_IP;
+import static org.opennms.netmgt.nb.Nms7918NetworkBuilder.PE01_NAME;
+import static org.opennms.netmgt.nb.Nms7918NetworkBuilder.PE01_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.Nms7918NetworkBuilder.SAMASW01_IP;
+import static org.opennms.netmgt.nb.Nms7918NetworkBuilder.SAMASW01_NAME;
+import static org.opennms.netmgt.nb.Nms7918NetworkBuilder.SAMASW01_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.Nms7918NetworkBuilder.STCASW01_IP;
+import static org.opennms.netmgt.nb.Nms7918NetworkBuilder.STCASW01_NAME;
+import static org.opennms.netmgt.nb.Nms7918NetworkBuilder.STCASW01_SNMP_RESOURCE;
 
 import java.net.InetAddress;
 import java.util.List;
@@ -156,9 +156,14 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
     Nms7918NetworkBuilder builder = new Nms7918NetworkBuilder();
     
     @Before
-    public void setUpNetwork4930() {
-    	builder.setNodeDao(m_nodeDao);
-        builder.buildNetwork7918();
+    public void setUpNetwork() {
+        m_nodeDao.save(builder.getAsw01());
+        m_nodeDao.save(builder.getOspwl01());
+        m_nodeDao.save(builder.getPe01());
+        m_nodeDao.save(builder.getSamasw01());
+        m_nodeDao.save(builder.getStcasw01());
+        m_nodeDao.save(builder.getOspss01());
+        m_nodeDao.flush();
     }
     
     @Test
@@ -478,7 +483,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         assertFalse(m_linkdConfig.useIsisDiscovery());
 
         assertTrue(m_linkd.scheduleNodeCollection(stcasw01.getId()));
-        assertFalse(m_linkd.scheduleNodeCollection(stcasw01.getId()));
+        assertFalse(m_linkd.scheduleNodeCollection(stcasw01.getId())); //Always scheduling give true.
 
         assertEquals(0,m_bridgeBridgeLinkDao.countAll());
         assertEquals(0,m_bridgeMacLinkDao.countAll());

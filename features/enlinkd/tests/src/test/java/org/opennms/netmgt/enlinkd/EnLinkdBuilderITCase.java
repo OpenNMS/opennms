@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.enlinkd;
 
-import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -155,19 +154,7 @@ public abstract class EnLinkdBuilderITCase extends EnLinkdTestHelper implements 
 
     @Before
     public void setUp() throws Exception {
-        Properties p = new Properties();
-        p.setProperty("log4j.logger.org.hibernate.SQL", "WARN");
-        p.setProperty("log4j.logger.org.hibernate.cfg", "WARN");
-        p.setProperty("log4j.logger.org.hibernate.impl", "WARN");
-        p.setProperty("log4j.logger.org.hibernate.hql", "WARN");
-        p.setProperty("log4j.logger.org.opennms.mock.snmp","WARN");
-        p.setProperty("log4j.logger.org.opennms.netmgt.snmp", "WARN");
-        p.setProperty("log4j.logger.org.opennms.netmgt.filter", "WARN");
-        p.setProperty("log4j.logger.org.hibernate", "WARN");
-        p.setProperty("log4j.logger.org.springframework","WARN");
-        p.setProperty("log4j.logger.com.mchange.v2.resourcepool", "WARN");
-        p.setProperty("log4j.logger.org.opennms.netmgt.enlinkd", "DEBUG");
-               MockLogAppender.setupLogging(p);
+        MockLogAppender.setupLogging(true, "DEBUG");
     }
 
     @After
