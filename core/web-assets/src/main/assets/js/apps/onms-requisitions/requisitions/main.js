@@ -2,7 +2,7 @@
 
 /**
 * @author Alejandro Galue <agalue@opennms.org>
-* @copyright 2014 The OpenNMS Group, Inc.
+* @copyright 2014-2022 The OpenNMS Group, Inc.
 */
 
 import Util from 'lib/util';
@@ -29,6 +29,10 @@ angular.module('onms-requisitions', [
 .constant('Configuration', {
   'baseHref': Util.getBaseHref() + 'admin/ng-requisitions/index.jsp'
 })
+
+.config(['$locationProvider', function($locationProvider) {
+  $locationProvider.hashPrefix('');
+}])
 
 .config(['$routeProvider', function ($routeProvider) {
   $routeProvider

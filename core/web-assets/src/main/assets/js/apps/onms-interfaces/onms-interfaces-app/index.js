@@ -1,6 +1,6 @@
 /**
 * @author Alejandro Galue <agalue@opennms.org>
-* @copyright 2016 The OpenNMS Group, Inc.
+* @copyright 2016-2022 The OpenNMS Group, Inc.
 */
 
 'use strict';
@@ -19,6 +19,10 @@ angular.module('onms-interfaces', [
   'onms.default.apps',
   'ui.bootstrap'
 ])
+
+.config(['$locationProvider', function($locationProvider) {
+  $locationProvider.hashPrefix('');
+}])
 
 .filter('startFrom', function() {
   return function(input, start) {

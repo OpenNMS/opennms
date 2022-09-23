@@ -1,6 +1,8 @@
 'use strict';
 
-require('expose-loader?moment!moment');
+import moment from 'moment';
+require('moment-timezone');
+
 require('vendor/jquery-js');
 require('tempusdominus-bootstrap-4/build/js/tempusdominus-bootstrap-4');
 require('tempusdominus-bootstrap-4/build/css/tempusdominus-bootstrap-4.css');

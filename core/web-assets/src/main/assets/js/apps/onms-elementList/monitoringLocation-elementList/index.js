@@ -53,6 +53,9 @@ angular.module('monitoringLocationsListFilters', [ 'onmsListFilters' ])
 // Minion module
 angular.module(MODULE_NAME, [ 'onms.restResources', 'onms.elementList', 'monitoringLocationsListFilters' ])
 
+.config(['$locationProvider', function($locationProvider) {
+	$locationProvider.hashPrefix('');
+}])
 
 /**
  * MonitoringLocations list controller
