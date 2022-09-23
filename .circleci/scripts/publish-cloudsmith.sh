@@ -20,10 +20,7 @@ case "${CIRCLE_BRANCH}" in
   release-*)
     REPO="testing"
     ;;
-  master-*)
-    REPO="stable"
-    ;;
-  master)
+  master-*|master)
     REPO="stable"
     ;;
   *)
@@ -32,40 +29,53 @@ case "${CIRCLE_BRANCH}" in
     ;;
 esac
 
-publishPackage() {
-  local _tmpdir;
-  _tmpdir="$(mktemp -d 2>/dev/null || mktemp -d -t 'publish_cloudsmith_')"
-  echo "publishing:" "$@"
-  "$@" >"${_tmpdir}/publish.log" 2>&1
-  ret="$?"
-  cat "${_tmpdir}/publish.log"
-  if [ "$(grep -c "This package duplicates the attributes of another package" < "${_tmpdir}/publish.log")" -gt 0 ]; then
-    echo "Duplicate upload... skipping."
-    return 0
-  fi
-  rm "${_tmpdir}/publish.log"
-  rmdir "${_tmpdir}" || :
-  return "$ret"
-}
+OPTS=(--verbose --no-wait-for-sync --republish --error-retry-max 3)
 
-publishPackage cloudsmith push raw \
-  --verbose \
-  --republish \
+cloudsmith push raw \
+  "${OPTS[@]}" \
   --version "${VERSION}" \
   --name "${REPO}/minion-config-schema.yml" \
   --description "minion-config-schema.yml for version ${VERSION} in the ${REPO} repository" \
   "${PROJECT}/config-schema" \
-  "/tmp/minion-config-schema/minion-config-schema.yml"
+  "/tmp/artifacts/yml/minion-config-schema.yml"
 
-for FILE in /tmp/rpm-horizon/*.rpm /tmp/rpm-minion/*.rpm /tmp/rpm-sentinel/*.rpm; do
-  # give it 3 tries then die
-  publishPackage cloudsmith push rpm --no-wait-for-sync "${PROJECT}/$REPO/any-distro/any-version" "$FILE" ||
-  publishPackage cloudsmith push rpm --no-wait-for-sync "${PROJECT}/$REPO/any-distro/any-version" "$FILE" ||
-  publishPackage cloudsmith push rpm --no-wait-for-sync "${PROJECT}/$REPO/any-distro/any-version" "$FILE" || exit 1
+for FILE in /tmp/artifacts/rpm/*.rpm; do
+  cloudsmith push rpm "${OPTS[@]}" "${PROJECT}/$REPO/any-distro/any-version" "$FILE"
 done
-for FILE in /tmp/deb-horizon/*.deb /tmp/deb-minion/*.deb /tmp/deb-sentinel/*.deb; do
-  # give it 3 tries then die
-  publishPackage cloudsmith push deb --no-wait-for-sync "${PROJECT}/$REPO/any-distro/any-version" "$FILE" ||
-  publishPackage cloudsmith push deb --no-wait-for-sync "${PROJECT}/$REPO/any-distro/any-version" "$FILE" ||
-  publishPackage cloudsmith push deb --no-wait-for-sync "${PROJECT}/$REPO/any-distro/any-version" "$FILE" || exit 1
+for FILE in /tmp/artifacts/deb/*.deb; do
+  cloudsmith push deb "${OPTS[@]}" "${PROJECT}/$REPO/any-distro/any-version" "$FILE"
+done
+
+. "${MYDIR}/lib.sh"
+
+export DOCKER_SERVER="docker.cloudsmith.io"
+export DOCKER_USERNAME="${CLOUDSMITH_USERNAME}"
+export DOCKER_PASSWORD="${CLOUDSMITH_API_KEY}"
+
+. "${MYDIR}/lib-docker.sh"
+
+export DOCKER_CONTENT_TRUST=0
+
+for TYPE in horizon minion sentinel; do
+  export DOCKER_REPO="${DOCKER_SERVER}/opennms/${REPO}/${TYPE}"
+
+  find /tmp/artifacts/oci -name "${TYPE}-*.oci" | while read -r _file; do
+    echo "* processing ${TYPE} image: ${_file}"
+    _internal_tag="$(basename "${_file}" | sed -e 's,\.oci$,,')"
+    _arch_tag="$(basename "${_file}" | sed -e "s,^${TYPE}-,," -e 's,\.oci$,,')"
+    echo "${TYPE}: tag=${_internal_tag}, arch_tag=${_arch_tag}, file=${_file}"
+    for _publish_tag in "${DOCKER_TAGS[@]}"; do
+      _tagname="${DOCKER_REPO}:${_publish_tag}-${_arch_tag}"
+      echo "* pushing ${TYPE} (${_arch_tag}) to Cloudsmith as ${_tagname}"
+      docker tag "${_internal_tag}" "${_tagname}"
+      do_with_retries docker push --quiet "${_tagname}"
+      # if this is the "amd64" version, then push it again without the arch modifier
+      if [ "${_arch_tag}" = "linux-amd64" ]; then
+        _tagname="${DOCKER_REPO}:${_publish_tag}"
+        docker tag "${_internal_tag}" "${_tagname}"
+        do_with_retries docker push --quiet "${_tagname}"
+      fi
+    done
+  done
+
 done
