@@ -54,9 +54,9 @@ image::metadata/meta-expression2.png[]
 
 Before creating a threshold, you should make sure you are collecting the metric against which you want to threshold:
 
-. In the {page-component-title} UI, choose menu:Reports[Resource Graphs].
+. Choose menu:Reports[Resource Graphs].
 . Select one of the listed resources.
-. Under *SNMP Node Data*, select menu:Node-Level Performance Data[Graph Selection].
+. Under SNMP Node Data, select menu:Node-Level Performance Data[Graph Selection].
 . Scroll to find the graph for the metric you want to threshold.
 +
 You can click the *Binoculars* symbol to display only that graph.
@@ -71,12 +71,12 @@ To determine the name of the data source, navigate to the *Resource Graphs* scre
 
 . Choose menu:Reports[Resource Graphs].
 . Select one of the listed resources.
-. Under *SNMP Node Data*, select menu:Node-Level Performance Data[Graph Selection].
+. Under SNMP Node Data, select menu:Node-Level Performance Data[Graph Selection].
 . Scroll through the graphs to find the title of the graph that displays the metric on which you want to threshold.
 For example, "Number of Processes" or "System Uptime":
 +
 image::thresholding/Graphs.png[]
 
 . Go to `etc/snmp-graph.properties.d` and search for the title of the graph (for example, "System Uptime").
-. Note the name of the data source, and type it in the *Datasource* field when you xref:quick-start/thresholding.adoc[create your threshold].
+. Note the name of the data source, and type it in the *Datasource* box when you xref:quick-start/thresholding.adoc[create your threshold].
 

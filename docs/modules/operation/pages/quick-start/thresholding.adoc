@@ -29,7 +29,7 @@ We will work with `netsnmp`.
 For information on how to create a threshold group, see xref:deep-dive/thresholds/thresh-group.adoc[Create a Threshold Group] in the Deep Dive section.
 
 . Click *Edit* beside the `netsnmp` group.
-. Click *Create New Threshold* at the bottom of the *Basic Thresholds* area.
+. Click *Create New Threshold* at the bottom of the Basic Thresholds area.
 . Set the following information and click *Save*:
 +
 [options="header"]
@@ -91,7 +91,7 @@ To test the threshold you just created, follow these steps:
 
 . Log in to the monitored node using two user accounts.
 . In the main menu, choose menu:Status[Events].
-. Under Event Queries, click *All events*.
+. Under Event Queries, click *All Events*.
 +
 You should see an event that indicates your threshold triggered when more than one user logged in.
 
@@ -114,7 +114,7 @@ To view the expression-based threshold for CPU use, follow these steps:
 . Click the *Gear* symbol in the top-right of the screen.
 . Under Performance Measurement, click *Configure Thresholds*.
 . Click *Edit* beside the `netsnmp` group.
-. In the Expression-based Thresholds area, view the first threshold (with the description "Trigger an alert when five ...").
+. In the Expression-Based Thresholds area, view the first threshold (with the description "Trigger an alert when five ...").
 +
 The following table describes the fields:
 +

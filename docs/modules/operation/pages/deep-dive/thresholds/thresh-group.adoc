@@ -27,7 +27,8 @@ This procedure creates a threshold group called "demo_group":
 </group>
 ----
 
-. Log in to the web UI, click the *Gear* symbol in the top-right of the screen, and choose menu:Performance Measurement[Configure Thresholds].
+. Log in to the web UI, and click the *Gear* symbol in the top-right of the screen.
+. Under Performance Measurement, click *Configure Thresholds*.
 +
 The group you created should appear in the UI.
 
