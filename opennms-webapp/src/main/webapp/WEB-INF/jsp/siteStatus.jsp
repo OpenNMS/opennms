@@ -32,17 +32,18 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="https://www.owasp.org/index.php/OWASP_Java_Encoder_Project" prefix="e"%>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false">
 	<jsp:param name="title" value="Site Status Page" />
 	<jsp:param name="headTitle" value="Site Status" />
 	<jsp:param name="breadcrumb" value="Site Status" />
-	<jsp:param name="breadcrumb" value="${view.columnValue}" />
+    <jsp:param name="breadcrumb" value="${e:forHtmlAttribute(view.columnValue)}" />
 </jsp:include>
 
 <div class="card">
   <div class="card-header">
-    <span>Site status for nodes in site '${view.columnValue}'</span>
+    <span>Site status for nodes in site '${e:forHtml(view.columnValue)}'</span>
   </div>
   <table class="table table-sm table-bordered severity">
     <thead>
