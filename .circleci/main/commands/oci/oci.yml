@@ -62,11 +62,10 @@ commands:
       - run:
           name: Install trivy
           command: |
-            sudo apt-get install -y curl
-            curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
+            curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /tmp/bin
       - run:
           name: Scan the local image with trivy
-          command: trivy image --exit-code 0 --no-progress ${TAG}:latest
+          command: /tmp/bin/trivy image --exit-code 0 --no-progress ${TAG}:latest
       - store_artifacts:
           path: ~/project/opennms-container/<< parameters.container_name >>/images/
           destination: /
