@@ -66,7 +66,7 @@ commands:
             docker images
       - run:
           name: Scan the local image with trivy
-          command: /tmp/bin/trivy image --exit-code 0 --no-progress ${TAG}
+          command: /tmp/bin/trivy image --exit-code 0 --no-progress $TAG
       - store_artifacts:
           path: ~/project/opennms-container/<< parameters.container_name >>/images/
           destination: /
