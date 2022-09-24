@@ -31,23 +31,33 @@ package org.opennms.netmgt.vmmgr;
 import static java.nio.file.StandardOpenOption.CREATE;
 import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.management.Attribute;
 import javax.management.MBeanServer;
 import javax.management.ObjectInstance;
 import javax.management.ObjectName;
 
+import org.json.JSONObject;
+import org.json.JSONStringer;
 import org.opennms.core.logging.Logging;
+import org.opennms.core.utils.StringUtils;
 import org.opennms.netmgt.config.service.Argument;
 import org.opennms.netmgt.config.service.Invoke;
 import org.opennms.netmgt.config.service.InvokeAtType;
@@ -55,6 +65,10 @@ import org.opennms.netmgt.config.service.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import me.tongfei.progressbar.DelegatingProgressBarConsumer;
+import me.tongfei.progressbar.ProgressBar;
+import me.tongfei.progressbar.ProgressBarBuilder;
+import me.tongfei.progressbar.ProgressBarStyle;
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
 
@@ -89,6 +103,17 @@ import sun.misc.SignalHandler;
 public class Invoker {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(Invoker.class);
+
+    /*
+     * These are used both as the logging category (prefix) and logger name,
+     * so we can handle these logs specially and ensure other logging logic
+     * doesn't mess with them.
+     */
+    public static final String LOG4J_CATEGORY_PROGRESS = "progressbar";
+    public static final String LOG4J_CATEGORY_MANAGER_JSON = "manager-json";
+
+    private static final Logger LOG_PROGRESS = LoggerFactory.getLogger(LOG4J_CATEGORY_PROGRESS);
+    private static final Logger LOG_MANAGER_JSON = LoggerFactory.getLogger(LOG4J_CATEGORY_MANAGER_JSON);
 	
     private MBeanServer m_server;
     private InvokeAtType m_atType;
@@ -97,13 +122,23 @@ public class Invoker {
     private List<InvokerService> m_services;
 
     private Path m_statusPath;
+    private final Path m_managerJsonPath;
+
+    private final String m_daemonName;
+    private final int m_terminalColumns;
+
     private static SignalHandler s_handler;
-    
+
     /**
      * <p>Constructor for Invoker.</p>
      */
     public Invoker() {
         m_statusPath = Path.of(System.getProperty("opennms.home"), "logs", "status-check.txt");
+        m_managerJsonPath = Path.of(System.getProperty("opennms.home"), "logs", "manager.json");
+
+        m_daemonName = System.getProperty("opennms.name", "OpenNMS");
+        m_terminalColumns = Integer.parseInt(System.getProperty("terminal.columns", "100"));
+
         this.registerSignalHandlerOnce();
     }
     
@@ -220,6 +255,90 @@ public class Invoker {
      * @return a {@link java.util.List} object.
      */
     public List<InvokerResult> invokeMethods() {
+        int count = 0;
+        for (int pass = 0, end = getLastPass(); pass <= end; pass++) {
+            for (InvokerService invokerService : getServices()) {
+                for (final Invoke invoke : invokerService.getService().getInvokes()) {
+                    if (invoke.getPass() != pass || !getAtType().equals(invoke.getAt())) {
+                        continue;
+                    }
+
+                    count++;
+                }
+            }
+        }
+
+        Optional<Duration> startingElapsed = getETA();
+        var startTime = System.currentTimeMillis();
+
+        String taskName = getAtType().getPresentParticiple() + " " + m_daemonName + ":";
+        ProgressBarBuilder pbb = new ProgressBarBuilder()
+                    .setConsumer(new DelegatingProgressBarConsumer(a -> logProgressUpdate(a + '\r'), m_terminalColumns))
+                    .setTaskName(taskName)
+                    .setInitialMax(count)
+                    .setStyle(ProgressBarStyle.ASCII)
+                    .continuousUpdate(); // ensures the duration increases at least 1/sec
+
+        if (startingElapsed.isPresent()) {
+            pbb.startsFrom(0, startingElapsed.get());
+
+            var estimatedCompletion = System.currentTimeMillis() + startingElapsed.get().toMillis();
+            pbb.setEtaFunction(a -> Optional.of(Duration.ofMillis(Math.max(estimatedCompletion - System.currentTimeMillis(), 0))));
+        } else {
+            pbb.hideEta();
+        }
+
+        logProgressUpdate("\r");
+        try (var pb = pbb.build()) {
+            var resultInfo = invokeMethods(pb);
+            var elapsed = System.currentTimeMillis() - startTime;
+
+            // We only want to log start and stop invoke types so the log file doesn't get filled with status entries.
+            if (getAtType() == InvokeAtType.START || getAtType() == InvokeAtType.STOP) {
+                Logging.withPrefix(LOG4J_CATEGORY_MANAGER_JSON, () -> {
+                    var elapsedLog = new JSONStringer()
+                            .object()
+                            .key("time").value(StringUtils.iso8601OffsetString(new Date(), ZoneId.of("Z"), null))
+                            .key("elapsed").value(Duration.ofMillis(elapsed).toString())
+                            .key("type").value(getAtType().name())
+                            .endObject()
+                            .toString();
+                    LOG_MANAGER_JSON.info(elapsedLog);
+                });
+            }
+
+            return resultInfo;
+        } finally {
+            // Advance to next line, so we don't erase the progress bar
+            Invoker.logProgressUpdate("\n");
+        }
+    }
+
+    private Optional<Duration> getETA() {
+        try (var reader = new BufferedReader(new FileReader(m_managerJsonPath.toFile()))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                var o = new JSONObject(line);
+                if (o.has("type")
+                        && o.getString("type").equals(getAtType().name())
+                        && o.has("elapsed")) {
+                    return Optional.of(Duration.parse(o.getString("elapsed")));
+                }
+            }
+        } catch (FileNotFoundException e) {
+            // Ignore since it might have not been created yet
+        } catch (IOException e) {
+            LOG.info("Received unexpected exception when trying to read manager JSON file: " + e, e);
+        }
+        return Optional.empty();
+    }
+
+    /**
+     * <p>invokeMethods</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
+    public List<InvokerResult> invokeMethods(ProgressBar pb) {
         List<InvokerService> invokerServicesOrdered;
         if (isReverse()) {
             invokerServicesOrdered = new ArrayList<InvokerService>(getServices());
@@ -238,6 +357,7 @@ public class Invoker {
                 Service service = invokerService.getService();
                 String name = invokerService.getService().getName();
                 ObjectInstance mbean = invokerService.getMbean();
+                String nameShort = name.replaceFirst("^OpenNMS:Name=", "");
 
                 if (invokerService.isBadService()) {
                     resultInfo.add(new InvokerResult(service, mbean, null, invokerService.getBadThrowable()));
@@ -251,8 +371,10 @@ public class Invoker {
                         continue;
                     }
 
-                    LOG.debug("pass {} on service {} will invoke method \"{}\"", pass, name, invoke.getMethod()); 
-                    
+                    LOG.debug("pass {} on service {} will invoke method \"{}\" as step {}",
+                            pass, name, invoke.getMethod(), pb.getCurrent());
+                    pb.setExtraMessage("Pass " + pass + ": " + nameShort);
+                    pb.refresh(); // make sure we output that the service changed so we see updates for quick services
 
                     try {
                         Object result = invoke(invoke, mbean);
@@ -263,14 +385,21 @@ public class Invoker {
                             return resultInfo;
                         }
                     }
+
+                    pb.step();
                 }
             }
             
             LOG.debug("completed pass {}", pass);
-           
+            pb.setExtraMessage("Pass " + pass + ": Complete");
         }
+        pb.setExtraMessage("All Passes Complete");
 
         return resultInfo;
+    }
+
+    public static void logProgressUpdate(String message) {
+        Logging.withPrefix(LOG4J_CATEGORY_PROGRESS, () -> LOG_PROGRESS.info(message));
     }
 
     /**

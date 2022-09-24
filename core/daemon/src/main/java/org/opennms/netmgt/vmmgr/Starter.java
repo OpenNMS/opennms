@@ -34,6 +34,7 @@ import java.util.List;
 
 import javax.management.MBeanServer;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.config.ServiceConfigFactory;
 import org.opennms.netmgt.config.service.InvokeAtType;
@@ -169,11 +170,18 @@ public class Starter {
 
                 LOG.error(message, result.getThrowable());
 
+                Invoker.logProgressUpdate(message + "\n");
+                Invoker.logProgressUpdate(ExceptionUtils.getFullStackTrace(result.getThrowable()) + "\n");
+
                 System.err.println(message);
                 result.getThrowable().printStackTrace();
 
                 Manager manager = new Manager();
                 manager.stop();
+
+                Invoker.logProgressUpdate("Shutdown completed after receiving on error on startup. "
+                        + "See error details above.\n");
+
                 manager.doSystemExit();
 
                 // Shouldn't get here
