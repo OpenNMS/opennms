@@ -17,19 +17,18 @@ By default, you will not receive a challenge, so you must configure your REST cl
 
 == Data format
 
-Jersey lets {page-component-title} create REST calls using either XML or JSON.
+Jersey enables {page-component-title} to create REST calls using either XML or JSON.
 By default, it returns a request to the API as XML data, delivered without namespaces.
 
-NOTE: If a namespace is added manually, in order to use a XML tool to validate against the XSD (like xmllint), it won't be preserved when OpenNMS updates that file.
+NOTE: If a namespace is added manually, in order to use a XML tool to validate against the XSD (for example, xmllint), it won't be preserved when OpenNMS updates that file.
 The same applies to comments.
 
-To receive JSON-encoded responses, you have to send the `Accept: application/json` header with the request.
+To receive JSON-encoded responses, you must send the `Accept: application/json` header with the request.
 
 == Standard parameters
 
 The following are standard parameters available on most resources:
 
-.REST standard parameters for resources
 [options="header" "autowidth", cols="1,2"]
 |===
 | Parameter
@@ -75,13 +74,14 @@ The following comparators are available:
 | Less than
 
 | `ge`
-| Greater than or equal to.
+| Greater than or equal to
 
 | `le`
-| Less than or equal to.
+| Less than or equal to
 |===
 
-If `null` is passed as the value for a property, then the obvious operation will occur (in other words, the comparator will be ignored for that property).
+If `null` is passed as the value for a property, then the obvious operation will occur.
+In other words, the comparator will be ignored for that property.
 `notnull` is handled similarly when passed as a property variable.
 
 // I want to integrate this into the table, but need to verify the phrasing
@@ -90,7 +90,7 @@ Default is ascending, unless the `order` parameter is set to `desc` (any other v
 
 == Standard filter examples
 
-Take `/events` as an example.
+Using `/events` as a base, the following table shows examples of REST calls with defined filters:
 
 [options="header" "autowidth", cols="1,2"]
 |===
@@ -98,50 +98,59 @@ Take `/events` as an example.
 | Description
 
 | `/events?eventUei=uei.opennms.org/internal/rtc/subscribe`
-| Returns the first 10 events with the rtc subscribe UEI (10 being the default limit for events).
+| Returns the first 10 events with the rtc subscribe UEI.
+10 is the default limit for events.
 
 | `/events?eventUei=uei.opennms.org/internal/rtc/subscribe&limit=0`
-| Returns _all_ rtc subscribe events (potentially quite a few).
+| Returns _all_ rtc subscribe events.
+This could potentially return quite a few results, and may impact performance.
 
 | `/events?id=100&comparator=gt`
-| Returns the first 10 events with an ID greater than 100.
+| Returns the first 10 events with an `ID` greater than 100.
 
 | `/events?eventAckTime=notnull`
-| Returns the first 10 events that have a non-null Ack time (i.e., those that have been acknowledged).
+| Returns the first 10 events that have a non-null `AckTime` (in other words, those that have been acknowledged).
 
 | `/events?eventAckTime=notnull&id=100&comparator=gt&limit=20`
-| Returns the first 20 events that have a non-null Ack time and an ID greater than 100.
+| Returns the first 20 events that have a non-null `AckTime` and an `ID` greater than 100.
 Note that the `notnull` value causes the comparator to be ignored for eventAckTime.
 
 | `/events?eventAckTime=2008-07-28T04:41:30.530%2B12:00&id=100&comparator=gt&limit=20`
-| Returns the first 20 events that have were acknowledged after 28th July 2008 at 4:41 a.m. (+12:00), and an ID greater than 100.
+| Returns the first 20 events that were acknowledged after July 28, 2008 at 4:41 a.m. (+12:00), and that have an `ID` greater than 100.
++
 Note that the same comparator applies to both property comparisons.
 Also note that you must URL encode the plus sign when using GET.
 
 | `/events?orderBy=id&order=desc`
-| Returns the 10 latest events inserted (probably, unless you've been messing with the IDs).
+| Returns the 10 latest events inserted.
 
 ifndef::opennms-prime[]
 | `/events?location.id=MINION`
-| Returns the first 10 events associated with some node in location 'MINION'.
+| Returns the first 10 events associated with a node in the `MINION` location.
 endif::opennms-prime[]
 |===
 
 == HTTP return codes
 
-The following apply to OpenNMS Horizon versions 18.0+.
+The following apply to OpenNMS Horizon versions 18.0+:
 
-* DELETE requests return a 202 (ACCEPTED) if they are performed asynchronously, otherwise they return a 204 (NO_CONTENT) on success.
-* All the PUT requests return a 204 (NO_CONTENT) on success.
-* All the POST requests that can either add or update an entity return a 204 (NO_CONTENT) on success.
-* All the POST associated to resource addition return a 201 (CREATED) on success.
-* All the POST requests where it is required to return an object return a 200 (OK).
-* All the requests excepts GET for the requisitions end-point and the foreign sources definitions end-point return 202 (ACCEPTED). This is because all the requests are actually executed asynchronously and there is no way to know the status of the execution, or wait until the processing is done.
-* If a resource is not modified during a PUT request, a NOT_MODIFIED will be returned. A NO_CONTENT will be returned only on a success operation.
+* DELETE requests return 202 (ACCEPTED) if they are performed asynchronously.
+Otherwise, they return 204 (NO_CONTENT) on success.
+* All PUT requests return 204 (NO_CONTENT) on success.
+* All POST requests that can either add or update an entity return 204 (NO_CONTENT) on success.
+* All POST requests associated with resource addition return 201 (CREATED) on success.
+* All POST requests where it is required to return an object return 200 (OK).
+* All requests except GET for the requisitions endpoint and the foreign sources definitions endpoint return 202 (ACCEPTED).
+This is because the requests are performed asynchronously.
+Because of that, there is no way to know the status of the execution or wait until the processing is done.
+* If a resource is not modified during a PUT request, NOT_MODIFIED will be returned.
+NO_CONTENT will be returned only on a successful operation.
 * All GET requests return 200 (OK) on success.
-* All GET requests return 404 (NOT_FOUND) when a single resource does not exist, but will return 400 (BAD_REQUEST) if an intermediate resource doesn't exist. For example, if a specific IP doesn't exist on a valid node, return 404. But if the IP is valid and the node is not valid, because the node is an intermediate resource, a 400 will be returned.
-* If something not expected is received from the Service/DAO Layer when processing any HTTP request, like an exception, a 500 (INTERNAL_SERVER_ERROR) will be returned.
-* Any problem related to the incoming parameters, like validations, generates a 400 (BAD_REQUEST).
+* All GET requests return 404 (NOT_FOUND) when a single resource does not exist, but will return 400 (BAD_REQUEST) if an intermediate resource doesn't exist.
+For example, if a specific IP doesn't exist on a valid node, it returns 404.
+If the IP is valid and the node is not valid, because the node is an intermediate resource, a 400 will be returned.
+* If something not expected is received from the Service or DAO Layer when processing any HTTP request, 500 (INTERNAL_SERVER_ERROR) is returned.
+* Any problem related to incoming parameters (for example, validations) generates 400 (BAD_REQUEST).
 
 == Identifying resources
 
