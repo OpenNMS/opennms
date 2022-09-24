@@ -54,28 +54,14 @@ import org.slf4j.LoggerFactory;
 
 /**
  * <p>
- * The Manager is reponsible for launching/starting all services in the VM
- * that it is started for. The Manager operates in two modes, normal and
- * server
+ * The Manager is responsible for managing running services in the VM
+ * that it is started for.
  * </p>
  * <p>
- * normal mode: In the normal mode, the Manager starts all services configured
- * for its VM in the service-configuration.xml and starts listening for
- * control events on the 'control-broadcast' JMS topic for stop control
- * messages for itself
+ * The Starter starts all services configured for its VM in the
+ * service-configuration.xml file and the manager exposes an
+ * MBean over JMX that is used to get service status and stop services.
  * </p>
- * <p>
- * server mode: In the server mode, the Manager starts up and listens on the
- * 'control-broadcast' JMS topic for 'start' control messages for services in
- * its VM and a stop control messge for itself. When a start for a service is
- * received, it launches only that service and sends a successful 'running' or
- * an 'error' response to the Controller
- * </p>
- * <p>
- * <strong>Note: </strong>The Manager is NOT intelligent - if it receives a
- * stop control event, it will exit - does not check to see if the services
- * its started are all stopped
- * <p>
  *
  * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj</a>
@@ -90,15 +76,15 @@ public class Manager implements ManagerMBean {
      */
     private static final String LOG4J_CATEGORY = "manager";
     private static final String m_osName = System.getProperty("os.name") == null? "" : System.getProperty("os.name").toLowerCase();
-    private static long startTime = System.currentTimeMillis();
-    private static AtomicBoolean stopInitiated = new AtomicBoolean(false);
+    private static final long startTime = System.currentTimeMillis();
+    private static final AtomicBoolean stopInitiated = new AtomicBoolean(false);
 
 
     /**
      *  Register shutdown hook to handle SIGTERM signal for the process.
      */
     public void init() {
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> stop()));
+        Runtime.getRuntime().addShutdownHook(new Thread(this::stop));
     }
     /**
      * <p>stop</p>
@@ -220,12 +206,7 @@ public class Manager implements ManagerMBean {
             }
         }
         LOG.debug("Thread dump of {} threads ({} daemons):", threads.size(), daemons);
-        Map<Thread, StackTraceElement[]> sortedThreads = new TreeMap<Thread, StackTraceElement[]>(new Comparator<Thread>() {
-            @Override
-            public int compare(Thread t1, Thread t2) {
-                return new Long(t1.getId()).compareTo(new Long(t2.getId()));
-            }
-        });
+        Map<Thread, StackTraceElement[]> sortedThreads = new TreeMap<>(Comparator.comparing(Thread::getId));
         sortedThreads.putAll(threads);
 
         for (Entry<Thread, StackTraceElement[]> entry : sortedThreads.entrySet()) {
@@ -251,7 +232,8 @@ public class Manager implements ManagerMBean {
 
     private void testGetLocalHost() {
         try {
-            InetAddress.getLocalHost();
+            var localHost = InetAddress.getLocalHost();
+            LOG.debug("local host: {}", localHost);
         } catch (UnknownHostException e) {
             throw new UndeclaredThrowableException(e, "Could not lookup the host name for the local host machine: " + e);
         }
@@ -288,7 +270,7 @@ public class Manager implements ManagerMBean {
         }
 
         if (!hasV4 && !hasV6) {
-            throwPingError("Neither IPv4 nor IPv6 are avaialable.  Bailing.");
+            throwPingError("Neither IPv4 nor IPv6 are available.  Bailing.");
         }
 
         final String requireV4String = System.getProperty("org.opennms.netmgt.icmp.requireV4");
@@ -302,7 +284,7 @@ public class Manager implements ManagerMBean {
         }
 
         // at least one is initialized, and we haven't said otherwise, so barrel ahead
-        // but first, reset the pinger factory so we can let auto-detection happen
+        // but first, reset the pinger factory, so we can let auto-detection happen
         pingerFactory.reset();
     }
 
