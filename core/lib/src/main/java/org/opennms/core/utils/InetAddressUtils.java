@@ -204,7 +204,6 @@ public abstract class InetAddressUtils {
 
     public static InetAddress getInetAddress(final byte[] ipAddrOctets) {
         return new IPAddress(ipAddrOctets).toInetAddress();
-
     }
 
     /**
@@ -331,33 +330,86 @@ public abstract class InetAddressUtils {
         }
     }
 
-    public static InetAddress getNetwork(InetAddress ipaddress, InetAddress netmask) {
+    public static InetAddress getIpv4Network(InetAddress ipaddress, InetAddress netmask) {
         final byte[] ipAddress = ipaddress.getAddress();
         final byte[] netMask = netmask.getAddress();
         final byte[] netWork = new byte[4];
 
         for (int i=0;i< 4; i++) {
-                netWork[i] = Integer.valueOf(ipAddress[i] & netMask[i]).byteValue();
+            netWork[i] = Integer.valueOf(ipAddress[i] & netMask[i]).byteValue();
 
         }
         return InetAddressUtils.getInetAddress(netWork);
     }
 
-    public static boolean inSameNetwork(final InetAddress addr1, final InetAddress addr2, final InetAddress mask) {
-        if (!(addr1 instanceof Inet4Address) || !(addr2 instanceof Inet4Address) || !(mask instanceof Inet4Address)) 
-        		return false;
- 
+    public static InetAddress getIpv6Network(InetAddress ipaddress, InetAddress netmask) {
+        final byte[] ipAddress = ipaddress.getAddress();
+        final byte[] netMask = netmask.getAddress();
+        final byte[] netWork = new byte[16];
+
+        for (int i=0;i< 16; i++) {
+            netWork[i] = Integer.valueOf(ipAddress[i] & netMask[i]).byteValue();
+
+        }
+        return InetAddressUtils.getInetAddress(netWork);
+    }
+
+    public static InetAddress getNetwork(InetAddress ipaddress, InetAddress netmask) {
+        if (ipaddress instanceof  Inet4Address && netmask instanceof  Inet4Address) {
+            return getIpv4Network(ipaddress,netmask);
+        }
+        if (ipaddress instanceof Inet6Address && netmask instanceof Inet6Address) {
+            return getIpv6Network(ipaddress,netmask);
+        }
+        throw new UnsupportedOperationException("ip and mask mismacht");
+    }
+
+    public static boolean inSameIpv4Network(final InetAddress addr1, final InetAddress addr2, final InetAddress mask) {
         final byte[] ipAddress1 = addr1.getAddress();
         final byte[] ipAddress2 = addr2.getAddress();
         final byte[] netMask = mask.getAddress();
 
         for (int i=0;i< 4; i++) {
-        	if ((ipAddress1[i] & netMask[i]) != (ipAddress2[i] & netMask[i]))
-        		return false;
+            if ((ipAddress1[i] & netMask[i]) != (ipAddress2[i] & netMask[i]))
+                return false;
 
         }
         return true;
-    	
+    }
+
+    public static boolean inSameIpv6Network(final InetAddress addr1, final InetAddress addr2, final InetAddress mask) {
+        final byte[] ipAddress1 = addr1.getAddress();
+        final byte[] ipAddress2 = addr2.getAddress();
+        final byte[] netMask = mask.getAddress();
+
+        for (int i=0;i< 16; i++) {
+            if ((ipAddress1[i] & netMask[i]) != (ipAddress2[i] & netMask[i]))
+                return false;
+
+        }
+        return true;
+    }
+
+    public static boolean isPointToPointMask(InetAddress mask) {
+        if (mask.equals(addr("255.255.255.252"))) {
+            return true;
+        }
+        return mask.equals(addr("ffff:ffff:ffff:ffff:ffff:ffff:ffff:fffd"));
+    }
+
+    public static boolean isLoopbackMask(InetAddress mask) {
+        if (mask.equals(addr("255.255.255.255"))) {
+            return true;
+        }
+        return mask.equals(addr("ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"));
+    }
+
+    public static boolean inSameNetwork(final InetAddress addr1, final InetAddress addr2, final InetAddress mask) {
+        if (addr1 instanceof Inet4Address && addr2 instanceof Inet4Address && mask instanceof Inet4Address)
+            return inSameIpv4Network(addr1,addr2,mask);
+        if (addr1 instanceof Inet6Address && addr2 instanceof Inet6Address && mask instanceof Inet6Address)
+            return inSameIpv6Network(addr1,addr2,mask);
+        return false;
     }
 
     public static boolean isInetAddressInRange(final byte[] addr, final byte[] begin, final byte[] end) {
@@ -370,6 +422,61 @@ public abstract class InetAddressUtils {
 
     public static boolean isInetAddressInRange(final String ipAddr, final byte[] begin, final byte[] end) {
         return isInetAddressInRange(InetAddressUtils.toIpAddrBytes(ipAddr), begin, end);
+    }
+
+    public static int convertInetAddressMaskToCidr(InetAddress mask) {
+        byte[] addr = mask.getAddress();
+        boolean foundZero = false;
+        int cidr = 0;
+        for (int i=0; i< addr.length; i++) {
+            Byte value= addr[i];
+            int k=0;
+            if (foundZero && value.intValue() != 0) {
+                throw new IllegalArgumentException("Error in mask: " + str(mask));
+            }
+            if (value.intValue() < 0) {
+                k = 256 + value.intValue();
+            }
+            switch (k) {
+                case 255:
+                    cidr=cidr+8;
+                    break;
+                case 254:
+                    cidr=cidr+7;
+                    foundZero=true;
+                    break;
+                case 252:
+                    cidr=cidr+6;
+                    foundZero=true;
+                    break;
+                case 248:
+                    cidr=cidr+5;
+                    foundZero=true;
+                    break;
+                case 240:
+                    cidr=cidr+4;
+                    foundZero=true;
+                    break;
+                case 224:
+                    cidr=cidr+3;
+                    foundZero=true;
+                    break;
+                case 192:
+                    cidr=cidr+2;
+                    foundZero=true;
+                    break;
+                case 128:
+                    cidr=cidr+1;
+                    foundZero=true;
+                    break;
+                case 0:
+                    foundZero=true;
+                    break;
+                default:
+                    throw new IllegalArgumentException("Error in mask: " + str(mask));
+            }
+        }
+        return cidr;
     }
 
     public static InetAddress convertCidrToInetAddressV4(int cidr) {
