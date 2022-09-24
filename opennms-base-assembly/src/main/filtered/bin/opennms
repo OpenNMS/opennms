@@ -153,6 +153,7 @@ END
 }
 
 isRunning() {
+	[ "$1" -gt 0 ] || return 1
 	[ "$(/bin/ps -o pid= -o comm= -p "$1" | wc -l)" -gt 0 ];
 }
 
@@ -502,6 +503,7 @@ doStart(){
 	fi
 
 	# wait for startup
+	sleep $STATUS_WAIT
 	STATUS_ATTEMPTS=0
 	while [ "$STATUS_ATTEMPTS" -lt "$START_TIMEOUT" ]; do
 		sleep $STATUS_WAIT
@@ -705,7 +707,7 @@ doStatus(){
 		# see org.opennms.netmgt.vmmgr.Invoker; we register a custom
 		# signal handler to trigger writing a current status update
 
-		kill -USR1 "$PID"
+		kill -USR1 "$PID" > /dev/null 2>&1
 
 		# wait up to 30 seconds for a new status-check.txt file to have been written
 		SLEEP_COUNT=0
@@ -1143,6 +1145,9 @@ case "$COMMAND" in
 		fi
 		if [ "$BACKGROUND" -eq 0 ]; then
 			__opennms_cmd+=("-f")
+		fi
+		if [[ "$-" =~ x ]]; then
+			__opennms_cmd=("${BASH}" "-x" "${__opennms_cmd[@]}")
 		fi
 		"${__opennms_cmd[@]}" "stop" && \
 		"${__opennms_cmd[@]}" "start"
