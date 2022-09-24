@@ -70,6 +70,48 @@
             <DefaultRolloverStrategy max="4" fileIndex="min" />
           </RollingFile>
         </Route>
+
+          <!--
+	      This route in configured specifically for the manager JSON log so it can be parsed
+              by the manager JSON log reader.  It does not compress the logs and has modified
+              pattern.
+	  -->
+        <Route key="manager-json">
+          <RollingFile name="Rolling-manager-json" fileName="\${logdir}/manager.json"
+                       filePattern="\${logdir}/manager.%i.json">
+            <PatternLayout>
+              <!-- the logging class is not included here since its is verbose and always the same -->
+              <pattern>%m%n</pattern>
+            </PatternLayout>
+
+            <!-- Rotate logs at 10kB-->
+            <SizeBasedTriggeringPolicy size="10kB" />
+
+            <!-- Rotate through 1 log -->
+            <DefaultRolloverStrategy max="1" fileIndex="min" />
+          </RollingFile>
+        </Route>
+
+          <!--
+	      This route in configured specifically for the progress bar so it can be
+              tailed by the opennms script.  It does not compress the logs and has
+              modified pattern. In particular, it does not add newlines.
+	  -->
+        <Route key="progressbar">
+          <RollingFile name="Rolling-progressbar" fileName="\${logdir}/progressbar.log"
+                       filePattern="\${logdir}/progressbar.%i.log">
+            <PatternLayout>
+              <!-- the logging class is not included here since its is verbose and always the same -->
+              <pattern>%m</pattern>
+            </PatternLayout>
+
+            <!-- Rotate logs at 10kB-->
+            <SizeBasedTriggeringPolicy size="10kB" />
+
+            <!-- Rotate through 2 logs -->
+            <DefaultRolloverStrategy max="1" fileIndex="min" />
+          </RollingFile>
+        </Route>
       </Routes>
     </Routing>
     <Console name="console" target="SYSTEM_OUT" follow="true">
