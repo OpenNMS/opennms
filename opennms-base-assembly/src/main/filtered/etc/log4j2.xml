@@ -129,11 +129,11 @@
     </logger>
 
     <!-- write startup/shutdown logs to stdout or output.log as well as manager.log -->
-    <logger name="org.opennms.netmgt.vmmgr.Invoker" additivity="true" level="INFO">
-      <appender-ref ref="console"/>
+    <logger name="org.opennms.netmgt.vmmgr.Invoker" additivity="true" level="DEBUG">
+      <appender-ref ref="console" level="INFO"/>
     </logger>
-    <logger name="org.opennms.netmgt.vmmgr.Manager" additivity="true" level="INFO">
-      <appender-ref ref="console"/>
+    <logger name="org.opennms.netmgt.vmmgr.Manager" additivity="true" level="DEBUG">
+      <appender-ref ref="console" level="INFO"/>
     </logger>
 
     <!-- 
