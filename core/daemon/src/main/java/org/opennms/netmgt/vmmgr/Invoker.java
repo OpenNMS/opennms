@@ -121,7 +121,7 @@ public class Invoker {
     private boolean m_failFast = true;
     private List<InvokerService> m_services;
 
-    private Path m_statusPath;
+    private final Path m_statusPath;
     private final Path m_managerJsonPath;
 
     private final String m_daemonName;
@@ -228,7 +228,7 @@ public class Invoker {
         try {
             Files.writeString(m_statusPath, output.toString(), Charset.defaultCharset(), CREATE, TRUNCATE_EXISTING);
         } catch (final IOException e) {
-            System.err.println("ERROR: failed to write current status to " + m_statusPath.toString());
+            System.err.println("ERROR: failed to write current status to " + m_statusPath);
             e.printStackTrace();
         }
     }
@@ -341,14 +341,14 @@ public class Invoker {
     public List<InvokerResult> invokeMethods(ProgressBar pb) {
         List<InvokerService> invokerServicesOrdered;
         if (isReverse()) {
-            invokerServicesOrdered = new ArrayList<InvokerService>(getServices());
+            invokerServicesOrdered = new ArrayList<>(getServices());
             Collections.reverse(invokerServicesOrdered);
         } else {
             // We can  use the original list
             invokerServicesOrdered = getServices();
         }
         
-        List<InvokerResult> resultInfo = new ArrayList<InvokerResult>(invokerServicesOrdered.size());
+        List<InvokerResult> resultInfo = new ArrayList<>(invokerServicesOrdered.size());
         for (int pass = 0, end = getLastPass(); pass <= end; pass++) {
         	LOG.debug("starting pass {}", pass);
             
@@ -405,7 +405,6 @@ public class Invoker {
     /**
      * Get the last pass for a set of InvokerServices.
      * 
-     * @param invokerServices list to look at
      * @return highest pass value found for all Invoke objects in the
      *      invokerServices list
      */
@@ -479,12 +478,12 @@ public class Invoker {
 
     private Attribute getAttribute(org.opennms.netmgt.config.service.Attribute attrib) throws Exception {
         Class<?> attribClass = Class.forName(attrib.getValue().getType());
-        Constructor<?> construct = attribClass.getConstructor(new Class[] { String.class });
+        Constructor<?> construct = attribClass.getConstructor(String.class);
 
         Object value;
         Map<String,String> mdc = Logging.getCopyOfContextMap();
         try {
-            value = construct.newInstance(new Object[] { attrib.getValue().getContent() });
+            value = construct.newInstance(attrib.getValue().getContent());
         } finally {
             Logging.setContextMap(mdc);
         }
@@ -494,22 +493,14 @@ public class Invoker {
 
     private Object getArgument(Argument arg) throws ClassNotFoundException, SecurityException, NoSuchMethodException, IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException {
         Class<?> argClass = Class.forName(arg.getType());
-        Constructor<?> construct = argClass.getConstructor(new Class[] { String.class });
+        Constructor<?> construct = argClass.getConstructor(String.class);
 
         Map<String,String> mdc = Logging.getCopyOfContextMap();
         try {
-            return construct.newInstance(new Object[] { arg.getValue().orElse(null) });
+            return construct.newInstance(arg.getValue().orElse(null));
         } finally {
             Logging.setContextMap(mdc);
         }
-    }
-
-    public Path getStatusPath() {
-        return m_statusPath;
-    }
-
-    public void setStatusPath(final Path statusPath) {
-        m_statusPath = statusPath;
     }
 
     /**
