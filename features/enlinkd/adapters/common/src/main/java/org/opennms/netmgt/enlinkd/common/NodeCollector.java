@@ -34,6 +34,7 @@ import java.net.InetAddress;
 
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.enlinkd.service.api.Node;
+import org.opennms.netmgt.scheduler.Schedulable;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 
@@ -44,7 +45,7 @@ import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
  * creating and collection occurs in the main run method of the instance. This
  * allows the collection to occur in a thread if necessary.
  */
-public abstract class NodeCollector extends Discovery {
+public abstract class NodeCollector extends Schedulable {
     /**
      * The node ID of the system used to collect the SNMP information
      */
@@ -77,7 +78,7 @@ public abstract class NodeCollector extends Discovery {
      * thread context synchronization must be added.
      * </p>
      */
-    public void runDiscovery() {
+    public void runSchedulable() {
             collect();
     }
 
