@@ -87,10 +87,8 @@ public class Nms0001EnIT extends EnLinkdBuilderITCase {
         final OnmsNode froh = m_nodeDao.findByForeignId("linkd", FROH_NAME);
         final OnmsNode oedipus = m_nodeDao.findByForeignId("linkd", OEDIPUS_NAME);
         final OnmsNode siegfrie = m_nodeDao.findByForeignId("linkd", SIEGFRIE_NAME);
-        
-        assertTrue(m_linkd.scheduleNodeCollection(froh.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(oedipus.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(siegfrie.getId()));
+
+        m_linkd.reload();
 
         assertTrue(m_linkd.runSingleSnmpCollection(froh.getId()));
         assertEquals(2, m_isisLinkDao.countAll());

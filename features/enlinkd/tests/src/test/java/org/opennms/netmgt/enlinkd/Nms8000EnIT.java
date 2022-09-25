@@ -126,13 +126,8 @@ public class Nms8000EnIT extends EnLinkdBuilderITCase {
         final OnmsNode nmmr3 = m_nodeDao.findByForeignId("linkd", NMMR3_NAME);
         final OnmsNode nmmsw1 = m_nodeDao.findByForeignId("linkd",NMMSW1_NAME);
         final OnmsNode nmmsw2 = m_nodeDao.findByForeignId("linkd",NMMSW2_NAME);
-        
-        assertTrue(m_linkd.scheduleNodeCollection(nmmr1.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(nmmr2.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(nmmr3.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(nmmsw1.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(nmmsw2.getId()));
-        
+
+        m_linkd.reload();
 
         assertTrue(m_linkd.runSingleSnmpCollection(nmmr1.getId()));
         assertEquals(3, m_cdpLinkDao.countAll());
@@ -194,13 +189,8 @@ public class Nms8000EnIT extends EnLinkdBuilderITCase {
         final OnmsNode nmmr3 = m_nodeDao.findByForeignId("linkd", NMMR3_NAME);
         final OnmsNode nmmsw1 = m_nodeDao.findByForeignId("linkd",NMMSW1_NAME);
         final OnmsNode nmmsw2 = m_nodeDao.findByForeignId("linkd",NMMSW2_NAME);
-        
-        assertTrue(m_linkd.scheduleNodeCollection(nmmr1.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(nmmr2.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(nmmr3.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(nmmsw1.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(nmmsw2.getId()));
-        
+
+        m_linkd.reload();
 
         assertTrue(m_linkd.runSingleSnmpCollection(nmmr1.getId()));
         assertEquals(3, m_lldpLinkDao.countAll());
