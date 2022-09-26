@@ -20,7 +20,7 @@
 			<attribute name="threads" type="int" use="required">
 				<annotation>
 					<documentation>
-						Number of parallel threads used by schedulable: groups, updaters, and discovery.
+						Number of parallel threads used by schedulable: collector groups, updaters, and discovery.
 					</documentation>
 				</annotation>
 			</attribute>

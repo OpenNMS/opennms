@@ -57,6 +57,15 @@ CDP, LLDP, OSPF and ISIS collectors provide the required information about links
 Bridge Collectors are able to collect Bridge Forwarding Table and IpNetToMedia Table on devices and to provide effective links a further step is required.
 The Enlinkd-Bridge-Discovery process attempts to discover bridge domain links with the data coming from all collected Bridge Forwarding Tables.
 The Topology-Updaters correlate all collected topology data to generate a global topology layout of your network.
+For each supported protocol is created a collection group with an assigned priority.
+The collection group is scheduled according with the rescan interval defined for the related protocol.
+The run of collection group will send to a Priority Executor protocol specific Snmp Collection and storage.
+First will be collecter the data whose value of priority is lower.
+Further a priority Map is ised to assign to a specific node a priority.
+Starting from the lowest ip subnetwork the same nodei priority is assigned to the nodes belonging to the same network.
+Final Node collection priority will be the sum of node priority and protocol related collection group priority.
+With respect to the default configuration CDP data collection (priority 1000) will be done before LLDP data collection (priotity 2000).
+Follow OSPF, IS-IS and Bridge data collection (respectively priority 3000, 4000 and 10000).
 
 For large environments, you can configure the behavior of Enlinkd.
 During the EnLink discovery process, informational and error output is logged to a global log file.
@@ -87,8 +96,9 @@ During the EnLink discovery process, informational and error output is logged to
 ----
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <enlinkd-configuration threads="5"
+                     executor-queue-size="100"
+                     executor-threads="5"
                      discovery-bridge-threads="1"
-                     max_bft="100"
                      initial_sleep_time="60000"
                      bridge_topology_interval="300000"
                      topology_interval="30000"
@@ -97,12 +107,18 @@ During the EnLink discovery process, informational and error output is logged to
                      bridge_rescan_interval="86400000"
                      ospf_rescan_interval="86400000"
                      isis_rescan_interval="86400000"
+                     cdp-priority="1000"
+                     lldp-priority="2000"
+                     bridge-priority="10000"
+                     ospf-priority="3000"
+                     isis-priority="4000"
                      use-cdp-discovery="true"
                      use-bridge-discovery="true"
                      use-lldp-discovery="true"
                      use-ospf-discovery="true"
                      use-isis-discovery="true"
                      disable-bridge-vlan-discovery="false"
+                     max_bft="100"
                      />
 ----
 
@@ -121,7 +137,15 @@ NOTE: If multiple protocols are enabled, the links will be discovered for each e
 3+| *Integer*
 
 | threads
-| Number of parallel threads used by updaters and link discovery.
+| Number of parallel threads used by schedulable: collector groups, updaters, and discovery.
+| 3
+
+| executor-queue-size
+| The initial queue size of Priority Executor.
+| 100
+
+| executor-threads
+| Number of parallel threads used by collectors.
 | 5
 
 | discovery-bridge-threads
@@ -163,6 +187,26 @@ NOTE: If multiple protocols are enabled, the links will be discovered for each e
 | isis_rescan_interval
 | Interval in milliseconds for Intermediate System to Intermediate System (IS-IS) links discovery.
 | 86400000
+
+| cdp-priority
+| The priority used for executing CDP links discovery
+| 1000
+
+| lldp-priority
+| The priority used for executing LLDP links discovery
+| 2000
+
+| bridge-priority
+| The priority used for executing Bridge links discovery
+| 10000
+
+| ospf-priority
+| The priority used for executing OSPF links discovery
+| 3000
+
+| isis-priority
+| The priority used for executing IS-IS links discovery
+| 4000
 
 3+| *Boolean*
 
