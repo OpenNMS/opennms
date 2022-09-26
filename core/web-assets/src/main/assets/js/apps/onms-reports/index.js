@@ -2,6 +2,7 @@ import ReportDetails from './ReportDetails';
 import ErrorResponse from '../../lib/onms-http/ErrorResponse';
 import Types from '../../lib/onms-schedule-editor/scripts/Types';
 import moment from 'moment';
+import { $q } from 'angular-ui-router';
 require('moment-timezone');
 
 const hash = require('hash.js');
@@ -71,13 +72,13 @@ const handleGrafanaError = function(response, report, optionalCallbackIfNoContex
             'onms.schedule.editor',
             'onms.pagination'
         ])
-        .config( ['$locationProvider', function ($locationProvider) {
+        .config(['$locationProvider', function ($locationProvider) {
             $locationProvider.hashPrefix('!');
             $locationProvider.html5Mode(false);
         }])
-        .run(function(confirmationPopoverDefaults) {
+        .run(['confirmationPopoverDefaults', function(confirmationPopoverDefaults) {
             confirmationPopoverDefaults.templateUrl = confirmTopoverTemplate;
-        })
+        }])
         .config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $urlRouterProvider) {
             $stateProvider
                 .state('report', {
@@ -111,7 +112,7 @@ const handleGrafanaError = function(response, report, optionalCallbackIfNoContex
             ;
             $urlRouterProvider.otherwise('/report/templates');
         }])
-        .factory('ReportTemplateResource', function($resource) {
+        .factory('ReportTemplateResource', ['$resource', function($resource) {
             return $resource('rest/reports/:id', {id: '@id'},
                 {
                     'list':             { method: 'GET', isArray: true },
@@ -119,8 +120,8 @@ const handleGrafanaError = function(response, report, optionalCallbackIfNoContex
                     'listScheduled':    { method: 'GET', isArray:true, url:'rest/reports/scheduled'}
                 }
             );
-        })
-        .factory('ReportScheduleResource', function($resource) {
+        }])
+        .factory('ReportScheduleResource', ['$resource', function($resource) {
             return $resource('rest/reports/scheduled/:id', {id: '@triggerName'},
                 {
                     'list':             { method: 'GET', isArray: true },
@@ -130,8 +131,8 @@ const handleGrafanaError = function(response, report, optionalCallbackIfNoContex
                     'update':           { method: 'PUT'}
                 }
             );
-        })
-        .factory('ReportStorageResource', function($resource) {
+        }])
+        .factory('ReportStorageResource', ['$resource', function($resource) {
             return $resource('rest/reports/persisted/:id', {id: '@id'},
                 {
                     'list':             { method: 'GET', isArray: true },
@@ -140,22 +141,23 @@ const handleGrafanaError = function(response, report, optionalCallbackIfNoContex
                     'deleteAll':        { method: 'DELETE'},
                 }
             );
-        })
-        .factory('WhoamiResource', function($resource) {
+        }])
+        .factory('WhoamiResource', ['$resource', function($resource) {
             return $resource('rest/whoami', {}, {'whoami': {method: 'GET'}});
-        })
-        .factory('GrafanaResource', function($resource) {
+        }])
+        .factory('GrafanaResource', ['$resource', function($resource) {
             return $resource('rest/endpoints/grafana/:id', {id: '@id'},
                 {
                     'get':          { method: 'GET' },
                     'list':         { method: 'GET', isArray:true },
                     'dashboards':   { method: 'GET', isArray:true, url: 'rest/endpoints/grafana/:uid/dashboards', params: {uid: '@uid'} },
                 });
-        })
-        .factory('UserService', function(WhoamiResource) {
+        }])
+        .factory('UserService', ['WhoamiResource', '$q', function(WhoamiResource, $q) {
             return {
-                whoami: function(successCallback, errorCallback) {
-                    return WhoamiResource.whoami(function(data) {
+                whoami: () => {
+                    const deferred = $q.defer();
+                    WhoamiResource.whoami(function(data) {
                         var user = {
                             id: data['id'],
                             name: data['fullName'],
@@ -170,17 +172,14 @@ const handleGrafanaError = function(response, report, optionalCallbackIfNoContex
                                 return this.roles.indexOf("ROLE_REPORT_DESIGNER") >= 0;
                             }
                         };
-                        if (successCallback) {
-                            successCallback(user);
-                        }
+                        deferred.resolve(user);
                     }, function(error) {
-                        if (errorCallback) {
-                            errorCallback(error);
-                        }
+                        deferred.reject(error);
                     });
+                    return deferred.promise;
                 }
             };  
-        })
+        }])
         .directive('onmsReportDetails', ['GrafanaResource', '$q', '$http', function (GrafanaResource, $q, $http) {
             const getDashboardDetails = (uid, dashboardId) => {
                 return $http.get('rest/endpoints/grafana/' + uid + '/dashboards/' + dashboardId).then((res) => res.data);
@@ -195,7 +194,7 @@ const handleGrafanaError = function(response, report, optionalCallbackIfNoContex
                     onInvalidChange: '&?onInvalidChange',
                     onGlobalError: '&onGlobalError'
                 },
-                link: function (scope, element, attrs) {
+                link: function (scope) {
                     scope.oldTimeZone = undefined;
 
                     scope.endpoints = [];
@@ -204,7 +203,7 @@ const handleGrafanaError = function(response, report, optionalCallbackIfNoContex
                         endpoint: undefined,
                         dashboard: undefined
                     };
-                    scope.onInvalidChange = scope.onInvalidChange || function(invalidState) {}; // eslint-disable-line @typescript-eslint/no-empty-function
+                    scope.onInvalidChange = scope.onInvalidChange || function() {}; // eslint-disable-line @typescript-eslint/no-empty-function
                     scope.onDateParamStateChange = function(state, date, parameter) {
                         scope.$evalAsync(() => {
                             if (date && parameter) {
@@ -382,23 +381,26 @@ const handleGrafanaError = function(response, report, optionalCallbackIfNoContex
                 }
             };
         })
-        .controller('ReportsController', ['$scope', '$rootScope', '$http', 'UserService', function($scope, $rootScope, $http, UserService) {
-            $scope.fetchUserInfo = function() {
-                UserService.whoami(function(user) {
-                    $scope.userInfo = user;
-                }, function(errorResponse) {
-                    $scope.setGlobalError(errorResponse);
-                });
-            };
-            $scope.fetchUserInfo();
+        .controller('ReportsController', ['$scope', 'UserService', function($scope, UserService) {
+            $scope.globalError = undefined;
+            $scope.globalErrorDetails = undefined;
             $scope.setGlobalError = function(errorResponse) {
                 $scope.globalError = 'An unexpected error occurred: ' + errorResponse.status + ' ' + errorResponse.statusText;
                 $scope.globalErrorDetails = JSON.stringify(errorResponse, null, 2);
+                return $scope.globalError;
             };
-            $scope.globalError = undefined;
-            $scope.globalErrorDetails = undefined;
+            $scope.fetchUserInfo = function() {
+                return UserService.whoami().then((user) => {
+                    $scope.userInfo = user;
+                    return user;
+                }, (errorResponse) => {
+                    $scope.setGlobalError(errorResponse);
+                    return $q.reject(errorResponse);
+                });
+            };
+            $scope.fetchUserInfo();
         }])
-        .controller('ReportTemplatesController', ['$scope', '$http', 'ReportTemplateResource', function($scope, $http, ReportTemplateResource) {
+        .controller('ReportTemplatesController', ['$scope', 'ReportTemplateResource', function($scope, ReportTemplateResource) {
             $scope.refresh = function() {
                 $scope.reports = [];
 
@@ -414,7 +416,7 @@ const handleGrafanaError = function(response, report, optionalCallbackIfNoContex
             $scope.refresh();
 
         }])
-        .controller('ReportDetailController', ['$scope', '$http', '$window', '$state', '$stateParams', '$uibModal', 'ReportTemplateResource', function($scope, $http, $window, $state, $stateParams, $uibModal, ReportTemplateResource) {
+        .controller('ReportDetailController', ['$scope', '$http', '$stateParams', 'ReportTemplateResource', function($scope, $http, $stateParams, ReportTemplateResource) {
             $scope.meta = {
                 reportId: $stateParams.id,
                 online: $stateParams.online === 'true'
@@ -634,7 +636,7 @@ const handleGrafanaError = function(response, report, optionalCallbackIfNoContex
 
             $scope.refresh();
         }])
-        .controller('ScheduleEditController', ['$http', '$q', '$scope', '$timeout', 'userInfo', 'meta', 'setGlobalError', 'ReportScheduleResource', function($http, $q, $scope, $timeout, userInfo, meta, setGlobalError, ReportScheduleResource) {
+        .controller('ScheduleEditController', ['$http', '$q', '$scope', 'userInfo', 'meta', 'setGlobalError', 'ReportScheduleResource', function($http, $q, $scope, userInfo, meta, setGlobalError, ReportScheduleResource) {
             $scope.meta = meta;
             $scope.userInfo = userInfo;
             $scope.report = null;
@@ -715,7 +717,7 @@ const handleGrafanaError = function(response, report, optionalCallbackIfNoContex
 
             $scope.loadDetails();
         }])
-        .controller('ReportStorageController', ['$scope', '$http', '$window', '$stateParams', 'ReportStorageResource', function($scope, $http, $window, $stateParams, ReportStorageResource) {
+        .controller('ReportStorageController', ['$scope', 'ReportStorageResource', function($scope, ReportStorageResource) {
             $scope.persistedReports = [];
             $scope.pagination = { page: 1, limit: 20, totalItems : 0, offset: 0 };
 

@@ -80,7 +80,7 @@
         "angular-bootstrap-confirm": "^2.5.1",
         "angular-bootstrap-toggle": "0.4.2",
         "angular-cookies": "^1.8.3",
-        "angular-growl-v2": "https://github.com/JanStevens/angular-growl-2#v0.7.9",
+        "angular-growl-v2": "https://github.com/JanStevens/angular-growl-2#master",
         "angular-loading-bar": "^0.9.0",
         "angular-resource": "^1.8.3",
         "angular-route": "^1.8.3",
