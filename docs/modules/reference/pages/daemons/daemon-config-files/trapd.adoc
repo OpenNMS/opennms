@@ -14,7 +14,7 @@ You can use that community name in event definitions as part of a mask.
 == How it works
 
 When an SNMP trap arrives, trapd parses the message, comparing the sender to known nodes.
-If the sender is not a monitored node and the `new-suspect-on-trap` parameter is set to `true`, {page-component-title} sends an event to xref:operation:provisioning/auto-discovery.adoc[discover] the node.
+If the sender is not a monitored node and the `new-suspect-on-trap` parameter is set to `true`, {page-component-title} sends an event to xref:operation:deep-dive/provisioning/auto-discovery.adoc[discover] the node.
 Otherwise, {page-component-title} tags the trap to the monitored node, broadcasts it to eventd, and the trap becomes a {page-component-title} event.
 
 .Trapd configuration file overview
@@ -55,7 +55,7 @@ For information on how to automate alarms and reduce the number of messages, see
 
 You can configure the eventd subsystem to discard unwanted SNMP traps.
 To do so, use the `discardtraps` logmsg.
-See xref:operation:events/event-definition.adoc#ga-events-anatomy-of-an-event[Anatomy of an event] in the Event Daemon Configuration section for more information.
+See xref:operation:deep-dive/events/event-definition.adoc#ga-events-anatomy-of-an-event[Anatomy of an event] in the Event Daemon Configuration section for more information.
 
 Note that for V3, you must specify the SNMPv3 credentials used to authenticate and decode V3 traps in `trapd-configuration.xml`, as in the following example:
 
