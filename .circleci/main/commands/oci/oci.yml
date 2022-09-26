@@ -68,10 +68,14 @@ commands:
           command: |
             export ARCH="$(printf "<< parameters.architecture >>" | tr / -)"
             export TAG="<< parameters.container_name >>-${ARCH}"
-            /tmp/bin/trivy image --exit-code 0 --format template "@contrib/html.tpl"  -o /tmp/report.html --no-progress $TAG:latest
+            /tmp/bin/trivy image --exit-code 0 --format json -o /tmp/report.json --no-progress $TAG:latest
+            /tmp/bin/trivy image --exit-code 0 -o /tmp/report.txt --no-progress $TAG:latest
       - store_artifacts:
-          path: /tmp/report.html
-          destination: report.html
+          path: /tmp/report.json
+          destination: report.json
+      - store_artifacts:
+          path: /tmp/report.txt
+          destination: report.txt
       - store_artifacts:
           path: ~/project/opennms-container/<< parameters.container_name >>/images/
           destination: /
