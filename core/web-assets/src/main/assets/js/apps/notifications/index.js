@@ -12,7 +12,12 @@ $(function() {
         let notificationSocket = null;
 
         let connect = function () {
-            notificationSocket = new WebSocket((Util.getBaseHref() + 'notification/stream').replace(/^http/, 'ws'));
+            try {
+                notificationSocket = new WebSocket((Util.getBaseHref() + 'notification/stream').replace(/^http/, 'ws'));
+            } catch (err) {
+                console.error("failed to create websocket connection:", err);
+                return;
+            }
 
             notificationSocket.onclose = function (event) {
                 notificationSocket.close();
