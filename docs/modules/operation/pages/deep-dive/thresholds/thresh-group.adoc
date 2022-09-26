@@ -3,7 +3,7 @@
 = Create a Threshold Group
 
 A threshold group associates a set of thresholds to a service (for example, thresholds that apply to all Cisco devices).
-{page-component-title} includes seven preconfigured, editable threshold groups:
+{page-component-title} includes the following preconfigured, editable threshold groups:
 
 * mib2
 * cisco
@@ -12,14 +12,14 @@ A threshold group associates a set of thresholds to a service (for example, thre
 * juniper-srx
 * netsnmp-memory-linux
 * netsnmp-memory-nonlinux
+* opennms-jvm-jvx
 
-You can edit an existing group (through the UI) or create a new one (in the `thresholds.xml` file located in `$OPENNMS_HOME/etc/thresholds.xml`).
-Once you create the group, you can then define it in the `thresholds.xml` file or define it in the UI.
+You can edit an existing group (through the web UI) or create a new one (in `$\{OPENNMS_HOME}/etc/thresholds.xml`).
+Once you create the group, you can then define it in the `thresholds.xml` file or in the UI.
 
-We will create a threshold group called "demo_group".
+This procedure creates a threshold group called "demo_group":
 
-. Type the following in the `thresholds.xml` file.
-
+. Open `$\{OPENNMS_HOME}/etc/thresholds.xml` and add the following line of code:
 +
 [source, xml]
 ----
@@ -27,13 +27,14 @@ We will create a threshold group called "demo_group".
 </group>
 ----
 
-. Once you have created the group in the `thresholds.xml` file, switch to the UI, go to the threshold screen and click *Reload Threshold Configuration*.
+. Log in to the web UI, and click the *Gear* symbol in the top-right of the screen.
+. Under Performance Measurement, click *Configure Thresholds*.
++
+The group you created should appear in the UI.
 
-.. The group you created should appear in the UI.
+. Click *Edit* next to the group's name.
 
-. Click *Edit* to edit it.
-
-The following is a sample of how the threshold appears in the `thresholds.xml` file:
+The following is a sample of how the threshold appears in `thresholds.xml`:
 
 [source, xml]
 -----
@@ -46,4 +47,4 @@ The following is a sample of how the threshold appears in the `thresholds.xml` f
 </group>
 -----
 <1> The name of the group and the directory of the stored data.
-<2> The details of the threshold including type, data source type, threshold value, rearm value, and so on.
+<2> The details of the threshold, including type, data source type, threshold value, re-arm value, and so on.

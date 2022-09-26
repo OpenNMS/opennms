@@ -7,8 +7,7 @@ jobs:
       DOCKER_CLI_EXPERIMENTAL: enabled
     steps:
       - shallow-clone
-      - setup_remote_docker:
-          version: 20.10.11
+      - setup_remote_docker
       - cloudsmith/ensure-api-key
       - cloudsmith/install-cli
       - run:
@@ -20,13 +19,6 @@ jobs:
       - run:
           name: download resources from parent jobs
           command: |
-            sudo apt-get update
-            sudo apt-get -y install \
-              libdatetime-format-iso8601-perl \
-              libjson-pp-perl \
-              libwww-perl \
-              liblwp-protocol-https-perl
-
             for TYPE in oci rpm deb yml; do
               download-artifacts.pl \
                 --vault-layout \

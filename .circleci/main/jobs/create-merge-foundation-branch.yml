@@ -1,6 +1,6 @@
  jobs:
   create-merge-foundation-branch:
-    <<: *docker_container_config
+    executor: base-executor
     steps:
       - run:
           name: "Branch Merge Parameters"

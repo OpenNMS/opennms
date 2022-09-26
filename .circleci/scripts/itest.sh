@@ -1,6 +1,7 @@
-#!/bin/sh
+#!/bin/bash
 
 set -e
+set -o pipefail
 
 # attempt to work around repository flakiness
 retry()
@@ -13,8 +14,6 @@ find_tests()
     # Generate surefire & failsafe test list based on current
     # branch and the list of files changed
     # (The format of the output files contains the canonical class names i.e. org.opennms.core.soa.filter.FilterTest)
-    SYSTEM_PYTHON="$(python3 --version | sed -e 's,^Python *,,')"
-    pyenv local "${SYSTEM_PYTHON}"
     python3 .circleci/scripts/find-tests/find-tests.py generate-test-lists \
       --changes-only="${CCI_CHANGES_ONLY:-true}" \
       --output-unit-test-classes=surefire_classnames \
@@ -34,9 +33,6 @@ find_tests()
 echo "#### Making sure git is up-to-date"
 git fetch --all
 
-echo "#### Generate project structure .json"
-./compile.pl -s .circleci/scripts/structure-settings.xml --batch-mode --fail-at-end -Prun-expensive-tasks -Pbuild-bamboo org.opennms.maven.plugins:structure-maven-plugin:1.0:structure
-
 echo "#### Determining tests to run"
 cd ~/project
 find_tests
@@ -46,7 +42,9 @@ if [ ! -s /tmp/this_node_projects ]; then
 fi
 
 echo "#### Set loopback to 127.0.0.1"
-sudo sed -i 's/127.0.1.1/127.0.0.1/g' /etc/hosts
+sudo sed -e 's/127.0.1.1/127.0.0.1/g' > /tmp/hosts
+sudo chmod 644 /tmp/hosts
+sudo mv /tmp/hosts /etc/hosts
 
 echo "#### Allowing non-root ICMP"
 sudo sysctl net.ipv4.ping_group_range='0 429496729'
@@ -55,59 +53,32 @@ echo "#### Setting up Postgres"
 cd ~/project
 ./.circleci/scripts/postgres.sh
 
-echo "#### Installing other dependencies"
-# limit the sources we need to update
-sudo rm -f /etc/apt/sources.list.d/*
-
 # kill other apt commands first to avoid problems locking /var/lib/apt/lists/lock - see https://discuss.circleci.com/t/could-not-get-lock-var-lib-apt-lists-lock/28337/6
 sudo killall -9 apt || true && \
-            retry sudo apt update && \
-            retry sudo env DEBIAN_FRONTEND=noninteractive apt -y --no-install-recommends install \
-                ca-certificates \
-                tzdata \
-                software-properties-common \
-                debconf-utils
-
-# install some keys
-curl -sSf https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc | sudo tee -a /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc
-curl -sSf https://debian.opennms.org/OPENNMS-GPG-KEY | sudo tee -a /etc/apt/trusted.gpg.d/opennms_key.asc
-
-# limit more sources and add mirrors
-echo "deb mirror://mirrors.ubuntu.com/mirrors.txt $(lsb_release -cs) main restricted universe multiverse
-deb http://archive.ubuntu.com/ubuntu/ $(lsb_release -cs) main restricted" | sudo tee -a /etc/apt/sources.list
-sudo add-apt-repository -y 'deb http://debian.opennms.org stable main'
-
-# add the R repository
-sudo add-apt-repository -y "deb https://cloud.r-project.org/bin/linux/ubuntu $(lsb_release -cs)-cran40/"
-
 retry sudo apt update && \
             RRDTOOL_VERSION=$(apt-cache show rrdtool | grep Version: | grep -v opennms | awk '{ print $2 }') && \
-            echo '* libraries/restart-without-asking boolean true' | sudo debconf-set-selections && \
-            retry sudo env DEBIAN_FRONTEND=noninteractive apt -f --no-install-recommends install \
-                r-base \
+            retry sudo /usr/local/bin/ghost-apt-install.sh \
                 "rrdtool=$RRDTOOL_VERSION" \
                 jrrd2 \
                 jicmp \
                 jicmp6 \
             || exit 1
 
-export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
-
 export MAVEN_OPTS="$MAVEN_OPTS -Xmx8g -XX:ReservedCodeCacheSize=1g"
 
 # shellcheck disable=SC3045
 ulimit -n 65536
 
-MAVEN_ARGS="install"
+MAVEN_ARGS=("install")
 
 case "${CIRCLE_BRANCH}" in
   "master"*|"release-"*|develop)
-    MAVEN_ARGS="-Dbuild.type=production $MAVEN_ARGS"
+    MAVEN_ARGS+=("-Dbuild.type=production")
   ;;
 esac
 
 echo "#### Building Assembly Dependencies"
-./compile.pl $MAVEN_ARGS \
+./compile.pl "${MAVEN_ARGS[@]}" \
            -P'!checkstyle' \
            -P'!production' \
            -Pbuild-bamboo \
@@ -122,7 +93,7 @@ echo "#### Building Assembly Dependencies"
            --projects "$(< /tmp/this_node_projects paste -s -d, -)"
 
 echo "#### Executing tests"
-./compile.pl $MAVEN_ARGS \
+./compile.pl "${MAVEN_ARGS[@]}" \
            -P'!checkstyle' \
            -P'!production' \
            -Pbuild-bamboo \
