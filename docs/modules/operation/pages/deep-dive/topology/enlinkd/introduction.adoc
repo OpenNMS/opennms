@@ -60,7 +60,7 @@ The Topology-Updaters correlate all collected topology data to generate a global
 For each supported protocol {page-component-title} creates a collection group with an assigned priority.
 The collection group is scheduled according to the rescan interval defined for the related protocol.
 The collection group run sends protocol-specific SNMP collection and storage to the Priority Executor.
-First will be collecter the data whose value of priority is lower.
+Collection starts with data that has the lowest priority value.
 Further, collection uses a priority map to assign a priority to a specific node.
 Starting from the lowest ip subnetwork the same nodei priority is assigned to the nodes belonging to the same network.
 Final Node collection priority will be the sum of node priority and protocol related collection group priority.
