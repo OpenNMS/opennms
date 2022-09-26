@@ -58,7 +58,7 @@ Bridge Collectors are able to collect Bridge Forwarding Table and IpNetToMedia T
 The Enlinkd-Bridge-Discovery process attempts to discover bridge domain links with the data coming from all collected Bridge Forwarding Tables.
 The Topology-Updaters correlate all collected topology data to generate a global topology layout of your network.
 For each supported protocol {page-component-title} creates a collection group with an assigned priority.
-The collection group is scheduled according with the rescan interval defined for the related protocol.
+The collection group is scheduled according to the rescan interval defined for the related protocol.
 The run of collection group will send to a Priority Executor protocol specific Snmp Collection and storage.
 First will be collecter the data whose value of priority is lower.
 Further a priority Map is ised to assign to a specific node a priority.
