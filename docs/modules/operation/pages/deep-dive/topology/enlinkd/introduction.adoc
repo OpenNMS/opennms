@@ -193,7 +193,7 @@ NOTE: If multiple protocols are enabled, the links will be discovered for each e
 | 1000
 
 | lldp-priority
-| The priority used for executing LLDP links discovery
+| The priority used for running LLDP links discovery.
 | 2000
 
 | bridge-priority
