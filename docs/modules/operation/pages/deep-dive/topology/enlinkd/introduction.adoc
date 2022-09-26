@@ -65,7 +65,6 @@ Further, collection uses a priority map to assign a priority to a specific node.
 Starting from the lowest IP subnetwork, the same nodeID priority is assigned to the nodes that belong to the same network.
 The final node collection priority is the sum of node priority and protocol-related collection group priority.
 By default, CDP data collection (priority 1000) is done before LLDP data collection (priority 2000), followed by OSPF, IS-IS, and Bridge data collection (priority 3000, 4000, and 10000 respectively).
-Follow OSPF, IS-IS and Bridge data collection (respectively priority 3000, 4000 and 10000).
 
 For large environments, you can configure the behavior of Enlinkd.
 During the EnLink discovery process, informational and error output is logged to a global log file.
