@@ -40,7 +40,11 @@ const getSize = function(element) {
 
   // otherwise, fall back to the old way of calculating
   const container = element.closest('div'); // This is the panel, not the cell that contains the IMG
-  return Math.round(container.width() * RELATIVE_SIZE);
+  if (container !== undefined) {
+    return Math.round(container.width() * RELATIVE_SIZE);
+  }
+
+  return NaN;
 }
 
 const recalculateBox = debounce(() => {
