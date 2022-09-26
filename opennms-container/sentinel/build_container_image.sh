@@ -9,23 +9,35 @@ set -o errexit
 # Use the error status of the first failure, rather than that of the last item in a pipeline.
 set -o pipefail
 
-cd "$(dirname "$0")"
+MYDIR="$(cd "$(dirname "$0")"; pwd)"
+cd "${MYDIR}"
 
 # shellcheck disable=SC1091
 source ../set-build-environment.sh
 
-../launch_yum_server.sh "$RPMDIR"
+TARBALL="$(find ../../opennms-assemblies/sentinel -name \*sentinel\*.tar.gz -type f | head -n 1)"
+if [ -z "${TARBALL}" ]; then
+  echo "unable to find sentinel tarball in opennms-assemblies"
+  exit 1
+fi
+rm -rf "${MYDIR}/tarball-root"
+mkdir -p "${MYDIR}/tarball-root"
+tar -x -z --strip-components 1 \
+	-C "${MYDIR}/tarball-root" \
+	-f "${TARBALL}"
 
-cat <<END >rpms/opennms-docker.repo
-[opennms-repo-docker-common]
-name=Local RPMs to Install from Docker
-baseurl=http://${YUM_CONTAINER_NAME}:19990/
-enabled=1
-gpgcheck=0
-END
+BUILDER_NAME=sentinel-build
+if [ $(docker buildx ls | grep -c "${BUILDER_NAME}") -gt 0 ]; then
+  docker buildx rm $BUILDER_NAME
+fi
 
-docker build -t sentinel \
-  --network "${BUILD_NETWORK}" \
+docker context rm tls-environment >/dev/null 2>&1 || :
+docker context create tls-environment
+docker buildx create --name $BUILDER_NAME --driver docker-container --use tls-environment
+
+docker buildx build -t sentinel \
+  --builder $BUILDER_NAME \
+  --platform="${DOCKER_ARCH}" \
   --build-arg BUILD_DATE="${BUILD_DATE}" \
   --build-arg VERSION="${VERSION}" \
   --build-arg SOURCE="${SOURCE}" \
@@ -34,9 +46,9 @@ docker build -t sentinel \
   --build-arg BUILD_NUMBER="${BUILD_NUMBER}" \
   --build-arg BUILD_URL="${BUILD_URL}" \
   --build-arg BUILD_BRANCH="${BUILD_BRANCH}" \
+  --load \
+  --progress plain \
   .
+docker image save sentinel -o "images/sentinel-${VERSION}.oci"
 
-docker image save sentinel -o images/container.oci
-
-rm -f rpms/*.repo
-../stop_yum_server.sh
+docker context rm tls-environment

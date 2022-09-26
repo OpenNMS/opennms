@@ -1,6 +1,6 @@
 [template]
 src = "newts.properties.tpl"
-dest = "/opt/opennms/etc/opennms.properties.d/_confd.newts.properties"
+dest = "/usr/share/opennms/etc/opennms.properties.d/_confd.newts.properties"
 keys = [
     "replication/factor",
     "opennms/cassandra",

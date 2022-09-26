@@ -12,7 +12,6 @@ The following describes the keys that can be specified in `minion-config.yaml` t
 ```yaml
 --- 
 broker-url: "<broker url>"
-http-url: "<http url>"
 id: "<id>"
 location: "<location>"
 ```
