@@ -522,8 +522,10 @@
         <feature>opennms-core-ipc-sink-api</feature>
         <feature>dropwizard-metrics</feature>
         <feature>rate-limited-logger</feature>
+        <feature>fst</feature>
         <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.offheap/${project.version}</bundle>
         <bundle>wrap:mvn:com.squareup.tape2/tape/${tape2Version}</bundle>
+        <bundle dependency="true">wrap:mvn:org.rocksdb/rocksdbjni/${rocksdbjniVersion}</bundle>
     </feature>
     <feature name="opennms-core-ipc-sink-camel-common" version="${project.version}" description="OpenNMS :: Core :: IPC :: Sink :: Camel :: Common">
         <feature>opennms-core-ipc-sink-api</feature>
