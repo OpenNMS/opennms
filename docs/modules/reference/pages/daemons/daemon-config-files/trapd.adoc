@@ -55,7 +55,7 @@ For information on how to automate alarms and reduce the number of messages, see
 
 You can configure the eventd subsystem to discard unwanted SNMP traps.
 To do so, use the `discardtraps` logmsg.
-See xref:operation:events/deep-dive/events/event-definition.adoc#ga-events-anatomy-of-an-event[Anatomy of an event] in the Event Daemon Configuration section for more information.
+See xref:operation:deep-dive/events/event-definition.adoc#ga-events-anatomy-of-an-event[Anatomy of an event] in the Event Daemon Configuration section for more information.
 
 Note that for V3, you must specify the SNMPv3 credentials used to authenticate and decode V3 traps in `trapd-configuration.xml`, as in the following example:
 
