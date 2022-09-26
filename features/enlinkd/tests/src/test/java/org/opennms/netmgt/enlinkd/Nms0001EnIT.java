@@ -185,4 +185,43 @@ public class Nms0001EnIT extends EnLinkdBuilderITCase {
          *  siegfrie-192.168.239.54-walk.txt:.1.2.840.10006.300.43.1.1.1.1.2.533 = Hex-STRING: 00 1F 12 AC C3 F0
          */
     }
+
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host = FROH_IP, port = 161, resource = FROH_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host = OEDIPUS_IP, port = 161, resource = OEDIPUS_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host = SIEGFRIE_IP, port = 161, resource = SIEGFRIE_SNMP_RESOURCE)
+    })
+    public void testIsIsLinksExec() throws InterruptedException {
+
+        m_nodeDao.save(builder.getFroh());
+        m_nodeDao.flush();
+
+        m_linkdConfig.getConfiguration().setUseBridgeDiscovery(false);
+        m_linkdConfig.getConfiguration().setUseOspfDiscovery(false);
+        m_linkdConfig.getConfiguration().setUseLldpDiscovery(false);
+        m_linkdConfig.getConfiguration().setUseCdpDiscovery(false);
+
+        assertTrue(m_linkdConfig.useIsisDiscovery());
+        assertFalse(m_linkdConfig.useBridgeDiscovery());
+        assertFalse(m_linkdConfig.useOspfDiscovery());
+        assertFalse(m_linkdConfig.useLldpDiscovery());
+        assertFalse(m_linkdConfig.useCdpDiscovery());
+
+        final OnmsNode froh = m_nodeDao.findByForeignId("linkd", FROH_NAME);
+
+        m_linkd.reload();
+
+        assertEquals(0, m_linkd.getStatus());
+        assertEquals("START_PENDING", m_linkd.getStatusText());
+        m_linkd.start();
+        assertEquals(2, m_linkd.getStatus());
+        assertEquals("RUNNING", m_linkd.getStatusText());
+
+        assertTrue(m_linkd.execSingleSnmpCollection(froh.getId()));
+
+        Thread.sleep(10000);
+        m_isisLinkDao.flush();
+        assertEquals(2, m_isisLinkDao.countAll());
+    }
 }

@@ -84,7 +84,7 @@ public final class EventProcessor {
         EventUtils.checkService(event);
 
         if (event.getService().equals("SNMP"))
-        	m_linkd.runSingleSnmpCollection(event.getNodeid().intValue());
+        	m_linkd.execSingleSnmpCollection(event.getNodeid().intValue());
     }
 
     @EventHandler(uei=EventConstants.NODE_LOST_SERVICE_EVENT_UEI)
@@ -114,7 +114,7 @@ public final class EventProcessor {
      */
     @EventHandler(uei = EventConstants.FORCE_RESCAN_EVENT_UEI)
     public void handleForceRescan(IEvent e) {
-    	m_linkd.runSingleSnmpCollection(e.getNodeid().intValue());
+    	m_linkd.execSingleSnmpCollection(e.getNodeid().intValue());
     }
     
 
