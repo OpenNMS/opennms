@@ -45,7 +45,7 @@ public abstract class Schedulable implements ReadyRunnable {
      */
     private long m_poll_interval = 1800000;
     /**
-     * The initial sleep time, default value 5 minutes
+     * The initial sleep time, default value 10 minutes
      */
     private long m_initial_sleep_time = 600000;
 
