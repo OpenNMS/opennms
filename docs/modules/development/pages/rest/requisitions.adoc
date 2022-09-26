@@ -4,18 +4,21 @@
 RESTful service to the {page-component-title} Provisioning Requisitions.
 In this API, these "groups" of nodes are aptly named and treated as requisitions.
 
-This current implementation supports CRUD operations for managing provisioning requisitions.
-Requisitions are first POSTed and no provisioning (import/synchronize) operations are taken.
-This is done so that a) the XML can be verified and b) so that the operations can happen at a later time.
+The current implementation supports CRUD operations for managing provisioning requisitions.
+Requisitions are first POSTed, and no provisioning (import or synchronize) operations are taken.
+This is done so that the XML can be verified and the operations can happen at a later time.
 They are moved to the deployed state (put in the active requisition repository) when an import is run.
 
 If a request says that it gets the active requisition, that means it returns the pending requisition (being edited for deployment) if there is one, otherwise it returns the deployed requisition.
-Note that anything that says it adds/deletes/modifies a node, interface, etc. in these instructions is referring to modifying that element from the requisition, not from the database itself.
-That will happen upon import/synchronization.
+Note that anything that says it adds, deletes, or modifies a node, interface, or another element in these instructions is referring to modifying that element from the requisition, not from the database itself.
+That will happen upon import or synchronization.
 
-You may write requisition data if the authenticated user is in the provision, rest, or admin roles.
+You may write requisition data if the authenticated user is assigned the provision, rest, or admin roles.
 
-== GETs (reading data)
+== GETs
+
+GET requests read data from the requisition repositories.
+The following table describes GET requests and how they are formatted:
 
 [options="header" "autowidth", cols="1,2"]
 |===
@@ -26,13 +29,15 @@ You may write requisition data if the authenticated user is in the provision, re
 | Get all active requisitions.
 
 | `/requisitions/count`
-| Get the number of active requisitions. (Returns plaintext, rather than XML or JSON.)
+| Get the number of undeployed requisitions.
+Returns plaintext rather than XML or JSON.
 
 | `/requisitions/deployed`
-| Get the list of all deployed (active) requisitions.
+| Get a list of all deployed (active) requisitions.
 
 | `/requisitions/deployed/count`
-| Get the number of deployed requisitions. (Returns plaintext, rather than XML or JSON.)
+| Get the number of deployed requisitions.
+Returns plaintext rather than XML or JSON.
 
 | `/requisitions/\{name}`
 | Get the active requisition for the given foreign source name.
@@ -68,9 +73,13 @@ You may write requisition data if the authenticated user is in the provision, re
 | Get the value of the asset for the given assetName for the node with the given foreign ID and foreign source name.
 |===
 
-== POSTs (adding data or updating existing data)
+== POSTs
 
-NOTE: Expects JSON/XML.
+POST requests add data to and update data existing in the requisition repositories.
+
+NOTE: POST requests expect JSON- or XML-formatted data.
+
+The following table describes POST requests and how they are formatted:
 
 [options="header" "autowidth", cols="1,2"]
 |===
@@ -78,28 +87,32 @@ NOTE: Expects JSON/XML.
 | Description
 
 | `/requisitions`
-| Adds (or replaces) a requisition.
+| Adds or replaces a requisition.
 
 | `/requisitions/\{name}/nodes`
-| Adds (or replaces) a node in the specified requisition.
+| Adds or replaces a node in the specified requisition.
 This operation can be very helpful when working with large requisitions.
 
 | `/requisitions/\{name}/nodes/\{foreignid}/interfaces`
-| Adds (or replaces) an interface for the given node in the specified requisition.
+| Adds or replaces an interface for the given node in the specified requisition.
 
 | `/requisitions/\{name}/nodes/\{foreignid}/interfaces/\{ipaddress}/services`
-| Adds (or replaces) a service on the given interface in the specified requisition.
+| Adds or replaces a service on the given interface in the specified requisition.
 
 | `/requisitions/\{name}/nodes/\{foreignid}/categories`
-| Adds (or replaces) a category for the given node in the specified requisition.
+| Adds or replaces a category for the given node in the specified requisition.
 
 | `/requisitions/\{name}/nodes/\{foreignid}/assets`
-| Adds (or replaces) an asset for the given node in the specified requisition.
+| Adds or replaces an asset for the given node in the specified requisition.
 |===
 
 == PUTs (modifying data)
 
-NOTE: Expects form-urlencoded.
+PUT requests modify data in the requisition repositories.
+
+NOTE: PUT requests expect `form-urlencoded` data.
+
+The following table describes PUT requests and how they are formatted:
 
 [options="header" "autowidth", cols="1,2"]
 |===
@@ -107,12 +120,13 @@ NOTE: Expects form-urlencoded.
 | Description
 
 | `/requisitions/\{name}/import`
-| Performs an import/synchronize on the specified requisition.
-This turns the "active" requisition into the "deployed" requisition.
+| Performs an import or synchronize on the specified requisition.
+This turns the "active" requisition into a "deployed" requisition.
 
 | `/requisitions/\{name}/import?rescanExisting=false`
-| Similar to the above import command, but existing nodes are not scanned until the next rescan interval. Only newly added/removed nodes are updated.
-Useful when applying changes to a subset of nodes in a requisition.
+| Performs an import or synchronize on the specified requisition, if it is newly added or removed.
+Existing nodes are not scanned until the next rescan interval.
+This request type is useful when applying changes to a subset of nodes in a requisition.
 
 | `/requisitions/\{name}`
 | Update the specified requisition.
@@ -125,6 +139,9 @@ Useful when applying changes to a subset of nodes in a requisition.
 |===
 
 == DELETEs (removing data)
+
+DELETE requests remove data from the requisition repositories.
+The following table describes DELETE requests and how they are formatted:
 
 [options="header" "autowidth", cols="1,2"]
 |===
