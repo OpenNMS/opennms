@@ -136,7 +136,7 @@ NOTE: If multiple protocols are enabled, the links will be discovered for each e
 3+| *Integer*
 
 | threads
-| Number of parallel threads used by schedulable: collector groups, updaters, and discovery.
+| Number of parallel threads schedulable objects use: collector groups, updaters, and discovery.
 | 3
 
 | executor-queue-size
