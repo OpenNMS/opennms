@@ -72,6 +72,10 @@ commands:
           command: |
             # now move them back so they end up in the workspace for builds further down the workflow
             mv /tmp/maven-keep/* ~/.m2/repository/org/opennms/
+      - run:
+          name: Test Step
+          command: |
+            gh --help
       - save-nodejs-cache
       - store_artifacts:
           path: ~/project/target/artifacts
