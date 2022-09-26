@@ -205,7 +205,7 @@ NOTE: If multiple protocols are enabled, the links will be discovered for each e
 | 3000
 
 | isis-priority
-| The priority used for executing IS-IS links discovery
+| The priority used for running IS-IS links discovery.
 | 4000
 
 3+| *Boolean*
