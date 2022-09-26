@@ -579,6 +579,7 @@ public abstract class AbstractOpenNMSSeleniumHelper {
             @Override public Boolean call() throws Exception {
                 waitForElement(textInput).clear();
                 waitForElement(textInput).click();
+                waitForElement(textInput).sendKeys(Keys.chord(Keys.CONTROL, "a"), Keys.BACK_SPACE);
                 waitForValue(textInput, "");
                 waitForElement(textInput).sendKeys(text);
                 // Click on the item that appears
@@ -815,6 +816,7 @@ public abstract class AbstractOpenNMSSeleniumHelper {
             LOG.debug("enterText({},{}): {}", selector, text, ++count);
             // Clear the element content and then confirm it's really clear
             waitForElement(selector).clear();
+            waitForElement(selector).click();
             waitForValue(selector, "");
 
             // Click the element to make sure it's still got the focus
