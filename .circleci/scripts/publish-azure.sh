@@ -5,24 +5,27 @@ set -o pipefail
 
 MYDIR="$(cd "$(dirname "$0")"; pwd)"
 
+# shellcheck disable=SC1091
 . "${MYDIR}/lib.sh"
 
-echo "docker tags: ${DOCKER_TAGS[@]}"
+echo "docker tags: ${DOCKER_TAGS[*]}"
 echo ""
 
 export DOCKER_SERVER="opennmspubacr.azurecr.io"
 export DOCKER_USERNAME="${AZURE_SP}"
 export DOCKER_PASSWORD="${AZURE_SP_PASSWORD}"
 
+# shellcheck disable=SC1091
 . "${MYDIR}/lib-docker.sh"
 
-printf "${AZURE_DCT_CI_KEY}" | base64 -d > "${PRIVATE_KEY_FOLDER}/${AZURE_DCT_CI_KEY_ID}.key"
-printf "${AZURE_DCT_REPO_MINION_KEY}" | base64 -d > "${PRIVATE_KEY_FOLDER}/${AZURE_DCT_REPO_MINION_KEY_ID}.key"
+printf '%s' "${AZURE_DCT_CI_KEY}" | base64 -d > "${PRIVATE_KEY_FOLDER}/${AZURE_DCT_CI_KEY_ID}.key"
+printf '%s' "${AZURE_DCT_REPO_MINION_KEY}" | base64 -d > "${PRIVATE_KEY_FOLDER}/${AZURE_DCT_REPO_MINION_KEY_ID}.key"
 chmod 600 "${PRIVATE_KEY_FOLDER}"/*
 
 export DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE="${AZURE_DCT_CI_PASSPHRASE}"
 docker trust key load "${PRIVATE_KEY_FOLDER}/${AZURE_DCT_CI_KEY_ID}.key"
 
+# shellcheck disable=SC2043
 for TYPE in minion; do
   export DOCKER_REPO="${DOCKER_SERVER}/opennms/${TYPE}"
 
@@ -30,7 +33,7 @@ for TYPE in minion; do
   find /tmp/artifacts/oci -name "${TYPE}-*.oci" | while read -r _file; do
     echo "* processing ${TYPE} image: ${_file}"
     _internal_tag="$(basename "${_file}" | sed -e 's,\.oci$,,')"
-    _arch_tag="$(printf "${_internal_tag}" | sed -e "s,^${TYPE}-,,")"
+    _arch_tag="$(printf '%s' "${_internal_tag}" | sed -e "s,^${TYPE}-,,")"
 
     _push_tag="${DOCKER_BRANCH_TAG}-${_arch_tag}"
     docker tag "${_internal_tag}" "${DOCKER_REPO}:${_push_tag}"

@@ -46,12 +46,14 @@ for FILE in /tmp/artifacts/deb/*.deb; do
   cloudsmith push deb "${OPTS[@]}" "${PROJECT}/$REPO/any-distro/any-version" "$FILE"
 done
 
+# shellcheck disable=SC1091
 . "${MYDIR}/lib.sh"
 
 export DOCKER_SERVER="docker.cloudsmith.io"
 export DOCKER_USERNAME="${CLOUDSMITH_USERNAME}"
 export DOCKER_PASSWORD="${CLOUDSMITH_API_KEY}"
 
+# shellcheck disable=SC1091
 . "${MYDIR}/lib-docker.sh"
 
 export DOCKER_CONTENT_TRUST=0
