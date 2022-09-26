@@ -140,7 +140,7 @@ NOTE: If multiple protocols are enabled, the links will be discovered for each e
 | 3
 
 | executor-queue-size
-| The initial queue size of Priority Executor.
+| The initial queue size of the Priority Executor.
 | 100
 
 | executor-threads
