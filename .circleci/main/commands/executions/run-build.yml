@@ -9,7 +9,7 @@ commands:
         default: echo "NODE_OPTIONS Not Set"
         type: string
       vaadin-javamaxmem:
-        default: 1g
+        default: 2g
         type: string
     steps:
       - cached-checkout
@@ -29,7 +29,7 @@ commands:
             export OPENNMS_VERSION="$(.circleci/scripts/pom2version.sh pom.xml)"
             .circleci/scripts/configure-signing.sh
             << parameters.node-memory >>
-            export MAVEN_OPTS="-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
+            export MAVEN_OPTS="-Xmx12g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
             MAVEN_ARGS="install"
             mkdir -p target/artifacts
             case "${CIRCLE_BRANCH}" in
@@ -48,6 +48,12 @@ commands:
               -Psmoke \
               --batch-mode \
               $MAVEN_ARGS || exit 1
+            ./compile.pl -s .circleci/scripts/structure-settings.xml \
+              --batch-mode \
+              --fail-at-end \
+              -Prun-expensive-tasks \
+              -Pbuild-bamboo \
+              org.opennms.maven.plugins:structure-maven-plugin:1.0:structure || exit 1
       - run:
           name: Check if we have generated apidocs
           command: |
@@ -56,9 +62,6 @@ commands:
                 tar -czf "../../artifacts/opennms-${OPENNMS_VERSION}-javadoc.tar.gz" *
               popd
             fi
-      # 90% of this is done just by the act of building, I'm not sure it's worth spending 7 minutes
-      # re-running an entire maven reactor build just to fill in a few missing assembly-only bits
-      # - update-maven-cache
       - run:
           name: Remove Extra Maven Repository OpenNMS Files
           command: |
@@ -66,6 +69,7 @@ commands:
             cd ~/.m2/repository/org/opennms
             mkdir /tmp/maven-keep
             mv $(ls -1 | grep -v -E '^(jicmp-api|jicmp6-api|jrrd-api|jrrd2-api|lib|maven)$') /tmp/maven-keep
+      - persist-project-changes
       - save-maven-cache
       - run:
           name: Restore Extra Maven Repository OpenNMS Files
@@ -79,6 +83,7 @@ commands:
       - persist_to_workspace:
           root: ~/
           paths:
-            - project
-            - .m2
+            - project/target/structure-graph.json
+            - .m2/repository/org/opennms
+            # is this even necessary anymore?
             - .artifacts

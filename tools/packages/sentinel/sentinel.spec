@@ -54,8 +54,9 @@ Source:        %{_name}-source-%{version}-%{releasenumber}.tar.gz
 URL:           http://www.opennms.org/wiki/Sentinel
 BuildRoot:     %{_tmppath}/%{name}-%{version}-root
 
-BuildRequires:	%{_java}
-BuildRequires:	libxslt
+# don't worry about buildrequires, the shell script will bomb quick  =)
+#BuildRequires:	%{_java}
+#BuildRequires:	libxslt
 
 Requires:       openssh
 Requires(post): util-linux

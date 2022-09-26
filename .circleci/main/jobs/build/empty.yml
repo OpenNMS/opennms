@@ -1,11 +1,8 @@
 jobs:
   empty:
-    executor: centos-build-executor
+    executor: cimg/base:stable
     # Building currently requires the xlarge containers in order for the webpack compilation
     # in the core/web-assets module to complete reliably
     resource_class: small
     steps:
-      - attach_workspace:
-          at: ~/
-      - run-empty:
-          number-vcpu: 8
+      - run-empty

@@ -1,14 +1,15 @@
 jobs:
   minion-image-single-arch-linux-amd64:
-    machine:
-      image: ubuntu-2204:current
-      docker_layer_caching: true
+    executor: base-executor
+    resource_class: medium
     environment:
       DOCKER_CLI_EXPERIMENTAL: enabled
     steps:
       - build-image-single-arch:
           architecture: linux/amd64
           container_name: minion
+          tarball_match: minion
+          tarball_path: /opennms-assemblies/minion/target
       - run:
           name: copy minion config schema for archiving
           command: |
