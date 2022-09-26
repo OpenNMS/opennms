@@ -201,7 +201,7 @@ NOTE: If multiple protocols are enabled, the links will be discovered for each e
 | 10000
 
 | ospf-priority
-| The priority used for executing OSPF links discovery
+| The priority used for running OSPF links discovery.
 | 3000
 
 | isis-priority
