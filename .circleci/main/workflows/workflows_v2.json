@@ -98,7 +98,9 @@
         },
         "experimental": {
             "extends": [
-                "sentinel-image-single-arch-linux-amd64"
+                "horizon-image-single-arch-linux-amd64",
+                "sentinel-image-single-arch-linux-amd64",
+                "minion-image-single-arch-linux-amd64"
             ]
         }
     },
