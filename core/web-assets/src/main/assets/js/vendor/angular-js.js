@@ -1,3 +1,6 @@
+/* Load jQuery first, so Angular finds it */
+require('./jquery-js');
+
 /* Angular Core */
 const angular = require('angular');
 require('angular-animate');
