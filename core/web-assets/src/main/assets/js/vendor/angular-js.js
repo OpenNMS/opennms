@@ -18,6 +18,6 @@ require('vendor/bootstrap-js');
 require('angular-bootstrap-checkbox');
 require('ui-bootstrap4'); // angular-ui-boostrap for bootstrap 4
 
-console.log('init: angular-js'); // eslint-disable-line no-console
+console.log('init: angular-js ' + angular.version.full); // eslint-disable-line no-console
 
 module.exports = window['angular'] = angular;
