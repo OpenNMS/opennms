@@ -54,6 +54,7 @@ commands:
               -Prun-expensive-tasks \
               -Pbuild-bamboo \
               org.opennms.maven.plugins:structure-maven-plugin:1.0:structure || exit 1
+            mv target/structure-graph.json ~/project/target/artifacts/
       - run:
           name: Check if we have generated apidocs
           command: |
@@ -83,7 +84,6 @@ commands:
       - persist_to_workspace:
           root: ~/
           paths:
-            - project/target/structure-graph.json
             - .m2/repository/org/opennms
             # is this even necessary anymore?
             - .artifacts

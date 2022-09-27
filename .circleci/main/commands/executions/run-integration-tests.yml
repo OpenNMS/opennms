@@ -14,6 +14,23 @@ commands:
         default: true
         type: boolean
     steps:
+      - download-download-artifacts
+      - run:
+          name: Check Integration Changes
+          command: |
+            export CCI_CHANGES_ONLY=<< parameters.changes-only >>
+            download-artifacts.pl --include-failed --workflow="${CIRCLE_WORKFLOW_ID}" json "${CIRCLE_BRANCH}" `pwd`/target/
+            if .circleci/scripts/itest-pre.sh; then
+              # itest-pre.sh returns 0 if there are no tests to run,
+              # short-circuit and skip the workspace and building
+              echo "No tests to run."
+              touch /tmp/no-tests
+              # This is a horrible hack; if we exit 1, the "when: on_fail" run at the
+              # end will fix it so we exit cleanly, but we skip the actual build.
+              exit 1
+            fi
+      - attach_workspace:
+          at: ~/
       - run:
           name: Wait for PostgreSQL
           command: dockerize -wait tcp://localhost:5432 -timeout 1m
@@ -88,3 +105,12 @@ commands:
           when: always
           path: ~/generated-tests
           destination: generated-tests
+      - run:
+         name: If no tests, exit cleanly
+         when: on_fail
+         command: |
+           if [ -e /tmp/no-tests ]; then
+             exit 0
+           else
+             exit 1
+           fi

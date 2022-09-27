@@ -5,8 +5,6 @@ jobs:
     resource_class: xlarge
     steps:
       - cached-checkout
-      - attach_workspace:
-          at: ~/
       - run-integration-tests:
           run-code-coverage: true
           rerun-failtest-count: 0

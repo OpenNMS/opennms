@@ -9,45 +9,8 @@ retry()
 	"$@" || "$@"
 }
 
-find_tests()
-{
-    # Generate surefire & failsafe test list based on current
-    # branch and the list of files changed
-    # (The format of the output files contains the canonical class names i.e. org.opennms.core.soa.filter.FilterTest)
-    python3 .circleci/scripts/find-tests/find-tests.py generate-test-lists \
-      --changes-only="${CCI_CHANGES_ONLY:-true}" \
-      --output-unit-test-classes=surefire_classnames \
-      --output-integration-test-classes=failsafe_classnames \
-      .
-
-    # Now determine the tests for this particular container based on the parallelism level and the test timings
-    < surefire_classnames circleci tests split --split-by=timings --timings-type=classname > /tmp/this_node_tests
-    < failsafe_classnames circleci tests split --split-by=timings --timings-type=classname > /tmp/this_node_it_tests
-
-    # Now determine the Maven modules related to the tests we need to run
-    cat /tmp/this_node* | python3 .circleci/scripts/find-tests/find-tests.py generate-test-modules \
-      --output=/tmp/this_node_projects \
-      .
-}
-
-echo "#### Making sure git is up-to-date"
-git fetch --all
-
-echo "#### Determining tests to run"
-cd ~/project
-perl -pi -e "s,/home/circleci,${HOME},g" target/structure-graph.json
-
-find_tests
-if [ ! -s /tmp/this_node_projects ]; then
-  echo "No tests to run."
-  exit 0
-fi
-
-#echo "#### Set loopback to 127.0.0.1"
-#sudo sed -i 's/127.0.1.1/127.0.0.1/g' /etc/hosts
-
 echo "#### Allowing non-root ICMP"
-sudo sysctl net.ipv4.ping_group_range='0 429496729'
+sudo sysctl net.ipv4.ping_group_range='0 429496729' || :
 
 echo "#### Setting up Postgres"
 cd ~/project
