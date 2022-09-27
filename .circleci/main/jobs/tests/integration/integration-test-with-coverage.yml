@@ -1,6 +1,6 @@
 jobs:
   integration-test-with-coverage:
-    executor: build-executor
+    executor: integration-test-executor
     parallelism: 10
     resource_class: xlarge
     steps:
