@@ -143,7 +143,8 @@ public class CollectionSetMapper {
                             .newBuilder();
                     attributeBuilder.setGroup(lastGroupName);
                     attributeBuilder.setName(attribute.getName());
-                    attributeBuilder.setValue(attribute.getNumericValue().doubleValue());
+                    final Number number = attribute.getNumericValue();
+                    attributeBuilder.setValue(number != null ? number.doubleValue() : Double.NaN);
                     attributeBuilder.setType((attribute.getType() == AttributeType.GAUGE) ? Type.GAUGE : Type.COUNTER);
                     collectionSetResourceBuilder.addNumeric(attributeBuilder);
                 }
