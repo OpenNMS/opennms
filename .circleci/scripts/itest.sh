@@ -35,6 +35,8 @@ git fetch --all
 
 echo "#### Determining tests to run"
 cd ~/project
+perl -pi -e "s,/home/circleci,${HOME},g" target/structure-graph.json
+
 find_tests
 if [ ! -s /tmp/this_node_projects ]; then
   echo "No tests to run."
@@ -49,10 +51,8 @@ sudo sysctl net.ipv4.ping_group_range='0 429496729'
 
 echo "#### Setting up Postgres"
 cd ~/project
-./.circleci/scripts/postgres.sh
+./.circleci/scripts/postgres.sh || exit 1
 
-# kill other apt commands first to avoid problems locking /var/lib/apt/lists/lock - see https://discuss.circleci.com/t/could-not-get-lock-var-lib-apt-lists-lock/28337/6
-sudo killall -9 apt || true && \
 retry sudo apt update && \
             RRDTOOL_VERSION=$(apt-cache show rrdtool | grep Version: | grep -v opennms | awk '{ print $2 }') && \
             retry sudo /usr/local/bin/ghost-apt-install.sh \
