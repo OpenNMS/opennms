@@ -4,10 +4,19 @@ executors:
       - image: cimg/base:stable-20.04
   build-executor:
     docker:
-      - image: opennms/build-env:circleci-ubuntu-jdk11-b8681
+      - image: opennms/build-env:circleci-ubuntu-jdk11-b8711
   docs-executor:
     docker:
       - image: opennms/antora:2.3.4-b7274
+  integration-test-executor:
+    docker:
+      - image: opennms/build-env:circleci-ubuntu-jdk11-b8711
+        environment:
+          PGHOST: localhost
+          PGPORT: 5432
+      - image: cimg/postgres:10.22
+        environment:
+          POSTGRES_INITDB_ARGS: -E UNICODE
   smoke-test-executor:
     machine:
       image: ubuntu-2204:current
