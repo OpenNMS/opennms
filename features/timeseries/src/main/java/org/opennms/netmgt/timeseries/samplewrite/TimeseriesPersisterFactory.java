@@ -44,6 +44,9 @@ import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.rrd.RrdRepository;
 
 import com.codahale.metrics.MetricRegistry;
+import org.opennms.netmgt.timeseries.TimeseriesStorageManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Factory for {@link TimeseriesPersister}.
@@ -51,18 +54,31 @@ import com.codahale.metrics.MetricRegistry;
  * @author jwhite
  */
 public class TimeseriesPersisterFactory implements PersisterFactory {
+    private static final Logger LOG = LoggerFactory.getLogger(TimeseriesPersisterFactory.class);
 
-    private final TimeSeriesWriter timeseriesWriter;
+    private final TimeseriesWriter timeseriesWriter;
     private final MetaTagDataLoader metaTagDataLoader;
     private final Cache<ResourcePath, Set<Tag>> configuredAdditionalMetaTagCache;
     private final MetricRegistry registry;
 
     @Inject
-    public TimeseriesPersisterFactory(final TimeSeriesWriter timeseriesWriter,
-                                      final MetaTagDataLoader metaTagDataLoader,
+    public TimeseriesPersisterFactory(final MetaTagDataLoader metaTagDataLoader,
+                                      @Named("timeseriesStorageManager") final TimeseriesStorageManager timeseriesStorageManager,
                                       @Named("timeseriesPersisterMetaTagCache") final CacheConfig cacheConfig,
-                                      @Named("timeseriesMetricRegistry") MetricRegistry registry) {
-        this.timeseriesWriter = timeseriesWriter;
+                                      @Named("timeseriesMetricRegistry") MetricRegistry registry,
+                                      @Named("timeseries.ring_buffer_size") Integer ringBufferSize,
+                                      @Named("timeseries.writer_threads") Integer numWriterThreads,
+                                      @Named("timeseries.backend") String backend,
+                                      @Named("timeseries.offheap.batchSize") final int batchSize,
+                                      @Named("timeseries.offheap.path") final String path,
+                                      @Named("timeseries.offheap.maxFileSize") final Long maxFileSize) {
+        if (OffheapTimeSeriesWriter.OFFHEAP_NAME.equals(backend)) {
+            this.timeseriesWriter = new OffheapTimeSeriesWriter(timeseriesStorageManager, ringBufferSize, batchSize, path, maxFileSize, registry);
+        } else {
+            this.timeseriesWriter = new RingBufferTimeseriesWriter(ringBufferSize, numWriterThreads, registry);
+        }
+        LOG.debug("Writer: {}", this.timeseriesWriter);
+
         this.metaTagDataLoader = metaTagDataLoader;
         this.configuredAdditionalMetaTagCache = new CacheBuilder<>()
                 .withConfig(cacheConfig)
@@ -78,11 +94,17 @@ public class TimeseriesPersisterFactory implements PersisterFactory {
 
     @Override
     public Persister createPersister(ServiceParameters params, RrdRepository repository, boolean dontPersistCounters,
-            boolean forceStoreByGroup, boolean dontReorderAttributes) {
+                                     boolean forceStoreByGroup, boolean dontReorderAttributes) {
         // We ignore the forceStoreByGroup flag since we always store by group, and we ignore
         // the dontReorderAttributes flag since attribute order does not matter
-        TimeseriesPersister persister =  new TimeseriesPersister(params, repository, timeseriesWriter, metaTagDataLoader, configuredAdditionalMetaTagCache, registry);
+        TimeseriesPersister persister = new TimeseriesPersister(params, repository, timeseriesWriter, metaTagDataLoader, configuredAdditionalMetaTagCache, registry);
         persister.setIgnorePersist(dontPersistCounters);
         return persister;
+    }
+
+    public void destroy() {
+        if (timeseriesWriter != null) {
+            timeseriesWriter.destroy();
+        }
     }
 }

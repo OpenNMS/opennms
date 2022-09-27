@@ -27,6 +27,22 @@
         <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.config.writer_threads:16}" />
   </bean>
 
+  <bean id="timeseries.backend" class="java.lang.String">
+    <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.config.backend:ringbuffer}" />
+  </bean>
+
+  <bean id="timeseries.offheap.batchSize" class="java.lang.Integer">
+    <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.config.offheap.batchSize:8192}" />
+  </bean>
+
+  <bean id="timeseries.offheap.path" class="java.lang.String">
+    <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.config.offheap.path:/tmp}" />
+  </bean>
+
+  <bean id="timeseries.offheap.maxFileSize" class="java.lang.Long">
+    <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.config.offheap.maxFileSize:-1}" />
+  </bean>
+
   <bean id="timeseriesMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
 
   <bean id="timeseriesMetricRegistryJmxReporterBuilder" class="com.codahale.metrics.JmxReporter" factory-method="forRegistry">
@@ -48,11 +64,12 @@
   <bean id="timeseriesSearcher" class="org.opennms.netmgt.timeseries.resource.TimeseriesSearcher" />
 
   <!--bean id="timeseriesWriter" class="org.opennms.netmgt.timeseries.samplewrite.TimeseriesWriter" / -->
-  <bean id="timeseriesWriter" class="org.opennms.netmgt.timeseries.samplewrite.TimeSeriesWriterWithOffheapQ">
-    <constructor-arg ref = "timeseriesStorageManager"/>
-    <constructor-arg ref = "timeseries.ring_buffer_size"/>
-    <constructor-arg ref = "timeseries.writer_threads"/>
-  </bean>
+<!--  <bean id="timeseriesWriter" class="org.opennms.netmgt.timeseries.samplewrite.OffheapTimeSeriesWriter">-->
+<!--    <constructor-arg ref = "timeseriesStorageManager"/>-->
+<!--    <constructor-arg ref = "timeseries.ring_buffer_size"/>-->
+<!--    <constructor-arg ref = "timeseries.writer_threads"/>-->
+<!--    <constructor-arg ref = "timeseries.backend"/>-->
+<!--  </bean>-->
 
   <bean id="timeseriesStorageManager" class="org.opennms.netmgt.timeseries.TimeseriesStorageManagerImpl" />
   <onmsgi:list id="timeseriesStorageList" interface="org.opennms.integration.api.v1.timeseries.TimeSeriesStorage">
@@ -70,7 +87,7 @@
 
   <bean id="metaTagDataLoader" class="org.opennms.netmgt.timeseries.samplewrite.MetaTagDataLoader" />
 
-  <bean id="timeseriesPersisterFactory" class="org.opennms.netmgt.timeseries.samplewrite.TimeseriesPersisterFactory" />
+  <bean id="timeseriesPersisterFactory" class="org.opennms.netmgt.timeseries.samplewrite.TimeseriesPersisterFactory" destroy-method="destroy" />
 
   <bean id="osgiPersisterFactory" class="org.opennms.features.collection.persistence.osgi.OsgiPersisterFactory" />
 

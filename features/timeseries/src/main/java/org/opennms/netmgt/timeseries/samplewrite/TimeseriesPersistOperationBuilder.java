@@ -64,12 +64,12 @@ import com.google.common.collect.Sets;
 
 /**
  * Used to collect attribute values and meta-data for a given resource group
- * and persist these via the {@link TimeseriesWriter} on {@link #commit()}.
+ * and persist these via the {@link RingBufferTimeseriesWriter} on {@link #commit()}.
  */
 public class TimeseriesPersistOperationBuilder implements PersistOperationBuilder {
     private static final Logger LOG = LoggerFactory.getLogger(TimeseriesPersistOperationBuilder.class);
 
-    private final TimeSeriesWriter writer;
+    private final TimeseriesWriter writer;
     private final RrdRepository rrepository;
     private final String groupName;
     private final ResourceIdentifier resource;
@@ -82,7 +82,7 @@ public class TimeseriesPersistOperationBuilder implements PersistOperationBuilde
 
     private TimeKeeper timeKeeper = new DefaultTimeKeeper();
 
-    public TimeseriesPersistOperationBuilder(TimeSeriesWriter writer, RrdRepository repository,
+    public TimeseriesPersistOperationBuilder(TimeseriesWriter writer, RrdRepository repository,
                                              ResourceIdentifier resource, String groupName,
                                              Set<Tag> configuredAdditionalMetaTags,
                                              final Map<ResourcePath, Map<String, String>> stringAttributesByPath,

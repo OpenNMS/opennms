@@ -59,6 +59,11 @@
       <artifactId>slf4j-api</artifactId>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>de.ruedigermoeller</groupId>
+      <artifactId>fst</artifactId>
+      <version>${fstVersion}</version>
+    </dependency>
 
     <!-- Dependencies used -->
     <dependency>
