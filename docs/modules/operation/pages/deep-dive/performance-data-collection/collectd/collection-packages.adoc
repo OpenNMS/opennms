@@ -26,7 +26,7 @@ At a minimum, collector package attributes include a package name and a filter t
 
 Note that `remote="false"` means that the services in this package are tested only from the OpenNMS core system itself and not from a different remote location.
 
-Each package must have a `filter` tag that performs the initial test to see if an interface should be included in a package.
+Each package must have a `filter` tag that performs the initial test to see if an interface is eligible to be included in a package.
 Filters operate on interfaces (not nodes).
 Each package can have only one `filter` tag.
 
