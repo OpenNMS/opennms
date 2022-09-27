@@ -71,16 +71,16 @@ On evaluation, this expression should return either true (persist index to stora
 | Value after JexlExpression evaluation.
 
 | `org.opennms.netmgt.dao.support.FrameRelayStorageStrategy`
-| interface label + '.' + dlci
+| interface label + '.' + DLCI
 
 | `org.opennms.netmgt.dao.support.HostFileSystemStorageStrategy`
-| Uses the value from the hrStorageDescr column in the hrStorageTable, cleaned up for UNIX file systems.
+| Uses the value from the hrStorageDescr column in the hrStorageTable, cleaned to make a valid directory name on supported file systems.
 
 | `org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy`
-| Uses the value from an SNMP lookup of OID in sibling-column-name parameter, cleaned up for UNIX file systems.
+| Uses the value from an SNMP lookup of OID in sibling-column-name parameter, cleaned to make a valid directory name on supported file systems.
 
 | `org.opennms.protocols.xml.collector.XmlStorageStrategy`
-| Index, but cleaned up for UNIX file systems.
+| Index, cleaned to make a valid directory name on supported file systems.
 |===
 
 === IndexStorageStrategy
@@ -173,13 +173,16 @@ Replace with the following:
 | Description
 
 | sibling-column-name
-| Alternate string value to use for index.
+| The name of another `mibObj` in the same group.
+This string value forms the starting point for the index.
 
 | replace-first
-| Regex pattern, replaces only the first match.
+| Specifies a regex replacement to perform against the value of the object that `sibling-column-name` points to.
+Only the first match in the input is replaced.
 
 | replace-all
-| Regex pattern, replaces all matches.
+| Specifies a global regex replacement to perform against the value of the object that `sibling-column-name` points to.
+Every match in the input is replaced.
 |===
 
 Values for `replace-first`, and `replace-all` must match the pattern _s/regex/replacement/_ or an error will be thrown.

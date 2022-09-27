@@ -6,7 +6,7 @@ This section describes how to set up performance data collection in {page-compon
 {page-component-title} collects performance data using xref:reference:daemons/daemon-config-files/collectd.adoc[collectd], which is enabled by default.
 Collectd schedules data collection on network entities using management agents and protocol-specific collectors.
 
-NOTE: In the {page-component-title} docs, any reference to collectd refers to the {page-component-title} collect daemon, not the open source project of the same name.
+NOTE: In the {page-component-title} docs, any reference to collectd refers to the {page-component-title} collect daemon, not the independent open source project of the same name.
 
 Data collection for SNMP and OpenNMS-JVM is enabled by default, allowing {page-component-title} to monitor itself through JMX.
 
