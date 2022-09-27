@@ -32,6 +32,7 @@ import java.util.Collection;
 import java.util.Set;
 
 import javax.ws.rs.Path;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
@@ -88,11 +89,27 @@ public class MonitoringLocationRestService extends AbstractDaoRestService<OnmsMo
 
     @Override
     protected CriteriaBuilder getCriteriaBuilder(UriInfo uriInfo) {
+        LOG.debug("getCriteriaBuilder");
+        LOG.debug("uriInfo"+uriInfo);
+        LOG.debug("uriInfo.parms size "+uriInfo.getQueryParameters().size());
+        MultivaluedMap m = uriInfo.getQueryParameters();
+        Set<String> keys = m.keySet();
+        LOG.debug("uriInfo start---");
+        for (String key: keys) {
+            LOG.debug(key+" key "+m.get(key));
+        }
+        LOG.debug("getQueryParameters end---");
+        LOG.debug("uriInfo getPath  "+uriInfo.getPath());
+        LOG.debug("uriInfo getAbsolutePath "+uriInfo.getAbsolutePath());
+        LOG.debug("uriInfo.getPathParameters "+uriInfo.getPathParameters());
+
         CriteriaBuilder builder = new CriteriaBuilder(OnmsMonitoringLocation.class);
 
-        // Order by location name by default and remove limit on list by setting to 1 because there will always be a default
-        builder = builder.orderBy("locationName").asc().limit(1);
-
+        // Limit should be set from the frontend and not hard coded here
+        //builder = builder.orderBy("locationName").asc().limit(null); // use default (10)
+        //builder = builder.orderBy("locationName").asc().limit(5); // use specific
+        //builder = builder.orderBy("locationName").asc().limit(15); // use specific
+        builder = builder.orderBy("locationName").asc().limit(0); // set unlimited
         return builder;
     }
 
@@ -103,17 +120,18 @@ public class MonitoringLocationRestService extends AbstractDaoRestService<OnmsMo
 
     @Override
     protected Set<SearchProperty> getQueryProperties() {
+
         return SearchProperties.LOCATION_SERVICE_PROPERTIES;
     }
 
     @Override
     protected OnmsMonitoringLocation doGet(UriInfo uriInfo, String id) {
+
         return getDao().get(id);
     }
 
     @Override
     public Response doCreate(final SecurityContext securityContext, final UriInfo uriInfo, final OnmsMonitoringLocation location) {
-
         final String id = getDao().save(location);
 
         return Response.created(RedirectHelper.getRedirectUri(uriInfo, id)).build();
@@ -121,7 +139,6 @@ public class MonitoringLocationRestService extends AbstractDaoRestService<OnmsMo
 
     @Override
     protected Response doUpdate(final SecurityContext securityContext, final UriInfo uriInfo, final String key, final OnmsMonitoringLocation targetObject) {
-
         if (!key.equals(targetObject.getLocationName())) {
             throw getException(Status.BAD_REQUEST, "The ID of the object doesn't match the ID of the path: {} != {}", targetObject.getLocationName(), key);
         }

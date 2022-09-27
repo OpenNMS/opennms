@@ -255,8 +255,9 @@ public abstract class AbstractDaoRestServiceWithDTO<T,D,Q,K extends Serializable
     @GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
     public Response get(@Context final UriInfo uriInfo, @Context final SearchContext searchContext) {
+        // If limit is default or specified we search for a match else we return all
         Criteria crit = getCriteria(uriInfo, searchContext);
-        final List<T> coll = (crit.getLimit() != 1 ?  getDao().findMatching(crit) : getDao().findAll());
+        final List<T> coll = (crit.getLimit() != 0 ?  getDao().findMatching(crit) : getDao().findAll());
         if (coll == null || coll.size() < 1) {
             return Response.status(Status.NO_CONTENT).build();
         } else {
