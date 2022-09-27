@@ -151,7 +151,7 @@ The following shows which configuration is applied for a specific service:
   <downtime interval="600000" begin="43200000" end="432000000" />
 </package>
 ----
-<1> Polling interval in the packages are 300 seconds and 30 seconds.
+<1> Polling interval in the packages is 300 seconds and 30 seconds.
 <2> Different polling interval for the ICMP service.
 <3> Different retry settings for the ICMP service.
 <4> Different timeout settings for the ICMP service.
@@ -162,7 +162,7 @@ Use a more specific polling package to overwrite the default setting.
 In the above example, all IP interfaces in 192.168.1/24 or 2600:/64 will be monitored with ICMP with different polling, retry, and timeout settings.
 
 The web UI displays which polling packages are applied to the IP interface and service.
-The IP Interface and Service pages show which polling package and service configuration are applied for this specific service.
+The IP interface and service pages show which polling package and service configuration are applied for this specific service.
 
 .Polling package applied to IP interface and service
 image::service-assurance/03_polling-package.png[]
@@ -279,7 +279,7 @@ Service is Up on 192.168.31.100 using org.opennms.netmgt.poller.monitors.IcmpMon
 
 == Test filters on Karaf Shell
 
-Filters are ubiquitous in opennms configurations with <filter> syntax.
+Filters are ubiquitous in {page-component-title} configurations with <filter> syntax.
 Use this Karaf shell to verify filters.
 For more information, see xref:reference:configuration/filters/filters.adoc[Filters].
 
