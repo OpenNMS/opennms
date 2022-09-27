@@ -25,6 +25,7 @@ commands:
           command: |
             free -m -c 500 -s 30
       - restore-maven-cache
+      - setup_remote_docker
       - run:
           name: Integration Tests
           no_output_timeout: 15m
