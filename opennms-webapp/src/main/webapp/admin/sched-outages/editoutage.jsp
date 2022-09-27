@@ -772,6 +772,7 @@ function updateOutageTypeDisplay(selectElement) {
 				<tr>
 					<td valign="top">
 						<form id="addNode" action="admin/sched-outages/editoutage.jsp" method="post">
+							<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 							<input type="hidden" name="formSubmission" value="true" />
 							<p style="font-weight: bold; margin-bottom: 2px;">Search (max 200 results):</p>
 							<div class="ui-widget">
@@ -793,6 +794,7 @@ function updateOutageTypeDisplay(selectElement) {
 														if (outageNodes.size() > 0) {
 							%>
 								<form id="deleteNodes" action="admin/sched-outages/editoutage.jsp" method="post">
+								<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 								<input type="hidden" name="formSubmission" value="true" />
 								<%
 								    for (int i = 0; i < outageNodes.size(); i++) {
@@ -818,6 +820,7 @@ function updateOutageTypeDisplay(selectElement) {
 					</td>
 					<td valign="top">
 						<form id="addInterface" action="admin/sched-outages/editoutage.jsp" method="post">
+							<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 							<input type="hidden" name="formSubmission" value="true" />
 							<p style="font-weight: bold; margin-bottom: 2px;">Search (max 200 results):</p>
 							<div class="ui-widget">
@@ -835,6 +838,7 @@ function updateOutageTypeDisplay(selectElement) {
 							List<org.opennms.netmgt.config.poller.outages.Interface> outageInterfaces = theOutage.getInterfaces();
 							if (outageInterfaces.size() > 0) { %>
 								<form id="deleteInterfaces" action="admin/sched-outages/editoutage.jsp" method="post">
+									<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 									<input type="hidden" name="formSubmission" value="true" />
 									<% for (int i = 0; i < outageInterfaces.size(); i++) {
 										org.opennms.netmgt.config.poller.outages.Interface iface = outageInterfaces.get(i);
@@ -878,6 +882,7 @@ function updateOutageTypeDisplay(selectElement) {
 							}
 						</script>
 						<form onsubmit="return verifyAddAll();" id="matchAnyForm" action="admin/sched-outages/editoutage.jsp" method="post">
+							<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 							<input type="hidden" name="formSubmission" value="true" />
 							<input type="submit" class="btn btn-secondary" name="matchAny" value="Select all nodes and interfaces" />
 						</form>
@@ -891,6 +896,7 @@ function updateOutageTypeDisplay(selectElement) {
 				<% } %>
 			</table>
 		<form id="editOutage" action="admin/sched-outages/editoutage.jsp" method="post">
+		<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 		<input type="hidden" name="formSubmission" value="true" />
           <div class="row">
             <div class="col-md-6">
