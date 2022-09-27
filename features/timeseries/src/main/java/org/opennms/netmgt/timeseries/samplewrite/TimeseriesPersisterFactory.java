@@ -45,8 +45,10 @@ import org.opennms.netmgt.rrd.RrdRepository;
 
 import com.codahale.metrics.MetricRegistry;
 import org.opennms.netmgt.timeseries.TimeseriesStorageManager;
+import org.opennms.netmgt.timeseries.stats.StatisticsCollector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Factory for {@link TimeseriesPersister}.
@@ -63,6 +65,7 @@ public class TimeseriesPersisterFactory implements PersisterFactory {
 
     @Inject
     public TimeseriesPersisterFactory(final MetaTagDataLoader metaTagDataLoader,
+                                      final StatisticsCollector stats,
                                       @Named("timeseriesStorageManager") final TimeseriesStorageManager timeseriesStorageManager,
                                       @Named("timeseriesPersisterMetaTagCache") final CacheConfig cacheConfig,
                                       @Named("timeseriesMetricRegistry") MetricRegistry registry,
@@ -73,9 +76,11 @@ public class TimeseriesPersisterFactory implements PersisterFactory {
                                       @Named("timeseries.offheap.path") final String path,
                                       @Named("timeseries.offheap.maxFileSize") final Long maxFileSize) {
         if (OffheapTimeSeriesWriter.OFFHEAP_NAME.equals(backend)) {
-            this.timeseriesWriter = new OffheapTimeSeriesWriter(timeseriesStorageManager, ringBufferSize, batchSize, path, maxFileSize, registry);
+            this.timeseriesWriter = new OffheapTimeSeriesWriter(timeseriesStorageManager, ringBufferSize,
+                    numWriterThreads, batchSize, path, maxFileSize, registry);
         } else {
-            this.timeseriesWriter = new RingBufferTimeseriesWriter(ringBufferSize, numWriterThreads, registry);
+            this.timeseriesWriter = new RingBufferTimeseriesWriter(timeseriesStorageManager, stats, ringBufferSize,
+                    numWriterThreads, registry);
         }
         LOG.debug("Writer: {}", this.timeseriesWriter);
 

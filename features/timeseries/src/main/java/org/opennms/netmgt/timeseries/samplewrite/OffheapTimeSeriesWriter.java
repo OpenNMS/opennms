@@ -83,6 +83,7 @@ public class OffheapTimeSeriesWriter implements TimeseriesWriter {
     public OffheapTimeSeriesWriter(
             final TimeseriesStorageManager storage,
             @Named("timeseries.ring_buffer_size") Integer ringBufferSize,
+            @Named("timeseries.writer_threads") Integer numWriterThreads,
             @Named("timeseries.offheap.batchSize") final int batchSize,
             @Named("timeseries.offheap.path") final String path,
             @Named("timeseries.offheap.maxFileSize") final Long maxFileSize,
@@ -91,38 +92,31 @@ public class OffheapTimeSeriesWriter implements TimeseriesWriter {
         this.storage = Objects.requireNonNull(storage);
         this.registry = Objects.requireNonNull(registry);
         this.ringBufferSize = ringBufferSize;
-        this.maxFileSize = maxFileSize == -1 ? Long.MAX_VALUE: maxFileSize;
+        this.maxFileSize = maxFileSize == -1 ? Long.MAX_VALUE : maxFileSize;
 
         registry.register(MetricRegistry.name(OFFHEAP_NAME, "max-size"),
                 (Gauge<Integer>) () -> OffheapTimeSeriesWriter.this.ringBufferSize);
 
         droppedSamples = registry.meter(MetricRegistry.name(OFFHEAP_NAME, "dropped-samples"));
         sampleWriteTsTimer = registry.timer(MetricRegistry.name(OFFHEAP_NAME, "samples.write.ts"));
-        //ringBufferSize = 327680;
-        //final int queueAmount = 1;
-        //final int batchSize = 8192; // for writing to disk
-        LOG.debug("ringBufferSize: {}, batchSize: {}, path: {}, maxFileSize: {}", ringBufferSize, batchSize, path, this.maxFileSize);
+
+        LOG.info("ringBufferSize: {}, numWriterThreads: {}, batchSize: {}, path: {}, maxFileSize: {}", ringBufferSize, numWriterThreads, batchSize, path, this.maxFileSize);
 
         // Set up Q's
         this.queue = createQueue(batchSize, ringBufferSize, path, this.maxFileSize);
-        setupConsumerThreads();
-//        queues = new ArrayList<>(queueAmount);
-//        for (int queueIndex = 0; queueIndex < queueAmount; queueIndex++) {
-//            queues.add(queueIndex, createQueue(queueIndex, batchSize, ringBufferSize));
-//            setupConsumerThreads(queueIndex, numWriterThreads);
-//        }
+        setupConsumerThreads(numWriterThreads);
 
         // must register after queue create
         registry.register(MetricRegistry.name(OFFHEAP_NAME, "size"),
                 (Gauge<Integer>) queue::getSize);
     }
 
-    private void setupConsumerThreads() {
-        //for (int i = 0; i < numWriterThreads; i++) {
-        Thread consumerThread = new Thread(() -> this.work());
-        this.workerPool.add(consumerThread);
-        consumerThread.start();
-        //}
+    private void setupConsumerThreads(int numWriterThreads) {
+        for (int i = 0; i < numWriterThreads; i++) {
+            Thread consumerThread = new Thread(() -> this.work());
+            this.workerPool.add(consumerThread);
+            consumerThread.start();
+        }
     }
 
     private DataBlocksOffHeapQueue<List<Sample>> createQueue(
@@ -149,7 +143,6 @@ public class OffheapTimeSeriesWriter implements TimeseriesWriter {
 
     @Override
     public void insert(List<Sample> samples) {
-        RATE_LIMITED_LOGGER.debug("Storing {} samples", samples.size());
         try {
             queue.enqueue(samples, UUID.randomUUID().toString());
         } catch (WriteFailedException e) {
@@ -166,14 +159,14 @@ public class OffheapTimeSeriesWriter implements TimeseriesWriter {
     }
 
     private void work() {
-        List<Sample> samples;
         while (isActive) {
             try (Timer.Context context = this.sampleWriteTsTimer.time()) {
-                samples = queue.dequeue().getValue();
+                var samples = queue.dequeue().getValue();
+                sentToPlugin(samples);
+                RATE_LIMITED_LOGGER.debug("Storing {} samples", samples.size());
             } catch (InterruptedException e) {
                 return; // we are done.
             }
-            sentToPlugin(samples);
         }
     }
 

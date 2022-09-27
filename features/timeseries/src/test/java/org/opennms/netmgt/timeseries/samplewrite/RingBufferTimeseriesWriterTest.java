@@ -80,7 +80,7 @@ public class RingBufferTimeseriesWriterTest {
 
         LatchedTimeseriesStorage store = new LatchedTimeseriesStorage(numWriterThreads);
         MetricRegistry registry = new MetricRegistry();
-        RingBufferTimeseriesWriter writer = new RingBufferTimeseriesWriter(ringBufferSize, numWriterThreads, registry);
+        RingBufferTimeseriesWriter writer = new RingBufferTimeseriesWriter(null, null, ringBufferSize, numWriterThreads, registry);
         when(storageManager.get()).thenReturn(store);
         writer.setTimeSeriesStorage(storageManager);
 
@@ -107,7 +107,7 @@ public class RingBufferTimeseriesWriterTest {
         Lock lock = new ReentrantLock();
         LockedTimeseriesStorage timeseriesStorage = new LockedTimeseriesStorage(lock);
         MetricRegistry registry = new MetricRegistry();
-        RingBufferTimeseriesWriter writer = new RingBufferTimeseriesWriter(ringBufferSize, numWriterThreads, registry);
+        RingBufferTimeseriesWriter writer = new RingBufferTimeseriesWriter(null, null, ringBufferSize, numWriterThreads, registry);
         when(storageManager.get()).thenReturn(timeseriesStorage);
         writer.setTimeSeriesStorage(storageManager);
 

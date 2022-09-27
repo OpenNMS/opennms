@@ -30,6 +30,7 @@ package org.opennms.netmgt.timeseries.samplewrite;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -71,9 +72,9 @@ import com.swrve.ratelimitedlogger.RateLimitedLog;
  *
  * @author jwhite
  */
-public class TimeseriesWriter implements TimeSeriesWriter, WorkHandler<SampleBatchEvent>, DisposableBean {
+public class RingBufferTimeseriesWriter implements TimeseriesWriter, WorkHandler<SampleBatchEvent>, DisposableBean {
 
-    private static final Logger LOG = LoggerFactory.getLogger(TimeseriesWriter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RingBufferTimeseriesWriter.class);
 
     private static final RateLimitedLog RATE_LIMITED_LOGGER = RateLimitedLog
             .withRateLimit(LOG)
@@ -84,7 +85,6 @@ public class TimeseriesWriter implements TimeSeriesWriter, WorkHandler<SampleBat
 
     private RingBuffer<SampleBatchEvent> ringBuffer;
 
-
     private final int ringBufferSize;
 
     private final int numWriterThreads;
@@ -93,10 +93,8 @@ public class TimeseriesWriter implements TimeSeriesWriter, WorkHandler<SampleBat
 
     private final Timer sampleWriteTsTimer;
 
-    @Autowired
     private TimeseriesStorageManager storage;
 
-    @Autowired
     private StatisticsCollector stats;
 
     /**
@@ -106,14 +104,18 @@ public class TimeseriesWriter implements TimeSeriesWriter, WorkHandler<SampleBat
     private final AtomicLong numEntriesOnRingBuffer = new AtomicLong();
 
     @Inject
-    public TimeseriesWriter(@Named("timeseries.ring_buffer_size") Integer ringBufferSize,
-                            @Named("timeseries.writer_threads") Integer numWriterThreads,
-                            @Named("timeseriesMetricRegistry") MetricRegistry registry) {
+    public RingBufferTimeseriesWriter(final TimeseriesStorageManager storage,
+                                      final StatisticsCollector stats,
+                                      @Named("timeseries.ring_buffer_size") Integer ringBufferSize,
+                                      @Named("timeseries.writer_threads") Integer numWriterThreads,
+                                      @Named("timeseriesMetricRegistry") MetricRegistry registry) {
         Preconditions.checkArgument(ringBufferSize > 0, "ringBufferSize must be positive");
         Preconditions.checkArgument(DoubleMath.isMathematicalInteger(Math.log(ringBufferSize) / Math.log(2)), "ringBufferSize must be a power of two");
         Preconditions.checkArgument(numWriterThreads > 0, "numWriterThreads must be positive");
         Preconditions.checkNotNull(registry, "metric registry");
 
+        this.storage = Objects.requireNonNull(storage);
+        this.stats = Objects.requireNonNull(stats);
         this.ringBufferSize = ringBufferSize;
         this.numWriterThreads = numWriterThreads;
         numEntriesOnRingBuffer.set(0L);
@@ -121,7 +123,7 @@ public class TimeseriesWriter implements TimeSeriesWriter, WorkHandler<SampleBat
         registry.register(MetricRegistry.name("ring-buffer", "size"),
                 (Gauge<Long>) numEntriesOnRingBuffer::get);
         registry.register(MetricRegistry.name("ring-buffer", "max-size"),
-                (Gauge<Long>) () -> (long) TimeseriesWriter.this.ringBufferSize);
+                (Gauge<Long>) () -> (long) RingBufferTimeseriesWriter.this.ringBufferSize);
 
         droppedSamples = registry.meter(MetricRegistry.name("ring-buffer", "dropped-samples"));
         sampleWriteTsTimer = registry.timer("samples.write.ts");

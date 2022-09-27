@@ -86,7 +86,7 @@ public class OffheapTimeseriesWriterTest {
 
         LatchedTimeseriesStorage store = new LatchedTimeseriesStorage(numWriterThreads);
         MetricRegistry registry = new MetricRegistry();
-        OffheapTimeSeriesWriter writer = new OffheapTimeSeriesWriter(storageManager, ringBufferSize, 32, path, Long.MAX_VALUE, registry);
+        OffheapTimeSeriesWriter writer = new OffheapTimeSeriesWriter(storageManager, ringBufferSize, 16, 32, path, Long.MAX_VALUE, registry);
         when(storageManager.get()).thenReturn(store);
 
         Metric metric = createMetric().build();
