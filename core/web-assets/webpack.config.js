@@ -238,21 +238,27 @@ var config = {
         test: require.resolve('angular'),
         use: [{
           loader: 'expose-loader',
-          options: 'angular'
+          options: {
+            exposes: 'angular'
+          }
         }]
       },
       {
         test: require.resolve('backshift/dist/backshift.onms'),
         use: [{
           loader: 'expose-loader',
-          options: 'Backshift'
+          options: {
+            exposes: 'Backshift'
+          }
         }]
       },
       {
         test: require.resolve('bootbox'),
         use: [{
           loader: 'expose-loader',
-          options: 'bootbox'
+          options: {
+            exposes: 'bootbox'
+          }
         }]
       },
       {
@@ -268,36 +274,36 @@ var config = {
         test: require.resolve('c3'),
         use: [{
           loader: 'expose-loader',
-          options: 'c3'
+          options: {
+            exposes: 'c3'
+          }
         }]
       },
       {
         test: require.resolve('d3'),
         use: [{
           loader: 'expose-loader',
-          options: 'd3'
+          options: {
+            exposes: 'd3'
+          }
         }]
       },
       {
         test: require.resolve('holderjs'),
         use: [{
           loader: 'expose-loader',
-          options: 'Holder'
-        },{
-          loader: 'expose-loader',
-          options: 'holder'
-        },{
-          loader: 'script-loader'
+          options: {
+            exposes: [ 'holder', 'Holder' ]
+          }
         }]
       },
       {
         test: require.resolve('jquery'),
         use: [{
           loader: 'expose-loader',
-          options: 'jQuery'
-        },{
-          loader: 'expose-loader',
-          options: '$'
+          options: {
+            exposes: [ 'jQuery', '$' ]
+          }
         }]
       },
       {
@@ -322,7 +328,9 @@ var config = {
         test: require.resolve('leaflet'),
         use: [{
           loader: 'expose-loader',
-          options: 'L'
+          options: {
+            exposes: 'L'
+          }
         }]
       },
       {
@@ -330,14 +338,18 @@ var config = {
         include: path.resolve(__dirname, 'src', 'main', 'assets'),
         use: [{
           loader: 'expose-loader',
-          options: 'OpenLayers'
+          options: {
+            exposes: 'OpenLayers'
+          }
         }]
       },
       {
         test: require.resolve('underscore'),
         use: [{
           loader: 'expose-loader',
-          options: '_'
+          options: {
+            exposes: '_'
+          }
         }]
       },
       {
@@ -479,22 +491,6 @@ function createConfig(options) {
   }));
 
   if (options.production !== 'vaadin') {
-    myconf.module.rules.unshift({
-      // run eslint on typescript files before rendering
-      enforce: 'pre',
-      test: /\.(js|ts)x?$/,
-      use: [
-        {
-          loader: 'eslint-loader',
-          options: {
-            cache: true,
-            failOnError: true
-          }
-        }
-      ],
-      exclude: [/node_modules/]
-    });
-
     myconf.optimization = {
       runtimeChunk: {
         name: 'vendor'
