@@ -20,8 +20,7 @@ By default, you will not receive a challenge, so you must configure your REST cl
 Jersey enables {page-component-title} to create REST calls using either XML or JSON.
 By default, it returns a request to the API as XML data, delivered without namespaces.
 
-NOTE: If a namespace is added manually in order to use an XML tool to validate against the XSD (for example, xmllint), it won't be preserved when OpenNMS updates that file.
-The same applies to comments.
+NOTE: If a namespace is added manually (for example, to use an XML tool like xmllint to validate against the XSD), it won't be preserved when OpenNMS updates the file that contains that namespace.
 
 To receive JSON-encoded responses, you must send the `Accept: application/json` header with the request.
 
