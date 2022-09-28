@@ -15,6 +15,9 @@ commands:
         type: boolean
     steps:
       - run:
+          name: Wait for PostgreSQL
+          command: dockerize -wait tcp://localhost:5432 -timeout 1m
+      - run:
           name: Monitor JVM processes
           background: true
           command: |
@@ -24,6 +27,7 @@ commands:
           background: true
           command: |
             free -m -c 500 -s 30
+      - restore-maven-cache
       - run:
           name: Integration Tests
           no_output_timeout: 15m

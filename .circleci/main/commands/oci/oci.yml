@@ -39,15 +39,24 @@ commands:
         type: string
       container_name:
         type: string
+      tarball_match:
+        type: string
+      tarball_path:
+        type: string
     steps:
-      - attach_workspace:
-          at: ~/
-      # - dockerhub-login
-      - qemu-user-static
-      - install-buildx
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - cached-checkout
+      - download-download-artifacts
+      - run:
+          name: download tarball dependency to << parameters.tarball_path >>
+          command: download-artifacts.pl --include-failed --workflow="${CIRCLE_WORKFLOW_ID}" --match="<< parameters.tarball_match >>" tar.gz "${CIRCLE_BRANCH}" "$(pwd)/<< parameters.tarball_path >>"
       - run:
           name: build << parameters.container_name >>=<< parameters.architecture >> container image
           command: |
+            # set up multi-arch
+            docker run --rm --privileged tonistiigi/binfmt:latest --install "<< parameters.architecture >>"
+
             export DOCKER_CONTENT_TRUST=1
             cd opennms-container/<< parameters.container_name >>
             export ARCH="$(printf "<< parameters.architecture >>" | tr / -)"
