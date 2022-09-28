@@ -1,0 +1,55 @@
+
+= Step 4: Set Up Performance Data Collection
+
+This section describes how to set up performance data collection in {page-component-title}.
+
+{page-component-title} collects performance data using xref:reference:daemons/daemon-config-files/collectd.adoc[collectd], which is enabled by default.
+Collectd schedules data collection on network entities using management agents and protocol-specific collectors.
+
+NOTE: In the {page-component-title} docs, any reference to collectd refers to the {page-component-title} collect daemon, not the independent open source project of the same name.
+
+Data collection for SNMP and OpenNMS-JVM is enabled by default, allowing {page-component-title} to monitor itself through JMX.
+
+For additional information, including collector configuration, see xref:operation:deep-dive/performance-data-collection/introduction.adoc[Performance Management] in the Deep Dive section.
+
+== Before you begin
+
+{page-component-title} data collection for SNMP works out of the box, provided your SNMP credentials are configured correctly.
+
+The default value for the community string is `public`.
+We recommend that you do not use the default community string in production.
+
+NOTE: If you are using SNMPv3, you need to configure details for a User-Based Security Model (USM) user instead of a community string.
+{page-component-title} supports SNMPv3 and USM, but these topics are outside of the scope of this guide.
+
+To change the community string, follow these steps:
+
+. Click the *Gear* symbol at the top-right of the screen.
+. Under Provisioning, click *Configure SNMP Community Names by IP Address*.
+. Set up the configuration as appropriate for your environment:
+** Enter a valid IP address in the *IP Address* box, and click *Look Up*.
+** Choose an SNMP version (`v2c` or `v1`) from the *Version* list.
+** (Optional) Define a range of IP addresses by typing the first and last addresses of the range into the *First IP Address* and *Last IP Address* boxes, respectively.
+** In the v1/v2c Specific Parameters section, enter the new community string in the *Read Community String* box.
+. Click *Save Config*.
+
+Performance data collection on other protocols (HTTPS, JMX, and so on) requires additional configuration.
+You may also want to change how collectd works—when, how, and what data it collects.
+For more information, see xref:reference:performance-data-collection/introduction.adoc[Collectors].
+
+== Default performance data collection
+
+By default, {page-component-title} collects a variety of information from monitored nodes that support SNMP.
+This information includes widely implemented metrics that are standard for MIB-2 sources (for example, TCP group data, network interface counters).
+SNMP data collection definitions are also included for devices from a range of popular vendors (for example, if you add a Cisco router to your instance, {page-component-title} will automatically collect Cisco-specific metrics).
+The metrics included in these collections vary by vendor.
+
+== SNMP collections and data collection groups
+
+SNMP collections collect, store, and persist performance data.
+By default, {page-component-title} defines two collections: `default` and `ejn`.
+Because the `ejn` collection is highly specialized, we recommend that you do not modify it.
+
+Data collection groups collect sets of performance data measurements for persisting, indexing, and visualizing the data in the UI.
+Individual data collection groups are stored in unique `.xml` files, which define associated resource types, MIB groups, and system definitions.
+System definitions bring together MIB groups with full or partial SNMP `sysObjectID` values, enabling automatic collection of appropriate metrics from devices for which they exist.
