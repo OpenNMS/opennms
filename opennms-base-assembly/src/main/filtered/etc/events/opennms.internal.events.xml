@@ -188,10 +188,12 @@
    <event>
       <uei>uei.opennms.org/services/passiveServiceStatus</uei>
       <event-label>OpenNMS-defined service event: passiveServiceStatus</event-label>
-      <descr>&lt;p>Status information for service %parm[passiveServiceName]% has been updated.&lt;/p></descr>
-      <logmsg dest="logndisplay">
-            &lt;p>Status information for service %parm[passiveServiceName]% has been updated.&lt;/p>
-        </logmsg>
+      <descr>&lt;p>Status information for service %parm[passiveServiceName]% has been updated. &lt;br/>
+         Passive Service Name: %parm[passiveServiceName]%&lt;br/>
+         IP Interface: %parm[passiveIpAddr]%&lt;br/>
+         Service Status: %parm[passiveStatus]%&lt;br/>
+         Reason: %parm[passiveReasonCode]%&lt;/p></descr>
+      <logmsg dest="logndisplay">&lt;p>Status information for service %parm[passiveServiceName]% has been updated.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
    <event>
