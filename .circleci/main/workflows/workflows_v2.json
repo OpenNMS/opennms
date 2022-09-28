@@ -353,7 +353,7 @@
                 "smoke-test-sentinel"
             ]
         },
-        "Minion-image-single-arch-with-trivy-linux-amd64": {
+        "minion-image-single-arch-with-trivy-linux-amd64": {
             "context": [
                 "docker-publish-account"
             ],
