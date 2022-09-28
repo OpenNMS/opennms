@@ -1,4 +1,5 @@
   #jobs:oci/horizon-image-single-arch#
+  #jobs:oci/horizon-image-single-arch-with-trivy#
   #jobs:oci/sentinel-image-single-arch#
   #jobs:oci/minion-image-single-arch#
   #jobs:oci/minion-image-single-arch-linux-amd64#
