@@ -2,16 +2,29 @@
 [[collectd-admin]]
 = Collectd Administration
 
-This section describes reference and administrative information associated with the Collectd service.
+This section describes reference and administrative information associated with the collectd service.
 
-.Configuration and log files related to Collectd
-[options="header, autowidth"]
+.Configuration and log files related to collectd
+[options="header" "autowidth", cols="1,2"]
 |===
-| File                                           | Description
-| `$OPENNMS_HOME/etc/collectd-configuration.xml` | Configuration file for global Collectd daemon and collectors configuration. (See <<deep-dive/performance-data-collection/collectd/configuration.adoc#ga-collectd-configuration, Configuring Collectd>>.)
-| `$OPENNMS_HOME/logs/collectd.log`              | Log file for all collectors and the global Collectd daemon.
-| `$OPENNMS_HOME/etc/snmp-graph.properties`      | RRD graph definitions to render performance data measurements in the UI.
-| `$OPENNMS_HOME/etc/snmp-graph.properties.d`    | Directory with RRD graph definitions for devices and applications to render performance data measurements in the UI.
-| `$OPENNMS_HOME/etc/events/opennms.events.xml`  | Event definitions for {page-component-title} system events, including Collectd.
-| `$OPENNMS_HOME/etc/resource-types.d`           | Directory to store generic resource type definitions. (See xref:operation:deep-dive/events/perf-data.adoc[Resource Types].)
+| File
+| Description
+
+| `$OPENNMS_HOME/etc/collectd-configuration.xml`
+| Configuration file for global collectd daemon and collectors configuration (see <<deep-dive/performance-data-collection/collectd/configuration.adoc#ga-collectd-configuration, Configuring collectd>>).
+
+| `$OPENNMS_HOME/logs/collectd.log`
+| Log file for all collectors and the global collectd service.
+
+| `$OPENNMS_HOME/etc/snmp-graph.properties`
+| RRD graph definitions to render performance data measurements in the UI.
+
+| `$OPENNMS_HOME/etc/snmp-graph.properties.d`
+| Directory with RRD graph definitions for devices and applications to render performance data measurements in the UI.
+
+| `$OPENNMS_HOME/etc/events/opennms.events.xml`
+| Event definitions for {page-component-title} system events, including collectd.
+
+| `$OPENNMS_HOME/etc/resource-types.d`
+| Directory to store generic resource type definitions (see xref:operation:deep-dive/performance-data-collection/resource-types.adoc[Resource Types]).
 |===

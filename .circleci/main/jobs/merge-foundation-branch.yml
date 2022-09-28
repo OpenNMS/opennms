@@ -4,7 +4,7 @@ jobs:
   # it will include the contents of the `foundation-2017` branch, thus we need to actually
   # look _backwards_ to the previous_branch and main_branch to merge the correct bits.
   merge-foundation-branch:
-    <<: *docker_container_config
+    executor: base-executor
     steps:
       - run:
           name: "Branch Merge Parameters"

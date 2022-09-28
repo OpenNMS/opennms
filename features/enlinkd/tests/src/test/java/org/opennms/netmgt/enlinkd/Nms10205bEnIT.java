@@ -33,41 +33,41 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.BAGMANE_IP;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.BAGMANE_OSPF_ID;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.BAGMANE_NAME;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.BAGMANE_SNMP_RESOURCE_B;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.BANGALORE_IP;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.BANGALORE_OSPF_ID;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.BANGALORE_NAME;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.BANGALORE_SNMP_RESOURCE_B;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.DELHI_OSPF_ID;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.DELHI_IP;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.DELHI_NAME;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.DELHI_SNMP_RESOURCE_B;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.J6350_42_OSPF_ID;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.J6350_42_IP;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.J6350_42_NAME;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.J6350_42_SNMP_RESOURCE_B;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.MUMBAI_OSPF_ID;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.MUMBAI_IP;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.MUMBAI_NAME;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.MUMBAI_SNMP_RESOURCE_B;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.MYSORE_IP;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.MYSORE_OSPF_ID;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.MYSORE_NAME;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.MYSORE_SNMP_RESOURCE_B;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.SPACE_EX_SW1_OSPF_ID;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.SPACE_EX_SW1_IP;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.SPACE_EX_SW1_NAME;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.SPACE_EX_SW1_SNMP_RESOURCE_B;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.SPACE_EX_SW2_OSPF_ID;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.SPACE_EX_SW2_IP;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.SPACE_EX_SW2_NAME;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.SPACE_EX_SW2_SNMP_RESOURCE_B;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.SRX_100_IP;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.SRX_100_NAME;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.SRX_100_SNMP_RESOURCE_B;
+import static org.opennms.netmgt.nb.Nms10205aNetworkBuilder.BAGMANE_IP;
+import static org.opennms.netmgt.nb.Nms10205aNetworkBuilder.BAGMANE_OSPF_ID;
+import static org.opennms.netmgt.nb.Nms10205aNetworkBuilder.BAGMANE_NAME;
+import static org.opennms.netmgt.nb.Nms10205bNetworkBuilder.BAGMANE_SNMP_RESOURCE_B;
+import static org.opennms.netmgt.nb.Nms10205aNetworkBuilder.BANGALORE_IP;
+import static org.opennms.netmgt.nb.Nms10205aNetworkBuilder.BANGALORE_OSPF_ID;
+import static org.opennms.netmgt.nb.Nms10205aNetworkBuilder.BANGALORE_NAME;
+import static org.opennms.netmgt.nb.Nms10205bNetworkBuilder.BANGALORE_SNMP_RESOURCE_B;
+import static org.opennms.netmgt.nb.Nms10205aNetworkBuilder.DELHI_OSPF_ID;
+import static org.opennms.netmgt.nb.Nms10205aNetworkBuilder.DELHI_IP;
+import static org.opennms.netmgt.nb.Nms10205aNetworkBuilder.DELHI_NAME;
+import static org.opennms.netmgt.nb.Nms10205bNetworkBuilder.DELHI_SNMP_RESOURCE_B;
+import static org.opennms.netmgt.nb.Nms10205aNetworkBuilder.J6350_42_OSPF_ID;
+import static org.opennms.netmgt.nb.Nms10205aNetworkBuilder.J6350_42_IP;
+import static org.opennms.netmgt.nb.Nms10205aNetworkBuilder.J6350_42_NAME;
+import static org.opennms.netmgt.nb.Nms10205bNetworkBuilder.J6350_42_SNMP_RESOURCE_B;
+import static org.opennms.netmgt.nb.Nms10205aNetworkBuilder.MUMBAI_OSPF_ID;
+import static org.opennms.netmgt.nb.Nms10205aNetworkBuilder.MUMBAI_IP;
+import static org.opennms.netmgt.nb.Nms10205aNetworkBuilder.MUMBAI_NAME;
+import static org.opennms.netmgt.nb.Nms10205bNetworkBuilder.MUMBAI_SNMP_RESOURCE_B;
+import static org.opennms.netmgt.nb.Nms10205aNetworkBuilder.MYSORE_IP;
+import static org.opennms.netmgt.nb.Nms10205aNetworkBuilder.MYSORE_OSPF_ID;
+import static org.opennms.netmgt.nb.Nms10205aNetworkBuilder.MYSORE_NAME;
+import static org.opennms.netmgt.nb.Nms10205bNetworkBuilder.MYSORE_SNMP_RESOURCE_B;
+import static org.opennms.netmgt.nb.Nms10205aNetworkBuilder.SPACE_EX_SW1_OSPF_ID;
+import static org.opennms.netmgt.nb.Nms10205aNetworkBuilder.SPACE_EX_SW1_IP;
+import static org.opennms.netmgt.nb.Nms10205aNetworkBuilder.SPACE_EX_SW1_NAME;
+import static org.opennms.netmgt.nb.Nms10205bNetworkBuilder.SPACE_EX_SW1_SNMP_RESOURCE_B;
+import static org.opennms.netmgt.nb.Nms10205aNetworkBuilder.SPACE_EX_SW2_OSPF_ID;
+import static org.opennms.netmgt.nb.Nms10205aNetworkBuilder.SPACE_EX_SW2_IP;
+import static org.opennms.netmgt.nb.Nms10205aNetworkBuilder.SPACE_EX_SW2_NAME;
+import static org.opennms.netmgt.nb.Nms10205bNetworkBuilder.SPACE_EX_SW2_SNMP_RESOURCE_B;
+import static org.opennms.netmgt.nb.Nms10205aNetworkBuilder.SRX_100_IP;
+import static org.opennms.netmgt.nb.Nms10205aNetworkBuilder.SRX_100_NAME;
+import static org.opennms.netmgt.nb.Nms10205bNetworkBuilder.SRX_100_SNMP_RESOURCE_B;
 import java.util.List;
 
 import org.junit.Test;
@@ -280,37 +280,46 @@ it has a link to Mysore that does not support LLDP
 
         assertTrue(m_linkd.runSingleSnmpCollection(mumbai.getId()));
         assertEquals(0,m_lldpLinkDao.findByNodeId(mumbai.getId()).size());
+        assertEquals(0,m_lldpElementDao.countAll());
 
         assertTrue(m_linkd.runSingleSnmpCollection(delhi.getId()));
         List<LldpLink> delhilldpLinks = m_lldpLinkDao.findByNodeId(delhi.getId());
         printLldpTopology(delhilldpLinks);
+        assertEquals(1,m_lldpElementDao.countAll());
         assertEquals(2,delhilldpLinks.size());
 
         assertTrue(m_linkd.runSingleSnmpCollection(bangalore.getId()));
+        assertEquals(1,m_lldpElementDao.countAll());
         assertEquals(0,m_lldpLinkDao.findByNodeId(bangalore.getId()).size());
 
         assertTrue(m_linkd.runSingleSnmpCollection(bagmane.getId()));
         List<LldpLink> bagmanelldpLinks = m_lldpLinkDao.findByNodeId(bagmane.getId());
         printLldpTopology(bagmanelldpLinks);
+        assertEquals(2,m_lldpElementDao.countAll());
         assertEquals(3,bagmanelldpLinks.size());
 
         assertTrue(m_linkd.runSingleSnmpCollection(mysore.getId()));
+        assertEquals(2,m_lldpElementDao.countAll());
         assertEquals(0,m_lldpLinkDao.findByNodeId(mysore.getId()).size());
 
         assertTrue(m_linkd.runSingleSnmpCollection(spaceexsw1.getId()));
         List<LldpLink> spaceexsw1lldpLinks = m_lldpLinkDao.findByNodeId(spaceexsw1.getId());
         printLldpTopology(spaceexsw1lldpLinks);
+        assertEquals(3,m_lldpElementDao.countAll());
         assertEquals(3,spaceexsw1lldpLinks.size());
 
         assertTrue(m_linkd.runSingleSnmpCollection(spaceexsw2.getId()));
         List<LldpLink> spaceexsw2lldpLinks = m_lldpLinkDao.findByNodeId(spaceexsw2.getId());
         printLldpTopology(spaceexsw2lldpLinks);
+        assertEquals(4,m_lldpElementDao.countAll());
         assertEquals(2,spaceexsw2lldpLinks.size());
 
         assertTrue(m_linkd.runSingleSnmpCollection(j635042.getId()));
+        assertEquals(5,m_lldpElementDao.countAll());
         assertEquals(0,m_lldpLinkDao.findByNodeId(j635042.getId()).size());
 
         assertTrue(m_linkd.runSingleSnmpCollection(srx100.getId()));
+        assertEquals(6,m_lldpElementDao.countAll());
         assertEquals(0,m_lldpLinkDao.findByNodeId(srx100.getId()).size());
 
         assertEquals(10,m_lldpLinkDao.countAll());

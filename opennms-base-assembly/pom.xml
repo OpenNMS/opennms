@@ -1014,6 +1014,11 @@
       <artifactId>postgresql</artifactId>
     </dependency>
     <dependency>
+      <groupId>io.pyroscope</groupId>
+      <artifactId>agent</artifactId>
+      <version>${pyroscopeVersion}</version>
+    </dependency>
+    <dependency>
       <groupId>axis</groupId>
       <artifactId>axis</artifactId>
       <exclusions>

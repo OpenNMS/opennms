@@ -1,11 +1,12 @@
  jobs:
   code-coverage:
-    executor: centos-build-executor
+    executor: build-executor
     resource_class: large
     steps:
+      - cached-checkout
       - attach_workspace:
           at: ~/
-      - checkout
+      - restore-maven-cache
       - extract-pom-version
       - restore-sonar-cache
       - run:

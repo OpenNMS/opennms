@@ -15,9 +15,9 @@ commands:
       steps:
         - restore_cache:
             keys:
-              - source-v3-{{ .Branch }}-{{ .Revision }}
-              - source-v3-{{ .Branch }}-
-              - source-v3-
+              - source-v4-{{ .Branch }}-{{ .Revision }}
+              - source-v4-{{ .Branch }}-
+              - source-v4-
         - checkout
         - run:
             name: git config merge.renameLimit
@@ -29,7 +29,7 @@ commands:
       description: "Cache a checkout"
       steps:
         - save_cache:
-            key: source-v3-{{ .Branch }}-{{ .Revision }}
+            key: source-v4-{{ .Branch }}-{{ .Revision }}
             paths:
               - ".git"
   cached-checkout-for-pushing:
@@ -52,13 +52,13 @@ commands:
             command: find core/web-assets -name package\*.json -o -name bower.json | grep -v /target/ | sort -u | xargs cat > nodejs-dependency-json-cache.key
         - restore_cache:
             keys:
-              - nodejs-dependencies-v3-{{ checksum "pom-version-cache.key" }}-{{ checksum "nodejs-dependency-json-cache.key" }}
-              - nodejs-dependencies-v3-{{ checksum "pom-version-cache.key" }}-
+              - nodejs-dependencies-v4-{{ checksum "pom-version-cache.key" }}-{{ checksum "nodejs-dependency-json-cache.key" }}
+              - nodejs-dependencies-v4-{{ checksum "pom-version-cache.key" }}-
   save-nodejs-cache:
     description: "NodeJS: Save cache"
     steps:
       - save_cache:
-          key: nodejs-dependencies-v3-{{ checksum "pom-version-cache.key" }}-{{ checksum "nodejs-dependency-json-cache.key" }}
+          key: nodejs-dependencies-v4-{{ checksum "pom-version-cache.key" }}-{{ checksum "nodejs-dependency-json-cache.key" }}
           paths:
             - ~/.npm
   restore-sonar-cache:
@@ -66,15 +66,12 @@ commands:
       steps:
         - restore_cache:
             keys:
-              - sonar-cache-v3-{{ .Branch }}-{{ checksum "pom-version-cache.key" }}-{{ .Revision }}
-              - sonar-cache-v3-{{ .Branch }}-{{ checksum "pom-version-cache.key" }}-
-              - sonar-cache-v3-{{ .Branch }}-
-              - sonar-cache-v3-
+              - sonar-cache-v4-{{ checksum "pom-version-cache.key" }}
   save-sonar-cache:
       description: "Sonar: Save sonar cache"
       steps:
         - save_cache:
-            key: sonar-cache-v3-{{ .Branch }}- {{ checksum "pom-version-cache.key" }}
+            key: sonar-cache-v4-{{ checksum "pom-version-cache.key" }}
             paths:
               - ~/.sonar
   cache-workflow-assets:
@@ -95,7 +92,7 @@ commands:
             find "${TARGET_PATH}" -type d -print0 | xargs -0 chmod 775
             find "${TARGET_PATH}" ! -type d -print0 | xargs -0 chmod 664
       - save_cache:
-          key: << parameters.cache_prefix >>-v3-{{ .Branch }}-{{ .Revision }}-{{ .Environment.CIRCLE_SHA1 }}
+          key: << parameters.cache_prefix >>-v4-{{ .Branch }}-{{ .Revision }}-{{ .Environment.CIRCLE_SHA1 }}
           paths:
             - "/tmp/<< parameters.cache_prefix >>"
   restore-workflow-assets:
@@ -110,7 +107,7 @@ commands:
     steps:
       - restore_cache:
           keys:
-            - << parameters.cache_prefix >>-v3-{{ .Branch }}-{{ .Revision }}-{{ .Environment.CIRCLE_SHA1 }}
+            - << parameters.cache_prefix >>-v4-{{ .Branch }}-{{ .Revision }}-{{ .Environment.CIRCLE_SHA1 }}
       - when:
           condition: << parameters.target_path >>
           steps:
@@ -194,6 +191,25 @@ commands:
               exit 1
             fi
             cd -
+
+  persist-project-changes:
+    description: persist project changes to the workspace, skipping files that come from git
+    steps:
+      - fix-workspace-permissions:
+          path: project
+      - run:
+          name: prep the working directory
+          command: |
+            WORKSPACE="/tmp/extracted-workspace"
+            mkdir -p "${WORKSPACE}/project"
+
+            cd ~/project
+            git clean -dx --dry-run | grep -v __pycache__ | sed -e 's,^Would remove ,,' > "${WORKSPACE}.filelist"
+            tar -cf - --files-from "${WORKSPACE}.filelist" | tar -xf - -C "${WORKSPACE}/project"
+      - persist_to_workspace:
+          root: /tmp/extracted-workspace/
+          paths:
+            - project
 
   fix-workspace-permissions:
     description: fix permissions of a path to be compatible with the docker cimg `circleci` user

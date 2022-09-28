@@ -31,6 +31,49 @@
               </resources>
             </configuration>
           </execution>
+          <!-- karaf-maven-plugin:verify doesn't know about external sun.nio.* packages, so we need to put a custom config in there -->
+          <execution>
+            <id>copy-karaf-resources</id>
+            <phase>generate-resources</phase>
+            <goals><goal>copy-resources</goal></goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/apache-karaf-${karafVersion}/etc</outputDirectory>
+              <overwrite>true</overwrite>
+              <resources>
+                <resource>
+                  <directory>src/test/karaf-resources</directory>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <!-- Unpack Karaf to get access to a default etc/ for verify -->
+          <execution>
+            <id>unpack-karaf</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.apache.karaf</groupId>
+                  <artifactId>apache-karaf</artifactId>
+                  <version>${karafVersion}</version>
+                  <type>tar.gz</type>
+                  <overWrite>false</overWrite>
+                  <outputDirectory>${project.build.directory}</outputDirectory>
+                  <includes>**/etc/**/*</includes>
+                  <excludes>**/custom.properties</excludes>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
       <plugin>
@@ -129,6 +172,7 @@
                           <feature>opennms-timseries-api</feature>
                           <feature>opennms-newts</feature>
                       </features>
+                      <configuration>file:${project.build.directory}/apache-karaf-${karafVersion}/etc/config.properties</configuration>
                   </configuration>
               </execution>
           </executions>

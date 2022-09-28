@@ -1,11 +1,12 @@
 jobs:
   horizon-image-single-arch-linux-amd64:
-    machine:
-      image: ubuntu-2204:current
-      docker_layer_caching: true
+    executor: base-executor
+    resource_class: medium
     environment:
       DOCKER_CLI_EXPERIMENTAL: enabled
     steps:
       - build-image-single-arch:
           architecture: linux/amd64
           container_name: horizon
+          tarball_match: -core
+          tarball_path: opennms-full-assembly/target/
