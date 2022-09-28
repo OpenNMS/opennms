@@ -18,6 +18,9 @@
   <display-name>opennms</display-name>
 
   <session-config>
+    <cookie-config>
+      <http-only>true</http-only>
+    </cookie-config>
     <session-timeout>-1</session-timeout>
   </session-config>
 
