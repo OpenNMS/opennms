@@ -1,5 +1,5 @@
 jobs:
-  horizon-image-single-arch:
+  horizon-image-single-arch-with-trivy:
     parameters:
       architecture:
         type: string
