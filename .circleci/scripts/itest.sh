@@ -51,6 +51,32 @@ sudo sysctl net.ipv4.ping_group_range='0 429496729'
 
 echo "#### Setting up Postgres"
 cd ~/project
+
+echo "#### Installing other dependencies"
+# limit the sources we need to update
+sudo rm -f /etc/apt/sources.list.d/*
+ 
+# kill other apt commands first to avoid problems locking /var/lib/apt/lists/lock - see https://discuss.circleci.com/t/could-not-get-lock-var-lib-apt-lists-lock/28337/6
+sudo killall -9 apt || true && \
+            retry sudo apt update && \
+            retry sudo env DEBIAN_FRONTEND=noninteractive apt -y --no-install-recommends install \
+                ca-certificates \
+                tzdata \
+                software-properties-common \
+                debconf-utils
+ 
+# install some keys
+curl -sSf https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc | sudo tee -a /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc
+curl -sSf https://debian.opennms.org/OPENNMS-GPG-KEY | sudo tee -a /etc/apt/trusted.gpg.d/opennms_key.asc
+ 
+# limit more sources and add mirrors
+echo "deb mirror://mirrors.ubuntu.com/mirrors.txt $(lsb_release -cs) main restricted universe multiverse
+deb http://archive.ubuntu.com/ubuntu/ $(lsb_release -cs) main restricted" | sudo tee -a /etc/apt/sources.list
+sudo add-apt-repository -y 'deb http://debian.opennms.org stable main'
+ 
+# add the R repository
+sudo add-apt-repository -y "deb https://cloud.r-project.org/bin/linux/ubuntu $(lsb_release -cs)-cran40/"
+
 ./.circleci/scripts/postgres.sh || exit 1
 
 retry sudo apt update && \
@@ -62,6 +88,7 @@ retry sudo apt update && \
                 jicmp6 \
             || exit 1
 
+export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
 export MAVEN_OPTS="$MAVEN_OPTS -Xmx8g -XX:ReservedCodeCacheSize=1g"
 
 # shellcheck disable=SC3045
