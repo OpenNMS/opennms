@@ -104,7 +104,7 @@
         },
         "experimental": {
             "extends": [
-                "weekly-coverage"
+                "empty"
             ]
         }
     },
