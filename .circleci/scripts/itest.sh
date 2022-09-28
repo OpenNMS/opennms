@@ -43,12 +43,6 @@ if [ ! -s /tmp/this_node_projects ]; then
   exit 0
 fi
 
-#echo "#### Set loopback to 127.0.0.1"
-#sudo sed -i 's/127.0.1.1/127.0.0.1/g' /etc/hosts
-
-echo "#### Allowing non-root ICMP"
-sudo sysctl net.ipv4.ping_group_range='0 429496729'
-
 echo "#### Setting up Postgres"
 cd ~/project
 ./.circleci/scripts/postgres.sh || exit 1
@@ -97,6 +91,7 @@ echo "#### Executing tests"
            -Pbuild-bamboo \
            -Dbuild.skip.tarball=true \
            -DfailIfNoTests=false \
+           -DrunPingTests=false \
            -DskipITs=false \
            -Dci.instance="${CIRCLE_NODE_INDEX:-0}" \
            -Dci.rerunFailingTestsCount="${CCI_RERUN_FAILTEST:-0}" \
