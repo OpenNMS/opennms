@@ -30,16 +30,18 @@ If your aim is to get up to speed quickly in a test environment, you can use Doc
 
 . Download the plugin's `.kar` file from GitHub (https://github.com/OpenNMS/opennms-cortex-tss-plugin/releases).
 . Copy the file into `$\{OPENNMS_HOME}/deploy`.
-. Enable and configure time series storage plugins in {page-component-title}:
+. Enable and configure time series storage plugins in {page-component-title}
 +
-[source, console]
+Create or modify the `$\{OPENNMS_HOME}/etc/opennms.properties.d/cortex.properties` file with the following content:
++
+[source, properties]
 ----
-echo "org.opennms.timeseries.strategy=integration
+org.opennms.timeseries.strategy=integration
 org.opennms.timeseries.tin.metatags.tag.node=${node:label}
 org.opennms.timeseries.tin.metatags.tag.location=${node:location}
 org.opennms.timeseries.tin.metatags.tag.geohash=${node:geohash}
 org.opennms.timeseries.tin.metatags.tag.ifDescr=${interface:if-description}
-org.opennms.timeseries.tin.metatags.tag.label=${resource:label}" >> ${OPENNMS_HOME}/etc/opennms.properties.d/cortex.properties
+org.opennms.timeseries.tin.metatags.tag.label=${resource:label}
 ----
 
 . Configure the Cortex Time Series plugin in {page-component-title}.
@@ -47,35 +49,34 @@ org.opennms.timeseries.tin.metatags.tag.label=${resource:label}" >> ${OPENNMS_HO
 Note that you can omit this step if you use the default settings.
 Substitute the correct host and port for your Cortex cluster in each place where cortex-service-host:9009 appears below.
 +
-[source, console]
-----
-config:edit org.opennms.plugins.tss.cortex
-
-property-set writeUrl http://cortex-service-host:9009/api/prom/push
-property-set readUrl http://cortex-service-host:9009/prometheus/api/v1
-property-set maxConcurrentHttpConnections 100
-property-set writeTimeoutInMs 1000
-property-set readTimeoutInMs 1000
-property-set metricCacheSize 1000
-property-set externalTagsCacheSize 1000
-property-set bulkheadMaxWaitDurationInMs 9223372036854775807
-
-config:update
-----
-
-. Configure the plugin to remain installed after a restart of {page-component-title}:
+Create or modify the `$\{OPENNMS_HOME}/etc/org.opennms.plugins.tss.cortex.cfg` file with the following content:
 +
-[source,console]
+[source, cfg]
 ----
-echo 'opennms-plugins-cortex-tss wait-for-kar=opennms-cortex-plugin' > "$OPENNMS_HOME/etc/featuresBoot.d/cortex.boot"
+writeUrl=http://cortex-service-host:9009/api/prom/push
+readUrl=http://cortex-service-host:9009/prometheus/api/v1
+maxConcurrentHttpConnections=100
+writeTimeoutInMs=1000
+readTimeoutInMs=1000
+metricCacheSize=1000
+externalTagsCacheSize=1000
+bulkheadMaxWaitDurationInMs=9223372036854775807
+----
+
+. Configure the plugin to remain installed after a restart of {page-component-title}.
++
+Create or modify the `$\{OPENNMS_HOME}/etc/featuresBoot.d/cortex.boot` file with the following content:
++
+[source, text]
+----
+opennms-plugins-cortex-tss wait-for-kar=opennms-cortex-plugin
 ----
 
 == Cortex tips
 
-=== View the ring
-
-\http://cortex-service-host:9009/ring
-
-=== View internal metrics
-
-\http://cortex-service-host:9009/metrics
+* View server status
+** \http://cortex-service-host:9009
+* View the ring
+** \http://cortex-service-host:9009/ring
+* View internal metrics
+** \http://cortex-service-host:9009/metrics
