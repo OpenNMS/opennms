@@ -93,14 +93,18 @@
             "extends": [
                 "build",
                 "integration-test-with-coverage",
-                "code-coverage"
+                "code-coverage",
+                "Minion-image-single-arch-with-trivy-linux-amd64",
+                "horizon-image-single-arch-with-trivy-linux-amd64",
+                "sentinel-image-single-arch-with-trivy-linux-amd64",
+                "minion-image-single-arch-with-trivy",
+                "horizon-image-single-arch-with-trivy",
+                "sentinel-image-single-arch-with-trivy"
             ]
         },
         "experimental": {
             "extends": [
-                "horizon-image-single-arch-linux-amd64",
-                "sentinel-image-single-arch-linux-amd64",
-                "minion-image-single-arch-linux-amd64"
+                "weekly-coverage"
             ]
         }
     },
@@ -347,6 +351,66 @@
                 "smoke-test-flaky",
                 "smoke-test-minion",
                 "smoke-test-sentinel"
+            ]
+        },
+        "Minion-image-single-arch-with-trivy-linux-amd64": {
+            "context": [
+                "docker-publish-account"
+            ],
+            "requires": [
+                "tarball-assembly-only"
+            ]
+        },
+        "horizon-image-single-arch-with-trivy-linux-amd64": {
+            "context": [
+                "docker-publish-account"
+            ],
+            "requires": [
+                "tarball-assembly-only"
+            ]
+        },
+        "sentinel-image-single-arch-with-trivy-linux-amd64": {
+            "context": [
+                "docker-publish-account"
+            ],
+            "requires": [
+                "tarball-assembly-only"
+            ]
+        },
+        "minion-image-single-arch-with-trivy": {
+            "context": [
+                "docker-publish-account"
+            ],
+            "variations": [
+                "linux/arm64",
+                "linux/arm/v7"
+            ],
+            "requires": [
+                "tarball-assembly-only"
+            ]
+        },
+        "horizon-image-single-arch-with-trivy": {
+            "context": [
+                "docker-publish-account"
+            ],
+            "variations": [
+                "linux/arm64",
+                "linux/arm/v7"
+            ],
+            "requires": [
+                "tarball-assembly-only"
+            ]
+        },
+        "sentinel-image-single-arch-with-trivy": {
+            "context": [
+                "docker-publish-account"
+            ],
+            "variations": [
+                "linux/arm64",
+                "linux/arm/v7"
+            ],
+            "requires": [
+                "tarball-assembly-only"
             ]
         },
         "create-merge-foundation-branch": {

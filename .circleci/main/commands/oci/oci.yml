@@ -59,6 +59,36 @@ commands:
                  BUILD_URL="${CIRCLE_BUILD_URL}" \
                  BUILD_BRANCH="${CIRCLE_BRANCH}" \
                  build install
+      - store_artifacts:
+          path: ~/project/opennms-container/<< parameters.container_name >>/images/
+          destination: /
+
+  build-image-single-arch-with-trivy:
+    parameters:
+      architecture:
+        type: string
+      container_name:
+        type: string
+    steps:
+      - attach_workspace:
+          at: ~/
+      # - dockerhub-login
+      - qemu-user-static
+      - install-buildx
+      - run:
+          name: build << parameters.container_name >>=<< parameters.architecture >> container image
+          command: |
+            export DOCKER_CONTENT_TRUST=1
+            cd opennms-container/<< parameters.container_name >>
+            export ARCH="$(printf "<< parameters.architecture >>" | tr / -)"
+            export TAG="<< parameters.container_name >>-${ARCH}"
+            make DOCKER_ARCH="<< parameters.architecture >>" \
+                 DOCKER_IMAGE_NAME="${TAG}.oci" \
+                 DOCKER_TAG="${TAG}" \
+                 BUILD_NUMBER="${CIRCLE_BUILD_NUM}" \
+                 BUILD_URL="${CIRCLE_BUILD_URL}" \
+                 BUILD_BRANCH="${CIRCLE_BRANCH}" \
+                 build install
       - run:
           name: Install trivy
           command: |

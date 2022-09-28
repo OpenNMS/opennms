@@ -20,3 +20,6 @@ executors:
   ui-executor:
     docker:
       - image: cimg/node:16.3.0
+  github-executor:
+    docker:
+      - image: cibuilds/github:0.12
