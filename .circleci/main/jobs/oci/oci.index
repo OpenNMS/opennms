@@ -9,4 +9,3 @@
   #jobs:oci/horizon-image-single-arch-linux-amd64#
   #jobs:oci/horizon-image-single-arch-with-trivy-linux-amd64#
   #jobs:oci/sentinel-image-single-arch-linux-amd64#
-  #jobs:oci/sentinel-image-single-arch-with-trivy-linux-amd64#
