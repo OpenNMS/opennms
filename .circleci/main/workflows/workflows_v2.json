@@ -94,7 +94,7 @@
                 "build",
                 "integration-test-with-coverage",
                 "code-coverage",
-                "Minion-image-single-arch-with-trivy-linux-amd64",
+                "minion-image-single-arch-with-trivy-linux-amd64",
                 "horizon-image-single-arch-with-trivy-linux-amd64",
                 "sentinel-image-single-arch-with-trivy-linux-amd64",
                 "minion-image-single-arch-with-trivy",
