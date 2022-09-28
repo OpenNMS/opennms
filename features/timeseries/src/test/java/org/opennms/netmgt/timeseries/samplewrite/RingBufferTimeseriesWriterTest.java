@@ -54,11 +54,14 @@ import org.opennms.integration.api.v1.timeseries.TimeSeriesStorage;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableMetric;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableSample;
 import org.opennms.netmgt.timeseries.TimeseriesStorageManager;
+import org.opennms.netmgt.timeseries.stats.StatisticsCollector;
+import org.opennms.netmgt.timeseries.stats.StatisticsCollectorImpl;
 import org.opennms.newts.api.Resource;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class RingBufferTimeseriesWriterTest {
 
@@ -80,7 +83,7 @@ public class RingBufferTimeseriesWriterTest {
 
         LatchedTimeseriesStorage store = new LatchedTimeseriesStorage(numWriterThreads);
         MetricRegistry registry = new MetricRegistry();
-        RingBufferTimeseriesWriter writer = new RingBufferTimeseriesWriter(null, null, ringBufferSize, numWriterThreads, registry);
+        RingBufferTimeseriesWriter writer = new RingBufferTimeseriesWriter(storageManager, new StatisticsCollectorImpl(numWriterThreads), ringBufferSize, numWriterThreads, registry);
         when(storageManager.get()).thenReturn(store);
         writer.setTimeSeriesStorage(storageManager);
 
@@ -107,7 +110,7 @@ public class RingBufferTimeseriesWriterTest {
         Lock lock = new ReentrantLock();
         LockedTimeseriesStorage timeseriesStorage = new LockedTimeseriesStorage(lock);
         MetricRegistry registry = new MetricRegistry();
-        RingBufferTimeseriesWriter writer = new RingBufferTimeseriesWriter(null, null, ringBufferSize, numWriterThreads, registry);
+        RingBufferTimeseriesWriter writer = new RingBufferTimeseriesWriter(storageManager, new StatisticsCollectorImpl(numWriterThreads), ringBufferSize, numWriterThreads, registry);
         when(storageManager.get()).thenReturn(timeseriesStorage);
         writer.setTimeSeriesStorage(storageManager);
 

@@ -32,7 +32,7 @@
   </bean>
 
   <bean id="timeseries.offheap.batchSize" class="java.lang.Integer">
-    <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.config.offheap.batchSize:8192}" />
+    <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.config.offheap.batch_size:8192}" />
   </bean>
 
   <bean id="timeseries.offheap.path" class="java.lang.String">
@@ -40,7 +40,7 @@
   </bean>
 
   <bean id="timeseries.offheap.maxFileSize" class="java.lang.Long">
-    <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.config.offheap.maxFileSize:-1}" />
+    <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.config.offheap.max_file_size:-1}" />
   </bean>
 
   <bean id="timeseriesMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
@@ -62,14 +62,6 @@
   <bean id="resourceIdSplitter" class="org.opennms.newts.cassandra.search.EscapableResourceIdSplitter" />
 
   <bean id="timeseriesSearcher" class="org.opennms.netmgt.timeseries.resource.TimeseriesSearcher" />
-
-  <!--bean id="timeseriesWriter" class="org.opennms.netmgt.timeseries.samplewrite.TimeseriesWriter" / -->
-<!--  <bean id="timeseriesWriter" class="org.opennms.netmgt.timeseries.samplewrite.OffheapTimeSeriesWriter">-->
-<!--    <constructor-arg ref = "timeseriesStorageManager"/>-->
-<!--    <constructor-arg ref = "timeseries.ring_buffer_size"/>-->
-<!--    <constructor-arg ref = "timeseries.writer_threads"/>-->
-<!--    <constructor-arg ref = "timeseries.backend"/>-->
-<!--  </bean>-->
 
   <bean id="timeseriesStorageManager" class="org.opennms.netmgt.timeseries.TimeseriesStorageManagerImpl" />
   <onmsgi:list id="timeseriesStorageList" interface="org.opennms.integration.api.v1.timeseries.TimeSeriesStorage">

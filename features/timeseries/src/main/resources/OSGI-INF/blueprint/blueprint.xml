@@ -15,9 +15,9 @@
             <cm:property name="ring_buffer_size" value="8192" />
             <cm:property name="writer_threads" value="16" />
             <cm:property name="backend" value="ringbuffer" />
-            <cm:property name="batchSize" value="8192" />
+            <cm:property name="batch_size" value="8192" />
             <cm:property name="path" value="/tmp" />
-            <cm:property name="maxFileSize" value="-1" />
+            <cm:property name="max_file_size" value="-1" />
 
             <cm:property name="cache.timeseriesPersisterMetaTagCache.expireAfterRead" value="300" />
             <cm:property name="cache.timeseriesPersisterMetaTagCache.maximumSize" value="8192" />
@@ -102,14 +102,6 @@
     </bean>
     <service interface="org.opennms.netmgt.timeseries.stats.StatisticsCollector" ref="statisticsCollector" />
 
-<!--    <bean id="timeseriesWriter" class="org.opennms.netmgt.timeseries.samplewrite.RingBufferTimeseriesWriter" destroy-method="destroy">-->
-<!--        <argument value="${ring_buffer_size}"/>-->
-<!--        <argument value="${writer_threads}"/>-->
-<!--        <argument ref="metricRegistry"/>-->
-<!--        <property name="timeSeriesStorage" ref="timeseriesStorageManager"/>-->
-<!--        <property name="stats" ref="statisticsCollector"/>-->
-<!--    </bean>-->
-
     <bean id="metaTagDataLoader" class="org.opennms.netmgt.timeseries.samplewrite.MetaTagDataLoader">
         <argument ref="nodeDao"/>
         <argument ref="sessionUtils"/>
@@ -124,10 +116,10 @@
         <argument value="${ring_buffer_size}"/>
         <argument value="${writer_threads}"/>
         <argument value="${ringbuffer}"/>
-        <argument value="${batchSize}"/>
+        <argument value="${batch_size}"/>
         <argument value="${backend}"/>
         <argument value="${path}"/>
-        <argument value="${maxFileSize}"/>
+        <argument value="${max_file_size}"/>
     </bean>
 
     <service interface="org.opennms.netmgt.collection.api.PersisterFactory" ref="timeseriesPersisterFactory">

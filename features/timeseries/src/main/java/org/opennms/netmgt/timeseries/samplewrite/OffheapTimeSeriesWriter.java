@@ -59,7 +59,8 @@ public class OffheapTimeSeriesWriter implements TimeseriesWriter {
             .withRateLimit(LOG)
             .maxRate(5).every(Duration.ofSeconds(30))
             .build();
-    public static String OFFHEAP_NAME = "offheap";
+    public static final String OFFHEAP_NAME = "offheap";
+    public static final int RETRY_TIME = 500;
 
     private static FSTConfiguration fstConf = FSTConfiguration.createDefaultConfiguration();
 
@@ -113,7 +114,7 @@ public class OffheapTimeSeriesWriter implements TimeseriesWriter {
 
     private void setupConsumerThreads(int numWriterThreads) {
         for (int i = 0; i < numWriterThreads; i++) {
-            Thread consumerThread = new Thread(() -> this.work());
+            Thread consumerThread = new Thread(this::work);
             this.workerPool.add(consumerThread);
             consumerThread.start();
         }
@@ -176,11 +177,11 @@ public class OffheapTimeSeriesWriter implements TimeseriesWriter {
                 this.storage.get().store(samples);
                 return; // we are done.
             } catch (StorageException e) {
-                RATE_LIMITED_LOGGER.warn("Could not send samples to plugin, will try again in {} ms.", 500, e);
+                RATE_LIMITED_LOGGER.warn("Could not send samples to plugin, will try again in {} ms.", RETRY_TIME, e);
                 try {
-                    Thread.sleep(500);
+                    Thread.sleep(RETRY_TIME);
                 } catch (InterruptedException ex) {
-                    RATE_LIMITED_LOGGER.warn("Could not send samples to plugin, got InterruptedException.", e);
+                    RATE_LIMITED_LOGGER.error("Could not send samples to plugin, got InterruptedException.", e);
                     return;
                 }
             }
