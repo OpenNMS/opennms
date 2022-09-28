@@ -1,6 +1,6 @@
 jobs:
   integration-test:
-    executor: integration-test-executor
+    executor: integration-test-executornew
     parallelism: 8
     resource_class: xlarge
     steps:
