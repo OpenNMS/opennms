@@ -15,6 +15,9 @@ commands:
         type: boolean
     steps:
       - run:
+          name: Wait for PostgreSQL
+          command: dockerize -wait tcp://localhost:5432 -timeout 1m
+      - run:
           name: Monitor JVM processes
           background: true
           command: |
