@@ -1,8 +1,8 @@
 version: 2.1
 
 orbs:
-  continuation: circleci/continuation@0.3.1
-  # path-filtering: circleci/path-filtering@0.1.3
+  continuation: circleci/continuation@0.2.0
+  # path-filtering: circleci/path-filtering@0.1.1
 
 parameters:
   trigger-prebuild:
@@ -26,16 +26,16 @@ setup: true
 
 commands:
   shallow-clone:
-      description: "Quick shallow checkout"
-      steps:
-        - run:
-            name: git clone
-            command: |
-              install -d -m 700 ~/.ssh
-              ssh-keyscan github.com >> ~/.ssh/known_hosts
-              ssh-keyscan -p 443 ssh.github.com >> ~/.ssh/known_hosts
-              chmod 600 ~/.ssh/known_hosts
-              git clone --depth 20 "${CIRCLE_REPOSITORY_URL}" --branch "${CIRCLE_BRANCH}" .
+    description: "Quick shallow checkout"
+    steps:
+      - run:
+          name: git clone
+          command: |
+            install -d -m 700 ~/.ssh
+            ssh-keyscan github.com >> ~/.ssh/known_hosts
+            ssh-keyscan -p 443 ssh.github.com >> ~/.ssh/known_hosts
+            chmod 600 ~/.ssh/known_hosts
+            git clone --depth 20 "${CIRCLE_REPOSITORY_URL}" --branch "${CIRCLE_BRANCH}" .
   pack-config:
     description: "Pack the dynamic config in .circleci/main/"
     steps:
@@ -124,7 +124,7 @@ jobs:
       - image: docker
     steps:
       - run:
-          name:  Docker GC - remove inactive images on feature branches
+          name: Docker GC - remove inactive images on feature branches
           # TODO replace expect when https://github.com/docker/hub-tool/pull/198 is merged
           command: |
             wget https://github.com/docker/hub-tool/releases/download/v0.4.4/hub-tool-linux-amd64.tar.gz
@@ -156,7 +156,7 @@ jobs:
                sed -i 's/"coverage": false/"coverage": true/g' /tmp/build-triggers.json
       - store_artifacts:
           path: /tmp/build-triggers.json
-          destination: build-triggers.json      
+          destination: build-triggers.json
       - continuation/continue:
           circleci_domain: circleci.com
           configuration_path: .circleci/main.yml
@@ -189,10 +189,10 @@ jobs:
             BASE_REVISION: << parameters.base-revision >>
             MAPPING: << parameters.mapping >>
             OUTPUT_PATH: /tmp/pipeline-parameters.json
-          command: python3 .circleci/pyscripts/process_generate.py 
+          command: python3 .circleci/pyscripts/process_generate.py
       - run:
           name: Generate Main YAML file
-          command: python3 .circleci/pyscripts/generate_main.py 
+          command: python3 .circleci/pyscripts/generate_main.py
       - store_artifacts:
           path: /tmp/pipeline-parameters.json
           destination: pipeline-parameters.json
@@ -202,6 +202,9 @@ jobs:
       - store_artifacts:
           path: /tmp/.circleci/main.yml
           destination: main.yml
+      - store_artifacts:
+          path: /tmp/performance.txt
+          destination: performance.txt
       - continuation/continue:
           circleci_domain: circleci.com
           configuration_path: /tmp/.circleci/main.yml
