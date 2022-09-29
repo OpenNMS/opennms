@@ -223,7 +223,7 @@
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-failsafe-plugin</artifactId>
             <configuration>
-              <excludedGroups>org.opennms.smoketest.junit.FlakyTests,org.opennms.smoketest.junit.MinionTests,org.opennms.smoketest.junit.SentinelTests</excludedGroups>
+              <excludedGroups>org.opennms.smoketest.junit.FlakyTests</excludedGroups>
             </configuration>
           </plugin>
         </plugins>

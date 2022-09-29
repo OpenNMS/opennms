@@ -20,7 +20,3 @@
                 at: ~/
             - run-smoke-tests:
                 suite: core
-            - run-smoke-tests:
-                suite: minion
-            - run-smoke-tests:
-                suite: sentinel
