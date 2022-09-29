@@ -55,9 +55,11 @@ commands:
           name: build << parameters.container_name >>=<< parameters.architecture >> container image
           command: |
             # set up multi-arch
+            docker container prune -f
             docker run --rm --privileged tonistiigi/binfmt:latest --install "<< parameters.architecture >>"
 
             export DOCKER_CONTENT_TRUST=1
+            docker container prune -f
             cd opennms-container/<< parameters.container_name >>
             export ARCH="$(printf "<< parameters.architecture >>" | tr / -)"
             export TAG="<< parameters.container_name >>-${ARCH}"
