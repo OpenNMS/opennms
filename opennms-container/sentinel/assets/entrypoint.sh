@@ -131,6 +131,9 @@ applyKarafDebugLogging() {
       echo "log4j2.logger.${logUnderscored}.name = $log" >> "$SENTINEL_HOME"/etc/org.ops4j.pax.logging.cfg
     done
   fi
+  if [[ "$JACOCO_AGENT_ENABLED" -gt 0 ]]; then
+    export JAVA_OPTS="$JAVA_OPTS -javaagent:${SENTINEL_HOME}/agent/jacoco-agent.jar=output=none,jmx=true,excludes=org.drools.*"
+  fi
 }
 
 start() {

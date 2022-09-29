@@ -289,12 +289,15 @@ commands:
       steps:
         - restore_cache:
             keys:
-              - sonar-cache-v2-{{ checksum "pom-version-cache.key" }}
+              - sonar-cache-v3-{{ .Branch }}-{{ checksum "pom-version-cache.key" }}-{{ .Revision }}
+              - sonar-cache-v3-{{ .Branch }}-{{ checksum "pom-version-cache.key" }}-
+              - sonar-cache-v3-{{ .Branch }}-
+              - sonar-cache-v3-
   save-sonar-cache:
       description: "Sonar: Save sonar cache"
       steps:
         - save_cache:
-            key: sonar-cache-v2-{{ checksum "pom-version-cache.key" }}
+            key: sonar-cache-v3-{{ .Branch }}- {{ checksum "pom-version-cache.key" }}
             paths:
               - ~/.sonar
   dockerhub-login:
@@ -500,21 +503,22 @@ commands:
           when: always
           command: |
             mkdir -p ~/generated-tests
-            cp ./surefire_classname* ~/generated-tests/ || :
-            cp ./failsafe_classname* ~/generated-tests/ || :
-            cp /tmp/this_node* ~/generated-tests/       || :
+            cp target/find-tests/* ~/generated-tests/ || :
+            cp /tmp/this_node* ~/generated-tests/     || :
       - when:
           condition: << parameters.run-code-coverage >>
           steps:
             - run:
-                name: Compress Target Directories (Code Coverage)
+                name: Save Code Coverage Data
                 when: always
                 command: |
-                  .circleci/scripts/codecoverage-save.sh
+                  .circleci/scripts/codecoverage-save.sh integration-test
             - persist_to_workspace:
                 root: ~/
                 paths:
                   - code-coverage
+                  - project/target/find-tests
+                  - project/target/structure-graph.json
       - run:
           name: Gather system logs
           when: always
@@ -1583,11 +1587,19 @@ jobs:
           changes-only: false
   code-coverage:
     executor: centos-build-executor
-    resource_class: large
+    resource_class: xlarge
     steps:
       - attach_workspace:
           at: ~/
+      - checkout
+      - cached-download:
+          url: https://repo1.maven.org/maven2/org/jacoco/org.jacoco.cli/0.8.8/org.jacoco.cli-0.8.8-nodeps.jar
+          file: /tmp/jacoco-cli.jar
+      - cached-download:
+          url: https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.7.0.2747.zip
+          file: /tmp/sonar-scanner-cli.zip
       - extract-pom-version
+      - restore-maven-cache
       - restore-sonar-cache
       - run:
           name: Restore Target Directories (Code Coverage)
@@ -1598,7 +1610,7 @@ jobs:
           name: Run SonarQube Code Analysis
           when: always
           command: |
-            export MAVEN_OPTS="-Xms3G -Xmx3G"
+            export MAVEN_OPTS="-Xms1g -Xmx12g"
             .circleci/scripts/sonar.sh
       - save-sonar-cache
   smoke-test-core:
@@ -1665,7 +1677,7 @@ jobs:
                 suite: minion
   smoke-test-sentinel:
     executor: smoke-test-executor
-    parallelism: 5
+    parallelism: 4
     # No resource class support for machine executors, we're constrained to use the default
     # medium class which has 2 vCPUs and 8 GB RAM
     #resource_class: large
