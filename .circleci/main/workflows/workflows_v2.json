@@ -104,7 +104,7 @@
         },
         "experimental": {
             "extends": [
-                "integration-test"
+                "smoke-test-combined"
             ]
         }
     },
@@ -211,6 +211,17 @@
                 "docker-publish-account"
             ],
             "job": "smoke-test-flaky",
+            "requires": [
+                "tarball-assembly-only",
+                "horizon-image-single-arch-linux-amd64",
+                "minion-image-single-arch-linux-amd64",
+                "sentinel-image-single-arch-linux-amd64"
+            ]
+        },
+        "smoke-test-combined": {
+            "context": [
+                "docker-publish-account"
+            ],
             "requires": [
                 "tarball-assembly-only",
                 "horizon-image-single-arch-linux-amd64",

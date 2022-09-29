@@ -3,3 +3,4 @@
   #jobs:tests/smoke/smoke-test-minion#
   #jobs:tests/smoke/smoke-test-sentinel#
   #jobs:tests/smoke/smoke-test-minimal#
+  #jobs:tests/smoke/smoke-test-combined#
