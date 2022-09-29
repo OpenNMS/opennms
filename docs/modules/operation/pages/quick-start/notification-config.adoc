@@ -8,15 +8,15 @@ We assume that you have followed the previous steps and are ready to proceed to 
 
 == Configuration and customization
 
-Beyond setting up default notifications in {page-component-title}, establishing notifications that are tailored for your environment will help maintain it.
+Now that you've xref:operation:quick-start/baseline.adoc[established your environment's baseline], it's time to take your notes and configure your custom notifications.
+Establishing notifications that are tailored for your {page-component-title} environment will help maintain it.
+Done correctly, customizing notifications will also mean that more relevant information is being brought to your attention.
 
-You can configure event notifications to provide UEI-specific coverage.
-You can also configure path outages for instances where a network path failure may occur.
-By default, this would trigger as many notifications as nodes served by that network path; path outages prevent this by generating only one notification.
+Here, we will discuss how to configure event notifications and path outages.
+Event notifications can be configured to provide UEI-specific coverage, allowing for granular control of incoming information.
+Path outages prevent the generation of excess notifications by identifying network paths where failures may cause multiple nodes to appear offline.
 
-== Examples
-
-=== Configure event notifications
+== Configure event notifications
 
 An event notification defines a destination path and message template for a specific event UEI.
 It is possible to define multiple notifications for the same UEI to utilize different filters, destination paths, and message templates.
@@ -33,14 +33,14 @@ A list of events that are configured for notifications is displayed.
 NOTE: Event notification configuration is stored in `$\{OPENNMS_HOME}/etc/notifications.xml`.
 Changes to this file happen immediately, with no need to restart {page-component-title}.
 
-==== Filter rules
+=== Filter rules
 
 The filter rule configured in `$\{OPENNMS_HOME}/etc/notifications.xml` (for example, `<rule>IPADDR != '0.0.0.0'</rule>`) is not strict by default.
 That means if there is an event that is not associated with a node or interface, it will not validate the rule and, by default, the notification would be saved.
 
 A strict rule (for example, `<rule strict="true">IPADDR != '0.0.0.0'</rule>`) will always be evaluated, and if there is no node or interface associated with the event, the notification will not be saved.
 
-=== Configure path outages
+== Configure path outages
 
 Configuring a path outage lets you suppress notifications for nodes that appear to be down due to a failure in the network path between the nodes and {page-component-title}.
 For example, if a WAN link fails, all nodes at the remote site served by the WAN link will appear to be down.
