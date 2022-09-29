@@ -48,12 +48,35 @@ NOTE: Make sure that the `org.opennms.timeseries.strategy` property is not set i
 The `writeUrl` and `readUrl` properties are required.
 All other properties shown here are example values to overwrite the defaults.
 Keep an eye on your Cortex cluster performance and adjust as necessary.
+Substitute the correct host and port for your Cortex cluster.
++
+You can configure the plugin via the Karaf shell or by creating a cfg file.
++
+[{tabs}]
+====
+Karaf Shell::
++
+[source, karaf]
+----
+config:edit org.opennms.plugins.tss.cortex
+property-set writeUrl http://cortex-service-host:9009/api/prom/push
+property-set readUrl http://cortex-service-host:9009/prometheus/api/v1
+property-set maxConcurrentHttpConnections 100
+property-set writeTimeoutInMs 1000
+property-set readTimeoutInMs 1000
+property-set metricCacheSize 1000
+property-set externalTagsCacheSize 1000
+property-set bulkheadMaxWaitDurationInMs 9223372036854775807
+config:update
+----
+
+CFG File::
 +
 .Create or modify the `$\{OPENNMS_HOME}/etc/org.opennms.plugins.tss.cortex.cfg` file
 [source, properties]
 ----
-writeUrl=http://cortex-service-host:9009/api/prom/push<1>
-readUrl=http://cortex-service-host:9009/prometheus/api/v1<2>
+writeUrl=http://cortex-service-host:9009/api/prom/push
+readUrl=http://cortex-service-host:9009/prometheus/api/v1
 maxConcurrentHttpConnections=100
 writeTimeoutInMs=1000
 readTimeoutInMs=1000
@@ -61,8 +84,7 @@ metricCacheSize=1000
 externalTagsCacheSize=1000
 bulkheadMaxWaitDurationInMs=9223372036854775807
 ----
-<1> Substitute the correct host and port for your Cortex cluster.
-<2> Substitute the correct host and port for your Cortex cluster.
+====
 
 . Configure the plugin to remain installed after a restart of {page-component-title}.
 +
