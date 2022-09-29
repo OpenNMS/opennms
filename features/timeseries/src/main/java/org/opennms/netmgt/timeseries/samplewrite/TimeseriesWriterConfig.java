@@ -40,7 +40,8 @@ public class TimeseriesWriterConfig {
 
     private BufferType bufferType = BufferType.RINGBUFFER;
 
-    // ringbuffer backward compatibility
+    // ringbuffer backward compatibility, use bufferSize instead
+    @Deprecated
     private int ringBufferSize;
 
     // for offheap
@@ -72,10 +73,6 @@ public class TimeseriesWriterConfig {
 
     public void setBufferType(BufferType bufferType) {
         this.bufferType = bufferType;
-    }
-
-    public int getRingBufferSize() {
-        return getBufferSize();
     }
 
     public void setRingBufferSize(int ringBufferSize) {

@@ -67,7 +67,7 @@
     <property name="bufferSize" value="${org.opennms.timeseries.config.buffer_size:-1}" />
     <property name="numWriterThreads" ref="timeseries.writer_threads" />
     <property name="bufferType" value="${org.opennms.timeseries.config.buffer_type:RINGBUFFER}" />
-    <property name="ringBufferSize" ref="timeseries.ring_buffer_size" />
+    <property name="ringBufferSize" ref="timeseries.ring_buffer_size" /><!-- deprecated: use bufferSize instead -->
     <property name="batchSize" value="${org.opennms.timeseries.config.offheap.batch_size:8192}" />
     <property name="path" value="${org.opennms.timeseries.config.offheap.path:/tmp}" />
     <property name="maxFileSize" value="${org.opennms.timeseries.config.offheap.max_file_size:-1}" />

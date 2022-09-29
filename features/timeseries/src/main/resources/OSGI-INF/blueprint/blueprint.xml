@@ -11,7 +11,7 @@
 ">
     <cm:property-placeholder id="timeseriesProperties" persistent-id="org.opennms.timeseries" update-strategy="reload">
         <cm:default-properties>
-            <cm:property name="ring_buffer_size" value="8192" />
+            <cm:property name="ring_buffer_size" value="8192" /><!-- deprecated: use bufferSize instead -->
             <cm:property name="buffer_size" value="-1" />
             <cm:property name="writer_threads" value="16" />
             <cm:property name="buffer_type" value="RINGBUFFER" />
