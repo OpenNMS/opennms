@@ -20,7 +20,23 @@
 			<attribute name="threads" type="int" use="required">
 				<annotation>
 					<documentation>
-						Number of parallel threads used by collectors, updaters, and discovery.
+						Number of parallel threads used by schedulable: collector groups, updaters, and discovery.
+					</documentation>
+				</annotation>
+			</attribute>
+
+			<attribute name="executor-threads" type="int" use="required">
+				<annotation>
+					<documentation>
+						Number of parallel threads used by collectors.
+					</documentation>
+				</annotation>
+			</attribute>
+
+			<attribute name="executor-queue-size" type="int" use="required">
+				<annotation>
+					<documentation>
+						The initial queue size of Priority Executor
 					</documentation>
 				</annotation>
 			</attribute>
@@ -52,7 +68,7 @@
 			<attribute name="bridge_topology_interval" type="long" default="300000">
 				<annotation>
 					<documentation>
-						Interval in milliseconds for executing bridge topology discovery.
+						Interval in milliseconds for executing bridge topology links discovery.
 					</documentation>
 				</annotation>
 			</attribute>
@@ -68,7 +84,7 @@
 			<attribute name="cdp-priority" type="int" default="1000">
 				<annotation>
 					<documentation>
-						The priority used for executing cdp data collection
+						The priority used for executing CDP links discovery
 					</documentation>
 				</annotation>
 			</attribute>
@@ -90,10 +106,18 @@
 				</annotation>
 			</attribute>
 
+			<attribute name="bridge-priority" type="int" default="10000">
+				<annotation>
+					<documentation>
+						The priority used for executing Bridge data collection
+					</documentation>
+				</annotation>
+			</attribute>
+
 			<attribute name="bridge_rescan_interval" type="long" default="86400000">
 				<annotation>
 					<documentation>
-						Interval in milliseconds for Bridge data discovery.
+						Interval in milliseconds for Bridge data collection.
 					</documentation>
 				</annotation>
 			</attribute>
@@ -103,6 +127,14 @@
 					<documentation>
 						Whether links discovery process should use
 						Bridge.
+					</documentation>
+				</annotation>
+			</attribute>
+
+			<attribute name="lldp-priority" type="int" default="2000">
+				<annotation>
+					<documentation>
+						The priority used for executing LLDP data collection
 					</documentation>
 				</annotation>
 			</attribute>
@@ -124,6 +156,14 @@
 				</annotation>
 			</attribute>
 
+			<attribute name="ospf-priority" type="int" default="3000">
+				<annotation>
+					<documentation>
+						The priority used for executing OSPF links discovery
+					</documentation>
+				</annotation>
+			</attribute>
+
 			<attribute name="ospf_rescan_interval" type="long" default="86400000">
 				<annotation>
 					<documentation>
@@ -137,6 +177,14 @@
 					<documentation>
 						Whether links discovery process should use
 						ospf mib data.
+					</documentation>
+				</annotation>
+			</attribute>
+
+			<attribute name="isis-priority" type="int" default="3000">
+				<annotation>
+					<documentation>
+						The priority used for executing IS-IS links discovery
 					</documentation>
 				</annotation>
 			</attribute>

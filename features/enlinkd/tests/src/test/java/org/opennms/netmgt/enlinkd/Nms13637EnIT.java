@@ -97,9 +97,7 @@ public class Nms13637EnIT extends EnLinkdBuilderITCase {
         final OnmsNode router1 = m_nodeDao.findByForeignId("linkd", MKTROUTER1_NAME);
         final OnmsNode router2 = m_nodeDao.findByForeignId("linkd", MKTROUTER2_NAME);
 
-        assertTrue(m_linkd.scheduleNodeCollection(router1.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(router2.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(ciscohomesw.getId()));
+        m_linkd.reload();
 
         assertTrue(m_linkd.runSingleSnmpCollection(router1.getId()));
         assertEquals(1, m_lldpElementDao.countAll());

@@ -96,7 +96,7 @@ public class SchedulableExecutableGroup extends Schedulable {
     public void add(Executable discovery, Integer priority) {
         synchronized (m_executables) {
             if (m_executables.add(discovery)) {
-                discovery.setPriority(m_priority+priority);
+                discovery.setPriority(m_priority + priority);
                 LOG.info("add: {}", discovery.getInfo());
             }
         }
@@ -105,7 +105,7 @@ public class SchedulableExecutableGroup extends Schedulable {
     public void add(Executable discovery) {
         synchronized (m_executables) {
             if (m_executables.add(discovery)) {
-                discovery.setPriority(m_priority);
+                discovery.setPriority(discovery.getPriority() + m_priority);
                 LOG.info("add: {}", discovery.getInfo());
             }
         }
