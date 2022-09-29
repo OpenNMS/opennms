@@ -1501,12 +1501,7 @@
     <argLineMemory>-Xmx2g</argLineMemory>
     <argLine>${argLineMemory} -Djava.security.egd=/dev/./urandom</argLine>
     <skipITs>true</skipITs>
-
-    <!--
-      This is on by default now that root is not required for pinging.
-      If you have issues with this, see https://docs.opennms.com/ for enabling non-root ping.
-      However, we need to set the default in a profile (NMS-8838).
-    <runPingTests>true</runPingTests> -->
+    <runPingTests>false</runPingTests>
 
     <maxCpus>2</maxCpus>
 
@@ -1856,7 +1851,6 @@
         </property>
       </activation>
       <properties>
-        <runPingTests>true</runPingTests>
         <skipPdfGeneration>false</skipPdfGeneration>
         <skipSignJar>false</skipSignJar>
       </properties>
@@ -2072,17 +2066,6 @@
           </plugin>
         </plugins>
       </build>
-    </profile>
-    <profile>
-      <id>default-runPingTests</id>
-      <activation>
-        <property>
-          <name>!runPingTests</name>
-        </property>
-      </activation>
-      <properties>
-        <runPingTests>true</runPingTests>
-      </properties>
     </profile>
     <profile>
       <id>checkstyle</id>
