@@ -27,22 +27,6 @@
         <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.config.writer_threads:16}" />
   </bean>
 
-  <bean id="timeseries.backend" class="java.lang.String">
-    <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.config.backend:ringbuffer}" />
-  </bean>
-
-  <bean id="timeseries.offheap.batchSize" class="java.lang.Integer">
-    <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.config.offheap.batch_size:8192}" />
-  </bean>
-
-  <bean id="timeseries.offheap.path" class="java.lang.String">
-    <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.config.offheap.path:/tmp}" />
-  </bean>
-
-  <bean id="timeseries.offheap.maxFileSize" class="java.lang.Long">
-    <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.config.offheap.max_file_size:-1}" />
-  </bean>
-
   <bean id="timeseriesMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
 
   <bean id="timeseriesMetricRegistryJmxReporterBuilder" class="com.codahale.metrics.JmxReporter" factory-method="forRegistry">
@@ -78,6 +62,16 @@
   <bean id="entityScopeProvider" class="org.opennms.core.mate.api.EntityScopeProvider"/>
 
   <bean id="metaTagDataLoader" class="org.opennms.netmgt.timeseries.samplewrite.MetaTagDataLoader" />
+
+  <bean id="timeseriesWriterConfig" class="org.opennms.netmgt.timeseries.samplewrite.TimeseriesWriterConfig">
+    <property name="bufferSize" value="${org.opennms.timeseries.config.buffer_size:-1}" />
+    <property name="numWriterThreads" ref="timeseries.writer_threads" />
+    <property name="bufferType" value="${org.opennms.timeseries.config.buffer_type:RINGBUFFER}" />
+    <property name="ringBufferSize" ref="timeseries.ring_buffer_size" />
+    <property name="batchSize" value="${org.opennms.timeseries.config.offheap.batch_size:8192}" />
+    <property name="path" value="${org.opennms.timeseries.config.offheap.path:/tmp}" />
+    <property name="maxFileSize" value="${org.opennms.timeseries.config.offheap.max_file_size:-1}" />
+  </bean>
 
   <bean id="timeseriesPersisterFactory" class="org.opennms.netmgt.timeseries.samplewrite.TimeseriesPersisterFactory" destroy-method="destroy" />
 

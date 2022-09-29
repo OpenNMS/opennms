@@ -70,7 +70,7 @@ public class OffheapTimeseriesWriterTest {
     public TemporaryFolder folder = new TemporaryFolder();
 
     @Before
-    public void setUp(){
+    public void setUp() {
         this.storageManager = Mockito.mock(TimeseriesStorageManager.class);
     }
 
@@ -80,21 +80,23 @@ public class OffheapTimeseriesWriterTest {
      */
     @Test
     public void canWriteToSampleRepositoryUsingMultipleThreads() throws IOException {
-        int ringBufferSize = 1024;
-        int numWriterThreads = 8;
-        String path = folder.newFolder().toString();
-
-        LatchedTimeseriesStorage store = new LatchedTimeseriesStorage(numWriterThreads);
+        TimeseriesWriterConfig config = new TimeseriesWriterConfig();
+        config.setBufferSize(1024);
+        config.setNumWriterThreads(8);
+        config.setBatchSize(32);
+        config.setPath(folder.newFolder().toString());
+        LatchedTimeseriesStorage store = new LatchedTimeseriesStorage(config.getNumWriterThreads());
         MetricRegistry registry = new MetricRegistry();
-        OffheapTimeSeriesWriter writer = new OffheapTimeSeriesWriter(storageManager, ringBufferSize, 16, 32, path, Long.MAX_VALUE, registry);
+
+        OffheapTimeSeriesWriter writer = new OffheapTimeSeriesWriter(storageManager, config, registry);
         when(storageManager.get()).thenReturn(store);
 
         Metric metric = createMetric().build();
-        for (int i = 0; i < ringBufferSize*2; i++) {
+        for (int i = 0; i < config.getBufferSize() * 2; i++) {
             Sample s = ImmutableSample.builder()
-            .metric(metric)
-            .time(Instant.now())
-            .value((double)i).build();
+                    .metric(metric)
+                    .time(Instant.now())
+                    .value((double) i).build();
             writer.insert(Lists.newArrayList(s));
         }
     }

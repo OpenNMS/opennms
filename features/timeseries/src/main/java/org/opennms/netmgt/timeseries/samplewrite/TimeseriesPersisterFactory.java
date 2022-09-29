@@ -69,20 +69,14 @@ public class TimeseriesPersisterFactory implements PersisterFactory {
                                       @Named("timeseriesStorageManager") final TimeseriesStorageManager timeseriesStorageManager,
                                       @Named("timeseriesPersisterMetaTagCache") final CacheConfig cacheConfig,
                                       @Named("timeseriesMetricRegistry") MetricRegistry registry,
-                                      @Named("timeseries.ring_buffer_size") Integer ringBufferSize,
-                                      @Named("timeseries.writer_threads") Integer numWriterThreads,
-                                      @Named("timeseries.backend") String backend,
-                                      @Named("timeseries.offheap.batchSize") final int batchSize,
-                                      @Named("timeseries.offheap.path") final String path,
-                                      @Named("timeseries.offheap.maxFileSize") final Long maxFileSize) {
-        if (OffheapTimeSeriesWriter.OFFHEAP_NAME.equals(backend)) {
-            this.timeseriesWriter = new OffheapTimeSeriesWriter(timeseriesStorageManager, ringBufferSize,
-                    numWriterThreads, batchSize, path, maxFileSize, registry);
+                                      @Named("timeseriesWriterConfig") TimeseriesWriterConfig timeseriesWriterConfig) {
+        if (timeseriesWriterConfig.getBufferType() == TimeseriesWriterConfig.BufferType.OFFHEAP) {
+            this.timeseriesWriter = new OffheapTimeSeriesWriter(timeseriesStorageManager,timeseriesWriterConfig, registry);
         } else {
-            this.timeseriesWriter = new RingBufferTimeseriesWriter(timeseriesStorageManager, stats, ringBufferSize,
-                    numWriterThreads, registry);
+            this.timeseriesWriter = new RingBufferTimeseriesWriter(timeseriesStorageManager, stats, timeseriesWriterConfig.getBufferSize(),
+                    timeseriesWriterConfig.getNumWriterThreads(), registry);
         }
-        LOG.debug("Writer: {}", this.timeseriesWriter);
+        LOG.info("Writer: {}", this.timeseriesWriter);
 
         this.metaTagDataLoader = metaTagDataLoader;
         this.configuredAdditionalMetaTagCache = new CacheBuilder<>()
