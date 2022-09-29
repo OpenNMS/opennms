@@ -68,8 +68,7 @@ public class Nms7777DWEnIT extends EnLinkdBuilderITCase {
         
         final OnmsNode dw = m_nodeDao.findByForeignId("linkd", DW_NAME);
         
-        assertTrue(m_linkd.scheduleNodeCollection(dw.getId()));
-
+        m_linkd.reload();
         assertTrue(m_linkd.runSingleSnmpCollection(dw.getId()));
 
         for (final LldpElement node: m_lldpElementDao.findAll()) {
