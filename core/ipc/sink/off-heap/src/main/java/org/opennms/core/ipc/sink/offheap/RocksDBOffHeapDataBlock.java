@@ -40,7 +40,6 @@ public class RocksDBOffHeapDataBlock<T> extends OffHeapDataBlock<T> {
 
     public RocksDBOffHeapDataBlock(String name, int queueSize, Function<T, byte[]> serializer, Function<byte[], T> deserializer, RocksDB rocksdb, byte[] data) {
         super(name, queueSize, serializer, deserializer, data);
-        LOG.warn("Create OffHeapDataBlock name = {}, data is empty {}, size {} ", name, data == null || data.length == 0, this.size());
         this.rocksdb = Objects.requireNonNull(rocksdb);
     }
 

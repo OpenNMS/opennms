@@ -59,6 +59,11 @@
       <artifactId>slf4j-api</artifactId>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>de.ruedigermoeller</groupId>
+      <artifactId>fst</artifactId>
+      <version>${fstVersion}</version>
+    </dependency>
 
     <!-- Dependencies used -->
     <dependency>
@@ -101,6 +106,11 @@
     <dependency>
       <groupId>net.agkn</groupId>
       <artifactId>hll</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.ipc.sink</groupId>
+      <artifactId>org.opennms.core.ipc.sink.offheap</artifactId>
+      <version>${project.version}</version>
     </dependency>
 
     <!-- Testing -->
