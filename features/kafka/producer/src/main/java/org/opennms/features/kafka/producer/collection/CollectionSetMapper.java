@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,6 +30,7 @@ package org.opennms.features.kafka.producer.collection;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.time.Duration;
 import java.util.Objects;
 
 import org.opennms.features.kafka.producer.model.CollectionSetProtos;
@@ -49,10 +50,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.base.Strings;
+import com.swrve.ratelimitedlogger.RateLimitedLog;
 
 public class CollectionSetMapper {
 
     private static final Logger LOG = LoggerFactory.getLogger(CollectionSetMapper.class);
+
+    private static final RateLimitedLog RATE_LIMITED_LOG = RateLimitedLog
+            .withRateLimit(LOG)
+            .maxRate(5).every(Duration.ofSeconds(30))
+            .build();
 
     @Autowired
     private NodeDao nodeDao;
@@ -143,7 +150,15 @@ public class CollectionSetMapper {
                             .newBuilder();
                     attributeBuilder.setGroup(lastGroupName);
                     attributeBuilder.setName(attribute.getName());
-                    attributeBuilder.setValue(attribute.getNumericValue().doubleValue());
+                    final Number number = attribute.getNumericValue();
+
+                    if (number != null) {
+                        attributeBuilder.setValue(number.doubleValue());
+                    } else {
+                        attributeBuilder.setValue(Double.NaN);
+                        RATE_LIMITED_LOG.error("Missing double value for non-string attribute (group='{}', name='{}', type='{}')", lastGroupName, attribute.getName(), attribute.getType().toString());
+                    }
+
                     attributeBuilder.setType((attribute.getType() == AttributeType.GAUGE) ? Type.GAUGE : Type.COUNTER);
                     collectionSetResourceBuilder.addNumeric(attributeBuilder);
                 }
