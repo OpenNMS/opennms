@@ -61,6 +61,7 @@ import com.google.common.collect.Lists;
 
 @Ignore
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
+@org.junit.experimental.categories.Category(org.opennms.smoketest.junit.FlakyTests.class)
 public class BSMAdminIT extends OpenNMSSeleniumIT {
 
     private static final Logger LOG = LoggerFactory.getLogger(BSMAdminIT.class);
