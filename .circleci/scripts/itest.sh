@@ -81,7 +81,9 @@ sudo add-apt-repository -y "deb https://cloud.r-project.org/bin/linux/ubuntu $(l
 
 retry sudo apt update && \
             RRDTOOL_VERSION=$(apt-cache show rrdtool | grep Version: | grep -v opennms | awk '{ print $2 }') && \
-            retry sudo /usr/local/bin/ghost-apt-install.sh \
+            echo '* libraries/restart-without-asking boolean true' | sudo debconf-set-selections && \
+            retry sudo env DEBIAN_FRONTEND=noninteractive apt -f --no-install-recommends install \
+                r-base \
                 "rrdtool=$RRDTOOL_VERSION" \
                 jrrd2 \
                 jicmp \
