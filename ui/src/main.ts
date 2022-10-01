@@ -31,12 +31,16 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import {
   faBell,
   faBellSlash,
-  faCogs
+  faCalendar,
+  faCogs,
+  faUsers
 } from '@fortawesome/free-solid-svg-icons'
 const icons = [
   faBell,
   faBellSlash,
-  faCogs
+  faCalendar,
+  faCogs,
+  faUsers
 ]
 library.add(...icons);
 

@@ -34,6 +34,49 @@
         </FeatherDropdownItem>
       </FeatherDropdown>
 
+      <FeatherDropdown class="menubar-dropdown">
+        <template v-slot:trigger="{ attrs, on }">
+          <FeatherButton link href="#" v-bind="attrs" v-on="on">
+            {{ mainMenu.countNoticesAssignedToOtherThanUser }} {{ mainMenu.countNoticesAssignedToOtherThanUser }}
+            <FeatherIcon :icon="ArrowDropDown" />
+          </FeatherButton>
+        </template>
+        <FeatherDropdownItem
+          @click="onMenuItemClick(mainMenu.noticesAssignedToUserLink)"
+        >
+          <a
+            :href="computeLink(mainMenu.noticesAssignedToUserLink)"
+            class="dropdown-menu-link"
+          >
+            <FeatherIcon :icon="Person" />
+            <span class="left-margin-small">
+              {{ mainMenu.countNoticesAssignedToUser }} notices assigned to you
+            </span>
+          </a>
+        </FeatherDropdownItem>
+        <FeatherDropdownItem
+          @click="onMenuItemClick(mainMenu.noticesAssignedToOtherThanUserLink)"
+        >
+          <a
+            :href="computeLink(mainMenu.noticesAssignedToOtherThanUserLink)"
+            class="dropdown-menu-link"
+          >
+            <font-awesome-icon icon="fa-solid fa-users"></font-awesome-icon>
+            <span class="left-margin-small">
+              {{ mainMenu.countNoticesAssignedToOtherThanUser }} of {{ mainMenu.countNoticesAssignedToOtherThanUser }} assigned to anyone but you
+            </span>
+          </a>
+        </FeatherDropdownItem>
+        <FeatherDropdownItem
+          @click="onMenuItemClick(mainMenu.rolesLink)"
+        >
+          <font-awesome-icon icon="fa-solid fa-calendar"></font-awesome-icon>
+          <a
+            :href="computeLink(mainMenu.rolesLink)"
+            class="dropdown-menu-link left-margin-small">On-Call Schedule</a>
+        </FeatherDropdownItem>
+      </FeatherDropdown>
+
       <a
         v-if="mainMenu.quickAddNodeLink"
         :href="computeLink(mainMenu.quickAddNodeLink)"
@@ -79,6 +122,7 @@ import { FeatherIcon } from '@featherds/icon'
 import AddCircleAlt from '@featherds/icon/action/AddCircleAlt'
 import ArrowDropDown from '@featherds/icon/navigation/ArrowDropDown'
 import LightDarkMode from '@featherds/icon/action/LightDarkMode'
+import Person from '@featherds/icon/action/Person'
 import Logo from '@/assets/Logo.vue'
 import Search from './Search.vue'
 import { useStore } from 'vuex'
@@ -180,6 +224,9 @@ onMounted(async () => {
 }
 .dropdown-menu-link {
   color: var($primary-text-on-surface) !important;
+}
+.left-margin-small {
+  margin-left: 4px;
 }
 .menu-link {
   color: var($primary-text-on-color) !important;

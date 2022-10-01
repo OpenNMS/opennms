@@ -18,7 +18,7 @@ const fakeMainMenuDefinition = {
   noticesAssignedToOtherThanUserLink: '/opennms/notification/browse?acktype=unack',
   rolesLink: '/opennms/roles',
   quickAddNodeLink: '/opennms/admin/ng-requisitions/quick-add-node.jsp',
-  adminLink: '/opennms/admin/index',
+  adminLink: '/opennms/admin/index.jsp',
 
   menuItems: [
     {
