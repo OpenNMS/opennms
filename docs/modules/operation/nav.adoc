@@ -100,7 +100,6 @@
 *** xref:bsm/edges.adoc[]
 *** xref:bsm/map-functions.adoc[]
 *** xref:bsm/reduce-functions.adoc[]
-** xref:bsm/bsmd.adoc[]
 
 * xref:topology/introduction.adoc[]
 ** xref:topology/topology.adoc[]
