@@ -55,7 +55,7 @@ const results = computed(() => {
 @import "@featherds/styles/themes/variables";
 
 .menubar-search {
-  width: 350px !important;
+  width: 250px !important;
   margin-right: 20px;
   :deep(.feather-input-border) {
     background: var($surface);

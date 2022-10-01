@@ -14,118 +14,42 @@
     <template v-slot:right>
       <a href="http://localhost:8980/opennms/element/index.jsp" class="menu-link">Search</a>
 
-      <FeatherDropdown class="menubar-dropdown">
+      <FeatherDropdown
+        v-for="menuItem in menuItems"
+        :key="menuItem.name"
+        class="menubar-dropdown"
+      >
         <template v-slot:trigger="{ attrs, on }">
           <FeatherButton link href="#" v-bind="attrs" v-on="on">
-            Info
+            {{ menuItem.name }}
             <FeatherIcon :icon="ArrowDropDown" />
           </FeatherButton>
         </template>
-        <FeatherDropdownItem><a href="http://localhost:8980/opennms/element/nodeList.htm" class="dropdown-menu-link">Nodes</a></FeatherDropdownItem>
-        <FeatherDropdownItem><a href="/opennms/asset/index.jsp" class="dropdown-menu-link">Assets</a></FeatherDropdownItem>
-        <FeatherDropdownItem><a href="/opennms/pathOutage/index.jsp" class="dropdown-menu-link">Path Outages</a></FeatherDropdownItem>
-        <FeatherDropdownItem><a href="/opennms/ui/index.html#/device-config-backup" class="dropdown-menu-link">Device Configs</a></FeatherDropdownItem>
-      </FeatherDropdown>
-
-      <FeatherDropdown class="menubar-dropdown">
-        <template v-slot:trigger="{ attrs, on }">
-          <FeatherButton link href="#" v-bind="attrs" v-on="on">
-            Status
-            <FeatherIcon :icon="ArrowDropDown" />
-          </FeatherButton>
-        </template>
-        <FeatherDropdownItem><a href="/opennms/event/index" class="dropdown-menu-link">Events</a></FeatherDropdownItem>
-        <FeatherDropdownItem><a href="/opennms/alarm/index.htm" class="dropdown-menu-link">Alarms</a></FeatherDropdownItem>
-        <FeatherDropdownItem><a href="/opennms/notification/index.jsp" class="dropdown-menu-link">Notifications</a></FeatherDropdownItem>
-        <FeatherDropdownItem><a href="/opennms/outage/index.jsp" class="dropdown-menu-link">Outages</a></FeatherDropdownItem>
-        <FeatherDropdownItem><a href="/opennms/surveillance-view.jsp" class="dropdown-menu-link">Surveillance</a></FeatherDropdownItem>
-        <FeatherDropdownItem><a href="/opennms/heatmap/index.jsp" class="dropdown-menu-link">Heatmap</a></FeatherDropdownItem>
-        <FeatherDropdownItem><a href="/opennms/trend/index.jsp" class="dropdown-menu-link">Trend</a></FeatherDropdownItem>
-        <FeatherDropdownItem><a href="/opennms/application/index.jsp" class="dropdown-menu-link">Application</a></FeatherDropdownItem>
-      </FeatherDropdown>
-
-      <FeatherDropdown class="menubar-dropdown">
-        <template v-slot:trigger="{ attrs, on }">
-          <FeatherButton link href="#" v-bind="attrs" v-on="on">
-            Reports
-            <FeatherIcon :icon="ArrowDropDown" />
-          </FeatherButton>
-        </template>
-        <FeatherDropdownItem><a href="/opennms/charts/index.jsp" class="dropdown-menu-link">Charts</a></FeatherDropdownItem>
-        <FeatherDropdownItem><a href="/opennms/graph/index.jsp" class="dropdown-menu-link">Resource Graphs</a></FeatherDropdownItem>
-        <FeatherDropdownItem><a href="/opennms/KSC/index.jsp" class="dropdown-menu-link">KSC Reports</a></FeatherDropdownItem>
-        <FeatherDropdownItem><a href="/opennms/report/database/index.jsp" class="dropdown-menu-link">Database Reports</a></FeatherDropdownItem>
-        <FeatherDropdownItem><a href="/opennms/statisticsReports/index.htm" class="dropdown-menu-link">Statistics</a></FeatherDropdownItem>
-      </FeatherDropdown>
-
-      <FeatherDropdown class="menubar-dropdown">
-        <template v-slot:trigger="{ attrs, on }">
-          <FeatherButton link href="#" v-bind="attrs" v-on="on">
-            Dashboards
-            <FeatherIcon :icon="ArrowDropDown" />
-          </FeatherButton>
-        </template>
-        <FeatherDropdownItem><a href="/opennms/dashboard.jsp" class="dropdown-menu-link">Dashboard</a></FeatherDropdownItem>
-        <FeatherDropdownItem><a href="/opennms/vaadin-wallboard" class="dropdown-menu-link">Ops Board</a></FeatherDropdownItem>
-      </FeatherDropdown>
-
-      <FeatherDropdown class="menubar-dropdown">
-        <template v-slot:trigger="{ attrs, on }">
-          <FeatherButton link href="#" v-bind="attrs" v-on="on">
-            Maps
-            <FeatherIcon :icon="ArrowDropDown" />
-          </FeatherButton>
-        </template>
-        <FeatherDropdownItem><a href="/opennms/topology" class="dropdown-menu-link">Topology</a></FeatherDropdownItem>
-        <FeatherDropdownItem><a href="/opennms/node-maps" class="dropdown-menu-link">Geographical</a></FeatherDropdownItem>
-      </FeatherDropdown>
-
-      <FeatherDropdown class="menubar-dropdown">
-        <template v-slot:trigger="{ attrs, on }">
-          <FeatherButton link href="#" v-bind="attrs" v-on="on">
-            Help
-            <FeatherIcon :icon="ArrowDropDown" />
-          </FeatherButton>
-        </template>
-        <FeatherDropdownItem><a href="/opennms/help/index.jsp" class="dropdown-menu-link">Help</a></FeatherDropdownItem>
-        <FeatherDropdownItem><a href="/opennms/about/index.jsp" class="dropdown-menu-link">About</a></FeatherDropdownItem>
-        <FeatherDropdownItem><a href="/opennms/support/index.jsp" class="dropdown-menu-link">Support</a></FeatherDropdownItem>
-      </FeatherDropdown>
-
-      <FeatherDropdown class="menubar-dropdown">
-        <template v-slot:trigger="{ attrs, on }">
-          <FeatherButton link href="/opennms/account/selfService/" v-bind="attrs" v-on="on">
-            {{ username }}
-            <FeatherIcon :icon="ArrowDropDown" />
-          </FeatherButton>
-        </template>
-        <FeatherDropdownItem><a href="/opennms/account/selfService/newPasswordEntry" class="dropdown-menu-link">Change Password</a></FeatherDropdownItem>
-        <FeatherDropdownItem><a href="/opennms/j_spring_security_logout" class="dropdown-menu-link">Log Out</a></FeatherDropdownItem>
-      </FeatherDropdown>
-
-      <FeatherDropdown class="menubar-dropdown">
-        <template v-slot:trigger="{ attrs, on }">
-          <FeatherButton link href="/opennms/account/selfService/" v-bind="attrs" v-on="on">{{ noticesCountUser }} {{ noticesCountOther }}</FeatherButton>
-        </template>
-        <FeatherDropdownItem>
-          <a href="/opennms/notification/browse?acktype=unack&filter=user=={{ username }}" class="dropdown-menu-link">
-            {{ noticesCountUser }} notices assigned to you</a>
+        <FeatherDropdownItem
+          v-for="item in menuItem.items"
+          :key="item.name"
+          @click="onMenuItemClick(item.url, item.isVueLink)"
+        >
+          <a :href="computeLink(item.url, item.isVueLink)" class="dropdown-menu-link">{{ item.name }}</a>
         </FeatherDropdownItem>
-        <FeatherDropdownItem>
-          <a href="/opennms/notification/browse?acktype=unack" class="dropdown-menu-link">
-            {{ noticesCountOther }} of {{ noticesCountOther }} assigned to anyone but you</a>
-        </FeatherDropdownItem>
-        <FeatherDropdownItem><a href="/opennms/roles" class="dropdown-menu-link">On-Call Schedule</a></FeatherDropdownItem>
       </FeatherDropdown>
 
-      <a href="/opennms/admin/ng-requisitions/quick-add-node.jsp" class="menu-link">
+      <a
+        v-if="mainMenu.quickAddNodeLink"
+        :href="computeLink(mainMenu.quickAddNodeLink)"
+        class="menu-link"
+      >
         <FeatherIcon
           :icon="AddCircleAlt"
           class="pointer light-dark"
         />
       </a>
 
-      <a href="/opennms/admin/index" class="menu-link">
+      <a
+        v-if="mainMenu.displayAdminLink"
+        :href="computeLink(mainMenu.adminLink)"
+        class="menu-link"
+      >
         <font-awesome-icon
           icon="fa-solid fa-cogs"
           class="menu-link"
@@ -174,10 +98,10 @@ const noticesCountOther = ref(1)
 
 const dateMillis = computed<number>(() => (new Date()).getTime())
 const mainMenu = computed<MainMenuDefinition>(() => store.state.menuModule.mainMenu)
+const menuItems = computed<MenuItemDefinition[]>(() => store.state.menuModule.mainMenu.menuItems)
 
 const noticesDisplay = computed<NoticeStatusDisplay>(() => {
   const status = mainMenu.value?.noticeStatus
-  console.log('DEBUG status: ' + status)
 
   if (status === 'on') {
     return {
@@ -223,6 +147,17 @@ const toggleDarkLightMode = (savedTheme: string | null) => {
   localStorage.setItem('theme', theme.value)
   store.dispatch('appModule/setTheme', theme.value)
 }
+
+const computeLink = (url: string, isVueLink?: boolean) => {
+  const baseLink = (isVueLink ? import.meta.env.VITE_VUE_BASE_URL : import.meta.env.VITE_BASE_URL) || ''
+  return `${baseLink}${url}`
+}
+
+const onMenuItemClick = (url: string, isVueLink?: boolean) => {
+  const link = computeLink(url, isVueLink)
+  window.location.assign(link)
+}
+
 onMounted(async () => {
   const savedTheme = localStorage.getItem('theme')
   toggleDarkLightMode(savedTheme)
