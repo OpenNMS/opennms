@@ -2,17 +2,17 @@
   <FeatherAppBar :labels="{ skip: 'main' }" content="app">
     <template v-slot:left>
       <FeatherAppBarLink :icon="logo" title="Home" type="home" url="/" />
-      <span class="body-large">2022-09-28T16:08:54-04:00</span>
+      <span class="body-large" v-date>{{ dateMillis }}</span>
       <font-awesome-icon
-        icon="fa-solid fa-bell-slash"
-        class="alarm-error"
-        title="Notices: Off"
+        :icon="noticesDisplay.icon"
+        :class="noticesDisplay.colorClass"
+        :title="noticesDisplay.title"
       ></font-awesome-icon>
       <Search v-if="!route.fullPath.includes('/map')" />
      </template>
 
     <template v-slot:right>
-      <a href="/search" class="menu-link">Search</a>
+      <a href="http://localhost:8980/opennms/element/index.jsp" class="menu-link">Search</a>
 
       <FeatherDropdown class="menubar-dropdown">
         <template v-slot:trigger="{ attrs, on }">
@@ -21,7 +21,7 @@
             <FeatherIcon :icon="ArrowDropDown" />
           </FeatherButton>
         </template>
-        <FeatherDropdownItem><a href="/opennms/element/nodeList.htm" class="dropdown-menu-link">Nodes</a></FeatherDropdownItem>
+        <FeatherDropdownItem><a href="http://localhost:8980/opennms/element/nodeList.htm" class="dropdown-menu-link">Nodes</a></FeatherDropdownItem>
         <FeatherDropdownItem><a href="/opennms/asset/index.jsp" class="dropdown-menu-link">Assets</a></FeatherDropdownItem>
         <FeatherDropdownItem><a href="/opennms/pathOutage/index.jsp" class="dropdown-menu-link">Path Outages</a></FeatherDropdownItem>
         <FeatherDropdownItem><a href="/opennms/ui/index.html#/device-config-backup" class="dropdown-menu-link">Device Configs</a></FeatherDropdownItem>
@@ -134,13 +134,12 @@
       </a>
 
       <!--
-      <FeatherButton @click="returnHandler" class="return-btn"
-        >Back to main page</FeatherButton
-      >
+      <FeatherButton @click="returnHandler" class="return-btn">Back to main page</FeatherButton>
       -->
+
       <FeatherIcon
         :icon="LightDarkMode"
-        title="Quick-Add Node"
+        title="Toggle Light/Dark Mode"
         class="pointer light-dark"
         @click="toggleDarkLightMode(null)"
       />
@@ -152,8 +151,6 @@
 import { FeatherAppBar, FeatherAppBarLink } from '@featherds/app-bar'
 import { FeatherButton } from '@featherds/button'
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
-import { FeatherListHeader, FeatherListItem } from '@featherds/list'
-import { FeatherMegaMenu } from '@featherds/megamenu'
 import { FeatherIcon } from '@featherds/icon'
 import AddCircleAlt from '@featherds/icon/action/AddCircleAlt'
 import ArrowDropDown from '@featherds/icon/navigation/ArrowDropDown'
@@ -161,6 +158,7 @@ import LightDarkMode from '@featherds/icon/action/LightDarkMode'
 import Logo from '@/assets/Logo.vue'
 import Search from './Search.vue'
 import { useStore } from 'vuex'
+import { MainMenuDefinition, MenuItemDefinition, NoticeStatusDisplay } from '@/types/mainMenu'
 
 const store = useStore()
 const route = useRoute()
@@ -173,6 +171,34 @@ const dark = 'open-dark'
 const username = ref('admin1')
 const noticesCountUser = ref(0)
 const noticesCountOther = ref(1)
+
+const dateMillis = computed<number>(() => (new Date()).getTime())
+const mainMenu = computed<MainMenuDefinition>(() => store.state.menuModule.mainMenu)
+
+const noticesDisplay = computed<NoticeStatusDisplay>(() => {
+  const status = mainMenu.value?.noticeStatus
+  console.log('DEBUG status: ' + status)
+
+  if (status === 'on') {
+    return {
+      icon: 'fa-solid fa-bell',
+      colorClass: 'alarm-ok',
+      title: 'Notices: On'
+    }
+  } else if (status === 'off') {
+    return {
+      icon: 'fa-solid fa-bell-slash',
+      colorClass: 'alarm-error',
+      title: 'Notices: Off'
+    }
+  }
+
+  return {
+    icon: 'fa-solid fa-bell',
+    colorClass: '',
+    title: ''
+  }
+})
 
 const toggleDarkLightMode = (savedTheme: string | null) => {
   const el = document.body
@@ -213,6 +239,9 @@ onMounted(async () => {
 }
 .alarm-error {
   color: var($error);
+}
+.alarm-ok {
+  color: var($success);
 }
 .dropdown-menu-link {
   color: var($primary-text-on-surface) !important;

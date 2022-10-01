@@ -29,10 +29,12 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 // TODO: Move to separate fil
 // See: https://fontawesome.com/docs/web/use-with/vue/ and following
 import {
+  faBell,
   faBellSlash,
   faCogs
 } from '@fortawesome/free-solid-svg-icons'
 const icons = [
+  faBell,
   faBellSlash,
   faCogs
 ]
