@@ -1,7 +1,7 @@
 import { VuexContext } from '@/types'
 import API from '@/services'
 import { State } from './state'
-import { MainMenuDefinition } from '@/types/mainMenu'
+import { MainMenu } from '@/types/mainMenu'
 
 interface ContextWithState extends VuexContext {
   state: State
@@ -10,7 +10,7 @@ interface ContextWithState extends VuexContext {
 // Set this to true to use local/fake data instead of making API call
 const useFakeMenuData = false
 
-const defaultMainMenuDefinition = {
+const defaultMainMenu = {
   displayAdminLink: true,
   countNoticesAssignedToUser: 0,
   countNoticesAssignedToOtherThanUser: 1,
@@ -171,26 +171,26 @@ const defaultMainMenuDefinition = {
       ]
     }
   ]
-} as MainMenuDefinition
+} as MainMenu
 
-const getMainMenuDefinition = async (context: ContextWithState) => {
+const getMainMenu = async (context: ContextWithState) => {
   // for using local data for dev/debugging purposes
   if (useFakeMenuData) {
-    context.commit('SAVE_MAIN_MENU_DEFINITION', defaultMainMenuDefinition)
+    context.commit('SAVE_MAIN_MENU', defaultMainMenu)
     return
   }
 
   const resp = await API.getMainMenu()
 
   if (resp) {
-    const mainMenuDefinition = resp as MainMenuDefinition
+    const mainMenu = resp as MainMenu
     console.log('DEBUG got menubar API result:')
-    console.dir(mainMenuDefinition)
+    console.dir(mainMenu)
 
-    context.commit('SAVE_MAIN_MENU_DEFINITION', mainMenuDefinition)
+    context.commit('SAVE_MAIN_MENU', mainMenu)
   }
 }
 
 export default {
-  getMainMenuDefinition
+  getMainMenu
 }

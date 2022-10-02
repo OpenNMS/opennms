@@ -1,13 +1,16 @@
-export interface MenuItemDefinition {
+export interface MenuItem {
   name: string
   url: string
   icon: string
   isAbsoluteUrl: boolean
   isVueLink: boolean
-  items: MenuItemDefinition[]
 }
 
-export interface MainMenuDefinition {
+export interface TopMenuItem extends MenuItem {
+  items: MenuItem[]
+}
+
+export interface MainMenu {
   displayAdminLink: boolean
   countNoticesAssignedToUser: number
   countNoticesAssignedToOtherThanUser: number
@@ -20,7 +23,7 @@ export interface MainMenuDefinition {
   searchLink: string
   selfServiceLink: string
   username: string
-  menuItems: MenuItemDefinition[]
+  menuItems: TopMenuItem[]
 }
 
 export interface NoticeStatusDisplay {

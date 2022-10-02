@@ -132,7 +132,7 @@ import Person from '@featherds/icon/action/Person'
 import Logo from '@/assets/Logo.vue'
 import Search from './Search.vue'
 import { useStore } from 'vuex'
-import { MainMenuDefinition, MenuItemDefinition, NoticeStatusDisplay } from '@/types/mainMenu'
+import { MainMenu, TopMenuItem, MenuItem, NoticeStatusDisplay } from '@/types/mainMenu'
 
 const store = useStore()
 const route = useRoute()
@@ -147,8 +147,8 @@ const noticesCountUser = ref(0)
 const noticesCountOther = ref(1)
 
 const dateMillis = computed<number>(() => (new Date()).getTime())
-const mainMenu = computed<MainMenuDefinition>(() => store.state.menuModule.mainMenu)
-const menuItems = computed<MenuItemDefinition[]>(() => store.state.menuModule.mainMenu.menuItems)
+const mainMenu = computed<MainMenu>(() => store.state.menuModule.mainMenu)
+const menuItems = computed<TopMenuItem[]>(() => store.state.menuModule.mainMenu.menuItems)
 
 const noticesDisplay = computed<NoticeStatusDisplay>(() => {
   const status = mainMenu.value?.noticeStatus

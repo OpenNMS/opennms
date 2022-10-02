@@ -1,10 +1,9 @@
-import { AxiosResponse } from 'axios'
 import { v2 } from './axiosInstances'
-import { MainMenuDefinition } from '@/types/mainMenu'
+import { MainMenu } from '@/types/mainMenu'
 
 const endpoint = 'menubar'
 
-const getMainMenu = async (): Promise<MainMenuDefinition | false> => {
+const getMainMenu = async (): Promise<MainMenu | false> => {
   try {
     const resp = await v2.get(endpoint)
     return resp.data

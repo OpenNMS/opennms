@@ -1,11 +1,11 @@
-import { MainMenuDefinition } from '@/types/mainMenu'
+import { MainMenu } from '@/types/mainMenu'
 
 export interface State {
-  mainMenu: MainMenuDefinition
+  mainMenu: MainMenu
 }
 
 const state: State = {
-  mainMenu: {} as MainMenuDefinition
+  mainMenu: {} as MainMenu
 }
 
 export default state

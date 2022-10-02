@@ -1,10 +1,10 @@
 import { State } from './state'
-import { MainMenuDefinition } from '@/types/mainMenu'
+import { MainMenu } from '@/types/mainMenu'
 
-const SAVE_MAIN_MENU_DEFINITION = (state: State, mainMenu: MainMenuDefinition) => {
+const SAVE_MAIN_MENU = (state: State, mainMenu: MainMenu) => {
   state.mainMenu = mainMenu
 }
 
 export default {
-  SAVE_MAIN_MENU_DEFINITION
+  SAVE_MAIN_MENU
 }
