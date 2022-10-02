@@ -45,21 +45,27 @@ import org.springframework.stereotype.Component;
 @Component
 @Path("menubar")
 public class MenubarRestService {
-
     private static final Logger LOG = LoggerFactory.getLogger(org.opennms.web.rest.v2.MenubarRestService.class);
 
     // DTO that is returned
-    public static class MainMenuDefinition {
-        public static class MenuItemDefinition {
+    public static class MainMenu {
+        public static class MenuItem {
             public String name;
             public String url;
             public String icon;
             public boolean isAbsoluteUrl;
             public boolean isVueLink;
-            public List<MenuItemDefinition> items;
 
-            public MenuItemDefinition(String name) {
+            public MenuItem(String name) {
                 this.name = name;
+            }
+        }
+
+        public static class TopMenuItem extends MenuItem {
+            public List<MenuItem> items;
+
+            public TopMenuItem(String name) {
+                super(name);
             }
 
             public void addItem(String name, String url) {
@@ -67,17 +73,17 @@ public class MenubarRestService {
             }
 
             public void addItem(String name, String url, String icon, boolean isAbsoluteUrl, boolean isVueLink) {
-               if (this.items == null) {
-                   this.items = new ArrayList<>();
-               }
+                if (this.items == null) {
+                    this.items = new ArrayList<>();
+                }
 
-               var item = new MenuItemDefinition(name);
-               item.url = url;
-               item.icon = icon;
-               item.isAbsoluteUrl = isAbsoluteUrl;
-               item.isVueLink = isVueLink;
+                var item = new MenuItem(name);
+                item.url = url;
+                item.icon = icon;
+                item.isAbsoluteUrl = isAbsoluteUrl;
+                item.isVueLink = isVueLink;
 
-               this.items.add(item);
+                this.items.add(item);
             }
         }
 
@@ -93,24 +99,24 @@ public class MenubarRestService {
         public String searchLink;
         public String selfServiceLink;
         public String username;
-        public List<MenuItemDefinition> menuItems;
+        public List<TopMenuItem> menuItems;
     }
 
     @GET
     @Path("/")
     @Produces({MediaType.APPLICATION_JSON})
     public Response getMainMenu() {
-        MainMenuDefinition mainMenu = buildMenuDefinition();
+        MainMenu mainMenu = buildMenuDefinition();
 
         return Response.ok(mainMenu).build();
     }
 
-    private MainMenuDefinition buildMenuDefinition() {
+    private MainMenu buildMenuDefinition() {
         // TODO: Get this from session
         final String username = "admin1";
 
         // fake data for now
-        MainMenuDefinition menu = new MainMenuDefinition();
+        MainMenu menu = new MainMenu();
         menu.displayAdminLink = true;
         menu.countNoticesAssignedToUser = 0;
         menu.countNoticesAssignedToOtherThanUser = 1;
@@ -126,14 +132,14 @@ public class MenubarRestService {
 
         menu.menuItems = new ArrayList<>();
 
-        var infoMenu = new MainMenuDefinition.MenuItemDefinition("Info");
+        var infoMenu = new MainMenu.TopMenuItem("Info");
         infoMenu.addItem("Nodes", "/opennms/element/nodeList.htm");
         infoMenu.addItem("Assets", "/opennms/asset/index.jsp");
         infoMenu.addItem("Path Outages", "/opennms/pathOutage/index.jsp");
         infoMenu.addItem("Device Configs", "/opennms/ui/index.html#/device-config-backup", "", false, true);
         menu.menuItems.add(infoMenu);
 
-        var statusMenu = new MainMenuDefinition.MenuItemDefinition("Status");
+        var statusMenu = new MainMenu.TopMenuItem("Status");
         statusMenu.addItem("Events", "/opennms/event/index");
         statusMenu.addItem("Alarms", "/opennms/alarm/index.htm");
         statusMenu.addItem("Notifications", "/opennms/notification/index.jsp");
@@ -144,7 +150,7 @@ public class MenubarRestService {
         statusMenu.addItem("Application", "/opennms/application/index.jsp");
         menu.menuItems.add(statusMenu);
 
-        var reportsMenu = new MainMenuDefinition.MenuItemDefinition("Reports");
+        var reportsMenu = new MainMenu.TopMenuItem("Reports");
         reportsMenu.addItem("Charts", "/opennms/charts/index.jsp");
         reportsMenu.addItem("Resource Graphs", "/opennms/graph/index.jsp");
         reportsMenu.addItem("KSC Reports", "/opennms/KSC/index.jsp");
@@ -152,23 +158,23 @@ public class MenubarRestService {
         reportsMenu.addItem("Statistics", "/opennms/statisticsReports/index.htm");
         menu.menuItems.add(reportsMenu);
 
-        var dashboardsMenu = new MainMenuDefinition.MenuItemDefinition("Dashboards");
+        var dashboardsMenu = new MainMenu.TopMenuItem("Dashboards");
         dashboardsMenu.addItem("Dashboard", "/opennms/dashboard.jsp");
         dashboardsMenu.addItem("Ops Board", "/opennms/vaadin-wallboard");
         menu.menuItems.add(dashboardsMenu);
 
-        var mapsMenu = new MainMenuDefinition.MenuItemDefinition("Maps");
+        var mapsMenu = new MainMenu.TopMenuItem("Maps");
         mapsMenu.addItem("Topology", "/opennms/topology");
         mapsMenu.addItem("Geographical", "/opennms/node-maps");
         menu.menuItems.add(mapsMenu);
 
-        var helpMenu = new MainMenuDefinition.MenuItemDefinition("Help");
+        var helpMenu = new MainMenu.TopMenuItem("Help");
         helpMenu.addItem("Help", "/opennms/help/index.jsp");
         helpMenu.addItem("About", "/opennms/about/index.jsp");
         helpMenu.addItem("Support", "/opennms/support/index.jsp");
         menu.menuItems.add(helpMenu);
 
-        var userMenu = new MainMenuDefinition.MenuItemDefinition(username);
+        var userMenu = new MainMenu.TopMenuItem(username);
         userMenu.icon = "Person";
         userMenu.url = "/opennms/account/selfService";
         userMenu.addItem("Account", "/opennms/account/selfService");
