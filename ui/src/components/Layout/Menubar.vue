@@ -12,7 +12,7 @@
      </template>
 
     <template v-slot:right>
-      <a href="http://localhost:8980/opennms/element/index.jsp" class="menu-link">Search</a>
+      <a :href="computeLink(mainMenu.searchLink)" class="menu-link">Search</a>
 
       <FeatherDropdown
         v-for="menuItem in menuItems"
@@ -21,6 +21,12 @@
       >
         <template v-slot:trigger="{ attrs, on }">
           <FeatherButton link href="#" v-bind="attrs" v-on="on">
+            <template v-if="menuItem.icon && menuItem.icon === 'Person'">
+              <FeatherIcon :icon="Person" />
+            </template>
+            <template v-if="menuItem.icon && menuItem.icon.startsWith('fa-')">
+              <font-awesome-icon :icon="`fa-solid ${menuItem.icon}`"></font-awesome-icon>
+            </template>
             {{ menuItem.name }}
             <FeatherIcon :icon="ArrowDropDown" />
           </FeatherButton>

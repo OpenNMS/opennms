@@ -7,19 +7,19 @@ interface ContextWithState extends VuexContext {
   state: State
 }
 
-const fakeMainMenuDefinition = {
-  noticeStatus: 'off',
+const defaultMainMenuDefinition = {
   displayAdminLink: true,
-  username: 'admin1',
   countNoticesAssignedToUser: 0,
   countNoticesAssignedToOtherThanUser: 1,
-  selfServiceLink: '/opennms/account/selfService/',
-  noticesAssignedToUserLink: '/opennms/notification/browse?acktype=unack&filter=user=={{ username }}',
+  noticesAssignedToUserLink: '/opennms/notification/browse?acktype=unack&filter=user==admin1',
   noticesAssignedToOtherThanUserLink: '/opennms/notification/browse?acktype=unack',
-  rolesLink: '/opennms/roles',
-  quickAddNodeLink: '/opennms/admin/ng-requisitions/quick-add-node.jsp',
+  noticeStatus: 'off',
   adminLink: '/opennms/admin/index.jsp',
-
+  rolesLink: '/opennms/roles',
+  searchLink: '/opennms/element/index.jsp',
+  selfServiceLink: '/opennms/account/selfService/',
+  quickAddNodeLink: '/opennms/admin/ng-requisitions/quick-add-node.jsp',
+  username: 'admin1',
   menuItems: [
     {
       name: 'Info',
@@ -150,6 +150,7 @@ const fakeMainMenuDefinition = {
     },
     {
       name: 'admin1',
+      icon: 'Person',
       url: '/opennms/account/selfService/',
       items: [
         {
@@ -170,9 +171,9 @@ const fakeMainMenuDefinition = {
 } as MainMenuDefinition
 
 const getMainMenuDefinition = async (context: ContextWithState) => {
+  // TODO: Replace with actual API call
   // const mainMenuDefinition = await API.getMainMenu()
-  console.log('DEBUG in getMainMenuDefinition')
-  const mainMenuDefinition = fakeMainMenuDefinition
+  const mainMenuDefinition = defaultMainMenuDefinition
   context.commit('SAVE_MAIN_MENU_DEFINITION', mainMenuDefinition)
 }
 
