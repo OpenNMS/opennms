@@ -1,20 +1,15 @@
 import { AxiosResponse } from 'axios'
 import { v2 } from './axiosInstances'
-import useSpinner from '@/composables/useSpinner'
+import { MainMenuDefinition } from '@/types/mainMenu'
 
-const endpoint = 'ui-menu'
+const endpoint = 'menubar'
 
-const { startSpinner, stopSpinner } = useSpinner()
-
-const getMainMenu = async (): Promise<AxiosResponse | false> => {
-  startSpinner()
-
+const getMainMenu = async (): Promise<MainMenuDefinition | false> => {
   try {
-    return await v2.get(endpoint)
+    const resp = await v2.get(endpoint)
+    return resp.data
   } catch (err) {
     return false
-  } finally {
-    stopSpinner()
   }
 }
 
