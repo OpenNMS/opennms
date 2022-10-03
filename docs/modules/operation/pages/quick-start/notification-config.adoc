@@ -8,26 +8,25 @@ We assume that you have followed the previous steps and are ready to proceed to 
 
 == Configuration and customization
 
-Now that you've xref:operation:quick-start/baseline.adoc[established your environment's baseline], it's time to take your notes and configure your custom notifications.
-Establishing notifications that are tailored for your {page-component-title} environment will help maintain it.
-Done correctly, customizing notifications will also mean that more relevant information is being brought to your attention.
+Now that you have xref:operation:quick-start/baseline.adoc[established your environment's baseline], it's time to take your notes and configure your custom notifications.
+Establishing notifications that are tailored for your environment and monitoring requirements lets the right people see and respond to the right issues in a timely manner.
 
-Here, we will discuss how to configure event notifications and path outages.
+Here, we will describe how to configure event notifications and path outages.
 Event notifications can be configured to provide UEI-specific coverage, allowing for granular control of incoming information.
 Path outages prevent the generation of excess notifications by identifying network paths where failures may cause multiple nodes to appear offline.
 
 == Configure event notifications
 
 An event notification defines a destination path and message template for a specific event UEI.
-It is possible to define multiple notifications for the same UEI to utilize different filters, destination paths, and message templates.
-Configure event notifications by following these steps:
+It is possible to define multiple notifications for the same UEI to use different filters, destination paths, and message templates.
+Follow these steps to configure event notifications:
 
 . Click the *Gear* symbol in the top-right of the screen.
 . Under Event Management, click menu:Configure Notifications[Configure Event Notifications].
 A list of events that are configured for notifications is displayed.
 . Click *Add New Event Notification*, choose the UEI that will trigger a notification, and click *Next*.
 ** (Optional) Build a rule to match a subset of IP addresses or services, and click menu:Validate Rule Results[Next] or *Skip Results Validation*.
-. In the *Choose Path* screen, specify information to be included in the notification, including the destination path, subject (for email messages), body text, and so on.
+. In the *Choose Path* screen, specify information to include in the notification, including the destination path, subject (for email messages), body text, and so on.
 . Click *Finish*.
 
 NOTE: Event notification configuration is stored in `$\{OPENNMS_HOME}/etc/notifications.xml`.
