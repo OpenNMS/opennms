@@ -111,10 +111,18 @@ a| Flag that indicates if interfaces that do not match the criteria attribute of
 
 * When "false" such an interface will be polled with default settings.
 * When "true" that interface will not be polled.
-** up-values: comma-separated list of valid integer values (1-7) to treat as equivalent to `up(1)` when sending status change events for an interface.
-Defaults to "1".
-** down-values: comma-separated list of valid integer values (1-7) to treat as equivalent to `down(2)` when sending status change events for an interface.
-Defaults to "2".
+
+| up-values
+| Values of `ifAdminStatus` and `ifOperStatus` to treat as up values.
+Expects a comma-separated list of integer values between 1 and 7.
+Example: `1,5`.
+Defaults to `1`.
+
+| down-values
+| Values of `ifAdminStatus` and `ifOperStatus` to treat as down values.
+Expects a comma-separated list of integer values between 1 and 7.
+Example: `2,3,4,6,7`.
+Defaults to `2`.
 |===
 
 node-outage::
