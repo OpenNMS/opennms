@@ -2,7 +2,7 @@
 [[ga-service-assurance]]
 = Service Assurance
 
-This section describes the basic functionalities of how {page-component-title} tests the availability of a service or device and measures its latency.
+This section describes how {page-component-title} tests the availability of a service or device and measures its latency.
 
 In {page-component-title} a service monitor framework fulfils these tasks.
 The main component, Pollerd, provides the following functionality:

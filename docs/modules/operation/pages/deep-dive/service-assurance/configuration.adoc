@@ -1,6 +1,6 @@
 
 [[ga-pollerd-configuration]]
-= Pollerd Configuration
+= Configure Pollerd
 
 .Configuration and log files related to Pollerd
 [options="header, autowidth"]

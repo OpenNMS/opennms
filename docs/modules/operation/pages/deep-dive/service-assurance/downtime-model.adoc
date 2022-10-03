@@ -1,6 +1,6 @@
 
 [[ga-service-assurance-downtime-model]]
-= Downtime Model
+= Detect Short Service Outages
 
 By default the monitoring interval for a service is five minutes.
 To detect short service outages, caused, for example, by automatic network rerouting, use the downtime model.

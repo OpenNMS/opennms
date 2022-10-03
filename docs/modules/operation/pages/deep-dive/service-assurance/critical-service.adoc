@@ -1,6 +1,6 @@
 
 [[ga-service-assurance-critical-service]]
-= Critical Service
+= Improve Monitoring Efficiency
 
 Monitoring services on an IP network can be resource expensive, especially in cases where many of these services are not available.
 When a service is offline or unreachable, the monitoring system spends most of its time waiting for retries and timeouts.

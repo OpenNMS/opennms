@@ -1,6 +1,6 @@
 
 [[ga-service-assurance-path-outage]]
-= Path Outages
+= Use Path Outages to Suppress Notifications
 
 An outage of a central network component can cause a lot of node outages.
 You can use path outages to suppress notifications based on how nodes depend on each other in the network which are defined in a critical path.
