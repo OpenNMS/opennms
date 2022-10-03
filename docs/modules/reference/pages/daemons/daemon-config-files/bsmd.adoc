@@ -5,7 +5,7 @@
 Handles calculation of the operational status of the defined xref:operation:bsm/introduction.adoc[business services].
 The daemon tracks the operational status of all business services and sends events when there are operational status changes.
 
-Every time you make changes to the configuration of a business service, you must reload the daemon's configuration.
+Every time you change the configuration of a business service, you must reload the daemon's configuration.
 This includes changes like the name of the business service or its attributes, as well as changes regarding the reduction keys, contained business services, or IP services.
 Reload the BSMD configuration with any of the following mechanisms:
 
