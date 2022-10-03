@@ -467,12 +467,14 @@
   </div>
   <div class="card-body severity-<%= alarm.getSeverity().getLabel().toLowerCase() %>">
 	         <form class="form" method="post" action="alarm/saveStickyMemo.htm">
+                 <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 				<textarea class="w-100 mb-1" name="stickyMemoBody" ><%=(alarm.getStickyMemo() != null && alarm.getStickyMemo().getBody() != null) ? alarm.getStickyMemo().getBody() : ""%></textarea>
 				<input type="hidden" name="alarmId" value="<%=alarm.getId() %>"/>
                 <form:input class="btn btn-sm btn-secondary" type="submit" value="Save" />
                 <form:input class="btn btn-sm btn-secondary" type="button" value="Delete" onclick="document.getElementById('deleteStickyForm').submit();"/>
 	         </form>
 	         <form id="deleteStickyForm" method="post" action="alarm/removeStickyMemo.htm">
+                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 				<input type="hidden" name="alarmId" value="<%=alarm.getId() %>"/>
 	         </form>
 	         <br/>
@@ -503,12 +505,14 @@
   </div>
   <div class="card-body severity-<%= alarm.getSeverity().getLabel().toLowerCase() %>">
             <form class="form" method="post" action="alarm/saveJournalMemo.htm">
+                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                 <textarea class="w-100 mb-1" name="journalMemoBody" ><%=(alarm.getReductionKeyMemo() != null && alarm.getReductionKeyMemo().getBody() != null) ? alarm.getReductionKeyMemo().getBody() : ""%></textarea>
                 <input type="hidden" name="alarmId" value="<%=alarm.getId()%>"/>
                 <form:input class="btn btn-sm btn-secondary" type="submit" value="Save" />
                 <form:input class="btn btn-sm btn-secondary" type="button" value="Delete" onclick="document.getElementById('deleteJournalForm').submit();"/>
             </form>
             <form id="deleteJournalForm" method="post" action="alarm/removeJournalMemo.htm">
+                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                 <input type="hidden" name="alarmId" value="<%=alarm.getId()%>"/>
             </form>
 	         <br/>
@@ -553,6 +557,7 @@
         <div class="col-md-6">
             <div class="input-group mt-2">
             <form class="form-inline mr-1" method="post" action="alarm/acknowledge">
+                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                 <input type="hidden" name="actionCode" value="<%=action%>" />
                 <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
                 <input type="hidden" name="redirect" value="<%= "detail.htm" + "?" + request.getQueryString()%>" />
@@ -563,6 +568,7 @@
 
             <%if (showEscalate) {%>
                 <form class="form-inline mr-1" method="post" action="alarm/changeSeverity?actionCode=<%=escalateAction%>">
+                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                     <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
                     <input type="hidden" name="redirect" value="<%= "detail.htm" + "?" + request.getQueryString()%>" />
                     <button class="form-control btn btn-secondary" type="submit">
@@ -573,6 +579,7 @@
 
             <%if (showClear) {%>
                 <form class="form-inline" method="post" action="alarm/changeSeverity?actionCode=<%=clearAction%>">
+                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                     <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
                     <input type="hidden" name="redirect" value="<%= "detail.htm" + "?" + request.getQueryString()%>" />
                     <button class="form-control btn btn-secondary" type="submit" value="Clear">
@@ -586,6 +593,7 @@
         <div class="col-md-6">
             <div class="input-group mt-2">
             <form class="form-inline mr-1" method="post" action="alarm/ticket/create.htm">
+                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                 <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
                 <input type="hidden" name="redirect" value="<%="/alarm/detail.htm" + "?" + request.getQueryString()%>" />
                 <form:input class="form-control btn btn-secondary" type="submit" value="Create Ticket" disabled="<%=((alarm.getTTicketState() != null) && (alarm.getTTicketState() != TroubleTicketState.CREATE_FAILED)) ? true : false %>" />
@@ -614,12 +622,14 @@
             </form>
 
             <form class="form-inline mr-1" method="post" action="alarm/ticket/update.htm">
+                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                 <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
                 <input type="hidden" name="redirect" value="<%="/alarm/detail.htm" + "?" + request.getQueryString()%>" />
                 <form:input class="form-control btn btn-secondary" type="submit" value="Update Ticket" disabled="<%=(alarm.getTTicketState() == null || alarm.getTTicketId() == null) %>"/>
             </form>
 
             <form class="form-inline" method="post" action="alarm/ticket/close.htm">
+                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                 <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
                 <input type="hidden" name="redirect" value="<%="/alarm/detail.htm" + "?" + request.getQueryString()%>" />
                 <form:input class="form-control btn btn-secondary" type="submit" value="Close Ticket" disabled="<%=((alarm.getTTicketState() == null) || ((alarm.getTTicketState() != TroubleTicketState.OPEN) && (alarm.getTTicketState() != TroubleTicketState.CLOSE_FAILED))) ? true : false %>" />

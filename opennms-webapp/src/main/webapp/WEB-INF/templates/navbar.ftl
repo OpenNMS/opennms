@@ -94,7 +94,8 @@
                 <div class="dropdown-menu dropdown-menu-right" role="menu">
                     <a class="dropdown-item" name="nav-admin-self-service" href="${baseHref}account/selfService/newPasswordEntry">
                         <i class="fa fa-key"></i>&nbsp; Change Password</a>
-                    <a class="dropdown-item" name="nav-admin-logout" href="${baseHref}j_spring_security_logout" style="white-space: nowrap">
+                    <form name="headerLogoutForm" action="${baseHref}j_spring_security_logout" method="post"></form>
+                    <a class="dropdown-item" name="nav-admin-logout" href="javascript:document.headerLogoutForm.submit()" style="white-space: nowrap">
                         <i class="fa fa-sign-out"></i>&nbsp; Log Out
                     </a>
                 </div>
