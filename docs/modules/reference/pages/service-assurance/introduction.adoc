@@ -60,7 +60,7 @@ These minimum configuration parameters are available in all monitors and describ
 |===
 
 
-NOTE: * If RRD properties are provided, the pollerd service will persist response times for the monitored service.
+NOTE: * If RRD properties are provided, the Pollerd service will persist response times for the monitored service.
 
 TIP: If the monitor uses SNMP, the default configuration for timeout and retry are taken from the SNMP configuration (`snmp-config.xml`).
 
