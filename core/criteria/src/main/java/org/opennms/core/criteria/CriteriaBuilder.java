@@ -203,7 +203,7 @@ public class CriteriaBuilder {
 
     public CriteriaBuilder count() {
         m_orderBuilder.clear();
-        m_limit = null;
+        //m_limit = null;
         m_offset = null;
         return this;
     }
