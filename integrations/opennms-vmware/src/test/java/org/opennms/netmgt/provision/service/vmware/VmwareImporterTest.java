@@ -26,13 +26,31 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.timeseries.samplewrite;
+package org.opennms.netmgt.provision.service.vmware;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
-import org.opennms.integration.api.v1.timeseries.Sample;
+import org.junit.Test;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
 
-public interface TimeseriesWriter {
-    void insert(List<Sample> samples);
-    void destroy();
+public class VmwareImporterTest {
+    @Test
+    public void testNMS14450() {
+        final VmwareImporter vmwareImporter = new VmwareImporter(new VmwareImportRequest());
+        final RequisitionNode requisitionNode = new RequisitionNode();
+        final Set<RequisitionInterface> requisitionInterfaces = new HashSet<>();
+
+        final RequisitionInterface requisitionInterface1 = new RequisitionInterface();
+        requisitionInterface1.setIpAddr("192.168.42.1");
+        requisitionInterfaces.add(requisitionInterface1);
+
+        final RequisitionInterface requisitionInterface2 = new RequisitionInterface();
+        requisitionInterface1.setIpAddr(null);
+        requisitionInterfaces.add(requisitionInterface2);
+
+        requisitionNode.setInterfaces(requisitionInterfaces);
+        vmwareImporter.getRequisitionInterface(requisitionNode, null);
+    }
 }

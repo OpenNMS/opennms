@@ -31,19 +31,13 @@ package org.opennms.netmgt.enlinkd;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.config.EnhancedLinkdConfig;
-import org.opennms.netmgt.config.datacollection.SnmpCollection;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.enlinkd.api.ReloadableTopologyDaemon;
-import org.opennms.netmgt.scheduler.Schedulable;
-import org.opennms.netmgt.enlinkd.common.NodeCollector;
+import org.opennms.netmgt.enlinkd.common.SchedulableNodeCollectorGroup;
 import org.opennms.netmgt.enlinkd.common.TopologyUpdater;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.CdpTopologyService;
@@ -54,7 +48,9 @@ import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.OspfTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
+import org.opennms.netmgt.scheduler.LegacyPriorityExecutor;
 import org.opennms.netmgt.scheduler.LegacyScheduler;
+import org.opennms.netmgt.scheduler.Schedulable;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,9 +74,14 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
     private static final String LOG_PREFIX = "enlinkd";
 
     /**
-     * scheduler thread
+     * threads scheduler
      */
     private LegacyScheduler m_scheduler;
+
+    /**
+     * threads priority executor
+     */
+    private LegacyPriorityExecutor m_executor;
 
     /**
      * The DB connection read and write handler
@@ -99,11 +100,6 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
      */
 
     private EnhancedLinkdConfig m_linkdConfig;
-
-    /**
-     * Map that contains Nodeid and List of NodeCollector.
-     */
-    private final Map<Integer, List<NodeCollector>> m_nodes = new HashMap<>();
 
     @Autowired
     private LocationAwareSnmpClient m_locationAwareSnmpClient;
@@ -125,6 +121,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
     @Autowired
     private UserDefinedLinkTopologyUpdater m_userDefinedLinkTopologyUpdater;
 
+    private final List<SchedulableNodeCollectorGroup> m_groups = new ArrayList<>();
     /**
      * <p>
      * Constructor for EnhancedLinkd.
@@ -142,8 +139,6 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
     protected void onInit() {
         BeanUtils.assertAutowiring(this);
 
-        // Create a scheduler
-        //
         try {
             LOG.info("init: Creating EnhancedLinkd scheduler");
             m_scheduler = new LegacyScheduler("EnhancedLinkd", m_linkdConfig.getThreads());
@@ -152,47 +147,69 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
             throw e;
         }
 
-        LOG.debug("init: Loading nodes.....");
-        for (final Node node : m_queryMgr.findAllSnmpNode()) {
-            m_nodes.put(node.getNodeId(), scheduleCollectionForNode(node));
+        try {
+            LOG.info("init: Creating EnhancedLinkd executor");
+            m_executor = new LegacyPriorityExecutor("EnhancedLinkd", m_linkdConfig.getExecutorThreads(), m_linkdConfig.getExecutorQueueSize());
+        } catch (RuntimeException e) {
+            LOG.error("init: Failed to create EnhancedLinkd executor", e);
+            throw e;
         }
-        LOG.debug("init: Nodes loaded.");
         LOG.debug("init: Loading Bridge Topology.....");
         m_bridgeTopologyService.load();
         LOG.debug("init: Bridge Topology loaded.");
 
-        scheduleAndRegisterOnmsTopologyUpdater(m_nodesTopologyUpdater);
         scheduleAndRegisterOnmsTopologyUpdater(m_userDefinedLinkTopologyUpdater);
+        schedule();
+    }
 
-        if (m_linkdConfig.useBridgeDiscovery()) {
-            scheduleDiscoveryBridgeDomain();
-            scheduleAndRegisterOnmsTopologyUpdater(m_bridgeTopologyUpdater);
-        }
+    private void schedule() {
+
+        scheduleAndRegisterOnmsTopologyUpdater(m_nodesTopologyUpdater);
 
         if (m_linkdConfig.useCdpDiscovery()) {
+            NodeCollectionGroupCdp nodeCollectionGroupCdp = new NodeCollectionGroupCdp(m_linkdConfig.getCdpRescanInterval(), m_linkdConfig.getInitialSleepTime(), m_executor, m_linkdConfig.getCdpPriority(), m_queryMgr, m_locationAwareSnmpClient, m_cdpTopologyService);
+            nodeCollectionGroupCdp.setScheduler(m_scheduler);
+            nodeCollectionGroupCdp.schedule();
+            m_groups.add(nodeCollectionGroupCdp);
             scheduleAndRegisterOnmsTopologyUpdater(m_cdpTopologyUpdater);
-            
         }
 
         if (m_linkdConfig.useLldpDiscovery()) {
+            NodeCollectionGroupLldp nodeCollectionGroupLldp = new NodeCollectionGroupLldp(m_linkdConfig.getLldpRescanInterval(), m_linkdConfig.getInitialSleepTime(), m_executor, m_linkdConfig.getLldpPriority(), m_queryMgr, m_locationAwareSnmpClient, m_lldpTopologyService);
+            nodeCollectionGroupLldp.setScheduler(m_scheduler);
+            nodeCollectionGroupLldp.schedule();
+            m_groups.add(nodeCollectionGroupLldp);
             scheduleAndRegisterOnmsTopologyUpdater(m_lldpTopologyUpdater);
        }
 
         if (m_linkdConfig.useIsisDiscovery()) {
+            NodeCollectionGroupIsis nodeCollectionGroupIsis = new NodeCollectionGroupIsis(m_linkdConfig.getIsisRescanInterval(), m_linkdConfig.getInitialSleepTime(), m_executor, m_linkdConfig.getIsisPriority(), m_queryMgr, m_locationAwareSnmpClient, m_isisTopologyService);
+            nodeCollectionGroupIsis.setScheduler(m_scheduler);
+            nodeCollectionGroupIsis.schedule();
+            m_groups.add(nodeCollectionGroupIsis);
             scheduleAndRegisterOnmsTopologyUpdater(m_isisTopologyUpdater);
         }
         
         if (m_linkdConfig.useOspfDiscovery()) {
+            NodeCollectionGroupOspf nodeCollectionGroupOspf = new NodeCollectionGroupOspf(m_linkdConfig.getOspfRescanInterval(), m_linkdConfig.getInitialSleepTime(), m_executor, m_linkdConfig.getOspfPriority(), m_queryMgr, m_locationAwareSnmpClient, m_ospfTopologyService);
+            nodeCollectionGroupOspf.setScheduler(m_scheduler);
+            nodeCollectionGroupOspf.schedule();
+            m_groups.add(nodeCollectionGroupOspf);
             scheduleAndRegisterOnmsTopologyUpdater(m_ospfTopologyUpdater);
         }
 
-    }
-
-    public void unscheduleAndUnregisterOnmsTopologyUpdater(TopologyUpdater onmsTopologyUpdater) {
-        LOG.info("unscheduleOnmsTopologyUpdater: UnScheduling {}",
-                   onmsTopologyUpdater.getInfo());
-        onmsTopologyUpdater.unschedule();
-        onmsTopologyUpdater.unregister();
+        if (m_linkdConfig.useBridgeDiscovery()) {
+            NodeCollectionGroupIpNetToMedia nodeCollectionGroupIpNetToMedia = new NodeCollectionGroupIpNetToMedia(m_linkdConfig.getBridgeRescanInterval(), m_linkdConfig.getInitialSleepTime(), m_executor, m_linkdConfig.getBridgePriority(), m_queryMgr, m_locationAwareSnmpClient, m_ipNetToMediaTopologyService);
+            nodeCollectionGroupIpNetToMedia.setScheduler(m_scheduler);
+            nodeCollectionGroupIpNetToMedia.schedule();
+            m_groups.add(nodeCollectionGroupIpNetToMedia);
+            NodeCollectionGroupBridge nodeCollectionGroupBridge = new NodeCollectionGroupBridge(m_linkdConfig.getBridgeRescanInterval(), m_linkdConfig.getInitialSleepTime(), m_executor, m_linkdConfig.getBridgePriority(), m_queryMgr, m_locationAwareSnmpClient, m_bridgeTopologyService, m_linkdConfig.getMaxBft(), m_linkdConfig.disableBridgeVlanDiscovery());
+            nodeCollectionGroupBridge.setScheduler(m_scheduler);
+            nodeCollectionGroupBridge.schedule();
+            m_groups.add(nodeCollectionGroupBridge);
+            scheduleDiscoveryBridgeDomain();
+            scheduleAndRegisterOnmsTopologyUpdater(m_bridgeTopologyUpdater);
+        }
     }
 
     public void scheduleAndRegisterOnmsTopologyUpdater(TopologyUpdater onmsTopologyUpdater) {
@@ -205,12 +222,6 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
         onmsTopologyUpdater.register();
     }
 
-    public void unscheduleDiscoveryBridgeDomain() {
-    LOG.info("unscheduleDiscoveryBridgeDomain: Scheduling {}",
-             m_discoveryBridgeDomains.getInfo());
-             m_discoveryBridgeDomains.unschedule();
-    }
-    
     public void scheduleDiscoveryBridgeDomain() {
             m_discoveryBridgeDomains.setScheduler(m_scheduler);
             m_discoveryBridgeDomains.setPollInterval(m_linkdConfig.getBridgeTopologyInterval());
@@ -219,85 +230,6 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
             LOG.info("scheduleDiscoveryBridgeDomain: Scheduling {}",
                      m_discoveryBridgeDomains.getInfo());
             m_discoveryBridgeDomains.schedule();
-    }
-
-    /**
-     * This method schedules a {@link SnmpCollection} for node for each
-     * package. Also schedule discovery link on package when not still
-     * activated.
-     */
-    private List<NodeCollector> scheduleCollectionForNode(final Node node) {
-
-        List<NodeCollector> colls = new ArrayList<>();
-        
-        if (m_linkdConfig.useLldpDiscovery()) {
-            LOG.debug("getSnmpCollections: adding Lldp: {}",
-                    node);
-            colls.add(new NodeDiscoveryLldp(m_lldpTopologyService,
-                                            m_locationAwareSnmpClient, 
-                                            m_linkdConfig.getLldpRescanInterval(),
-                                            m_linkdConfig.getInitialSleepTime(),
-                                             node));
-        }
-        
-        if (m_linkdConfig.useCdpDiscovery()) {
-            LOG.debug("getSnmpCollections: adding Cdp: {}",
-                    node);
-             colls.add(new NodeDiscoveryCdp(m_cdpTopologyService,
-                                            m_locationAwareSnmpClient, 
-                                            m_linkdConfig.getCdpRescanInterval(),
-                                            m_linkdConfig.getInitialSleepTime(),
-                                            node));       
-        }
-        
-        if (m_linkdConfig.useBridgeDiscovery()) {
-                LOG.debug("getSnmpCollections: adding IpNetToMedia: {}",
-                    node);
-                colls.add(new NodeDiscoveryIpNetToMedia(m_ipNetToMediaTopologyService,
-                                                        m_locationAwareSnmpClient, 
-                                                        m_linkdConfig.getBridgeRescanInterval(),
-                                                        m_linkdConfig.getInitialSleepTime(),
-                                                        node));
-                
-                LOG.debug("getSnmpCollections: adding Bridge: {}",
-                    node);
-                colls.add(new NodeDiscoveryBridge(m_bridgeTopologyService,
-                                                  m_linkdConfig.getMaxBft(),
-                                                  m_locationAwareSnmpClient, 
-                                                  m_linkdConfig.getBridgeRescanInterval(),
-                                                  m_linkdConfig.getInitialSleepTime(),
-                                                  node,
-                                                  m_linkdConfig.disableBridgeVlanDiscovery()));
-        }
-
-        if (m_linkdConfig.useOspfDiscovery()) {
-            LOG.debug("getSnmpCollections: adding Ospf: {}",
-                    node);
-                colls.add(new NodeDiscoveryOspf(m_ospfTopologyService,
-                                                m_locationAwareSnmpClient, 
-                                                m_linkdConfig.getOspfRescanInterval(),
-                                                m_linkdConfig.getInitialSleepTime(),
-                                                node));
-        }
-
-        if (m_linkdConfig.useIsisDiscovery()) {
-            LOG.debug("getSnmpCollections: adding Is-Is: {}",
-                    node);
-                colls.add(new NodeDiscoveryIsis(m_isisTopologyService,
-                                                m_locationAwareSnmpClient, 
-                                                m_linkdConfig.getIsisRescanInterval(),
-                                                m_linkdConfig.getInitialSleepTime(), 
-                                                node));
-        }
-       
-        for (final NodeCollector coll : colls ){
-            LOG.debug("ScheduleCollectionForNode: Scheduling {}",
-                coll.getInfo());
-            coll.setScheduler(m_scheduler);
-            coll.schedule();
-        }
-        
-        return colls;
     }
 
     /**
@@ -311,8 +243,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
         //
         m_scheduler.start();
         
-        // Set the status of the service as running.
-        //
+        m_executor.start();
 
     }
 
@@ -325,6 +256,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
               // Stop the scheduler
         m_scheduler.stop();
         m_scheduler = null;
+        m_executor.stop();
     }
 
     /**
@@ -334,6 +266,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
      */
     protected synchronized void onPause() {
         m_scheduler.pause();
+        m_executor.pause();
     }
 
     /**
@@ -343,42 +276,29 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
      */
     protected synchronized void onResume() {
         m_scheduler.resume();
+        m_executor.resume();
     }
 
-    public boolean scheduleNodeCollection(int nodeid) {
-
-        if (m_nodes.containsKey(nodeid)) {
-            LOG.debug("scheduleNodeCollection: node:[{}], node Collection already Scheduled ",
-                      nodeid);
-            return false;
-        }
-        LOG.debug("scheduleNodeCollection: Loading node {} from database",
-                  nodeid);
-        Node node = m_queryMgr.getSnmpNode(nodeid);
+    public boolean execSingleSnmpCollection(final int nodeId) {
+        final Node node = m_queryMgr.getSnmpNode(nodeId);
         if (node == null) {
-            LOG.warn("scheduleNodeCollection: Failed to get linkable node from database with ID {}. Exiting",
-                           nodeid);
             return false;
         }
-        synchronized (m_nodes) {
-            m_nodes.put(node.getNodeId(), scheduleCollectionForNode(node));
+        for (SchedulableNodeCollectorGroup group: m_groups) {
+            m_executor.addPriorityReadyRunnable(group.getNodeCollector(node, 0));
         }
         return true;
     }
 
     public boolean runSingleSnmpCollection(final int nodeId) {
-        boolean allready = true;
-        if (!m_nodes.containsKey(nodeId)) {
+        final Node node = m_queryMgr.getSnmpNode(nodeId);
+        if (node == null) {
             return false;
         }
-        for (final NodeCollector snmpColl : m_nodes.get(nodeId)) {
-            if (!snmpColl.isReady()) {
-                allready = false;
-                continue;
-            }
-            snmpColl.collect();
+        for (SchedulableNodeCollectorGroup group: m_groups) {
+            group.getNodeCollector(node, 0).collect();
         }
-        return allready;
+       return true;
     }
 
     public void runDiscoveryBridgeDomains() {
@@ -428,7 +348,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
         default:
             break;
         
-    }
+        }
 
     }
 
@@ -478,17 +398,6 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
         }
     }
 
-    void wakeUpNodeCollection(int nodeid) {
-
-        if (!m_nodes.containsKey(nodeid)) {
-            LOG.warn("wakeUpNodeCollection: node not found during scheduling with ID {}",
-                           nodeid);
-            scheduleNodeCollection(nodeid);
-            return;
-        } 
-        m_nodes.get(nodeid).forEach(Schedulable::wakeUp);
-    }
-
     public void addNode() {
         m_queryMgr.updatesAvailable();
     }
@@ -496,8 +405,6 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
     void deleteNode(int nodeid) {
         LOG.info("deleteNode: deleting LinkableNode for node {}",
                         nodeid);
-        unscheduleNodeCollection(nodeid);
-
         m_bridgeTopologyService.delete(nodeid);
         m_cdpTopologyService.delete(nodeid);
         m_isisTopologyService.delete(nodeid);
@@ -509,31 +416,16 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
 
     }
 
-    void unscheduleNodeCollection(int nodeid) {
-        synchronized (m_nodes) {
-            if (m_nodes.containsKey(nodeid)) {
-                m_nodes.remove(nodeid).
-                forEach(Schedulable::unschedule);
-            }        
-        }
-    }
-    
-    void rescheduleNodeCollection(int nodeid) {
-        LOG.info("rescheduleNodeCollection: suspend collection LinkableNode for node {}",
-                nodeid);        
-        unscheduleNodeCollection(nodeid);
-        
-        scheduleNodeCollection(nodeid);            	
-    }
-    
-    void suspendNodeCollection(int nodeid) {
+    void suspendNodeCollection(final int nodeid) {
         LOG.info("suspendNodeCollection: suspend collection LinkableNode for node {}",
-                        nodeid);   
-        synchronized (m_nodes) {
-               if (m_nodes.containsKey(nodeid)) {
-                   m_nodes.get(nodeid).forEach(Schedulable::suspend);
-               } 
-        }
+                        nodeid);
+        m_groups.forEach(g -> g.suspend(nodeid));
+    }
+
+    void wakeUpNodeCollection(int nodeid) {
+        LOG.info("wakeUpNodeCollection: wakeUp collection LinkableNode for node {}",
+                nodeid);
+        m_groups.forEach(g -> g.wakeUp(nodeid));
     }
 
     public NodeTopologyService getQueryManager() {
@@ -623,102 +515,45 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
     public void reload() {
         LOG.info("reload: reload enlinkd daemon service");
 
+        m_groups.forEach(Schedulable::unschedule);
+        m_groups.clear();
         m_nodesTopologyUpdater.unschedule();
         m_nodesTopologyUpdater.unregister();
-        NodesOnmsTopologyUpdater nodeupdater = NodesOnmsTopologyUpdater.clone(m_nodesTopologyUpdater);
-        scheduleAndRegisterOnmsTopologyUpdater(nodeupdater);
-        m_nodesTopologyUpdater = nodeupdater;
+        m_nodesTopologyUpdater = NodesOnmsTopologyUpdater.clone(m_nodesTopologyUpdater);
 
-        if (m_linkdConfig.useOspfDiscovery()) {
-            if (m_ospfTopologyUpdater.isRegistered()) {
-                m_ospfTopologyUpdater.unschedule();
-                m_ospfTopologyUpdater.unregister();
-                OspfOnmsTopologyUpdater updater = OspfOnmsTopologyUpdater.clone(m_ospfTopologyUpdater);
-                scheduleAndRegisterOnmsTopologyUpdater(updater);
-                m_ospfTopologyUpdater = updater;
-            } else {
-                scheduleAndRegisterOnmsTopologyUpdater(m_ospfTopologyUpdater);
-            }
-        } else {
-            unscheduleAndUnregisterOnmsTopologyUpdater(m_ospfTopologyUpdater);
+        if (m_ospfTopologyUpdater.isRegistered()) {
+            m_ospfTopologyUpdater.unschedule();
+            m_ospfTopologyUpdater.unregister();
+            m_ospfTopologyUpdater = OspfOnmsTopologyUpdater.clone(m_ospfTopologyUpdater);
         }
 
-        if (m_linkdConfig.useLldpDiscovery()) {
-            if (m_lldpTopologyUpdater.isRegistered()) {
-                m_lldpTopologyUpdater.unschedule();
-                m_lldpTopologyUpdater.unregister();
-                LldpOnmsTopologyUpdater updater = LldpOnmsTopologyUpdater.clone(m_lldpTopologyUpdater);
-                scheduleAndRegisterOnmsTopologyUpdater(updater);
-                m_lldpTopologyUpdater = updater;
-            } else {
-                scheduleAndRegisterOnmsTopologyUpdater(m_lldpTopologyUpdater);
-            }
-        } else {
-            unscheduleAndUnregisterOnmsTopologyUpdater(m_lldpTopologyUpdater);
-        }
-        
-        if (m_linkdConfig.useIsisDiscovery()) {
-            if (m_isisTopologyUpdater.isRegistered()) {
-                m_isisTopologyUpdater.unschedule();
-                m_isisTopologyUpdater.unregister();
-                IsisOnmsTopologyUpdater updater = IsisOnmsTopologyUpdater.clone(m_isisTopologyUpdater);
-                scheduleAndRegisterOnmsTopologyUpdater(updater);
-                m_isisTopologyUpdater = updater;
-            } else {
-                scheduleAndRegisterOnmsTopologyUpdater(m_isisTopologyUpdater);
-            }
-        } else {
-            unscheduleAndUnregisterOnmsTopologyUpdater(m_isisTopologyUpdater);
+        if (m_lldpTopologyUpdater.isRegistered()) {
+            m_lldpTopologyUpdater.unschedule();
+            m_lldpTopologyUpdater.unregister();
+            m_lldpTopologyUpdater = LldpOnmsTopologyUpdater.clone(m_lldpTopologyUpdater);
         }
 
-        if (m_linkdConfig.useCdpDiscovery()) {
-            if (m_cdpTopologyUpdater.isRegistered()) {
-                m_cdpTopologyUpdater.unschedule();
-                m_cdpTopologyUpdater.unregister();
-                CdpOnmsTopologyUpdater updater = CdpOnmsTopologyUpdater.clone(m_cdpTopologyUpdater);
-                scheduleAndRegisterOnmsTopologyUpdater(updater);
-                m_cdpTopologyUpdater = updater;
-            } else {
-                scheduleAndRegisterOnmsTopologyUpdater(m_cdpTopologyUpdater);
-            }
-        } else {
-            unscheduleAndUnregisterOnmsTopologyUpdater(m_cdpTopologyUpdater);
+        if (m_isisTopologyUpdater.isRegistered()) {
+            m_isisTopologyUpdater.unschedule();
+            m_isisTopologyUpdater.unregister();
+            m_isisTopologyUpdater = IsisOnmsTopologyUpdater.clone(m_isisTopologyUpdater);
+        }
+
+        if (m_cdpTopologyUpdater.isRegistered()) {
+            m_cdpTopologyUpdater.unschedule();
+            m_cdpTopologyUpdater.unregister();
+            m_cdpTopologyUpdater = CdpOnmsTopologyUpdater.clone(m_cdpTopologyUpdater);
         }
         
-        if (m_linkdConfig.useBridgeDiscovery()) {
-            if (m_bridgeTopologyUpdater.isRegistered()) {
-                m_bridgeTopologyUpdater.unschedule();
-                m_bridgeTopologyUpdater.unregister();
-                BridgeOnmsTopologyUpdater updater = BridgeOnmsTopologyUpdater.clone(m_bridgeTopologyUpdater);
-                scheduleAndRegisterOnmsTopologyUpdater(updater);
-                m_bridgeTopologyUpdater = updater;
-            } else {
-                scheduleAndRegisterOnmsTopologyUpdater(m_bridgeTopologyUpdater);
-            }
-        } else {
-            unscheduleAndUnregisterOnmsTopologyUpdater(m_bridgeTopologyUpdater);
-        }
-        
-        if (m_linkdConfig.useBridgeDiscovery()) {
+        if (m_bridgeTopologyUpdater.isRegistered()) {
+            m_bridgeTopologyUpdater.unschedule();
+            m_bridgeTopologyUpdater.unregister();
+            m_bridgeTopologyUpdater = BridgeOnmsTopologyUpdater.clone(m_bridgeTopologyUpdater);
             m_discoveryBridgeDomains.unschedule();
             m_discoveryBridgeDomains = DiscoveryBridgeDomains.clone(m_discoveryBridgeDomains);
-            scheduleDiscoveryBridgeDomain();
-        } else {
-            unscheduleDiscoveryBridgeDomain();
         }
 
-        synchronized (m_nodes) {
-            final Set<Node> nodes = new HashSet<>();
-            for (List<NodeCollector> list: m_nodes.values()) {
-                list.forEach(coll -> {
-                    coll.unschedule(); 
-                    nodes.add(coll.getNode());
-                });
-            }
-            m_nodes.clear();
-            nodes.
-                forEach(node -> m_nodes.put(node.getNodeId(), scheduleCollectionForNode(node)));
-        }
+        schedule();
     }
     
     public void reloadConfig() {

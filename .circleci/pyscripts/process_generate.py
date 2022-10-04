@@ -22,7 +22,7 @@ base_revision = os.environ.get("BASE_REVISION")
 branch_name = os.environ.get("CIRCLE_BRANCH")
 
 
-libgit = libgit.libgit("stdout")
+libgit = libgit.libgit("/tmp/performance.txt")
 
 
 libgit.switch_branch(base_revision)
@@ -30,11 +30,10 @@ libgit.switch_branch(head)
 
 base = libgit.common_ancestor(base_revision, head)
 
-print("branch_name", branch_name)
-print("output_path", output_path)
-print("head", head)
-print("base_revision", base_revision)
-print("base", base)
+print("Branch Name:", branch_name)
+print("Output Path:", output_path)
+print("Branch HEAD:", head)
+print("Base Revision:", base_revision)
 
 if head == base:
     try:
@@ -50,9 +49,10 @@ if head == base:
         # to that is just the first commit as patch.
         base = "4b825dc642cb6eb9a060e54bf8d69288fbee4904"
 
-print("base", base)
+print("Base:", base)
+print()
 
-changes = libgit.get_changed_files_in_commits(base, head)
+changed_files = libgit.get_changed_files_in_commits(base, head)
 
 mappings = [m.split() for m in os.environ.get("MAPPING").splitlines()]
 
@@ -65,7 +65,7 @@ def check_mapping(mapping):
         raise Exception("Invalid mapping size. Current mapping:", mapping)
     path, param, value = mapping
     regex = re.compile(r"^" + path + r"$")
-    for change in changes:
+    for change in changed_files:
         if regex.match(change):
             return True
     return False
@@ -82,8 +82,10 @@ mappings = filter(check_mapping, mappings)
 mappings = map(convert_mapping, mappings)
 mappings = dict(mappings)
 
-print("Mappings:", mappings)
-
+print("Mappings:")
+for item in mappings:
+    print(" ", "*", item, "[", mappings[item], "]")
+print()
 
 What_to_build = []
 
@@ -96,7 +98,8 @@ def add_to_build_list(item):
         What_to_build.append(item)
 
 
-for change in changes:
+# Step 1, Detect all changes and Git keywords (if any)
+for change in changed_files:
     if not change:
         continue
     if "src/test/" in change and "smoke-test/" not in change:
@@ -115,18 +118,33 @@ for change in changes:
         if "merge-foundation/" not in branch_name:
             add_to_build_list("build")
 
-print("What we want to build:", What_to_build, len(What_to_build))
+if changed_files:
+    print("Changed file(s):")
+    for item in changed_files:
+        if item:
+            print(" ", "*", item)
+    print()
+
+if What_to_build:
+    print("What we want to build:")
+    for item in What_to_build:
+        print(" ", "*", item)
+    print()
+
 git_keywords = libgit.extract_keywords_from_last_commit()
 
 with open(path_to_workflow, "r", encoding="UTF-8") as file_handler:
     workflow_data = json.load(file_handler)
 
 workflow_keywords = workflow_data["bundles"].keys()
-print("Workflow Keywords:", workflow_keywords)
 
-if ".circleci/epoch" in changes:
-    print("`epoch` file detected")
-    mappings["trigger-build"] = True
+print("Supported Workflow Keywords:")
+for item in workflow_keywords:
+    print(" ", "*", item)
+print()
+
+
+# Step 2: Take action on them
 
 # Check to see if build-trigger.overrride file exists and we are not
 # on the main branches
@@ -162,6 +180,26 @@ else:
     }
 
 print("Build Trigger Override Found:", str(build_trigger_override_found))
+print()
+
+# Epoch file will force a build to run
+if ".circleci/epoch" in changed_files:
+    print("`epoch` file detected")
+    mappings["trigger-build"] = True
+    print()
+
+
+if build_mappings["experimental"] or "experimentalPath" in git_keywords:
+    print("Experimental path detected, will disable other paths")
+    print()
+    # If experimental path is enabled, disable other paths
+    for item in build_mappings:
+        build_mappings[item] = False
+
+    # Clear the mappings
+    mappings.clear()
+
+    build_mappings["experimental"] = True
 
 if "trigger-build" in mappings:
     if (
@@ -172,17 +210,21 @@ if "trigger-build" in mappings:
     ) and "merge-foundation/" not in branch_name:
         print("Executing workflow: build-publish")
         build_mappings["build-publish"] = mappings["trigger-build"]
-    else:
-        if "merge-foundation/" in branch_name:
-            print("Execute workflow: merge-foundation")
-            build_mappings["merge-foundation"] = True
-            build_mappings["build-publish"] = False
-            build_mappings["build-deploy"] = False
-        elif (
-            not build_trigger_override_found and "merge-foundation/" not in branch_name
-        ):
-            print("Executing workflow: build-deploy")
-            build_mappings["build-deploy"] = mappings["trigger-build"]
+        print()
+    elif "merge-foundation/" in branch_name and not build_trigger_override_found:
+        print("Execute workflow: merge-foundation")
+        print()
+        # If experimental path is enabled, disable other paths
+        for item in build_mappings:
+            build_mappings[item] = False
+
+        # Clear the mappings
+        mappings.clear()
+        build_mappings["merge-foundation"] = True
+    elif not build_trigger_override_found and "merge-foundation/" not in branch_name:
+        print("Executing workflow: build-deploy")
+        print()
+        build_mappings["build-deploy"] = mappings["trigger-build"]
 
 if "trigger-docs" in mappings:
     build_mappings["docs"] = mappings["trigger-docs"]
@@ -197,16 +239,27 @@ if "trigger-flaky-smoke" in mappings:
     if not build_mappings["smoke-flaky"]:
         build_mappings["smoke-flaky"] = mappings["trigger-flaky-smoke"]
 
-if re.match(".*smoke.*", branch_name):
+if re.match(".*smoke.*", branch_name) and (
+    not build_mappings["experimental"] or "experimentalPath" not in git_keywords
+):
     print("Detected smoke in the branch name")
     build_mappings["smoke"] = True
+    print()
 
-if re.match(".*flaky.*", branch_name):
+if re.match(".*flaky.*", branch_name) and (
+    not build_mappings["experimental"] or "experimentalPath" not in git_keywords
+):
     print("Detected smoke in the branch name")
     build_mappings["smoke-flaky"] = True
+    print()
 
 
-print("Git Keywords:", git_keywords)
+if git_keywords:
+    print("Detected GIT keywords:")
+    for item in git_keywords:
+        print(" ", "*", item)
+    print()
+
 if (
     "circleci_configuration" in What_to_build
     and len(What_to_build) == 1
@@ -266,9 +319,6 @@ if "doc" in git_keywords or "docs" in git_keywords or "doc" in What_to_build:
 
 if "ui" in git_keywords or "ui" in What_to_build:
     build_mappings["ui"] = True
-
-if "experimentalPath" in git_keywords:
-    build_mappings["experimental"] = True
 
 with open(output_path, "w", encoding="UTF-8") as file_handler:
     file_handler.write(json.dumps(mappings))

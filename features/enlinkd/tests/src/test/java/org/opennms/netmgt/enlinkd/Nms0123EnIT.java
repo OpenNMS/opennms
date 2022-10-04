@@ -131,15 +131,7 @@ public class Nms0123EnIT extends EnLinkdBuilderITCase {
         m_nodeDao.findAll().forEach(System.err::println);
         System.err.println(m_linkd.getQueryManager().getSnmpNode(itpn0202.getId()));
 
-        assertTrue(m_linkd.scheduleNodeCollection(itpn0111.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(itpn0112.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(itpn0113.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(itpn0114.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(itpn0121.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(itpn0123.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(itpn0201.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(itpn0202.getId()));
-
+        m_linkd.reload();
         assertEquals(0,m_lldpLinkDao.countAll());
 
         assertTrue(m_linkd.runSingleSnmpCollection(itpn0111.getId()));

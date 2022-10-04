@@ -74,8 +74,7 @@ public class Nms13923EnIT extends EnLinkdBuilderITCase {
 
         final OnmsNode srv005 = m_nodeDao.findByForeignId("linkd", srv005_NAME);
 
-        assertTrue(m_linkd.scheduleNodeCollection(srv005.getId()));
-
+        m_linkd.reload();
 
         assertTrue(m_linkd.runSingleSnmpCollection(srv005.getId()));
         assertEquals(1, m_lldpElementDao.countAll());

@@ -74,7 +74,7 @@ public class Nms7467EnIT extends EnLinkdBuilderITCase {
         
         final OnmsNode cisco01 = m_nodeDao.findByForeignId("linkd", CISCO_WS_C2948_NAME);
         
-        assertTrue(m_linkd.scheduleNodeCollection(cisco01.getId()));
+        m_linkd.reload();
 
         assertTrue(m_linkd.runSingleSnmpCollection(cisco01.getId()));
 
