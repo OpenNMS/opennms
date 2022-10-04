@@ -259,8 +259,7 @@ public abstract class AbstractDaoRestServiceWithDTO<T,D,Q,K extends Serializable
     public Response get(@Context final UriInfo uriInfo, @Context final SearchContext searchContext) {
         // If limit is default or specified we search for a match else we return all
         Criteria crit = getCriteria(uriInfo, searchContext);
-        Integer limit = crit.getLimit();
-        final List<T> coll = (limit == 0 || limit == UNLIMITED || UNLIMITED.equals(limit)) ? getDao().findAll() : getDao().findMatching(crit);
+        final List<T> coll = getDao().findMatching(crit);
         if (coll == null || coll.size() < 1) {
             return Response.status(Status.NO_CONTENT).build();
         } else {
