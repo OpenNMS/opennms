@@ -306,7 +306,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
                     allUniqueRecords.addAll(getQueryResult(copyOfCriteria));
                 } else {
                     allUniqueRecords.addAll(Sets.intersection(allUniqueRecords,
-                            Set.copyOf(getQueryResult(copyOfCriteria))));
+                            new HashSet(getQueryResult(copyOfCriteria))));
                 }
             });
         });
