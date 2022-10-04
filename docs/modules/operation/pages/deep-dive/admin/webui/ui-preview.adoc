@@ -2,15 +2,17 @@
 [[ui-preview]]
 = UI Preview
 
-Click the UI Preview button to access our new user interface based on modern web technologies including https://feather.nanthealth.com/[FeatherDS] and Vue3.
+You can access our new user interface by clicking *UI Preview* in the top-right of the screen.
+
+.The *UI Preview* button
+image::admin/ui-preview.png[]
+
+The new interface is based on modern web technologies, including https://feather.nanthealth.com/[FeatherDS] and Vue3.
 
 You can access the following features in the new UI:
 
-- view nodes and node details
-- edit configuration files
-- view log files
-- navigate and call the REST API
-- view and perform device configuration backup
-
-.UI Preview Button
-image::admin/ui-preview.png[]
+* View nodes and node details.
+* Edit configuration files.
+* View log files.
+* Navigate to and call the REST API.
+* View and perform device configuration backups.

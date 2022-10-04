@@ -1,137 +1,154 @@
+
 = Dashboard
 
-In Network Operations Centers (NOCs) an overview of issues in the network is important and often presented as dashboards.
-Large networks have people (operators) with different responsibilities and the dashboard should show only information for a given monitoring context.
-Network or Server operators need to customize or filter information on the dashboard.
-A dashboard as an at-a-glance overview is also often used to give an entry point for more detailed diagnosis through the information provided by the monitoring system.
-The Surveillance View lets you reduce the visible information by selecting rows, columns, and cells to quickly limit the amount of information to navigate through.
+In Network Operations Centers (NOCs), an overview of issues occurring in the network is important.
+This information is often presented in customized dashboards, as appropriate for the monitored environment.
+A dashboard is an at-a-glance overview of the network, and it is often used as an entry point for more detailed diagnosis of issues using data provided by {page-component-title}.
 
-[[ga-dashboard-components]]
-== Components
-
-The dashboard is built with five components:
-
-* Surveillance View: Lets you model a monitoring context for the dashboard.
-* Alarms: Shows unacknowledged alarms which should be escalated by an operator.
-* Notifications: Shows outstanding and unacknowledged notifications sent to engineers.
-* Node Status: Shows all ongoing network outages.
-* Resource Graph Viewer: Shows performance time series reports for performance diagnosis.
-
-The following screenshot shows a configured dashboard and which information are displayed in the components.
+Large networks have people (operators) who have different responsibilities, according to its monitoring needs.
+Each dashboard should show only the information pertaining to a specific monitoring context.
+Operators need to customize and filter information on the dashboard to create focused data sets.
 
 .Dashboard with configured surveillance view and current outage
 image::dashboard/01_dashboard-overall.png[]
 
-The following section describe the information shown in each component.
-All other components display information based on the Surveillance View.
+TIP: You can hide the upper navigation bar on any page by adding `?quiet=true;` to the end of any {page-component-title} URL.
+This is useful when viewing dashboards on a large monitor or TV screen.
+
+[[ga-dashboard-components]]
+== Components
+
+The dashboard is comprised of five components:
+
+* *Surveillance view:* lets you model a monitoring context for the dashboard.
++
+You can reduce visible information by selecting rows, columns, and cells to focus on, limiting the data to sift through.
+The rest of the dashboard updates dynamically.
+
+* *Alarms:* displays unacknowledged alarms whose severity is higher than Normal (1).
+Any alarms shown here should be escalated by an operator.
+* *Notifications:* displays outstanding and unacknowledged notifications that have been sent to engineers.
+* *Outages:* displays all ongoing network outages.
+* *Resource graphs* displays time series reports for performance diagnosis.
 
 [[ga-dashboard-surveillance-view]]
-=== Surveillance View
+=== Surveillance view
 
-The Surveillance View has multiple functions.
+The surveillance view component has multiple functions:
 
-* Lets you model the monitoring context and shows service and node outages in compact matrix view.
-* Lets you limit the number of information in the dashboard by selecting rows, columns and cells.
+* It lets you model the network monitoring context.
+* It shows service and node outages in a compact matrix view.
+* It lets you limit the information displayed in the rest of the dashboard dynamically by manually selecting rows, columns, and cells.
 
-You can select columns, rows, single cells and of course all entries in a Surveillance View.
-Please refer to the <<deep-dive/admin/webui/surveillance-view.adoc#ga-surveillance-view, Surveillance View Section>> for details on how to configure Surveillance Views.
+By default, all entries in a surveillance view are selected.
+For more information on configuring the surveillance view component, see <<deep-dive/admin/webui/surveillance-view.adoc#ga-surveillance-view, Surveillance View>>.
 
-.The Surveillance View forms the basis for the dashboard page.
+.A surveillance view component in its default state (all entries selected)
 image::dashboard/02_dashboard-surveillance-view.png[]
 
 [[ga-dashboard-alarms]]
 === Alarms
 
-The Alarms component gives an overview about all unacknowledged alarms with a severity higher than Normal(1).
-Acknowledged alarms will be removed from the responsibility of the operator.
-The following information are shown in:
+The alarms component displays an overview of all unacknowledged alarms whose severity is higher than Normal (1).
+It sorts alarms from most to least recent, and lets you scroll through the last 100 alarms.
 
-.Information displayed in the alarms component
+Acknowledged alarms are removed from the operator's responsibility and, therefore, the alarms component.
+
+The following information is shown in the component:
+
+.An alarms component displaying three alarms--two of Minor severity, and one of Warning severity
 image::dashboard/03_dashboard-alarms.png[]
 
-1. Node: Node label of the node associated with the alarm.
-2. Severity: Severity of the alarm.
-3. UEI: Shows the UEI of the alarm.
-4. Count: Number of alarms deduplicated by the reduction key of the alarm.
-5. Last Time: Time of the most recent alarm.
-6. Log Msg: The log message from the event definition.
-
-The Alarms component shows the most recent alarms and lets the user scroll through the last 100 alarms.
+1. *Node:* the label of the node associated with the alarm.
+2. *Severity:* severity of the alarm.
+3. *UEI:* the alarm's UEI.
+4. *Count:* the number of alarms deduplicated by the alarm's reduction key.
+5. *Last Time:* the time at which the most recent alarm was generated.
+6. *Log Msg:* the log message from the alarm's event definition.
 
 [[ga-dashboard-notifications]]
 === Notifications
 
-To inform people on a duty schedule notifications are used and force action to fix or reconfigure systems immediately.
-In {page-component-title} it is possible to acknowledge notifications to see who is working on a specific issue.
-The dashboard should show outstanding notifications in the NOC to provide an overview and give the possibility for intervention.
+The notifications component shows outstanding and unacknowledged notifications.
+It sorts notifications from most to least recent, and lets you scroll through the last 100 notifications.
 
-.Information displayed in the Notifications component
+Notifications are used to inform people on a duty schedule of issues in the monitored network, and to force action to fix or reconfigure systems immediately.
+In {page-component-title}, it is possible to acknowledge notifications to designate someone as working on a specific issue.
+
+A dashboard should show outstanding notifications in the NOC.
+This provides an overview of the monitored network and gives an opportunity for intervention.
+
+The following information is shown in the component:
+
+.A notifications component displaying three notifications
 image::dashboard/04_dashboard-notifications.png[]
 
-1. Node: Label of the node associated with the notification.
-2. Service: Name of the service associated with the notification.
-3. Message: Message associated with the notification.
-4. Sent Time: Time when the notification was sent.
-5. Responder: User name who acknowledged the notification.
-6. Response Time: Time when the user acknowledged the notification.
-
-The Notifications component shows the most recent unacknowledged notifications and lets the user scroll through the last 100 notifications.
+1. *Node:* the label of the node associated with the notification.
+2. *Service:* the name of the service associated with the notification.
+3. *Message:* the log message associated with the notification.
+4. *Sent Time:* time when the notification was sent.
+5. *Responder:* name of the user who acknowledged the notification.
+6. *Respond Time:* the time when the Responder acknowledged the notification.
 
 [[ga-dashboard-node-status]]
-=== Node Status
+=== Outages
 
-An acknowledged alarm doesn't mean necessarily the outage is solved.
-To give an overview information about ongoing Outages in the network, the dashboard shows an outage list in the Node Status component.
+The outages component shows all ongoing network outages.
+An acknowledged alarm doesn't necessarily mean that an outage has been solved; for this reason, the outages component works alongside the alarms component to provide a holistic overview of the network.
 
-.Information displayed in the Node Status component
+.An outages component displaying five nodes and their availability stats
 image::dashboard/05_dashboard-outages.png[]
 
-1. Node: Label of the monitored node with ongoing outages.
-2. Current Outages: Number of services on the node with outages out of the total number of monitored services; for example, "3 of 3 services are affected".
-3. 24 Hour Availability: Availability of all services provided by the node calculated by the last 24 hours.
+1. *Node:* the label of the node.
+2. *Current Outages:* the number of services on the node experiencing outages.
+The number of outages is listed out of the total number of monitored services (for example, "3 of 3 services are affected").
+3. *24 Hour Availability:* the availability of all node services, calculated across the last 24 hours.
 
 [[ga-dashboard-resource-graph-viewer]]
-=== Resource Graph Viewer
+=== Resource graphs
 
-The Resource Graph Viewer lets you navigate to time series data reports to give a quick entry point to diagnose performance issues.
-This viewer filters nodes based on the Surveillance View context and shows one graph report at a time.
-It lets you navigate sequentially through resource graphs provided by nodes filtered by the Surveillance View context and selection and shows one graph report at a time.
+The resource graphs component shows time series reports across a defined time range.
+It also lets you navigate to time series data reports, providing a quick entry point from which to diagnose performance issues.
 
-.Show time series based performance with the Resource Graph Viewer
+The component filters nodes based on the surveillance view context.
+It shows only one graph report at a time, and lets you navigate sequentially through the data.
+
+.A resource graphs component displaying ICMP response time data from 11:00 a.m. to 12:00 p.m.
 image::dashboard/06_dashboard-resource-graphs.png[]
 
 [[ga-dashboard-advanced-configuration]]
 == Advanced configuration
 
-The Surveillance View component lets you model multiple views for different monitoring contexts.
-It gives the possibility to create special view as example for network operators or server operators.
-The dashboard shows only *one* configured <<deep-dive/admin/webui/surveillance-view.adoc#ga-surveillance-view, Surveillance View>>.
-To give different users the possibility using their Surveillance View fitting there requirements it is possible to map a logged in user to a given Surveillance View used in the dashboard.
+The surveillance view component lets you model views for different monitoring contexts.
+Using it, you can create a special view as an example for network or server operators.
+The dashboard displays only _one_ configured <<deep-dive/admin/webui/surveillance-view.adoc#ga-surveillance-view, surveillance view>>.
+You can, however, let certain users define their surveillance view to fit their requirements by mapping their account to a configured surveillance view component.
 
-The selected nodes from the Surveillance View are also aware of https://opennms.discourse.group/t/user-restriction-filters-webacls/1021[User Restriction Filter].
-If you have a group of users, which should see just a subset of nodes the Surveillance View will filter nodes which are not related to the assigned user group.
+Any nodes selected in the surveillance view are also aware of the https://opennms.discourse.group/t/user-restriction-filters-webacls/1021[User Restriction Filter].
+If you have a group of users who should see only a subset of nodes, the surveillance view will filter the data appropriately.
 
-The dashboard is designed to focus, and therefore also restrict, a user's view to devices of their interest.
-To do this, a new role was added that can be assigned to a user that restricts them to viewing only the dashboard if that is intended.
+The dashboard is designed to focus, and therefore also restrict, a user's view of monitored devices.
+To do this, a new user role was added.
+It restricts them to viewing only the dashboard, if that is the administrator's intent.
 
-=== Using the Dashboard role
+[[ga-dashboard-dashboard-role]]
+=== The Dashboard role
 
-The following example illustrates how this dashboard role can be used.
-For instance the user `drv4doe` is assigned the dashboard role.
-So, when logging in as `drv4doe`, the user is taking directly to the dashboard page and is presented with a custom dashboard based on the `drv4doe` Surveillance View definition.
+The following example shows how the Dashboard role (`ROLE_PROVISION`) can be used.
+Here, the `drv4doe` user is assigned the Dashboard role:
 
-==== Step 1: Create an user
-The following example assigns a dashboard to the user "drv4doe" (a router and switch jockey) and restricts the user for navigation to any other link in the {page-component-title} WebUI.
-
-.Creating the user `drv4doe` using the {page-component-title} WebUI
-image::dashboard/07_dashboard-add-user.png[]
-
-==== Step 2: Change Security Roles
-Now, add the `ROLE_PROVISION` role to the user through the WebUI or by manually editing the `users.xml` file in the `$\{OPENNMS_HOME}/etc` directory for the user `drv4doe`.
-
-.Adding dashboard role to the user `drv4doe` using the {page-component-title} WebUI
-image::dashboard/08_dashboard-user-roles.png[]
-
+. xref:operation:quick-start/users.adoc#create-user[Create a new user] named `drv4doe`.
+The user represents a router and switch jockey.
+. Add the `ROLE_PROVISION` role to the account through the web UI or by manually editing `$\{OPENNMS_HOME}/etc/users.xml`:
+** Via the web UI:
+... Click the *Gear* symbol at the top-right of the screen.
+... Under OpenNMS System, click *Configure Users, Groups and On-Call Roles*.
+... On the Users and Groups screen, click *Configure Users*.
+... Click *Modify* beside the `drv4doe` account.
+... In the Security Roles section, select `ROLE_PROVISION` in the *Available Roles* list and click *Add >>* to add it to the account.
+... Click *Finish* at the bottom of the screen to update the account.
+** Add the following code to `$\{OPENNMS_HOME}/etc/users.xml`:
++
 [source, xml]
 ----
 <user>
@@ -142,8 +159,8 @@ image::dashboard/08_dashboard-user-roles.png[]
 </user>
 ----
 
-==== Step 3: Define Surveillance View
-Edit the `$\{OPENNMS_HOME}/etc/surveillance-view.xml` file to add a definition for the user _drv4doe_, which you created in step 1.
+. Define the surveillance view for `drv4doe` in `$\{OPENNMS_HOME}/etc/surveillance-view.xml`:
++
 [source, xml]
 ----
 <?xml version="1.0" encoding="UTF-8"?>
@@ -197,26 +214,22 @@ Edit the `$\{OPENNMS_HOME}/etc/surveillance-view.xml` file to add a definition f
 </surveillance-view-configuration>
 ----
 
-This configuration and proper assignment of node tags will produce a default dashboard for all users, other than `drv4doe`.
+When a user logs in using the `drv4doe` account, they are taken directly to the dashboard page and presented with a custom dashboard based on the `drv4doe` surveillance view definition.
+All other users will see the default dashboard.
 
-TIP: You can hide the upper navigation on any page by specifying `?quiet=true;` adding it to the end of the {page-component-title} URL.
-     This is useful when viewing the dashboard on a large monitor or TV screen for office-wide viewing.
-
-However, when logging in as `drv4doe`, the user is taking directly to the dashboard page and is presented with a dashboard based on the custom Surveillance View definition.
-
-NOTE: The `drv4doe` user is not allowed to navigate to URLs other than the `dashboard.jsp` URL.
-      Doing so will result in an Access Denied error.
+NOTE: After logging in, the person using the `drv4doe` account is taken directly to the dashboard page.
+They are not allowed to navigate to other {page-component-title} URLs.
+If they try to do so, they are presented with an Access Denied error.
 
 === Anonymous dashboards
 
-You can modify the configuration files for the security framework to give you access to one or more dashboards without logging in.
-At the end you'll be able to point a browser at a special URL like `\http://hostname/opennms/dashboard1` or `\http://hostname/opennms/dashboard2` and see a dashboard without any authentication.
-First, configure surveillance views and create dashboard users as above.
-For example, make two dashboards and two users called `dashboard1` and `dashboard2`.
-Test that you can log in as each of the new users and see the correct dashboard.
-Now create some aliases you can use to distinguish between dashboards.
-In `$\{OPENNMS_HOME}/jetty-webapps/opennms/WEB-INF`, edit `web.xml`.
-Just before the first `<servlet-mapping>` tag, add the following servlet entries:
+You can modify the security framework configuration files to allow access to one or more dashboards without requiring a user to log in:
+
+. Create users and configure surveillance views as shown in <<#ga-dashboard-dashboard-role, The Dashboard role>>.
+For this example, we will create two dashboards and two users, one of each named `dashboard1` and the others named `dashboard2`.
+. Edit `$\{OPENNMS_HOME}/jetty-webapps/opennms/WEB-INF/web.xml` to create aliases for the dashboards.
+Add the following code just before the first `<servlet-mapping>` tag:
++
 [source, xml]
 ----
     <servlet>
@@ -229,7 +242,9 @@ Just before the first `<servlet-mapping>` tag, add the following servlet entries
         <jsp-file>/dashboard.jsp</jsp-file>
     </servlet>
 ----
-Just before the first `<error-page>` tag, add the following servlet-mapping entries:
++
+Add the following code just before the first `<error-page>` tag:
++
 [source, xml]
 ----
     <servlet-mapping>
@@ -242,7 +257,9 @@ Just before the first `<error-page>` tag, add the following servlet-mapping entr
         <url-pattern>/dashboard2</url-pattern>
     </servlet-mapping>
 ----
-After the last `<filter-mapping>` tag, add the following filter-mapping entries:
++
+Add the following code after the final `<filter-mapping>` tag:
++
 [source, xml]
 ----
   <filter-mapping>
@@ -258,9 +275,11 @@ After the last `<filter-mapping>` tag, add the following filter-mapping entries:
     <url-pattern>/dashboard2</url-pattern>
   </filter-mapping>
 ----
-Next edit `applicationContext-acegi-security.xml` to enable anonymous authentication for the `/dashboard1` and `/dashboard2` aliases.
-Near the top of the file, find `<bean id="filterChainProxy" ...>`.
-Below the entry for `/rss.jsp*`, add an entry for each of the dashboard aliases:
+
+. Edit `$\{OPENNMS_HOME}/jetty-webapps/opennms/WEB-INF/applicationContext-acegi-security.xml` to enable anonymous authentication for the `/dashboard1` and `/dashboard2` aliases:
++
+Add the following code in the `<bean id="filterChainProxy" ...>` block, after the entry for `/rss.jsp*`:
++
 [source, xml]
 ----
   <bean id="filterChainProxy" class="org.acegisecurity.util.FilterChainProxy">
@@ -275,8 +294,9 @@ Below the entry for `/rss.jsp*`, add an entry for each of the dashboard aliases:
 
 ...
 ----
-About halfway through the file, look for `<bean id="filterInvocationInterceptor" ...>`.
-Below the entry for `/dashboard.jsp`, add an entry for each of the aliases:
++
+Add the following code in the `<bean id="filterInvocationInterceptor" ...>` block, after the entry for `/dashboard.jsp`:
++
 [source, xml]
 ----
   <bean id="filterInvocationInterceptor" class="org.acegisecurity.intercept.web.FilterSecurityInterceptor">
@@ -291,11 +311,12 @@ Below the entry for `/dashboard.jsp`, add an entry for each of the aliases:
 
 ...
 ----
-Finally, near the bottom of the page, add a new instance of `AnonymousProcessingFilter` for each alias.
++
+Add a new `AnonymousProcessingFilter` instance for each alias near the bottom of the file:
++
 [source, xml]
 ----
-  <!-- Set the anonymous username to dashboard1 so the dashboard page
-       can match it to a surveillance view of the same name. -->
+  <!-- Set the anonymous username to dashboard1 so the dashboard page can match it to a surveillance view of the same name. -->
   <bean id="dash1AnonymousProcessingFilter" class="org.acegisecurity.providers.anonymous.AnonymousProcessingFilter">
     <property name="key"><value>foobar</value></property>
     <property name="userAttribute"><value>dashboard1,ROLE_DASHBOARD</value></property>
@@ -306,11 +327,14 @@ Finally, near the bottom of the page, add a new instance of `AnonymousProcessing
     <property name="userAttribute"><value>dashboard2,ROLE_DASHBOARD</value></property>
   </bean>
 ----
-Restart {page-component-title} and you should bring up a dashboard at `\http://hostname/opennms/dashboard1` without logging in.
 
-WARNING: There's no way to switch dashboards without closing the browser (or deleting the JSESSIONID session cookie).
+. Restart {page-component-title}.
+. Navigate to `\http://hostname/opennms/dashboard1` to test your settings.
+You should be able to see a dashboard without logging in.
 
-WARNING: If you accidentally click a link that requires full user privileges (for example, Node List), you'll be given a login form.
-         Once you receive the login form, you cannot return to the dashboard without restarting the browser.
-         If this problem bothers you, you can set `ROLE_USER` in addition to `ROLE_DASHBOARD` in your `userAttribute` property.
-         However, setting this role will give full user access to anonymous browsers.
+NOTE: There is no way to view another dashboard without closing the browser, or deleting the `JSESSIONID` cookie.
+
+TIP: If you accidentally click a link that requires full user privileges, you will see a login form.
+Once you are directed to the login form, you cannot return to the anonymous dashboard without restarting the browser.
+If this bothers you, you can set the `ROLE_USER` role alongside the `ROLE_DASHBOARD` role in the `userAttribute` property definition.
+Note, however, that setting this role provides full user access to anonymous browsers.

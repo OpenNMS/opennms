@@ -8,6 +8,7 @@
 ** xref:quick-start/performance-data.adoc[]
 ** xref:quick-start/thresholding.adoc[]
 ** xref:quick-start/baseline.adoc[]
+** xref:quick-start/visualize-data.adoc[]
 
 * xref:deep-dive/introduction.adoc[]
 

@@ -6,7 +6,7 @@ This section describes how to visualize your environment's data (using the dashb
 == {page-component-title} Home page
 
 The {page-component-title} Home page presents an overview of important network status metrics, right after you log in.
-By default, you see any pending situations and problems, ongoing outages, 24-hour availability statistics, and a map displaying real-time regional status data.
+By default, it displays pending situations and problems, ongoing outages, 24-hour availability statistics, and a map displaying real-time regional status data.
 
 When you log in, the visualizations on the Home page are not filtered.
 You can apply filters to the data using the sections on the right side of the screen (Resource Graphs, KSC Reports, and Quick Search).
@@ -24,28 +24,30 @@ The dashboard is comprised of five components:
 * *Surveillance view:* lets you model a monitoring context on the dashboard.
 +
 You can reduce visible information by selecting rows, columns, and cells to focus on, quickly limiting the data you have to sift through.
-The rest of the dashboard dynamically updates, as appropriate.
+The rest of the dashboard updates dynamically.
+
 * *Alarms:* shows unacknowledged alarms which should be escalated.
 * *Notifications:* shows outstanding and unacknowledged notifications.
 * *Outages:* shows all ongoing network outages.
-* *Resource graphs:* shows performance time series reports for performance diagnosis.
+* *Resource graphs:* shows time series reports for performance diagnosis.
 
 For more information on each of the components, see xref:operation:deep-dive/admin/webui/dashboard.adoc[Dashboard] in the Deep Dive section.
 
+[[qs-visualize-ops-board]]
 == Operator board
 
-An operator board helps you visualize monitoring information by configuring dashlet to display different kinds of data (alarms, maps, KSC reports, and so on).
+An operator board (ops board) helps you visualize monitoring information by configuring dashlet to display different kinds of data (alarms, maps, KSC reports, and so on).
 Each dashlet visualizes specific information.
 You can combine dashlets to build an overview of your environment that best suits your needs.
 
-Operator boards can be created and configured only by users with admin permissions.
+Ops boards can be created and configured only by users with admin permissions.
 Follow these steps to create a new operator board:
 
 . Click the *Gear* symbol at the top-right of the screen.
 . Under Additional Tools, click *Ops Board Configuration*.
-. Click the *Plus* symbol (*+*) beside the Overview tab, type a name for the new operator board, and click *Save*.
+. Click the *Plus* symbol (*+*) beside the Overview tab, type a name for the new ops board, and click *Save*.
 . Click *Add Dashlet* and configure its settings:
-** *Title:* dashlet name to display in the operator board.
+** *Title:* dashlet name to display in the ops board.
 ** *Priority:* how often the dashlet displays in the rotation.
 Priority 1 is the highest, meaning it appears the most often.
 ** *Duration:* how long the dashlet displays in the rotation, in seconds.
@@ -55,14 +57,14 @@ This setting is optional, and is not available for all dashlets.
 This setting is optional, and is not available for all dashlets.
 ** (Optional) Click *Properties* to configure additional settings (alarm severity, chart type, and so on).
 . Click the *Up Arrow* and *Down Arrow* symbols to change the dashlet's order.
-This affects its rotation order in the ops board or its position in the ops panel.
+This affects its rotation order in the Ops Board view, or its position in the Ops Panel view.
 . Click *Preview* in the dashlet settings area to preview the dashlet.
 . Click *Preview* beside the operator board name to preview the board and all of its dashlets.
 
 The board's configuration is automatically saved.
-To view the operator board, click menu:Dashboards[Ops Board] in the menu bar.
+To view the ops board, click menu:Dashboards[Ops Board] in the menu bar.
 
-For more information about operator boards and dashlets, see xref:operation:deep-dive/admin/webui/opsboard/introduction.adoc[Operator Board] in the Deep Dive section.
+For more information about ops boards and dashlets, see xref:operation:deep-dive/admin/webui/opsboard/introduction.adoc[Operator Board] in the Deep Dive section.
 
 == Surveillance View
 
@@ -84,14 +86,14 @@ For more information, see xref:operation:deep-dive/admin/webui/heatmap.adoc[Heat
 
 == Trend
 
-The Trend page displays small, inline charts of database-related statistics (nodes with outages, unacknowledged alarms, and so on).
+The Trend page displays small, inline charts of database-related statistics (nodes experiencing outages, unacknowledged alarms, and so on).
 You can view it by clicking menu:Status[Trend] in the top menu bar.
 
 For more information, see xref:operation:deep-dive/admin/webui/trends.adoc[Trend] in the Deep Dive section.
 
 == Beyond Quick Start
 
-Refer to xref:operation:deep-dive/admin/webui/introduction.adoc[{page-component-title} Administration] in the Deep Dive section for more information on visualizations, including the following:
+Refer to xref:operation:deep-dive/admin/webui/introduction.adoc[Administrative Web Interface] in the Deep Dive section for more information on visualizations, including the following:
 
-* xref:operation:deep-dive/admin/webui/opsboard/dashlet/criteria-builder.adoc[Filtering dashlet information using the Criteria Builder].
+* xref:operation:deep-dive/admin/webui/opsboard/criteria-builder.adoc[Filtering dashlet information using the Criteria Builder].
 * xref:operation:deep-dive/admin/webui/ui-preview.adoc[Using the UI preview].
