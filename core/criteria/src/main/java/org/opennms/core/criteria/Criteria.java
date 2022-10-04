@@ -49,7 +49,9 @@ import java.util.regex.Pattern;
 import org.opennms.core.criteria.restrictions.Restriction;
 
 public class Criteria implements Cloneable {
-
+    private static final Integer DEFAULT_LIMIT = 10;
+    private static final Integer UNLIMITED = Integer.MAX_VALUE;
+    private static final Integer ZERO = 0; // used to mark unlimited limit
 	/**
 	 * This enum provides all of the locking modes that are available in the
 	 * ORM implementation.
@@ -239,10 +241,6 @@ public class Criteria implements Cloneable {
     public final Integer getLimit() {
         return m_limit;
     }
-
-    private static final Integer ZERO = 0;
-    private static final Integer DEFAULT_LIMIT = 10;
-    private static final Integer UNLIMITED = Integer.MAX_VALUE;
 
     public final Criteria setLimit(final Integer limit) {
         if (limit == null) {

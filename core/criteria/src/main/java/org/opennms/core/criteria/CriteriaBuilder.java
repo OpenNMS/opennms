@@ -48,6 +48,7 @@ public class CriteriaBuilder {
 
     private static final int DEFAULT_LIMIT = 10;
     private static final int UNLIMITED = Integer.MAX_VALUE;
+    private static final int ZERO = 0; // used to mark unlimited limit
 
 	private static final Logger LOG = LoggerFactory.getLogger(CriteriaBuilder.class);
 	
@@ -168,7 +169,7 @@ public class CriteriaBuilder {
     public CriteriaBuilder limit(final Integer limit) {
         if (limit == null) {
             m_limit = DEFAULT_LIMIT;
-        } else if (limit == 0 || limit.equals(0)) {
+        } else if (limit == 0 || limit.equals(ZERO)) {
             m_limit = UNLIMITED;
         } else {
             m_limit = limit;
