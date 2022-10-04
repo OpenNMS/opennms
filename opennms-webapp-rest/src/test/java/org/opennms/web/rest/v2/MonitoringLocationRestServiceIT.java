@@ -175,6 +175,11 @@ public class MonitoringLocationRestServiceIT extends AbstractSpringJerseyRestTes
 
     @Test
     @Transactional
+    public void testListLimitAndSortDefault() throws Exception {
+        testListLimitSort(9); // One default location always there
+    }
+    @Test
+    @Transactional
     public void testListLimitAndSortLong() throws Exception {
         testListLimitSort(15);// Should be 15 (not default of 10)
     }
@@ -187,15 +192,8 @@ public class MonitoringLocationRestServiceIT extends AbstractSpringJerseyRestTes
 
     @Test
     @Transactional
-    public void testZero() throws Exception {
-        testListLimitSort(0); // should be unlimited (all)
-    }
-
-    @Test
-    @Transactional
-    public void testNull() throws Exception {
-        //testListLimitSort(null);// hardcoded default limit is 10
-        assert(true);
+    public void testListLimitAndSortUnlimited() throws Exception {
+        testListLimitSort(50); // Just a largish value
     }
 
     /**
@@ -224,11 +222,10 @@ public class MonitoringLocationRestServiceIT extends AbstractSpringJerseyRestTes
         }
 
         // Fetch count and check it against local count
-        /* This is just commented so CircleCI passes (or should pass)
         String remoteCount = sendRequest(GET, "/monitoringLocations/count", Collections.emptyMap(), 200);
         LOG.info("testListLimitAndSort: remoteCount="+remoteCount+" localCount="+localLocations.size());
         assertEquals (localLocations.size(), Integer.parseInt(remoteCount));
-        */
+
         String fetchedJson = sendRequest(GET, "/monitoringLocations", Collections.emptyMap(), 200);
         ArrayList<Location> locationsFetched = (new ObjectMapper()).readValue(fetchedJson, Locations.class).location;
 

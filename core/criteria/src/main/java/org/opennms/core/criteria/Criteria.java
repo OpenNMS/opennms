@@ -240,8 +240,19 @@ public class Criteria implements Cloneable {
         return m_limit;
     }
 
+    private static final Integer ZERO = 0;
+    private static final Integer DEFAULT_LIMIT = 10;
+    private static final Integer UNLIMITED = Integer.MAX_VALUE;
+
     public final Criteria setLimit(final Integer limit) {
-        m_limit = limit;
+        if (limit == null) {
+            m_limit = DEFAULT_LIMIT;
+        } else if (limit == 0 || limit.equals(0) || limit.equals(ZERO) ){
+            m_limit = UNLIMITED;
+        } else {
+            m_limit = limit;
+        }
+
         return this;
     }
 

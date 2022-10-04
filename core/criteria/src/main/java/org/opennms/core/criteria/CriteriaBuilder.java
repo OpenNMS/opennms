@@ -46,6 +46,9 @@ import org.slf4j.LoggerFactory;
 
 public class CriteriaBuilder {
 
+    private static final int DEFAULT_LIMIT = 10;
+    private static final int UNLIMITED = Integer.MAX_VALUE;
+
 	private static final Logger LOG = LoggerFactory.getLogger(CriteriaBuilder.class);
 	
     private Class<?> m_class;
@@ -163,7 +166,13 @@ public class CriteriaBuilder {
     }
 
     public CriteriaBuilder limit(final Integer limit) {
-        m_limit = limit;
+        if (limit == null) {
+            m_limit = DEFAULT_LIMIT;
+        } else if (limit == 0 || limit.equals(0)) {
+            m_limit = UNLIMITED;
+        } else {
+            m_limit = limit;
+        }
         return this;
     }
 
@@ -203,7 +212,7 @@ public class CriteriaBuilder {
 
     public CriteriaBuilder count() {
         m_orderBuilder.clear();
-        //m_limit = null;
+        m_limit = null;
         m_offset = null;
         return this;
     }

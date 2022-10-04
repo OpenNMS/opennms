@@ -89,27 +89,9 @@ public class MonitoringLocationRestService extends AbstractDaoRestService<OnmsMo
 
     @Override
     protected CriteriaBuilder getCriteriaBuilder(UriInfo uriInfo) {
-        LOG.debug("getCriteriaBuilder");
-        LOG.debug("uriInfo"+uriInfo);
-        LOG.debug("uriInfo.parms size "+uriInfo.getQueryParameters().size());
-        MultivaluedMap m = uriInfo.getQueryParameters();
-        Set<String> keys = m.keySet();
-        LOG.debug("uriInfo start---");
-        for (String key: keys) {
-            LOG.debug(key+" key "+m.get(key));
-        }
-        LOG.debug("getQueryParameters end---");
-        LOG.debug("uriInfo getPath  "+uriInfo.getPath());
-        LOG.debug("uriInfo getAbsolutePath "+uriInfo.getAbsolutePath());
-        LOG.debug("uriInfo.getPathParameters "+uriInfo.getPathParameters());
-
         CriteriaBuilder builder = new CriteriaBuilder(OnmsMonitoringLocation.class);
-
-        // Limit should be set from the frontend and not hard coded here
-        //builder = builder.orderBy("locationName").asc().limit(null); // use default (10)
-        //builder = builder.orderBy("locationName").asc().limit(5); // use specific
-        //builder = builder.orderBy("locationName").asc().limit(15); // use specific
-        builder = builder.orderBy("locationName").asc().limit(0); // set unlimited
+        // TODO: Zero limit working but should be set from the frontend
+        builder = builder.orderBy("locationName").asc().limit(0);
         return builder;
     }
 

@@ -126,6 +126,8 @@ import com.googlecode.concurentlocks.ReentrantReadWriteUpdateLock;
 @Transactional
 public abstract class AbstractDaoRestServiceWithDTO<T,D,Q,K extends Serializable,I extends Serializable> {
 
+    private static final Integer UNLIMITED = Integer.MAX_VALUE;
+
     private static final Logger LOG = LoggerFactory.getLogger(AbstractDaoRestServiceWithDTO.class);
 
     @Autowired
@@ -257,7 +259,8 @@ public abstract class AbstractDaoRestServiceWithDTO<T,D,Q,K extends Serializable
     public Response get(@Context final UriInfo uriInfo, @Context final SearchContext searchContext) {
         // If limit is default or specified we search for a match else we return all
         Criteria crit = getCriteria(uriInfo, searchContext);
-        final List<T> coll = (crit.getLimit() != 0 ?  getDao().findMatching(crit) : getDao().findAll());
+        Integer limit = crit.getLimit();
+        final List<T> coll = (limit == 0 || limit == UNLIMITED || UNLIMITED.equals(limit)) ? getDao().findAll() : getDao().findMatching(crit);
         if (coll == null || coll.size() < 1) {
             return Response.status(Status.NO_CONTENT).build();
         } else {
@@ -559,6 +562,8 @@ public abstract class AbstractDaoRestServiceWithDTO<T,D,Q,K extends Serializable
 
         if (queryParameters.getLimit() == null) {
             queryParameters.setLimit(defaultLimit);
+        } else if (queryParameters.getLimit() == 0 || queryParameters.getLimit().equals(0)) {
+            queryParameters.setLimit(UNLIMITED);
         }
         CriteriaBuilderUtils.applyQueryParameters(builder, queryParameters);
     }

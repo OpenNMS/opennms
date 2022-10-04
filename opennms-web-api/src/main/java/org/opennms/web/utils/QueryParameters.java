@@ -31,6 +31,7 @@ package org.opennms.web.utils;
 public class QueryParameters {
 
     private static final Integer DEFAULT_LIMIT = 10;
+    private static final Integer UNLIMITED = Integer.MAX_VALUE;
 
     public static class Order {
         private final String column;
@@ -67,7 +68,13 @@ public class QueryParameters {
     }
 
     public void setLimit(Integer limit) {
-        this.limit = limit;
+        if (limit == null){
+            this.limit = DEFAULT_LIMIT;
+        } if (limit == 0 || limit.equals(0)){
+            this.limit = UNLIMITED;
+        } else {
+            this.limit = limit;
+        }
     }
 
     public Integer getLimit() {
