@@ -2,15 +2,15 @@
 = Trend
 
 The Trend feature lets you display small, inline charts of database-related statistics (nodes experiencing outages, unacknowledged alarms, and so on).
-You can view them by clicking menu:Status[Trend] in the top menu bar.
+Click menu:Status[Trend] in the top menu bar to view them.
 
-You can also configure these charts to be displayed on the {page-component-title} Home page.
+You can also configure these charts to be displayed on the {page-component-title} home page.
 To do this, modify the `org.opennms.web.console.centerUrl` parameter to include `/trend/trend-box.htm`.
 
 .Example of a trend chart
 image::webui/trend/trend-chart.png[]
 
-Trend charts can be defined and configured in `$\{OPENNMS_HOME}/etc/trend-configuration.xml`.
+You can define and configure trend charts in `$\{OPENNMS_HOME}/etc/trend-configuration.xml`.
 
 The following code defines a Trend chart that displays nodes that are experiencing ongoing outages:
 
@@ -120,23 +120,23 @@ The following table describes available variable substitutions:
 | Double
 
 | ${intValue[]}
-| An array of integer result values for the given SQL query.
+| An array of integer result values for the given SQL query
 | Integer array
 
 | {doubleValue[]}
-| An array of double result values for the given SQL query.
+| An array of double result values for the given SQL query
 | Double array
 
 | ${intValueChange[]}
-| An array of integer value changes for the given SQL query.
+| An array of integer value changes for the given SQL query
 | Integer array
 
 | ${doubleValueChange[]}
-| An array of double value changes for the given SQL query.
+| An array of double value changes for the given SQL query
 | Double array
 
 | $\{intlastvalue}
-| The last integer value.
+| The last integer value
 | Integer
 
 | $\{doublelastvalue}
@@ -144,11 +144,11 @@ The following table describes available variable substitutions:
 | Double
 
 | $\{intlastvaluechange}
-| The last integer value change.
+| The last integer value change
 | Integer
 
 | $\{doublelastvaluechange}
-| The last double value change.
+| The last double value change
 | Double
 |===
 

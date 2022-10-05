@@ -2,8 +2,8 @@
 [[surveillance-view]]
 = Surveillance View
 
-When monitoring a large network that contains devices of different priorities, you may want to see how the "whole system" is working at a glance.
-The Surveillance View feature aims to do that.
+When monitoring a large network that contains devices of different priorities, you may want to see how the whole system is working at a glance.
+Use the Surveillance View feature to do so.
 Using categories, you can define a matrix that lets you aggregate monitoring data.
 
 Imagine that you have 10 servers with 10 internet connections, and 5 PCs with DSL lines.
@@ -26,7 +26,7 @@ When monitoring your network, you want to know how many servers or services are 
 .Surveillance View displaying three categories; one category is experiencing an outage
 image::surveillance-view/01_surveillance-view.png[]
 
-Visual status indications are defined as follows:
+Visual status indicators are defined as follows:
 
 * *Green:* no services down.
 * *Yellow:* one service down.
@@ -38,9 +38,9 @@ The Surveillance View also serves as the foundation of the <<deep-dive/admin/web
 
 Surveillance Views are defined in `$\{OPENNMS_HOME}/etc/surveillance-views.xml`.
 
-NOTE: `surveillance-views.xml` can be modified using a text editor.
-It is re-evaluated every time the Surveillance View page is loaded.
-As such, changes to the file do not require {page-component-title} to be restarted.
+NOTE: You can use a text editor to modify `surveillance-views.xml`.
+{page-component-title} re-evaluates the file every time the Surveillance View page is loaded.
+Changes to the file do not require you to restart {page-component-title}.
 
 The default Surveillance View configuration is as follows:
 
@@ -85,7 +85,7 @@ WARNING: The old `report-category` attribute is deprecated and is no longer supp
 
 == Custom configuration
 
-The Surveillance View can be modified using the Surveillance View Configurations editor:
+Use the Surveillance View Configurations editor to modify the Surveillance View:
 
 . Click the *Gear* symbol at the top-right of the screen.
 . Under Additional Tools, click *Surveillance Views Configuration*.
@@ -93,7 +93,7 @@ The Surveillance View can be modified using the Surveillance View Configurations
 The page displays an overview of configured Surveillance Views and lets you edit, remove, and preview them.
 You can also select a default Surveillance View by selecting the Default box beside its name.
 
-.Surveillance View Configuration UI, with three entries; the `default` configuration is designated as the default View
+.Surveillance View Configuration UI, with three entries; the `default` configuration is designated as the default view
 image::surveillance-view/02_surveillance-view-config-ui.png[]
 
 When you configure a Surveillance View, you must define its title and the time (in seconds) between refreshes.
@@ -104,7 +104,7 @@ image::surveillance-view/03_surveillance-view-config-ui-edit.png[]
 
 Editing row or column definitions requires you to choose a unique label and at least one {page-component-title} category.
 
-When you are finished, you can click *Save* to persist the configuration settings.
+When you are finished, click *Save* to persist the configuration settings.
 You can also click *Cancel* to close the dialog without saving.
 
 == Categorizing nodes
@@ -126,7 +126,7 @@ Your changes are automatically saved.
 == Creating views for users and groups
 
 You can create user and group names for Surveillance Views.
-When the Surveillance View page is loaded, the first of the following criteria to be fulfilled determines the view that is displayed:
+When the Surveillance View page loads, the first of the following criteria to be fulfilled determines the view that is displayed:
 
 . The Surveillance View name is equal to the username.
 . The Surveillance View name is equal to the user's assigned group name.

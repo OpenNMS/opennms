@@ -10,7 +10,7 @@ Thus, a node with fewer services is displayed as a smaller box than one with mor
 
 The heatmap feature is deactivated by default, and is configured in `opennms.properties`.
 
-.Heatmap visualization of outages; the smallest entity is reporting an ongoing outage
+.Heatmap visualization of outages; the smallest entity reports an ongoing outage
 image::webui/heatmap/heatmap.png[]
 
 == Configuration properties
@@ -70,4 +70,4 @@ You can place the heatmap on the landing page by setting this parameter to `/hea
 |===
 
 TIP: You can use negative lookahead expressions to exclude categories from the heatmap.
-For example, by using `^(?!XY).*`, you can filter out entities with names starting with `XY`.
+For example, use `^(?!XY).*` to filter out entities with names starting with `XY`.

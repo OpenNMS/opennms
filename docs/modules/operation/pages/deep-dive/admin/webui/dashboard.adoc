@@ -3,9 +3,9 @@
 
 In Network Operations Centers (NOCs), an overview of issues occurring in the network is important.
 This information is often presented in customized dashboards, as appropriate for the monitored environment.
-A dashboard is an at-a-glance overview of the network, and it is often used as an entry point for more detailed diagnosis of issues using data provided by {page-component-title}.
+A dashboard is an at-a-glance overview of the network, and it is often used as an entry point for more detailed diagnosis of issues using data {page-component-title} provides.
 
-Large networks have people (operators) who have different responsibilities, according to its monitoring needs.
+Large networks have people (operators) who have different responsibilities, according to the organization's monitoring needs.
 Each dashboard should show only the information pertaining to a specific monitoring context.
 Operators need to customize and filter information on the dashboard to create focused data sets.
 
@@ -13,12 +13,12 @@ Operators need to customize and filter information on the dashboard to create fo
 image::dashboard/01_dashboard-overall.png[]
 
 TIP: You can hide the upper navigation bar on any page by adding `?quiet=true;` to the end of any {page-component-title} URL.
-This is useful when viewing dashboards on a large monitor or TV screen.
+This is useful when viewing dashboards on a large screen.
 
 [[ga-dashboard-components]]
 == Components
 
-The dashboard is comprised of five components:
+The dashboard is comprised of the following components:
 
 * *Surveillance view:* lets you model a monitoring context for the dashboard.
 +
@@ -26,10 +26,10 @@ You can reduce visible information by selecting rows, columns, and cells to focu
 The rest of the dashboard updates dynamically.
 
 * *Alarms:* displays unacknowledged alarms whose severity is higher than Normal (1).
-Any alarms shown here should be escalated by an operator.
+An operator should escalate any alarms shown here.
 * *Notifications:* displays outstanding and unacknowledged notifications that have been sent to engineers.
 * *Outages:* displays all ongoing network outages.
-* *Resource graphs* displays time series reports for performance diagnosis.
+* *Resource graphs:* displays time series reports for performance diagnosis.
 
 [[ga-dashboard-surveillance-view]]
 === Surveillance view
@@ -54,17 +54,17 @@ It sorts alarms from most to least recent, and lets you scroll through the last 
 
 Acknowledged alarms are removed from the operator's responsibility and, therefore, the alarms component.
 
-The following information is shown in the component:
+The component displays the following information:
 
 .An alarms component displaying three alarms--two of Minor severity, and one of Warning severity
 image::dashboard/03_dashboard-alarms.png[]
 
-1. *Node:* the label of the node associated with the alarm.
-2. *Severity:* severity of the alarm.
-3. *UEI:* the alarm's UEI.
-4. *Count:* the number of alarms deduplicated by the alarm's reduction key.
-5. *Last Time:* the time at which the most recent alarm was generated.
-6. *Log Msg:* the log message from the alarm's event definition.
+* *Node:* the label of the node associated with the alarm.
+* *Severity:* alarm severity.
+* *UEI:* the alarm's UEI.
+* *Count:* the number of alarms deduplicated by the alarm's reduction key.
+* *Last Time:* the time at which the most recent alarm was generated.
+* *Log Msg:* the log message from the alarm's event definition.
 
 [[ga-dashboard-notifications]]
 === Notifications
@@ -72,7 +72,7 @@ image::dashboard/03_dashboard-alarms.png[]
 The notifications component shows outstanding and unacknowledged notifications.
 It sorts notifications from most to least recent, and lets you scroll through the last 100 notifications.
 
-Notifications are used to inform people on a duty schedule of issues in the monitored network, and to force action to fix or reconfigure systems immediately.
+Notifications inform people on a duty schedule of issues in the monitored network, so they can take action to fix or reconfigure systems immediately.
 In {page-component-title}, it is possible to acknowledge notifications to designate someone as working on a specific issue.
 
 A dashboard should show outstanding notifications in the NOC.
@@ -83,12 +83,12 @@ The following information is shown in the component:
 .A notifications component displaying three notifications
 image::dashboard/04_dashboard-notifications.png[]
 
-1. *Node:* the label of the node associated with the notification.
-2. *Service:* the name of the service associated with the notification.
-3. *Message:* the log message associated with the notification.
-4. *Sent Time:* time when the notification was sent.
-5. *Responder:* name of the user who acknowledged the notification.
-6. *Respond Time:* the time when the Responder acknowledged the notification.
+* *Node:* the label of the node associated with the notification.
+* *Service:* the name of the service associated with the notification.
+* *Message:* the log message associated with the notification.
+* *Sent Time:* time when the notification was sent.
+* *Responder:* name of the user who acknowledged the notification.
+* *Respond Time:* the time when the responder acknowledged the notification.
 
 [[ga-dashboard-node-status]]
 === Outages
@@ -99,10 +99,10 @@ An acknowledged alarm doesn't necessarily mean that an outage has been solved; f
 .An outages component displaying five nodes and their availability stats
 image::dashboard/05_dashboard-outages.png[]
 
-1. *Node:* the label of the node.
-2. *Current Outages:* the number of services on the node experiencing outages.
+* *Node:* the label of the node.
+* *Current Outages:* the number of services on the node experiencing outages.
 The number of outages is listed out of the total number of monitored services (for example, "3 of 3 services are affected").
-3. *24 Hour Availability:* the availability of all node services, calculated across the last 24 hours.
+* *24 Hour Availability:* the availability of all node services, calculated across the last 24 hours.
 
 [[ga-dashboard-resource-graph-viewer]]
 === Resource graphs
@@ -113,7 +113,7 @@ It also lets you navigate to time series data reports, providing a quick entry p
 The component filters nodes based on the surveillance view context.
 It shows only one graph report at a time, and lets you navigate sequentially through the data.
 
-.A resource graphs component displaying ICMP response time data from 11:00 a.m. to 12:00 p.m.
+.A resource graph component displaying ICMP response time data from 11:00 a.m. to 12:00 p.m.
 image::dashboard/06_dashboard-resource-graphs.png[]
 
 [[ga-dashboard-advanced-configuration]]
@@ -121,33 +121,33 @@ image::dashboard/06_dashboard-resource-graphs.png[]
 
 The surveillance view component lets you model views for different monitoring contexts.
 Using it, you can create a special view as an example for network or server operators.
-The dashboard displays only _one_ configured <<deep-dive/admin/webui/surveillance-view.adoc#ga-surveillance-view, surveillance view>>.
+The dashboard displays only one configured <<deep-dive/admin/webui/surveillance-view.adoc#ga-surveillance-view, surveillance view>>.
 You can, however, let certain users define their surveillance view to fit their requirements by mapping their account to a configured surveillance view component.
 
 Any nodes selected in the surveillance view are also aware of the https://opennms.discourse.group/t/user-restriction-filters-webacls/1021[User Restriction Filter].
 If you have a group of users who should see only a subset of nodes, the surveillance view will filter the data appropriately.
 
 The dashboard is designed to focus, and therefore also restrict, a user's view of monitored devices.
-To do this, a new user role was added.
-It restricts them to viewing only the dashboard, if that is the administrator's intent.
+To do this, {page-component-title} includes a dashboard user role that restricts the user to viewing only the dashboard.
 
 [[ga-dashboard-dashboard-role]]
 === The Dashboard role
 
-The following example shows how the Dashboard role (`ROLE_PROVISION`) can be used.
-Here, the `drv4doe` user is assigned the Dashboard role:
+The following example shows how you can use the Dashboard role (`ROLE_PROVISION`).
+This procedure shows how to assign the Dashboard role to the `drv4doe` user:
 
 . xref:operation:quick-start/users.adoc#create-user[Create a new user] named `drv4doe`.
 The user represents a router and switch jockey.
 . Add the `ROLE_PROVISION` role to the account through the web UI or by manually editing `$\{OPENNMS_HOME}/etc/users.xml`:
-** Via the web UI:
+** *Web UI*
 ... Click the *Gear* symbol at the top-right of the screen.
 ... Under OpenNMS System, click *Configure Users, Groups and On-Call Roles*.
 ... On the Users and Groups screen, click *Configure Users*.
 ... Click *Modify* beside the `drv4doe` account.
 ... In the Security Roles section, select `ROLE_PROVISION` in the *Available Roles* list and click *Add >>* to add it to the account.
 ... Click *Finish* at the bottom of the screen to update the account.
-** Add the following code to `$\{OPENNMS_HOME}/etc/users.xml`:
+** *Manually via code*
+... Add the following code to `$\{OPENNMS_HOME}/etc/users.xml`:
 +
 [source, xml]
 ----
@@ -219,14 +219,14 @@ All other users will see the default dashboard.
 
 NOTE: After logging in, the person using the `drv4doe` account is taken directly to the dashboard page.
 They are not allowed to navigate to other {page-component-title} URLs.
-If they try to do so, they are presented with an Access Denied error.
+If they try to do so, they receive an access denied error.
 
 === Anonymous dashboards
 
 You can modify the security framework configuration files to allow access to one or more dashboards without requiring a user to log in:
 
 . Create users and configure surveillance views as shown in <<#ga-dashboard-dashboard-role, The Dashboard role>>.
-For this example, we will create two dashboards and two users, one of each named `dashboard1` and the others named `dashboard2`.
+For this example, we will create two dashboards and two users, one of each named `dashboard1` and the other named `dashboard2`.
 . Edit `$\{OPENNMS_HOME}/jetty-webapps/opennms/WEB-INF/web.xml` to create aliases for the dashboards.
 Add the following code just before the first `<servlet-mapping>` tag:
 +

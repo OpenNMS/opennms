@@ -2,7 +2,7 @@
 [[webui-opsboard-criteria-builder]]
 = Criteria Builder
 
-The Criteria Builder is a generic component used to filter dashlet information.
+The Criteria Builder is a generic component to filter dashlet information.
 Some dashlets use this component in certain use cases to filter the displayed information.
 It is possible to combine multiple criteria to display a subset of information in a given dashlet.
 
@@ -140,7 +140,7 @@ This option is similar to the SQL `like` function.
 | -
 
 | MultiAnd
-| Constraint that supports multiple parameters in criteria builder.
+| Constraint that supports multiple parameters in the criteria builder.
 | Database attribute
 | String
 | String

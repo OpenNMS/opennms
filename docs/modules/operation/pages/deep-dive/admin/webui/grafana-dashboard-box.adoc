@@ -2,11 +2,11 @@
 [[webui-grafana-dashboard-box]]
 = Grafana Dashboard Box
 
-http://grafana.org/[Grafana] provides an API key which lets third-party applications access it.
-In {page-component-title}, Grafana is used to generate visualizations, including the Grafana Dashboard Box on the Home page.
+http://grafana.org/[Grafana] provides an API key that lets third-party applications access it.
+{page-component-title} uses Grafana to generate visualizations, including the Grafana Dashboard Box on the home page.
 By default, it shows a set of dashboards related to {page-component-title} and your monitored environment.
 
-.Grafana dashboards on the {page-component-title} Home page
+.Grafana dashboards on the {page-component-title} home page
 image::webui/startpage/01_grafana-box.png[]
 
 == Filter dashboards
@@ -24,7 +24,7 @@ You can configure this feature by creating or editing `$\{OPENNMS_HOME}/etc/open
 | Default
 
 | org.opennms.grafanaBox.show
-| Determines whether a Grafana Dashboard Box showing the available dashboards is included on the Home page.
+| Determines whether a Grafana Dashboard Box showing the available dashboards is included on the home page.
 | Boolean
 | `false`
 
@@ -47,7 +47,7 @@ You may need to use the IP address or fully qualified domain name, based on your
 | org.opennms.grafanaBox.apiKey
 | The Grafana API key.
 This key is needed for REST calls to work. +
-Refer to the official https://grafana.com/docs/grafana/latest/http_api/[Grafana HTTP documentation] for details on generating an API key.
+Refer to the official https://grafana.com/docs/grafana/latest/developers/http_api/[Grafana HTTP documentation] for details on generating an API key.
 | String
 | Empty string
 
@@ -100,5 +100,5 @@ Setting the value to `0` will display an unlimited number of entries.
 | `org.opennms.grafanaBox.basePath`
 |===
 
-NOTE: If you have Grafana set up behind a reverse proxy, you may need to define the `org.opennms.grafanaBox.link.*` properties.
+NOTE: If you have Grafana set up behind a reverse proxy, you may need to define the `org.opennms.grafanaBox.link.\*` properties.
 The `link.*` properties, if defined, are used to build the user-facing URLs, independent of other properties that are used for internal interaction with the Grafana REST API.

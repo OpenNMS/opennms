@@ -15,7 +15,7 @@ Useful for displaying information in a centralized location (for example, on a N
 image::webui/opsboard/01_opspanel-concept.png[]
 
 * *Ops Board:* displays one dashlet at a time, in rotation.
-Useful for displaying a variety of information that can be viewed independently (for example, on a wall-mounted screen in an NOC).
+Useful for displaying a variety of information that users can view independently (for example, on a wall-mounted screen in a NOC).
 +
 .Four dashlets in rotation on an Ops Board
 image::webui/opsboard/02_opsboard-concept.png[]
@@ -24,7 +24,7 @@ image::webui/opsboard/02_opsboard-concept.png[]
 == Configuration
 
 You must have admin permissions to create and configure ops boards.
-After you create an ops board, you can specify how the information will be visualized (as a Panel or a Board).
+After you create an ops board, you can specify how the information will be visualized (as a panel or a board).
 
 See xref:operation:quick-start/visualize-data.adoc#qs-visualize-ops-board[Operator board] in the Quick Start section for details on creating and customizing ops boards.
 
