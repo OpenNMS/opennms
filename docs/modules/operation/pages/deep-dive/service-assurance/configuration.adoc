@@ -2,7 +2,7 @@
 [[ga-pollerd-configuration]]
 = Configure Pollerd
 
-.Configuration and log files related to Pollerd
+.Configuration and log files related to pollerd
 [options="header, autowidth"]
 [cols="1,2"]
 |===
@@ -13,13 +13,13 @@
 | Configuration file for monitors and global daemon configuration.
 
 | $OPENNMS_HOME/logs/poller.log
-| Log file for all monitors and the global Pollerd.
+| Log file for all monitors and the pollerd daemon.
 
 | $OPENNMS_HOME/etc/response-graph.properties
 | RRD graph definitions for service response time measurements.
 
-| $OPENNMS_HOME/etc/events/opennms.events.xml
-| Event definitions for Pollerd.
+| $OPENNMS_HOME/etc/events/opennms.pollerd.events.xml
+| Event definitions for pollerd.
   For example, nodeLostService, interfaceDown, or nodeDown.
 |===
 
