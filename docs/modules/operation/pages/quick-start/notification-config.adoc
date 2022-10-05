@@ -34,7 +34,10 @@ Changes to this file happen immediately, with no need to restart {page-component
 
 === Filter rules
 
-The filter rule configured in `$\{OPENNMS_HOME}/etc/notifications.xml` (for example, `<rule>IPADDR != '0.0.0.0'</rule>`) is not strict by default.
+A filter rule lets you define which notifications to send or save. Strict rules are always evaluated, and if there is no node or interface associated with the event, the notification will not be saved. 
+
+By default, the filter rule configured in `$\{OPENNMS_HOME}/etc/notifications.xml` (for example, `<rule>IPADDR != '0.0.0.0'</rule>`) is not strict.
+That means that events with no associated node or interface will not validate the rule, and the notification would be saved.
 That means if there is an event that is not associated with a node or interface, it will not validate the rule and, by default, the notification would be saved.
 
 A strict rule (for example, `<rule strict="true">IPADDR != '0.0.0.0'</rule>`) will always be evaluated, and if there is no node or interface associated with the event, the notification will not be saved.
