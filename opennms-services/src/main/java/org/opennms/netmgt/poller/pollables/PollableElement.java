@@ -477,6 +477,10 @@ public abstract class PollableElement {
      * @param resolution a {@link org.opennms.netmgt.poller.pollables.PollEvent} object.
      */
     protected void processLingeringCauses(PollEvent resolvedCause, PollEvent resolution) {
+        if (isSuspended()) {
+            return;
+        }
+
         if (getStatus().isDown() && resolvedCause.equals(getCause())) {
             resolveAllOutages(resolvedCause, resolution);
             processGoingDown(resolution.getDate());
@@ -486,6 +490,8 @@ public abstract class PollableElement {
             processComingUp(resolution.getDate());
         }
     }
+
+    protected abstract boolean isSuspended();
 
     /**
      * <p>extrapolateCause</p>
