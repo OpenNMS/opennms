@@ -29,6 +29,7 @@
 package org.opennms.features.kafka.producer.collection;
 
 import static com.jayway.awaitility.Awaitility.await;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.isOneOf;
 import static org.junit.Assert.assertThat;
@@ -74,8 +75,10 @@ import org.opennms.netmgt.collection.api.LatencyCollectionResource;
 import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.support.SingleResourceCollectionSet;
+import org.opennms.netmgt.collection.support.builder.Attribute;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
+import org.opennms.netmgt.collection.support.builder.StringAttribute;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.rrd.RrdRepository;
@@ -240,6 +243,39 @@ public class KafkaPersisterIT {
         assertThat(responseResource.isPresent(), equalTo(Boolean.TRUE));
         responseResource.ifPresent(resource -> {
                     assertThat(resource.getNumeric(0).getValue(), equalTo(1050.0)); // persisted resource
+                }
+        );
+    }
+
+    public void testNMS14740() throws IOException {
+        final OnmsNode node = databasePopulator.getNode6();
+        final CollectionAgent agent = new MockCollectionAgent(node.getId(), "test", InetAddress.getLocalHost());
+        final NodeLevelResource nodeResource = new NodeLevelResource(node.getId());
+
+        // construct a string attribute with a GAUGE attribute type, this triggered the NPE before
+        final Attribute<?> brokenAttribute = new StringAttribute("group2", "node6", "foobar", null) {
+            @Override
+            public AttributeType getType() {
+                return AttributeType.GAUGE;
+            }
+        };
+
+        final CollectionSet collectionSet = new CollectionSetBuilder(agent).withTimestamp(new Date(2))
+                .withNumericAttribute(nodeResource, "group1", "node6", 105, AttributeType.GAUGE)
+                .withAttribute(nodeResource, brokenAttribute).build();
+
+        persister.visitCollectionSet(collectionSet);
+
+        await().atMost(1, TimeUnit.MINUTES).pollInterval(15, TimeUnit.SECONDS).until(() -> kafkaConsumer.getCollectionSetValues().size(), equalTo(1));
+        List<CollectionSetProtos.CollectionSetResource> resources = kafkaConsumer.getCollectionSetValues().stream().map(CollectionSetProtos.CollectionSet::getResourceList).flatMap(Collection::stream).collect(Collectors.toList());
+
+        final Optional<CollectionSetProtos.CollectionSetResource> nodeLevelResource = resources.stream().filter(CollectionSetProtos.CollectionSetResource::hasNode).findFirst();
+        nodeLevelResource.ifPresent(resource -> {
+                    assertThat(resource.getNode().getNodeId(), equalTo(node.getId().longValue()));
+                    assertThat(resource.getNumericList().size(), equalTo(2));
+                    assertThat(resource.getNumeric(0).getValue(), isOneOf(105.0, 1050.0));
+                    // check that a NaN was stored for this invalid value instead of throwing a NPE
+                    assertThat(resource.getNumeric(1).getValue(), is(Double.NaN));
                 }
         );
     }

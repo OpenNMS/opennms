@@ -283,6 +283,7 @@ if (request.getAttribute("success") != null) {
       </div>
       <div class="card-body">
         <form role="form" class="form" method="post" name="snmpConfigGetForm" action="admin/snmpConfig?action=get">
+          <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
           <div class="form-group form-row">
             <label for="lookup_ipAddress" class="col-form-label col-sm-3" data-toggle="tooltip" data-placement="right" title="Specify the IP Address for which you want to lookup the SNMP configuration. Either IPv4 or IPv6 format is allowed.">
             IP Address
@@ -345,6 +346,7 @@ if (request.getAttribute("success") != null) {
 
 <form role="form" class="form-horizontal" method="post" name="snmpConfigForm"
   action="admin/snmpConfig?action=add" onsubmit="return verifySnmpConfig();">
+  <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 
 <div class="row">
   <div class="col-md-6">

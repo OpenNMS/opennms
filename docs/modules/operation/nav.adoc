@@ -104,14 +104,13 @@
 *** xref:notifications/strategies/slack.adoc[]
 
 * xref:bsm/introduction.adoc[]
-** xref:bsm/business-service-map.adoc[]
-** xref:bsm/operational-status.adoc[]
-** xref:bsm/root-cause-impact-analysis.adoc[]
 ** xref:bsm/business-service-definition.adoc[]
 *** xref:bsm/edges.adoc[]
+** xref:bsm/business-service-map.adoc[]
+** xref:bsm/operational-status.adoc[]
 *** xref:bsm/map-functions.adoc[]
 *** xref:bsm/reduce-functions.adoc[]
-** xref:bsm/bsmd.adoc[]
+** xref:bsm/root-cause-impact-analysis.adoc[]
 
 * xref:topology/introduction.adoc[]
 ** xref:topology/topology.adoc[]
