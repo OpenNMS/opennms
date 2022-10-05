@@ -98,7 +98,7 @@ yes | ${OPENNMS_HOME}/bin/fix-karaf-setup.sh
 systemctl start opennms.service
 ----
 +
-NOTE: `tail -F $\{OPENNMS_HOME}/logs/manager.log` illustrates the {page-component-title} startup progress.
+TIP: `tail -F $\{OPENNMS_HOME}/logs/manager.log` shows the {page-component-title} startup progress.
 
 . The upgrade is completed and operation resumes.
 
