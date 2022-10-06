@@ -23,7 +23,7 @@ All other services on the other IP interfaces are not tested and no events are s
 This is a global configuration option of pollerd, defined in `poller-configuration.xml`.
 The {page-component-title} default configuration enables this behavior.
 
-.Critical service configuration in Pollerd
+.Critical service configuration in pollerd
 [source, xml]
 ----
 <poller-configuration threads="30"
@@ -36,7 +36,7 @@ The {page-component-title} default configuration enables this behavior.
 </node-outage>
 ----
 <1> Enable node outage correlation based on a critical service.
-<2> Optional: With nodes without a critical service, this option controls the behavior.
-    If set to `true` then all services will be polled.
-    If set to `false` then the first service in the package that exists on the node will be polled until service is restored, and then polling will resume for all services.
+<2> Optional: For nodes without a critical service, this option controls the polling behavior during a node outage.
+If set to `true` then all services will be polled.
+If set to `false` then the first service in the package that exists on the node will be polled until service is restored, and then polling will resume for all services.
 <3> Define critical service for node outage correlation.

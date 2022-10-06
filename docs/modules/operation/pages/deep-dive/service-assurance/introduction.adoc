@@ -5,21 +5,21 @@
 This section describes how {page-component-title} tests the availability of a service or device and measures its latency.
 
 In {page-component-title} a service monitor framework fulfils these tasks.
-The main component, Pollerd, provides the following functionality:
+The main component, pollerd, provides the following functionality:
 
 * Tracks the status of a management resource or an application for availability calculations.
 * Measures response times for service quality.
 * Correlates node and interface outages based on a <<deep-dive/service-assurance/critical-service.adoc#ga-service-assurance-critical-service, critical service>>.
 
-The following image shows the model and representation of availability and response time.
+The following image shows the model and representation of availability and response time:
 
-.Representation of latency measurement and availability
 image::service-assurance/01_node-model.png[]
 
-This information is based on service monitors which Pollerd stores and runs.
+This information is based on service monitors which pollerd stores and runs.
 A service can have any arbitrary name and is associated with a service monitor.
-For example, we can define two services with the name `HTTP` and `HTTP-8080`, both are associated with the HTTP Service Monitor but use a different TCP port configuration parameter.
-The following figure shows how Pollerd interacts with other components in {page-component-title} and applications or agents to be monitored.
+For example, we can define two services with the name `HTTP` and `HTTP-8080`.
+Both are associated with the HTTP Service Monitor, but each uses a different TCP port configuration parameter.
+The following figure shows how pollerd interacts with other components in {page-component-title} and applications or agents to be monitored.
 
 The availability is calculated over the last 24 hours and is shown in the Surveillance Views, SLA Categories, and the Node Detail pages.
 Response times are displayed as resource graphs of the IP interface on the Node Detail page.

@@ -3,10 +3,10 @@
 = Detect Short Service Outages
 
 By default the monitoring interval for a service is five minutes.
-To detect short service outages, caused, for example, by automatic network rerouting, use the downtime model.
+To detect short service outages, like those caused by automatic network rerouting, use the downtime model.
 On a detected-service outage, the interval is reduced to every 30 seconds for five minutes.
 If the service comes back within five minutes, a shorter outage is documented and the impact on service availability can be less than five minutes.
-This configurable behavior is called "downtime model".
+This configurable behavior is called the "downtime model."
 
 fix this: downtime model defines ...
 
