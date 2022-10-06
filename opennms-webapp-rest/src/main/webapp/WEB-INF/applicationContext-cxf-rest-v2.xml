@@ -53,6 +53,12 @@
         <property name="securityDefinitions" ref="securityDefinitionsMap" />
         <property name="customizer" ref="openApiCustomizer" />
     </bean>
+    <bean id="dispatcherServletResource" class="org.springframework.core.io.UrlResource">
+        <constructor-arg value="file:${opennms.home}/jetty-webapps/opennms/WEB-INF/dispatcher-servlet.xml"/>
+    </bean>
+    <bean id="menuProvider" class="org.opennms.web.rest.support.menu.MenuProvider">
+        <constructor-arg ref="dispatcherServletResource"/>
+    </bean>
 
     <jaxrs:server id="cxf-rest-v2" address="/" basePackages="org.opennms.web.rest.v2,org.opennms.web.rest.v2.bsm,,org.opennms.web.rest.v2.status">
       <jaxrs:properties>

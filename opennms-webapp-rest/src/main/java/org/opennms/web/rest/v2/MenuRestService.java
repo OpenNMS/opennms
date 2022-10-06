@@ -28,24 +28,38 @@
 
 package org.opennms.web.rest.v2;
 
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import org.opennms.core.time.CentralizedDateTimeFormat;
+import org.opennms.netmgt.config.NotifdConfigFactory;
+import org.opennms.web.api.Authentication;
+import org.opennms.web.rest.support.menu.MenuProvider;
+import org.opennms.web.rest.support.menu.TopMenuEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
  * Web Service using REST for retrieving information to dynamically build the Vue webapp's Menubar component.
  */
 @Component
-@Path("menubar")
-public class MenubarRestService {
-    private static final Logger LOG = LoggerFactory.getLogger(org.opennms.web.rest.v2.MenubarRestService.class);
+@Path("menu")
+public class MenuRestService {
+    private static final Logger LOG = LoggerFactory.getLogger(MenuRestService.class);
+    private CentralizedDateTimeFormat dateTimeFormat = new CentralizedDateTimeFormat();
+
+    @Autowired
+    private MenuProvider menuProvider;
 
     // DTO that is returned
     public static class MainMenu {
@@ -87,6 +101,8 @@ public class MenubarRestService {
             }
         }
 
+        public String baseHref;
+        public String formattedTime;
         public boolean displayAdminLink;
         public Integer countNoticesAssignedToUser;
         public Integer countNoticesAssignedToOtherThanUser;
@@ -105,24 +121,60 @@ public class MenubarRestService {
     @GET
     @Path("/")
     @Produces({MediaType.APPLICATION_JSON})
-    public Response getMainMenu() {
-        MainMenu mainMenu = buildMenuDefinition();
+    public Response getMainMenu(final @Context HttpServletRequest request) {
+        MainMenu mainMenu = buildMenuDefinition(request);
 
         return Response.ok(mainMenu).build();
     }
 
-    private MainMenu buildMenuDefinition() {
+    /**
+     * Build the menu definition.
+     * Should correspond to logic in opennms-webapp org.opennms.web.controller.NavBarController
+     * as well as opennms-webapp webapp/WEB-INF/templates/navbar.ftl.
+     */
+    private MainMenu buildMenuDefinition(final HttpServletRequest request) {
+        final String baseHref = org.opennms.web.api.Util.calculateUrlBase(request);
+        final String remoteUser = request.getRemoteUser();
+
+        boolean isProvision = request.isUserInRole(Authentication.ROLE_PROVISION);
+        boolean isFlow = request.isUserInRole(Authentication.ROLE_FLOW_MANAGER);
+        boolean isAdmin = request.isUserInRole(Authentication.ROLE_ADMIN);
+        final String formattedTime = this.dateTimeFormat.format(Instant.now(), extractUserTimeZone(request));
+
+        String noticeStatus = "Unknown";
+        try {
+            noticeStatus = NotifdConfigFactory.getPrettyStatus();
+        } catch (final Throwable t) {
+        }
+
+        boolean testFlag = true;
+
+        List<TopMenuEntry> menuEntries = null;
+
+        if (testFlag) {
+            if (this.menuProvider != null) {
+                try {
+                    menuEntries = this.menuProvider.getMenu(request);
+                } catch (Exception e) {
+                    LOG.error("Error creating menu entries: " + e.getMessage(), e);
+                }
+            }
+        }
+
+
         // TODO: Get this from session
-        final String username = "admin1";
+        final String username = remoteUser;
 
         // fake data for now
         MainMenu menu = new MainMenu();
+        menu.baseHref = baseHref;
+        menu.formattedTime = formattedTime;
         menu.displayAdminLink = true;
         menu.countNoticesAssignedToUser = 0;
         menu.countNoticesAssignedToOtherThanUser = 1;
         menu.noticesAssignedToUserLink = "/opennms/notification/browse?acktype=unack&filter=user==" + username;
         menu.noticesAssignedToOtherThanUserLink = "/opennms/notification/browse?acktype=unack";
-        menu.noticeStatus = "off";
+        menu.noticeStatus = noticeStatus;
         menu.adminLink = "/opennms/admin/index.jsp";
         menu.rolesLink = "/opennms/roles";
         menu.searchLink = "/opennms/element/index.jsp";
@@ -183,5 +235,15 @@ public class MenubarRestService {
         menu.menuItems.add(userMenu);
 
         return menu;
+    }
+
+    private ZoneId extractUserTimeZone(HttpServletRequest request){
+        ZoneId timeZoneId = (ZoneId) request.getSession().getAttribute(CentralizedDateTimeFormat.SESSION_PROPERTY_TIMEZONE_ID);
+
+        if (timeZoneId == null) {
+            timeZoneId = ZoneId.systemDefault();
+        }
+
+        return timeZoneId;
     }
 }
