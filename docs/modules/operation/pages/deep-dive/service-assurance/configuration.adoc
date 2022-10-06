@@ -20,7 +20,7 @@
 
 | $OPENNMS_HOME/etc/events/opennms.pollerd.events.xml
 | Event definitions for pollerd.
-  For example, nodeLostService, interfaceDown, or nodeDown.
+For example, nodeLostService, interfaceDown, or nodeDown.
 |===
 
 You can modify `poller-configuration.xml` to change the behavior for service monitoring.
