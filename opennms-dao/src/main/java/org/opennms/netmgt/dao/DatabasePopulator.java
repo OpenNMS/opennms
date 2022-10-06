@@ -353,6 +353,7 @@ public class DatabasePopulator {
         final OnmsEvent event = buildEvent(builder.getDistPoller());
         event.setEventCreateTime(new Date(1436881548292L));
         event.setEventTime(new Date(1436881548292L));
+        event.setDistPoller(m_distPollerDao.whoami());
         getEventDao().save(event);
         getEventDao().flush();
 
