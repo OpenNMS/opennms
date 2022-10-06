@@ -67,16 +67,18 @@ Any data containing the defined text string is selected.
 | -
 
 | Ilike
-| unknown
+| Select data where the defined attribute is like a given text value.
+This option is similar to the SQL `ilike` function and is not case sensitive.
 | Database attribute
 | String
-| -
+| String
 
 | In
-| unknown
+| Select data where the defined attribute matches any value in a list.
+Text value must be a comma-separated list of options.
 | Database attribute
 | String
-| -
+| Comma-separated list of strings
 
 | Iplike
 | Select data where the defined attribute matches a given `IPLIKE` expression.
@@ -110,7 +112,7 @@ Any data containing the defined text string is selected.
 
 | Like
 | Select data where the defined attribute is like a given text value.
-This option is similar to the SQL `like` function.
+This option is similar to the SQL `like` function and is case-sensitive.
 | Database attribute
 | String
 | -
@@ -129,8 +131,8 @@ This option is similar to the SQL `like` function.
 
 | Not
 | Unknown difference between `Ne`.
-| Database attribute
-| String
+| -
+| -
 | -
 
 | OrderBy

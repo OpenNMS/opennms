@@ -73,7 +73,8 @@ The notifications component shows outstanding and unacknowledged notifications.
 It sorts notifications from most to least recent, and lets you scroll through the last 100 notifications.
 
 Notifications inform people on a duty schedule of issues in the monitored network, so they can take action to fix or reconfigure systems immediately.
-In {page-component-title}, it is possible to acknowledge notifications to designate someone as working on a specific issue.
+In {page-component-title}, you can acknowledge notifications to indicate that they are being worked on.
+When a notification is acknowledged, it is removed from the component.
 
 A dashboard should show outstanding notifications in the NOC.
 This provides an overview of the monitored network and gives an opportunity for intervention.
