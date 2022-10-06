@@ -50,7 +50,7 @@ public abstract class NodeCollector extends Executable {
      * The node ID of the system used to collect the SNMP information
      */
     protected final Node m_node;
-    private final SchedulableNodeCollectorGroup m_schedulableGroup;
+    private final LocationAwareSnmpClient m_loLocationAwareSnmpClient;
 
     /**
      * Constructs a new SNMP collector for a node using the passed interface
@@ -58,10 +58,10 @@ public abstract class NodeCollector extends Executable {
      * <code>run</code> method is invoked.
      * 
      */
-    public NodeCollector(final SchedulableNodeCollectorGroup group, final Node node, final int priority) {
-        super(priority + group.getPriority());
+    public NodeCollector(final LocationAwareSnmpClient snmpClient, final Node node, final int priority) {
+        super(priority);
         m_node = node;
-        m_schedulableGroup = group;
+        m_loLocationAwareSnmpClient = snmpClient;
     }
 
 
@@ -145,7 +145,7 @@ public abstract class NodeCollector extends Executable {
     }
 
     public LocationAwareSnmpClient getLocationAwareSnmpClient() {
-        return m_schedulableGroup.getLocationAwareSnmpClient();
+        return m_loLocationAwareSnmpClient;
     }
 
     public Node getNode() {
