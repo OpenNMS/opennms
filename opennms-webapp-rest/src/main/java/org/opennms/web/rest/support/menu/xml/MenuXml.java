@@ -48,7 +48,7 @@ public class MenuXml {
             return this.beans;
         }
 
-        public void setList(List<BeanElement> list) {
+        public void setBeans(List<BeanElement> list) {
             this.beans = list;
         }
     }
@@ -92,6 +92,7 @@ public class MenuXml {
 
     public static class BeanElement {
         private String id;
+        private String className;
         private List<BeanPropertyElement> properties = new ArrayList<>();
         private ConstructorArgElement constructorArgElement;
 
@@ -102,6 +103,15 @@ public class MenuXml {
 
         public void setId(String id) {
             this.id = id;
+        }
+
+        @XmlAttribute(name="class")
+        public String getClassName() {
+            return this.className;
+        }
+
+        public void setClassName(String s) {
+            this.className = s;
         }
 
         @XmlElement(name="property", type=BeanPropertyElement.class)

@@ -30,6 +30,8 @@ package org.opennms.web.rest.support.menu;
 
 // Similar to org.opennms.web.navigate.MenuEntry
 public class MenuEntry {
+    public String id;
+    public String className;
     public String name;
     public String url;
     public String locationMatch;
