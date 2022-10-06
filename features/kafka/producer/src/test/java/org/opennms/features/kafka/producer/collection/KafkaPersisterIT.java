@@ -54,10 +54,12 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
+import org.junit.runners.MethodSorters;
 import org.opennms.core.collection.test.MockCollectionAgent;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
@@ -88,6 +90,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @ContextConfiguration(locations = {"classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
@@ -95,7 +98,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/applicationContext-test-kafka-collection.xml"})
 @JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase(dirtiesContext = false, tempDbClass = MockDatabase.class, reuseDatabase = false)
+@JUnitTemporaryDatabase(dirtiesContext = true, tempDbClass = MockDatabase.class, reuseDatabase = false)
 public class KafkaPersisterIT {
 
     static final String IP_ADDRESS = "172.0.0.1";
