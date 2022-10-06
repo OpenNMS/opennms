@@ -61,7 +61,8 @@
            <%-- search by user --%>
            <div class="row">
              <div class="col-md-12">
-               <form role="form" class="form pull-right" method="get" action="notification/browse">
+               <form role="form" class="form pull-right" method="post" action="notification/browse">
+                 <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                  <div class="form-group">
                    <label for="byuser_user">User</label>
                    <div class="input-group">

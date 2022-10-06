@@ -162,7 +162,8 @@
 
 <% if( request.isUserInRole( Authentication.ROLE_ADMIN ) || !request.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
     <form action="event/acknowledge" method="post" name="acknowledge_form">
-    <input type="hidden" name="redirect" value="<c:out value='<%= request.getServletPath() + "?" + request.getQueryString()%>'/>" />
+    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+    <input type="hidden" name="redirect" value="<c:out value='<%= request.getRequestURI() + "?" + request.getQueryString()%>'/>" />
     <input type="hidden" name="actionCode" value="<%=org.opennms.web.event.AcknowledgeType.ACKNOWLEDGED.getShortName() %>" />
 <% } %>
 
