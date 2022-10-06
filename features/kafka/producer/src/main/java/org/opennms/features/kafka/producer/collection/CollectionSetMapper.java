@@ -187,6 +187,7 @@ public class CollectionSetMapper {
 
                     if (number != null) {
                         attributeBuilder.setValue(number.doubleValue());
+                        attributeBuilder.setMetricValue(DoubleValue.of(number.doubleValue()));
                     } else {
                         attributeBuilder.setValue(Double.NaN);
                         RATE_LIMITED_LOG.error("Missing double value for non-string attribute (group='{}', name='{}', type='{}')", lastGroupName, attribute.getName(), attribute.getType().toString());
