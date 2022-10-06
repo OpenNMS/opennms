@@ -2,26 +2,7 @@
 [[ga-pollerd-configuration]]
 = Configure Pollerd
 
-.Configuration and log files related to pollerd
-[options="header, autowidth"]
-[cols="1,2"]
-|===
-| File
-| Description
-
-| $OPENNMS_HOME/etc/poller-configuration.xml
-| Configuration file for monitors and global daemon configuration.
-
-| $OPENNMS_HOME/logs/poller.log
-| Log file for all monitors and the pollerd daemon.
-
-| $OPENNMS_HOME/etc/response-graph.properties
-| RRD graph definitions for service response time measurements.
-
-| $OPENNMS_HOME/etc/events/opennms.pollerd.events.xml
-| Event definitions for pollerd.
-For example, nodeLostService, interfaceDown, or nodeDown.
-|===
+For information on configuration and log files related to pollerd, see xref:reference:daemons/daemon-config-files/pollerd.adoc[Pollerd] in the reference section.
 
 You can modify `$\{OPENNMS_HOME}/etc/poller-configuration.xml` to change the behavior for service monitoring.
 The configuration file has the following parts:
