@@ -83,8 +83,18 @@ public class ExecutableTest extends Executable {
     }
 
     @Override
+    public String toString() {
+        return "ExecutableTest{" +
+                "m_name='" + m_name + '\'' +
+                " m_priority=" + getPriority()
+                +
+                '}';
+    }
+
+    @Override
     public boolean isReady() {
         return true;
     }
+
 }
 

@@ -103,6 +103,7 @@
           <% } %>
         </p>        
         <form method="post" action="element/rescan">
+          <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
           <p>
             <input type="hidden" name="node" value="<%=nodeId%>" />
             <input type="hidden" name="returnUrl" value="${fn:escapeXml(returnUrl)}" />

@@ -36,6 +36,7 @@ import java.util.Properties;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.fiber.PausableFiber;
@@ -56,8 +57,7 @@ public class LegacyPriorityExecutorTest {
 
     @Test
     public void testRun() {
-        ExecutableTest discoveryTestA = new ExecutableTest("testA");
-        discoveryTestA.setPriority(9);
+        ExecutableTest discoveryTestA = new ExecutableTest("testA", 9);
         assertTrue(discoveryTestA.isReady());
         discoveryTestA.run();
     }
@@ -132,5 +132,35 @@ public class LegacyPriorityExecutorTest {
         queue.add(1);
         queue.add(2);
         queue.add(3);
+    }
+
+    @Test
+    public void testSchedulableExecutableGroup() {
+        LegacyPriorityExecutor executor = new LegacyPriorityExecutor("CollectorGroupTest", 2, 5);
+        SchedulableExecutableGroup group = new SchedulableExecutableGroup(60000,5000, executor, 100, "testGroup");
+        group.add(new ExecutableTest("A",30 ));
+        group.add(new ExecutableTest("B",20 ));
+        group.add(new ExecutableTest("C",10 ));
+        Assert.assertEquals(3, group.getExecutables().size());
+
+        group.getExecutables().forEach(System.err::println);
+
+        ExecutableTest et = (ExecutableTest) group.getExecutables().iterator().next();
+        LOG.info("Removing: {}", et);
+        group.remove(et);
+        Assert.assertEquals(2, group.getExecutables().size());
+
+        ExecutableTest et1 = (ExecutableTest) group.getExecutables().iterator().next();
+        LOG.info("Removing: {}", et1);
+        group.remove(et1);
+        Assert.assertEquals(1, group.getExecutables().size());
+
+        Executable c = group.getExecutables().iterator().next();
+        c.suspend();
+        c.run();
+
+        c.wakeUp();
+        c.run();
+
     }
 }

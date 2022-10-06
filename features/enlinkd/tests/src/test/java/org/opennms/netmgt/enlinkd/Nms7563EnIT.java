@@ -95,7 +95,7 @@ public class Nms7563EnIT extends EnLinkdBuilderITCase {
         
         final OnmsNode cisco01 = m_nodeDao.findByForeignId("linkd", CISCO01_NAME);
         
-        assertTrue(m_linkd.scheduleNodeCollection(cisco01.getId()));
+        m_linkd.reload();
 
         assertTrue(m_linkd.runSingleSnmpCollection(cisco01.getId()));
 
@@ -162,8 +162,7 @@ public class Nms7563EnIT extends EnLinkdBuilderITCase {
         
         final OnmsNode homeserver = m_nodeDao.findByForeignId("linkd", HOMESERVER_NAME);
         
-        assertTrue(m_linkd.scheduleNodeCollection(homeserver.getId()));
-
+        m_linkd.reload();
         assertTrue(m_linkd.runSingleSnmpCollection(homeserver.getId()));
 
         for (final LldpElement node: m_lldpElementDao.findAll()) {
@@ -226,8 +225,7 @@ public class Nms7563EnIT extends EnLinkdBuilderITCase {
         
         final OnmsNode switch02 = m_nodeDao.findByForeignId("linkd", SWITCH02_NAME);
         
-        assertTrue(m_linkd.scheduleNodeCollection(switch02.getId()));
-
+        m_linkd.reload();
         assertTrue(m_linkd.runSingleSnmpCollection(switch02.getId()));
 
         for (final CdpElement node: m_cdpElementDao.findAll()) {

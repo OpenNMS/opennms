@@ -762,8 +762,6 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         assertNotNull(nodeAbd.getRootBridge());
         topology.check(nodeAbd);
 
-        assertTrue(m_linkd.scheduleNodeCollection(nodeB.getId()));
-        
         m_linkd.deleteNode(nodeB.getId());
         assertEquals(1, m_bridgeTopologyService.findAll().size());
         
@@ -865,8 +863,6 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         assertNotNull(nodeAbd.getRootBridge());
         topology.check(nodeAbd);
 
-        assertTrue(m_linkd.scheduleNodeCollection(nodeA.getId()));
-        
         m_linkd.deleteNode(nodeA.getId());
         assertEquals(1, m_bridgeTopologyService.findAll().size());
         
