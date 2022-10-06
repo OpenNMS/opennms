@@ -7,10 +7,9 @@ You can use path outages to suppress notifications based on how nodes depend on 
 The critical path needs to be configured from the network perspective of the monitoring system.
 By default, the path outage feature is disabled and has to be enabled in `poller-configuration.xml`.
 
-The following image shows a sample network topology.
+The following image shows a sample network topology:
 
 [[path-outage-example]]
-.Path Outage example
 image::service-assurance/02_path-outage.png[width=600]
 
 From the perspective of the monitoring system, a router named `default-gw-01` is on the critical path to reach two networks.
@@ -18,8 +17,8 @@ If router `default-gw-01` is down, it is not possible to reach any node in the t
 In this case, an administrator would like to have just one notification for `default-gw-01` and not for all the other nodes behind it.
 Building this configuration in {page-component-title} requires the following information:
 
-* *Parent Foreign Source*: The foreign source where the parent node is defined.
-* *Parent Foreign ID*: The foreign ID of the parent node this node depends on.
+* *Parent Foreign Source*: the foreign source where the parent node is defined.
+* *Parent Foreign ID*: the foreign ID of the parent node this node depends on.
 * The *IP Interface* selected as primary is used as critical IP.
 
 In this example we have created all nodes in a requisition named `Network-ACME` and we use the node label value as the foreign ID.
@@ -60,5 +59,5 @@ In the web UI, go to menu:Gear Menu[Manage Provisioning Requisitions > Edit the 
 |===
 
 IMPORTANT: The IP interface, set to primary is selected as the critical IP.
-           In this example, it is important that the IP interface on default-gw-01 in the network 192.168.1.0/24 is set as primary interface.
-           The IP interface in the network 172.23.42.0/24 on default-gw-02 is set as primary interface.
+In this example, it is important that the IP interface on `default-gw-01` in the network `192.168.1.0/24` is set as primary interface.
+The IP interface in the network `172.23.42.0/24` on `default-gw-02` is set as primary interface.

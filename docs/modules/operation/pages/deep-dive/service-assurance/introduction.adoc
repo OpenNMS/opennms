@@ -27,13 +27,12 @@ Configuration parameters of the service monitor can be seen in the Service page 
 The status of a service can be up or down.
 
 TIP: The Service page also includes timestamps that indicate the last time at which the service was polled and found to to be Up (last good) or down (last fail).
-These fields help to validate that Pollerd is polling the services as expected.
+These fields help to validate that pollerd is polling the services as expected.
 
-When a service monitor detects an outage, Pollerd sends an event. which is used to create an alarm.
+When a service monitor detects an outage, pollerd sends an event. which is used to create an alarm.
 You can also use events to generate notifications for on-call network or server administrators.
-The following images show the interaction of Pollerd in {page-component-title}.
+The following image shows the interaction of pollerd in {page-component-title}:
 
-.Service assurance with Pollerd in {page-component-title}
 image::service-assurance/02_service-assurance.png[]
 
 Pollerd can generate the following events in {page-component-title}:
