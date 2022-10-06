@@ -478,6 +478,7 @@ public abstract class PollableElement {
      */
     protected void processLingeringCauses(PollEvent resolvedCause, PollEvent resolution) {
         if (isSuspended()) {
+            LOG.debug("Element '{}' polling suspended - processing of lingering causes skipped", this.toString());
             return;
         }
 
