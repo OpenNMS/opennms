@@ -49,8 +49,8 @@ The configuration file has the following parts:
 <3> In case of an unresponsive service, generate a `serviceUnresponsive` event instead of an outage.
 This prevents the application of the xref:operation:deep-dive/service-assurance/downtime-model.adoc[Downtime Model] in retesting the service after 30 seconds to help prevent false alarms.
 
-Restart {page-component-title} and Pollerd to apply configuration changes.
-You can also reload the configuration to send an event to Pollerd.
+Restart {page-component-title} and pollerd to apply configuration changes.
+You can also reload the configuration to send an event to pollerd.
 You can send an event on the CLI or the web UI.
 
 .Send configuration-reload event on CLI
