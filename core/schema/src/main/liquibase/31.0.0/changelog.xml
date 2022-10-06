@@ -17,6 +17,16 @@
             CREATE EXTENSION pgcrypto;
         </sql>
         <sql>
+            ALTER TABLE alarms
+            DROP CONSTRAINT fk_alarms_systemid;
+        </sql>
+        <sql>
+            ALTER TABLE alarms
+            ADD CONSTRAINT fk_alarms_systemid
+            FOREIGN KEY (systemid)
+            REFERENCES monitoringsystems (id) ON UPDATE CASCADE ON DELETE CASCADE;
+        </sql>
+        <sql>
             UPDATE monitoringsystems
             SET id=gen_random_uuid ()
             WHERE id = '00000000-0000-0000-0000-000000000000' AND type='OpenNMS' AND location='Default';
