@@ -23,7 +23,7 @@
 For example, nodeLostService, interfaceDown, or nodeDown.
 |===
 
-You can modify `poller-configuration.xml` to change the behavior for service monitoring.
+You can modify `$\{OPENNMS_HOME}/etc/poller-configuration.xml` to change the behavior for service monitoring.
 The configuration file has the following parts:
 
 * Global daemon config
