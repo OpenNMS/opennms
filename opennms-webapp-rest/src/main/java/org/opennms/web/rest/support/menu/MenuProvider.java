@@ -107,7 +107,7 @@ public class MenuProvider {
                 .findFirst().orElse(null);
 
         if (xNavBarEntriesElem == null || xNavBarEntriesElem.getConstructorArgElement() == null) {
-            throw new Exception("Could not find 'navBarEntries' item");)
+            throw new Exception("Could not find 'navBarEntries' item");
         }
 
         for (var xTopLevelBean : xNavBarEntriesElem.getConstructorArgElement().getBeans()) {
