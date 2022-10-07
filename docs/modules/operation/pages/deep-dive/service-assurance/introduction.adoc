@@ -24,7 +24,7 @@ The following figure shows how pollerd interacts with other components in {page-
 
 The availability is calculated over the last 24 hours and is shown in the Surveillance Views, SLA Categories, and the Node Detail pages.
 Response times are displayed as resource graphs of the IP interface on the Node Detail page.
-Configuration parameters of the service monitor can be seen in the Service page by clicking on the service name on the Node Detail page.
+Click the service name on the Node Detail page to see the configuration parameters of the service monitor.
 The status of a service can be up or down.
 
 TIP: The Service page also includes timestamps that indicate the last time at which the service was polled and found to to be Up (last good) or down (last fail).
