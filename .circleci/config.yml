@@ -289,17 +289,17 @@ commands:
       steps:
         - restore_cache:
             keys:
-              - sonar-cache-v3-{{ .Branch }}-{{ checksum "pom-version-cache.key" }}-{{ .Revision }}
-              - sonar-cache-v3-{{ .Branch }}-{{ checksum "pom-version-cache.key" }}-
-              - sonar-cache-v3-{{ .Branch }}-
-              - sonar-cache-v3-
+              - sonar-cache-v5-{{ .Branch }}-{{ checksum "pom-version-cache.key" }}-{{ .Revision }}
+              - sonar-cache-v5-{{ .Branch }}-{{ checksum "pom-version-cache.key" }}-
+              - sonar-cache-v5-{{ .Branch }}-
+              - sonar-cache-v5-
   save-sonar-cache:
       description: "Sonar: Save sonar cache"
       steps:
         - save_cache:
-            key: sonar-cache-v3-{{ .Branch }}- {{ checksum "pom-version-cache.key" }}
+            key: sonar-cache-v5-{{ .Branch }}- {{ checksum "pom-version-cache.key" }}-${{ .Revision }}
             paths:
-              - ~/.sonar
+              - /tmp/sonar-cache
   dockerhub-login:
     description: "Connect to DockerHub"
     steps:

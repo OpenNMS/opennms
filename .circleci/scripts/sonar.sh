@@ -120,6 +120,8 @@ else
   fi
 fi
 
+mkdir -p /tmp/sonar-cache
+export SONAR_USER_HOME=/tmp/sonar-cache
 export SONAR_SCANNER_OPTS="${MAVEN_OPTS:--Xmx7g}"
 
 echo "#### Executing Sonar"
