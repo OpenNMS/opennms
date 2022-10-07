@@ -1,9 +1,6 @@
 commands:
   run-integration-tests:
     parameters:
-      run-code-coverage:
-        default: false
-        type: boolean
       rerun-failtest-count:
         default: 0
         type: integer
@@ -29,7 +26,6 @@ commands:
           name: Integration Tests
           no_output_timeout: 15m
           command: |
-            export CCI_CODE_COVERAGE=<< parameters.run-code-coverage >>
             export CCI_RERUN_FAILTEST=<< parameters.rerun-failtest-count >>
             export CCI_FAILURE_OPTION=<< parameters.failure-option >>
             export CCI_CHANGES_ONLY=<< parameters.changes-only >>
@@ -48,20 +44,17 @@ commands:
             mkdir -p ~/generated-tests
             cp target/find-tests/* ~/generated-tests/ || :
             cp /tmp/this_node* ~/generated-tests/     || :
-      - when:
-          condition: << parameters.run-code-coverage >>
-          steps:
-            - run:
-                name: Save Code Coverage Data
-                when: always
-                command: |
-                  .circleci/scripts/codecoverage-save.sh integration-test
-            - persist_to_workspace:
-                root: ~/
-                paths:
-                  - code-coverage
-                  - project/target/find-tests
-                  - project/target/structure-graph.json
+      - run:
+          name: Save Code Coverage Data
+          when: always
+          command: |
+            .circleci/scripts/codecoverage-save.sh integration-test
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - code-coverage
+            - project/target/find-tests
+            - project/target/structure-graph.json
       - run:
           name: Gather system logs
           when: always

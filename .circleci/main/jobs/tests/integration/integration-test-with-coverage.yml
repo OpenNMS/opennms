@@ -8,7 +8,6 @@ jobs:
       - attach_workspace:
           at: ~/
       - run-integration-tests:
-          run-code-coverage: true
           rerun-failtest-count: 0
           failure-option: -fn
-          changes-only: false
+          changes-only: true
