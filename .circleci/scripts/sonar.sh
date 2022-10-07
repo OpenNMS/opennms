@@ -77,10 +77,6 @@ find_tests()
       .
 }
 
-dnf -y module reset nodejs
-dnf -y module enable nodejs:18
-dnf -y module switch-to nodejs:18
-
 # shellcheck disable=SC1091
 . ./.circleci/scripts/lib.sh
 
