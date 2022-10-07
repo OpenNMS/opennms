@@ -13,4 +13,3 @@ This section describes additional administrative tasks you may want to perform o
 * xref:deep-dive/admin/restart.adoc[shutdown and restart]
 * xref:deep-dive/admin/logging/log-file-viewer.adoc[view log files]
 * xref:deep-dive/admin/housekeeping/introduction.adoc[housekeeping tasks]
-* xref:deep-dive/admin/webui/ui-preview.adoc[UI Preview]

@@ -218,7 +218,6 @@
 **** xref:deep-dive/admin/webui/surveillance-view.adoc[]
 **** xref:deep-dive/admin/webui/trends.adoc[]
 **** xref:deep-dive/admin/webui/log-reader.adoc[]
-**** xref:deep-dive/admin/webui/ui-preview.adoc[]
 *** xref:deep-dive/admin/system-properties/introduction.adoc[]
 **** xref:deep-dive/admin/system-properties/system-proxies.adoc[]
 *** xref:deep-dive/admin/config-tester.adoc[]

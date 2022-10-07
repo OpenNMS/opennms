@@ -96,4 +96,3 @@ For more information, see xref:operation:deep-dive/admin/webui/trends.adoc[Trend
 Refer to xref:operation:deep-dive/admin/webui/introduction.adoc[Administrative Web Interface] in the Deep Dive section for more information on visualizations, including the following:
 
 * xref:operation:deep-dive/admin/webui/opsboard/criteria-builder.adoc[Filtering dashlet information using the Criteria Builder].
-* xref:operation:deep-dive/admin/webui/ui-preview.adoc[Using the UI preview].
