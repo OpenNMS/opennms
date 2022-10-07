@@ -63,4 +63,4 @@ In this example, we have created all nodes in a requisition named `Network-ACME`
 
 IMPORTANT: The primary IP interface is selected as the critical IP.
 In this example, it is important that the IP interface on `default-gw-01` in the network `192.168.1.0/24` is set as the primary interface.
-The IP interface in the network `172.23.42.0/24` on `default-gw-02` is set as primary interface.
+The IP interface in the network `172.23.42.0/24` on `default-gw-02` is also set as a primary interface.
