@@ -1,7 +1,7 @@
  jobs:
   smoke-test-sentinel:
     executor: smoke-test-executor
-    parallelism: 5
+    parallelism: 4
     steps:
       - run:
           name: "skip if flaky tests are enabled"

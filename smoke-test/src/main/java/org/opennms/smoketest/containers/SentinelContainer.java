@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -90,7 +90,7 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
     private final Path overlay;
 
     public SentinelContainer(StackModel model, SentinelProfile profile) {
-        super("sentinel");
+        super(ALIAS);
         this.model = Objects.requireNonNull(model);
         this.profile = Objects.requireNonNull(profile);
         this.overlay = writeOverlay();
@@ -110,6 +110,7 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
                 .withEnv("OPENNMS_HTTP_PASS", "admin")
                 .withEnv("OPENNMS_BROKER_USER", "admin")
                 .withEnv("OPENNMS_BROKER_PASS", "admin")
+                .withEnv("JACOCO_AGENT_ENABLED", "1")
                 .withEnv("JAVA_OPTS", "-Xms512m -Xmx512m -Djava.security.egd=file:/dev/./urandom -Dorg.opennms.rrd.storeByForeignSource=true")
                 .withNetwork(Network.SHARED)
                 .withNetworkAliases(ALIAS)
@@ -131,6 +132,7 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
         DevDebugUtils.setupMavenRepoBind(this, "/opt/sentinel/.m2");
     }
 
+    @SuppressWarnings("java:S5443")
     private Path writeOverlay() {
         try {
             final Path home = Files.createTempDirectory(ALIAS).toAbsolutePath();
@@ -278,6 +280,8 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
 
     @Override
     public void afterTest(TestDescription description, Optional<Throwable> throwable) {
+        // not working yet in karaf-started JVMs
+        // KarafShellUtils.saveCoverage(this, description.getFilesystemFriendlyName(), ALIAS);
         retainLogsfNeeded(description.getFilesystemFriendlyName(), !throwable.isPresent());
     }
 
@@ -293,9 +297,9 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
         final List<String> logFiles = Arrays.asList("karaf.log");
         DevDebugUtils.copyLogs(container,
                 // dest
-                Paths.get("target", "logs", prefix, "sentinel"),
+                Paths.get("target", "logs", prefix, ALIAS),
                 // source folder
-                Paths.get("/opt", "sentinel", "data", "log"),
+                Paths.get("/opt", ALIAS, "data", "log"),
                 // log files
                 logFiles);
     }

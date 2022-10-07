@@ -46,21 +46,22 @@ commands:
           when: always
           command: |
             mkdir -p ~/generated-tests
-            cp ./surefire_classname* ~/generated-tests/ || :
-            cp ./failsafe_classname* ~/generated-tests/ || :
-            cp /tmp/this_node* ~/generated-tests/       || :
+            cp target/find-tests/* ~/generated-tests/ || :
+            cp /tmp/this_node* ~/generated-tests/     || :
       - when:
           condition: << parameters.run-code-coverage >>
           steps:
             - run:
-                name: Compress Target Directories (Code Coverage)
+                name: Save Code Coverage Data
                 when: always
                 command: |
-                  .circleci/scripts/codecoverage-save.sh
+                  .circleci/scripts/codecoverage-save.sh integration-test
             - persist_to_workspace:
                 root: ~/
                 paths:
                   - code-coverage
+                  - project/target/find-tests
+                  - project/target/structure-graph.json
       - run:
           name: Gather system logs
           when: always
