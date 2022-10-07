@@ -32,25 +32,36 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 public class MenuXml {
     public static class ConstructorArgElement {
-        private List<BeanElement> beans = new ArrayList<>();
+        // List of BeanElement and/or BeanRefElement
+        private List<BeanOrRefElement> beansOrRefs = new ArrayList<>();
 
         // <constructor-arg>
         //   <list>
         //     <bean>
+        //     <ref>
         @XmlElementWrapper(name="list")
-        @XmlElement(name="bean")
-        public List<BeanElement> getBeans() {
-            return this.beans;
+        @XmlElements({
+            @XmlElement(name="bean", type=BeanElement.class),
+            @XmlElement(name="ref", type=BeanRefElement.class)
+        })
+        public List<BeanOrRefElement> getBeansOrRefs() {
+            return this.beansOrRefs;
         }
 
-        public void setBeans(List<BeanElement> list) {
-            this.beans = list;
+        public void setBeansOrRefs(List<BeanOrRefElement> list) {
+            this.beansOrRefs = list;
         }
+    }
+
+    // wrapper class
+    // <constructor-arg><list> can include either <bean> or <ref @bean> elements.
+    public static abstract class BeanOrRefElement {
     }
 
     public static class BeanPropertyElement {
@@ -90,8 +101,9 @@ public class MenuXml {
         }
     }
 
-    public static class BeanElement {
+    public static class BeanElement extends BeanOrRefElement {
         private String id;
+        private String name;
         private String className;
         private List<BeanPropertyElement> properties = new ArrayList<>();
         private ConstructorArgElement constructorArgElement;
@@ -103,6 +115,15 @@ public class MenuXml {
 
         public void setId(String id) {
             this.id = id;
+        }
+
+        @XmlAttribute(name="name")
+        public String getName() {
+            return this.name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
         }
 
         @XmlAttribute(name="class")
@@ -130,6 +151,19 @@ public class MenuXml {
 
         public void setConstructorArgElement(ConstructorArgElement c) {
             this.constructorArgElement = c;
+        }
+    }
+
+    public static class BeanRefElement extends BeanOrRefElement{
+        private String beanRef;
+
+        @XmlAttribute(name="bean")
+        public String getBeanRef() {
+            return this.beanRef;
+        }
+
+        public void setBeanRef(String s) {
+            this.beanRef = s;
         }
     }
 

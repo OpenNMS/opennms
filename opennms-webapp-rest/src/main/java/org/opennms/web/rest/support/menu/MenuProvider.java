@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.JAXBContext;
@@ -99,57 +100,91 @@ public class MenuProvider {
     public List<TopMenuEntry> parseXmlToMenuEntries(MenuXml.BeansElement xBeansElem) throws Exception {
         List<TopMenuEntry> topMenuEntries = new ArrayList<>();
 
-        MenuXml.BeanElement xNavBarEntriesElem =
+        Optional<MenuXml.BeanElement> xNavBarEntriesElem =
             xBeansElem.getBeans().stream()
                 .filter(b -> b.getId() != null && b.getId().equals("navBarEntries"))
-                .findFirst().orElse(null);
+                .findFirst();
 
-        if (xNavBarEntriesElem == null || xNavBarEntriesElem.getConstructorArgElement() == null) {
+        if (!xNavBarEntriesElem.isPresent() || xNavBarEntriesElem.get().getConstructorArgElement() == null) {
             throw new Exception("Could not find 'navBarEntries' item");
         }
 
-        for (var xTopLevelBean : xNavBarEntriesElem.getConstructorArgElement().getBeans()) {
-            // Top level menu items, like "Info", "Status"
-            TopMenuEntry topEntry = new TopMenuEntry();
-            topEntry.id = xTopLevelBean.getId();
-            topEntry.className = xTopLevelBean.getClassName();
+        List<MenuXml.BeanOrRefElement> xBeansOrRefs = xNavBarEntriesElem.get().getConstructorArgElement().getBeansOrRefs();
 
-            for (var prop : xTopLevelBean.getProperties()) {
-                setFromBeanProperty(prop, "name", (s) -> topEntry.name = s);
-                setFromBeanProperty(prop, "url", (s) -> topEntry.url = s);
-                setFromBeanProperty(prop, "locationMatch", (s) -> topEntry.locationMatch = s);
+        for (MenuXml.BeanOrRefElement xTopLevelBeanOrRef : xBeansOrRefs) {
+            Optional<TopMenuEntry> topEntry = Optional.empty();
+
+            if (xTopLevelBeanOrRef instanceof MenuXml.BeanElement) {
+                topEntry = parseTopMenuEntry((MenuXml.BeanElement) xTopLevelBeanOrRef);
+            } else if (xTopLevelBeanOrRef instanceof MenuXml.BeanRefElement) {
+                topEntry = parseTopMenuEntryFromRef((MenuXml.BeanRefElement) xTopLevelBeanOrRef, xBeansElem);
             }
 
-            if (!Strings.isNullOrEmpty(topEntry.name) && !Strings.isNullOrEmpty(topEntry.url)) {
-                topMenuEntries.add(topEntry);
+            topEntry.ifPresent(topMenuEntries::add);
+        }
 
-                MenuXml.BeanPropertyElement xEntries =
-                    xTopLevelBean.getProperties().stream()
-                        .filter(p -> !Strings.isNullOrEmpty(p.getName()) && p.getName().equals("entries"))
-                        .findFirst().orElse(null);
+        return topMenuEntries;
+    }
 
-                if (xEntries != null) {
-                    for (var xBean : xEntries.getBeans()) {
-                        MenuEntry menuEntry = new MenuEntry();
-                        menuEntry.id = xBean.getId();
-                        menuEntry.className = xBean.getClassName();
+    private Optional<TopMenuEntry> parseTopMenuEntry(MenuXml.BeanElement xTopLevelBean) {
+        // Top level menu items, like "Info", "Status"
+        TopMenuEntry topEntry = new TopMenuEntry();
+        topEntry.id = xTopLevelBean.getId();
+        topEntry.className = xTopLevelBean.getClassName();
 
-                        for (var prop : xBean.getProperties()) {
-                            setFromBeanProperty(prop, "name", (s) -> menuEntry.name = s);
-                            setFromBeanProperty(prop, "url", (s) -> menuEntry.url = s);
-                            setFromBeanProperty(prop, "locationMatch", (s) -> menuEntry.locationMatch = s);
-                        }
+        for (var prop : xTopLevelBean.getProperties()) {
+            setFromBeanProperty(prop, "name", (s) -> topEntry.name = s);
+            setFromBeanProperty(prop, "url", (s) -> topEntry.url = s);
+            setFromBeanProperty(prop, "locationMatch", (s) -> topEntry.locationMatch = s);
+        }
 
-                        if (!Strings.isNullOrEmpty(menuEntry.name) && !Strings.isNullOrEmpty(menuEntry.url)) {
-                            topEntry.addItem(menuEntry);
-                        }
+        boolean isValid = false;
+
+        if (!Strings.isNullOrEmpty(topEntry.name) && !Strings.isNullOrEmpty(topEntry.url)) {
+            isValid = true;
+
+            MenuXml.BeanPropertyElement xEntries =
+                xTopLevelBean.getProperties().stream()
+                    .filter(p -> !Strings.isNullOrEmpty(p.getName()) && p.getName().equals("entries"))
+                    .findFirst().orElse(null);
+
+            if (xEntries != null) {
+                for (var xBean : xEntries.getBeans()) {
+                    MenuEntry menuEntry = new MenuEntry();
+                    menuEntry.id = xBean.getId();
+                    menuEntry.className = xBean.getClassName();
+
+                    for (var prop : xBean.getProperties()) {
+                        setFromBeanProperty(prop, "name", (s) -> menuEntry.name = s);
+                        setFromBeanProperty(prop, "url", (s) -> menuEntry.url = s);
+                        setFromBeanProperty(prop, "locationMatch", (s) -> menuEntry.locationMatch = s);
+                    }
+
+                    if (!Strings.isNullOrEmpty(menuEntry.name) && !Strings.isNullOrEmpty(menuEntry.url)) {
+                        topEntry.addItem(menuEntry);
                     }
                 }
             }
         }
 
-        return topMenuEntries;
+        return isValid ? Optional.of(topEntry) : Optional.empty();
     }
+
+    private Optional<TopMenuEntry> parseTopMenuEntryFromRef(MenuXml.BeanRefElement xBeanRefElement, MenuXml.BeansElement xBeansElem) {
+        String refName = xBeanRefElement.getBeanRef();
+
+        Optional<MenuXml.BeanElement> xBean =
+            xBeansElem.getBeans().stream()
+                .filter(b -> b.getName() != null && b.getName().equals(refName))
+                .findFirst();
+
+        if (xBean.isPresent()) {
+            return parseTopMenuEntry(xBean.get());
+        }
+
+        return Optional.empty();
+    }
+
 
     private void setFromBeanProperty(MenuXml.BeanPropertyElement propElem, String name, Consumer<String> consumer) {
         if (propElem.getName() != null && propElem.getName().equals(name)) {
