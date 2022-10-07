@@ -128,9 +128,9 @@ commands:
       description: "Sonar: Save sonar cache"
       steps:
         - save_cache:
-            key: sonar-cache-v5-{{ .Branch }}- {{ checksum "pom-version-cache.key" }}
+            key: sonar-cache-v5-{{ .Branch }}-{{ checksum "pom-version-cache.key" }}-{{ .Revision }}
             paths:
-              - ~/.sonar
+              - /tmp/sonar-cache
   cache-workflow-assets:
     parameters:
       cache_prefix:

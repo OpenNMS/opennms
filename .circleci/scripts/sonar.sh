@@ -5,6 +5,13 @@ set -o pipefail
 
 FIND_TESTS_DIR="target/find-tests"
 
+filter_exists()
+{
+  while read -r CHECK; do
+    [ -e "${CHECK}" ] && echo "${CHECK}"
+  done
+}
+
 generate_jacoco_report_files()
 {
   find . -type f '!' -path './.git/*' -name jacoco.xml
@@ -20,9 +27,10 @@ generate_class_folders()
   generate_junit_report_folders \
     | sed -e 's,/\(surefire-reports\|failsafe-reports\).*$,,' \
     | sort -u \
-    | while read -r DIR; do \
-      find "$DIR" -maxdepth 1 -type d -name classes; \
-    done
+    | while read -r DIR; do
+      find "$DIR" -maxdepth 1 -type d -name classes
+    done \
+    | filter_exists
 }
 
 generate_test_class_folders()
@@ -30,9 +38,33 @@ generate_test_class_folders()
   generate_junit_report_folders \
     | sed -e 's,/\(surefire-reports\|failsafe-reports\).*$,,' \
     | sort -u \
-    | while read -r DIR; do \
-      find "$DIR" -maxdepth 1 -type d -name test-classes; \
-    done
+    | while read -r DIR; do
+      find "$DIR" -maxdepth 1 -type d -name test-classes
+    done \
+    | filter_exists
+}
+
+generate_source_folders()
+{
+  find . -type d '!' -path './.git/*' -name target \
+    | sed -e 's,/target,/src,' \
+    | sort -u \
+    | while read -r DIR; do
+      echo "${DIR}/main"
+      echo "${DIR}/assembly"
+    done \
+    | filter_exists
+}
+
+generate_test_folders()
+{
+  find . -type d '!' -path './.git/*' -name target \
+    | sed -e 's,/target,/src,' \
+    | sort -u \
+    | while read -r DIR; do
+      echo "${DIR}/test"
+    done \
+    | filter_exists
 }
 
 find_tests()
@@ -88,6 +120,8 @@ else
   fi
 fi
 
+mkdir -p /tmp/sonar-cache
+export SONAR_USER_HOME=/tmp/sonar-cache
 export SONAR_SCANNER_OPTS="${MAVEN_OPTS:--Xmx7g}"
 
 echo "#### Executing Sonar"
@@ -97,6 +131,8 @@ echo "#### Executing Sonar"
   -Djava.security.egd=file:/dev/./urandom \
   -Dsonar.coverage.jacoco.xmlReportPaths="$(generate_jacoco_report_files | paste -s -d, -)" \
   -Dsonar.junit.reportPaths="$(generate_junit_report_folders | paste -s -d, -)" \
+  -Dsonar.sources="$(generate_source_folders | paste -s -d, -)" \
+  -Dsonar.tests="$(generate_test_folders | paste -s -d, -)" \
   -Dsonar.java.binaries="$(generate_class_folders | paste -s -d, -)" \
   -Dsonar.java.libraries="${HOME}/.m2/repository/**/*.jar,**/*.jar" \
   -Dsonar.java.test.binaries="$(generate_test_class_folders | paste -s -d, -)" \
