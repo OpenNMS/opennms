@@ -5,12 +5,12 @@
 This section describes how {page-component-title} tests the availability of a service or device and measures its latency.
 Refer to the xref:operation:quick-start/service-assurance.adoc[service assurance topic] in the Quick Start section for additional information on determining service availability.
 
-In {page-component-title}, a service monitor framework fulfils these tasks.
+In {page-component-title}, a service monitor framework fulfills these tasks.
 The main component, pollerd, provides the following functionality:
 
 * Tracks the status of a management resource or an application for availability calculations.
 * Measures response times for service quality.
-* Correlates node and interface outages based on a <<deep-dive/service-assurance/critical-service.adoc#ga-service-assurance-critical-service, critical service>>.
+* Correlates node and interface outages based on a <<deep-dive/service-assurance/critical-service.adoc, critical service>>.
 
 The following image shows the model and representation of availability and response time:
 
@@ -18,7 +18,7 @@ image::service-assurance/01_node-model.png[]
 
 This information is based on service monitors which pollerd stores and runs.
 A service can have any arbitrary name and is associated with a service monitor.
-For example, we can define two services with the name `HTTP` and `HTTP-8080`.
+For example, we can define two services with the names `HTTP` and `HTTP-8080`.
 Both are associated with the HTTP Service Monitor, but each uses a different TCP port configuration parameter.
 The following figure shows how pollerd interacts with other components in {page-component-title} and applications or agents to be monitored.
 
@@ -30,9 +30,9 @@ The status of a service can be up or down.
 TIP: The Service page also includes timestamps that indicate the last time at which the service was polled and found to to be Up (last good) or down (last fail).
 These fields help to validate that pollerd is polling the services as expected.
 
-When a service monitor detects an outage, pollerd sends an event. which is used to create an alarm.
+When a service monitor detects an outage, pollerd sends an event that is used to create an alarm.
 You can also use events to generate notifications for on-call network or server administrators.
-The following image shows the interaction of pollerd in {page-component-title}:
+The following image shows how pollerd interacts with other {page-component-title} components:
 
 image::service-assurance/02_service-assurance.png[]
 
@@ -61,9 +61,9 @@ Pollerd can generate the following events in {page-component-title}:
 The whole host is unreachable over the network.
 
 | uei.opennms.org/nodes/nodeUp
-| Some of the critical services came back online.
+| Some critical services came back online.
 |===
 
-The behavior to generate `interfaceDown` and `nodeDown` events is described in the <<deep-dive/service-assurance/critical-service.adoc#ga-service-assurance-critical-service, Critical Service>> section.
+The behavior to generate `interfaceDown` and `nodeDown` events is described in the <<deep-dive/service-assurance/critical-service.adoc, Critical Service>> section.
 
 NOTE: This assumes that node-outage processing is enabled.

@@ -15,28 +15,26 @@ Performs xref:operation:deep-dive/service-assurance/introduction.adoc[service as
 
 | poller-configuration.xml
 | Contains service monitor configurations for service availability checks and global daemon configuration. +
-Restart is required in case new monitors are created or removed. +
-Reload event loads changed configuration parameters of existing monitors but will not load new monitors.
-| yes
-| yes
+Restart is required when monitors are created or removed. +
+A reload event loads changed configuration parameters of existing monitors, but will not load new monitors.
+| Yes
+| Yes
 
 | response-graph.properties
 | RRD graph definitions for service response time measurements from monitors.
-| no
-| no
+| No
+| No
 
 | poll-outages.xml
 | Defines scheduled maintenance windows when polling should not occur.
 Can reload with `uei.opennms.org/internal/schedOutagesChanged`.
-| yes
-| no
+| Yes
+| No
 
 | pollerd.events.xml
-| Event definitions for pollerd.
-For example, nodeLostService, interfaceDown, or nodeDown.
+| Event definitions for pollerd (for example, nodeLostService, interfaceDown, or nodeDown).
 |
 |
-
 |===
 
 .Pollerd log file overview

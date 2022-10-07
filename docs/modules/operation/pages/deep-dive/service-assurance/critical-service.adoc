@@ -2,10 +2,10 @@
 [[ga-service-assurance-critical-service]]
 = Improve Monitoring Efficiency
 
-Monitoring services on an IP network can be resource intensive, especially in cases where many of these services are not available.
+Monitoring services on an IP network can be resource-intensive, especially in cases where many of the services are not available.
 When a service is offline or unreachable, the monitoring system spends most of its time waiting for retries and timeouts.
 
-To improve efficiency, {page-component-title} deems all services on a interface to be down if the critical service is down.
+To improve efficiency, {page-component-title} deems all services on an interface to be down if the critical service is down.
 {page-component-title} uses ICMP as the critical service by default.
 
 The following image shows how to use critical services to generate these events:
@@ -13,11 +13,13 @@ The following image shows how to use critical services to generate these events:
 .Service assurance with pollerd in {page-component-title}
 image::service-assurance/03_node-outage-correlation.png[]
 
-* (1) Critical services are all up on the node and just a `nodeLostService` is sent.
-* (2) Critical service of one of many IP interfaces is down and `interfaceDown` is sent.
-All other services are not tested and no events are sent, the services are assumed to be unreachable.
-* (3) All critical services on the node are down and just a `nodeDown` is sent.
-All other services on the other IP interfaces are not tested and no events are sent, these services are assumed as unreachable.
+<1> Critical services are all up on the node and just a `nodeLostService` is sent.
+<2> Critical service of one of many IP interfaces is down and `interfaceDown` is sent.
+All other services are not tested and no events are sent.
+The services are assumed to be unreachable.
+<3> All critical services on the node are down and just a `nodeDown` is sent.
+All other services on the other IP interfaces are not tested and no events are sent.
+These services are assumed as unreachable.
 
 {page-component-title} uses the critical service to correlate outages from services to a `nodeDown` or `interfaceDown` event.
 This is a global configuration option of pollerd, defined in `poller-configuration.xml`.
@@ -35,8 +37,9 @@ The {page-component-title} default configuration enables this behavior.
       <critical-service name="ICMP" /> <3>
 </node-outage>
 ----
-<1> Enable node outage correlation based on a critical service.
-<2> Optional: For nodes without a critical service, this option controls the polling behavior during a node outage.
-If set to `true` then all services will be polled.
-If set to `false` then the first service in the package that exists on the node will be polled until service is restored, and then polling will resume for all services.
-<3> Define critical service for node outage correlation.
+<1> Allow node outage correlation based on a critical service.
+<2> (Optional) For nodes without a critical service, this option controls the polling behavior during a node outage.
+If set to `true`, all services will be polled.
+If set to `false`, the first service in the package that exists on the node will be polled until service is restored.
+When service is restored, polling will resume for all services.
+<3> Define the critical service for node outage correlation.

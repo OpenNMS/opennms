@@ -28,11 +28,11 @@ The configuration file has the following parts:
 <1> Size of the thread pool to run service monitors in parallel.
 <2> Enable or disable path outage functionality based on a critical node in a network path.
 <3> In case of an unresponsive service, generate a `serviceUnresponsive` event instead of an outage.
-This prevents the application of the xref:operation:deep-dive/service-assurance/downtime-model.adoc[Downtime Model] in retesting the service after 30 seconds to help prevent false alarms.
+This stops the xref:operation:deep-dive/service-assurance/downtime-model.adoc[Downtime Model] retesting the service after 30 seconds, and prevents false alarms.
 
 Restart {page-component-title} and pollerd to apply configuration changes.
 You can also reload the configuration to send an event to pollerd.
-You can send an event on the CLI or the web UI.
+You can send an event using the CLI or the web UI.
 
 .Send configuration-reload event on CLI
 [source, shell]

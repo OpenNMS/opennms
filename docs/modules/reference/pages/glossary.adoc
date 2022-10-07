@@ -9,10 +9,11 @@ ActiveMQ:: Java-based open-source message broker supported by the Apache communi
 xref:operation:deep-dive/alarms/introduction.adoc[Alarms]:: Indicators for problems occurring on entities that {page-component-title} monitors.
 
 https://docs.opennms.com/alec/latest/[Architecture for Learning Enabled Correlation (ALEC)]:: An OpenNMS framework that uses artificial intelligence and machine learning to provide alarm triage.
-ALEC groups related alarms so you can better manage the more complex situations they might represent.
+ALEC groups related alarms so you can better manage the more complex situations that they might represent.
 
-xref:operation:deep-dive/service-assurance/application-perspective-monitoring/introduction.adoc[Application Perspective Monitoring (APM)]:: A method that uses the Minion infrastructure to monitor a service’s availability from different perspectives to help identify if nodes are down for everyone or if an outage affects only certain sites.
-When a service is not responsive an outage will be generated with the corresponding perspective that sees the outage.
+xref:operation:deep-dive/service-assurance/application-perspective-monitoring/introduction.adoc[Application Perspective Monitoring (APM)]:: A method that uses the Minion infrastructure to monitor a service’s availability from different perspectives.
+It helps to identify if nodes are down for everyone, or if an outage affects only certain sites.
+When a service is not responsive, an outage will be generated using the perspective that detects the outage.
 
 Asset data:: A set of optional fields, similar to metadata, that can be associated with a node to provide additional information.
 Examples include physical location and hardware specifications.

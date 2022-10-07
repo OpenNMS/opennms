@@ -4,21 +4,22 @@
 
 By default, {page-component-title} monitors a number of services including ICMP, DNS, Elasticsearch, SMTP, FTP, SNMP, HTTP(S), SSH, Postgres, IMAP, and POP3.
 Using a service monitor framework with pollerd as the main component, {page-component-title} detects if a service is available, then monitors it for its availability and response time.
-Calculated over the last 24 hours, you can view this availability information in summary on the main dashboard, or on a per-node basis.
+You can view a summary of this availability information, calculated over the last 24 hours, on the main dashboard.
+You can also view a summary of availability information on a per-node basis.
 
-.Service availability in the node detail page
+.Service availability on the node detail page
 image::operation:service-assurance/service-availability.png[service-availability-screen]
 
-Pollerd schedules and runs service monitors, as specified in `poller-configuration.xml`.
+Pollerd schedules and runs service monitors, as defined in `poller-configuration.xml`.
 When a service monitor detects an outage, pollerd sends an event which {page-component-title} uses to create an alarm.
 You can also use events to generate a notification for on-call network or server administrators.
 
 == Beyond Quick Start
 
-Refer to xref:operation:deep-dive/service-assurance/introduction.adoc[Service Assurance] in the Deep Dive section for more information, including ways to customize service monitoring to minimize notifications:
+Refer to xref:operation:deep-dive/service-assurance/introduction.adoc[Service Assurance] in the Deep Dive section for more information, including ways to customize service monitoring and minimize notifications:
 
 * xref:operation:deep-dive/service-assurance/configuration.adoc[Modify `poller-configuration.xml`] to change pollerd behavior.
 * xref:operation:deep-dive/service-assurance/polling-packages.adoc[Group service configurations] into polling packages.
-* xref:operation:deep-dive/service-assurance/path-outages.adoc[Use path outages] to suppress notifications based on node interdependence
-* xref:operation:deep-dive/service-assurance/downtime-model.adoc[Detect short service outages] using a downtime model
+* xref:operation:deep-dive/service-assurance/path-outages.adoc[Use path outages] to suppress notifications based on node interdependence.
+* xref:operation:deep-dive/service-assurance/downtime-model.adoc[Detect short service outages] using a downtime model.
 
