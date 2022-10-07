@@ -22,6 +22,7 @@ asciidoc:
     compatible-postgresql: '10.x - 14.x'
     compatible-rrdtool: '1.7.x'
     jasperreportsversion: '6.3.0'
+    latest-meridian-stable: '2022'
     postgresql-version: '14'
 nav:
 - modules/ROOT/index.adoc
