@@ -9,7 +9,7 @@ class libprocess:
     This class is designed to run shell commands.
     """
 
-    def saveFile(self, filename, data):
+    def saveFile(self, filename, command, data, startTime, endTime, deltaTime):
         if not data:
             return
         if os.path.exists(filename):
@@ -17,6 +17,7 @@ class libprocess:
                 f.write("\n_____________\n")
 
         with open(filename, "a", encoding="UTF-8") as f:
+            f.write(" ".join(command) + "\n")
             if isinstance(data, list):
                 f.writelines("\n".join(data))
             elif isinstance(data, subprocess.CompletedProcess):
@@ -25,6 +26,10 @@ class libprocess:
                 f.write(str(data.stderr.decode("utf-8")) + "\n")
                 f.write("===STDOUT\n")
                 f.write(str(data.stdout.decode("utf-8")) + "\n")
+                f.write("===Time\n")
+                f.write("Start: " + startTime + "\n")
+                f.write("End: " + endTime + "\n")
+                f.write("Delta: " + deltaTime + "\n")
             else:
                 f.write(data)
 
@@ -37,7 +42,7 @@ class libprocess:
         redirectSTDERR=False,
         outputFile="",
     ):
-        print("Command:", " ".join(command))
+        # print("Command:", " ".join(command))
         if redirectSTDOUT:
             _redirectSTDOUT = subprocess.PIPE
         else:
@@ -78,12 +83,23 @@ class libprocess:
                 "Return Code": _output.returncode,
             }
         else:
-            self.saveFile(outputFile, _output)
+            self.saveFile(
+                outputFile,
+                command,
+                _output,
+                _start.strftime("%Y/%m/%d %H:%M:%S.%f"),
+                _end.strftime("%Y/%m/%d %H:%M:%S.%f"),
+                str(_end - _start),
+            )
             return_data = {
                 "Time Started": _start.strftime("%Y/%m/%d %H:%M:%S.%f"),
                 "Time Finnished": _end.strftime("%Y/%m/%d %H:%M:%S.%f"),
                 "Time Taken": str(_end - _start),
-                "Output": outputFile,
+                "Output": {
+                    "stdout": str(_output.stdout.decode("utf-8")) + "\n",
+                    "stderr": str(_output.stderr.decode("utf-8")) + "\n",
+                    "file": outputFile,
+                },
                 "Return Code": _output.returncode,
             }
 
