@@ -220,6 +220,7 @@ if "trigger-build" in mappings:
 
         # Clear the mappings
         mappings.clear()
+        What_to_build.clear()
         build_mappings["merge-foundation"] = True
     elif not build_trigger_override_found and "merge-foundation/" not in branch_name:
         print("Executing workflow: build-deploy")
