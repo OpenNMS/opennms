@@ -3,8 +3,9 @@
 = Service Assurance
 
 This section describes how {page-component-title} tests the availability of a service or device and measures its latency.
+Refer to the xref:operation:quick-start/service-assurance.adoc[service assurance topic] in the Quick Start section for additional information on determining service availability.
 
-In {page-component-title} a service monitor framework fulfils these tasks.
+In {page-component-title}, a service monitor framework fulfils these tasks.
 The main component, pollerd, provides the following functionality:
 
 * Tracks the status of a management resource or an application for availability calculations.
