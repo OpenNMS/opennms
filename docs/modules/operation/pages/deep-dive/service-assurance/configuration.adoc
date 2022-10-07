@@ -15,7 +15,8 @@ The configuration file has the following parts:
 * Downtime Model
 ** Configure pollerd behavior to run tests if an outage is detected.
 * Monitor service association
-** Based on the name of the service, the implementation for application or network management protocols assignment.
+** Implement application or network management protocol assignments.
+Configures settings for individual services, based on their names.
 
 .Global configuration parameters for pollerd
 [source, xml]
