@@ -8,4 +8,4 @@ Performance management processes collect metrics from nodes to generate graphs a
 
 == Supported monitors
 
-For information on supported monitors and how to configure them, see the xref:reference:service-assurance/introduction.adoc[service monitor reference section].
+For information on supported monitors and how to configure them, see the xref:reference:service-assurance/introduction.adoc[Service Monitors reference section].
