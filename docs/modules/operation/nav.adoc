@@ -8,6 +8,7 @@
 ** xref:quick-start/performance-data.adoc[]
 ** xref:quick-start/thresholding.adoc[]
 ** xref:quick-start/baseline.adoc[]
+** xref:quick-start/service-assurance.adoc[]
 
 * xref:deep-dive/introduction.adoc[]
 
@@ -46,7 +47,7 @@
 *** xref:deep-dive/service-assurance/path-outages.adoc[]
 *** xref:deep-dive/service-assurance/polling-packages.adoc[]
 *** xref:deep-dive/service-assurance/service-monitors.adoc[]
-*** xref:deep-dive/application-perspective-monitoring/introduction.adoc[]
+*** xref:deep-dive/service-assurance/application-perspective-monitoring/introduction.adoc[]
 
 ** xref:deep-dive/device-config-backup/introduction.adoc[]
 *** xref:deep-dive/device-config-backup/ssh.adoc[]
