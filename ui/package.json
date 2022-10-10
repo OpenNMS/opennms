@@ -39,7 +39,7 @@
     "@featherds/table": "0.10.17",
     "@featherds/tabs": "0.10.17",
     "@featherds/textarea": "0.10.17",
-    "@featherds/tooltip": "0.10.17",
+    "@featherds/tooltip": "0.12.4",
     "@featherds/utils": "0.10.17",
     "@vueuse/core": "^9.1.0",
     "axios": "^0.27.2",
