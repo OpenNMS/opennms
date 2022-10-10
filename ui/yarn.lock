@@ -123,6 +123,14 @@
     "@featherds/utils" "^0.10.17"
     vue "^3.1.0-0"
 
+"@featherds/composables@^0.12.4":
+  version "0.12.4"
+  resolved "https://registry.yarnpkg.com/@featherds/composables/-/composables-0.12.4.tgz#969cda18eb7b549d8bb649398f5525636b72a958"
+  integrity sha512-fksKu8NS7Bb/pO3YN6TCoOh0PYE6xYNwo/Kne2oM6lkgZTIS09+gLJ1RpR0XZGKiocuhsjVIJ9Zbktm9EWFsZQ==
+  dependencies:
+    "@featherds/utils" "^0.12.4"
+    vue "^3.1.0-0"
+
 "@featherds/date-input@0.10.17":
   version "0.10.17"
   resolved "https://registry.yarnpkg.com/@featherds/date-input/-/date-input-0.10.17.tgz#d8502425933ca10fb7ed4502f2614ccf39f0a826"
@@ -186,6 +194,13 @@
   version "0.10.17"
   resolved "https://registry.yarnpkg.com/@featherds/icon/-/icon-0.10.17.tgz#90bba74d6143b56120e32c186efe01b7f69d76cf"
   integrity sha512-EDlitbjOyV452pIkG3jHwy1S8VMwoe4ZZwQ18Udl0S0PKj/fHFZbmJwYugY1YQNTX0c/Ouy1MTdThiRdXn0cgA==
+  dependencies:
+    vue "^3.1.0-0"
+
+"@featherds/icon@^0.12.4":
+  version "0.12.4"
+  resolved "https://registry.yarnpkg.com/@featherds/icon/-/icon-0.12.4.tgz#ed427c93a33fe1d5ed530c2b60187d2958fda2e3"
+  integrity sha512-H5KEJvh2AmgwZuE+MZAJhlukL/fD6cU3Y0xcPY5M4wICJEyJr/uzDrAgu2n6wEsV4A1NRgsS2Uy6FiNIOzRzNw==
   dependencies:
     vue "^3.1.0-0"
 
@@ -301,6 +316,13 @@
   dependencies:
     vue "^3.1.0-0"
 
+"@featherds/ripple@^0.12.4":
+  version "0.12.4"
+  resolved "https://registry.yarnpkg.com/@featherds/ripple/-/ripple-0.12.4.tgz#e8299176dbb423d50c48a1cfc17eb5f50e239b63"
+  integrity sha512-J829MGIB/Zo+mowsLtqudqGv2d14+B4yT/nH1Vz5Jw2fj72Doae6220I1GM8fhPOAjIJexjO6P3YaTJU4mTQDg==
+  dependencies:
+    vue "^3.1.0-0"
+
 "@featherds/select@0.10.17", "@featherds/select@^0.10.17":
   version "0.10.17"
   resolved "https://registry.yarnpkg.com/@featherds/select/-/select-0.10.17.tgz#6c38c3251bb77e9fd2cd39dc7bfdf3e5b67a9ebc"
@@ -327,6 +349,11 @@
   resolved "https://registry.yarnpkg.com/@featherds/styles/-/styles-0.10.17.tgz#603686055c45e34c6eb5a6797b870478408658b2"
   integrity sha512-kNkir7MQy1KhSstaBBpOHmBPpSmL07Mfeq1hGudtPuPt0hRejyaCmpoBUiiFUf9SI/e3h9dyTUTEymhEyyuV1w==
 
+"@featherds/styles@^0.12.4":
+  version "0.12.4"
+  resolved "https://registry.yarnpkg.com/@featherds/styles/-/styles-0.12.4.tgz#19a6da0a8b03354c19f2d6338a99bd7d8c19bd21"
+  integrity sha512-enE3nVJg7kjq3n8OX4IdH2/2yPufvOKuytilWEH4frefzoKQHTCPMxWKiDKyWtYkNF4vaCGQg8K6dUayquRSzg==
+
 "@featherds/switch@^0.10.17":
   version "0.10.17"
   resolved "https://registry.yarnpkg.com/@featherds/switch/-/switch-0.10.17.tgz#cc487880949a98fda728d9308168821e1cda44a2"
@@ -335,15 +362,15 @@
     "@featherds/styles" "^0.10.17"
     vue "^3.1.0-0"
 
-"@featherds/table@0.10.17":
-  version "0.10.17"
-  resolved "https://registry.yarnpkg.com/@featherds/table/-/table-0.10.17.tgz#571617563508897d7c4f2dc79047677351405165"
-  integrity sha512-dm3qmklKV7zPizk+EDsexTIvGcDQf0T8lKoL+rLYFwFRFmRJOFqUDAJveHv/eeIuT4x9D5fpy87gbS0YKS0QEQ==
+"@featherds/table@0.12.4":
+  version "0.12.4"
+  resolved "https://registry.yarnpkg.com/@featherds/table/-/table-0.12.4.tgz#3cbc8acb48fed82b7ad3c6c1dc3c4359280124d4"
+  integrity sha512-GGLGNzofjfaHIBpWxk8flFBHwMtsQ5YNvDgthGrcjRt6gzXHg0+L2oj4nnr9rW2FU61h/mb9RMXwUv3H+wJVPA==
   dependencies:
-    "@featherds/composables" "^0.10.17"
-    "@featherds/icon" "^0.10.17"
-    "@featherds/ripple" "^0.10.17"
-    "@featherds/styles" "^0.10.17"
+    "@featherds/composables" "^0.12.4"
+    "@featherds/icon" "^0.12.4"
+    "@featherds/ripple" "^0.12.4"
+    "@featherds/styles" "^0.12.4"
     vue "^3.1.0-0"
 
 "@featherds/tabs@0.10.17":
@@ -380,6 +407,11 @@
   version "0.10.17"
   resolved "https://registry.yarnpkg.com/@featherds/utils/-/utils-0.10.17.tgz#8687af26c2b0821aa513989c7dde5b0e6dcae41d"
   integrity sha512-+aWVAGTZ/m16feuuFAJX6H3ze2zpVu+RzAx4PA9Q2WsBJj/qfmp2VQFkohW3Wypg4Fj37vMiTD56iA1/jTEgXg==
+
+"@featherds/utils@^0.12.4":
+  version "0.12.4"
+  resolved "https://registry.yarnpkg.com/@featherds/utils/-/utils-0.12.4.tgz#78d38d682a48b025c5dc0546a8a6e01d920d77ed"
+  integrity sha512-gbwFtX49l2vjEmA9wL+0AtNPk6E8C+0sm5mgdtFkEFJJfYOqBN+WgEz6Z/q+ExCWeo/s4CU2rMs4WLZO7nYEiw==
 
 "@humanwhocodes/config-array@^0.10.4":
   version "0.10.4"
