@@ -238,7 +238,8 @@ WARNING: disabling the discovery protocol deletes related persisted data.
 [.line-through]#**#
 
 The discovery for bridge first start is scheduled at `initial_sleep_time + bridge_topology_interval`.
-[.line-through]#The# updaters' first start is scheduled at 0L.
+
+The updaters' first start is scheduled at 0L.
 
 Restart OpenNMS or just the Enlinkd daemon to apply configuration changes.
 
