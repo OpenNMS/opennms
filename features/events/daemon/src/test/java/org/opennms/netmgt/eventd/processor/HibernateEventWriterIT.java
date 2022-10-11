@@ -255,7 +255,8 @@ public class HibernateEventWriterIT {
         assertTrue(event.getDbid() > 0);
 
         String minionId = jdbcTemplate.queryForObject("SELECT systemId FROM events LIMIT 1", String.class);
-        assertEquals(MockDistPollerDao.DEFAULT_DIST_POLLER_ID, minionId);
+        String originalSystemId = jdbcTemplate.queryForObject("SELECT id FROM monitoringsystems LIMIT 1", String.class);
+        assertEquals(originalSystemId, minionId);
 
         jdbcTemplate.execute("DELETE FROM events");
         jdbcTemplate.execute(String.format("INSERT INTO monitoringsystems (id, location, type) VALUES ('%s', 'Hello World', '%s')", systemId, OnmsMonitoringSystem.TYPE_MINION));
