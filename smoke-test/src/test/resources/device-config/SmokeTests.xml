@@ -1,7 +1,0 @@
-<foreign-source xmlns="http://xmlns.opennms.org/xsd/config/foreign-source" name="SmokeTests" date-stamp="2022-10-04T13:38:18.589Z">
-   <scan-interval>1d</scan-interval>
-   <detectors>
-      <detector name="SSH" class="org.opennms.netmgt.provision.detector.ssh.SshDetector"/>
-   </detectors>
-   <policies/>
-</foreign-source>
