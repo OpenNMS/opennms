@@ -240,7 +240,7 @@ The discovery for bridge first start is scheduled at `initial_sleep_time + bridg
 
 The updaters' first start is scheduled at 0L.
 
-Restart OpenNMS or just the Enlinkd daemon to apply configuration changes.
+Restart OpenNMS or just the enlinkd daemon to apply configuration changes.
 
 .Send configuration reload event via CLI
 
