@@ -2,6 +2,44 @@
 [[release-30-changelog]]
 = Changelog
 
+[[releasenotes-changelog-30.0.4]]
+
+== Release 30.0.4
+
+Release 30.0.4 contains quite a few bug fixes as well as number of enhancements.
+
+The codename for Horizon 30.0.4 is https://wikipedia.org/wiki/$$Capybara$$[_Capybara_].
+
+=== Bug
+
+* VMware requisition import fail with "Problem getting input stream: '{}'" (Issue http://issues.opennms.org/browse/NMS-14450[NMS-14450])
+* DCB fails on newly provisioned nodes (Issue http://issues.opennms.org/browse/NMS-14670[NMS-14670])
+* Duplicate V3 trap security names causing spurious errors on non V3 traps (Issue http://issues.opennms.org/browse/NMS-14718[NMS-14718])
+* Flow docs don't account for default config (Issue http://issues.opennms.org/browse/NMS-14749[NMS-14749])
+* On saving of the provisiond configuration must be ensured, that all requsition-def's have unique names (Issue http://issues.opennms.org/browse/NMS-14752[NMS-14752])
+* NPE in opennms-provision-persistence (Issue http://issues.opennms.org/browse/NMS-14814[NMS-14814])
+
+=== Story
+
+* Update BSM Documentation (Issue http://issues.opennms.org/browse/NMS-8571[NMS-8571])
+* Determine if requisitions docs are correct (Issue http://issues.opennms.org/browse/NMS-13938[NMS-13938])
+* MOS CDR Processor: Tie to node (Issue http://issues.opennms.org/browse/NMS-14659[NMS-14659])
+* MOS CDR Processor: Send to multiple OpenNMS instances (Issue http://issues.opennms.org/browse/NMS-14770[NMS-14770])
+
+=== Task
+
+* Add documentation for partial configuration modification via REST (Issue http://issues.opennms.org/browse/NMS-14671[NMS-14671])
+
+=== Enhancement
+
+* Open JDK Package References in Upgrade Documentation (Issue http://issues.opennms.org/browse/NMS-14682[NMS-14682])
+* backport CircleCI and Docker enhancements from develop to release-30.x (Issue http://issues.opennms.org/browse/NMS-14724[NMS-14724])
+* Add new handling options for the snmp provisioning metadata adapter (Issue http://issues.opennms.org/browse/NMS-14729[NMS-14729])
+* Modify reduction key for dataCollectionFailed to be service specific (Issue http://issues.opennms.org/browse/NMS-14744[NMS-14744])
+* Add details to PassiveServiceStatus event description (Issue http://issues.opennms.org/browse/NMS-14799[NMS-14799])
+* Update Cortex plugin docs (Issue http://issues.opennms.org/browse/NMS-14807[NMS-14807])
+
+
 [[releasenotes-changelog-30.0.3]]
 
 == Release 30.0.3
