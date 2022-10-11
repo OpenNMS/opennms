@@ -104,6 +104,8 @@ public class UsageStatisticsReporter implements StateChangeHandler {
     private static final int MAX_DEP_RECURSION_DEPTH = 2;
     private static final String OIA_FEATURE_NAME = "opennms-integration-api";
     private static final String API_LAYER_FEATURE_NAME = "opennms-api-layer";
+    private static final String JMX_ATTR_START_TIME_MILLISECONDS = "StartTimeMilliseconds";
+    private static final String JMX_OBJ_OPENNMS_KARAF_STARTUP_MONITOR = "OpenNMS:Name=KarafStartupMonitor";
 
     private String m_url;
 
@@ -284,11 +286,18 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         usageStatisticsReport.setRpcStrategy(RpcStrategy.getRpcStrategy().getName());
         usageStatisticsReport.setTssStrategies(TimeSeries.getTimeseriesStrategy().getName());
         usageStatisticsReport.setNodesWithDeviceConfigBySysOid(m_deviceConfigDao.getNumberOfNodesWithDeviceConfigBySysOid());
-
+        usageStatisticsReport.setOnmsStartupTimeSeconds(getStartupTimeSeconds());
         setDatasourceInfo(usageStatisticsReport);
 
         return usageStatisticsReport;
     }
+
+    private long getStartupTimeSeconds(){
+        long jvmStartTime = ManagementFactory.getRuntimeMXBean().getStartTime();
+        long karafStartupMonitorStartTime = Long.parseLong(getJmxAttribute(JMX_OBJ_OPENNMS_KARAF_STARTUP_MONITOR, JMX_ATTR_START_TIME_MILLISECONDS).toString());
+        return (karafStartupMonitorStartTime - jvmStartTime) / 1000;
+    }
+
     private void setJmxAttributes(UsageStatisticsReportDTO usageStatisticsReport) {
         setSystemJmxAttributes(usageStatisticsReport);
         setOpenNmsJmxAttributes(usageStatisticsReport);
