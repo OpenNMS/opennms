@@ -65,7 +65,7 @@ public final class NodeDiscoveryIpNetToMedia extends NodeCollector {
 	            final NodeCollectionGroupIpNetToMedia group,
 	            final Node node,
                 final int priority) {
-	        super(group, node, priority);
+	        super(group.getLocationAwareSnmpClient(), node, priority);
     	m_ipNetToMediaTopologyService = group.getIpNetToMediaTopologyService();
     }
 

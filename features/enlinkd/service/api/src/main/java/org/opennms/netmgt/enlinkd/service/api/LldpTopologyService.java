@@ -47,5 +47,6 @@ public interface LldpTopologyService extends TopologyService {
     List<LldpElementTopologyEntity> findAllLldpElements();
     List<TopologyConnection<LldpLinkTopologyEntity, LldpLinkTopologyEntity>> match();
 
-    
+    void deletePersistedData();
+
 }

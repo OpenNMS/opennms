@@ -137,7 +137,7 @@ public class LegacyPriorityExecutorTest {
     @Test
     public void testSchedulableExecutableGroup() {
         LegacyPriorityExecutor executor = new LegacyPriorityExecutor("CollectorGroupTest", 2, 5);
-        SchedulableExecutableGroup group = new SchedulableExecutableGroup(60000,5000, executor, 100, "testGroup");
+        SchedulableExecutableGroup group = new SchedulableExecutableGroup(60000,5000, executor, "testGroup");
         group.add(new ExecutableTest("A",30 ));
         group.add(new ExecutableTest("B",20 ));
         group.add(new ExecutableTest("C",10 ));

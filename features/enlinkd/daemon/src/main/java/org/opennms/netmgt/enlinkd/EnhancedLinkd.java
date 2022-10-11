@@ -158,13 +158,14 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
         m_bridgeTopologyService.load();
         LOG.debug("init: Bridge Topology loaded.");
 
-        scheduleAndRegisterOnmsTopologyUpdater(m_userDefinedLinkTopologyUpdater);
-        schedule();
+        schedule(true);
     }
 
-    private void schedule() {
-
-        scheduleAndRegisterOnmsTopologyUpdater(m_nodesTopologyUpdater);
+    private void schedule(boolean init) {
+        if (init) {
+            scheduleAndRegisterOnmsTopologyUpdater(m_nodesTopologyUpdater);
+            scheduleAndRegisterOnmsTopologyUpdater(m_userDefinedLinkTopologyUpdater);
+        }
 
         if (m_linkdConfig.useCdpDiscovery()) {
             NodeCollectionGroupCdp nodeCollectionGroupCdp = new NodeCollectionGroupCdp(m_linkdConfig.getCdpRescanInterval(), m_linkdConfig.getInitialSleepTime(), m_executor, m_linkdConfig.getCdpPriority(), m_queryMgr, m_locationAwareSnmpClient, m_cdpTopologyService);
@@ -172,6 +173,8 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
             nodeCollectionGroupCdp.schedule();
             m_groups.add(nodeCollectionGroupCdp);
             scheduleAndRegisterOnmsTopologyUpdater(m_cdpTopologyUpdater);
+        } else {
+            m_cdpTopologyService.deletePersistedData();
         }
 
         if (m_linkdConfig.useLldpDiscovery()) {
@@ -180,7 +183,9 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
             nodeCollectionGroupLldp.schedule();
             m_groups.add(nodeCollectionGroupLldp);
             scheduleAndRegisterOnmsTopologyUpdater(m_lldpTopologyUpdater);
-       }
+       } else {
+            m_lldpTopologyService.deletePersistedData();
+        }
 
         if (m_linkdConfig.useIsisDiscovery()) {
             NodeCollectionGroupIsis nodeCollectionGroupIsis = new NodeCollectionGroupIsis(m_linkdConfig.getIsisRescanInterval(), m_linkdConfig.getInitialSleepTime(), m_executor, m_linkdConfig.getIsisPriority(), m_queryMgr, m_locationAwareSnmpClient, m_isisTopologyService);
@@ -188,6 +193,8 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
             nodeCollectionGroupIsis.schedule();
             m_groups.add(nodeCollectionGroupIsis);
             scheduleAndRegisterOnmsTopologyUpdater(m_isisTopologyUpdater);
+        } else {
+            m_isisTopologyService.deletePersistedData();
         }
         
         if (m_linkdConfig.useOspfDiscovery()) {
@@ -196,6 +203,8 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
             nodeCollectionGroupOspf.schedule();
             m_groups.add(nodeCollectionGroupOspf);
             scheduleAndRegisterOnmsTopologyUpdater(m_ospfTopologyUpdater);
+        } else {
+            m_ospfTopologyService.deletePersistedData();
         }
 
         if (m_linkdConfig.useBridgeDiscovery()) {
@@ -209,6 +218,8 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
             m_groups.add(nodeCollectionGroupBridge);
             scheduleDiscoveryBridgeDomain();
             scheduleAndRegisterOnmsTopologyUpdater(m_bridgeTopologyUpdater);
+        } else {
+            m_bridgeTopologyService.deletePersistedData();
         }
     }
 
@@ -517,9 +528,6 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
 
         m_groups.forEach(Schedulable::unschedule);
         m_groups.clear();
-        m_nodesTopologyUpdater.unschedule();
-        m_nodesTopologyUpdater.unregister();
-        m_nodesTopologyUpdater = NodesOnmsTopologyUpdater.clone(m_nodesTopologyUpdater);
 
         if (m_ospfTopologyUpdater.isRegistered()) {
             m_ospfTopologyUpdater.unschedule();
@@ -553,7 +561,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
             m_discoveryBridgeDomains = DiscoveryBridgeDomains.clone(m_discoveryBridgeDomains);
         }
 
-        schedule();
+        schedule(false);
     }
     
     public void reloadConfig() {

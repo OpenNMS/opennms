@@ -47,4 +47,6 @@ public interface CdpTopologyService extends TopologyService {
     List<CdpElementTopologyEntity> findAllCdpElements();
     List<TopologyConnection<CdpLinkTopologyEntity, CdpLinkTopologyEntity>> match();
 
+    void deletePersistedData();
+
 }

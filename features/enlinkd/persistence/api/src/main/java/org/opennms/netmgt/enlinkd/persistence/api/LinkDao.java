@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,35 +28,25 @@
 
 package org.opennms.netmgt.enlinkd.persistence.api;
 
-import java.net.InetAddress;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
 import org.opennms.netmgt.dao.api.OnmsDao;
-import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
-
-
-
+import org.opennms.netmgt.enlinkd.model.BridgeBridgeLink;
 
 
 /**
- * <p>IpNetToMediaDao interface.</p>
+ * <p>BridgeBridgeLinkDao interface.</p>
  */
-public interface IpNetToMediaDao extends OnmsDao<IpNetToMedia, Integer> {
+public interface LinkDao<T, K extends Serializable> extends OnmsDao<T, K > {
     
-    List<IpNetToMedia> findBySourceNodeId(Integer id);
+    List<T> findByNodeId(Integer id);
 
-    List<IpNetToMedia> findByPhysAddress(String physAddress);
+    void deleteByNodeIdOlderThen(Integer nodeiId, Date now);
 
-    List<IpNetToMedia> findByNetAddress(InetAddress netAddress);
-
-    IpNetToMedia getByNetAndPhysAddress(InetAddress netAddress, String physAddress);
-
-    void deleteBySourceNodeIdOlderThen(Integer nodeiId, Date now);
-    
-    void deleteBySourceNodeId(Integer nodeId);
-
-    List<IpNetToMedia> findByMacLinksOfNode(Integer nodeId);
+    void deleteByNodeId(Integer nodeiId);
 
     void deleteAll();
+
 }

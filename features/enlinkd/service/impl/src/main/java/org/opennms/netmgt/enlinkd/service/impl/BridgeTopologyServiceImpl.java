@@ -807,6 +807,24 @@ SEG:        for (SharedSegment segment : bmlsegments) {
     }
 
     @Override
+    public void deletePersistedData() {
+        m_bridgeElementDao.deleteAll();
+        m_bridgeElementDao.flush();
+
+        m_bridgeMacLinkDao.deleteAll();
+        m_bridgeMacLinkDao.flush();
+
+        m_bridgeBridgeLinkDao.deleteAll();
+        m_bridgeBridgeLinkDao.flush();
+
+        m_bridgeStpLinkDao.deleteAll();
+        m_bridgeStpLinkDao.flush();
+
+        m_ipNetToMediaDao.deleteAll();
+        m_ipNetToMediaDao.flush();
+    }
+
+    @Override
     public List<TopologyShared> match() {       
         final List<TopologyShared> links = new ArrayList<>();
         final List<MacPort> macPortMap = getMacPorts();

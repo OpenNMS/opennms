@@ -234,9 +234,13 @@ NOTE: If multiple protocols are enabled, the links will be discovered for each e
 | false
 |===
 
+WARNING: Disabling the discovery protocol deletes related persisted data.
+
 The discovery for bridge first start is scheduled at `initial_sleep_time + bridge_topology_interval`.
+
 The updaters' first start is scheduled at 0L.
-Restart OpenNMS or just the Enlinkd daemon to apply configuration changes.
+
+Restart OpenNMS or just the enlinkd daemon to apply configuration changes.
 
 .Send configuration reload event via CLI
 
