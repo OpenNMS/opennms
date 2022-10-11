@@ -36,9 +36,6 @@ import org.junit.Test;
 import org.opennms.features.deviceconfig.persistence.impl.DeviceConfigDaoImpl;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.hibernate.NodeDaoHibernate;
-import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsMonitoredService;
-import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
@@ -174,10 +171,10 @@ public class DcbMultipleNodesIT {
     }
 
     @Test
-    public void testGetConfigOnSchedule() {
+    public void testGetConfigOnSchedule() throws Exception{
         // Waiting for the Backups to appear.
         await().atMost(6, MINUTES)
-                .pollInterval(30, SECONDS)
-                .until(restClient::getBackups, equalTo(NUMBER_OF_NODES));
+                .pollInterval(20, SECONDS)
+                .until(() -> restClient.getBackups().size(), equalTo(NUMBER_OF_NODES));
     }
 }
