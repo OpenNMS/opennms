@@ -45,9 +45,11 @@ asciimath:[severity = \|__log_{3}( 3^{0} + 3^{0} + 0 + 0 )__\| = \|__log_{3}( 1 
 which means WARNING.
 |===
 
+== Threshold example
+
 The following table shows the status calculation with edges assigned to an IP service.
 The IP service is driven by the monitoring of the ICMP service for three web servers.
-Te table below shows a configuration where Web Server 3 is weighted three times higher than the others with a configured threshold of 0.33 (33%).
+The table below shows a configuration where Web Server 3 is weighted three times higher than the others with a configured threshold of 0.33 (33%).
 
 .Example for status calculation using the threshold function
 [options="header, %autowidth"]

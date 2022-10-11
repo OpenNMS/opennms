@@ -165,12 +165,8 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
         final OnmsNode switch3 = m_nodeDao.findByForeignId("linkd", SWITCH3_NAME);
         final OnmsNode switch4 = m_nodeDao.findByForeignId("linkd", SWITCH4_NAME);
         final OnmsNode switch5 = m_nodeDao.findByForeignId("linkd", SWITCH5_NAME);
-        
-        assertTrue(m_linkd.scheduleNodeCollection(switch1.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(switch2.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(switch3.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(switch4.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(switch5.getId()));
+
+        m_linkd.reload();
  
         assertEquals(0,m_lldpLinkDao.countAll());
         assertEquals(0,m_lldpElementDao.countAll());
@@ -508,17 +504,8 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
         final OnmsNode router2 = m_nodeDao.findByForeignId("linkd", ROUTER2_NAME);
         final OnmsNode router3 = m_nodeDao.findByForeignId("linkd", ROUTER3_NAME);
         final OnmsNode router4 = m_nodeDao.findByForeignId("linkd", ROUTER4_NAME);
-        
-        assertTrue(m_linkd.scheduleNodeCollection(switch1.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(switch2.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(switch3.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(switch4.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(switch5.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(router1.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(router2.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(router3.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(router4.getId()));
-        
+
+        m_linkd.reload();
 
         assertTrue(m_linkd.runSingleSnmpCollection(switch1.getId()));
         assertEquals(5, m_cdpLinkDao.countAll());
@@ -855,8 +842,7 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
         final OnmsNode switch1 = m_nodeDao.findByForeignId("linkd", SWITCH1_NAME);
         final OnmsNode switch2 = m_nodeDao.findByForeignId("linkd", SWITCH2_NAME);
 
-        assertTrue(m_linkd.scheduleNodeCollection(switch1.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(switch2.getId()));
+        m_linkd.reload();
 
         assertTrue(m_linkd.runSingleSnmpCollection(switch1.getId()));
         assertEquals(5, m_cdpLinkDao.countAll());
@@ -975,9 +961,7 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
         final OnmsNode switch2 = m_nodeDao.findByForeignId("linkd", SWITCH2_NAME);
         final OnmsNode switch3 = m_nodeDao.findByForeignId("linkd", SWITCH3_NAME);
 
-        assertTrue(m_linkd.scheduleNodeCollection(switch1.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(switch2.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(switch3.getId()));
+        m_linkd.reload();
 
         assertTrue(m_linkd.runSingleSnmpCollection(switch1.getId()));
         assertEquals(4, m_lldpLinkDao.countAll());

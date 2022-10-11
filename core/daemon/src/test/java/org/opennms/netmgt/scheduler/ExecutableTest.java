@@ -38,10 +38,6 @@ public class ExecutableTest extends Executable {
     private static final Logger LOG = LoggerFactory.getLogger(ExecutableTest.class);
 
     private final String m_name;
-    public ExecutableTest(String name) {
-        super();
-        m_name=name;
-    }
 
     public ExecutableTest(String name, int priority) {
         super(priority);
@@ -83,8 +79,18 @@ public class ExecutableTest extends Executable {
     }
 
     @Override
+    public String toString() {
+        return "ExecutableTest{" +
+                "m_name='" + m_name + '\'' +
+                " m_priority=" + getPriority()
+                +
+                '}';
+    }
+
+    @Override
     public boolean isReady() {
         return true;
     }
+
 }
 

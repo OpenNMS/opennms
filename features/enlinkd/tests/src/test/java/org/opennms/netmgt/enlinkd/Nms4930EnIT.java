@@ -406,7 +406,7 @@ String[] forwardersdlink2on10bbport= {"001195256302","f07d68a13d67","001517028e0
         assertTrue(m_linkdConfig.useBridgeDiscovery());
         assertFalse(m_linkdConfig.useIsisDiscovery());
 
-        assertTrue(m_linkd.scheduleNodeCollection(dlink1.getId()));
+        m_linkd.reload();
 
         assertEquals(0,m_bridgeBridgeLinkDao.countAll());
         assertEquals(0,m_bridgeMacLinkDao.countAll());
@@ -468,7 +468,7 @@ String[] forwardersdlink2on10bbport= {"001195256302","f07d68a13d67","001517028e0
         assertTrue(m_linkdConfig.useBridgeDiscovery());
         assertFalse(m_linkdConfig.useIsisDiscovery());
 
-        assertTrue(m_linkd.scheduleNodeCollection(dlink1.getId()));
+        m_linkd.reload();
         assertEquals(0,m_bridgeBridgeLinkDao.countAll());
         assertEquals(0,m_bridgeMacLinkDao.countAll());
         
@@ -497,7 +497,7 @@ String[] forwardersdlink2on10bbport= {"001195256302","f07d68a13d67","001517028e0
         assertTrue(m_linkdConfig.useBridgeDiscovery());
         assertFalse(m_linkdConfig.useIsisDiscovery());
 
-        assertTrue(m_linkd.scheduleNodeCollection(dlink2.getId()));
+        m_linkd.reload();
         assertEquals(0,m_bridgeBridgeLinkDao.countAll());
         assertEquals(0,m_bridgeMacLinkDao.countAll());
         
@@ -540,8 +540,7 @@ String[] forwardersdlink2on10bbport= {"001195256302","f07d68a13d67","001517028e0
         assertTrue(m_linkdConfig.useBridgeDiscovery());
         assertFalse(m_linkdConfig.useIsisDiscovery());
 
-        assertTrue(m_linkd.scheduleNodeCollection(dlink1.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(dlink2.getId()));
+        m_linkd.reload();
         assertEquals(0,m_bridgeBridgeLinkDao.countAll());
         assertEquals(0,m_bridgeMacLinkDao.countAll());
         
@@ -581,8 +580,7 @@ String[] forwardersdlink2on10bbport= {"001195256302","f07d68a13d67","001517028e0
         assertTrue(m_linkdConfig.useBridgeDiscovery());
         assertFalse(m_linkdConfig.useIsisDiscovery());
 
-        assertTrue(m_linkd.scheduleNodeCollection(dlink2.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(dlink1.getId()));
+        m_linkd.reload();
         assertEquals(0,m_bridgeBridgeLinkDao.countAll());
         assertEquals(0,m_bridgeMacLinkDao.countAll());
 

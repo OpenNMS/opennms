@@ -8,6 +8,7 @@
 ** xref:quick-start/performance-data.adoc[]
 ** xref:quick-start/thresholding.adoc[]
 ** xref:quick-start/baseline.adoc[]
+** xref:quick-start/service-assurance.adoc[]
 ** xref:quick-start/notification-config.adoc[]
 
 * xref:deep-dive/introduction.adoc[]
@@ -47,7 +48,7 @@
 *** xref:deep-dive/service-assurance/path-outages.adoc[]
 *** xref:deep-dive/service-assurance/polling-packages.adoc[]
 *** xref:deep-dive/service-assurance/service-monitors.adoc[]
-*** xref:deep-dive/application-perspective-monitoring/introduction.adoc[]
+*** xref:deep-dive/service-assurance/application-perspective-monitoring/introduction.adoc[]
 
 ** xref:deep-dive/device-config-backup/introduction.adoc[]
 *** xref:deep-dive/device-config-backup/ssh.adoc[]
@@ -111,14 +112,13 @@
 **** xref:deep-dive/notifications/strategies/slack.adoc[]
 
 ** xref:deep-dive/bsm/introduction.adoc[]
-*** xref:deep-dive/bsm/business-service-map.adoc[]
-*** xref:deep-dive/bsm/operational-status.adoc[]
-*** xref:deep-dive/bsm/root-cause-impact-analysis.adoc[]
 *** xref:deep-dive/bsm/business-service-definition.adoc[]
 **** xref:deep-dive/bsm/edges.adoc[]
+*** xref:deep-dive/bsm/business-service-map.adoc[]
+*** xref:deep-dive/bsm/operational-status.adoc[]
 **** xref:deep-dive/bsm/map-functions.adoc[]
 **** xref:deep-dive/bsm/reduce-functions.adoc[]
-*** xref:deep-dive/bsm/bsmd.adoc[]
+*** xref:deep-dive/bsm/root-cause-impact-analysis.adoc[]
 
 ** xref:deep-dive/topology/introduction.adoc[]
 *** xref:deep-dive/topology/topology.adoc[]

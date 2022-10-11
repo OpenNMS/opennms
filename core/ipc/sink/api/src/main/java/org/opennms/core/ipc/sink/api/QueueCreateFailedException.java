@@ -28,7 +28,7 @@
 
 package org.opennms.core.ipc.sink.api;
 
-public class QueueCreateFailedException extends Exception {
+public class QueueCreateFailedException extends RuntimeException {
 
     public QueueCreateFailedException(String message) {
         super(message);

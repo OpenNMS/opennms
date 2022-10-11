@@ -38,5 +38,5 @@ public interface IpNetToMediaTopologyService {
     void delete(int nodeid);
     void reconcile(int nodeId, Date now);
     void store(int nodeId, IpNetToMedia link);
-    
+
 }

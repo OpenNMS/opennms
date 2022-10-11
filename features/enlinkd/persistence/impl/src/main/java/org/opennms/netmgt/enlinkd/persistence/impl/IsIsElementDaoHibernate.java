@@ -74,5 +74,10 @@ public class IsIsElementDaoHibernate extends AbstractDaoHibernate<IsIsElement, I
         getHibernateTemplate().bulkUpdate("delete from IsIsElement rec where rec.node.id = ? ",
                                     new Object[] {nodeId});
     }
-	
+
+    @Override
+    public void deleteAll() {
+        getHibernateTemplate().bulkUpdate("delete from IsIsElement");
+    }
+
 }

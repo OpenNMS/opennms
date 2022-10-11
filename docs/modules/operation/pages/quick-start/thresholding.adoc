@@ -18,8 +18,6 @@ This Quick Start guide shows how to create both kinds of threshold.
 This procedure describes how to create a basic threshold for a single, system-wide variable: the number of logged-in users.
 This threshold tells {page-component-title} to create an event when the number of logged-in users on the device exceeds two, and re-arm when it falls below two.
 
-Before creating this threshold, make sure you have at least two users defined in your {page-component-title} instance (see <<quick-start/users.adoc#create-user, Create a new user>>).
-
 . Click the *Gear* symbol in the top-right of the screen.
 . Under Performance Measurement, click *Configure Thresholds*.
 +
@@ -89,7 +87,7 @@ If left blank, it defaults to the standard thresholds UEIs.
 
 To test the threshold you just created, follow these steps:
 
-. Log in to the monitored node using two user accounts.
+. SSH to the monitored node and log in to it using two different user accounts.
 . In the main menu, choose menu:Status[Events].
 . Under Event Queries, click *All Events*.
 +
@@ -172,8 +170,6 @@ If left blank, it defaults to the standard thresholds UEIs.
 | A custom unique event identifier (UEI) that is sent into the events system when the threshold is re-armed.
 | Leave blank.
 |===
-
-. Click *Save*.
 
 == Beyond Quick Start
 
