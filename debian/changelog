@@ -1,7 +1,7 @@
 opennms (30.0.4-1) stable; urgency=low
 
-  * New minor release. It contains quite a few bug fixes as well as number of
-    enhancements.
+  * New minor release. It contains quite a few bug and security fixes and 
+    a number of enhancements.
 
     For details on what has changed, see:
     https://docs.opennms.com/horizon/30.0.4/index.html
