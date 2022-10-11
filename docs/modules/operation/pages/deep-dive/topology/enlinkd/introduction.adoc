@@ -234,7 +234,7 @@ NOTE: If multiple protocols are enabled, the links will be discovered for each e
 | false
 |===
 
-WARNING: disabling the discovery protocol deletes related persisted data.
+WARNING: Disabling the discovery protocol deletes related persisted data.
 
 The discovery for bridge first start is scheduled at `initial_sleep_time + bridge_topology_interval`.
 
