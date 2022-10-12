@@ -65,7 +65,7 @@ import org.slf4j.LoggerFactory;
 public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWriter {
     private static final Logger LOG = LoggerFactory.getLogger(MockDatabase.class);
 
-    private String distPoller;
+    private String distPoller = "00000000-0000-0000-0000-000000000000";
 	
     public MockDatabase(String dbName) throws Exception {
         this(dbName, true);
