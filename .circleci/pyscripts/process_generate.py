@@ -198,7 +198,7 @@ if build_mappings["experimental"] or "experimentalPath" in git_keywords:
 
     # Clear the mappings
     mappings.clear()
-
+    What_to_build.clear()
     build_mappings["experimental"] = True
 
 if "trigger-build" in mappings:
