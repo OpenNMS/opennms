@@ -28,21 +28,14 @@
 
 package org.opennms.web.rest.support.menu;
 
-import java.util.List;
+public interface MenuRequestContext {
+    String getRemoteUser();
 
-// Similar to org.opennms.web.navigate.MenuEntry
-public class MenuEntry {
-    public String id;
-    public String className;
-    public String name;
-    public String url;
-    public String locationMatch;
-    public String icon;
-    /** The icon type, "fa" for font-awesome, "feather" for FeatherDS */
-    public String iconType;  // "fa" or "feather"
-    /** If true, display an icon only, no name/title. */
-    public Boolean isIconOnly;
-    public Boolean isVueLink;
-    /** If present, user must have at least one of these roles to display */
-    public List<String> requiredRoles;
+    String calculateUrlBase();
+
+    boolean isUserInRole(String role);
+
+    String getFormattedTime();
+
+    String getNoticeStatus();
 }

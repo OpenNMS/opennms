@@ -28,21 +28,25 @@
 
 package org.opennms.web.rest.support.menu;
 
+import java.util.ArrayList;
 import java.util.List;
 
-// Similar to org.opennms.web.navigate.MenuEntry
-public class MenuEntry {
-    public String id;
-    public String className;
-    public String name;
-    public String url;
-    public String locationMatch;
-    public String icon;
-    /** The icon type, "fa" for font-awesome, "feather" for FeatherDS */
-    public String iconType;  // "fa" or "feather"
-    /** If true, display an icon only, no name/title. */
-    public Boolean isIconOnly;
-    public Boolean isVueLink;
-    /** If present, user must have at least one of these roles to display */
-    public List<String> requiredRoles;
+public class MainMenu {
+    public String baseHref;
+    public String formattedTime;
+    public String noticeStatus;
+    public String username;
+
+    final public List<TopMenuEntry> menus = new ArrayList<>();
+    public TopMenuEntry helpMenu;
+    public TopMenuEntry selfServiceMenu;
+    public TopMenuEntry userNotificationMenu;
+    public MenuEntry provisionMenu;
+    public MenuEntry flowsMenu;
+    public MenuEntry configurationMenu; // aka admin menu, the "cogs"
+    public Notices notices;
+
+    public void addTopMenu(TopMenuEntry entry) {
+        this.menus.add(entry);
+    }
 }

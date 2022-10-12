@@ -28,68 +28,86 @@
 
 package org.opennms.web.rest.support.menu;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
-import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import joptsimple.internal.Strings;
+import org.opennms.web.api.Authentication;
 import org.opennms.web.rest.support.menu.xml.MenuXml;
-import org.springframework.core.io.Resource;
-import org.springframework.util.Assert;
+import org.springframework.core.io.InputStreamSource;
 
 public class MenuProvider {
-    private List<MenuEntry> navBarEntries;
+    final private InputStreamSource dispatcherServletResource;
 
-    final private Resource dispatcherServletResource;
-
-    public MenuProvider(Resource dispatcherServletResource) {
+    public MenuProvider(InputStreamSource dispatcherServletResource) {
         this.dispatcherServletResource = dispatcherServletResource;
     }
 
-    public List<TopMenuEntry> getMenu(final HttpServletRequest request) throws Exception, IOException {
-        List<TopMenuEntry> menuEntries = null;
+    public MainMenu getMainMenu(final MenuRequestContext context) throws Exception, IOException {
+        MainMenu mainMenu = new MainMenu();
 
         try {
-            File file = getFileFromResource();
+            final boolean isProvision = context.isUserInRole(Authentication.ROLE_PROVISION);
+            final boolean isFlow = context.isUserInRole(Authentication.ROLE_FLOW_MANAGER);
+            final boolean isAdmin = context.isUserInRole(Authentication.ROLE_ADMIN);
 
-            MenuXml.BeansElement xBeans = parseBeansXml(file);
-            menuEntries = this.parseXmlToMenuEntries(xBeans);
+            mainMenu.baseHref = context.calculateUrlBase();
+            mainMenu.formattedTime = context.getFormattedTime();
+            mainMenu.username = context.getRemoteUser();
+            mainMenu.noticeStatus = context.getNoticeStatus();
+            mainMenu.notices = buildNotices(context);
 
+            // Parse out menu data from "dispatcher-servlet.xml"
+            MenuXml.BeansElement xBeans = null;
+
+            try {
+                xBeans = parseDispatcherServletXml(this.dispatcherServletResource.getInputStream());
+            } finally {
+                this.dispatcherServletResource.getInputStream().close();
+            }
+
+            List<TopMenuEntry> topMenuEntries = this.parseXmlToMenuEntries(xBeans);
+
+            for (var topMenu : topMenuEntries) {
+                mainMenu.addTopMenu(topMenu);
+            }
+
+            // These are taken from "navbar.ftl" and handled somewhat specially
+            mainMenu.helpMenu = getHelpMenuEntry(isAdmin);
+            mainMenu.selfServiceMenu = getSelfServiceMenuEntry(context.getRemoteUser());
+            mainMenu.userNotificationMenu = getUserNotificationMenu(context.getRemoteUser());
+
+            if (isAdmin || isProvision) {
+                mainMenu.provisionMenu = getProvisionMenu();
+            }
+
+            if (isFlow) {
+                mainMenu.flowsMenu = getFlowsMenu();
+            }
+
+            if (isAdmin) {
+                mainMenu.configurationMenu = getConfigurationMenu();
+            }
         } catch (IOException ioe) {
             throw ioe;
         }
 
-        return menuEntries;
+        return mainMenu;
     }
 
-    private File getFileFromResource() throws IOException {
-        File file = null;
-
-        try {
-            file = this.dispatcherServletResource.getFile();
-            Assert.notNull(file, "config file must be set to a non-null value");
-        } catch (IOException e) {
-            String message = String.format("Could not find file object for 'dispatcher-servlet.xml' for resource '%s'",
-                this.dispatcherServletResource);
-            throw new IOException(message, e);
-        }
-
-        return file;
-    }
-
-    public MenuXml.BeansElement parseBeansXml(File file) {
+    public MenuXml.BeansElement parseDispatcherServletXml(InputStream inputStream) {
         MenuXml.BeansElement xBeansElem = null;
 
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(MenuXml.BeansElement.class);
             Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-            xBeansElem = (MenuXml.BeansElement) jaxbUnmarshaller.unmarshal(file);
+            xBeansElem = (MenuXml.BeansElement) jaxbUnmarshaller.unmarshal(inputStream);
         } catch (JAXBException e) {
             String msg = e.getMessage();
         }
@@ -170,6 +188,140 @@ public class MenuProvider {
         return isValid ? Optional.of(topEntry) : Optional.empty();
     }
 
+    /**
+     * This is in navbar.ftl, we add it here as if it were just another menu entry.
+     */
+    private TopMenuEntry getHelpMenuEntry(boolean isAdmin) {
+        TopMenuEntry helpMenu = new TopMenuEntry();
+        helpMenu.name = "Help";
+
+        MenuEntry helpEntry = new MenuEntry();
+        helpEntry.name = "Help";
+        helpEntry.url = "help/index.jsp";
+        helpEntry.iconType = "fa";
+        helpEntry.icon = "fa-question-circle";
+        helpMenu.addItem(helpEntry);
+
+        MenuEntry aboutEntry = new MenuEntry();
+        aboutEntry.name = "About";
+        aboutEntry.url = "about/index.jsp";
+        aboutEntry.iconType = "fa";
+        aboutEntry.icon = "fa-info-circle";
+        helpMenu.addItem(aboutEntry);
+
+        // only admin gets Support menu
+        if (isAdmin) {
+            MenuEntry supportEntry = new MenuEntry();
+            supportEntry.name = "Support";
+            supportEntry.url = "support/index.jsp";
+            supportEntry.iconType = "fa";
+            supportEntry.icon = "fa-life-ring";
+            supportEntry.requiredRoles = List.of(Authentication.ROLE_ADMIN);
+            helpMenu.addItem(supportEntry);
+        }
+
+        return helpMenu;
+    }
+
+    private TopMenuEntry getSelfServiceMenuEntry(String username) {
+        TopMenuEntry selfServiceMenu = new TopMenuEntry();
+        selfServiceMenu.name = username;
+        selfServiceMenu.url = "account/selfService/index.jsp";
+        selfServiceMenu.iconType = "fa";
+        selfServiceMenu.icon = "fa-user";
+
+        MenuEntry changePasswordMenu = new MenuEntry();
+        changePasswordMenu.name = "Change Password";
+        changePasswordMenu.iconType = "fa";
+        changePasswordMenu.icon = "fa-key";
+        changePasswordMenu.url = "account/selfService/newPasswordEntry";
+        selfServiceMenu.addItem(changePasswordMenu);
+
+        MenuEntry logoutMenu = new MenuEntry();
+        logoutMenu.name = "Log Out";
+        logoutMenu.iconType = "fa";
+        logoutMenu.icon = "fa-sign-out";
+        logoutMenu.url = "j_spring_security_logout";
+        selfServiceMenu.addItem(logoutMenu);
+
+        return selfServiceMenu;
+    }
+
+    private TopMenuEntry getUserNotificationMenu(String username) {
+        TopMenuEntry notificationsMenu = new TopMenuEntry();
+
+        // Note that the top menu is actually 2 items with notification counts,
+        // UI implementation will need to add that
+        MenuEntry userMenu = new MenuEntry();
+        userMenu.url = "notification/browse?acktype=unack&filter=user==" + username;
+        userMenu.id = "user";
+        userMenu.icon = "fa-user";
+        userMenu.iconType = "fa";
+        notificationsMenu.addItem(userMenu);
+
+        MenuEntry teamMenu = new MenuEntry();
+        teamMenu.url = "notification/browse?acktype=unack";
+        teamMenu.id = "team";
+        teamMenu.icon = "fa-users";
+        teamMenu.iconType = "fa";
+        notificationsMenu.addItem(teamMenu);
+
+        MenuEntry onCallMenu = new MenuEntry();
+        onCallMenu.id = "oncall";
+        onCallMenu.url = "roles";
+        onCallMenu.name = "On-Call Schedule";
+        onCallMenu.icon = "fa-calendar";
+        onCallMenu.iconType = "fa";
+        notificationsMenu.addItem(onCallMenu);
+
+        return notificationsMenu;
+    }
+
+    private MenuEntry getProvisionMenu() {
+        MenuEntry provisionMenu = new MenuEntry();
+        provisionMenu.name = "Quick-Add Node";
+        provisionMenu.url = "admin/ng-requisitions/quick-add-node.jsp#/";
+        provisionMenu.iconType = "fa";
+        provisionMenu.icon = "fa-plus-circle";
+        provisionMenu.requiredRoles = List.of(Authentication.ROLE_ADMIN, Authentication.ROLE_PROVISION);
+
+        return provisionMenu;
+    }
+
+    private MenuEntry getFlowsMenu() {
+        MenuEntry flowsMenu = new MenuEntry();
+        flowsMenu.name = "Flows Management";
+        flowsMenu.url = "admin/classification/index.jsp";
+        flowsMenu.iconType = "fa";
+        flowsMenu.icon = "fa-minus-circle";
+        flowsMenu.requiredRoles = List.of(Authentication.ROLE_FLOW_MANAGER);
+
+        return flowsMenu;
+    }
+
+    private MenuEntry getConfigurationMenu() {
+        MenuEntry configurationMenu = new MenuEntry();
+        configurationMenu.name = "Configure OpenNMS";
+        configurationMenu.url = "admin/index.jsp";
+        configurationMenu.iconType = "fa";
+        configurationMenu.icon = "fa-cogs";
+        configurationMenu.requiredRoles = List.of(Authentication.ROLE_ADMIN);
+
+        return configurationMenu;
+    }
+
+    private Notices buildNotices(MenuRequestContext context) {
+        Notices notices = new Notices();
+
+        notices.status = context.getNoticeStatus();
+
+        // TODO: figure this out, code in navbar.ftl
+        // Javascript code plus a Rest API call.......
+        // Could maybe build here or else have UI do code similar to Javascript in navbar.ftl
+
+        return notices;
+    }
+
     private Optional<TopMenuEntry> parseTopMenuEntryFromRef(MenuXml.BeanRefElement xBeanRefElement, MenuXml.BeansElement xBeansElem) {
         String refName = xBeanRefElement.getBeanRef();
 
@@ -184,7 +336,6 @@ public class MenuProvider {
 
         return Optional.empty();
     }
-
 
     private void setFromBeanProperty(MenuXml.BeanPropertyElement propElem, String name, Consumer<String> consumer) {
         if (propElem.getName() != null && propElem.getName().equals(name)) {

@@ -28,85 +28,127 @@
 
 package org.opennms.web.rest.support.menu;
 
-import java.io.File;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.web.rest.support.menu.xml.MenuXml;
+import org.springframework.core.io.InputStreamSource;
 
 public class MenuProviderTest {
     final static String RESOURCE_PATH = "file:{opennms.home}/jetty-webapps/opennms/WEB-INF/dispatcher-servlet.xml";
 
     @Test
     public void testParseBeansXml() {
-        System.out.println("DEBUG In testParseBeansXml");
-        File file;
+        MenuProvider provider = new MenuProvider(null);
+        MenuXml.BeansElement xBeansElem = null;
 
-        try {
-            file = new File(RESOURCE_PATH);
+        try (var inputStream = new FileInputStream(RESOURCE_PATH)) {
+            xBeansElem = provider.parseDispatcherServletXml(inputStream);
         } catch (Exception e) {
-            Assert.fail("Could not open file: " + e.getMessage());
-            return;
+            Assert.fail("Could not open file resource: " + e.getMessage());
         }
 
-        MenuProvider provider = new MenuProvider(null);
-        MenuXml.BeansElement topBeans = provider.parseBeansXml(file);
-        System.out.println("DEBUG parsed beans");
+        Assert.assertNotNull(xBeansElem);
 
-        Assert.assertNotNull(topBeans);
-        System.out.println("DEBUG topBeans not null");
-
-        List<MenuXml.BeanElement> topLevelBeans = topBeans.getBeans();
-        System.out.println("DEBUG topLevelBeans size: " + topLevelBeans.size());
-
+        List<MenuXml.BeanElement> topLevelBeans = xBeansElem.getBeans();
 
         Optional<MenuXml.BeanElement> navBarBean = topLevelBeans.stream()
             .filter(e -> e.getId() != null && e.getId().equals("navBarEntries"))
             .findFirst();
 
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
         if (navBarBean.isPresent()) {
-            System.out.println("DEBUG found 'navBarEntries' bean");
+            System.out.println("DEBUG found 'navBarEntries' bean:");
 
-            var c = navBarBean.get().getConstructorArgElement();
-            var topLevelMenuBeans = c != null ? c.getBeans() : null;
+            String json = gson.toJson(navBarBean.get());
+            System.out.println(json);
 
-            if (topLevelMenuBeans != null) {
-                System.out.println("Found topLevelMenuBeans: " + topLevelMenuBeans.size());
+            List<TopMenuEntry> topMenuEntries = null;
 
-                for (var bean : topLevelMenuBeans) {
-                    var properties = bean.getProperties();
+            try {
+                topMenuEntries = provider.parseXmlToMenuEntries(xBeansElem);
+            } catch (Exception e) {
+                Assert.fail("Error parsing XML to MenuEntries: " + e.getMessage());
+            }
 
-                    if (properties != null) {
-                        System.out.println("Found properties: " + properties.size());
+            System.out.println("Parsed xml -> menu entries:");
+            json = gson.toJson(topMenuEntries);
+            System.out.println(json);
+        }
 
-                        for (var prop : properties) {
-                            String msg = String.format("prop.name: %s, value: %s",
-                                prop.getName(), prop.getValue());
-                            System.out.println(msg);
+        Assert.assertTrue(topLevelBeans.size() > 0);
+    }
 
-                            var menuEntryBeans = prop.getBeans();
+    @Test
+    public void testParseMainMenu() {
+        MainMenu mainMenu = null;
+        MenuRequestContext context = new TestMenuRequestContext();
 
-                            if (menuEntryBeans != null && !menuEntryBeans.isEmpty()) {
-                                System.out.println("DEBUG found menuEntry beans: " + menuEntryBeans.size());
+        try (var inputStreamSource = new TestInputStreamSource(RESOURCE_PATH)) {
+            MenuProvider provider = new MenuProvider(inputStreamSource);
 
-                                for (var menuEntry : menuEntryBeans) {
-                                    System.out.println("  MenuEntry bean:");
-                                    var props = menuEntry.getProperties();
+            mainMenu = provider.getMainMenu(context);
+        } catch (Exception e) {
+            Assert.fail("Error in MenuProvider.getMainMenu: " + e.getMessage());
+        }
 
-                                    for (var p : props) {
-                                        String propMsg = String.format("    MenuEntry name: %s, value: %s",
-                                            p.getName(), p.getValue());
-                                        System.out.println(propMsg);
-                                    }
-                                }
-                            }
-                        }
-                    }
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        System.out.println("Parsed MainMenu:");
+        String json = gson.toJson(mainMenu);
+        System.out.println(json);
+    }
+
+    public static class TestInputStreamSource implements InputStreamSource, AutoCloseable {
+        private FileInputStream inputStream;
+
+        public TestInputStreamSource(String resourcePath) throws FileNotFoundException {
+            this.inputStream = new FileInputStream(resourcePath);
+        }
+        @Override
+        public void close() {
+            if (this.inputStream != null) {
+                try {
+                    this.inputStream.close();
+                } catch (IOException ignored) {
+                } finally {
+                    this.inputStream = null;
                 }
             }
         }
 
-        Assert.assertTrue(topLevelBeans.size() > 0);
+        @Override
+        public InputStream getInputStream() throws IOException {
+            return this.inputStream;
+        }
+    }
+
+    public static class TestMenuRequestContext implements MenuRequestContext {
+        public String getRemoteUser() {
+            return "admin1";
+        }
+
+        public String calculateUrlBase() {
+            return "opennms/";
+        }
+
+        public boolean isUserInRole(String role) {
+            return true;
+        }
+
+        public String getFormattedTime() {
+            return "2022-10-11T20:30:00.000Z";
+        }
+
+        public String getNoticeStatus() {
+            return "On";
+        }
     }
 }

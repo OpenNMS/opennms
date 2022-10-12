@@ -53,6 +53,7 @@
         <property name="securityDefinitions" ref="securityDefinitionsMap" />
         <property name="customizer" ref="openApiCustomizer" />
     </bean>
+    <!-- Used by MenuRestService -->
     <bean id="dispatcherServletResource" class="org.springframework.core.io.UrlResource">
         <constructor-arg value="file:${opennms.home}/jetty-webapps/opennms/WEB-INF/dispatcher-servlet.xml"/>
     </bean>
