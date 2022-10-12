@@ -51,6 +51,7 @@ import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.CriticalPath;
+import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.PathOutageDao;
 import org.opennms.netmgt.dao.api.PathOutageManager;
@@ -122,6 +123,9 @@ public class PollContextIT implements TemporaryDatabaseAware<MockDatabase> {
 
     LocationAwarePingClient m_locationAwarePingClient;
 
+    @Autowired
+    DistPollerDao m_distPollerDao;
+
 	@Override
 	public void setTemporaryDatabase(MockDatabase database) {
 		m_db = database;
@@ -153,7 +157,7 @@ public class PollContextIT implements TemporaryDatabaseAware<MockDatabase> {
         m_mNetwork.addService("HTTP");
         
         m_mSvc = m_mNetwork.getService(1, "192.168.1.1", "ICMP");
-
+        m_db.setDistPoller(m_distPollerDao.whoami().getId());
         m_db.populate(m_mNetwork);
         
         m_pollerConfig = new MockPollerConfig(m_mNetwork);

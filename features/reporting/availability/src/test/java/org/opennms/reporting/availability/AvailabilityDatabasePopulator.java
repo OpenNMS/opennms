@@ -153,7 +153,7 @@ public class AvailabilityDatabasePopulator {
 //      m_db.update("insert into ifservices (nodeid, ipaddr, serviceid, status, ipInterfaceId) values "
 //              + "(2,'192.168.100.3',1,'A', 3);");
         
-        NetworkBuilder builder = new NetworkBuilder();
+        NetworkBuilder builder = new NetworkBuilder(m_distPollerDao.whoami());
         
         setNode1(builder.addNode("test1.availability.opennms.org").
                  setId(1).

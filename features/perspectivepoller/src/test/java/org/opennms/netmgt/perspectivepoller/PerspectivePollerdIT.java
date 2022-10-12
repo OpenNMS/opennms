@@ -67,6 +67,7 @@ import org.opennms.netmgt.config.dao.thresholding.api.OverrideableThreshdDao;
 import org.opennms.netmgt.config.dao.thresholding.api.OverrideableThresholdingDao;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
@@ -151,6 +152,9 @@ public class PerspectivePollerdIT implements InitializingBean, TemporaryDatabase
     @Autowired
     private OutageDao outageDao;
 
+    @Autowired
+    private DistPollerDao distPollerDao;
+
     private PerspectivePollerd perspectivePollerd;
 
     private OnmsMonitoredService node1icmp;
@@ -173,6 +177,7 @@ public class PerspectivePollerdIT implements InitializingBean, TemporaryDatabase
     public void setUp() throws Exception {
         this.databasePopulator.populateDatabase();
 
+        this.database.setDistPoller(distPollerDao.whoami().getId());
         this.eventIpcManager.setEventWriter(this.database);
 
         PollerConfigFactory.setPollerConfigFile(POLLER_CONFIG_1);
