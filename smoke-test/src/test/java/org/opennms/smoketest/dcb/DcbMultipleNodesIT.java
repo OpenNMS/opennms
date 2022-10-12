@@ -151,7 +151,7 @@ public class DcbMultipleNodesIT {
         // wait until all nodes are created
         await().atMost(5, MINUTES)
                 .pollInterval(30, SECONDS)
-                .until(() -> nodeDao.findByForeignSource(FOREIGN_SOURCE).size() == 100);
+                .until(() -> nodeDao.findByForeignSource(FOREIGN_SOURCE).size() == NUMBER_OF_NODES);
     }
 
     @Before
