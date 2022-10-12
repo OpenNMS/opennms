@@ -28,10 +28,15 @@
 
 package org.opennms.web.rest.v2;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.ws.rs.core.MediaType;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
@@ -48,6 +53,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
+
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 /**
  * TODO
@@ -72,6 +80,11 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitTemporaryDatabase
 public class MonitoringLocationRestServiceIT extends AbstractSpringJerseyRestTestCase {
     private static final Logger LOG = LoggerFactory.getLogger(MonitoringLocationRestServiceIT.class);
+
+    private static final Integer DEFAULT_LIMIT = 10;
+    public static final Integer DEFAULT_FLAG = null;
+    public static final Integer UNLIMITED = Integer.MAX_VALUE;
+    public static final Integer UNLIMITED_FLAG = 0;
 
     @Autowired
     private MockEventIpcManager eventIpcManager;
@@ -163,5 +176,209 @@ public class MonitoringLocationRestServiceIT extends AbstractSpringJerseyRestTes
 
         // delete the one with polling packages
         sendRequest(DELETE, "/monitoringLocations/location2", 204);
+    }
+
+    @Test
+    @Transactional
+    public void testDefaultLimitLocations5() throws Exception {
+        // 5 <= current default of 10, should return 5 (includes default)
+        assertEquals(5, testLocationLimit(5,DEFAULT_FLAG));
+    }
+    @Test
+    @Transactional
+    public void testDefaultLimitLocations10() throws Exception {
+        // 10 = default, should return 10
+        assertEquals(10, testLocationLimit(10,DEFAULT_FLAG));
+    }
+    @Test
+    @Transactional
+    public void testDefaultLimitLocations15() throws Exception {
+        // 15 > default, should return 10
+        assertEquals(10, testLocationLimit(15,DEFAULT_FLAG));
+    }
+    @Test
+    @Transactional
+    public void testUnlimitedLocations5() throws Exception {
+        // 5 <= unlimited, should return 5 (includes default)
+        assertEquals(5, testLocationLimit(5,UNLIMITED_FLAG));
+    }
+    @Test
+    @Transactional
+    public void testUnlimitedLocations10() throws Exception {
+        // 10 <= unlimited, should 10
+        assertEquals(10, testLocationLimit(10,UNLIMITED_FLAG));
+    }
+    @Test
+    @Transactional
+    public void testUnlimitedLocations15() throws Exception {
+        // 15 <= unlimited, should return 15
+        assertEquals(15, testLocationLimit(15,UNLIMITED_FLAG));
+    }
+    @Test
+    @Transactional
+    public void testLimit5Locations5() throws Exception {
+        // 5 <= specified limit of 5, should return 5
+        assertEquals(5, testLocationLimit(5,5));
+    }
+
+    @Test
+    @Transactional
+    public void testLimit5Locations10() throws Exception {
+        // 10 > specified limit of 5, should return 5
+        assertEquals(5, testLocationLimit(10,5));
+    }
+    @Test
+    @Transactional
+    public void testLimit5Locations15() throws Exception {
+        // 15 > specified limit of 5, should return 5
+        assertEquals(5, testLocationLimit(15,5));
+    }
+    @Test
+    @Transactional
+    public void testLimit10Locations5() throws Exception {
+        // 5 <= specified limit of 10, should return 6 (includes default)
+        assertEquals(5, testLocationLimit(5,10));
+    }
+
+    @Test
+    @Transactional
+    public void testLimit10Locations10() throws Exception {
+        // 10 = specified limit of 10, should return 10
+        assertEquals(10, testLocationLimit(10,10));
+    }
+
+    @Test
+    @Transactional
+    public void testLimit10Locations15() throws Exception {
+        // 10 > specified limit of 10, should return 10
+        assertEquals(10, testLocationLimit(15,10));
+    }
+
+    @Test
+    @Transactional
+    public void testLimit15Locations5() throws Exception {
+        // 5 <= 15 specified limit of 15, should return 5 (includes default)
+        assertEquals(5, testLocationLimit(5,15));
+    }
+    @Test
+    @Transactional
+    public void testLimit15Locations10() throws Exception {
+        // 10 <= specified limit of 15, should return 10
+        assertEquals(10, testLocationLimit(10,15));
+    }
+    @Test
+    @Transactional
+    public void testLimit15Locations15() throws Exception {
+        // 10 > specified limit of 15, should return 15
+        assertEquals(15, testLocationLimit(15,15));
+    }
+
+    public static Integer calcLimit(final Integer flaggedLimit){
+        if (flaggedLimit == DEFAULT_FLAG) {
+            return DEFAULT_LIMIT;
+        } else if (flaggedLimit.equals(UNLIMITED_FLAG)){
+            return UNLIMITED;
+        } else {
+            return flaggedLimit;
+        }
+    }
+    /**
+     * Add LOCATION_COUNT locations
+     * Store them locally as we add them
+     * Then fetch the list and compare
+     */
+    private int testLocationLimit(final Integer LOCATION_COUNT, final Integer LIMIT) throws Exception {
+        ArrayList<Location> localLocations = new ArrayList<>(calcLimit(LOCATION_COUNT));
+
+        // Add default location but do not post it as it is already there
+        Location defaultLoc = new Location();
+        defaultLoc.locationName = "Default";
+        defaultLoc.monitoringArea = "localhost";
+        localLocations.add(defaultLoc);
+
+        // Location count minus one because default is there
+        for (int i = 0; i < LOCATION_COUNT - 1; i++) {
+
+            Location loc = new Location();
+            loc.locationName = "Location-" + String.format("%05d", i);
+            loc.monitoringArea = "LocationArea-" + String.format("%05d", i);
+
+            // Add to our local storage if we're under the limit, minus one for default
+            if (i < calcLimit(LIMIT) - 1) {
+                localLocations.add(loc);
+            }
+
+            // post it to web service
+            String location = "<location location-name=\"" + loc.locationName + "\" monitoring-area=\"" + loc.monitoringArea + "\"/>";
+            sendPost("/monitoringLocations", location, 201, null);
+        }
+
+        // Fetch count and check it against local count
+        String remoteCount = sendRequest(GET, "/monitoringLocations/count", Collections.emptyMap(), 200);
+        LOG.info("testLimitLocations: remoteCount="+remoteCount+" localCount="+localLocations.size());
+
+        Map<String,String> parameters = new HashMap<String,String>();
+        if (LIMIT != null) {
+            parameters.put("limit", LIMIT.toString());
+        }
+
+        String fetchedJson = sendRequest(GET, "/monitoringLocations", parameters, 200);
+        ArrayList<Location> locationsFetched = (new ObjectMapper()).readValue(fetchedJson, Locations.class).location;
+
+        // Sort local list, remote list should be returned sorted
+        Collections.sort(localLocations);
+
+        LOG.info("testLimitLocations: LOCATION_COUNT="+LOCATION_COUNT+" LIMIT="+LIMIT);
+        LOG.info("local Locations");
+        for (Location l: localLocations){
+            LOG.info(l.locationName);
+        }
+        LOG.info("locations Fetched");
+        for (Location l: locationsFetched){
+            LOG.info(l.locationName);
+        }
+
+        // finally check the lists are the same
+        // can't compare if we have a funky limit set
+        if (LIMIT != null && LIMIT <= LOCATION_COUNT) {
+            assertTrue(localLocations.equals(locationsFetched));
+        }
+        return  locationsFetched.size();
+    }
+
+    /**
+     * Used for mapper to load Json from rest service
+     */
+    private static class Location implements Comparable {
+        public int priority;
+        public ArrayList<Object> tags;
+        public Object geolocation;
+        public Object latitude;
+        public Object longitude;
+        @JsonProperty("location-name")
+        public String locationName;
+        @JsonProperty("monitoring-area")
+        public String monitoringArea;
+
+        @Override
+        public int compareTo(Object other) {
+            return this.locationName.compareTo(((Location) other).locationName);
+        }
+
+        @Override
+        public boolean equals(Object other){
+            return this.locationName.equals(((Location) other).locationName);
+        }
+
+    }
+
+    /**
+     * Used for mapper to load Json from rest service
+     */
+    private static class Locations {
+        public int offset;
+        public int count;
+        public int totalCount;
+        public ArrayList<Location> location;
     }
 }
