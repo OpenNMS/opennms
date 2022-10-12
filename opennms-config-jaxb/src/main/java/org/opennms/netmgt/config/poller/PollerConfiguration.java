@@ -31,7 +31,6 @@ package org.opennms.netmgt.config.poller;
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -171,10 +170,9 @@ public class PollerConfiguration implements Serializable {
 
     public List<Package> getPackages() {
         if (m_packages == null) {
-            return Collections.emptyList();
-        } else {
-            return Collections.unmodifiableList(m_packages);
+            m_packages = new ArrayList<>();
         }
+        return m_packages;
     }
 
     public void setPackages(final List<Package> packages) {
@@ -200,10 +198,9 @@ public class PollerConfiguration implements Serializable {
 
     public List<Monitor> getMonitors() {
         if (m_monitors == null) {
-            return Collections.emptyList();
-        } else {
-            return Collections.unmodifiableList(m_monitors);
+            m_monitors = new ArrayList<>();
         }
+        return m_monitors;
     }
 
     public void setMonitors(final List<Monitor> monitors) {
