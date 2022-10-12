@@ -420,6 +420,51 @@ public class PollerIT implements TemporaryDatabaseAware<MockDatabase> {
 
     }
 
+    @Test
+    public void testNMS14695() {
+        final MockNode testNode = m_network.addNode(999, "Test-Node");
+        m_db.writeNode(testNode);
+        final MockInterface firstInterface = m_network.addInterface(999, "192.168.42.1");
+        m_db.writeInterface(firstInterface);
+        final MockService firstIcmp = m_network.addService(999, "192.168.42.1", "ICMP");
+        m_db.writeService(firstIcmp);
+
+        m_pollerConfig.setNodeOutageProcessingEnabled(true);
+        m_pollerConfig.setCriticalService("ICMP");
+        m_pollerConfig.setDefaultPollInterval(1000L);
+        m_pollerConfig.addService(firstIcmp);
+
+        startDaemons();
+
+        final MockVisitor gainSvcSender = new MockVisitorAdapter() {
+            @Override
+            public void visitService(MockService svc) {
+                Event event = MockEventUtil.createNodeGainedServiceEvent("Test", svc);
+                m_eventMgr.sendEventToListeners(event);
+            }
+        };
+
+        anticipateDown(testNode);
+        firstInterface.bringDown();
+        sleep(2000);
+        verifyAnticipated(5000);
+
+        final long start = System.currentTimeMillis();
+        m_pollerConfig.addScheduledOutage(m_pollerConfig.getPackage("TestPkg2"), "TestOutage", start, start + 60000, firstInterface.getIpAddr());
+
+        m_eventMgr.getEventAnticipator().anticipateEvent(testNode.createUpEvent());
+
+        final MockInterface secondInterface = m_network.addInterface(999, "192.168.84.1");
+        m_db.writeInterface(secondInterface);
+        final MockService secondIcmp = m_network.addService(999, "192.168.84.1", "ICMP");
+        m_db.writeService(secondIcmp);
+        m_pollerConfig.addService(secondIcmp);
+
+        testNode.visit(gainSvcSender);
+
+        verifyAnticipated(5000);
+    }
+
     // what about scheduled outages?
     @Test
     public void testDontPollDuringScheduledOutages() {
