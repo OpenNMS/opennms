@@ -157,4 +157,7 @@ public class Schedule {
         m_currentExpirationCode++;
     }
 
+    public ScheduleInterval getInterval() {
+        return m_interval;
+    }
 }
