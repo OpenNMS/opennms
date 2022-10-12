@@ -59,6 +59,7 @@ import java.util.List;
 import static com.jayway.awaitility.Awaitility.await;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.hamcrest.Matchers.iterableWithSize;
 import static org.hamcrest.Matchers.notNullValue;
 
 public class DcbMultipleNodesIT {
@@ -176,8 +177,8 @@ public class DcbMultipleNodesIT {
         // Waiting for the Backups to appear.
         await().atMost(5, MINUTES)
                 .pollInterval(20, SECONDS)
-                .until(restClient::getBackups, notNullValue());
+                .until(restClient::getBackups, iterableWithSize(NUMBER_OF_NODES));
 
-        Assert.assertEquals(restClient.getBackups().size(), NUMBER_OF_NODES);
+        Assert.assertEquals(NUMBER_OF_NODES, restClient.getBackups().size());
     }
 }
