@@ -29,6 +29,7 @@
 package org.opennms.smoketest.dcb;
 
 import com.google.common.collect.Iterables;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -58,7 +59,7 @@ import java.util.List;
 import static com.jayway.awaitility.Awaitility.await;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.notNullValue;
 
 public class DcbMultipleNodesIT {
 
@@ -171,10 +172,12 @@ public class DcbMultipleNodesIT {
     }
 
     @Test
-    public void testGetConfigOnSchedule() throws Exception{
+    public void testGetConfigOnSchedule() throws Exception {
         // Waiting for the Backups to appear.
-        await().atMost(6, MINUTES)
+        await().atMost(5, MINUTES)
                 .pollInterval(20, SECONDS)
-                .until(() -> restClient.getBackups().size(), equalTo(NUMBER_OF_NODES));
+                .until(restClient::getBackups, notNullValue());
+
+        Assert.assertEquals(restClient.getBackups().size(), NUMBER_OF_NODES);
     }
 }
