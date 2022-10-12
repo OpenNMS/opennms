@@ -172,7 +172,7 @@ public class DcbMultipleNodesIT {
     }
 
     @Test
-    public void testGetConfigOnSchedule() throws Exception {
+    public void testGetConfigFromMultipleNodes() throws Exception {
         // Waiting for the Backups to appear.
         await().atMost(5, MINUTES)
                 .pollInterval(20, SECONDS)
