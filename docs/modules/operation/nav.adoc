@@ -5,6 +5,8 @@
 ** xref:quick-start/users.adoc[]
 ** xref:quick-start/notifications.adoc[]
 ** xref:quick-start/inventory.adoc[]
+** xref:quick-start/performance-data.adoc[]
+** xref:quick-start/thresholding.adoc[]
 
 * xref:deep-dive/introduction.adoc[]
 
@@ -31,9 +33,6 @@
 *** xref:deep-dive/provisioning/snmp-profile.adoc[]
 
 ** xref:deep-dive/thresholds/thresholding.adoc[]
-*** xref:deep-dive/thresholds/basic.adoc[]
-**** xref:deep-dive/thresholds/create-thresh.adoc[]
-**** xref:deep-dive/thresholds/metadata.adoc[]
 **** xref:deep-dive/thresholds/datasource.adoc[]
 **** xref:deep-dive/thresholds/thresh-group.adoc[]
 *** xref:deep-dive/thresholds/thresh-service.adoc[]

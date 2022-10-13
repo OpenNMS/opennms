@@ -26,23 +26,14 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.enlinkd.common;
+package org.opennms.netmgt.scheduler;
 
-import org.opennms.netmgt.scheduler.LegacyScheduler;
-import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * This class is designed to collect the necessary SNMP information from the
- * target address and store the collected information. When the class is
- * initially constructed no information is collected. The SNMP Session
- * creating and collection occurs in the main run method of the instance. This
- * allows the collection to occur in a thread if necessary.
- */
-public abstract class Discovery implements ReadyRunnable {
+public abstract class Schedulable implements ReadyRunnable {
 
-    private static final Logger LOG = LoggerFactory.getLogger(Discovery.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Schedulable.class);
 
     /**
      * The scheduler object
@@ -53,34 +44,31 @@ public abstract class Discovery implements ReadyRunnable {
      * The interval, default value 30 minutes
      */
     private long m_poll_interval = 1800000;
-    private long m_initial_sleep_time = 600000;
-
     /**
-     * The initial sleep time, default value 5 minutes
+     * The initial sleep time, default value 10 minutes
      */
+    private long m_initial_sleep_time = 600000;
 
     private boolean m_suspendCollection = false;
     private boolean m_unschedule = false;
     
     /**
-     * Constructs a new SNMP collector for a node using the passed interface
-     * as the collection point. The collection does not occur until the
-     * <code>run</code> method is invoked.
-     * 
+     * Constructs a new Schedulable
+     *
      * @param interval the time in msec between collections
      * @param initial the time in msec wait before performing a collection at all
-     *            The SnmpPeer object to collect from.
+     *
      */
-    public Discovery(long interval, long initial) {
+    public Schedulable(long interval, long initial) {
         m_poll_interval = interval;
         m_initial_sleep_time = initial;
     }
 
-    public Discovery() {
+    public Schedulable() {
     }
 
     public abstract String getName();
-    public abstract void runDiscovery();
+    public abstract void runSchedulable();
     
     // run is called by a Thread for the runnable
     // execute is where you got the stuff made
@@ -102,7 +90,7 @@ public abstract class Discovery implements ReadyRunnable {
         }
         LOG.info( "run: running {}", 
                       getInfo());
-        runDiscovery();            
+        runSchedulable();
         reschedule();
     }
 
@@ -222,7 +210,7 @@ public abstract class Discovery implements ReadyRunnable {
                     return false;
             if (getClass() != obj.getClass())
                     return false;
-            Discovery other = (Discovery) obj;
+            Schedulable other = (Schedulable) obj;
             if (m_initial_sleep_time != other.m_initial_sleep_time)
                     return false;
         return m_poll_interval == other.m_poll_interval;

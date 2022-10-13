@@ -1,11 +1,12 @@
 jobs:
   horizon-rpm-build:
-    executor: centos-build-executor
-    # Larger memory footprint required to speed up builds using Takari smartbuilder
+    executor: build-executor
     resource_class: large
     steps:
+      - cached-checkout
       - attach_workspace:
           at: ~/
+      - restore-maven-cache
       - sign-packages/setup-env:
           skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
@@ -13,8 +14,8 @@ jobs:
           name: Build RPMs
           command: |
             export NODE_OPTIONS=--max_old_space_size=1024
-            export CCI_MAXCPU=4
-            export MAVEN_OPTS="-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
+            export CCI_MAXCPU=2
+            export MAVEN_OPTS="-Xmx5g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
             .circleci/scripts/makerpm.sh tools/packages/opennms/opennms.spec
       - sign-packages/sign-rpms:
           skip_if_forked_pr: true

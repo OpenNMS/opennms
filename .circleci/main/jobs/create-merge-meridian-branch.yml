@@ -1,15 +1,15 @@
 jobs: 
   create-merge-meridian-branch:
-    <<: *docker_container_config
+    executor: base-executor
     steps:
       - when:
           condition: << pipeline.parameters.main_branch >>
           steps:
             - restore_cache:
                 keys:
-                  - meridian-v1-{{ .Branch }}-{{ .Revision }}
-                  - meridian-v1-{{ .Branch }}-
-                  - meridian-v1-
+                  - meridian-v2-{{ .Branch }}-{{ .Revision }}
+                  - meridian-v2-{{ .Branch }}-
+                  - meridian-v2-
             - cached-checkout-for-pushing
             - run:
                 name: Add Meridian remote if necessary
@@ -23,7 +23,7 @@ jobs:
                 command: |
                   git fetch meridian
             - save_cache:
-                key: meridian-v1-{{ .Branch }}-{{ .Revision }}
+                key: meridian-v2-{{ .Branch }}-{{ .Revision }}
                 paths:
                   - ".git"
             - run:

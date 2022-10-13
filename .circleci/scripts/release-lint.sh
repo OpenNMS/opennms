@@ -1,7 +1,12 @@
 #!/bin/sh
 
-OPENNMS_FULL_VERSION="$1"; shift
-TYPE="$1"; shift
+if [ -n "$1" ]; then
+  OPENNMS_FULL_VERSION="$1"; shift
+fi
+
+if [ -n "$1" ]; then
+  TYPE="$1"; shift
+fi
 
 set -e
 
