@@ -72,7 +72,7 @@ public class DcbMultipleNodesIT {
 
     private static final int SSH_PORT = 2222;
 
-    private static final int NUMBER_OF_NODES = 100;
+    private static final int NUMBER_OF_NODES = 50;
 
     private static final String FOREIGN_SOURCE = "SmokeTests";
 
