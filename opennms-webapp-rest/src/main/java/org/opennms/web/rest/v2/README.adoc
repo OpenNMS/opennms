@@ -10,7 +10,7 @@ All endpoints share a common set of query parameters that can be used to query f
 [options="header",width="99%",cols="1m,1,4"]
 |===
 | Parameter | Type | Description
-| limit | Integer | Number of entries to return
+| limit | Integer | Number of entries to return. 0 for all entries
 | offset | Integer | Offset from the beginning of the list to return
 | orderBy | String | Name of the property that should be used for sorting the results
 | order | String | Use "desc" for descending search order, otherwise ascending is used
