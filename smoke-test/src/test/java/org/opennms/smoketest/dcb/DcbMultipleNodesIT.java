@@ -46,6 +46,7 @@ import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
 import org.opennms.smoketest.stacks.OpenNMSProfile;
 import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.opennms.smoketest.stacks.StackModel;
+import org.opennms.smoketest.utils.KarafShell;
 import org.opennms.smoketest.utils.RestClient;
 import org.opennms.smoketest.utils.TestContainerUtils;
 import org.testcontainers.containers.GenericContainer;
@@ -72,7 +73,7 @@ public class DcbMultipleNodesIT {
 
     private static final int SSH_PORT = 2222;
 
-    private static final int NUMBER_OF_NODES = 50;
+    private static final int NUMBER_OF_NODES = 100;
 
     private static final String FOREIGN_SOURCE = "SmokeTests";
 
@@ -174,6 +175,10 @@ public class DcbMultipleNodesIT {
 
     @Test
     public void testGetConfigFromMultipleNodes() throws Exception {
+        // should be removed after NMS-14720 resolved
+        KarafShell karafShell = new KarafShell(STACK.opennms().getSshAddress());
+        karafShell.runCommand("opennms:sync-node-cache");
+
         // Waiting for the Backups to appear.
         await().atMost(5, MINUTES)
                 .pollInterval(20, SECONDS)
