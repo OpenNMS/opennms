@@ -205,9 +205,7 @@ public class MonitoringLocationRestServiceIT extends AbstractSpringJerseyRestTes
             Integer count = (new ObjectMapper()).readValue(fetchedJson, Locations.class).count;
             LOG.info("limit="+limit+" expected="+limits.get(limit)+" count="+count);
             if (limit == null) {
-                if (DEFAULT_LIMIT == 10) { // Limit inside webservice is set to 10
-                    assertEquals(DEFAULT_LIMIT, count);
-                }
+                assertEquals(DEFAULT_LIMIT, count);
             } else {
                 assertEquals(limits.get(limit),count);
             }
