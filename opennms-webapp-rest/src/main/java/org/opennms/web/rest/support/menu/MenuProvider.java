@@ -28,6 +28,8 @@
 
 package org.opennms.web.rest.support.menu;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -40,13 +42,13 @@ import javax.xml.bind.Unmarshaller;
 import joptsimple.internal.Strings;
 import org.opennms.web.api.Authentication;
 import org.opennms.web.rest.support.menu.xml.MenuXml;
-import org.springframework.core.io.InputStreamSource;
 
 public class MenuProvider {
-    final private InputStreamSource dispatcherServletResource;
+    /** Full file path to dispatcher.servlet.xml file, see "applicationContext-cxf-rest-v2.xml" */
+    final private String dispatcherServletPath;
 
-    public MenuProvider(InputStreamSource dispatcherServletResource) {
-        this.dispatcherServletResource = dispatcherServletResource;
+    public MenuProvider(String dispatcherServletPath) {
+        this.dispatcherServletPath = dispatcherServletPath;
     }
 
     public MainMenu getMainMenu(final MenuRequestContext context) throws Exception, IOException {
@@ -66,10 +68,12 @@ public class MenuProvider {
             // Parse out menu data from "dispatcher-servlet.xml"
             MenuXml.BeansElement xBeans = null;
 
-            try {
-                xBeans = parseDispatcherServletXml(this.dispatcherServletResource.getInputStream());
-            } finally {
-                this.dispatcherServletResource.getInputStream().close();
+            final String path = this.dispatcherServletPath;
+
+            try (var fis = new FileInputStream(path)) {
+                xBeans = parseDispatcherServletXml(fis);
+            } catch (FileNotFoundException fnfe) {
+                throw fnfe;
             }
 
             List<TopMenuEntry> topMenuEntries = this.parseXmlToMenuEntries(xBeans);

@@ -31,25 +31,23 @@ package org.opennms.web.rest.support.menu;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.web.rest.support.menu.xml.MenuXml;
-import org.springframework.core.io.InputStreamSource;
 
 public class MenuProviderTest {
-    final static String RESOURCE_PATH = "file:{opennms.home}/jetty-webapps/opennms/WEB-INF/dispatcher-servlet.xml";
+    final static String RESOURCE_PATH = "src/test/resources/dispatcher-servlet.xml";
 
     @Test
     public void testParseBeansXml() {
-        MenuProvider provider = new MenuProvider(null);
+        MenuProvider provider = new MenuProvider(getResourcePath());
         MenuXml.BeansElement xBeansElem = null;
 
-        try (var inputStream = new FileInputStream(RESOURCE_PATH)) {
+        try (var inputStream = new FileInputStream(getResourcePath())) {
             xBeansElem = provider.parseDispatcherServletXml(inputStream);
         } catch (Exception e) {
             Assert.fail("Could not open file resource: " + e.getMessage());
@@ -92,9 +90,8 @@ public class MenuProviderTest {
         MainMenu mainMenu = null;
         MenuRequestContext context = new TestMenuRequestContext();
 
-        try (var inputStreamSource = new TestInputStreamSource(RESOURCE_PATH)) {
-            MenuProvider provider = new MenuProvider(inputStreamSource);
-
+        try {
+            MenuProvider provider = new MenuProvider(getResourcePath());
             mainMenu = provider.getMainMenu(context);
         } catch (Exception e) {
             Assert.fail("Error in MenuProvider.getMainMenu: " + e.getMessage());
@@ -106,28 +103,9 @@ public class MenuProviderTest {
         System.out.println(json);
     }
 
-    public static class TestInputStreamSource implements InputStreamSource, AutoCloseable {
-        private FileInputStream inputStream;
-
-        public TestInputStreamSource(String resourcePath) throws FileNotFoundException {
-            this.inputStream = new FileInputStream(resourcePath);
-        }
-        @Override
-        public void close() {
-            if (this.inputStream != null) {
-                try {
-                    this.inputStream.close();
-                } catch (IOException ignored) {
-                } finally {
-                    this.inputStream = null;
-                }
-            }
-        }
-
-        @Override
-        public InputStream getInputStream() throws IOException {
-            return this.inputStream;
-        }
+    private String getResourcePath() {
+        Path p = Paths.get(RESOURCE_PATH);
+        return p.toFile().getAbsolutePath();
     }
 
     public static class TestMenuRequestContext implements MenuRequestContext {
