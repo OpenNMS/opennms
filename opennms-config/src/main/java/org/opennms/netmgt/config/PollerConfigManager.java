@@ -253,6 +253,7 @@ abstract public class PollerConfigManager implements PollerConfig  {
     private List<Monitor> mergedMonitors = new ArrayList<>();
     //private boolean monitorsUpdated = false;
 
+    @Override
     public void setExternalData(List<Package> externalPackages,  List<Monitor> externalMonitors) {
         try {
             getWriteLock().lock();

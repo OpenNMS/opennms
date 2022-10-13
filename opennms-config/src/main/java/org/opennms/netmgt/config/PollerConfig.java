@@ -426,6 +426,8 @@ public interface PollerConfig extends PathOutageConfig {
 
     ServiceMonitorRegistry getServiceMonitorRegistry();
 
+    default void setExternalData(List<Package> externalPackages, List<Monitor> externalMonitors) {};
+
     /**
      * <p>getReadLock</p>
      * 

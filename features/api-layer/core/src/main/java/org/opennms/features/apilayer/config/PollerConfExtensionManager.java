@@ -35,7 +35,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.opennms.integration.api.v1.config.poller.PollerConfigurationExtension;
-import org.opennms.netmgt.config.PollerConfigManager;
+import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Downtime;
 import org.opennms.netmgt.config.poller.ExcludeRange;
 import org.opennms.netmgt.config.poller.IncludeRange;
@@ -60,11 +60,11 @@ public class PollerConfExtensionManager extends ConfigExtensionManager<PollerCon
         }
     }
 
-    private final PollerConfigManager pollerConfigManager;
+    private final PollerConfig pollerConfig;
 
-    public PollerConfExtensionManager(PollerConfigManager pollerConfigManager) {
+    public PollerConfExtensionManager(PollerConfig pollerConfig) {
         super(PollerConfigurationPart.class, new PollerConfigurationPart());
-        this.pollerConfigManager = pollerConfigManager;
+        this.pollerConfig = pollerConfig;
     }
 
     @Override
@@ -77,9 +77,9 @@ public class PollerConfExtensionManager extends ConfigExtensionManager<PollerCon
 
     @Override
     protected void triggerReload() {
-        if (pollerConfigManager != null) {
+        if (pollerConfig != null) {
             final PollerConfigurationPart object = getObject();
-            pollerConfigManager.setExternalData(object.packages, object.monitors);
+            pollerConfig.setExternalData(object.packages, object.monitors);
         }
     }
 
