@@ -52,14 +52,14 @@ public class HttpsRewriteFilter implements Filter {
         HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
         HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
         String requestURL = httpRequest.getRequestURL().toString();
-        if(Util.calculateUrlBase(httpRequest).startsWith("https:") && requestURL.startsWith("http:")) {
-            String httpsURL = requestURL.replace("http:", "https:");
+        String calculatedURL = Util.calculateUrlBase(httpRequest);
+        if(calculatedURL.startsWith("https:") && requestURL.startsWith("http:")) {
             if (httpRequest.getServletPath().equals("/")) {
-                httpsURL += "frontPage.htm";
+                calculatedURL += "frontPage.htm";
             }
             httpResponse.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
             httpResponse.setHeader("Connection", "close");
-            httpResponse.setHeader("Location", httpsURL);
+            httpResponse.setHeader("Location", calculatedURL);
         } else {
             filterChain.doFilter(servletRequest, servletResponse);
         }
