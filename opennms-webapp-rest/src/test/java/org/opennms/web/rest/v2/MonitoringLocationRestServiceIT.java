@@ -28,10 +28,15 @@
 
 package org.opennms.web.rest.v2;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.ws.rs.core.MediaType;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
@@ -48,6 +53,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * TODO
@@ -72,7 +79,8 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitTemporaryDatabase
 public class MonitoringLocationRestServiceIT extends AbstractSpringJerseyRestTestCase {
     private static final Logger LOG = LoggerFactory.getLogger(MonitoringLocationRestServiceIT.class);
-
+    private static final Integer DEFAULT_LIMIT = 10;
+    private static final Integer LOCATION_COUNT = 15;
     @Autowired
     private MockEventIpcManager eventIpcManager;
 
@@ -163,5 +171,71 @@ public class MonitoringLocationRestServiceIT extends AbstractSpringJerseyRestTes
 
         // delete the one with polling packages
         sendRequest(DELETE, "/monitoringLocations/location2", 204);
+    }
+
+    @Test
+    @Transactional
+    public void testLocationLimits() throws Exception {
+        // There is one default location
+        for (int i = 0; i < LOCATION_COUNT - 1; i++) {
+            Location loc = new Location();
+            loc.locationName = "Location-" + String.format("%05d", i);
+            loc.monitoringArea = "LocationArea-" + String.format("%05d", i);
+
+            // post it to web service
+            String location = "<location location-name=\"" + loc.locationName + "\" monitoring-area=\"" + loc.monitoringArea + "\"/>";
+            sendPost("/monitoringLocations", location, 201, null);
+        }
+
+        // Map contains (limit, expected count)
+        Map<Integer,Integer> limits = new HashMap<Integer,Integer>(8);
+        limits.put(null,DEFAULT_LIMIT); // null limit, should return default
+        limits.put(DEFAULT_LIMIT - 1,DEFAULT_LIMIT - 1); // limit less than default limit
+        limits.put(DEFAULT_LIMIT,DEFAULT_LIMIT); // limit equals default
+        limits.put(DEFAULT_LIMIT + 1,DEFAULT_LIMIT + 1); // limit greater than default
+        limits.put(LOCATION_COUNT + 1,LOCATION_COUNT); // limit greater than count
+        limits.put(0,LOCATION_COUNT); // unlimited, should return all
+
+        for (Integer limit: limits.keySet()) {
+            Map<String, String> parameters = new HashMap<String, String>(1);
+            if (limit != null) {
+                parameters.put("limit", limit.toString());
+            }
+            String fetchedJson = sendRequest(GET, "/monitoringLocations", parameters, 200);
+            Integer count = (new ObjectMapper()).readValue(fetchedJson, Locations.class).count;
+                LOG.info("limit="+limit+" expected="+limits.get(limit)+" count="+count);
+            if (limit == null) {
+                if (DEFAULT_LIMIT == 10) { // Limit inside webservice is set to 10
+                    assertEquals(DEFAULT_LIMIT, count);
+                }
+            } else {
+                assertEquals(limits.get(limit),count);
+            }
+        }
+    }
+
+    /**
+     * Used for mapper to load Json from rest service
+     */
+    private static class Location {
+        public int priority;
+        public ArrayList<Object> tags;
+        public Object geolocation;
+        public Object latitude;
+        public Object longitude;
+        @JsonProperty("location-name")
+        public String locationName;
+        @JsonProperty("monitoring-area")
+        public String monitoringArea;
+    }
+
+    /**
+     * Used for mapper to load Json from rest service
+     */
+    private static class Locations {
+        public int offset;
+        public int count;
+        public int totalCount;
+        public ArrayList<Location> location;
     }
 }
