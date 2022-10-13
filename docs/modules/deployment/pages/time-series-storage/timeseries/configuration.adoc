@@ -47,33 +47,38 @@ Use the following properties, found in `$\{OPENNMS_HOME}/etc/opennms.properties`
 
 | org.opennms.timeseries.config.ring_buffer_size (Deprecated)
 | Maximum number of records that can be held in the ring buffer.
-Must be a power of two. (It will override by org.opennms.timeseries.config.buffer_size, unless it is -1.)
+Must be a power of two.
+This will be overridden by `org.opennms.timeseries.config.buffer_size`, unless it is -1.
 | 8192
 
 | org.opennms.timeseries.config.buffer_size
 | Maximum number of records that can be held in the memory buffer.
 Must be a power of two.
-| -1 (override by org.opennms.timeseries.config.ring_buffer_size)
+| -1 (override by `org.opennms.timeseries.config.ring_buffer_size`)
 
 | org.opennms.timeseries.config.writer_threads
 | Number of threads used to pull samples from the ring buffer and insert them into the time-series database.
 | 16
 
 | org.opennms.timeseries.config.buffer_type
-| Type of buffer. (RINGBUFFER / OFFHEAP) +
-RINGBUFFER is a high performance queue. It will only keep data in memory. if the queue overflow, it will drop data. +
-OFFHEAP is a queue that will store data in memory. However, when queue overflow, it will persist extra data into disk.
+| Type of buffer (RINGBUFFER or OFFHEAP). +
+RINGBUFFER is a high-performance queue.
+It will only keep data in memory.
+If the queue overflows, it will drop data. +
+OFFHEAP is a queue that will store data in memory.
+When the queue overflows, it will persist extra data onto the disk.
 | RINGBUFFER
 
-| org.opennms.timeseries.config.offheap.batch_size (OFFHEAP)
-| Data block size for OFFHEAP queue.
+| org.opennms.timeseries.config.offheap.batch_size
+| Data block size for offheap queue.
 | 8192
 
-| org.opennms.timeseries.config.offheap.path (OFFHEAP)
-| Location for storing offheap data. Please make sure it is a high performance disk for high loading system.
+| org.opennms.timeseries.config.offheap.path
+| Location for storing offheap data.
+This location should be a high performance disk that will accommodate a high-load system.
 | /tmp
 
-| org.opennms.timeseries.config.offheap.max_file_size (OFFHEAP)
+| org.opennms.timeseries.config.offheap.max_file_size
 | Maximum file size of offheap storage.
 | -1 (-1: unlimited)
 
