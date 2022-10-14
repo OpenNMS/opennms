@@ -1,29 +1,42 @@
 export interface MenuItem {
-  name: string
-  url: string
-  icon: string
-  isAbsoluteUrl: boolean
-  isVueLink: boolean
+  id: string | null
+  className: string | null
+  name: string | null
+  url: string | null
+  locationMatch: string | null
+  icon: string | null
+  iconType: string | null
+  isIconOnly: boolean | null
+  isVueLink: boolean | null
+  requiredRoles: string[] | null
 }
 
 export interface TopMenuItem extends MenuItem {
-  items: MenuItem[]
+  items: MenuItem[] | null | undefined
+}
+
+export interface Notices {
+  countUser: number | null
+  countNonUser: number | null
+  linkUser: string | null
+  linkNonUser: string | null
+  status: string | null
 }
 
 export interface MainMenu {
-  displayAdminLink: boolean
-  countNoticesAssignedToUser: number
-  countNoticesAssignedToOtherThanUser: number
-  noticesAssignedToUserLink: string
-  noticesAssignedToOtherThanUserLink: string
+  baseHref: string
+  formattedTime: string
   noticeStatus: string
-  adminLink: string
-  rolesLink: string
-  quickAddNodeLink: string
-  searchLink: string
-  selfServiceLink: string
   username: string
-  menuItems: TopMenuItem[]
+  
+  menus: TopMenuItem[]
+  helpMenu: TopMenuItem | null
+  selfServiceMenu: TopMenuItem | null
+  userNotificationMenu: TopMenuItem | null
+  provisionMenu: TopMenuItem | null
+  flowsMenu: TopMenuItem | null
+  configurationMenu: TopMenuItem | null
+  notices: Notices | null
 }
 
 export interface NoticeStatusDisplay {

@@ -25,7 +25,7 @@ import {
   getHistoryByIpInterface
 } from './deviceService'
 
-import { getMainMenu } from './menubarService'
+import { getMainMenu } from './menuService'
 import { getFileNames, getFile, getSnippets, postFile, deleteFile, getFileExtensions } from './configService'
 import { getAliases, getCredentialsByAlias, addCredentials, updateCredentials } from './scvService'
 

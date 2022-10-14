@@ -11,166 +11,525 @@ interface ContextWithState extends VuexContext {
 const useFakeMenuData = false
 
 const defaultMainMenu = {
-  displayAdminLink: true,
-  countNoticesAssignedToUser: 0,
-  countNoticesAssignedToOtherThanUser: 1,
-  noticesAssignedToUserLink: '/opennms/notification/browse?acktype=unack&filter=user==admin1',
-  noticesAssignedToOtherThanUserLink: '/opennms/notification/browse?acktype=unack',
-  noticeStatus: 'off',
-  adminLink: '/opennms/admin/index.jsp',
-  rolesLink: '/opennms/roles',
-  searchLink: '/opennms/element/index.jsp',
-  selfServiceLink: '/opennms/account/selfService/',
-  quickAddNodeLink: '/opennms/admin/ng-requisitions/quick-add-node.jsp',
-  username: 'admin1',
-  menuItems: [
+  baseHref: 'http://localhost:8980/opennms/',
+  formattedTime: '2022-10-13T19:49:29-04:00',
+  noticeStatus: 'Off',
+  username: 'admin',
+  menus: [
     {
+      id: null,
+      className: 'org.opennms.web.navigate.LocationBasedNavBarEntry',
+      name: 'Search',
+      url: 'element/index.jsp',
+      locationMatch: 'element',
+      icon: null,
+      iconType: null,
+      isIconOnly: null,
+      isVueLink: null,
+      requiredRoles: null,
+      items: null
+    },
+    {
+      id: null,
+      className: 'org.opennms.web.navigate.MenuDropdownNavBarEntry',
       name: 'Info',
+      url: '#',
+      locationMatch: null,
+      icon: null,
+      iconType: null,
+      isIconOnly: null,
+      isVueLink: null,
+      requiredRoles: null,
       items: [
         {
+          id: null,
+          className: 'org.opennms.web.navigate.LocationBasedNavBarEntry',
           name: 'Nodes',
-          url: '/opennms/element/nodeList.htm'
+          url: 'element/nodeList.htm',
+          locationMatch: 'nodelist',
+          icon: null,
+          iconType: null,
+          isIconOnly: null,
+          isVueLink: null,
+          requiredRoles: null
         },
         {
+          id: null,
+          className: 'org.opennms.web.navigate.LocationBasedNavBarEntry',
           name: 'Assets',
-          url: '/opennms/asset/index.jsp'
+          url: 'asset/index.jsp',
+          locationMatch: 'asset',
+          icon: null,
+          iconType: null,
+          isIconOnly: null,
+          isVueLink: null,
+          requiredRoles: null
         },
         {
+          id: null,
+          className: 'org.opennms.web.navigate.LocationBasedNavBarEntry',
           name: 'Path Outages',
-          url: '/opennms/pathOutage/index.jsp'
+          url: 'pathOutage/index.jsp',
+          locationMatch: 'pathOutage',
+          icon: null,
+          iconType: null,
+          isIconOnly: null,
+          isVueLink: null,
+          requiredRoles: null
         },
         {
+          id: null,
+          className: 'org.opennms.web.navigate.LocationBasedNavBarEntry',
           name: 'Device Configs',
-          url: '/opennms/ui/index.html#/device-config-backup',
-          isVueLink: true
+          url: 'ui/index.html#/device-config-backup',
+          locationMatch: 'configurationManagement',
+          icon: null,
+          iconType: null,
+          isIconOnly: null,
+          isVueLink: null,
+          requiredRoles: null
         }
       ]
     },
     {
+      id: null,
+      className: 'org.opennms.web.navigate.MenuDropdownNavBarEntry',
       name: 'Status',
+      url: '#',
+      locationMatch: null,
+      icon: null,
+      iconType: null,
+      isIconOnly: null,
+      isVueLink: null,
+      requiredRoles: null,
       items: [
         {
+          id: null,
+          className: 'org.opennms.web.navigate.LocationBasedNavBarEntry',
           name: 'Events',
-          url: '/opennms/event/index'
+          url: 'event/index',
+          locationMatch: 'event',
+          icon: null,
+          iconType: null,
+          isIconOnly: null,
+          isVueLink: null,
+          requiredRoles: null
         },
         {
+          id: null,
+          className: 'org.opennms.web.navigate.LocationBasedNavBarEntry',
           name: 'Alarms',
-          url: '/opennms/alarm/index.htm'
+          url: 'alarm/index.htm',
+          locationMatch: 'alarm',
+          icon: null,
+          iconType: null,
+          isIconOnly: null,
+          isVueLink: null,
+          requiredRoles: null
         },
         {
+          id: null,
+          className: 'org.opennms.web.navigate.LocationBasedNavBarEntry',
           name: 'Notifications',
-          url: '/opennms/notification/index.jsp'
+          url: 'notification/index.jsp',
+          locationMatch: 'notification',
+          icon: null,
+          iconType: null,
+          isIconOnly: null,
+          isVueLink: null,
+          requiredRoles: null
         },
         {
+          id: null,
+          className: 'org.opennms.web.navigate.LocationBasedNavBarEntry',
           name: 'Outages',
-          url: '/opennms/outage/index.jsp'
+          url: 'outage/index.jsp',
+          locationMatch: 'outage',
+          icon: null,
+          iconType: null,
+          isIconOnly: null,
+          isVueLink: null,
+          requiredRoles: null
         },
         {
+          id: null,
+          className: 'org.opennms.web.navigate.LocationBasedNavBarEntry',
           name: 'Surveillance',
-          url: '/opennms/surveillance-view.jsp'
+          url: 'surveillance-view.jsp',
+          locationMatch: 'surveillance-view',
+          icon: null,
+          iconType: null,
+          isIconOnly: null,
+          isVueLink: null,
+          requiredRoles: null
         },
         {
+          id: null,
+          className: 'org.opennms.web.navigate.LocationBasedNavBarEntry',
           name: 'Heatmap',
-          url: '/opennms/heatmap/index.jsp'
+          url: 'heatmap/index.jsp',
+          locationMatch: 'heatmap',
+          icon: null,
+          iconType: null,
+          isIconOnly: null,
+          isVueLink: null,
+          requiredRoles: null
         },
         {
+          id: null,
+          className: 'org.opennms.web.navigate.LocationBasedNavBarEntry',
           name: 'Trend',
-          url: '/opennms/trend/index.jsp'
+          url: 'trend/index.jsp',
+          locationMatch: 'trend',
+          icon: null,
+          iconType: null,
+          isIconOnly: null,
+          isVueLink: null,
+          requiredRoles: null
         },
         {
+          id: null,
+          className: 'org.opennms.web.navigate.LocationBasedNavBarEntry',
           name: 'Application',
-          url: '/opennms/application/index.jsp'
+          url: 'application/index.jsp',
+          locationMatch: 'application',
+          icon: null,
+          iconType: null,
+          isIconOnly: null,
+          isVueLink: null,
+          requiredRoles: null
         }
       ]
     },
     {
+      id: null,
+      className: 'org.opennms.web.navigate.MenuDropdownNavBarEntry',
       name: 'Reports',
+      url: 'report/index.jsp',
+      locationMatch: null,
+      icon: null,
+      iconType: null,
+      isIconOnly: null,
+      isVueLink: null,
+      requiredRoles: null,
       items: [
         {
+          id: null,
+          className: 'org.opennms.web.navigate.LocationBasedNavBarEntry',
           name: 'Charts',
-          url: '/opennms/charts/index.jsp'
+          url: 'charts/index.jsp',
+          locationMatch: 'chart',
+          icon: null,
+          iconType: null,
+          isIconOnly: null,
+          isVueLink: null,
+          requiredRoles: null
         },
         {
+          id: null,
+          className: 'org.opennms.web.navigate.LocationBasedNavBarEntry',
           name: 'Resource Graphs',
-          url: '/opennms/graph/index.jsp'
+          url: 'graph/index.jsp',
+          locationMatch: 'performance',
+          icon: null,
+          iconType: null,
+          isIconOnly: null,
+          isVueLink: null,
+          requiredRoles: null
         },
         {
+          id: null,
+          className: 'org.opennms.web.navigate.LocationBasedNavBarEntry',
           name: 'KSC Reports',
-          url: '/opennms/KSC/index.jsp'
+          url: 'KSC/index.jsp',
+          locationMatch: 'ksc',
+          icon: null,
+          iconType: null,
+          isIconOnly: null,
+          isVueLink: null,
+          requiredRoles: null
         },
         {
+          id: null,
+          className: 'org.opennms.web.navigate.LocationBasedNavBarEntry',
           name: 'Database Reports',
-          url: '/opennms/report/database/index.jsp'
+          url: 'report/database/index.jsp',
+          locationMatch: 'database-reports',
+          icon: null,
+          iconType: null,
+          isIconOnly: null,
+          isVueLink: null,
+          requiredRoles: null
         },
         {
+          id: null,
+          className: 'org.opennms.web.navigate.LocationBasedNavBarEntry',
           name: 'Statistics',
-          url: '/opennms/statisticsReports/index.htm'
+          url: 'statisticsReports/index.htm',
+          locationMatch: 'reports',
+          icon: null,
+          iconType: null,
+          isIconOnly: null,
+          isVueLink: null,
+          requiredRoles: null
         }
       ]
     },
     {
+      id: null,
+      className: 'org.opennms.web.navigate.MenuDropdownNavBarEntry',
       name: 'Dashboards',
+      url: 'dashboards.htm',
+      locationMatch: null,
+      icon: null,
+      iconType: null,
+      isIconOnly: null,
+      isVueLink: null,
+      requiredRoles: null,
       items: [
         {
+          id: null,
+          className: 'org.opennms.web.navigate.LocationBasedNavBarEntry',
           name: 'Dashboard',
-          url: '/opennms/dashboard.jsp'
+          url: 'dashboard.jsp',
+          locationMatch: 'dashboard',
+          icon: null,
+          iconType: null,
+          isIconOnly: null,
+          isVueLink: null,
+          requiredRoles: null
         },
         {
+          id: null,
+          className: 'org.opennms.web.navigate.LocationBasedNavBarEntry',
           name: 'Ops Board',
-          url: '/opennms/vaadin-wallboard'
+          url: 'vaadin-wallboard',
+          locationMatch: 'vaadin-wallboard',
+          icon: null,
+          iconType: null,
+          isIconOnly: null,
+          isVueLink: null,
+          requiredRoles: null
         }
       ]
     },
     {
+      id: null,
+      className: 'org.opennms.web.navigate.MenuDropdownNavBarEntry',
       name: 'Maps',
+      url: 'maps.htm',
+      locationMatch: null,
+      icon: null,
+      iconType: null,
+      isIconOnly: null,
+      isVueLink: null,
+      requiredRoles: null,
       items: [
         {
+          id: null,
+          className: 'org.opennms.web.navigate.LocationBasedNavBarEntry',
           name: 'Topology',
-          url: '/opennms/topology'
+          url: 'topology',
+          locationMatch: 'topology',
+          icon: null,
+          iconType: null,
+          isIconOnly: null,
+          isVueLink: null,
+          requiredRoles: null
         },
         {
+          id: null,
+          className: 'org.opennms.web.navigate.LocationBasedNavBarEntry',
           name: 'Geographical',
-          url: '/opennms/node-maps'
-        }
-      ]
-    },
-    {
-      name: 'Help',
-      items: [
-        {
-          name: 'Help',
-          url: '/opennms/help/index.jsp'
-        },
-        {
-          name: 'About',
-          url: '/opennms/about/index.jsp'
-        },
-        {
-          name: 'Support',
-          url: '/opennms/support/index.jsp'
-        }
-      ]
-    },
-    {
-      name: 'admin1',
-      icon: 'Person',
-      url: '/opennms/account/selfService/',
-      items: [
-        {
-          name: 'Account',
-          url: '/opennms/account/selfService/'
-        },
-        {
-          name: 'Change Password',
-          url: '/opennms/account/selfService/newPasswordEntry'
-        },
-        {
-          name: 'Log Out',
-          url: '/opennms/j_spring_security_logout'
+          url: 'node-maps',
+          locationMatch: 'node-maps',
+          icon: null,
+          iconType: null,
+          isIconOnly: null,
+          isVueLink: null,
+          requiredRoles: null
         }
       ]
     }
-  ]
+  ],
+  helpMenu: {
+    id: null,
+    className: null,
+    name: 'Help',
+    url: null,
+    locationMatch: null,
+    icon: null,
+    iconType: null,
+    isIconOnly: null,
+    isVueLink: null,
+    requiredRoles: null,
+    items: [
+      {
+        id: null,
+        className: null,
+        name: 'Help',
+        url: 'help/index.jsp',
+        locationMatch: null,
+        icon: 'fa-question-circle',
+        iconType: 'fa',
+        isIconOnly: null,
+        isVueLink: null,
+        requiredRoles: null
+      },
+      {
+        id: null,
+        className: null,
+        name: 'About',
+        url: 'about/index.jsp',
+        locationMatch: null,
+        icon: 'fa-info-circle',
+        iconType: 'fa',
+        isIconOnly: null,
+        isVueLink: null,
+        requiredRoles: null
+      },
+      {
+        id: null,
+        className: null,
+        name: 'Support',
+        url: 'support/index.jsp',
+        locationMatch: null,
+        icon: 'fa-life-ring',
+        iconType: 'fa',
+        isIconOnly: null,
+        isVueLink: null,
+        requiredRoles: [
+          'ROLE_ADMIN'
+        ]
+      }
+    ]
+  },
+  selfServiceMenu: {
+    id: null,
+    className: null,
+    name: 'admin',
+    url: 'account/selfService/index.jsp',
+    locationMatch: null,
+    icon: 'fa-user',
+    iconType: 'fa',
+    isIconOnly: null,
+    isVueLink: null,
+    requiredRoles: null,
+    items: [
+      {
+        id: null,
+        className: null,
+        name: 'Change Password',
+        url: 'account/selfService/newPasswordEntry',
+        locationMatch: null,
+        icon: 'fa-key',
+        iconType: 'fa',
+        isIconOnly: null,
+        isVueLink: null,
+        requiredRoles: null
+      },
+      {
+        id: null,
+        className: null,
+        name: 'Log Out',
+        url: 'j_spring_security_logout',
+        locationMatch: null,
+        icon: 'fa-sign-out',
+        iconType: 'fa',
+        isIconOnly: null,
+        isVueLink: null,
+        requiredRoles: null
+      }
+    ]
+  },
+  userNotificationMenu: {
+    id: null,
+    className: null,
+    name: null,
+    url: null,
+    locationMatch: null,
+    icon: null,
+    iconType: null,
+    isIconOnly: null,
+    isVueLink: null,
+    requiredRoles: null,
+    items: [
+      {
+        id: 'user',
+        className: null,
+        name: null,
+        url: 'notification/browse?acktype=unack&filter=user==admin',
+        locationMatch: null,
+        icon: 'fa-user',
+        iconType: 'fa',
+        isIconOnly: null,
+        isVueLink: null,
+        requiredRoles: null
+      },
+      {
+        id: 'team',
+        className: null,
+        name: null,
+        url: 'notification/browse?acktype=unack',
+        locationMatch: null,
+        icon: 'fa-users',
+        iconType: 'fa',
+        isIconOnly: null,
+        isVueLink: null,
+        requiredRoles: null
+      },
+      {
+        id: 'oncall',
+        className: null,
+        name: 'On-Call Schedule',
+        url: 'roles',
+        locationMatch: null,
+        icon: 'fa-calendar',
+        iconType: 'fa',
+        isIconOnly: null,
+        isVueLink: null,
+        requiredRoles: null
+      }
+    ]
+  },
+  provisionMenu: {
+    id: null,
+    className: null,
+    name: 'Quick-Add Node',
+    url: 'admin/ng-requisitions/quick-add-node.jsp#/',
+    locationMatch: null,
+    icon: 'fa-plus-circle',
+    iconType: 'fa',
+    isIconOnly: null,
+    isVueLink: null,
+    requiredRoles: [
+      'ROLE_ADMIN',
+      'ROLE_PROVISION'
+    ]
+  },
+  flowsMenu: null,
+
+  configurationMenu: {
+    id: null,
+    className: null,
+    name: 'Configure OpenNMS',
+    url: 'admin/index.jsp',
+    locationMatch: null,
+    icon: 'fa-cogs',
+    iconType: 'fa',
+    isIconOnly: null,
+    isVueLink: null,
+    requiredRoles: [
+      'ROLE_ADMIN'
+    ]
+  },
+  notices: {
+    countUser: null,
+    countNonUser: null,
+    linkUser: null,
+    linkNonUser: null,
+    status: 'Off'
+  }
 } as MainMenu
 
 const getMainMenu = async (context: ContextWithState) => {

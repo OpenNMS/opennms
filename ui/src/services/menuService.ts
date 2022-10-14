@@ -1,7 +1,7 @@
 import { v2 } from './axiosInstances'
 import { MainMenu } from '@/types/mainMenu'
 
-const endpoint = 'menubar'
+const endpoint = 'menu'
 
 const getMainMenu = async (): Promise<MainMenu | false> => {
   try {

@@ -33,6 +33,11 @@ import {
   faBellSlash,
   faCalendar,
   faCogs,
+  faInfoCircle,
+  faKey,
+  faLifeRing,
+  faQuestionCircle,
+  faSignOut,
   faUsers
 } from '@fortawesome/free-solid-svg-icons'
 const icons = [
@@ -40,6 +45,11 @@ const icons = [
   faBellSlash,
   faCalendar,
   faCogs,
+  faInfoCircle,
+  faKey,
+  faLifeRing,
+  faQuestionCircle,
+  faSignOut,
   faUsers
 ]
 library.add(...icons);
