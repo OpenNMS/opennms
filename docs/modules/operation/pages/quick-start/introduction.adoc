@@ -1,7 +1,29 @@
 
 = Quick Start
 
-The Quick Start guide assumes you have already completed the deployment steps, have installed a xref:deployment:core/introduction.adoc[{page-component-title} instance], and are able to connect to the web UI at `\http://<ip-or-fqdn-of-your-server>:8980/opennms`.
+The Quick Start guide assumes you have already completed the xref:deployment:core/introduction.adoc[deployment steps], have xref:deployment:core/getting-started.adoc[installed a {page-component-title} instance], and are able to connect to the web UI at `\http://<ip-or-fqdn-of-your-server>:8980/opennms`.
 
-Unless otherwise stated, the procedures in the Quick Start require you to be logged in to the OpenNMS web UI as a user with Admin privileges.
-<<quick-start/users.adoc, Step 1: First-Time Login>> describes how to create an admin user.
+== Introduction
+
+Now that you have installed and started {page-component-title}, you should consider what your monitoring goals are.
+Knowing what kind of information you want to collect will help focus your setup process.
+
+Out of the box, {page-component-title} provides the following functionality:
+
+// list
+
+This guide covers the following tasks:
+
+* xref:operation:quick-start/users.adoc#ga-data-choices[First-time login and usage data permissions]
+* xref:operation:quick-start/users.adoc#ga-admin-user-setup[Set up `admin` user]
+* xref:operation:quick-start/users.adoc#create-user[Create a new user]
+* xref:operation:quick-start/notifications.adoc[Turn on default notifications]
+* xref:operation:quick-start/inventory.adoc[Provision inventory]
+* xref:operation:quick-start/performance-data.adoc[Set up performance data collection]
+* xref:operation:quick-start/thresholding.adoc[Set up a threshold]
+* xref:operation:quick-start/baseline.adoc[Establish a baseline]
+* xref:operation:quick-start/service-assurance.adoc[Determine service availability]
+* Configure notifications
+* Visualize your data
+
+NOTE: Unless otherwise stated, the procedures in the Quick Start require you to be logged in to the OpenNMS web UI as a user with admin privileges.
