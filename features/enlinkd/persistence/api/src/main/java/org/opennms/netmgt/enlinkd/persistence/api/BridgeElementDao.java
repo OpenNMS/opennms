@@ -28,10 +28,8 @@
 
 package org.opennms.netmgt.enlinkd.persistence.api;
 
-import java.util.Date;
 import java.util.List;
 
-import org.opennms.netmgt.dao.api.OnmsDao;
 import org.opennms.netmgt.enlinkd.model.BridgeElement;
 
 
@@ -39,18 +37,12 @@ import org.opennms.netmgt.enlinkd.model.BridgeElement;
 /**
  * <p>BridgeElementDao interface.</p>
  */
-public interface BridgeElementDao extends OnmsDao<BridgeElement, Integer> {
-    
-    List<BridgeElement> findByNodeId(Integer id);
+public interface BridgeElementDao extends LinkDao<BridgeElement, Integer> {
 
     BridgeElement getByNodeIdVlan(Integer id, Integer vlanId);
 
     List<BridgeElement> findByBridgeId(String id);
 
     BridgeElement getByBridgeIdVlan(String id, Integer vlanId);
-
-    void deleteByNodeIdOlderThen(Integer nodeiId, Date now);
-    
-    void deleteByNodeId(Integer nodeiId);
 
 }

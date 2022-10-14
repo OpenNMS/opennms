@@ -85,7 +85,8 @@
                 </ul>
             </div> <!-- row -->
             <div>
-                <form role="form" class="form-group" action="asset/nodelist.jsp" method="get">
+                <form role="form" class="form-group" action="asset/nodelist.jsp" method="post">
+                  <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                   <label for="input_searchvalue">Assets in category</label>
                   <div class="input-group">
                     <select class="form-control custom-select" id="input_searchvalue" name="searchvalue">

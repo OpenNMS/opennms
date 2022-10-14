@@ -31,13 +31,13 @@ package org.opennms.netmgt.scheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class Executable implements PriorityReadyRunnable {
+public abstract class Executable implements PriorityReadyRunnable, Comparable<Executable> {
 
     private static final Logger LOG = LoggerFactory.getLogger(Executable.class);
 
     private boolean m_suspend = false;
 
-    private Integer m_priority = null;
+    private Integer m_priority = 0;
 
     public Integer getPriority() {
           return m_priority;
@@ -51,7 +51,7 @@ public abstract class Executable implements PriorityReadyRunnable {
     }
 
     public Executable(int priority) {
-        m_priority=priority;
+        m_priority = priority;
     }
 
     public abstract String getName();
@@ -101,4 +101,8 @@ public abstract class Executable implements PriorityReadyRunnable {
         return  getName() + ": Priority: " + m_priority;
     }
 
+    @Override
+    public int compareTo(Executable o) {
+        return m_priority-o.getPriority();
+    }
 }

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2014-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,6 +31,7 @@ package org.opennms.netmgt.poller.monitors;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
@@ -55,13 +56,13 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-soa.xml"})
 @JUnitConfigurationEnvironment
 public class SshMonitorIT {
-    public static final String HOST_TO_TEST = "127.0.0.1";
+    public static final InetAddress HOST_TO_TEST = InetAddressUtils.getLocalHostAddress();
 
     @Test
     public void testPoll() throws UnknownHostException {
 
         ServiceMonitor sm = new SshMonitor();
-        MonitoredService svc = new MockMonitoredService(1, "Router", InetAddressUtils.addr(HOST_TO_TEST), "SSH");
+        MonitoredService svc = new MockMonitoredService(1, "Router", HOST_TO_TEST, "SSH");
         Map<String, Object> parms = new HashMap<String, Object>();
 
         PollStatus ps = sm.poll(svc, parms);
@@ -73,7 +74,7 @@ public class SshMonitorIT {
     public void testPollWithMatch() throws UnknownHostException {
 
         ServiceMonitor sm = new SshMonitor();
-        MonitoredService svc = new MockMonitoredService(1, "Router", InetAddressUtils.addr(HOST_TO_TEST), "SSH");
+        MonitoredService svc = new MockMonitoredService(1, "Router", HOST_TO_TEST, "SSH");
         Map<String, Object> parms = new HashMap<String, Object>();
         parms.put("match", "SSH");
 
@@ -86,7 +87,7 @@ public class SshMonitorIT {
     public void testPollWithStarBanner() throws UnknownHostException {
 
         ServiceMonitor sm = new SshMonitor();
-        MonitoredService svc = new MockMonitoredService(1, "Router", InetAddressUtils.addr(HOST_TO_TEST), "SSH");
+        MonitoredService svc = new MockMonitoredService(1, "Router", HOST_TO_TEST, "SSH");
         Map<String, Object> parms = new HashMap<String, Object>();
         parms.put("banner", "*");
 
@@ -99,7 +100,7 @@ public class SshMonitorIT {
     public void testPollWithRegexpBanner() throws UnknownHostException {
 
         ServiceMonitor sm = new SshMonitor();
-        MonitoredService svc = new MockMonitoredService(1, "Router", InetAddressUtils.addr(HOST_TO_TEST), "SSH");
+        MonitoredService svc = new MockMonitoredService(1, "Router", HOST_TO_TEST, "SSH");
         Map<String, Object> parms = new HashMap<String, Object>();
         parms.put("banner", "^SSH");
 
@@ -112,7 +113,7 @@ public class SshMonitorIT {
     public void testPollWithBannerOpenSSH() throws UnknownHostException {
 
         ServiceMonitor sm = new SshMonitor();
-        MonitoredService svc = new MockMonitoredService(1, "Router", InetAddressUtils.addr(HOST_TO_TEST), "SSH");
+        MonitoredService svc = new MockMonitoredService(1, "Router", HOST_TO_TEST, "SSH");
         Map<String, Object> parms = new HashMap<String, Object>();
         parms.put("banner", "OpenSSH");
 
@@ -125,7 +126,7 @@ public class SshMonitorIT {
     public void testPollWithBannerMissing() throws UnknownHostException {
 
         ServiceMonitor sm = new SshMonitor();
-        MonitoredService svc = new MockMonitoredService(1, "Router", InetAddressUtils.addr(HOST_TO_TEST), "SSH");
+        MonitoredService svc = new MockMonitoredService(1, "Router", HOST_TO_TEST, "SSH");
         Map<String, Object> parms = new HashMap<String, Object>();
         parms.put("banner", "OpenNMS");
 
@@ -138,7 +139,7 @@ public class SshMonitorIT {
     public void testPollWithBannerOpenSSHRegexp() throws UnknownHostException {
 
         ServiceMonitor sm = new SshMonitor();
-        MonitoredService svc = new MockMonitoredService(1, "Router", InetAddressUtils.addr(HOST_TO_TEST), "SSH");
+        MonitoredService svc = new MockMonitoredService(1, "Router", HOST_TO_TEST, "SSH");
         Map<String, Object> parms = new HashMap<String, Object>();
         parms.put("banner", "^SSH\\-2\\.0\\-OpenSSH_\\d+\\.\\d+.*$");
 
@@ -151,7 +152,7 @@ public class SshMonitorIT {
     public void testPollWithInvalidRegexpBanner() throws UnknownHostException, PatternSyntaxException {
 
         ServiceMonitor sm = new SshMonitor();
-        MonitoredService svc = new MockMonitoredService(1, "Router", InetAddressUtils.addr(HOST_TO_TEST), "SSH");
+        MonitoredService svc = new MockMonitoredService(1, "Router", HOST_TO_TEST, "SSH");
         Map<String, Object> parms = new HashMap<String, Object>();
         parms.put("banner", "^SSH\\-2\\.0\\-OpenSSH_\\d+\\.\\d+\\g$");
 
@@ -164,7 +165,7 @@ public class SshMonitorIT {
     public void testPollWithInvalidRegexpMatch() throws UnknownHostException, PatternSyntaxException {
 
         ServiceMonitor sm = new SshMonitor();
-        MonitoredService svc = new MockMonitoredService(1, "Router", InetAddressUtils.addr(HOST_TO_TEST), "SSH");
+        MonitoredService svc = new MockMonitoredService(1, "Router", HOST_TO_TEST, "SSH");
         Map<String, Object> parms = new HashMap<String, Object>();
         parms.put("banner", "^SSH\\-2\\.0\\-OpenSSH_\\d+\\.\\d+\\g$");
 

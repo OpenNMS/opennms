@@ -75,8 +75,7 @@ public class Nms6802EnIT extends EnLinkdBuilderITCase {
         
         final OnmsNode ciscoiosxr = m_nodeDao.findByForeignId("linkd", CISCOISIS_NAME);
         
-        assertTrue(m_linkd.scheduleNodeCollection(ciscoiosxr.getId()));
-
+        m_linkd.reload();
         assertTrue(m_linkd.runSingleSnmpCollection(ciscoiosxr.getId()));
         assertEquals(4, m_isisLinkDao.countAll());
 

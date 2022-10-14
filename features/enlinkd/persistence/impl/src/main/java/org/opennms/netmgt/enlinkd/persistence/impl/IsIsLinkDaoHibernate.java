@@ -96,4 +96,9 @@ public class IsIsLinkDaoHibernate extends AbstractDaoHibernate<IsIsLink, Integer
                                   new Object[] {nodeId});
     }
 
+    @Override
+    public void deleteAll() {
+        getHibernateTemplate().bulkUpdate("delete from IsIsLink");
+    }
+
 }

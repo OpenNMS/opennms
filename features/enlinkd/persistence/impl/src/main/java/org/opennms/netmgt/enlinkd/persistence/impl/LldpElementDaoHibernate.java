@@ -84,4 +84,9 @@ public class LldpElementDaoHibernate extends AbstractDaoHibernate<LldpElement, I
                                     new Object[] {nodeId});
     }
 
+    @Override
+    public void deleteAll() {
+        getHibernateTemplate().bulkUpdate("delete from LldpElement");
+    }
+
 }

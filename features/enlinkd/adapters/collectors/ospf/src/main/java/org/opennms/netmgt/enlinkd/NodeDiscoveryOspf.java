@@ -44,7 +44,6 @@ import org.opennms.netmgt.enlinkd.snmp.OspfIfTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.OspfIpAddrTableGetter;
 import org.opennms.netmgt.enlinkd.snmp.OspfNbrTableTracker;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,21 +59,13 @@ public final class NodeDiscoveryOspf extends NodeCollector {
 	private final static Logger LOG = LoggerFactory.getLogger(NodeDiscoveryOspf.class);
 	
 	private final OspfTopologyService m_ospfTopologyService;
-	/**
-	 * Constructs a new SNMP collector for Ospf Node Discovery. 
-	 * The collection does not occur until the
-     * <code>run</code> method is invoked.
-     * 
-	 * @param ospfTopologyService linkd
-	 * @param locationAwareSnmpClient node
-	 */
+
     public NodeDiscoveryOspf(
-            final OspfTopologyService ospfTopologyService,
-            final LocationAwareSnmpClient locationAwareSnmpClient,
-            final long interval,final long initial,
-            final Node node) {
-        super(locationAwareSnmpClient, interval, initial,node);
-    	m_ospfTopologyService = ospfTopologyService;
+            final NodeCollectionGroupOspf group,
+            final Node node,
+            final int priority) {
+        super(group.getLocationAwareSnmpClient(), node, priority);
+    	m_ospfTopologyService = group.getOspfTopologyService();
     }
 
     public void collect() {

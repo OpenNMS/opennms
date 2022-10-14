@@ -1494,12 +1494,7 @@
     <argLineMemory>-Xmx2g</argLineMemory>
     <argLine>${argLineMemory} -Djava.security.egd=/dev/./urandom</argLine>
     <skipITs>true</skipITs>
-
-    <!--
-      This is on by default now that root is not required for pinging.
-      If you have issues with this, see https://docs.opennms.com/ for enabling non-root ping.
-      However, we need to set the default in a profile (NMS-8838).
-    <runPingTests>true</runPingTests> -->
+    <runPingTests>false</runPingTests>
 
     <maxCpus>2</maxCpus>
 
@@ -1746,14 +1741,14 @@
     <paxSwissboxVersion>1.8.3</paxSwissboxVersion>
     <paxWebVersion>7.3.23</paxWebVersion>
     <pktsVersion>3.0.0</pktsVersion>
-    <protobufVersion>3.16.1</protobufVersion>
+    <protobufVersion>3.16.3</protobufVersion>
     <protobuf2Version>2.6.1</protobuf2Version>
     <postgresqlVersion>42.4.1</postgresqlVersion>
     <powermockVersion>2.0.9</powermockVersion>
     <okhttpVersion>3.10.0</okhttpVersion>
     <okioVersion>1.14.0</okioVersion>
     <opennmsApiVersion>1.1.0-SNAPSHOT</opennmsApiVersion>
-    <opennmsApiVersionOsgi>1.0.1</opennmsApiVersionOsgi>
+    <opennmsApiVersionOsgi>1.1.0.SNAPSHOT</opennmsApiVersionOsgi>
     <osgiVersion>7.0.0</osgiVersion>
     <osgiAnnotationVersion>7.0.0</osgiAnnotationVersion>
     <osgiCompendiumVersion>7.0.0</osgiCompendiumVersion>
@@ -1849,7 +1844,6 @@
         </property>
       </activation>
       <properties>
-        <runPingTests>true</runPingTests>
         <skipPdfGeneration>false</skipPdfGeneration>
         <skipSignJar>false</skipSignJar>
       </properties>
@@ -2065,17 +2059,6 @@
           </plugin>
         </plugins>
       </build>
-    </profile>
-    <profile>
-      <id>default-runPingTests</id>
-      <activation>
-        <property>
-          <name>!runPingTests</name>
-        </property>
-      </activation>
-      <properties>
-        <runPingTests>true</runPingTests>
-      </properties>
     </profile>
     <profile>
       <id>checkstyle</id>
@@ -2354,13 +2337,6 @@
         <groupId>org.opennms.core</groupId>
         <artifactId>org.opennms.core.xml</artifactId>
         <version>${project.version}</version>
-      </dependency>
-      <!-- only used at build-time -->
-      <dependency>
-        <groupId>org.opennms.core.build</groupId>
-        <artifactId>org.opennms.core.build.keystore</artifactId>
-        <version>${project.version}</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.opennms.core.test-api</groupId>

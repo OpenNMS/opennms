@@ -106,9 +106,7 @@ ZHBGO1Zsr001 (3/2/c6/1) -> ZHBGO1Zsr002 (3/2/c6/1)
         final OnmsNode zsr001 = m_nodeDao.findByForeignId("linkd", ZHBGO1Zsr001_NAME);
         final OnmsNode zsr002 = m_nodeDao.findByForeignId("linkd", ZHBGO1Zsr002_NAME);
 
-        assertTrue(m_linkd.scheduleNodeCollection(zsr001.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(zsr002.getId()));
-
+        m_linkd.reload();
 
         assertTrue(m_linkd.runSingleSnmpCollection(zsr001.getId()));
         assertEquals(1, m_lldpElementDao.countAll());
