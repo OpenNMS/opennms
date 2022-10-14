@@ -13,9 +13,11 @@
                 AND location='Default'
             </sqlCheck>
         </preConditions>
+        <!--
         <sql>
             CREATE EXTENSION IF NOT EXISTS pgcrypto;
         </sql>
+        -->
         <sql>
             ALTER TABLE alarms
             DROP CONSTRAINT fk_alarms_systemid;
