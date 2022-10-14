@@ -44,3 +44,19 @@ export interface NoticeStatusDisplay {
   colorClass: string
   title: string
 }
+
+export interface NotificationItem {
+  offset: number
+  count: number
+  totalCount: number
+  notification: string[]
+}
+
+export interface NotificationSummary {
+  totalCount: number
+  totalUnacknowledgedCount: number
+  user: string
+  userUnacknowledgedCount: number
+  teamUnacknowledgedCount: number
+  userUnacknowledgedNotifications: NotificationItem
+}

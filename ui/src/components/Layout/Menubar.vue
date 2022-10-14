@@ -110,7 +110,7 @@
           class="menubar-dropdown">
           <template v-slot:trigger="{ attrs, on }">
             <FeatherButton link href="#" v-bind="attrs" v-on="on">
-              {{ mainMenu.notices?.countUser}} {{ mainMenu.notices?.countNonUser }}
+              {{ notificationSummary.userUnacknowledgedCount }} {{ notificationSummary.teamUnacknowledgedCount }}
               <FeatherIcon :icon="ArrowDropDown" />
             </FeatherButton>
           </template>
@@ -132,10 +132,10 @@
               </template>
               <span class="left-margin-small">
                 <template v-if="item.id === 'user'">
-                  {{ mainMenu.notices?.countUser }} notices assigned to you
+                  {{ notificationSummary.userUnacknowledgedCount }} notices assigned to you
                 </template>
-                <template v-if="item.id === 'users'">
-                    {{ mainMenu.notices?.countNonUser }} of {{ mainMenu.notices?.countNonUser }} assigned to anyone but you
+                <template v-if="item.id === 'team'">
+                    {{ notificationSummary.teamUnacknowledgedCount }} of {{ notificationSummary.totalUnacknowledgedCount }} assigned to anyone but you
                 </template>
                 <template v-if="item.id === 'oncall'">
                     {{ item.name }}
@@ -197,7 +197,7 @@ import Person from '@featherds/icon/action/Person'
 import Logo from '@/assets/Logo.vue'
 import Search from './Search.vue'
 import { useStore } from 'vuex'
-import { MainMenu, TopMenuItem, MenuItem, Notices, NoticeStatusDisplay } from '@/types/mainMenu'
+import { MainMenu, TopMenuItem, NoticeStatusDisplay, NotificationSummary } from '@/types/mainMenu'
 
 const store = useStore()
 const route = useRoute()
@@ -220,6 +220,8 @@ const menuItems = computed<TopMenuItem[]>(() => {
     return []
   }
 })
+
+const notificationSummary = computed<NotificationSummary>(() => store.state.menuModule.notificationSummary)
 
 const noticesDisplay = computed<NoticeStatusDisplay>(() => {
   const status = mainMenu.value?.noticeStatus

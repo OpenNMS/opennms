@@ -41,6 +41,7 @@ onMounted(() => {
   store.dispatch('infoModule/getInfo')
   store.dispatch('menuModule/getMainMenu')
   store.dispatch('pluginModule/getPlugins')
+  store.dispatch('menuModule/getNotificationSummary')
 })
 </script>
 

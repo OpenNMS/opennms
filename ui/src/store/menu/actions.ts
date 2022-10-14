@@ -1,7 +1,7 @@
 import { VuexContext } from '@/types'
 import API from '@/services'
 import { State } from './state'
-import { MainMenu } from '@/types/mainMenu'
+import { MainMenu, NotificationSummary } from '@/types/mainMenu'
 
 interface ContextWithState extends VuexContext {
   state: State
@@ -532,6 +532,19 @@ const defaultMainMenu = {
   }
 } as MainMenu
 
+const defaultNotificationSummary = {
+  totalCount: 0,
+  totalUnacknowledgedCount: 0,
+  userUnacknowledgedCount: 0,
+  teamUnacknowledgedCount: 0,
+  userUnacknowledgedNotifications: {
+    offset: 0,
+    count: 0,
+    totalCount: 0,
+    notification: []
+  }
+} as NotificationSummary
+
 const getMainMenu = async (context: ContextWithState) => {
   // for using local data for dev/debugging purposes
   if (useFakeMenuData) {
@@ -543,13 +556,26 @@ const getMainMenu = async (context: ContextWithState) => {
 
   if (resp) {
     const mainMenu = resp as MainMenu
-    console.log('DEBUG got menubar API result:')
-    console.dir(mainMenu)
-
     context.commit('SAVE_MAIN_MENU', mainMenu)
   }
 }
 
+const getNotificationSummary = async (context: ContextWithState) => {
+  // for using local data for dev/debugging purposes
+  if (useFakeMenuData) {
+    context.commit('SAVE_NOTIFICATION_SUMMARY', defaultNotificationSummary)
+    return
+  }
+
+  const resp = await API.getNotificationSummary()
+
+  if (resp) {
+    const notificationSummary = resp as NotificationSummary
+    context.commit('SAVE_NOTIFICATION_SUMMARY', notificationSummary)
+  }
+}
+
 export default {
-  getMainMenu
+  getMainMenu,
+  getNotificationSummary
 }
