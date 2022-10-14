@@ -59,7 +59,7 @@
 
     <bean id="linkdTopologyFactory" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyFactory">
         <constructor-arg ref="metricRegistry"/>
-        <property name="onmsTopologyDao" ref="onmsTopologyDao" />
+        <constructor-arg ref="onmsTopologyDao" />
     </bean>
 
     <bean id="enlinkdTopologyProviderInfo" class="org.opennms.features.topology.api.topo.DefaultTopologyProviderInfo">
