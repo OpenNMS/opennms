@@ -554,7 +554,6 @@ public class Migrator {
             c = m_adminDataSource.getConnection();
             st = c.createStatement();
             st.execute("CREATE DATABASE \"" + getDatabaseName() + "\" WITH ENCODING='UNICODE'");
-            st.execute("CREATE EXTENSION IF NOT EXISTS pgcrypto");
             st.execute("GRANT ALL ON DATABASE \"" + getDatabaseName() + "\" TO \"" + getUserForONMSDB() + "\"");
         } catch (final SQLException e) {
             throw new MigrationException("an error occurred creating the OpenNMS database: " + e, e);
@@ -872,6 +871,27 @@ public class Migrator {
 
     }
 
+    public void addPGCryptoExtension(boolean isNewDatabase) throws MigrationException {
+        LOG.info("adding pgcrypto extension in template db");
+
+        Connection c = null;
+        Statement st = null;
+
+        try {
+            if (isNewDatabase)
+                c = m_adminDataSource.getConnection();
+            else
+                c = m_dataSource.getConnection();
+            st = c.createStatement();
+            st.execute("CREATE EXTENSION IF NOT EXISTS pgcrypto CASCADE");
+        } catch (SQLException e) {
+            throw new MigrationException("could not add pgcrypto extension", e);
+        } finally {
+            cleanUpDatabase(c, null, st, null);
+        }
+
+    }
+
     /**
      * This method creates the Timescale extension on the user database (opennms) and then on template1
      * to give access to the extension to new databases.
@@ -893,6 +913,28 @@ public class Migrator {
 
         } catch (SQLException e) {
             throw new MigrationException("could not add timescaledb extension", e);
+        } finally {
+            cleanUpDatabase(c, null, st, null);
+        }
+
+    }
+
+    public void addPGCryptoExtensionOnDatabase() throws MigrationException {
+        LOG.info("adding pgcrypto extension in db");
+
+        Connection c = null;
+        Statement st = null;
+
+        try {
+            c = m_adminDataSource.getConnection();
+            st = c.createStatement();
+            st.execute("ALTER ROLE " + getDatabaseUser() + " WITH SUPERUSER");
+            addPGCryptoExtension(false);
+            st.execute("ALTER ROLE " + getDatabaseUser() + " WITH NOSUPERUSER");
+            addPGCryptoExtension(true);
+
+        } catch (SQLException e) {
+            throw new MigrationException("could not add pgcrypto extension", e);
         } finally {
             cleanUpDatabase(c, null, st, null);
         }
@@ -1024,6 +1066,11 @@ public class Migrator {
             } else {
                 addTimescaleDBExtension(true);
             }
+        }
+        if (databaseExists()) {
+            addPGCryptoExtensionOnDatabase();
+        } else {
+            addPGCryptoExtension(true);
         }
 
         checkUnicode();
