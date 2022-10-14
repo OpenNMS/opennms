@@ -871,6 +871,27 @@ public class Migrator {
 
     }
 
+    public void addPGCryptoExtension(boolean isNewDatabase) throws MigrationException {
+        LOG.info("adding pgcrypto extension in template db");
+
+        Connection c = null;
+        Statement st = null;
+
+        try {
+            if (isNewDatabase)
+                c = m_adminDataSource.getConnection();
+            else
+                c = m_dataSource.getConnection();
+            st = c.createStatement();
+            st.execute("CREATE EXTENSION IF NOT EXISTS pgcrypto CASCADE");
+        } catch (SQLException e) {
+            throw new MigrationException("could not add pgcrypto extension", e);
+        } finally {
+            cleanUpDatabase(c, null, st, null);
+        }
+
+    }
+
     /**
      * This method creates the Timescale extension on the user database (opennms) and then on template1
      * to give access to the extension to new databases.
@@ -892,6 +913,28 @@ public class Migrator {
 
         } catch (SQLException e) {
             throw new MigrationException("could not add timescaledb extension", e);
+        } finally {
+            cleanUpDatabase(c, null, st, null);
+        }
+
+    }
+
+    public void addPGCryptoExtensionOnDatabase() throws MigrationException {
+        LOG.info("adding pgcrypto extension in db");
+
+        Connection c = null;
+        Statement st = null;
+
+        try {
+            c = m_adminDataSource.getConnection();
+            st = c.createStatement();
+            st.execute("ALTER ROLE " + getDatabaseUser() + " WITH SUPERUSER");
+            addPGCryptoExtension(false);
+            st.execute("ALTER ROLE " + getDatabaseUser() + " WITH NOSUPERUSER");
+            addPGCryptoExtension(true);
+
+        } catch (SQLException e) {
+            throw new MigrationException("could not add pgcrypto extension", e);
         } finally {
             cleanUpDatabase(c, null, st, null);
         }
@@ -1010,7 +1053,7 @@ public class Migrator {
         }
     }
 
-    public void setupDatabase(boolean updateDatabase, boolean vacuum, boolean fullVacuum, boolean iplike, boolean timescaleDB) throws MigrationException, Exception, IOException {
+    public void setupDatabase(boolean updateDatabase, boolean vacuum, boolean fullVacuum, boolean iplike, boolean timescaleDB, boolean pgcrypto) throws MigrationException, Exception, IOException {
         validateDatabaseVersion();
 
         if (updateDatabase) {
@@ -1022,6 +1065,19 @@ public class Migrator {
                 addTimescaleDBExtensionOnDatabase();
             } else {
                 addTimescaleDBExtension(true);
+            }
+        }
+        if (pgcrypto) {
+            try {
+                if (databaseExists()) {
+                    addPGCryptoExtensionOnDatabase();
+                } else {
+                    addPGCryptoExtension(true);
+                }
+            }
+            catch (MigrationException me) {
+                // This is not a fatal issue, and can be remedied later if a unique systemID is needed
+                LOG.warn("Unable to install pgcrypto extension, system will use default ID", me);
             }
         }
 

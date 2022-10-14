@@ -744,7 +744,7 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
 
             m_migrator.setDataSource(templateDataSource);
 
-            m_migrator.setupDatabase(true, true, true, true, false);
+            m_migrator.setupDatabase(true, true, true, true, false, false);
 
             Integer count = new JdbcTemplate(templateDataSource).queryForObject("SELECT count(id) FROM databasechangelog WHERE id = '" + SAMPLE_CHANGELOG_ID + "'", Integer.class);
             assertTrue("couldn't find a sample databasechangelog entry after setting up template database. Looking for ID " + SAMPLE_CHANGELOG_ID, count == 1);
