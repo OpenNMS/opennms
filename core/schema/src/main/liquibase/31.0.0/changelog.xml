@@ -14,7 +14,7 @@
             </sqlCheck>
         </preConditions>
         <sql>
-            CREATE EXTENSION pgcrypto;
+            CREATE EXTENSION IF NOT EXISTS pgcrypto;
         </sql>
         <sql>
             ALTER TABLE alarms

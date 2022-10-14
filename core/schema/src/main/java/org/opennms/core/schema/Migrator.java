@@ -554,6 +554,7 @@ public class Migrator {
             c = m_adminDataSource.getConnection();
             st = c.createStatement();
             st.execute("CREATE DATABASE \"" + getDatabaseName() + "\" WITH ENCODING='UNICODE'");
+            st.execute("CREATE EXTENSION IF NOT EXISTS pgcrypto");
             st.execute("GRANT ALL ON DATABASE \"" + getDatabaseName() + "\" TO \"" + getUserForONMSDB() + "\"");
         } catch (final SQLException e) {
             throw new MigrationException("an error occurred creating the OpenNMS database: " + e, e);
