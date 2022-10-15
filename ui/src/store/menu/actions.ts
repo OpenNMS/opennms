@@ -9,6 +9,7 @@ interface ContextWithState extends VuexContext {
 
 // Set this to true to use local/fake data instead of making API call
 const useFakeMenuData = false
+const useFakeUserNotificationData = true;
 
 const defaultMainMenu = {
   baseHref: 'http://localhost:8980/opennms/',
@@ -533,15 +534,50 @@ const defaultMainMenu = {
 } as MainMenu
 
 const defaultNotificationSummary = {
-  totalCount: 0,
-  totalUnacknowledgedCount: 0,
-  userUnacknowledgedCount: 0,
-  teamUnacknowledgedCount: 0,
+  totalCount: 10,
+  totalUnacknowledgedCount: 8,
+  userUnacknowledgedCount: 3,
+  teamUnacknowledgedCount: 5,
+  user: 'admin',
   userUnacknowledgedNotifications: {
     offset: 0,
-    count: 0,
-    totalCount: 0,
-    notification: []
+    count: 3,
+    totalCount: 3,
+    notification: [
+      {
+        id: 1,
+        ipAddress: '127.0.0.1',
+        nodeLabel: 'localhost',
+        notificationName: 'name1',
+        pageTime: new Date(),
+        serviceType: {
+          name: 'service1'
+        },
+        severity: 'major'
+      },
+      {
+        id: 2,
+        ipAddress: '127.0.0.1',
+        nodeLabel: 'localhost',
+        notificationName: 'name2',
+        pageTime: new Date(),
+        serviceType: {
+          name: 'service2'
+        },
+        severity: 'minor'
+      },
+      {
+        id: 3,
+        ipAddress: '127.0.0.1',
+        nodeLabel: 'localhost',
+        notificationName: 'name3',
+        pageTime: new Date(),
+        serviceType: {
+          name: 'service2'
+        },
+        severity: null
+      }
+    ]
   }
 } as NotificationSummary
 
@@ -562,7 +598,7 @@ const getMainMenu = async (context: ContextWithState) => {
 
 const getNotificationSummary = async (context: ContextWithState) => {
   // for using local data for dev/debugging purposes
-  if (useFakeMenuData) {
+  if (useFakeUserNotificationData) {
     context.commit('SAVE_NOTIFICATION_SUMMARY', defaultNotificationSummary)
     return
   }

@@ -1,3 +1,4 @@
+import { StringifyOptions } from 'querystring';
 export interface MenuItem {
   id: string | null
   className: string | null
@@ -45,11 +46,26 @@ export interface NoticeStatusDisplay {
   title: string
 }
 
+export interface OnmsServiceType {
+  id: number
+  name: string
+}
+
+export interface OnmsNotification {
+  id: number
+  ipAddress: string
+  nodeLabel: string
+  notificationName: string
+  pageTime: Date
+  serviceType: OnmsServiceType | null
+  severity: string
+}
+
 export interface NotificationItem {
   offset: number
   count: number
   totalCount: number
-  notification: string[]
+  notification: OnmsNotification[]
 }
 
 export interface NotificationSummary {
