@@ -87,7 +87,7 @@ public class IpLikeSearchProvider extends AbstractSearchProvider implements Hist
 
     @Override
     public boolean contributesTo(String namespace) {
-        return CONTRIBUTES_TO_NAMESPACE.equals(namespace);
+        return (namespace != null ? namespace.startsWith(CONTRIBUTES_TO_NAMESPACE) : false);
     }
 
     /**
