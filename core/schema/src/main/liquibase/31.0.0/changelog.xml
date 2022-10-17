@@ -12,6 +12,10 @@
                 AND type='OpenNMS'
                 AND location='Default'
             </sqlCheck>
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(*) from pg_extension
+                WHERE extname = 'pgcrypto'
+            </sqlCheck>
         </preConditions>
         <dropForeignKeyConstraint constraintName="fk_alarms_systemid" baseTableName="alarms" />
         <addForeignKeyConstraint  constraintName="fk_alarms_systemid" baseTableName="alarms" baseColumnNames="systemid" 

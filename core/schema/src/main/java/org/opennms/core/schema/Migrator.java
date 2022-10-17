@@ -885,7 +885,9 @@ public class Migrator {
             st = c.createStatement();
             st.execute("CREATE EXTENSION IF NOT EXISTS pgcrypto CASCADE");
         } catch (SQLException e) {
-            throw new MigrationException("could not add pgcrypto extension", e);
+            LOG.warn("Unable to install pgcrypto extension");
+            e.printStackTrace();
+            // throw new MigrationException("could not add pgcrypto extension", e);
         } finally {
             cleanUpDatabase(c, null, st, null);
         }
@@ -928,13 +930,15 @@ public class Migrator {
         try {
             c = m_adminDataSource.getConnection();
             st = c.createStatement();
-            st.execute("ALTER ROLE " + getDatabaseUser() + " WITH SUPERUSER");
+            //st.execute("ALTER ROLE " + getDatabaseUser() + " WITH SUPERUSER");
             addPGCryptoExtension(false);
+            //st.execute("ALTER ROLE " + getDatabaseUser() + " WITH NOSUPERUSER");
             addPGCryptoExtension(true);
-            st.execute("ALTER ROLE " + getDatabaseUser() + " WITH NOSUPERUSER");
 
         } catch (SQLException e) {
-            throw new MigrationException("could not add pgcrypto extension", e);
+            LOG.warn("Unable to install pgcrypto extension");
+            e.printStackTrace();
+            //throw new MigrationException("could not add pgcrypto extension", e);
         } finally {
             cleanUpDatabase(c, null, st, null);
         }
