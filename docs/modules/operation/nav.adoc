@@ -9,6 +9,7 @@
 ** xref:quick-start/thresholding.adoc[]
 ** xref:quick-start/baseline.adoc[]
 ** xref:quick-start/service-assurance.adoc[]
+** xref:quick-start/notification-config.adoc[]
 ** xref:quick-start/beyond-qs.adoc[]
 
 * xref:deep-dive/introduction.adoc[]
