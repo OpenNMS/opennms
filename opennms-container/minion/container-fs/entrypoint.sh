@@ -201,6 +201,9 @@ configure() {
   applyConfd
   applyOpennmsPropertiesD
   applyOverlayConfig
+  if [[ "$JACOCO_AGENT_ENABLED" -gt 0 ]]; then
+    export JAVA_OPTS="$JAVA_OPTS -javaagent:${MINION_HOME}/agent/jacoco-agent.jar=output=none,jmx=true,excludes=org.drools.*"
+  fi
   if [[ -f "$MINION_PROCESS_ENV_CFG" ]]; then
     while read assignment; do
       [[ $assignment =~ ^#.* ]] && continue

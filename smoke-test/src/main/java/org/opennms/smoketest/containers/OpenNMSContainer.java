@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -63,6 +63,7 @@ import org.opennms.smoketest.stacks.OpenNMSProfile;
 import org.opennms.smoketest.stacks.StackModel;
 import org.opennms.smoketest.stacks.TimeSeriesStrategy;
 import org.opennms.smoketest.utils.DevDebugUtils;
+import org.opennms.smoketest.utils.KarafShellUtils;
 import org.opennms.smoketest.utils.OverlayUtils;
 import org.opennms.smoketest.utils.RestClient;
 import org.opennms.smoketest.utils.SshClient;
@@ -88,6 +89,7 @@ import com.google.common.collect.ImmutableMap;
  *
  * @author jwhite
  */
+@SuppressWarnings("java:S2068")
 public class OpenNMSContainer extends GenericContainer implements KarafContainer, TestLifecycleAware {
     public static final String ALIAS = "opennms";
     public static final String DB_ALIAS = "db";
@@ -150,7 +152,7 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
                 .mapToInt(Map.Entry::getValue)
                 .toArray();
 
-        String javaOpts = "-Xms2048m -Xmx2048m -Djava.security.egd=file:/dev/./urandom ";
+        String javaOpts = "-Xms2048m -Xmx2048m -Djava.security.egd=file:/dev/./urandom -javaagent:/opt/opennms/agent/jacoco-agent.jar=output=none,jmx=true";
         if (profile.isJvmDebuggingEnabled()) {
             javaOpts += String.format("-agentlib:jdwp=transport=dt_socket,server=y,address=*:%d,suspend=n", OPENNMS_DEBUG_PORT);
         }
@@ -189,6 +191,7 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
         DevDebugUtils.setupMavenRepoBind(this, "/root/.m2/repository");
     }
 
+    @SuppressWarnings("java:S5443")
     private Path writeOverlay() {
         try {
             final Path home = Files.createTempDirectory(ALIAS).toAbsolutePath();
@@ -217,7 +220,7 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
 
         final Properties sysProps = getSystemProperties();
         File propsFile = propsD.resolve("stest.properties").toFile();
-        try (FileOutputStream fos = new FileOutputStream(propsFile)) {
+        try (@SuppressWarnings("java:S6300") FileOutputStream fos = new FileOutputStream(propsFile)) {
             sysProps.store(fos, "Generated");
         }
 
@@ -388,7 +391,7 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
         @Override
         protected void waitUntilReady() {
             LOG.info("Waiting for startup to begin.");
-            final Path managerLog = Paths.get("/opt", "opennms", "logs", "manager.log");
+            final Path managerLog = Paths.get("/opt", ALIAS, "logs", "manager.log");
             await().atMost(3, MINUTES).ignoreExceptions()
                     .until(() -> TestContainerUtils.getFileFromContainerAsString(container, managerLog),
                     containsString("Starter: Beginning startup"));
@@ -431,7 +434,8 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
     }
 
     @Override
-    public void afterTest(TestDescription description, Optional<Throwable> throwable) {
+    public void afterTest(final TestDescription description, final Optional<Throwable> throwable) {
+        KarafShellUtils.saveCoverage(this, description.getFilesystemFriendlyName(), ALIAS);
         retainLogsfNeeded(description.getFilesystemFriendlyName(), !throwable.isPresent());
     }
 
@@ -456,9 +460,9 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
                 "web.log");
         DevDebugUtils.copyLogs(container,
                 // dest
-                Paths.get("target", "logs", prefix, "opennms"),
+                Paths.get("target", "logs", prefix, ALIAS),
                 // source folder
-                Paths.get("/opt", "opennms", "logs"),
+                Paths.get("/opt", ALIAS, "logs"),
                 // log files
                 logFiles);
     }

@@ -38,10 +38,6 @@ public class ExecutableTest extends Executable {
     private static final Logger LOG = LoggerFactory.getLogger(ExecutableTest.class);
 
     private final String m_name;
-    public ExecutableTest(String name) {
-        super();
-        m_name=name;
-    }
 
     public ExecutableTest(String name, int priority) {
         super(priority);

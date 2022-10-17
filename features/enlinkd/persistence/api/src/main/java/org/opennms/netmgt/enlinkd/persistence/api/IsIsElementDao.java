@@ -30,16 +30,13 @@ package org.opennms.netmgt.enlinkd.persistence.api;
 
 import java.util.List;
 
-import org.opennms.netmgt.dao.api.OnmsDao;
 import org.opennms.netmgt.enlinkd.model.IsIsElement;
 
 
 /**
  * <p>IsIsElementDao interface.</p>
  */
-public interface IsIsElementDao extends OnmsDao<IsIsElement, Integer> {
-    
-    IsIsElement findByNodeId(Integer id);
+public interface IsIsElementDao extends ElementDao<IsIsElement, Integer> {
 
     IsIsElement findByIsIsSysId(String isisSysId);
 
@@ -48,7 +45,5 @@ public interface IsIsElementDao extends OnmsDao<IsIsElement, Integer> {
      * node. Used to retrieve all IsIsElements that need to be accessed when finding IsIs links of a node.
      */
     List<IsIsElement> findBySysIdOfIsIsLinksOfNode(int nodeId);
-    
-    void deleteByNodeId(Integer nodeId);
 
 }

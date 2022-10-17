@@ -31,15 +31,12 @@ package org.opennms.netmgt.enlinkd.persistence.api;
 import java.util.List;
 
 import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
-import org.opennms.netmgt.dao.api.OnmsDao;
 import org.opennms.netmgt.enlinkd.model.LldpElement;
 
 /**
  * <p>LldpElementDao interface.</p>
  */
-public interface LldpElementDao extends OnmsDao<LldpElement, Integer> {
-
-    LldpElement findByNodeId(Integer id);
+public interface LldpElementDao extends ElementDao<LldpElement, Integer> {
 
     List<LldpElement> findByChassisId(String chassisId, LldpChassisIdSubType type);
 
@@ -52,6 +49,4 @@ public interface LldpElementDao extends OnmsDao<LldpElement, Integer> {
 
     LldpElement findBySysname(String sysname);
 
-    void deleteByNodeId(Integer nodeid);
-    
 }

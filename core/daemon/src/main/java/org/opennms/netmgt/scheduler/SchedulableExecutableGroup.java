@@ -47,11 +47,6 @@ public class SchedulableExecutableGroup extends Schedulable {
     private final LegacyPriorityExecutor m_executor;
 
     /**
-     * priority for executing runnables
-     */
-    private Integer m_priority;
-
-    /**
      * name under which are executed runnables
      */
     private final String m_name;
@@ -63,15 +58,13 @@ public class SchedulableExecutableGroup extends Schedulable {
      * @param interval the time in msec between group of collections
      * @param initial the time in msec wait before performing a collection at all
      * @param executor the executor service that will perform the single collections
-     * @param priority the priority for executables
      * @param name a unique name that identifies this group
      */
-    public SchedulableExecutableGroup(long interval, long initial, LegacyPriorityExecutor executor, int priority, String name) {
+    public SchedulableExecutableGroup(long interval, long initial, LegacyPriorityExecutor executor, String name) {
         super(interval,initial);
         Assert.notNull(executor);
         Assert.notNull(name);
         m_executor=executor;
-        m_priority=priority;
         m_name=name;
     }
 
@@ -79,33 +72,13 @@ public class SchedulableExecutableGroup extends Schedulable {
         return m_name;
     }
 
-    public Integer getPriority() {
-        return m_priority;
-    }
-
-    public void setPriority(Integer priority) {
-        m_priority = priority;
-    }
-
-
     public Set<Executable> getExecutables() {
         return m_executables;
-    }
-
-
-    public void add(Executable discovery, Integer priority) {
-        synchronized (m_executables) {
-            if (m_executables.add(discovery)) {
-                discovery.setPriority(m_priority + priority);
-                LOG.info("add: {}", discovery.getInfo());
-            }
-        }
     }
 
     public void add(Executable discovery) {
         synchronized (m_executables) {
             if (m_executables.add(discovery)) {
-                discovery.setPriority(discovery.getPriority() + m_priority);
                 LOG.info("add: {}", discovery.getInfo());
             }
         }
@@ -115,7 +88,6 @@ public class SchedulableExecutableGroup extends Schedulable {
         synchronized (m_executables) {
             if (m_executables.remove(discovery)) {
                 LOG.info("remove: {}", discovery.getInfo());
-                discovery.setPriority(null);
             }
         }
     }

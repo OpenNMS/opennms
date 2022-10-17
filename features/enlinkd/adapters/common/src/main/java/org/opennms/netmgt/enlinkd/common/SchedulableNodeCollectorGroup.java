@@ -45,7 +45,7 @@ public abstract class SchedulableNodeCollectorGroup extends SchedulableExecutabl
     private final ProtocolSupported m_protocolSupported;
     private final NodeTopologyService m_nodeTopologyService;
     private final LocationAwareSnmpClient m_locationAwareSnmpClient;
-
+    private final int m_priority;
     private final Set<Integer> m_suspended = new HashSet<>();
 
     public SchedulableNodeCollectorGroup(
@@ -56,10 +56,11 @@ public abstract class SchedulableNodeCollectorGroup extends SchedulableExecutabl
             ProtocolSupported protocolSupported,
             NodeTopologyService nodeTopologyService,
             LocationAwareSnmpClient locationAwareSnmpClient) {
-        super(interval,initial,executor,priority, protocolSupported.name());
+        super(interval, initial, executor, protocolSupported.name());
         m_protocolSupported = protocolSupported;
         m_nodeTopologyService = nodeTopologyService;
         m_locationAwareSnmpClient = locationAwareSnmpClient;
+        m_priority=priority;
     }
 
     public void suspend(final Integer nodeid) {
@@ -91,7 +92,7 @@ public abstract class SchedulableNodeCollectorGroup extends SchedulableExecutabl
         m_nodeTopologyService.findAllSnmpNode()
                 .stream()
                 .filter(node -> !m_suspended.contains(node.getNodeId()))
-                .forEach(node -> this.add(getNodeCollector(node, (priorityMap.getOrDefault(node.getNodeId(), maxPriority)))));
+                .forEach(node -> this.add(getNodeCollector(node, (priorityMap.getOrDefault(node.getNodeId(), maxPriority))+ m_priority)));
         super.runSchedulable();
     }
 

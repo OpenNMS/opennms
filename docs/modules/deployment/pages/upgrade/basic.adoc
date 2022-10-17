@@ -1,8 +1,9 @@
+
 [[upgrade-basic]]
 = Basic Upgrade Steps
 
 This procedure describes how to do a basic {page-component-title} upgrade.
-You may need to complete additional steps to upgrade in a more complex setup (for example, if you run more than one OpenNMS instance, have more complex database migration requirements, and/or depending on the age of current version).
+You may need to complete additional steps to upgrade in a more complex setup (for example, if you run more than one {page-component-title} instance, have more complex database migration requirements, or depending on the age of current version).
 
 If you use Git to track changes to your configuration files, see xref:deployment:upgrade/git-upgrade.adoc[Upgrade {page-component-title} with Git].
 
@@ -34,4 +35,4 @@ endif::[]
 Refer to the https://www.postgresql.org/docs/[PostgreSQL documentation] for information on how to upgrade a PostgreSQL database.
 You may also find the https://opennms.discourse.group/t/upgrading-postgresql/772#upgrading-on-rhel-or-centos-using-pg_upgrade-6[Upgrading PostgreSQL] article on Discourse useful.
 
-NOTE: You must stop the OpenNMS service while doing maintenance on database services.
+NOTE: You must stop the {page-component-title} service while doing maintenance on database services.

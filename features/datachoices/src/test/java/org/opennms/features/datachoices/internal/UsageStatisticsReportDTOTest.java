@@ -66,6 +66,7 @@ public class UsageStatisticsReportDTOTest {
         usageStatisticsReport.setDestinationPathCount(-1);
         usageStatisticsReport.setUsers(0);
         usageStatisticsReport.setGroups(0);
+        usageStatisticsReport.setOnmsStartupTimeSeconds(1000L);
         String actualJson = usageStatisticsReport.toJson();
         System.err.println(actualJson);
 
@@ -99,6 +100,7 @@ public class UsageStatisticsReportDTOTest {
             "\"notificationEnablementStatus\":null," +
             "\"notifications\":0," +
             "\"onCallRoleCount\":1," +
+            "\"onmsStartupTimeSeconds\":1000," +
             "\"osArch\":null," +
             "\"osName\":null," +
             "\"osVersion\":null," +

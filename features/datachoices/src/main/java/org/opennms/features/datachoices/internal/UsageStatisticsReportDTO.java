@@ -97,6 +97,7 @@ public class UsageStatisticsReportDTO {
     private Map<String, Long> m_nodesWithDeviceConfigBySysOid = Collections.emptyMap();
     private int outages;
     private int notifications;
+    private long m_onmsStartupTimeSeconds;
 
     public int getNotifications() {return notifications;}
 
@@ -510,6 +511,10 @@ public class UsageStatisticsReportDTO {
     public void setNodesWithDeviceConfigBySysOid(Map<String, Long> nodesWithConfigBySysOid) {
         this.m_nodesWithDeviceConfigBySysOid = nodesWithConfigBySysOid;
     }
+
+    public long getOnmsStartupTimeSeconds() { return m_onmsStartupTimeSeconds; }
+
+    public void setOnmsStartupTimeSeconds(long onmsStartupTimeSeconds) { this.m_onmsStartupTimeSeconds = onmsStartupTimeSeconds; }
 
     public String toJson() {
         return toJson(false);

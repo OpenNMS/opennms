@@ -80,7 +80,7 @@ public final class NodeDiscoveryLldp extends NodeCollector {
             final NodeCollectionGroupLldp group,
             final Node node,
             final int priority) {
-        super(group, node, priority);
+        super(group.getLocationAwareSnmpClient(), node, priority);
     	m_lldpTopologyService = group.getLldpTopologyService();
     }
 

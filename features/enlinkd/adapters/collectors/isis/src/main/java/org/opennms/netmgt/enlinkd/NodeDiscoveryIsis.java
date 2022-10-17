@@ -66,7 +66,7 @@ public final class NodeDiscoveryIsis extends NodeCollector {
             final NodeCollectionGroupIsis group,
             final Node node,
             final int priority) {
-        super(group, node, priority);
+        super(group.getLocationAwareSnmpClient(), node, priority);
     	m_isisTopologyService = group.getIsisTopologyService();
     }
 

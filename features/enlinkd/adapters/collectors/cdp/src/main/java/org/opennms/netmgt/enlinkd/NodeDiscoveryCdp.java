@@ -68,7 +68,7 @@ public final class NodeDiscoveryCdp extends NodeCollector {
             NodeCollectionGroupCdp group,
             final Node node,
             final int priority) {
-        super(group, node, priority);
+        super(group.getLocationAwareSnmpClient(), node, priority);
     	m_cdpTopologyService = group.getCdpTopologyService();
     }
 

@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.vacuumd.jmx;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 
@@ -127,6 +128,11 @@ public class Vacuumd implements VacuumdMBean {
     @Override
     public String getStatusText() {
         return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
+    }
+
+    @Override
+    public long getStartTimeMilliseconds() {
+        throw new NotImplementedException();
     }
 
     /** {@inheritDoc} */

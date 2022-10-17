@@ -64,7 +64,7 @@ public final class NodeDiscoveryOspf extends NodeCollector {
             final NodeCollectionGroupOspf group,
             final Node node,
             final int priority) {
-        super(group, node, priority);
+        super(group.getLocationAwareSnmpClient(), node, priority);
     	m_ospfTopologyService = group.getOspfTopologyService();
     }
 

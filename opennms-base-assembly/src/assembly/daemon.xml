@@ -112,6 +112,7 @@
         <exclude>org.springframework:*</exclude>
         <exclude>org.slf4j:slf4j-jdk14</exclude>
         <exclude>io.pyroscope:agent</exclude>
+        <exclude>org.jacoco:org.jacoco.agent:jar:runtime</exclude>
         <!-- Exclude the dependency POMs -->
         <exclude>*:pom</exclude>
       </excludes>
@@ -131,6 +132,15 @@
       <useStrictFiltering>true</useStrictFiltering>
       <includes>
         <include>io.pyroscope:agent:jar</include>
+      </includes>
+    </dependencySet>
+    <dependencySet>
+      <useProjectArtifact>false</useProjectArtifact>
+      <outputFileNameMapping>jacoco-agent.jar</outputFileNameMapping>
+      <outputDirectory>agent</outputDirectory>
+      <useStrictFiltering>true</useStrictFiltering>
+      <includes>
+        <include>org.jacoco:org.jacoco.agent:jar:runtime</include>
       </includes>
     </dependencySet>
   </dependencySets>

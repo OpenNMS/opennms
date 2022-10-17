@@ -26,7 +26,6 @@
   </build>
   <modules>
     <module>api</module>
-    <module>build</module>
     <module>cache</module>
     <module>camel</module>
     <module>cli</module>

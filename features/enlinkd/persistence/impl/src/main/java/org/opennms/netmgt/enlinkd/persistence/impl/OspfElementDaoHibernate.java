@@ -81,4 +81,9 @@ public class OspfElementDaoHibernate extends AbstractDaoHibernate<OspfElement, I
                                  new Object[] {nodeId});
     }
 
+    @Override
+    public void deleteAll() {
+        getHibernateTemplate().bulkUpdate("delete from OspfElement");
+    }
+
 }

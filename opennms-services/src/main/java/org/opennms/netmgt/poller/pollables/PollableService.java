@@ -83,7 +83,12 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
         super(iface, Scope.SERVICE);
         m_svcName = svcName;
     }
-    
+
+    @Override
+    protected boolean isSuspended() {
+        return getSchedule().getInterval().scheduledSuspension();
+    }
+
     /**
      * <p>getInterface</p>
      *
