@@ -13,21 +13,9 @@
                 AND location='Default'
             </sqlCheck>
         </preConditions>
-        <!--
-        <sql>
-            CREATE EXTENSION IF NOT EXISTS pgcrypto;
-        </sql>
-        -->
-        <sql>
-            ALTER TABLE alarms
-            DROP CONSTRAINT fk_alarms_systemid;
-        </sql>
-        <sql>
-            ALTER TABLE alarms
-            ADD CONSTRAINT fk_alarms_systemid
-            FOREIGN KEY (systemid)
-            REFERENCES monitoringsystems (id) ON UPDATE CASCADE ON DELETE CASCADE;
-        </sql>
+        <dropForeignKeyConstraint constraintName="fk_alarms_systemid" baseTableName="alarms" />
+        <addForeignKeyConstraint  constraintName="fk_alarms_systemid" baseTableName="alarms" baseColumnNames="systemid" 
+            referencedTableName="monitoringsystems" referencedColumnNames="id" onDelete="CASCADE" onUpdate="CASCADE" />
         <sql>
             UPDATE monitoringsystems
             SET id=gen_random_uuid ()

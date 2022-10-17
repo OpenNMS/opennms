@@ -930,8 +930,8 @@ public class Migrator {
             st = c.createStatement();
             st.execute("ALTER ROLE " + getDatabaseUser() + " WITH SUPERUSER");
             addPGCryptoExtension(false);
-            st.execute("ALTER ROLE " + getDatabaseUser() + " WITH NOSUPERUSER");
             addPGCryptoExtension(true);
+            st.execute("ALTER ROLE " + getDatabaseUser() + " WITH NOSUPERUSER");
 
         } catch (SQLException e) {
             throw new MigrationException("could not add pgcrypto extension", e);
