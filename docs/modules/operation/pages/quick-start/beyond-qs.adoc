@@ -1,0 +1,28 @@
+
+= What's Next?
+
+This Quick Start guide has covered the following topics:
+
+* xref:operation:quick-start/users.adoc[Creating and modifying user accounts].
+* xref:operation:quick-start/inventory.adoc[Provisioning inventory].
+* xref:operation:quick-start/performance-data.adoc[Collecting performance data].
+* xref:operation:quick-start/thresholding.adoc[Thresholding].
+* xref:operation:quick-start/baseline.adoc[Establishing a baseline].
+* xref:operation:quick-start/service-assurance.adoc[Determining service availability].
+* xref:operation:quick-start/notifications.adoc[Turning on] and configuring notifications.
+* Visualizing monitoring data.
+
+== Beyond the Quick Start guide
+
+Your {page-component-title} instance should now be set up and prepared to monitor your network.
+There is still so much more that you can do, however.
+
+=== Explore the Deep Dive section
+
+If you want to know more about any of the topics covered in the Quick Start guide, you can explore their corresponding docs in the Deep Dive section.
+Deep Dive topics are referenced in each of the Quick Start pages; they can provide a starting point.
+
+=== Customize {page-component-title} home page
+
+We covered visualizations in Step 9: Visualize Data, but you can do much more to display your data--including customizing your {page-component-title} home page.
+For more information, see xref:operation:deep-dive/grafana-dashboard-box.adoc[Grafana Dashboard Box] in the Deep Dive section.
