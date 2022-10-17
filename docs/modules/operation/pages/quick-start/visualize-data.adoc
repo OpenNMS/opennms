@@ -3,12 +3,12 @@
 
 This section describes how to visualize your environment's data (using the dashboard, graphs, and so on) in {page-component-title}.
 
-== {page-component-title} Home page
+== {page-component-title} home page
 
 The {page-component-title} home page presents an overview of important network status metrics, as soon as you log in.
 By default, it displays pending situations and problems, ongoing outages, 24-hour availability statistics, and a map displaying real-time regional status data.
 
-When you log in, the visualizations on the Home page are not filtered.
+When you log in, the visualizations on the home page are not filtered.
 You can apply filters to the data using the sections on the right side of the screen (Resource Graphs, KSC Reports, and Quick Search).
 
 For more information, see xref:operation:deep-dive/admin/webui/grafana-dashboard-box.adoc[Grafana Dashboard Box] in the Deep Dive section.

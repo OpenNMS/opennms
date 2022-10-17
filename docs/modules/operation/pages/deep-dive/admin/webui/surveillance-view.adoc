@@ -32,7 +32,7 @@ Visual status indicators are defined as follows:
 * *Yellow:* one service down.
 * *Red:* more than one service down.
 
-The Surveillance View also serves as the foundation of the <<deep-dive/admin/webui/dashboard.adoc, Dashboard>>.
+The Surveillance View also serves as the foundation of the xref:operation:deep-dive/admin/webui/dashboard.adoc[Dashboard].
 
 == Default configuration
 

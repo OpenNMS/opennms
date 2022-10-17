@@ -140,12 +140,6 @@ This option is similar to the SQL `like` function and is case-sensitive.
 | Database attribute
 | -
 | -
-
-| MultiAnd
-| Constraint that supports multiple parameters in the criteria builder.
-| Database attribute
-| String
-| String
 |===
 
 TIP: For date values, you can specify absolute value in ISO format (`2019-06-20T20:45:15.123-05:00`).
