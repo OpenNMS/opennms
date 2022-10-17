@@ -1281,6 +1281,13 @@
       <artifactId>org.opennms.features.config.upgrade</artifactId>
       <version>${project.version}</version>
     </dependency>
+
+    <dependency>
+      <groupId>org.jacoco</groupId>
+      <artifactId>org.jacoco.agent</artifactId>
+      <version>${jacocoVersion}</version>
+      <classifier>runtime</classifier>
+    </dependency>
   </dependencies>
 
   <pluginRepositories>

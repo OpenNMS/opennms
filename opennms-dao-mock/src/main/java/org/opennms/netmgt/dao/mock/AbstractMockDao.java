@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -114,13 +114,13 @@ public abstract class AbstractMockDao<T, K extends Serializable> implements Lega
 
     @Override
     public int countAll() {
-        //LOG.debug("countAll()");
+        LOG.trace("countAll()");
         return findAll().size();
     }
 
     @Override
     public void delete(final T entity) {
-        LOG.debug("delete({})", entity);
+        LOG.trace("delete({})", entity);
         m_entries.remove(getId(entity));
     }
 
@@ -131,7 +131,7 @@ public abstract class AbstractMockDao<T, K extends Serializable> implements Lega
 
     @Override
     public List<T> findAll() {
-        //LogUtils.debugf(this, "findAll()");
+        LOG.trace("findAll()");
         return new ArrayList<T>(m_entries.values());
     }
 
@@ -146,20 +146,20 @@ public abstract class AbstractMockDao<T, K extends Serializable> implements Lega
 
     @Override
     public List<T> findMatching(final OnmsCriteria criteria) {
-        LOG.debug("findMatching({})", criteria);
+        LOG.trace("findMatching({})", criteria);
         throw new UnsupportedOperationException("Not yet implemented!");
     }
 
     @Override
     public int countMatching(final Criteria onmsCrit) {
-        LOG.debug("countMatching({})", onmsCrit);
+        LOG.trace("countMatching({})", onmsCrit);
         final List<T> matched = findMatching(onmsCrit);
         return matched == null? 0 : matched.size();
     }
 
     @Override
     public int countMatching(final OnmsCriteria onmsCrit) {
-        LOG.debug("countMatching({})", onmsCrit);
+        LOG.trace("countMatching({})", onmsCrit);
         final List<T> matched = findMatching(onmsCrit);
         return matched == null? 0 : matched.size();
     }
@@ -167,14 +167,18 @@ public abstract class AbstractMockDao<T, K extends Serializable> implements Lega
     @Override
     public T get(final K id) {
         T retval = m_entries.get(id);
-        LOG.debug("get({}: {})", retval == null ? "null" : retval.getClass().getSimpleName(), id);
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("get({}: {})", retval == null ? "null" : retval.getClass().getSimpleName(), id);
+        }
         return retval;
     }
 
     @Override
     public T load(K id) {
         T retval = m_entries.get(id);
-        LOG.debug("load({}: {})", retval == null ? "null" : retval.getClass().getSimpleName(), id);
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("load({}: {})", retval == null ? "null" : retval.getClass().getSimpleName(), id);
+        }
         return retval;
     }
 
@@ -189,7 +193,7 @@ public abstract class AbstractMockDao<T, K extends Serializable> implements Lega
         if (m_entries.containsKey(id)) {
             LOG.debug("save({}): id already exists: {}", entity, id);
         } else {
-            LOG.debug("save({})", entity);
+            LOG.trace("save({})", entity);
         }
         m_entries.put(id, entity);
         return id;
@@ -206,7 +210,7 @@ public abstract class AbstractMockDao<T, K extends Serializable> implements Lega
 
     @Override
     public void update(final T entity) {
-        LOG.debug("update({})", entity);
+        LOG.trace("update({})", entity);
         final K id = getId(entity);
         final T existingEntity = get(id);
         if (!entity.equals(existingEntity)) {
