@@ -1,11 +1,11 @@
 
 = Quick Start
 
-The Quick Start guide assumes you have already completed the xref:deployment:core/introduction.adoc[deployment steps], have xref:deployment:core/getting-started.adoc[installed a {page-component-title} instance], and are able to connect to the web UI at `\http://<ip-or-fqdn-of-your-server>:8980/opennms`.
+This Quick Start guide assumes that you have already completed the xref:deployment:core/introduction.adoc[deployment steps], have xref:deployment:core/getting-started.adoc[installed a {page-component-title} instance], and that you are able to connect to the web UI at `\http://<ip-or-fqdn-of-your-server>:8980/opennms`.
 
 == Introduction
 
-Now that you have installed and started {page-component-title}, you should consider what your monitoring goals are.
+Now that you have installed and started {page-component-title}, you should consider your monitoring goals.
 Knowing what kind of information you want to collect will help focus your setup process.
 
 Out of the box, {page-component-title} provides the following functionality:
