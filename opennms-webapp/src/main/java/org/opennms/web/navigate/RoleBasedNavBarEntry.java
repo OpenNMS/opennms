@@ -26,21 +26,36 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.rest.support.menu;
+package org.opennms.web.navigate;
 
-// Similar to org.opennms.web.navigate.MenuEntry
-public class MenuEntry {
-    public String id;
-    public String className;
-    public String name;
-    public String url;
-    public String locationMatch;
-    public String icon;
-    /** The icon type, "fa" for font-awesome, "feather" for FeatherDS */
-    public String iconType;  // "fa" or "feather"
-    /** If true, display an icon only, no name/title. */
-    public Boolean isIconOnly;
-    public Boolean isVueLink;
-    /** Comma-separated list of roles. If present, user must have at least one of these roles to display */
-    public String roles;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+import com.google.common.base.Strings;
+
+public class RoleBasedNavBarEntry extends LocationBasedNavBarEntry {
+    /** comma-separated list of roles */
+    private String roles;
+
+    public String getRoles() {
+        return this.roles;
+    }
+
+    public void setRoles(String roles) {
+        this.roles = roles;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public DisplayStatus evaluate(MenuContext context) {
+        if (!Strings.isNullOrEmpty(this.roles)) {
+            List<String> roleList = Arrays.stream(this.roles.split(",")).map(String::trim).collect(Collectors.toList());
+
+            boolean anyMatch = roleList.stream().anyMatch(context::isUserInRole);
+
+            return anyMatch ? super.evaluate(context) : DisplayStatus.NO_DISPLAY;
+        }
+
+        return DisplayStatus.NO_DISPLAY;
+    }
 }

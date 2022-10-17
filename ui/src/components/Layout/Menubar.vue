@@ -211,7 +211,7 @@
           <font-awesome-icon
             :icon="`fa-solid ${mainMenu.flowsMenu.icon || 'fa-minus-circle'}`"
             class="top-menu-icon"
-            :title="`${mainMenu.flowsMenu?.name} || 'Flow Management'`"
+            :title="`${mainMenu.flowsMenu?.name || 'Flow Management'}`"
           ></font-awesome-icon>
         </a>
 
@@ -224,7 +224,7 @@
           <font-awesome-icon
             :icon="`fa-solid ${mainMenu.configurationMenu.icon || 'fa-cogs'}`"
             class="top-menu-icon"
-            :title="`${mainMenu.configurationMenu?.name} || 'Configure OpenNMS'`"
+            :title="`${mainMenu.configurationMenu?.name || 'Configure OpenNMS'}`"
           ></font-awesome-icon>
         </a>
       </template>
