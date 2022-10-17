@@ -689,6 +689,9 @@ find %{buildroot}%{sharedir} ! -type d | \
 	grep -v 'tca-datacollection-config.xml' | \
 	grep -v 'juniper-tca' | \
 	sort >> %{_tmppath}/files.main
+find %{buildroot}%{instprefix}/agent ! -type d | \
+        sed -e "s|^%{buildroot}|%attr(755,opennms,opennms) |" | \
+        sort >> %{_tmppath}/files.main
 find %{buildroot}%{instprefix}/contrib ! -type d | \
 	sed -e "s|^%{buildroot}|%attr(755,opennms,opennms) |" | \
 	sort >> %{_tmppath}/files.main
@@ -713,8 +716,9 @@ find %{buildroot}%{instprefix}/system ! -type d | \
 	sed -e "s|^%{buildroot}|%attr(755,opennms,opennms) |" | \
 	grep -v 'jira-' | \
 	sort >> %{_tmppath}/files.main
-# Put the etc, lib, and system subdirectories into the package
-find %{buildroot}%{instprefix}/bin \
+# Put the agent, etc, lib, and system subdirectories into the package
+find %{buildroot}%{instprefix}/agent \
+	%{buildroot}%{instprefix}/bin \
 	%{buildroot}%{instprefix}/contrib \
 	%{buildroot}%{instprefix}/etc \
 	%{buildroot}%{instprefix}/lib \
