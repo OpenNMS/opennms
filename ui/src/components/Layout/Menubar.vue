@@ -110,10 +110,10 @@
           class="menubar-dropdown">
           <template v-slot:trigger="{ attrs, on }">
             <FeatherButton link href="#" v-bind="attrs" v-on="on" class="menubar-dropdown-button-dark">
-              <span class="notification-badge-pill">
+              <span :class="{'notification-badge-pill': true, 'badge-severity-minor': notificationSummary.userUnacknowledgedCount > 0}">
                 {{ notificationSummary.userUnacknowledgedCount }}
               </span>
-              <span class="notification-badge-pill">
+              <span :class="{'notification-badge-pill': true, 'badge-severity-minor': notificationSummary.teamUnacknowledgedCount > 0}">
                 {{ notificationSummary.teamUnacknowledgedCount }}
               </span>
               <FeatherIcon :icon="ArrowDropDown" />
@@ -121,14 +121,57 @@
           </template>
 
           <FeatherDropdownItem
-            v-for="item in mainMenu.userNotificationMenu.items"
+            v-for="item in mainMenu.userNotificationMenu.items?.filter(i => i.id === 'user')"
             :key="item.name || ''"
             @click="onMenuItemClick(item.url || '', item.isVueLink)"
           >
             <a :href="computeLink(item.url || '')" class="dropdown-menu-link">
-              <template v-if="item.icon && item.id === 'user'">
+              <template v-if="item.icon">
                 <FeatherIcon :icon="Person" />
               </template>
+              <span class="left-margin-small">
+                {{ notificationSummary.userUnacknowledgedCount }} notices assigned to you
+              </span>
+            </a>
+          </FeatherDropdownItem>
+
+          <!-- user notifications -->
+          <FeatherDropdownItem
+            v-for="item in notificationSummary.userUnacknowledgedNotifications.notification"
+            :key="item.id || ''"
+            class="notification-dropdown-item"
+            @click="onNotificationItemClick(item)"
+          >
+              <template #default>
+                <div class="notification-dropdown-item-content">
+                  <span :class="`notification-badge-pill badge-severity-${item.severity.toLocaleLowerCase()}`">
+                    &nbsp;
+                  </span>
+                  <span class="font-weight-bold left-margin-small">
+                  {{ new Date(item.pageTime).toLocaleDateString() }} {{ new Date(item.pageTime).toLocaleTimeString() }}
+                  </span>
+                  <a href="#" @click="onNotificationItemClick(item)">
+                    <FeatherIcon :icon="View" class="left-margin-small" />
+                  </a>
+                  <!--
+                  <br />>
+                  <span class="row">{{ item.notificationName }}</span>
+                  <span class="row">{{ item.nodeLabel }}</span>
+                  <span class="row">{{ item.ipAddress }}</span>
+                  <span class="row">{{ item.serviceType?.name }}</span>
+                  -->
+                </div>
+              
+              </template>
+          </FeatherDropdownItem>
+
+          <!-- Team and On-Call links -->
+          <FeatherDropdownItem
+            v-for="item in mainMenu.userNotificationMenu.items?.filter(i => i.id !== 'user')"
+            :key="item.name || ''"
+            @click="onMenuItemClick(item.url || '', item.isVueLink)"
+          >
+            <a :href="computeLink(item.url || '')" class="dropdown-menu-link">
               <template v-if="item.icon && item.id === 'team'">
                 <font-awesome-icon icon="fa-solid fa-users"></font-awesome-icon>
               </template>
@@ -136,9 +179,6 @@
                 <font-awesome-icon icon="fa-solid fa-calendar"></font-awesome-icon>
               </template>
               <span class="left-margin-small">
-                <template v-if="item.id === 'user'">
-                  {{ notificationSummary.userUnacknowledgedCount }} notices assigned to you
-                </template>
                 <template v-if="item.id === 'team'">
                     {{ notificationSummary.teamUnacknowledgedCount }} of {{ notificationSummary.totalUnacknowledgedCount }} assigned to anyone but you
                 </template>
@@ -147,14 +187,6 @@
                 </template>
               </span>
             </a>
-          </FeatherDropdownItem>
-
-          <FeatherDropdownItem
-            v-for="item in notificationSummary.userUnacknowledgedNotifications.notification"
-            :key="item.id || ''"
-            @click="onNotificationItemClick(item)"
-          >
-              Notification: {{ item.id }}
           </FeatherDropdownItem>
         </FeatherDropdown>
 
@@ -259,6 +291,7 @@ import { FeatherIcon } from '@featherds/icon'
 import AddCircleAlt from '@featherds/icon/action/AddCircleAlt'
 import ArrowDropDown from '@featherds/icon/navigation/ArrowDropDown'
 import LightDarkMode from '@featherds/icon/action/LightDarkMode'
+import View from '@featherds/icon/action/View'
 import Person from '@featherds/icon/action/Person'
 import Logo from '@/assets/Logo.vue'
 import Search from './Search.vue'
@@ -461,6 +494,13 @@ onMounted(async () => {
   color: #131736;   // --feather-surface-dark
   border-radius: .8rem;
 }
+.notification-dropdown-item {
+//  min-height: 200px;
+}
+.notification-dropdown-item-content {
+//  min-height: 200px;
+//  overflow-y: none;
+}
 
 .dialog-content-container {
   display: flex;
@@ -474,6 +514,31 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
 }
+
+.badge-severity-indeterminate {
+  background-color: #5dafdd;
+}
+
+.badge-severity-cleared {
+  background-color: #cdcdd0;
+}
+.badge-severity-normal {
+  background-color: #438953;
+}
+.badge-severity-warning {
+  background-color: #fff000;
+}
+.badge-severity-minor {
+  background-color: #ffd60a;
+}
+.badge-severity-major {
+  background-color: #ff9f0a;
+}
+.badge-severity-critical {
+  background-color: #df5251;
+}
+
+
 </style>
 
 <style lang="scss">
