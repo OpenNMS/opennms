@@ -30,7 +30,6 @@ package org.opennms.web.rest.v2;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.ws.rs.core.MediaType;
@@ -39,6 +38,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import static org.hamcrest.CoreMatchers.is;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
@@ -47,6 +47,7 @@ import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.opennms.web.rest.v1.support.OnmsMonitoringLocationDefinitionList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +55,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 /**
  * TODO
@@ -176,40 +177,46 @@ public class MonitoringLocationRestServiceIT extends AbstractSpringJerseyRestTes
     @Test
     @Transactional
     public void testLocationLimits() throws Exception {
+
+        final Integer DEFAULT_LIMIT = 10;
+        final Integer LOCATION_COUNT = 15;
+        final ObjectMapper MAPPER = new ObjectMapper();
+
+        this.eventIpcManager.getEventAnticipator().reset();
+
         // There is one default location
+        LOG.info("Adding locations...");
         for (int i = 0; i < LOCATION_COUNT - 1; i++) {
-            Location loc = new Location();
-            loc.locationName = "Location-" + String.format("%05d", i);
-            loc.monitoringArea = "LocationArea-" + String.format("%05d", i);
-
-            // post it to web service
-            String location = "<location location-name=\"" + loc.locationName + "\" monitoring-area=\"" + loc.monitoringArea + "\"/>";
-            sendPost("/monitoringLocations", location, 201, null);
+            OnmsMonitoringLocation loc = new OnmsMonitoringLocation();
+            loc.setLocationName(String.format("Location-%05d",i));
+            loc.setMonitoringArea(String.format("LocationArea-%05d", i));
+            sendData(POST, MediaType.APPLICATION_XML,"/monitoringLocations", JaxbUtils.marshal(loc), 201);
+            this.eventIpcManager.getEventAnticipator().verifyAnticipated();
         }
 
-        // Map contains (limit, expected count)
-        Map<Integer,Integer> limits = new HashMap<Integer,Integer>(8);
-        limits.put(null,DEFAULT_LIMIT); // null limit, should return default
-        limits.put(DEFAULT_LIMIT - 1,DEFAULT_LIMIT - 1); // limit less than default limit
-        limits.put(DEFAULT_LIMIT,DEFAULT_LIMIT); // limit equals default
-        limits.put(DEFAULT_LIMIT + 1,DEFAULT_LIMIT + 1); // limit greater than default
-        limits.put(LOCATION_COUNT + 1,LOCATION_COUNT); // limit greater than count
-        limits.put(0,LOCATION_COUNT); // unlimited, should return all
+        // null limit (empty parameters) should return default
+        assertThat(MAPPER.readValue(sendRequest(GET, "/monitoringLocations",
+                    Collections.emptyMap(), 200),Locations.class).count, is(DEFAULT_LIMIT));
 
-        for (Integer limit: limits.keySet()) {
-            Map<String, String> parameters = new HashMap<String, String>(1);
-            if (limit != null) {
-                parameters.put("limit", limit.toString());
-            }
-            String fetchedJson = sendRequest(GET, "/monitoringLocations", parameters, 200);
-            Integer count = (new ObjectMapper()).readValue(fetchedJson, Locations.class).count;
-            LOG.info("limit="+limit+" expected="+limits.get(limit)+" count="+count);
-            if (limit == null) {
-                assertEquals(DEFAULT_LIMIT, count);
-            } else {
-                assertEquals(limits.get(limit),count);
-            }
-        }
+        // limit less than default
+        assertThat(MAPPER.readValue(sendRequest(GET, "/monitoringLocations", Map.of("limit",
+                Integer.toString(DEFAULT_LIMIT-1)), 200), Locations.class).count, is(DEFAULT_LIMIT-1));
+
+        // limit equals default
+        assertThat(MAPPER.readValue(sendRequest(GET, "/monitoringLocations", Map.of("limit",
+                Integer.toString(DEFAULT_LIMIT)), 200), Locations.class).count, is(DEFAULT_LIMIT));
+
+        // limit greater than default
+        assertThat(MAPPER.readValue(sendRequest(GET, "/monitoringLocations", Map.of("limit",
+                Integer.toString(DEFAULT_LIMIT+1)), 200), Locations.class).count, is(DEFAULT_LIMIT+1));
+
+        // max count
+        assertThat(MAPPER.readValue(sendRequest(GET, "/monitoringLocations", Map.of("limit",
+                Integer.toString(LOCATION_COUNT)), 200), Locations.class).count, is(LOCATION_COUNT));
+
+        // unlimited, should return all
+        assertThat(MAPPER.readValue(sendRequest(GET, "/monitoringLocations", Map.of("limit",
+                Integer.toString(DEFAULT_LIMIT-1)), 200), Locations.class).count, is(DEFAULT_LIMIT-1));
     }
 
     /**
