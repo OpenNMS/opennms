@@ -21,6 +21,11 @@
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
+            <Import-Package>
+              <!-- Declare the Attach API as an optional dependency -->
+              com.sun.tools.attach;resolution:=optional,
+              *
+            </Import-Package>
           </instructions>
         </configuration>
       </plugin>
