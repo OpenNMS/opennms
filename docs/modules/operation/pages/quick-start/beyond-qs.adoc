@@ -9,7 +9,7 @@ This Quick Start guide has covered the following topics:
 * xref:operation:quick-start/thresholding.adoc[Thresholding].
 * xref:operation:quick-start/baseline.adoc[Establishing a baseline].
 * xref:operation:quick-start/service-assurance.adoc[Determining service availability].
-* xref:operation:quick-start/notifications.adoc[Turning on] and configuring notifications.
+* xref:operation:quick-start/notifications.adoc[Turning on] and xref:operation:quick-start/notification-config.adoc[configuring notifications].
 * Visualizing monitoring data.
 
 == Beyond the Quick Start guide
