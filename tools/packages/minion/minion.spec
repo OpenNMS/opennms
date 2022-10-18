@@ -51,7 +51,7 @@ Group:         Applications/System
 BuildArch:     noarch
 
 Source:        %{_name}-source-%{version}-%{releasenumber}.tar.gz
-URL:           http://www.opennms.org/wiki/Minion
+URL:           https://docs.opennms.com/horizon/latest/deployment/minion/introduction.html
 BuildRoot:     %{_tmppath}/%{name}-%{version}-root
 
 # don't worry about buildrequires, the shell script will bomb quick  =)
@@ -84,7 +84,7 @@ Prefix:         %{minioninstprefix}
 OpenNMS Minion is a container infrastructure for distributed, scalable network
 management and monitoring.
 
-http://www.opennms.org/wiki/Minion
+https://docs.opennms.com/horizon/latest/deployment/minion/introduction.html
 
 %{extrainfo}
 %{extrainfo2}
