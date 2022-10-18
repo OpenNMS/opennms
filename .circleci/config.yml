@@ -1139,7 +1139,6 @@ jobs:
   tarball-assembly:
     machine:
       image: ubuntu-2004:202010-01
-      docker_layer_caching: true
     resource_class: xlarge
     environment:
       DOCKER_CLI_EXPERIMENTAL: enabled
