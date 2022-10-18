@@ -14,16 +14,16 @@ Out of the box, {page-component-title} provides the following functionality:
 
 This guide covers the following tasks:
 
-* xref:operation:quick-start/users.adoc#ga-data-choices[First-time login and usage data permissions]
-* xref:operation:quick-start/users.adoc#ga-admin-user-setup[Set up `admin` user]
-* xref:operation:quick-start/users.adoc#create-user[Create a new user]
-* xref:operation:quick-start/notifications.adoc[Turn on default notifications]
-* xref:operation:quick-start/inventory.adoc[Provision inventory]
-* xref:operation:quick-start/performance-data.adoc[Set up performance data collection]
-* xref:operation:quick-start/thresholding.adoc[Set up a threshold]
-* xref:operation:quick-start/baseline.adoc[Establish a baseline]
-* xref:operation:quick-start/service-assurance.adoc[Determine service availability]
-* Configure notifications
-* Visualize your data
+* xref:operation:quick-start/users.adoc#ga-data-choices[First-time login and usage data permissions].
+* xref:operation:quick-start/users.adoc#ga-admin-user-setup[Set up `admin` user].
+* xref:operation:quick-start/users.adoc#create-user[Create a new user].
+* xref:operation:quick-start/notifications.adoc[Turn on default notifications].
+* xref:operation:quick-start/inventory.adoc[Provision inventory].
+* xref:operation:quick-start/performance-data.adoc[Set up performance data collection].
+* xref:operation:quick-start/thresholding.adoc[Set up a threshold].
+* xref:operation:quick-start/baseline.adoc[Establish a baseline].
+* xref:operation:quick-start/service-assurance.adoc[Determine service availability].
+* xref:operation:quick-start/notification-config.adoc[Configure notifications].
+* Visualize your data.
 
 NOTE: Unless otherwise stated, the procedures in the Quick Start require you to be logged in to the OpenNMS web UI as a user with admin privileges.
