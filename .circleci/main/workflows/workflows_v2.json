@@ -98,6 +98,12 @@
                 "code-coverage"
             ]
         },
+        "master-branch": {
+            "extends": [
+                "tarball-assembly-only",
+                "integration-test"
+            ]
+        },
         "experimental": {
             "extends": [
                 "code-coverage"
