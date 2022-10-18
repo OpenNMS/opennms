@@ -496,7 +496,7 @@ public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration
 
         example1.addService(new Service("OpenNMS-JVM", 300000, "false", "on",
                                         "port", "18980",
-                                        "factory", "PASSWORD-CLEAR",
+                                        "factory", "PASSWORD_CLEAR",
                                         "username", "admin",
                                         "password", "admin",
                                         "retry", "2",
