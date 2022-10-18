@@ -7,7 +7,6 @@
     class="menubar-search"
     @search="search"
     :loading="loading"
-    :hideLabel="true"
     text-prop="label"
     @update:modelValue="selectItem"
   ></FeatherAutocomplete>
@@ -17,13 +16,13 @@
   setup
   lang="ts"
 >
-import { debounce } from 'lodash'
 import { useStore } from 'vuex'
 import { FeatherAutocomplete } from '@featherds/autocomplete'
 
 const router = useRouter()
 const store = useStore()
 const searchStr = ref()
+const pausedSearch = ref()
 const loading = ref(false)
 
 const selectItem: any = (value: { url: string }) => {
@@ -33,18 +32,27 @@ const selectItem: any = (value: { url: string }) => {
   router.push(`/${path[0]}/${path[1]}`)
 }
 
-const search = debounce(async (value: string) => {
-  const searchVal = value || 'node'
-  loading.value = true
-  await store.dispatch('searchModule/search', searchVal)
-  loading.value = false
-}, 600)
+
+const search = async (value: string) => {
+  if (value || searchStr.value && !loading.value){
+    loading.value = true
+    await store.dispatch('searchModule/search', value)
+    loading.value = false
+  } else {
+    pausedSearch.value = value
+    searchStr.value = value
+  }
+}
+
+watchEffect(() => {
+  if (!loading.value && pausedSearch){
+    search(pausedSearch.value)
+    pausedSearch.value = ''
+  }
+})
 
 const results = computed(() => {
-  if (store.state.searchModule.searchResults[0]) {
-    return store.state.searchModule.searchResults[0].results
-  }
-  return []
+  return store.state?.searchModule?.searchResults?.[0]?.results || null
 })
 </script>
 
@@ -61,7 +69,10 @@ const results = computed(() => {
     background: var($surface);
   }
   :deep(.feather-input-sub-text){
-    display:none
+    display:none;
+  }
+  :deep(.feather-input-wrapper-container.raised .feather-input-label){
+    display:none;
   }
 }
 </style>
