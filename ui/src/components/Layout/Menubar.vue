@@ -199,6 +199,7 @@
           <FeatherIcon
             :icon="AddCircleAlt"
             class="pointer light-dark"
+            :title="`${mainMenu.provisionMenu?.name || 'Quick-Add Node'}`"
           />
         </a>
 
@@ -246,24 +247,31 @@
     <template #default>
       <div class="dialog-content-container">
         <div class="row">
-            <p>Notification {{ notificationDialogItem.id }}</p>
-          <span :class="`fa fa-circle text-severity-${notificationDialogItem.severity}`"></span>
-          <font-awesome-icon
-            icon="fa-solid fa-circle"
-            :class="`'menu-link text-severity-'${notificationDialogItem.severity ? notificationDialogItem.severity.toLowerCase() : 'indeterminate'}`"
-            :title="notificationDialogItem.severity"
-          ></font-awesome-icon>
-        </div>
-        <div class="row">
+          <!-- <p>Notification: {{ notificationDialogItem.notificationName }}</p> -->
+          <span :class="`notification-badge-pill badge-severity-${notificationDialogItem.severity.toLocaleLowerCase()}`">
+            &nbsp;&nbsp;&nbsp;
+          </span>
           <span class="font-weight-bold">
-          {{ new Date(notificationDialogItem.pageTime).toLocaleDateString() }} {{ new Date(notificationDialogItem.pageTime).toLocaleTimeString() }}
+            {{ new Date(notificationDialogItem.pageTime).toLocaleDateString() }} {{ new Date(notificationDialogItem.pageTime).toLocaleTimeString() }}
           </span>
         </div>
         <div class="row-container">
-          <div class="row">Name: {{ notificationDialogItem.notificationName }}</div>
-          <div class="row">Node: {{ notificationDialogItem.nodeLabel }}</div>
-          <div class="row">IP Address: {{ notificationDialogItem.ipAddress }}</div>
-          <div class="row">Service: {{ notificationDialogItem.serviceType?.name }}</div>
+          <div class="column-container">
+            <div class="column-label">Name:</div>
+            <div class="column">{{ notificationDialogItem.notificationName }}</div>
+          </div>
+          <div class="column-container">
+            <div class="column-label">Node:</div>
+            <div class="column">{{ notificationDialogItem.nodeLabel }}</div>
+          </div>
+          <div class="column-container">
+            <div class="column-label">IP Address:</div>
+            <div class="column">{{ notificationDialogItem.ipAddress }}</div>
+          </div>
+          <div class="column-container">
+            <div class="column-label">Service:</div>
+            <div class="column">{{ notificationDialogItem.serviceType?.name }}</div>
+          </div>
         </div>
         <div class="row">
           <span>Details:</span>
@@ -400,7 +408,7 @@ const onMenuItemClick = (url: string, isVueLink?: boolean | null) => {
 }
 
 const onNotificationItemClick = (item: OnmsNotification) => {
-  notificationDialogLabels.value.title = `Notification ${item.id}`
+  notificationDialogLabels.value.title = 'Notification'
   notificationDialogItem.value = item
   notificationDialogVisible.value = true
 }
@@ -507,12 +515,26 @@ onMounted(async () => {
   flex-direction: column;
   min-width: 400px;
 }
+.font-weight-bold, .font-weight-bold span {
+  font-weight: 800;
+}
 .row {
   display: flex;
+}
+.column {
+  display: flex;
+}
+.column-label {
+  display: flex;
+  min-width: 100px;
 }
 .row-container {
   display: flex;
   flex-direction: column;
+}
+.column-container {
+  display: flex;
+  flex-direction: row;
 }
 
 .badge-severity-indeterminate {
