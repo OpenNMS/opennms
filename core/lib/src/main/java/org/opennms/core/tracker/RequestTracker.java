@@ -203,7 +203,7 @@ public class RequestTracker<ReqT extends Request<?, ReqT, ReplyT>, ReplyT extend
         assertStarted();
         if (!m_requestLocator.trackRequest(request)) return;
         m_messenger.sendRequest(request);
-        s_log.debug("Scheding timeout for request to {} in {} ms", request, request.getDelay(TimeUnit.MILLISECONDS));
+        s_log.debug("Scheduling timeout for request to {} in {} ms", request, request.getDelay(TimeUnit.MILLISECONDS));
         m_timeoutQueue.offer(request);
     }
 
