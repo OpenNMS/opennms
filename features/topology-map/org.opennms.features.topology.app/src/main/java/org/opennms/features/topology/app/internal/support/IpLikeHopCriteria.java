@@ -98,7 +98,6 @@ public class IpLikeHopCriteria extends VertexHopCriteria implements SearchCriter
 		Objects.requireNonNull(graphContainer.getTopologyServiceClient());
         m_collapsedVertex.setChildren(getVertices());
         setId(searchResult.getId());
-		LOG.info("IpLikeHopCriteria: called constructor: {}", m_graphContainer.getMetaTopologyId());
     }
 
 	@Override
@@ -134,12 +133,9 @@ public class IpLikeHopCriteria extends VertexHopCriteria implements SearchCriter
 		
 		CriteriaBuilder bldr = new CriteriaBuilder(OnmsIpInterface.class);
 
-		LOG.info("getVertices: queryString: {}", m_ipQuery);
 		bldr.iplike("ipAddr", m_ipQuery);
 		final Set<Integer> nodeids = ipInterfaceProvider.findMatching(bldr.toCriteria()).stream().map(ip -> ip.getNode().getId()).collect(Collectors.toSet());
-		LOG.info("getVertices: nodeids: {}", nodeids);
-//		LOG.info("getVertices(): namespace: {}", m_graphContainer.getTopologyServiceClient().getNamespace());
-		LOG.info("getVertices(): namespace: {}", m_graphContainer.getTopologyServiceClient().getInfo().getName());
+		LOG.debug("getVertices: nodeids: {}", nodeids);
 		final GraphProvider graphProvider = m_graphContainer.getTopologyServiceClient().getGraphProviderBy(m_graphContainer.getTopologyServiceClient().getNamespace());
 		final BackendGraph currentGraph = graphProvider.getCurrentGraph();
 		return currentGraph.getVertices().stream().filter(v -> v.getNodeID() != null && nodeids.contains(v.getNodeID())).collect(Collectors.toSet());
