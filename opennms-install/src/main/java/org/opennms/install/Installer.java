@@ -247,7 +247,7 @@ public class Installer {
                 LOG.info(String.format("* using '%s' as the PostgreSQL schema name for OpenNMS", m_migrator.getSchemaName()));
             }
 
-            m_migrator.setupDatabase(m_update_database, m_do_vacuum, m_do_vacuum, m_update_iplike, m_timescaleDB);
+            m_migrator.setupDatabase(m_update_database, m_do_vacuum, m_do_vacuum, m_update_iplike, m_timescaleDB, true);
 
             // XXX why do both options need to be set to remove the database?
             if (m_update_database && m_remove_database) {

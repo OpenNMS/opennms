@@ -885,9 +885,7 @@ public class Migrator {
             st = c.createStatement();
             st.execute("CREATE EXTENSION IF NOT EXISTS pgcrypto CASCADE");
         } catch (SQLException e) {
-            LOG.warn("Unable to install pgcrypto extension");
-            e.printStackTrace();
-            // throw new MigrationException("could not add pgcrypto extension", e);
+            throw new MigrationException("could not add pgcrypto extension", e);
         } finally {
             cleanUpDatabase(c, null, st, null);
         }
@@ -930,15 +928,13 @@ public class Migrator {
         try {
             c = m_adminDataSource.getConnection();
             st = c.createStatement();
-            //st.execute("ALTER ROLE " + getDatabaseUser() + " WITH SUPERUSER");
+            st.execute("ALTER ROLE " + getDatabaseUser() + " WITH SUPERUSER");
             addPGCryptoExtension(false);
-            //st.execute("ALTER ROLE " + getDatabaseUser() + " WITH NOSUPERUSER");
+            st.execute("ALTER ROLE " + getDatabaseUser() + " WITH NOSUPERUSER");
             addPGCryptoExtension(true);
 
         } catch (SQLException e) {
-            LOG.warn("Unable to install pgcrypto extension");
-            e.printStackTrace();
-            //throw new MigrationException("could not add pgcrypto extension", e);
+            throw new MigrationException("could not add pgcrypto extension", e);
         } finally {
             cleanUpDatabase(c, null, st, null);
         }
@@ -1057,7 +1053,7 @@ public class Migrator {
         }
     }
 
-    public void setupDatabase(boolean updateDatabase, boolean vacuum, boolean fullVacuum, boolean iplike, boolean timescaleDB) throws MigrationException, Exception, IOException {
+    public void setupDatabase(boolean updateDatabase, boolean vacuum, boolean fullVacuum, boolean iplike, boolean timescaleDB, boolean pgcrypto) throws MigrationException, Exception, IOException {
         validateDatabaseVersion();
 
         if (updateDatabase) {
@@ -1071,10 +1067,18 @@ public class Migrator {
                 addTimescaleDBExtension(true);
             }
         }
-        if (databaseExists()) {
-            addPGCryptoExtensionOnDatabase();
-        } else {
-            addPGCryptoExtension(true);
+        if (pgcrypto) {
+            try {
+                if (databaseExists()) {
+                    addPGCryptoExtensionOnDatabase();
+                } else {
+                    addPGCryptoExtension(true);
+                }
+            }
+            catch (MigrationException me) {
+                // This is not a fatal issue, and can be remedied later if a unique systemID is needed
+                LOG.warn("Unable to install pgcrypto extension, system will use default ID", me);
+            }
         }
 
         checkUnicode();

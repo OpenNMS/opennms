@@ -31,5 +31,8 @@
             FROM (SELECT id FROM monitoringsystems where type='OpenNMS' AND location='Default') AS subquery
             WHERE systemid = '00000000-0000-0000-0000-000000000000';
         </sql>
+        <dropForeignKeyConstraint constraintName="fk_alarms_systemid" baseTableName="alarms" />
+        <addForeignKeyConstraint  constraintName="fk_alarms_systemid" baseTableName="alarms" baseColumnNames="systemid" 
+            referencedTableName="monitoringsystems" referencedColumnNames="id" onDelete="CASCADE" />
     </changeSet>
 </databaseChangeLog>
