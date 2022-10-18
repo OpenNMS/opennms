@@ -317,7 +317,7 @@ public abstract class AbstractOpenNMSSeleniumHelper {
     }
 
     protected void logout() {
-        getDriver().get(getBaseUrlInternal() + "opennms/j_spring_security_logout");
+        getElementWithoutWaiting(By.name("headerLogoutForm")).submit();
         waitForLogin();
     }
 

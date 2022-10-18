@@ -25,14 +25,8 @@
     <url>http://issues.opennms.org/</url>
  </issueManagement>
   <ciManagement>
-    <system>Bamboo</system>
-    <url>http://bamboo.internal.opennms.com:8085/</url>
-    <notifiers>
-      <notifier>
-        <type>htmlmail</type>
-        <address>ci@lists.opennms.com</address>
-      </notifier>
-    </notifiers>
+    <system>CircleCI</system>
+    <url>https://app.circleci.com/pipelines/github/OpenNMS/opennms</url>
   </ciManagement>
   <developers>
     <developer>
@@ -69,36 +63,6 @@
       <timezone>-5</timezone>
     </developer>
   </developers>
-  <mailingLists>
-    <mailingList>
-      <name>OpenNMS Discuss List</name>
-      <subscribe>https://lists.sourceforge.net/lists/listinfo/opennms-discuss</subscribe>
-      <unsubscribe>https://lists.sourceforge.net/lists/listinfo/opennms-discuss</unsubscribe>
-      <post>opennms-discuss@lists.sourcforge.net</post>
-      <archive>http://sourceforge.net/mailarchive/forum.php?forum=opennms-discuss</archive>
-    </mailingList>
-    <mailingList>
-      <name>OpenNMS Developer's List</name>
-      <subscribe>https://lists.sourceforge.net/lists/listinfo/opennms-devel</subscribe>
-      <unsubscribe>https://lists.sourceforge.net/lists/listinfo/opennms-devel</unsubscribe>
-      <post>opennms-devel@lists.sourcforge.net</post>
-      <archive>http://sourceforge.net/mailarchive/forum.php?forum=opennms-devel</archive>
-    </mailingList>
-    <mailingList>
-      <name>OpenNMS Install Help List</name>
-      <subscribe>https://lists.sourceforge.net/lists/listinfo/opennms-install</subscribe>
-      <unsubscribe>https://lists.sourceforge.net/lists/listinfo/opennms-install</unsubscribe>
-      <post>opennms-install@lists.sourcforge.net</post>
-      <archive>http://sourceforge.net/mailarchive/forum.php?forum=opennms-install</archive>
-    </mailingList>
-    <mailingList>
-      <name>OpenNMS Source Control List</name>
-      <subscribe>https://lists.sourceforge.net/lists/listinfo/opennms-cvs</subscribe>
-      <unsubscribe>https://lists.sourceforge.net/lists/listinfo/opennms-cvs</unsubscribe>
-      <post>opennms-cvs@lists.sourcforge.net</post>
-      <archive>http://sourceforge.net/mailarchive/forum.php?forum=opennms-cvs</archive>
-    </mailingList>
-  </mailingLists>
   <scm>
     <connection>scm:git:https://github.com/OpenNMS/opennms.git</connection>
     <developerConnection>scm:git:https://${user.name}@github.com/OpenNMS/opennms.git</developerConnection>
@@ -155,7 +119,7 @@
     <extension>
       <groupId>org.apache.maven.wagon</groupId>
       <artifactId>wagon-ssh-external</artifactId>
-      <version>2.6</version>
+      <version>3.5.2</version>
     </extension>
   </extensions>
   <pluginManagement>
@@ -1163,14 +1127,11 @@
                    <exclude>com.sun.xml.bind.mvn:*</exclude>
                    <exclude>org.glassfish.jaxb:jaxb-core</exclude>
 
-                   <!-- use org.opennms.dependencies:org.opennms.dependencies.spring-beans-XX-shaded for CVE-2022-22965 -->
-                   <exclude>org.springframework:spring-beans</exclude>
-                   <exclude>org.apache.servicemix.bundles:org.apache.servicemix.bundles.spring-beans</exclude>
-
                    <exclude>asm:*</exclude>                          <!-- use: org.ow2.asm.* -->
                    <exclude>commons-logging:*</exclude>              <!-- use: jcl-over-slf4j -->
                    <exclude>com.github.detro:*</exclude>             <!-- use: com.codeborne.phantomjsdriver -->
                    <exclude>com.github.detro.ghostdriver:*</exclude> <!-- use: com.codeborne.phantomjsdriver -->
+                   <exclude>dom4j:dom4j</exclude>                    <!-- use: org.dom4j:dom4j -->
                    <exclude>javax.servlet:jstl</exclude>             <!-- use: jstl-dependencies -->
                    <exclude>javax.servlet.jsp:jsp-api</exclude>      <!-- use: servlet-dependencies -->
                    <exclude>javax.ws.rs:jsr311-api</exclude>         <!-- use: javax.ws.rs-api -->
@@ -1358,7 +1319,6 @@
           <forkCount>1</forkCount>
           <reuseForks>false</reuseForks>
           <rerunFailingTestsCount>${ci.rerunFailingTestsCount}</rerunFailingTestsCount>
-          <reportsDirectory>${project.build.directory}/surefire-reports-${ci.instance}</reportsDirectory>
           <useModulePath>false</useModulePath>
           <forkedProcessExitTimeoutInSeconds>120</forkedProcessExitTimeoutInSeconds>
         </configuration>
@@ -1367,6 +1327,8 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
         <configuration>
+          <!-- Don't use this! Use the normal -DskipITs=true; this exists only for CI to do some optimizations. -->
+          <skip>${skipFailsafe}</skip>
           <!-- Don't specify argLine here or it will override the argLine property value -->
           <systemPropertyVariables>
             <java.locale.providers>CLDR,COMPAT</java.locale.providers>
@@ -1383,7 +1345,6 @@
           <reuseForks>false</reuseForks>
           <rerunFailingTestsCount>${ci.rerunFailingTestsCount}</rerunFailingTestsCount>
           <skipITs>${skipITs}</skipITs>
-          <reportsDirectory>${project.build.directory}/failsafe-reports-${ci.instance}</reportsDirectory>
           <useModulePath>false</useModulePath>
         </configuration>
         <executions>
@@ -1542,7 +1503,7 @@
 
     <!--
       This is on by default now that root is not required for pinging.
-      If you have issues with this, see https://docs.opennms.org/ for enabling non-root ping.
+      If you have issues with this, see https://docs.opennms.com/ for enabling non-root ping.
       However, we need to set the default in a profile (NMS-8838).
     <runPingTests>true</runPingTests> -->
 
@@ -1698,6 +1659,7 @@
     <cxfXjcVersion>3.3.0</cxfXjcVersion>
     <dhcp4javaVersion>1.1.0</dhcp4javaVersion>
     <dnsjavaVersion>2.1.9_1</dnsjavaVersion>
+    <dom4jVersion>2.1.3</dom4jVersion>
     <dropwizardMetricsVersion>3.1.2</dropwizardMetricsVersion>
     <ecjVersion>4.4.2</ecjVersion>
     <eclipseGeminiVersion>2.1.0.RELEASE</eclipseGeminiVersion>
@@ -1714,7 +1676,7 @@
     <geronimoVersion>1.1.1</geronimoVersion>
     <groovyVersion>2.5.16</groovyVersion>
     <grpcVersion>1.46.0</grpcVersion>
-    <gsonVersion>2.8.5</gsonVersion>
+    <gsonVersion>2.9.1</gsonVersion>
     <guavaVersion>25.1-jre</guavaVersion>
     <guavaOsgiVersion>25.1.0</guavaOsgiVersion>
     <guavagRPCVersion>28.2-jre</guavagRPCVersion>
@@ -1725,11 +1687,11 @@
     <hikaricpVersion>2.5.1</hikaricpVersion>
     <httpcoreVersion>4.4.15</httpcoreVersion>
     <httpclientVersion>4.5.13</httpclientVersion>
-    <httpasyncclientVersion>4.1.3</httpasyncclientVersion>
+    <httpasyncclientVersion>4.1.5</httpasyncclientVersion>
     <ipaddressVersion>5.3.3</ipaddressVersion>
     <jacksonVersion>1.9.13-atlassian-6</jacksonVersion>
     <jackson2Version>2.10.5</jackson2Version>
-    <jacocoVersion>0.8.5</jacocoVersion>
+    <jacocoVersion>0.8.8</jacocoVersion>
     <jasperreportsVersion>6.3.0</jasperreportsVersion>
     <jasperreportsMavenPluginVersion>1.0-beta-4-OPENNMS-20160912-1</jasperreportsMavenPluginVersion>
     <!-- this should match what's in Karaf's lib/jdk9plus directory -->
@@ -1742,7 +1704,7 @@
     <jcommonVersion>1.0.23</jcommonVersion>
     <jettyVersion>9.4.44.v20210927</jettyVersion>
     <jestVersion>5.3.3</jestVersion>
-    <jestGsonVersion>${gsonVersion}</jestGsonVersion>
+    <jestGsonVersion>2.9.1</jestGsonVersion>
     <jfreechartVersion>1.0.19</jfreechartVersion>
     <jicmpVersion>2.0.4</jicmpVersion>
     <jicmp6Version>2.0.3</jicmp6Version>
@@ -1750,7 +1712,7 @@
     <jldapVersion>4.3</jldapVersion>
     <jmhVersion>1.33</jmhVersion>
     <jmxremote.optional.version>1.0_01-ea</jmxremote.optional.version>
-    <jnaVersion>5.11.0</jnaVersion>
+    <jnaVersion>5.12.1</jnaVersion>
     <jodaTimeVersion>2.1</jodaTimeVersion>
     <jqwikVersion>1.6.5</jqwikVersion>
     <jrrdVersion>1.1.0</jrrdVersion>
@@ -1767,10 +1729,10 @@
     <kafkaVersion>2.8.0</kafkaVersion>
     <liquibaseVersion>3.6.3</liquibaseVersion>
     <lmaxDisruptorVersion>3.3.2</lmaxDisruptorVersion>
-    <log4j2Version>2.17.2</log4j2Version>
+    <log4j2Version>2.18.0</log4j2Version>
     <logbackClassicVersion>1.2.11</logbackClassicVersion>
     <mapstructVersion>1.4.1.Final</mapstructVersion>
-    <minaVersion>2.1.5</minaVersion>
+    <minaVersion>2.1.6</minaVersion>
     <mockitoVersion>3.4.6</mockitoVersion>
     <netty3Version>3.10.6.Final</netty3Version>
     <netty4Version>4.1.78.Final</netty4Version>
@@ -1830,6 +1792,8 @@
     <zstdJniVersion>1.4.9-1</zstdJniVersion>
 
     <springVersion>4.2.9.RELEASE_1</springVersion>
+    <patchedSpringVersion>4.2.9.RELEASE_1.ONMS.1</patchedSpringVersion>
+
     <!-- ALWAYS change aspectj to match the version referenced in the spring poms -->
     <aspectjVersion>1.8.6</aspectjVersion>
     <springWebFlowVersion>2.3.4.RELEASE</springWebFlowVersion>
@@ -1880,6 +1844,60 @@
           <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>license-maven-plugin</artifactId>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>coverage</id>
+      <activation>
+        <property>
+          <name>coverage</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.jacoco</groupId>
+            <artifactId>jacoco-maven-plugin</artifactId>
+            <version>${jacocoVersion}</version>
+            <configuration>
+              <excludes>
+                <exclude>org/drools/**/*</exclude>
+              </excludes>
+            </configuration>
+            <executions>
+              <execution>
+                <id>prepare-agent</id>
+                <goals>
+                  <goal>prepare-agent</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>report</id>
+                <goals>
+                  <goal>report</goal>
+                </goals>
+                <configuration>
+                  <formats>
+                    <format>XML</format>
+                  </formats>
+                </configuration>
+              </execution>
+              <execution>
+                <id>report-aggregate</id>
+                <goals>
+                  <goal>report-aggregate</goal>
+                </goals>
+                <inherited>false</inherited>
+                <configuration>
+                  <formats>
+                    <format>XML</format>
+                  </formats>
+                </configuration>
+              </execution>
+            </executions>
           </plugin>
         </plugins>
       </build>
@@ -2172,103 +2190,6 @@
         </plugins>
       </build>
     </profile>
-    <profile>
-      <id>code-coverage</id>
-      <activation>
-        <property>
-          <name>code.coverage</name>
-          <value>true</value>
-        </property>
-      </activation>
-      <build>
-        <plugins>
-          <!-- Jacoco code coverage testing library -->
-          <plugin>
-            <groupId>org.jacoco</groupId>
-            <artifactId>jacoco-maven-plugin</artifactId>
-            <version>${jacocoVersion}</version>
-            <executions>
-              <execution>
-                <id>before-unit-test-execution</id>
-                <goals>
-                  <goal>prepare-agent</goal>
-                </goals>
-                <configuration>
-                  <append>true</append>
-                  <destFile>${project.build.directory}/jacoco-output/jacoco-unit.exec</destFile>
-                </configuration>
-              </execution>
-              <!--
-              <execution>
-                <id>after-unit-test-execution</id>
-                <phase>test</phase>
-                <goals>
-                  <goal>report</goal>
-                </goals>
-                <configuration>
-                  <dataFile>${project.build.directory}/jacoco-output/jacoco-unit.exec</dataFile>
-                  <outputDirectory>${project.build.directory}/jacoco-surefire-${ci.instance}</outputDirectory>
-                </configuration>
-              </execution>
-              -->
-              <execution>
-                <id>before-integration-test-execution</id>
-                <phase>pre-integration-test</phase>
-                <goals>
-                  <goal>prepare-agent</goal>
-                </goals>
-                <configuration>
-                  <append>true</append>
-                  <destFile>${project.build.directory}/jacoco-output/jacoco-it.exec</destFile>
-                </configuration>
-              </execution>
-              <!--
-              <execution>
-                <id>after-integration-test-execution</id>
-                <phase>post-integration-test</phase>
-                <goals>
-                  <goal>report</goal>
-                </goals>
-                <configuration>
-                  <dataFile>${project.build.directory}/jacoco-output/jacoco-it.exec</dataFile>
-                  <outputDirectory>${project.build.directory}/jacoco-failsafe-${ci.instance}</outputDirectory>
-                </configuration>
-              </execution>
-              -->
-              <execution>
-                <id>merge-unit-and-integration</id>
-                <phase>post-integration-test</phase>
-                  <goals>
-                    <goal>merge</goal>
-                  </goals>
-                  <configuration>
-                  <fileSets>
-                    <fileSet>
-                      <directory>${project.build.directory}/jacoco-output/</directory>
-                      <includes>
-                        <include>*.exec</include>
-                      </includes>
-                    </fileSet>
-                  </fileSets>
-                  <destFile>${project.build.directory}/jacoco-merged-${ci.instance}.exec</destFile>
-                </configuration>
-              </execution>
-              <execution>
-                <id>create-merged-report</id>
-                <phase>post-integration-test</phase>
-                <goals>
-                  <goal>report</goal>
-                </goals>
-                <configuration>
-                  <dataFile>${project.build.directory}/jacoco-merged-${ci.instance}.exec</dataFile>
-                  <outputDirectory>${project.build.directory}/jacoco-merged-report-${ci.instance}</outputDirectory>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
   </profiles>
   <dependencyManagement>
     <dependencies>
@@ -2463,13 +2384,6 @@
         <groupId>org.opennms.core</groupId>
         <artifactId>org.opennms.core.xml</artifactId>
         <version>${project.version}</version>
-      </dependency>
-      <!-- only used at build-time -->
-      <dependency>
-        <groupId>org.opennms.core.build</groupId>
-        <artifactId>org.opennms.core.build.keystore</artifactId>
-        <version>${project.version}</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.opennms.core.test-api</groupId>
@@ -3977,6 +3891,11 @@
         <scope>test</scope>
       </dependency>
       <dependency>
+        <groupId>org.dom4j</groupId>
+        <artifactId>dom4j</artifactId>
+        <version>${dom4jVersion}</version>
+      </dependency>
+      <dependency>
         <groupId>geoGoogle</groupId>
         <artifactId>geoGoogle</artifactId>
         <version>1.5.1-20110518onms1</version>
@@ -4622,6 +4541,12 @@
         <scope>test</scope>
       </dependency>
       <dependency>
+        <groupId>org.awaitility</groupId>
+        <artifactId>awaitility</artifactId>
+        <version>4.2.0</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
         <groupId>net.sourceforge.jwebunit</groupId>
         <artifactId>jwebunit-htmlunit-plugin</artifactId>
         <version>2.5</version>
@@ -4693,6 +4618,219 @@
         <groupId>com.novell.ldap</groupId>
         <artifactId>jldap</artifactId>
         <version>${jldapVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicemix.bundles</groupId>
+        <artifactId>org.apache.servicemix.bundles.spring-aop</artifactId>
+        <version>${patchedSpringVersion}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicemix.bundles</groupId>
+        <artifactId>org.apache.servicemix.bundles.spring-aspects</artifactId>
+        <version>${springVersion}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicemix.bundles</groupId>
+        <artifactId>org.apache.servicemix.bundles.spring-beans</artifactId>
+        <version>${patchedSpringVersion}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicemix.bundles</groupId>
+        <artifactId>org.apache.servicemix.bundles.spring-context</artifactId>
+        <version>${springVersion}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicemix.bundles</groupId>
+        <artifactId>org.apache.servicemix.bundles.spring-context-support</artifactId>
+        <version>${springVersion}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicemix.bundles</groupId>
+        <artifactId>org.apache.servicemix.bundles.spring-core</artifactId>
+        <version>${springVersion}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicemix.bundles</groupId>
+        <artifactId>org.apache.servicemix.bundles.spring-expression</artifactId>
+        <version>${patchedSpringVersion}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicemix.bundles</groupId>
+        <artifactId>org.apache.servicemix.bundles.spring-instrument</artifactId>
+        <version>${springVersion}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicemix.bundles</groupId>
+        <artifactId>org.apache.servicemix.bundles.spring-jdbc</artifactId>
+        <version>${springVersion}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicemix.bundles</groupId>
+        <artifactId>org.apache.servicemix.bundles.spring-jms</artifactId>
+        <version>${springVersion}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicemix.bundles</groupId>
+        <artifactId>org.apache.servicemix.bundles.spring-messaging</artifactId>
+        <version>${patchedSpringVersion}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicemix.bundles</groupId>
+        <artifactId>org.apache.servicemix.bundles.spring-orm</artifactId>
+        <version>${springVersion}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicemix.bundles</groupId>
+        <artifactId>org.apache.servicemix.bundles.spring-oxm</artifactId>
+        <version>${springVersion}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicemix.bundles</groupId>
+        <artifactId>org.apache.servicemix.bundles.spring-test</artifactId>
+        <version>${springVersion}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicemix.bundles</groupId>
+        <artifactId>org.apache.servicemix.bundles.spring-tx</artifactId>
+        <version>${springVersion}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicemix.bundles</groupId>
+        <artifactId>org.apache.servicemix.bundles.spring-web</artifactId>
+        <version>${patchedSpringVersion}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicemix.bundles</groupId>
+        <artifactId>org.apache.servicemix.bundles.spring-webmvc</artifactId>
+        <version>${springVersion}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicemix.bundles</groupId>
+        <artifactId>org.apache.servicemix.bundles.spring-webmvc-portlet</artifactId>
+        <version>${springVersion}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicemix.bundles</groupId>
+        <artifactId>org.apache.servicemix.bundles.spring-websocket</artifactId>
+        <version>${springVersion}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>

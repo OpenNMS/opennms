@@ -1,17 +1,16 @@
+
 [[ref-daemon-config-files-ackd]]
 = Ackd
 
-Acknowledge daemon (ACKD) is responsible for alarm acknowledgment.
+The acknowledge daemon is responsible for alarm acknowledgment.
 
 .Ackd log file overview
 [options="header"]
 [cols="2,3"]
-
 |===
 | File
 | Description
 
 | ackd.log
 | Logs relating to ackd server events.
-
 |===

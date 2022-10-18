@@ -31,6 +31,12 @@
         <groupId>org.opennms</groupId>
         <artifactId>opennms-util</artifactId>
     </dependency>
+    <!-- Needed for Cassandra -->
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jackson1-dependencies</artifactId>
+      <type>pom</type>
+    </dependency>
     <dependency>
       <groupId>org.apache.cassandra</groupId>
       <artifactId>cassandra-all</artifactId>

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -64,10 +64,14 @@ import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.smoketest.containers.OpenNMSContainer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class RestClient {
+    private static final Logger LOG = LoggerFactory.getLogger(RestClient.class);
 
     private static final String DEFAULT_USERNAME = OpenNMSContainer.ADMIN_USER;
 
@@ -121,8 +125,9 @@ public class RestClient {
             JsonNode actualObj = mapper.readTree(json);
             return actualObj.get("displayVersion").asText();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            LOG.debug("Failed to get displayVersion from the info REST service. (OpenNMS is probably not up yet): {}", e.getMessage());
         }
+        return null;
     }
 
     public void addOrReplaceRequisition(Requisition requisition) {

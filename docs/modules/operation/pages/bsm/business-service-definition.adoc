@@ -9,8 +9,6 @@ A business service is defined with the following components:
 * xref:operation:bsm/reduce-functions.adoc[Reduce function]: function used to aggregate the operational status from all the edges.
 Specific functions may take additional parameters.
 * Attributes: optional key/value pairs to tag or enrich the business service with additional information.
-
-Each business service can contain a list of optional key/value attributes.
 These are used to identify or tag the business service and may be referenced in other workflows.
 These attributes do not affect the dependencies or the status calculation of the business service.
 

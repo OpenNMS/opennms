@@ -34,6 +34,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.opennms.core.utils.StringUtils;
+
 public abstract class FilterUtil {
 
     public static String toFilterURL(String[] filters) {
@@ -55,10 +57,18 @@ public abstract class FilterUtil {
 
     public static String[] parse(String filterString) {
         String decodedString = URLDecoder.decode(filterString, StandardCharsets.UTF_8);
-        String[] filterParameter = (decodedString == null) ? null : Arrays.stream(decodedString.split("&amp;"))
-                .filter(fp -> fp.startsWith("filter="))
+        return Arrays.stream(getFilterParameters(decodedString))
                 .map(fp -> fp.replace("filter=", ""))
                 .toArray(String[]::new);
-        return filterParameter;
+    }
+
+    public static String[] getFilterParameters(String filterString) {
+        if (StringUtils.isEmpty(filterString)) {
+            return new String[0];
+        }
+        if (filterString.contains("&amp;")) {
+            return filterString.split("&amp;");
+        }
+        return filterString.split("&");
     }
 }

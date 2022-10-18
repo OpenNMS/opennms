@@ -1,4 +1,3 @@
-
 = Heatmap
 
 == GETs (Reading Data)
@@ -6,10 +5,10 @@
 [options="header", cols="5,10"]
 |===
 | Resource                                                        | Description
-| `/heatmap/outages/categories`                                   | Sizes and color codes based on outages for nodes grouped by surveillance categories.
+| `/heatmap/outages/categories`                                   | Sizes and color codes based on outages for nodes grouped by node tags.
 | `/heatmap/outages/foreignSources`                               | Sizes and color codes based on outages for nodes grouped by foreign source.
 | `/heatmap/outages/monitoredServices`                            | Sizes and color codes based on outages for nodes grouped by monitored services.
-| `/heatmap/outages/nodesByCategory/\{category}`                  | Sizes and color codes based on outages for nodes associated with a specific surveillance category.
+| `/heatmap/outages/nodesByCategory/\{category}`                  | Sizes and color codes based on outages for nodes associated with a specific node tag.
 | `/heatmap/outages/nodesByForeignSource/\{foreignsource}`        | Sizes and color codes based on outages for nodes associated with a specific foreign source.
 | `/heatmap/outages/nodesByMonitoredService/\{monitoredservice}`  | Sizes and color codes based on outages for nodes providing a specific monitored service.
 |===
@@ -17,10 +16,10 @@
 [options="header", cols="5,10"]
 |===
 | Resource                                                       | Description
-| `/heatmap/alarms/categories`                                   | Sizes and color codes based on alarms for nodes grouped by surveillance categories.
+| `/heatmap/alarms/categories`                                   | Sizes and color codes based on alarms for nodes grouped by node tags.
 | `/heatmap/alarms/foreignSources`                               | Sizes and color codes based on alarms for nodes grouped by foreign source.
 | `/heatmap/alarms/monitoredServices`                            | Sizes and color codes based on alarms for nodes grouped by monitored services.
-| `/heatmap/alarms/nodesByCategory/\{category}`                  | Sizes and color codes based on alarms for nodes associated with a specific surveillance category.
+| `/heatmap/alarms/nodesByCategory/\{category}`                  | Sizes and color codes based on alarms for nodes associated with a specific node tag.
 | `/heatmap/alarms/nodesByForeignSource/\{foreignsource}`        | Sizes and color codes based on alarms for nodes associated with a specific foreign source.
 | `/heatmap/alarms/nodesByMonitoredService/\{monitoredservice}`  | Sizes and color codes based on alarms for nodes providing a specific monitored service.
 |===

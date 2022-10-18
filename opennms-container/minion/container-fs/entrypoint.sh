@@ -49,9 +49,7 @@ useEnvCredentials(){
 
 setCredentials() {
   # Directory to initialize a new keystore file which can be mounted to the local host
-  if [ ! -d /keystore ]; then
-    mkdir /keystore
-  fi
+  mkdir -p /keystore
 
   read -r -p "Enter OpenNMS HTTP username: " OPENNMS_HTTP_USER
   read -r -s -p "Enter OpenNMS HTTP password: " OPENNMS_HTTP_PASS
@@ -122,6 +120,13 @@ initConfig() {
     fi
 
     if [ ! -f ${MINION_HOME}/etc/configured ]; then
+        # Create SSH Key-Pair to use with the Karaf Shell
+        mkdir -p "${MINION_HOME}/.ssh" && \
+            chmod 700 "${MINION_HOME}/.ssh" && \
+            ssh-keygen -t rsa -f "${MINION_HOME}/.ssh/id_rsa" -q -N "" && \
+            echo "minion=$(cat "${MINION_HOME}/.ssh/id_rsa.pub" | awk '{print $2}'),viewer" > "${MINION_HOME}/etc/keys.properties" && \
+            echo "_g_\\:admingroup = group,admin,manager,viewer,systembundles,ssh" >> ${MINION_HOME}/etc/keys.properties && \
+            chmod 600 "${MINION_HOME}/.ssh/id_rsa"
 
         # Expose Karaf Shell
         sed -i "/^sshHost/s/=.*/= 0.0.0.0/" ${MINION_HOME}/etc/org.apache.karaf.shell.cfg
@@ -197,6 +202,9 @@ configure() {
   applyConfd
   applyOpennmsPropertiesD
   applyOverlayConfig
+  if [[ "$JACOCO_AGENT_ENABLED" -gt 0 ]]; then
+    export JAVA_OPTS="$JAVA_OPTS -javaagent:${MINION_HOME}/agent/jacoco-agent.jar=output=none,jmx=true,excludes=org.drools.*"
+  fi
   if [[ -f "$MINION_PROCESS_ENV_CFG" ]]; then
     while read assignment; do
       [[ $assignment =~ ^#.* ]] && continue

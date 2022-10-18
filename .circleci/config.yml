@@ -127,8 +127,19 @@ commands:
         - run:
             name: Extract Maven POM version
             command: .circleci/scripts/pom2version.sh pom.xml > pom-version-cache.key
-  cached-checkout:
-      description: "Checkout with caching"
+  shallow-clone:
+      description: "Quick shallow checkout"
+      steps:
+        - run:
+            name: git clone
+            command: |
+              install -d -m 700 ~/.ssh
+              ssh-keyscan github.com >> ~/.ssh/known_hosts
+              ssh-keyscan -p 443 ssh.github.com >> ~/.ssh/known_hosts
+              chmod 600 ~/.ssh/known_hosts
+              git clone --depth 20 "${CIRCLE_REPOSITORY_URL}" --branch "${CIRCLE_BRANCH}" .
+  cached-checkout-readonly:
+      description: "Checkout from cache"
       steps:
         - restore_cache:
             keys:
@@ -142,6 +153,10 @@ commands:
         - run:
             name: git fetch origin
             command: git fetch origin
+  cached-checkout:
+      description: "Checkout with cache (updates cache)"
+      steps:
+        - cached-checkout-readonly
         - save_cache:
             key: source-v2-{{ .Branch }}-{{ .Revision }}
             paths:
@@ -158,6 +173,60 @@ commands:
             command: |
               git config user.email "cicd-system@opennms.com"
               git config user.name "CI/CD System"
+  cached-download:
+      description: Download with wget or curl
+      parameters:
+        url:
+          type: string
+        file:
+          type: string
+      steps:
+        - run:
+            name: create checksum file
+            command: echo "<< parameters.url >>|||<< parameters.file >>" > /tmp/download-parameters.txt
+        - restore_cache:
+            keys:
+              - cached-download-v1-{{ checksum "/tmp/download-parameters.txt" }}
+        - run:
+            name: download (if necessary)
+            command: |
+              WGET="$(command -v wget || :)"
+              CURL="$(command -v curl || :)"
+              SUDO="$(command -v sudo || :)"
+
+              if [ ! -e "<< parameters.file >>" ]; then
+                if [ -x "${WGET}" ]; then
+                  if [ -x "${SUDO}" ]; then
+                    "${SUDO}" wget --quiet "<< parameters.url >>" -O "<< parameters.file >>"
+                  else
+                    wget --quiet "<< parameters.url >>" -O "<< parameters.file >>"
+                  fi
+                elif [ -x "${CURL}" ]; then
+                  if [ -x "${SUDO}" ]; then
+                    "${SUDO}" curl -sSf -L  "<< parameters.url >>" -o "<< parameters.file >>"
+                  else
+                    curl -sSf -L "<< parameters.url >>" -o "<< parameters.file >>"
+                  fi
+                else
+                  echo "unable to locate wget or curl, make sure one is installed before using cached-download"
+                  exit 1
+                fi
+
+                case "<< parameters.file >>" in
+                  */bin/*)
+                    if [ -x "${SUDO}" ]; then
+                      sudo chmod a+x "<< parameters.file >>"
+                    else
+                      chmod a+x "<< parameters.file >>"
+                    fi
+                    ;;
+                esac
+              fi
+        - save_cache:
+            key: cached-download-v1-{{ checksum "/tmp/download-parameters.txt" }}
+            paths:
+              - << parameters.file >>
+
   restore-maven-cache:
       description: "Maven: Calculate cache key and restore cache"
       steps:
@@ -177,6 +246,7 @@ commands:
         - run:
             name: Collect Maven Dependencies
             command: |
+              ulimit -n 65536 || :
               ./compile.pl -t \
                 -Dbuild.skip.tarball=true \
                 --update-plugins \
@@ -219,14 +289,17 @@ commands:
       steps:
         - restore_cache:
             keys:
-              - sonar-cache-v2-{{ checksum "pom-version-cache.key" }}
+              - sonar-cache-v5-{{ .Branch }}-{{ checksum "pom-version-cache.key" }}-{{ .Revision }}
+              - sonar-cache-v5-{{ .Branch }}-{{ checksum "pom-version-cache.key" }}-
+              - sonar-cache-v5-{{ .Branch }}-
+              - sonar-cache-v5-
   save-sonar-cache:
       description: "Sonar: Save sonar cache"
       steps:
         - save_cache:
-            key: sonar-cache-v2-{{ checksum "pom-version-cache.key" }}
+            key: sonar-cache-v5-{{ .Branch }}- {{ checksum "pom-version-cache.key" }}-${{ .Revision }}
             paths:
-              - ~/.sonar
+              - /tmp/sonar-cache
   dockerhub-login:
     description: "Connect to DockerHub"
     steps:
@@ -333,9 +406,9 @@ commands:
           name: Compile OpenNMS
           no_output_timeout: 20m
           command: |
+            ulimit -n 65536 || :
             export OPENNMS_VERSION="$(.circleci/scripts/pom2version.sh pom.xml)"
             .circleci/scripts/configure-signing.sh
-            ./clean.pl
             << parameters.node-memory >>
             export MAVEN_OPTS="$MAVEN_OPTS -Xmx8g -XX:ReservedCodeCacheSize=1g"
             MAVEN_ARGS="install"
@@ -355,7 +428,7 @@ commands:
               -Prun-expensive-tasks \
               -Psmoke \
               --batch-mode \
-              $MAVEN_ARGS
+              $MAVEN_ARGS || exit 1
             if [ -d target/site/apidocs ]; then
               pushd target/site/apidocs
                 tar -czf "../../artifacts/opennms-${OPENNMS_VERSION}-javadoc.tar.gz" *
@@ -430,21 +503,22 @@ commands:
           when: always
           command: |
             mkdir -p ~/generated-tests
-            cp ./surefire_classname* ~/generated-tests/ || :
-            cp ./failsafe_classname* ~/generated-tests/ || :
-            cp /tmp/this_node* ~/generated-tests/       || :
+            cp target/find-tests/* ~/generated-tests/ || :
+            cp /tmp/this_node* ~/generated-tests/     || :
       - when:
           condition: << parameters.run-code-coverage >>
           steps:
             - run:
-                name: Compress Target Directories (Code Coverage)
+                name: Save Code Coverage Data
                 when: always
                 command: |
-                  .circleci/scripts/codecoverage-save.sh
+                  .circleci/scripts/codecoverage-save.sh integration-test
             - persist_to_workspace:
                 root: ~/
                 paths:
                   - code-coverage
+                  - project/target/find-tests
+                  - project/target/structure-graph.json
       - run:
           name: Gather system logs
           when: always
@@ -555,25 +629,6 @@ workflows:
             ((?!docs/).)* trigger-build true
             docs/.*       trigger-docs  true
             .circleci/.*  trigger-docs  true
-#  weekly-coverage:
-#    when:
-#      equal: [ false, << pipeline.parameters.minimal >> ]
-#    triggers:
-#      - schedule:
-#          # Saturday at 12:00 AM
-#          cron: "0 0 * * 6"
-#          filters:
-#            branches:
-#              only:
-#                - develop
-#    jobs:
-#      - build
-#      - integration-test-with-coverage:
-#          requires:
-#            - build
-#      - code-coverage:
-#          requires:
-#            - integration-test-with-coverage
   build-minimal:
     when:
       and:
@@ -712,7 +767,18 @@ workflows:
           filters:
             branches:
               ignore:
+                - /^.*sonar.*/
                 - /^merge-foundation.*/
+      - integration-test-with-coverage:
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - /^.*sonar.*/
+      - code-coverage:
+          requires:
+            - integration-test-with-coverage
       - smoke-test-core:
           requires:
             - tarball-assembly
@@ -795,6 +861,7 @@ workflows:
             - minion-deb-build
             - sentinel-deb-build
             - integration-test
+            - code-coverage
             - smoke-test-core
             - smoke-test-flaky
             - smoke-test-minion
@@ -811,6 +878,7 @@ workflows:
             - minion-deb-build
             - sentinel-deb-build
             - integration-test
+            - code-coverage
             - smoke-test-core
             - smoke-test-flaky
             - smoke-test-minion
@@ -821,11 +889,12 @@ workflows:
                 - develop
                 - /^master-.*/
                 - /^release-.*/
-      # These don't actually require `integration-test` but we shouldn't bother
+      # These don't actually require `integration-test`/`code-coverage` but we shouldn't bother
       # spending cycles unless everything else passed
       - horizon-deb-build:
           requires:
             - integration-test
+            - code-coverage
           filters:
             branches:
               ignore:
@@ -833,6 +902,7 @@ workflows:
       - minion-deb-build:
           requires:
             - integration-test
+            - code-coverage
           filters:
             branches:
               ignore:
@@ -840,6 +910,7 @@ workflows:
       - sentinel-deb-build:
           requires:
             - integration-test
+            - code-coverage
           filters:
             branches:
               ignore:
@@ -852,6 +923,7 @@ workflows:
             - minion-deb-build
             - sentinel-deb-build
             - integration-test
+            - code-coverage
             - smoke-test-core
             - smoke-test-flaky
             - smoke-test-minion
@@ -875,6 +947,7 @@ workflows:
             - minion-deb-build
             - sentinel-deb-build
             - integration-test
+            - code-coverage
             - smoke-test-core
             - smoke-test-flaky
             - smoke-test-minion
@@ -892,6 +965,7 @@ workflows:
             - smoke-test-minion
             - smoke-test-sentinel
             - integration-test
+            - code-coverage
           filters:
             branches:
               only:
@@ -904,6 +978,7 @@ workflows:
             - minion-deb-build
             - sentinel-deb-build
             - integration-test
+            - code-coverage
             - smoke-test-core
             - smoke-test-flaky
             - smoke-test-minion
@@ -930,7 +1005,7 @@ jobs:
         description: Mapping of path regular expressions to pipeline parameters and values. One mapping per line, whitespace-delimited.
         type: string
     steps:
-      - cached-checkout
+      - shallow-clone
       # copied from https://circleci.com/developer/orbs/orb/circleci/path-filtering
       # we do it ourselves because otherwise we have to do a full un-cached checkout every time
       - run:
@@ -1049,7 +1124,7 @@ jobs:
   build-docs:
     executor: docs-executor
     steps:
-      - cached-checkout
+      - cached-checkout-readonly
       - run:
           name: Validate Xrefs in docs
           command: |
@@ -1064,7 +1139,6 @@ jobs:
   tarball-assembly:
     machine:
       image: ubuntu-2004:202010-01
-      docker_layer_caching: true
     resource_class: xlarge
     environment:
       DOCKER_CLI_EXPERIMENTAL: enabled
@@ -1081,12 +1155,12 @@ jobs:
       - run:
           name: multiarch/qemu-user-static
           command: docker run --privileged multiarch/qemu-user-static --reset -p yes
+      - cached-download:
+          url: https://github.com/docker/buildx/releases/download/v0.5.1/buildx-v0.5.1.linux-amd64
+          file: /usr/local/bin/docker-buildx
       - run:
-          name: Install Docker buildx
-          command: |
-            sudo wget https://github.com/docker/buildx/releases/download/v0.5.1/buildx-v0.5.1.linux-amd64 -O /usr/local/bin/docker-buildx
-            sudo chmod a+x /usr/local/bin/docker-buildx
-            sudo systemctl restart docker
+          name: restart Docker to find docker-buildx
+          command: sudo systemctl restart docker
       - dockerhub-login
       - run:
           name: Assemble tarballs and related artifacts
@@ -1099,6 +1173,7 @@ jobs:
                 MAVEN_ARGS="-Dbuild.type=production $MAVEN_ARGS"
                 ;;
             esac
+            ulimit -n 65536 || :
             ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
               -Daether.connector.resumeDownloads=false \
               -Daether.connector.basic.threads=1 \
@@ -1174,12 +1249,12 @@ jobs:
       - run:
           name: multiarch/qemu-user-static
           command: docker run --privileged multiarch/qemu-user-static --reset -p yes
+      - cached-download:
+          url: https://github.com/docker/buildx/releases/download/v0.5.1/buildx-v0.5.1.linux-amd64
+          file: /usr/local/bin/docker-buildx
       - run:
-          name: Install Docker buildx
-          command: |
-            sudo wget https://github.com/docker/buildx/releases/download/v0.5.1/buildx-v0.5.1.linux-amd64 -O /usr/local/bin/docker-buildx
-            sudo chmod a+x /usr/local/bin/docker-buildx
-            sudo systemctl restart docker
+          name: restart Docker to find docker-buildx
+          command: sudo systemctl restart docker
       - dockerhub-login
       - run: *setup_dct_env
       - run: *setup_dct_key
@@ -1208,11 +1283,9 @@ jobs:
       - dockerhub-login
       - run: *setup_dct_env
       - run: *setup_dct_key
-      - run:
-          name: Install notary
-          command: |
-            sudo wget https://github.com/theupdateframework/notary/releases/download/v0.6.1/notary-Linux-amd64 -O /usr/local/bin/notary
-            sudo chmod a+x /usr/local/bin/notary
+      - cached-download:
+          url: https://github.com/theupdateframework/notary/releases/download/v0.6.1/notary-Linux-amd64
+          file: /usr/local/bin/notary
       - run:
           name: Create & push multi-arch manifest
           command: |
@@ -1463,7 +1536,7 @@ jobs:
   horizon-publish-oci:
     executor: centos-build-executor
     steps:
-      - cached-checkout
+      - cached-checkout-readonly
       - setup_remote_docker:
           docker_layer_caching: true
       - dockerhub-login
@@ -1478,7 +1551,7 @@ jobs:
   sentinel-publish-oci:
     executor: centos-build-executor
     steps:
-      - cached-checkout
+      - cached-checkout-readonly
       - setup_remote_docker:
           docker_layer_caching: true
       - dockerhub-login
@@ -1513,11 +1586,19 @@ jobs:
           changes-only: false
   code-coverage:
     executor: centos-build-executor
-    resource_class: medium
+    resource_class: xlarge
     steps:
       - attach_workspace:
           at: ~/
+      - checkout
+      - cached-download:
+          url: https://repo1.maven.org/maven2/org/jacoco/org.jacoco.cli/0.8.8/org.jacoco.cli-0.8.8-nodeps.jar
+          file: /tmp/jacoco-cli.jar
+      - cached-download:
+          url: https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.7.0.2747.zip
+          file: /tmp/sonar-scanner-cli.zip
       - extract-pom-version
+      - restore-maven-cache
       - restore-sonar-cache
       - run:
           name: Restore Target Directories (Code Coverage)
@@ -1528,7 +1609,7 @@ jobs:
           name: Run SonarQube Code Analysis
           when: always
           command: |
-            export MAVEN_OPTS="-Xms3G -Xmx3G"
+            export MAVEN_OPTS="-Xms1g -Xmx12g"
             .circleci/scripts/sonar.sh
       - save-sonar-cache
   smoke-test-core:
@@ -1595,7 +1676,7 @@ jobs:
                 suite: minion
   smoke-test-sentinel:
     executor: smoke-test-executor
-    parallelism: 5
+    parallelism: 4
     # No resource class support for machine executors, we're constrained to use the default
     # medium class which has 2 vCPUs and 8 GB RAM
     #resource_class: large

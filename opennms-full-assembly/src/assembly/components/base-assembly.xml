@@ -14,6 +14,35 @@
       <includes>
         <include>org.opennms:opennms-base-assembly:tar.gz:daemon:${project.version}</include>
       </includes>
+      <unpackOptions>
+        <excludes>
+          <!-- contrib -->
+          <exclude>contrib/**/*</exclude>
+
+          <!-- northbounders -->
+          <exclude>lib/*alarm-northbounder-jms*</exclude>
+
+          <!-- protocols -->
+          <exclude>etc/nsclient-config.xml</exclude>
+
+          <!-- provisioning adapters -->
+          <exclude>lib/*rancid-provisioning-adapter*</exclude>
+          <exclude>etc/*snmp-asset-adapter*</exclude>
+          <exclude>lib/*snmp-asset-provisioning-adapter*</exclude>
+          <exclude>etc/*snmp-hardware-inventory-adapter*</exclude>
+          <!-- not included in base assembly tar -->
+          <!-- <exclude>lib/*snmp-hardware-inventory-provisioning-adapter*</exclude> -->
+          <exclude>etc/*wsman-asset-adapter*</exclude>
+          <!-- not included in base assembly tar -->
+          <!-- <exclude>lib/*wsman-asset-provisioning-adapter*</exclude> -->
+
+          <!-- ticketing plugins -->
+          <exclude>etc/*otrs*</exclude>
+          <exclude>lib/*otrs*</exclude>
+          <exclude>etc/rt.properties</exclude>
+          <exclude>lib/*integration-rt*</exclude>
+        </excludes>
+      </unpackOptions>
     </dependencySet>
     <dependencySet>
       <unpack>true</unpack>
@@ -56,7 +85,7 @@
     </fileSet>
     <!-- Add the third party license list -->
     <fileSet>
-	    <directory>${project.build.directory}/generated-sources/license</directory>
+      <directory>${project.build.directory}/generated-sources/license</directory>
       <filtered>false</filtered>
       <outputDirectory>etc</outputDirectory>
       <includes>

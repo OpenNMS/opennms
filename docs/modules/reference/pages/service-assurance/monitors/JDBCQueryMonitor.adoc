@@ -102,6 +102,7 @@ This monitor implements the <<reference:service-assurance/introduction.adoc#ref-
 
 .Available operand parameters
 [options="header, autowidth"]
+[cols="1,1"]
 |===
 | Parameter
 | XML entity to use in XML configs

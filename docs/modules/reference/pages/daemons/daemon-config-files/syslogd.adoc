@@ -7,7 +7,6 @@ Handles processing of xref:operation:events/sources/syslog.adoc[syslog messages]
 .Syslogd configuration file overview
 [options="header"]
 [cols="2,3,1,1"]
-
 |===
 | File
 | Description
@@ -15,7 +14,7 @@ Handles processing of xref:operation:events/sources/syslog.adoc[syslog messages]
 | Restart Required
 
 | syslogd-configuration.xml
-| Configure generic behavior of Syslogd; for example, port numbers or matching behavior.
+| Configure generic behavior of syslogd (for example, port numbers or matching behavior).
 | yes
 | no
 

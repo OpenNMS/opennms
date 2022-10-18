@@ -94,6 +94,9 @@ RUNJAVA_OPTIONS=""
 # when it cannot connect using the Attach API (automatically or by PID)
 JMX_URL="service:jmx:rmi:///jndi/rmi://127.0.0.1:1099/jmxrmi"
 
+# JaCoCo Code Coverage agent, used in smoke tests
+[ -z "$JACOCO_AGENT_ENABLED" ] && JACOCO_AGENT_ENABLED=0
+
 # The user that OpenNMS needs to run as.
 [ -z "$RUNAS" ] && RUNAS=opennms
 
@@ -803,6 +806,11 @@ if [ -n "$JAVA_HEAP_SIZE" ] && [ "$JAVA_HEAP_SIZE" -gt 0 ]; then
 	MANAGER_OPTIONS+=("-Xmx${JAVA_HEAP_SIZE}m")
 fi
 
+# https://www.jacoco.org/jacoco/trunk/doc/agent.html
+if [ -n "$JACOCO_AGENT_ENABLED" ] && [ "$JACOCO_AGENT_ENABLED" -gt 0 ]; then
+	MANAGER_OPTIONS+=("-javaagent:${OPENNMS_HOME}/agent/jacoco-agent.jar=output=none,jmx=true,excludes=org.drools.*")
+fi
+
 JAVA_VERSION="$("$OPENNMS_HOME/bin/runjava" -p -f 2> /dev/null)"
 JAVA_SHORT_VERSION="$(echo "$JAVA_VERSION" | cut -d. -f1)"
 if [ -z "$JAVA_SHORT_VERSION" ]; then
@@ -1002,17 +1010,18 @@ if [ "$VERBOSE_GC" != "" ]; then
 	MANAGER_OPTIONS+=("-verbose:gc")
 fi
 
-SUDO="$(command -v sudo 2>/dev/null || which sudo 2>/dev/null || :)"
+RUNUSER="$(command -v runuser 2>/dev/null || which runuser 2>/dev/null || :)"
 myuser="$(id -u -n)"
 if [ "$myuser" != "$RUNAS" ]; then
-	if [ "$myuser" = "root" ] && [ -n "$SUDO" ] && [ -x "$SUDO" ]; then
+	if [ "$myuser" = "root" ] && [ -x "$RUNUSER" ]; then
 		echo "WARNING: relaunching as $RUNAS" >&2
-		_cmd=("$SUDO" "-u" "$RUNAS" "$0" "${INCOMING_ARGS[@]}");
+		_cmd=("$RUNUSER" "-u" "$RUNAS" -- "$0" "${INCOMING_ARGS[@]}");
 		exec "${_cmd[@]}"
 	fi
-	echo "ERROR: you must run this script as ${RUNAS}, not '${myuser}'." >&2
-	echo "       Create or edit ${OPENNMS_HOME}/etc/opennms.conf and set 'RUNAS=${myuser}'" >&2
-	echo "       if you wish for OpenNMS to run as ${myuser} instead." >&2
+	echo "ERROR: you should run this script as ${RUNAS}, not '${myuser}'." >&2
+    echo "       To correct this, try 'sudo -u $RUNAS $0 $@'" >&2
+	echo "       If you wish for OpenNMS to run as ${myuser} instead," >&2
+	echo "       create or edit ${OPENNMS_HOME}/etc/opennms.conf and set 'RUNAS=${myuser}'" >&2
 	echo "       If you have already edited opennms.conf, make sure that 'User=' is also set" >&2
 	echo "       in the OpenNMS systemd service." >&2
 	exit 4 # According to LSB: 4 - user had insufficient privileges

@@ -120,6 +120,7 @@
 </form>
 
 <form method="post" name="snmpConfig" action="admin/snmpConfig">
+    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
     <input type="hidden"/>
 </form>
 
