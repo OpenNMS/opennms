@@ -28,24 +28,45 @@
 
 package org.opennms.web.rest.support.menu;
 
+import com.google.common.base.Strings;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import joptsimple.internal.Strings;
 import org.opennms.web.api.Authentication;
 import org.opennms.web.rest.support.menu.xml.MenuXml;
 
+/**
+ * Creates a MainMenu object that is used by the MenuRestService, which provides this data to the
+ * new Vue UI Menubar.
+ *
+ * Reads opennms-webapp 'dispatcher-servlet.xml' to determine most of the menu structure, this allows old JSP and
+ * new Vue Menubar to be in sync (note, there are some special case differences due to additional processing done
+ * in navbar.ftl, etc.).
+ *
+ * This class does not convert items in 'dispatcher-servlet.xml' to actual Java Beans and evaluate them,
+ * or read the full file, but reimplements just the needed functionality.
+ *
+ * TopMenuEntry and MenuEntry are similar to NavBarEntry in opennms-webapp, but redefined and reimplemented here
+ * partly to avoid 'opennms-webapp-rest' having a dependency on 'opennms-webapp'.
+ *
+ * This does some special-casing of role-based authentication (i.e. including or excluding menu entries based
+ * on user roles), but will also respect items in 'dispatcher.servlet.xml' marked as 'RoleBasedNavBarEntry'.
+ */
 public class MenuProvider {
     /** Full file path to dispatcher.servlet.xml file, see "applicationContext-cxf-rest-v2.xml" */
     final private String dispatcherServletPath;
+
+    /** Fully qualified classname of RoleBasedNavBarEntry class, from opennms-webapp. */
+    final private String ROLE_BASED_NAV_BAR_ENTRY_CLASS = "org.opennms.web.navigate.RoleBasedNavBarEntry";
 
     public MenuProvider(String dispatcherServletPath) {
         this.dispatcherServletPath = dispatcherServletPath;
@@ -63,6 +84,7 @@ public class MenuProvider {
             mainMenu.formattedTime = context.getFormattedTime();
             mainMenu.username = context.getRemoteUser();
             mainMenu.noticeStatus = context.getNoticeStatus();
+            // TODO: Remove
             mainMenu.notices = buildNotices(context);
 
             // Parse out menu data from "dispatcher-servlet.xml"
@@ -77,6 +99,8 @@ public class MenuProvider {
             }
 
             List<TopMenuEntry> topMenuEntries = this.parseXmlToMenuEntries(xBeans);
+            // Remove any MenuEntry items marked as RoleBased where user does not have any required role
+            evaluateRoleBasedEntries(topMenuEntries, context);
 
             for (var topMenu : topMenuEntries) {
                 mainMenu.addTopMenu(topMenu);
@@ -148,6 +172,37 @@ public class MenuProvider {
         return topMenuEntries;
     }
 
+    /**
+     * Evaluate a list of TopMenuEntry and child MenuEntry items, removing any that are RoleBased
+     * and where current user does not have the required role.
+     * Note, this modifies the passed-in 'topMenuEntries' parameter!
+     */
+    private void evaluateRoleBasedEntries(List<TopMenuEntry> topMenuEntries, final MenuRequestContext context) {
+        for (TopMenuEntry topEntry : topMenuEntries) {
+            // For now, we don't evaluate the TopMenuEntries
+            if (topEntry.items != null && !topEntry.items.isEmpty()) {
+                for (int i = topEntry.items.size() - 1; i >= 0; i--) {
+                    if (!evaluateRoleBasedMenuEntry(topEntry.items.get(i), context)) {
+                        topEntry.items.remove(i);
+                    }
+                }
+            }
+        }
+    }
+
+    private boolean evaluateRoleBasedMenuEntry(MenuEntry menuEntry, final MenuRequestContext context) {
+        if (menuEntry.className != null &&
+            menuEntry.className.equals(ROLE_BASED_NAV_BAR_ENTRY_CLASS)) {
+            List<String> roles = rolesAsList(menuEntry.roles);
+
+            if (!roles.isEmpty() && roles.stream().noneMatch(context::isUserInRole)) {
+                return false;
+            }
+        }
+
+       return true;
+    }
+
     private Optional<TopMenuEntry> parseTopMenuEntry(MenuXml.BeanElement xTopLevelBean) {
         // Top level menu items, like "Info", "Status"
         TopMenuEntry topEntry = new TopMenuEntry();
@@ -158,6 +213,7 @@ public class MenuProvider {
             setFromBeanProperty(prop, "name", (s) -> topEntry.name = s);
             setFromBeanProperty(prop, "url", (s) -> topEntry.url = s);
             setFromBeanProperty(prop, "locationMatch", (s) -> topEntry.locationMatch = s);
+            setFromBeanProperty(prop, "roles", (s) -> topEntry.roles = s);
         }
 
         boolean isValid = false;
@@ -180,6 +236,7 @@ public class MenuProvider {
                         setFromBeanProperty(prop, "name", (s) -> menuEntry.name = s);
                         setFromBeanProperty(prop, "url", (s) -> menuEntry.url = s);
                         setFromBeanProperty(prop, "locationMatch", (s) -> menuEntry.locationMatch = s);
+                        setFromBeanProperty(prop, "roles", (s) -> menuEntry.roles = s);
                     }
 
                     if (!Strings.isNullOrEmpty(menuEntry.name) && !Strings.isNullOrEmpty(menuEntry.url)) {
@@ -220,7 +277,7 @@ public class MenuProvider {
             supportEntry.url = "support/index.jsp";
             supportEntry.iconType = "fa";
             supportEntry.icon = "fa-life-ring";
-            supportEntry.requiredRoles = List.of(Authentication.ROLE_ADMIN);
+            mergeRole(supportEntry, Authentication.ROLE_ADMIN);
             helpMenu.addItem(supportEntry);
         }
 
@@ -287,7 +344,8 @@ public class MenuProvider {
         provisionMenu.url = "admin/ng-requisitions/quick-add-node.jsp#/";
         provisionMenu.iconType = "fa";
         provisionMenu.icon = "fa-plus-circle";
-        provisionMenu.requiredRoles = List.of(Authentication.ROLE_ADMIN, Authentication.ROLE_PROVISION);
+        mergeRole(provisionMenu, Authentication.ROLE_ADMIN);
+        mergeRole(provisionMenu, Authentication.ROLE_PROVISION);
 
         return provisionMenu;
     }
@@ -298,7 +356,7 @@ public class MenuProvider {
         flowsMenu.url = "admin/classification/index.jsp";
         flowsMenu.iconType = "fa";
         flowsMenu.icon = "fa-minus-circle";
-        flowsMenu.requiredRoles = List.of(Authentication.ROLE_FLOW_MANAGER);
+        mergeRole(flowsMenu, Authentication.ROLE_FLOW_MANAGER);
 
         return flowsMenu;
     }
@@ -309,11 +367,12 @@ public class MenuProvider {
         configurationMenu.url = "admin/index.jsp";
         configurationMenu.iconType = "fa";
         configurationMenu.icon = "fa-cogs";
-        configurationMenu.requiredRoles = List.of(Authentication.ROLE_ADMIN);
+        mergeRole(configurationMenu, Authentication.ROLE_ADMIN);
 
         return configurationMenu;
     }
 
+    // TODO: Remove, we are handling this in UI with separate Rest call to 'rest/notifications/summary'
     private Notices buildNotices(MenuRequestContext context) {
         Notices notices = new Notices();
 
@@ -345,5 +404,29 @@ public class MenuProvider {
         if (propElem.getName() != null && propElem.getName().equals(name)) {
             consumer.accept(propElem.getValue());
         }
+    }
+
+    private void mergeRole(MenuEntry entry, String role) {
+        final String trimmedRole = role.trim();
+
+        if (Strings.isNullOrEmpty(entry.roles)) {
+            entry.roles = trimmedRole;
+            return;
+        }
+
+        List<String> roles = rolesAsList(entry.roles);
+
+        if (roles.stream().noneMatch(s -> s.equals(trimmedRole))) {
+            roles.add(trimmedRole);
+            entry.roles = String.join(",", roles);
+        }
+    }
+
+    private List<String> rolesAsList(String roles) {
+        if (Strings.isNullOrEmpty(roles)) {
+            return new ArrayList<>();
+        }
+
+        return new ArrayList<String>(Arrays.asList(roles.split(",")));
     }
 }
