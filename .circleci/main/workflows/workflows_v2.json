@@ -106,7 +106,7 @@
         },
         "experimental": {
             "extends": [
-                "code-coverage"
+                "master-branch"
             ]
         }
     },
