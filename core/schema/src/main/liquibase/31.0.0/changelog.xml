@@ -5,16 +5,18 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
 
     <changeSet author="pschweizer" id="31.0.0-make-systemid-a-uuid">
+        <preConditions onFail="CONTINUE">
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(*) from pg_extension
+                WHERE extname = 'pgcrypto'
+            </sqlCheck>
+        </preConditions>
         <preConditions onFail="MARK_RAN">
             <sqlCheck expectedResult="1">
                 SELECT COUNT(*) from monitoringsystems
                 WHERE id = '00000000-0000-0000-0000-000000000000'
                 AND type='OpenNMS'
                 AND location='Default'
-            </sqlCheck>
-            <sqlCheck expectedResult="1">
-                SELECT COUNT(*) from pg_extension
-                WHERE extname = 'pgcrypto'
             </sqlCheck>
         </preConditions>
         <dropForeignKeyConstraint constraintName="fk_alarms_systemid" baseTableName="alarms" />
