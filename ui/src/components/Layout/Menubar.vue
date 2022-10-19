@@ -43,10 +43,8 @@
         </FeatherDropdown>
 
         <!-- Plugins menu -->
-        <FeatherDropdown
-          v-if="plugins && plugins.length"
-          class="menubar-dropdown-dark"
-        >
+        <FeatherDropdown v-if="plugins && plugins.length" class="menubar-dropdown-dark" @mouseenter="hoverItem(PluginIndex)"
+          :modelValue="hoveredItems[PluginIndex]">
           <template v-slot:trigger="{ attrs, on }">
             <FeatherButton link href="#" v-bind="attrs" v-on="on" class="menubar-dropdown-button-dark">
               Plugins
@@ -331,6 +329,7 @@ const outsideClick = ref()
 const HelpIndex = 0
 const SelfServiceIndex = 1
 const UserIndex = 2
+const PluginIndex = 3
 
 useOutsideClick(outsideClick.value, () => {
   resetMenuItems()
