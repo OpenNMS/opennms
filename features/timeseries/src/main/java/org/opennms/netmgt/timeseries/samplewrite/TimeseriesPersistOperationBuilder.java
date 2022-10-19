@@ -166,7 +166,7 @@ public class TimeseriesPersistOperationBuilder implements PersistOperationBuilde
         for (Entry<CollectionAttributeType, Number> entry : declarations.entrySet()) {
             CollectionAttributeType attrType = entry.getKey();
 
-            Tag type = typeToTag(attrType.getType());
+            Tag type = typeToTag(attrType.getName(), attrType.getType());
             if (type == null) {
                 // Skip attributes with no type
                 continue;
@@ -201,8 +201,7 @@ public class TimeseriesPersistOperationBuilder implements PersistOperationBuilde
         return samples;
     }
 
-    private Tag typeToTag (final AttributeType type) {
-
+    private Tag typeToTag(final String name, final AttributeType type) {
         ImmutableMetric.Mtype mtype;
 
         if(type == AttributeType.COUNTER) {
@@ -214,7 +213,7 @@ public class TimeseriesPersistOperationBuilder implements PersistOperationBuilde
         } else {
             mtype = ImmutableMetric.Mtype.gauge;
         }
-        return new ImmutableTag(MetaTagNames.mtype, mtype.name());
+        return new ImmutableTag(name + "." + MetaTagNames.mtype, mtype.name());
     }
 
     /**
