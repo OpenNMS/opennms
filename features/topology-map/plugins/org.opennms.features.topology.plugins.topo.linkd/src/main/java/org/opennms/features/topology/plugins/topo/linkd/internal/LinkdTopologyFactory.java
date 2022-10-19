@@ -55,7 +55,7 @@ public class LinkdTopologyFactory {
     private static final Logger LOG = LoggerFactory.getLogger(LinkdTopologyFactory.class);
 
     private GraphProvider m_delegate;
-    private OnmsTopologyDao m_onmsTopologyDao;
+    private final OnmsTopologyDao m_onmsTopologyDao;
 
     private final Timer m_loadFullTimer;
     private final Timer m_loadLldpLinksTimer;
@@ -69,8 +69,10 @@ public class LinkdTopologyFactory {
 
     private final SelectionAware selectionAwareDelegate;
 
-    public LinkdTopologyFactory(MetricRegistry registry) {
+    public LinkdTopologyFactory(MetricRegistry registry, OnmsTopologyDao onmsTopologyDao) {
         Objects.requireNonNull(registry);
+        Objects.requireNonNull(onmsTopologyDao);
+        m_onmsTopologyDao=onmsTopologyDao;
         selectionAwareDelegate = new LinkdSelectionAware(this);
         m_loadFullTimer = registry.timer(MetricRegistry.name("enlinkd", "load", "full"));
         m_loadLldpLinksTimer = registry.timer(MetricRegistry.name("enlinkd", "load", "links", "lldp"));
@@ -124,9 +126,11 @@ public class LinkdTopologyFactory {
         Timer.Context context = timer.time();
         try{
             loadTopology(protocol, graph);
-            LOG.info("loadEdges: {}, loaded", protocol.name());
+            LOG.info("loadEdges: {}, protocol: {}, loaded", graph.getNamespace(), protocol.name());
+        } catch (IllegalArgumentException e){
+            LOG.info("loadEdges: {}, protocol: {}, not supported",graph.getNamespace(), protocol.name());
         } catch (Exception e){
-            LOG.error("loadEdges: {}, failed", protocol.name(), e);
+            LOG.error("loadEdges: {}, protocol: {}, failed",graph.getNamespace(), protocol.name(), e);
         } finally {
             context.stop();
         }
@@ -166,10 +170,10 @@ public class LinkdTopologyFactory {
         }
 
         if (node == null) {
-            LOG.info("getDefaultVertex: no default node found!");
+            LOG.info("getDefaultVertex: namespace: {}, no default node found!", graph.getNamespace());
             return null;
         }
-        LOG.info("getDefaultVertex: default node found: [{}]:{}", node.getId(), node.getLabel());
+        LOG.info("getDefaultVertex: topology: {}, default node found: [{}]:{}", graph.getNamespace(), node.getId(), node.getLabel());
         return graph.getVertex(graph.getNamespace(), node.getId());
     }
 
@@ -192,9 +196,9 @@ public class LinkdTopologyFactory {
         Timer.Context vcontext = m_loadVerticesTimer.time();
         try {
             for (OnmsTopologyVertex tvertex : m_onmsTopologyDao.getTopology(ProtocolSupported.NODES.name()).getVertices()) {
-                graph.addVertices(LinkdVertex.create(tvertex,getActiveNamespace()));
+                graph.addVertices(LinkdVertex.create(tvertex, getActiveNamespace()));
             }
-            LOG.info("refresh: Loaded Vertices");
+            LOG.info("refresh: Loaded Vertices on graph: {} activeNamespace: {}",graph.getNamespace(), getActiveNamespace());
         } catch (Exception e){
             LOG.error("Exception Loading Vertices", e);
         } finally {
@@ -211,14 +215,6 @@ public class LinkdTopologyFactory {
             context.stop();
         }
 
-    }
-
-    public OnmsTopologyDao getOnmsTopologyDao() {
-        return m_onmsTopologyDao;
-    }
-
-    public void setOnmsTopologyDao(OnmsTopologyDao onmsTopologyDao) {
-        m_onmsTopologyDao = onmsTopologyDao;
     }
 
     public GraphProvider getDelegate() {

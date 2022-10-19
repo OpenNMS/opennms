@@ -58,10 +58,6 @@ public class NodesOnmsTopologyUpdater extends TopologyUpdater {
         for (NodeTopologyEntity element: getNodeMap().values()) {
             topology.getVertices().add(create(element,ipMap.get(element.getId())));
         }
-        NodeTopologyEntity defaultFocusPoint = getDefaultFocusPoint();
-        if (defaultFocusPoint != null) {
-            topology.setDefaultVertex(create(defaultFocusPoint,ipMap.get(defaultFocusPoint.getId())));
-        }
         return topology;
     }
 
