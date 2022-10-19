@@ -9,7 +9,7 @@ interface ContextWithState extends VuexContext {
 
 // Set this to true to use local/fake data instead of making API call
 const useFakeMenuData = false
-const useFakeUserNotificationData = true
+const useFakeUserNotificationData = false
 
 const defaultMainMenu = {
   baseHref: 'http://localhost:8980/opennms/',

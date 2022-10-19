@@ -36,7 +36,9 @@
           </template>
           <FeatherDropdownItem v-for="item in menuItem.items" :key="item.name || ''"
             @click="onMenuItemClick(item.url || '', item.isVueLink)">
-            <a :href="computeLink(item.url || '', item.isVueLink)" class="dropdown-menu-link">{{ item.name }}</a>
+            <div class="menubar-dropdown-item-content">
+              <a :href="computeLink(item.url || '', item.isVueLink)" class="dropdown-menu-link">{{ item.name }}</a>
+            </div>
           </FeatherDropdownItem>
         </FeatherDropdown>
 
@@ -56,12 +58,14 @@
             :key="plugin.extensionId"
             @click="onMenuItemClick(computePluginRelLink(plugin))"
           >
-            <a :href="computeLink(computePluginRelLink(plugin))" class="dropdown-menu-link">
-              <FeatherIcon :icon="UpdateUtilities" />
-              <span class="left-margin-small">
-                {{ plugin.menuEntry }}
-              </span>
-            </a>
+            <div class="menubar-dropdown-item-content">
+              <a :href="computeLink(computePluginRelLink(plugin))" class="dropdown-menu-link">
+                <FeatherIcon :icon="UpdateUtilities" />
+                <span class="left-margin-small">
+                  {{ plugin.menuEntry }}
+                </span>
+              </a>
+            </div>
           </FeatherDropdownItem>
         </FeatherDropdown>
 
@@ -76,14 +80,16 @@
           </template>
           <FeatherDropdownItem v-for="item in mainMenu.helpMenu.items" :key="item.name || ''"
             @click="onMenuItemClick(item.url || '', item.isVueLink)">
-            <a :href="computeLink(item.url || '', item.isVueLink)" class="dropdown-menu-link">
-              <template v-if="item.icon">
-                <font-awesome-icon :icon="`fa-solid ${item.icon}`"></font-awesome-icon>
-              </template>
-              <span :class="{'left-margin-small': item.icon}">
-                {{ item.name }}
-              </span>
-            </a>
+            <div class="menubar-dropdown-item-content">
+              <a :href="computeLink(item.url || '', item.isVueLink)" class="dropdown-menu-link">
+                <template v-if="item.icon">
+                  <font-awesome-icon :icon="`fa-solid ${item.icon}`"></font-awesome-icon>
+                </template>
+                <span :class="{'left-margin-small': item.icon}">
+                  {{ item.name }}
+                </span>
+              </a>
+            </div>
           </FeatherDropdownItem>
         </FeatherDropdown>
 
@@ -104,14 +110,16 @@
           </template>
           <FeatherDropdownItem v-for="item in mainMenu.selfServiceMenu.items" :key="item.name || ''"
             @click="onMenuItemClick(item.url || '', item.isVueLink)">
-            <a :href="computeLink(item.url || '', item.isVueLink)" class="dropdown-menu-link">
-              <template v-if="item.icon">
-                <font-awesome-icon :icon="`fa-solid ${item.icon}`"></font-awesome-icon>
-              </template>
-              <span :class="{'left-margin-small': item.icon}">
-                {{ item.name }}
-              </span>
-            </a>
+            <div class="menubar-dropdown-item-content">
+              <a :href="computeLink(item.url || '', item.isVueLink)" class="dropdown-menu-link">
+                <template v-if="item.icon">
+                  <font-awesome-icon :icon="`fa-solid ${item.icon}`"></font-awesome-icon>
+                </template>
+                <span :class="{'left-margin-small': item.icon}">
+                  {{ item.name }}
+                </span>
+              </a>
+            </div>
           </FeatherDropdownItem>
         </FeatherDropdown>
 
@@ -134,14 +142,16 @@
 
           <FeatherDropdownItem v-for="item in mainMenu.userNotificationMenu.items?.filter(i => i.id === 'user')"
             :key="item.name || ''" @click="onMenuItemClick(item.url || '', item.isVueLink)">
-            <a :href="computeLink(item.url || '')" class="dropdown-menu-link dropdown-menu-wrapper">
-              <template v-if="item.icon">
-                <FeatherIcon :icon="Person" />
-              </template>
-              <span class="left-margin-small">
-                {{ notificationSummary.userUnacknowledgedCount }} notices assigned to you
-              </span>
-            </a>
+            <div class="menubar-dropdown-item-content">
+              <a :href="computeLink(item.url || '')" class="dropdown-menu-link dropdown-menu-wrapper">
+                <template v-if="item.icon">
+                  <FeatherIcon :icon="Person" />
+                </template>
+                <span class="left-margin-small">
+                  {{ notificationSummary.userUnacknowledgedCount }} notices assigned to you
+                </span>
+              </a>
+            </div>
           </FeatherDropdownItem>
 
           <!-- user notifications -->
@@ -149,55 +159,59 @@
             v-for="item in notificationSummary.userUnacknowledgedNotifications.notification.slice(0,2)"
             :key="item.id || ''" class="notification-dropdown-item" @click="onNotificationItemClick(item)">
             <template #default>
-              <div class="notification-dropdown-item-content dropdown-menu-wrapper">
-                <div @click="onNotificationItemClick(item)" class="notification-dropdown-item-content-button">
-                  <i :class="`notification-badge-pill badge-severity-${item?.severity?.toLocaleLowerCase()}`" />
-                  <div class="full-width-left">
-                    <div>
-                      <span class="font-weight-bold">
-                        {{ new Date(item.pageTime).toLocaleDateString() }} {{ new
-                        Date(item.pageTime).toLocaleTimeString()
-                        }}
-                      </span>
-                    </div>
-                    <div class="dropdown-info-bar">
-                      <span>{{ item.notificationName }}</span>
-                      <span>{{ item.nodeLabel }}</span>
-                      <span>{{ item.ipAddress }}</span>
-                      <span>{{ item.serviceType?.name }}</span>
+              <div class="menubar-dropdown-item-content">
+                <div class="notification-dropdown-item-content dropdown-menu-wrapper">
+                  <div @click="onNotificationItemClick(item)" class="notification-dropdown-item-content-button">
+                    <i :class="`notification-badge-pill badge-severity-${item?.severity?.toLocaleLowerCase()}`" />
+                    <div class="full-width-left">
+                      <div>
+                        <span class="font-weight-bold">
+                          {{ new Date(item.pageTime).toLocaleDateString() }} {{ new
+                          Date(item.pageTime).toLocaleTimeString()
+                          }}
+                        </span>
+                      </div>
+                      <div class="dropdown-info-bar">
+                        <span>{{ item.notificationName }}</span>
+                        <span>{{ item.nodeLabel }}</span>
+                        <span>{{ item.ipAddress }}</span>
+                        <span>{{ item.serviceType?.name }}</span>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-
             </template>
           </FeatherDropdownItem>
           <FeatherDropdownItem>
-            <div class="dropdown-menu-wrapper show-more-link notification-dropdown-item-content">
-
-              <a href="#">Show more...</a>
+            <div class="menubar-dropdown-item-content">
+              <div class="dropdown-menu-wrapper show-more-link notification-dropdown-item-content">
+                <a href="#">Show more...</a>
+              </div>
             </div>
           </FeatherDropdownItem>
           <!-- Team and On-Call links -->
           <FeatherDropdownItem v-for="item in mainMenu.userNotificationMenu.items?.filter(i => i.id !== 'user')"
             :key="item.name || ''" @click="onMenuItemClick(item.url || '', item.isVueLink)">
-            <a :href="computeLink(item.url || '')" class="dropdown-menu-link dropdown-menu-wrapper final-menu-wrapper">
-              <template v-if="item.icon && item.id === 'team'">
-                <font-awesome-icon icon="fa-solid fa-users"></font-awesome-icon>
-              </template>
-              <template v-if="item.icon && item.id === 'oncall'">
-                <font-awesome-icon icon="fa-solid fa-calendar"></font-awesome-icon>
-              </template>
-              <span class="left-margin-small">
-                <template v-if="item.id === 'team'">
-                  {{ notificationSummary.teamUnacknowledgedCount }} of {{ notificationSummary.totalUnacknowledgedCount
-                  }} assigned to anyone but you
+            <div class="menubar-dropdown-item-content">
+              <a :href="computeLink(item.url || '')" class="dropdown-menu-link dropdown-menu-wrapper final-menu-wrapper">
+                <template v-if="item.icon && item.id === 'team'">
+                  <font-awesome-icon icon="fa-solid fa-users"></font-awesome-icon>
                 </template>
-                <template v-if="item.id === 'oncall'">
-                  {{ item.name }}
+                <template v-if="item.icon && item.id === 'oncall'">
+                  <font-awesome-icon icon="fa-solid fa-calendar"></font-awesome-icon>
                 </template>
-              </span>
-            </a>
+                <span class="left-margin-small">
+                  <template v-if="item.id === 'team'">
+                    {{ notificationSummary.teamUnacknowledgedCount }} of {{ notificationSummary.totalUnacknowledgedCount
+                    }} assigned to anyone but you
+                  </template>
+                  <template v-if="item.id === 'oncall'">
+                    {{ item.name }}
+                  </template>
+                </span>
+              </a>
+            </div>
           </FeatherDropdownItem>
         </FeatherDropdown>
 
@@ -222,11 +236,6 @@
             :title="`${mainMenu.configurationMenu?.name || 'Configure OpenNMS'}`"></font-awesome-icon>
         </a>
       </template>
-
-      <!--
-      <FeatherButton @click="returnHandler" class="return-btn">Back to main page</FeatherButton>
-      -->
-
       <FeatherIcon :icon="LightDarkMode" title="Toggle Light/Dark Mode" class="pointer light-dark"
         @click="toggleDarkLightMode(null)" />
     </template>
@@ -287,7 +296,6 @@ import AddCircleAlt from '@featherds/icon/action/AddCircleAlt'
 import ArrowDropDown from '@featherds/icon/navigation/ArrowDropDown'
 import LightDarkMode from '@featherds/icon/action/LightDarkMode'
 import UpdateUtilities from '@featherds/icon/action/UpdateUtilities'
-import View from '@featherds/icon/action/View'
 import Person from '@featherds/icon/action/Person'
 import Logo from '@/assets/LogoHorizon.vue'
 import { Plugin } from '@/types'
@@ -529,6 +537,15 @@ a.top-menu-link:visited {
   font-size: 0.875rem;
   padding-left: 0.5rem;
   padding-right: 0.5rem;
+}
+
+.menubar-dropdown-item-content {
+    padding-top: 0.33rem;
+    padding-right: 1.25rem;
+    padding-bottom: 0.33rem;
+    padding-left: 1.25rem;
+    font-size: 0.875rem;
+    font-weight: 400;
 }
 
 .notification-badge-pill {
