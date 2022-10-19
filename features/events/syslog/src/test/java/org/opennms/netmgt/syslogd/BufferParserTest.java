@@ -260,7 +260,7 @@ public class BufferParserTest {
 			long start = System.currentTimeMillis();
 			for (int i = 0; i < iterations; i++) {
 				ConvertToEvent convertToEvent = new ConvertToEvent(
-						MockDistPollerDao.DEFAULT_DIST_POLLER_ID,
+					MockDistPollerDao.DEFAULT_DIST_POLLER_ID,
 					MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID,
 					InetAddressUtils.ONE_TWENTY_SEVEN,
 					9999,

@@ -878,10 +878,11 @@ public class Migrator {
         Statement st = null;
 
         try {
-            if (isNewDatabase)
+            if (isNewDatabase) {
                 c = m_adminDataSource.getConnection();
-            else
+            } else {
                 c = m_dataSource.getConnection();
+            }
             st = c.createStatement();
             st.execute("CREATE EXTENSION IF NOT EXISTS pgcrypto CASCADE");
         } catch (SQLException e) {

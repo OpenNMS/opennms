@@ -79,7 +79,7 @@ public class DnsCacheTest {
     private Event parseSyslog(final String name, final SyslogdConfig config, final String syslog, Date receivedTimestamp, Cache<HostNameWithLocationKey, String> cache) {
         try {
             ConvertToEvent convert = new ConvertToEvent(
-                MockDistPollerDao.DEFAULT_DIST_POLLER_ID,
+                    MockDistPollerDao.DEFAULT_DIST_POLLER_ID,
                     "MINION",
                     InetAddressUtils.ONE_TWENTY_SEVEN,
                     9999,
