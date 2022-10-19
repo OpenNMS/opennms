@@ -40,6 +40,31 @@
           </FeatherDropdownItem>
         </FeatherDropdown>
 
+        <!-- Plugins menu -->
+        <FeatherDropdown
+          v-if="plugins"
+          class="menubar-dropdown-dark"
+        >
+          <template v-slot:trigger="{ attrs, on }">
+            <FeatherButton link href="#" v-bind="attrs" v-on="on" class="menubar-dropdown-button-dark">
+              Plugins
+              <FeatherIcon :icon="ArrowDropDown" />
+            </FeatherButton>
+          </template>
+          <FeatherDropdownItem
+            v-for="plugin of plugins"
+            :key="plugin.extensionId"
+            @click="onMenuItemClick(computePluginRelLink(plugin))"
+          >
+            <a :href="computeLink(computePluginRelLink(plugin))" class="dropdown-menu-link">
+              <FeatherIcon :icon="UpdateUtilities" />
+              <span class="left-margin-small">
+                {{ plugin.menuEntry }}
+              </span>
+            </a>
+          </FeatherDropdownItem>
+        </FeatherDropdown>
+
         <!-- Help menu -->
         <FeatherDropdown v-if="mainMenu.helpMenu" class="menubar-dropdown-dark" @mouseenter="hoverItem(HelpIndex)"
           :modelValue="hoveredItems[HelpIndex]">
@@ -261,9 +286,11 @@ import { FeatherIcon } from '@featherds/icon'
 import AddCircleAlt from '@featherds/icon/action/AddCircleAlt'
 import ArrowDropDown from '@featherds/icon/navigation/ArrowDropDown'
 import LightDarkMode from '@featherds/icon/action/LightDarkMode'
+import UpdateUtilities from '@featherds/icon/action/UpdateUtilities'
 import View from '@featherds/icon/action/View'
 import Person from '@featherds/icon/action/Person'
 import Logo from '@/assets/LogoHorizon.vue'
+import { Plugin } from '@/types'
 import Search from './Search.vue'
 
 import { useStore } from 'vuex'
@@ -299,6 +326,7 @@ const UserIndex = 2
 useOutsideClick(outsideClick.value, () => {
   resetMenuItems()
 })
+const plugins = computed<Plugin[]>(() => store.state.pluginModule.plugins)
 
 const mainMenu = computed<MainMenu>(() => store.state.menuModule.mainMenu)
 const menuItems = computed<TopMenuItem[]>(() => {
@@ -382,6 +410,10 @@ const toggleDarkLightMode = (savedTheme: string | null) => {
 const computeLink = (url: string, isVueLink?: boolean | null) => {
   const baseLink = (isVueLink ? import.meta.env.VITE_VUE_BASE_URL : (mainMenu.value?.baseHref || import.meta.env.VITE_BASE_URL)) || ''
   return `${baseLink}${url}`
+}
+
+const computePluginRelLink = (plugin: Plugin) => {
+  return `ui/#/plugins/${plugin.extensionId}/${plugin.resourceRootPath}/${plugin.moduleFileName}`
 }
 
 const computeSearchLink = () => {
