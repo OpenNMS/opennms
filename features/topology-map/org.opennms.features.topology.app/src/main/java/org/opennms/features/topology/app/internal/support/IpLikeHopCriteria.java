@@ -94,7 +94,7 @@ public class IpLikeHopCriteria extends VertexHopCriteria implements SearchCriter
         m_ipQuery = searchResult.getQuery();
         this.ipInterfaceProvider = Objects.requireNonNull(ipInterfaceProvider);
         m_collapsedVertex = new IPVertex(m_ipQuery);
-		m_graphContainer = Objects.requireNonNull(graphContainer);
+	m_graphContainer = Objects.requireNonNull(graphContainer);
 		Objects.requireNonNull(graphContainer.getTopologyServiceClient());
         m_collapsedVertex.setChildren(getVertices());
         setId(searchResult.getId());
