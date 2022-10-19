@@ -1,7 +1,7 @@
 <template>
   <FeatherAppBar :labels="{ skip: 'main' }" content="app" :ref="outsideClick" @mouseleave="resetMenuItems">
     <template v-slot:left>
-      <div :style="{display:'flex',alignItems:'center'}">
+      <div class="center-flex">
         <FeatherAppBarLink :icon="Logo" title="Home" class="logo-link home" type="home" url="/" />
         <template v-if="mainMenu.username">
           <span class="body-large left-margin-small formatted-time">{{ mainMenu.formattedTime }}</span>
@@ -91,8 +91,8 @@
         </FeatherDropdown>
 
         <!-- User notifications menu -->
-        <FeatherDropdown v-if="mainMenu.userNotificationMenu" class="menubar-dropdown"
-          @mouseenter="hoverItem(UserIndex)" :modelValue="hoveredItems[UserIndex]">
+        <FeatherDropdown @mouseenter="hoverItem(UserIndex)" v-if="mainMenu.userNotificationMenu"
+          class="menubar-dropdown" :modelValue="hoveredItems[UserIndex]">
           <template v-slot:trigger="{ attrs, on }">
             <FeatherButton link href="#" v-bind="attrs" v-on="on" class="menubar-dropdown-button-dark">
               <span
@@ -109,7 +109,7 @@
 
           <FeatherDropdownItem v-for="item in mainMenu.userNotificationMenu.items?.filter(i => i.id === 'user')"
             :key="item.name || ''" @click="onMenuItemClick(item.url || '', item.isVueLink)">
-            <a :href="computeLink(item.url || '')" class="dropdown-menu-link">
+            <a :href="computeLink(item.url || '')" class="dropdown-menu-link dropdown-menu-wrapper">
               <template v-if="item.icon">
                 <FeatherIcon :icon="Person" />
               </template>
@@ -120,35 +120,43 @@
           </FeatherDropdownItem>
 
           <!-- user notifications -->
-          <FeatherDropdownItem v-for="item in notificationSummary.userUnacknowledgedNotifications.notification"
+          <FeatherDropdownItem
+            v-for="item in notificationSummary.userUnacknowledgedNotifications.notification.slice(0,2)"
             :key="item.id || ''" class="notification-dropdown-item" @click="onNotificationItemClick(item)">
             <template #default>
-              <div class="notification-dropdown-item-content">
-                <span :class="`notification-badge-pill badge-severity-${item?.severity?.toLocaleLowerCase()}`">
-                  &nbsp;
-                </span>
-                <span class="font-weight-bold left-margin-small">
-                  {{ new Date(item.pageTime).toLocaleDateString() }} {{ new Date(item.pageTime).toLocaleTimeString() }}
-                </span>
-                <a href="#" @click="onNotificationItemClick(item)">
-                  <FeatherIcon :icon="View" class="left-margin-small" />
-                </a>
-                <!--
-                  <br />>
-                  <span class="row">{{ item.notificationName }}</span>
-                  <span class="row">{{ item.nodeLabel }}</span>
-                  <span class="row">{{ item.ipAddress }}</span>
-                  <span class="row">{{ item.serviceType?.name }}</span>
-                  -->
+              <div class="notification-dropdown-item-content dropdown-menu-wrapper">
+                <div @click="onNotificationItemClick(item)" class="notification-dropdown-item-content-button">
+                  <i :class="`notification-badge-pill badge-severity-${item?.severity?.toLocaleLowerCase()}`" />
+                  <div class="full-width-left">
+                    <div>
+                      <span class="font-weight-bold">
+                        {{ new Date(item.pageTime).toLocaleDateString() }} {{ new
+                        Date(item.pageTime).toLocaleTimeString()
+                        }}
+                      </span>
+                    </div>
+                    <div class="dropdown-info-bar">
+                      <span>{{ item.notificationName }}</span>
+                      <span>{{ item.nodeLabel }}</span>
+                      <span>{{ item.ipAddress }}</span>
+                      <span>{{ item.serviceType?.name }}</span>
+                    </div>
+                  </div>
+                </div>
               </div>
 
             </template>
           </FeatherDropdownItem>
+          <FeatherDropdownItem>
+            <div class="dropdown-menu-wrapper show-more-link notification-dropdown-item-content">
 
+              <a href="#">Show more...</a>
+            </div>
+          </FeatherDropdownItem>
           <!-- Team and On-Call links -->
           <FeatherDropdownItem v-for="item in mainMenu.userNotificationMenu.items?.filter(i => i.id !== 'user')"
             :key="item.name || ''" @click="onMenuItemClick(item.url || '', item.isVueLink)">
-            <a :href="computeLink(item.url || '')" class="dropdown-menu-link">
+            <a :href="computeLink(item.url || '')" class="dropdown-menu-link dropdown-menu-wrapper final-menu-wrapper">
               <template v-if="item.icon && item.id === 'team'">
                 <font-awesome-icon icon="fa-solid fa-users"></font-awesome-icon>
               </template>
@@ -169,42 +177,24 @@
         </FeatherDropdown>
 
         <!-- Provision/Quick add node menu -->
-        <a
-          v-if="mainMenu.provisionMenu"
-          :href="computeLink(mainMenu.provisionMenu?.url || '')"
-          class="top-menu-icon horiz-padding-small"
-        >
-          <FeatherIcon
-            :icon="AddCircleAlt"
-            class="pointer light-dark"
-            :title="`${mainMenu.provisionMenu?.name || 'Quick-Add Node'}`"
-          />
+        <a v-if="mainMenu.provisionMenu" :href="computeLink(mainMenu.provisionMenu?.url || '')"
+          class="top-menu-icon horiz-padding-small">
+          <FeatherIcon :icon="AddCircleAlt" class="pointer light-dark"
+            :title="`${mainMenu.provisionMenu?.name || 'Quick-Add Node'}`" />
         </a>
 
         <!-- Flows menu -->
-        <a
-          v-if="mainMenu.flowsMenu"
-          :href="computeLink(mainMenu.flowsMenu?.url || '')"
-          class="menu-link horiz-padding-small"
-        >
-          <font-awesome-icon
-            :icon="`fa-solid ${mainMenu.flowsMenu.icon || 'fa-minus-circle'}`"
-            class="top-menu-icon"
-            :title="`${mainMenu.flowsMenu?.name || 'Flow Management'}`"
-          ></font-awesome-icon>
+        <a v-if="mainMenu.flowsMenu" :href="computeLink(mainMenu.flowsMenu?.url || '')"
+          class="menu-link horiz-padding-small">
+          <font-awesome-icon :icon="`fa-solid ${mainMenu.flowsMenu.icon || 'fa-minus-circle'}`" class="top-menu-icon"
+            :title="`${mainMenu.flowsMenu?.name || 'Flow Management'}`"></font-awesome-icon>
         </a>
 
         <!-- Admin/Configuration menu -->
-        <a
-          v-if="mainMenu.configurationMenu"
-          :href="computeLink(mainMenu.configurationMenu.url || '')"
-          class="menu-link horiz-padding-small"
-        >
-          <font-awesome-icon
-            :icon="`fa-solid ${mainMenu.configurationMenu.icon || 'fa-cogs'}`"
-            class="top-menu-icon"
-            :title="`${mainMenu.configurationMenu?.name || 'Configure OpenNMS'}`"
-          ></font-awesome-icon>
+        <a v-if="mainMenu.configurationMenu" :href="computeLink(mainMenu.configurationMenu.url || '')"
+          class="menu-link horiz-padding-small">
+          <font-awesome-icon :icon="`fa-solid ${mainMenu.configurationMenu.icon || 'fa-cogs'}`" class="top-menu-icon"
+            :title="`${mainMenu.configurationMenu?.name || 'Configure OpenNMS'}`"></font-awesome-icon>
         </a>
       </template>
 
@@ -222,11 +212,13 @@
       <div class="dialog-content-container">
         <div class="row">
           <!-- <p>Notification: {{ notificationDialogItem.notificationName }}</p> -->
-          <span :class="`notification-badge-pill badge-severity-${notificationDialogItem.severity.toLocaleLowerCase()}`">
+          <span
+            :class="`notification-badge-pill badge-severity-${notificationDialogItem.severity.toLocaleLowerCase()}`">
             &nbsp;&nbsp;&nbsp;
           </span>
           <span class="font-weight-bold">
-            {{ new Date(notificationDialogItem.pageTime).toLocaleDateString() }} {{ new Date(notificationDialogItem.pageTime).toLocaleTimeString() }}
+            {{ new Date(notificationDialogItem.pageTime).toLocaleDateString() }} {{ new
+            Date(notificationDialogItem.pageTime).toLocaleTimeString() }}
           </span>
         </div>
         <div class="row-container">
@@ -273,7 +265,6 @@ import View from '@featherds/icon/action/View'
 import Person from '@featherds/icon/action/Person'
 import Logo from '@/assets/LogoHorizon.vue'
 import Search from './Search.vue'
-import FeatherHoverDropdown from './FeatherHoverDropdown.vue'
 
 import { useStore } from 'vuex'
 
@@ -523,8 +514,23 @@ a.top-menu-link:visited {
 }
 
 .notification-dropdown-item-content {
+  border-bottom: 1px solid #ececec;
+
   //  min-height: 200px;
   //  overflow-y: none;
+  .notification-dropdown-item-content-button {
+    display: flex;
+    align-items: center;
+    background-color: transparent;
+    border: none;
+    width: 100%;
+  }
+
+  i {
+    width: 15px;
+    height: 15px;
+    margin-right: 15px;
+  }
 }
 
 .dialog-content-container {
@@ -532,23 +538,30 @@ a.top-menu-link:visited {
   flex-direction: column;
   min-width: 400px;
 }
-.font-weight-bold, .font-weight-bold span {
+
+.font-weight-bold,
+.font-weight-bold span {
   font-weight: 800;
 }
+
 .row {
   display: flex;
 }
+
 .column {
   display: flex;
 }
+
 .column-label {
   display: flex;
   min-width: 100px;
 }
+
 .row-container {
   display: flex;
   flex-direction: column;
 }
+
 .column-container {
   display: flex;
   flex-direction: row;
@@ -639,8 +652,8 @@ body .feather-menu .feather-menu-dropdown {
     svg {
       background-color: hsla(0, 0%, 100%, 0.5);
       border-radius: 50%;
-      height:20px;
-      width:20px;
+      height: 20px;
+      width: 20px;
 
       path:first-child {
         fill: rgb(19, 23, 54);
@@ -653,4 +666,56 @@ body .feather-menu .feather-menu-dropdown {
   }
 }
 
+.feather-dropdown {
+
+  .feather-list-item {
+    height: auto;
+    padding: 0;
+  }
+
+  .dropdown-menu-wrapper {
+    padding: 0 1em;
+    min-width: 400px;
+    padding-top: 10px;
+
+    &.show-more-link {
+      padding-bottom: 10px;
+
+      a {
+        color: var(--feather-primary-text-on-surface)
+      }
+    }
+  }
+
+  .final-menu-wrapper {
+    display: block;
+    padding-left: 20px;
+    padding-bottom: 10px;
+
+    svg {
+      margin-right: 10px;
+    }
+  }
+}
+
+.dropdown-info-bar {
+  display: flex;
+  align-items: center;
+  text-align: left;
+  margin-bottom: 10px;
+
+  span {
+    margin-right: 10px;
+  }
+}
+
+.center-flex {
+  display: flex;
+  align-items: center;
+}
+
+.full-width-left {
+  width: 100%;
+  text-align: left;
+}
 </style>
