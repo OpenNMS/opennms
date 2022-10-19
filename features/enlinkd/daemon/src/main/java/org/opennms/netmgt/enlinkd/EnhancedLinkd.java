@@ -338,11 +338,16 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
                 m_isisTopologyUpdater.forceRun();
             }
             break;
-        
+
+        case OSPFAREA:
+            if (m_linkdConfig.useOspfDiscovery()) {
+                m_ospfAreaTopologyUpdater.forceRun();
+            }
+            break;
+
         case OSPF:
             if (m_linkdConfig.useOspfDiscovery()) {
                 m_ospfTopologyUpdater.forceRun();
-                m_ospfAreaTopologyUpdater.forceRun();
             }
             break;
         
@@ -390,10 +395,15 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
             case OSPF:
                 if (m_linkdConfig.useOspfDiscovery()) {
                     m_ospfTopologyUpdater.runSchedulable();
+                }
+                break;
+
+            case OSPFAREA:
+                if (m_linkdConfig.useOspfDiscovery()) {
                     m_ospfAreaTopologyUpdater.runSchedulable();
                 }
                 break;
-            
+
             case BRIDGE:
                 if (m_linkdConfig.useBridgeDiscovery()) {
                     m_bridgeTopologyUpdater.runSchedulable();
