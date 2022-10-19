@@ -140,15 +140,30 @@ public abstract class TopologyUpdater extends Schedulable implements OnmsTopolog
 
     @Override
     public synchronized void runSchedulable() {
-        LOG.debug("run: start {}", getName());
+        LOG.info("run: start {}", getName());
         final OnmsTopology oldTopology = m_topology.clone();
         final OnmsTopology newTopology = runDiscoveryInternally(oldTopology);
         if (oldTopology != newTopology) {
             synchronized (m_lock) {
                 m_topology = newTopology;
+                setDefaultVertex();
             }
         }
-        LOG.debug("run: end {}", getName());
+        LOG.info("run: end {}", getName());
+    }
+
+    public void setDefaultVertex() {
+        NodeTopologyEntity defaultFocusPoint = getDefaultFocusPoint();
+        if (defaultFocusPoint != null) {
+            OnmsTopologyVertex dv = create(defaultFocusPoint,getIpPrimaryMap().get(defaultFocusPoint.getId()));
+            if (m_topology.hasVertex(dv.getId())) {
+                m_topology.setDefaultVertex(dv);
+                LOG.info("setDefaultVertex: set default: {}", dv.getLabel());
+            } else  if (!m_topology.getVertices().isEmpty()) {
+                m_topology.setDefaultVertex(m_topology.getVertices().iterator().next());
+                LOG.info("setDefaultVertex: set first item: {}", m_topology.getDefaultVertex().getLabel());
+            }
+        }
     }
 
     protected OnmsTopology runDiscoveryInternally(OnmsTopology oldTopology) {
@@ -159,7 +174,7 @@ public abstract class TopologyUpdater extends Schedulable implements OnmsTopolog
                 m_topologyService.parseUpdates();
                 newTopology.getVertices().forEach(this::update);
                 newTopology.getEdges().forEach(this::update);
-                LOG.debug("run: {} first run topology calculated", getName());
+                LOG.info("run: {} first run topology calculated", getName());
                 return newTopology;
             } catch (Exception e) {
                 LOG.error("run: {} first run: cannot build topology", getName(), e);
@@ -168,7 +183,7 @@ public abstract class TopologyUpdater extends Schedulable implements OnmsTopolog
         } else if (m_topologyService.parseUpdates() || m_forceRun) {
             m_forceRun = false;
             m_topologyService.refresh();
-            LOG.debug("run: updates {}, recalculating topology ", getName());
+            LOG.info("run: updates {}, recalculating topology ", getName());
             OnmsTopology newTopology;
             try {
                 newTopology = buildTopology();

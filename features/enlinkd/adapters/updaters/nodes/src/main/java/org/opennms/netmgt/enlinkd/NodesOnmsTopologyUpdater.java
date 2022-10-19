@@ -41,14 +41,6 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
 
 public class NodesOnmsTopologyUpdater extends TopologyUpdater {
 
-    public static NodesOnmsTopologyUpdater clone (NodesOnmsTopologyUpdater bpu) {
-        NodesOnmsTopologyUpdater update = new NodesOnmsTopologyUpdater(bpu.getTopologyDao(), bpu.getNodeTopologyService());
-        update.setRunned(bpu.isRunned());
-        update.setTopology(bpu.getTopology());
-        return update;
- 
-    }
-    
     public NodesOnmsTopologyUpdater(
             OnmsTopologyDao topologyDao, NodeTopologyService nodeTopologyService) {
         super(nodeTopologyService, topologyDao,nodeTopologyService);
@@ -65,10 +57,6 @@ public class NodesOnmsTopologyUpdater extends TopologyUpdater {
         OnmsTopology topology = new OnmsTopology();
         for (NodeTopologyEntity element: getNodeMap().values()) {
             topology.getVertices().add(create(element,ipMap.get(element.getId())));
-        }
-        NodeTopologyEntity defaultFocusPoint = getDefaultFocusPoint();
-        if (defaultFocusPoint != null) {
-            topology.setDefaultVertex(create(defaultFocusPoint,ipMap.get(defaultFocusPoint.getId())));
         }
         return topology;
     }

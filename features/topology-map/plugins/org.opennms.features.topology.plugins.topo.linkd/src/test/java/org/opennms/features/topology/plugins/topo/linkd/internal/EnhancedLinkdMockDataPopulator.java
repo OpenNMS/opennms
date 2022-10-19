@@ -94,8 +94,8 @@ public class EnhancedLinkdMockDataPopulator {
         final String snmp = "SNMP";
         final String http = "HTTP";
 
-        m_nodes = new ArrayList<OnmsNode>();
-        m_lldpnodes = new ArrayList<LldpElement>();
+        m_nodes = new ArrayList<>();
+        m_lldpnodes = new ArrayList<>();
         m_ospfnodes = new ArrayList<>();
         final NetworkBuilder builder = new NetworkBuilder();
 
