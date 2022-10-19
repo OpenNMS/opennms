@@ -308,7 +308,7 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
                 if (provider.supportsPrefix(query)) {
                     // If there is an '=' divider, strip it off. Otherwise, use an empty query string
                     String queryOnly = query.indexOf('=') > 0 ? query.substring(query.indexOf('=') + 1) : "";
-                    List<SearchResult> q = provider.    query(getSearchQuery(queryOnly), m_operationContext.getGraphContainer());
+                    List<SearchResult> q = provider.query(getSearchQuery(queryOnly), m_operationContext.getGraphContainer());
                     results.addAll(q);
 
                     if (m_suggestionMap.containsKey(provider)) {
