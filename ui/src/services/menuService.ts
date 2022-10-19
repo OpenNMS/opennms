@@ -16,13 +16,8 @@ const getMainMenu = async (): Promise<MainMenu | false> => {
 const getNotificationSummary = async (): Promise<NotificationSummary | false> => {
   try {
     const resp = await rest.get(notificationSummaryEndpoint)
-    console.log('DEBUG in getNotificationSummary, resp:')
-    console.dir(resp)
-
     return resp.data
   } catch (err) {
-    console.log('DEBUG in getNotificationSummary, err:')
-    console.dir(err)
     return false
   }
 }
