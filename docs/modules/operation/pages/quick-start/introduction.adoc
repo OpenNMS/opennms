@@ -8,14 +8,20 @@ This Quick Start guide assumes that you have already completed the xref:deployme
 Now that you have installed and started {page-component-title}, you should consider your monitoring goals.
 Knowing what kind of information you want to collect will help focus your setup process.
 
-Out of the box, {page-component-title} provides the following functionality:
+{page-component-title} provides robust functionality out of the box, including (but not limited to) the following:
 
-// list
+* Self-monitoring via JMX data collection.
+* Detection and monitoring of more than twelve services, including DNS, HTTP/S, and more.
+* Reception and recognition of SNMP traps from over 200 MIBs.
+* Collection of SNMP performance data from over 200 families of SNMP-capable devices.
+* Collection of standard MIB-2 stats from any SNMP-capable device.
+
+== Quick Start contents
 
 This guide covers the following tasks:
 
 * xref:operation:quick-start/users.adoc#ga-data-choices[First-time login and usage data permissions].
-* xref:operation:quick-start/users.adoc#ga-admin-user-setup[Set up `admin` user].
+* xref:operation:quick-start/users.adoc#ga-admin-user-setup[Set up admin user].
 * xref:operation:quick-start/users.adoc#create-user[Create a new user].
 * xref:operation:quick-start/notifications.adoc[Turn on default notifications].
 * xref:operation:quick-start/inventory.adoc[Provision inventory].
@@ -26,4 +32,4 @@ This guide covers the following tasks:
 * xref:operation:quick-start/notification-config.adoc[Configure notifications].
 * Visualize your data.
 
-NOTE: Unless otherwise stated, the procedures in the Quick Start require you to be logged in to the OpenNMS web UI as a user with admin privileges.
+NOTE: Unless otherwise stated, the procedures in this guide require you to be logged in to the OpenNMS web UI as a user with admin privileges.
