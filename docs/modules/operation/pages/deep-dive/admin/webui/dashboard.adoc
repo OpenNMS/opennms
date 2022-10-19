@@ -18,7 +18,7 @@ This is useful when viewing dashboards on a large screen.
 [[ga-dashboard-components]]
 == Components
 
-The dashboard is comprised of the following components:
+The dashboard includes the following components:
 
 * *Surveillance view:* lets you model a monitoring context for the dashboard.
 +
@@ -27,7 +27,7 @@ The rest of the dashboard updates dynamically.
 
 * *Alarms:* displays unacknowledged alarms whose severity is higher than Normal (1).
 An operator should escalate any alarms shown here.
-* *Notifications:* displays outstanding and unacknowledged notifications that have been sent to engineers.
+* *Notifications:* displays outstanding and unacknowledged notifications that have been sent to recipients.
 * *Outages:* displays all ongoing network outages.
 * *Resource graphs:* displays time series reports for performance diagnosis.
 
@@ -61,7 +61,7 @@ image::dashboard/03_dashboard-alarms.png[]
 
 * *Node:* the label of the node associated with the alarm.
 * *Severity:* alarm severity.
-* *UEI:* the alarm's UEI.
+* *UEI:* the alarm's unique event identifier.
 * *Count:* the number of alarms deduplicated by the alarm's reduction key.
 * *Last Time:* the time at which the most recent alarm was generated.
 * *Log Msg:* the log message from the alarm's event definition.
@@ -100,7 +100,7 @@ An acknowledged alarm doesn't necessarily mean that an outage has been solved; f
 .An outages component displaying five nodes and their availability stats
 image::dashboard/05_dashboard-outages.png[]
 
-* *Node:* the label of the node.
+* *Node:* the label of the node associated with the outage.
 * *Current Outages:* the number of services on the node experiencing outages.
 The number of outages is listed out of the total number of monitored services (for example, "3 of 3 services are affected").
 * *24 Hour Availability:* the availability of all node services, calculated across the last 24 hours.
@@ -121,7 +121,7 @@ image::dashboard/06_dashboard-resource-graphs.png[]
 == Advanced configuration
 
 The surveillance view component lets you model views for different monitoring contexts.
-Using it, you can create a special view as an example for network or server operators.
+Use it to create a special view as an example for network or server operators.
 The dashboard displays only one configured <<deep-dive/admin/webui/surveillance-view.adoc#ga-surveillance-view, surveillance view>>.
 You can, however, let certain users define their surveillance view to fit their requirements by mapping their account to a configured surveillance view component.
 
@@ -227,7 +227,7 @@ If they try to do so, they receive an access denied error.
 You can modify the security framework configuration files to allow access to one or more dashboards without requiring a user to log in:
 
 . Create users and configure surveillance views as shown in <<#ga-dashboard-dashboard-role, The Dashboard role>>.
-For this example, we will create two dashboards and two users, one of each named `dashboard1` and the other named `dashboard2`.
+For this example, we will create two dashboards and two users: `dashboard1` and `dashboard2`.
 . Edit `$\{OPENNMS_HOME}/jetty-webapps/opennms/WEB-INF/web.xml` to create aliases for the dashboards.
 Add the following code just before the first `<servlet-mapping>` tag:
 +

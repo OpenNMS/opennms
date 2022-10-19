@@ -8,7 +8,7 @@ This section describes how to visualize your environment's data (using the dashb
 The {page-component-title} home page presents an overview of important network status metrics, as soon as you log in.
 By default, it displays pending situations and problems, ongoing outages, 24-hour availability statistics, and a map displaying real-time regional status data.
 
-When you log in, the visualizations on the home page are not filtered.
+By default, the visualizations on the home page are not filtered.
 You can apply filters to the data using the sections on the right side of the screen (Resource Graphs, KSC Reports, and Quick Search).
 
 For more information, see xref:operation:deep-dive/admin/webui/grafana-dashboard-box.adoc[Grafana Dashboard Box] in the Deep Dive section.
@@ -19,7 +19,7 @@ For more information, see xref:operation:deep-dive/admin/webui/grafana-dashboard
 You can view the default dashboard by clicking menu:Dashboards[Dashboard] in the top menu bar.
 The dashboard compiles environment data to generate an overview of monitored components; this information can often be a useful starting point for more detailed analysis of issues.
 
-The dashboard is comprised of the following components:
+The dashboard includes the following components:
 
 * *Surveillance view:* lets you model a monitoring context on the dashboard.
 +
@@ -46,7 +46,7 @@ Follow these steps to create a new operator board:
 . Click the *Gear* symbol at the top-right of the screen.
 . Under Additional Tools, click *Ops Board Configuration*.
 . Click the *Plus* symbol (*+*) beside the Overview tab, type a name for the new ops board, and click *Save*.
-. Click *Add Dashlet* and configure its settings:
+. Click *Add Dashlet*, select a dashlet from the *Dashlet* list, and configure its settings:
 ** *Title:* dashlet name to display in the ops board.
 ** *Priority:* how often the dashlet displays in the rotation.
 Priority 1 is the highest, meaning it appears the most often.
@@ -69,7 +69,7 @@ For more information about ops boards and dashlets, see xref:operation:deep-dive
 == Surveillance View
 
 The Surveillance View is similar to its component of the same name in the <<#qs-visualize-dashboard, Dashboard>>.
-You can view it by clicking menu:Status[Surveillance] in the top menu bar.
+Click menu:Status[Surveillance] in the top menu bar to view it.
 
 Just like in the Dashboard, you can select rows, columns, and cells to narrow your data focus.
 
@@ -80,14 +80,14 @@ For more information, see xref:operation:deep-dive/admin/webui/surveillance-view
 You can use the heatmap to display either unacknowledged alarms or ongoing node outages.
 Each visualization can be applied to categories, foreign sources, or node services.
 
-You can view the heatmap by clicking menu:Status[Heatmap] in the top menu bar.
+Click menu:Status[Heatmap] in the top menu bar to view the heatmap.
 
 For more information, see xref:operation:deep-dive/admin/webui/heatmap.adoc[Heatmap] in the Deep Dive section.
 
 == Trend
 
 The Trend page displays small, inline charts of database-related statistics (nodes experiencing outages, unacknowledged alarms, and so on).
-You can view it by clicking menu:Status[Trend] in the top menu bar.
+Click menu:Status[Trend] in the top menu bar to view it.
 
 For more information, see xref:operation:deep-dive/admin/webui/trends.adoc[Trend] in the Deep Dive section.
 

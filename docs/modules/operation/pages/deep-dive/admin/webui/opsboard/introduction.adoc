@@ -34,6 +34,6 @@ Depending on the visualization you want to see, select either *Ops Panel* or *Op
 == Dashlets
 
 Each dashlet visualizes specific information (for example, unacknowledged alarms).
-The following sections describe each dashlet and their available configuration parameters.
+The following sections describe each dashlet and its available configuration parameters.
 
 To filter the information displayed in a dashlet, configure it using a generic <<deep-dive/admin/webui/opsboard/criteria-builder.adoc#webui-opsboard-criteria-builder, criteria builder>>.

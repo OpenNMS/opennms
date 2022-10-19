@@ -36,7 +36,7 @@ It is possible to combine multiple criteria to display a subset of information i
 | String
 
 | Contains
-| A text string to be compared against a database attribute.
+| A text string to compare against a database attribute.
 Any data containing the defined text string is selected.
 | Database attribute
 | String

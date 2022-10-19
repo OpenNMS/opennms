@@ -78,7 +78,7 @@ See below for supported variable substitutions.
 +
 IMPORTANT: Don't forget to limit the SQL query's return values!
 
-It is possible to use individual or aggregated values in the title, subtitle, and description fields.
+You can use individual or aggregated values in the title, subtitle, and description fields.
 The following table describes available variable substitutions:
 
 [options="header, autowidth" cols="1,3,1"]
