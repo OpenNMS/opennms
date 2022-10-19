@@ -4,10 +4,13 @@ executors:
       - image: cimg/base:stable-20.04
   build-executor:
     docker:
-      - image: opennms/build-env:circleci-ubuntu-jdk11-b8681
+      - image: opennms/build-env:circleci-ubuntu-jdk11-b8711
   docs-executor:
     docker:
       - image: opennms/antora:2.3.4-b7274
+  integration-test-executor:
+    machine:
+      image: ubuntu-2204:current
   smoke-test-executor:
     machine:
       image: ubuntu-2204:current

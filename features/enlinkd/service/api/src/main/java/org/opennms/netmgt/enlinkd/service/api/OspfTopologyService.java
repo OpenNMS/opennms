@@ -50,4 +50,6 @@ public interface OspfTopologyService extends TopologyService {
     List<OspfAreaTopologyEntity> findAllOspfAreas();
     List<TopologyConnection<OspfLinkTopologyEntity, OspfLinkTopologyEntity>> match();
 
+    void deletePersistedData();
+
 }

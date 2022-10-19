@@ -1,3 +1,13 @@
+opennms-sentinel (30.0.4-1) stable; urgency=low
+
+  * New minor release. It contains quite a few bug and security fixes and 
+    a number of enhancements.
+
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/30.0.4/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 11 Oct 2022 11:46:00 -0400
+
 opennms-sentinel (30.0.3-1) stable; urgency=low
 
   * New minor release. It contains quite a few bug fixes as well as number of 

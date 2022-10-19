@@ -126,6 +126,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
     @Override
     public void refresh() {
+        LOG.info("refresh: {}: protocolSupported: {}",getNamespace(), m_supportedSet);
         m_linkdTopologyFactory.setDelegate(this);
         graph.resetContainer();
         m_linkdTopologyFactory.doRefresh(m_supportedSet, graph);

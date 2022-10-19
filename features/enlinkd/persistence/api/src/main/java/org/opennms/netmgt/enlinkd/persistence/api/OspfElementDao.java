@@ -31,16 +31,13 @@ package org.opennms.netmgt.enlinkd.persistence.api;
 import java.net.InetAddress;
 import java.util.List;
 
-import org.opennms.netmgt.dao.api.OnmsDao;
 import org.opennms.netmgt.enlinkd.model.OspfElement;
 
 
 /**
  * <p>OspfElementDao interface.</p>
  */
-public interface OspfElementDao extends OnmsDao<OspfElement, Integer> {
-    
-    OspfElement findByNodeId(Integer id);
+public interface OspfElementDao extends ElementDao<OspfElement, Integer> {
 
     OspfElement findByRouterId(InetAddress routerId);
 
@@ -51,7 +48,5 @@ public interface OspfElementDao extends OnmsDao<OspfElement, Integer> {
      * node. Used to retrieve all OspfElements that need to be accessed when finding Ospf links of a node.
      */
     List<OspfElement> findByRouterIdOfRelatedOspfLink(int nodeId);
-
-    void deleteByNodeId(Integer nodeId);
 
 }

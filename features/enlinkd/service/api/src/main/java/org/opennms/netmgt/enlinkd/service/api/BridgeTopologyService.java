@@ -131,5 +131,7 @@ public interface BridgeTopologyService extends TopologyService {
     List<TopologyShared> match();
     
     List<MacPort> getMacPorts();
+
+    void deletePersistedData();
     
 }

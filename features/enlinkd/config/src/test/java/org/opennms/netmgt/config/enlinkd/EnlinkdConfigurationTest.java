@@ -46,7 +46,9 @@ public class EnlinkdConfigurationTest extends XmlTestNoCastor<EnlinkdConfigurati
         return Arrays.asList(new Object[][] {
             {
                 getConfig(),
-                "<enlinkd-configuration threads=\"5\" \n" +
+                "<enlinkd-configuration threads=\"3\" \n" +
+                "                     executor-queue-size=\"100\"\n" +
+                "                     executor-threads=\"5\"\n" +
                 "                     discovery-bridge-threads=\"1\"\n" +
                 "                     initial_sleep_time=\"60000\"\n" +
                 "                     bridge_topology_interval=\"300000\"\n" +
@@ -56,6 +58,11 @@ public class EnlinkdConfigurationTest extends XmlTestNoCastor<EnlinkdConfigurati
                 "                     bridge_rescan_interval=\"86400000\" \n" +
                 "                     ospf_rescan_interval=\"86400000\" \n" +
                 "                     isis_rescan_interval=\"86400000\" \n" +
+                "                     cdp-priority=\"1000\" \n" +
+                "                     lldp-priority=\"2000\" \n" +
+                "                     bridge-priority=\"10000\" \n" +
+                "                     ospf-priority=\"3000\" \n" +
+                "                     isis-priority=\"4000\" \n" +
                 "                     use-cdp-discovery=\"true\"\n" +
                 "                     use-bridge-discovery=\"true\"\n" + 
                 "                     use-lldp-discovery=\"true\"\n" + 
@@ -70,7 +77,9 @@ public class EnlinkdConfigurationTest extends XmlTestNoCastor<EnlinkdConfigurati
 
     private static EnlinkdConfiguration getConfig() {
         EnlinkdConfiguration config = new EnlinkdConfiguration();
-        config.setThreads(5);
+        config.setExecutorThreads(5);
+        config.setExecutorQueueSize(100);
+        config.setThreads(3);
         config.setDiscoveryBridgeThreads(1);
         config.setInitialSleepTime(60000L);
         config.setBridgeTopologyInterval(300000L);
@@ -80,6 +89,11 @@ public class EnlinkdConfigurationTest extends XmlTestNoCastor<EnlinkdConfigurati
         config.setBridgeRescanInterval(86400000L);
         config.setOspfRescanInterval(86400000L);
         config.setIsisRescanInterval(86400000L);
+        config.setCdpPriority(1000);
+        config.setLldpPriority(2000);
+        config.setBridgePriority(10000);
+        config.setOspfPriority(3000);
+        config.setIsisPriority(4000);
         config.setUseCdpDiscovery(true);
         config.setUseBridgeDiscovery(true);
         config.setUseLldpDiscovery(true);

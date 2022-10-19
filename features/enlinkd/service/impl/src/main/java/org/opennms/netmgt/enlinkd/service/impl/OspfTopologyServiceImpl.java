@@ -271,4 +271,13 @@ public class OspfTopologyServiceImpl extends TopologyServiceImpl implements Ospf
         return results;
 
     }
+
+    @Override
+    public void deletePersistedData() {
+        m_ospfElementDao.deleteAll();
+        m_ospfElementDao.flush();
+
+        m_ospfLinkDao.deleteAll();
+        m_ospfLinkDao.flush();
+    }
 }

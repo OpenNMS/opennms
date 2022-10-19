@@ -118,6 +118,7 @@
 	<div class="card-header">
 		<h4 class="pull-left">Scheduled Outages</h4>
     <form role="form" class="form-inline pull-right" action="admin/sched-outages/editoutage.jsp" method="post" >
+	  <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
       <input type="hidden" name="addNew" value="true" />
 		<div class="input-group">
 			<input type="text" class="form-control" value="New Name" size="40" name="newName" />

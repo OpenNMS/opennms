@@ -57,7 +57,6 @@ import org.opennms.netmgt.enlinkd.snmp.Dot1dStpPortTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.Dot1dTpFdbTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.Dot1qTpFdbTableTracker;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,15 +80,13 @@ public final class NodeDiscoveryBridge extends NodeCollector {
      * 
      */
     public NodeDiscoveryBridge(
-            final BridgeTopologyService bridgeTopologyService,
-            final int maxSize,
-            final LocationAwareSnmpClient locationAwareSnmpClient,
-            final long interval,final long initial, final Node node,
-            final boolean disableBridgeVlanDiscovery) {
-        super(locationAwareSnmpClient, interval, initial,node);
-        m_bridgeTopologyService = bridgeTopologyService;
-        m_maxSize = maxSize;
-        m_disableBridgeVlanDiscovery = disableBridgeVlanDiscovery;
+            final NodeCollectionGroupBridge group,
+            final Node node,
+            final int priority ) {
+        super(group.getLocationAwareSnmpClient() , node, priority);
+        m_bridgeTopologyService = group.getBridgeTopologyService();
+        m_maxSize = group.getMaxBft();
+        m_disableBridgeVlanDiscovery = group.isDisableBridgeVlanDiscovery();
     }
 
     public void collect() {

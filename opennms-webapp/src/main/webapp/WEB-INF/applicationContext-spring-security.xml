@@ -2,10 +2,12 @@
 <beans:beans xmlns="http://www.springframework.org/schema/security"
   xmlns:beans="http://www.springframework.org/schema/beans"
   xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+  xmlns:util="http://www.springframework.org/schema/util"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
               http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd
-              http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd">
+              http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+              http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd">
   
   <!-- Only use BASIC auth for the RESTful APIs -->
   <http pattern="/rest/**" realm="OpenNMS Realm" create-session="never">
@@ -152,8 +154,60 @@
     <custom-filter position="LAST" ref="authFilterEnabler"/>
   </http>
 
+  <beans:bean id="csrfMatcher" class="org.springframework.security.web.util.matcher.OrRequestMatcher">
+    <beans:constructor-arg>
+      <util:list value-type="org.springframework.security.web.util.matcher.RequestMatcher">
+
+        <!-- see NMS-13124 -->
+        <beans:bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
+          <beans:constructor-arg value="/admin/userGroupView/**"/>
+          <beans:constructor-arg name="httpMethod" value="POST"/>
+        </beans:bean>
+
+        <!-- see NMS-14716 -->
+        <beans:bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
+          <beans:constructor-arg name="pattern" value="/element/rescan.jsp"/>
+          <beans:constructor-arg name="httpMethod" value="POST"/>
+        </beans:bean>
+        <beans:bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
+          <beans:constructor-arg name="pattern" value="/element/nodeList.jsp"/>
+          <beans:constructor-arg name="httpMethod" value="POST"/>
+        </beans:bean>
+        <beans:bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
+          <beans:constructor-arg name="pattern" value="/admin/sched-outages/editoutage.jsp"/>
+          <beans:constructor-arg name="httpMethod" value="POST"/>
+        </beans:bean>
+        <beans:bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
+          <beans:constructor-arg name="pattern" value="/admin/snmpConfig"/>
+          <beans:constructor-arg name="httpMethod" value="POST"/>
+        </beans:bean>
+        <beans:bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
+          <beans:constructor-arg name="pattern" value="/admin/account/selfService/newPasswordAction"/>
+          <beans:constructor-arg name="httpMethod" value="POST"/>
+        </beans:bean>
+        <beans:bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
+          <beans:constructor-arg name="pattern" value="/event/**"/>
+          <beans:constructor-arg name="httpMethod" value="POST"/>
+        </beans:bean>
+        <beans:bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
+          <beans:constructor-arg name="pattern" value="/alarm/**"/>
+          <beans:constructor-arg name="httpMethod" value="POST"/>
+        </beans:bean>
+        <beans:bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
+          <beans:constructor-arg name="pattern" value="/asset/nodelist.jsp"/>
+          <beans:constructor-arg name="httpMethod" value="POST"/>
+        </beans:bean>
+        <beans:bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
+          <beans:constructor-arg name="pattern" value="/notification/browse"/>
+          <beans:constructor-arg name="httpMethod" value="POST"/>
+        </beans:bean>
+      </util:list>
+    </beans:constructor-arg>
+  </beans:bean>
+
   <!-- Only one <http> section can match the implicit '/**' pattern -->
   <http pattern="/**" use-expressions="true" access-denied-page="/accessDenied.jsp" realm="OpenNMS Realm" auto-config="false" entry-point-ref="loginUrlAuthenticationEntryPoint">
+    <csrf request-matcher-ref="csrfMatcher"/>
     <intercept-url pattern="/" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_USER','ROLE_DASHBOARD')" />
     <intercept-url pattern="/favicon.ico" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_USER','ROLE_DASHBOARD')" />
     <intercept-url pattern="/apple-touch-icon.png" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_USER','ROLE_DASHBOARD')" />

@@ -37,7 +37,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -73,21 +72,27 @@ public class EnhancedLinkdTopologyProviderTest {
 
     @Autowired
     private LinkdTopologyFactory m_topologyFactory;
+
     @Autowired
     private LinkdTopologyProvider m_topologyProvider;
+
     @Autowired
     private EnhancedLinkdMockDataPopulator m_databasePopulator;
+
     @Autowired
     private OnmsTopologyDao m_onmsTopologyDao;    
+
     @Autowired
     private NodesOnmsTopologyUpdater m_nodesOnmsTopologyUpdater;
+
     @Autowired
     private LldpOnmsTopologyUpdater m_lldpOnmsTopologyUpdater;    
-    @Autowired 
+
+    @Autowired
     private OspfOnmsTopologyUpdater m_ospfOnmsTopologyUpdater;
 
     @Before
-    public void setUp() throws Exception{
+    public void setUp() {
         MockLogAppender.setupLogging();
 
         m_databasePopulator.populateDatabase();
@@ -136,6 +141,9 @@ public class EnhancedLinkdTopologyProviderTest {
     @Test
     public void testGetDefaultTopologyLoaded() {
         m_topologyProvider.refresh();
+        assertEquals("nodes", m_topologyProvider.getNamespace());
+        assertNotNull(m_onmsTopologyDao.getTopology(m_topologyProvider.getNamespace()));
+        assertNotNull(m_onmsTopologyDao.getTopology(m_topologyProvider.getNamespace()).getDefaultVertex());
         Defaults defaults = m_topologyProvider.getDefaults();
         assertEquals(Defaults.DEFAULT_SEMANTIC_ZOOM_LEVEL, defaults.getSemanticZoomLevel());
         assertEquals("D3 Layout", defaults.getPreferredLayout());
@@ -161,23 +169,23 @@ public class EnhancedLinkdTopologyProviderTest {
         Vertex vertex6 = m_topologyProvider.getCurrentGraph().getVertex(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, "6");
         Vertex vertex7 = m_topologyProvider.getCurrentGraph().getVertex(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, "7");
         Vertex vertex8 = m_topologyProvider.getCurrentGraph().getVertex(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, "8");
-        Assert.assertTrue("linkd.system.snmp.1.3.6.1.4.1.5813.1.25".equals(vertex1.getIconKey()));
-        Assert.assertTrue("linkd.system".equals(vertex2.getIconKey()));
-        Assert.assertTrue("linkd.system".equals(vertex3.getIconKey()));
-        Assert.assertTrue("linkd.system".equals(vertex4.getIconKey()));
-        Assert.assertTrue("linkd.system".equals(vertex5.getIconKey()));
-        Assert.assertTrue("linkd.system".equals(vertex6.getIconKey()));
-        Assert.assertTrue("linkd.system".equals(vertex7.getIconKey()));
-        Assert.assertTrue("linkd.system".equals(vertex8.getIconKey()));
+        assertEquals("linkd.system.snmp.1.3.6.1.4.1.5813.1.25", vertex1.getIconKey());
+        assertEquals("linkd.system", vertex2.getIconKey());
+        assertEquals("linkd.system", vertex3.getIconKey());
+        assertEquals("linkd.system", vertex4.getIconKey());
+        assertEquals("linkd.system", vertex5.getIconKey());
+        assertEquals("linkd.system", vertex6.getIconKey());
+        assertEquals("linkd.system", vertex7.getIconKey());
+        assertEquals("linkd.system", vertex8.getIconKey());
     }
 
     @Test
-    public void test() throws Exception {
+    public void test() {
         m_topologyProvider.refresh();
         assertEquals(8, m_topologyProvider.getCurrentGraph().getVertices().size());
 
         // Add v0 vertex
-        Vertex vertexA = new SimpleLeafVertex(m_topologyProvider.getNamespace(), "v0", 50, 100);
+        AbstractVertex vertexA = new SimpleLeafVertex(m_topologyProvider.getNamespace(), "v0", 50, 100);
         m_topologyProvider.getCurrentGraph().addVertices(vertexA);
         assertEquals(9, m_topologyProvider.getCurrentGraph().getVertices().size());
         assertEquals("v0", vertexA.getId());
@@ -186,7 +194,7 @@ public class EnhancedLinkdTopologyProviderTest {
         assertTrue(m_topologyProvider.getCurrentGraph().containsVertexId(new DefaultVertexRef("nodes", "v0",m_topologyProvider.getNamespace() + ":" + "v0")));
         assertFalse(m_topologyProvider.getCurrentGraph().containsVertexId(new DefaultVertexRef("nodes", "v1",m_topologyProvider.getNamespace() + ":" + "v1")));
 
-        ((AbstractVertex)vertexA).setIpAddress("10.0.0.4");
+        vertexA.setIpAddress("10.0.0.4");
 
         // Search by VertexRef
         VertexRef vertexAref = new DefaultVertexRef(m_topologyProvider.getNamespace(), "v0",m_topologyProvider.getNamespace() + ":" + "v0");
@@ -199,7 +207,6 @@ public class EnhancedLinkdTopologyProviderTest {
         m_topologyProvider.getCurrentGraph().addVertices(vertexB);
         assertEquals("v1", vertexB.getId());
         assertTrue(m_topologyProvider.getCurrentGraph().containsVertexId(vertexB));
-        assertTrue(m_topologyProvider.getCurrentGraph().containsVertexId("v1"));
         assertEquals(1, m_topologyProvider.getCurrentGraph().getVertices(Collections.singletonList(vertexBref)).size());
 
         // Added 3 more vertices
@@ -247,39 +254,39 @@ public class EnhancedLinkdTopologyProviderTest {
     }
 
     @Test
-    public void testLoadSimpleGraph() throws Exception {
+    public void testLoadSimpleGraph() {
         m_topologyProvider.refresh();
         assertEquals(8, m_topologyProvider.getCurrentGraph().getVertices().size());
         assertEquals(9, m_topologyProvider.getCurrentGraph().getEdges().size());
 
         LinkdVertex v1 = (LinkdVertex)m_topologyProvider.getCurrentGraph().getVertex("nodes", "1");
-        assertEquals(true,v1.getProtocolSupported().contains(ProtocolSupported.LLDP));
-        assertEquals(true,v1.getProtocolSupported().contains(ProtocolSupported.OSPF));
-        assertEquals(false,v1.getProtocolSupported().contains(ProtocolSupported.CDP));
-        assertEquals(false,v1.getProtocolSupported().contains(ProtocolSupported.ISIS));
-        assertEquals(false,v1.getProtocolSupported().contains(ProtocolSupported.BRIDGE));
+        assertTrue(v1.getProtocolSupported().contains(ProtocolSupported.LLDP));
+        assertTrue(v1.getProtocolSupported().contains(ProtocolSupported.OSPF));
+        assertFalse(v1.getProtocolSupported().contains(ProtocolSupported.CDP));
+        assertFalse(v1.getProtocolSupported().contains(ProtocolSupported.ISIS));
+        assertFalse(v1.getProtocolSupported().contains(ProtocolSupported.BRIDGE));
         LinkdVertex v2 = (LinkdVertex)m_topologyProvider.getCurrentGraph().getVertex("nodes", "2");
-        assertEquals(true,v2.getProtocolSupported().contains(ProtocolSupported.LLDP));
-        assertEquals(true,v2.getProtocolSupported().contains(ProtocolSupported.OSPF));
-        assertEquals(false,v2.getProtocolSupported().contains(ProtocolSupported.CDP));
-        assertEquals(false,v2.getProtocolSupported().contains(ProtocolSupported.ISIS));
-        assertEquals(false,v2.getProtocolSupported().contains(ProtocolSupported.BRIDGE));
+        assertTrue(v2.getProtocolSupported().contains(ProtocolSupported.LLDP));
+        assertTrue(v2.getProtocolSupported().contains(ProtocolSupported.OSPF));
+        assertFalse(v2.getProtocolSupported().contains(ProtocolSupported.CDP));
+        assertFalse(v2.getProtocolSupported().contains(ProtocolSupported.ISIS));
+        assertFalse(v2.getProtocolSupported().contains(ProtocolSupported.BRIDGE));
         LinkdVertex v3 = (LinkdVertex)m_topologyProvider.getCurrentGraph().getVertex("nodes", "3");
-        assertEquals(true,v3.getProtocolSupported().contains(ProtocolSupported.LLDP));
-        assertEquals(false,v3.getProtocolSupported().contains(ProtocolSupported.OSPF));
-        assertEquals(false,v3.getProtocolSupported().contains(ProtocolSupported.CDP));
-        assertEquals(false,v3.getProtocolSupported().contains(ProtocolSupported.ISIS));
-        assertEquals(false,v3.getProtocolSupported().contains(ProtocolSupported.BRIDGE));
+        assertTrue(v3.getProtocolSupported().contains(ProtocolSupported.LLDP));
+        assertFalse(v3.getProtocolSupported().contains(ProtocolSupported.OSPF));
+        assertFalse(v3.getProtocolSupported().contains(ProtocolSupported.CDP));
+        assertFalse(v3.getProtocolSupported().contains(ProtocolSupported.ISIS));
+        assertFalse(v3.getProtocolSupported().contains(ProtocolSupported.BRIDGE));
         LinkdVertex v4 = (LinkdVertex)m_topologyProvider.getCurrentGraph().getVertex("nodes", "4");
         LinkdVertex v5 = (LinkdVertex)m_topologyProvider.getCurrentGraph().getVertex("nodes", "5");
         LinkdVertex v6 = (LinkdVertex)m_topologyProvider.getCurrentGraph().getVertex("nodes", "6");
         assertEquals("node1", v1.getLabel());
         assertEquals("192.168.1.1", v1.getIpAddress());
-        assertEquals(false, v1.isLocked());
-        assertEquals(new Integer(1), v1.getNodeID());
-        assertEquals(false, v1.isSelected());
-        assertEquals(new Integer(0), v1.getX());
-        assertEquals(new Integer(0), v1.getY());
+        assertFalse(v1.isLocked());
+        assertEquals(Integer.valueOf(1), v1.getNodeID());
+        assertFalse(v1.isSelected());
+        assertEquals(Integer.valueOf(0), v1.getX());
+        assertEquals(Integer.valueOf(0), v1.getY());
 
         final CollapsibleGraph collapsibleGraph = new CollapsibleGraph(m_topologyProvider.getCurrentGraph());
         collapsibleGraph.getVertices();

@@ -31,8 +31,8 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
 
     <!-- Factory -->
     <bean id="linkdTopologyFactory" scope="singleton" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyFactory">
-        <argument ref="metricRegistry" />
-        <property name="onmsTopologyDao" ref="onmsTopologyDao"/>
+        <argument ref="metricRegistry" index="0"/>
+        <argument ref="onmsTopologyDao" index="1"/>
     </bean>
 
     <!-- Providers -->

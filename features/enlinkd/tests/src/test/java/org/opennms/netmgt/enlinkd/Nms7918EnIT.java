@@ -185,7 +185,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         assertTrue(m_linkdConfig.useBridgeDiscovery());
         assertFalse(m_linkdConfig.useIsisDiscovery());
         
-        assertTrue(m_linkd.scheduleNodeCollection(ospwl01.getId()));
+        m_linkd.reload();
 
         assertEquals(0,m_bridgeBridgeLinkDao.countAll());
         assertEquals(0,m_bridgeMacLinkDao.countAll());
@@ -242,7 +242,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         assertTrue(m_linkdConfig.useBridgeDiscovery());
         assertFalse(m_linkdConfig.useIsisDiscovery());
         
-        assertTrue(m_linkd.scheduleNodeCollection(ospess01.getId()));
+        m_linkd.reload();
 
         assertEquals(0,m_bridgeBridgeLinkDao.countAll());
         assertEquals(0,m_bridgeMacLinkDao.countAll());
@@ -319,8 +319,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         assertTrue(m_linkdConfig.useBridgeDiscovery());
         assertFalse(m_linkdConfig.useIsisDiscovery());
         
-        assertTrue(m_linkd.scheduleNodeCollection(pe01.getId()));
-
+        m_linkd.reload();
         assertEquals(0,m_bridgeBridgeLinkDao.countAll());
         assertEquals(0,m_bridgeMacLinkDao.countAll());
         assertEquals(0,m_ipNetToMediaDao.countAll());
@@ -441,7 +440,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         assertTrue(m_linkdConfig.useBridgeDiscovery());
         assertFalse(m_linkdConfig.useIsisDiscovery());
 
-        assertTrue(m_linkd.scheduleNodeCollection(stcasw01.getId()));
+        m_linkd.reload();
 
         assertEquals(0,m_bridgeBridgeLinkDao.countAll());
         assertEquals(0,m_bridgeMacLinkDao.countAll());
@@ -482,9 +481,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         assertTrue(m_linkdConfig.useBridgeDiscovery());
         assertFalse(m_linkdConfig.useIsisDiscovery());
 
-        assertTrue(m_linkd.scheduleNodeCollection(stcasw01.getId()));
-        assertFalse(m_linkd.scheduleNodeCollection(stcasw01.getId())); //Always scheduling give true.
-
+        m_linkd.reload();
         assertEquals(0,m_bridgeBridgeLinkDao.countAll());
         assertEquals(0,m_bridgeMacLinkDao.countAll());
         
@@ -547,7 +544,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         assertTrue(m_linkdConfig.useBridgeDiscovery());
         assertFalse(m_linkdConfig.useIsisDiscovery());
 
-        assertTrue(m_linkd.scheduleNodeCollection(samasw01.getId()));
+        m_linkd.reload();
 
         assertEquals(0,m_bridgeBridgeLinkDao.countAll());
         assertEquals(0,m_bridgeMacLinkDao.countAll());
@@ -588,8 +585,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         assertTrue(m_linkdConfig.useBridgeDiscovery());
         assertFalse(m_linkdConfig.useIsisDiscovery());
 
-        assertTrue(m_linkd.scheduleNodeCollection(samasw01.getId()));
-        assertFalse(m_linkd.scheduleNodeCollection(samasw01.getId()));
+        m_linkd.reload();
 
         assertEquals(0,m_bridgeBridgeLinkDao.countAll());
         assertEquals(0,m_bridgeMacLinkDao.countAll());
@@ -653,7 +649,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         assertTrue(m_linkdConfig.useBridgeDiscovery());
         assertFalse(m_linkdConfig.useIsisDiscovery());
 
-        assertTrue(m_linkd.scheduleNodeCollection(asw01.getId()));
+        m_linkd.reload();
 
         assertEquals(0,m_bridgeBridgeLinkDao.countAll());
         assertEquals(0,m_bridgeMacLinkDao.countAll());
@@ -695,8 +691,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         assertTrue(m_linkdConfig.useBridgeDiscovery());
         assertFalse(m_linkdConfig.useIsisDiscovery());
 
-        assertTrue(m_linkd.scheduleNodeCollection(asw01.getId()));
-        assertFalse(m_linkd.scheduleNodeCollection(asw01.getId()));
+        m_linkd.reload();
 
         assertEquals(0,m_bridgeBridgeLinkDao.countAll());
         assertEquals(0,m_bridgeMacLinkDao.countAll());
@@ -764,9 +759,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         assertTrue(m_linkdConfig.useBridgeDiscovery());
         assertFalse(m_linkdConfig.useIsisDiscovery());
 
-        assertTrue(m_linkd.scheduleNodeCollection(asw01.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(samasw01.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(stcasw01.getId()));
+        m_linkd.reload();
 
         assertEquals(0,m_ipNetToMediaDao.countAll());
         assertEquals(0,m_bridgeElementDao.countAll());
@@ -862,9 +855,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         assertTrue(m_linkdConfig.useBridgeDiscovery());
         assertFalse(m_linkdConfig.useIsisDiscovery());
 
-        assertTrue(m_linkd.scheduleNodeCollection(asw01.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(samasw01.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(stcasw01.getId()));
+        m_linkd.reload();
 
         assertEquals(0,m_bridgeElementDao.countAll());
         assertEquals(0,m_bridgeStpLinkDao.countAll());
@@ -931,9 +922,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         assertTrue(m_linkdConfig.useBridgeDiscovery());
         assertFalse(m_linkdConfig.useIsisDiscovery());
 
-        assertTrue(m_linkd.scheduleNodeCollection(asw01.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(samasw01.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(stcasw01.getId()));
+        m_linkd.reload();
 
         assertEquals(0,m_bridgeElementDao.countAll());
         assertEquals(0,m_bridgeStpLinkDao.countAll());
@@ -1052,12 +1041,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         final OnmsNode samasw01 = m_nodeDao.findByForeignId("linkd", SAMASW01_NAME);
         final OnmsNode stcasw01 = m_nodeDao.findByForeignId("linkd", STCASW01_NAME);
 
-        assertTrue(m_linkd.scheduleNodeCollection(pe01.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(ospess01.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(asw01.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(samasw01.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(stcasw01.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(ospwl01.getId()));
+        m_linkd.reload();
 
         assertEquals(0,m_ipNetToMediaDao.countAll());
         assertEquals(0,m_bridgeElementDao.countAll());

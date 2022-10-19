@@ -64,7 +64,7 @@ import com.google.common.collect.Sets;
 
 /**
  * Used to collect attribute values and meta-data for a given resource group
- * and persist these via the {@link TimeseriesWriter} on {@link #commit()}.
+ * and persist these via the {@link RingBufferTimeseriesWriter} on {@link #commit()}.
  */
 public class TimeseriesPersistOperationBuilder implements PersistOperationBuilder {
     private static final Logger LOG = LoggerFactory.getLogger(TimeseriesPersistOperationBuilder.class);

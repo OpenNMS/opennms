@@ -1,22 +1,22 @@
 
 [[ga-service-assurance-downtime-model]]
-= Downtime Model
+= Detect Short Service Outages
 
-By default the monitoring interval for a service is 5 minutes.
-To also detect short service outages, caused, for example, by automatic network rerouting, use the downtime model.
-On a detected service outage, the interval is reduced to 30 seconds for 5 minutes.
-If the service comes back within 5 minutes, a shorter outage is documented and the impact on service availability can be less than 5 minutes.
-This configurable behavior is called "downtime model".
+By default, the monitoring interval for a service is five minutes.
+To detect short service outages, like those caused by automatic network rerouting, use the configurable downtime model.
+The downtime model lets you reduce the monitoring interval to every 30 seconds for five minutes on a detected service outage.
+If the service comes back within five minutes, a shorter outage is documented and the impact on service availability can be less than five minutes.
+
+The following figure shows two outages.
+The first shows a short outage that was detected as up after 90 seconds.
+The second outage is not currently resolved: the monitor has not detected an available service and was not available within the first five minutes (10 times 30 second polling).
 
 .Downtime model with resolved and ongoing outage
 image::service-assurance/01_downtime-model.png[]
 
-The above figure (Downtime model with resolved and ongoing outage) shows two outages.
-The first shows a short outage which was detected as "up" after 90 seconds.
-The second outage is not resolved now and the monitor has not detected an available service and was not available in the first 5 minutes (10 times 30 second polling).
-The scheduler changed the polling interval back to 5 minutes.
+The scheduler changed the polling interval back to five minutes.
 
-.Example default configuration of the Downtime Model
+.Example default configuration of the downtime model
 [source, xml]
 ----
 <downtime interval="30000" begin="0" end="300000" /><!-- 30s, 0, 5m --><1>
@@ -24,13 +24,13 @@ The scheduler changed the polling interval back to 5 minutes.
 <downtime interval="600000" begin="43200000" end="432000000" /><!-- 10m, 12h, 5d --><3>
 <downtime interval="3600000" begin="432000000" delete="never"/><!-- 1h, 5d --><4>
 ----
-<1> from 0 seconds after an outage is detected until 5 minutes, the polling interval will be set to 30 seconds
-<2> after 5 minutes of an ongoing outage until 12 hours, the polling interval will be set to 5 minutes
-<3> after 12 hours of an ongoing outage until 5 days, the polling interval will be set to 10 minutes
-<4> after 5 days of an ongoing outage the service will be polled only once a hour and we do not delete services
+<1> From 0 seconds after an outage is detected until five minutes, set the polling interval to 30 seconds.
+<2> After five minutes of an ongoing outage until 12 hours, set the polling interval to 5 minutes.
+<3> After 12 hours of an ongoing outage until five days, set the polling interval to 10 minutes.
+<4> After five days of an ongoing outage, the service will be polled only once a hour and we do not delete services.
 
-The last downtime interval can have an attribute `delete` and lets you influence the service lifecycle.
-It defines the behavior that happens if a service doesn't come back online after the specified interval.
+The last downtime interval can have an attribute `delete` that lets you influence the service lifecycle.
+It defines the intended behavior if a service doesn't come back online after the specified interval.
 The following downtime attributes for `delete` can be used:
 
 [options="header, autowidth"]

@@ -1,7 +1,7 @@
  jobs:
   smoke-test-core:
     executor: smoke-test-executor
-    parallelism: 8
+    parallelism: 10
     steps:
       - run:
           name: "skip if flaky tests are enabled"

@@ -210,6 +210,15 @@ public class CdpTopologyServiceImpl extends TopologyServiceImpl implements CdpTo
         return results;
     }
 
+    @Override
+    public void deletePersistedData() {
+        m_cdpElementDao.deleteAll();
+        m_cdpElementDao.flush();
+
+        m_cdpLinkDao.deleteAll();
+        m_cdpLinkDao.flush();
+    }
+
 
     @Override
     public List<CdpElementTopologyEntity> findAllCdpElements() {
