@@ -41,14 +41,6 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
 
 public class NodesOnmsTopologyUpdater extends TopologyUpdater {
 
-    public static NodesOnmsTopologyUpdater clone (NodesOnmsTopologyUpdater bpu) {
-        NodesOnmsTopologyUpdater update = new NodesOnmsTopologyUpdater(bpu.getTopologyDao(), bpu.getNodeTopologyService());
-        update.setRunned(bpu.isRunned());
-        update.setTopology(bpu.getTopology());
-        return update;
- 
-    }
-    
     public NodesOnmsTopologyUpdater(
             OnmsTopologyDao topologyDao, NodeTopologyService nodeTopologyService) {
         super(nodeTopologyService, topologyDao,nodeTopologyService);

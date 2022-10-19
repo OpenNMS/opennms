@@ -35,5 +35,6 @@ public enum ProtocolSupported {
     BRIDGE,
     CDP,
     NODES,
-    USERDEFINED
+    USERDEFINED,
+    NETWORKROUTER
 }
