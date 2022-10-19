@@ -44,7 +44,7 @@
 
         <!-- Plugins menu -->
         <FeatherDropdown
-          v-if="plugins"
+          v-if="plugins && plugins.length"
           class="menubar-dropdown-dark"
         >
           <template v-slot:trigger="{ attrs, on }">
@@ -236,6 +236,7 @@
             :title="`${mainMenu.configurationMenu?.name || 'Configure OpenNMS'}`"></font-awesome-icon>
         </a>
       </template>
+
       <FeatherIcon :icon="LightDarkMode" title="Toggle Light/Dark Mode" class="pointer light-dark"
         @click="toggleDarkLightMode(null)" />
     </template>
