@@ -56,8 +56,8 @@ import org.opennms.web.api.Authentication;
  */
 public class NewPasswordActionServlet extends HttpServlet {
     private static final long serialVersionUID = 6803675433403988004L;
-    public static final String PASSWORD_REGEX = "((?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%&.*+-]).{12,128})";
-    public static final String SAME_CHARACTER_REGEX = "(.)\\1{5}";
+    private final String passwordRegex = "((?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%&.*+-]).{12,128})";
+    private final String sameCharacterRegex = "(.)\\1{5}";
     /** {@inheritDoc} */
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -104,10 +104,10 @@ public class NewPasswordActionServlet extends HttpServlet {
     }
 
     private boolean validatePassword(final String password) {
-        boolean isPasswordComplexityValid = Pattern.compile(this.PASSWORD_REGEX)
+        boolean isPasswordComplexityValid = Pattern.compile(this.passwordRegex)
                 .matcher(password)
                 .matches();
-        boolean isPasswordWithSameCharacters = Pattern.compile(this.SAME_CHARACTER_REGEX)
+        boolean isPasswordWithSameCharacters = Pattern.compile(this.sameCharacterRegex)
                 .matcher(password)
                 .matches();
         if(isPasswordComplexityValid && !isPasswordWithSameCharacters) {
