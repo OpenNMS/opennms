@@ -224,8 +224,8 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
         final String prevForeignSource = String.format(PROVISIONING_FOREIGN_SOURCE_PATTERN, prevLocation);
         final String nextForeignSource = String.format(PROVISIONING_FOREIGN_SOURCE_PATTERN, nextLocation);
 
-        PluginConfig policy = new PluginConfig(DEFAULT_SNMP_POLICY, "org.opennms.netmgt.provision.persist.policies.MatchingIpInterfacePolicy");
-        policy.addParameter("ipAddress", "~^docker.*$");
+        PluginConfig policy = new PluginConfig(DEFAULT_SNMP_POLICY, "org.opennms.netmgt.provision.persist.policies.MatchingSnmpInterfacePolicy");
+        policy.addParameter("ifDescr", "~^docker.*$");
         policy.addParameter("action", "DO_NOT_PERSIST");
         policy.addParameter("matchBehavior", "ALL_PARAMETERS");
 
