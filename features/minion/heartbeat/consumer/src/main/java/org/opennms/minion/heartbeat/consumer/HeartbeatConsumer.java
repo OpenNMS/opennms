@@ -132,7 +132,7 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
     @Transactional
     public void handleMessage(MinionIdentityDTO minionHandle) {
         LOG.info("Received heartbeat for Minion with id: {} at location: {}",
-                minionHandle.getId(), minionHandle.getLocation());
+                 minionHandle.getId(), minionHandle.getLocation());
 
         OnmsMinion minion = minionDao.findById(minionHandle.getId());
         if (minion == null) {
@@ -206,6 +206,7 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
         });
 
 
+
     }
 
     private void provision(final OnmsMinion minion,
@@ -268,6 +269,7 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
             if(foreignSource.getPolicy(DEFAULT_SNMP_POLICY) == null || foreignSource.getDetector(DEFAULT_SNMP_DETECTOR) == null) {
                 foreignSource.addPolicy(policy);
                 foreignSource.addDetector(detector);
+                deployedForeignSourceRepository.save(foreignSource);
 
                 alteredForeignSources.add(nextForeignSource);
             }
