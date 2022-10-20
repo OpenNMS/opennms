@@ -30,7 +30,6 @@ const mapquestTemplate  = require('./views/config/mapquest.html');
             'onms.elementList'
         ])
         .config(['$locationProvider', function ($locationProvider) {
-            $locationProvider.hashPrefix('!');
             $locationProvider.html5Mode(false);
         }])
         .config(['growlProvider', function(growlProvider) {

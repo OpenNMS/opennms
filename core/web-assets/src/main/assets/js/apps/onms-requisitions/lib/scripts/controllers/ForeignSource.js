@@ -4,7 +4,7 @@ require('../services/Requisitions');
 
 /**
 * @author Alejandro Galue <agalue@opennms.org>
-* @copyright 2014 The OpenNMS Group, Inc.
+* @copyright 2014-2022 The OpenNMS Group, Inc.
 */
 
 (function() {
@@ -195,7 +195,7 @@ require('../services/Requisitions');
     */
     $scope.goTop = function() {
       var doGoTop = function() {
-        $window.location.href = Configuration.baseHref + '#/requisitions';
+        $window.location.href = Configuration.baseHref + '#!/requisitions';
       };
       $scope.goTo(doGoTop);
     };
@@ -210,9 +210,9 @@ require('../services/Requisitions');
     $scope.goBack = function() {
       var doGoBack = function() {
         if ($scope.foreignSource === 'default') {
-          $window.location.href = Configuration.baseHref + '#/requisitions';
+          $window.location.href = Configuration.baseHref + '#!/requisitions';
         } else {
-          $window.location.href = Configuration.baseHref + '#/requisitions/' + encodeURIComponent($scope.foreignSource);
+          $window.location.href = Configuration.baseHref + '#!/requisitions/' + encodeURIComponent($scope.foreignSource);
         }
       };
       $scope.goTo(doGoBack);

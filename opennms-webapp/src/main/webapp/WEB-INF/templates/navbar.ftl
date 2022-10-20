@@ -125,7 +125,7 @@
             <ul class="navbar-nav">
             <#if isAdmin || isProvision >
                 <li class="nav-item">
-                    <a class="nav-link" style="font-size: 1.25rem" name="nav-admin-quick-add" href="${baseHref}admin/ng-requisitions/quick-add-node.jsp#/" title="Quick-Add Node">
+                    <a class="nav-link" style="font-size: 1.25rem" name="nav-admin-quick-add" href="${baseHref}admin/ng-requisitions/quick-add-node.jsp#!/" title="Quick-Add Node">
                         <i class="fa fa-plus-circle"></i>
                     </a>
                 </li>

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -82,7 +82,7 @@ public class AngularLoginRedirectIT extends OpenNMSSeleniumIT {
                     () -> pageContainsText("Classification rules defined by the user"),
                     () -> findElementById("action.refresh").click()),
             new Check(
-                    "admin/ng-requisitions/index.jsp#/requisitions",
+                    "admin/ng-requisitions/index.jsp#!/requisitions",
                     () -> pageContainsText("There are no requisitions"),
                     () -> {
                         sleep(SLEEP_TIME); // encounter for UI Delay

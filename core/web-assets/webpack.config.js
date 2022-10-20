@@ -235,15 +235,6 @@ var config = {
   module: {
     rules: [
       {
-        test: require.resolve('angular'),
-        use: [{
-          loader: 'expose-loader',
-          options: {
-            exposes: 'angular'
-          }
-        }]
-      },
-      {
         test: require.resolve('backshift/dist/backshift.onms'),
         use: [{
           loader: 'expose-loader',

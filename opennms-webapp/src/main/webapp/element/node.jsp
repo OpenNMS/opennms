@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -431,7 +431,7 @@ function confirmAssetEdit() {
 
     <c:if test="${model.existsInRequisition && (model.admin || model.provision)}">
         <li class="list-inline-item">
-            <a href="<c:out value="admin/ng-requisitions/index.jsp#/requisitions/${model.foreignSource}/nodes/${model.foreignId}"/>">Edit in Requisition</a>
+            <a href="<c:out value="admin/ng-requisitions/index.jsp#!/requisitions/${model.foreignSource}/nodes/${model.foreignId}"/>">Edit in Requisition</a>
         </li>
     </c:if>
 

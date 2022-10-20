@@ -7,7 +7,7 @@ const RequisitionMetaDataEntry = require('../model/RequisitionMetaDataEntry');
 
 /**
 * @author Alejandro Galue <agalue@opennms.org>
-* @copyright 2014 The OpenNMS Group, Inc.
+* @copyright 2014-2022 The OpenNMS Group, Inc.
 */
 
 (function() {
@@ -178,7 +178,7 @@ const RequisitionMetaDataEntry = require('../model/RequisitionMetaDataEntry');
     * @methodOf NodeController
     */
     $scope.goTop = function() {
-      $scope.goTo(Configuration.baseHref + '#/requisitions');
+      $scope.goTo(Configuration.baseHref + '#!/requisitions');
     };
 
     /**
@@ -189,7 +189,7 @@ const RequisitionMetaDataEntry = require('../model/RequisitionMetaDataEntry');
     * @methodOf NodeController
     */
     $scope.goBack = function() {
-      $scope.goTo(Configuration.baseHref + '#/requisitions/' + encodeURIComponent($scope.foreignSource));
+      $scope.goTo(Configuration.baseHref + '#!/requisitions/' + encodeURIComponent($scope.foreignSource));
     };
 
     /**
@@ -201,7 +201,7 @@ const RequisitionMetaDataEntry = require('../model/RequisitionMetaDataEntry');
     */
     $scope.goVerticalLayout = function() {
       $cookies.put('use_requisitions_node_vertical_layout', 'true');
-      $scope.goTo(Configuration.baseHref + '#/requisitions/' + encodeURIComponent($scope.foreignSource) + '/nodes/' + encodeURIComponent($scope.foreignId) + '/vertical');
+      $scope.goTo(Configuration.baseHref + '#!/requisitions/' + encodeURIComponent($scope.foreignSource) + '/nodes/' + encodeURIComponent($scope.foreignId) + '/vertical');
     };
 
     /**
@@ -213,7 +213,7 @@ const RequisitionMetaDataEntry = require('../model/RequisitionMetaDataEntry');
     */
     $scope.goHorizontalLayout = function() {
       $cookies.put('use_requisitions_node_vertical_layout', 'false');
-      $scope.goTo(Configuration.baseHref + '#/requisitions/' + encodeURIComponent($scope.foreignSource) + '/nodes/' + encodeURIComponent($scope.foreignId));
+      $scope.goTo(Configuration.baseHref + '#!/requisitions/' + encodeURIComponent($scope.foreignSource) + '/nodes/' + encodeURIComponent($scope.foreignId));
     };
 
     /**

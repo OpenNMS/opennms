@@ -73,7 +73,6 @@ const handleGrafanaError = function(response, report, optionalCallbackIfNoContex
             'onms.pagination'
         ])
         .config(['$locationProvider', function ($locationProvider) {
-            $locationProvider.hashPrefix('!');
             $locationProvider.html5Mode(false);
         }])
         .run(['confirmationPopoverDefaults', function(confirmationPopoverDefaults) {

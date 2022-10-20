@@ -5,7 +5,7 @@ require('../services/Synchronize');
 
 /**
 * @author Alejandro Galue <agalue@opennms.org>
-* @copyright 2014 The OpenNMS Group, Inc.
+* @copyright 2014-2022 The OpenNMS Group, Inc.
 */
 
 (function() {
@@ -229,7 +229,7 @@ require('../services/Synchronize');
     * @param {string} foreignSource The name of the requisition
     */
     $scope.editForeignSource = function(foreignSource) {
-      $window.location.href = Configuration.baseHref + '#/requisitions/' + encodeURIComponent(foreignSource) + '/foreignSource';
+      $window.location.href = Configuration.baseHref + '#!/requisitions/' + encodeURIComponent(foreignSource) + '/foreignSource';
     };
 
     /**
@@ -241,7 +241,7 @@ require('../services/Synchronize');
     * @param {string} foreignSource The name of the requisition
     */
     $scope.edit = function(foreignSource) {
-      $window.location.href = Configuration.baseHref + '#/requisitions/' + encodeURIComponent(foreignSource);
+      $window.location.href = Configuration.baseHref + '#!/requisitions/' + encodeURIComponent(foreignSource);
     };
 
     /**
@@ -331,7 +331,7 @@ require('../services/Synchronize');
     * @methodOf RequisitionsController
     */
     $scope.editDefaultForeignSource = function() {
-      $window.location.href = Configuration.baseHref + '#/requisitions/default/foreignSource';
+      $window.location.href = Configuration.baseHref + '#!/requisitions/default/foreignSource';
     };
 
     /**

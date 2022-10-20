@@ -27,7 +27,6 @@ const grafanaModalTemplate = require('./grafana/grafana-modal.html');
             confirmationPopoverDefaults.templateUrl = confirmPopoverTemplate;
         })
         .config( ['$locationProvider', function ($locationProvider) {
-            $locationProvider.hashPrefix('!');
             $locationProvider.html5Mode(false);
         }])
         .config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $urlRouterProvider) {

@@ -7,7 +7,7 @@ require('../services/Synchronize');
 
 /**
 * @author Alejandro Galue <agalue@opennms.org>
-* @copyright 2014 The OpenNMS Group, Inc.
+* @copyright 2014-2022 The OpenNMS Group, Inc.
 */
 
 (function() {
@@ -115,7 +115,7 @@ require('../services/Synchronize');
     */
     // FIXME Should be called getTop to be consistent with the rest of the controllers
     $scope.goBack = function() {
-      $window.location.href = Configuration.baseHref + '#/requisitions';
+      $window.location.href = Configuration.baseHref + '#!/requisitions';
     };
 
     /**
@@ -126,7 +126,7 @@ require('../services/Synchronize');
     * @methodOf RequisitionController
     */
     $scope.editForeignSource = function() {
-      $window.location.href = Configuration.baseHref + '#/requisitions/' + encodeURIComponent($scope.foreignSource) + '/foreignSource';
+      $window.location.href = Configuration.baseHref + '#!/requisitions/' + encodeURIComponent($scope.foreignSource) + '/foreignSource';
     };
 
     /**
@@ -175,7 +175,7 @@ require('../services/Synchronize');
     * @methodOf RequisitionController
     */
     $scope.addNode = function() {
-      $window.location.href = Configuration.baseHref + '#/requisitions/' + encodeURIComponent($scope.foreignSource) + '/nodes/__new__' + $scope.getVerticalLayout();
+      $window.location.href = Configuration.baseHref + '#!/requisitions/' + encodeURIComponent($scope.foreignSource) + '/nodes/__new__' + $scope.getVerticalLayout();
     };
 
     /**
@@ -188,7 +188,7 @@ require('../services/Synchronize');
     * @param {object} The node's object to edit
     */
     $scope.editNode = function(node) {
-      $window.location.href = Configuration.baseHref + '#/requisitions/' + encodeURIComponent($scope.foreignSource) + '/nodes/' + encodeURIComponent(node.foreignId) + $scope.getVerticalLayout();
+      $window.location.href = Configuration.baseHref + '#!/requisitions/' + encodeURIComponent($scope.foreignSource) + '/nodes/' + encodeURIComponent(node.foreignId) + $scope.getVerticalLayout();
     };
 
     /**

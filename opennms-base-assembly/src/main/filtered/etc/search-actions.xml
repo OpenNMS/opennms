@@ -236,7 +236,7 @@
     <action>
         <icon>fa fa-plus-circle</icon>
         <label>Quick Add Node</label>
-        <url>admin/ng-requisitions/quick-add-node.jsp#/</url>
+        <url>admin/ng-requisitions/quick-add-node.jsp#!/</url>
         <roles>
             <role>ROLE_ADMIN</role>
             <role>ROLE_PROVISION</role>

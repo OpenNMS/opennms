@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -70,7 +70,7 @@ public class RequisitionSearchProvider implements SearchProvider {
         final List<SearchResultItem> resultItems = requisitions.stream().map(r -> {
                 final SearchResultItem searchResultItem = new SearchResultItem();
                 searchResultItem.setIdentifier(r.getForeignSource());
-                searchResultItem.setUrl(String.format("admin/ng-requisitions/index.jsp#/requisitions/%s", UrlUtils.encode(r.getForeignSource())));
+                searchResultItem.setUrl(String.format("admin/ng-requisitions/index.jsp#!/requisitions/%s", UrlUtils.encode(r.getForeignSource())));
                 searchResultItem.setLabel(String.format("Edit Requisition '%s'", r.getForeignSource()));
                 searchResultItem.setIcon("fa fa-pencil");
                 return searchResultItem;
