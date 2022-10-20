@@ -21,7 +21,7 @@ enabled=1
 gpgcheck=0
 END
 
-docker build -t sentinel \
+docker build -t sentinel:"${VERSION}" \
   --network "${BUILD_NETWORK}" \
   --build-arg BUILD_DATE="${BUILD_DATE}" \
   --build-arg VERSION="${VERSION}" \
@@ -33,7 +33,7 @@ docker build -t sentinel \
   --build-arg BUILD_BRANCH="${BUILD_BRANCH}" \
   .
 
-docker image save sentinel -o images/container.oci
+docker image save sentinel:"${VERSION}" -o images/container.oci
 
 rm -f rpms/*.repo
 ../stop_yum_server.sh

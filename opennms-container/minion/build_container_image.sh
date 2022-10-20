@@ -21,7 +21,7 @@ enabled=1
 gpgcheck=0
 END
 
-docker build -t minion \
+docker build -t minion:"${VERSION}" \
   --network "${BUILD_NETWORK}" \
   --build-arg BUILD_DATE="${BUILD_DATE}" \
   --build-arg VERSION="${VERSION}" \
@@ -33,7 +33,7 @@ docker build -t minion \
   --build-arg BUILD_BRANCH="${BUILD_BRANCH}" \
   .
 
-docker image save minion -o images/container.oci
+docker image save minion:"${VERSION}" -o images/container.oci
 
 rm -f rpms/*.repo
 ../stop_yum_server.sh
