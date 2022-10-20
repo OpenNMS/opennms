@@ -1,11 +1,10 @@
 ##
-# Makefile to build OpenNMS container image with Docker
+# Common Makefile bits to build OpenNMS container images with Docker
 ##
 .PHONY: help test build install uninstall clean clean-all
 
 .DEFAULT_GOAL := build
 
-CONTAINER_TYPE_FRIENDLY := Minion
 VERSION                 := $(shell ../../.circleci/scripts/pom2version.sh ../../pom.xml)
 SHELL                   := /bin/bash -o nounset -o pipefail -o errexit
 BUILD_DATE              := $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
@@ -13,7 +12,6 @@ BASE_IMAGE              := opennms/deploy-base:jre-2.1.0.b175
 DOCKER_CLI_EXPERIMENTAL := enabled
 DOCKER_REGISTRY         := docker.io
 DOCKER_ORG              := opennms
-DOCKER_PROJECT          := minion
 DOCKER_TAG              := $(DOCKER_REGISTRY)/$(DOCKER_ORG)/$(DOCKER_PROJECT):$(VERSION)
 DOCKER_ARCH             := linux/amd64
 DOCKER_IMAGE_NAME       := $(DOCKER_PROJECT)-$(VERSION).oci
@@ -24,11 +22,13 @@ REVISION                := $(shell git describe --always)
 BUILD_NUMBER            := 0
 BUILD_URL               := "unset"
 BUILD_BRANCH            := $(shell git describe --always)
-TARBALL                 := ../../opennms-assemblies/minion/target/*minion*.tar.gz
-TAR_STRIP_COMPONENTS    := 1
 README                  := tarball-root/data/tmp/README
 ASSEMBLE_COMMAND        := ./assemble.pl -Dopennms.home=/opt/opennms -DskipTests
-ADDITIONAL_TARGETS      := minion-config-schema.yml
+
+# These are defaults that some Makefiles will override so
+# ?= for conditional assignment is used for these.
+TAR_STRIP_COMPONENTS    ?= 0
+ADDITIONAL_TARGETS      ?=
 
 %.yml: %.yml.in
 	@echo "Generating $@..."
