@@ -35,9 +35,9 @@ jobs:
       - run:
           name: Publish to Docker Hub
           command: .circleci/scripts/publish-dockerhub.sh
-      - run:
-          name: Publish to Cloudsmith
-          command: .circleci/scripts/publish-cloudsmith.sh
-      - run:
-          name: Publish to Azure
-          command: .circleci/scripts/publish-azure.sh
+      #- run:
+      #    name: Publish to Cloudsmith
+      #    command: .circleci/scripts/publish-cloudsmith.sh
+      #- run:
+      #    name: Publish to Azure
+      #    command: .circleci/scripts/publish-azure.sh
