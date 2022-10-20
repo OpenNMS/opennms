@@ -5,7 +5,7 @@ jobs:
         type: string
     machine:
       image: ubuntu-2204:current
-      docker_layer_caching: true
+      docker_layer_caching: false
     environment:
       DOCKER_CLI_EXPERIMENTAL: enabled
     steps:
