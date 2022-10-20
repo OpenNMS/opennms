@@ -478,11 +478,6 @@
                 "sentinel-rpm-build",
                 "sentinel-image-single-arch",
                 "sentinel-image-single-arch-linux-amd64",
-                "integration-test",
-                "smoke-test-core",
-                "smoke-test-flaky",
-                "smoke-test-minion",
-                "smoke-test-sentinel"
             ],
             "filters": {
                 "branches": {
