@@ -235,6 +235,9 @@ if "trigger-ui" in mappings:
 
 if "trigger-coverage" in mappings:
     build_mappings["coverage"] = mappings["trigger-coverage"]
+    mappings.clear()
+    What_to_build.clear()
+    git_keywords.clear()
 
 if "trigger-flaky-smoke" in mappings:
     if not build_mappings["smoke-flaky"]:
