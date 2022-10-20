@@ -157,6 +157,21 @@ abstract public class EnhancedLinkdConfigManager implements EnhancedLinkdConfig 
     public long getIsisRescanInterval() {
         return m_config.getIsisRescanInterval();
     }
+    public int getCdpPriority() {
+        return m_config.getCdpPriority();
+    }
+    public int getLldpPriority() {
+        return m_config.getLldpPriority();
+    }
+    public int getBridgePriority() {
+        return m_config.getBridgePriority();
+    }
+    public int getOspfPriority() {
+        return m_config.getOspfPriority();
+    }
+    public int getIsisPriority() {
+        return m_config.getIsisPriority();
+    }
 
     public long getBridgeTopologyInterval() {
         return m_config.getBridgeTopologyInterval();
@@ -172,9 +187,29 @@ abstract public class EnhancedLinkdConfigManager implements EnhancedLinkdConfig 
      *
      * @return a int.
      */
+    public int getExecutorThreads() {
+        if (m_config.getExecutorThreads() != null) return m_config.getExecutorThreads();
+        return 5;
+    }
+
+    /**
+     * <p>getExecutorQueueSize</p>
+     *
+     * @return a int.
+     */
+    public int getExecutorQueueSize() {
+        if (m_config.getExecutorQueueSize() != null) return m_config.getExecutorQueueSize();
+        return 100;
+    }
+
+    /**
+     * <p>getThreads</p>
+     *
+     * @return a int.
+     */
     public int getThreads() {
         if (m_config.getThreads() != null) return m_config.getThreads();
-        return 5;
+        return 3;
     }
 
     public int getMaxBft() {

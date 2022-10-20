@@ -106,9 +106,8 @@ public class Nms0002EnIT extends EnLinkdBuilderITCase {
 
         final OnmsNode routerJuniper = m_nodeDao.findByForeignId("linkd", Rluck001_NAME);
         final OnmsNode switchCisco = m_nodeDao.findByForeignId("linkd", Sluck001_NAME);
-        
-        assertTrue(m_linkd.scheduleNodeCollection(routerJuniper.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(switchCisco.getId()));
+
+        m_linkd.reload();
 
         assertEquals(0,m_lldpLinkDao.countAll());
 
@@ -251,12 +250,7 @@ public class Nms0002EnIT extends EnLinkdBuilderITCase {
         final OnmsNode swicthAlu142 = m_nodeDao.findByForeignId("linkd", SDeEssnBrue142_NAME);
         final OnmsNode swicthAlu165 = m_nodeDao.findByForeignId("linkd", SDeEssnBrue165_NAME);
         
-        assertTrue(m_linkd.scheduleNodeCollection(routerCisco.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(swicthAlu081.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(swicthAlu121.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(swicthAlu142.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(swicthAlu165.getId()));
-
+        m_linkd.reload();
         assertEquals(0,m_lldpLinkDao.countAll());
 
         assertTrue(m_linkd.runSingleSnmpCollection(routerCisco.getId()));

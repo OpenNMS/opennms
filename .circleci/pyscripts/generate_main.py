@@ -180,6 +180,14 @@ for e in main_yml_content:
             job_entry_spaces = level
 
             if (
+                "master-branch" in build_components
+                and build_components["master-branch"]
+            ):
+                workflow_path = print_add(
+                    workflow_path, level, filters_enabled, "master-branch"
+                )
+
+            if (
                 "merge-foundation" in build_components
                 and build_components["merge-foundation"]
             ):

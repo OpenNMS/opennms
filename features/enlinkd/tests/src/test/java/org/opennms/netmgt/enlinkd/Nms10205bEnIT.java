@@ -266,16 +266,7 @@ it has a link to Mysore that does not support LLDP
         final OnmsNode j635042 = m_nodeDao.findByForeignId("linkd", J6350_42_NAME);
         final OnmsNode srx100 = m_nodeDao.findByForeignId("linkd", SRX_100_NAME);
 
-        assertTrue(m_linkd.scheduleNodeCollection(mumbai.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(delhi.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(bangalore.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(bagmane.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(mysore.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(spaceexsw1.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(spaceexsw2.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(j635042.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(srx100.getId()));
-
+        m_linkd.reload();
         assertEquals(0,m_lldpLinkDao.countAll());
 
         assertTrue(m_linkd.runSingleSnmpCollection(mumbai.getId()));
@@ -485,15 +476,7 @@ Address          Interface              State     ID               Pri  Dead
         assertFalse(m_linkdConfig.useBridgeDiscovery());
         assertFalse(m_linkdConfig.useIsisDiscovery());
 
-        assertTrue(m_linkd.scheduleNodeCollection(mumbai.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(delhi.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(bangalore.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(bagmane.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(mysore.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(spaceexsw1.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(spaceexsw2.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(j635042.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(srx100.getId()));
+        m_linkd.reload();
 
         assertEquals(0,m_ospfLinkDao.countAll());
 

@@ -34,7 +34,7 @@ angular.module('onms.http', ['ui.bootstrap'])
         $rootScope.$on('loginRequired', function() {
             var baseTags = document.getElementsByTagName('base');
             if (baseTags && baseTags.length > 0 && baseTags[0].href) {
-                window.location.href = baseTags[0].href + 'login.jsp?session_expired=true';
+                document.headerLogoutForm.submit();
             } else {
                 console.warn('Login is required, but cannot forward to login page due to missing base tag.'); // eslint-disable-line no-console
             }

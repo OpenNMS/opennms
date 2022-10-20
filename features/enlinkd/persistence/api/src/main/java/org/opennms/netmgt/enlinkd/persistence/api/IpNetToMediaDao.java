@@ -57,4 +57,6 @@ public interface IpNetToMediaDao extends OnmsDao<IpNetToMedia, Integer> {
     void deleteBySourceNodeId(Integer nodeId);
 
     List<IpNetToMedia> findByMacLinksOfNode(Integer nodeId);
+
+    void deleteAll();
 }

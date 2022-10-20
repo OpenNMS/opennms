@@ -29,6 +29,7 @@
         "rpms": {
             "extends": [
                 "build",
+                "integration-test",
                 "horizon-rpm-build",
                 "minion-rpm-build",
                 "sentinel-rpm-build"
@@ -37,6 +38,7 @@
         "debs": {
             "extends": [
                 "build",
+                "integration-test",
                 "horizon-deb-build",
                 "minion-deb-build",
                 "sentinel-deb-build"
@@ -93,18 +95,18 @@
             "extends": [
                 "build",
                 "integration-test-with-coverage",
-                "code-coverage",
-                "minion-image-single-arch-with-trivy-linux-amd64",
-                "horizon-image-single-arch-with-trivy-linux-amd64",
-                "sentinel-image-single-arch-with-trivy-linux-amd64",
-                "minion-image-single-arch-with-trivy",
-                "horizon-image-single-arch-with-trivy",
-                "sentinel-image-single-arch-with-trivy"
+                "code-coverage"
+            ]
+        },
+        "master-branch": {
+            "extends": [
+                "tarball-assembly-only",
+                "integration-test"
             ]
         },
         "experimental": {
             "extends": [
-                "smoke-test-combined"
+                "master-branch"
             ]
         }
     },
@@ -211,17 +213,6 @@
                 "docker-publish-account"
             ],
             "job": "smoke-test-flaky",
-            "requires": [
-                "tarball-assembly-only",
-                "horizon-image-single-arch-linux-amd64",
-                "minion-image-single-arch-linux-amd64",
-                "sentinel-image-single-arch-linux-amd64"
-            ]
-        },
-        "smoke-test-combined": {
-            "context": [
-                "docker-publish-account"
-            ],
             "requires": [
                 "tarball-assembly-only",
                 "horizon-image-single-arch-linux-amd64",
@@ -362,66 +353,6 @@
                 "smoke-test-flaky",
                 "smoke-test-minion",
                 "smoke-test-sentinel"
-            ]
-        },
-        "minion-image-single-arch-with-trivy-linux-amd64": {
-            "context": [
-                "docker-publish-account"
-            ],
-            "requires": [
-                "tarball-assembly-only"
-            ]
-        },
-        "horizon-image-single-arch-with-trivy-linux-amd64": {
-            "context": [
-                "docker-publish-account"
-            ],
-            "requires": [
-                "tarball-assembly-only"
-            ]
-        },
-        "sentinel-image-single-arch-with-trivy-linux-amd64": {
-            "context": [
-                "docker-publish-account"
-            ],
-            "requires": [
-                "tarball-assembly-only"
-            ]
-        },
-        "minion-image-single-arch-with-trivy": {
-            "context": [
-                "docker-publish-account"
-            ],
-            "variations": [
-                "linux/arm64",
-                "linux/arm/v7"
-            ],
-            "requires": [
-                "tarball-assembly-only"
-            ]
-        },
-        "horizon-image-single-arch-with-trivy": {
-            "context": [
-                "docker-publish-account"
-            ],
-            "variations": [
-                "linux/arm64",
-                "linux/arm/v7"
-            ],
-            "requires": [
-                "tarball-assembly-only"
-            ]
-        },
-        "sentinel-image-single-arch-with-trivy": {
-            "context": [
-                "docker-publish-account"
-            ],
-            "variations": [
-                "linux/arm64",
-                "linux/arm/v7"
-            ],
-            "requires": [
-                "tarball-assembly-only"
             ]
         },
         "create-merge-foundation-branch": {

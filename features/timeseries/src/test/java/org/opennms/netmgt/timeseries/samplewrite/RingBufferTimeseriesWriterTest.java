@@ -54,13 +54,16 @@ import org.opennms.integration.api.v1.timeseries.TimeSeriesStorage;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableMetric;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableSample;
 import org.opennms.netmgt.timeseries.TimeseriesStorageManager;
+import org.opennms.netmgt.timeseries.stats.StatisticsCollector;
+import org.opennms.netmgt.timeseries.stats.StatisticsCollectorImpl;
 import org.opennms.newts.api.Resource;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
+import org.springframework.beans.factory.annotation.Autowired;
 
-public class TimeseriesWriterTest {
+public class RingBufferTimeseriesWriterTest {
 
     private TimeseriesStorageManager storageManager;
 
@@ -80,7 +83,7 @@ public class TimeseriesWriterTest {
 
         LatchedTimeseriesStorage store = new LatchedTimeseriesStorage(numWriterThreads);
         MetricRegistry registry = new MetricRegistry();
-        TimeseriesWriter writer = new TimeseriesWriter(ringBufferSize, numWriterThreads, registry);
+        RingBufferTimeseriesWriter writer = new RingBufferTimeseriesWriter(storageManager, new StatisticsCollectorImpl(numWriterThreads), ringBufferSize, numWriterThreads, registry);
         when(storageManager.get()).thenReturn(store);
         writer.setTimeSeriesStorage(storageManager);
 
@@ -107,7 +110,7 @@ public class TimeseriesWriterTest {
         Lock lock = new ReentrantLock();
         LockedTimeseriesStorage timeseriesStorage = new LockedTimeseriesStorage(lock);
         MetricRegistry registry = new MetricRegistry();
-        TimeseriesWriter writer = new TimeseriesWriter(ringBufferSize, numWriterThreads, registry);
+        RingBufferTimeseriesWriter writer = new RingBufferTimeseriesWriter(storageManager, new StatisticsCollectorImpl(numWriterThreads), ringBufferSize, numWriterThreads, registry);
         when(storageManager.get()).thenReturn(timeseriesStorage);
         writer.setTimeSeriesStorage(storageManager);
 
@@ -196,7 +199,7 @@ public class TimeseriesWriterTest {
                 .intrinsicTag(MetaTagNames.mtype, Metric.Mtype.counter.name());
     }
 
-    private static class MockTimeSeriesStorage implements TimeSeriesStorage {
+    static class MockTimeSeriesStorage implements TimeSeriesStorage {
 
         @Override
         public void store(List<Sample> samples) throws StorageException {

@@ -227,4 +227,12 @@ public class IsisTopologyServiceImpl extends TopologyServiceImpl implements Isis
         return results;
     }
 
+    @Override
+    public void deletePersistedData() {
+        m_isisElementDao.deleteAll();
+        m_isisElementDao.flush();
+        m_isisLinkDao.deleteAll();
+        m_isisLinkDao.flush();
+    }
+
 }

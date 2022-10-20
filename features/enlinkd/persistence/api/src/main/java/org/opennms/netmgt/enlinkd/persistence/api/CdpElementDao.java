@@ -30,16 +30,13 @@ package org.opennms.netmgt.enlinkd.persistence.api;
 
 import java.util.List;
 
-import org.opennms.netmgt.dao.api.OnmsDao;
 import org.opennms.netmgt.enlinkd.model.CdpElement;
 
 /**
  * <p>CdpElementDao interface.</p>
  */
-public interface CdpElementDao extends OnmsDao<CdpElement, Integer> {
+public interface CdpElementDao extends ElementDao<CdpElement, Integer> {
     
-    CdpElement findByNodeId(Integer id);
-
     CdpElement findByGlobalDeviceId(String deviceId);
 
     /**
@@ -48,5 +45,4 @@ public interface CdpElementDao extends OnmsDao<CdpElement, Integer> {
      */
     List<CdpElement> findByCacheDeviceIdOfCdpLinksOfNode(int nodeId);
 
-    void deleteByNodeId(Integer nodeId);
 }

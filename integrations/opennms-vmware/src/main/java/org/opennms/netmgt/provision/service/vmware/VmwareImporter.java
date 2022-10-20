@@ -834,7 +834,10 @@ public class VmwareImporter {
         return attributes;
     }
 
-    private RequisitionInterface getRequisitionInterface(RequisitionNode node, InetAddress ipAddr) {
+    RequisitionInterface getRequisitionInterface(RequisitionNode node, InetAddress ipAddr) {
+        if (ipAddr == null) {
+            return null;
+        }
         for (RequisitionInterface intf : node.getInterfaces()) {
             if (ipAddr.equals(intf.getIpAddr())) {
                 return intf;

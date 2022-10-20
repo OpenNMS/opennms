@@ -278,4 +278,13 @@ public class LldpTopologyServiceImpl extends TopologyServiceImpl implements Lldp
        // }
 
     }
+
+    @Override
+    public void deletePersistedData() {
+        m_lldpElementDao.deleteAll();
+        m_lldpElementDao.flush();
+
+        m_lldpLinkDao.deleteAll();
+        m_lldpLinkDao.flush();
+    }
 }

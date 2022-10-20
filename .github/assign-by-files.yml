@@ -1,9 +1,12 @@
 ---
 "**/*.adoc":
   - Bonrob2
+  - emarsh1995
 
 "opennms-doc/**/*":
   - Bonrob2
+  - emarsh1995
 
 "docs/**/*":
   - Bonrob2
+  - emarsh1995

@@ -86,6 +86,11 @@ public class LldpLinkDaoHibernate extends AbstractDaoHibernate<LldpLink, Integer
                                          new Object[] {nodeId});
     }
 
+    @Override
+    public void deleteAll() {
+        getHibernateTemplate().bulkUpdate("delete from LldpLink");
+    }
+
     public List<LldpLink> findLinksForIds(List<Integer> linkIds) {
 
         final StringBuilder sql = new StringBuilder();
