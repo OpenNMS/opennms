@@ -1072,7 +1072,7 @@ public class Migrator {
                         statement.addBatch("UPDATE monitoringsystems SET id='" + newUUID + "' WHERE id='00000000-0000-0000-0000-000000000000' AND location='Default' AND type='OpenNMS'");
                         statement.addBatch("ALTER TABLE alarms DROP CONSTRAINT fk_alarms_systemid");
                         statement.addBatch("ALTER TABLE alarms ADD CONSTRAINT fk_alarms_systemid FOREIGN KEY (systemId) REFERENCES monitoringsystems (id) ON DELETE CASCADE");
-                        statement.addBatch("UPDATE events SET systemid = subquery.id FROM (SELECT id FROM monitoringsystems where type='OpenNMS' AND location='Default') AS subquery WHERE systemid = '00000000-0000-0000-0000-000000000000'");
+                        statement.addBatch("UPDATE events SET systemid='" + newUUID + "' WHERE systemid = '00000000-0000-0000-0000-000000000000'");
                         statement.executeBatch();
                         c.commit();
                     }
