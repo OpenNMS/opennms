@@ -11,8 +11,9 @@ image::webui/startpage/01_grafana-box.png[]
 
 == Filter dashboards
 
-To filter for relevant dashboards, you can use a dashboard's tag and make it accessible.
+To filter for relevant dashboards, you can use a dashboard's tag (defined by the `org.opennms.grafanaBox.tag` property) and make it accessible.
 If no tag is provided, all Grafana dashboards are shown.
+
 You can configure this feature by creating or editing `$\{OPENNMS_HOME}/etc/opennms.properties.d/grafana.properties`.
 
 .Grafana Dashboard Box configuration properties
