@@ -65,6 +65,10 @@ parameters:
     description: whether to trigger the main build
     type: boolean
     default: false
+  trigger-coverage-api:
+    description: whether to enable running code coverage
+    type: boolean
+    default: false
   trigger-flaky:
     description: whether to enable running flaky smoke tests
     type: boolean
@@ -629,6 +633,19 @@ workflows:
             ((?!docs/).)* trigger-build true
             docs/.*       trigger-docs  true
             .circleci/.*  trigger-docs  true
+  coverage:
+    when:
+      and:
+        - equal: [ true, << pipeline.parameters.trigger-coverage-api >> ]
+        - equal: [ false, << pipeline.parameters.trigger-setup >> ]
+    jobs:
+      - build
+      - integration-test-with-coverage:
+          requires:
+            - build
+      - code-coverage:
+          requires:
+            - integration-test-with-coverage
   build-minimal:
     when:
       and:
