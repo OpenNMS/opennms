@@ -1,4 +1,4 @@
-<%--
+<%@ page import="org.opennms.web.account.selfService.NewPasswordActionServlet" %><%--
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
@@ -47,8 +47,8 @@
     if (document.goForm.pass1.value == document.goForm.pass2.value)
     {
       let newPassword=document.goForm.pass1.value
-      const passwordRegex= /((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%&.*+-]).{12,128})/;
-      const sameCharacterRegex= /(.)\1{5}/;
+      const passwordRegex= <%= NewPasswordActionServlet.PASSWORD_REGEX%>;
+      const sameCharacterRegex= <%= NewPasswordActionServlet.SAME_CHARACTER_REGEX%>;
 
       if(newPassword.match(passwordRegex) && !newPassword.match(sameCharacterRegex) )
       {
