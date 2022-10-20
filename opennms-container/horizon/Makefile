@@ -1,16 +1,16 @@
 ##
-# Makefile to build Horizon container image with Docker
+# Makefile to build OpenNMS container image with Docker
 ##
 .PHONY: help test build install uninstall clean clean-all
 
 .DEFAULT_GOAL := build
 
+CONTAINER_TYPE_FRIENDLY := Horizon
 VERSION                 := $(shell ../../.circleci/scripts/pom2version.sh ../../pom.xml)
 SHELL                   := /bin/bash -o nounset -o pipefail -o errexit
 BUILD_DATE              := $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
 BASE_IMAGE              := opennms/deploy-base:jre-2.1.0.b175
 DOCKER_CLI_EXPERIMENTAL := enabled
-DOCKERX_INSTANCE        := env-horizon-oci
 DOCKER_REGISTRY         := docker.io
 DOCKER_ORG              := opennms
 DOCKER_PROJECT          := horizon
@@ -18,24 +18,30 @@ DOCKER_TAG              := $(DOCKER_REGISTRY)/$(DOCKER_ORG)/$(DOCKER_PROJECT):$(
 DOCKER_ARCH             := linux/amd64
 DOCKER_IMAGE_NAME       := $(DOCKER_PROJECT)-$(VERSION).oci
 DOCKER_FLAGS            := --output=type=docker,dest=images/$(DOCKER_IMAGE_NAME)
+DOCKERX_INSTANCE        := env-$(DOCKER_PROJECT)-oci
 SOURCE                  := $(shell git remote get-url origin)
 REVISION                := $(shell git describe --always)
 BUILD_NUMBER            := 0
 BUILD_URL               := "unset"
 BUILD_BRANCH            := $(shell git describe --always)
+TARBALL                 := ../../opennms-full-assembly/target/*-core.tar.gz
+TAR_STRIP_COMPONENTS    := 0
+README                  := tarball-root/data/tmp/README
+ASSEMBLE_COMMAND        := ./assemble.pl -Dopennms.home=/opt/opennms -DskipTests
+ADDITIONAL_TARGETS      :=
 
 help:
 	@echo ""
-	@echo "Makefile to build Horizon Docker container images and push to a registry."
+	@echo "Makefile to build $(CONTAINER_TYPE_FRIENDLY) Docker container images and push to a registry."
 	@echo ""
 	@echo "Requirements to build images:"
 	@echo "  * Docker 19.03+"
-	@echo "  * Horizon assembled with: ./assemble.pl -Dopennms.home=/opt/opennms -DskipTests"
+	@echo "  * $(CONTAINER_TYPE_FRIENDLY) assembled with: $(ASSEMBLE_COMMAND)"
 	@echo ""
 	@echo "Targets:"
 	@echo "  help:      Show this help"
 	@echo "  build:     Create an OCI image file in images/$(DOCKER_IMAGE_NAME)"
-	@echo "  test:      Test requirements to build the Horizon OCI"
+	@echo "  test:      Test requirements to build the OCI"
 	@echo "  install:   Load the OCI file in your Docker instance"
 	@echo "  uninstall: Remove the container image from your Docker instance"
 	@echo "  clean:     Remove the Dockerx build instance keep the files in the directory images/"
@@ -61,19 +67,19 @@ help:
 	@echo ""
 
 test:
-	@echo "Test Docker installation and existence of the Horizon tarball ..."
+	@echo "Test Docker installation and existence of the tarball ..."
 	@command -v docker
-	test -f ../../opennms-full-assembly/target/*-core.tar.gz
+	test -f $(TARBALL)
 
 unpack-tarball: test
-	@if [ ! -e ./tarball-root/data/tmp/README ] || [ ../../opennms-full-assembly/target/*-core.tar.gz -nt ./tarball-root/data/tmp/README ]; then \
-	  echo "Unpacking Horizon tarball for Docker context..."; \
+	@if [ ! -e $(README) ] || [ $(TARBALL) -nt $(README) ]; then \
+	  echo "Unpacking tarball for Docker context..."; \
 	  mkdir -p tarball-root && \
-	  tar -x -z -C ./tarball-root -f ../../opennms-full-assembly/target/*-core.tar.gz && \
-	  touch ./tarball-root/data/tmp/README; \
+	  tar -x -z --strip-components $(TAR_STRIP_COMPONENTS) -C ./tarball-root -f $(TARBALL) && \
+	  touch $(README); \
 	fi
 
-build: test unpack-tarball
+build: test unpack-tarball $(ADDITIONAL_TARGETS)
 	@echo "Initialize builder instance ..."
 	if ! docker buildx inspect $(DOCKERX_INSTANCE); then docker context create "$(DOCKERX_INSTANCE)-context" && docker buildx create --name "$(DOCKERX_INSTANCE)" --driver docker-container "$(DOCKERX_INSTANCE)-context"; fi;
 	docker buildx use $(DOCKERX_INSTANCE)
@@ -111,3 +117,4 @@ clean-all: clean
 	@echo "Delete tarball and artifacts ..."
 	@rm -rf images/*.oci
 	@rm -rf tarball-root
+	@rm -rf $(ADDITIONAL_TARGETS)
