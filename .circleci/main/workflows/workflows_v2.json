@@ -477,7 +477,7 @@
                 "sentinel-deb-build",
                 "sentinel-rpm-build",
                 "sentinel-image-single-arch",
-                "sentinel-image-single-arch-linux-amd64",
+                "sentinel-image-single-arch-linux-amd64"
             ],
             "filters": {
                 "branches": {
