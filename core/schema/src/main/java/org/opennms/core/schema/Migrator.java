@@ -50,6 +50,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -871,28 +872,6 @@ public class Migrator {
 
     }
 
-    public void addPGCryptoExtension(boolean isNewDatabase) throws MigrationException {
-        LOG.info("adding pgcrypto extension in template db");
-
-        Connection c = null;
-        Statement st = null;
-
-        try {
-            if (isNewDatabase) {
-                c = m_adminDataSource.getConnection();
-            } else {
-                c = m_dataSource.getConnection();
-            }
-            st = c.createStatement();
-            st.execute("CREATE EXTENSION IF NOT EXISTS pgcrypto CASCADE");
-        } catch (SQLException e) {
-            throw new MigrationException("could not add pgcrypto extension", e);
-        } finally {
-            cleanUpDatabase(c, null, st, null);
-        }
-
-    }
-
     /**
      * This method creates the Timescale extension on the user database (opennms) and then on template1
      * to give access to the extension to new databases.
@@ -914,28 +893,6 @@ public class Migrator {
 
         } catch (SQLException e) {
             throw new MigrationException("could not add timescaledb extension", e);
-        } finally {
-            cleanUpDatabase(c, null, st, null);
-        }
-
-    }
-
-    public void addPGCryptoExtensionOnDatabase() throws MigrationException {
-        LOG.info("adding pgcrypto extension in db");
-
-        Connection c = null;
-        Statement st = null;
-
-        try {
-            c = m_adminDataSource.getConnection();
-            st = c.createStatement();
-            st.execute("ALTER ROLE " + getDatabaseUser() + " WITH SUPERUSER");
-            addPGCryptoExtension(false);
-            st.execute("ALTER ROLE " + getDatabaseUser() + " WITH NOSUPERUSER");
-            addPGCryptoExtension(true);
-
-        } catch (SQLException e) {
-            throw new MigrationException("could not add pgcrypto extension", e);
         } finally {
             cleanUpDatabase(c, null, st, null);
         }
@@ -1054,7 +1011,7 @@ public class Migrator {
         }
     }
 
-    public void setupDatabase(boolean updateDatabase, boolean vacuum, boolean fullVacuum, boolean iplike, boolean timescaleDB, boolean pgcrypto) throws MigrationException, Exception, IOException {
+    public void setupDatabase(boolean updateDatabase, boolean vacuum, boolean fullVacuum, boolean iplike, boolean timescaleDB) throws MigrationException, Exception, IOException {
         validateDatabaseVersion();
 
         if (updateDatabase) {
@@ -1068,19 +1025,6 @@ public class Migrator {
                 addTimescaleDBExtension(true);
             }
         }
-        if (pgcrypto) {
-            try {
-                if (databaseExists()) {
-                    addPGCryptoExtensionOnDatabase();
-                } else {
-                    addPGCryptoExtension(true);
-                }
-            }
-            catch (MigrationException me) {
-                // This is not a fatal issue, and can be remedied later if a unique systemID is needed
-                LOG.warn("Unable to install pgcrypto extension, system will use default ID", me);
-            }
-        }
 
         checkUnicode();
         checkTime();
@@ -1092,6 +1036,8 @@ public class Migrator {
                 LOG.info("- Running migration for changelog: {}", resource.getDescription());
                 migrate(resource);
             }
+
+            updateSystemId();
         }
 
         if (vacuum) {
@@ -1100,6 +1046,35 @@ public class Migrator {
 
         if (iplike) {
             updateIplike();
+        }
+    }
+
+    /**
+     * Do this here to avoid installing an extension to the database
+     */
+    private void updateSystemId() throws MigrationException {
+        try {
+            Connection c = m_dataSource.getConnection();
+            Statement st = c.createStatement();
+            ResultSet rs = st.executeQuery("SELECT id FROM monitoringsystems WHERE location='Default' AND type='OpenNMS'");
+            if (rs.next()) {
+                String systemId = rs.getString("id");
+                if (systemId != null && systemId.equals("00000000-0000-0000-0000-000000000000")) {
+                    String newUUID = UUID.randomUUID().toString();
+                    LOG.info("Updating systemId to {}", newUUID);
+                    // For existing databases, we need to temporarily alter a foreign key
+                    // constraint to cascade updates into the alarm table
+                    st.execute("ALTER TABLE alarms DROP CONSTRAINT fk_alarms_systemid");
+                    st.execute("ALTER TABLE alarms ADD CONSTRAINT fk_alarms_systemid FOREIGN KEY (systemId) REFERENCES monitoringsystems (id) ON UPDATE CASCADE ON DELETE CASCADE");
+                    st.execute("UPDATE monitoringsystems SET id='" + newUUID + "' WHERE id='00000000-0000-0000-0000-000000000000' AND location='Default' AND type='OpenNMS'");
+                    st.execute("ALTER TABLE alarms DROP CONSTRAINT fk_alarms_systemid");
+                    st.execute("ALTER TABLE alarms ADD CONSTRAINT fk_alarms_systemid FOREIGN KEY (systemId) REFERENCES monitoringsystems (id) ON DELETE CASCADE");
+                    st.execute("UPDATE events SET systemid = subquery.id FROM (SELECT id FROM monitoringsystems where type='OpenNMS' AND location='Default') AS subquery WHERE systemid = '00000000-0000-0000-0000-000000000000'");
+                }
+            }
+        }
+        catch (SQLException e) {
+            throw new MigrationException("unable to update systemId", e);
         }
     }
 
