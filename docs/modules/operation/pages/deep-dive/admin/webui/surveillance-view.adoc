@@ -126,7 +126,7 @@ Your changes are automatically saved.
 == Creating views for users and groups
 
 You can create Surveillance Views for only specific users, or only users in specific groups.
-For example, to create a view that can only be accessed by the user `drv4doe`, edit `$\{OPENNMS_HOME}/etc/surveillance-view.xml` and add a definition for the user:
+For example, to create a view that only the user `drv4doe` can access, edit `$\{OPENNMS_HOME}/etc/surveillance-view.xml` and add a definition for the user:
 
 [source, xml]
 ----
@@ -147,11 +147,11 @@ For example, to create a view that can only be accessed by the user `drv4doe`, e
 </view>
 ----
 
-The same can be done for group names.
+You can do the same for group names.
 
-NOTE: The definition should be added within the `<views>` tag, above the default view.
+NOTE: You should add the definition within the `<views>` tag, above the default view.
 
-When the Surveillance View page loads, the first of the following criteria to be fulfilled determines the view that is displayed:
+When the Surveillance View page loads, the first of the following criteria to be fulfilled determines the view it displays:
 
 . The Surveillance View name is equal to the username.
 . The Surveillance View name is equal to the user's assigned group name.

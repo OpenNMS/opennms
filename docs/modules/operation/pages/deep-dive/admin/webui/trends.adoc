@@ -77,7 +77,7 @@ See below for supported variable substitutions.
 <8> The SQL statement that queries the chart's values.
 +
 IMPORTANT: Don't forget to limit the SQL query's return values!
-If the query is set to fetch an unlimited number of results, its run time can increase significantly.
+Setting the query to fetch an unlimited number of results can increase its run time significantly.
 
 You can use individual or aggregated values in the title, subtitle, and description fields.
 The following table describes available variable substitutions:
