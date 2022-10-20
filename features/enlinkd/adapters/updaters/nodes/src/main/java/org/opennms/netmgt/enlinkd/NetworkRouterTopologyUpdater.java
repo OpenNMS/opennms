@@ -67,7 +67,7 @@ public class NetworkRouterTopologyUpdater extends TopologyUpdater {
     }
 
     public static OnmsTopologyPort createNetworkPort(OnmsTopologyVertex source, IpInterfaceTopologyEntity target) {
-        OnmsTopologyPort port = OnmsTopologyPort.create(target.getIpAddress().getHostAddress(), source, target.getId());
+        OnmsTopologyPort port = OnmsTopologyPort.create(source.getId()+"to:"+target.getIpAddress().getHostAddress(), source, target.getId());
         port.setAddr("to: " +target.getIpAddress().getHostAddress());
         port.setToolTipText(Topology.getPortTextString(source.getLabel(), port.getIndex(), port.getAddr(), null));
         return port;
@@ -76,7 +76,7 @@ public class NetworkRouterTopologyUpdater extends TopologyUpdater {
     public static OnmsTopologyVertex createNetworkVertex(SubNetwork network) {
         OnmsTopologyVertex networkVertex = OnmsTopologyVertex.create(network.getCidr(),
                 network.getCidr(),
-                null,
+                network.getCidr(),
                 Topology.getCloudIconKey());
         networkVertex.setToolTipText("SubNetwork: " + network.getCidr() + ", Nodeids:" + network.getNodeIds());
         return networkVertex;

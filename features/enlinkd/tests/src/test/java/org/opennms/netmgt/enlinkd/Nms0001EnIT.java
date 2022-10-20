@@ -53,6 +53,7 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.netmgt.enlinkd.model.IsIsElement;
 import org.opennms.netmgt.enlinkd.model.IsIsLink;
+import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.nb.Nms0001NetworkBuilder;
 
@@ -184,6 +185,15 @@ public class Nms0001EnIT extends EnLinkdBuilderITCase {
          *  siegfrie-192.168.239.54-walk.txt:.1.2.840.10006.300.43.1.1.1.1.2.532 = Hex-STRING: 00 1F 12 AC C3 F0 
          *  siegfrie-192.168.239.54-walk.txt:.1.2.840.10006.300.43.1.1.1.1.2.533 = Hex-STRING: 00 1F 12 AC C3 F0
          */
+
+        m_linkd.forceTopologyUpdaterRun(ProtocolSupported.NETWORKROUTER);
+        m_linkd.runTopologyUpdater(ProtocolSupported.NETWORKROUTER);
+
+        NetworkRouterTopologyUpdater topologyUpdater = m_linkd.getNetworkRouterTopologyUpdater();
+
+        assertNotNull(topologyUpdater);
+        printOnmsTopology(topologyUpdater.getTopology());
+
     }
 
     @Test

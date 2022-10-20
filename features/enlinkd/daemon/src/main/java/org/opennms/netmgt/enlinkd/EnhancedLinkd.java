@@ -517,6 +517,9 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
     public NodesOnmsTopologyUpdater getNodesTopologyUpdater() {
         return m_nodesTopologyUpdater;
     }
+    public NetworkRouterTopologyUpdater getNetworkRouterTopologyUpdater() {
+        return m_networkRouterTopologyUpdater;
+    }
     public CdpOnmsTopologyUpdater getCdpTopologyUpdater() {
         return m_cdpTopologyUpdater;
     }
