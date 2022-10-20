@@ -1062,15 +1062,24 @@ public class Migrator {
                 if (systemId != null && systemId.equals("00000000-0000-0000-0000-000000000000")) {
                     String newUUID = UUID.randomUUID().toString();
                     LOG.info("Updating systemId to {}", newUUID);
-                    // For existing databases, we need to temporarily alter a foreign key
-                    // constraint to cascade updates into the alarm table
-                    st.addBatch("ALTER TABLE alarms DROP CONSTRAINT fk_alarms_systemid");
-                    st.addBatch("ALTER TABLE alarms ADD CONSTRAINT fk_alarms_systemid FOREIGN KEY (systemId) REFERENCES monitoringsystems (id) ON UPDATE CASCADE ON DELETE CASCADE");
-                    st.addBatch("UPDATE monitoringsystems SET id='" + newUUID + "' WHERE id='00000000-0000-0000-0000-000000000000' AND location='Default' AND type='OpenNMS'");
-                    st.addBatch("ALTER TABLE alarms DROP CONSTRAINT fk_alarms_systemid");
-                    st.addBatch("ALTER TABLE alarms ADD CONSTRAINT fk_alarms_systemid FOREIGN KEY (systemId) REFERENCES monitoringsystems (id) ON DELETE CASCADE");
-                    st.addBatch("UPDATE events SET systemid = subquery.id FROM (SELECT id FROM monitoringsystems where type='OpenNMS' AND location='Default') AS subquery WHERE systemid = '00000000-0000-0000-0000-000000000000'");
-                    st.executeBatch();
+                    try {
+                        c.setAutoCommit(false);
+                        Statement statement = c.createStatement();
+                        // For existing databases, we need to temporarily alter a foreign key
+                        // constraint to cascade updates into the alarm table
+                        statement.addBatch("ALTER TABLE alarms DROP CONSTRAINT fk_alarms_systemid");
+                        statement.addBatch("ALTER TABLE alarms ADD CONSTRAINT fk_alarms_systemid FOREIGN KEY (systemId) REFERENCES monitoringsystems (id) ON UPDATE CASCADE ON DELETE CASCADE");
+                        statement.addBatch("UPDATE monitoringsystems SET id='" + newUUID + "' WHERE id='00000000-0000-0000-0000-000000000000' AND location='Default' AND type='OpenNMS'");
+                        statement.addBatch("ALTER TABLE alarms DROP CONSTRAINT fk_alarms_systemid");
+                        statement.addBatch("ALTER TABLE alarms ADD CONSTRAINT fk_alarms_systemid FOREIGN KEY (systemId) REFERENCES monitoringsystems (id) ON DELETE CASCADE");
+                        statement.addBatch("UPDATE events SET systemid = subquery.id FROM (SELECT id FROM monitoringsystems where type='OpenNMS' AND location='Default') AS subquery WHERE systemid = '00000000-0000-0000-0000-000000000000'");
+                        statement.executeBatch();
+                        c.commit();
+                    }
+                    catch (SQLException e) {
+                        c.rollback();
+                        throw e;
+                    }
                 }
             }
         }
