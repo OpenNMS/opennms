@@ -50,7 +50,6 @@ import org.slf4j.LoggerFactory;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class UserIT extends OpenNMSSeleniumIT {
     private static final Logger LOG = LoggerFactory.getLogger(UserIT.class);
-    private static final String NEW_PASSWORD = "OpenNMSIsGr3at!!";
 
     @Before
     public void setUp() throws Exception {
@@ -68,10 +67,10 @@ public class UserIT extends OpenNMSSeleniumIT {
     @Test
     public void testSubmitWithWrongPassword() throws InterruptedException {
         driver.findElement(By.linkText("Change Password")).click();
-        enterText(By.cssSelector("input[type=password][name=oldpass]"), "OpenNMS.!123xyz");
-        enterText(By.cssSelector("input[type=password][name=pass1]"), "OpenNMS.!123456");
-        enterText(By.cssSelector("input[type=password][name=pass2]"), "OpenNMS.!123456");
-        clickElement(By.cssSelector("button[type=submit]"));
+        enterText(By.cssSelector("input[type=password][name=oldpass]"), "12345");
+        enterText(By.cssSelector("input[type=password][name=pass1]"), "23456");
+        enterText(By.cssSelector("input[type=password][name=pass2]"), "34567");
+        driver.findElement(By.cssSelector("button[type=submit]")).click();
 
         try {
             final Alert alert = wait.until(ExpectedConditions.alertIsPresent());
@@ -133,9 +132,9 @@ public class UserIT extends OpenNMSSeleniumIT {
 
         driver.get(getBaseUrlInternal() + "opennms/account/selfService/newPasswordEntry");
         enterText(By.cssSelector("input[type=password][name=oldpass]"), "admin");
-        enterText(By.cssSelector("input[type=password][name=pass1]"), "OpenNMS.!123456");
-        enterText(By.cssSelector("input[type=password][name=pass2]"), "OpenNMS.!123");
-        clickElement(By.cssSelector("button[type=submit]"));
+        enterText(By.cssSelector("input[type=password][name=pass1]"), "OpenNMS");
+        enterText(By.cssSelector("input[type=password][name=pass2]"), "OpenNM");
+        driver.findElement(By.cssSelector("button[type=submit]")).click();
         try {
             final Alert alert = wait.until(ExpectedConditions.alertIsPresent());
             alert.dismiss();
@@ -153,7 +152,7 @@ public class UserIT extends OpenNMSSeleniumIT {
         enterText(By.cssSelector("input[type=password][name=oldpass]"), "admin");
         enterText(By.cssSelector("input[type=password][name=pass1]"), "OpenNMS.!123");
         enterText(By.cssSelector("input[type=password][name=pass2]"), "OpenNMS.!123");
-        clickElement(By.cssSelector("button[type=submit]"));
+        driver.findElement(By.cssSelector("button[type=submit]")).click();
         assertTrue(wait.until(pageContainsText("Password successfully changed")));
     }
 
