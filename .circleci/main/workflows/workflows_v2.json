@@ -106,8 +106,7 @@
         },
         "experimental": {
             "extends": [
-                "horizon-rpm-build",
-                "oci-horizon"
+                "publish"
             ]
         }
     },

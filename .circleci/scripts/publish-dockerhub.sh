@@ -17,6 +17,9 @@ export DOCKER_PASSWORD="${DOCKERHUB_PASS}"
 
 # shellcheck disable=SC1091
 . "${MYDIR}/lib-docker.sh"
+echo "EXITING"
+echo "EXITING"
+exit 0 
 
 printf '%s' "${DCT_DELEGATE_KEY}" | base64 -d > "${PRIVATE_KEY_FOLDER}/${DCT_DELEGATE_KEY_NAME}.key"
 chmod 600 "${PRIVATE_KEY_FOLDER}/${DCT_DELEGATE_KEY_NAME}.key"
