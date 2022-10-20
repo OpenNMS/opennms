@@ -75,8 +75,8 @@ public class NewtsConverterUtils {
         final Context context = new Context("not relevant");
         final Resource resource = new Resource(metric.getFirstTagByKey(IntrinsicTagNames.resourceId).getValue(), resourceAttributes);
         final String name = metric.getFirstTagByKey(IntrinsicTagNames.name).getValue();
-        final MetricType type = toNewts(Metric.Mtype.valueOf(metric.getFirstTagByKey(name + "." + IntrinsicTagNames.mtype).getValue()));
-        final ValueType<?> value = toNewtsValue(metric, dataPoint);
+        final MetricType type = toNewts(Metric.Mtype.valueOf(metric.getFirstTagByKey(name + "." + MetaTagNames.mtype).getValue()));
+        final ValueType<?> value = toNewtsValue(metric, type, dataPoint);
         final Map<String, String> attributes = new HashMap<>();
 
         org.opennms.newts.api.Sample newtsSample = new org.opennms.newts.api.Sample(
@@ -97,14 +97,13 @@ public class NewtsConverterUtils {
         }
     }
 
-    private static ValueType<?> toNewtsValue(final Metric metric, final DataPoint dataPoint) {
-        final Metric.Mtype mtype = Metric.Mtype.valueOf(metric.getFirstTagByKey(MetaTagNames.mtype).getValue());
-        if(Metric.Mtype.count == mtype) {
+    private static ValueType<?> toNewtsValue(final Metric metric, final MetricType type, final DataPoint dataPoint) {
+        if(MetricType.COUNTER.equals(type)) {
             return new Counter(dataPoint.getValue().longValue());
-        } else if(Metric.Mtype.gauge == mtype) {
+        } else if(MetricType.GAUGE.equals(type)) {
             return new Gauge(dataPoint.getValue());
         } else  {
-            throw new IllegalArgumentException(String.format("I don't know how to map %s to ValueType", mtype));
+            throw new IllegalArgumentException(String.format("I don't know how to map %s to ValueType", type));
         }
     }
 
