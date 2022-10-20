@@ -316,11 +316,7 @@
                 "linux/arm/v7"
             ],
             "requires": [
-                "tarball-assembly-only",
-                "smoke-test-core",
-                "smoke-test-flaky",
-                "smoke-test-minion",
-                "smoke-test-sentinel"
+                "tarball-assembly-only"
             ]
         },
         "horizon-image-single-arch": {
@@ -332,11 +328,7 @@
                 "linux/arm/v7"
             ],
             "requires": [
-                "tarball-assembly-only",
-                "smoke-test-core",
-                "smoke-test-flaky",
-                "smoke-test-minion",
-                "smoke-test-sentinel"
+                "tarball-assembly-only"
             ]
         },
         "sentinel-image-single-arch": {
@@ -348,11 +340,7 @@
                 "linux/arm/v7"
             ],
             "requires": [
-                "tarball-assembly-only",
-                "smoke-test-core",
-                "smoke-test-flaky",
-                "smoke-test-minion",
-                "smoke-test-sentinel"
+                "tarball-assembly-only"
             ]
         },
         "create-merge-foundation-branch": {

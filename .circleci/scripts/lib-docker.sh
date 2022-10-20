@@ -39,7 +39,7 @@ create_and_push_manifest() {
   echo "Manifest-inspect BYTES: ${DOCKER_IMAGE_BYTES_SIZE}";
 
   echo "Manifest contents:\n";
-  printf "${MANIFEST_FROM_REG}"
+  echo "${MANIFEST_FROM_REG}"
   #printf "${MANIFEST_FROM_REG}" | jq -r '.[].Descriptor | "Architecture: " + .platform.architecture + .platform.variant + ", digest: " + .digest';
 
   export DOCKER_IMAGE_SHA_256 DOCKER_IMAGE_BYTES_SIZE
