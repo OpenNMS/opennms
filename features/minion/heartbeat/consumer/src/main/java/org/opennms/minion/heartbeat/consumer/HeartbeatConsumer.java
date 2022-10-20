@@ -59,6 +59,8 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.minion.OnmsMinion;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
+import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
+import org.opennms.netmgt.provision.persist.policies.MatchingIpInterfacePolicy;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredService;
@@ -89,6 +91,10 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
      * Services on the Minion nodes must be associated to *some* interface, so we use the following constant:
      */
     private static final String MINION_INTERFACE = "127.0.0.1";
+
+    private static String DEFAULT_SNMP_POLICY = "snmp-policy";
+
+    private static String DEFAULT_SNMP_DETECTOR = "snmp-detector";
 
     private static final HeartbeatModule heartbeatModule = new HeartbeatModule();
 
@@ -126,7 +132,7 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
     @Transactional
     public void handleMessage(MinionIdentityDTO minionHandle) {
         LOG.info("Received heartbeat for Minion with id: {} at location: {}",
-                 minionHandle.getId(), minionHandle.getLocation());
+                minionHandle.getId(), minionHandle.getLocation());
 
         OnmsMinion minion = minionDao.findById(minionHandle.getId());
         if (minion == null) {
@@ -200,7 +206,6 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
         });
 
 
-
     }
 
     private void provision(final OnmsMinion minion,
@@ -216,15 +221,29 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
             return;
         }
 
+        final String prevForeignSource = String.format(PROVISIONING_FOREIGN_SOURCE_PATTERN, prevLocation);
+        final String nextForeignSource = String.format(PROVISIONING_FOREIGN_SOURCE_PATTERN, nextLocation);
+
+        PluginConfig policy = new PluginConfig(DEFAULT_SNMP_POLICY, "org.opennms.netmgt.provision.persist.policies.MatchingIpInterfacePolicy");
+        policy.addParameter("ipAddress", "~^docker.*$");
+        policy.addParameter("action", "DO_NOT_PERSIST");
+        policy.addParameter("matchBehavior", "ALL_PARAMETERS");
+
+        PluginConfig detector = new PluginConfig(DEFAULT_SNMP_DETECTOR, "org.opennms.netmgt.provision.detector.snmp.SnmpDetector");
+
         // Return if minion with this foreignId and location already exists.
         String foreignId = minion.getLabel() != null ? minion.getLabel() : minion.getId();
         List<OnmsNode> nodes = nodeDao.findByForeignIdForLocation(foreignId, nextLocation);
         if (!nodes.isEmpty()) {
+            //check for existing requisitions the policy and detectors are in place
+            final ForeignSource foreignSource = deployedForeignSourceRepository.getForeignSource(prevForeignSource);
+            if(foreignSource.getPolicy(DEFAULT_SNMP_POLICY) == null || foreignSource.getDetector(DEFAULT_SNMP_DETECTOR) == null) {
+                foreignSource.addPolicy(policy);
+                foreignSource.addDetector(detector);
+                deployedForeignSourceRepository.save(foreignSource);
+            }
             return;
         }
-
-        final String prevForeignSource = String.format(PROVISIONING_FOREIGN_SOURCE_PATTERN, prevLocation);
-        final String nextForeignSource = String.format(PROVISIONING_FOREIGN_SOURCE_PATTERN, nextLocation);
 
         final Set<String> alteredForeignSources = Sets.newHashSet();
 
@@ -243,6 +262,16 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
         }
 
         Requisition nextRequisition = deployedForeignSourceRepository.getRequisition(nextForeignSource);
+        // check that existing foreignId requisition have detectors and policies in place
+        if (nextRequisition != null) {
+            final ForeignSource foreignSource = deployedForeignSourceRepository.getForeignSource(nextForeignSource);
+            if(foreignSource.getPolicy(DEFAULT_SNMP_POLICY) == null || foreignSource.getDetector(DEFAULT_SNMP_DETECTOR) == null) {
+                foreignSource.addPolicy(policy);
+                foreignSource.addDetector(detector);
+
+                alteredForeignSources.add(nextForeignSource);
+            }
+        }
         if (nextRequisition == null) {
             nextRequisition = new Requisition(nextForeignSource);
             nextRequisition.updateDateStamp();
@@ -254,6 +283,10 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
             final ForeignSource foreignSource = deployedForeignSourceRepository.getForeignSource(nextForeignSource);
             foreignSource.setDetectors(Collections.emptyList());
             foreignSource.setPolicies(Collections.emptyList());
+
+            // Add Snmp detector for appliances and do not persist docker interfaces
+            foreignSource.addPolicy(policy);
+            foreignSource.addDetector(detector);
             deployedForeignSourceRepository.save(foreignSource);
 
             alteredForeignSources.add(nextForeignSource);
@@ -279,7 +312,7 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
             alteredForeignSources.add(nextForeignSource);
         } else {
             // Change location in requisition.
-            if(!prevLocation.equals(nextLocation)) {
+            if (!prevLocation.equals(nextLocation)) {
                 requisitionNode.setLocation(nextLocation);
             }
             // The node already exists in the requisition
