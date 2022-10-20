@@ -5,6 +5,10 @@
 
 .DEFAULT_GOAL := build
 
+ifeq (,$(shell command -v docker))
+$(error 'docker' command not found, but this Makefile requires it)
+endif
+
 VERSION                 := $(shell ../../.circleci/scripts/pom2version.sh ../../pom.xml)
 SHELL                   := /bin/bash -o nounset -o pipefail -o errexit
 BUILD_DATE              := $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
@@ -73,10 +77,16 @@ help:
 	@echo "  make build DOCKER_REGISTRY=myregistry.com DOCKER_ORG=myorg DOCKER_FLAGS=--push"
 	@echo ""
 
-test:
-	@echo "Test Docker installation and existence of the tarball ..."
-	@command -v docker
-	test -f $(TARBALL)
+# If we ever execute the commands in this recipe, it's because $(TARBALL)
+# doesn't exist and make wants to build it, so tell the user we couldn't
+# find the tarball and they need to run the assembly.
+$(TARBALL):
+	$(warning Couldn't find opennms-full-assembly tarball at $(TARBALL))
+	$(error Go to the top-level and run this: $(ASSEMBLE_COMMAND))
+
+test: $(TARBALL)
+	$(info Ready to go, let's light this candle!)
+	@true
 
 unpack-tarball: test
 	@if [ ! -e $(README) ] || [ $(TARBALL) -nt $(README) ]; then \
