@@ -250,7 +250,7 @@ public class MenuProvider {
     }
 
     /**
-     * This is in navbar.ftl, we add it here as if it were just another menu entry.
+     * This and the following are in navbar.ftl, we add them here as if they were just another menu entry.
      */
     private TopMenuEntry getHelpMenuEntry(boolean isAdmin) {
         TopMenuEntry helpMenu = new TopMenuEntry();
@@ -377,10 +377,6 @@ public class MenuProvider {
         Notices notices = new Notices();
 
         notices.status = context.getNoticeStatus();
-
-        // TODO: figure this out, code in navbar.ftl
-        // Javascript code plus a Rest API call.......
-        // Could maybe build here or else have UI do code similar to Javascript in navbar.ftl
 
         return notices;
     }

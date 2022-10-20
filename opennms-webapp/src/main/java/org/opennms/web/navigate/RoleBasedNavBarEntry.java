@@ -28,10 +28,8 @@
 
 package org.opennms.web.navigate;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 import com.google.common.base.Strings;
+import java.util.Arrays;
 
 public class RoleBasedNavBarEntry extends LocationBasedNavBarEntry {
     /** comma-separated list of roles */
@@ -49,9 +47,7 @@ public class RoleBasedNavBarEntry extends LocationBasedNavBarEntry {
     @Override
     public DisplayStatus evaluate(MenuContext context) {
         if (!Strings.isNullOrEmpty(this.roles)) {
-            List<String> roleList = Arrays.stream(this.roles.split(",")).map(String::trim).collect(Collectors.toList());
-
-            boolean anyMatch = roleList.stream().anyMatch(context::isUserInRole);
+            boolean anyMatch = Arrays.stream(this.roles.split(",")).map(String::trim).anyMatch(context::isUserInRole);
 
             return anyMatch ? super.evaluate(context) : DisplayStatus.NO_DISPLAY;
         }

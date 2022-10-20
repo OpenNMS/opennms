@@ -28,8 +28,6 @@
 
 package org.opennms.web.rest.support.menu;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import java.io.FileInputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -61,14 +59,7 @@ public class MenuProviderTest {
             .filter(e -> e.getId() != null && e.getId().equals("navBarEntries"))
             .findFirst();
 
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-
         if (navBarBean.isPresent()) {
-            System.out.println("DEBUG found 'navBarEntries' bean:");
-
-            String json = gson.toJson(navBarBean.get());
-            System.out.println(json);
-
             List<TopMenuEntry> topMenuEntries = null;
 
             try {
@@ -76,10 +67,6 @@ public class MenuProviderTest {
             } catch (Exception e) {
                 Assert.fail("Error parsing XML to MenuEntries: " + e.getMessage());
             }
-
-            System.out.println("Parsed xml -> menu entries:");
-            json = gson.toJson(topMenuEntries);
-            System.out.println(json);
         }
 
         Assert.assertTrue(topLevelBeans.size() > 0);
@@ -96,11 +83,6 @@ public class MenuProviderTest {
         } catch (Exception e) {
             Assert.fail("Error in MenuProvider.getMainMenu: " + e.getMessage());
         }
-
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        System.out.println("Parsed MainMenu:");
-        String json = gson.toJson(mainMenu);
-        System.out.println(json);
     }
 
     private String getResourcePath() {
