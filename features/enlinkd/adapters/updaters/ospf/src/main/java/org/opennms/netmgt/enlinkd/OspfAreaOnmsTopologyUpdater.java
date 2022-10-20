@@ -95,7 +95,7 @@ public class OspfAreaOnmsTopologyUpdater extends TopologyUpdater {
                 str(ospfElement.getOspfRouterId()),
                 Topology.getIconKey(node)
         );
-        ospfNodeVertex.setToolTipText( node.getLabel() + "/" + ospfElement.getNode().getNodeId() + "ospf stat: " + ospfElement.getOspfAdminStat());
+        ospfNodeVertex.setToolTipText( node.getLabel() + "/" + node.getId() + "ospf stat: " + ospfElement.getOspfAdminStat());
         return ospfNodeVertex;
     }
     private final OspfTopologyService m_ospfTopologyService;
@@ -124,7 +124,7 @@ public class OspfAreaOnmsTopologyUpdater extends TopologyUpdater {
 
         final Map<InetAddress, OnmsTopologyVertex> areaMap = new HashMap<>();
 
-        // Use ospfAreas to associate more Area info to the map
+// Use ospfAreas to associate more Area info to the map
 //        final List<OspfAreaTopologyEntity> ospfAreas = m_ospfTopologyService.findAllOspfAreas();
 //        ospfAreas
 //                .stream()
