@@ -1053,18 +1053,22 @@ public class Migrator {
      * Do this here to avoid installing an extension to the database
      */
     private void updateSystemId() throws MigrationException {
+        Connection c = null;
+        Statement st = null;
+        ResultSet rs = null;
         try {
-            Connection c = m_dataSource.getConnection();
-            Statement st = c.createStatement();
-            ResultSet rs = st.executeQuery("SELECT id FROM monitoringsystems WHERE location='Default' AND type='OpenNMS'");
+            c = m_dataSource.getConnection();
+            st = c.createStatement();
+            rs = st.executeQuery("SELECT id FROM monitoringsystems WHERE location='Default' AND type='OpenNMS'");
             if (rs.next()) {
                 String systemId = rs.getString("id");
                 if (systemId != null && systemId.equals("00000000-0000-0000-0000-000000000000")) {
                     String newUUID = UUID.randomUUID().toString();
                     LOG.info("Updating systemId to {}", newUUID);
+                    Statement statement = null;
                     try {
                         c.setAutoCommit(false);
-                        Statement statement = c.createStatement();
+                        statement = c.createStatement();
                         // For existing databases, we need to temporarily alter a foreign key
                         // constraint to cascade updates into the alarm table
                         statement.addBatch("ALTER TABLE alarms DROP CONSTRAINT fk_alarms_systemid");
@@ -1080,11 +1084,17 @@ public class Migrator {
                         c.rollback();
                         throw e;
                     }
+                    finally {
+                        cleanUpDatabase(null, null, statement, null);
+                    }
                 }
             }
         }
         catch (SQLException e) {
             throw new MigrationException("unable to update systemId", e);
+        }
+        finally {
+            cleanUpDatabase(c, null, st, rs);
         }
     }
 
