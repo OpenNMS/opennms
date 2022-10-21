@@ -36,7 +36,7 @@
           </template>
           <FeatherDropdownItem v-for="item in menuItem.items" :key="item.name || ''"
             @click="onMenuItemClick(item.url || '', item.isVueLink)">
-            <div class="menubar-dropdown-item-content">
+            <div class="menubar-dropdown-item-content menubar-padding">
               <a :href="computeLink(item.url || '', item.isVueLink)" class="dropdown-menu-link">{{ item.name }}</a>
             </div>
           </FeatherDropdownItem>
@@ -56,7 +56,7 @@
             :key="plugin.extensionId"
             @click="onMenuItemClick(computePluginRelLink(plugin))"
           >
-            <div class="menubar-dropdown-item-content">
+            <div class="menubar-dropdown-item-content menubar-padding">
               <a :href="computeLink(computePluginRelLink(plugin))" class="dropdown-menu-link">
                 <FeatherIcon :icon="UpdateUtilities" />
                 <span class="left-margin-small">
@@ -78,7 +78,7 @@
           </template>
           <FeatherDropdownItem v-for="item in mainMenu.helpMenu.items" :key="item.name || ''"
             @click="onMenuItemClick(item.url || '', item.isVueLink)">
-            <div class="menubar-dropdown-item-content">
+            <div class="menubar-dropdown-item-content menubar-padding">
               <a :href="computeLink(item.url || '', item.isVueLink)" class="dropdown-menu-link">
                 <template v-if="item.icon">
                   <font-awesome-icon :icon="`fa-solid ${item.icon}`"></font-awesome-icon>
@@ -108,7 +108,7 @@
           </template>
           <FeatherDropdownItem v-for="item in mainMenu.selfServiceMenu.items" :key="item.name || ''"
             @click="onMenuItemClick(item.url || '', item.isVueLink)">
-            <div class="menubar-dropdown-item-content">
+            <div class="menubar-dropdown-item-content menubar-padding">
               <a :href="computeLink(item.url || '', item.isVueLink)" class="dropdown-menu-link">
                 <template v-if="item.icon">
                   <font-awesome-icon :icon="`fa-solid ${item.icon}`"></font-awesome-icon>
@@ -472,6 +472,9 @@ onMounted(async () => {
 
 .dropdown-menu-link {
   color: var($primary-text-on-surface) !important;
+  &:hover {
+    text-decoration: none;
+  }
 }
 
 .left-margin-small {
@@ -539,13 +542,8 @@ a.top-menu-link:visited {
   padding-right: 0.5rem;
 }
 
-.menubar-dropdown-item-content {
-    padding-top: 0.33rem;
-    padding-right: 1.25rem;
-    padding-bottom: 0.33rem;
-    padding-left: 1.25rem;
-    font-size: 0.875rem;
-    font-weight: 400;
+.menubar-dropdown-item-content.menubar-padding {
+    padding:10px;
 }
 
 .notification-badge-pill {
@@ -671,13 +669,13 @@ body {
 }
 
 .banner .header {
-  height: 62px;
 
   .logo-link.home {
     padding-left: 0;
     margin-right: 1rem;
     padding-top: 2px;
     padding-bottom: 0;
+    padding-right:0;
   }
 
   .body-large.formatted-time {
@@ -761,6 +759,7 @@ body .feather-menu .feather-menu-dropdown {
 .center-flex {
   display: flex;
   align-items: center;
+  padding-top:3px;
 }
 
 .full-width-left {

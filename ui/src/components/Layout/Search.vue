@@ -3,7 +3,7 @@
     v-model="searchStr"
     type="single"
     :results="results"
-    label="Search"
+    label="Search..."
     class="menubar-search"
     @search="search"
     :loading="loading"

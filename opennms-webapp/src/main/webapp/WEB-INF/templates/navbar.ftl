@@ -13,10 +13,10 @@
         <#if request.remoteUser?has_content >
             <ul class="navbar-nav ml-1">
                 <li class="nav-item">
-                    <span class="navbar-text">${formattedTime}</span>
+                    <span class="navbar-text navbar-formatted-time">${formattedTime}</span>
                 </li>
                 <li class="nav-item">
-                    <span class="navbar-text ml-1">
+                    <span class="navbar-text navbar-bell ml-1">
                         <#if noticeStatus = 'Unknown'>
                             <!-- Gray circle with bell inside -->
                             <i class="fa fa-bell text-secondary"></i>
@@ -32,7 +32,7 @@
             </ul>
         </#if>
 
-        <onms-central-search class="ml-auto"></onms-central-search>
+        <onms-central-search></onms-central-search>
 
         <ul class="navbar-nav ml-auto">
 		<#if request.remoteUser?has_content >
