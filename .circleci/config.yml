@@ -479,11 +479,12 @@ commands:
               echo "ERROR: No OCI files to load. Something probably went wrong earlier."
               exit 1
             fi
+            export image_name=<< parameters.key >>
             source "opennms-container/set-build-environment.sh"
             for FILE in *.oci; do
               echo "Loading ${FILE} into Docker..."
               docker image load -i "$FILE"
-              docker tag << parameters.key >:"${VERSION}"  << parameters.key >:latest
+              docker tag $image_name:"${VERSION}"  $image_name:latest
             done
 
 workflows:
