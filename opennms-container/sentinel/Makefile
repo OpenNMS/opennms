@@ -74,8 +74,6 @@ unpack-tarball: test
 	fi
 
 build: test unpack-tarball
-	@echo "Copy Sentinel tarball to Docker context ..."
-	@mkdir -p tarball-root && tar -x -z --strip-components 1 -C ./tarball-root -f ../../opennms-assemblies/sentinel/target/*sentinel*.tar.gz
 	@echo "Initialize builder instance ..."
 	if ! docker buildx inspect $(DOCKERX_INSTANCE); then docker context create "$(DOCKERX_INSTANCE)-context" && docker buildx create --name "$(DOCKERX_INSTANCE)" --driver docker-container --use "$(DOCKERX_INSTANCE)-context"; fi;
 	docker buildx use $(DOCKERX_INSTANCE)
