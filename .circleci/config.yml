@@ -210,6 +210,8 @@ commands:
           command: |
             cd opennms-container/sentinel
             docker image load -i /tmp/oci-sentinel/container.oci
+            source "opennms-container/set-build-environment.sh"
+            docker tag sentinel:"${VERSION}"  sentinel:latest
       - run:
           name: Monitor JVM processes
           background: true
@@ -477,9 +479,11 @@ commands:
               echo "ERROR: No OCI files to load. Something probably went wrong earlier."
               exit 1
             fi
+            source "opennms-container/set-build-environment.sh"
             for FILE in *.oci; do
               echo "Loading ${FILE} into Docker..."
               docker image load -i "$FILE"
+              docker tag << parameters.key >:"${VERSION}"  << parameters.key >:latest
             done
 
 workflows:
