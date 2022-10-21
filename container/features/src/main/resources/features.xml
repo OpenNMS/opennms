@@ -580,6 +580,7 @@
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.utils/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.mate/org.opennms.core.mate.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.mate/org.opennms.core.mate.model/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core.mate/org.opennms.core.mate.shell-commands/${project.version}</bundle>
     </feature>
     <feature name="opennms-core-ipc-rpc-jms" version="${project.version}" description="OpenNMS :: Core :: IPC :: RPC :: JMS Impl.">
         <feature>opennms-core-ipc-rpc-api</feature>
