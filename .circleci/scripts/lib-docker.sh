@@ -19,7 +19,7 @@ export NOTARY_AUTH
 # ex: create_and_push_manifest docker.io "develop" "31-dev"
 create_and_push_manifest() {
   local _repo="$1" 
-  local _source_tag="$2"
+  local _source_tag="latest"#"$2"
   local _target_tag="$3"
 
   local IMAGE_REF="${_repo}:${_source_tag}"
@@ -38,7 +38,7 @@ create_and_push_manifest() {
   DOCKER_IMAGE_BYTES_SIZE="$(printf '%s' "${MANIFEST_FROM_REG}" | jq -r '.[].Descriptor.size' | uniq)";
   echo "Manifest-inspect BYTES: ${DOCKER_IMAGE_BYTES_SIZE}";
 
-  echo "Manifest contents:\n";
+  echo "Manifest contents:"
   echo "${MANIFEST_FROM_REG}"
   #printf "${MANIFEST_FROM_REG}" | jq -r '.[].Descriptor | "Architecture: " + .platform.architecture + .platform.variant + ", digest: " + .digest';
 
