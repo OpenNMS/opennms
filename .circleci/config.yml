@@ -474,6 +474,7 @@ commands:
       - run:
           name: Load Docker Image(s) in oci-<< parameters.key >>
           command: |
+            cd ~/project/opennms-container 
             source ~/project/opennms-container/set-build-environment.sh
 
             cd "/tmp/oci-<< parameters.key >>"
