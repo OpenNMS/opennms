@@ -112,7 +112,8 @@ docker-buildx-create:
 	docker context inspect "$(DOCKERX_INSTANCE)-context" > /dev/null 2>&1 || \
 	  docker context create "$(DOCKERX_INSTANCE)-context"
 	docker buildx inspect $(DOCKERX_INSTANCE) > /dev/null 2>&1 || \
-	  docker buildx create --name "$(DOCKERX_INSTANCE)" --driver docker-container
+	  docker --context "$(DOCKERX_INSTANCE)-context" buildx create \
+	    --name "$(DOCKERX_INSTANCE)" --driver docker-container
 
 # If DOCKERX_INSTANCE is set, we want to make sure docker-buildx-create
 # is run before docker-buildx
