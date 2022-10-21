@@ -88,6 +88,7 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
     private static final int MINION_JETTY_PORT = 8181;
 
     static final String ALIAS = "minion";
+    static final String IMAGE = "opennms/minion";
 
     private final StackModel model;
 
@@ -97,7 +98,7 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
     private Exception waitUntilReadyException = null;
 
     private MinionContainer(final StackModel model, final String id, final String location, final Function<MinionContainer, WaitStrategy> waitStrategy) {
-        super("minion");
+        super(IMAGE);
         this.model = Objects.requireNonNull(model);
         this.id = Objects.requireNonNull(id);
         this.location = Objects.requireNonNull(location);
