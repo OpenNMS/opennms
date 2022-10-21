@@ -480,7 +480,7 @@ commands:
               exit 1
             fi
             export image_name=<< parameters.key >>
-            source "opennms-container/set-build-environment.sh"
+            source "~/project/opennms-container/set-build-environment.sh"
             for FILE in *.oci; do
               echo "Loading ${FILE} into Docker..."
               docker image load -i "$FILE"
