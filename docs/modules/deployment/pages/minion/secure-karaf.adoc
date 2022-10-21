@@ -10,6 +10,7 @@ ssh -p 8201 admin@localhost
 config:edit org.apache.karaf.jaas
 config:property-set encryption.enabled true
 config:property-set encryption.algorithm SHA-512
+config:property-set encryption.name jasypt
 config:update
 ----
 
