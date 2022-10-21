@@ -3,7 +3,7 @@
 ##
 .PHONY: help test docker-buildx-create oci build install uninstall uninstall-all clean clean-all
 
-.DEFAULT_GOAL := build
+.DEFAULT_GOAL := image
 
 ifeq (,$(shell command -v docker))
 $(error 'docker' command not found, but this Makefile requires it)
@@ -56,7 +56,6 @@ help:
 	@echo ""
 	@echo "Targets:"
 	@echo "  help:      Show this help"
-	@echo "  build:     Same as 'oci'"
 	@echo "  oci:       Create an OCI image file in $(DOCKER_OCI)"
 	@echo "  image:     Create Docker image in the local repository"
 	@echo "  test:      Test requirements to build the OCI"
@@ -177,7 +176,8 @@ image:
 	docker image tag "$(DOCKER_TAG)" "$(DOCKER_BASE):latest"
 	docker image tag "$(DOCKER_TAG)" "$(DOCKER_BUILDX_TAG)"
 
-build: oci
+build:
+	$(error 'build' has been removed and replaced with 'oci'. Also see 'image' goal.)
 
 install: $(DOCKER_OCI)
 	$(info Load image ...)
