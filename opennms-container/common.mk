@@ -1,7 +1,7 @@
 ##
 # Common Makefile bits to build OpenNMS container images with Docker
 ##
-.PHONY: help test docker-buildx-create oci build install uninstall clean clean-all
+.PHONY: help test docker-buildx-create oci image build install uninstall clean clean-all
 
 .DEFAULT_GOAL := build
 
@@ -22,6 +22,7 @@ DOCKER_OCI              := images/$(DOCKER_PROJECT)-$(VERSION).oci
 DOCKER_FLAGS            :=
 DOCKER_OUTPUT           :=
 DOCKER_OUTPUT_OCI       := type=docker,dest=$(DOCKER_OCI)
+DOCKER_OUTPUT_IMAGE     := type=image
 DOCKERX_INSTANCE        := env-$(DOCKER_PROJECT)-oci
 SOURCE                  := $(shell git remote get-url origin)
 REVISION                := $(shell git describe --always)
@@ -55,6 +56,7 @@ help:
 	@echo "  help:      Show this help"
 	@echo "  build:     Same as 'oci'"
 	@echo "  oci:       Create an OCI image file in $(DOCKER_OCI)"
+	@echo "  image:     Create Docker image in the local repository"
 	@echo "  test:      Test requirements to build the OCI"
 	@echo "  install:   Load the OCI file in your Docker instance"
 	@echo "  uninstall: Remove the container image from your Docker instance"
@@ -73,6 +75,7 @@ help:
 	@echo "  DOCKER_OCI:         Path to OCI image, default: $(DOCKER_OCI)"
 	@echo "  DOCKER_OUTPUT:      Output method: $(DOCKER_OUTPUT)"
 	@echo "  DOCKER_OUTPUT_OCI:  DOCKER_OUTPUT value used to write a single architecture to a file, default: $(DOCKER_OUTPUT_OCI)"
+	@echo "  DOCKER_OUTPUT_IMAGE: DOCKER_OUTPUT value used to store the image in Docker: $(DOCKER_OUTPUT_IMAGE)"
 	@echo "  DOCKER_FLAGS:       Additional docker buildx flags, default: $(DOCKER_FLAGS)"
 	@echo "  BUILD_NUMBER:       In case we run in CI/CD this is the build number which produced the artifact, default: $(BUILD_NUMBER)"
 	@echo "  BUILD_URL:          In case we run in CI/CD this is the URL which for the build, default: $(BUILD_URL)"
@@ -109,13 +112,19 @@ docker-buildx-create:
 	docker buildx inspect $(DOCKERX_INSTANCE) > /dev/null 2>&1 || \
 	  docker buildx create --name "$(DOCKERX_INSTANCE)" --driver docker-container
 
+# If DOCKERX_INSTANCE is set, we want to make sure docker-buildx-create
+# is run before docker-buildx
+ifdef DOCKERX_INSTANCE
+docker-buildx: docker-buildx-create
+endif
+
 # The docker-buildx target is intended to be called from another recipe
 # and DOCKER_OUTPUT needs to be set
-docker-buildx: $(README) $(ADDITIONAL_TARGETS) docker-buildx-create
+docker-buildx: $(README) $(ADDITIONAL_TARGETS)
 ifndef DOCKER_OUTPUT
 	$(warning DOCKER_OUTPUT cannot be empty when running 'docker-buildx')
 	$(warning The 'docker-buildx' goal is not intended to be run directly.)
-	$(error Did you want to run 'make oci' instead?)
+	$(error Did you want to run 'make oci' or 'make image' instead?)
 endif
 	@echo "Build container image for architecture: $(DOCKER_ARCH) ..."
 	docker buildx build \
@@ -138,6 +147,24 @@ $(DOCKER_OCI): $(README) $(ADDITIONAL_TARGETS)
 	$(MAKE) DOCKER_OUTPUT="$(DOCKER_OUTPUT_OCI)" docker-buildx
 
 oci: $(DOCKER_OCI)
+
+# Don't use the builder when we are saving the image as a docker image,
+# otherwise the image will be in the builder.
+image:
+	$(MAKE) DOCKER_OUTPUT="$(DOCKER_OUTPUT_IMAGE)" DOCKERX_INSTANCE="" docker-buildx
+	@if ! docker image inspect "$(DOCKER_TAG)" > /dev/null; then \
+	  echo "*** Could not find '$(DOCKER_TAG)' image" >&2 ; \
+	  echo "See above--the image we just built is not showing up in the" >&2 ; \
+	  echo "local repository. This is quite odd as it should be there." >&2 ; \
+	  echo "This can happen if a docker buildx builder instance using" >&2 ; \
+	  echo "the 'docker-container' driver was used to build the image." >&2 ; \
+	  echo "Try running 'make clean' and building again." >&2 ; \
+	  echo "Including 'docker buildx ls' output below" >&2 ; \
+	  docker buildx ls >&2 ; \
+	  exit 1 ; \
+	fi
+	docker image tag "$(DOCKER_TAG)" "$(DOCKER_PROJECT):$(VERSION)"
+	docker image tag "$(DOCKER_TAG)" "$(DOCKER_PROJECT):latest"
 
 build: oci
 
