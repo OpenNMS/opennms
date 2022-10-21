@@ -474,13 +474,14 @@ commands:
       - run:
           name: Load Docker Image(s) in oci-<< parameters.key >>
           command: |
+            source ~/project/opennms-container/set-build-environment.sh
+
             cd "/tmp/oci-<< parameters.key >>"
             if [ "$(ls -1 *.oci | wc -l)" -eq 0 ]; then
               echo "ERROR: No OCI files to load. Something probably went wrong earlier."
               exit 1
             fi
             export image_name=<< parameters.key >>
-            source "~/project/opennms-container/set-build-environment.sh"
             for FILE in *.oci; do
               echo "Loading ${FILE} into Docker..."
               docker image load -i "$FILE"
