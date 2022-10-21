@@ -64,7 +64,7 @@ commands:
             export ARCH="$(printf "<< parameters.architecture >>" | tr / -)"
             export TAG="<< parameters.container_name >>-${ARCH}"
             make DOCKER_ARCH="<< parameters.architecture >>" \
-                 DOCKER_IMAGE_NAME="${TAG}.oci" \
+                 DOCKER_OCI="images/${TAG}.oci" \
                  DOCKER_TAG="${TAG}" \
                  BUILD_NUMBER="${CIRCLE_BUILD_NUM}" \
                  BUILD_URL="${CIRCLE_BUILD_URL}" \

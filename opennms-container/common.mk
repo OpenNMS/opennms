@@ -18,9 +18,9 @@ DOCKER_REGISTRY         := docker.io
 DOCKER_ORG              := opennms
 DOCKER_TAG              := $(DOCKER_REGISTRY)/$(DOCKER_ORG)/$(DOCKER_PROJECT):$(VERSION)
 DOCKER_ARCH             := linux/amd64
-DOCKER_IMAGE_NAME       := $(DOCKER_PROJECT)-$(VERSION).oci
+DOCKER_OCI              := images/$(DOCKER_PROJECT)-$(VERSION).oci
 DOCKER_FLAGS            :=
-DOCKER_OUTPUT           := type=docker,dest=images/$(DOCKER_IMAGE_NAME)
+DOCKER_OUTPUT           := type=docker,dest=$(DOCKER_OCI)
 DOCKERX_INSTANCE        := env-$(DOCKER_PROJECT)-oci
 SOURCE                  := $(shell git remote get-url origin)
 REVISION                := $(shell git describe --always)
@@ -68,7 +68,7 @@ help:
 	@echo "  DOCKER_PROJECT:     Name of the project in the registry, the default is set to $(DOCKER_PROJECT)"
 	@echo "  DOCKER_TAG:         Docker tag is generated from registry, org, project, version and build number, set to $(DOCKER_TAG)"
 	@echo "  DOCKER_ARCH:        Architecture for OCI image, default: $(DOCKER_ARCH)"
-	@echo "  DOCKER_IMAGE_NAME:  Name of the OCI image, default: $(DOCKER_IMAGE_NAME)"
+	@echo "  DOCKER_OCI:         Path to OCI image, default: $(DOCKER_OCI)"
 	@echo "  DOCKER_OUTPUT:      Docker --output value to write a single architecture to a file, default: $(DOCKER_OUTPUT)"
 	@echo "  DOCKER_FLAGS:       Additional docker buildx flags, default: $(DOCKER_FLAGS)"
 	@echo "  BUILD_NUMBER:       In case we run in CI/CD this is the build number which produced the artifact, default: $(BUILD_NUMBER)"
@@ -119,9 +119,9 @@ build: test unpack-tarball $(ADDITIONAL_TARGETS)
 	  $(DOCKER_FLAGS) \
 	  .
 
-install: build images/$(DOCKER_IMAGE_NAME)
+install: $(DOCKER_OCI)
 	@echo "Load image ..."
-	@docker image load -i "images/$(DOCKER_IMAGE_NAME)"
+	@docker image load -i "$(DOCKER_OCI)"
 	@docker image tag "$(DOCKER_TAG)" "$(DOCKER_ORG)/$(DOCKER_PROJECT):$(VERSION)"
 	@docker image tag "$(DOCKER_TAG)" "$(DOCKER_PROJECT):$(VERSION)"
 	@docker image tag "$(DOCKER_TAG)" "$(DOCKER_PROJECT):latest"
