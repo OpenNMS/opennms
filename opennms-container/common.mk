@@ -1,7 +1,7 @@
 ##
 # Common Makefile bits to build OpenNMS container images with Docker
 ##
-.PHONY: help test build install uninstall clean clean-all
+.PHONY: help test docker-buildx-create oci build install uninstall clean clean-all
 
 .DEFAULT_GOAL := build
 
@@ -20,7 +20,8 @@ DOCKER_TAG              := $(DOCKER_REGISTRY)/$(DOCKER_ORG)/$(DOCKER_PROJECT):$(
 DOCKER_ARCH             := linux/amd64
 DOCKER_OCI              := images/$(DOCKER_PROJECT)-$(VERSION).oci
 DOCKER_FLAGS            :=
-DOCKER_OUTPUT           := type=docker,dest=$(DOCKER_OCI)
+DOCKER_OUTPUT           :=
+DOCKER_OUTPUT_OCI       := type=docker,dest=$(DOCKER_OCI)
 DOCKERX_INSTANCE        := env-$(DOCKER_PROJECT)-oci
 SOURCE                  := $(shell git remote get-url origin)
 REVISION                := $(shell git describe --always)
@@ -52,7 +53,8 @@ help:
 	@echo ""
 	@echo "Targets:"
 	@echo "  help:      Show this help"
-	@echo "  build:     Create an OCI image file in images/$(DOCKER_IMAGE_NAME)"
+	@echo "  build:     Same as 'oci'"
+	@echo "  oci:       Create an OCI image file in $(DOCKER_OCI)"
 	@echo "  test:      Test requirements to build the OCI"
 	@echo "  install:   Load the OCI file in your Docker instance"
 	@echo "  uninstall: Remove the container image from your Docker instance"
@@ -69,7 +71,8 @@ help:
 	@echo "  DOCKER_TAG:         Docker tag is generated from registry, org, project, version and build number, set to $(DOCKER_TAG)"
 	@echo "  DOCKER_ARCH:        Architecture for OCI image, default: $(DOCKER_ARCH)"
 	@echo "  DOCKER_OCI:         Path to OCI image, default: $(DOCKER_OCI)"
-	@echo "  DOCKER_OUTPUT:      Docker --output value to write a single architecture to a file, default: $(DOCKER_OUTPUT)"
+	@echo "  DOCKER_OUTPUT:      Output method: $(DOCKER_OUTPUT)"
+	@echo "  DOCKER_OUTPUT_OCI:  DOCKER_OUTPUT value used to write a single architecture to a file, default: $(DOCKER_OUTPUT_OCI)"
 	@echo "  DOCKER_FLAGS:       Additional docker buildx flags, default: $(DOCKER_FLAGS)"
 	@echo "  BUILD_NUMBER:       In case we run in CI/CD this is the build number which produced the artifact, default: $(BUILD_NUMBER)"
 	@echo "  BUILD_URL:          In case we run in CI/CD this is the URL which for the build, default: $(BUILD_URL)"
@@ -99,12 +102,24 @@ $(README): $(TARBALL)
 
 unpack-tarball: $(README)
 
-build: test unpack-tarball $(ADDITIONAL_TARGETS)
+docker-buildx-create:
 	@echo "Initialize builder instance ..."
-	if ! docker buildx inspect $(DOCKERX_INSTANCE); then docker context create "$(DOCKERX_INSTANCE)-context" && docker buildx create --name "$(DOCKERX_INSTANCE)" --driver docker-container "$(DOCKERX_INSTANCE)-context"; fi;
-	docker buildx use $(DOCKERX_INSTANCE)
+	docker context inspect "$(DOCKERX_INSTANCE)-context" > /dev/null 2>&1 || \
+	  docker context create "$(DOCKERX_INSTANCE)-context"
+	docker buildx inspect $(DOCKERX_INSTANCE) > /dev/null 2>&1 || \
+	  docker buildx create --name "$(DOCKERX_INSTANCE)" --driver docker-container
+
+# The docker-buildx target is intended to be called from another recipe
+# and DOCKER_OUTPUT needs to be set
+docker-buildx: $(README) $(ADDITIONAL_TARGETS) docker-buildx-create
+ifndef DOCKER_OUTPUT
+	$(warning DOCKER_OUTPUT cannot be empty when running 'docker-buildx')
+	$(warning The 'docker-buildx' goal is not intended to be run directly.)
+	$(error Did you want to run 'make oci' instead?)
+endif
 	@echo "Build container image for architecture: $(DOCKER_ARCH) ..."
 	docker buildx build \
+	  --builder=$(DOCKERX_INSTANCE) \
 	  --platform=$(DOCKER_ARCH) \
 	  --build-arg BASE_IMAGE=$(BASE_IMAGE) \
 	  --build-arg VERSION=$(VERSION) \
@@ -118,6 +133,13 @@ build: test unpack-tarball $(ADDITIONAL_TARGETS)
 	  --output=$(DOCKER_OUTPUT) \
 	  $(DOCKER_FLAGS) \
 	  .
+
+$(DOCKER_OCI): $(README) $(ADDITIONAL_TARGETS)
+	$(MAKE) DOCKER_OUTPUT="$(DOCKER_OUTPUT_OCI)" docker-buildx
+
+oci: $(DOCKER_OCI)
+
+build: oci
 
 install: $(DOCKER_OCI)
 	@echo "Load image ..."
