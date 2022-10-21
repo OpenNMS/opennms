@@ -1,7 +1,7 @@
 ##
 # Common Makefile bits to build OpenNMS container images with Docker
 ##
-.PHONY: help test docker-buildx-create oci image build install uninstall clean clean-all
+.PHONY: help test docker-buildx-create oci build install uninstall uninstall-all clean clean-all
 
 .DEFAULT_GOAL := build
 
@@ -17,6 +17,7 @@ DOCKER_CLI_EXPERIMENTAL := enabled
 DOCKER_REGISTRY         := docker.io
 DOCKER_ORG              := opennms
 DOCKER_TAG              := $(DOCKER_REGISTRY)/$(DOCKER_ORG)/$(DOCKER_PROJECT):$(VERSION)
+DOCKER_BUILDX_TAG       := $(DOCKER_ORG)/$(DOCKER_PROJECT):buildx-$(shell echo $(BUILD_DATE) | sed 's/[-:]//g')
 DOCKER_ARCH             := linux/amd64
 DOCKER_OCI              := images/$(DOCKER_PROJECT)-$(VERSION).oci
 DOCKER_FLAGS            :=
@@ -60,7 +61,8 @@ help:
 	@echo "  test:      Test requirements to build the OCI"
 	@echo "  install:   Load the OCI file in your Docker instance"
 	@echo "  uninstall: Remove the container image from your Docker instance"
-	@echo "  clean:     Remove the Dockerx build instance keep the files in the directory images/"
+	@echo "  uninstall-all: Remove all container images built by this Makefile from your Docker instance"
+	@echo "  clean:     Remove the Dockerx build instance, keeping the files in the directory images/"
 	@echo "  clean-all: Remove the Dockerx build instance and delete *everything* in the directory images/"
 	@echo ""
 	@echo "Arguments to modify the build:"
@@ -150,6 +152,13 @@ oci: $(DOCKER_OCI)
 
 # Don't use the builder when we are saving the image as a docker image,
 # otherwise the image will be in the builder.
+#
+# We also add the "buildx" tag here, so we can cleanup images later.
+# Without this, if you run 'make image' two times in a row, all of the
+# tags on the first image will be removed when the second image is
+# created and then moved to the second image, leaving an untagged
+# image in the local repository. This will at least give us an easy
+# way to cleanup those orphaned untagged images in 'uninstall-all'.
 image:
 	$(MAKE) DOCKER_OUTPUT="$(DOCKER_OUTPUT_IMAGE)" DOCKERX_INSTANCE="" docker-buildx
 	@if ! docker image inspect "$(DOCKER_TAG)" > /dev/null; then \
@@ -165,6 +174,7 @@ image:
 	fi
 	docker image tag "$(DOCKER_TAG)" "$(DOCKER_PROJECT):$(VERSION)"
 	docker image tag "$(DOCKER_TAG)" "$(DOCKER_PROJECT):latest"
+	docker image tag "$(DOCKER_TAG)" "$(DOCKER_BUILDX_TAG)"
 
 build: oci
 
@@ -178,6 +188,9 @@ install: $(DOCKER_OCI)
 uninstall:
 	@echo "Remove image ..."
 	@docker rmi $(DOCKER_TAG)
+
+uninstall-all: uninstall
+	-docker image rm `docker image ls --format='{{ .Repository }}:{{ .Tag }}' '$(DOCKER_BASE):buildx-*T*Z'`
 
 clean:
 	@echo "Destroy builder environment: $(DOCKERX_INSTANCE) ..."
