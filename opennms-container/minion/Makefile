@@ -82,7 +82,8 @@ unpack-tarball: test
 
 build: test unpack-tarball minion-config-schema.yml
 	@echo "Initialize builder instance ..."
-	if ! docker buildx inspect $(DOCKERX_INSTANCE); then docker context create "$(DOCKERX_INSTANCE)-context" && docker buildx create --name "$(DOCKERX_INSTANCE)" --driver docker-container --use "$(DOCKERX_INSTANCE)-context"; fi;
+	if ! docker buildx inspect $(DOCKERX_INSTANCE); then docker context create "$(DOCKERX_INSTANCE)-context" && docker buildx create --name "$(DOCKERX_INSTANCE)" --driver docker-container "$(DOCKERX_INSTANCE)-context"; fi;
+	docker buildx use $(DOCKERX_INSTANCE)
 	@echo "Build container image for architecture: $(DOCKER_ARCH) ..."
 	docker buildx build --platform=$(DOCKER_ARCH) \
 	  --build-arg BASE_IMAGE=$(BASE_IMAGE) \
