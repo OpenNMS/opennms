@@ -90,13 +90,14 @@ test: $(TARBALL)
 	$(info Ready to go, let's light this candle!)
 	@true
 
-unpack-tarball: test
-	@if [ ! -e $(README) ] || [ $(TARBALL) -nt $(README) ]; then \
-	  echo "Unpacking tarball for Docker context..."; \
-	  mkdir -p tarball-root && \
-	  tar -x -z --strip-components $(TAR_STRIP_COMPONENTS) -C ./tarball-root -f $(TARBALL) && \
-	  touch $(README); \
-	fi
+$(README): $(TARBALL)
+	@echo "Unpacking tarball for Docker context..."
+	rm -rf tarball-root
+	mkdir -p tarball-root
+	tar -x -z --strip-components $(TAR_STRIP_COMPONENTS) -C ./tarball-root -f $<
+	touch $@
+
+unpack-tarball: $(README)
 
 build: test unpack-tarball $(ADDITIONAL_TARGETS)
 	@echo "Initialize builder instance ..."
