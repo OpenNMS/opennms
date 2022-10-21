@@ -36,7 +36,7 @@
 
         <ul class="navbar-nav ml-auto">
 		<#if request.remoteUser?has_content >
-		  <#list model.entryList as entry>
+		    <#list model.entryList as entry>
               <#assign item=entry.getKey()>
               <#assign display=entry.getValue()>
 
@@ -69,7 +69,13 @@
                       </#if>
                   </#if>
               </#if>
-          </#list>
+            </#list>
+
+            <li id="menubar-plugin-container" class="nav-item dropdown" style="display:none">
+                <a name="nav-plugin-top" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Plugins</a>
+                <div id="menubar-plugin-item-container" class="dropdown-menu dropdown-menu-right" role="menu"></div>
+            </li>
+
             <li class="nav-item dropdown">
                 <a name="nav-help-top" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Help</a>
                 <div class="dropdown-menu dropdown-menu-right">
@@ -145,7 +151,6 @@
         </#if>
         </ul>
     </div>
-    <a href="${baseHref}ui/index.html"><button type="button" class="btn btn-primary" id="ui-preview-btn">UI Preview</button></a>
 </nav>
 
 <#-- hide the header if not displayed in a toplevel window (iFrame) -->
@@ -255,6 +260,21 @@
         }
     };
 
+    var updatePluginLinks = function(response) {
+        if (response && response.length) {
+            response.forEach(function(item, index) {
+                var name = "nav-plugin-" + item.extensionId + "-" + item.resourceRootPath;
+                var url = "${baseHref}ui/#/plugins/" + item.extensionId + "/" + item.resourceRootPath + "/" + item.moduleFileName;
+                var text = item.menuEntry;
+                var html = '<a class="dropdown-item" name="nav-' + name + '" href="' + url + '">' + text + '</a>';
+
+                $(html).appendTo("#menubar-plugin-item-container");
+            });
+
+            $("#menubar-plugin-container").show();
+        }
+    };
+
     $(document).ready(function() {
         updateNotificationIndicators();
 
@@ -262,6 +282,13 @@
         $.get(baseHref + "rest/notifications/summary", function(response) {
             if (response) {
                 updateNotificationIndicators(response);
+            }
+        });
+
+        // Get plugin info
+        $.get(baseHref + "rest/plugins", function(response) {
+            if (response) {
+                updatePluginLinks(response);
             }
         });
     });

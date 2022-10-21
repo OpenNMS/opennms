@@ -1,38 +1,395 @@
-  
 <template>
-  <FeatherAppBar :labels="{ skip: 'main' }" content="app">
+  <FeatherAppBar :labels="{ skip: 'main' }" content="app" :ref="outsideClick" @mouseleave="resetMenuItems">
     <template v-slot:left>
-      <FeatherAppBarLink :icon="logo" title="Home" type="home" url="/" />
+      <div class="center-flex">
+        <FeatherAppBarLink :icon="Logo" title="Home" class="logo-link home" type="home" url="/" />
+        <template v-if="mainMenu.username">
+          <span class="body-large left-margin-small formatted-time">{{ mainMenu.formattedTime }}</span>
+          <font-awesome-icon :icon="noticesDisplay.icon"
+            :class="`${noticesDisplay.colorClass} left-margin-small bell-icon`" :title="noticesDisplay.title">
+          </font-awesome-icon>
+        </template>
+        <Search v-if="!route.fullPath.includes('/map')" class="search-left-margin" />
+      </div>
     </template>
 
     <template v-slot:right>
-      <Search v-if="!route.fullPath.includes('/map')" />
-      <FeatherButton @click="returnHandler" class="return-btn">Back to main page</FeatherButton>
-      <FeatherIcon
-        :icon="LightDarkMode"
-        class="pointer light-dark"
-        @click="toggleDarkLightMode(null)"
-      />
+      <a :href="computeSearchLink()" class="top-menu-link">Search</a>
+
+      <template v-if="mainMenu.username">
+        <!-- Normal menus -->
+
+        <FeatherDropdown :tabIndex="index" @mouseenter="() => onHoverMenuItem(index)"
+          :modelValue="menuItemsHovered[index]" right v-for="menuItem,index in menuItems" :key="menuItem.name || ''"
+          class="menubar-dropdown">
+          <template v-slot:trigger="{ attrs, on }">
+            <FeatherButton link href="#" v-bind="attrs" v-on="on" class="menubar-dropdown-button-dark">
+              <template v-if="menuItem.icon && menuItem.iconType === 'feather' && menuItem.icon === 'Person'">
+                <FeatherIcon :icon="Person" />
+              </template>
+              <template v-if="menuItem.icon && menuItem.iconType === 'fa'">
+                <font-awesome-icon :icon="`fa-solid ${menuItem.icon}`"></font-awesome-icon>
+              </template>
+              {{ menuItem.name }}
+              <FeatherIcon :icon="ArrowDropDown" />
+            </FeatherButton>
+          </template>
+          <FeatherDropdownItem v-for="item in menuItem.items" :key="item.name || ''"
+            @click="onMenuItemClick(item.url || '', item.isVueLink)">
+            <div class="menubar-dropdown-item-content">
+              <a :href="computeLink(item.url || '', item.isVueLink)" class="dropdown-menu-link">{{ item.name }}</a>
+            </div>
+          </FeatherDropdownItem>
+        </FeatherDropdown>
+
+        <!-- Plugins menu -->
+        <FeatherDropdown v-if="plugins && plugins.length" class="menubar-dropdown-dark" @mouseenter="hoverItem(PluginIndex)"
+          :modelValue="hoveredItems[PluginIndex]">
+          <template v-slot:trigger="{ attrs, on }">
+            <FeatherButton link href="#" v-bind="attrs" v-on="on" class="menubar-dropdown-button-dark">
+              Plugins
+              <FeatherIcon :icon="ArrowDropDown" />
+            </FeatherButton>
+          </template>
+          <FeatherDropdownItem
+            v-for="plugin of plugins"
+            :key="plugin.extensionId"
+            @click="onMenuItemClick(computePluginRelLink(plugin))"
+          >
+            <div class="menubar-dropdown-item-content">
+              <a :href="computeLink(computePluginRelLink(plugin))" class="dropdown-menu-link">
+                <FeatherIcon :icon="UpdateUtilities" />
+                <span class="left-margin-small">
+                  {{ plugin.menuEntry }}
+                </span>
+              </a>
+            </div>
+          </FeatherDropdownItem>
+        </FeatherDropdown>
+
+        <!-- Help menu -->
+        <FeatherDropdown v-if="mainMenu.helpMenu" class="menubar-dropdown-dark" @mouseenter="hoverItem(HelpIndex)"
+          :modelValue="hoveredItems[HelpIndex]">
+          <template v-slot:trigger="{ attrs, on }">
+            <FeatherButton link href="#" v-bind="attrs" v-on="on" class="menubar-dropdown-button-dark">
+              {{ mainMenu.helpMenu.name }}
+              <FeatherIcon :icon="ArrowDropDown" />
+            </FeatherButton>
+          </template>
+          <FeatherDropdownItem v-for="item in mainMenu.helpMenu.items" :key="item.name || ''"
+            @click="onMenuItemClick(item.url || '', item.isVueLink)">
+            <div class="menubar-dropdown-item-content">
+              <a :href="computeLink(item.url || '', item.isVueLink)" class="dropdown-menu-link">
+                <template v-if="item.icon">
+                  <font-awesome-icon :icon="`fa-solid ${item.icon}`"></font-awesome-icon>
+                </template>
+                <span :class="{'left-margin-small': item.icon}">
+                  {{ item.name }}
+                </span>
+              </a>
+            </div>
+          </FeatherDropdownItem>
+        </FeatherDropdown>
+
+        <!-- Self-service menu -->
+        <FeatherDropdown v-if="mainMenu.selfServiceMenu" class="menubar-dropdown"
+          @mouseenter="hoverItem(SelfServiceIndex)" :modelValue="hoveredItems[SelfServiceIndex]">
+          <template v-slot:trigger="{ attrs, on }">
+            <!-- TODO: clickable link -->
+            <FeatherButton link href="#" v-bind="attrs" v-on="on" class="menubar-dropdown-button-dark">
+              <template v-if="mainMenu.selfServiceMenu.icon &&
+              (mainMenu.selfServiceMenu.iconType === 'feather' && mainMenu.selfServiceMenu.icon === 'Person') ||
+              (mainMenu.selfServiceMenu.iconType === 'fa' && mainMenu.selfServiceMenu.icon === 'fa-user')">
+                <FeatherIcon :icon="Person" />
+              </template>
+              {{ mainMenu.selfServiceMenu.name }}
+              <FeatherIcon :icon="ArrowDropDown" />
+            </FeatherButton>
+          </template>
+          <FeatherDropdownItem v-for="item in mainMenu.selfServiceMenu.items" :key="item.name || ''"
+            @click="onMenuItemClick(item.url || '', item.isVueLink)">
+            <div class="menubar-dropdown-item-content">
+              <a :href="computeLink(item.url || '', item.isVueLink)" class="dropdown-menu-link">
+                <template v-if="item.icon">
+                  <font-awesome-icon :icon="`fa-solid ${item.icon}`"></font-awesome-icon>
+                </template>
+                <span :class="{'left-margin-small': item.icon}">
+                  {{ item.name }}
+                </span>
+              </a>
+            </div>
+          </FeatherDropdownItem>
+        </FeatherDropdown>
+
+        <!-- User notifications menu -->
+        <FeatherDropdown @mouseenter="hoverItem(UserIndex)" v-if="mainMenu.userNotificationMenu"
+          class="menubar-dropdown" :modelValue="hoveredItems[UserIndex]">
+          <template v-slot:trigger="{ attrs, on }">
+            <FeatherButton link href="#" v-bind="attrs" v-on="on" class="menubar-dropdown-button-dark">
+              <span
+                :class="{'notification-badge-pill': true, 'badge-severity-minor': notificationSummary.userUnacknowledgedCount > 0}">
+                {{ notificationSummary.userUnacknowledgedCount }}
+              </span>
+              <span
+                :class="{'notification-badge-pill': true, 'badge-severity-minor': notificationSummary.teamUnacknowledgedCount > 0}">
+                {{ notificationSummary.teamUnacknowledgedCount }}
+              </span>
+              <FeatherIcon :icon="ArrowDropDown" />
+            </FeatherButton>
+          </template>
+
+          <FeatherDropdownItem v-for="item in mainMenu.userNotificationMenu.items?.filter(i => i.id === 'user')"
+            :key="item.name || ''" @click="onMenuItemClick(item.url || '', item.isVueLink)">
+            <div class="menubar-dropdown-item-content">
+              <a :href="computeLink(item.url || '')" class="dropdown-menu-link dropdown-menu-wrapper">
+                <template v-if="item.icon">
+                  <FeatherIcon :icon="Person" />
+                </template>
+                <span class="left-margin-small">
+                  {{ notificationSummary.userUnacknowledgedCount }} notices assigned to you
+                </span>
+              </a>
+            </div>
+          </FeatherDropdownItem>
+
+          <!-- user notifications -->
+          <FeatherDropdownItem
+            v-for="item in notificationSummary.userUnacknowledgedNotifications.notification.slice(0,2)"
+            :key="item.id || ''" class="notification-dropdown-item" @click="onNotificationItemClick(item)">
+            <template #default>
+              <div class="menubar-dropdown-item-content">
+                <div class="notification-dropdown-item-content dropdown-menu-wrapper">
+                  <div @click="onNotificationItemClick(item)" class="notification-dropdown-item-content-button">
+                    <i :class="`notification-badge-pill badge-severity-${item?.severity?.toLocaleLowerCase()}`" />
+                    <div class="full-width-left">
+                      <div>
+                        <span class="font-weight-bold">
+                          {{ new Date(item.pageTime).toLocaleDateString() }} {{ new
+                          Date(item.pageTime).toLocaleTimeString()
+                          }}
+                        </span>
+                      </div>
+                      <div class="dropdown-info-bar">
+                        <span>{{ item.notificationName }}</span>
+                        <span>{{ item.nodeLabel }}</span>
+                        <span>{{ item.ipAddress }}</span>
+                        <span>{{ item.serviceType?.name }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </template>
+          </FeatherDropdownItem>
+          <FeatherDropdownItem>
+            <div class="menubar-dropdown-item-content">
+              <div class="dropdown-menu-wrapper show-more-link notification-dropdown-item-content">
+                <a href="#">Show more...</a>
+              </div>
+            </div>
+          </FeatherDropdownItem>
+          <!-- Team and On-Call links -->
+          <FeatherDropdownItem v-for="item in mainMenu.userNotificationMenu.items?.filter(i => i.id !== 'user')"
+            :key="item.name || ''" @click="onMenuItemClick(item.url || '', item.isVueLink)">
+            <div class="menubar-dropdown-item-content">
+              <a :href="computeLink(item.url || '')" class="dropdown-menu-link dropdown-menu-wrapper final-menu-wrapper">
+                <template v-if="item.icon && item.id === 'team'">
+                  <font-awesome-icon icon="fa-solid fa-users"></font-awesome-icon>
+                </template>
+                <template v-if="item.icon && item.id === 'oncall'">
+                  <font-awesome-icon icon="fa-solid fa-calendar"></font-awesome-icon>
+                </template>
+                <span class="left-margin-small">
+                  <template v-if="item.id === 'team'">
+                    {{ notificationSummary.teamUnacknowledgedCount }} of {{ notificationSummary.totalUnacknowledgedCount
+                    }} assigned to anyone but you
+                  </template>
+                  <template v-if="item.id === 'oncall'">
+                    {{ item.name }}
+                  </template>
+                </span>
+              </a>
+            </div>
+          </FeatherDropdownItem>
+        </FeatherDropdown>
+
+        <!-- Provision/Quick add node menu -->
+        <a v-if="mainMenu.provisionMenu" :href="computeLink(mainMenu.provisionMenu?.url || '')"
+          class="top-menu-icon horiz-padding-small">
+          <FeatherIcon :icon="AddCircleAlt" class="pointer light-dark"
+            :title="`${mainMenu.provisionMenu?.name || 'Quick-Add Node'}`" />
+        </a>
+
+        <!-- Flows menu -->
+        <a v-if="mainMenu.flowsMenu" :href="computeLink(mainMenu.flowsMenu?.url || '')"
+          class="menu-link horiz-padding-small">
+          <font-awesome-icon :icon="`fa-solid ${mainMenu.flowsMenu.icon || 'fa-minus-circle'}`" class="top-menu-icon"
+            :title="`${mainMenu.flowsMenu?.name || 'Flow Management'}`"></font-awesome-icon>
+        </a>
+
+        <!-- Admin/Configuration menu -->
+        <a v-if="mainMenu.configurationMenu" :href="computeLink(mainMenu.configurationMenu.url || '')"
+          class="menu-link horiz-padding-small">
+          <font-awesome-icon :icon="`fa-solid ${mainMenu.configurationMenu.icon || 'fa-cogs'}`" class="top-menu-icon"
+            :title="`${mainMenu.configurationMenu?.name || 'Configure OpenNMS'}`"></font-awesome-icon>
+        </a>
+      </template>
+
+      <FeatherIcon :icon="LightDarkMode" title="Toggle Light/Dark Mode" class="pointer light-dark"
+        @click="toggleDarkLightMode(null)" />
     </template>
+
   </FeatherAppBar>
+  <FeatherDialog v-model="notificationDialogVisible" :labels="notificationDialogLabels">
+    <template #default>
+      <div class="dialog-content-container">
+        <div class="row">
+          <!-- <p>Notification: {{ notificationDialogItem.notificationName }}</p> -->
+          <span
+            :class="`notification-badge-pill badge-severity-${notificationDialogItem.severity.toLocaleLowerCase()}`">
+            &nbsp;&nbsp;&nbsp;
+          </span>
+          <span class="font-weight-bold">
+            {{ new Date(notificationDialogItem.pageTime).toLocaleDateString() }} {{ new
+            Date(notificationDialogItem.pageTime).toLocaleTimeString() }}
+          </span>
+        </div>
+        <div class="row-container">
+          <div class="column-container">
+            <div class="column-label">Name:</div>
+            <div class="column">{{ notificationDialogItem.notificationName }}</div>
+          </div>
+          <div class="column-container">
+            <div class="column-label">Node:</div>
+            <div class="column">{{ notificationDialogItem.nodeLabel }}</div>
+          </div>
+          <div class="column-container">
+            <div class="column-label">IP Address:</div>
+            <div class="column">{{ notificationDialogItem.ipAddress }}</div>
+          </div>
+          <div class="column-container">
+            <div class="column-label">Service:</div>
+            <div class="column">{{ notificationDialogItem.serviceType?.name }}</div>
+          </div>
+        </div>
+        <div class="row">
+          <span>Details:</span>
+          <a :href="computeLink(`notification/detail.jsp?notice=${notificationDialogItem.id}`)"
+            class="dropdown-menu-link left-margin-small">{{ notificationDialogItem.notificationName }}</a>
+        </div>
+      </div>
+    </template>
+    <template #footer>
+      <FeatherButton primary @click="notificationDialogVisible = false">Close</FeatherButton>
+    </template>
+  </FeatherDialog>
 </template>
-    
+
 <script setup lang="ts">
 import { FeatherAppBar, FeatherAppBarLink } from '@featherds/app-bar'
 import { FeatherButton } from '@featherds/button'
+import { FeatherDialog } from '@featherds/dialog'
+import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 import { FeatherIcon } from '@featherds/icon'
+import AddCircleAlt from '@featherds/icon/action/AddCircleAlt'
+import ArrowDropDown from '@featherds/icon/navigation/ArrowDropDown'
 import LightDarkMode from '@featherds/icon/action/LightDarkMode'
-import Logo from '@/assets/Logo.vue'
+import UpdateUtilities from '@featherds/icon/action/UpdateUtilities'
+import Person from '@featherds/icon/action/Person'
+import Logo from '@/assets/LogoHorizon.vue'
+import { Plugin } from '@/types'
 import Search from './Search.vue'
+
 import { useStore } from 'vuex'
+
+import {
+  MainMenu,
+  TopMenuItem,
+  NoticeStatusDisplay,
+  NotificationSummary,
+  OnmsNotification
+} from '@/types/mainMenu'
+import { useOutsideClick } from '@featherds/composables/events/OutsideClick'
 
 const store = useStore()
 const route = useRoute()
-const returnHandler = () => window.location.href = '/opennms/'
-const logo = Logo
 const theme = ref('')
 const light = 'open-light'
 const dark = 'open-dark'
+
+const notificationDialogVisible = ref(false)
+
+const notificationDialogLabels = ref({
+  title: 'Notification Dialog',
+  close: 'Close'
+})
+
+const notificationDialogItem = ref({} as OnmsNotification)
+const outsideClick = ref()
+const HelpIndex = 0
+const SelfServiceIndex = 1
+const UserIndex = 2
+const PluginIndex = 3
+
+useOutsideClick(outsideClick.value, () => {
+  resetMenuItems()
+})
+const plugins = computed<Plugin[]>(() => store.state.pluginModule.plugins)
+
+const mainMenu = computed<MainMenu>(() => store.state.menuModule.mainMenu)
+const menuItems = computed<TopMenuItem[]>(() => {
+  if (store.state.menuModule.mainMenu && store.state.menuModule.mainMenu.menus) {
+    return store.state.menuModule.mainMenu.menus?.filter((m: TopMenuItem) => m.name !== 'Search')
+  } else {
+    return []
+  }
+})
+
+const menuItemsHovered = ref<Array<boolean>>([])
+const hoveredItems = ref<Array<boolean>>([])
+const resetMenuItems = () => {
+  for (let i = 0; i < menuItemsHovered.value.length; i++) {
+    menuItemsHovered.value[i] = false
+  }
+  for (let i = 0; i < hoveredItems.value.length; i++) {
+    hoveredItems.value[i] = false
+  }
+}
+const onHoverMenuItem = (key: number) => {
+  resetMenuItems()
+  menuItemsHovered.value[key] = true
+}
+const hoverItem = (key: number) => {
+  resetMenuItems()
+  hoveredItems.value[key] = true
+}
+
+const notificationSummary = computed<NotificationSummary>(() => store.state.menuModule.notificationSummary)
+
+const noticesDisplay = computed<NoticeStatusDisplay>(() => {
+  const status = mainMenu.value?.noticeStatus
+
+  if (status === 'On') {
+    return {
+      icon: 'fa-solid fa-bell',
+      colorClass: 'alarm-ok',
+      title: 'Notices: On'
+    }
+  } else if (status === 'Off') {
+    return {
+      icon: 'fa-solid fa-bell-slash',
+      colorClass: 'alarm-error',
+      title: 'Notices: Off'
+    }
+  }
+
+  // 'Unknown'
+  return {
+    icon: 'fa-solid fa-bell',
+    colorClass: '',
+    title: ''
+  }
+})
 
 const toggleDarkLightMode = (savedTheme: string | null) => {
   const el = document.body
@@ -57,6 +414,38 @@ const toggleDarkLightMode = (savedTheme: string | null) => {
   localStorage.setItem('theme', theme.value)
   store.dispatch('appModule/setTheme', theme.value)
 }
+
+const computeLink = (url: string, isVueLink?: boolean | null) => {
+  const baseLink = (isVueLink ? import.meta.env.VITE_VUE_BASE_URL : (mainMenu.value?.baseHref || import.meta.env.VITE_BASE_URL)) || ''
+  return `${baseLink}${url}`
+}
+
+const computePluginRelLink = (plugin: Plugin) => {
+  return `ui/#/plugins/${plugin.extensionId}/${plugin.resourceRootPath}/${plugin.moduleFileName}`
+}
+
+const computeSearchLink = () => {
+  if (mainMenu.value.menus) {
+    const searchMenus = mainMenu.value?.menus.filter(m => m.name === 'Search')
+    if (searchMenus && searchMenus.length > 0) {
+      return computeLink(searchMenus[0].url || '')
+    }
+  }
+
+  return ''
+}
+
+const onMenuItemClick = (url: string, isVueLink?: boolean | null) => {
+  const link = computeLink(url, isVueLink)
+  window.location.assign(link)
+}
+
+const onNotificationItemClick = (item: OnmsNotification) => {
+  notificationDialogLabels.value.title = 'Notification'
+  notificationDialogItem.value = item
+  notificationDialogVisible.value = true
+}
+
 onMounted(async () => {
   const savedTheme = localStorage.getItem('theme')
   toggleDarkLightMode(savedTheme)
@@ -65,27 +454,317 @@ onMounted(async () => {
 
 <style lang="scss" scoped>
 @import "@featherds/styles/themes/variables";
+@import "@featherds/dropdown/scss/mixins";
+
 .return-btn {
   background: var($secondary-variant);
   color: var($primary-text-on-color) !important;
   margin-right: 20px;
 }
+
+.alarm-error {
+  color: var($error);
+}
+
+.alarm-ok {
+  color: var($success);
+}
+
+.dropdown-menu-link {
+  color: var($primary-text-on-surface) !important;
+}
+
+.left-margin-small {
+  margin-left: 4px;
+}
+
+.horiz-padding-small {
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+.search-left-margin {
+  margin-left: 60px;
+}
+
+.menu-link {
+  color: var($primary-text-on-color) !important;
+  background-color: var(--feather-surface-dark);
+  margin-left: 2px;
+  // make it look more like OG menu
+  text-transform: none;
+  letter-spacing: normal;
+  font-weight: 400;
+  font-size: .875rem;
+}
+
+.top-menu-link,
+a.top-menu-link:visited {
+  color: #ffffff;
+  margin-left: 2px;
+  font-weight: 400;
+  font-size: .875rem;
+}
+
+.top-menu-icon {
+  color: #ffffff;
+  margin-left: 2px;
+}
+
+.menubar-dropdown {
+  margin-left: 2px;
+
+  :deep(.feather-dropdown) {
+    @include dropdown-menu-height(10);
+  }
+}
+
+.menubar-dropdown-dark {
+  margin-left: 2px;
+
+  :deep(.feather-dropdown) {
+    @include dropdown-menu-height(10);
+  }
+}
+
+.menubar-dropdown-button-dark {
+  // make it look more like OG menu
+  color: rgba(255, 255, 255, 0.78); // --feather-surface-light or --feather-state-text-color-on-surface-dark
+  background-color: #131736; // --feather-surface-dark
+  text-transform: none;
+  letter-spacing: normal;
+  font-weight: 400;
+  font-size: 0.875rem;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+.menubar-dropdown-item-content {
+    padding-top: 0.33rem;
+    padding-right: 1.25rem;
+    padding-bottom: 0.33rem;
+    padding-left: 1.25rem;
+    font-size: 0.875rem;
+    font-weight: 400;
+}
+
+.notification-badge-pill {
+  padding-left: 6px;
+  padding-right: 6px;
+  margin-left: 4px;
+  margin-right: 2px;
+  background-color: #ffffff;
+  color: #131736; // --feather-surface-dark
+  border-radius: .8rem;
+}
+
+.notification-dropdown-item {
+  //  min-height: 200px;
+}
+
+.notification-dropdown-item-content {
+  border-bottom: 1px solid #ececec;
+
+  //  min-height: 200px;
+  //  overflow-y: none;
+  .notification-dropdown-item-content-button {
+    display: flex;
+    align-items: center;
+    background-color: transparent;
+    border: none;
+    width: 100%;
+  }
+
+  i {
+    width: 15px;
+    height: 15px;
+    margin-right: 15px;
+  }
+}
+
+.dialog-content-container {
+  display: flex;
+  flex-direction: column;
+  min-width: 400px;
+}
+
+.font-weight-bold,
+.font-weight-bold span {
+  font-weight: 800;
+}
+
+.row {
+  display: flex;
+}
+
+.column {
+  display: flex;
+}
+
+.column-label {
+  display: flex;
+  min-width: 100px;
+}
+
+.row-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.column-container {
+  display: flex;
+  flex-direction: row;
+}
+
+.badge-severity-indeterminate {
+  background-color: #5dafdd;
+}
+
+.badge-severity-cleared {
+  background-color: #cdcdd0;
+}
+
+.badge-severity-normal {
+  background-color: #438953;
+}
+
+.badge-severity-warning {
+  background-color: #fff000;
+}
+
+.badge-severity-minor {
+  background-color: #ffd60a;
+}
+
+.badge-severity-major {
+  background-color: #ff9f0a;
+}
+
+.badge-severity-critical {
+  background-color: #df5251;
+}
 </style>
 
 <style lang="scss">
 @import "@featherds/styles/themes/open-mixins";
+
 body {
   background: var($background);
 }
+
 .open-light {
   @include open-light;
 }
+
 .open-dark {
   @include open-dark;
 }
+
 .light-dark {
   font-size: 24px;
   margin-top: 2px;
 }
+
+.header .header-content {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.banner .header {
+  height: 62px;
+
+  .logo-link.home {
+    padding-left: 0;
+    margin-right: 1rem;
+    padding-top: 2px;
+    padding-bottom: 0;
+  }
+
+  .body-large.formatted-time {
+    margin-right: 1rem;
+  }
+
+}
+
+body .feather-menu .feather-menu-dropdown {
+  border-radius: 4px;
+
+  .feather-dropdown {
+    border: 1px solid rgba(0, 0, 0, .35);
+  }
+}
+
+.center-horiz {
+  a.top-menu-icon.add-circle {
+    color: hsla(0, 0%, 100%, .5);
+
+    svg {
+      background-color: hsla(0, 0%, 100%, 0.5);
+      border-radius: 50%;
+      height: 20px;
+      width: 20px;
+
+      path:first-child {
+        fill: rgb(19, 23, 54);
+      }
+
+      path:last-child {
+        fill: transparent;
+      }
+    }
+  }
+}
+
+.feather-dropdown {
+
+  .feather-list-item {
+    height: auto;
+    padding: 0;
+  }
+
+  .dropdown-menu-wrapper {
+    padding: 0 1em;
+    min-width: 400px;
+    padding-top: 10px;
+
+    &.show-more-link {
+      padding-bottom: 10px;
+
+      a {
+        color: var(--feather-primary-text-on-surface)
+      }
+    }
+  }
+
+  .final-menu-wrapper {
+    display: block;
+    padding-left: 20px;
+    padding-bottom: 10px;
+
+    svg {
+      margin-right: 10px;
+    }
+  }
+}
+
+.dropdown-info-bar {
+  display: flex;
+  align-items: center;
+  text-align: left;
+  margin-bottom: 10px;
+
+  span {
+    margin-right: 10px;
+  }
+}
+
+.center-flex {
+  display: flex;
+  align-items: center;
+}
+
+.full-width-left {
+  width: 100%;
+  text-align: left;
+}
 </style>
-  
