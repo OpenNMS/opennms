@@ -19,7 +19,8 @@ DOCKER_ORG              := opennms
 DOCKER_TAG              := $(DOCKER_REGISTRY)/$(DOCKER_ORG)/$(DOCKER_PROJECT):$(VERSION)
 DOCKER_ARCH             := linux/amd64
 DOCKER_IMAGE_NAME       := $(DOCKER_PROJECT)-$(VERSION).oci
-DOCKER_FLAGS            := --output=type=docker,dest=images/$(DOCKER_IMAGE_NAME)
+DOCKER_FLAGS            :=
+DOCKER_OUTPUT           := type=docker,dest=images/$(DOCKER_IMAGE_NAME)
 DOCKERX_INSTANCE        := env-$(DOCKER_PROJECT)-oci
 SOURCE                  := $(shell git remote get-url origin)
 REVISION                := $(shell git describe --always)
@@ -68,7 +69,8 @@ help:
 	@echo "  DOCKER_TAG:         Docker tag is generated from registry, org, project, version and build number, set to $(DOCKER_TAG)"
 	@echo "  DOCKER_ARCH:        Architecture for OCI image, default: $(DOCKER_ARCH)"
 	@echo "  DOCKER_IMAGE_NAME:  Name of the OCI image, default: $(DOCKER_IMAGE_NAME)"
-	@echo "  DOCKER_FLAGS:       Additional docker buildx flags, by default write a single architecture to a file, default: $(DOCKER_FLAGS)"
+	@echo "  DOCKER_OUTPUT:      Docker --output value to write a single architecture to a file, default: $(DOCKER_OUTPUT)"
+	@echo "  DOCKER_FLAGS:       Additional docker buildx flags, default: $(DOCKER_FLAGS)"
 	@echo "  BUILD_NUMBER:       In case we run in CI/CD this is the build number which produced the artifact, default: $(BUILD_NUMBER)"
 	@echo "  BUILD_URL:          In case we run in CI/CD this is the URL which for the build, default: $(BUILD_URL)"
 	@echo "  BUILD_BRANCH:       In case we run in CI/CD this is the branch of the build, default: $(BUILD_BRANCH)"
@@ -101,7 +103,8 @@ build: test unpack-tarball $(ADDITIONAL_TARGETS)
 	if ! docker buildx inspect $(DOCKERX_INSTANCE); then docker context create "$(DOCKERX_INSTANCE)-context" && docker buildx create --name "$(DOCKERX_INSTANCE)" --driver docker-container "$(DOCKERX_INSTANCE)-context"; fi;
 	docker buildx use $(DOCKERX_INSTANCE)
 	@echo "Build container image for architecture: $(DOCKER_ARCH) ..."
-	docker buildx build --platform=$(DOCKER_ARCH) \
+	docker buildx build \
+	  --platform=$(DOCKER_ARCH) \
 	  --build-arg BASE_IMAGE=$(BASE_IMAGE) \
 	  --build-arg VERSION=$(VERSION) \
 	  --build-arg BUILD_DATE=$(BUILD_DATE) \
@@ -111,6 +114,7 @@ build: test unpack-tarball $(ADDITIONAL_TARGETS)
 	  --build-arg BUILD_URL=$(BUILD_URL) \
 	  --build-arg BUILD_BRANCH=$(BUILD_BRANCH) \
 	  --tag=$(DOCKER_TAG) \
+	  --output=$(DOCKER_OUTPUT) \
 	  $(DOCKER_FLAGS) \
 	  .
 
