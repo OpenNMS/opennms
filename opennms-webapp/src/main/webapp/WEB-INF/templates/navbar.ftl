@@ -72,7 +72,7 @@
             </#list>
 
             <li id="menubar-plugin-container" class="nav-item dropdown" style="display:none">
-                <a name="nav-help-top" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Plugins</a>
+                <a name="nav-plugin-top" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Plugins</a>
                 <div id="menubar-plugin-item-container" class="dropdown-menu dropdown-menu-right" role="menu"></div>
             </li>
 
