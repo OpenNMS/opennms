@@ -5,7 +5,7 @@
 
 .DEFAULT_GOAL := image
 
-ifeq (,$(shell command -v docker))
+ifeq (,$(shell which docker))
 $(error 'docker' command not found, but this Makefile requires it)
 endif
 
