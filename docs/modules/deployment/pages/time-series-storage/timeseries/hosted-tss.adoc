@@ -1,0 +1,18 @@
+
+= Hosted Time Series Service
+
+
+
+
+== Requirements
+
+Make sure you have the following before you start to use hosted time series service:
+
+* Horizon 31+ (Meridian availability with the 2023 release)
+*
+
+
+== Deployment
+
+To use the Cortex Time Series plugin, do the following:
+
