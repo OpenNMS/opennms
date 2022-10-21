@@ -109,7 +109,7 @@ $(README): $(TARBALL)
 unpack-tarball: $(README)
 
 docker-buildx-create:
-	@echo "Initialize builder instance ..."
+	$(info Initialize builder instance ...)
 	docker context inspect "$(DOCKERX_INSTANCE)-context" > /dev/null 2>&1 || \
 	  docker context create "$(DOCKERX_INSTANCE)-context"
 	docker buildx inspect $(DOCKERX_INSTANCE) > /dev/null 2>&1 || \
@@ -129,7 +129,7 @@ ifndef DOCKER_OUTPUT
 	$(warning The 'docker-buildx' goal is not intended to be run directly.)
 	$(error Did you want to run 'make oci' or 'make image' instead?)
 endif
-	@echo "Build container image for architecture: $(DOCKER_ARCH) ..."
+	$(info Build container image for architecture: $(DOCKER_ARCH) ...)
 	docker buildx build \
 	  --builder=$(DOCKERX_INSTANCE) \
 	  --platform=$(DOCKER_ARCH) \
@@ -180,13 +180,13 @@ image:
 build: oci
 
 install: $(DOCKER_OCI)
-	@echo "Load image ..."
+	$(info Load image ...)
 	docker image load -i "$(DOCKER_OCI)"
 	docker image tag "$(DOCKER_TAG)" "$(DOCKER_BASE):$(VERSION)"
 	docker image tag "$(DOCKER_TAG)" "$(DOCKER_BASE):latest"
 
 uninstall:
-	@echo "Remove image ..."
+	$(info Remove image(s) ...)
 	-docker rmi "$(DOCKER_TAG)"
 	-docker rmi "$(DOCKER_BASE):$(VERSION)"
 	-docker rmi "$(DOCKER_BASE):latest"
@@ -195,12 +195,12 @@ uninstall-all: uninstall
 	-docker image rm `docker image ls --format='{{ .Repository }}:{{ .Tag }}' '$(DOCKER_BASE):buildx-*T*Z'`
 
 clean:
-	@echo "Destroy builder environment: $(DOCKERX_INSTANCE) ..."
+	$(info Destroy builder environment: $(DOCKERX_INSTANCE) ...)
 	-docker buildx rm $(DOCKERX_INSTANCE)
 	-docker context rm "$(DOCKERX_INSTANCE)-context"
 
 clean-all: clean
-	@echo "Delete tarball and artifacts ..."
+	$(info Delete tarball and artifacts ...)
 	rm -rf images/*.oci
 	rm -rf tarball-root
 	rm -rf $(ADDITIONAL_TARGETS)
