@@ -80,8 +80,7 @@ import static org.junit.Assert.assertThat;
 @JUnitTemporaryDatabase
 public class MonitoringLocationRestServiceIT extends AbstractSpringJerseyRestTestCase {
     private static final Logger LOG = LoggerFactory.getLogger(MonitoringLocationRestServiceIT.class);
-    private static final Integer DEFAULT_LIMIT = 10;
-    private static final Integer LOCATION_COUNT = 15;
+
     @Autowired
     private MockEventIpcManager eventIpcManager;
 
