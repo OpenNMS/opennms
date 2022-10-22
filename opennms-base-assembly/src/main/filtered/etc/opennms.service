@@ -13,7 +13,7 @@ RuntimeDirectory=opennms
 PIDFile=${install.pid.file}
 
 ExecStart=${install.bin.dir}/opennms -s start
-ExecStop=${install.bin.dir}/opennms stop
+ExecStop=${install.bin.dir}/opennms -s stop
 
 [Install]
 WantedBy=multi-user.target

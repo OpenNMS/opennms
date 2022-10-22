@@ -105,8 +105,8 @@
               <pattern>%m</pattern>
             </PatternLayout>
 
-            <!-- Rotate logs at 10kB-->
-            <SizeBasedTriggeringPolicy size="10kB" />
+            <!-- Rotate logs slowly because some tail(1)s are noisy with file rotations with -F -->
+            <SizeBasedTriggeringPolicy size="100kB" />
 
             <!-- Rotate through 2 logs -->
             <DefaultRolloverStrategy max="1" fileIndex="min" />
