@@ -119,6 +119,7 @@ public class Invoker {
 
     private final String m_daemonName;
     private final int m_terminalColumns;
+    private final boolean m_interactive;
 
     private static SignalHandler s_handler;
 
@@ -131,6 +132,7 @@ public class Invoker {
 
         m_daemonName = System.getProperty("opennms.name", "OpenNMS");
         m_terminalColumns = Integer.parseInt(System.getProperty("terminal.columns", "100"));
+        m_interactive = System.getProperties().containsKey("terminal.columns");
 
         this.registerSignalHandlerOnce();
     }
@@ -266,11 +268,15 @@ public class Invoker {
 
         String taskName = getAtType().getPresentParticiple() + " " + m_daemonName + ":";
         ProgressBarBuilder pbb = new ProgressBarBuilder()
-                    .setConsumer(new DelegatingProgressBarConsumer(a -> logProgressUpdate(a + '\r'), m_terminalColumns))
+                    .setConsumer(new DelegatingProgressBarConsumer(a -> logProgressUpdate(a + (m_interactive ? "\r" : "\n")), m_terminalColumns))
                     .setTaskName(taskName)
-                    .setInitialMax(count)
-                    .setStyle(ProgressBarStyle.ASCII)
-                    .continuousUpdate(); // ensures the duration increases at least 1/sec
+                    .setInitialMax(count);
+
+        if (m_interactive) {
+            pbb.continuousUpdate(); // ensures the duration increases at least 1/sec
+        } else {
+            pbb.setStyle(ProgressBarStyle.ASCII); // let's be conservative on the progress bar
+        }
 
         if (startingElapsed.isPresent()) {
             pbb.startsFrom(0, startingElapsed.get());
@@ -281,7 +287,7 @@ public class Invoker {
             pbb.hideEta();
         }
 
-        logProgressUpdate("\r");
+        logProgressUpdate(m_interactive ? "\r" : "\n");
         try (var pb = pbb.build()) {
             var resultInfo = invokeMethods(pb);
             var elapsed = System.currentTimeMillis() - startTime;
@@ -302,8 +308,10 @@ public class Invoker {
 
             return resultInfo;
         } finally {
-            // Advance to next line, so we don't erase the progress bar
-            Invoker.logProgressUpdate("\n");
+            if (m_interactive) {
+                // Advance to next line, so we don't erase the progress bar
+                Invoker.logProgressUpdate("\n");
+            }
         }
     }
 

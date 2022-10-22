@@ -463,11 +463,23 @@ doStart(){
 		fi
 		echo "running ulimit -a"
 		ulimit -a
-		runCmd "${CMD[@]}" &
-		if [ ${PROGRESS_BAR} -gt 0 ]; then
-			# XXX not sure of the right way to do this with systemd
-			# Assuming the process will be killed later by systemd.
-			tail -0F "${PROGRESS_LOG}" &
+		if [ ${PROGRESS_BAR} -eq 0 ]; then
+			runCmd "${CMD[@]}" &
+		else
+			runCmd "${CMD[@]}" >> "$REDIRECT" 2>&1 &
+			pid=$!
+			# Note: under systemd, this tail(1) will stay running until the
+			# service is stopped and all processes in this group will be
+			# killed by systemd. We make sure not to start another tail(1)
+			# in 'doStop' later whenever the service is shutdown in systemd.
+			# The "--pid $pid" part here is *critical* for systemd to be
+			# able to detect that OpenNMS has died. Using --pid tells
+			# tail(1) to exit once $pid is gone. Without this, tail(1) will
+			# stick around, and systemd will think that the service is
+			# active since *any* forked process is still around. We have
+			# a check that happens when this script starts up to ensure
+			# that tail(1) supports --pid, and if not, set set PROGRESS_LOG=0.
+			tail --pid $pid -F -n 0 "${PROGRESS_LOG}" &
 		fi
 	else
 		if [ "$BACKGROUND" = 1 ]; then
@@ -497,7 +509,7 @@ doStart(){
 	fi
 
 	if [ ${PROGRESS_BAR} -gt 0 ]; then
-		tail -0F "${PROGRESS_LOG}" &
+		tail -F -n 0 "${PROGRESS_LOG}" &
 		tail_pid=$!
 		trap "kill ${tail_pid} > /dev/null 2>&1" 0
 	fi
@@ -615,8 +627,10 @@ doStop() {
 		runCmd "${RUNJAVA_CMD[@]}" "${JAVA_CMD[@]}" "${APP_VM_PARMS[@]}" -jar "$BOOTSTRAP" "${APP_PARMS_CONTROLLER[@]}" "${APP_PARMS_BEFORE[@]}" "$@" "${APP_PARMS_AFTER[@]}"
 	fi
 
-	if [ ${PROGRESS_BAR} -gt 0 ]; then
-		tail -0F "${PROGRESS_LOG}" &
+	# We don't want two copies of tail running under systemd
+	# (one left running from the start, another here).
+	if [ ${PROGRESS_BAR} -gt 0 ] && [ ${SYSTEMD} -eq 0 ]; then
+		tail -F -n 0 -q "${PROGRESS_LOG}" &
 		tail_pid=$!
 		trap "kill ${tail_pid} > /dev/null 2>&1" 0
 	fi
@@ -626,7 +640,7 @@ doStop() {
 		doStatus "$@"
 		if [ "$?" -eq 3 ]; then
 			clearPids
-			if [ ${PROGRESS_BAR} -gt 0 ]; then
+			if [ ${PROGRESS_BAR} -gt 0 ] && [ ${SYSTEMD} -eq 0 ]; then
 				kill ${tail_pid} > /dev/null 2>&1
 				trap "" 0
 			fi
@@ -813,7 +827,7 @@ MANAGER_OPTIONS+=("-Dopennms.home=$OPENNMS_HOME")
 MANAGER_OPTIONS+=("-XX:+HeapDumpOnOutOfMemoryError")
 
 MANAGER_OPTIONS+=("-Dopennms.name=${install.package.description}")
-columns=$(which tput > /dev/null 2>&1 && tput cols)
+columns=$(which tput > /dev/null 2>&1 && tput cols 2>/dev/null)
 if [ -n "${columns}" ]; then
 	MANAGER_OPTIONS+=("-Dterminal.columns=${columns}")
 fi
@@ -1057,6 +1071,20 @@ if [ "$SYSTEMD" -ne 1 ]; then
 	fi
 fi
 
+# If the progress bar is enabled *and* we are running in systemd, check
+# if the tail(1) program supports --pid. If it does not support --pid,
+# we can't use the progress bar, so set PROGRESS_BAR=0. See the earlier
+# comments where we use "tail --pid" for why this check is ***critical***.
+if [ ${PROGRESS_BAR} -gt 0 ] && [ ${SYSTEMD} -gt 0 ] && ! tail --help 2>&1 | grep -q -- --pid; then
+	echo "WARNING: disabling the progress bar because we are running in systemd and the 'tail' program doesn't support '--pid'" >&2
+	PROGRESS_BAR=0
+fi
+
+if [ -e "${OPENNMS_PIDFILE}" ]; then
+	# if the file already exists, make sure it's writable in the future
+	chown "${RUNAS}" "${OPENNMS_PIDFILE}"
+fi
+
 case "$COMMAND" in
 	start|spawn)
 		printf 'Starting %s: ' "${install.package.description}"
@@ -1115,7 +1143,7 @@ case "$COMMAND" in
 			echo ""
 		else
 			if [ "$__ret" -eq 0 ]; then
-				if [ ${PROGRESS_BAR} -eq 0 ]; then
+				if [ ${PROGRESS_BAR} -eq 0 ] || [ ${SYSTEMD} -ne 0 ]; then
 					echo "stopped"
 				fi
 			else
