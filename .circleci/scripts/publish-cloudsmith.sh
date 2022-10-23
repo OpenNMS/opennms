@@ -63,7 +63,7 @@ for TYPE in horizon minion sentinel; do
 
   find /tmp/artifacts/oci -name "${TYPE}-*.oci" | while read -r _file; do
     echo "* processing ${TYPE} image: ${_file}"
-    _internal_tag="$(basename "${_file}" | sed -e 's,\.oci$,,')"
+    _internal_tag="opennms/$(basename "${_file}" | sed -e 's,\.oci$,,')"
     _arch_tag="$(basename "${_file}" | sed -e "s,^${TYPE}-,," -e 's,\.oci$,,')"
     echo "${TYPE}: tag=${_internal_tag}, arch_tag=${_arch_tag}, file=${_file}"
     for _publish_tag in "${DOCKER_TAGS[@]}"; do
