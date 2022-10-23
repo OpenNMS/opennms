@@ -5,7 +5,7 @@ ARG BASE_IMAGE="opennms/deploy-base:jre-2.0.6.b165"
 
 FROM ${BASE_IMAGE} as horizon-base
 
-ADD --chown=10001:10001 ./tarball-root/ /usr/share/opennms/
+ADD --chown=10001:0 ./tarball-root/ /usr/share/opennms/
 
 ARG REQUIRED_DEBS="rrdtool jrrd2 r-base-core rsync libxml-twig-perl libwww-perl jq diffutils hostname sudo"
 
@@ -35,6 +35,17 @@ RUN apt-get update && \
     apt-get -y autoclean && \
     apt-get -y clean && \
     rm -rf /var/cache/apt
+
+# Preserve a pristine copy of the Java binaries before we apply setcap
+# Symlink to the other resources vs copying to keep the container image smaller
+RUN mkdir "${JAVA_HOME}-nocap" && \
+    cp -R "${JAVA_HOME}/bin" "${JAVA_HOME}-nocap/" && \
+    ln -s "${JAVA_HOME}/conf" "${JAVA_HOME}-nocap/conf" && \
+    ln -s "${JAVA_HOME}/docs" "${JAVA_HOME}-nocap/docs" && \
+    ln -s "${JAVA_HOME}/legal" "${JAVA_HOME}-nocap/legal" && \
+    ln -s "${JAVA_HOME}/lib" "${JAVA_HOME}-nocap/lib" && \
+    ln -s "${JAVA_HOME}/man" "${JAVA_HOME}-nocap/man" && \
+    ln -s "${JAVA_HOME}/release" "${JAVA_HOME}-nocap/release"
 
 # Allow to send ICMP messages as non-root user
 RUN setcap cap_net_raw+ep ${JAVA_HOME}/bin/java && \
@@ -79,12 +90,12 @@ RUN if [[ -n "${ADD_DEB_PACKAGES}" ]]; then \
            /usr/share/opennms/share/reports \
            /usr/share/opennms/share/mibs \
            /var/cache/apt && \
-    install -d -m 755 -g 10001 -o 10001 \
+    install -d -m 775 -g 0 -o 10001 \
             /opt/opennms-etc-overlay \
             /opt/opennms-jetty-webinf-overlay \
             /opt/opennms-overlay \
             /opennms-data && \
-    install -d -m 755 -g 10001 -o 10001 \
+    install -d -m 775 -g 0 -o 10001 \
             /opennms-data/rrd \
             /opennms-data/reports \
             /opennms-data/mibs && \
@@ -99,6 +110,10 @@ RUN if [[ -n "${ADD_DEB_PACKAGES}" ]]; then \
 # Add templates replaced at runtime and entrypoint
 COPY --chown=10001:0 ./container-fs/confd /etc/confd
 COPY --chown=10001:0 ./container-fs/entrypoint.sh /
+
+# Allow users in the root group to access them with the same authorization as the directory and file owner
+RUN chmod -R g=u /usr/share/opennms
+RUN chmod -R g=u /opennms-data
 
 # Arguments for labels should not invalidate caches
 ARG VERSION
