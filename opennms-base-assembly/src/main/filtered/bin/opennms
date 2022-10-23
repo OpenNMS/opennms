@@ -827,8 +827,8 @@ MANAGER_OPTIONS+=("-Dopennms.home=$OPENNMS_HOME")
 MANAGER_OPTIONS+=("-XX:+HeapDumpOnOutOfMemoryError")
 
 MANAGER_OPTIONS+=("-Dopennms.name=${install.package.description}")
-columns=$(which tput > /dev/null 2>&1 && tput cols 2>/dev/null)
-if [ -n "${columns}" ]; then
+# macOS tput is finicky, so check first to see if stdout (FD 1) is a tty
+if [ -t 1 ] && which tput > /dev/null 2>&1 && columns=$(tput cols) && [ -n "${columns}" ]; then
 	MANAGER_OPTIONS+=("-Dterminal.columns=${columns}")
 fi
 
