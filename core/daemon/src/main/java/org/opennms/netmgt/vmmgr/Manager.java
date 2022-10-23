@@ -40,6 +40,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.management.MBeanServer;
 import javax.management.MBeanServerFactory;
@@ -69,7 +70,7 @@ import org.slf4j.LoggerFactory;
  */
 public class Manager implements ManagerMBean {
 
-	private static final Logger LOG = LoggerFactory.getLogger(Manager.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Manager.class);
 
     /**
      * The log4j category used to log debug messages and statements.
@@ -78,23 +79,30 @@ public class Manager implements ManagerMBean {
     private static final String m_osName = System.getProperty("os.name") == null? "" : System.getProperty("os.name").toLowerCase();
     private static final long startTime = System.currentTimeMillis();
     private static final AtomicBoolean stopInitiated = new AtomicBoolean(false);
+    private static final AtomicInteger exitCode = new AtomicInteger(0);
 
 
     /**
      *  Register shutdown hook to handle SIGTERM signal for the process.
      */
     public void init() {
-        Runtime.getRuntime().addShutdownHook(new Thread(this::stop));
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> { LOG.info("got sigterm, stopping"); stop(); }));
     }
+
     /**
      * <p>stop</p>
      */
     @Override
     public synchronized void stop() {
+        stop(0);
+    }
+
+    public synchronized void stop(int processExitCode) {
         if (stopInitiated.get()) {
             return;
         }
         stopInitiated.set(true);
+        exitCode.set(processExitCode);
 
         Logging.withPrefix(LOG4J_CATEGORY, () -> {
             for (MBeanServer server : getMBeanServers()) {
@@ -186,12 +194,12 @@ public class Manager implements ManagerMBean {
                 LOG.debug("memory usage (free/used/total/max allowed): {}/{}/{}/{}", r.freeMemory(), (r.totalMemory() - r.freeMemory()), r.totalMemory(), (r.maxMemory() == Long.MAX_VALUE ? "infinite" : r.maxMemory()));
             }
 
-            LOG.info("calling System.exit(0)");
 
+            LOG.info("calling System.exit(" + exitCode.get() + ") very shortly");
             new Timer().schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    System.exit(0);
+                    System.exit(exitCode.get());
                 }
             }, 500);
         });

@@ -177,7 +177,7 @@ public class Starter {
                 result.getThrowable().printStackTrace();
 
                 Manager manager = new Manager();
-                manager.stop();
+                manager.stop(1);
 
                 Invoker.logProgressUpdate("Shutdown completed after receiving on error on startup. "
                         + "See error details above.\n");
