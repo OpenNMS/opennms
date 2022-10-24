@@ -34,7 +34,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
@@ -51,6 +50,7 @@ import org.opennms.web.rest.support.CriteriaBehavior;
 import org.opennms.web.rest.support.CriteriaBehaviors;
 import org.opennms.web.rest.support.SearchProperties;
 import org.opennms.web.rest.support.SearchProperty;
+import org.opennms.web.rest.v2.api.IpInterfaceRestApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,9 +62,8 @@ import org.springframework.transaction.annotation.Transactional;
  * based on a given criteria.</p>
  */
 @Component
-@Path("ipinterfaces")
 @Transactional
-public class IpInterfaceRestService extends AbstractDaoRestService<OnmsIpInterface,SearchBean,Integer,String> {
+public class IpInterfaceRestService extends AbstractDaoRestService<OnmsIpInterface, SearchBean, Integer, String> implements IpInterfaceRestApi {
 
     @Autowired
     private IpInterfaceDao m_dao;
