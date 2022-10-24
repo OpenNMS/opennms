@@ -1,6 +1,11 @@
 <template>
   <div class="card">
     <div class="feather-row">
+      <div class="feather-col-12">
+        <BreadCrumbs :items="breadcrumbs" />
+      </div>
+    </div>
+    <div class="feather-row">
       <div class="feather-col-3">
         <FeatherInput
           @update:modelValue="searchFilterHandler"
@@ -83,6 +88,8 @@ import useQueryParameters from '@/composables/useQueryParams'
 import { FeatherInput } from '@featherds/input'
 import { FeatherSortHeader, SORT } from '@featherds/table'
 import { FeatherSortObject } from '@/types'
+import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
+import { BreadCrumb } from '@/types'
 
 const store = useStore()
 const sortStates: any = reactive({
@@ -105,6 +112,7 @@ const { queryParameters, updateQueryParameters, sort } = useQueryParameters({
   offset: 0,
   orderBy: 'label'
 }, 'nodesModule/getNodes')
+
 const searchFilterHandler: UpdateModelFunction = (val = '') => {
   const searchQueryParam: QueryParameters = { _s: `node.label==${val}*` }
   const updatedParams = { ...queryParameters.value, ...searchQueryParam }
@@ -112,6 +120,13 @@ const searchFilterHandler: UpdateModelFunction = (val = '') => {
   queryParameters.value = updatedParams
 }
 const nodes = computed(() => store.state.nodesModule.nodes)
+
+const homeUrl = computed<string>(() => store.state.menuModule.mainMenu?.homeUrl)
+
+const breadcrumbs: BreadCrumb[] = [
+  { label: 'Home', to: homeUrl.value, isAbsoluteLink: true },
+  { label: 'Nodes', to: '/', position: 'last' }
+]
 </script>
 
 <style

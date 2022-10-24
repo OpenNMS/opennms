@@ -2,7 +2,8 @@
   <div class="breadcrumbs subtitle2">
     <template v-for="item of items" :key="item.label">
       <div class="link">
-        <router-link :to="item.to">{{ item.label }}</router-link>
+        <a v-if="item.isAbsoluteLink" :href="item.to">{{ item.label }}</a>
+        <router-link v-else :to="item.to">{{ item.label }}</router-link>
         <FeatherIcon :icon="ChevronRight" :class="'link-icon' + ` ${item.position}`" />
       </div>
     </template>
@@ -24,6 +25,7 @@ defineProps({
   
 <style lang="scss" scoped>
 @import "@featherds/styles/mixins/elevation";
+@import "@featherds/styles/themes/variables";
 .breadcrumbs {
   @include elevation(1);
   width: 100%;
@@ -31,6 +33,7 @@ defineProps({
   height: 47px;
   margin-top: 15px;
   margin-bottom: 15px;
+  background: var($shade-4);
   .link {
     color: var($secondary-variant) !important;
     line-height: 3.5;

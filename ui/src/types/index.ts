@@ -265,6 +265,7 @@ export interface BreadCrumb {
   label: string
   to: string
   position?: string
+  isAbsoluteLink?: boolean
 }
 
 export interface Vertice {

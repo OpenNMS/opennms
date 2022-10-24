@@ -89,6 +89,7 @@ public class MenuProvider {
             final boolean isAdmin = context.isUserInRole(Authentication.ROLE_ADMIN);
 
             mainMenu.baseHref = context.calculateUrlBase();
+            mainMenu.homeUrl = mainMenu.baseHref + "index.jsp";
             mainMenu.formattedTime = context.getFormattedTime();
             mainMenu.username = context.getRemoteUser();
             mainMenu.noticeStatus = context.getNoticeStatus();

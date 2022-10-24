@@ -33,6 +33,7 @@ import java.util.List;
 
 public class MainMenu {
     public String baseHref;
+    public String homeUrl;
     public String formattedTime;
     public String noticeStatus;
     public String username;
