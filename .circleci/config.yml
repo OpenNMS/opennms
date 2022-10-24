@@ -210,10 +210,10 @@ commands:
           command: |
             cd opennms-container/sentinel
             docker image load -i /tmp/oci-sentinel/container.oci
-            output=`docker images  sentinel --format '{{.ID}}'`
-            docker tag $output sentinel:latest
-            docker images
-            docker tag sentinel:"${VERSION}"  sentinel:latest
+            #output=`docker images  sentinel --format '{{.ID}}'`
+            #docker tag $output sentinel:latest
+            #docker images
+            #docker tag sentinel:"${VERSION}"  sentinel:latest
       - run:
           name: Monitor JVM processes
           background: true
@@ -485,9 +485,9 @@ commands:
             for FILE in *.oci; do
               echo "Loading ${FILE} into Docker..."
               docker image load -i "$FILE"
-              output=`docker images  $image_name --format '{{.ID}}'`
-              docker tag $output  $image_name:latest
-              docker images
+              #output=`docker images  $image_name --format '{{.ID}}'`
+              #docker tag $output  $image_name:latest
+              #docker images
             done
 
 workflows:

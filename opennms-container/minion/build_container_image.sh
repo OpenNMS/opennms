@@ -33,7 +33,9 @@ docker build -t minion:"${VERSION}" \
   --build-arg BUILD_BRANCH="${BUILD_BRANCH}" \
   .
 
-docker image save minion:"${VERSION}" -o images/container.oci
+docker tag minion:"${VERSION}"  minion:latest
+
+docker image save minion:latest -o images/container.oci
 
 rm -f rpms/*.repo
 ../stop_yum_server.sh

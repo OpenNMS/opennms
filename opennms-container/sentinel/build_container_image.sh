@@ -33,7 +33,10 @@ docker build -t sentinel:"${VERSION}" \
   --build-arg BUILD_BRANCH="${BUILD_BRANCH}" \
   .
 
-docker image save sentinel:"${VERSION}" -o images/container.oci
+docker tag sentinel:"${VERSION}"  sentinel:latest
+
+docker image save sentinel:latest -o images/container.oci
+
 
 rm -f rpms/*.repo
 ../stop_yum_server.sh

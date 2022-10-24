@@ -37,7 +37,9 @@ if [ -n "${CIRCLE_BUILD_NUM}" ]; then
   IMAGE_VERSION+=("${BASE_IMAGE_VERSION}-b${CIRCLE_BUILD_NUM}")
 fi
 
-docker image save horizon:"${VERSION}" -o images/container.oci
+docker tag horizon:"${VERSION}"  horizon:latest
+
+docker image save horizon:latest -o images/container.oci
 
 rm -f rpms/*.repo
 ../stop_yum_server.sh
