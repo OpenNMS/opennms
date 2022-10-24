@@ -1,18 +1,81 @@
 
 = Hosted Time Series Service
 
+The hosted time series service provides a cloud-hosted time series database to store performance metrics that {page-component-title} collects from the devices it monitors.
 
-
+In addition, users can view time series summary data including health status, capacity, and metrics per second in the #OpenNMS Portal#.
 
 == Requirements
 
 Make sure you have the following before you start to use hosted time series service:
 
 * Horizon 31+ (Meridian availability with the 2023 release)
-*
+* Access to the xref:https://portal.opennms.com[OpenNMS Portal] to retrieve your API key and view hosted time series service metrics
 
+Contact sales@opennms.com to sign up for hosted time series service.
 
 == Deployment
 
-To use the Cortex Time Series plugin, do the following:
+There are three phases of deployment to set up the hosted time series service for your system:
+
+* Configure the Cloud Connectivity plugin
+* Obtain a license key for the service
+* Enable cloud services
+
+=== Configure the Cloud Connectivity plugin
+
+The Cloud Connectivity plugin makes it possible for a {page-component-title} instance to send time series data to an OpenNMS-hosted cloud service.
+
+The Cloud Connectivity plugin is installed by default in {page-component-title} 31.
+However, you need to move the configuration files into the correct location and restart {page-component-title}:
+
+[source, console]
+----
+cp /opt/opennms/etc/examples/opennms.properties.d/timeseries.properties /opt/opennms/etc/opennms.properties.d/timeseries.properties
+
+systemctl restart openmns
+----
+
+=== Obtain a license key for the hosted time series service
+
+The license key enables the hosted time series service in {page-component-title}.
+
+You must log in to the OpenNMS Portal to get this license key, copy it, and then paste it into the appropriate screen in {page-component-title}.
+
+You should have received an activation email from OpenNMS with a login for the OpenNMS Portal.
+
+To obtain the license key, follow these steps:
+
+. If you have not already done so, activate your OpenNMS Portal account by clicking the *Account Activation* button in your welcome email.
+. On the Create Your OpenNMS Account screen, type a password in the Password box.
+. Click *Create My Account*.
+. Sign in to the OpenNMS Portal with your username and password.
+. Choose *OpenNMS Core Instances* in the left menu and click *Add New*.
+. Type in the name of your instance and click *Get Instance Key*.
+. Copy the instance key and click *Save & Close*.
+
++
+NOTE: The key is valid for one hour.
+If you do not use it within that time, you must log back into the OpenNMS Portal and copy it from your instance.
+
+. Log in to the OpenNMS web UI for your instance.
+. Click *UI Preview*.
+. In the left menu, click *Time Series*.
+. Turn hosted time series on.
+. Paste the key in the ?? field and click *Save*.
+
+By default, collectd collects data every five minutes.
+You should see time series summary information in the OpenNMS Portal UI within 15 minutes.
+For more information on how to view this information, see #View Time Series Summary Data# in the OpenNMS Portal documentation.
+To change the data collection frequency, see #XXX#.
+
+
+
+
+
+
+
+
+
+== Troubleshooting
 
