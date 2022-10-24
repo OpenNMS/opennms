@@ -47,7 +47,7 @@ public class OspfAreaTableTracker extends TableTracker {
     public final static SnmpObjId OSPF_AREA_ID = SnmpObjId.get(".1.3.6.1.2.1.14.2.1.1");
     public final static SnmpObjId OSPF_AUTH_TYPE = SnmpObjId.get(".1.3.6.1.2.1.14.2.1.2");
     public final static SnmpObjId OSPF_IMPORT_AS_EXTERN = SnmpObjId.get(".1.3.6.1.2.1.14.2.1.3");
-    //    public final static SnmpObjId OSPF_SPF_RUNS       = SnmpObjId.get(".1.3.6.1.2.1.14.2.1.4");
+    public final static SnmpObjId OSPF_SPF_RUNS       = SnmpObjId.get(".1.3.6.1.2.1.14.2.1.4");
     public final static SnmpObjId OSPF_AREA_BDR_RTR_COUNT = SnmpObjId.get(".1.3.6.1.2.1.14.2.1.5");
     public final static SnmpObjId OSPF_AS_BDR_RTR_COUNT = SnmpObjId.get(".1.3.6.1.2.1.14.2.1.6");
     public final static SnmpObjId OSPF_AREA_LSA_COUNT = SnmpObjId.get(".1.3.6.1.2.1.14.2.1.7");
@@ -111,7 +111,7 @@ public class OspfAreaTableTracker extends TableTracker {
         }
 
         public Integer getOspfImportAsExtern() {
-            return getValue(OSPF_IMPORT_AS_EXTERN).toInt();
+            return getValue(OSPF_IMPORT_AS_EXTERN).isNull() ? null : getValue(OSPF_IMPORT_AS_EXTERN).toInt();
         }
 
         public Integer getOspfAreaBdrRtrCount() {
@@ -130,7 +130,7 @@ public class OspfAreaTableTracker extends TableTracker {
             final OspfArea area = new OspfArea();
             area.setOspfAreaId(getOspfAreaId());
             area.setOspfAuthType(getOspfAuthType());
-            area.setOspfImportAsExtern(OspfArea.ImportAsExtern.valueOf(getOspfImportAsExtern().intValue()));
+            area.setOspfImportAsExtern(getOspfImportAsExtern());
             area.setOspfAreaBdrRtrCount(getOspfAreaBdrRtrCount());
             area.setOspfAsBdrRtrCount(getOspfAsBdrRtrCount());
             area.setOspfAreaLsaCount(getOspfAreaLsaCount());

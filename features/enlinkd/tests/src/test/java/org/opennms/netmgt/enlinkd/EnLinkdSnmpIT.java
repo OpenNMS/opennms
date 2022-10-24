@@ -241,7 +241,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
         }
         assertEquals(areas.get(0).getOspfAreaId(), InetAddress.getByName("0.0.0.0"));
         assertEquals(areas.get(0).getOspfAuthType().intValue(), 0);
-        assertEquals(areas.get(0).getOspfImportAsExtern().getValue().intValue(), 1);
+        assertEquals(areas.get(0).getOspfImportAsExtern().intValue(), 1);
         assertEquals(areas.get(0).getOspfAreaBdrRtrCount().intValue(), 4);
         assertEquals(areas.get(0).getOspfAsBdrRtrCount().intValue(), 2);
         assertEquals(areas.get(0).getOspfAreaLsaCount().intValue(), 43);

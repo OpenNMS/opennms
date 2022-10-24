@@ -41,7 +41,7 @@ import org.opennms.netmgt.model.OnmsNode;
 public interface OspfAreaDao extends OnmsDao<OspfArea, Integer> {
 
 
-    OspfArea get(OnmsNode node, InetAddress areaId);
+    OspfArea get(Integer node, InetAddress areaId);
     List<OspfArea> findByNodeId(Integer nodeId);
 
     void deleteByNodeIdOlderThen(Integer nodeiId, Date now);

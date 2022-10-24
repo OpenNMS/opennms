@@ -193,7 +193,7 @@ public final class NodeDiscoveryOspf extends NodeCollector {
         // Areas
         List<OspfArea> areas =  new ArrayList<>();
         OspfAreaTableTracker ospfAreaTableTracker = new OspfAreaTableTracker() {
-            public void processOspfIfRow(final OspfAreaRow row) {
+            public void processOspfAreaRow(final OspfAreaRow row) {
                 areas.add(row.getOspfArea());
             }
         };

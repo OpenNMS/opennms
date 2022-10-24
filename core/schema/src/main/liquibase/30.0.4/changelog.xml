@@ -34,6 +34,12 @@
             <column name="ospfarealsacount" type="integer">
                 <constraints nullable="true"/>
             </column>
+            <column name="ospfareacreatetime" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false" />
+            </column>
+            <column name="ospfarealastpolltime" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false" />
+            </column>
 
         </createTable>
 

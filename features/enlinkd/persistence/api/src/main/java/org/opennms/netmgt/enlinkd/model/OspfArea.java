@@ -44,8 +44,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import java.io.Serializable;
 import java.net.InetAddress;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -63,10 +66,12 @@ public class OspfArea implements Serializable {
     private OnmsNode m_node;
     private InetAddress m_ospfAreaId;
     private Integer m_ospfAuthType;
-    private ImportAsExtern m_ospfImportAsExtern;
+    private Integer m_ospfImportAsExtern;
     private Integer m_ospfAreaBdrRtrCount;
     private Integer m_ospfAsBdrRtrCount;
     private Integer m_ospfAreaLsaCount;
+    private Date m_ospfAreaCreateTime = new Date();
+    private Date m_ospfAreaLastPollTime;
 
     public OspfArea() {
     }
@@ -96,8 +101,9 @@ public class OspfArea implements Serializable {
         return m_ospfAuthType;
     }
 
+//    @Type(type="org.opennms.netmgt.enlinkd.model.ImportAsExternUserType")
     @Column(name = "ospfImportAsExtern")
-    public ImportAsExtern getOspfImportAsExtern() {
+    public Integer getOspfImportAsExtern() {
         return m_ospfImportAsExtern;
     }
 
@@ -114,6 +120,18 @@ public class OspfArea implements Serializable {
     @Column(name = "ospfAreaLsaCount")
     public Integer getOspfAreaLsaCount() {
         return m_ospfAreaLsaCount;
+    }
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="ospfLinkCreateTime", nullable=false)
+    public Date getOspfAreaCreateTime() {
+        return m_ospfAreaCreateTime;
+    }
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="ospfAreaLastPollTime", nullable=false)
+    public Date getOspfAreaLastPollTime() {
+        return m_ospfAreaLastPollTime;
     }
 
     public OspfArea setId(Integer id) {
@@ -136,7 +154,7 @@ public class OspfArea implements Serializable {
         return this;
     }
 
-    public OspfArea setOspfImportAsExtern(ImportAsExtern ospfImportAsExtern) {
+    public OspfArea setOspfImportAsExtern(Integer ospfImportAsExtern) {
         this.m_ospfImportAsExtern = ospfImportAsExtern;
         return this;
     }
@@ -155,6 +173,14 @@ public class OspfArea implements Serializable {
         this.m_ospfAreaLsaCount = ospfAreaLsaCount;
     }
 
+    public void setOspfAreaCreateTime(Date ospfAreaCreateTime) {
+        m_ospfAreaCreateTime = ospfAreaCreateTime;
+    }
+
+    public void setOspfAreaLastPollTime(Date ospfAreaLastPollTime) {
+        m_ospfAreaLastPollTime = ospfAreaLastPollTime;
+    }
+
     /**
      * <p>toString</p>
      *
@@ -168,7 +194,7 @@ public class OspfArea implements Serializable {
                 "/" +
                 getOspfAuthType() +
                 "/" +
-                getOspfImportAsExtern() +
+//                getOspfImportAsExtern() +
                 "/" +
                 getOspfAreaBdrRtrCount() +
                 "/" +
@@ -187,6 +213,7 @@ public class OspfArea implements Serializable {
         setOspfAreaBdrRtrCount(area.getOspfAreaBdrRtrCount());
         setOspfAsBdrRtrCount(area.getOspfAsBdrRtrCount());
         setOspfAreaLsaCount(area.getOspfAreaLsaCount());
+        setOspfAreaLastPollTime(area.getOspfAreaCreateTime());
     }
 
 

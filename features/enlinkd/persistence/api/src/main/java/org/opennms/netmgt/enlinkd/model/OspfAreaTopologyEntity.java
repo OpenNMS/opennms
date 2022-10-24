@@ -62,7 +62,7 @@ public class OspfAreaTopologyEntity {
                 , area.getNode().getId()
                 , area.getOspfAreaId()
                 , area.getOspfAuthType()
-                , area.getOspfImportAsExtern().getValue()
+                , area.getOspfImportAsExtern()
                 , area.getOspfAreaBdrRtrCount()
                 , area.getOspfAsBdrRtrCount()
                 , area.getOspfAreaLsaCount());

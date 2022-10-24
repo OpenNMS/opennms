@@ -140,7 +140,7 @@ public class OspfTopologyServiceImpl extends TopologyServiceImpl implements Ospf
 
             @Override
             protected OspfArea query() {
-                return m_dao.get(area.getNode(), area.getOspfAreaId());
+                return m_dao.get(area.getNode().getId(), area.getOspfAreaId());
             }
 
             @Override
@@ -156,6 +156,7 @@ public class OspfTopologyServiceImpl extends TopologyServiceImpl implements Ospf
                 final OnmsNode node = new OnmsNode();
                 node.setId(nodeId);
                 area.setNode(node);
+                area.setOspfAreaLastPollTime(area.getOspfAreaCreateTime());
                 m_dao.saveOrUpdate(area);
                 m_dao.flush();
                 return area;

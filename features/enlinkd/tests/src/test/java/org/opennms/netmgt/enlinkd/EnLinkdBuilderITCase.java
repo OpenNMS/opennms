@@ -54,6 +54,7 @@ import org.opennms.netmgt.enlinkd.persistence.api.IsIsElementDao;
 import org.opennms.netmgt.enlinkd.persistence.api.IsIsLinkDao;
 import org.opennms.netmgt.enlinkd.persistence.api.LldpElementDao;
 import org.opennms.netmgt.enlinkd.persistence.api.LldpLinkDao;
+import org.opennms.netmgt.enlinkd.persistence.api.OspfAreaDao;
 import org.opennms.netmgt.enlinkd.persistence.api.OspfElementDao;
 import org.opennms.netmgt.enlinkd.persistence.api.OspfLinkDao;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
@@ -146,6 +147,9 @@ public abstract class EnLinkdBuilderITCase extends EnLinkdTestHelper implements 
 
     @Autowired
     protected OnmsTopologyDao m_topologyDao;
+
+    @Autowired
+    protected OspfAreaDao m_ospfAreaDao;
 
     @Override
     public void afterPropertiesSet() {

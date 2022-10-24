@@ -54,9 +54,9 @@ public class OspfAreaDaoHibernate extends AbstractDaoHibernate<OspfArea, Integer
 
     /** {@inheritDoc} */
     @Override
-    public OspfArea get(OnmsNode node, InetAddress ospfAreaId ){
-        return findUnique("from OspfArea as ospfArea where ospfArea.node = ? and ospfArea.ospfAreaId = ? ",
-                          node, ospfAreaId);
+    public OspfArea get(Integer nodeId, InetAddress ospfAreaId ){
+        return findUnique("from OspfArea as ospfArea where ospfArea.node.id = ? and ospfArea.ospfAreaId = ? ",
+                          nodeId, ospfAreaId);
     }
 
 
