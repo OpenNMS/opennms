@@ -7,7 +7,7 @@ The daemon essentially asks each device the following question: "What is the net
 The enlinkd discovery process attempts to discover bridge domain links with the data coming from all collected bridge forwarding tables.
 The enlinkd updaters correlate all collected topology data to generate a global topology layout of your network.
 
-.Enlink configuration file overview
+.Enlinkd configuration file overview
 [options="header"]
 [cols="2,3,1,1"]
 |===
@@ -53,7 +53,7 @@ Restart {page-component-title} or just the enlinkd daemon to apply configuration
 3+| *Integer*
 
 | threads
-| Number of parallel threads collectors, updaters, and discovery use.
+| Number of parallel threads for enlinkd collector, updater, and discovery tasks.
 | 5
 
 | initial_sleep_time
