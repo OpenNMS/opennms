@@ -475,7 +475,26 @@ commands:
           name: Load Docker Image(s) in oci-<< parameters.key >>
           command: |
             cd ~/project/opennms-container 
-            source ~/project/opennms-container/set-build-environment.sh
+            TOPDIR="$(cd "$(dirname "$0")" || exit 1; pwd -P)"
+            TOPDIR="$(echo "$TOPDIR" | sed -e 's,opennms-container/.*$,opennms-container,')"
+            POM_VERSION="$("~/project/opennms-container/pom2version.py" "~/project/pom.xml")"
+            case "${CIRCLE_BRANCH}" in
+              master-*)
+                VERSION="${POM_VERSION}"
+                ;;
+              develop)
+                VERSION="bleeding"
+                ;;
+              *)
+                # Replace / in branch names which is not allowed in OCI tags
+                VERSION="${CIRCLE_BRANCH//\//-}"
+                ;;
+            esac
+
+            if [ -z "$VERSION" ]; then
+              VERSION="$("${TOPDIR}/pom2version.py" "${TOPDIR}/../pom.xml")"
+            fi
+
 
             cd "/tmp/oci-<< parameters.key >>"
             if [ "$(ls -1 *.oci | wc -l)" -eq 0 ]; then
