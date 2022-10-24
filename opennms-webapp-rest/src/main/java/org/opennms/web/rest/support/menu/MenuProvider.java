@@ -63,13 +63,21 @@ import org.opennms.web.rest.support.menu.xml.MenuXml;
  */
 public class MenuProvider {
     /** Full file path to dispatcher.servlet.xml file, see "applicationContext-cxf-rest-v2.xml" */
-    final private String dispatcherServletPath;
+    private String dispatcherServletPath;
 
     /** Fully qualified classname of RoleBasedNavBarEntry class, from opennms-webapp. */
     final private String ROLE_BASED_NAV_BAR_ENTRY_CLASS = "org.opennms.web.navigate.RoleBasedNavBarEntry";
 
     public MenuProvider(String dispatcherServletPath) {
         this.dispatcherServletPath = dispatcherServletPath;
+    }
+
+    public String getDispatcherServletPath() {
+        return this.dispatcherServletPath;
+    }
+
+    public void setDispatcherServletPath(String path) {
+        this.dispatcherServletPath = path;
     }
 
     public MainMenu getMainMenu(final MenuRequestContext context) throws Exception, IOException {
