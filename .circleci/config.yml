@@ -477,7 +477,7 @@ commands:
             cd ~/project/opennms-container 
             TOPDIR="$(cd "$(dirname "$0")" || exit 1; pwd -P)"
             TOPDIR="$(echo "$TOPDIR" | sed -e 's,opennms-container/.*$,opennms-container,')"
-            POM_VERSION="$("~/project/opennms-container/pom2version.py" "~/project/pom.xml")"
+            POM_VERSION="$(~/project/opennms-container/pom2version.py "~/project/pom.xml")"
             case "${CIRCLE_BRANCH}" in
               master-*)
                 VERSION="${POM_VERSION}"
