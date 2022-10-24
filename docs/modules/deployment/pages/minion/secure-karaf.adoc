@@ -1,4 +1,4 @@
-.Login to the Karaf shell
+.Log in to the Karaf shell
 [source, console]
 ----
 ssh -p 8201 admin@localhost
@@ -21,6 +21,6 @@ jaas:realm-manage --index 1 --realm karaf
 jaas:user-add admin my-secure-password<1>
 jaas:update
 ----
-<1> Replace `my-secure-password` with a strong password
+<1> Replace `my-secure-password` with a strong password.
 
-Logout and try login to verify your new password is set.
+Log out and log back in to verify that your new password is set.
