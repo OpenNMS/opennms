@@ -113,7 +113,7 @@ If you need to link to another document and want to modify the link text, use th
 .Reference assigned ID with defined link text
 [source, asciidoc]
 ----
-<<target-it, link text that fits the context>>
+<<target-id, link text that fits the context>>
 ----
 
 To include an external link, use the following syntax:
@@ -124,8 +124,13 @@ To include an external link, use the following syntax:
 http://www.opennnms.com[Link text here]
 ----
 
-Links should have descriptive hyperlink text associated, and should avoid generic phrases (for example, "Click here").
+Links should have descriptive hyperlink text associated with them, and should avoid generic phrases (for example, "Click here").
 This helps with search engine optimization.
+
+When inserting an external link to the OpenNMS documentation (for example, linking to the main docs from another project), you can link to the latest version of the docs by replacing the version number in the URL with `latest` (`https://docs.opennms.com/horizon/latest/index.html`).
+Linking to the latest documentation ensures that, when new versions are released, individual cross-reference links do not need to be updated.
+
+NOTE: If you do link to documentation for a specific project version, that link will be valid only for as long as that version is officially supported.
 
 == Lists
 

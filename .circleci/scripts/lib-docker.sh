@@ -35,7 +35,7 @@ create_and_push_manifest() {
   echo "Image-Ref: ${IMAGE_REF}"
 
   MANIFEST_FROM_REG="$(docker manifest inspect "${TARGET_REF}" -v)";
-  DOCKER_IMAGE_BYTES_SIZE="$(printf '%s' "${MANIFEST_FROM_REG}" | jq -r '.[].Descriptor.size' | uniq)";
+  DOCKER_IMAGE_BYTES_SIZE="$(printf '%s' "${MANIFEST_FROM_REG}" | jq -r '.[].Descriptor.size' | uniq | sort -n |tail  -1)";
   echo "Manifest-inspect BYTES: ${DOCKER_IMAGE_BYTES_SIZE}";
 
   #echo "Manifest contents:\n";
