@@ -14,7 +14,7 @@
     </template>
 
     <template v-slot:right>
-      <a :href="computeSearchLink()" class="top-menu-link">Search</a>
+      <a :href="computeSearchLink()" class="top-menu-link top-menu-search">Search</a>
 
       <template v-if="mainMenu.username">
         <!-- Normal menus -->
@@ -43,19 +43,16 @@
         </FeatherDropdown>
 
         <!-- Plugins menu -->
-        <FeatherDropdown v-if="plugins && plugins.length" class="menubar-dropdown-dark" @mouseenter="hoverItem(PluginIndex)"
-          :modelValue="hoveredItems[PluginIndex]">
+        <FeatherDropdown v-if="plugins && plugins.length" class="menubar-dropdown-dark"
+          @mouseenter="hoverItem(PluginIndex)" :modelValue="hoveredItems[PluginIndex]">
           <template v-slot:trigger="{ attrs, on }">
             <FeatherButton link href="#" v-bind="attrs" v-on="on" class="menubar-dropdown-button-dark">
               Plugins
               <FeatherIcon :icon="ArrowDropDown" />
             </FeatherButton>
           </template>
-          <FeatherDropdownItem
-            v-for="plugin of plugins"
-            :key="plugin.extensionId"
-            @click="onMenuItemClick(computePluginRelLink(plugin))"
-          >
+          <FeatherDropdownItem v-for="plugin of plugins" :key="plugin.extensionId"
+            @click="onMenuItemClick(computePluginRelLink(plugin))">
             <div class="menubar-dropdown-item-content menubar-padding">
               <a :href="computeLink(computePluginRelLink(plugin))" class="dropdown-menu-link">
                 <FeatherIcon :icon="UpdateUtilities" />
@@ -192,7 +189,8 @@
           <FeatherDropdownItem v-for="item in mainMenu.userNotificationMenu.items?.filter(i => i.id !== 'user')"
             :key="item.name || ''" @click="onMenuItemClick(item.url || '', item.isVueLink)">
             <div class="menubar-dropdown-item-content">
-              <a :href="computeLink(item.url || '')" class="dropdown-menu-link dropdown-menu-wrapper final-menu-wrapper">
+              <a :href="computeLink(item.url || '')"
+                class="dropdown-menu-link dropdown-menu-wrapper final-menu-wrapper">
                 <template v-if="item.icon && item.id === 'team'">
                   <font-awesome-icon icon="fa-solid fa-users"></font-awesome-icon>
                 </template>
@@ -229,14 +227,14 @@
 
         <!-- Admin/Configuration menu -->
         <a v-if="mainMenu.configurationMenu" :href="computeLink(mainMenu.configurationMenu.url || '')"
-          class="menu-link horiz-padding-small">
+          class="menu-link horiz-padding-small menubar-cogs">
           <font-awesome-icon :icon="`fa-solid ${mainMenu.configurationMenu.icon || 'fa-cogs'}`" class="top-menu-icon"
             :title="`${mainMenu.configurationMenu?.name || 'Configure OpenNMS'}`"></font-awesome-icon>
         </a>
       </template>
 
-      <FeatherIcon :icon="LightDarkMode" title="Toggle Light/Dark Mode" class="pointer light-dark"
-        @click="toggleDarkLightMode(null)" />
+      <!--<FeatherIcon :icon="LightDarkMode" title="Toggle Light/Dark Mode" class="pointer light-dark"
+        @click="toggleDarkLightMode(null)" /> -->
     </template>
 
   </FeatherAppBar>
@@ -472,6 +470,7 @@ onMounted(async () => {
 
 .dropdown-menu-link {
   color: var($primary-text-on-surface) !important;
+
   &:hover {
     text-decoration: none;
   }
@@ -503,15 +502,9 @@ onMounted(async () => {
 
 .top-menu-link,
 a.top-menu-link:visited {
-  color: #ffffff;
-  margin-left: 2px;
+  color: rgba(255, 255, 255, 0.78);
   font-weight: 400;
   font-size: .875rem;
-}
-
-.top-menu-icon {
-  color: #ffffff;
-  margin-left: 2px;
 }
 
 .menubar-dropdown {
@@ -543,7 +536,7 @@ a.top-menu-link:visited {
 }
 
 .menubar-dropdown-item-content.menubar-padding {
-    padding:10px;
+  padding: 10px;
 }
 
 .notification-badge-pill {
@@ -675,7 +668,7 @@ body {
     margin-right: 1rem;
     padding-top: 2px;
     padding-bottom: 0;
-    padding-right:0;
+    padding-right: 0;
   }
 
   .body-large.formatted-time {
@@ -759,11 +752,41 @@ body .feather-menu .feather-menu-dropdown {
 .center-flex {
   display: flex;
   align-items: center;
-  padding-top:3px;
+  padding-top: 3px;
 }
 
 .full-width-left {
   width: 100%;
   text-align: left;
+}
+
+.menubar-cogs {
+  display: flex;
+  align-items: center;
+
+  svg {
+    width: 23px;
+    height: 23px;
+  }
+}
+
+a.top-menu-icon svg.feather-icon {
+  color: #FFF;
+}
+.feather-menu {
+  &.menubar-dropdown {
+    margin-left:0;
+  }
+  .menubar-dropdown-button-dark {
+    padding: 0 6px;
+  }
+}
+.header-content {
+  .right.center-horiz {
+    margin-right:2px;
+  }
+    .top-menu-search {
+      margin-right:5px;
+    }
 }
 </style>

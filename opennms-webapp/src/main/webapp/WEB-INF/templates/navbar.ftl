@@ -107,7 +107,7 @@
                 </div>
             </li>
             <li class="nav-item dropdown">
-                <a href="#" class="nav-link" data-toggle="dropdown" role="button" aria-expanded="false">
+                <a href="#" class="nav-link dropdown-toggle badge-wrapper" data-toggle="dropdown" role="button" aria-expanded="false">
                     <span class="badge badge-pill userNotificationCount" id="userNotificationsBadge"></span>
                     <span class="badge badge-pill teamNotificationCount" id="teamNotificationsBadge"></span>
                 </a>

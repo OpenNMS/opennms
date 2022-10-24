@@ -400,12 +400,14 @@ iframe.vaadin-fullscreen {
 .navbar-dark,.navbar-light {
   span.navbar-formatted-time {
     font-size:14px;
-    color:rgba(255, 255, 255, 0.78);
+    color:rgba(255, 255, 255, 0.8);
     letter-spacing: 0.12px;
     margin-right:1rem;
+    padding-top:13px;
   }
   .navbar-bell {
     margin-right:60px;
+    padding-top:13px;
   }
   .form-control {
       border-radius:0px;
@@ -448,8 +450,12 @@ iframe.vaadin-fullscreen {
       display:none;
     }
   }
+  .navbar-nav {
+    margin-top:-3px;
+  }
   .navbar-nav a.nav-link {
     color:rgba(255,255,255,0.8);
+    letter-spacing:0.25px;
   }
   .dropdown-item {
     padding:10px;
@@ -457,4 +463,37 @@ iframe.vaadin-fullscreen {
   .dropdown-menu-right {
     right:-5px;
   }
+  .badge.badge-pill {
+    width:20px;
+    height:20px;
+    display:flex;
+    align-items:center;
+    justify-content: center;
+    margin-left:4px;
+    margin-right:2px;
+    font-weight:400;
+    font-size: 14px;
+    line-height:32px;
+  }
+  .badge-wrapper {
+    display:flex;
+    &:after {
+      position:relative;
+      top:10px;
+    }
+  }
+  .fa.fa-cogs {
+    width:23px;
+    height:23px;
+    color: #FFF;
+  }
+ 
+.nav-item.dropdown a.dropdown-toggle:after {
+  vertical-align: 2px;
+  margin-left: 6px;
+}
+
+}
+#ui-preview-btn {
+  display:none;
 }
