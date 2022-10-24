@@ -53,7 +53,7 @@ public interface Topology {
             port.append(snmpiface.getIfAlias());
             port.append(")");
         } 
-        if ( snmpiface.getIfSpeed() > 0) {
+        if ( snmpiface.getIfSpeed() != null && snmpiface.getIfSpeed() > 0) {
             port.append("(");
             port.append(InetAddressUtils.getHumanReadableIfSpeed(snmpiface.getIfSpeed()));
             port.append(")");
