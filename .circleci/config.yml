@@ -210,10 +210,6 @@ commands:
           command: |
             cd opennms-container/sentinel
             docker image load -i /tmp/oci-sentinel/container.oci
-            #output=`docker images  sentinel --format '{{.ID}}'`
-            #docker tag $output sentinel:latest
-            #docker images
-            #docker tag sentinel:"${VERSION}"  sentinel:latest
       - run:
           name: Monitor JVM processes
           background: true

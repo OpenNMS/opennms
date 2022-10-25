@@ -22,10 +22,6 @@ gpgcheck=0
 END
 
 
-docker images
-docker rmi $(docker images | grep 'horizon')
-
-
 docker build -t horizon:"${VERSION}" \
   --network "${BUILD_NETWORK}" \
   --build-arg BUILD_DATE="${BUILD_DATE}" \
@@ -42,7 +38,6 @@ if [ -n "${CIRCLE_BUILD_NUM}" ]; then
   IMAGE_VERSION+=("${BASE_IMAGE_VERSION}-b${CIRCLE_BUILD_NUM}")
 fi
 
-docker images
 docker tag horizon:"${VERSION}"  horizon:latest
 
 docker image save horizon:latest -o images/container.oci
