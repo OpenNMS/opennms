@@ -29,12 +29,12 @@
 package org.opennms.netmgt.enlinkd.service.api;
 
 public enum ProtocolSupported {
+    NODES,
+    CDP,
     LLDP,
+    BRIDGE,
     OSPF,
     ISIS,
-    BRIDGE,
-    CDP,
-    NODES,
     USERDEFINED,
     NETWORKROUTER
 }

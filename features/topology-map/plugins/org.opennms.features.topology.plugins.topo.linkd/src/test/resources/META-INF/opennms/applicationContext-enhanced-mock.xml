@@ -38,7 +38,12 @@
 		<constructor-arg ref="nodeTopologyService" />
 	</bean>
 
-	<bean id ="lldpOnmsTopologyUpdater" class="org.opennms.netmgt.enlinkd.LldpOnmsTopologyUpdater">
+    <bean id ="networkRouterTopologyUpdater" class="org.opennms.netmgt.enlinkd.NetworkRouterTopologyUpdater">
+        <constructor-arg ref="onmsTopologyDao" />
+        <constructor-arg ref="nodeTopologyService" />
+    </bean>
+
+    <bean id ="lldpOnmsTopologyUpdater" class="org.opennms.netmgt.enlinkd.LldpOnmsTopologyUpdater">
 		<constructor-arg ref="onmsTopologyDao" />
 		<constructor-arg ref="lldpTopologyService" />
 		<constructor-arg ref="nodeTopologyService" />
