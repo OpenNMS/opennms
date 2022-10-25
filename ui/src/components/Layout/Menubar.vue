@@ -450,31 +450,45 @@ const clearShiftCheck = () => {
   lastShift.timeSinceLastKey = 0
 }
 
+/**
+ * Used to focus the search bar at the top of the page when the user hits either shift
+ * key in quick succession (less than 2000 ms). Only stores a single shift keypress, ignores
+ * all other input. Upon detection of the second shift keypress, it clears all stored values,
+ * focuses the search box in the MenuBar and returns to its default state.
+ * 
+ * Logic:
+ * If user presses either left or right shift key and we're in a default state, store it in temporary memory, 
+ * along with the time it was pressed.
+ * 
+ * If user presses any other key, clear stored values and stored timestamp.
+ * 
+ * If user's last keypress was a shift key, 
+ * but they take longer than the variable shiftDelay (currently 2000ms), 
+ * clear state and return to default.
+ * 
+ * If the user presses a shift key, directly after pressing a shift key, 
+ * focus the search box, clear the values and return to a default state.
+ * 
+ */
 const shiftCheck = (e: KeyboardEvent) => {
   const shiftCodes = ['ShiftLeft', 'ShiftRight']
-  console.log('shift check',e.code)
+  const shiftDelay = 2000
   if (shiftCodes.includes(e.code)) {
-    console.log('it includes')
     if (shiftCodes.includes(lastShift.lastKey)) {
-      console.log('last key was also shift',Date.now(),lastShift.timeSinceLastKey,Date.now() - lastShift.timeSinceLastKey)
-      if (Date.now() - lastShift.timeSinceLastKey < 2000) {
-        console.log('were good. focus the thing')
+      if (Date.now() - lastShift.timeSinceLastKey < shiftDelay) {
         clearShiftCheck()
         const elem: HTMLInputElement | null = document.querySelector('.menubar-search textarea')
         if (elem) {
           elem.focus()
         }
       } else {
-        console.log('time elapsed, clearing')
         clearShiftCheck()
       }
     } else {
-      console.log('last key was not shift, setting up for next check')
       lastShift.lastKey = e.code
       lastShift.timeSinceLastKey = Date.now()
     }
   } else {
-    console.log('wrong keycode, clearing')
     clearShiftCheck()
   }
 }
