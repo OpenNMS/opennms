@@ -90,6 +90,7 @@ public abstract class ElementUtil {
         
         m_interfaceSnmpStatusMap = new HashMap<Character, String>();
         m_interfaceSnmpStatusMap.put('P', "Polled");
+        m_interfaceSnmpStatusMap.put('I', "Not Polled");
         m_interfaceSnmpStatusMap.put('N', "Not Monitored");
         
         m_serviceStatusMap = new HashMap<Character, String>();

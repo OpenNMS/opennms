@@ -234,6 +234,7 @@ public class DefaultPollContext implements PollContext {
     		dbSnmpInterface.setIfOperStatus(snmpinterface.getIfOperStatus());
     		dbSnmpInterface.setIfAdminStatus(snmpinterface.getIfAdminStatus());
     		dbSnmpInterface.setLastSnmpPoll(snmpinterface.getLastSnmpPoll());
+            dbSnmpInterface.setPoll(snmpinterface.getPoll());
     		log().debug("updating SnmpInterface: " + dbSnmpInterface.toString());
     		getSnmpInterfaceDao().update(dbSnmpInterface);
     	}
