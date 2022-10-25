@@ -126,6 +126,12 @@ function version()
         head -n 1
 }
 
+function opa_version()
+{
+    grep '<opennmsApiVersion>' pom.xml | \
+    sed -e 's,^[^>]*>,,' -e 's,<.*$,,' -e 's,-[^-]*-SNAPSHOT$,,' -e 's,-SNAPSHOT$,,' -e 's,-testing$,,' -e 's,-,.,g' | \
+    head -n 1
+}
 function skipCompile()
 {
     if $ASSEMBLY_ONLY; then echo 1; else echo 0; fi
@@ -199,6 +205,7 @@ fi
 EXTRA_INFO=$(extraInfo)
 EXTRA_INFO2=$(extraInfo2)
 VERSION=$(version)
+OPA_VERSION=$(opa_version)
 
 export PATH="$TOPDIR/maven/bin:$JAVA_HOME/bin:$PATH"
 
@@ -211,6 +218,7 @@ function build_opennms()
     echo
     echo "Version: " $VERSION
     echo "Release: " $RELEASE
+    echo "OPA VERSION: " $OPA_VERSION
     echo
 
     if $DO_CHANGELOG; then
