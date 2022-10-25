@@ -37,6 +37,7 @@ if [ -n "${CIRCLE_BUILD_NUM}" ]; then
   IMAGE_VERSION+=("${BASE_IMAGE_VERSION}-b${CIRCLE_BUILD_NUM}")
 fi
 
+docker images
 docker tag horizon:"${VERSION}"  horizon:latest
 
 docker image save horizon:latest -o images/container.oci

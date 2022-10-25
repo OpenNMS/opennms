@@ -33,6 +33,8 @@ docker build -t minion:"${VERSION}" \
   --build-arg BUILD_BRANCH="${BUILD_BRANCH}" \
   .
 
+docker images
+
 docker tag minion:"${VERSION}"  minion:latest
 
 docker image save minion:latest -o images/container.oci

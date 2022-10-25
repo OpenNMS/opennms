@@ -33,6 +33,8 @@ docker build -t sentinel:"${VERSION}" \
   --build-arg BUILD_BRANCH="${BUILD_BRANCH}" \
   .
 
+docker images
+
 docker tag sentinel:"${VERSION}"  sentinel:latest
 
 docker image save sentinel:latest -o images/container.oci
