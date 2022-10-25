@@ -485,10 +485,8 @@ commands:
             for FILE in *.oci; do
               echo "Loading ${FILE} into Docker..."
               docker image load -i "$FILE"
-              #output=`docker images  $image_name --format '{{.ID}}'`
-              #docker tag $output  $image_name:latest
-              #docker images
             done
+            docker images
 
 workflows:
   weekly-coverage:

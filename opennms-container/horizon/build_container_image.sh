@@ -21,6 +21,11 @@ enabled=1
 gpgcheck=0
 END
 
+
+docker images
+docker rmi $(docker images | grep 'horizon')
+
+
 docker build -t horizon:"${VERSION}" \
   --network "${BUILD_NETWORK}" \
   --build-arg BUILD_DATE="${BUILD_DATE}" \
