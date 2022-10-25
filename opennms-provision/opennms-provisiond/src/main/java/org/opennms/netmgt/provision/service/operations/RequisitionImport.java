@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.provision.service.operations;
 
+import static java.util.Optional.ofNullable;
+
 import javax.xml.bind.ValidationException;
 
 import org.slf4j.Logger;
@@ -54,6 +56,10 @@ public class RequisitionImport {
                 LOG.debug("Requisition {} did not validate, but we'll ignore the exception because we've previously aborted with: {}", requisition, m_throwable, e);
             }
         }
+    }
+
+    public static boolean isValidRequisitionImport(RequisitionImport ri) {
+        return ofNullable(ri).isPresent() && ofNullable(ri.getRequisition()).isPresent();
     }
 
     public Throwable getError() {

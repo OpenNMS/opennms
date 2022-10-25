@@ -28,8 +28,10 @@
 
 package org.opennms.netmgt.provision.service;
 
+import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 import static org.opennms.netmgt.provision.service.lifecycle.Lifecycles.RESOURCE;
+import static org.opennms.netmgt.provision.service.operations.RequisitionImport.isValidRequisitionImport;
 
 import java.io.File;
 import java.net.InetAddress;
@@ -542,7 +544,7 @@ public class Provisioner implements SpringServiceDaemon {
                     resource = new FileSystemResource(file);
                 } else {
                     final String filename = file.getName();
-                    if (filename.contains("%20")) {
+                    if (isNotBlank(filename) && filename.contains("%20")) {
                         resource = new FileSystemResource(new File(file.getParentFile(), filename.replace("%20", " ")));
                     } else {
                         resource = new UrlResource(url);
@@ -555,22 +557,18 @@ public class Provisioner implements SpringServiceDaemon {
             send(importStartedEvent(resource, rescanExisting), monitor);
 
             final RequisitionImport ri = importModelFromResource(resource, rescanExisting, monitor);
-            String foreignSource = null;
-            if (ri != null && ri.getRequisition() != null) {
-                foreignSource = ri.getRequisition().getForeignSource();
-            }
+            String foreignSource = isValidRequisitionImport(ri) ? ri.getRequisition().getForeignSource() : null;
             monitor.finishImporting();
             LOG.info("Finished Importing: {}", monitor);
-    
+
             send(importSuccessEvent(monitor, url, rescanExisting, foreignSource), monitor);
-    
-        } catch (final Throwable t) {
+
+        } catch (Exception e) {
             final String msg = "Exception importing "+url;
-            LOG.error("Exception importing {} using rescanExisting={}", url, rescanExisting, t);
-            send(importFailedEvent((msg+": "+t.getMessage()), url, rescanExisting), monitor);
+            LOG.error("Exception importing {} using rescanExisting={}", url, rescanExisting, e);
+            send(importFailedEvent((msg+": "+e), url, rescanExisting), monitor);
         }
     }
-
 
     /**
      * <p>handleNodeAddedEvent</p>
@@ -583,8 +581,8 @@ public class Provisioner implements SpringServiceDaemon {
         LOG.warn("node added event ({})", System.currentTimeMillis());
         try {
             /* we don't force a scan on node added so new suspect doesn't cause 2 simultaneous node scans
-             * New nodes that are created another way shouldn't have a 'lastCapsPoll' timestamp set 
-             */ 
+             * New nodes that are created another way shouldn't have a 'lastCapsPoll' timestamp set
+             */
             scheduleForNode = getProvisionService().getScheduleForNode(e.getNodeid().intValue(), false, getMonitorKey(e));
         } catch (Throwable t) {
             LOG.error("getScheduleForNode fails", t);
@@ -595,7 +593,7 @@ public class Provisioner implements SpringServiceDaemon {
         }
 
     }
-    
+
     /**
      * <p>handleForceRescan</p>
      *
@@ -627,7 +625,7 @@ public class Provisioner implements SpringServiceDaemon {
         };
         m_scheduledExecutor.execute(r);
     }
-    
+
     @EventHandler(uei = EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI)
     public void handleNewSuspectEvent(IEvent event) {
         final String uei = event.getUei();
@@ -685,9 +683,9 @@ public class Provisioner implements SpringServiceDaemon {
         };
         // Run new suspect events in a single thread executor so that only one node will be scanned at a given time.
         m_newSuspectExecutor.execute(r);
-        
+
     }
-    
+
     /**
      * <p>handleNodeUpdated</p>
      * A re-import has occurred, attempt a rescan now.
@@ -697,7 +695,7 @@ public class Provisioner implements SpringServiceDaemon {
     @EventHandler(uei = EventConstants.NODE_UPDATED_EVENT_UEI)
     public void handleNodeUpdated(IEvent e) {
     	LOG.debug("Node updated event received: {}", e);
-    	
+
         if (!Boolean.valueOf(System.getProperty(SCHEDULE_RESCAN_FOR_UPDATED_NODES, "true"))) {
         	LOG.debug("Rescanning updated nodes is disabled via property: {}", SCHEDULE_RESCAN_FOR_UPDATED_NODES);
         	return;
@@ -716,13 +714,13 @@ public class Provisioner implements SpringServiceDaemon {
             LOG.debug("Rescanning updated nodes is disabled via event parameter: {}", EventConstants.PARM_RESCAN_EXISTING);
             return;
         }
-        
+
         removeNodeFromScheduleQueue(new Long(e.getNodeid()).intValue());
         NodeScanSchedule scheduleForNode = getProvisionService().getScheduleForNode(e.getNodeid().intValue(), true, monitorKey);
         if (scheduleForNode != null) {
             addToScheduleQueue(scheduleForNode);
         }
-        
+
     }
 
     /**
@@ -733,9 +731,9 @@ public class Provisioner implements SpringServiceDaemon {
     @EventHandler(uei = EventConstants.NODE_DELETED_EVENT_UEI)
     public void handleNodeDeletedEvent(IEvent e) {
         removeNodeFromScheduleQueue(e.getNodeid().intValue());
-        
+
     }
-    
+
     /**
      * <p>handleReloadConfigEvent</p>
      *
@@ -743,43 +741,43 @@ public class Provisioner implements SpringServiceDaemon {
      */
     @EventHandler(uei = EventConstants.RELOAD_DAEMON_CONFIG_UEI)
     public void handleReloadConfigEvent(IEvent e) {
-        
+
         if (isReloadConfigEventTarget(e)) {
             LOG.info("handleReloadConfigEvent: reloading configuration...");
             EventBuilder ebldr = null;
 
             try {
                 LOG.debug("handleReloadConfigEvent: lock acquired, unscheduling current reports...");
-                
+
                 m_importSchedule.rebuildImportSchedule();
-                
+
                 LOG.debug("handleRelodConfigEvent: reports rescheduled.");
-                
+
                 ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, "Provisiond");
                 ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Provisiond");
-                
+
             } catch (Throwable exception) {
-                
+
                 LOG.error("handleReloadConfigurationEvent: Error reloading configuration", exception);
                 ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, "Provisiond");
                 ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Provisiond");
                 ebldr.addParam(EventConstants.PARM_REASON, exception.getLocalizedMessage().substring(1, 128));
-                
+
             }
-            
+
             if (ebldr != null) {
                 m_eventForwarder.sendNow(ebldr.getEvent());
             }
             LOG.info("handleReloadConfigEvent: configuration reloaded.");
         }
-        
+
     }
-    
+
     private boolean isReloadConfigEventTarget(IEvent event) {
         boolean isTarget = false;
-        
+
         List<IParm> parmCollection = event.getParmCollection();
-        
+
 
         for (IParm parm : parmCollection) {
             if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && "Provisiond".equalsIgnoreCase(parm.getValue().getContent())) {
@@ -787,7 +785,7 @@ public class Provisioner implements SpringServiceDaemon {
                 break;
             }
         }
-        
+
         LOG.debug("isReloadConfigEventTarget: Provisiond was target of reload event: {}", isTarget);
         return isTarget;
     }
@@ -838,7 +836,7 @@ public class Provisioner implements SpringServiceDaemon {
             LOG.error("Unexpected exception processing event: {}", event.getUei(), e);
         }
     }
-    
+
     private void doDeleteInterface(long nodeId, String ipAddr) {
         m_provisionService.deleteInterface((int)nodeId, ipAddr);
     }
@@ -856,7 +854,7 @@ public class Provisioner implements SpringServiceDaemon {
             LOG.error("Unexpected exception processing event: {}", event.getUei(), e);
         }
     }
-    
+
     private void doDeleteNode(long nodeId) {
         m_provisionService.deleteNode((int)nodeId);
     }
@@ -879,7 +877,7 @@ public class Provisioner implements SpringServiceDaemon {
             LOG.error("Unexpected exception processing event: {}", event.getUei(), e);
         }
     }
-    
+
     private void doDeleteService(final long nodeId, final InetAddress addr, final String service, final boolean ignoreUnmanaged) {
         m_provisionService.deleteService((int)nodeId, addr, service, ignoreUnmanaged);
     }
@@ -890,12 +888,12 @@ public class Provisioner implements SpringServiceDaemon {
 
     private String getEventRescanExistingOnImport(final IEvent event) {
         final String rescanExisting = EventUtils.getParm(event, EventConstants.PARM_IMPORT_RESCAN_EXISTING);
-        
+
         if (rescanExisting == null) {
             final String enabled = System.getProperty(SCHEDULE_RESCAN_FOR_UPDATED_NODES, "true");
             return enabled;
         }
-        
+
         return rescanExisting;
     }
 
@@ -915,7 +913,7 @@ public class Provisioner implements SpringServiceDaemon {
     }
 
     private Event importSuccessEvent(final ProvisionMonitor stats, final String url, final String rescanExisting, final String foreignSource) {
-    
+
         return new EventBuilder( EventConstants.IMPORT_SUCCESSFUL_UEI, NAME )
             .addParam( EventConstants.PARM_IMPORT_RESOURCE, stripCredentials(url) )
             .addParam( EventConstants.PARM_IMPORT_RESCAN_EXISTING, rescanExisting )
@@ -930,17 +928,19 @@ public class Provisioner implements SpringServiceDaemon {
         monitor.finishSendingEvent(event);
     }
 
+    // TODO: look here at the event
+    // TODO: probably in the event builder the exception stack trace must be added
     private Event importFailedEvent(final String msg, final String url, final String rescanExisting) {
-    
+
         return new EventBuilder( EventConstants.IMPORT_FAILED_UEI, NAME )
             .addParam( EventConstants.PARM_IMPORT_RESOURCE, stripCredentials(url) )
             .addParam( EventConstants.PARM_IMPORT_RESCAN_EXISTING, rescanExisting)
-            .addParam( EventConstants.PARM_FAILURE_MESSAGE, msg )
+            .addParam( EventConstants.PARM_FAILURE_MESSAGE, msg)
             .getEvent();
     }
 
     private Event importStartedEvent(final Resource resource, final String rescanExisting) {
-    
+
         return new EventBuilder( EventConstants.IMPORT_STARTED_UEI, NAME )
             .addParam( EventConstants.PARM_IMPORT_RESOURCE, stripCredentials(resource.toString()) )
             .addParam( EventConstants.PARM_IMPORT_RESCAN_EXISTING, rescanExisting )
