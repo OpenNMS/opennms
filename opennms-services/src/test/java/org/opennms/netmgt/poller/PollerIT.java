@@ -69,6 +69,7 @@ import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.Querier;
 import org.opennms.netmgt.config.poller.Package;
+import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
@@ -162,6 +163,9 @@ public class PollerIT implements TemporaryDatabaseAware<MockDatabase> {
 
     private LocationAwarePingClient m_locationAwarePingClient;
 
+    @Autowired
+    DistPollerDao m_distPollerDao;
+
     //
     // SetUp and TearDown
     //
@@ -204,6 +208,7 @@ public class PollerIT implements TemporaryDatabaseAware<MockDatabase> {
         m_network.addService("SNMP");
         MockService unmonitoredService = m_network.addService("NotMonitored");
 
+        m_db.setDistPoller(m_distPollerDao.whoami().getId());
         m_db.populate(m_network);
         DataSourceFactory.setInstance(m_db);
 

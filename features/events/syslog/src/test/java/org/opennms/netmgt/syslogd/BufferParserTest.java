@@ -38,7 +38,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.opennms.core.test.ConfigurationTestUtils;
@@ -47,8 +46,8 @@ import org.opennms.core.time.ZonedDateTimeBuilder;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SyslogdConfig;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
-import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
+import org.opennms.netmgt.dao.mock.MockDistPollerDao;
 import org.opennms.netmgt.provision.LocationAwareDnsLookupClient;
 import org.opennms.netmgt.syslogd.ParserStageSequenceBuilder.MatchChar;
 import org.opennms.netmgt.syslogd.ParserStageSequenceBuilder.MatchMonth;
@@ -240,7 +239,7 @@ public class BufferParserTest {
 			long start = System.currentTimeMillis();
 			for (int i = 0; i < iterations; i++) {
 				ConvertToEvent convertToEvent = new ConvertToEvent(
-					DistPollerDao.DEFAULT_DIST_POLLER_ID,
+					MockDistPollerDao.DEFAULT_DIST_POLLER_ID,
 					MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID,
 					InetAddressUtils.ONE_TWENTY_SEVEN,
 					9999,
@@ -261,7 +260,7 @@ public class BufferParserTest {
 			long start = System.currentTimeMillis();
 			for (int i = 0; i < iterations; i++) {
 				ConvertToEvent convertToEvent = new ConvertToEvent(
-					DistPollerDao.DEFAULT_DIST_POLLER_ID,
+					MockDistPollerDao.DEFAULT_DIST_POLLER_ID,
 					MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID,
 					InetAddressUtils.ONE_TWENTY_SEVEN,
 					9999,
@@ -461,7 +460,7 @@ public class BufferParserTest {
 		assertNull(message.getMillisecond());
 		assertNull(message.getZoneId());
 
-		Event event = ConvertToEvent.toEventBuilder(message, DistPollerDao.DEFAULT_DIST_POLLER_ID, MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID).getEvent();
+		Event event = ConvertToEvent.toEventBuilder(message, MockDistPollerDao.DEFAULT_DIST_POLLER_ID, MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID).getEvent();
 		assertEquals("main", event.getParm("messageid").getValue().getContent());
 		assertEquals("foo%d", event.getParm("process").getValue().getContent());
 	}
@@ -517,7 +516,7 @@ public class BufferParserTest {
 		assertEquals("localhost", message.getHostName());
 		assertEquals("connect from www.opennms.org[10.1.1.1]", message.getMessage());
 
-		Event event = ConvertToEvent.toEventBuilder(message, DistPollerDao.DEFAULT_DIST_POLLER_ID, MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID).getEvent();
+		Event event = ConvertToEvent.toEventBuilder(message, MockDistPollerDao.DEFAULT_DIST_POLLER_ID, MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID).getEvent();
 		assertEquals("localhost", event.getParm("hostname").getValue().getContent());
 		assertEquals("postfix/smtpd", event.getParm("process").getValue().getContent());
 	}
@@ -540,7 +539,7 @@ public class BufferParserTest {
 		assertNull(message.getHostName());
 		assertEquals("Authentication failed from 7.40.16.188 - sshd[20189]", message.getMessage());
 
-		Event event = ConvertToEvent.toEventBuilder(message, DistPollerDao.DEFAULT_DIST_POLLER_ID, MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID).getEvent();
+		Event event = ConvertToEvent.toEventBuilder(message, MockDistPollerDao.DEFAULT_DIST_POLLER_ID, MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID).getEvent();
 		assertNull(event.getParm("hostname").getValue().getContent());
 		assertEquals("%AUTHPRIV-3-SYSTEM_MSG", event.getParm("process").getValue().getContent());
 	}

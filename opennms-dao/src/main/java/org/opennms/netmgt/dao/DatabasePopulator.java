@@ -319,7 +319,7 @@ public class DatabasePopulator {
     private void doPopulateDatabase() {
         LOG.debug("==== DatabasePopulator Starting ====");
 
-        final NetworkBuilder builder = new NetworkBuilder();
+        final NetworkBuilder builder = new NetworkBuilder(m_distPollerDao.whoami());
 
         final OnmsNode node1 = buildNode1(builder);
         getNodeDao().save(node1);
