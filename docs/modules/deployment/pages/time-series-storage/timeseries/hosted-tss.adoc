@@ -10,7 +10,7 @@ In addition, users can view time series summary data including health status, ca
 Make sure you have the following before you start to use hosted time series service:
 
 * Horizon 31+ (Meridian availability with the 2023 release)
-* Access to the xref:https://portal.opennms.com[OpenNMS Portal] to retrieve your API key and view hosted time series service metrics
+* Access to the https://portal.opennms.com[OpenNMS Portal] to retrieve your API key and view hosted time series service metrics
 
 Contact sales@opennms.com to sign up for hosted time series service.
 
@@ -27,7 +27,7 @@ There are three phases of deployment to set up the hosted time series service fo
 The Cloud Connectivity plugin makes it possible for a {page-component-title} instance to send time series data to an OpenNMS-hosted cloud service.
 
 The Cloud Connectivity plugin is installed by default in {page-component-title} 31.
-However, you need to move the configuration files into the correct location and restart {page-component-title}:
+However, you need to move the configuration files into the correct location and restart {page-component-title} as part of the hosted time series service set up:
 
 [source, console]
 ----
@@ -42,7 +42,7 @@ The license key enables the hosted time series service in {page-component-title}
 
 You must log in to the OpenNMS Portal to get this license key, copy it, and then paste it into the appropriate screen in {page-component-title}.
 
-You should have received an activation email from OpenNMS with a login for the OpenNMS Portal.
+When you signed up for the hosted time series service, you received an activation email from OpenNMS with a login for the OpenNMS Portal.
 
 To obtain the license key, follow these steps:
 
@@ -58,24 +58,44 @@ To obtain the license key, follow these steps:
 NOTE: The key is valid for one hour.
 If you do not use it within that time, you must log back into the OpenNMS Portal and copy it from your instance.
 
-. Log in to the OpenNMS web UI for your instance.
+. Log in to the OpenNMS {page-component-title} web UI for your instance.
 . Click *UI Preview*.
-. In the left menu, click *Time Series*.
-. Turn hosted time series on.
+. In the left menu, click *OpenNMS Cloud*.
+. Turn the hosted time series toggle to "on".
 . Paste the key in the ?? field and click *Save*.
+. Click *Activate Cloud Services for OpenNMS*.
 
 By default, collectd collects data every five minutes.
 You should see time series summary information in the OpenNMS Portal UI within 15 minutes.
 For more information on how to view this information, see #View Time Series Summary Data# in the OpenNMS Portal documentation.
-To change the data collection frequency, see #XXX#.
-
-
-
-
-
-
-
-
+To change the data collection frequency, see xref:operation:performance-data-collection/collectd/collection-packages.adoc#ga-collectd-packages-services[Service configuration attributes].
 
 == Troubleshooting
+
+To verify that your hosted time series service is set up correctly, run the `health-check` command in Karaf.
+You should see something like the following:
+
+[source,karaf]
+----
+admin@opennms()> health-check
+Verifying the health of the container
+
+Verifying installed bundles                    [ Success  ]
+Cloud status                                   [ Success  ] => Cloud status=SERVING
+Connecting to ElasticSearch ReST API (Flows)   [ Success  ] => Not configured
+
+=> Everything is awesome
+----
+
+Check Karaf logs if the registration fails or the health check does not say `SERVING`.
+If this is the case, you will need to open a support ticket.
+
+You can also check that `OPENNMS_HOME/share/rrd` files are still being updated.
+If they are not, this indicates that the hosted time series service is not working.
+
+
+
+
+
+
 
