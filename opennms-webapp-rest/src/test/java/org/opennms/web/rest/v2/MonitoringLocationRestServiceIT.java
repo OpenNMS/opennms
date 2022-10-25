@@ -35,7 +35,8 @@ import java.util.Map;
 import javax.ws.rs.core.MediaType;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.codehaus.jackson.map.DeserializationConfig;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import static org.hamcrest.CoreMatchers.is;
@@ -179,67 +180,38 @@ public class MonitoringLocationRestServiceIT extends AbstractSpringJerseyRestTes
 
         final Integer DEFAULT_LIMIT = 10;
         final Integer LOCATION_COUNT = 15;
+
         final ObjectMapper MAPPER = new ObjectMapper();
+        MAPPER.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-        this.eventIpcManager.getEventAnticipator().reset();
-
-        // There is one default location
-        LOG.info("Adding locations...");
+        // There is one default location (therefore we subtract one from LOCATION COUNT)
         for (int i = 0; i < LOCATION_COUNT - 1; i++) {
-            OnmsMonitoringLocation loc = new OnmsMonitoringLocation();
-            loc.setLocationName(String.format("Location-%05d",i));
-            loc.setMonitoringArea(String.format("LocationArea-%05d", i));
+            OnmsMonitoringLocation loc = new OnmsMonitoringLocation(String.format("LocationName-%05d",i),String.format("LocationArea-%05d", i));
             sendData(POST, MediaType.APPLICATION_XML,"/monitoringLocations", JaxbUtils.marshal(loc), 201);
-            this.eventIpcManager.getEventAnticipator().verifyAnticipated();
         }
 
         // null limit (empty parameters) should return default
         assertThat(MAPPER.readValue(sendRequest(GET, "/monitoringLocations",
-                    Collections.emptyMap(), 200),Locations.class).count, is(DEFAULT_LIMIT));
+                    Collections.emptyMap(), 200),OnmsMonitoringLocationDefinitionList.class).getCount(), is(DEFAULT_LIMIT));
 
         // limit less than default
         assertThat(MAPPER.readValue(sendRequest(GET, "/monitoringLocations", Map.of("limit",
-                Integer.toString(DEFAULT_LIMIT-1)), 200), Locations.class).count, is(DEFAULT_LIMIT-1));
+                Integer.toString(DEFAULT_LIMIT-1)), 200), OnmsMonitoringLocationDefinitionList.class).getCount(), is(DEFAULT_LIMIT-1));
 
         // limit equals default
         assertThat(MAPPER.readValue(sendRequest(GET, "/monitoringLocations", Map.of("limit",
-                Integer.toString(DEFAULT_LIMIT)), 200), Locations.class).count, is(DEFAULT_LIMIT));
+                Integer.toString(DEFAULT_LIMIT)), 200), OnmsMonitoringLocationDefinitionList.class).getCount(), is(DEFAULT_LIMIT));
 
         // limit greater than default
         assertThat(MAPPER.readValue(sendRequest(GET, "/monitoringLocations", Map.of("limit",
-                Integer.toString(DEFAULT_LIMIT+1)), 200), Locations.class).count, is(DEFAULT_LIMIT+1));
+                Integer.toString(DEFAULT_LIMIT+1)), 200), OnmsMonitoringLocationDefinitionList.class).getCount(), is(DEFAULT_LIMIT+1));
 
         // max count
         assertThat(MAPPER.readValue(sendRequest(GET, "/monitoringLocations", Map.of("limit",
-                Integer.toString(LOCATION_COUNT)), 200), Locations.class).count, is(LOCATION_COUNT));
+                Integer.toString(LOCATION_COUNT)), 200), OnmsMonitoringLocationDefinitionList.class).getCount(), is(LOCATION_COUNT));
 
         // unlimited, should return all
         assertThat(MAPPER.readValue(sendRequest(GET, "/monitoringLocations", Map.of("limit",
-                Integer.toString(DEFAULT_LIMIT-1)), 200), Locations.class).count, is(DEFAULT_LIMIT-1));
-    }
-
-    /**
-     * Used for mapper to load Json from rest service
-     */
-    private static class Location {
-        public int priority;
-        public ArrayList<Object> tags;
-        public Object geolocation;
-        public Object latitude;
-        public Object longitude;
-        @JsonProperty("location-name")
-        public String locationName;
-        @JsonProperty("monitoring-area")
-        public String monitoringArea;
-    }
-
-    /**
-     * Used for mapper to load Json from rest service
-     */
-    private static class Locations {
-        public int offset;
-        public int count;
-        public int totalCount;
-        public ArrayList<Location> location;
+                Integer.toString(0)), 200), OnmsMonitoringLocationDefinitionList.class).getCount(), is(LOCATION_COUNT));
     }
 }
