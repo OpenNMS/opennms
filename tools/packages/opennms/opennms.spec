@@ -69,6 +69,7 @@ Requires(pre):		postgresql-server  >= 10
 Requires:		postgresql-server  >= 10
 Requires(pre):		%{jdk}
 Requires:		%{jdk}
+Provides:	opennms-integration-api = %{opa_version}
 
 # don't worry about buildrequires, the shell script will bomb quick  =)
 #BuildRequires:		%{jdk}
@@ -100,7 +101,7 @@ Requires:	jicmp6 >= 2.0.0
 Requires(pre):	/usr/sbin/useradd
 Requires:	/usr/sbin/useradd
 Obsoletes:	opennms < 1.3.11
-Provides:	org.opennms.integration.api = %{opa_version}
+Provides:	opennms-integration-api = %{opa_version}
 Provides:	%{name}-plugin-protocol-xml = %{version}-%{release}
 Obsoletes:	%{name}-plugin-protocol-xml < %{version}
 Provides:	%{name}-plugin-protocol-dhcp = %{version}-%{release}
