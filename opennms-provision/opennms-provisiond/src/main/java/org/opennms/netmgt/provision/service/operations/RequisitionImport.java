@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.provision.service.operations;
 
+import static java.util.Optional.ofNullable;
+
 import javax.xml.bind.ValidationException;
 
 import org.slf4j.Logger;
@@ -73,4 +75,7 @@ public class RequisitionImport {
         return false;
     }
 
+    public static boolean isValidRequisitionImport(RequisitionImport ri) {
+        return ofNullable(ri).isPresent() && ofNullable(ri.getRequisition()).isPresent();
+    }
 }

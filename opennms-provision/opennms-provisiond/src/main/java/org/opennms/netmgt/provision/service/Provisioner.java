@@ -28,8 +28,10 @@
 
 package org.opennms.netmgt.provision.service;
 
+import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 import static org.opennms.netmgt.provision.service.lifecycle.Lifecycles.RESOURCE;
+import static org.opennms.netmgt.provision.service.operations.RequisitionImport.isValidRequisitionImport;
 
 import java.io.File;
 import java.net.InetAddress;
@@ -542,7 +544,7 @@ public class Provisioner implements SpringServiceDaemon {
                     resource = new FileSystemResource(file);
                 } else {
                     final String filename = file.getName();
-                    if (filename.contains("%20")) {
+                    if (isNotBlank(filename) && filename.contains("%20")) {
                         resource = new FileSystemResource(new File(file.getParentFile(), filename.replace("%20", " ")));
                     } else {
                         resource = new UrlResource(url);
@@ -555,19 +557,17 @@ public class Provisioner implements SpringServiceDaemon {
             send(importStartedEvent(resource, rescanExisting), monitor);
 
             final RequisitionImport ri = importModelFromResource(resource, rescanExisting, monitor);
-            String foreignSource = null;
-            if (ri != null && ri.getRequisition() != null) {
-                foreignSource = ri.getRequisition().getForeignSource();
-            }
+            String foreignSource = isValidRequisitionImport(ri) ? ri.getRequisition().getForeignSource() : null;
+
             monitor.finishImporting();
             LOG.info("Finished Importing: {}", monitor);
     
             send(importSuccessEvent(monitor, url, rescanExisting, foreignSource), monitor);
     
-        } catch (final Throwable t) {
+        } catch (Exception e) {
             final String msg = "Exception importing "+url;
-            LOG.error("Exception importing {} using rescanExisting={}", url, rescanExisting, t);
-            send(importFailedEvent((msg+": "+t.getMessage()), url, rescanExisting), monitor);
+            LOG.error("Exception importing {} using rescanExisting={}", url, rescanExisting, e);
+            send(importFailedEvent((msg+": "+e), url, rescanExisting), monitor);
         }
     }
 
