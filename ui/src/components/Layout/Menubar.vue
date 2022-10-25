@@ -43,19 +43,16 @@
         </FeatherDropdown>
 
         <!-- Plugins menu -->
-        <FeatherDropdown v-if="plugins && plugins.length" class="menubar-dropdown-dark" @mouseenter="hoverItem(PluginIndex)"
-          :modelValue="hoveredItems[PluginIndex]">
+        <FeatherDropdown v-if="plugins && plugins.length" class="menubar-dropdown-dark"
+          @mouseenter="hoverItem(PluginIndex)" :modelValue="hoveredItems[PluginIndex]">
           <template v-slot:trigger="{ attrs, on }">
             <FeatherButton link href="#" v-bind="attrs" v-on="on" class="menubar-dropdown-button-dark">
               Plugins
               <FeatherIcon :icon="ArrowDropDown" />
             </FeatherButton>
           </template>
-          <FeatherDropdownItem
-            v-for="plugin of plugins"
-            :key="plugin.extensionId"
-            @click="onMenuItemClick(computePluginRelLink(plugin))"
-          >
+          <FeatherDropdownItem v-for="plugin of plugins" :key="plugin.extensionId"
+            @click="onMenuItemClick(computePluginRelLink(plugin))">
             <div class="menubar-dropdown-item-content">
               <a :href="computeLink(computePluginRelLink(plugin))" class="dropdown-menu-link">
                 <FeatherIcon :icon="UpdateUtilities" />
@@ -192,7 +189,8 @@
           <FeatherDropdownItem v-for="item in mainMenu.userNotificationMenu.items?.filter(i => i.id !== 'user')"
             :key="item.name || ''" @click="onMenuItemClick(item.url || '', item.isVueLink)">
             <div class="menubar-dropdown-item-content">
-              <a :href="computeLink(item.url || '')" class="dropdown-menu-link dropdown-menu-wrapper final-menu-wrapper">
+              <a :href="computeLink(item.url || '')"
+                class="dropdown-menu-link dropdown-menu-wrapper final-menu-wrapper">
                 <template v-if="item.icon && item.id === 'team'">
                   <font-awesome-icon icon="fa-solid fa-users"></font-awesome-icon>
                 </template>
@@ -314,6 +312,7 @@ import { useOutsideClick } from '@featherds/composables/events/OutsideClick'
 const store = useStore()
 const route = useRoute()
 const theme = ref('')
+const lastShift = reactive({ lastKey: '', timeSinceLastKey: 0 })
 const light = 'open-light'
 const dark = 'open-dark'
 
@@ -446,10 +445,48 @@ const onNotificationItemClick = (item: OnmsNotification) => {
   notificationDialogVisible.value = true
 }
 
+const clearShiftCheck = () => {
+  lastShift.lastKey = ''
+  lastShift.timeSinceLastKey = 0
+}
+
+const shiftCheck = (e: KeyboardEvent) => {
+  const shiftCodes = ['ShiftLeft', 'ShiftRight']
+  console.log('shift check',e.code)
+  if (shiftCodes.includes(e.code)) {
+    console.log('it includes')
+    if (shiftCodes.includes(lastShift.lastKey)) {
+      console.log('last key was also shift',Date.now(),lastShift.timeSinceLastKey,Date.now() - lastShift.timeSinceLastKey)
+      if (Date.now() - lastShift.timeSinceLastKey < 2000) {
+        console.log('were good. focus the thing')
+        clearShiftCheck()
+        const elem: HTMLInputElement | null = document.querySelector('.menubar-search textarea')
+        if (elem) {
+          elem.focus()
+        }
+      } else {
+        console.log('time elapsed, clearing')
+        clearShiftCheck()
+      }
+    } else {
+      console.log('last key was not shift, setting up for next check')
+      lastShift.lastKey = e.code
+      lastShift.timeSinceLastKey = Date.now()
+    }
+  } else {
+    console.log('wrong keycode, clearing')
+    clearShiftCheck()
+  }
+}
+
 onMounted(async () => {
   const savedTheme = localStorage.getItem('theme')
   toggleDarkLightMode(savedTheme)
+  window.addEventListener('keyup', shiftCheck)
 })
+
+
+
 </script>
 
 <style lang="scss" scoped>
@@ -540,12 +577,12 @@ a.top-menu-link:visited {
 }
 
 .menubar-dropdown-item-content {
-    padding-top: 0.33rem;
-    padding-right: 1.25rem;
-    padding-bottom: 0.33rem;
-    padding-left: 1.25rem;
-    font-size: 0.875rem;
-    font-weight: 400;
+  padding-top: 0.33rem;
+  padding-right: 1.25rem;
+  padding-bottom: 0.33rem;
+  padding-left: 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 400;
 }
 
 .notification-badge-pill {
