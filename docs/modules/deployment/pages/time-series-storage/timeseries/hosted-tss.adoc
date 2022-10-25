@@ -3,7 +3,7 @@
 
 The hosted time series service provides a cloud-hosted time series database to store performance metrics that {page-component-title} collects from the devices it monitors.
 
-In addition, users can view time series summary data including health status, capacity, and metrics per second in the #OpenNMS Portal#.
+In addition, users can view time series summary data including health status, capacity, and metrics per second in the OpenNMS Portal.
 
 == Requirements
 
@@ -67,7 +67,7 @@ If you do not use it within that time, you must log back into the OpenNMS Portal
 
 By default, collectd collects data every five minutes.
 You should see time series summary information in the OpenNMS Portal UI within 15 minutes.
-For more information on how to view this information, see #View Time Series Summary Data# in the OpenNMS Portal documentation.
+For more information on how to view this information, see <<view-time-series-data,View Time Series Summary Data>>.
 To change the data collection frequency, see xref:operation:performance-data-collection/collectd/collection-packages.adoc#ga-collectd-packages-services[Service configuration attributes].
 
 == Troubleshooting
@@ -92,6 +92,19 @@ If this is the case, you will need to open a support ticket.
 
 You can also check that `OPENNMS_HOME/share/rrd` files are still being updated.
 If they are not, this indicates that the hosted time series service is not working.
+
+[[view-time-series-data]]
+== View time series summary data
+You can view time series summary data including health status, capacity, and metrics per second in the OpenNMS Portal.
+By default, the screen displays data for all OpenNMS instances you have configured to use the hosted time series service.
+You can filter to see data for a specific instance.
+
+. Sign in to the https://portal.opennms.com[OpenNMS Portal] with your username and password.
+. In the left menu, click *Time Series*.
+. View the information.
+. To see summary data for a specific instance, type an instance name in the *Search Instances* field.
++
+The screen updates to display only that instance and its associated summary data.
 
 
 
