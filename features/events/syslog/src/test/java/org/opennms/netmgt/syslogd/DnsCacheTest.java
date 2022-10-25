@@ -30,18 +30,16 @@ package org.opennms.netmgt.syslogd;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import java.util.Date;
+import java.util.concurrent.CompletableFuture;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SyslogdConfig;
-import org.opennms.netmgt.dao.api.DistPollerDao;
+import org.opennms.netmgt.dao.mock.MockDistPollerDao;
 import org.opennms.netmgt.provision.LocationAwareDnsLookupClient;
 import org.opennms.netmgt.xml.event.Event;
-
-import java.util.Date;
-import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 
 public class DnsCacheTest {
 
@@ -81,7 +79,7 @@ public class DnsCacheTest {
     private Event parseSyslog(final String name, final SyslogdConfig config, final String syslog, Date receivedTimestamp, Cache<HostNameWithLocationKey, String> cache) {
         try {
             ConvertToEvent convert = new ConvertToEvent(
-                    DistPollerDao.DEFAULT_DIST_POLLER_ID,
+                    MockDistPollerDao.DEFAULT_DIST_POLLER_ID,
                     "MINION",
                     InetAddressUtils.ONE_TWENTY_SEVEN,
                     9999,
