@@ -65,7 +65,7 @@
         </FeatherDropdown>
 
         <!-- Help menu -->
-        <FeatherDropdown v-if="mainMenu.helpMenu" class="menubar-dropdown-dark" @mouseenter="hoverItem(HelpIndex)"
+        <FeatherDropdown v-if="mainMenu.helpMenu" class="menubar-dropdown-dark help-menu" @mouseenter="hoverItem(HelpIndex)"
           :modelValue="hoveredItems[HelpIndex]">
           <template v-slot:trigger="{ attrs, on }">
             <FeatherButton link href="#" v-bind="attrs" v-on="on" class="menubar-dropdown-button-dark">
@@ -517,7 +517,9 @@ a.top-menu-link:visited {
 
 .menubar-dropdown-dark {
   margin-left: 2px;
-
+  &.help-menu {
+    margin-left:1px;
+  }
   :deep(.feather-dropdown) {
     @include dropdown-menu-height(10);
   }
@@ -778,7 +780,7 @@ a.top-menu-icon svg.feather-icon {
     margin-left:0;
   }
   .menubar-dropdown-button-dark {
-    padding: 0 6px;
+    padding: 0 7px;
   }
 }
 .header-content {
