@@ -1186,8 +1186,8 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
 
             public void processOspfAreaRow(final OspfAreaTableTracker.OspfAreaRow row) {
                 System.err.println(row.getOspfArea());
-                //areas.add(row.getOspfArea());
-//                m_topologyService.store(node.getId(), row.getOspfArea());
+//                areas.add(row.getOspfArea());
+                m_topologyService.store(node.getId(), row.getOspfArea());
             }
         };
 

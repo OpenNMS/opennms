@@ -123,7 +123,7 @@ public class OspfArea implements Serializable {
     }
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="ospfLinkCreateTime", nullable=false)
+    @Column(name="ospfAreaCreateTime", nullable=false)
     public Date getOspfAreaCreateTime() {
         return m_ospfAreaCreateTime;
     }
@@ -169,16 +169,19 @@ public class OspfArea implements Serializable {
         return this;
     }
 
-    public void setOspfAreaLsaCount(Integer ospfAreaLsaCount) {
+    public OspfArea setOspfAreaLsaCount(Integer ospfAreaLsaCount) {
         this.m_ospfAreaLsaCount = ospfAreaLsaCount;
+        return this;
     }
 
-    public void setOspfAreaCreateTime(Date ospfAreaCreateTime) {
+    public OspfArea setOspfAreaCreateTime(Date ospfAreaCreateTime) {
         m_ospfAreaCreateTime = ospfAreaCreateTime;
+        return this;
     }
 
-    public void setOspfAreaLastPollTime(Date ospfAreaLastPollTime) {
+    public OspfArea setOspfAreaLastPollTime(Date ospfAreaLastPollTime) {
         m_ospfAreaLastPollTime = ospfAreaLastPollTime;
+        return this;
     }
 
     /**
@@ -194,7 +197,7 @@ public class OspfArea implements Serializable {
                 "/" +
                 getOspfAuthType() +
                 "/" +
-//                getOspfImportAsExtern() +
+                getOspfImportAsExtern() +
                 "/" +
                 getOspfAreaBdrRtrCount() +
                 "/" +
@@ -213,6 +216,7 @@ public class OspfArea implements Serializable {
         setOspfAreaBdrRtrCount(area.getOspfAreaBdrRtrCount());
         setOspfAsBdrRtrCount(area.getOspfAsBdrRtrCount());
         setOspfAreaLsaCount(area.getOspfAreaLsaCount());
+        setOspfAreaCreateTime(area.getOspfAreaCreateTime());
         setOspfAreaLastPollTime(area.getOspfAreaCreateTime());
     }
 
