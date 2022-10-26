@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.provision.service;
 
-import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 import static org.opennms.netmgt.provision.service.lifecycle.Lifecycles.RESOURCE;
 
@@ -543,7 +542,7 @@ public class Provisioner implements SpringServiceDaemon {
                     resource = new FileSystemResource(file);
                 } else {
                     final String filename = file.getName();
-                    if (isNotBlank(filename) && filename.contains("%20")) {
+                    if (filename.contains("%20")) {
                         resource = new FileSystemResource(new File(file.getParentFile(), filename.replace("%20", " ")));
                     } else {
                         resource = new UrlResource(url);
@@ -560,7 +559,6 @@ public class Provisioner implements SpringServiceDaemon {
             if (ri != null && ri.getRequisition() != null) {
                 foreignSource = ri.getRequisition().getForeignSource();
             }
-
             monitor.finishImporting();
             LOG.info("Finished Importing: {}", monitor);
     
