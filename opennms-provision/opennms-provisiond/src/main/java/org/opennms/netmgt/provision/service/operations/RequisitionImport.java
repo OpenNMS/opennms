@@ -75,7 +75,4 @@ public class RequisitionImport {
         return false;
     }
 
-    public static boolean isValidRequisitionImport(RequisitionImport ri) {
-        return ofNullable(ri).isPresent() && ofNullable(ri.getRequisition()).isPresent();
-    }
 }

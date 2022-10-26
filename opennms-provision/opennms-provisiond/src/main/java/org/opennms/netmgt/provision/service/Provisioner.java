@@ -31,7 +31,6 @@ package org.opennms.netmgt.provision.service;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 import static org.opennms.netmgt.provision.service.lifecycle.Lifecycles.RESOURCE;
-import static org.opennms.netmgt.provision.service.operations.RequisitionImport.isValidRequisitionImport;
 
 import java.io.File;
 import java.net.InetAddress;
@@ -557,7 +556,10 @@ public class Provisioner implements SpringServiceDaemon {
             send(importStartedEvent(resource, rescanExisting), monitor);
 
             final RequisitionImport ri = importModelFromResource(resource, rescanExisting, monitor);
-            String foreignSource = isValidRequisitionImport(ri) ? ri.getRequisition().getForeignSource() : null;
+            String foreignSource = null;
+            if (ri != null && ri.getRequisition() != null) {
+                foreignSource = ri.getRequisition().getForeignSource();
+            }
 
             monitor.finishImporting();
             LOG.info("Finished Importing: {}", monitor);
