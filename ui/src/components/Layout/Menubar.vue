@@ -14,7 +14,7 @@
     </template>
 
     <template v-slot:right>
-      <a :href="computeSearchLink()" class="top-menu-link">Search</a>
+      <a :href="computeSearchLink()" class="top-menu-link top-menu-search">Search</a>
 
       <template v-if="mainMenu.username">
         <!-- Normal menus -->
@@ -36,7 +36,7 @@
           </template>
           <FeatherDropdownItem v-for="item in menuItem.items" :key="item.name || ''"
             @click="onMenuItemClick(item.url || '', item.isVueLink)">
-            <div class="menubar-dropdown-item-content">
+            <div class="menubar-dropdown-item-content menubar-padding">
               <a :href="computeLink(item.url || '', item.isVueLink)" class="dropdown-menu-link">{{ item.name }}</a>
             </div>
           </FeatherDropdownItem>
@@ -53,7 +53,8 @@
           </template>
           <FeatherDropdownItem v-for="plugin of plugins" :key="plugin.extensionId"
             @click="onMenuItemClick(computePluginRelLink(plugin))">
-            <div class="menubar-dropdown-item-content">
+
+            <div class="menubar-dropdown-item-content menubar-padding">
               <a :href="computeLink(computePluginRelLink(plugin))" class="dropdown-menu-link">
                 <FeatherIcon :icon="UpdateUtilities" />
                 <span class="left-margin-small">
@@ -65,7 +66,7 @@
         </FeatherDropdown>
 
         <!-- Help menu -->
-        <FeatherDropdown v-if="mainMenu.helpMenu" class="menubar-dropdown-dark" @mouseenter="hoverItem(HelpIndex)"
+        <FeatherDropdown v-if="mainMenu.helpMenu" class="menubar-dropdown-dark help-menu" @mouseenter="hoverItem(HelpIndex)"
           :modelValue="hoveredItems[HelpIndex]">
           <template v-slot:trigger="{ attrs, on }">
             <FeatherButton link href="#" v-bind="attrs" v-on="on" class="menubar-dropdown-button-dark">
@@ -75,7 +76,7 @@
           </template>
           <FeatherDropdownItem v-for="item in mainMenu.helpMenu.items" :key="item.name || ''"
             @click="onMenuItemClick(item.url || '', item.isVueLink)">
-            <div class="menubar-dropdown-item-content">
+            <div class="menubar-dropdown-item-content menubar-padding">
               <a :href="computeLink(item.url || '', item.isVueLink)" class="dropdown-menu-link">
                 <template v-if="item.icon">
                   <font-awesome-icon :icon="`fa-solid ${item.icon}`"></font-awesome-icon>
@@ -105,7 +106,7 @@
           </template>
           <FeatherDropdownItem v-for="item in mainMenu.selfServiceMenu.items" :key="item.name || ''"
             @click="onMenuItemClick(item.url || '', item.isVueLink)">
-            <div class="menubar-dropdown-item-content">
+            <div class="menubar-dropdown-item-content menubar-padding">
               <a :href="computeLink(item.url || '', item.isVueLink)" class="dropdown-menu-link">
                 <template v-if="item.icon">
                   <font-awesome-icon :icon="`fa-solid ${item.icon}`"></font-awesome-icon>
@@ -227,14 +228,14 @@
 
         <!-- Admin/Configuration menu -->
         <a v-if="mainMenu.configurationMenu" :href="computeLink(mainMenu.configurationMenu.url || '')"
-          class="menu-link horiz-padding-small">
+          class="menu-link horiz-padding-small menubar-cogs">
           <font-awesome-icon :icon="`fa-solid ${mainMenu.configurationMenu.icon || 'fa-cogs'}`" class="top-menu-icon"
             :title="`${mainMenu.configurationMenu?.name || 'Configure OpenNMS'}`"></font-awesome-icon>
         </a>
       </template>
 
-      <FeatherIcon :icon="LightDarkMode" title="Toggle Light/Dark Mode" class="pointer light-dark"
-        @click="toggleDarkLightMode(null)" />
+      <!--<FeatherIcon :icon="LightDarkMode" title="Toggle Light/Dark Mode" class="pointer light-dark"
+        @click="toggleDarkLightMode(null)" /> -->
     </template>
 
   </FeatherAppBar>
@@ -523,6 +524,10 @@ onMounted(async () => {
 
 .dropdown-menu-link {
   color: var($primary-text-on-surface) !important;
+
+  &:hover {
+    text-decoration: none;
+  }
 }
 
 .left-margin-small {
@@ -551,15 +556,9 @@ onMounted(async () => {
 
 .top-menu-link,
 a.top-menu-link:visited {
-  color: #ffffff;
-  margin-left: 2px;
+  color: rgba(255, 255, 255, 0.78);
   font-weight: 400;
   font-size: .875rem;
-}
-
-.top-menu-icon {
-  color: #ffffff;
-  margin-left: 2px;
 }
 
 .menubar-dropdown {
@@ -572,7 +571,9 @@ a.top-menu-link:visited {
 
 .menubar-dropdown-dark {
   margin-left: 2px;
-
+  &.help-menu {
+    margin-left:1px;
+  }
   :deep(.feather-dropdown) {
     @include dropdown-menu-height(10);
   }
@@ -590,6 +591,7 @@ a.top-menu-link:visited {
   padding-right: 0.5rem;
 }
 
+
 .menubar-dropdown-item-content {
   padding-top: 0.33rem;
   padding-right: 1.25rem;
@@ -597,6 +599,10 @@ a.top-menu-link:visited {
   padding-left: 1.25rem;
   font-size: 0.875rem;
   font-weight: 400;
+  }
+
+.menubar-dropdown-item-content.menubar-padding {
+  padding: 10px;
 }
 
 .notification-badge-pill {
@@ -722,13 +728,13 @@ body {
 }
 
 .banner .header {
-  height: 62px;
 
   .logo-link.home {
     padding-left: 0;
     margin-right: 1rem;
     padding-top: 2px;
     padding-bottom: 0;
+    padding-right: 0;
   }
 
   .body-large.formatted-time {
@@ -812,10 +818,41 @@ body .feather-menu .feather-menu-dropdown {
 .center-flex {
   display: flex;
   align-items: center;
+  padding-top: 3px;
 }
 
 .full-width-left {
   width: 100%;
   text-align: left;
+}
+
+.menubar-cogs {
+  display: flex;
+  align-items: center;
+
+  svg {
+    width: 23px;
+    height: 23px;
+  }
+}
+
+a.top-menu-icon svg.feather-icon {
+  color: #FFF;
+}
+.feather-menu {
+  &.menubar-dropdown {
+    margin-left:0;
+  }
+  .menubar-dropdown-button-dark {
+    padding: 0 7px;
+  }
+}
+.header-content {
+  .right.center-horiz {
+    margin-right:2px;
+  }
+    .top-menu-search {
+      margin-right:5px;
+    }
 }
 </style>

@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -51,6 +52,7 @@ import org.springframework.stereotype.Component;
 @Path("menu")
 public class MenuRestService {
     private static final Logger LOG = LoggerFactory.getLogger(MenuRestService.class);
+    private static final String WEB_INF_PREFIX = "/WEB-INF";
     private CentralizedDateTimeFormat dateTimeFormat = new CentralizedDateTimeFormat();
 
     @Autowired
@@ -60,9 +62,15 @@ public class MenuRestService {
     @Path("/")
     @Produces({MediaType.APPLICATION_JSON})
     public Response getMainMenu(final @Context HttpServletRequest request) {
-        MainMenu mainMenu = buildMenu(request);
-
-        return Response.ok(mainMenu).build();
+        try {
+            MainMenu mainMenu = buildMenu(request);
+            return Response.ok(mainMenu).build();
+        } catch (Exception e) {
+            throw new WebApplicationException(
+                Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .type(MediaType.TEXT_PLAIN)
+                    .entity("Error building menu.").build());
+        }
     }
 
     /**
@@ -70,8 +78,20 @@ public class MenuRestService {
      * Should correspond to logic in opennms-webapp org.opennms.web.controller.NavBarController
      * as well as opennms-webapp webapp/WEB-INF/templates/navbar.ftl.
      */
-    private MainMenu buildMenu(final HttpServletRequest request) {
+    private MainMenu buildMenu(final HttpServletRequest request) throws Exception {
         MainMenu mainMenu = null;
+
+        // TODO: This may not be needed, need more testing to be sure that variable expansion is working
+        String webInfRealPath = request.getServletContext().getRealPath(WEB_INF_PREFIX);
+
+        if (this.menuProvider.getDispatcherServletPath().contains("${opennms.home}")) {
+            int index = this.menuProvider.getDispatcherServletPath().indexOf(WEB_INF_PREFIX);
+
+            if (index >= 0) {
+                String path = webInfRealPath + this.menuProvider.getDispatcherServletPath().substring(index + WEB_INF_PREFIX.length());
+                this.menuProvider.setDispatcherServletPath(path);
+            }
+        }
 
         if (this.menuProvider != null) {
             try {
@@ -79,6 +99,7 @@ public class MenuRestService {
                 mainMenu = this.menuProvider.getMainMenu(context);
             } catch (Exception e) {
                 LOG.error("Error creating menu entries: " + e.getMessage(), e);
+                throw e;
             }
         }
 

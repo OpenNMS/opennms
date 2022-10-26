@@ -1,4 +1,3 @@
-import { StringifyOptions } from 'querystring';
 export interface MenuItem {
   id: string | null
   className: string | null
@@ -9,7 +8,7 @@ export interface MenuItem {
   iconType: string | null
   isIconOnly: boolean | null
   isVueLink: boolean | null
-  requiredRoles: string[] | null
+  roles: string[] | null
 }
 
 export interface TopMenuItem extends MenuItem {
@@ -26,6 +25,7 @@ export interface Notices {
 
 export interface MainMenu {
   baseHref: string
+  homeUrl: string
   formattedTime: string
   noticeStatus: string
   username: string

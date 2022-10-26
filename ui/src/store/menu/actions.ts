@@ -13,6 +13,7 @@ const useFakeUserNotificationData = false
 
 const defaultMainMenu = {
   baseHref: 'http://localhost:8980/opennms/',
+  homeUrl: 'http://localhost:8980/opennms/index.jsp',
   formattedTime: '2022-10-13T19:49:29-04:00',
   noticeStatus: 'Off',
   username: 'admin',
@@ -27,7 +28,7 @@ const defaultMainMenu = {
       iconType: null,
       isIconOnly: null,
       isVueLink: null,
-      requiredRoles: null,
+      roles: null,
       items: null
     },
     {
@@ -40,7 +41,7 @@ const defaultMainMenu = {
       iconType: null,
       isIconOnly: null,
       isVueLink: null,
-      requiredRoles: null,
+      roles: null,
       items: [
         {
           id: null,
@@ -52,7 +53,7 @@ const defaultMainMenu = {
           iconType: null,
           isIconOnly: null,
           isVueLink: null,
-          requiredRoles: null
+          roles: null
         },
         {
           id: null,
@@ -64,7 +65,7 @@ const defaultMainMenu = {
           iconType: null,
           isIconOnly: null,
           isVueLink: null,
-          requiredRoles: null
+          roles: null
         },
         {
           id: null,
@@ -76,7 +77,7 @@ const defaultMainMenu = {
           iconType: null,
           isIconOnly: null,
           isVueLink: null,
-          requiredRoles: null
+          roles: null
         },
         {
           id: null,
@@ -87,8 +88,8 @@ const defaultMainMenu = {
           icon: null,
           iconType: null,
           isIconOnly: null,
-          isVueLink: null,
-          requiredRoles: null
+          isVueLink: true,
+          roles: 'ROLE_ADMIN,ROLE_REST,ROLE_DEVICE_CONFIG_BACKUP'
         }
       ]
     },
@@ -102,7 +103,7 @@ const defaultMainMenu = {
       iconType: null,
       isIconOnly: null,
       isVueLink: null,
-      requiredRoles: null,
+      roles: null,
       items: [
         {
           id: null,
@@ -114,7 +115,7 @@ const defaultMainMenu = {
           iconType: null,
           isIconOnly: null,
           isVueLink: null,
-          requiredRoles: null
+          roles: null
         },
         {
           id: null,
@@ -126,7 +127,7 @@ const defaultMainMenu = {
           iconType: null,
           isIconOnly: null,
           isVueLink: null,
-          requiredRoles: null
+          roles: null
         },
         {
           id: null,
@@ -138,7 +139,7 @@ const defaultMainMenu = {
           iconType: null,
           isIconOnly: null,
           isVueLink: null,
-          requiredRoles: null
+          roles: null
         },
         {
           id: null,
@@ -150,7 +151,7 @@ const defaultMainMenu = {
           iconType: null,
           isIconOnly: null,
           isVueLink: null,
-          requiredRoles: null
+          roles: null
         },
         {
           id: null,
@@ -162,7 +163,7 @@ const defaultMainMenu = {
           iconType: null,
           isIconOnly: null,
           isVueLink: null,
-          requiredRoles: null
+          roles: null
         },
         {
           id: null,
@@ -174,7 +175,7 @@ const defaultMainMenu = {
           iconType: null,
           isIconOnly: null,
           isVueLink: null,
-          requiredRoles: null
+          roles: null
         },
         {
           id: null,
@@ -186,7 +187,7 @@ const defaultMainMenu = {
           iconType: null,
           isIconOnly: null,
           isVueLink: null,
-          requiredRoles: null
+          roles: null
         },
         {
           id: null,
@@ -198,7 +199,7 @@ const defaultMainMenu = {
           iconType: null,
           isIconOnly: null,
           isVueLink: null,
-          requiredRoles: null
+          roles: null
         }
       ]
     },
@@ -212,7 +213,7 @@ const defaultMainMenu = {
       iconType: null,
       isIconOnly: null,
       isVueLink: null,
-      requiredRoles: null,
+      roles: null,
       items: [
         {
           id: null,
@@ -224,7 +225,7 @@ const defaultMainMenu = {
           iconType: null,
           isIconOnly: null,
           isVueLink: null,
-          requiredRoles: null
+          roles: null
         },
         {
           id: null,
@@ -236,7 +237,7 @@ const defaultMainMenu = {
           iconType: null,
           isIconOnly: null,
           isVueLink: null,
-          requiredRoles: null
+          roles: null
         },
         {
           id: null,
@@ -248,7 +249,7 @@ const defaultMainMenu = {
           iconType: null,
           isIconOnly: null,
           isVueLink: null,
-          requiredRoles: null
+          roles: null
         },
         {
           id: null,
@@ -260,7 +261,7 @@ const defaultMainMenu = {
           iconType: null,
           isIconOnly: null,
           isVueLink: null,
-          requiredRoles: null
+          roles: null
         },
         {
           id: null,
@@ -272,7 +273,7 @@ const defaultMainMenu = {
           iconType: null,
           isIconOnly: null,
           isVueLink: null,
-          requiredRoles: null
+          roles: null
         }
       ]
     },
@@ -286,7 +287,7 @@ const defaultMainMenu = {
       iconType: null,
       isIconOnly: null,
       isVueLink: null,
-      requiredRoles: null,
+      roles: null,
       items: [
         {
           id: null,
@@ -298,7 +299,7 @@ const defaultMainMenu = {
           iconType: null,
           isIconOnly: null,
           isVueLink: null,
-          requiredRoles: null
+          roles: null
         },
         {
           id: null,
@@ -310,7 +311,7 @@ const defaultMainMenu = {
           iconType: null,
           isIconOnly: null,
           isVueLink: null,
-          requiredRoles: null
+          roles: null
         }
       ]
     },
@@ -324,7 +325,7 @@ const defaultMainMenu = {
       iconType: null,
       isIconOnly: null,
       isVueLink: null,
-      requiredRoles: null,
+      roles: null,
       items: [
         {
           id: null,
@@ -336,7 +337,19 @@ const defaultMainMenu = {
           iconType: null,
           isIconOnly: null,
           isVueLink: null,
-          requiredRoles: null
+          roles: null
+        },
+        {
+          id: null,
+          className: 'org.opennms.web.navigate.LocationBasedNavBarEntry',
+          name: 'Geographical (Legacy)',
+          url: 'node-maps',
+          locationMatch: 'node-maps',
+          icon: null,
+          iconType: null,
+          isIconOnly: null,
+          isVueLink: null,
+          roles: null
         },
         {
           id: null,
@@ -348,7 +361,7 @@ const defaultMainMenu = {
           iconType: null,
           isIconOnly: null,
           isVueLink: null,
-          requiredRoles: null
+          roles: null
         }
       ]
     }
@@ -363,7 +376,7 @@ const defaultMainMenu = {
     iconType: null,
     isIconOnly: null,
     isVueLink: null,
-    requiredRoles: null,
+    roles: null,
     items: [
       {
         id: null,
@@ -375,7 +388,7 @@ const defaultMainMenu = {
         iconType: 'fa',
         isIconOnly: null,
         isVueLink: null,
-        requiredRoles: null
+        roles: null
       },
       {
         id: null,
@@ -387,7 +400,7 @@ const defaultMainMenu = {
         iconType: 'fa',
         isIconOnly: null,
         isVueLink: null,
-        requiredRoles: null
+        roles: null
       },
       {
         id: null,
@@ -399,7 +412,7 @@ const defaultMainMenu = {
         iconType: 'fa',
         isIconOnly: null,
         isVueLink: null,
-        requiredRoles: [
+        roles: [
           'ROLE_ADMIN'
         ]
       }
@@ -415,7 +428,7 @@ const defaultMainMenu = {
     iconType: 'fa',
     isIconOnly: null,
     isVueLink: null,
-    requiredRoles: null,
+    roles: null,
     items: [
       {
         id: null,
@@ -427,7 +440,7 @@ const defaultMainMenu = {
         iconType: 'fa',
         isIconOnly: null,
         isVueLink: null,
-        requiredRoles: null
+        roles: null
       },
       {
         id: null,
@@ -439,7 +452,7 @@ const defaultMainMenu = {
         iconType: 'fa',
         isIconOnly: null,
         isVueLink: null,
-        requiredRoles: null
+        roles: null
       }
     ]
   },
@@ -453,7 +466,7 @@ const defaultMainMenu = {
     iconType: null,
     isIconOnly: null,
     isVueLink: null,
-    requiredRoles: null,
+    roles: null,
     items: [
       {
         id: 'user',
@@ -465,7 +478,7 @@ const defaultMainMenu = {
         iconType: 'fa',
         isIconOnly: null,
         isVueLink: null,
-        requiredRoles: null
+        roles: null
       },
       {
         id: 'team',
@@ -477,7 +490,7 @@ const defaultMainMenu = {
         iconType: 'fa',
         isIconOnly: null,
         isVueLink: null,
-        requiredRoles: null
+        roles: null
       },
       {
         id: 'oncall',
@@ -489,7 +502,7 @@ const defaultMainMenu = {
         iconType: 'fa',
         isIconOnly: null,
         isVueLink: null,
-        requiredRoles: null
+        roles: null
       }
     ]
   },
@@ -503,7 +516,7 @@ const defaultMainMenu = {
     iconType: 'fa',
     isIconOnly: null,
     isVueLink: null,
-    requiredRoles: [
+    roles: [
       'ROLE_ADMIN',
       'ROLE_PROVISION'
     ]
@@ -520,7 +533,7 @@ const defaultMainMenu = {
     iconType: 'fa',
     isIconOnly: null,
     isVueLink: null,
-    requiredRoles: [
+    roles: [
       'ROLE_ADMIN'
     ]
   },
