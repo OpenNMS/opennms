@@ -223,7 +223,7 @@ function build_opennms()
 
     if $DO_CHANGELOG; then
         echo "- adding auto-generated changelog entry"
-        dch -b -v "$VERSION-$RELEASE" "${EXTRA_INFO}${EXTRA_INFO2}${OPA_VERSION}" || die "failed to update debian/changelog"
+        dch -b -v "$VERSION-$RELEASE" "${EXTRA_INFO}${EXTRA_INFO2}" || die "failed to update debian/changelog"
     fi
 
     if [ -f "${HOME}/.m2/settings.xml" ]; then
