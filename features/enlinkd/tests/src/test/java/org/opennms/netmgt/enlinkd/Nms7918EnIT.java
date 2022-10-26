@@ -1000,7 +1000,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         assertTrue(m_linkdConfig.useBridgeDiscovery());
         assertTrue(m_linkdConfig.useIsisDiscovery());
 
-        assertEquals(8, getSupportedProtocolsAsProtocolSupported().size());
+        assertEquals(9, getSupportedProtocolsAsProtocolSupported().size());
         assertTrue(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.NODES));
         assertTrue(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.NETWORKROUTER));
         assertTrue(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.BRIDGE));
