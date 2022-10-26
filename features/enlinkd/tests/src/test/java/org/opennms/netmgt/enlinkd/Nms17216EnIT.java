@@ -830,8 +830,9 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
         //update configuration to support only CDP updates
         //need to reload daemon
         m_linkd.reload();
-        assertEquals(3, getSupportedProtocolsAsProtocolSupported().size());
+        assertEquals(4, getSupportedProtocolsAsProtocolSupported().size());
         assertTrue(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.NODES));
+        assertTrue(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.NETWORKROUTER));
         assertFalse(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.BRIDGE));
         assertTrue(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.CDP));
         assertFalse(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.ISIS));
@@ -949,7 +950,8 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
         // reload daemon and support only: LLDP updates
         m_linkd.reload();
         assertTrue(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.NODES));
-        assertEquals(3, getSupportedProtocolsAsProtocolSupported().size());
+        assertTrue(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.NETWORKROUTER));
+        assertEquals(4, getSupportedProtocolsAsProtocolSupported().size());
         assertFalse(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.BRIDGE));
         assertFalse(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.CDP));
         assertFalse(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.ISIS));

@@ -122,6 +122,8 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
     private DiscoveryBridgeDomains m_discoveryBridgeDomains;
     @Autowired
     private UserDefinedLinkTopologyUpdater m_userDefinedLinkTopologyUpdater;
+    @Autowired
+    private NetworkRouterTopologyUpdater m_networkRouterTopologyUpdater;
 
     private final List<SchedulableNodeCollectorGroup> m_groups = new ArrayList<>();
     /**
@@ -166,6 +168,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
     private void schedule(boolean init) {
         if (init) {
             scheduleAndRegisterOnmsTopologyUpdater(m_nodesTopologyUpdater);
+            scheduleAndRegisterOnmsTopologyUpdater(m_networkRouterTopologyUpdater);
             scheduleAndRegisterOnmsTopologyUpdater(m_userDefinedLinkTopologyUpdater);
         }
 
@@ -365,6 +368,10 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
             m_userDefinedLinkTopologyUpdater.forceRun();
             break;
 
+        case NETWORKROUTER:
+            m_networkRouterTopologyUpdater.forceRun();
+            break;
+
         default:
             break;
         
@@ -418,9 +425,12 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
                 m_userDefinedLinkTopologyUpdater.runSchedulable();
                 break;
 
+            case NETWORKROUTER:
+                m_networkRouterTopologyUpdater.runSchedulable();
+                break;
+
             default:
                 break;
-            
         }
     }
 
@@ -521,6 +531,9 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
     }
     public NodesOnmsTopologyUpdater getNodesTopologyUpdater() {
         return m_nodesTopologyUpdater;
+    }
+    public NetworkRouterTopologyUpdater getNetworkRouterTopologyUpdater() {
+        return m_networkRouterTopologyUpdater;
     }
     public CdpOnmsTopologyUpdater getCdpTopologyUpdater() {
         return m_cdpTopologyUpdater;

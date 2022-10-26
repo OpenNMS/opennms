@@ -1002,6 +1002,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
 
         assertEquals(8, getSupportedProtocolsAsProtocolSupported().size());
         assertTrue(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.NODES));
+        assertTrue(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.NETWORKROUTER));
         assertTrue(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.BRIDGE));
         assertTrue(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.CDP));
         assertTrue(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.ISIS));
@@ -1025,8 +1026,9 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
 
         //Updated configuration will lead to support only BRIDGE updates,
         m_linkd.reload();
-        assertEquals(3, getSupportedProtocolsAsProtocolSupported().size());
+        assertEquals(4, getSupportedProtocolsAsProtocolSupported().size());
         assertTrue(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.NODES));
+        assertTrue(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.NETWORKROUTER));
         assertTrue(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.BRIDGE));
         assertTrue(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.USERDEFINED));
         assertFalse(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.CDP));

@@ -106,7 +106,7 @@
         },
         "experimental": {
             "extends": [
-                "master-branch"
+                "empty"
             ]
         }
     },
