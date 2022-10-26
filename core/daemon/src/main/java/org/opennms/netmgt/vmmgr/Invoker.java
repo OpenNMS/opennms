@@ -289,7 +289,7 @@ public class Invoker {
 
         logProgressUpdate(m_interactive ? "\r" : "\n");
         try (var pb = pbb.build()) {
-            var resultInfo = invokeMethods(pb);
+            var resultInfo = invokeMethods(pb, getLongestShortName());
             var elapsed = System.currentTimeMillis() - startTime;
 
             // We only want to log start and stop invoke types so the log file doesn't get filled with status entries.
@@ -313,6 +313,18 @@ public class Invoker {
                 Invoker.logProgressUpdate("\n");
             }
         }
+    }
+
+    private int getLongestShortName() {
+        int longestShortName = 0;
+        for (int pass = 0, end = getLastPass(); pass <= end; pass++) {
+            for (InvokerService invokerService : getServices()) {
+                if (invokerService.getService().getShortName().length() > longestShortName) {
+                    longestShortName = invokerService.getService().getShortName().length();
+                }
+            }
+        }
+        return longestShortName;
     }
 
     private Optional<Duration> getETA() {
@@ -339,7 +351,7 @@ public class Invoker {
      *
      * @return a {@link java.util.List} object.
      */
-    public List<InvokerResult> invokeMethods(ProgressBar pb) {
+    public List<InvokerResult> invokeMethods(ProgressBar pb, int longestShortName) {
         List<InvokerService> invokerServicesOrdered;
         if (isReverse()) {
             invokerServicesOrdered = new ArrayList<>(getServices());
@@ -374,7 +386,7 @@ public class Invoker {
 
                     LOG.debug("pass {} on service {} will invoke method \"{}\" as step {}",
                             pass, name, invoke.getMethod(), pb.getCurrent());
-                    pb.setExtraMessage("Pass " + pass + ": " + nameShort);
+                    setExtraMessageWithPadding(pb, pass, service.getShortName(), longestShortName);
                     pb.refresh(); // make sure we output that the service changed so we see updates for quick services
 
                     try {
@@ -392,11 +404,25 @@ public class Invoker {
             }
             
             LOG.debug("completed pass {}", pass);
-            pb.setExtraMessage("Pass " + pass + ": Complete");
+            setExtraMessageWithPadding(pb, pass, "Complete", longestShortName);
         }
-        pb.setExtraMessage("All Passes Complete");
+        setExtraMessageWithPadding(pb, -1, "All Passes Complete", longestShortName);
 
         return resultInfo;
+    }
+
+    private void setExtraMessageWithPadding(ProgressBar pb, int pass, String message, int longestShortName) {
+        // We'll want to make sure we include the optional prefix "Pass X: " in the padLength.
+        // Assume pad is always one character.
+        final var padLength = longestShortName + "Pass X: ".length();
+        final String fullMessage;
+        if (pass >= 0) {
+            fullMessage = "Pass " + pass + ": " + message;
+        } else {
+            fullMessage = message;
+        }
+        var paddedMessage = org.apache.commons.lang.StringUtils.rightPad(fullMessage, padLength);
+        pb.setExtraMessage(paddedMessage);
     }
 
     public static void logProgressUpdate(String message) {
