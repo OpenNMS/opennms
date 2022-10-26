@@ -268,6 +268,7 @@ public class NodeScan implements Scan {
     @Override
     public void run(final BatchTask parent) {
         LOG.info("Scanning node {}/{}/{}", m_nodeId, m_foreignSource, m_foreignId);
+        reset();
         if (monitor != null) {
             monitor.beginScanning(this);
         }
@@ -397,6 +398,11 @@ public class NodeScan implements Scan {
 
     NoAgentScan createNoAgentScan() {
         return new NoAgentScan(getNodeId(), getNode());
+    }
+
+    private void reset() {
+        m_aborted = false;
+        m_agentFound = false;
     }
 
     /**
