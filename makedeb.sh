@@ -232,7 +232,7 @@ function build_opennms()
 
     ./compile.pl -N install
 
-    dpkg-buildpackage "-p${TRUE_BIN}" -us -uc
+    dpkg-buildpackage "-p${TRUE_BIN}" -us -uc --source-option=-Dopa_version=$OPA_VERSION
 }
 
 function build_minion()
