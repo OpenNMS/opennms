@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.provision.service.operations;
 
-import static java.util.Optional.ofNullable;
-
 import javax.xml.bind.ValidationException;
 
 import org.slf4j.Logger;
