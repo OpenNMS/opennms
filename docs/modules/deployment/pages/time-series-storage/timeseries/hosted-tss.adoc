@@ -7,12 +7,12 @@ In addition, users can view time series summary data including health status, ca
 
 == Requirements
 
-Make sure you have the following before you start to use hosted time series service:
+You must have the following to use the hosted time series service:
 
 * Horizon 31+ (Meridian availability with the 2023 release)
 * Access to the https://portal.opennms.com[OpenNMS Portal] to retrieve your API key and view hosted time series service metrics
 
-Contact sales@opennms.com to sign up for hosted time series service.
+Contact sales@opennms.com to sign up for the hosted time series service.
 
 == Deployment
 
@@ -47,7 +47,7 @@ When you signed up for the hosted time series service, you received an activatio
 To obtain the license key, follow these steps:
 
 . If you have not already done so, activate your OpenNMS Portal account by clicking the *Account Activation* button in your welcome email.
-. On the Create Your OpenNMS Account screen, type a password in the Password box.
+. On the Create Your OpenNMS Account screen, type a password in the *Password* box.
 . Click *Create My Account*.
 . Sign in to the OpenNMS Portal with your username and password.
 . Choose *OpenNMS Core Instances* in the left menu and click *Add New*.
@@ -59,16 +59,14 @@ NOTE: The key is valid for one hour.
 If you do not use it within that time, you must log back into the OpenNMS Portal and copy it from your instance.
 
 . Log in to the OpenNMS {page-component-title} web UI for your instance.
-. Click *UI Preview*.
-. In the left menu, click *OpenNMS Cloud*.
-. Turn the hosted time series toggle to "on".
-. Paste the key in the ?? field and click *Save*.
-. Click *Activate Cloud Services for OpenNMS*.
+. In the main menu, click *Plugins>OpenNMS Cloud*.
+. Turn the *Cloud Services Disabled* toggle to "on".
+. Paste the key in the *Enter API Key* box and click *Activate Cloud Services for OpenNMS*.
 
 By default, collectd collects data every five minutes.
 You should see time series summary information in the OpenNMS Portal UI within 15 minutes.
 For more information on how to view this information, see <<view-time-series-data,View Time Series Summary Data>>.
-To change the data collection frequency, see xref:operation:performance-data-collection/collectd/collection-packages.adoc#ga-collectd-packages-services[Service configuration attributes].
+To change the data collection frequency, see xref:operation:deep-dive/performance-data-collection/collectd/collection-packages.adoc#ga-collectd-packages-services[Service configuration attributes].
 
 == Troubleshooting
 
@@ -105,10 +103,3 @@ You can filter to see data for a specific instance.
 . To see summary data for a specific instance, type an instance name in the *Search Instances* field.
 +
 The screen updates to display only that instance and its associated summary data.
-
-
-
-
-
-
-
