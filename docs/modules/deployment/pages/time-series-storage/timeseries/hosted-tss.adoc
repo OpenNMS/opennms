@@ -18,15 +18,15 @@ Contact sales@opennms.com to sign up for the hosted time series service.
 
 There are three phases of deployment to set up the hosted time series service for your system:
 
-* Configure the Cloud Connectivity plugin
-* Obtain a license key for the service
-* Enable cloud services
+* Update cloud services connectivity files
+* Obtain an API key for the service
+* Enable cloud services connectivity
 
-=== Configure the Cloud Connectivity plugin
+=== Update cloud services connectivity files
 
-The Cloud Connectivity plugin makes it possible for a {page-component-title} instance to send time series data to an OpenNMS-hosted cloud service.
+A cloud connectivity services plugin makes it possible for a {page-component-title} instance to send time series data to an OpenNMS-hosted cloud service.
 
-The Cloud Connectivity plugin is installed by default in {page-component-title} 31.
+This plugin is installed by default in {page-component-title} 31.
 However, you need to move the configuration files into the correct location and restart {page-component-title} as part of the hosted time series service set up:
 
 [source, console]
@@ -36,15 +36,15 @@ cp /opt/opennms/etc/examples/opennms.properties.d/timeseries.properties /opt/ope
 systemctl restart openmns
 ----
 
-=== Obtain a license key for the hosted time series service
+=== Obtain an API key for time series services
 
-The license key enables the hosted time series service in {page-component-title}.
+The API key enables the hosted time series service in {page-component-title}.
 
-You must log in to the OpenNMS Portal to get this license key, copy it, and then paste it into the appropriate screen in {page-component-title}.
+You must log in to the OpenNMS Portal to get this API key, copy it, and then paste it into the appropriate screen in {page-component-title}.
 
 When you signed up for the hosted time series service, you received an activation email from OpenNMS with a login for the OpenNMS Portal.
 
-To obtain the license key, follow these steps:
+To obtain the API key, follow these steps:
 
 . If you have not already done so, activate your OpenNMS Portal account by clicking the *Account Activation* button in your welcome email.
 . On the Create Your OpenNMS Account screen, type a password in the *Password* box.
