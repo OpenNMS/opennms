@@ -144,8 +144,9 @@ public class NetworkRouterTopologyUpdater extends TopologyUpdater {
                             break;
                         }
                     }
-                    if (targetIp == null)
+                    if (targetIp == null) {
                         return;
+                    }    
                     OnmsTopologyPort sourcePort = createNetworkPort(source, targetIp);
                     OnmsTopologyPort targetPort = create(target, targetIp, (targetIp.getSnmpInterfaceId() != null ? snmpMap.get(targetIp.getSnmpInterfaceId()) : null));
                     topology.getEdges().add(OnmsTopologyEdge.create(targetIp.getId().toString(), sourcePort, targetPort));
