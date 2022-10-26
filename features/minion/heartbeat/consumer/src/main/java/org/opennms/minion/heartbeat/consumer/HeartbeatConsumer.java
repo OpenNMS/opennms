@@ -281,14 +281,12 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
             // We have to save the requisition before we can alter the according foreign source definition
             deployedForeignSourceRepository.save(nextRequisition);
 
-            // Remove all policies and detectors from the foreign source
+            // Remove and replace all policies and detectors from the foreign source with defaults
+            // Default Snmp detector and policy for appliances
             final ForeignSource foreignSource = deployedForeignSourceRepository.getForeignSource(nextForeignSource);
-            foreignSource.setDetectors(Collections.emptyList());
-            foreignSource.setPolicies(Collections.emptyList());
+            foreignSource.setDetectors(List.of(detector));
+            foreignSource.setPolicies(List.of(policy));
 
-            // Add Snmp detector for appliances and do not persist docker interfaces
-            foreignSource.addPolicy(policy);
-            foreignSource.addDetector(detector);
             deployedForeignSourceRepository.save(foreignSource);
 
             alteredForeignSources.add(nextForeignSource);
