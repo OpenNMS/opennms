@@ -53,6 +53,7 @@
           </template>
           <FeatherDropdownItem v-for="plugin of plugins" :key="plugin.extensionId"
             @click="onMenuItemClick(computePluginRelLink(plugin))">
+
             <div class="menubar-dropdown-item-content menubar-padding">
               <a :href="computeLink(computePluginRelLink(plugin))" class="dropdown-menu-link">
                 <FeatherIcon :icon="UpdateUtilities" />
@@ -312,6 +313,7 @@ import { useOutsideClick } from '@featherds/composables/events/OutsideClick'
 const store = useStore()
 const route = useRoute()
 const theme = ref('')
+const lastShift = reactive({ lastKey: '', timeSinceLastKey: 0 })
 const light = 'open-light'
 const dark = 'open-dark'
 
@@ -444,10 +446,62 @@ const onNotificationItemClick = (item: OnmsNotification) => {
   notificationDialogVisible.value = true
 }
 
+const clearShiftCheck = () => {
+  lastShift.lastKey = ''
+  lastShift.timeSinceLastKey = 0
+}
+
+/**
+ * Used to focus the search bar at the top of the page when the user hits either shift
+ * key in quick succession (less than 2000 ms). Only stores a single shift keypress, ignores
+ * all other input. Upon detection of the second shift keypress, it clears all stored values,
+ * focuses the search box in the MenuBar and returns to its default state.
+ * 
+ * Logic:
+ * If user presses either left or right shift key and we're in a default state, store it in temporary memory, 
+ * along with the time it was pressed.
+ * 
+ * If user presses any other key, clear stored values and stored timestamp.
+ * 
+ * If user's last keypress was a shift key, 
+ * but they take longer than the variable shiftDelay (currently 2000ms), 
+ * clear state and return to default.
+ * 
+ * If the user presses a shift key, directly after pressing a shift key, 
+ * focus the search box, clear the values and return to a default state.
+ * 
+ */
+const shiftCheck = (e: KeyboardEvent) => {
+  const shiftCodes = ['ShiftLeft', 'ShiftRight']
+  const shiftDelay = 2000
+  if (shiftCodes.includes(e.code)) {
+    if (shiftCodes.includes(lastShift.lastKey)) {
+      if (Date.now() - lastShift.timeSinceLastKey < shiftDelay) {
+        clearShiftCheck()
+        const elem: HTMLInputElement | null = document.querySelector('.menubar-search textarea')
+        if (elem) {
+          elem.focus()
+        }
+      } else {
+        clearShiftCheck()
+      }
+    } else {
+      lastShift.lastKey = e.code
+      lastShift.timeSinceLastKey = Date.now()
+    }
+  } else {
+    clearShiftCheck()
+  }
+}
+
 onMounted(async () => {
   const savedTheme = localStorage.getItem('theme')
   toggleDarkLightMode(savedTheme)
+  window.addEventListener('keyup', shiftCheck)
 })
+
+
+
 </script>
 
 <style lang="scss" scoped>
@@ -536,6 +590,16 @@ a.top-menu-link:visited {
   padding-left: 0.5rem;
   padding-right: 0.5rem;
 }
+
+
+.menubar-dropdown-item-content {
+  padding-top: 0.33rem;
+  padding-right: 1.25rem;
+  padding-bottom: 0.33rem;
+  padding-left: 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 400;
+  }
 
 .menubar-dropdown-item-content.menubar-padding {
   padding: 10px;
