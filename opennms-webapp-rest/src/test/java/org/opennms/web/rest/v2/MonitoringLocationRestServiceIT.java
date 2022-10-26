@@ -28,18 +28,16 @@
 
 package org.opennms.web.rest.v2;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Map;
 
 import javax.ws.rs.core.MediaType;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import static org.hamcrest.CoreMatchers.is;
+
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
@@ -190,28 +188,28 @@ public class MonitoringLocationRestServiceIT extends AbstractSpringJerseyRestTes
             sendData(POST, MediaType.APPLICATION_XML,"/monitoringLocations", JaxbUtils.marshal(loc), 201);
         }
 
-        // null limit (empty parameters) should return default
-        assertThat(MAPPER.readValue(sendRequest(GET, "/monitoringLocations",
-                    Collections.emptyMap(), 200),OnmsMonitoringLocationDefinitionList.class).getCount(), is(DEFAULT_LIMIT));
+         // null limit (empty parameters) should return default
+        assertThat(getJsonObject(MAPPER,"/monitoringLocations",
+                Collections.emptyMap(),200,OnmsMonitoringLocationDefinitionList.class).getCount(), is(DEFAULT_LIMIT));
 
         // limit less than default
-        assertThat(MAPPER.readValue(sendRequest(GET, "/monitoringLocations", Map.of("limit",
-                Integer.toString(DEFAULT_LIMIT-1)), 200), OnmsMonitoringLocationDefinitionList.class).getCount(), is(DEFAULT_LIMIT-1));
+        assertThat(getJsonObject(MAPPER,"/monitoringLocations?limit="+
+                       Integer.toString(DEFAULT_LIMIT - 1),Collections.emptyMap(),200,OnmsMonitoringLocationDefinitionList.class).getCount(), is(DEFAULT_LIMIT - 1));
 
         // limit equals default
-        assertThat(MAPPER.readValue(sendRequest(GET, "/monitoringLocations", Map.of("limit",
-                Integer.toString(DEFAULT_LIMIT)), 200), OnmsMonitoringLocationDefinitionList.class).getCount(), is(DEFAULT_LIMIT));
+        assertThat(getJsonObject(MAPPER,"/monitoringLocations?limit="+
+                Integer.toString(DEFAULT_LIMIT),Collections.emptyMap(),200,OnmsMonitoringLocationDefinitionList.class).getCount(), is(DEFAULT_LIMIT));
 
         // limit greater than default
-        assertThat(MAPPER.readValue(sendRequest(GET, "/monitoringLocations", Map.of("limit",
-                Integer.toString(DEFAULT_LIMIT+1)), 200), OnmsMonitoringLocationDefinitionList.class).getCount(), is(DEFAULT_LIMIT+1));
+        assertThat(getJsonObject(MAPPER,"/monitoringLocations?limit="+
+                Integer.toString(DEFAULT_LIMIT+1),Collections.emptyMap(),200,OnmsMonitoringLocationDefinitionList.class).getCount(), is(DEFAULT_LIMIT+1));
 
         // max count
-        assertThat(MAPPER.readValue(sendRequest(GET, "/monitoringLocations", Map.of("limit",
-                Integer.toString(LOCATION_COUNT)), 200), OnmsMonitoringLocationDefinitionList.class).getCount(), is(LOCATION_COUNT));
+        assertThat(getJsonObject(MAPPER,"/monitoringLocations?limit="+
+                Integer.toString(LOCATION_COUNT),Collections.emptyMap(),200,OnmsMonitoringLocationDefinitionList.class).getCount(), is(LOCATION_COUNT));
 
         // unlimited, should return all
-        assertThat(MAPPER.readValue(sendRequest(GET, "/monitoringLocations", Map.of("limit",
-                Integer.toString(0)), 200), OnmsMonitoringLocationDefinitionList.class).getCount(), is(LOCATION_COUNT));
+        assertThat(getJsonObject(MAPPER,"/monitoringLocations?limit="+
+                Integer.toString(0),Collections.emptyMap(),200,OnmsMonitoringLocationDefinitionList.class).getCount(), is(LOCATION_COUNT));
     }
 }
