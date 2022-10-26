@@ -191,27 +191,27 @@ public class MonitoringLocationRestServiceIT extends AbstractSpringJerseyRestTes
         }
 
         // null limit (empty parameters) should return default
-        assertThat(MAPPER.readValue(sendRequest(GET, "/monitoringLocations",
-                    Collections.emptyMap(), 200),OnmsMonitoringLocationDefinitionList.class).getCount(), is(DEFAULT_LIMIT));
+        assertThat(getJsonObject(MAPPER, "/monitoringLocations",
+                    Collections.emptyMap(), 200, OnmsMonitoringLocationDefinitionList.class).getCount(), is(DEFAULT_LIMIT));
 
         // limit less than default
-        assertThat(MAPPER.readValue(sendRequest(GET, "/monitoringLocations", Map.of("limit",
-                Integer.toString(DEFAULT_LIMIT-1)), 200), OnmsMonitoringLocationDefinitionList.class).getCount(), is(DEFAULT_LIMIT-1));
+        assertThat(getJsonObject(MAPPER, "/monitoringLocations", Map.of("limit",
+                Integer.toString(DEFAULT_LIMIT-1)), 200, OnmsMonitoringLocationDefinitionList.class).getCount(), is(DEFAULT_LIMIT-1));
 
         // limit equals default
-        assertThat(MAPPER.readValue(sendRequest(GET, "/monitoringLocations", Map.of("limit",
-                Integer.toString(DEFAULT_LIMIT)), 200), OnmsMonitoringLocationDefinitionList.class).getCount(), is(DEFAULT_LIMIT));
+        assertThat(getJsonObject(MAPPER, "/monitoringLocations", Map.of("limit",
+                Integer.toString(DEFAULT_LIMIT)), 200, OnmsMonitoringLocationDefinitionList.class).getCount(), is(DEFAULT_LIMIT));
 
         // limit greater than default
-        assertThat(MAPPER.readValue(sendRequest(GET, "/monitoringLocations", Map.of("limit",
-                Integer.toString(DEFAULT_LIMIT+1)), 200), OnmsMonitoringLocationDefinitionList.class).getCount(), is(DEFAULT_LIMIT+1));
+        assertThat(getJsonObject(MAPPER, "/monitoringLocations", Map.of("limit",
+                Integer.toString(DEFAULT_LIMIT+1)), 200, OnmsMonitoringLocationDefinitionList.class).getCount(), is(DEFAULT_LIMIT+1));
 
         // max count
-        assertThat(MAPPER.readValue(sendRequest(GET, "/monitoringLocations", Map.of("limit",
-                Integer.toString(LOCATION_COUNT)), 200), OnmsMonitoringLocationDefinitionList.class).getCount(), is(LOCATION_COUNT));
+        assertThat(getJsonObject(MAPPER, "/monitoringLocations", Map.of("limit",
+                Integer.toString(LOCATION_COUNT)), 200, OnmsMonitoringLocationDefinitionList.class).getCount(), is(LOCATION_COUNT));
 
         // unlimited, should return all
-        assertThat(MAPPER.readValue(sendRequest(GET, "/monitoringLocations", Map.of("limit",
-                Integer.toString(0)), 200), OnmsMonitoringLocationDefinitionList.class).getCount(), is(LOCATION_COUNT));
+        assertThat(getJsonObject(MAPPER, "/monitoringLocations", Map.of("limit",
+                Integer.toString(0)), 200, OnmsMonitoringLocationDefinitionList.class).getCount(), is(LOCATION_COUNT));
     }
 }
