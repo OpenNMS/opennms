@@ -37,6 +37,7 @@ public class MainMenu {
     public String formattedTime;
     public String noticeStatus;
     public String username;
+    public String baseNodeUrl;
 
     final public List<TopMenuEntry> menus = new ArrayList<>();
     public TopMenuEntry helpMenu;
