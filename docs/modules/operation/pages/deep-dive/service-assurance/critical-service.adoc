@@ -13,11 +13,11 @@ The following image shows how to use critical services to generate these events:
 .Service assurance with pollerd in {page-component-title}
 image::service-assurance/03_node-outage-correlation.png[]
 
-<1> Critical services are all up on the node and just a `nodeLostService` is sent.
-<2> Critical service of one of many IP interfaces is down and `interfaceDown` is sent.
+. Critical services are all up on the node and just a `nodeLostService` is sent.
+. Critical service of one of many IP interfaces is down and `interfaceDown` is sent.
 All other services are not tested and no events are sent.
 The services are assumed to be unreachable.
-<3> All critical services on the node are down and just a `nodeDown` is sent.
+. All critical services on the node are down and just a `nodeDown` is sent.
 All other services on the other IP interfaces are not tested and no events are sent.
 These services are assumed as unreachable.
 
