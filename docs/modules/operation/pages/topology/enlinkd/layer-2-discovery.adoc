@@ -8,6 +8,6 @@ Enlinkd is able to discover Layer 2 network links based on the following protoco
 * link:https://en.wikipedia.org/wiki/Cisco_Discovery_Protocol[Cisco Discovery Protocol] (CDP)
 * link:https://en.wikipedia.org/wiki/Bridging_(networking)[Bridge Discovery] (Bridge)
 
-This information is provided by SNMP Agents with appropriate MIB support.
-For this reason it is required to have a working SNMP configuration running.
-The following section describes the required SNMP MIB provided by the SNMP agent to allow the link discovery.
+Information on Level 2 network links is provided by SNMP agents that support the appropriate MIBs.
+For this reason, you are required to have a working SNMP configuration.
+The following page describes the MIBs required to allow link discovery.
