@@ -28,8 +28,11 @@
 
 package org.opennms.netmgt.enlinkd.common;
 
+import java.net.InetAddress;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.enlinkd.model.IpInterfaceTopologyEntity;
@@ -39,6 +42,7 @@ import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.enlinkd.service.api.Topology;
 import org.opennms.netmgt.enlinkd.service.api.TopologyService;
+import org.opennms.netmgt.model.InetAddressTypeEditor;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.scheduler.Schedulable;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
@@ -59,7 +63,7 @@ public abstract class TopologyUpdater extends Schedulable implements OnmsTopolog
     public static OnmsTopologyProtocol create(ProtocolSupported protocol) {
             return OnmsTopologyProtocol.create(protocol.name());
     }
-    
+
     public static OnmsTopologyVertex create(NodeTopologyEntity node, IpInterfaceTopologyEntity primary) {
         Objects.requireNonNull(node);
         Objects.requireNonNull(node.getId());
@@ -212,7 +216,7 @@ public abstract class TopologyUpdater extends Schedulable implements OnmsTopolog
     public Map<Integer, NodeTopologyEntity> getNodeMap() {
         return m_nodeTopologyService.findAllNode().stream().collect(Collectors.toMap(NodeTopologyEntity::getId, node -> node, (n1, n2) ->n1));
     }
-    
+
     public Map<Integer, IpInterfaceTopologyEntity> getIpPrimaryMap() {
         return m_nodeTopologyService.findAllIp().
                 stream().
@@ -236,7 +240,25 @@ public abstract class TopologyUpdater extends Schedulable implements OnmsTopolog
         }
         return nodeToOnmsSnmpTable;
     }
-    
+
+    public Map<Integer, SnmpInterfaceTopologyEntity> getSnmpInterfaceMap() {
+        return
+                m_nodeTopologyService.
+                        findAllSnmp().
+                        stream().
+                        collect(Collectors.toMap(SnmpInterfaceTopologyEntity::getId, Function.identity()));
+    }
+
+    public Table<Integer, InetAddress, IpInterfaceTopologyEntity> getIpInterfaceTable() {
+        Table<Integer, InetAddress,IpInterfaceTopologyEntity> nodeToOnmsIpTable = HashBasedTable.create();
+        for (IpInterfaceTopologyEntity ip: m_nodeTopologyService.findAllIp()) {
+            if (!nodeToOnmsIpTable.contains(ip.getNodeId(),ip.getIpAddress())) {
+                nodeToOnmsIpTable.put(ip.getNodeId(),ip.getIpAddress(),ip);
+            }
+        }
+        return nodeToOnmsIpTable;
+    }
+
     private static IpInterfaceTopologyEntity getPrimary(IpInterfaceTopologyEntity n1, IpInterfaceTopologyEntity n2) {
         if (PrimaryType.PRIMARY.equals(n2.getIsSnmpPrimary()) ) {
             return n2;

@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.enlinkd.service.impl;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -82,7 +83,18 @@ public class NodeTopologyServiceImpl extends TopologyServiceImpl implements Node
 
     @Override
     public Set<SubNetwork> findAllLegalSubNetwork() {
-        return findAllSubNetwork().stream().filter(s -> s.getNodeIds().size() > 1 && !s.hasDuplicatedAddress()).collect(Collectors.toSet());
+        return findAllSubNetwork()
+                .stream()
+                .filter(s -> !s.hasDuplicatedAddress())
+                .filter(s ->!InetAddressUtils.inSameNetwork(s.getNetwork(),InetAddress.getLoopbackAddress(), s.getNetmask()))
+                .collect(Collectors.toSet());
+    }
+
+    @Override
+    public Set<SubNetwork> findSubNetworkByNetworkPrefixLessThen(int ipv4prefix, int ipv6prefix) {
+        return findAllLegalSubNetwork()
+                .stream()
+                .filter(s -> (s.isIpV4Subnetwork() && s.getNetworkPrefix() < ipv4prefix) ||(!s.isIpV4Subnetwork() && s.getNetworkPrefix() < ipv6prefix)).collect(Collectors.toSet());
     }
 
     @Override
@@ -97,7 +109,7 @@ public class NodeTopologyServiceImpl extends TopologyServiceImpl implements Node
     public Set<SubNetwork> findAllLegalPointToPointSubNetwork() {
         return findAllLegalSubNetwork()
                 .stream()
-                .filter(s -> InetAddressUtils.isPointToPointMask(s.getNetmask()))
+                .filter(s -> InetAddressUtils.isPointToPointMask(s.getNetmask()) && s.getNodeIds().size() == 2)
                 .collect(Collectors.toSet());
     }
 
@@ -177,7 +189,7 @@ public class NodeTopologyServiceImpl extends TopologyServiceImpl implements Node
     @Override
     public Map<Integer, Integer> getNodeidPriorityMap(ProtocolSupported protocol) {
         final Map<Integer, Integer> priorityMap = new HashMap<>();
-        Set<SubNetwork> allLegalSubnets = findAllLegalSubNetwork();
+        Set<SubNetwork> allLegalSubnets = findAllLegalSubNetwork().stream().filter(s -> s.getNodeIds().size() > 1).collect(Collectors.toSet());
         LOG.info("getNodeidPriorityMap: subnetworks.size: {}",  allLegalSubnets.size());
         int priority = 0;
         int loop = 0;

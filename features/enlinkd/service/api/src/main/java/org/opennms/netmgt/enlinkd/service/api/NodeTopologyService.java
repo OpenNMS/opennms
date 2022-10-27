@@ -41,6 +41,7 @@ public interface NodeTopologyService extends TopologyService {
     List<Node> findAllSnmpNode();
     Set<SubNetwork> findAllSubNetwork();
     Set<SubNetwork> findAllLegalSubNetwork();
+    Set<SubNetwork> findSubNetworkByNetworkPrefixLessThen(int ipv4prefix, int ipv6prefix);
     Set<SubNetwork> findAllPointToPointSubNetwork();
     Set<SubNetwork> findAllLegalPointToPointSubNetwork();
     Set<SubNetwork> findAllLoopbacks();

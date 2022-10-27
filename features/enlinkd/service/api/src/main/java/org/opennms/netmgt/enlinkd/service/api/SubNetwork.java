@@ -76,6 +76,14 @@ public class SubNetwork {
         return m_network.getHostAddress()+"/"+InetAddressUtils.convertInetAddressMaskToCidr(m_netmask);
     }
 
+    public int getNetworkPrefix() {
+        return InetAddressUtils.convertInetAddressMaskToCidr(m_netmask);
+    }
+
+    public boolean isIpV4Subnetwork() {
+        return m_network.getAddress().length == 4;
+    }
+
     public Set<Integer> getNodeIds() {
         return m_nodeInterfaceMap.keySet();
     }
