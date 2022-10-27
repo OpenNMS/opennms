@@ -33,14 +33,7 @@ export BUILDDEFINES=\
 	--threads $${CCI_MAXCPU:-2} \
 	$(OPTS_PROFILES)
 
-function opa_version()
-{
-    grep '<opennmsApiVersion>' pom.xml | \
-    sed -e 's,^[^>]*>,,' -e 's,<.*$,,' -e 's,-[^-]*-SNAPSHOT$,,' -e 's,-SNAPSHOT$,,' -e 's,-testing$,,' -e 's,-,.,g' | \
-    head -n 1
-}
-
-export OPA_VERSION=$(opa_version)
+export OPA_VERSION=$(opa_version}
 
 configure:
 
