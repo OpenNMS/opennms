@@ -1,13 +1,13 @@
 <template>
   <FeatherAutocomplete
-    v-model="searchStr"
+    v-model="searchModel"
     type="single"
     :results="results"
     label="Search..."
     class="menubar-search"
     @search="search"
     :loading="loading"
-    text-prop="label"
+    text-prop="_text"
     @update:modelValue="selectItem"
   ></FeatherAutocomplete>
 </template>
@@ -18,25 +18,48 @@
 >
 import { useStore } from 'vuex'
 import { FeatherAutocomplete } from '@featherds/autocomplete'
+import { SearchResultResponse } from '@/types'
 
-const router = useRouter()
 const store = useStore()
 const searchStr = ref()
 const pausedSearch = ref()
 const loading = ref(false)
+const baseHref = computed<string>(() => store.state.menuModule.mainMenu?.baseHref)
+const results = ref([{}])
+const searchModel = ref({})
 
-const selectItem: any = (value: { url: string }) => {
-  if (!value) return
-  // parse selected item url and redirect
-  const path = value.url.split('?')[1].split('=')
-  router.push(`/${path[0]}/${path[1]}`)
+const selectItem: any = (value: any) => {
+  if (!value || !value.url) return
+
+  const absPath = `${baseHref.value}${value.url}`
+  window.location.assign(absPath)
 }
-
 
 const search = async (value: string) => {
   if (value || searchStr.value && !loading.value){
     loading.value = true
     await store.dispatch('searchModule/search', value)
+
+    const searchResults : (SearchResultResponse[] | null) = store.state?.searchModule?.searchResults || null
+
+    if (searchResults) {
+      const allResults : any[] = []
+
+      searchResults.forEach(sr => {
+        const context = sr.context?.name || ''
+
+        if (sr.results) {
+          sr.results.forEach(r => {
+            const text = context ? `${context}: ${r.label}` : r.label
+            const obj = { _text: text, ...r }
+            allResults.push(obj)
+          })
+        }
+      })
+
+      results.value = allResults
+    }
+
     loading.value = false
   } else {
     pausedSearch.value = value
@@ -49,10 +72,6 @@ watchEffect(() => {
     search(pausedSearch.value)
     pausedSearch.value = ''
   }
-})
-
-const results = computed(() => {
-  return store.state?.searchModule?.searchResults?.[0]?.results || null
 })
 </script>
 
