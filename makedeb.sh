@@ -220,6 +220,7 @@ function build_opennms()
     echo "Release: " $RELEASE
     echo "OPA VERSION: " $OPA_VERSION
     echo
+    sed -i "s/OPA_VERSION/$OPA_VERSION/g" debian/control
 
     if $DO_CHANGELOG; then
         echo "- adding auto-generated changelog entry"

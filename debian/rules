@@ -5,7 +5,6 @@
 # Uncomment this to turn on verbose mode.
 export DH_VERBOSE=1
 export SHELL=/bin/bash
-export OPA_VERSION=$${opa_version}
 
 export JAVA_HOME=$(shell core/cli/src/main/resources/bin/find-java.sh 1.8 1.9)
 
