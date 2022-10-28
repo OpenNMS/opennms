@@ -2,7 +2,25 @@
 [[ref-daemon-config-files-enlinkd]]
 = Enlinkd
 
-The enhanced link daemon collects xref:operation:deep-dive/topology/enlinkd/introduction.adoc[topology information] via SNMP to determine neighboring nodes.
+The enhanced link daemon collects xref:operation:topology/enlinkd/introduction.adoc[topology information] via SNMP to determine neighboring nodes.
+The daemon essentially asks each device the following question: "What is the network topology from your point of view?"
+The enlinkd discovery process attempts to discover bridge domain links with the data coming from all collected bridge forwarding tables.
+The enlinkd updaters correlate all collected topology data to generate a global topology layout of your network.
+
+.Enlinkd configuration file overview
+[options="header"]
+[cols="2,3,1,1"]
+|===
+| File
+| Description
+| Reload Event
+| Restart Required
+
+| enlinkd-configuration.xml
+| Configure generic behavior of enlinkd.
+| yes
+| no
+|===
 
 .Enlinkd log file overview
 [options="header"]
@@ -14,3 +32,76 @@ The enhanced link daemon collects xref:operation:deep-dive/topology/enlinkd/intr
 | enlinkd.log
 | Logs relating to enlinkd server events.
 |===
+
+
+== Enlinkd configuration
+
+If multiple protocols are enabled, links will be discovered for each enabled discovery protocol.
+The topology web UI visualizes links for each discovery protocol.
+For example, if you start CDP and LLDP discovery, the web UI visualizes a CDP link and an LLDP link.
+
+Restart {page-component-title} or just the enlinkd daemon to apply configuration changes.
+
+.enlinkd-configuration parameters
+[options="header"]
+[cols="1,3,1"]
+|===
+| Attribute
+| Description
+| Default
+
+3+| *Integer*
+
+| threads
+| Number of parallel threads for enlinkd collector, updater, and discovery tasks.
+| 5
+
+| initial_sleep_time
+| Time in milliseconds to wait to start collectors after {page-component-title} is started.
+| 60000
+
+| rescan_interval
+| Interval in milliseconds for collectors.
+| 86400000
+
+| topology_interval
+| Interval in milliseconds for updater.
+| 30000
+
+| bridge_topology_interval
+| Interval in milliseconds for discovery.
+| 300000
+
+| max_bft
+| The maximum number of bridge forwarding tables (BFTs) stored in memory for discovery.
+| 100
+
+| discovery-bridge-threads
+| The number of threads used for discovery.
+| 1
+
+3+| *Boolean*
+
+| use-cdp-discovery
+| Enable or disable discovery based on CDP information.
+| true
+
+| use-bridge-discovery
+| Enable or disable discovery based on the bridge information.
+| true
+
+| use-lldp-discovery
+| Enable or disable discovery based on LLDP information.
+| true
+
+| use-ospf-discovery
+| Enable or disable discovery based on OSPF information.
+| true
+
+| use-isis-discovery
+| Enable or disable discovery based on IS-IS information.
+| true
+|===
+
+The discovery for bridge first start is scheduled at `initial_sleep_time + bridge_topology_interval`.
+The updaters' first start is scheduled at 0L.
