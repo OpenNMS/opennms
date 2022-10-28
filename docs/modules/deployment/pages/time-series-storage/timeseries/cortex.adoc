@@ -91,7 +91,7 @@ bulkheadMaxWaitDurationInMs=9223372036854775807
 .Create or modify the `$\{OPENNMS_HOME}/etc/featuresBoot.d/cortex.boot` file
 [source, text]
 ----
-opennms-plugins-cortex-tss  wait-for-kar=opennms-cortex-tss-plugin
+opennms-plugins-cortex-tss wait-for-kar=opennms-cortex-tss-plugin
 ----
 . Restart the {page-component-title} service.
 
