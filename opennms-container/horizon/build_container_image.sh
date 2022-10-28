@@ -25,7 +25,7 @@ echo "List of Docker images"
 docker images 
 
 echo "Purge all images/containers"
-docker system prune -a
+#docker system prune -a -f
 
 echo "List of Docker images"
 docker images 
@@ -48,7 +48,7 @@ fi
 
 docker tag horizon:"${VERSION}"  horizon:latest
 
-docker image save horizon:latest -o images/container.oci
+docker image save horizon:"${VERSION}" -o images/container.oci
 
 rm -f rpms/*.repo
 ../stop_yum_server.sh
