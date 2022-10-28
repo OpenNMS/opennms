@@ -21,6 +21,14 @@ enabled=1
 gpgcheck=0
 END
 
+echo "List of Docker images"
+docker images 
+
+echo "Purge all images/containers"
+docker system prune -a
+
+echo "List of Docker images"
+docker images 
 
 docker build -t horizon:"${VERSION}" \
   --network "${BUILD_NETWORK}" \
