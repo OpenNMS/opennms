@@ -92,6 +92,8 @@ public class MenuProvider {
             mainMenu.homeUrl = mainMenu.baseHref + "index.jsp";
             mainMenu.formattedTime = context.getFormattedTime();
             mainMenu.username = context.getRemoteUser();
+            // for navigating to a specific node id
+            mainMenu.baseNodeUrl = "element/node.jsp?node=";
             mainMenu.noticeStatus = context.getNoticeStatus();
             // TODO: Remove
             mainMenu.notices = buildNotices(context);

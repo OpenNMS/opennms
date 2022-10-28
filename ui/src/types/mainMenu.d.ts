@@ -29,6 +29,7 @@ export interface MainMenu {
   formattedTime: string
   noticeStatus: string
   username: string
+  baseNodeUrl: string
   
   menus: TopMenuItem[]
   helpMenu: TopMenuItem | null
