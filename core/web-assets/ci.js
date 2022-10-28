@@ -31,9 +31,9 @@ if (!fs.existsSync(touchfile)
 
 if (doUpdate) {
   console.info('node_modules is potentially out of date compared to package-lock.json');
-  const cache_cleanup_child = child_process.execFile(path.join(__dirname, 'target', 'node', 'npm'), ['cache', 'clean', '--force']);
-  cache_cleanup_child.stdout.pipe(process.stdout);
-  cache_cleanup_child.stderr.pipe(process.stderr);
+  //const cache_cleanup_child = child_process.execFile(path.join(__dirname, 'target', 'node', 'npm'), ['cache', 'clean', '--force']);
+  //cache_cleanup_child.stdout.pipe(process.stdout);
+  //cache_cleanup_child.stderr.pipe(process.stderr);
   const child = child_process.execFile(path.join(__dirname, 'target', 'node', 'npm'), ['--prefer-offline', '--no-progress', 'ci']);
   child.stdout.pipe(process.stdout);
   child.stderr.pipe(process.stderr);
