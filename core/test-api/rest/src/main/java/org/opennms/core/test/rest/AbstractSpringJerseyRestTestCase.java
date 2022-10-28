@@ -312,8 +312,9 @@ public abstract class AbstractSpringJerseyRestTestCase {
             }
         }
         if (parameterMap != null) {
-            request.setParameters(parameterMap);
-            request.setQueryString(getQueryString(parameterMap));
+            for (Entry<String, String> eachEntry : parameterMap.entrySet()) {
+                request.addParameter(eachEntry.getKey(), eachEntry.getValue());
+            }
         }
         return request;
     }
