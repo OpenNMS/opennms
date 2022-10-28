@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -123,8 +123,9 @@ public class NetworkRouterTopologyUpdater extends TopologyUpdater {
                         break;
                     }
                 }
-                if (sourceIp == null || targetIp == null)
+                if (sourceIp == null || targetIp == null) {
                     return;
+                }   
                 OnmsTopologyPort sourcePort = create(source, sourceIp, (sourceIp.getSnmpInterfaceId() != null ? snmpMap.get(sourceIp.getSnmpInterfaceId()) : null));
                 OnmsTopologyPort targetPort = create(target, targetIp, (targetIp.getSnmpInterfaceId() != null ? snmpMap.get(targetIp.getSnmpInterfaceId()) : null));
                 topology.getEdges().add(OnmsTopologyEdge.create(sourceIp.getId().toString(), sourcePort, targetPort));
@@ -143,8 +144,9 @@ public class NetworkRouterTopologyUpdater extends TopologyUpdater {
                             break;
                         }
                     }
-                    if (targetIp == null)
+                    if (targetIp == null) {
                         return;
+                    }    
                     OnmsTopologyPort sourcePort = createNetworkPort(source, targetIp);
                     OnmsTopologyPort targetPort = create(target, targetIp, (targetIp.getSnmpInterfaceId() != null ? snmpMap.get(targetIp.getSnmpInterfaceId()) : null));
                     topology.getEdges().add(OnmsTopologyEdge.create(targetIp.getId().toString(), sourcePort, targetPort));

@@ -79,6 +79,7 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
+import org.opennms.netmgt.dao.mock.MockDistPollerDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -234,7 +235,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
     @Before
     public void setUp() throws Exception {
         if (m_distPollerDao.findAll().size() == 0) {
-            OnmsDistPoller distPoller = new OnmsDistPoller(DistPollerDao.DEFAULT_DIST_POLLER_ID);
+            OnmsDistPoller distPoller = new OnmsDistPoller(MockDistPollerDao.DEFAULT_DIST_POLLER_ID);
             distPoller.setLabel("localhost");
             distPoller.setLocation(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID);
             distPoller.setType(OnmsMonitoringSystem.TYPE_OPENNMS);
@@ -1823,6 +1824,52 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
 
         // The interface should remain
         assertEquals(1, node.getIpInterfaces().size());
+    }
+
+    /**
+     * Tests fix for NMS-14853
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testAbortFlagResetOnRescan() throws Exception {
+        NetworkBuilder builder = new NetworkBuilder();
+        builder.addNode("node1");
+
+        builder.addInterface("192.168.0.1")
+                .getInterface()
+                // Pretend this was discovered an hour ago
+                .setIpLastCapsdPoll(new Date(new Date().getTime() - 60*60*1000));
+
+        builder.addService(new OnmsServiceType());
+
+        OnmsNode node = builder.getCurrentNode();
+        getNodeDao().save(node);
+
+        // Preliminary check
+        assertEquals(1, node.getIpInterfaces().size());
+
+        // Issue a scan without setting up the requisition
+        // Expect a nodeScanAborted event
+        m_eventAnticipator.anticipateEvent(nodeScanAborted(node.getId()));
+        m_eventAnticipator.setDiscardUnanticipated(true);
+
+        final NodeScan scan = m_provisioner.createNodeScan(node.getId(), "empty", "1", node.getLocation(), null);
+        runScan(scan);
+
+        m_eventAnticipator.verifyAnticipated();
+        assertTrue(scan.isAborted());
+
+        m_eventAnticipator.reset();
+
+        // Import requisition and re-run scan with the same object
+        importFromResource("classpath:/single_node.xml", Boolean.FALSE.toString());
+        m_eventAnticipator.anticipateEvent(nodeScanCompleted(node.getId()));
+        m_eventAnticipator.setDiscardUnanticipated(true);
+        runScan(scan);
+
+        m_eventAnticipator.verifyAnticipated();
+        assertFalse(scan.isAborted());
     }
 
     private void testLocationChanges(String path1, String location1, String path2, String location2) throws Exception {

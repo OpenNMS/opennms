@@ -2,11 +2,16 @@
 [[getting-started-core]]
 = Installation and Configuration
 
+This section explains how to install and configure a new {page-component-title} instance.
+
 [[objectives-setup-core]]
 == Objectives
 
 * Install all required OpenNMS {page-component-title} components, including PostgreSQL, on a single node.
-* Run {page-component-title} core and PostgreSQL with the default configuration (which is not optimized to run in production and monitor large networks).
+* Run {page-component-title} core and PostgreSQL with the default configuration.
++
+NOTE: The default configuration is not optimized to run in production or monitor large networks.
+
 ifeval::["{page-component-title}" == "Horizon"]
 ** By default, your time series storage is JRobin, which persists RRD files on the local file system.
 endif::[]
@@ -24,7 +29,7 @@ endif::[]
 * A Linux physical server or a virtual machine running a supported xref:deployment:core/system-requirements.adoc#operating-systems-core[Linux operating system].
 * Internet access to download the installation packages.
 * A working DNS server, and a localhost and server name that resolve properly.
-* A system user with administrative permissions (sudo) to perform installation.
+* A system user with administrative permissions (`sudo`) to perform installation.
 ifeval::["{page-component-title}" == "Horizon"]
 * To run services in https://docs.docker.com/[Docker], you need https://docs.docker.com/compose/install[Docker Compose] for the service stacks from our examples.
 
@@ -38,7 +43,7 @@ include::../time-sync.adoc[]
 == Set up PostgreSQL
 
 TIP: PostgreSQL 14 uses the `scram-sha-256` https://www.postgresql.org/docs/14/auth-password.html[password authentication] method by default.
-If you use older versions of PostgreSQL, you should change the method in postgresql.conf and in pg_hba.conf before continuing with the <<install-core-instance, core instance installation>>.
+If you use older versions of PostgreSQL, you should change the method in `postgresql.conf` and in `pg_hba.conf` before continuing with the <<install-core-instance, core instance installation>>.
 
 [{tabs}]
 ====
@@ -139,7 +144,7 @@ endif::[]
 == Encrypt database credentials
 
 It is also possible to store the PostgreSQL credentials in the secure credentials vault.
-To achieve this, use the `scvcli` command line utility to add the credentials, and reference these credentials in your `opennms-datasources.xml` file.
+To achieve this, use the `scvcli` command line utility to add the credentials, and reference these credentials in `opennms-datasources.xml`.
 
 .Create encrypted credentials for the PostgreSQL database connections:
 [source, console]
@@ -170,7 +175,7 @@ To achieve this, use the `scvcli` command line utility to add the credentials, a
 == Receive SNMP traps/informs
 
 {page-component-title} core lets you receive and process SNMP traps/informs out of the box.
-{page-component-title} services run as an unprivileged user and can't bind on port numbers below 1024 without escalated privileges.
+{page-component-title} services run as an unprivileged user and can't bind on port numbers below `1024` without escalated privileges.
 For this reason, the default port for the SNMP trap/inform listener is set to port number `10162/udp` instead of the IANA registered port number `162/udp`.
 The following example shows how to configure the local firewall daemon to forward port `162/udp` to `10162/udp`.
 
@@ -199,7 +204,8 @@ You can verify your firewall and port forwarding configuration by sending an SNM
 ----
 snmptrap -v 2c -c public opennms-core-host '' 1.3.6.1.4.1.2021.991.17 .1.3.6.1.2.1.1.6.0 s "Milky Way"<1><2>
 ----
-. By default, OpenNMS uses the community string `public`.
+
+. By default, OpenNMS uses the `public` community string.
 If you changed the community string in {page-component-title}, use that name here.
 . Replace `opennms-core-host` with the IP or FQDN of your {page-component-title} core instance.
 
@@ -209,24 +215,21 @@ If you run on Debian or Ubuntu, the tool is part of the `snmp-utils` package.
 Your configuration works as expected when you see an SNMP trap event in the web UI.
 
 . Log in to the web UI.
-. Click *Status -> Events -> All events*.
-. Verify you received a `uei.opennms.org/generic/traps/EnterpriseDefault` event from your test host.
+. Click menu:Status[Events > All Events].
+. Verify that you received a `uei.opennms.org/generic/traps/EnterpriseDefault` event from your test host.
 
 == First login
 
 After you start the {page-component-title} core services, access the web application at `\http://core-instance-ip:8980/opennms`.
 The default login and password is *admin*.
 
-IMPORTANT: Immediately change the password to a secure one.
-
-. Open `\http://core-instance-ip:8980/opennms` in your web browser.
-. Log in with with the default user name and password.
-. Click  *admin -> Change Password* in the navigation bar.
-. Use *admin* as the current password, then enter and confirm a new password in the appropriate boxes.
-. Click *Submit*.
-. Log out, then log in with your new password.
+IMPORTANT: Immediately xref:operation:quick-start/users.adoc#ga-admin-user-setup[change the `admin` account password] to a secure one.
 
 == First monitored node
 
 The default configuration will discover a single node with an interface `127.0.0.1` and detect services exposed on the loopback interface, including the OpenNMS-JVM service.
 Nodes with this service have JMX-based data collection performed on Java JVM statistics such as heap memory and open file handles.
+
+== Next steps
+
+See the xref:operation:quick-start/introduction.adoc[Quick Start guide] for more information on setting up and configuring your {page-component-title} instance.
