@@ -154,8 +154,10 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
             this.withEnv("OPENNMS_TIMESERIES_STRATEGY", model.getTimeSeriesStrategy().name().toLowerCase());
         }
 
-        final Integer[] exposedPorts = new ArrayList<>(networkProtocolMap.values())
-                .toArray(new Integer[0]);
+        final Integer[] exposedPorts = networkProtocolMap.entrySet().stream()
+                .filter(e -> InternetProtocol.TCP.equals(e.getKey().getIpProtocol()))
+                .map(Map.Entry::getValue)
+                .toArray(Integer[]::new);
         final int[] exposedUdpPorts = networkProtocolMap.entrySet().stream()
                 .filter(e -> InternetProtocol.UDP.equals(e.getKey().getIpProtocol()))
                 .mapToInt(Map.Entry::getValue)

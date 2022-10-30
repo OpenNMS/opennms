@@ -32,8 +32,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
@@ -46,6 +46,7 @@ import com.github.dockerjava.api.exception.DockerException;
 import com.github.dockerjava.api.model.ExposedPort;
 import com.github.dockerjava.api.model.HostConfig;
 import com.github.dockerjava.api.model.InternetProtocol;
+import com.github.dockerjava.api.model.Ports;
 import com.google.common.io.CharStreams;
 
 public class TestContainerUtils {
@@ -126,24 +127,24 @@ public class TestContainerUtils {
      * @param ports
      */
     public static void exposePortsAsUdp(CreateContainerCmd cmd, int... ports) {
-        final ExposedPort[] exposedPorts = cmd.getExposedPorts();
-        if (exposedPorts == null && ports.length > 0) {
-            throw new RuntimeException("There are 1+ ports to convert to UDP, but no exposed ports were found.");
+        // Add already exposed TCP ports
+        List<ExposedPort> exposedPorts = new ArrayList<>();
+        for (ExposedPort p : cmd.getExposedPorts()) {
+            exposedPorts.add(p);
         }
-
-        // Index the ports for easy lookup
-        final Map<Integer, Integer> portToIdx = new HashMap<>();
-        for (int i = 0; i < exposedPorts.length; i++) {
-            portToIdx.put(exposedPorts[i].getPort(), i);
-        }
-
+        // Add our UDP portts
         for (int port : ports) {
-            final Integer idx = portToIdx.get(port);
-            if (idx == null) {
-                throw new RuntimeException("No exposed port entry found for: " + port);
-            }
-            exposedPorts[idx] = new ExposedPort(port, InternetProtocol.UDP);
+            exposedPorts.add(ExposedPort.udp(port));
         }
+        cmd.withExposedPorts(exposedPorts);
+
+        // Add previous port bindings
+        Ports portBindings = cmd.getHostConfig().getPortBindings();
+        // Add port bindings for our UDP ports
+        for (int port : ports) {
+            portBindings.bind(ExposedPort.udp(port), Ports.Binding.empty());
+        }
+        cmd.getHostConfig().withPortBindings(portBindings);
     }
 
     /**
