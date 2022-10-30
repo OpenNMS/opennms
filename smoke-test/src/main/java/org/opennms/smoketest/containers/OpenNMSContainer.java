@@ -135,6 +135,7 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
     private final OpenNMSProfile profile;
     private final Path overlay;
     private int generatedUserId = -1;
+    private boolean afterTestCalled = false;
 
     public OpenNMSContainer(StackModel model, OpenNMSProfile profile) {
         super("horizon");
@@ -469,6 +470,11 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
 
     @Override
     public void afterTest(final TestDescription description, final Optional<Throwable> throwable) {
+        if (afterTestCalled) {
+            LOG.warn("afterTest has already been called, not running on subsequent calls");
+            return;
+        }
+        afterTestCalled = true;
         KarafShellUtils.saveCoverage(this, description.getFilesystemFriendlyName(), ALIAS);
         retainLogsfNeeded(description.getFilesystemFriendlyName(), !throwable.isPresent());
     }
