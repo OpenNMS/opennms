@@ -35,8 +35,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.opennms.integration.api.v1.timeseries.DataPoint;
 import org.opennms.integration.api.v1.timeseries.IntrinsicTagNames;
 import org.opennms.integration.api.v1.timeseries.MetaTagNames;
+import org.opennms.integration.api.v1.timeseries.Metric;
 import org.opennms.integration.api.v1.timeseries.Sample;
 import org.opennms.integration.api.v1.timeseries.Tag;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableMetric;
@@ -166,7 +168,7 @@ public class TimeseriesPersistOperationBuilder implements PersistOperationBuilde
         for (Entry<CollectionAttributeType, Number> entry : declarations.entrySet()) {
             CollectionAttributeType attrType = entry.getKey();
 
-            Tag type = typeToTag(attrType.getName(), attrType.getType());
+            Tag type = typeToTag(attrType.getType());
             if (type == null) {
                 // Skip attributes with no type
                 continue;
@@ -181,7 +183,7 @@ public class TimeseriesPersistOperationBuilder implements PersistOperationBuilde
             ImmutableMetric.MetricBuilder builder = ImmutableMetric.builder()
                     .intrinsicTag(IntrinsicTagNames.resourceId, resourceId)
                     .intrinsicTag(IntrinsicTagNames.name, attrType.getName())
-                    .externalTag(type);
+                    .metaTag(type);
 
             // add resource level string attributes
             this.configuredAdditionalMetaTags.forEach(builder::metaTag);
@@ -201,7 +203,12 @@ public class TimeseriesPersistOperationBuilder implements PersistOperationBuilde
         return samples;
     }
 
-    private Tag typeToTag(final String name, final AttributeType type) {
+    /**
+     * @see org.opennms.netmgt.timeseries.sampleread.aggregation.NewtsConverterUtils#toNewtsValue
+     * @param type
+     * @return
+     */
+    private Tag typeToTag(final AttributeType type) {
         ImmutableMetric.Mtype mtype;
 
         if(type == AttributeType.COUNTER) {
@@ -213,7 +220,8 @@ public class TimeseriesPersistOperationBuilder implements PersistOperationBuilde
         } else {
             mtype = ImmutableMetric.Mtype.gauge;
         }
-        return new ImmutableTag(name + "." + MetaTagNames.mtype, mtype.name());
+        // types handling is in NewtsConverterUtils.toNewtsValue
+        return new ImmutableTag(MetaTagNames.mtype, mtype.name());
     }
 
     /**

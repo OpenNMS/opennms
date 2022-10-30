@@ -103,9 +103,9 @@ public class TimeseriesPersistOperationBuilderTest {
         Assert.assertEquals(Double.valueOf(value.doubleValue()), samples.get(0).getValue());
 
         Metric metric = samples.get(0).getMetric();
-        Assert.assertEquals(1, metric.getExternalTags().size());
-        Tag tag = metric.getExternalTags().stream().findFirst().get();
-        Assert.assertEquals(attributeType.getName() + "." + MetaTagNames.mtype, tag.getKey());
+        Assert.assertEquals(1, metric.getMetaTags().size());
+        Tag tag = metric.getMetaTags().stream().findFirst().get();
+        Assert.assertEquals(MetaTagNames.mtype, tag.getKey());
         Assert.assertEquals(mtype.toString(), tag.getValue().toLowerCase());
         Assert.assertEquals(2, metric.getIntrinsicTags().size());
         tag = metric.getIntrinsicTags().stream().filter(t -> t.getKey().equals("name")).findFirst().get();

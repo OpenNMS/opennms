@@ -75,7 +75,7 @@ public class NewtsConverterUtils {
         final Context context = new Context("not relevant");
         final Resource resource = new Resource(metric.getFirstTagByKey(IntrinsicTagNames.resourceId).getValue(), resourceAttributes);
         final String name = metric.getFirstTagByKey(IntrinsicTagNames.name).getValue();
-        final MetricType type = toNewts(Metric.Mtype.valueOf(metric.getFirstTagByKey(name + "." + IntrinsicTagNames.mtype).getValue()));
+        final MetricType type = toNewts(Metric.Mtype.valueOf(metric.getFirstTagByKey(MetaTagNames.mtype).getValue()));
         final ValueType<?> value = toNewtsValue(metric, dataPoint);
         final Map<String, String> attributes = new HashMap<>();
 
