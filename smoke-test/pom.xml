@@ -19,6 +19,10 @@
     <jersey.version>2.36</jersey.version>
     <karafVersion>4.3.6</karafVersion>
     <selenium.version>3.141.59</selenium.version>
+    <!-- seleniarm.version needs to match a date stamped release version from the docker-seleniarm releases page
+         for the same version of selenium specified in selenium.version above.
+         https://github.com/seleniumhq-community/docker-seleniarm/releases -->
+    <seleniarm.version>4.6.0-20221104</seleniarm.version>
     <testcontainers.version>1.17.5</testcontainers.version>
     <netty4Version>4.1.78.Final</netty4Version>
     <jna.version>5.8.0</jna.version>
@@ -78,7 +82,9 @@
           <version>${failsafeVersion}</version>
           <configuration>
             <!-- Don't specify argLine here or it will override the argLine property value -->
-            <systemPropertyVariables/>
+            <systemPropertyVariables>
+              <seleniarm.version>${seleniarm.version}</seleniarm.version>
+            </systemPropertyVariables>
             <!--
               Configure failsafe to put reports in the surefire unit test directory so that
               Bamboo and Sonar tally the test results properly.
