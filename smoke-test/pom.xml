@@ -20,6 +20,7 @@
     <karafVersion>4.3.6</karafVersion>
     <selenium.version>3.141.59</selenium.version>
     <testcontainers.version>1.17.5</testcontainers.version>
+    <netty4Version>4.1.78.Final</netty4Version>
     <jna.version>5.8.0</jna.version>
     <test.fork.count>0</test.fork.count>
     <!-- Limit ITs to 30 minutes by default -->
@@ -333,6 +334,13 @@
         <groupId>com.fasterxml.jackson.module</groupId>
         <artifactId>jackson-module-jaxb-annotations</artifactId>
         <version>${jackson2Version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-bom</artifactId>
+        <version>${netty4Version}</version>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>org.codehaus.groovy</groupId>
