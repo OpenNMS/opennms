@@ -52,7 +52,7 @@ commands:
             find . -type f -regex ".*/target/surefire-reports/.*xml" -exec cp {} ~/test-results/junit/ \;
             find . -type f -regex ".*/target/failsafe-reports/.*xml" -exec cp {} ~/test-results/junit/ \;
             mkdir -p ~/test-artifacts/recordings
-            cp -R ~/project/smoke-test/target/*.flv ~/test-artifacts/recordings || true
+            cp -R ~/project/smoke-test/target/*.{flv,mp4} ~/test-artifacts/recordings || true
             cp -R ~/project/smoke-test/target/screenshots ~/test-artifacts/ || true
             cp -R ~/project/smoke-test/target/logs ~/test-artifacts/ || true
       - store_test_results:
