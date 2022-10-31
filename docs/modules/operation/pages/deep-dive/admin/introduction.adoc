@@ -1,15 +1,15 @@
 
 = {page-component-title} Administration
 
-This section describes additional administrative tasks you may want to perform or configure:
+This section describes administrative tasks that you may want to perform in {page-component-title}:
 
-* xref:deep-dive/admin/webui/introduction.adoc[admin UI customization]
-* xref:deep-dive/admin/system-properties/introduction.adoc[system properties]
-* xref:deep-dive/admin/config-tester.adoc[configuration tester]
-* xref:deep-dive/admin/rmi.adoc[enable RMI]
-* xref:deep-dive/admin/geocoder.adoc[geolocation resolution]
-* xref:deep-dive/admin/http-ssl.adoc[HTTPS/SSL configuration]
-* xref:deep-dive/admin/request-logging.adoc[request logging]
-* xref:deep-dive/admin/restart.adoc[shutdown and restart]
-* xref:deep-dive/admin/logging/log-file-viewer.adoc[view log files]
-* xref:deep-dive/admin/housekeeping/introduction.adoc[housekeeping tasks]
+* xref:deep-dive/admin/webui/introduction.adoc[Customize admin UI].
+* xref:deep-dive/admin/system-properties/introduction.adoc[Update system properties].
+* xref:deep-dive/admin/config-tester.adoc[Test configuration settings].
+* xref:deep-dive/admin/rmi.adoc[Enable RMI].
+* xref:deep-dive/admin/geocoder.adoc[Resolve geolocations].
+* xref:deep-dive/admin/http-ssl.adoc[Configure HTTP(S) and SSL].
+* xref:deep-dive/admin/request-logging.adoc[Request logging].
+* xref:deep-dive/admin/restart.adoc[Shutdown and restart your instance].
+* xref:deep-dive/admin/logging/log-file-viewer.adoc[View log files].
+* xref:deep-dive/admin/housekeeping/introduction.adoc[Housekeeping tasks].

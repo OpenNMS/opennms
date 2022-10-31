@@ -1,52 +1,67 @@
+
 [[scv-overview]]
 = Secure Credentials Vault
 
-Secure Credentials Vault (SCV) lets you encrypt credentials the {page-component-title} system uses.
-SCV uses a Java KeyStore (JKS) to store credentials in JKS format.
-SCV is enabled by default on {page-component-title}.
+The secure credentials vault (SCV) lets you encrypt credentials used by {page-component-title}.
+It uses Java KeyStore (JKS) to store credentials in the JKS format.
 
-== Configuring SCV password
+The SCV is enabled by default.
 
-A custom SCV password can be defined with the `org.opennms.features.scv.jceks.key` system property in the `$\{OPENNMS_HOME}/etc/opennms.properties.d/svc.properties` file.
-The SCV keystore file is stored at `$\{OPENNMS_HOME}/etc/scv.jce`.
+== Configure SCV password
 
-IMPORTANT: The SCV password cannot be changed once it has credentials stored.
-The keystore file must be deleted and credentials re-added if you want to change the password from the default after the file has been created.
+A custom SCV password is defined by the `org.opennms.features.scv.jceks.key` property in `$\{OPENNMS_HOME}/etc/opennms.properties.d/svc.properties`.
+The SCV keystore file is located at `$\{OPENNMS_HOME}/etc/scv.jce`.
 
-== Storing credentials in SCV
+IMPORTANT: The SCV password cannot be changed once credentials have been stored.
+`$\{OPENNMS_HOME}/etc/scv.jce` must be deleted and any credentials manually re-added if you want to change the password after the file has been created.
 
-SCV entries are identified by an alias.
-For each alias, you can store `username`, `password`, and a set of key-value pair attributes.
-To access or add credentials, navigate to menu:UI Preview[Secure Credentials Vault].
+== Store credentials
 
-== Accessing SCV entries
+Entries in the SCV are identified by aliases.
+For each alias, you can store a username, a password, and a set of key-value pair attributes.
 
-Access SCV entries from metadata with context `scv`.
+To access or add credentials, click menu:Info[Secure Credentials Vault] in the top menu bar.
 
-${scv:juniper-vm:username}::
-This metadata expression can access the username from the `juniper-vm` alias.
+== Access entries
 
-${scv:juniper-vm:password}::
-This metadata expression can access the password from the `juniper-vm` alias.
+=== Metadata expressions
 
-${scv:juniper-vm:user1}::
-This metadata expression can access the `user1` property from the `juniper-vm` alias.
+You can access SCV entries from metadata using the `scv` context.
 
-${scv:corp-directory:domain}::
-This metadata expression can access the `domain` property from the `corp-directory` alias.
+.Example metadata expressions for accessing SCV entries
+[options="header, autowidth" cols="1,2"]
+|===
+| Expression
+| Description
 
+| ${scv:juniper-vm:username}
+| Accesses the username from the `juniper-vm` alias.
 
-== Karaf commands
+| ${scv:juniper-vm:password}
+| Accesses the password from the `juniper-vm` alias.
 
-You can update and access SCV entries from the Karaf shell.
+| ${scv:juniper-vm:user1}
+| Accesses the `user1` property from the `juniper-vm` alias.
 
+| ${scv:corp-directory:domain}
+| Accesses the `domain` property from the `corp-directory` alias.
+|===
+
+=== Karaf commands
+
+You can access and update SCV entries from the Karaf shell.
+To do so, follow the instructions below:
+
+. Open an SSH session:
++
 [source, console]
 ----
 ssh -p 8101 admin@localhost
 ----
 
-Once in the shell, you can set credentials from the `scv-set` command as follows:
-
+. Access or update SCV entries using the shell.
+** Use the following command to set credentials:
++
 [source, karaf]
 .Set SCV entries
 ----
@@ -71,8 +86,8 @@ ARGUMENTS
                 (required)
 ----
 
-You can also access SCV entries from the `scv-get` command as follows:
-
+** Use the following command to access SCV entries:
++
 [source, karaf]
 .Get SCV entries
 ----
