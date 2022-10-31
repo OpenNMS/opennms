@@ -1825,6 +1825,9 @@
     <npmVersion>8.11.0</npmVersion>
     <yarnVersion>v1.22.19</yarnVersion>
 
+    <!-- Cloud Plugin -->
+    <pluginCloudVersion>1.0.0-SNAPSHOT</pluginCloudVersion>
+
     <!-- configuration manager -->
     <xmlschemaVersion>2.2.5</xmlschemaVersion>
 
@@ -2212,6 +2215,12 @@
         <artifactId>karaf-features</artifactId>
         <version>${opennmsApiVersion}</version>
         <type>pom</type>
+      </dependency>
+
+      <dependency>
+        <groupId>org.opennms.plugins.cloud</groupId>
+        <artifactId>assembly</artifactId>
+        <version>${pluginCloudVersion}</version>
       </dependency>
 
       <!--  opennms dependencies -->
