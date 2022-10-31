@@ -155,10 +155,16 @@ public class TestContainerUtils {
      */
     //
     public static int getMappedUdpPort(Container container, int port) {
-        final String hostPortSpec = container.getContainerInfo().getNetworkSettings().getPorts()
-                .getBindings().get(new ExposedPort(port, InternetProtocol.UDP))[0].getHostPortSpec();
-        final int hostPort = Integer.parseInt(hostPortSpec);
-        return hostPort;
+        final ExposedPort searchForPort = new ExposedPort(port, InternetProtocol.UDP);
+        final Ports.Binding[] bindings = container.getContainerInfo()
+                .getNetworkSettings()
+                .getPorts()
+                .getBindings()
+                .get(searchForPort);
+        if (bindings == null || bindings.length == 0) {
+            throw new RuntimeException("No exposed port bindings found for " + searchForPort);
+        }
+        return Integer.parseInt(bindings[0].getHostPortSpec());
     }
 
 }
