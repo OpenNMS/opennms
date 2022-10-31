@@ -39,6 +39,7 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 import org.opennms.smoketest.containers.CassandraContainer;
 import org.opennms.smoketest.containers.ElasticsearchContainer;
+import org.opennms.smoketest.containers.LocalOpenNMS;
 import org.opennms.smoketest.containers.MinionContainer;
 import org.opennms.smoketest.containers.OpenNMSContainer;
 import org.opennms.smoketest.containers.PostgreSQLContainer;
@@ -61,6 +62,11 @@ import org.testcontainers.utility.DockerImageName;
  * @author jwhite
  */
 public final class OpenNMSStack implements TestRule {
+
+    /**
+     * This creates an empty OpenNMS stack for testing with locally-installed components outside of Docker.
+     */
+    public static final OpenNMSStack NONE = new OpenNMSStack();
 
 	public static final OpenNMSStack MINIMAL = OpenNMSStack.withModel(StackModel.newBuilder()
 			.withOpenNMS(OpenNMSProfile.newBuilder()
@@ -93,7 +99,7 @@ public final class OpenNMSStack implements TestRule {
 
     private final TestRule delegateTestRule;
 
-    private final PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer();
+    private final PostgreSQLContainer postgreSQLContainer;
 
     private final OpenNMSContainer opennmsContainer;
 
@@ -107,9 +113,25 @@ public final class OpenNMSStack implements TestRule {
 
     private final List<SentinelContainer> sentinelContainers;
 
+    /**
+     * Create an empty OpenNMS stack for testing with locally-installed components outside of Docker.
+     */
+    private OpenNMSStack() {
+        postgreSQLContainer = null;
+        elasticsearchContainer = null;
+        kafkaContainer = null;
+        cassandraContainer = null;
+        opennmsContainer = new LocalOpenNMS();
+        minionContainers = Collections.EMPTY_LIST;
+        sentinelContainers = Collections.EMPTY_LIST;
+
+        delegateTestRule = RuleChain.emptyRuleChain();
+        return;
+    }
+
     private OpenNMSStack(StackModel model) {
-        RuleChain chain = RuleChain
-                .outerRule(postgreSQLContainer);
+        postgreSQLContainer = new PostgreSQLContainer();
+        RuleChain chain = RuleChain.outerRule(postgreSQLContainer);
 
         if (model.isElasticsearchEnabled()) {
             elasticsearchContainer = new ElasticsearchContainer();

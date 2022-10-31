@@ -303,7 +303,7 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
     /**
      * @return the URL in a form consumable by containers networked with this one using the alias and internal port
      */
-    public static URL getBaseUrlInternal() {
+    public URL getBaseUrlInternal() {
         try {
             return new URL(String.format("http://%s:%d/", ALIAS, OPENNMS_WEB_PORT));
         } catch (MalformedURLException e) {
