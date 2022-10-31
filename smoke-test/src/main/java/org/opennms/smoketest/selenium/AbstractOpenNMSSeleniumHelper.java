@@ -422,7 +422,7 @@ public abstract class AbstractOpenNMSSeleniumHelper {
     }
 
     protected void setChecked(final By by) {
-        LOG.debug("setChecked: locator=", by);
+        LOG.debug("setChecked: locator={}", by);
         final var element = scrollToElement(by);
         if (element.isSelected()) {
             return;
@@ -432,7 +432,7 @@ public abstract class AbstractOpenNMSSeleniumHelper {
     }
 
     protected void setUnchecked(final By by) {
-        LOG.debug("setUnchecked: locator=", by);
+        LOG.debug("setUnchecked: locator={}", by);
         final var element = scrollToElement(by);
         if (element.isSelected()) {
             element.click();
@@ -1006,7 +1006,7 @@ public abstract class AbstractOpenNMSSeleniumHelper {
         for (final String entry : bounds) {
             ret.add(Integer.valueOf(entry));
         }
-        LOG.debug("getAbsoluteBoundedRectangleOfElement: element={}: {}", we, ret);
+        LOG.debug("getAbsoluteBoundedRectangleOfElement: element={}, ret={}", we, ret);
         return ret;
     }
 
@@ -1027,7 +1027,7 @@ public abstract class AbstractOpenNMSSeleniumHelper {
             try {
                 element = findElementById(id);
             } catch (final Throwable t) {
-                LOG.warn("Failed to locate id=" + id, t);
+                LOG.warn("Failed to locate id={}", id, t);
             }
 
             final long waitUntil = System.currentTimeMillis() + 60000;
@@ -1043,7 +1043,7 @@ public abstract class AbstractOpenNMSSeleniumHelper {
                     wait.until(ExpectedConditions.elementToBeClickable(By.id(id)));
                     element = findElementById(id);
                 } catch (final Throwable t) {
-                    LOG.warn("Failed to locate id=" + id, t);
+                    LOG.warn("Failed to locate id={}", id, t);
                 }
             }
             sleepQuietly(50);
@@ -1239,13 +1239,13 @@ public abstract class AbstractOpenNMSSeleniumHelper {
     }
 
     protected void createRequisition(final String foreignSource) {
-        LOG.debug("Creating empty requisition: " + foreignSource);
+        LOG.debug("Creating empty requisition: {}", foreignSource);
         final String emptyRequisition = "<model-import xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" date-stamp=\"2013-03-29T11:36:55.901-04:00\" foreign-source=\"" + foreignSource + "\" last-import=\"2016-03-29T10:40:23.947-04:00\"></model-import>";
         createRequisition(foreignSource, emptyRequisition, 0);
     }
 
     protected void createRequisition(final String foreignSource, final String xml, final int expectedNodes) {
-        LOG.debug("Creating requisition from XML: " + foreignSource);
+        LOG.debug("Creating requisition from XML: {}", foreignSource);
         try {
             final String foreignSourceUrlFragment = URLEncoder.encode(foreignSource, "UTF-8");
 
@@ -1487,7 +1487,7 @@ public abstract class AbstractOpenNMSSeleniumHelper {
                     return true;
                 }
             } catch (final Exception e) {
-                LOG.warn("WaitForNodesInRequisition: foreignSource={}, expectedNodes={}: Failed to get nodes in requisition {}.", m_foreignSource, m_numberToMatch, e);
+                LOG.warn("WaitForNodesInRequisition: foreignSource={}, expectedNodes={}: Failed to get nodes in requisition.", m_foreignSource, m_numberToMatch, e);
             }
             return null;
         }
