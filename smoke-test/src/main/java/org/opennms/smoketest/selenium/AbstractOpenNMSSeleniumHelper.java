@@ -935,9 +935,28 @@ public abstract class AbstractOpenNMSSeleniumHelper {
     private WebElement doScroll(final WebDriver driver, final WebElement element) {
         try {
             final List<Integer> bounds = getAbsoluteBoundedRectangleOfElement(driver, element);
-            final int windowHeight = driver.manage().window().getSize().getHeight();
+            final var windowSize = driver.manage().window().getSize();
             final JavascriptExecutor je = (JavascriptExecutor)driver;
-            je.executeScript("window.scrollTo(0, " + (bounds.get(1) - (windowHeight/2)) + ");");
+
+            // If the left and right bounds of the element are within the width of the page, don't scroll (keep x = 0)
+            final int x;
+            if (bounds.get(0) < windowSize.width && (bounds.get(0) + bounds.get(2)) < windowSize.width) {
+                x = 0;
+            }  else {
+                x = bounds.get(0) - (windowSize.width / 2);
+            }
+
+            // Same as above
+            final int y;
+            if (bounds.get(1) < windowSize.height && (bounds.get(1) + bounds.get(3)) < windowSize.height) {
+                y = 0;
+            } else {
+                y = bounds.get(1) - (windowSize.height / 2);
+            }
+
+            je.executeScript("window.scrollTo(" + x + ", " + y + ");");
+            LOG.debug("doScroll: element={}, x={}, y={}, windowSize={}x{}, bounds={}",
+                    element, x, y, windowSize.width, windowSize.height, bounds);
             return element;
         } catch (final Exception e) {
             return null;
