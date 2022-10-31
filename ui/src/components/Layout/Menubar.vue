@@ -125,11 +125,11 @@
           <template v-slot:trigger="{ attrs, on }">
             <FeatherButton link href="#" v-bind="attrs" v-on="on" class="menubar-dropdown-button-dark">
               <span
-                :class="{'notification-badge-pill': true, 'badge-severity-minor': notificationSummary.userUnacknowledgedCount > 0}">
+                :class="['notification-badge-pill', userNotificationBadgeClass]">
                 {{ notificationSummary.userUnacknowledgedCount }}
               </span>
               <span
-                :class="{'notification-badge-pill': true, 'badge-severity-minor': notificationSummary.teamUnacknowledgedCount > 0}">
+                :class="['notification-badge-pill', teamNotificationBadgeClass]">
                 {{ notificationSummary.teamUnacknowledgedCount }}
               </span>
               <FeatherIcon :icon="ArrowDropDown" />
@@ -152,7 +152,7 @@
 
           <!-- user notifications -->
           <FeatherDropdownItem
-            v-for="item in notificationSummary.userUnacknowledgedNotifications.notification.slice(0,2)"
+            v-for="item in notificationSummary.userUnacknowledgedNotifications.notification.slice(0, maxNotifications)"
             :key="item.id || ''" class="notification-dropdown-item" @click="onNotificationItemClick(item)">
             <template #default>
               <div class="menubar-dropdown-item-content">
@@ -179,10 +179,10 @@
               </div>
             </template>
           </FeatherDropdownItem>
-          <FeatherDropdownItem>
+          <FeatherDropdownItem v-if="notificationSummary.userUnacknowledgedCount > maxNotifications">
             <div class="menubar-dropdown-item-content">
               <div class="dropdown-menu-wrapper show-more-link notification-dropdown-item-content">
-                <a href="#">Show more...</a>
+                <a :href="notificationsShowMoreLink" @click="onMenuItemClick(notificationsShowMoreLink)">Show more...</a>
               </div>
             </div>
           </FeatherDropdownItem>
@@ -237,57 +237,12 @@
       <!--<FeatherIcon :icon="LightDarkMode" title="Toggle Light/Dark Mode" class="pointer light-dark"
         @click="toggleDarkLightMode(null)" /> -->
     </template>
-
   </FeatherAppBar>
-  <FeatherDialog v-model="notificationDialogVisible" :labels="notificationDialogLabels">
-    <template #default>
-      <div class="dialog-content-container">
-        <div class="row">
-          <!-- <p>Notification: {{ notificationDialogItem.notificationName }}</p> -->
-          <span
-            :class="`notification-badge-pill badge-severity-${notificationDialogItem.severity.toLocaleLowerCase()}`">
-            &nbsp;&nbsp;&nbsp;
-          </span>
-          <span class="font-weight-bold">
-            {{ new Date(notificationDialogItem.pageTime).toLocaleDateString() }} {{ new
-            Date(notificationDialogItem.pageTime).toLocaleTimeString() }}
-          </span>
-        </div>
-        <div class="row-container">
-          <div class="column-container">
-            <div class="column-label">Name:</div>
-            <div class="column">{{ notificationDialogItem.notificationName }}</div>
-          </div>
-          <div class="column-container">
-            <div class="column-label">Node:</div>
-            <div class="column">{{ notificationDialogItem.nodeLabel }}</div>
-          </div>
-          <div class="column-container">
-            <div class="column-label">IP Address:</div>
-            <div class="column">{{ notificationDialogItem.ipAddress }}</div>
-          </div>
-          <div class="column-container">
-            <div class="column-label">Service:</div>
-            <div class="column">{{ notificationDialogItem.serviceType?.name }}</div>
-          </div>
-        </div>
-        <div class="row">
-          <span>Details:</span>
-          <a :href="computeLink(`notification/detail.jsp?notice=${notificationDialogItem.id}`)"
-            class="dropdown-menu-link left-margin-small">{{ notificationDialogItem.notificationName }}</a>
-        </div>
-      </div>
-    </template>
-    <template #footer>
-      <FeatherButton primary @click="notificationDialogVisible = false">Close</FeatherButton>
-    </template>
-  </FeatherDialog>
 </template>
 
 <script setup lang="ts">
 import { FeatherAppBar, FeatherAppBarLink } from '@featherds/app-bar'
 import { FeatherButton } from '@featherds/button'
-import { FeatherDialog } from '@featherds/dialog'
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 import { FeatherIcon } from '@featherds/icon'
 import AddCircleAlt from '@featherds/icon/action/AddCircleAlt'
@@ -316,15 +271,7 @@ const theme = ref('')
 const lastShift = reactive({ lastKey: '', timeSinceLastKey: 0 })
 const light = 'open-light'
 const dark = 'open-dark'
-
-const notificationDialogVisible = ref(false)
-
-const notificationDialogLabels = ref({
-  title: 'Notification Dialog',
-  close: 'Close'
-})
-
-const notificationDialogItem = ref({} as OnmsNotification)
+const maxNotifications = 2
 const outsideClick = ref()
 const HelpIndex = 0
 const SelfServiceIndex = 1
@@ -391,6 +338,35 @@ const noticesDisplay = computed<NoticeStatusDisplay>(() => {
   }
 })
 
+const userNotificationBadgeClass = computed<string>(() => {
+  if (notificationSummary.value.userUnacknowledgedCount === 0) {
+    return 'badge-severity-cleared'
+  }
+
+  if (!notificationSummary.value.userUnacknowledgedNotifications ||
+      !notificationSummary.value.userUnacknowledgedNotifications.notification) {
+    return 'badge-severity-indeterminate'
+  }
+
+  const severities = ['cleared', 'indeterminate', 'warning', 'minor', 'major', 'critical']
+
+  const severityIndexList = notificationSummary.value.userUnacknowledgedNotifications
+    .notification.map(n => severities.indexOf(n.severity.toLowerCase())) || []
+
+  const maxSeverityIndex = Math.max.apply(Math, severityIndexList)
+  const maxSeverity = severities[maxSeverityIndex]
+
+  return `badge-severity-${maxSeverity}`
+})
+
+const teamNotificationBadgeClass = computed<string>(() =>
+  notificationSummary.value.teamUnacknowledgedCount === 0 ?  'badge-severity-cleared' : 'badge-info'
+)
+
+const notificationsShowMoreLink = computed<string>(() =>
+  mainMenu.value.userNotificationMenu?.items?.filter(item => item.id === 'user')[0].url || ''
+)
+
 const toggleDarkLightMode = (savedTheme: string | null) => {
   const el = document.body
   const newTheme = theme.value === light ? dark : light
@@ -441,9 +417,8 @@ const onMenuItemClick = (url: string, isVueLink?: boolean | null) => {
 }
 
 const onNotificationItemClick = (item: OnmsNotification) => {
-  notificationDialogLabels.value.title = 'Notification'
-  notificationDialogItem.value = item
-  notificationDialogVisible.value = true
+  const url = `notification/detail.jsp?notice=${item.id}`
+  onMenuItemClick(url)
 }
 
 const clearShiftCheck = () => {
@@ -639,12 +614,6 @@ a.top-menu-link:visited {
   }
 }
 
-.dialog-content-container {
-  display: flex;
-  flex-direction: column;
-  min-width: 400px;
-}
-
 .font-weight-bold,
 .font-weight-bold span {
   font-weight: 800;
@@ -663,14 +632,8 @@ a.top-menu-link:visited {
   min-width: 100px;
 }
 
-.row-container {
-  display: flex;
-  flex-direction: column;
-}
-
-.column-container {
-  display: flex;
-  flex-direction: row;
+.badge-info {
+  background-color: #17a2b8;
 }
 
 .badge-severity-indeterminate {
