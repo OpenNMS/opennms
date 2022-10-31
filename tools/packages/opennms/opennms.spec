@@ -213,7 +213,7 @@ Requires(pre):	%{name}-plugin-protocol-radius
 Requires:	%{name}-plugin-protocol-radius
 Requires(pre):	%{name}-plugin-collector-vtdxml-handler
 Requires:	%{name}-plugin-collector-vtdxml-handler
-Requires: ${name}-plugin-cloud
+Requires: %{name}-plugin-cloud
 
 %description plugins
 This installs all optional plugins.
