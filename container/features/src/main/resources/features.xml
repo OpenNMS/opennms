@@ -1309,17 +1309,6 @@
         <bundle>mvn:org.opennms.features/org.opennms.features.mib-compiler/${project.version}</bundle>
         <bundle>mvn:commons-lang/commons-lang/${commonsLangVersion}</bundle>
     </feature>
-    <feature name="vaadin-node-maps" version="${project.version}" description="OpenNMS :: Features :: Node Maps">
-        <details>OpenNMS Vaadin UI for displaying nodes on geographical maps using assets records.</details>
-        <feature>opennms-core-web</feature>
-        <feature>vaadin</feature>
-        <feature>geolocation</feature>
-        <bundle>mvn:org.opennms.features/vaadin-node-maps/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.vaadin-components/core/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.vaadin-components/header/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.topology/org.opennms.features.topology.api/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.topology.plugins/org.opennms.features.topology.plugins.browsers/${project.version}</bundle>
-    </feature>
     <feature name="osgi-nrtg-api" version="${project.version}" description="OpenNMS :: Features :: NRTG :: Features :: API">
         <details>The API contains the models for the NRTG OSGI projects. It has models for collection jobs, measurements and protocol collectors.</details>
         <bundle>mvn:org.opennms.features.nrtg/nrtg-api/${project.version}</bundle>

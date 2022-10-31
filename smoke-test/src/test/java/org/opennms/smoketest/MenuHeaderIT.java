@@ -122,11 +122,6 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='navbar']//a[@name='nav-Maps-top']")));
 
         frontPage();
-        clickMenuItem(mapsMenuName, "Geographical", "node-maps");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[text()='Show Severity >=']")));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='navbar']//a[@name='nav-Maps-top']")));
-
-        frontPage();
         findElementByXpath("//nav//a[contains(@title, 'Configure OpenNMS') and contains(@href, 'opennms/admin/index.jsp')]").click();
         findElementByXpath("//div[@class='card-header']/span[text()='OpenNMS System']");
         findElementByXpath("//div[@class='card-header']/span[text()='Provisioning']");
