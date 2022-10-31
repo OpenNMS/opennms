@@ -2217,9 +2217,10 @@
         <type>pom</type>
       </dependency>
 
+
       <dependency>
         <groupId>org.opennms.plugins.cloud</groupId>
-        <artifactId>assembly</artifactId>
+        <artifactId>cloud-plugin</artifactId>
         <version>${pluginCloudVersion}</version>
       </dependency>
 
