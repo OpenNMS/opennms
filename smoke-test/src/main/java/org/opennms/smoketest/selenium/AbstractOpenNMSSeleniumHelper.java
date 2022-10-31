@@ -423,7 +423,7 @@ public abstract class AbstractOpenNMSSeleniumHelper {
 
     protected void setChecked(final By by) {
         LOG.debug("setChecked: locator=", by);
-        final WebElement element = getDriver().findElement(by);
+        final var element = scrollToElement(by);
         if (element.isSelected()) {
             return;
         } else {
@@ -433,7 +433,7 @@ public abstract class AbstractOpenNMSSeleniumHelper {
 
     protected void setUnchecked(final By by) {
         LOG.debug("setUnchecked: locator=", by);
-        final WebElement element = getDriver().findElement(by);
+        final var element = scrollToElement(by);
         if (element.isSelected()) {
             element.click();
         } else {
@@ -894,7 +894,7 @@ public abstract class AbstractOpenNMSSeleniumHelper {
     protected static WebElement scrollToElement(final WebDriver driver, final WebElement element) {
         LOG.debug("scrollToElement: element={}", element);
 
-        final List<Integer> bounds = getBoundedRectangleOfElement(driver, element);
+        final List<Integer> bounds = getAbsoluteBoundedRectangleOfElement(driver, element);
         final int windowHeight = driver.manage().window().getSize().getHeight();
         final JavascriptExecutor je = (JavascriptExecutor)driver;
         je.executeScript("window.scrollTo(0, " + (bounds.get(1) - (windowHeight/2)) + ");");
@@ -934,7 +934,7 @@ public abstract class AbstractOpenNMSSeleniumHelper {
 
     private WebElement doScroll(final WebDriver driver, final WebElement element) {
         try {
-            final List<Integer> bounds = getBoundedRectangleOfElement(driver, element);
+            final List<Integer> bounds = getAbsoluteBoundedRectangleOfElement(driver, element);
             final int windowHeight = driver.manage().window().getSize().getHeight();
             final JavascriptExecutor je = (JavascriptExecutor)driver;
             je.executeScript("window.scrollTo(0, " + (bounds.get(1) - (windowHeight/2)) + ");");
@@ -977,16 +977,17 @@ public abstract class AbstractOpenNMSSeleniumHelper {
     }
 
     @SuppressWarnings("unchecked")
-    protected static List<Integer> getBoundedRectangleOfElement(final WebDriver driver, final WebElement we) {
-        LOG.debug("getBoundedRectangleOfElement: element={}", we);
+    protected static List<Integer> getAbsoluteBoundedRectangleOfElement(final WebDriver driver, final WebElement we) {
         final JavascriptExecutor je = (JavascriptExecutor)driver;
         final List<String> bounds = (ArrayList<String>) je.executeScript(
                 "var rect = arguments[0].getBoundingClientRect();" +
-                        "return [ '' + parseInt(rect.left), '' + parseInt(rect.top), '' + parseInt(rect.width), '' + parseInt(rect.height) ]", we);
-        final List<Integer> ret = new ArrayList<>();
+                        "return [ '' + parseInt(rect.left + window.scrollX), '' + parseInt(rect.top + window.scrollY), '' + parseInt(rect.width), '' + parseInt(rect.height) ]", we);
+        assertEquals("bounding box array size returned from Javascript", 4, bounds.size());
+        final List<Integer> ret = new ArrayList<>(bounds.size());
         for (final String entry : bounds) {
             ret.add(Integer.valueOf(entry));
         }
+        LOG.debug("getAbsoluteBoundedRectangleOfElement: element={}: {}", we, ret);
         return ret;
     }
 
