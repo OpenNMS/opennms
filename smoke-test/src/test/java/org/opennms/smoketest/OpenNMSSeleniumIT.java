@@ -42,7 +42,6 @@ import org.junit.rules.RuleChain;
 import org.junit.rules.TestRule;
 import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
-import org.opennms.smoketest.containers.OpenNMSContainer;
 import org.opennms.smoketest.selenium.AbstractOpenNMSSeleniumHelper;
 import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.opennms.smoketest.utils.TestContainerUtils;
@@ -177,7 +176,7 @@ public class OpenNMSSeleniumIT extends AbstractOpenNMSSeleniumHelper {
 
     @Override
     public String getBaseUrlInternal() {
-        return OpenNMSContainer.getBaseUrlInternal().toString();
+        return stack.opennms().getBaseUrlInternal().toString();
     }
 
     @Override
