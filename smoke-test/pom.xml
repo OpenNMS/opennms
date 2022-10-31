@@ -75,6 +75,7 @@
             <!-- skips surefire tests without skipping failsafe tests.
                  Property value seems to magically default to false -->
             <skipTests>${skip.surefire.tests}</skipTests>
+            <trimStackTrace>false</trimStackTrace>
           </configuration>
         </plugin>
         <plugin>
@@ -98,6 +99,7 @@
             <forkedProcessTimeoutInSeconds>${test.fork.timeout}</forkedProcessTimeoutInSeconds>
             <!-- Spawn a new JVM for every test so things don't leak over from one to the next -->
             <reuseForks>false</reuseForks>
+            <trimStackTrace>false</trimStackTrace>
 
             <argLine>${argLine}</argLine>
           </configuration>
