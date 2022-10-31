@@ -138,6 +138,14 @@ function opa_version()
     head -n 1
 }
 
+function cloudplugin_version()
+{
+    grep '<pluginCloudVersion>' pom.xml | \
+    sed -e 's,^[^>]*>,,' -e 's,<.*$,,' -e 's,-[^-]*-SNAPSHOT$,,' -e 's,-SNAPSHOT$,,' -e 's,-testing$,,' -e 's,-,.,g' | \
+    head -n 1
+}
+
+
 
 function skipCompile()
 {
@@ -211,6 +219,8 @@ function main()
     EXTRA_INFO2=$(extraInfo2)
     VERSION=$(version)
     OPA_VERSION=$(opa_version)
+    CLOUDPLUGIN_VERSION=$(cloudplugin_version)
+    
 
     if $BUILD_RPM; then
         if [ "$SPECS" == "" ]; then
@@ -230,6 +240,7 @@ function main()
         echo "Release: " $RELEASE
         echo "Specs  : " $SPECS
         echo "OPA VERSION: " $OPA_VERSION
+        echo "CLOUD VERSION: " $CLOUDPLUGIN_VERSION
         echo
 
         echo "=== Creating Working Directories ==="
@@ -261,6 +272,7 @@ function main()
                 --define "_name $PACKAGE_NAME" \
                 --define "_descr $PACKAGE_DESCRIPTION" \
                 --define "opa_version $OPA_VERSION" \
+                --define "cloud_plugin_version $CLOUDPLUGIN_VERSION" \
                 $spec || die "failed to build $spec"
         done
     fi

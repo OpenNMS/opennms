@@ -102,6 +102,7 @@ Requires(pre):	/usr/sbin/useradd
 Requires:	/usr/sbin/useradd
 Obsoletes:	opennms < 1.3.11
 Provides:	opennms-integration-api = %{opa_version}
+Provides:   %{name}-plugin-cloud = %{cloud_plugin_version}
 Provides:	%{name}-plugin-protocol-xml = %{version}-%{release}
 Obsoletes:	%{name}-plugin-protocol-xml < %{version}
 Provides:	%{name}-plugin-protocol-dhcp = %{version}-%{release}
@@ -212,6 +213,7 @@ Requires(pre):	%{name}-plugin-protocol-radius
 Requires:	%{name}-plugin-protocol-radius
 Requires(pre):	%{name}-plugin-collector-vtdxml-handler
 Requires:	%{name}-plugin-collector-vtdxml-handler
+Requires: ${name}-plugin-cloud
 
 %description plugins
 This installs all optional plugins.
