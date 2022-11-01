@@ -244,7 +244,7 @@ function build_minion()
     echo "Release: " $RELEASE
     echo "OPA VERSION: " $OPA_VERSION
     echo
-    sed -i "s/OPA_VERSION/$OPA_VERSION/g" opennms-assemblies/minion/src/main/filtered/debian/control
+    sed -i "s/OPA_VERSION/$OPA_VERSION/g" $TOPDIR/opennms-assemblies/minion/src/main/filtered/debian/control
     local _extra_args=()
     if [ "$OPENNMS_ENABLE_SNAPSHOTS" = "1" ]; then
         _extra_args+=("-s")
@@ -286,7 +286,7 @@ function build_sentinel() {
     echo "Release: " $RELEASE
     echo "OPA VERSION: " $OPA_VERSION
     echo
-    sed -i "s/OPA_VERSION/$OPA_VERSION/g" opennms-assemblies/sentinel/src/main/filtered/debian/control
+    sed -i "s/OPA_VERSION/$OPA_VERSION/g" $TOPDIR/opennms-assemblies/sentinel/src/main/filtered/debian/control
 
     local _extra_args=()
     if [ "$OPENNMS_ENABLE_SNAPSHOTS" = "1" ]; then
