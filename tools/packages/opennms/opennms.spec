@@ -65,11 +65,12 @@ Requires(pre):		%{name}-webui       = %{version}-%{release}
 Requires:		%{name}-webui       = %{version}-%{release}
 Requires(pre):		%{name}-core        = %{version}-%{release}
 Requires:		%{name}-core        = %{version}-%{release}
+Requires: %{name}-plugin-cloud >= 1.0.0
 Requires(pre):		postgresql-server  >= 10
 Requires:		postgresql-server  >= 10
 Requires(pre):		%{jdk}
 Requires:		%{jdk}
-Provides:	opennms-integration-api = %{opa_version}
+
 
 # don't worry about buildrequires, the shell script will bomb quick  =)
 #BuildRequires:		%{jdk}
@@ -101,8 +102,7 @@ Requires:	jicmp6 >= 2.0.0
 Requires(pre):	/usr/sbin/useradd
 Requires:	/usr/sbin/useradd
 Obsoletes:	opennms < 1.3.11
-Provides:	opennms-integration-api = %{opa_version}
-Provides:   %{name}-plugin-cloud = %{cloud_plugin_version}
+Provides:	%{name}-plugin-api = %{opa_version}
 Provides:	%{name}-plugin-protocol-xml = %{version}-%{release}
 Obsoletes:	%{name}-plugin-protocol-xml < %{version}
 Provides:	%{name}-plugin-protocol-dhcp = %{version}-%{release}
