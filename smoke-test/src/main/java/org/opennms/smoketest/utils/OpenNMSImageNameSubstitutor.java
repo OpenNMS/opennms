@@ -34,6 +34,8 @@ import org.testcontainers.utility.ImageNameSubstitutor;
 public class OpenNMSImageNameSubstitutor extends ImageNameSubstitutor {
     @Override
     public DockerImageName apply(DockerImageName original) {
+        return original;
+        /*
         // These are published for ARM64, ARM/v7, and AMD64, so use them for all platforms
         // https://github.com/seleniumhq-community/docker-seleniarm/releases
         if (original.getUnversionedPart().startsWith("selenium/standalone-firefox")) { // also match -debug for older selenium
@@ -49,6 +51,7 @@ public class OpenNMSImageNameSubstitutor extends ImageNameSubstitutor {
         } else {
             return original;
         }
+        */
     }
 
     @Override
