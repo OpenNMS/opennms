@@ -210,7 +210,6 @@ function main()
     EXTRA_INFO2=$(extraInfo2)
     VERSION=$(version)
     OPA_VERSION=$(opa_version)
-    CLOUDPLUGIN_VERSION=$(cloudplugin_version)
     
 
     if $BUILD_RPM; then
