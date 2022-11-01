@@ -32,7 +32,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -52,6 +51,11 @@ import com.google.common.io.CharStreams;
 public class TestContainerUtils {
 
     private static final Logger LOG = LoggerFactory.getLogger(TestContainerUtils.class);
+
+    // Constants used when setting UID/GID behavior to match OpenShift
+    public static final int OPENSHIFT_CONTAINER_UID_RANGE_MIN = 1000600000;
+    public static final int OPENSHIFT_CONTAINER_UID_RANGE_MAX = 1000700000;
+    public static final int OPENSHIFT_CONTAINER_GID = 0;
 
     private static final int NUM_CPUS_PER_CONTAINER = 2;
 
