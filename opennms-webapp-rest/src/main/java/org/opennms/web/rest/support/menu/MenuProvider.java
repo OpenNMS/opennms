@@ -62,11 +62,13 @@ import org.opennms.web.rest.support.menu.xml.MenuXml;
  * on user roles), but will also respect items in 'dispatcher.servlet.xml' marked as 'RoleBasedNavBarEntry'.
  */
 public class MenuProvider {
-    /** Full file path to dispatcher.servlet.xml file, see "applicationContext-cxf-rest-v2.xml" */
-    private String dispatcherServletPath;
-
     /** Fully qualified classname of RoleBasedNavBarEntry class, from opennms-webapp. */
     final private String ROLE_BASED_NAV_BAR_ENTRY_CLASS = "org.opennms.web.navigate.RoleBasedNavBarEntry";
+
+    final private String ADMIN_ROLE_ICON = "fa-cogs";
+
+    /** Full file path to dispatcher.servlet.xml file, see "applicationContext-cxf-rest-v2.xml" */
+    private String dispatcherServletPath;
 
     public MenuProvider(String dispatcherServletPath) {
         this.dispatcherServletPath = dispatcherServletPath;
@@ -186,6 +188,7 @@ public class MenuProvider {
     /**
      * Evaluate a list of TopMenuEntry and child MenuEntry items, removing any that are RoleBased
      * and where current user does not have the required role.
+     * Also sets ADMIN_ROLE_ICON for items that require Admin access.
      * Note, this modifies the passed-in 'topMenuEntries' parameter!
      */
     private void evaluateRoleBasedEntries(List<TopMenuEntry> topMenuEntries, final MenuRequestContext context) {
@@ -193,8 +196,13 @@ public class MenuProvider {
             // For now, we don't evaluate the TopMenuEntries
             if (topEntry.items != null && !topEntry.items.isEmpty()) {
                 for (int i = topEntry.items.size() - 1; i >= 0; i--) {
-                    if (!evaluateRoleBasedMenuEntry(topEntry.items.get(i), context)) {
+                    MenuEntry entry = topEntry.items.get(i);
+
+                    if (!evaluateRoleBasedMenuEntry(entry, context)) {
                         topEntry.items.remove(i);
+                    } else if (isInRole(Authentication.ROLE_ADMIN, entry)) {
+                        entry.iconType = "fa";
+                        entry.icon = ADMIN_ROLE_ICON;
                     }
                 }
             }
@@ -287,7 +295,7 @@ public class MenuProvider {
             supportEntry.name = "Support";
             supportEntry.url = "support/index.jsp";
             supportEntry.iconType = "fa";
-            supportEntry.icon = "fa-life-ring";
+            supportEntry.icon = ADMIN_ROLE_ICON;
             mergeRole(supportEntry, Authentication.ROLE_ADMIN);
             helpMenu.addItem(supportEntry);
         }
@@ -377,7 +385,7 @@ public class MenuProvider {
         configurationMenu.name = "Configure OpenNMS";
         configurationMenu.url = "admin/index.jsp";
         configurationMenu.iconType = "fa";
-        configurationMenu.icon = "fa-cogs";
+        configurationMenu.icon = ADMIN_ROLE_ICON;
         mergeRole(configurationMenu, Authentication.ROLE_ADMIN);
 
         return configurationMenu;
@@ -435,5 +443,9 @@ public class MenuProvider {
         }
 
         return new ArrayList<String>(Arrays.asList(roles.split(",")));
+    }
+
+    private boolean isInRole(String role, MenuEntry entry) {
+        return rolesAsList(entry.roles).stream().anyMatch(s -> s.equals(role));
     }
 }
