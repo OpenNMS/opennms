@@ -1,11 +1,15 @@
-import { SearchResultResponse } from '@/types'
+import { SearchResultResponse, SearchResultsByContext } from '@/types'
 
 export interface State {
-  searchResults: SearchResultResponse[]
+  searchResults: SearchResultResponse[],
+  searchResultsByContext: SearchResultsByContext,
+  loading: boolean
 }
 
 const state: State = {
-  searchResults: []
+  searchResults: [],
+  searchResultsByContext: [],
+  loading: false
 }
 
 export default state

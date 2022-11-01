@@ -53,6 +53,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.awaitility.core.ConditionTimeoutException;
@@ -133,11 +134,19 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
     private final StackModel model;
     private final OpenNMSProfile profile;
     private final Path overlay;
+    private int generatedUserId = -1;
 
     public OpenNMSContainer(StackModel model, OpenNMSProfile profile) {
         super("horizon");
         this.model = Objects.requireNonNull(model);
         this.profile = Objects.requireNonNull(profile);
+
+        // Generate a random UID if simulating an OpenShift environment
+        if (model.isSimulateRestricedOpenShiftEnvironment()) {
+            generatedUserId = ThreadLocalRandom.current().nextInt(
+                    TestContainerUtils.OPENSHIFT_CONTAINER_UID_RANGE_MIN, TestContainerUtils.OPENSHIFT_CONTAINER_UID_RANGE_MAX + 1);
+        }
+
         this.overlay = writeOverlay();
 
         String containerCommand = "-s";
@@ -157,12 +166,22 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
             javaOpts += String.format("-agentlib:jdwp=transport=dt_socket,server=y,address=*:%d,suspend=n", OPENNMS_DEBUG_PORT);
         }
 
+        // Use a Java binary without any capabilities set (i.e. cap_net_raw for ping) when simulating an OpenShift env.
+        // This helps make sure that the JVM in question is setup correctly
+        if (model.isSimulateRestricedOpenShiftEnvironment()) {
+            this.withEnv("JAVA_HOME", "/usr/lib/jvm/java-nocap");
+        }
+
         withExposedPorts(exposedPorts)
                 .withCreateContainerCmdModifier(cmd -> {
                     final CreateContainerCmd createCmd = (CreateContainerCmd)cmd;
                     TestContainerUtils.setGlobalMemAndCpuLimits(createCmd);
                     // The framework doesn't support exposing UDP ports directly, so we use this hook to map some of the exposed ports to UDP
                     TestContainerUtils.exposePortsAsUdp(createCmd, exposedUdpPorts);
+                    // Use the generated UID and known GID when simulating OpenShift
+                    if (model.isSimulateRestricedOpenShiftEnvironment()) {
+                        createCmd.withUser(generatedUserId + ":" + TestContainerUtils.OPENSHIFT_CONTAINER_GID);
+                    }
                 })
                 .withEnv("POSTGRES_HOST", DB_ALIAS)
                 .withEnv("POSTGRES_PORT", Integer.toString(PostgreSQLContainer.POSTGRESQL_PORT))
@@ -222,6 +241,15 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
         File propsFile = propsD.resolve("stest.properties").toFile();
         try (@SuppressWarnings("java:S6300") FileOutputStream fos = new FileOutputStream(propsFile)) {
             sysProps.store(fos, "Generated");
+        }
+
+        // Set RUNAS to the generated UID to make our startup scripts happy
+        // This is not necessary in an OpenShift environment, since /etc/passwd is automatically populated with the entry
+        if (model.isSimulateRestricedOpenShiftEnvironment()) {
+            writeProps(etc.resolve("opennms.conf"),
+                    ImmutableMap.<String,String>builder()
+                            .put("RUNAS", Integer.toString(generatedUserId))
+                            .build());
         }
 
         // Karaf feature configuration
@@ -431,6 +459,10 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
                 LOG.info("Health check passed.");
             }
         }
+    }
+
+    public int getGeneratedUserId() {
+        return generatedUserId;
     }
 
     @Override
