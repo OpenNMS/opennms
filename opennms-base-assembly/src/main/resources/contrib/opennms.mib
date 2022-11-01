@@ -110,6 +110,9 @@ virtualAppliance	OBJECT IDENTIFIER
 applianceMini		OBJECT IDENTIFIER
 							::= { appliance 2 }
 
+appliance1U		OBJECT IDENTIFIER
+							::= { appliance 3 }
+
 eventsAlarms	OBJECT IDENTIFIER
 	::= { data 3 }														
 
