@@ -260,7 +260,7 @@ function main()
                 --define "releasenumber $RELEASE" \
                 --define "_name $PACKAGE_NAME" \
                 --define "_descr $PACKAGE_DESCRIPTION" \
-                --define "opa_version $OPA_VERSION"
+                --define "opa_version $OPA_VERSION" \
                 $spec || die "failed to build $spec"
         done
     fi
