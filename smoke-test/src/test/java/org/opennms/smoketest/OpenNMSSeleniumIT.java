@@ -120,7 +120,7 @@ public class OpenNMSSeleniumIT extends AbstractOpenNMSSeleniumHelper {
         final FirefoxOptions options = new FirefoxOptions();
         options.setProfile(new FirefoxProfile());
         // Disable browser notifications
-        options.addPreference("dom.webnotifications.enabled", false);
+        options.addPreference("dom.webnotifications.enabled", Boolean.FALSE);
         // Increase the browser resolution on startup
         options.addArguments("--width=2048");
         options.addArguments("--height=1400");

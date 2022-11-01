@@ -18,7 +18,7 @@
     <jackson2Version>2.12.3</jackson2Version>
     <jersey.version>2.36</jersey.version>
     <karafVersion>4.3.6</karafVersion>
-    <selenium.version>3.141.59</selenium.version>
+    <selenium.version>4.6.0</selenium.version>
     <!-- seleniarm.version needs to match a date stamped release version from the docker-seleniarm releases page
          for the same version of selenium specified in selenium.version above.
          https://github.com/seleniumhq-community/docker-seleniarm/releases -->
@@ -26,6 +26,7 @@
     <testcontainers.version>1.17.5</testcontainers.version>
     <netty4Version>4.1.78.Final</netty4Version>
     <jna.version>5.8.0</jna.version>
+    <okhttpVersion>3.10.0</okhttpVersion>
     <test.fork.count>0</test.fork.count>
     <!-- Limit ITs to 30 minutes by default -->
     <test.fork.timeout>1800</test.fork.timeout>
@@ -765,6 +766,13 @@
       <artifactId>jna</artifactId>
       <version>${jna.version}</version>
       <scope>test</scope>
+    </dependency>
+
+    <!-- for FileEditorIT -->
+    <dependency>
+      <groupId>com.squareup.okhttp3</groupId>
+      <artifactId>okhttp</artifactId>
+      <version>${okhttpVersion}</version>
     </dependency>
 
   </dependencies>

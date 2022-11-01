@@ -45,6 +45,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -148,8 +149,8 @@ public abstract class AbstractOpenNMSSeleniumHelper {
             }
             getDriver().manage().window().setPosition(new Point(0,0));
             getDriver().manage().window().maximize();
-            wait = new WebDriverWait(getDriver(), TimeUnit.SECONDS.convert(LOAD_TIMEOUT, TimeUnit.MILLISECONDS));
-            requisitionWait = new WebDriverWait(getDriver(), TimeUnit.SECONDS.convert(REQ_TIMEOUT, TimeUnit.MILLISECONDS));
+            wait = new WebDriverWait(getDriver(), Duration.ofMillis(LOAD_TIMEOUT));
+            requisitionWait = new WebDriverWait(getDriver(), Duration.ofMillis(REQ_TIMEOUT));
 
             login();
 
@@ -232,7 +233,7 @@ public abstract class AbstractOpenNMSSeleniumHelper {
     }
 
     protected WebDriverWait waitFor(final long seconds) {
-        return new WebDriverWait(getDriver(), seconds);
+        return new WebDriverWait(getDriver(), Duration.ofSeconds(seconds));
     }
 
     protected void waitForClose(final By selector) {
@@ -454,7 +455,7 @@ public abstract class AbstractOpenNMSSeleniumHelper {
 
         // Repeat the process altering the offset slightly everytime
         final AtomicInteger offset = new AtomicInteger(10);
-        final WebDriverWait shortWait = new WebDriverWait(getDriver(), 1);
+        final WebDriverWait shortWait = new WebDriverWait(getDriver(), Duration.ofSeconds(1));
         Unreliables.retryUntilSuccess(timeout, TimeUnit.SECONDS, () -> {
             final Actions action = new Actions(getDriver());
 
@@ -810,7 +811,7 @@ public abstract class AbstractOpenNMSSeleniumHelper {
         boolean found = false;
         int count = 0;
 
-        final WebDriverWait shortWait = new WebDriverWait(getDriver(), 10);
+        final WebDriverWait shortWait = new WebDriverWait(getDriver(), Duration.ofSeconds(10));
 
         do {
             LOG.debug("enterText({},{}): {}", selector, text, ++count);

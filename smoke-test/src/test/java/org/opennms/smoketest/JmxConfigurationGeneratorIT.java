@@ -127,7 +127,7 @@ public class JmxConfigurationGeneratorIT extends OpenNMSSeleniumIT {
     protected void configureJMXConnection(final boolean skipDefaultVM) throws Exception {
         final long end = System.currentTimeMillis() + LOAD_TIMEOUT;
 
-        final WebDriverWait shortWait = new WebDriverWait(driver, 10);
+        final WebDriverWait shortWait = new WebDriverWait(driver, Duration.ofSeconds(10));
 
         final String skipDefaultVMxpath = "//span[@id='skipDefaultVM']/input";
         final boolean selected = waitForElement(By.xpath(skipDefaultVMxpath)).isSelected();

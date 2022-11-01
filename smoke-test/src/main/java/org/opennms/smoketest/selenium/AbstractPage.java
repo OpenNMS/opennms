@@ -34,6 +34,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -109,7 +110,7 @@ public class AbstractPage {
     protected void waitUntil(ExpectedCondition<Boolean> condition) {
         try {
             testCase.setImplicitWait(LONG_WAIT_SECONDS, TimeUnit.SECONDS);
-            new WebDriverWait(getDriver(), LONG_WAIT_SECONDS).until(condition);
+            new WebDriverWait(getDriver(), Duration.ofSeconds(LONG_WAIT_SECONDS)).until(condition);
         } finally {
             testCase.setImplicitWait();
         }
