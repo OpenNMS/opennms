@@ -35,11 +35,15 @@ import {
   faCircle,
   faCogs,
   faInfoCircle,
+  faSearch,
   faKey,
   faLifeRing,
   faMinusCircle,
+  faPlus,
+  faPlusCircle,
   faQuestionCircle,
   faSignOut,
+  faUser,
   faUsers
 } from '@fortawesome/free-solid-svg-icons'
 const icons = [
@@ -48,12 +52,16 @@ const icons = [
   faCalendar,
   faCircle,
   faCogs,
+  faPlusCircle,
+  faPlus,
   faInfoCircle,
   faKey,
   faLifeRing,
   faMinusCircle,
   faQuestionCircle,
+  faSearch,
   faSignOut,
+  faUser,
   faUsers
 ]
 library.add(...icons);
@@ -64,7 +72,7 @@ library.add(...icons);
 (window as any).Pinia = Pinia;
 (window as any).Vuex = Vuex;
 (window as any).VueRouter = VueRouter;
-(window as any)['VRouter'] = router;
+(window as any)['VRouter'] = router
 
 // plugin scripts must be loaded before app to use their routes
 const baseUrl = import.meta.env.VITE_BASE_REST_URL
