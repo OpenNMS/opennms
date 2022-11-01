@@ -204,7 +204,7 @@
       };
 
       // Get all available locations
-      $.get('api/v2/monitoringLocations', function(locationList) {
+      $.get('api/v2/monitoringLocations?limit=0', function(locationList) {
           if (locationList && locationList.location && locationList.location.length > 0) {
               updateLocations(locationList.location);
           }
