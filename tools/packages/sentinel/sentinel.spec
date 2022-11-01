@@ -68,7 +68,7 @@ Requires(pre):  /sbin/nologin
 Requires:       /sbin/nologin
 Requires:       /usr/bin/id
 Requires:       /usr/bin/sudo
-Provides:	%{name}-plugin-api = %{opa_version}
+Provides:	opennms-plugin-api = %{opa_version}
 Recommends:	haveged
 
 Prefix:        %{sentinelinstprefix}
