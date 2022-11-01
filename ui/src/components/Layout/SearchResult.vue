@@ -1,5 +1,5 @@
 <template>
-    <div @click="() => itemClicked(item)">
+    <button class="search-result-button" @click="() => itemClicked(item)" :tabIndex="0">
         <div class="label-wrapper">
             <div :style="{ paddingRight: '20px' }">
                 <div :style="{ display: 'flex', alignItems: 'center' }">
@@ -18,7 +18,7 @@
                 <FeatherIcon :icon="SubdirectoryArrowLeft"></FeatherIcon>
             </span>
         </div>
-    </div>
+    </button>
 </template>
 <script lang="ts" setup>
 import { PropType } from 'vue'
@@ -61,5 +61,37 @@ defineProps({
             opacity: 1;
         }
     }
+}
+/** 
+    These styles are a bit wild, but they were take from a diff done
+    between this component as a div vs a button. Initially coded using the div
+    we had to move to the button to get better accessibility. But then the styles were off.
+    These styles below make the button in the header look significantly better.
+ */
+.search-result-button {
+    background: transparent;
+    border:none;
+    appearance: none;
+    block-size:24px;
+    caret-color: rgb(10,12,27,0.7);
+    color: rgba(10, 12, 27, 0.7);
+    column-rule-color: rgba(10, 12, 27, 0.7);
+    cursor: pointer;
+    display:block;
+    font-family: OpenSans, Helvetica, Arial, sans-serif;
+    font-size:14px;
+    height:24px;
+    inline-size:266px;
+    letter-spacing:0.25px;
+    line-height:24px;
+    outline-color:rgba(10, 12, 27, 0.7);
+    padding:0;
+    perspective-origin: 133px 12px;
+    text-align:left;
+    text-decoration-color: rgba(10, 12, 27, 0.7);
+    text-emphasis-color: rgba(10, 12, 27, 0.7);
+    transform-origin: 133px 12px;
+    unicode-bidi: isolate;
+    user-select: auto;
 }
 </style>

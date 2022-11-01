@@ -19,7 +19,7 @@
       <template v-if="mainMenu.username">
         <!-- Normal menus -->
 
-        <FeatherDropdown :tabIndex="index" @mouseenter="() => onHoverMenuItem(index)"
+        <FeatherDropdown :tabIndex="0" @keyup.enter="() => onHoverMenuItem(index)" @mouseenter="() => onHoverMenuItem(index)"
           :modelValue="menuItemsHovered[index]" right v-for="menuItem,index in menuItems" :key="menuItem.name || ''"
           class="menubar-dropdown">
           <template v-slot:trigger="{ attrs, on }">
