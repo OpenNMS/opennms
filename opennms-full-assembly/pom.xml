@@ -1086,8 +1086,7 @@
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
-  </dependencies>
-
+</dependencies>
   <!--
     In theory, we may need all repositories to be defined here.
     In practice, almost everything is in the reactor.
