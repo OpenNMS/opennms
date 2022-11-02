@@ -342,21 +342,9 @@ const defaultMainMenu = {
         {
           id: null,
           className: 'org.opennms.web.navigate.LocationBasedNavBarEntry',
-          name: 'Geographical (Legacy)',
-          url: 'node-maps',
-          locationMatch: 'node-maps',
-          icon: null,
-          iconType: null,
-          isIconOnly: null,
-          isVueLink: null,
-          roles: null
-        },
-        {
-          id: null,
-          className: 'org.opennms.web.navigate.LocationBasedNavBarEntry',
           name: 'Geographical',
-          url: 'node-maps',
-          locationMatch: 'node-maps',
+          url: 'ui/index.html#/map',
+          locationMatch: 'ui/index.html#/map',
           icon: null,
           iconType: null,
           isIconOnly: null,
