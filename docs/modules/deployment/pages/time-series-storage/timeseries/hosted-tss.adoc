@@ -35,7 +35,7 @@ cp /opt/opennms/etc/examples/opennms.properties.d/timeseries.properties /opt/ope
 systemctl restart openmns
 ----
 
-=== Obtain an activation key for time series services
+=== Obtain an activation key
 
 The activation key lets {page-component-title} connect with OpenNMS cloud services (currently the time series service).
 
