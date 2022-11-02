@@ -57,7 +57,7 @@ NOTE: The key is valid for one hour.
 If you do not use it within that time, you must log back into the OpenNMS Portal, delete the old instance, create a new one and generate a new key.
 
 . Log in to the OpenNMS {page-component-title} web UI for your instance.
-. In the main menu, click *Info>Cloud Services*.
+. Click menu:Info[Cloud Services] in the top menu bar.
 . Turn the *Cloud Services Deactivate* toggle to on.
 . Paste the key in the *Enter Activation Key* box and click *Activate*.
 
