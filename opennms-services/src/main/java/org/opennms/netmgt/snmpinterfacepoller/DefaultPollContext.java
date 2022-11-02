@@ -88,6 +88,11 @@ public class DefaultPollContext implements PollContext {
         return m_ipInterfaceDao;
     }
 
+    public void setIpInterfaceDao(IpInterfaceDao ipInterfaceDao) {
+        this.m_ipInterfaceDao = ipInterfaceDao;
+    }
+
+
     /**
      * <p>getSnmpInterfaceDao</p>
      *
@@ -95,6 +100,18 @@ public class DefaultPollContext implements PollContext {
      */
     public SnmpInterfaceDao getSnmpInterfaceDao() {
         return m_snmpInterfaceDao;
+    }
+
+    public void setSnmpInterfaceDao(SnmpInterfaceDao snmpInterfaceDao) {
+        this.m_snmpInterfaceDao = snmpInterfaceDao;
+    }
+
+    public NodeDao getNodeDao() {
+        return m_nodeDao;
+    }
+
+    public void setNodeDao(NodeDao nodeDao) {
+        this.m_nodeDao = nodeDao;
     }
 
     /**
