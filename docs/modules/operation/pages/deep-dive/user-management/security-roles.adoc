@@ -45,7 +45,7 @@ Also, for a user with `ROLE_FILESYSTEM_EDITOR` to use the UI, they will also nee
 | Permissions to edit flow classifications.
 
 | ROLE_JMX
-| Permissions to retrieve JMX metrics but does not not to execute MBeans of the {page-component-title} JVM, even if they just return simple values.
+| Permissions to retrieve JMX metrics, but not to execute MBeans of the {page-component-title} JVM, even if they just return simple values.
 ifndef::opennms-prime[]
 
 | ROLE_MINION
@@ -78,7 +78,7 @@ endif::opennms-prime[]
 
 Follow the steps below to assign security roles to user accounts:
 
-. Click the *Gear* symbol at the top-right of the screen.
+. Click the *gear* symbol at the top-right of the screen.
 . Under Configure OpenNMS, click menu:Configure Users, Groups and On-Call Roles[Configure Users].
 . Find the user to whom you want to assign a security role and click *Modify* beside their name.
 . Select the role to add to the user account from the *Available Roles* list, and click *Add*.

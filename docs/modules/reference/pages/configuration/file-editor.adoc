@@ -27,12 +27,23 @@ image::configuration/file-editor-main.png[File editor, 300]
 To edit a file, open it on the File Editor page and type in the text box.
 Click *Save* to save your changes and update the configuration file.
 
-CAUTION: Changing configuration files on the File Editor page overwrites the file on your disk; there is currently no versioning or support for backup files.
+CAUTION: Changing configuration files on the File Editor page overwrites the file on your disk.
+There is currently no versioning or support for backup files.
 While the file editor does not have support for Git, you may want to xref:deployment:upgrade/git-diff.adoc[set up your config folder as a Git repository].
 
 Click *Reset* to reload the file from your local disk into the editor.
 
 NOTE: Reloading the file will display it as it was last saved to your disk, not necessarily the file from before you edited it.
+
+=== Activate configuration changes
+
+Depending on which file you edit, {page-component-title} may detect and apply the configuration changes automatically.
+In other cases, you may need to reload a daemon or restart your instance.
+
+The following documentation provides more information on configuration files:
+
+* xref:operation:deep-dive/admin/daemon-config-files.adoc[Daemon Config Files]
+* xref:reference:daemons/introduction.adoc#ga-daemons[Daemon reference] (overview of all daemons, related configuration files, and which daemons can be reloaded without restarting {page-component-title})
 
 == Add and delete files
 
@@ -45,7 +56,7 @@ If an error occurs, a message at the bottom of the text editor provides more inf
 .Add a new file
 image::configuration/file-editor-add-new.png[300,300]
 
-To delete a file from your directory, navigate to a subdirectory, find the file that you want to delete, and click the *Minus* symbol (*-*) beside its name.
+To delete a file from your directory, navigate to a subdirectory, find the file that you want to delete, and click the *minus* symbol (*-*) beside its name.
 Click *Confirm* in the dialog that appears to confirm deletion.
 
 CAUTION: Deleting a file is permanent.
@@ -57,13 +68,3 @@ A console box is displayed at the bottom of the *Edit* box.
 It displays detailed information after your perform certain actions (for example, saving or deleting a file).
 To clear the console of text, click *Clear*.
 To hide the console box, click *Minimize*.
-
-== Activate configuration changes
-
-Depending on which file you edit, {page-component-title} may detect and apply the configuration changes automatically.
-In other cases, you may need to reload a daemon or restart your instance.
-
-The following documentation provides more information on configuration files:
-
-* xref:operation:deep-dive/admin/daemon-config-files.adoc[Daemon Config Files]
-* xref:reference:daemons/introduction.adoc#ga-daemons[Daemon reference] (overview of all daemons, related configuration files, and which daemons can be reloaded without restarting {page-component-title})
