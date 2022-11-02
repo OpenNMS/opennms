@@ -56,7 +56,7 @@ To obtain the activation key, follow these steps:
 
 +
 NOTE: The key is valid for one hour.
-If you do not use it within that time, you must log back into the OpenNMS Portal and copy it from your instance.
+If you do not use it within that time, you must log back into the OpenNMS Portal, delete the old instance, create a new one and generate a new key.
 
 . Log in to the OpenNMS {page-component-title} web UI for your instance.
 . In the main menu, click *Info>Cloud Services*.
