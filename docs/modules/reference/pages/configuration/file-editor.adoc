@@ -20,7 +20,7 @@ From this page, you can do the following:
 * View and edit files.
 
 .File Editor page with directory tree and an open configuration file
-image::configuration/file-editor-main.png[File editor, 300]
+image::configuration/file-editor-main.png[File editor, 700]
 
 == Edit files
 
