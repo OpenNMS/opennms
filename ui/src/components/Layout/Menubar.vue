@@ -9,7 +9,7 @@
             :class="`${noticesDisplay.colorClass} left-margin-small bell-icon`" :title="noticesDisplay.title">
           </font-awesome-icon>
         </template>
-        <Search v-if="!route.fullPath.includes('/map')" class="search-left-margin" />
+        <Search class="search-left-margin" />
       </div>
     </template>
 
@@ -18,7 +18,6 @@
 
       <template v-if="mainMenu.username">
         <!-- Normal menus -->
-
         <FeatherDropdown :tabIndex="0" @keyup.enter="() => onHoverMenuItem(index)" @mouseenter="() => onHoverMenuItem(index)"
           :modelValue="menuItemsHovered[index]" right v-for="menuItem,index in menuItems" :key="menuItem.name || ''"
           class="menubar-dropdown">
