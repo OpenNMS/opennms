@@ -153,8 +153,8 @@ for e in main_yml_content:
             if enabled_components.count(True) > 1:
                 workflow_name = "combined-builds"
             elif enabled_components.count(True) == 1:
-                if build_components["doc"]:
-                    workflow_name = "doc"
+                if build_components["docs"]:
+                    workflow_name = "docs"
                 elif build_components["ui"]:
                     workflow_name = "ui"
                 elif build_components["build-publish"]:
@@ -235,8 +235,8 @@ for e in main_yml_content:
                     workflow_path, level, filters_enabled, "build-deploy"
                 )
 
-            if build_components["doc"]:
-                workflow_path = print_add(workflow_path, level, filters_enabled, "doc")
+            if build_components["docs"]:
+                workflow_path = print_add(workflow_path, level, filters_enabled, "docs")
 
             if build_components["ui"]:
                 workflow_path = print_add(workflow_path, level, filters_enabled, "ui")
@@ -253,7 +253,7 @@ for e in main_yml_content:
 
             if (
                 not build_components["build-deploy"]
-                and not build_components["doc"]
+                and not build_components["docs"]
                 and not build_components["ui"]
                 and not build_components["coverage"]
                 and len(workflow_path) < 4
