@@ -10,7 +10,7 @@ In addition, users can view time series summary data including health status, ca
 You must have the following to use the hosted time series service:
 
 * Horizon 31+ (Meridian availability with the 2023 release)
-* Access to the https://portal.opennms.com[OpenNMS Portal] to retrieve your API key and view hosted time series service metrics
+* Time series service subscription that provides access to the https://portal.opennms.com[OpenNMS Portal] to retrieve your API key and view hosted time series service metrics
 
 Contact sales@opennms.com to sign up for the hosted time series service.
 
