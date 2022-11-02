@@ -487,6 +487,13 @@ iframe.vaadin-fullscreen {
     height:23px;
     color: #FFF;
   }
+
+  /* admin "cogs" icon on dropdown menu entries */
+  .fa.fa-solid.fa-cogs {
+    width:23px;
+    height:23px;
+    color: #000;
+  }
  
 .nav-item.dropdown a.dropdown-toggle:after {
   vertical-align: 2px;

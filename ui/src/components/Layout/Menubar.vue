@@ -37,7 +37,12 @@
           <FeatherDropdownItem v-for="item in menuItem.items" :key="item.name || ''"
             @click="onMenuItemClick(item.url || '', item.isVueLink)">
             <div class="menubar-dropdown-item-content menubar-padding">
-              <a :href="computeLink(item.url || '', item.isVueLink)" class="dropdown-menu-link">{{ item.name }}</a>
+              <a :href="computeLink(item.url || '', item.isVueLink)" class="dropdown-menu-link">
+                <template v-if="item.icon && item.iconType === 'fa'">
+                  <font-awesome-icon :icon="`fa-solid ${item.icon}`"></font-awesome-icon>
+                </template>
+                {{ item.name }}
+                </a>
             </div>
           </FeatherDropdownItem>
         </FeatherDropdown>
