@@ -5,6 +5,8 @@ import { RequisitionTypes, RequisitionData, ErrorStrings, VMWareFields } from '.
 import { test, expect, describe, it } from 'vitest'
 import { LocalConfiguration, ProvisionDServerConfiguration } from '@/components/Configuration/configuration.types'
 import ConfigurationTable from '@/components/Configuration/ConfigurationTable.vue'
+import ProvisionDConfig from '@/containers/ProvisionDConfig.vue'
+import { findByText } from './utils'
 
 const mockRequisitionProvisionDServiceConfig = {
   [RequisitionData.ImportName]: 'test',
@@ -30,6 +32,12 @@ const wrapper = mount(ConfigurationTable, {
     plugins: [store]
   },
   propsData: mockProps
+})
+
+const provisionDConfig = mount(ProvisionDConfig, {
+  global: {
+    plugins: [store]
+  }
 })
 
 test('Convert item to URL query string', () => {
@@ -170,7 +178,6 @@ describe('Requisition name field - validateRequisitionNameField()', () => {
   })
 })
 
-
 test('The HTTP/S type config path does not contain params', () => {
   const httpUrlIn = 'http://abc.xyz/mypath?key1=key2'
   const httpsUrlIn = 'https://abc.xyz/mypath?key1=key2'
@@ -247,4 +254,22 @@ test('Display appropriate form errors for VMware requisition', async () => {
   mockLocalConfig.host = '  '
   errors = ConfigurationHelper.validateLocalItem(mockLocalConfig, [], 1, false)
   expect(errors.host).toBe(ErrorStrings.InvalidHostname)
+})
+
+test('External sources is populated', async () => {
+  const btn = provisionDConfig.get('[data-test="external-req-btn"]')
+  await btn.trigger('click')
+  const select = provisionDConfig.get('[data-test="external-source-select"] .feather-select-input')
+  await select.trigger('click')
+  const DNS = findByText(provisionDConfig, 'span', 'DNS')
+  expect(DNS).toBeDefined()
+})
+
+test('Schedule Type is populated', async () => {
+  const btn = provisionDConfig.get('[data-test="external-req-btn"]')
+  await btn.trigger('click')
+  const select = provisionDConfig.get('[data-test="schedule-type-select"] .feather-select-input')
+  await select.trigger('click')
+  const Monthly = findByText(provisionDConfig, 'span', 'Monthly')
+  expect(Monthly).toBeDefined()
 })
