@@ -91,6 +91,7 @@ If they are not, this indicates that the time series service is not working.
 
 [[view-time-series-data]]
 == View time series summary data
+
 You can view time series summary data including health status, capacity, and metrics per second in the OpenNMS Portal.
 By default, the screen displays data for all OpenNMS instances you have configured to use the time series service.
 You can filter to see data for a specific instance.
