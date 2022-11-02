@@ -25,7 +25,7 @@ There are three phases of deployment to set up the time series service for your 
 
 The OpenNMS Cloud Plugin makes it possible for a {page-component-title} instance to send time series data to an OpenNMS-hosted cloud service.
 
-This plugin is installed by default in {page-component-title} 31.
+This plugin is installed by default in Horizon 31.
 However, you need to move the configuration files into the correct location and restart {page-component-title} as part of the time series service set up:
 
 [source, console]
