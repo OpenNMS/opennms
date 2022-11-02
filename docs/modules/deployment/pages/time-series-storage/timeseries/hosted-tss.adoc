@@ -17,9 +17,9 @@ Contact sales@opennms.com to sign up for the time series service.
 
 There are three phases of deployment to set up the time series service for your system:
 
-* Update OpenNMS Cloud Plugin files
-* Obtain an activation key for the service
-* Enable cloud services connectivity
+* Update OpenNMS Cloud Plugin files.
+* Obtain an activation key for the service.
+* Enable cloud services connectivity.
 
 === Update OpenNMS Cloud Plugin files
 
