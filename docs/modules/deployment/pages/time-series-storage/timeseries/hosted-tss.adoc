@@ -46,8 +46,7 @@ When you signed up for the time series service, you received an activation email
 To obtain the activation key, follow these steps:
 
 . If you have not already done so, activate your OpenNMS Portal account by clicking the *Account Activation* button in your welcome email.
-. On the Create Your OpenNMS Account screen, type a password in the *Password* box.
-. Click *Create My Account*.
+. On the Create Your OpenNMS Account screen, type a password in the *Password* box and click *Create My Account*.
 . Sign in to the OpenNMS Portal with your username and password.
 . Choose *OpenNMS Core Instances* in the left menu and click *Add New*.
 . Type in the name of your instance and click *Generate Activation Key*.
