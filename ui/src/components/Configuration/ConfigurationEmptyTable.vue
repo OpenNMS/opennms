@@ -5,6 +5,7 @@
       <div class="paragraph">Add an external requisition to synchronize inventory.</div>
       <div class="flex button-wrapper">
         <FeatherButton
+          data-test="external-req-btn"
           class="button"
           primary
           @click="newDefinition"
