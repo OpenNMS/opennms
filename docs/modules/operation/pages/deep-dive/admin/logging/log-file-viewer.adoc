@@ -17,4 +17,4 @@ Type in the *Search Logs* box to search for any part of a log file's name
 Click the *Arrow* symbol at the top-right of the content pane to order the data from oldest to newest, or newest to oldest.
 
 NOTE: The log file's data is not automatically refreshed.
-Click the file's name in the left pane to refresh that log's data.
+Click a file name in the left pane to refresh that log's data.

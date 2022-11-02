@@ -3,7 +3,7 @@
 = Secure Credentials Vault
 
 The secure credentials vault (SCV) lets you encrypt credentials {page-component-title} uses.
-It uses Java KeyStore (JKS) to store credentials in the JKS format.
+It stores credentials in the Java KeyStore (JKS) format.
 
 The SCV is enabled by default.
 

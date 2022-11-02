@@ -28,6 +28,7 @@ To edit a file, open it on the File Editor page and type in the text box.
 Click *Save* to save your changes and update the configuration file.
 
 CAUTION: Changing configuration files on the File Editor page overwrites the file on your disk; there is currently no versioning or support for backup files.
+While the file editor does not have support for Git, you may want to xref:deployment:upgrade/git-diff.adoc[set up your config folder as a Git repository].
 
 Click *Reset* to reload the file from your local disk into the editor.
 
@@ -60,7 +61,7 @@ To hide the console box, click *Minimize*.
 == Activate configuration changes
 
 Depending on which file you edit, {page-component-title} may detect and apply the configuration changes automatically.
-In other cases, you may need to your instance.
+In other cases, you may need to reload a daemon or restart your instance.
 
 The following documentation provides more information on configuration files:
 
