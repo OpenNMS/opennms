@@ -2,7 +2,6 @@
 = Time Series Service
 
 The time series service provides a scalable cloud-hosted time series database to store and persist performance metrics that {page-component-title} collects from the devices it monitors.
-
 In addition, users can view time series summary data including health status, capacity, and metrics per second in the OpenNMS Portal.
 
 == Requirements
