@@ -1,0 +1,55 @@
+[[ga-logging-introduction]]
+= Logging
+
+{page-component-title} stores logs based on the name of the daemon that was acting on a process.
+For example, logs for xref:operation:service-assurance/introduction.adoc#ga-service-assurance[service assurance checks] that are done by `pollerd` are stored in the `pollerd.log` file.
+
+The log files are available in `$\{OPENNMS_HOME}/logs`, which is a symlink to `/var/log/opennms`.
+
+Check the xref:reference:daemons/introduction.adoc[list of daemons] to see which log files are associated with each daemon.
+
+[[ga-change-logging]]
+== Change logging
+
+{page-component-title} uses the https://logging.apache.org/log4j/[Apache Log4j] framework to manage how the logs are written, structured, and rotated.
+
+The log configuration file is available in `$\{OPENNMS_HOME}/etc/opennms/log4j2.xml`.
+
+Each daemon can have an individual logging level.
+
+The corresponding configuration in this file can be found in the XML tree path: `configuration/loggers/root/DynamicThresholdFilter/KeyValuePair`.
+
+The default logging level is `WARN`; for troubleshooting, use `DEBUG`.
+See the table below for a description of the available log levels.
+Changes to logging levels are applied immediately and do not require any service or daemon restarts.
+
+NOTE: Don't forget to set the logging level back to WARN after changing it to a higher severity.
+Depending on the scale, {page-component-title} can generate a lot of logs, which requires more disk space.
+
+== Logging levels
+
+.Service daemon logging level options
+[options="header"]
+[cols="1,8"]
+|===
+| Level
+| Description
+
+| INFO
+| Anything likely to be useful to the average user to determine the current general behavior/state of the system.
+
+| WARN
+| Messages relating to code that has a failure that might be temporary or recoverable, or code that is misconfigured but can continue running in a regressed state.
+This is the recommended default log level.
+
+| ERROR
+| Only things that cause code to stop working and be unrecoverable.
+
+| DEBUG
+| Additional information that can help diagnose issues.
+
+| TRACE
+| Even more additional information that is often useful only to developers.
+This mode will output very detailed logs and can cause performance issues if left enabled.
+Use sparingly as necessary.
+|===

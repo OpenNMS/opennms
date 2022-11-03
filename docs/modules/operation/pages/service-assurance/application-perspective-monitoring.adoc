@@ -1,0 +1,47 @@
+
+= Application Perspective Monitoring
+
+With {page-component-title} Application Perspective Monitoring you can see the availability of a service hosted in Houston that is accessed in Seattle from your central location in New York.
+If a service outage occurs, understanding the _perspective_ from which that outage was monitored makes it easier to troubleshoot the problem.
+
+Application Perspective Monitoring uses the Minion infrastructure to monitor a service's availability from these different perspectives.
+When a service is not responsive an outage will be generated with the corresponding perspective.
+
+.Application Perspective Monitoring operation
+image::application-perspective-monitoring/apm-operation.png[]
+
+The service monitor configuration is looked up in the `poller-configuration.xml`.
+
+NOTE: Use the `perspective-only` flag in the package definition to define packages that will be used *only* for Application Perspective Monitoring.
+
+== Configuring Application Perspective Monitoring
+
+Application Perspective Monitoring requires at least one {page-component-title} Minion on your network.
+Refer to the xref:deployment:minion/install.adoc#install-minion[Installing Minion] for more information.
+
+To configure Application Perspective Monitoring, create an application and then associate a set of services and perspectives from which to monitor those services with the application.
+
+. Login to the web UI.
+. Click the gear icon and select *Manage Applications*.
+. Specify a name for the application and click *Add New Application*.
+
++
+.Create a new application
+image::application-perspective-monitoring/create-app.png[]
+
+. Click the edit icon.
+. In the upper section, select the services you want to monitor from perspective locations with this application.
+. In the lower section, select the perspective locations from which to monitor the specified services.
+
+.Application configuration
+image::application-perspective-monitoring/configure-app.png[]
+
+After configuring the application, Minions at the perspective locations start to monitor the services associated with this application.
+The next link:#apm-perspective-outages[figure] shows an HTTP outage noticed from all perspective locations and the _{page-component-title}_ poller daemon itself.
+
+[[apm-perspective-outages]]
+.Perspective outages
+image::application-perspective-monitoring/perspective-outages.png[]
+
+The *Perspective* column shows the perspective location from which a Minion has detected this outage.
+An empty *Perspective* column indicates that the normal process detected the outage: either the _{page-component-title}_ instance detected it in the default location or a Minion detected it in the corresponding node's location.
