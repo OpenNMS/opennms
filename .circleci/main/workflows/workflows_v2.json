@@ -131,7 +131,7 @@
                 "user_overridable": false
             }
         },
-        "doc": {
+        "docs": {
             "job": "build-docs",
             "filters": {
                 "branches": {
