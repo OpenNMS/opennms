@@ -15,6 +15,13 @@ Here, we will describe how to configure event notifications and path outages.
 Event notifications can be configured to provide UEI-specific coverage, allowing for granular control of incoming information.
 Path outages prevent the generation of excess notifications by identifying network paths where failures may cause multiple nodes to appear offline.
 
+You can define multiple notifications for the same unique event identifier (UEI) to use different destination paths.
+By default, {page-component-title} runs the destination path of all notifications matching the event's UEI.
+You can configure notifd to process only the destination path of the first matching notification by editing `$\{OPENNMS_HOME}/etc/notifd-configuration.xml` and setting `match-all="false"` in the top-level `notifd-configuration` element.
+
+NOTE: Configuration of destination paths is stored in `$\{OPENNMS_HOME}/etc/destinationPaths.xml`.
+Changes to this file happen immediately, with no need to restart {page-component-title}.
+
 == Configure event notifications
 
 An event notification defines a destination path and message template for a specific event UEI.
@@ -64,3 +71,7 @@ Topics include:
 
 * xref:operation:deep-dive/notifications/concepts.adoc[Concepts (events, UEIs, on-call roles, and so on)]
 * xref:operation:deep-dive/notifications/commands.adoc[Notification commands]
+
+
+For example, defining a five minute delay will mean that, when a notification is generated, the first member of the group will be notified immediately.
+Subsequent members will then be notified in five-minute increments, from the top of the list of group members to the bottom.
