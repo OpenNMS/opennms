@@ -100,35 +100,6 @@ public class OpsBoardAdminPageIT extends OpenNMSSeleniumIT {
         }
     }
 
-    // See NMS-12166
-    @Test(timeout = 300000)
-    public void testHeaderHiddenForNodeMap() {
-        final OpsBoardAdminEditorPage testBoard = adminPage.createNew("testBoard");
-        testBoard.addDashlet(new DashletBuilder()
-                .withDashlet("Map")
-                .withTitle("Test Dashlet")
-                .withDuration(300).build());
-
-        // Hit preview button
-        testBoard.preview();
-
-        try {
-            setImplicitWait(5, TimeUnit.SECONDS);
-            new WebDriverWait(driver, 5).until(not(pageContainsText("Access denied")));
-            new WebDriverWait(driver, 5).until(pageContainsText("Map"));
-
-            // Verify that the header is hidden
-            // This method can throw StateElementReference exceptions, so we try multiple times
-            await().atMost(1, TimeUnit.MINUTES)
-                    .ignoreExceptionsInstanceOf(WebDriverException.class)
-                    .until(() -> driver.switchTo().parentFrame()
-                            .switchTo().frame(findElementByXpath("//div[@id = 'opsboard-map-iframe']//iframe"))
-                            .findElement(By.id("header")).isDisplayed(), equalTo(false));
-        } finally {
-            setImplicitWait();
-        }
-    }
-
     // See NMS-9678
     @Test
     public void canCreateAndPreview() {

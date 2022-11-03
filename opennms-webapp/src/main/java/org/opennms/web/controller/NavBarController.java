@@ -35,9 +35,11 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -55,6 +57,7 @@ import org.opennms.web.navigate.DisplayStatus;
 import org.opennms.web.navigate.MenuEntry;
 import org.opennms.web.navigate.NavBarEntry;
 import org.opennms.web.navigate.NavBarModel;
+import org.opennms.web.navigate.RoleBasedNavBarEntry;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
@@ -146,6 +149,7 @@ public class NavBarController extends AbstractController implements Initializing
 
         // Helper functions
         model.put("shouldDisplay", new ShouldDisplayEntryMethod(request));
+        model.put("isAdminLink", new IsAdminLinkEntryMethod());
 
         return model;
     }
@@ -249,6 +253,36 @@ public class NavBarController extends AbstractController implements Initializing
                 throw new TemplateModelException("Wrong arguments");
             }
             return entryDisplayStatus != DisplayStatus.NO_DISPLAY;
+        }
+    }
+
+    public static class IsAdminLinkEntryMethod implements TemplateMethodModelEx {
+        public IsAdminLinkEntryMethod () {
+        }
+
+        @Override
+        @SuppressWarnings("rawtypes")
+        public Boolean exec(List arguments) throws TemplateModelException {
+            if (arguments.size() == 1) {
+                /*
+                 * Evaluate the NavBarEntry's display status based on the
+                 * current request.
+                 */
+                NavBarEntry entry = (NavBarEntry) ((StringModel) arguments
+                    .get(0)).getWrappedObject();
+
+                if (entry instanceof RoleBasedNavBarEntry) {
+                    RoleBasedNavBarEntry roleEntry = (RoleBasedNavBarEntry) entry;
+
+                    return Arrays.stream(roleEntry.getRoles().split(","))
+                        .map(String::trim)
+                        .anyMatch(s -> s.toUpperCase(Locale.ROOT).equals(Authentication.ROLE_ADMIN));
+                }
+            } else {
+                throw new TemplateModelException("Wrong arguments");
+            }
+
+            return false;
         }
     }
 }
