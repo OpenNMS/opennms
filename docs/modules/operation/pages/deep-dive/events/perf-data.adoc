@@ -124,8 +124,8 @@ report.TIME.name=TIME
 report.TIME.columns=TIME
 report.TIME.type=nodeSnmp
 report.TIME.command=--title="TIME" \
- --vertical-label="Bytes per second" \
- DEF:octIn={rrd1}:bytesIn:AVERAGE \
+ --vertical-label="Time in seconds" \
+ DEF:octIn={rrd1}:TIME:AVERAGE \
  AREA:octIn#73d216: \
  LINE1:octIn#4e9a06:"In " \
  GPRINT:octIn:AVERAGE:"Avg  \\: %8.2lf %s" \
@@ -136,8 +136,8 @@ report.STATUS.name=STATUS
 report.STATUS.columns=STATUS
 report.STATUS.type=nodeSnmp
 report.STATUS.command=--title="STATUS" \
- --vertical-label="Bytes per second" \
- DEF:octIn={rrd1}:bytesIn:AVERAGE \
+ --vertical-label="Numeric status value" \
+ DEF:octIn={rrd1}:STATUS:AVERAGE \
  AREA:octIn#73d216: \
  LINE1:octIn#4e9a06:"In " \
  GPRINT:octIn:AVERAGE:"Avg  \\: %8.2lf %s" \
@@ -148,22 +148,24 @@ report.VALUE.name=VALUE
 report.VALUE.columns=VALUE
 report.VALUE.type=eventType
 report.VALUE.command=--title="VALUE" \
- --vertical-label="Bytes per second" \
- DEF:octOut={rrd1}:bytesOut:AVERAGE \
+ --vertical-label="Some units" \
+ DEF:octOut={rrd1}:VALUE:AVERAGE \
  AREA:octOut#73d216: \
  LINE1:octOut#4e9a06:"Out " \
- GPRINT:octOut:AVERAGE:"Avg  \\: %8.2lf %s" \
+ GPRINT:octOut:AVERAGE:"Avg  \\: %8.2lf %s"
 
 report.uei.opennms.org_traps_test_varbind.name=uei.opennms.org_traps_test_varbind
 report.uei.opennms.org_traps_test_varbind.columns=uei.opennms.org_traps_test_varbind
 report.uei.opennms.org_traps_test_varbind.type=interfaceSnmp
 report.uei.opennms.org_traps_test_varbind.command=--title="uei.opennms.org_traps_test_varbind" \
  --vertical-label="Bytes per second" \
- DEF:octIn={rrd1}:bytesIn:AVERAGE \
+ DEF:octIn={rrd1}:uei.opennms.org_traps_test_varbind:AVERAGE \
  AREA:octIn#73d216: \
  LINE1:octIn#4e9a06:"In " \
  GPRINT:octIn:AVERAGE:"Avg  \\: %8.2lf %s"
 ----
+
+Note that the value {NAME} in the attribute `columns` (`report.{REPORT}.columns={NAME}`) should match the collection name from an event configuration (`<collection name="`{NAME}`" type="{TYPE}"/>`) and the expression in DEF (`DEF:octIn={rrd1}:{NAME}:AVERAGE`).
 
 You can view the resulting performance graphs in menu:Reports[Resource Graphs].
 
