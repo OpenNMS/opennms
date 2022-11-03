@@ -53,6 +53,7 @@ import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.Querier;
+import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
@@ -72,6 +73,7 @@ import org.opennms.netmgt.mock.MockVisitor;
 import org.opennms.netmgt.mock.MockVisitorAdapter;
 import org.opennms.netmgt.mock.OutageAnticipator;
 import org.opennms.netmgt.mock.PollAnticipator;
+import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.poller.pollables.PollableNetwork;
@@ -122,6 +124,9 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
 	private boolean m_daemonsStarted = false;
 
 	private OutageAnticipator m_outageAnticipator;
+
+	@Autowired
+	private DistPollerDao m_distPollerDao;
 
 	@Autowired
 	private QueryManager m_queryManager;
@@ -184,6 +189,7 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
 //		m_network.addInterface("fe80:0000:0000:0000:0231:f982:0123:4567");
 //		m_network.addService("SNMP");
 
+		m_db.setDistPoller(m_distPollerDao.whoami().getId());
 		m_db.populate(m_network);
 		DataSourceFactory.setInstance(m_db);
 

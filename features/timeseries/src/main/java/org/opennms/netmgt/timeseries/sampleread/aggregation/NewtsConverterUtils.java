@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,7 +32,6 @@ import java.time.Instant;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -40,11 +39,9 @@ import org.opennms.integration.api.v1.timeseries.DataPoint;
 import org.opennms.integration.api.v1.timeseries.IntrinsicTagNames;
 import org.opennms.integration.api.v1.timeseries.MetaTagNames;
 import org.opennms.integration.api.v1.timeseries.Metric;
-import org.opennms.integration.api.v1.timeseries.Sample;
 import org.opennms.integration.api.v1.timeseries.Tag;
 import org.opennms.integration.api.v1.timeseries.TimeSeriesData;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableDataPoint;
-import org.opennms.integration.api.v1.timeseries.immutables.ImmutableSample;
 import org.opennms.newts.api.Context;
 import org.opennms.newts.api.Counter;
 import org.opennms.newts.api.Gauge;
@@ -78,7 +75,7 @@ public class NewtsConverterUtils {
         final Context context = new Context("not relevant");
         final Resource resource = new Resource(metric.getFirstTagByKey(IntrinsicTagNames.resourceId).getValue(), resourceAttributes);
         final String name = metric.getFirstTagByKey(IntrinsicTagNames.name).getValue();
-        final MetricType type = toNewts(Metric.Mtype.valueOf(metric.getFirstTagByKey(IntrinsicTagNames.mtype).getValue()));
+        final MetricType type = toNewts(Metric.Mtype.valueOf(metric.getFirstTagByKey(MetaTagNames.mtype).getValue()));
         final ValueType<?> value = toNewtsValue(metric, dataPoint);
         final Map<String, String> attributes = new HashMap<>();
 
