@@ -84,10 +84,8 @@ const setup = async () => {
 
 watch(getTheme, () => setup())
 onMounted(() => {
-  store.dispatch('appModule/setNavRailOpen', false)
   setup()
 })
-onUnmounted(() => store.dispatch('appModule/setNavRailOpen', true))
 </script>
 
 <style scoped lang="scss">
