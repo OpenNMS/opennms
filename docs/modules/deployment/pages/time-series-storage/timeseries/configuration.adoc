@@ -57,7 +57,7 @@ Must be a power of two.
 | -1 (override by `org.opennms.timeseries.config.ring_buffer_size`)
 
 | org.opennms.timeseries.config.writer_threads
-| Number of threads used to pull samples from the ring buffer and insert them into the time-series database.
+| Number of threads used to pull samples from the buffer and insert them into the time-series database.
 | 16
 
 | org.opennms.timeseries.config.buffer_type
@@ -153,9 +153,9 @@ You can tune the cache settings to suit your needs, using the parameters above.
 | TimeseriesPersisterMetaTagCache  | Caches all additionally configured and resolved meta-tag values by resource.
 |===
 
-The samples the collectors gather are temporarily stored in a ring buffer before they are persisted to the Time Series Integration Layer.
-Increase the value of the ring_buffer_size if you expect large peaks of collectors returning at once or latency in persisting these.
-However, note that the memory the ring buffer uses is reserved, and larger values may require an increased heap size.
+The samples the collectors gather are temporarily stored in a buffer before they are persisted to the Time Series Integration Layer.
+Increase the value of the buffer_size if you expect large peaks of collectors returning at once or latency in persisting these.
+However, note that the memory the buffer uses is reserved, and larger values may require an increased heap size.
 
 [[ga-opennms-operation-timeseries-properties-meta-tags]]
 == Expose additional meta tags
@@ -169,18 +169,20 @@ The configuration of the tags has the following form:
 * The prefix is: `org.opennms.timeseries.tin.metatags.tag`
 * The tagKey can be an arbitrary string as long as it does not break the Java properties file https://en.wikipedia.org/wiki/.properties[syntax].
 * The query expression lets you query the value.
-Supports use of the xref:operation:deep-dive/meta-data.adoc#ga-meta-data-dsl[Metadata DSL].
+Supports use of the xref:operation:deep-dive/meta-data.adoc#ga-meta-data-dsl[Metadata DSL] within the node, asset, and requisition contexts.
 
 Examples:
 
 * `org.opennms.timeseries.tin.metatags.tag.nodelabel=${node:label}`
 * `org.opennms.timeseries.tin.metatags.tag.sysObjectID=${node:sys-object-id}`
 
-Expose categories by setting `org.opennms.timeseries.tin.metatags.exposeCategories` to `true`.
+=== Expose categories as meta tags
+
+You can expose node categories as meta tags by setting `org.opennms.timeseries.tin.metatags.exposeCategories` to `true`.
 
 * `org.opennms.timeseries.tin.metatags.exposeCategories=true` +
 
 Will lead to:
 
-** `Tag("cat_myFirstCategory", "myFirstCategory")`
-** `Tag("cat_mySecondCategory", "mySecondCategory")`
+* `Tag("cat_myFirstCategory", "myFirstCategory")`
+* `Tag("cat_mySecondCategory", "mySecondCategory")`
