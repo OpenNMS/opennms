@@ -1,6 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
-import Nodes from '@/containers/Nodes.vue'
 import DeviceConfigBackup from '@/containers/DeviceConfigBackup.vue'
+import Home from '@/containers/Home.vue'
 import FileEditor from '@/containers/FileEditor.vue'
 import Resources from '@/components/Resources/Resources.vue'
 import Graphs from '@/components/Resources/Graphs.vue'
@@ -17,13 +17,8 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: 'nodes',
-      component: Nodes
-    },
-    {
-      path: '/node/:id',
-      name: 'Node Details',
-      component: () => import('@/containers/NodeDetails.vue')
+      name: 'home',
+      component: Home
     },
     {
       path: '/plugins/:extensionId/:resourceRootPath/:moduleFileName',

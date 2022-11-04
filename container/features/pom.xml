@@ -296,12 +296,6 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features</groupId>
-      <artifactId>vaadin-node-maps</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
       <artifactId>vaadin</artifactId>
       <version>${project.version}</version>
       <type>pom</type>

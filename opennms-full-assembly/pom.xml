@@ -459,7 +459,6 @@
                 <feature>vaadin</feature>
                 <feature>vaadin-dashboard</feature>
                 <feature>vaadin-jmxconfiggenerator</feature>
-                <feature>vaadin-node-maps</feature>
                 <feature>vaadin-snmp-events-and-metrics</feature>
                 <feature>vaadin-surveillance-views</feature>
                 <feature>jira-troubleticketer</feature>

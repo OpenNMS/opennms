@@ -143,10 +143,16 @@
             />
           </td>
           <td>
+            <a
+              :href="computeNodeLink(config.nodeId)"
+              @click="onNodeLinkClick(config.nodeId)"
+              target="_blank">
+            <!--
             <router-link
               :to="`/node/${config.nodeId}`"
               target="_blank"
             >
+            -->
               {{ config.deviceName }}
               <FeatherTooltip
                 :title="config.configName"
@@ -157,7 +163,7 @@
                   :icon="Speed"
                 />
               </FeatherTooltip>
-            </router-link>
+            </a>
           </td>
           <td>{{ config.ipAddress }}</td>
           <td>{{ config.location }}</td>
@@ -232,6 +238,7 @@ import DCBModalViewHistoryContentVue from './DCBModalViewHistoryContent.vue'
 import DCBModalConfigDiffContent from './DCBModalConfigDiffContent.vue'
 import { DeviceConfigBackup, DeviceConfigQueryParams } from '@/types/deviceConfig'
 import DCBTableStatusDropdown from './DCBTableStatusDropdown.vue'
+import { MainMenu } from '@/types/mainMenu'
 
 enum DCBModalContentComponentNames {
   DCBModalLastBackupContent = 'DCBModalLastBackupContent',
@@ -240,6 +247,7 @@ enum DCBModalContentComponentNames {
 }
 
 const store = useStore()
+const mainMenu = computed<MainMenu>(() => store.state.menuModule.mainMenu)
 const dcbModalVisible = ref(false)
 const dcbModalContentComponentName = ref('')
 const all = ref(false)
@@ -256,6 +264,14 @@ const sortStates: Record<string, SORT> = reactive({
 const { arrivedState, directions } = useScroll(tableWrap, {
   offset: { bottom: 300 }
 })
+
+const computeNodeLink = (nodeId: number) => {
+  return `${mainMenu.value.baseHref}${mainMenu.value.baseNodeUrl}${nodeId}`
+}
+
+const onNodeLinkClick = (nodeId: number) => {
+  window.location.assign(computeNodeLink(nodeId))
+}
 
 watch(() => directions.bottom, () => {
   if (!directions.bottom && arrivedState.bottom) {
