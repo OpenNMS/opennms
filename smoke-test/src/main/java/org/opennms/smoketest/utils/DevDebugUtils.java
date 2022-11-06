@@ -104,6 +104,11 @@ public class DevDebugUtils {
     }
 
     public static void triggerThreadDump(Container container) {
+        if (!container.isRunning()) {
+            LOG.warn("triggerThreadDump can only be used on a running container. Container is not running: {}", container);
+            return;
+        }
+
         try {
             LIMITER.callWithTimeout(() -> {
                 LOG.info("kill -3 -1");
