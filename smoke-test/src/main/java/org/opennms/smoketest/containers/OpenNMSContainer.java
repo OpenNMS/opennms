@@ -483,10 +483,12 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
         LOG.info("Triggering thread dump...");
         DevDebugUtils.triggerThreadDump(this);
         LOG.info("Gathering logs...");
-        copyLogs(this, prefix);
+        var logs = copyLogs(this, prefix);
+        LOG.info("Logs: {}", logs.toUri());
+        LOG.info("Console log: {}", logs.resolve(DevDebugUtils.CONTAINER_STDOUT_STDERR).toUri());
     }
 
-    private static void copyLogs(OpenNMSContainer container, String prefix) {
+    private static Path copyLogs(OpenNMSContainer container, String prefix) {
         // List of known log files we expect to find in the container
         final List<String> logFiles = Arrays.asList("alarmd.log",
                 "collectd.log",
@@ -498,13 +500,15 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
                 "provisiond.log",
                 "trapd.log",
                 "web.log");
+        Path targetLogFolder = Paths.get("target", "logs", prefix, ALIAS);
         DevDebugUtils.copyLogs(container,
                 // dest
-                Paths.get("target", "logs", prefix, ALIAS),
+                targetLogFolder,
                 // source folder
                 Paths.get("/opt", ALIAS, "logs"),
                 // log files
                 logFiles);
+        return targetLogFolder;
     }
 
 }
