@@ -33,6 +33,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.openqa.selenium.support.ui.ExpectedConditions.not;
 
 import java.lang.NullPointerException;
+import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -84,8 +85,8 @@ public class OpsBoardAdminPageIT extends OpenNMSSeleniumIT {
 
         try {
             setImplicitWait(5, TimeUnit.SECONDS);
-            new WebDriverWait(driver, 5).until(not(pageContainsText("Access denied")));
-            new WebDriverWait(driver, 5).until(pageContainsText("Topology"));
+            new WebDriverWait(driver, Duration.ofSeconds(5)).until(not(pageContainsText("Access denied")));
+            new WebDriverWait(driver, Duration.ofSeconds(5)).until(pageContainsText("Topology"));
 
             // Verify that the header is hidden
             // This method can throw StateElementReference exceptions, so we try multiple times
@@ -115,8 +116,8 @@ public class OpsBoardAdminPageIT extends OpenNMSSeleniumIT {
         // Now ensure that access was NOT denied
         try {
             setImplicitWait(1, TimeUnit.SECONDS);
-            new WebDriverWait(driver, 5).until(not(pageContainsText("Access denied")));
-            new WebDriverWait(driver, 5).until(pageContainsText("Surveillance view"));
+            new WebDriverWait(driver, Duration.ofSeconds(5)).until(not(pageContainsText("Access denied")));
+            new WebDriverWait(driver, Duration.ofSeconds(5)).until(pageContainsText("Surveillance view"));
         } finally {
             setImplicitWait();
         }

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,28 +28,37 @@
 
 package org.opennms.smoketest.containers;
 
-import java.net.InetSocketAddress;
+import java.net.MalformedURLException;
+import java.net.URL;
 
-import org.opennms.smoketest.utils.TestContainerUtils;
-import org.testcontainers.containers.Network;
+import org.opennms.smoketest.stacks.OpenNMSProfile;
+import org.opennms.smoketest.stacks.StackModel;
 
-public class ElasticsearchContainer extends org.testcontainers.elasticsearch.ElasticsearchContainer {
-
-    public ElasticsearchContainer() {
-        super("docker.elastic.co/elasticsearch/elasticsearch-oss:7.10.2");
-        withEnv("ES_JAVA_OPTS", "-Xms512m -Xmx512m")
-                .withNetwork(Network.SHARED)
-                .withNetworkAliases(OpenNMSContainer.ELASTIC_ALIAS)
-                .withCreateContainerCmdModifier(TestContainerUtils::setGlobalMemAndCpuLimits);
+public class LocalOpenNMS extends OpenNMSContainer {
+    public LocalOpenNMS() {
+        super(StackModel.newBuilder().build(), OpenNMSProfile.DEFAULT);
     }
 
-    public InetSocketAddress getRestAddress() {
-        return InetSocketAddress.createUnresolved(getContainerIpAddress(), getMappedPort(9200));
+    @Override
+    public URL getBaseUrlInternal() {
+        try {
+            return new URL(String.format("http://%s:%d/", "host.docker.internal", 8980));
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public String getRestAddressString() {
-        final InetSocketAddress elasticRestAddress = getRestAddress();
-        final String addressString = String.format("http://%s:%d", elasticRestAddress.getHostString(), elasticRestAddress.getPort());
-        return addressString;
+    @Override
+    public URL getBaseUrlExternal() {
+        try {
+            return new URL(String.format("http://%s:%d/", "localhost", 8980));
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "I'm an empty opennms container, y'all!";
     }
 }

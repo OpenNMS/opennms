@@ -615,7 +615,7 @@ public class DatabaseReportPageIT extends UiPageTest {
 
         public void edit(DeliveryOptions deliveryOptions, String cronExpression) {
             LOG.debug("Try updating report schedule for trigger '{}' with delivery options {} and cron expression '{}'", triggerName, deliveryOptions, cronExpression);
-            final WebDriverWait webDriverWait = new WebDriverWait(getDriver(), 30, 1000);
+            final WebDriverWait webDriverWait = new WebDriverWait(getDriver(), Duration.ofSeconds(30), Duration.ofMillis(1000));
             execute(() -> findElementById("action.edit." + triggerName)).click();
             webDriverWait.until((driver) -> execute(() -> driver.findElements(By.id("loading-bar-spinner")).isEmpty())
                     && findElementById("action.update." + triggerName) != null

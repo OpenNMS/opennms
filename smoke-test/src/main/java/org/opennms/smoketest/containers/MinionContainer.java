@@ -56,7 +56,6 @@ import org.opennms.smoketest.stacks.MinionProfile;
 import org.opennms.smoketest.stacks.NetworkProtocol;
 import org.opennms.smoketest.stacks.StackModel;
 import org.opennms.smoketest.utils.DevDebugUtils;
-import org.opennms.smoketest.utils.KarafShellUtils;
 import org.opennms.smoketest.utils.OverlayUtils;
 import org.opennms.smoketest.utils.RestHealthClient;
 import org.opennms.smoketest.utils.SshClient;
@@ -101,11 +100,26 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
         this.id = Objects.requireNonNull(id);
         this.location = Objects.requireNonNull(location);
 
-        this.container = withExposedPorts(MINION_DEBUG_PORT, MINION_SSH_PORT, MINION_SYSLOG_PORT, MINION_SNMP_TRAP_PORT, MINION_TELEMETRY_FLOW_PORT, MINION_TELEMETRY_IPFIX_TCP_PORT, MINION_TELEMETRY_JTI_PORT, MINION_TELEMETRY_NXOS_PORT, MINION_JETTY_PORT)
+        Integer[] tcpPorts = {
+                MINION_DEBUG_PORT,
+                MINION_SSH_PORT,
+                MINION_TELEMETRY_FLOW_PORT,
+                MINION_TELEMETRY_IPFIX_TCP_PORT,
+                MINION_JETTY_PORT,
+        };
+        int[] udpPorts = {
+                MINION_SYSLOG_PORT,
+                MINION_SNMP_TRAP_PORT,
+                MINION_TELEMETRY_FLOW_PORT,
+                MINION_TELEMETRY_JTI_PORT,
+                MINION_TELEMETRY_NXOS_PORT,
+        };
+
+        this.container = withExposedPorts(tcpPorts)
                 .withCreateContainerCmdModifier(cmd -> {
                     final CreateContainerCmd createCmd = (CreateContainerCmd)cmd;
                     TestContainerUtils.setGlobalMemAndCpuLimits(createCmd);
-                    TestContainerUtils.exposePortsAsUdp(createCmd, MINION_SNMP_TRAP_PORT, MINION_TELEMETRY_FLOW_PORT, MINION_TELEMETRY_JTI_PORT, MINION_TELEMETRY_NXOS_PORT);
+                    TestContainerUtils.exposePortsAsUdp(createCmd, udpPorts);
                 })
                 .withEnv("OPENNMS_HTTP_USER", "admin")
                 .withEnv("OPENNMS_HTTP_PASS", "admin")
