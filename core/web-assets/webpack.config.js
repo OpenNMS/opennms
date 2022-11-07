@@ -9,7 +9,6 @@ var fs = require('fs');
 const SpeedMeasurePlugin = require('speed-measure-webpack-plugin');
 
 var AssetsPlugin = require('assets-webpack-plugin');
-var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 var CopyWebpackPlugin = require('copy-webpack-plugin');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var StringReplacePlugin = require('string-replace-webpack-plugin');
@@ -547,8 +546,6 @@ function createConfig(options) {
         compress: true
       }
     }));
-  } else {
-    //myconf.plugins.push(new BundleAnalyzerPlugin());
   }
 
   myconf.plugins.push(new AssetsPlugin({
