@@ -126,6 +126,12 @@ function version()
         head -n 1
 }
 
+function opa_version()
+{
+    grep '<opennmsApiVersion>' pom.xml | \
+    sed -e 's,^[^>]*>,,' -e 's,<.*$,,' -e 's,-[^-]*-SNAPSHOT$,,' -e 's,-SNAPSHOT$,,' -e 's,-testing$,,' -e 's,-,.,g' | \
+    head -n 1
+}
 function skipCompile()
 {
     if $ASSEMBLY_ONLY; then echo 1; else echo 0; fi
@@ -199,6 +205,7 @@ fi
 EXTRA_INFO=$(extraInfo)
 EXTRA_INFO2=$(extraInfo2)
 VERSION=$(version)
+OPA_VERSION=$(opa_version)
 
 export PATH="$TOPDIR/maven/bin:$JAVA_HOME/bin:$PATH"
 
@@ -211,7 +218,9 @@ function build_opennms()
     echo
     echo "Version: " $VERSION
     echo "Release: " $RELEASE
+    echo "OPA VERSION: " $OPA_VERSION
     echo
+    sed -i "s/OPA_VERSION/$OPA_VERSION/g" debian/control
 
     if $DO_CHANGELOG; then
         echo "- adding auto-generated changelog entry"
@@ -224,7 +233,7 @@ function build_opennms()
 
     ./compile.pl -N install
 
-    dpkg-buildpackage "-p${TRUE_BIN}" -us -uc
+    dpkg-buildpackage "-p${TRUE_BIN}" -us -uc 
 }
 
 function build_minion()
@@ -233,8 +242,9 @@ function build_minion()
     echo
     echo "Version: " $VERSION
     echo "Release: " $RELEASE
+    echo "OPA VERSION: " $OPA_VERSION
     echo
-
+    sed -i "s/OPA_VERSION/$OPA_VERSION/g" $TOPDIR/opennms-assemblies/minion/src/main/filtered/debian/control
     local _extra_args=()
     if [ "$OPENNMS_ENABLE_SNAPSHOTS" = "1" ]; then
         _extra_args+=("-s")
@@ -274,7 +284,9 @@ function build_sentinel() {
     echo
     echo "Version: " $VERSION
     echo "Release: " $RELEASE
+    echo "OPA VERSION: " $OPA_VERSION
     echo
+    sed -i "s/OPA_VERSION/$OPA_VERSION/g" $TOPDIR/opennms-assemblies/sentinel/src/main/filtered/debian/control
 
     local _extra_args=()
     if [ "$OPENNMS_ENABLE_SNAPSHOTS" = "1" ]; then

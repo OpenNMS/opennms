@@ -135,5 +135,11 @@
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.opennms.integration.api</groupId>
+            <artifactId>config</artifactId>
+            <version>${opennmsApiVersion}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>
