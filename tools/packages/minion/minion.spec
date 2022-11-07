@@ -72,6 +72,7 @@ Requires:       jicmp >= 2.0.0
 Requires(pre):  jicmp >= 2.0.0
 Requires:       jicmp6 >= 2.0.0
 Requires(pre):  jicmp6 >= 2.0.0
+Provides:	opennms-plugin-api = %{opa_version}
 Recommends:	haveged
 
 Conflicts:      %{name}-container        < %{version}-%{release}
