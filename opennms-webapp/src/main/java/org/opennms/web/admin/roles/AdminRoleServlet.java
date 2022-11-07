@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.Servlet;
@@ -237,7 +238,7 @@ public class AdminRoleServlet extends HttpServlet implements Servlet {
             buf.append(request.getParameter(prefix+"Minute"));
             buf.append(' ');
             buf.append(request.getParameter(prefix+"AmOrPm"));
-            return new SimpleDateFormat("M-d-yyyy h:m a").parse(buf.toString());
+            return new SimpleDateFormat("M-d-yyyy h:m a", Locale.ENGLISH).parse(buf.toString());
         }
         
         public int getIntParameter(String name, HttpServletRequest request) {
