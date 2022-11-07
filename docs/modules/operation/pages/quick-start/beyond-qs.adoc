@@ -1,28 +1,22 @@
 
-= What's Next?
+= Beyond the Quick Start Guide
 
-This Quick Start guide has covered the following topics:
+After completing the topics in the Quick Start guide, {page-component-title} should now be set up and monitoring your network.
 
-* xref:operation:quick-start/users.adoc[Creating and modifying user accounts].
-* xref:operation:quick-start/inventory.adoc[Provisioning inventory].
-* xref:operation:quick-start/performance-data.adoc[Collecting performance data].
-* xref:operation:quick-start/thresholding.adoc[Thresholding].
-* xref:operation:quick-start/baseline.adoc[Establishing a baseline].
-* xref:operation:quick-start/service-assurance.adoc[Determining service availability].
-* xref:operation:quick-start/notifications.adoc[Turning on] and xref:operation:quick-start/notification-config.adoc[configuring notifications].
-* Visualizing monitoring data.
+Of course, there is still so much more that you can do to customize {page-component-title} for your own needs, and you can explore the Deep Dive section to find out more:
 
-== Beyond the Quick Start guide
+* Add more users and create groups
+* 
 
-Your {page-component-title} instance should now be set up and prepared to monitor your network.
-There is still so much more that you can do, however.
 
-=== Explore the Deep Dive section
+== 
 
-If you want to know more about any of the topics covered in the Quick Start guide, you can explore their corresponding docs in the Deep Dive section.
+== Explore the Deep Dive section
+
+To learn more about any of the topics covered in the Quick Start guide, you can explore their corresponding docs in the Deep Dive section.
 Deep Dive topics are referenced in each of the Quick Start pages; they can provide a starting point.
 
-=== Customize {page-component-title} home page
+== Customize {page-component-title} home page
 
 We covered visualizations in Step 9: Visualize Data, but you can do much more to display your data--including customizing your {page-component-title} home page.
 For more information, see xref:operation:deep-dive/grafana-dashboard-box.adoc[Grafana Dashboard Box] in the Deep Dive section.
