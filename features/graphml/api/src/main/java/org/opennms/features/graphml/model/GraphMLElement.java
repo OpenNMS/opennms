@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -93,7 +93,7 @@ public abstract class GraphMLElement {
 
     @Override
     public String toString() {
-        return com.google.common.base.Objects.toStringHelper(getClass())
+        return com.google.common.base.MoreObjects.toStringHelper(getClass())
                 .add("id", getId()).toString();
     }
 }

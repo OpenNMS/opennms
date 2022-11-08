@@ -31,11 +31,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-library</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.opennms.core.test-api</groupId>
             <artifactId>org.opennms.core.test-api.lib</artifactId>
             <scope>test</scope>
@@ -66,15 +61,10 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.cassandraunit</groupId>
-            <artifactId>cassandra-unit</artifactId>
-            <version>${cassandraUnitVersion}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.newts</groupId>
-            <artifactId>newts-cassandra-common</artifactId>
-            <version>${newtsVersion}</version>
+            <groupId>org.opennms.dependencies</groupId>
+            <artifactId>cassandra-test-dependencies</artifactId>
+            <version>${project.version}</version>
+            <type>pom</type>
             <scope>test</scope>
         </dependency>
     </dependencies>

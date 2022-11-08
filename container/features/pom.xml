@@ -71,6 +71,11 @@
                   <classifier>spring-legacy</classifier>
                 </artifact>
                 <artifact>
+                  <file>${project.build.outputDirectory}/features-core.xml</file>
+                  <type>xml</type>
+                  <classifier>core</classifier>
+                </artifact>
+                <artifact>
                   <file>${project.build.outputDirectory}/features.xml</file>
                   <type>xml</type>
                   <classifier>features</classifier>
@@ -512,6 +517,18 @@
     <dependency>
       <groupId>org.opennms.features.topologies</groupId>
       <artifactId>org.opennms.features.topologies.service.api</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.scv</groupId>
+      <artifactId>org.opennms.features.scv.jceks-impl</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.scv</groupId>
+      <artifactId>org.opennms.features.scv.shell</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>

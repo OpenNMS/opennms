@@ -6,6 +6,7 @@
   xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.4.0 http://karaf.apache.org/xmlns/features/v1.4.0"
 >
     <!-- OpenNMS Features -->
+    <repository>mvn:${project.groupId}/${project.artifactId}/${project.version}/xml/core</repository>
     <repository>mvn:${project.groupId}/${project.artifactId}/${project.version}/xml/features</repository>
 
     <feature name="minion-core-api" description="OpenNMS :: Distributed :: Core :: API" version="${project.version}">
@@ -26,7 +27,7 @@
     </feature>
 
     <feature name="minion-heartbeat-producer" description="OpenNMS :: Minion :: Heartbeat Producer" version="${project.version}">
-      <feature version="${guavaVersion}">guava</feature>
+      <feature version="${guavaOsgiVersion}">guava</feature>
       <feature>minion-core-api</feature>
       <feature>opennms-core</feature>
       <feature>opennms-core-ipc-sink-api</feature>
