@@ -171,6 +171,36 @@ To achieve this, use the `scvcli` command line utility to add the credentials, a
                     password="${scv:postgres-admin:password}" />
 ----
 
+[[ga-data-choices]]
+== First login and data choices
+
+After you start the {page-component-title} core services, access the web application at `\http://core-instance-ip:8980/opennms`.
+
+The default user login is `admin` with the password `admin`.
+
+IMPORTANT: Immediately change the `admin` account password to a secure one.
+
+The first time you log in, we prompt for permission to allow the Data Choices module to collect and publish anonymous usage statistics to https://stats.opennms.org.
+The OpenNMS Group uses this anonymized information to help determine product use and to improve the {page-component-title} software.
+We do not share it with third parties and we will not use it for sales purposes.
+
+.Data sources collection permission
+image::deployment/core/data-sources.png[prompt,300]
+
+Click *Show me what is being sent* to see what xref:operation:deep-dive/admin/housekeeping/introduction.adoc#ga-data-collection[information we collect].
+Statistics collection and publication happen only if an admin user opts in.
+
+NOTE: Admin users can xref:operation:deep-dive/admin/housekeeping/introduction.adoc#disable-data-collection[enable or disable usage statistics collection] at any time.
+
+. On the top menu bar, click menu:admin[Change Password].
+. Type the current and new passwords in the appropriate fields.
+. Confirm the new password and click *Submit*.
+
+We encourage you to use {page-component-title} with a personalized account instead of the `admin` account.
+This allows you to see who is completing tasks like clearing or acknowledging alarms, instead of everything being done by the `admin user.
+
+For information on how to create a personalized user account, see xref:operation:quick-start/users.adoc#create-user[Create a new user] in the Quick Start guide.
+
 [[receive-snmp-traps]]
 == Receive SNMP traps/informs
 
@@ -218,12 +248,6 @@ Your configuration works as expected when you see an SNMP trap event in the web 
 . Click menu:Status[Events > All Events].
 . Verify that you received a `uei.opennms.org/generic/traps/EnterpriseDefault` event from your test host.
 
-== First login
-
-After you start the {page-component-title} core services, access the web application at `\http://core-instance-ip:8980/opennms`.
-The default login and password is *admin*.
-
-IMPORTANT: Immediately xref:operation:quick-start/users.adoc#ga-admin-user-setup[change the `admin` account password] to a secure one.
 
 == First monitored node
 
