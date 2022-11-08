@@ -78,7 +78,7 @@ This monitor implements the <<reference:service-assurance/introduction.adoc#ref-
 
 NOTE: For `min-services` and `max-services`, the poller service is up if `services_count >= min-services` and `services_count <= max-services`.
 If either one is not defined, then only one has to pass.
-If neither are defined, the monitor checks all instances to see if they are running.
+If neither is defined, the monitor checks all instances to see if they are running.
 
 == Examples
 
