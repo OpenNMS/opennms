@@ -48,6 +48,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.apache.cxf.jaxrs.ext.search.SearchBean;
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.Alias.JoinType;
@@ -277,6 +278,7 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{nodeCriteria}/rescan")
+    @Operation(summary = "Rescan node by NodeId", description = "Rescan node by NodeId", operationId = "NodeRestServicePUTRescanNodeByNodeId")
     public Response rescanNode(@PathParam("nodeCriteria") final String nodeCriteria) {
         final OnmsNode node = m_dao.get(nodeCriteria);
         if (node == null) {
@@ -291,6 +293,7 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
     @GET
     @Path("{nodeCriteria}/metadata")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
+    @Operation(summary = "Get Metadata by NodeId", description = "Get Metadata by NodeId", operationId = "NodeRestServiceGETMetaDataByNodeId")
     public OnmsMetaDataList getMetaData(@PathParam("nodeCriteria") String nodeCriteria) {
         final OnmsNode node = getDao().get(nodeCriteria);
 
@@ -304,6 +307,7 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
     @GET
     @Path("{nodeCriteria}/metadata/{context}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
+    @Operation(summary = "Get Metadata by NodeId and Context", description = "Get Metadata by NodeId and Context", operationId = "NodeRestServiceGETMetaDataByNodeIdAndContext")
     public OnmsMetaDataList getMetaData(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("context") String context) {
         final OnmsNode node = getDao().get(nodeCriteria);
 
@@ -319,6 +323,7 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
     @GET
     @Path("{nodeCriteria}/metadata/{context}/{key}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
+    @Operation(summary = "Get Metadata by NodeId, Context and Key", description = "Get Metadata by NodeId, Context and Key", operationId = "NodeRestServiceGETMetaDataByNodeIdAndContextAndKey")
     public OnmsMetaDataList getMetaData(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("context") String context, @PathParam("key") String key) {
         final OnmsNode node = getDao().get(nodeCriteria);
 

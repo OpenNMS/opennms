@@ -59,7 +59,7 @@ public class ProvisiondStatusRestService {
     @GET
     @Path("status")
     @Produces({MediaType.APPLICATION_JSON})
-    @Operation(summary = "Get all jobs status", description = "Get all recent provisiond jobs status.")
+    @Operation(summary = "Get all jobs status", description = "Get all recent provisiond jobs status.", operationId = "ProvisiondStatusRestServiceGETStatusOfJobs")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "all jobs current monitor object.", content = @Content(schema = @Schema(type = "Map<String, TimeTrackingMonitor>")))
     })
@@ -71,7 +71,7 @@ public class ProvisiondStatusRestService {
     @GET
     @Path("status/{jobId}")
     @Produces({MediaType.APPLICATION_JSON})
-    @Operation(summary = "Get single job status", description = "Get single provisiond job status by jobId")
+    @Operation(summary = "Get single job status", description = "Get single provisiond job status by jobId", operationId = "ProvisiondStatusRestServiceGETStatusOfJobByJobId")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "The current job status.",
                     content = @Content(schema = @Schema(implementation = TimeTrackingMonitor.class))),
