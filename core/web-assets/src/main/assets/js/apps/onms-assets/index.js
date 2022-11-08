@@ -9,11 +9,13 @@ const angular = require('vendor/angular-js');
 const bootbox = require('vendor/bootbox-js');
 require('lib/onms-http');
 require('../onms-date-formatter');
+require('../onms-default-apps');
 
 const defaultConfig = require('./config.json');
 
 angular.module('onms-assets', [
   'onms.http',
+  'onms.default.apps',
   'ui.bootstrap',
   'angular-growl',
   'onmsDateFormatter'

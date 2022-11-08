@@ -113,8 +113,8 @@ public class DroolsConfigurationTest extends XmlTest<EngineConfiguration> {
 		   					new ConfigBuilder()
 		   					.addRuleSet("locationMonitorRules")
 		   						.addRuleFile("file:src/test/opennms-home/etc/LocationMonitorRules.drl")
-		   					 	.addEvent("uei.opennms.org/remote/nodes/nodeLostService")
-		   					 	.addEvent("uei.opennms.org/remote/nodes/nodeRegainedService")
+		   					 	.addEvent("uei.opennms.org/perspective/nodes/nodeLostService")
+		   					 	.addEvent("uei.opennms.org/perspective/nodes/nodeRegainedService")
 		   					 	.addGlobalValue("WIDE_SPREAD_THRESHOLD", Integer.class, 3)
 		   					 	.addGlobalValue("FLAP_INTERVAL", Long.class, 1000L)
 		   					 	.addGlobalValue("FLAP_COUNT", Integer.class, 3)
@@ -130,8 +130,8 @@ public class DroolsConfigurationTest extends XmlTest<EngineConfiguration> {
 		   					"<engine-configuration>\n" + 
 		   					"  <rule-set name=\"locationMonitorRules\">\n" + 
 		   					"    <rule-file>file:src/test/opennms-home/etc/LocationMonitorRules.drl</rule-file>\n" + 
-		   					"    <event>uei.opennms.org/remote/nodes/nodeLostService</event>\n" + 
-		   					"    <event>uei.opennms.org/remote/nodes/nodeRegainedService</event>\n" + 
+		   					"    <event>uei.opennms.org/perspective/nodes/nodeLostService</event>\n" + 
+		   					"    <event>uei.opennms.org/perspective/nodes/nodeRegainedService</event>\n" + 
 		   					"    <global name=\"WIDE_SPREAD_THRESHOLD\" type=\"java.lang.Integer\" value=\"3\"/>\n" + 
 		   					"    <global name=\"FLAP_INTERVAL\" type=\"java.lang.Long\" value=\"1000\" />\n" + 
 		   					"    <global name=\"FLAP_COUNT\" type=\"java.lang.Integer\" value=\"3\" />\n" + 

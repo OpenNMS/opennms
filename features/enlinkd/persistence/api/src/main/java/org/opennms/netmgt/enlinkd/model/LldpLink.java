@@ -168,7 +168,7 @@ public class LldpLink implements Serializable {
 		m_lldpPortDescr = lldpPortDescr;
 	}
 
-    @Column(name = "lldpPortIfindex", nullable = true)
+    @Column(name = "lldpPortIfindex")
 	public Integer getLldpPortIfindex() {
 		return m_lldpPortIfindex;
 	}
@@ -295,34 +295,32 @@ public class LldpLink implements Serializable {
 	 * @return a {@link java.lang.String} object.
 	 */
 	public String toString() {
-	    StringBuffer strb = new StringBuffer();
-	        strb.append("lldplink: nodeid:["); 
-	        strb.append(getNode().getId());
-	        strb.append("]. portnum:[ ");
-	        strb.append(getLldpLocalPortNum());
-	        strb.append("], ifindex:[");
-	        strb.append(getLldpPortIfindex());
-	        strb.append("], port type/id:[");
-	        strb.append(LldpPortIdSubType.getTypeString(getLldpPortIdSubType().getValue())); 
-	        strb.append("/");
-	        strb.append(getLldpPortId());
-	        strb.append("], port descr:[");
-	        strb.append(getLldpPortDescr());
-	        strb.append("], rem chassis type/id:[");
-	        strb.append(LldpChassisIdSubType.getTypeString(getLldpRemChassisIdSubType().getValue()));
-	        strb.append("/");
-	        strb.append(getLldpRemChassisId());
-	        strb.append("], rem sysname:[");
-	        strb.append(getLldpRemSysname());
-	        strb.append("], rem port type/id:[");
-	        strb.append(LldpPortIdSubType.getTypeString(getLldpRemPortIdSubType().getValue()));
-	        strb.append("/");
-	        strb.append(getLldpRemPortId());
-	        strb.append("], rem port descr: [");
-	        strb.append(getLldpRemPortDescr());
-                strb.append("]");
 
-	    return strb.toString();
+		return "lldplink: nodeid:[" +
+				getNode().getId() +
+				"]. portnum:[ " +
+				getLldpLocalPortNum() +
+				"], ifindex:[" +
+				getLldpPortIfindex() +
+				"], port type/id:[" +
+				LldpPortIdSubType.getTypeString(getLldpPortIdSubType().getValue()) +
+				"/" +
+				getLldpPortId() +
+				"], port descr:[" +
+				getLldpPortDescr() +
+				"], rem chassis type/id:[" +
+				LldpChassisIdSubType.getTypeString(getLldpRemChassisIdSubType().getValue()) +
+				"/" +
+				getLldpRemChassisId() +
+				"], rem sysname:[" +
+				getLldpRemSysname() +
+				"], rem port type/id:[" +
+				LldpPortIdSubType.getTypeString(getLldpRemPortIdSubType().getValue()) +
+				"/" +
+				getLldpRemPortId() +
+				"], rem port descr: [" +
+				getLldpRemPortDescr() +
+				"]";
 	}
 
 }

@@ -38,7 +38,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
@@ -53,13 +52,11 @@ import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import kafka.cluster.Broker;
-import kafka.metrics.KafkaMetricsReporter;
+import kafka.admin.BrokerMetadata;
 import kafka.server.KafkaConfig;
 import kafka.server.KafkaServer;
 import scala.Option;
 import scala.collection.JavaConverters;
-import scala.collection.mutable.Buffer;
 
 /**
  * This class starts up an embedded Kafka server for use in integration
@@ -127,9 +124,7 @@ public class JUnitKafkaServer extends ExternalResource {
         System.err.println("Kafka server properties: " + properties);
         kafkaConfig = new KafkaConfig(properties);
 
-        final List<KafkaMetricsReporter> kmrList = new ArrayList<>();
-        final Buffer<KafkaMetricsReporter> metricsList = JavaConverters.asScalaBuffer(kmrList);
-        kafkaServer = new KafkaServer(kafkaConfig, new SystemTime(), Option.<String>empty(), metricsList);
+        kafkaServer = new KafkaServer(kafkaConfig, new SystemTime(), Option.<String>empty(), false);
         kafkaServer.startup();
         await().atMost(1, MINUTES).until(this::getBrokers, hasSize(greaterThanOrEqualTo(1)));
 
@@ -153,7 +148,7 @@ public class JUnitKafkaServer extends ExternalResource {
         }
     }
 
-    private List<Broker> getBrokers() {
+    private List<BrokerMetadata> getBrokers() {
         return JavaConverters.seqAsJavaList(kafkaServer.metadataCache().getAliveBrokers().toList());
     }
 

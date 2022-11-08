@@ -39,6 +39,7 @@ import java.util.List;
 
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.web.svclayer.support.DefaultAdminApplicationService.ApplicationAndMemberServices;
 import org.opennms.web.svclayer.support.DefaultAdminApplicationService.EditModel;
 import org.opennms.web.svclayer.support.DefaultAdminApplicationService.ServiceEditModel;
@@ -60,7 +61,9 @@ public interface AdminApplicationService {
      * @return a {@link java.util.List} object.
      */
     public List<OnmsMonitoredService> findAllMonitoredServices();
-    
+
+    public List<OnmsMonitoringLocation> findAllMonitoringLocations();
+
     /**
      * <p>findApplicationAndAllMonitoredServices</p>
      *
@@ -69,16 +72,11 @@ public interface AdminApplicationService {
      */
     public EditModel findApplicationAndAllMonitoredServices(String applicationIdString);
 
-    /**
-     * <p>performEdit</p>
-     *
-     * @param editAction a {@link java.lang.String} object.
-     * @param editAction2 a {@link java.lang.String} object.
-     * @param toAdd an array of {@link java.lang.String} objects.
-     * @param toDelete an array of {@link java.lang.String} objects.
-     */
     @Transactional(readOnly = false)
-    public void performEdit(String editAction, String editAction2, String[] toAdd, String[] toDelete);
+    public void performEditServices(String appId, String editAction, String[] serviceAdds, String[] serviceDeletes);
+
+    @Transactional(readOnly = false)
+    public void performEditLocations(String appId, String editAction, String[] locationAdds, String[] locationDeletes);
 
     /**
      * <p>addNewApplication</p>

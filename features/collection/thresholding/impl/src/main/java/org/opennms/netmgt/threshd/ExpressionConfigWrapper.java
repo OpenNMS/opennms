@@ -37,9 +37,9 @@ import java.util.Objects;
 
 import org.apache.commons.jexl2.ExpressionImpl;
 import org.apache.commons.jexl2.MapContext;
-import org.opennms.core.rpc.utils.mate.EmptyScope;
-import org.opennms.core.rpc.utils.mate.Interpolator;
-import org.opennms.core.rpc.utils.mate.Scope;
+import org.opennms.core.mate.api.EmptyScope;
+import org.opennms.core.mate.api.Interpolator;
+import org.opennms.core.mate.api.Scope;
 import org.opennms.core.utils.jexl.OnmsJexlEngine;
 import org.opennms.netmgt.config.threshd.Expression;
 import org.slf4j.Logger;
@@ -176,10 +176,13 @@ public class ExpressionConfigWrapper extends BaseThresholdDefConfigWrapper {
      * Evaluate with un-interpolated expression that may contain mate data, meaning we need to interpolate it first. The
      * interpolation should happen once here and future calls to evaluate should use the resulting interpolated value.
      */
-    public ExpressionValue interpolateAndEvaluate(Map<String, Double> values, Scope scope)
+    public ExpressionThresholdValues interpolateAndEvaluate(Map<String, Double> values, Scope scope)
             throws ThresholdExpressionException {
         String interpolatedExpression = interpolateExpression(m_expression.getExpression(), scope);
-        return new ExpressionValue(interpolatedExpression, evaluate(interpolatedExpression, values));
+        ExpressionThresholdValues expressionThresholdValues = new ExpressionThresholdValues(interpolatedExpression, evaluate(interpolatedExpression, values));
+        ThresholdEvaluatorState.ThresholdValues thresholdValues = interpolateThresholdValues(scope);
+        expressionThresholdValues.setThresholdValues(thresholdValues);
+        return expressionThresholdValues;
     }
 
     @Override
@@ -188,30 +191,32 @@ public class ExpressionConfigWrapper extends BaseThresholdDefConfigWrapper {
     }
 
     private String interpolateExpression(String expression, Scope scope) {
-        if (Interpolator.containsMateData(expression)) {
-            String interpolatedExpression = Interpolator.interpolate(expression, scope);
-            LOG.debug("Expression {} was interpolated to {}", expression, interpolatedExpression);
-            return interpolatedExpression;
-        }
-
-        LOG.debug("Expression {} does not contain any mate data and will not be interpolated", expression);
-        return expression;
+        return Interpolator.interpolate(expression, scope).output;
     }
     
-    public static class ExpressionValue {
+    public static class ExpressionThresholdValues {
         public final String expression;
         public final double value;
+        private ThresholdEvaluatorState.ThresholdValues thresholdValues;
 
-        public ExpressionValue(String expression, double value) {
+        public ExpressionThresholdValues(String expression, double value) {
             this.expression = Objects.requireNonNull(expression);
             this.value = value;
+        }
+
+        public ThresholdEvaluatorState.ThresholdValues getThresholdValues() {
+            return thresholdValues;
+        }
+
+        public void setThresholdValues(ThresholdEvaluatorState.ThresholdValues thresholdValues) {
+            this.thresholdValues = thresholdValues;
         }
 
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
-            ExpressionValue that = (ExpressionValue) o;
+            ExpressionThresholdValues that = (ExpressionThresholdValues) o;
             return Double.compare(that.value, value) == 0 &&
                     Objects.equals(expression, that.expression);
         }

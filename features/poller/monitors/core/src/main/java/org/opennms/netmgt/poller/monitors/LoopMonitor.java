@@ -31,7 +31,6 @@ package org.opennms.netmgt.poller.monitors;
 import java.util.Map;
 
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.monitors.support.LoopPlugin;
@@ -43,7 +42,6 @@ import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
  * @author david
  * @version $Id: $
  */
-@Distributable
 public class LoopMonitor extends AbstractServiceMonitor {
 
     @Override

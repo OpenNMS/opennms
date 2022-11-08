@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -34,13 +34,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.container.ResourceContext;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -57,7 +56,6 @@ import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.events.api.EventProxy;
-import org.opennms.netmgt.model.OnmsMetaData;
 import org.opennms.netmgt.model.OnmsMetaDataList;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNodeList;
@@ -225,7 +223,7 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
             object.getAssetRecord().setNode(object);
         }
         final Integer id = getDao().save(object);
-        final Event e = EventUtils.createNodeAddedEvent("Rest", id, object.getLabel(), object.getLabelSource());
+        final Event e = EventUtils.createNodeAddedEvent("Rest", id, object.getLabel(), object.getLabelSource(), null);
         sendEvent(e);
 
         return Response.created(RedirectHelper.getRedirectUri(uriInfo, id)).build();
@@ -270,6 +268,26 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
         return context.getResource(NodeCategoriesRestService.class);
     }
 
+    /**
+     * <p>rescanNode</p>
+     *
+     * @param nodeCriteria a {@link java.lang.String} object.
+     * @return a {@link javax.ws.rs.core.Response} object.
+     */
+    @PUT
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Path("{nodeCriteria}/rescan")
+    public Response rescanNode(@PathParam("nodeCriteria") final String nodeCriteria) {
+        final OnmsNode node = m_dao.get(nodeCriteria);
+        if (node == null) {
+            throw getException(Status.NOT_FOUND, "Node {} was not found.", nodeCriteria);
+        }
+        
+        final Event e = EventUtils.createNodeRescanEvent("ReST", node.getId());
+        sendEvent(e);
+        return Response.ok().build();
+    }
+
     @GET
     @Path("{nodeCriteria}/metadata")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
@@ -311,77 +329,5 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
         return new OnmsMetaDataList(node.getMetaData().stream()
                 .filter(e -> context.equals(e.getContext()) && key.equals(e.getKey()))
                 .collect(Collectors.toList()));
-    }
-
-    @DELETE
-    @Path("{nodeCriteria}/metadata/{context}")
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
-    public Response deleteMetaData(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("context") String context) {
-        writeLock();
-        try {
-            final OnmsNode node = getDao().get(nodeCriteria);
-            if (node == null) {
-                throw getException(Status.BAD_REQUEST, "deleteMetaData: Can't find node " + nodeCriteria);
-            }
-            node.removeMetaData(context);
-            getDao().update(node);
-            return Response.noContent().build();
-        } finally {
-            writeUnlock();
-        }
-    }
-
-    @DELETE
-    @Path("{nodeCriteria}/metadata/{context}/{key}")
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
-    public Response deleteMetaData(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("context") String context, @PathParam("key") String key) {
-        writeLock();
-        try {
-            final OnmsNode node = getDao().get(nodeCriteria);
-            if (node == null) {
-                throw getException(Status.BAD_REQUEST, "deleteMetaData: Can't find node " + nodeCriteria);
-            }
-            node.removeMetaData(context, key);
-            getDao().update(node);
-            return Response.noContent().build();
-        } finally {
-            writeUnlock();
-        }
-    }
-
-    @POST
-    @Path("{nodeCriteria}/metadata")
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
-    public Response postMetaData(@PathParam("nodeCriteria") String nodeCriteria, OnmsMetaData entity) {
-        writeLock();
-        try {
-            final OnmsNode node = getDao().get(nodeCriteria);
-            if (node == null) {
-                throw getException(Status.BAD_REQUEST, "postMetaData: Can't find node " + nodeCriteria);
-            }
-            node.addMetaData(entity.getContext(), entity.getKey(), entity.getValue());
-            getDao().update(node);
-            return Response.noContent().build();
-        } finally {
-            writeUnlock();
-        }
-    }
-
-    @PUT
-    @Path("{nodeCriteria}/metadata/{context}/{key}/{value}")
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
-    public Response putMetaData(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("context") String context, @PathParam("key") String key, @PathParam("value") String value) {
-        writeLock();
-        try {
-            final OnmsNode node = getDao().get(nodeCriteria);
-            if (node == null) {
-                throw getException(Status.BAD_REQUEST, "putMetaData: Can't find node " + nodeCriteria);
-            }
-            node.addMetaData(context, key, value);
-            getDao().update(node);
-            return Response.noContent().build();
-        } finally {
-            writeUnlock();
-        }
     }
 }

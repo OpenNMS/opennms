@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -36,8 +36,8 @@ public class NullUpdateOperation extends UpdateOperation {
 
     private static final Logger LOG = LoggerFactory.getLogger(NullUpdateOperation.class);
 
-    public NullUpdateOperation(final Integer nodeId, final String foreignSource, final String foreignId, final String nodeLabel, final String location, final String building, final String city, final ProvisionService provisionService, final String rescanExisting) {
-        super(nodeId, foreignSource, foreignId, nodeLabel, location, building, city, provisionService, rescanExisting);
+    public NullUpdateOperation(final Integer nodeId, final String foreignSource, final String foreignId, final String nodeLabel, final String location, final String building, final String city, final ProvisionService provisionService, final String rescanExisting, final String monitorKey) {
+        super(nodeId, foreignSource, foreignId, nodeLabel, location, building, city, provisionService, rescanExisting, monitorKey);
     }
 
     @Override

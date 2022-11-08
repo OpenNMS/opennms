@@ -191,4 +191,18 @@ public class MockIpInterfaceDao extends AbstractMockDao<OnmsIpInterface, Integer
         throw new UnsupportedOperationException("Not yet implemented!");
     }
 
+    @Override
+    public List<OnmsIpInterface> findInterfacesWithMetadata(String context, String key, String value) {
+        throw new UnsupportedOperationException("Not yet implemented!");
+    }
+
+    @Override
+    public List<OnmsIpInterface> findByMacLinksOfNode(Integer nodeId) {
+        throw new UnsupportedOperationException("Not yet implemented!");
+    }
+
+    @Override
+    public List<OnmsIpInterface> findByIpAddressAndLocation(String location, String address) {
+        throw new UnsupportedOperationException("Not yet implemented!");
+    }
 }

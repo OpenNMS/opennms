@@ -1,0 +1,33 @@
+[source, karaf]
+----
+config:edit --alias ipfix --factory org.opennms.features.telemetry.listeners
+config:property-set name IPFIX<1>
+config:property-set adapters.0.name IPFIX-Adapter<2>
+config:property-set adapters.0.class-name org.opennms.netmgt.telemetry.protocols.netflow.adapter.ipfix.IpfixAdapter<3>
+config:update
+----
+
+<1> Queue name from which Sentinel will fetch messages.
+By default, for {page-component-title} components, the queue name convention is `IPFIX`.
+<2> Set a name for the IPFIX adapter.
+<3> Assign an adapter to enrich IPFIX messages.
+
+The configuration is persisted with the suffix specified as alias in `etc/org.opennms.features.telemetry.adapters-ipfix.cfg`.
+
+TIP: To process multiple protocols, increase the index `0` in the adapters name and class name accordingly for additional protocols.
+
+.Run health-check to verify adapter configuration
+[source, karaf]
+----
+opennms:health-check
+----
+
+.Ensure the configured flow adapters work properly
+[source, output]
+----
+Verifying the health of the container
+
+...
+Verifying Adapter IPFIX-Adapter (org.opennms.netmgt.telemetry.protocols.netflow.adapter.ipfix.IpfixAdapter)   [ Success  ]
+----
+

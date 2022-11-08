@@ -170,7 +170,32 @@ public abstract class EventConstants {
      * The SNMP interface admin down event UEI.
      */
     public static final String SNMP_INTERFACE_ADMIN_DOWN_EVENT_UEI = "uei.opennms.org/nodes/snmp/interfaceAdminDown";
-    
+
+    /**
+     * The SNMP interface operStatus testing event UEI.
+     */
+    public static final String SNMP_INTERFACE_OPER_TESTING_EVENT_UEI = "uei.opennms.org/nodes/snmp/interfaceOperTesting";
+
+    /**
+     * The SNMP interface operStatus unknown event UEI.
+     */
+    public static final String SNMP_INTERFACE_OPER_UNKNOWN_EVENT_UEI = "uei.opennms.org/nodes/snmp/interfaceOperUnknown";
+
+    /**
+     * The SNMP interface operStatus dormant event UEI.
+     */
+    public static final String SNMP_INTERFACE_OPER_DORMANT_EVENT_UEI = "uei.opennms.org/nodes/snmp/interfaceOperDormant";
+
+    /**
+     * The SNMP interface operStatus notPresent event UEI.
+     */
+    public static final String SNMP_INTERFACE_OPER_NOT_PRESENT_EVENT_UEI = "uei.opennms.org/nodes/snmp/interfaceOperNotPresent";
+
+    /**
+     * The SNMP interface operStatus lowerLayerDown event UEI.
+     */
+    public static final String SNMP_INTERFACE_OPER_LOWER_LAYER_DOWN_EVENT_UEI = "uei.opennms.org/nodes/snmp/interfaceOperLowerLayerDown";
+
     /**
      * The node down event UEI.
      */
@@ -423,10 +448,8 @@ public abstract class EventConstants {
     public static final String REPORT_RUN_FAILED_UEI = "uei.opennms.org/reportd/reportRunFailed";
     public static final String REPORT_DELIVERY_FAILED_UEI = "uei.opennms.org/reportd/reportDeliveryFailed";
     
-    /** Constant <code>REMOTE_NODE_LOST_SERVICE_UEI="uei.opennms.org/remote/nodes/nodeLostSe"{trunked}</code> */
-    public static final String REMOTE_NODE_LOST_SERVICE_UEI = "uei.opennms.org/remote/nodes/nodeLostService";
-    /** Constant <code>REMOTE_NODE_REGAINED_SERVICE_UEI="uei.opennms.org/remote/nodes/nodeRegain"{trunked}</code> */
-    public static final String REMOTE_NODE_REGAINED_SERVICE_UEI = "uei.opennms.org/remote/nodes/nodeRegainedService";
+    public static final String PERSPECTIVE_NODE_LOST_SERVICE_UEI = "uei.opennms.org/perspective/nodes/nodeLostService";
+    public static final String PERSPECTIVE_NODE_REGAINED_SERVICE_UEI = "uei.opennms.org/perspective/nodes/nodeRegainedService";
     /** Constant <code>LOCATION_MONITOR_REGISTERED_UEI="uei.opennms.org/remote/locationMonitorR"{trunked}</code> */
     public static final String LOCATION_MONITOR_REGISTERED_UEI="uei.opennms.org/remote/locationMonitorRegistered";
     /** Constant <code>LOCATION_MONITOR_STARTED_UEI="uei.opennms.org/remote/locationMonitorS"{trunked}</code> */
@@ -522,6 +545,9 @@ public abstract class EventConstants {
     public static final String PARAM_MONITORING_SYSTEM_PREV_LOCATION = "monitoringSystemPreviousLocation";
 
     public static final String PARAM_TOPOLOGY_NAMESPACE = "namespace";
+    public static final String DEVICE_CONFIG_BACKUP_STARTED_UEI = "uei.opennms.org/deviceconfig/configBackupStarted";
+    public static final String DEVICE_CONFIG_BACKUP_FAILED_UEI = "uei.opennms.org/deviceconfig/configBackupFailed";
+    public static final String DEVICE_CONFIG_BACKUP_SUCCEEDED_UEI = "uei.opennms.org/deviceconfig/configBackupSucceeded";
     //
     // end eventUEIs
     //
@@ -622,6 +648,8 @@ public abstract class EventConstants {
      * The new ifIndex value sent as a parm of the 'interfaceIndexChanged' event.
      */
     public static final String PARM_NEW_IFINDEX = "newIfIndex";
+
+    public static final String PARM_IPINTERFACE_ID = "ipInterfaceID";
 
     /**
      * The nodeLabel from the node table when sent as an event parm.
@@ -878,7 +906,9 @@ public abstract class EventConstants {
     public static final String PARM_FOREIGN_ID = "foreignId";
     /** Constant <code>PARM_RESCAN_EXISTING="rescanExisting"</code> */
     public static final String PARM_RESCAN_EXISTING = "rescanExisting";
-    
+    /** Constant <code>PARM_RESCAN_EXISTING="monitorKey"</code> */
+    public static final String PARM_MONITOR_KEY = "monitorKey";
+
     /**
      * Parms used for configureSnmp events
      */
@@ -973,6 +1003,8 @@ public abstract class EventConstants {
     public static final String BUSINESS_SERVICE_PROBLEM_UEI = "uei.opennms.org/bsm/serviceProblem";
     public static final String BUSINESS_SERVICE_PROBLEM_RESOLVED_UEI = "uei.opennms.org/bsm/serviceProblemResolved";
     public static final String BUSINESS_SERVICE_DELETED_EVENT_UEI = "uei.opennms.org/internal/serviceDeleted";
+    public static final String APPLICATION_CREATED_EVENT_UEI = "uei.opennms.org/internal/applicationCreated";
+    public static final String APPLICATION_CHANGED_EVENT_UEI = "uei.opennms.org/internal/applicationChanged";
     public static final String APPLICATION_DELETED_EVENT_UEI = "uei.opennms.org/internal/applicationDeleted";
     public static final String BUSINESS_SERVICE_GRAPH_INVALIDATED = "uei.opennms.org/bsm/graphInvalidated";
 

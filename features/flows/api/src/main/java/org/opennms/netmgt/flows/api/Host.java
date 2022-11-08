@@ -35,21 +35,21 @@ import com.google.common.base.MoreObjects;
 
 public class Host {
     private final String ip;
-    private final Optional<String> hostname;
+    private final String hostname;
 
     public Host(final String ip) {
         this.ip = Objects.requireNonNull(ip);
-        this.hostname = Optional.empty();
+        this.hostname = null;
     }
 
     public Host(final String ip, final String hostname) {
         this.ip = Objects.requireNonNull(ip);
-        this.hostname = Optional.ofNullable(hostname);
+        this.hostname = hostname;
     }
 
     public Host(final Builder builder) {
         this.ip = Objects.requireNonNull(builder.ip);
-        this.hostname = Optional.ofNullable(builder.hostname);
+        this.hostname = builder.hostname;
     }
 
     public String getIp() {
@@ -57,7 +57,7 @@ public class Host {
     }
 
     public Optional<String> getHostname() {
-        return this.hostname;
+        return Optional.ofNullable(this.hostname);
     }
 
     public static class Builder {
@@ -73,7 +73,7 @@ public class Host {
         }
 
         public Builder withHostname(final String hostname) {
-            this.hostname = Objects.requireNonNull(hostname);
+            this.hostname = hostname;
             return this;
         }
 
@@ -89,6 +89,12 @@ public class Host {
     public static Host.Builder from(final String ip) {
         return new Host.Builder()
                 .withIp(ip);
+    }
+
+    public static Host.Builder from(final Host host) {
+        return new Host.Builder()
+                .withIp(host.ip)
+                .withHostname(host.hostname);
     }
 
     public static Host.Builder forOther() {

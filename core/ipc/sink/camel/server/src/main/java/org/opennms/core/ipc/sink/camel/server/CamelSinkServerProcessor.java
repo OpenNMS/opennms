@@ -28,7 +28,6 @@
 
 package org.opennms.core.ipc.sink.camel.server;
 
-import static org.opennms.core.ipc.sink.api.Message.SINK_METRIC_CONSUMER_DOMAIN;
 import static org.opennms.core.ipc.sink.api.MessageConsumerManager.METRIC_DISPATCH_TIME;
 import static org.opennms.core.ipc.sink.api.MessageConsumerManager.METRIC_MESSAGE_SIZE;
 import static org.opennms.core.ipc.sink.camel.CamelSinkConstants.JMS_QUEUE_NAME_HEADER;
@@ -47,7 +46,6 @@ import org.opennms.core.tracing.api.TracerRegistry;
 import org.opennms.core.tracing.util.TracingInfoCarrier;
 
 import com.codahale.metrics.Histogram;
-import com.codahale.metrics.JmxReporter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 
@@ -63,8 +61,6 @@ public class CamelSinkServerProcessor implements Processor {
     private final CamelMessageConsumerManager consumerManager;
     private final SinkModule<?, Message> module;
     private final TracerRegistry tracerRegistry;
-    private final MetricRegistry metricRegistry;
-    private JmxReporter jmxReporter = null;
     private Histogram messageSize;
     private Timer dispatchTime;
 
@@ -73,11 +69,9 @@ public class CamelSinkServerProcessor implements Processor {
         this.consumerManager = Objects.requireNonNull(consumerManager);
         this.module = Objects.requireNonNull(module);
         this.tracerRegistry = tracerRegistry;
-        this.metricRegistry = metricRegistry;
-        jmxReporter = JmxReporter.forRegistry(metricRegistry).inDomain(SINK_METRIC_CONSUMER_DOMAIN).build();
-        jmxReporter.start();
-        messageSize = metricRegistry.histogram(MetricRegistry.name(module.getId(), METRIC_MESSAGE_SIZE));
-        dispatchTime = metricRegistry.timer(MetricRegistry.name(module.getId(), METRIC_DISPATCH_TIME));
+
+        this.messageSize = metricRegistry.histogram(MetricRegistry.name(module.getId(), METRIC_MESSAGE_SIZE));
+        this.dispatchTime = metricRegistry.timer(MetricRegistry.name(module.getId(), METRIC_DISPATCH_TIME));
     }
 
     @Override

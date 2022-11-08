@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+            xmlns="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+            elementFormDefault="qualified">
+
+    <xsd:element name="registerSchema">
+        <xsd:complexType>
+            <xsd:attribute name="id" type="xsd:string" use="required"/>
+            <xsd:attribute name="allowMultiple" type="xsd:boolean" use="optional"/>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="importSchemaFromXsd">
+        <xsd:complexType>
+            <xsd:attribute name="id" type="xsd:string" use="required"/>
+            <xsd:attribute name="xsdFileName" type="xsd:string" use="required"/>
+            <xsd:attribute name="xsdFileHash" type="xsd:string" use="required"/>
+            <xsd:attribute name="rootElement" type="xsd:string" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="changeSchema">
+        <xsd:complexType>
+            <xsd:choice maxOccurs="unbounded">
+                <xsd:element name="put" minOccurs="0">
+                    <xsd:complexType>
+                        <xsd:attribute name="name" type="xsd:string" use="required"/>
+                        <xsd:attribute name="type" type="propertyType" use="required"/>
+                        <xsd:attribute name="default" type="xsd:string"/><!-- if not defined it will be null -->
+                        <xsd:attribute name="pattern" type="xsd:string"/>
+                        <xsd:attribute name="min" type="xsd:string"/>
+                        <xsd:attribute name="max" type="xsd:string"/>
+                    </xsd:complexType>
+                </xsd:element>
+                <xsd:element name="delete" minOccurs="0">
+                    <xsd:complexType>
+                        <xsd:attribute name="name" type="xsd:string" use="required"/>
+                    </xsd:complexType>
+                </xsd:element>
+            </xsd:choice>
+            <xsd:attribute name="schemaId" type="xsd:string" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:simpleType name="propertyType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="string" />
+            <xsd:enumeration value="number" />
+            <xsd:enumeration value="boolean" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:element name="importConfig">
+        <xsd:complexType>
+            <xsd:attribute name="schemaId" type="xsd:string" use="required"/>
+            <xsd:attribute name="configId" type="xsd:string" use="optional"/>
+            <xsd:attribute name="filePath" type="xsd:string" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="importConfigs">
+        <!-- used for multiple configs, currently only cfg files are supported -->
+        <xsd:complexType>
+            <xsd:attribute name="schemaId" type="xsd:string" use="required"/>
+            <xsd:attribute name="filePath" type="xsd:string" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
+
+</xsd:schema>

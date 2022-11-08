@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.enlinkd.snmp;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LldpUtils;
 import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
 import org.opennms.netmgt.enlinkd.model.LldpElement;
@@ -42,6 +43,8 @@ import org.opennms.netmgt.snmp.SnmpValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Locale;
+
 public final class LldpLocalGroupTracker extends AggregateTracker {
 
     private final static Logger LOG = LoggerFactory.getLogger(LldpLocalGroupTracker.class);
@@ -55,13 +58,13 @@ public final class LldpLocalGroupTracker extends AggregateTracker {
     public final static String LLDP_LOC_SYSNAME_ALIAS = "lldpLocSysName";
     public final static String LLDP_LOC_SYSNAME_OID = ".1.0.8802.1.1.2.1.3.3";
     
-    public static NamedSnmpVar[] ms_elemList = null;
+    public static NamedSnmpVar[] ms_elemList;
     
     static {
         ms_elemList = new NamedSnmpVar[3];
         int ndx = 0;
 
-        /**
+        /*
          * <P>
          * "The type of encoding used to identify the chassis
          * associated with the local system."
@@ -69,7 +72,7 @@ public final class LldpLocalGroupTracker extends AggregateTracker {
          */
         ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,LLDP_LOC_CHASSISID_SUBTYPE_ALIAS,LLDP_LOC_CHASSISID_SUBTYPE_OID);
 
-        /**
+        /*
          * <P>
          *  "The string value used to identify the chassis component
          *   associated with the local system."
@@ -77,7 +80,7 @@ public final class LldpLocalGroupTracker extends AggregateTracker {
          */
         ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING,LLDP_LOC_CHASSISID_ALIAS,LLDP_LOC_CHASSISID_OID);
         
-        /**
+        /*
          * <P>
          * "The string value used to identify the system name of the
          * local system.  If the local agent supports IETF RFC 3418,
@@ -85,10 +88,8 @@ public final class LldpLocalGroupTracker extends AggregateTracker {
          * object."
          *   </P>
          */
-        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING,LLDP_LOC_SYSNAME_ALIAS,LLDP_LOC_SYSNAME_OID);
+        ms_elemList[ndx] = new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING,LLDP_LOC_SYSNAME_ALIAS,LLDP_LOC_SYSNAME_OID);
     }
-    
-    public static final String LLDP_LOC_OID = ".1.0.8802.1.1.2.1.3";
 
     public static String getDisplayable(final SnmpValue snmpValue) {
         String decodedsnmpValue = snmpValue.toHexString();
@@ -100,11 +101,27 @@ public final class LldpLocalGroupTracker extends AggregateTracker {
         }
         return decodedsnmpValue;
     }
-    
+
+    public static String decodeMacAddress(SnmpValue snmpValue) {
+        String mac = snmpValue.toHexString();
+        if (InetAddressUtils.isValidBridgeAddress(mac)) {
+            LOG.debug("decodeMacAddress: hexString {}", snmpValue.toHexString());
+            return mac;
+        }
+        LOG.debug("decodeMacAddress: displayable {} type {}", snmpValue.isDisplayable(),snmpValue.getType());
+        if (snmpValue.isDisplayable()) {
+            LOG.debug("decodeMacAddress: displayString {}", snmpValue.toDisplayString());
+            return snmpValue.toDisplayString().replaceAll("\\s+","")
+                    .replaceAll(":","").toLowerCase(Locale.ROOT);
+        }
+        LOG.debug("decodeMacAddress: hexString {}", snmpValue.toHexString());
+        return snmpValue.toHexString();
+    }
+
     public static String decodeLldpChassisId(final SnmpValue lldpchassisid, Integer lldpLocChassisidSubType) {
         if (lldpLocChassisidSubType == null) 
             return getDisplayable(lldpchassisid);
-        LldpChassisIdSubType type = null;
+        LldpChassisIdSubType type;
         try {
             type = LldpChassisIdSubType.get(lldpLocChassisidSubType);
         }  catch (IllegalArgumentException iae) {
@@ -226,7 +243,7 @@ public final class LldpLocalGroupTracker extends AggregateTracker {
              case LLDP_CHASSISID_SUBTYPE_LOCAL:
                  return getDisplayable(lldpchassisid);
              case LLDP_CHASSISID_SUBTYPE_MACADDRESS:
-                 return lldpchassisid.toHexString();
+                 return decodeMacAddress(lldpchassisid);
              case LLDP_CHASSISID_SUBTYPE_NETWORKADDRESS:
                  try {
                      return LldpUtils.decodeNetworkAddress(getDisplayable(lldpchassisid));
@@ -237,7 +254,7 @@ public final class LldpLocalGroupTracker extends AggregateTracker {
         return getDisplayable(lldpchassisid);
     }
 
-    private SnmpStore m_store;
+    private final SnmpStore m_store;
     
     public LldpLocalGroupTracker() {
         super(NamedSnmpVar.getTrackersFor(ms_elemList));

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -206,7 +206,7 @@ public class NodeDetailPageIT extends OpenNMSSeleniumIT {
 
             sendPost("rest/nodes/smoketests:nodeForeignId/ipinterfaces", ipInterface, 201);
 
-            final String service = "<service status=\"A\"><applications/><serviceType id=\"1\"><name>ICMP</name></serviceType></service>";
+            final String service = "<service status=\"A\"><serviceType id=\"1\"><name>ICMP</name></serviceType></service>";
 
             sendPost("rest/nodes/smoketests:nodeForeignId/ipinterfaces/192.168.10.254/services", service, 201);
 

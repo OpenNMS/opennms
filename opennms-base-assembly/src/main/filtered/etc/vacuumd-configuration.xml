@@ -51,9 +51,6 @@
                 trigger-name="selectPathOutagesNodes"
                 action-name="clearPathOutages" />
 
-    <automation name="cleanUpRpStatusChanges" interval="600000" active="true" 
-                action-name="cleanUpRpStatusChanges" />
-    
     <!-- Enable these automation for monitoring maintenance contracts -->
     <!--
     <automation name="maintenanceCheck" interval="84600000" active="true" 
@@ -121,19 +118,6 @@
         UPDATE node
            SET nodeid = -1
          WHERE nodeid = -1
-      </statement>
-    </action>
-
-    <action name="cleanUpRpStatusChanges">
-      <statement>
-        <!-- Remove expired locations specific status changes -->
-        DELETE 
-          FROM location_specific_status_changes
-         WHERE (systemid, ifserviceid, id) 
-        NOT IN (SELECT systemid, ifserviceid, max(id) 
-                  FROM location_specific_status_changes 
-              GROUP BY systemid, ifserviceid)
-           AND statustime &lt; now() - interval '24 hours'
       </statement>
     </action>
 

@@ -11,18 +11,18 @@
    <event>
       <uei>uei.opennms.org/internal/discovery/hardwareInventoryFailed</uei>
       <event-label>OpenNMS-defined internal event: reload specified daemon configuration failed</event-label>
-      <descr>&lt;p>The hardware discovery on node %nodelabel% (IP address %interface%) has failed with the following reason: %parm[reason]%.&lt;/p></descr>
+      <descr>&lt;p>The hardware discovery (%parm[method]%) on node %nodelabel% (IP address %interface%) has failed with the following reason: %parm[reason]%.&lt;/p></descr>
       <logmsg dest="logndisplay">
-            &lt;p>The hardware discovery on node %nodelabel% (IP address %interface%) has failed.&lt;/p>
+            &lt;p>The hardware discovery (%parm[method]%) on node %nodelabel% (IP address %interface%) has failed.&lt;/p>
         </logmsg>
       <severity>Minor</severity>
    </event>
    <event>
       <uei>uei.opennms.org/internal/discovery/hardwareInventorySuccessful</uei>
       <event-label>OpenNMS-defined internal event: hardware discovery successful</event-label>
-      <descr>&lt;p>The hardware discovery on node %nodelabel% (IP address %interface%) has been completed successfuly.&lt;/p></descr>
+      <descr>&lt;p>The hardware discovery (%parm[method]%) on node %nodelabel% (IP address %interface%) has been completed successfuly.&lt;/p></descr>
       <logmsg dest="logndisplay">
-            &lt;p>The hardware discovery on node %nodelabel% (IP address %interface%) has been completed successfuly.&lt;/p>
+            &lt;p>The hardware discovery (%parm[method]%) on node %nodelabel% (IP address %interface%) has been completed successfuly.&lt;/p>
         </logmsg>
       <severity>Normal</severity>
    </event>

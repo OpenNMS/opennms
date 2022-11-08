@@ -33,6 +33,9 @@ package org.opennms.core.health.api;
  */
 public class Response {
 
+    public static Response UNKNOWN = new Response(Status.Unknown);
+    public static Response SUCCESS = new Response(Status.Success);
+
     // The status
     private final Status status;
 
@@ -43,7 +46,7 @@ public class Response {
         this(status, null);
     }
 
-    public Response(Exception ex) {
+    public Response(Throwable ex) {
         this(Status.Failure, ex.getMessage());
     }
 

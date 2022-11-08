@@ -46,6 +46,7 @@ import org.opennms.netmgt.enlinkd.persistence.api.IsIsLinkDao;
 import org.opennms.netmgt.enlinkd.service.api.CompositeKey;
 import org.opennms.netmgt.enlinkd.service.api.IsisTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.TopologyConnection;
+import org.opennms.netmgt.enlinkd.service.api.TopologyService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,13 +97,13 @@ public class IsisTopologyServiceImpl extends TopologyServiceImpl implements Isis
 
     @Transactional
     protected void saveIsisLink(final int nodeId, final IsIsLink saveMe) {
-        new UpsertTemplate<IsIsLink, IsIsLinkDao>(m_transactionManager,
-                                                  m_isisLinkDao) {
+        new UpsertTemplate<>(m_transactionManager,
+                m_isisLinkDao) {
 
             @Override
             protected IsIsLink query() {
                 return m_dao.get(nodeId, saveMe.getIsisCircIndex(),
-                                 saveMe.getIsisISAdjIndex());
+                        saveMe.getIsisISAdjIndex());
             }
 
             @Override
@@ -180,7 +181,7 @@ public class IsisTopologyServiceImpl extends TopologyServiceImpl implements Isis
         List<IsIsElementTopologyEntity> elements = getTopologyEntityCache().getIsIsElementTopologyEntities();
         List<IsIsLinkTopologyEntity> allLinks = getTopologyEntityCache().getIsIsLinkTopologyEntities();
         // 1.) create lookupMaps
-        Map<Integer, IsIsElementTopologyEntity> elementmap = new HashMap<Integer, IsIsElementTopologyEntity>();
+        Map<Integer, IsIsElementTopologyEntity> elementmap = new HashMap<>();
         for (IsIsElementTopologyEntity element: elements) {
             elementmap.put(element.getNodeId(), element);
         }
@@ -194,7 +195,7 @@ public class IsisTopologyServiceImpl extends TopologyServiceImpl implements Isis
         }
 
         // 2. iterate
-        Set<Integer> parsed = new HashSet<Integer>();
+        Set<Integer> parsed = new HashSet<>();
         List<TopologyConnection<IsIsLinkTopologyEntity, IsIsLinkTopologyEntity>> results = new ArrayList<>();
 
         for (IsIsLinkTopologyEntity sourceLink : allLinks) {
@@ -219,11 +220,19 @@ public class IsisTopologyServiceImpl extends TopologyServiceImpl implements Isis
             if (LOG.isDebugEnabled()) {
                 LOG.debug("getIsIsLinks: target: {}", targetLink);
             }
-            results.add(TopologyConnection.of(sourceLink, targetLink));
+            results.add(TopologyService.of(sourceLink, targetLink));
             parsed.add(sourceLink.getId());
             parsed.add(targetLink.getId());
         }
         return results;
+    }
+
+    @Override
+    public void deletePersistedData() {
+        m_isisElementDao.deleteAll();
+        m_isisElementDao.flush();
+        m_isisLinkDao.deleteAll();
+        m_isisLinkDao.flush();
     }
 
 }

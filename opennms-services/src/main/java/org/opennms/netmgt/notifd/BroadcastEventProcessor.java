@@ -47,6 +47,11 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import org.opennms.core.mate.api.EntityScopeProvider;
+import org.opennms.core.mate.api.FallbackScope;
+import org.opennms.core.mate.api.Interpolator;
+import org.opennms.core.mate.api.MapScope;
+import org.opennms.core.mate.api.Scope;
 import org.opennms.core.utils.RowProcessor;
 import org.opennms.core.utils.TimeConverter;
 import org.opennms.netmgt.config.DestinationPathManager;
@@ -83,6 +88,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 /**
@@ -114,6 +120,9 @@ public final class BroadcastEventProcessor implements EventListener {
     
     @Autowired
     private ReadablePollOutagesDao m_pollOutagesDao;
+
+    @Autowired
+    private EntityScopeProvider m_entityScopeProvider;
 
     /**
      * <p>Constructor for BroadcastEventProcessor.</p>
@@ -624,21 +633,10 @@ public final class BroadcastEventProcessor implements EventListener {
                         String scheduledOutageName = scheduledOutage(nodeid, ipaddr);
                         if (scheduledOutageName != null) {
                             // This event occurred during a scheduled outage.
-                            // Must decide what to do
-                            if (autoAckExistsForEvent(event.getUei())) {
-                                // Defer starttime till the given outage ends -
-                                // if the auto ack catches the other event
-                                // before then,
-                                // then the page will not be sent
-                                Calendar endOfOutage = m_pollOutagesDao.getEndOfOutage(scheduledOutageName);
-                                startTime = endOfOutage.getTime().getTime();
-                            } else {
-                                // No auto-ack exists - there's no point
-                                // delaying the page, so just drop it (but leave
-                                // the database entry)
+                                // drop it (but leave the database entry)
                                 continue; // with the next notification (for
                                             // loop)
-                            }
+                            
                         }
 
                         List<NotificationTask> targetSiblings = new ArrayList<NotificationTask>();
@@ -760,6 +758,22 @@ public final class BroadcastEventProcessor implements EventListener {
         paramMap.put(NotificationManager.PARAM_SERVICE, event.getService());
         paramMap.put("eventID", String.valueOf(event.getDbid()));
         paramMap.put("eventUEI", event.getUei());
+
+        final Integer nodeId = event.getNodeid() != null ? event.getNodeid().intValue() : null;
+
+        paramMap = new HashMap(Interpolator.interpolateStrings(paramMap, new FallbackScope(
+            m_entityScopeProvider.getScopeForNode(nodeId),
+            m_entityScopeProvider.getScopeForInterface(nodeId, event.getInterface()),
+            m_entityScopeProvider.getScopeForService(nodeId, event.getInterfaceAddress(), event.getService()),
+            MapScope.singleContext(Scope.ScopeName.SERVICE, "notification",
+                    new ImmutableMap.Builder<String,String>()
+                            .put("eventID", String.valueOf(event.getDbid()))
+                            .put("eventUEI", event.getUei())
+                            .put("noticeid", String.valueOf(noticeId))
+                            .build())
+                    )
+            )
+        );
 
         m_eventUtil.expandMapValues(paramMap, event);
 

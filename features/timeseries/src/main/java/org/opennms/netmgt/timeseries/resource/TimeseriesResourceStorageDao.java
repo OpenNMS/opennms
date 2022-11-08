@@ -29,23 +29,20 @@
 package org.opennms.netmgt.timeseries.resource;
 
 import static org.opennms.netmgt.timeseries.util.TimeseriesUtils.toMetricName;
-import static org.opennms.netmgt.timeseries.util.TimeseriesUtils.toResourceId;
 import static org.opennms.netmgt.timeseries.util.TimeseriesUtils.toResourcePath;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.opennms.integration.api.v1.timeseries.IntrinsicTagNames;
+import org.opennms.integration.api.v1.timeseries.MetaTagNames;
 import org.opennms.integration.api.v1.timeseries.Metric;
-import org.opennms.integration.api.v1.timeseries.Sample;
 import org.opennms.integration.api.v1.timeseries.StorageException;
+import org.opennms.integration.api.v1.timeseries.Tag;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.ResourcePath;
@@ -53,16 +50,11 @@ import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.netmgt.model.StringPropertyAttribute;
 import org.opennms.netmgt.timeseries.TimeseriesStorageManager;
-import org.opennms.netmgt.timeseries.samplewrite.TimeseriesWriter;
-import org.opennms.netmgt.timeseries.util.TimeseriesUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Throwables;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 /**
@@ -85,9 +77,6 @@ public class TimeseriesResourceStorageDao implements ResourceStorageDao {
 
     @Autowired
     private TimeseriesSearcher searcher;
-
-    @Autowired
-    private TimeseriesWriter writer;
 
     @Override
     public boolean exists(ResourcePath path, int depth) {
@@ -150,10 +139,6 @@ public class TimeseriesResourceStorageDao implements ResourceStorageDao {
     public Set<OnmsAttribute> getAttributes(ResourcePath path) {
         Set<OnmsAttribute> attributes = Sets.newHashSet();
 
-        // Fetch the resource-level attributes in parallel
-        Future<Map<String, String>> stringAttributes = ForkJoinPool.commonPool()
-                .submit(getResourceAttributesCallable(path));
-
         // Gather the list of metrics available under the resource path
         Set<Metric> metrics = searchFor(path, 0);
         for (Metric metric : metrics) {
@@ -173,7 +158,7 @@ public class TimeseriesResourceStorageDao implements ResourceStorageDao {
                 }
             }
 
-            if (ResourceTypeUtils.isResponseTime(resourceId)) {
+            if (ResourceTypeUtils.isResponseTime(resourceId) || ResourceTypeUtils.isStatus(resourceId)) {
                 // Use the last part of the resource id as the dsName
                 // Store the resource id in the rrdFile field
                 attributes.add(new RrdGraphAttribute(toMetricName(resourceId), "", resourceId));
@@ -185,29 +170,20 @@ public class TimeseriesResourceStorageDao implements ResourceStorageDao {
         }
 
         // Add the resource level attributes to the result set
-        try {
-            stringAttributes.get().entrySet().stream()
-                    .map(e -> new StringPropertyAttribute(e.getKey(), e.getValue()))
+        Set<Metric> metricsWithStringAttributes = new HashSet<>(metrics);
+        metricsWithStringAttributes.addAll(searchFor(path, -1));
+        if (!metricsWithStringAttributes.isEmpty()) {
+            metricsWithStringAttributes.iterator().next()
+                    .getExternalTags().stream()
+                    .map(t -> new StringPropertyAttribute(t.getKey(), t.getValue()))
                     .forEach(attributes::add);
-        } catch (InterruptedException|ExecutionException e) {
-            throw Throwables.propagate(e);
         }
-
         return attributes;
     }
 
     @Override
     public void setStringAttribute(ResourcePath path, String key, String value) {
-        // Create a mock sample referencing the resource. This is a bit of a miss use of the Sample class but it allows
-        // us to use the ring buffer
-        Map<String, String> attributes = new ImmutableMap.Builder<String, String>()
-                .put(key, value)
-                .build();
-        Sample sample = TimeseriesUtils.createSampleForIndexingStrings(toResourceId(path), attributes);
-
-        // Index, but do not insert the sample(s)
-        // The key/value pair specified in the attributes map will be merged with the others.
-        writer.index(Lists.newArrayList(sample));
+        throw new UnsupportedOperationException("This method is not supported anymore. Please use KV store instead.");
     }
 
     @Override
@@ -222,21 +198,20 @@ public class TimeseriesResourceStorageDao implements ResourceStorageDao {
 
     @Override
     public Map<String, String> getMetaData(ResourcePath path) {
-        return searcher.getResourceAttributes(path);
-    }
-
-    private Callable<Map<String, String>> getResourceAttributesCallable(final ResourcePath path) {
-        return new Callable<Map<String, String>>() {
-            @Override
-            public Map<String, String> call() {
-                return searcher.getResourceAttributes(path);
-            }
-        };
+        Set<Metric> metricsWithStringAttributes = new HashSet<>();
+        metricsWithStringAttributes.addAll(searchFor(path, 0));
+        metricsWithStringAttributes.addAll(searchFor(path, -1)); // resource level
+        return metricsWithStringAttributes
+                    .stream()
+                    .flatMap(m -> m.getExternalTags().stream())
+                    .distinct()
+                    .filter(t -> !t.getKey().endsWith(MetaTagNames.mtype)) // mtype is on Metric level => we are one above (resource level)
+                    .collect(Collectors.toMap(Tag::getKey, Tag::getValue));
     }
 
     @Override
     public void updateMetricToResourceMappings(ResourcePath path, Map<String, String> metricsNameToResourceNames) {
-        // These are already stored by the indexer
+        // These are already stored.
     }
 
     private Set<Metric> searchFor(ResourcePath path, int depth) {
@@ -266,10 +241,6 @@ public class TimeseriesResourceStorageDao implements ResourceStorageDao {
         }
 
         return ResourcePath.get(els);
-    }
-
-    public void setWriter(TimeseriesWriter writer) {
-        this.writer = writer;
     }
 
     public void setSearcher(TimeseriesSearcher searcher) {

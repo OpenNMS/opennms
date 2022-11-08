@@ -1,0 +1,75 @@
+
+= Win32ServiceMonitor
+
+The Win32ServiceMonitor lets {page-component-title} monitor the running state of any Windows service.
+The service status is monitored using the Microsoft Windows-provided SNMP agent providing the link:http://technet.microsoft.com/en-us/library/cc977581.aspx[LAN Manager MIB-II].
+For this reason, the SNMP agent and {page-component-title} must be correctly configured to allow queries against part of the MIB tree.
+The status of the service is monitored by polling the
+
+`svSvcOperatingState = 1.3.6.1.4.1.77.1.2.3.1.3`
+
+of a given service by the display name.
+
+== Monitor facts
+
+[cols="1,7"]
+|===
+| Class Name
+| `org.opennms.netmgt.poller.monitors.Win32ServiceMonitor`
+|===
+
+== Configuration and use
+
+.Required monitor-specific parameter for the Win32ServiceMonitor
+[options="header"]
+[cols="1,3,2"]
+|===
+| Parameter
+| Description
+| Default
+
+| service-name
+| The name of the service. This should be the exact Display Name of the Windows service to monitor as it appears in the Services MSC snap-in.
+Short names such as you might use with net start will not work here.
+| Server
+|===
+
+This monitor implements the <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+=== Non-English Windows
+The service-name is sometimes encoded in languages other than English.
+For example, in French the Task Scheduler service is _Planificateur de tâche_.
+Because of the "â" (non-English character), the OID value is encoded in hexadecimal (0x50 6C 61 6E 69 66 69 63 61 74 65 75 72 20 64 65 20 74 C3 A2 63 68 65 73).
+
+== Troubleshooting
+If you have created a Win32ServiceMonitor poller and are having difficulties with it not being monitored properly on your hosts, chances are there is a difference in the name of the service you have created and the actual name in the registry.
+
+Assume you want to monitor a process called "Example Service" on one of your servers.
+You retrieve the display name from looking at the service in service manager, and create an entry in the `poller-configuration.xml` files using the exact name in the display name field.
+
+However, you miss the errant space at the end of the service display name that is revealed when doing the following:
+
+`snmpwalk -v 2c -c <communitystring> <hostname> .1.3.6.1.4.1.77.1.2.3.1.1`
+
+This provides the critical piece of missing information:
+
+`iso.3.6.1.4.1.77.1.2.3.1.1.31.83.116.97.102.102.119.97.114.101.32.83.84.65.70.70.86.73.69.87.32.66.97.99.107.103.114.111.117.110.100.32 = STRING: "Example Service "`
+
+Note the extra space before the close quote.
+
+The extra space at the end of the name was difficult to notice in the service manager GUI, but is easily visible in the snmpwalk output.
+The right way to fix this would be to correct the service display name field on the server; however, that is often out of your control based on the service's code.
+Use snmpwalk to verify the service name, as opposed to relying on the service manager GUI, to yield more accurate results.
+
+== Examples
+
+Monitoring the service running state of the Task Scheduler on an English local Microsoft Windows Server requires at minimum the following entry in poller-configuration.xml:
+
+[source, xml]
+----
+<service name="Windows-Task-Scheduler" interval="300000" user-defined="false" status="on">
+    <parameter key="service-name" value="Task Scheduler"/>
+</service>
+
+<monitor service="Windows-Task-Scheduler" class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor"/>
+----

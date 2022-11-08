@@ -1,0 +1,91 @@
+
+= DiskUsageMonitor
+
+The DiskUsageMonitor tests the amount of free space available on the specified storage disk of a monitored node.
+The monitor inspects the http://tools.ietf.org/html/rfc1514[HOST-RESOURCES-MIB] hrStorageTable to get information about the available free storage space.
+
+A disk's description (as found in the corresponding `hrStorageDescr` object) must match the criteria the `disk` and `match-type` parameters specify to be monitored.
+The available free space is calculated using the corresponding hrStorageSize and hrStorageUsed objects.
+
+CAUTION: The hrStorageUsed does not account for filesystem reserved blocks (for example, for the super-user), so DiskUsageMonitor will report the service as unavailable only when the amount of free disk space is actually lower than `free` minus the percentage of reserved filesystem blocks.
+
+This monitor uses SNMP to accomplish its work.
+Therefore, systems against which you use it must have an SNMP agent supporting the HOST-RESOURCES-MIB installed and configured.
+Most modern SNMP agents, including most distributions of the Net-SNMP agent and the SNMP service that ships with Microsoft Windows, support this MIB.
+Out-of-the-box support for HOST-RESOURCES-MIB among commercial Unix operating systems may be spotty.
+
+== Monitor facts
+
+[cols="1,7"]
+|===
+| Class Name
+| `org.opennms.netmgt.poller.monitors.DiskUsageMonitor`
+|===
+
+== Configuration and use
+
+.Monitor-specific parameters for the DiskUsageMonitor
+[options="header"]
+[cols="1,4a,2"]
+|===
+| Parameter
+| Description
+| Default
+
+3+|*Required*
+
+| disk
+| A pattern that a storage's description (`hrStorageDescr`) must match to be taken into account.
+| n/a
+
+3+|*Optional*
+
+| free
+| The minimum amount of free space that storage matching the criteria must have available.
+This parameter is evaluated as a percent of the storage's reported maximum capacity.
+| 15
+
+| match-type
+| The way the pattern specified by the disk parameter must be compared to the storage's description.
+Must be one of the following symbolic operators:
+
+* **endswith**: The disk parameter's value is evaluated as a string that the storage's description must end with.
+* **exact**: The disk parameter's value is evaluated as a string that the storage's description must exactly match.
+* **regex**: The disk parameter's value is evaluated as a regular expression that the storage's description must match.
+* **startswith**: The disk parameter's value is evaluated as a string that storage's description must start with.
+
+Note that comparisons are case-sensitive.
+| exact
+
+| port
+| Destination port where the SNMP requests are sent.
+| From snmp-config.xml
+
+| retries
+| Deprecated.
+Same as `retry`.
+Parameter retry takes precedence when both are set.
+|From snmp-config.xml
+|===
+
+This monitor implements the <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+== Examples
+
+[source, xml]
+----
+<!-- Make sure there's at least 5% of free space available on storages ending with "/home" -->
+<service name="DiskUsage-home" interval="300000" user-defined="false" status="on">
+  <parameter key="timeout" value="3000" />
+  <parameter key="retry" value="2" />
+  <parameter key="disk" value="/home" />
+  <parameter key="match-type" value="endsWith" />
+  <parameter key="free" value="5" />
+</service>
+<monitor service="DiskUsage-home" class-name="org.opennms.netmgt.poller.monitors.DiskUsageMonitor" />
+----
+
+== DiskUsageMonitor versus thresholds
+
+You can also use thresholds to monitor a storage's available free space if you are already collecting these data.
+The difference between thresholds and this monitor is that while both can trigger notifications, using this monitor will put the node into a service down state and trigger an outage.

@@ -466,4 +466,27 @@ public abstract class StringUtils {
             return defaultValue;
         }
     }
+
+    public static Long parseLong(String value, Long defaultValue) {
+        if (Strings.isNullOrEmpty(value)) {
+            return defaultValue;
+        }
+        try {
+            return Long.parseLong(value);
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
+    }
+
+    public static Double parseDouble(String value, Double defaultValue) {
+        if(Strings.isNullOrEmpty(value)) {
+            return defaultValue;
+        }
+        try {
+            return Double.parseDouble(value);
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
+    }
+
 }

@@ -316,7 +316,11 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
 
     private void scheduleAutomations() {
         for (Automation auto : getVacuumdConfig().getAutomations()) {
-            scheduleAutomation(auto);
+            try {
+                scheduleAutomation(auto);
+            } catch (Exception e) {
+                LOG.warn("Could not schedule automation {}", auto.getActionName(), e);
+            }
         }
     }
 

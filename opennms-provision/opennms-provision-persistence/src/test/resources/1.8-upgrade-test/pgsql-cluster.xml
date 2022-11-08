@@ -25,6 +25,7 @@
             <monitored-service service-name="SNMP"/>
             <monitored-service service-name="ICMP"/>
         </interface>
+        <interface status="1" snmp-primary="N" ip-addr="10.10.10.10.10.10.10.10.10" descr="invalid"/>
         <category name="Servers"/>
         <category name="Production"/>
     </node>

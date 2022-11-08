@@ -121,7 +121,7 @@ public class PassiveStatusKeeper extends AbstractServiceDaemon implements EventL
                 "JOIN ipInterface ON ifServices.ipInterfaceId = ipInterface.id " +
                 "JOIN node ON ipInterface.nodeId = node.nodeId " +
                 "JOIN service ON ifServices.serviceId = service.serviceId " +
-                "WHERE outages.ifRegainedService is NULL";
+                "WHERE outages.ifRegainedService is NULL AND outages.perspective is NULL";
         
         Querier querier = new Querier(m_dataSource, sql) {
         

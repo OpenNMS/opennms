@@ -62,9 +62,6 @@
         	<th>Datasource</th>
         	<th>Datasource type</th>
         	<th>Datasource label</th>
-        	<th>Value</th>
-        	<th>Re-arm</th>
-        	<th>Trigger</th>
         </tr>
         	<tr>
         		<td>
@@ -98,10 +95,19 @@
         				</c:forEach>
         			</select></td>
                 <td><input type="text" class="form-control" name="dsLabel" size="30" value="${threshold.dsLabel.orElse(null)}"/></td>
-                <td><input type="text" class="form-control" name="value" size="10" value="${threshold.value}"/></td>
-                <td><input type="text" class="form-control" name="rearm" size="10" value="${threshold.rearm}"/></td>
-                <td><input type="text" class="form-control" name="trigger" size="10" value="${threshold.trigger}"/></td>
         	</tr>
+      </table>
+      <table class="table table-sm">
+            <tr>
+                <th>Value</th>
+                <th>Re-arm</th>
+                <th>Trigger</th>
+            </tr>
+            <tr>
+                <td><input type="text" class="form-control" name="value" size="60" value="${threshold.value}"/></td>
+                <td><input type="text" class="form-control" name="rearm" size="60" value="${threshold.rearm}"/></td>
+                <td><input type="text" class="form-control" name="trigger" size="60" value="${threshold.trigger}"/></td>
+            </tr>
       </table>
       <table class="table table-sm">
              <tr>

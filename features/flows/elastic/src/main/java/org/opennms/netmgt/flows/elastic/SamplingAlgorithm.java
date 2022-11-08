@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.flows.elastic;
 
-import org.opennms.netmgt.flows.api.Flow;
+import org.opennms.integration.api.v1.flows.Flow;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -62,7 +62,7 @@ public enum SamplingAlgorithm {
                 return SystematicCountBasedSampling;
             case SystematicTimeBasedSampling:
                 return SystematicTimeBasedSampling;
-            case RandomNoutOfNSampling:
+            case RandomNOutOfNSampling:
                 return RandomNoutOfNSampling;
             case UniformProbabilisticSampling:
                 return UniformProbabilisticSampling;

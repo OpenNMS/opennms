@@ -27,7 +27,7 @@
   <event-file>events/opennms.pollerd.events.xml</event-file>
   <event-file>events/opennms.provisioning.events.xml</event-file>
   <event-file>events/opennms.minion.events.xml</event-file>
-  <event-file>events/opennms.remote.poller.events.xml</event-file>
+  <event-file>events/opennms.perspective.poller.events.xml</event-file>
   <event-file>events/opennms.reportd.events.xml</event-file>
   <event-file>events/opennms.syslogd.events.xml</event-file>
   <event-file>events/opennms.ticketd.events.xml</event-file>

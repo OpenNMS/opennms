@@ -35,6 +35,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -48,10 +49,12 @@ import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsMetaData;
 import org.opennms.netmgt.model.OnmsNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -61,6 +64,13 @@ public class VmwareTopologyProvider extends AbstractTopologyProvider {
     private static final String SPLIT_REGEXP = " *, *";
     private final NodeDao m_nodeDao;
     private final IpInterfaceDao m_ipInterfaceDao;
+
+    public final static String METADATA_CONTEXT = "VMware";
+    public final static String METADATA_MANAGEMENT_SERVER = "managementServer";
+    public final static String METADATA_MANAGED_ENTITY_TYPE = "managedEntityType";
+    public final static String METADATA_MANAGED_OBJECT_ID = "managedObjectId";
+    public final static String METADATA_TOPOLOGY_INFO = "topologyInfo";
+    public final static String METADATA_STATE = "state";
 
     private interface Icons {
         String DATACENTER = "vmware.DATACENTER_ICON";
@@ -135,10 +145,10 @@ public class VmwareTopologyProvider extends AbstractTopologyProvider {
         getEntities("VirtualMachine").stream().forEach(this::addVirtualMachine);
     }
 
-    private List<OnmsNode> getEntities(String entityType) {
-        List<OnmsNode> entities = m_nodeDao.findAllByVarCharAssetColumn("vmwareManagedEntityType", entityType);
+    private List<OnmsNode> getEntities(final String entityType) {
+        List<OnmsNode> entities = m_nodeDao.findNodeWithMetaData(METADATA_CONTEXT, METADATA_MANAGED_ENTITY_TYPE, entityType);
         if (entities.isEmpty()) {
-            LOG.info("No entities of type '{}' with defined VMware assets fields found!", entityType);
+            LOG.info("No entities of type '{}' with defined VMware metadata fields found!", entityType);
         }
         return entities;
     }
@@ -219,17 +229,20 @@ public class VmwareTopologyProvider extends AbstractTopologyProvider {
     }
 
     private Map<String, ParsedEntity> parseNodeAssets(OnmsNode onmsNode) {
-        String vmwareTopologyInfo = onmsNode.getAssetRecord().getVmwareTopologyInfo().trim();
+        final String vmwareTopologyInfo = getTopologyInfo(onmsNode);
 
         return Arrays.stream(vmwareTopologyInfo.split(SPLIT_REGEXP))
+                .map(s -> s.trim())
+                .filter(s -> !s.isEmpty())
                 .map(ParsedEntity::new)
                 .collect(Collectors.toMap(ParsedEntity::getEntityId, Function.identity()));
     }
 
     private void addHostSystem(OnmsNode hostSystem) {
-        String vmwareManagementServer = hostSystem.getAssetRecord().getVmwareManagementServer().trim();
-        String vmwareManagedObjectId = hostSystem.getAssetRecord().getVmwareManagedObjectId().trim();
-        String vmwareState = hostSystem.getAssetRecord().getVmwareState().trim();
+        final String vmwareManagementServer = getManagementServer(hostSystem);
+        final String vmwareManagedObjectId = getManagedObjectId(hostSystem);
+        final String vmwareState = getState(hostSystem);
+
         String primaryInterface = "unknown";
         OnmsIpInterface ipInterface = m_ipInterfaceDao.findPrimaryInterfaceByNodeId(hostSystem.getId());
 
@@ -287,9 +300,10 @@ public class VmwareTopologyProvider extends AbstractTopologyProvider {
     }
 
     private void addVirtualMachine(OnmsNode virtualMachine) {
-        String vmwareManagementServer = virtualMachine.getAssetRecord().getVmwareManagementServer().trim();
-        String vmwareManagedObjectId = virtualMachine.getAssetRecord().getVmwareManagedObjectId().trim();
-        String vmwareState = virtualMachine.getAssetRecord().getVmwareState().trim();
+        final String vmwareManagementServer = getManagementServer(virtualMachine);
+        final String vmwareManagedObjectId = getManagedObjectId(virtualMachine);
+        final String vmwareState = getState(virtualMachine);
+
         String primaryInterface = "unknown";
         OnmsIpInterface ipInterface = m_ipInterfaceDao.findPrimaryInterfaceByNodeId(virtualMachine.getId());
 
@@ -317,5 +331,30 @@ public class VmwareTopologyProvider extends AbstractTopologyProvider {
                 virtualMachineVertex,
                 graph.getVertex(getNamespace(), vmwareManagementServer + "/" + vmwareHostSystemId)
         );
+    }
+
+    private static String getMetaData(final OnmsNode node, final String key) {
+        final Optional<OnmsMetaData> metaData = node.findMetaDataForContextAndKey(METADATA_CONTEXT, key);
+        return metaData.map(onmsMetaData -> onmsMetaData.getValue().trim()).orElse("");
+    }
+
+    public static String getManagementServer(final OnmsNode node) {
+        return getMetaData(node, METADATA_MANAGEMENT_SERVER);
+    }
+
+    public static String getManagedObjectId(final OnmsNode node) {
+        return getMetaData(node, METADATA_MANAGED_OBJECT_ID);
+    }
+
+    public static String getManagedEntityType(final OnmsNode node) {
+        return getMetaData(node, METADATA_MANAGED_ENTITY_TYPE);
+    }
+
+    public static String getState(final OnmsNode node) {
+        return getMetaData(node, METADATA_STATE);
+    }
+
+    public static String getTopologyInfo(final OnmsNode node) {
+        return getMetaData(node, METADATA_TOPOLOGY_INFO);
     }
 }

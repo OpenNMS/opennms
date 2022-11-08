@@ -1,0 +1,12 @@
+= Cisco CBQoS property extender
+This property extender is used only in very specific circumstances.
+
+== When to use Cisco CBQoS property extender
+
+The Cisco CBQoS property extender is designed specifically and exclusively to include string properties across `ifXTable` and the several MIB tables that make up the Cisco class-gased QoS MIB.
+It is not useful for any other sets of target and source tables.
+
+== Configure Cisco CBQoS extended properties
+
+The complex relationships among the various Cisco CBQoS tables are encapsulated in the code of this property extender class.
+As a result, this extender takes only a single parameter, `target-property`, whose value must be one of `policyName`, `classMapName`, `interfaceAlias`, or `interfaceName`.

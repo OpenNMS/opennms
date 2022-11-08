@@ -28,39 +28,24 @@
 
 package org.opennms.netmgt.flows.api;
 
+import static org.opennms.integration.api.v1.flows.Flow.Direction;
+import static org.opennms.integration.api.v1.flows.Flow.NetflowVersion;
+import static org.opennms.integration.api.v1.flows.Flow.SamplingAlgorithm;
+
+import java.time.Instant;
 import java.util.Optional;
 
 public interface Flow {
-    int IPV4_PROTOCOL_VERSION = 4;
-    int IPV6_PROTOCOL_VERSION = 6;
 
-    enum NetflowVersion {
-        V5,
-        V9,
-        IPFIX,
-        SFLOW,
-    }
-
-    enum Direction {
-        INGRESS,
-        EGRESS,
-    }
-
-    enum SamplingAlgorithm {
-        Unassigned,
-        SystematicCountBasedSampling,
-        SystematicTimeBasedSampling,
-        RandomNoutOfNSampling,
-        UniformProbabilisticSampling,
-        PropertyMatchFiltering,
-        HashBasedFiltering,
-        FlowStateDependentIntermediateFlowSelectionProcess;
-    }
+    /**
+     * Time at which the flow was received by listener in milliseconds since epoch UTC.
+     */
+    Instant getReceivedAt();
 
     /**
      * Flow timestamp in milliseconds.
      */
-    long getTimestamp();
+    Instant getTimestamp();
 
     /**
      * Number of bytes transferred in the flow.
@@ -111,13 +96,13 @@ public interface Flow {
      * Unix timestamp in ms at which the previous exported packet
      * associated with this flow was switched.
      */
-    Long getDeltaSwitched();
+    Instant getDeltaSwitched();
 
     /**
      * Unix timestamp in ms at which the first packet
      * associated with this flow was switched.
      */
-    Long getFirstSwitched();
+    Instant getFirstSwitched();
 
     /**
      * Number of flow records in the associated packet.
@@ -143,7 +128,7 @@ public interface Flow {
      * Unix timestamp in ms at which the last packet
      * associated with this flow was switched.
      */
-    Long getLastSwitched();
+    Instant getLastSwitched();
 
     /**
      * Next hop
@@ -214,6 +199,14 @@ public interface Flow {
      * TOS.
      */
     Integer getTos();
+
+    default Integer getDscp() {
+        return getTos() != null ? getTos() >>> 2 : null;
+    }
+
+    default Integer getEcn() {
+        return getTos() != null ? getTos() & 0x03 : null;
+    }
 
     /**
      * Netfow version

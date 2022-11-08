@@ -32,24 +32,29 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import javax.sql.DataSource;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.core.schema.Migration;
 import org.opennms.core.schema.MigrationException;
 import org.opennms.core.schema.Migrator;
 import org.opennms.core.test.MockLogAppender;
@@ -60,8 +65,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.context.ContextConfiguration;
+
+import com.google.common.base.Joiner;
 
 /**
  * Note that this test may have some issues inside Eclipse related to
@@ -73,18 +79,22 @@ import org.springframework.test.context.ContextConfiguration;
 @ContextConfiguration(locations={
         "classpath:/migratorTest.xml"
 })
-@JUnitTemporaryDatabase
-public class MigratorIT {
+@JUnitTemporaryDatabase(createSchema = false)
+public class MigratorIT implements TemporaryDatabaseAware<TemporaryDatabase> {
     private static final Logger LOG = LoggerFactory.getLogger(MigratorIT.class);
 
     @Autowired
     DataSource m_dataSource;
 
     @Autowired
-    ResourceLoader m_resourceLoader;
-
-    @Autowired
     ApplicationContext m_context;
+
+    TemporaryDatabase m_database;
+
+    @Override
+    public void setTemporaryDatabase(TemporaryDatabase database) {
+        m_database = database;
+    }
 
     @Before
     public void setUp() throws Exception {
@@ -112,9 +122,11 @@ public class MigratorIT {
             URI uri = resource.getURI();
             if (uri.getScheme().equals("file") && uri.toString().contains("test-api/schema/a")) {
                 aResource = resource;
+                break;
             }
             if (uri.getScheme().equals("jar") && uri.toString().contains("test-api.schema.a")) {
                 aResource = resource;
+                break;
             }
         }
         assertNotNull("aResource must not be null", aResource);
@@ -122,26 +134,24 @@ public class MigratorIT {
         Set<String> tables = getTables();
         assertFalse("must not contain table 'schematest'", tables.contains("schematest"));
 
-        final Migration migration = new Migration();
-        migration.setAdminUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
-        migration.setAdminPassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
-        migration.setDatabaseUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
-        migration.setDatabasePassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
-        migration.setChangeLog(aResource);
+        final Migrator migrator = new Migrator();
+        migrator.setApplicationContext(m_context);
+        migrator.setAdminUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
+        migrator.setAdminPassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
+        migrator.setDatabaseUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
+        migrator.setDatabasePassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
+        migrator.setDataSource(m_dataSource);
+        migrator.setAdminDataSource(m_dataSource);
+        migrator.setValidateDatabaseVersion(false);
+        migrator.setCreateUser(false);
+        migrator.setCreateDatabase(false);
 
-        LOG.info("Running migration on database: {}", migration);
+        LOG.info("Running migration on database: {}", migrator.getDatabaseName());
 
-        final Migrator m = new Migrator();
-        m.setDataSource(m_dataSource);
-        m.setAdminDataSource(m_dataSource);
-        m.setValidateDatabaseVersion(false);
-        m.setCreateUser(false);
-        m.setCreateDatabase(false);
+        migrator.prepareDatabase();
+        migrator.migrate(aResource);
 
-        m.prepareDatabase(migration);
-        m.migrate(migration);
-
-        LOG.info("Migration complete: {}", migration);
+        LOG.info("Migration complete: {}", migrator.getDatabaseName());
 
         tables = getTables();
         assertTrue("must contain table 'schematest'", tables.contains("schematest"));
@@ -152,26 +162,32 @@ public class MigratorIT {
     public void testMultipleChangelogs() throws Exception {
         assertFalse(changelogExists());
 
-        final Migration migration = new Migration();
-        migration.setAdminUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
-        migration.setAdminPassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
-        migration.setDatabaseUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
-        migration.setDatabasePassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
+        final Migrator migrator = new Migrator();
+        migrator.setApplicationContext(m_context);
 
-        final Migrator m = new Migrator();
-        m.setDataSource(m_dataSource);
-        m.setAdminDataSource(m_dataSource);
-        m.setValidateDatabaseVersion(false);
-        m.setCreateUser(false);
-        m.setCreateDatabase(false);
+        migrator.setAdminUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
+        migrator.setAdminPassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
+        migrator.setDatabaseUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
+        migrator.setDatabasePassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
+
+        migrator.setDataSource(m_dataSource);
+        migrator.setAdminDataSource(m_dataSource);
+        migrator.setValidateDatabaseVersion(false);
+        migrator.setCreateUser(false);
+        migrator.setCreateDatabase(false);
+
+        migrator.setLiquibaseChangelogFilter(createTestApiLiquibaseChangelogFilter());
+
+        // this doesn't work as an alternative to the for loop below and I haven't had a chance to dig too deep yet -- dj@
+        //migrator.setDatabaseName(m_database.getTestDatabase());
+        //migrator.setupDatabase(true, false, false, false, m_context);
 
         for (final Resource resource : getTestResources()) {
             URI uri = resource.getURI();
             if (uri.getScheme().equals("jar") && !uri.toString().contains("test-api.schema")) continue;
             if (uri.getScheme().equals("file") && !uri.toString().contains("test-api/schema")) continue;
             LOG.info("=== found resource: {} ===", resource);
-            migration.setChangeLog(resource);
-            m.migrate(migration);
+            migrator.migrate(resource);
         }
 
         final List<ChangelogEntry> ids = getChangelogEntries();
@@ -181,29 +197,43 @@ public class MigratorIT {
         assertEquals("test-api.schema.b", ids.get(1).getId());
     }
 
+    public static final Predicate<Resource> createTestApiLiquibaseChangelogFilter() {
+        return r -> {
+            try {
+                URI uri = r.getURI();
+                final String scheme = uri.getScheme();
+                final String uriString = uri.toString();
+                return (scheme.equals("file") && uriString.contains("test-api/schema")) ||
+                        (scheme.equals("jar") && uriString.contains("test-api.schema"));
+            } catch (IOException e) {
+                throw new IllegalStateException("Resource is not a URI", e);
+            }
+        };
+    }
+
     @Test
     @JUnitTemporaryDatabase(createSchema=false)
     public void testRealChangelogs() throws Exception {
 
         assertFalse(changelogExists());
 
-        final Migration migration = new Migration();
-        migration.setAdminUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
-        migration.setAdminPassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
-        migration.setDatabaseUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
-        migration.setDatabasePassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
+        final Migrator migrator = new Migrator();
+        migrator.setApplicationContext(m_context);
 
-        final Migrator m = new Migrator();
-        m.setDataSource(m_dataSource);
-        m.setAdminDataSource(m_dataSource);
-        m.setValidateDatabaseVersion(false);
-        m.setCreateUser(false);
-        m.setCreateDatabase(false);
+        migrator.setAdminUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
+        migrator.setAdminPassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
+        migrator.setDatabaseUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
+        migrator.setDatabasePassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
+
+        migrator.setDataSource(m_dataSource);
+        migrator.setAdminDataSource(m_dataSource);
+        migrator.setValidateDatabaseVersion(false);
+        migrator.setCreateUser(false);
+        migrator.setCreateDatabase(false);
 
         for (final Resource resource : getRealChangelog()) {
             LOG.info("=== found resource: {} ===", resource);
-            migration.setChangeLog(resource);
-            m.migrate(migration);
+            migrator.migrate(resource);
         }
 
         final List<ChangelogEntry> ids = getChangelogEntries();
@@ -225,19 +255,18 @@ public class MigratorIT {
     }
 
     private void doMigration() throws MigrationException, IOException {
-        final Migration migration = new Migration();
-        migration.setAdminUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
-        migration.setAdminPassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
-        migration.setDatabaseUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
-        migration.setDatabasePassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
-        migration.setChangeLog("changelog.xml");
+        final Migrator migrator = new Migrator();
+        migrator.setApplicationContext(m_context);
 
-        final Migrator m = new Migrator();
-        m.setDataSource(m_dataSource);
+        migrator.setAdminUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
+        migrator.setAdminPassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
+        migrator.setDatabaseUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
+        migrator.setDatabasePassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
+
+        migrator.setDataSource(m_dataSource);
 
         for (final Resource resource : getTestResources()) {
-            migration.setChangeLog(resource);
-            m.migrate(migration);
+            migrator.migrate(resource);
         }
     }
 
@@ -352,24 +381,45 @@ public class MigratorIT {
     }
 
     private List<Resource> getTestResources() throws IOException {
-        final List<Resource> resources = new ArrayList<>();
-        for (final Resource resource : m_context.getResources("classpath*:/changelog.xml")) {
-            URI uri = resource.getURI();
-            if (uri.getScheme().equals("file") && !uri.toString().contains("test-api/schema")) continue;
-            if (uri.getScheme().equals("jar") && !uri.toString().contains("test-api.schema")) continue;
-            resources.add(resource);
-        }
-        return resources;
+        return getChangelogs("test-api/schema");
     }
 
     private List<Resource> getRealChangelog() throws IOException {
+        return getChangelogs("core/schema");
+    }
+
+    private List<Resource> getChangelogs(String fileMatch) throws IOException {
+        String jarMatch = fileMatch.replace('/', '.');
         final List<Resource> resources = new ArrayList<>();
-        for (final Resource resource : m_context.getResources("classpath*:/changelog.xml")) {
+        for (final Resource resource : m_context.getResources(Migrator.LIQUIBASE_CHANGELOG_LOCATION_PATTERN)) {
             URI uri = resource.getURI();
-            if (uri.getScheme().equals("file") && !uri.toString().contains("core/schema")) continue;
-            if (uri.getScheme().equals("jar") && !uri.toString().contains("core.schema")) continue;
+            if (uri.getScheme().equals("file") && !uri.toString().contains(fileMatch)) continue;
+            if (uri.getScheme().equals("jar") && !uri.toString().contains(jarMatch)) continue;
             resources.add(resource);
         }
+
+        if (resources.isEmpty() ) {
+            fail("Couldn't find changelog.xml in this ApplicationContext ClassLoader hierarchy:\n" +
+                    Joiner.on("\n").join(getClassLoaderUrls(m_context)));
+        }
+
         return resources;
     }
+
+    private static Collection<String> getClassLoaderUrls(ApplicationContext context) {
+        List<String> urls = new LinkedList<String>();
+        for (ApplicationContext c = context; c != null; c = c.getParent()) {
+            for (ClassLoader l = c.getClassLoader(); l != null; l = l.getParent()) {
+                if (l instanceof URLClassLoader) {
+                    for (URL u : ((URLClassLoader)l).getURLs()) {
+                        urls.add(u.toString());
+                    }
+                } else {
+                    throw new RuntimeException("Couldn't get URLs for classloader " + l + ", not an instance of URLClassLoader. (This shouldn't happen.)");
+                }
+            }
+        }
+        return urls;
+    }
+
 }

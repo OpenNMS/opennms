@@ -411,24 +411,25 @@
         <thead>
             <tr>
                 <th class="divider" width="50em">Event</th>
-                <!-- <th class="divider" width="50em">Alarm ID</th> -->
-                <th width="200em">Creation Time</th>
                 <th class="divider" width="100em">Severity</th>
-                <th></th>
+                <th width="200em">Time</th>
+                <th class="divider">UEI</th>
             </tr>
         </thead>
         <tbody>
             <% for (final RelatedEvent entry : related) { %>
                 <tr class="severity-<%=entry.getSeverity().getLabel().toLowerCase()%>">
-                    <td>
+                    <td rowspan="2">
                         <% if (entry.getEventId() != 0) { %>
                             <a href="event/detail.jsp?id=<%= entry.getEventId() %>"><%= entry.getEventId() %></a>
                         <% } %>
                     </td>
-                    <!-- <td><%= entry.getAlarmId() %></td> -->
-                    <td><%= Util.formatDateToUIString(entry.getCreationTime()) %></td>
-                    <td><%= entry.getSeverity().getLabel() %></td>
-                    <td style="width: auto">&nbsp;</td>
+                    <td rowspan="2"><%= entry.getSeverity().getLabel() %></td>
+                    <td><onms:datetime date="<%= entry.getCreationTime() %>" /></td>
+                    <td style="width: auto"><%= entry.getUei() %></td>
+                </tr>
+                <tr class="severity-<%=entry.getSeverity().getLabel().toLowerCase()%>">
+                    <td colspan="2"><%= entry.getLogMessage() %></td>
                 </tr>
             <% } %>
         </tbody>

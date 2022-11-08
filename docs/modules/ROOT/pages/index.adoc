@@ -1,0 +1,59 @@
+
+[[welcome]]
+= Welcome to the {page-component-title} Documentation
+
+[options="autowidth"]
+|===
+|Version:     |{full-display-version}
+|Last update: |{docdatetime}
+|===
+
+OpenNMS {page-component-title} is an open source solution that helps you visualize and monitor everything on your local and remote networks.
+It offers comprehensive fault, performance, traffic monitoring, and alarm generation in one place.
+Highly customizable and scalable, {page-component-title} easily integrates with your core business applications and workflows.
+
+{page-component-title} bundles OpenNMS's core platform, Minion (remote distributed monitoring), Sentinel (scalability), and Newts (time-series database) technologies with other open source components:
+
+* Apache https://kafka.apache.org/[Kafka] or https://activemq.apache.org/[ActiveMQ] (message brokers)
+* https://www.postgresql.org/[PostgreSQL] (database)
+* https://www.elastic.co/elasticsearch/[Elasticsearch] (search and analytics engine)
+* Apache https://cassandra.apache.org/[Cassandra] (time-series data storage)
+* https://grafana.com/[Grafana] and https://www.elastic.co/kibana[Kibana] (for dashboard creation)
+
+to collect, present, and store network monitoring information.
+
+{page-component-title} collects data on the devices, interfaces, and services you define during provisioning.
+It triggers alarms when it detects a problem, and also stores the metrics it collects over a long period of time.
+Not only can you monitor and troubleshoot problems on your local and remote networks, you can also analyze trends and anticipate problems for better capacity management and network optimization. 
+
+The following shows a sample full stack {page-component-title} implementation:
+
+image::opennms-full-stack.png[]
+
+. OpenNMS core
+. Kafka message broker
+. PostgreSQL database
+. Elasticsearch
+. Apache Cassandra
+. Sentinel
+. Grafana
+. Kibana
+. Minions (at remote locations)
+
+See the xref:deployment:core/introduction.adoc#basic-deployment[Deployment] and xref:operation:overview/overview.adoc#overview[Operation] sections for more detail about these components.
+
+ifeval::["{page-component-title}" == "Horizon"]
+The OpenNMS Group also offers https://www.opennms.com/meridian/[Meridian], a subscription-based, more stable version of the platform with long-term support.
+endif::[]
+ifeval::["{page-component-title}" == "Meridian"]
+The OpenNMS Group also offers https://www.opennms.com/horizon/[Horizon], a fast-moving, features-first version of the platform with community support.
+endif::[]
+
+== Navigating the {page-component-title} Documentation
+
+The {page-component-title} documentation contains the following sections:
+
+* xref:deployment:core/introduction.adoc#basic-deployment[Deployment] (installation and setup of the core, Minion, and Sentinel)
+* xref:operation:overview/overview.adoc#overview[Operation] (setup, configuration, and use of the platform)
+* xref:development:development.adoc#development[Development] (information and procedures on setting up and using a development environment)
+* xref:reference:glossary.adoc#glossary[Reference] (glossary, code snippets, and other reference material)

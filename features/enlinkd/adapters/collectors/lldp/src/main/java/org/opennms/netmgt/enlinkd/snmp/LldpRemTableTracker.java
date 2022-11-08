@@ -34,7 +34,6 @@ import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
 import org.opennms.core.utils.LldpUtils.LldpPortIdSubType;
 import org.opennms.netmgt.enlinkd.model.LldpLink;
 import org.opennms.netmgt.snmp.AbstractSnmpValue;
-import org.opennms.netmgt.snmp.RowCallback;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpRowResult;
@@ -58,37 +57,37 @@ public class LldpRemTableTracker extends TableTracker {
 
     public static final SnmpObjId[] s_lldpremtable_elemList = new SnmpObjId[] {
         
-        /**
+        /*
          *  "The type of encoding used to identify the chassis associated
          *  with the remote system."
          */
         LLDP_REM_CHASSIS_ID_SUBTYPE,
         
-        /**
+        /*
          * "The string value used to identify the chassis component
          * associated with the remote system."
          */
        LLDP_REM_CHASSIS_ID,
 
-        /**
+        /*
          * "The type of port identifier encoding used in the associated
          * 'lldpRemPortId' object."
          */
         LLDP_REM_PORT_ID_SUBTYPE,
 
-        /**
+        /*
          * "The string value used to identify the port component
             associated with the remote system."
          */
         LLDP_REM_PORT_ID,
         
-        /**
+        /*
          * 	"The string value used to identify the description of 
          *  the given port associated with the remote system."
          */
         LLDP_REM_PORT_DESCR,
 
-        /**
+        /*
          * "The string value used to identify the port component
          * associated with the remote system."
          */
@@ -156,17 +155,13 @@ public class LldpRemTableTracker extends TableTracker {
                 else 
                     return lldpportid.toHexString();
             case LLDP_PORTID_SUBTYPE_MACADDRESS:
-                return lldpportid.toHexString();
+                return LldpLocalGroupTracker.decodeMacAddress(lldpportid);
             case LLDP_PORTID_SUBTYPE_NETWORKADDRESS:
                 LldpUtils.decodeNetworkAddress(lldpportid.toDisplayString());
            }
-        } catch (IllegalArgumentException iae) {
+        } catch (Exception iae) {
             iae.printStackTrace();
-        } catch (IndexOutOfBoundsException ioe) {
-            ioe.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } 
+        }
         return lldpportid.toHexString();
     }
 
@@ -177,12 +172,15 @@ public class LldpRemTableTracker extends TableTracker {
 			super(columnCount, instance);
             LOG.debug( "column count = {}, instance = {}", columnCount, instance);
 		}
-    	
+
 	    public Integer getLldpRemLocalPortNum() {
 	    	return getInstance().getSubIdAt(1);
 	    }
-	    
-	    public Integer getLldpRemChassisidSubtype() {
+        public Integer getLldpRemIndex() {
+            return getInstance().getSubIdAt(2);
+        }
+
+        public Integer getLldpRemChassisidSubtype() {
 	    	return getValue(LLDP_REM_CHASSIS_ID_SUBTYPE).toInt();
 	    }
 	    
@@ -211,7 +209,7 @@ public class LldpRemTableTracker extends TableTracker {
 	    public LldpLink getLldpLink() {
 
             LldpLink lldpLink = new LldpLink();
-            lldpLink.setLldpLocalPortNum(getLldpRemLocalPortNum());
+            lldpLink.setLldpLocalPortNum(getLldpRemIndex());
             lldpLink.setLldpRemChassisId(LldpLocalGroupTracker.decodeLldpChassisId(getLldpRemChassisId() , getLldpRemChassisidSubtype()));
             lldpLink.setLldpRemChassisIdSubType(LldpChassisIdSubType.get(getLldpRemChassisidSubtype()));
             lldpLink.setLldpRemSysname(getLldpRemSysname());
@@ -232,15 +230,6 @@ public class LldpRemTableTracker extends TableTracker {
 
     public LldpRemTableTracker() {
         super(s_lldpremtable_elemList);
-    }
-    
-    /**
-     * <p>Constructor for LldpRemTableTracker.</p>
-     *
-     * @param rowProcessor a {@link org.opennms.netmgt.snmp.RowCallback} object.
-     */
-    public LldpRemTableTracker(final RowCallback rowProcessor) {
-        super(rowProcessor, s_lldpremtable_elemList);
     }
     
     /** {@inheritDoc} */

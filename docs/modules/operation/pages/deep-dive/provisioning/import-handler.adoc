@@ -1,0 +1,7 @@
+
+[[import-handlers]]
+= Import Handlers
+
+{page-component-title} supports a number of import handlers to facilitate provisioning nodes from an external system (foreign source) into a requisition.
+
+See the xref:reference:provisioning/handlers/introduction.adoc[provisioning reference section] for information on supported handlers.

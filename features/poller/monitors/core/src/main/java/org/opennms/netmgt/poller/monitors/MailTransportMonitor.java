@@ -50,7 +50,6 @@ import org.opennms.javamail.JavaMailerException;
 import org.opennms.netmgt.config.mailtransporttest.JavamailProperty;
 import org.opennms.netmgt.config.mailtransporttest.ReadmailTest;
 import org.opennms.netmgt.config.mailtransporttest.SendmailTest;
-import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
@@ -73,7 +72,6 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @version $Id: $
  */
-@Distributable
 public class MailTransportMonitor extends AbstractServiceMonitor {
     private static final Logger LOG = LoggerFactory.getLogger(MailTransportMonitor.class);
 

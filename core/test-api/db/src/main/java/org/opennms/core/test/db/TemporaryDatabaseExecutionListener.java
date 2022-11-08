@@ -28,25 +28,12 @@
 
 package org.opennms.core.test.db;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-
-import javax.sql.DataSource;
-
 import org.junit.Test;
 import org.junit.internal.MethodSorter;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.db.HikariCPConnectionFactory;
 import org.opennms.core.db.XADataSourceFactory;
+import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 import org.springframework.test.annotation.DirtiesContext.HierarchyMode;
@@ -55,6 +42,11 @@ import org.springframework.test.context.TestExecutionListener;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.util.Assert;
+
+import javax.sql.DataSource;
+import java.lang.reflect.Method;
+import java.util.*;
+import java.util.concurrent.*;
 
 /**
  * This {@link TestExecutionListener} creates a temporary database and then
@@ -186,7 +178,7 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
         TemporaryDatabasePostgreSQL.failIfUnitTest();
 
         // Fire up a thread pool for each CPU to create test databases
-        ExecutorService pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+        ExecutorService pool = Executors.newFixedThreadPool(SystemProperties.getInteger("org.opennms.core.test-api.dbCreateThreads", Runtime.getRuntime().availableProcessors()));
 
         final JUnitTemporaryDatabase classJtd = testContext.getTestClass().getAnnotation(JUnitTemporaryDatabase.class);
 
@@ -307,6 +299,7 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
         if (methodName != null) {
             retval.setMethodName(methodName);
         }
+        retval.setPlpgsqlIplike(jtd.plpgsqlIplike());
         final StringBuilder b = new StringBuilder();
         if (jtd.useExistingDatabase() != null && !"".equals(jtd.useExistingDatabase())) {
             b.append("use existing database: " + jtd.useExistingDatabase() + " ");

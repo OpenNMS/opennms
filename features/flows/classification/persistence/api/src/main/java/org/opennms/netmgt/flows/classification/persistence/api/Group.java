@@ -84,7 +84,7 @@ public class Group {
     }
 
     public List<Rule> getRules() {
-        rules.sort(new RulePositionComparator());
+        rules.sort(RulePositionComparator.INSTANCE);
         return rules;
     }
 

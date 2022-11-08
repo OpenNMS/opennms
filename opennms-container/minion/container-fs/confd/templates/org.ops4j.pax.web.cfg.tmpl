@@ -1,0 +1,10 @@
+{{- /* Upon updating this file please ensure that the schema minion-config-schema.yml accurately reflects the keys that
+are used by this template. */ -}}
+#
+# DON'T EDIT THIS FILE :: GENERATED WITH CONFD
+#
+{{$jettyWebPath := "/jetty/web" -}}
+org.osgi.service.http.port={{getv (print $jettyWebPath "/port") "8181"}}
+org.ops4j.pax.web.listening.addresses={{getv (print $jettyWebPath "/host") "0.0.0.0"}}
+javax.servlet.context.tempdir=${karaf.data}/pax-web-jsp
+org.ops4j.pax.web.config.file=${karaf.etc}/jetty.xml

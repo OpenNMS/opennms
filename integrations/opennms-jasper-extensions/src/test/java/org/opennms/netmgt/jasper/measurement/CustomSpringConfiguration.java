@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.jrobin.core.RrdException;
+import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.dao.support.InterfaceSnmpResourceType;
 import org.opennms.netmgt.measurements.api.FetchResults;
@@ -43,8 +44,6 @@ import org.opennms.netmgt.measurements.impl.AbstractRrdBasedFetchStrategy;
 import org.opennms.netmgt.measurements.model.QueryMetadata;
 import org.opennms.netmgt.measurements.model.Source;
 import org.opennms.netmgt.model.OnmsAttribute;
-import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
@@ -111,13 +110,13 @@ public class CustomSpringConfiguration {
             }
 
             @Override
-            public OnmsResource getResourceForIpInterface(OnmsIpInterface ipInterface, OnmsLocationMonitor locationMonitor) {
+            public boolean deleteResourceById(ResourceId resourceId) {
                 throw new UnsupportedOperationException();
             }
 
             @Override
-            public boolean deleteResourceById(ResourceId resourceId) {
-                throw new UnsupportedOperationException();
+            public ResourceId getResourceId(CollectionResource resource, long nodeId) {
+                return null;
             }
         };
     }

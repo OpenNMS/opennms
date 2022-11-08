@@ -41,6 +41,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import com.google.common.base.Strings;
+
 /**
  * Represents a remote SNMP agent on a specific IPv4 interface.
  *
@@ -203,8 +205,14 @@ public class DefaultSnmpCollectionAgent extends DefaultCollectionAgent implement
     public Set<IfInfo> getSnmpInterfaceInfo(final IfResourceType type) {
         final Set<SnmpIfData> snmpIfData = getSnmpInterfaceData();
         final Set<IfInfo> ifInfos = new LinkedHashSet<IfInfo>(snmpIfData.size());
-        
+
         for (final SnmpIfData ifData : snmpIfData) {
+            if (Strings.isNullOrEmpty(ifData.getLabelForRRD())) {
+                LOG.warn("Unable to compute resource index for interface: {}. " +
+                        "Associated metrics will not be added to the CollectionSet and will not be considered" +
+                        " for persistence,thresholding or other processing.", ifData);
+                continue;
+            }
             ifInfos.add(new IfInfo(type, this, ifData));
         }
         

@@ -1,4 +1,5 @@
-#!/bin/bash -e
+#!/usr/bin/env bash
+set -e
 
 MYDIR=`dirname $0`
 TOPDIR=`cd $MYDIR; pwd`
@@ -13,7 +14,7 @@ export PATH="$TOPDIR/maven/bin:$JAVA_HOME/bin:$PATH"
 
 cd "$TOPDIR"
 
-BINARIES="expect rpmbuild rsync makensis"
+BINARIES="expect rpmbuild rsync"
 
 function exists() {
     which "$1" >/dev/null 2>&1
@@ -130,6 +131,13 @@ function version()
     head -n 1
 }
 
+function opa_version()
+{
+    grep '<opennmsApiVersion>' pom.xml | \
+    sed -e 's,^[^>]*>,,' -e 's,<.*$,,' -e 's,-[^-]*-SNAPSHOT$,,' -e 's,-SNAPSHOT$,,' -e 's,-testing$,,' -e 's,-,.,g' | \
+    head -n 1
+}
+
 function skipCompile()
 {
     if $ASSEMBLY_ONLY; then echo 1; else echo 0; fi
@@ -152,6 +160,7 @@ function main()
     BUILD_RPM=true
     PACKAGE_NAME="opennms"
     PACKAGE_DESCRIPTION="OpenNMS"
+
 
     RELEASE_MAJOR=0
     local RELEASE_MINOR="$(calcMinor)"
@@ -200,6 +209,8 @@ function main()
     EXTRA_INFO=$(extraInfo)
     EXTRA_INFO2=$(extraInfo2)
     VERSION=$(version)
+    OPA_VERSION=$(opa_version)
+    
 
     if $BUILD_RPM; then
         if [ "$SPECS" == "" ]; then
@@ -218,6 +229,7 @@ function main()
         echo "Version: " $VERSION
         echo "Release: " $RELEASE
         echo "Specs  : " $SPECS
+        echo "OPA VERSION: " $OPA_VERSION
         echo
 
         echo "=== Creating Working Directories ==="
@@ -248,6 +260,7 @@ function main()
                 --define "releasenumber $RELEASE" \
                 --define "_name $PACKAGE_NAME" \
                 --define "_descr $PACKAGE_DESCRIPTION" \
+                --define "opa_version $OPA_VERSION" \
                 $spec || die "failed to build $spec"
         done
     fi

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -46,33 +46,6 @@ public class ChooseResourcesPageIT extends OpenNMSSeleniumIT {
 
     /** The Constant LOG. */
     private static final Logger LOG = LoggerFactory.getLogger(ChooseResourcesPageIT.class);
-
-    // See NMS-8886
-    @Test
-    @Ignore
-    public void verifyGraphAll() throws Exception {
-        try {
-            // INITIALIZE
-            String requisitionXML = "<model-import foreign-source=\"" + OpenNMSSeleniumIT.REQUISITION_NAME + "\">" +
-                    "   <node foreign-id=\"localhost\" node-label=\"localhost\">" +
-                    "       <interface ip-addr=\"127.0.0.1\" status=\"1\" snmp-primary=\"N\">" +
-                    "           <monitored-service service-name=\"OpenNMS-JVM\"/>" +
-                    "       </interface>" +
-                    "   </node>" +
-                    "</model-import>";
-            createRequisition(REQUISITION_NAME, requisitionXML, 1);
-            driver.get(getBaseUrlInternal() + "opennms/element/node.jsp?node=SeleniumTestGroup:localhost");
-
-            // VERIFY
-            findElementByLink("Resource Graphs").click();
-            wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(), \"Graph All\")]")));
-            findElementByXpath("//button[contains(text(), \"Graph All\")]").click();
-            Assert.assertTrue("There should be graphs visible, but could not find any", !driver.findElements(By.xpath("//div[@id='graph-results']//div[@class='graph-container']")).isEmpty());
-        } finally {
-            // CLEANUP
-            deleteTestRequisition();
-        }
-    }
 
     @Test
     public void verifyShowsNoResourcesBanner() throws Exception {

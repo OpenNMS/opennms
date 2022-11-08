@@ -1,0 +1,7 @@
+
+[[ga-events-sources-of-events]]
+= Sources of Events
+
+Events may originate within {page-component-title} itself or from outside.
+
+Internally-generated events can be the result of the platform's monitoring and management functions (for example, a monitored node becoming  unavailable, resulting in an event with the UEI `uei.opennms.org/nodes/nodeDown`) or they may act as inputs or outputs of housekeeping processes.

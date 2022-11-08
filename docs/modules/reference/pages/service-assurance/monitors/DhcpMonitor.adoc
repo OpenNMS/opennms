@@ -1,0 +1,118 @@
+
+= DhcpMonitor
+
+Use this monitor to check the availability and functionality of DHCP servers.
+The DhcpMonitor is run by Pollerd and opens a background process to listen for incoming DHCP responses.
+A DHCP server is tested by sending a DISCOVER message.
+If the DHCP server responds with an OFFER, the service is marked as up.
+The background listening process is started only if the DhcpMonitor is used.
+
+CAUTION: Make sure no DHCP client is running on the {page-component-title} server and using port UDP/67 and UDP/68.
+         If UDP/67 and UDP/68 are already in use, you will find warning messages in your log files.
+         You can test if a process is listening on UDP/68 with `sudo ss -lnpu sport = :68`.
+
+NOTE: The use of the DhcpMonitor previously required the installation of an additional package.
+The functionality of this additional plugin has been rolled into the core {page-component-title} service and is no longer a separate install.
+
+== Monitor facts
+
+[cols="1,7"]
+|===
+| Class Name
+| `org.opennms.netmgt.poller.monitors.DhcpMonitor`
+|===
+
+This monitor implements the <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+== DhcpMonitor configuration
+
+.Optional DhcpMonitor parameters in poller-configuration.xml.
+[options="header"]
+[cols="1,3,1"]
+|===
+| Parameter
+| Description
+| Default
+
+| macAddress
+| The MAC address that {page-component-title} uses for a DHCP request.
+| 00:06:0D:BE:9C:B2
+
+| relayMode
+| Puts the poller in relay mode.
+| false
+
+| myIpAddress
+| This parameter will usually be set to the IP address of the {page-component-title} server, if relayMode is set to true.
+In relay mode, the DHCP server being polled will unicast its responses directly back to the IP address specified by myIpAddress rather than broadcasting its responses.
+This lets DHCP servers be polled even though they are not on the same subnet as the {page-component-title} server, and without the aid of an external relay.
+| 127.0.0.1
+
+| extendedMode
+| When extendedMode is false, the DHCP poller sends a DISCOVER and expects an OFFER in return.
+When extendedMode is true, the DHCP poller first sends a DISCOVER.
+If it receives no valid response it sends an INFORM.
+If that returns no valid response, it sends a REQUEST.
+OFFER, ACK, and NAK are all considered valid responses in extendedMode.
+| false
+
+| requestIpAddress
+| This parameter applies only to REQUEST queries sent to the DHCP server when extendedMode is true.
+The query requests the specified IP address.
+| 127.0.0.1
+
+|===
+
+.Visualization of DHCP message flow in broadcast mode
+image::service-assurance/monitors/02_01_dhcp-monitor-messages-broadcast.png[]
+
+.Visualization of DHCP message flow in relay mode
+image::service-assurance/monitors/02_02_dhcp-monitor-messages-unicast.png[]
+
+== Example: testing DHCP server in the same subnet
+
+Example configuration on how to configure the monitor in `poller-configuration.xml`.
+The monitor tries to send a maximum of three DISCOVER messages and waits three seconds for the DHCP server OFFER message.
+
+Examples use CentOS/RHEL path name.
+For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
+
+.Configure a DHCP service in `poller-configuration.xml`
+[source, xml]
+----
+<service name="DHCP" interval="300000" user-defined="false" status="on">
+ <parameter key="retry" value="2" />
+ <parameter key="timeout" value="3000" />
+ <parameter key="relayMode" value="false"/>
+ <parameter key="extendedMode" value="false"/>
+ <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response" />
+ <parameter key="rrd-base-name" value="dhcp" />
+ <parameter key="ds-name" value="dhcp" />
+</service>
+
+<monitor service="DHCP" class-name="org.opennms.netmgt.poller.monitors.DhcpMonitor"/>
+----
+
+== Example: testing DHCP server in a different subnet in extended mode
+
+You can use the same monitor in `poller-configuration.xml` as in the above example.
+
+.Configure DhcpMonitor to test DHCP server in a different subnet. The OFFER from the DHCP server is sent to myIpAddress.
+[source, xml]
+----
+<service name="DHCP" interval="300000" user-defined="false" status="on">
+ <parameter key="retry" value="2" />
+ <parameter key="timeout" value="3000" />
+ <parameter key="relayMode" value="true"/>
+ <parameter key="extendedMode" value="false"/>
+ <parameter key="myIpAddress" value="1.2.3.4"/>
+ <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response" />
+ <parameter key="rrd-base-name" value="dhcp" />
+ <parameter key="ds-name" value="dhcp" />
+</service>
+
+<monitor service="DHCP" class-name="org.opennms.netmgt.poller.monitors.DhcpMonitor"/>
+----
+
+NOTE: If in extendedMode, the time required to complete the poll for an unresponsive node increases by a factor of three.
+      It is a good idea to limit the number of retries to a small number.

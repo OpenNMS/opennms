@@ -34,6 +34,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +49,7 @@ import com.google.common.base.MoreObjects;
 public class ListenerConfig implements ListenerDefinition {
 
     @XmlAttribute(name="name", required=true)
+    @XmlID
     private String name;
 
     @XmlAttribute(name="class-name", required=true)

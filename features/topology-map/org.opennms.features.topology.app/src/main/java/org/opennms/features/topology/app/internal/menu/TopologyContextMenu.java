@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -98,7 +98,7 @@ public class TopologyContextMenu extends ContextMenu {
 				this.addItem(
 					eachItem.getText(),
 					eachItem.getIcon(),
-					(Command) selectedItem -> {
+					(MenuBar.Command) selectedItem -> {
 						if (eachItem.getCommand() != null) {
 							eachItem.getCommand().menuSelected(eachItem);
 						}
@@ -106,14 +106,14 @@ public class TopologyContextMenu extends ContextMenu {
 		}
 	}
 
-	private void addItems(ItemAddBehaviour<com.vaadin.contextmenu.MenuItem> behaviour, MenuBar.MenuItem child) {
-		com.vaadin.contextmenu.MenuItem contextMenuItem = behaviour.addItem();
+	private void addItems(ItemAddBehaviour<MenuBar.MenuItem> behaviour, MenuBar.MenuItem child) {
+		MenuBar.MenuItem contextMenuItem = behaviour.addItem();
 		contextMenuItem.setEnabled(child.isEnabled());
 		if (child.isSeparator()) {
 			contextMenuItem.addSeparator();
 		}
 		if (child.getCommand() != null) {
-			contextMenuItem.setCommand((Command) contextMenuItemClickEvent -> child.getCommand().menuSelected(child));
+			contextMenuItem.setCommand((MenuBar.Command) contextMenuItemClickEvent -> child.getCommand().menuSelected(child));
 		}
 		if (child.hasChildren()) {
 			for (MenuBar.MenuItem eachChild : child.getChildren()) {
@@ -121,7 +121,7 @@ public class TopologyContextMenu extends ContextMenu {
 						contextMenuItem.addItem(
 								eachChild.getText(),
 								eachChild.getIcon(),
-								(Command) selectedItem -> {
+								(MenuBar.Command) selectedItem -> {
 									if (eachChild.getCommand() != null) {
 										eachChild.getCommand().menuSelected(eachChild);
 									}

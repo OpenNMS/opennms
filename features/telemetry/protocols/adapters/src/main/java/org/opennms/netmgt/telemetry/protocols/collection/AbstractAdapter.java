@@ -31,17 +31,16 @@ package org.opennms.netmgt.telemetry.protocols.collection;
 import static com.codahale.metrics.MetricRegistry.name;
 
 import java.util.Objects;
-import java.util.stream.Stream;
 
 import org.opennms.netmgt.telemetry.api.adapter.Adapter;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLog;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLogEntry;
 import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
-import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.codahale.metrics.Histogram;
+import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 
@@ -58,6 +57,8 @@ public abstract class AbstractAdapter implements Adapter {
      */
     protected final Histogram packetsPerLogHistogram;
 
+    private final Meter recordsConsumed;
+
     /**
      * A single instance of an adapter will only be responsible for this one config
      */
@@ -69,8 +70,9 @@ public abstract class AbstractAdapter implements Adapter {
 
         Objects.requireNonNull(metricRegistry);
 
-        this.logParsingTimer = metricRegistry.timer(name("adapters", adapterConfig.getName(), "logParsing"));
-        this.packetsPerLogHistogram = metricRegistry.histogram(name("adapters", adapterConfig.getName(), "packetsPerLog"));
+        this.logParsingTimer = metricRegistry.timer(name("adapters", adapterConfig.getFullName(), "logParsing"));
+        this.packetsPerLogHistogram = metricRegistry.histogram(name("adapters", adapterConfig.getFullName(), "packetsPerLog"));
+        this.recordsConsumed = metricRegistry.meter(name("adapters", adapterConfig.getFullName(), "recordsConsumed"));
     }
 
     public abstract void handleMessage(TelemetryMessageLogEntry message, TelemetryMessageLog messageLog);
@@ -82,6 +84,7 @@ public abstract class AbstractAdapter implements Adapter {
                 this.handleMessage(message, messageLog);
             }
             packetsPerLogHistogram.update(messageLog.getMessageList().size());
+            recordsConsumed.mark(messageLog.getMessageList().size());
         }
     }
 

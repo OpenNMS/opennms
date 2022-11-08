@@ -92,7 +92,6 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
-        "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-pinger.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
@@ -184,7 +183,7 @@ public abstract class AbstractSnmpCollectorIT implements InitializingBean, TestC
         collector.initialize();
 
         m_collectionSpecification = CollectorTestUtils.createCollectionSpec("SNMP", collector, "default",
-                m_pollOutagesDao);
+                m_pollOutagesDao, collector.getClass().getCanonicalName());
         m_collectionAgent = DefaultSnmpCollectionAgent.create(iface.getId(), m_ipInterfaceDao, m_transactionManager);
         m_agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.getLocalHostAddress());
     }
@@ -573,5 +572,65 @@ public abstract class AbstractSnmpCollectorIT implements InitializingBean, TestC
     @Override
     public void setTestContext(TestContext context) {
         m_context = context;
+    }
+
+    @Test
+    @Transactional
+    @JUnitCollector(
+            datacollectionConfig = "/org/opennms/netmgt/config/datacollection-config-value-mapping.xml",
+            datacollectionType = "snmp",
+            anticipateRrds={
+                    "1/the-instance/1/wordGauge",
+                    "1/the-instance/2/wordGauge",
+                    "1/the-instance/3/wordGauge",
+                    "1/the-instance/4/wordGauge",
+                    "1/the-instance/5/wordGauge",
+                    "1/the-instance/6/wordGauge",
+                    "1/the-instance/7/wordGauge",
+                    "1/the-instance/8/wordGauge",
+                    "1/the-instance/9/wordGauge",
+                    "1/the-instance/10/wordGauge",
+                    "1/the-instance/11/wordGauge",
+                    "1/the-instance/12/wordGauge",
+                    "1/the-instance/13/wordGauge"
+            }
+    )
+    @JUnitSnmpAgent(resource = "/org/opennms/netmgt/snmp/brocadeTestData1.properties")
+    public void testNMS14084() throws Exception {
+        final int numUpdates = 2;
+        final int stepSizeInSecs = 1;
+        final int stepSizeInMillis = stepSizeInSecs * 1000;
+        final int rangeSizeInMillis = stepSizeInMillis + 20000;
+        CollectorTestUtils.collectNTimes(m_rrdStrategy, m_resourceStorageDao, m_collectionSpecification, m_collectionAgent, numUpdates);
+        checkValueMapping("1", 10.0, stepSizeInMillis, rangeSizeInMillis);
+        checkValueMapping("2", 20.0, stepSizeInMillis, rangeSizeInMillis);
+        checkValueMapping("3", 30.0, stepSizeInMillis, rangeSizeInMillis);
+        checkValueMapping("4", 40.0, stepSizeInMillis, rangeSizeInMillis);
+        checkValueMapping("5", 1000.0, stepSizeInMillis, rangeSizeInMillis);
+        checkValueMapping("6", 100.0, stepSizeInMillis, rangeSizeInMillis);
+        checkValueMapping("7", 200.0, stepSizeInMillis, rangeSizeInMillis);
+        checkValueMapping("8", 300.0, stepSizeInMillis, rangeSizeInMillis);
+        checkValueMapping("9", 400.0, stepSizeInMillis, rangeSizeInMillis);
+        checkValueMapping("10", 500.0, stepSizeInMillis, rangeSizeInMillis);
+        checkValueMapping("11", 1000.0, stepSizeInMillis, rangeSizeInMillis);
+        checkValueMapping("12", 1000.0, stepSizeInMillis, rangeSizeInMillis);
+        checkValueMapping("13", 1000.0, stepSizeInMillis, rangeSizeInMillis);
+    }
+
+    private void checkValueMapping(final String instance, final double value, final int stepSize, final int rangeSize) throws Exception {
+        assertEquals(value,
+                m_rrdStrategy.fetchLastValueInRange(
+                        m_resourceStorageDao.getRrdDirectory()
+                                .toPath()
+                            .resolve("snmp")
+                            .resolve("1")
+                            .resolve("the-instance")
+                            .resolve(instance)
+                            .resolve("wordGauge.jrb")
+                            .toString(),
+                    "wordGauge",
+                        stepSize,
+                        rangeSize),
+                0.0);
     }
 }

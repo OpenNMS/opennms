@@ -42,7 +42,7 @@ public class EventTextFilter extends OrFilter {
 
     @Override
     public String getTextDescription() {
-        return ("event text containing \"" + value + "\"");
+        return ("Event text containing \"" + value + "\"");
     }
 
     @Override

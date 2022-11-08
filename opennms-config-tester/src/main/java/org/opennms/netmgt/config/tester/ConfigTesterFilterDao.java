@@ -73,6 +73,11 @@ public class ConfigTesterFilterDao implements FilterDao {
         return new HashMap<InetAddress, Set<String>>();
     }
 
+    @Override
+    public Map<Integer, Map<InetAddress, Set<String>>> getNodeIPAddressServiceMap(String rule) throws FilterParseException {
+        return new HashMap<>();
+    }
+
     /* (non-Javadoc)
      * @see org.opennms.netmgt.filter.api.FilterDao#flushActiveIpAddressListCache()
      */

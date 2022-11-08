@@ -32,6 +32,7 @@ package org.opennms.netmgt.snmpinterfacepoller;
 import org.apache.commons.lang.StringUtils;
 import org.opennms.core.network.IPAddress;
 import org.opennms.core.network.IPAddressRange;
+import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.config.SnmpEventInfo;
 import org.opennms.netmgt.config.SnmpInterfacePollerConfig;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
@@ -48,6 +49,8 @@ import org.opennms.netmgt.snmpinterfacepoller.pollable.PollableNetwork;
 import org.opennms.netmgt.snmpinterfacepoller.pollable.PollableSnmpInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.*;
 
 /**
  * SnmpPoller daemon class
@@ -246,8 +249,7 @@ public class SnmpPoller extends AbstractServiceDaemon {
     /**
      * <p>schedulePollableInterface</p>
      *
-     * @param nodeid a int.
-     * @param ipaddress a {@link java.lang.String} object.
+     * @param iface a {@link org.opennms.netmgt.model.OnmsIpInterface} object.
      */
     protected void schedulePollableInterface(OnmsIpInterface iface) {
         String ipaddress = iface.getIpAddress().getHostAddress();
@@ -294,8 +296,18 @@ public class SnmpPoller extends AbstractServiceDaemon {
                 int maxVarsPerPdu = -1;
                 if (hasMaxVarsPerPdu) maxVarsPerPdu = getPollerConfig().getMaxVarsPerPdu(pkgName, pkgInterfaceName);
 
-                PollableSnmpInterface node = nodeGroup.createPollableSnmpInterface(location, pkgInterfaceName,
-                        criteria, port != -1, port, timeout != -1, timeout, retries != -1, retries, hasMaxVarsPerPdu, maxVarsPerPdu);
+                LOG.debug("package interface up-values: {}", getPollerConfig().getUpValues(pkgName, pkgInterfaceName));
+                LOG.debug("package interface down-values: {}", getPollerConfig().getDownValues(pkgName, pkgInterfaceName));
+                LOG.debug("package up-values: {}", getPollerConfig().getUpValues());
+                LOG.debug("package down-values: {}", getPollerConfig().getDownValues());
+                int[] upValues = statusValuesFromString(getPollerConfig().getUpValues(pkgName, pkgInterfaceName)
+                        , new int[]{1});
+                int[] downValues = statusValuesFromString(getPollerConfig().getDownValues(pkgName, pkgInterfaceName)
+                        , new int[]{2});
+
+                PollableSnmpInterface node = nodeGroup.createPollableSnmpInterface(location, pkgInterfaceName, 
+                        criteria, port != -1, port, timeout != -1, timeout, retries != -1, retries, hasMaxVarsPerPdu, maxVarsPerPdu,
+                        upValues, downValues);
 
                 node.setSnmpinterfaces(getNetwork().getContext().get(node.getParent().getNodeid(), criteria));
 
@@ -307,12 +319,20 @@ public class SnmpPoller extends AbstractServiceDaemon {
         if (!getPollerConfig().useCriteriaFilters()) {
             LOG.debug("excluding criteria used for default polling: {}", excludingCriteria);
             PollableSnmpInterface node = nodeGroup.createPollableSnmpInterface(location, "null",
-                    excludingCriteria, false, -1, false, -1, false, -1, false, -1);
+                    excludingCriteria, false, -1, false, -1, false, -1, false, -1,
+                    statusValuesFromString(getPollerConfig().getUpValues(), new int[]{1}),
+                    statusValuesFromString(getPollerConfig().getDownValues(), new int[]{2}));
 
             node.setSnmpinterfaces(getNetwork().getContext().get(node.getParent().getNodeid(), excludingCriteria));
 
             getNetwork().schedule(node,getPollerConfig().getInterval(),getScheduler());
         }
+    }
+
+    private int[] statusValuesFromString(String str, int[] defValues) {
+        Map map = new HashMap<String, String>(1);
+        map.put("values", str);
+        return ParameterMap.getKeyedIntegerArray(map, "values", defValues);
     }
     
     private void createScheduler() {
@@ -328,7 +348,7 @@ public class SnmpPoller extends AbstractServiceDaemon {
             throw e;
         }
     }
-    
+
     /**
      * <p>reloadSnmpConfig</p>
      *

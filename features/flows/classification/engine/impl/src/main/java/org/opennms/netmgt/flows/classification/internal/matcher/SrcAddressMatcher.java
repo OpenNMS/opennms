@@ -28,8 +28,13 @@
 
 package org.opennms.netmgt.flows.classification.internal.matcher;
 
+import org.opennms.netmgt.flows.classification.internal.value.IpValue;
+
 public class SrcAddressMatcher extends IpMatcher {
-    public SrcAddressMatcher(String input) {
+    public SrcAddressMatcher(IpValue input) {
         super(input, (request) -> request.getSrcAddress());
+    }
+    public SrcAddressMatcher(String input) {
+        this(IpValue.of(input));
     }
 }

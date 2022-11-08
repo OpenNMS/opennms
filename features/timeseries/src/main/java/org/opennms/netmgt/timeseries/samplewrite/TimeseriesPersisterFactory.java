@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.timeseries.samplewrite;
 
-import java.util.Map;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -36,6 +36,7 @@ import javax.inject.Named;
 import org.opennms.core.cache.Cache;
 import org.opennms.core.cache.CacheBuilder;
 import org.opennms.core.cache.CacheConfig;
+import org.opennms.integration.api.v1.timeseries.Tag;
 import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.collection.api.ServiceParameters;
@@ -43,6 +44,11 @@ import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.rrd.RrdRepository;
 
 import com.codahale.metrics.MetricRegistry;
+import org.opennms.netmgt.timeseries.TimeseriesStorageManager;
+import org.opennms.netmgt.timeseries.stats.StatisticsCollector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Factory for {@link TimeseriesPersister}.
@@ -50,20 +56,30 @@ import com.codahale.metrics.MetricRegistry;
  * @author jwhite
  */
 public class TimeseriesPersisterFactory implements PersisterFactory {
+    private static final Logger LOG = LoggerFactory.getLogger(TimeseriesPersisterFactory.class);
 
     private final TimeseriesWriter timeseriesWriter;
     private final MetaTagDataLoader metaTagDataLoader;
-    private final Cache<ResourcePath, Map<String, String>> metaCache;
+    private final Cache<ResourcePath, Set<Tag>> configuredAdditionalMetaTagCache;
     private final MetricRegistry registry;
 
     @Inject
-    public TimeseriesPersisterFactory(final TimeseriesWriter timeseriesWriter,
-                                      final MetaTagDataLoader metaTagDataLoader,
+    public TimeseriesPersisterFactory(final MetaTagDataLoader metaTagDataLoader,
+                                      final StatisticsCollector stats,
+                                      @Named("timeseriesStorageManager") final TimeseriesStorageManager timeseriesStorageManager,
                                       @Named("timeseriesPersisterMetaTagCache") final CacheConfig cacheConfig,
-                                      @Named("timeseriesMetricRegistry") MetricRegistry registry) {
-        this.timeseriesWriter = timeseriesWriter;
+                                      @Named("timeseriesMetricRegistry") MetricRegistry registry,
+                                      @Named("timeseriesWriterConfig") TimeseriesWriterConfig timeseriesWriterConfig) {
+        if (timeseriesWriterConfig.getBufferType() == TimeseriesWriterConfig.BufferType.OFFHEAP) {
+            this.timeseriesWriter = new OffheapTimeSeriesWriter(timeseriesStorageManager,timeseriesWriterConfig, registry);
+        } else {
+            this.timeseriesWriter = new RingBufferTimeseriesWriter(timeseriesStorageManager, stats, timeseriesWriterConfig.getBufferSize(),
+                    timeseriesWriterConfig.getNumWriterThreads(), registry);
+        }
+        LOG.info("Writer: {}", this.timeseriesWriter);
+
         this.metaTagDataLoader = metaTagDataLoader;
-        this.metaCache = new CacheBuilder<>()
+        this.configuredAdditionalMetaTagCache = new CacheBuilder<>()
                 .withConfig(cacheConfig)
                 .withCacheLoader(metaTagDataLoader)
                 .build();
@@ -77,11 +93,17 @@ public class TimeseriesPersisterFactory implements PersisterFactory {
 
     @Override
     public Persister createPersister(ServiceParameters params, RrdRepository repository, boolean dontPersistCounters,
-            boolean forceStoreByGroup, boolean dontReorderAttributes) {
+                                     boolean forceStoreByGroup, boolean dontReorderAttributes) {
         // We ignore the forceStoreByGroup flag since we always store by group, and we ignore
         // the dontReorderAttributes flag since attribute order does not matter
-        TimeseriesPersister persister =  new TimeseriesPersister(params, repository, timeseriesWriter, metaTagDataLoader, metaCache, registry);
+        TimeseriesPersister persister = new TimeseriesPersister(params, repository, timeseriesWriter, metaTagDataLoader, configuredAdditionalMetaTagCache, registry);
         persister.setIgnorePersist(dontPersistCounters);
         return persister;
+    }
+
+    public void destroy() {
+        if (timeseriesWriter != null) {
+            timeseriesWriter.destroy();
+        }
     }
 }

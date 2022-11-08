@@ -111,6 +111,8 @@ public class DefaultGraphSearchService implements GraphSearchService {
     }
 
     public void onUnbind(SearchProvider graphSearchProvider, Map<String, String> props) {
-        graphSearchProviders.remove(graphSearchProvider.getProviderId());
+        if (graphSearchProvider != null) {
+            graphSearchProviders.remove(graphSearchProvider.getProviderId());
+        }
     }
 }

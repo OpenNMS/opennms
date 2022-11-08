@@ -29,6 +29,8 @@
 package org.opennms.netmgt.dnsresolver.netty;
 
 import java.net.InetAddress;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
@@ -43,6 +45,8 @@ import org.opennms.core.utils.InetAddressUtils;
 
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 
+import static org.opennms.core.health.api.HealthCheckConstants.LOCAL;
+
 public class NettyDnsHealthCheck implements HealthCheck {
 
     private final NettyDnsResolver dnsResolver;
@@ -54,6 +58,11 @@ public class NettyDnsHealthCheck implements HealthCheck {
     @Override
     public String getDescription() {
         return "DNS Lookups (Netty)";
+    }
+
+    @Override
+    public List<String> getTags() {
+        return Arrays.asList(LOCAL);
     }
 
     @Override

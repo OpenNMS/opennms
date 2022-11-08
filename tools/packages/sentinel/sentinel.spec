@@ -18,7 +18,7 @@
 %{!?_descr:%define _descr OpenNMS}
 %{!?packagedir:%define packagedir %{_name}-%version-%{releasenumber}}
 
-%{!?_java:%define _java java-1.8.0-openjdk-devel}
+%{!?_java:%define _java java-11-openjdk-devel}
 
 %{!?extrainfo:%define extrainfo %{nil}}
 %{!?extrainfo2:%define extrainfo2 %{nil}}
@@ -51,11 +51,12 @@ Group:         Applications/System
 BuildArch:     noarch
 
 Source:        %{_name}-source-%{version}-%{releasenumber}.tar.gz
-URL:           http://www.opennms.org/wiki/Sentinel
+URL:            https://docs.opennms.com/horizon/latest/deployment/sentinel/introduction.html
 BuildRoot:     %{_tmppath}/%{name}-%{version}-root
 
-BuildRequires:	%{_java}
-BuildRequires:	libxslt
+# don't worry about buildrequires, the shell script will bomb quick  =)
+#BuildRequires:	%{_java}
+#BuildRequires:	libxslt
 
 Requires:       openssh
 Requires(post): util-linux
@@ -67,6 +68,7 @@ Requires(pre):  /sbin/nologin
 Requires:       /sbin/nologin
 Requires:       /usr/bin/id
 Requires:       /usr/bin/sudo
+Provides:	opennms-plugin-api = %{opa_version}
 Recommends:	haveged
 
 Prefix:        %{sentinelinstprefix}
@@ -76,7 +78,7 @@ OpenNMS Sentinel is a container for running a subset of OpenNMS
 services in a standalone container, suitable for horizontally
 scaling some subsystems, like flow telemetry processing.
 
-http://www.opennms.org/wiki/Sentinel
+https://docs.opennms.com/horizon/latest/deployment/sentinel/introduction.html
 
 %{extrainfo}
 %{extrainfo2}
@@ -134,6 +136,13 @@ install -c -m 644 "%{buildroot}%{sentinelinstprefix}/etc/sentinel.service" "%{bu
 # move sentinel.conf to the sysconfig dir
 install -d -m 755 %{buildroot}%{_sysconfdir}/sysconfig
 mv "%{buildroot}%{sentinelinstprefix}/etc/sentinel.conf" "%{buildroot}%{_sysconfdir}/sysconfig/sentinel"
+
+# fix the permissions-fixing scripts
+sed -i \
+    -e 's,OPENNMS_HOME,SENTINEL_HOME,g' \
+    -e 's,opennms,sentinel,g' \
+    '%{buildroot}%{sentinelinstprefix}/bin/fix-permissions' \
+    '%{buildroot}%{sentinelinstprefix}/bin/update-package-permissions'
 
 # sentinel package files
 find %{buildroot}%{sentinelinstprefix} ! -type d | \
@@ -212,6 +221,8 @@ fi
 
 # Set up ICMP for non-root users
 "${ROOT_INST}/bin/ensure-user-ping.sh" "sentinel" >/dev/null 2>&1 || echo "WARNING: Unable to enable ping by the 'sentinel' user. If you intend to run ping-related commands from the Sentinel container without running as root, try running ${ROOT_INST}/bin/ensure-user-ping.sh manually."
+
+"${ROOT_INST}/bin/update-package-permissions" "%{name}"
 
 %preun -p /bin/bash
 ROOT_INST="${RPM_INSTALL_PREFIX0}"

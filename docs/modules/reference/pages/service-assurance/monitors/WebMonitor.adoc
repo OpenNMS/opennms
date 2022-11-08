@@ -1,0 +1,95 @@
+
+= WebMonitor
+
+WebMonitor is a clone of <<service-assurance/monitors/HttpMonitor.adoc#poller-http-monitor, HttpMonitor>>, that uses a different underlying library for doing HTTP connections.
+WebMonitor uses Apache HttpClient, which acts more like a real browser (follows redirects, and so on) than HttpMonitor.
+
+== Monitor facts
+
+[cols="1,7"]
+|===
+| Class Name
+| `org.opennms.netmgt.poller.monitors.WebMonitor`
+|===
+
+== Configuration and use
+
+.Optional configuration parameters
+[options="header"]
+[cols="2,3,2"]
+|===
+| Parameter
+| Description
+| Default
+
+| use-system-proxy kbd:[{}]
+| Specifies that system-wide proxy settings be used.
+| false
+
+| scheme
+| Protocol/scheme to use.
+| http, https
+
+| port
+| The port to connect to.
+| 80
+
+| path
+| The path of the URL to request (for example, `/store/index.html`).
+| n/a
+
+| queryString
+| The query string to add to the URL after a `?` (for example, foo=bar&baz=zot).
+| n/a
+
+| timeout
+| The connection/socket timeout in milliseconds.
+| 3000
+
+| user-agent
+| The User-Agent: header to send.
+| OpenNMS WebMonitor
+
+| virtual-host
+| The Host: header to send.
+| n/a
+
+| http-1.0
+| True/false whether to use HTTP 1.0 or 1.1.
+| false
+
+| header_#header#-value
+| Additional headers to include in the request.
+The parameter name should match a regular expressions of `header_[0-9]+$`
+| n/a
+
+| use-ssl-filter
+| Defaults to false. If true, it will trust self-signed certificates.
+| false
+
+| auth-enabled
+| Whether to enable basic authentication.
+| n/a
+
+| auth-user
+| The username for basic authentication.
+| n/a
+
+| auth-password
+| The password
+| n/a
+
+| auth-preemptive
+| Whether to send basic authentication even if the site did not ask for it.
+| true
+
+| response-text
+| The response text to look for.
+| n/a
+
+| response-range
+| What HTTP status ranges are considered success.
+| 100-399
+|===
+
+kbd:[{}] _indicates the parameter supports <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution>>._

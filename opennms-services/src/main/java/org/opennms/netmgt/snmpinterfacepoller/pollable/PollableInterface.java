@@ -35,6 +35,7 @@ import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
@@ -59,7 +60,7 @@ public class PollableInterface {
     private Map<String, PollableSnmpInterface> m_pollablesnmpinterface;
 
     private String m_packageName;
-    
+
     private boolean polling = true;
     
     /**
@@ -154,13 +155,16 @@ public class PollableInterface {
    * @param maxVarsPerPdu a int.
    * @return a {@link org.opennms.netmgt.snmpinterfacepoller.pollable.PollableSnmpInterface} object.
    */
-  public PollableSnmpInterface createPollableSnmpInterface(String location, String name, String criteria, boolean hasPort,
-                                                           int port, boolean hasTimeout, int timeout, boolean hasRetries, int retries,
-                                                           boolean hasMaxVarsPerPdu, int maxVarsPerPdu) {
+  public PollableSnmpInterface createPollableSnmpInterface(String location, String name, String criteria, boolean hasPort, 
+                                                           int port, boolean hasTimeout, int timeout, boolean hasRetries, int retries, 
+                                                           boolean hasMaxVarsPerPdu,int maxVarsPerPdu,
+                                                           int[] upValues, int[] downValues) {
 
         PollableSnmpInterface iface = new PollableSnmpInterface(this);
         iface.setName(name);
         iface.setCriteria(criteria);
+        iface.setUpValues(SnmpInterfaceStatus.getStatuses(upValues));
+        iface.setDownValues(SnmpInterfaceStatus.getStatuses(downValues));
         InetAddress ipAddr = null;
         ipAddr = InetAddressUtils.addr(getIpaddress());
         SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(ipAddr, location);

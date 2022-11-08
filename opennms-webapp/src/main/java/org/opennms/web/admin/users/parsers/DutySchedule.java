@@ -39,7 +39,7 @@ import java.util.Vector;
 /**
  * This class holds information on the duty schedules that users can have.
  * Converstion between different formats of the duty schedule information are
- * possible, as is the comparision between a Calendar passed in and the start
+ * possible, as is the comparison between a Calendar passed in and the start
  * and stop times of each day in a duty schedule.
  *
  * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
@@ -259,7 +259,7 @@ public class DutySchedule implements Cloneable {
      * falls within the duty schedule contained in this object. It creates two
      * partial Calendars from the Calendar that is passed in and then sets the
      * start time for one and the end time for the other. Then in a loop it
-     * reassigns the day of week according to the BitSet. It makes a comparision
+     * reassigns the day of week according to the BitSet. It makes a comparison
      * to see if the argument Calendar is between the start and stop times and
      * returns true immediately if it is.
      *

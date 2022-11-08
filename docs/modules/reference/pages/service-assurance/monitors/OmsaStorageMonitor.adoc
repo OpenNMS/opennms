@@ -1,0 +1,164 @@
+
+[[OmsaStorageMonitor]]
+= OmsaStorageMonitor
+
+The OmsaStorageMonitor lets you monitor your https://www.dell.com/support/kbdoc/en-ca/000126778/how-to-dell-server-manage-multiple-servers-with-omsa-and-ome[Dell OpenManaged] servers RAID array status.
+This monitor supports the following OIDs from the https://www.dell.com/support/manuals/en-ca/dell-openmanage-software-9.1/snmp_om_9.1_reference%20guide/server-administrator-storage-management-mib?guid=guid-a067ce36-3019-4bf6-8ce4-d92ad428194d&lang=en-us[STORAGEMANAGEMENT-MIB]:
+
+[source, console]
+----
+virtualDiskRollUpStatus                     .1.3.6.1.4.1.674.10893.1.20.140.1.1.19
+arrayDiskLogicalConnectionVirtualDiskNumber .1.3.6.1.4.1.674.10893.1.20.140.3.1.5
+arrayDiskNexusID                            .1.3.6.1.4.1.674.10893.1.20.130.4.1.26
+arrayDiskLogicalConnectionArrayDiskNumber   .1.3.6.1.4.1.674.10893.1.20.140.3.1.3
+arrayDiskState                              .1.3.6.1.4.1.674.10893.1.20.130.4.1.4
+----
+
+The virtualDiskRollUpStatus value checks the status of the disk array.
+If the result of the virtualDiskRollUpStatus is not 3, the monitor is marked as down.
+
+.Possible result of virtual disk rollup status
+[options="header, %autowidth"]
+[cols="1,1,1"]
+|===
+| Result
+| State description
+| Monitor state in {page-component-title}
+
+| 1
+| other
+| DOWN
+
+| 2
+| unknown
+| DOWN
+
+| 3
+| ok
+| UP
+
+| 4
+| non-critical
+| DOWN
+
+| 5
+| critical
+| DOWN
+
+| 6
+| non-recoverable
+| DOWN
+|===
+
+IMPORTANT: You need to know the maximum number of possible logical disks you have in your environment.
+           For example, if you have three RAID arrays, you need a service poller for each logical disk array.
+
+To give more detailed information in case of a disk array error, the monitor tries to identify the problem using the other OIDs.
+These values enrich the error reason in the service down event.
+The disk array state is resolved to a human-readable value as in the following status table.
+
+.Possible array disk state errors
+[options="header"]
+[cols="1,3"]
+|===
+| Value
+| Status
+
+| 1
+| Ready
+
+| 2
+| Failed
+
+| 3
+| Online
+
+| 4
+| Offline
+
+| 6
+| Degraded
+
+| 7
+| Recovering
+
+| 11
+| Removed
+
+| 15
+| Resynching
+
+| 24
+| Rebuilding
+
+| 25
+| noMedia
+
+| 26
+| Formatting
+
+| 28
+| Running Diagnostics
+
+| 35
+| Initializing
+|===
+
+== Monitor facts
+
+[cols="1,7"]
+|===
+| Class Name
+| `org.opennms.netmgt.poller.monitors.OmsaStorageMonitor`
+|===
+
+== Configuration and use
+
+.Optional monitor-specific parameters for the OmsaStorageMonitor
+[options="header"]
+[cols="2,3,2"]
+|===
+| Parameter
+| Description
+| Default
+
+| virtualDiskNumber
+| The disk index of your RAID array.
+| 1
+
+| port
+| The TCP port where OpenManage listens.
+| From snmp-config.xml
+|===
+
+This monitor implements the <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+== Examples
+
+Sample configuration on how to configure the monitor in `poller-configuration.xml`.
+The RAID array monitor for your first array is configured with `virtualDiskNumber = 1` and may look like this:
+
+[source, xml]
+----
+<service name="OMSA-Disk-Array-1" interval="300000" user-defined="false" status="on">
+    <parameter key="retry" value="3"/>
+    <parameter key="timeout" value="6000"/>
+    <parameter key="virtualDiskNumber" value="1"/>
+</service>
+
+<monitor service="OMSA-Disk-Array-1" class-name="org.opennms.netmgt.poller.monitors.OmsaStorageMonitor"/>
+----
+
+If there is more than one RAID array to monitor, you need an additional configuration.
+In this case, `virtualDiskNumber = 2`.
+
+[source, xml]
+----
+<service name="OMSA-Disk-Array-2" interval="300000" user-defined="false" status="on">
+    <parameter key="retry" value="3"/>
+    <parameter key="timeout" value="6000"/>
+    <parameter key="virtualDiskNumber" value="2"/>
+</service>
+
+<monitor service="OMSA-Disk-Array-2" class-name="org.opennms.netmgt.poller.monitors.OmsaStorageMonitor"/>
+----

@@ -92,6 +92,20 @@ public class SnmpInterfacePollerConfiguration implements Serializable {
     private Boolean m_useCriteriaFilters;
 
     /**
+     * Values of ifAdminStatus and ifOperStatus to treat as up values.
+     * Expects a comma separated list of values i.e. '1,3'.
+     */
+    @XmlAttribute(name = "up-values")
+    private String m_upValues = "1";
+
+    /**
+     * Values of ifAdminStatus and ifOperStatus to treat as down values.
+     * Expects a comma separated list of values i.e. '2,3,5,7'.
+     */
+    @XmlAttribute(name = "down-values")
+    private String m_downValues = "2";
+
+    /**
      * Configuration of node-outage functionality
      */
     @XmlElement(name = "node-outage", required = true)
@@ -144,6 +158,22 @@ public class SnmpInterfacePollerConfiguration implements Serializable {
         m_useCriteriaFilters = useCriteriaFilters;
     }
 
+    public void setUpValues(final String upValues) {
+        m_upValues = upValues;
+    }
+
+    public String getUpValues() {
+        return m_upValues;
+    }
+
+    public void setDownValues(final String downValues) {
+        m_downValues = downValues;
+    }
+
+    public String getDownValues() {
+        return m_downValues;
+    }
+
     public NodeOutage getNodeOutage() {
         return m_nodeOutage;
     }
@@ -177,7 +207,9 @@ public class SnmpInterfacePollerConfiguration implements Serializable {
                             m_threads, 
                             m_service, 
                             m_suppressAdminDownEvent, 
-                            m_useCriteriaFilters, 
+                            m_useCriteriaFilters,
+                            m_upValues,
+                            m_downValues,
                             m_nodeOutage, 
                             m_packages);
     }
@@ -195,10 +227,11 @@ public class SnmpInterfacePollerConfiguration implements Serializable {
                     && Objects.equals(this.m_service, that.m_service)
                     && Objects.equals(this.m_suppressAdminDownEvent, that.m_suppressAdminDownEvent)
                     && Objects.equals(this.m_useCriteriaFilters, that.m_useCriteriaFilters)
+                    && Objects.equals(this.m_upValues, that.m_upValues)
+                    && Objects.equals(this.m_downValues, that.m_downValues)
                     && Objects.equals(this.m_nodeOutage, that.m_nodeOutage)
                     && Objects.equals(this.m_packages, that.m_packages);
         }
         return false;
     }
-
 }

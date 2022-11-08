@@ -1,0 +1,14 @@
+
+// Allow image rendering
+:imagesdir: ../../images
+
+= Minion
+
+A Minion is an instance of the Karaf OSGi service that enables OpenNMS to monitor devices and services in locations that OpenNMS cannot reach. 
+Minions communicate with these remote devices while OpenNMS performs coordination and task delegation.
+
+Minions can operate behind a firewall and/or network address translation (NAT) as long as they can communicate with OpenNMS via ActiveMQ or Apache Kafka. 
+
+This section provides information to help developers get started with writing Minion-related features.
+It is not intended to be an exhaustive overview of the Minion architecture or feature set.
+

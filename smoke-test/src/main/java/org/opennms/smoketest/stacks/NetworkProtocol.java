@@ -51,6 +51,7 @@ public enum NetworkProtocol {
     JTI(UDP),
     NXOS(UDP),
     FLOWS(UDP),
+    TFTP(UDP),
     BMP(TCP),
     IPFIX_TCP(TCP),
     GRPC(TCP);

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.hibernate.transform.ResultTransformer;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -79,6 +80,13 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
     public List<OnmsIpInterface> findByNodeId(Integer nodeId) {
         Assert.notNull(nodeId, "nodeId cannot be null");
         return find("from OnmsIpInterface ipInterface where ipInterface.node.id = ?", nodeId);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public List<OnmsIpInterface> findByMacLinksOfNode(Integer nodeId) {
+        Assert.notNull(nodeId, "nodeId cannot be null");
+        return find("from OnmsIpInterface ipInterface where ipInterface.ipAddress in (select ipNetToMedia.netAddress from IpNetToMedia ipNetToMedia where ipNetToMedia.physAddress in (select l.macAddress from BridgeMacLink l where l.node.id = ?))", nodeId);
     }
 
     /** {@inheritDoc} */
@@ -131,7 +139,7 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
 
         // Add all primary addresses first
         @SuppressWarnings("unchecked")
-        List<Object[]> l = (List<Object[]>)getHibernateTemplate().find("select distinct ipInterface.ipAddress, ipInterface.node.id from OnmsIpInterface as ipInterface where ipInterface.isSnmpPrimary = 'P'");
+        List<Object[]> l = (List<Object[]>)getHibernateTemplate().find("select distinct ipInterface.ipAddress, ipInterface.node.id from OnmsIpInterface as ipInterface where ipInterface.snmpPrimary = 'P'");
         for (Object[] tuple : l) {
             InetAddress ip = (InetAddress) tuple[0];
             Integer nodeId = (Integer) tuple[1];
@@ -140,7 +148,7 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
 
         // Add all non-primary addresses only if those addresses doesn't exist on the map.
         @SuppressWarnings("unchecked")
-        List<Object[]> s = (List<Object[]>)getHibernateTemplate().find("select distinct ipInterface.ipAddress, ipInterface.node.id from OnmsIpInterface as ipInterface where ipInterface.isSnmpPrimary != 'P'");
+        List<Object[]> s = (List<Object[]>)getHibernateTemplate().find("select distinct ipInterface.ipAddress, ipInterface.node.id from OnmsIpInterface as ipInterface where ipInterface.snmpPrimary != 'P'");
         for (Object[] tuple : s) {
             InetAddress ip = (InetAddress) tuple[0];
             Integer nodeId = (Integer) tuple[1];
@@ -181,7 +189,7 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
         Assert.notNull(nodeId, "nodeId cannot be null");
         // SELECT ipaddr FROM ipinterface WHERE nodeid = ? AND issnmpprimary = 'P'
 
-        List<OnmsIpInterface> primaryInterfaces = find("from OnmsIpInterface as ipInterface where ipInterface.node.id = ? and ipInterface.isSnmpPrimary = 'P' order by ipLastCapsdPoll desc", nodeId);
+        List<OnmsIpInterface> primaryInterfaces = find("from OnmsIpInterface as ipInterface where ipInterface.node.id = ? and ipInterface.snmpPrimary = 'P' order by ipLastCapsdPoll desc", nodeId);
         if (primaryInterfaces.size() < 1) {
             return null;
         } else {
@@ -191,5 +199,32 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
             }
             return retval;
         }
+    }
+
+    @Override
+    public List<OnmsIpInterface> findInterfacesWithMetadata(String context, String key, String value) {  return getHibernateTemplate().execute(session -> (List<OnmsIpInterface>) session.createSQLQuery("SELECT ip.id FROM ipInterface ip, ipInterface_metadata m WHERE m.id = ip.id AND context = :context AND key = :key AND value = :value ORDER BY ip.id")
+            .setString("context", context)
+            .setString("key", key)
+            .setString("value", value)
+            .setResultTransformer(new ResultTransformer() {
+                @Override
+                public Object transformTuple(Object[] tuple, String[] aliases) {
+                    return get((Integer) tuple[0]);
+                }
+
+                @SuppressWarnings("rawtypes")
+                @Override
+                public List transformList(List collection) {
+                    return collection;
+                }
+            }).list());
+    }
+
+    @Override
+    public List<OnmsIpInterface> findByIpAddressAndLocation(String address, String location) {
+        return find(
+                "from OnmsIpInterface i where i.ipAddress = ? and exists (from OnmsNode n where n.id = i.node.id AND n.location.locationName = ?)",
+                address, location
+        );
     }
 }

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -275,52 +275,5 @@ public class JaxbUtilsTest {
 		assertEquals(1, log.getEvents().getEvent().length);
 		// Make sure that the time was parsed properly to a specific epoch time
 		assertEquals(1302631500000L, log.getEvents().getEvent(0).getTime().getTime());
-	}
-	
-	@Test
-	@Ignore
-	public void testValidationMemoryLeak() throws Exception {
-        final String text = "<log>\n" + 
-            " <events>\n" + 
-            "  <event >\n" + 
-            "   <uei>uei.opennms.org/internal/capsd/addNode</uei>\n" + 
-            "   <source>perl_send_event</source>\n" + 
-            "   <time>Tuesday, 12 April 2011 18:05:00 o'clock GMT</time>\n" + 
-            "   <host></host>\n" + 
-            "   <interface>10.0.0.1</interface>\n" + 
-            "   <parms>\n" + 
-            "    <parm>\n" + 
-            "     <parmName><![CDATA[txno]]></parmName>\n" + 
-            "     <value type=\"string\" encoding=\"text\"><![CDATA[1]]></value>\n" + 
-            "    </parm>\n" + 
-            "    <parm>\n" + 
-            "     <parmName><![CDATA[nodelabel]]></parmName>\n" + 
-            "     <value type=\"string\" encoding=\"text\"><![CDATA[test10]]></value>\n" + 
-            "    </parm>\n" + 
-            "   </parms>\n" + 
-            "  </event>\n" + 
-            " </events>\n" + 
-            "</log>\n";
-        
-        final int eventCount = 1000000;
-        final int logEvery = (eventCount / 1000);
-        
-        MockLogAppender.setupLogging(true, "INFO");
-
-        LOG.info("starting");
-        Thread.sleep(30000);
-        for (int i = 0; i < eventCount; i++) {
-            if (i % logEvery == 0) {
-                LOG.info("- event #{}", i);
-            }
-            final Log log = JaxbUtils.unmarshal(Log.class, text);
-            assertNotNull(log);
-            assertNotNull(log.getEvents());
-            final String results = JaxbUtils.marshal(log);
-            assertNotNull(results);
-            assertTrue(results.contains("uei.opennms.org/internal/capsd/addNode"));
-        }
-        LOG.info("finished");
-        Thread.sleep(30000);
 	}
 }

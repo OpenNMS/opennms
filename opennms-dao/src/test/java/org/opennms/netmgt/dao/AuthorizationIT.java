@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -40,6 +40,7 @@ import org.hibernate.Session;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
@@ -50,6 +51,7 @@ import org.opennms.netmgt.dao.hibernate.AlarmDaoHibernate;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsOutage;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.model.outage.OutageSummary;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
@@ -64,7 +66,7 @@ import org.springframework.transaction.annotation.Transactional;
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
-        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
@@ -135,8 +137,9 @@ public class AuthorizationIT implements InitializingBean {
     @Transactional
     @JUnitTemporaryDatabase
     public void testAuthorizedOutages() {
+        Collection<OnmsOutage> matching = m_outageDao.findMatching(new CriteriaBuilder(OnmsOutage.class).isNull("perspective").toCriteria());
 
-        Collection<OnmsOutage> matching = m_outageDao.findAll();
+        OnmsMonitoringLocation l = m_populator.getMonitoringLocationDao().get("RDU");
 
         assertNotNull(matching);
         assertEquals(2, matching.size());
@@ -145,7 +148,7 @@ public class AuthorizationIT implements InitializingBean {
 
         enableAuthorizationFilter("NonExistentGroup");
 
-        Collection<OnmsOutage> matching2 = m_outageDao.findAll();
+        Collection<OnmsOutage> matching2 = m_outageDao.findMatching(new CriteriaBuilder(OnmsOutage.class).isNull("perspective").toCriteria());
 
         assertNotNull(matching2);
         assertEquals(0, matching2.size());
@@ -154,7 +157,7 @@ public class AuthorizationIT implements InitializingBean {
 
         disableAuthorizationFilter();
 
-        Collection<OnmsOutage> matching3 = m_outageDao.findAll();
+        Collection<OnmsOutage> matching3 = m_outageDao.findMatching(new CriteriaBuilder(OnmsOutage.class).isNull("perspective").toCriteria());
 
         assertNotNull(matching3);
         assertEquals(2, matching3.size());
@@ -191,20 +194,6 @@ public class AuthorizationIT implements InitializingBean {
         assertEquals(1, matching3.size());
 
         System.err.println(matching3);
-    }
-
-    @Test
-    @Transactional
-    @Ignore("What does this even do?  Category 'groups' aren't even exposed in DAOs.")
-    @JUnitTemporaryDatabase
-    public void testGetCategoriesWithAuthorizedGroups() {
-
-        List<OnmsCategory> categories = m_categoryDao.getCategoriesWithAuthorizedGroup("RoutersGroup");
-
-        assertNotNull(categories);
-        assertEquals(1, categories.size());
-        assertEquals("Routers", categories.get(0).getName());
-
     }
 
     public void enableAuthorizationFilter(final String... groupNames) {

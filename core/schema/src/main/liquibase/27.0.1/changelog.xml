@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd" >
+
+  <changeSet id="27.0.1-remove-vmware-asset-columns" author="cpape">
+    <preConditions onFail="CONTINUE">
+      <sqlCheck expectedResult="t">
+        SELECT EXISTS (SELECT 1 FROM pg_attribute WHERE attrelid = (SELECT oid FROM pg_class WHERE relname = 'assets') AND attname = 'vmwaremanagedobjectid')
+      </sqlCheck>
+      <sqlCheck expectedResult="t">
+        SELECT EXISTS (SELECT 1 FROM pg_attribute WHERE attrelid = (SELECT oid FROM pg_class WHERE relname = 'assets') AND attname = 'vmwarestate')
+      </sqlCheck>
+      <sqlCheck expectedResult="t">
+        SELECT EXISTS (SELECT 1 FROM pg_attribute WHERE attrelid = (SELECT oid FROM pg_class WHERE relname = 'assets') AND attname = 'vmwaremanagedentitytype')
+      </sqlCheck>
+      <sqlCheck expectedResult="t">
+        SELECT EXISTS (SELECT 1 FROM pg_attribute WHERE attrelid = (SELECT oid FROM pg_class WHERE relname = 'assets') AND attname = 'vmwaremanagementserver')
+      </sqlCheck>
+      <sqlCheck expectedResult="t">
+        SELECT EXISTS (SELECT 1 FROM pg_attribute WHERE attrelid = (SELECT oid FROM pg_class WHERE relname = 'assets') AND attname = 'vmwaretopologyinfo')
+      </sqlCheck>
+      <sqlCheck expectedResult="f">
+        SELECT EXISTS (SELECT 1 FROM assets WHERE vmwaremanagedobjectid IS NOT NULL LIMIT 1);
+      </sqlCheck>
+      <sqlCheck expectedResult="f">
+        SELECT EXISTS (SELECT 1 FROM assets WHERE vmwarestate IS NOT NULL LIMIT 1);
+      </sqlCheck>
+      <sqlCheck expectedResult="f">
+        SELECT EXISTS (SELECT 1 FROM assets WHERE vmwaremanagedentitytype IS NOT NULL LIMIT 1);
+      </sqlCheck>
+      <sqlCheck expectedResult="f">
+        SELECT EXISTS (SELECT 1 FROM assets WHERE vmwaremanagementserver IS NOT NULL LIMIT 1);
+      </sqlCheck>
+      <sqlCheck expectedResult="f">
+        SELECT EXISTS (SELECT 1 FROM assets WHERE vmwaretopologyinfo IS NOT NULL LIMIT 1);
+      </sqlCheck>
+    </preConditions>
+
+    <dropColumn tableName="assets" columnName="vmwaremanagedobjectid"/>
+    <dropColumn tableName="assets" columnName="vmwarestate"/>
+    <dropColumn tableName="assets" columnName="vmwaremanagedentitytype"/>
+    <dropColumn tableName="assets" columnName="vmwaremanagementserver"/>
+    <dropColumn tableName="assets" columnName="vmwaretopologyinfo"/>
+  </changeSet>
+
+</databaseChangeLog>

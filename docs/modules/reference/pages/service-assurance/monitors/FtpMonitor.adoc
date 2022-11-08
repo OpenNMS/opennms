@@ -1,0 +1,84 @@
+
+= FtpMonitor
+
+The FtpMonitor validates an FTP connection's login processes.
+The monitor can test the FTP server on multiple ports with specific login data.
+
+The service using the FtpMonitor is up if the FTP server responds with return codes between 200 and 299.
+For special cases, the service is also marked as up for codes 425 and 530.
+
+== Monitor facts
+
+[cols="1,7"]
+|===
+| Class Name
+| `org.opennms.netmgt.poller.monitors.FtpMonitor`
+|===
+
+== Configuration and use
+
+.Optional monitor-specific parameters for the FtpMonitor
+[options="header"]
+[cols="1,3,2"]
+
+|===
+| Parameter
+| Description
+| Default
+
+| retry
+| Number of attempts to get a valid FTP response/response-text.
+| 0
+
+| port
+| A list of TCP ports to which connection shall be tried.
+| 20, 21
+
+| password kbd:[{}]
+| Specifies the password to use.
+Use this parameter with the userid parameter to perform authentication.
+| empty string
+
+| userid kbd:[{}]
+| Specifies the user ID to use.
+Use this parameter with the password parameter to perform authentication.
+|n/a
+|===
+
+kbd:[{}] _indicates the parameter supports <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution>>._
+
+This monitor implements the <<reference:service-assurance/introduction.adoc#<ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+== Examples
+
+Example configuration on how to configure the monitor in `poller-configuration.xml`.
+[source, xml]
+----
+<service name="FTP" interval="300000" user-defined="false" status="on">
+  <parameter key="retry" value="1"/>
+  <parameter key="timeout" value="3000"/>
+  <parameter key="port" value="21"/>
+  <parameter key="userid" value=""/>
+  <parameter key="password" value=""/>
+</service>
+
+<service name="FTP-With-Auth-From-Asset" interval="300000" user-defined="false" status="on">
+  <parameter key="retry" value="1"/>
+  <parameter key="timeout" value="3000"/>
+  <parameter key="port" value="21"/>
+  <parameter key="userid" value="{username}"/>
+  <parameter key="password" value="{password}"/>
+</service>
+
+<service name="FTP-Customer" interval="300000" user-defined="false" status="on">
+  <parameter key="retry" value="1"/>
+  <parameter key="timeout" value="3000"/>
+  <parameter key="port" value="21"/>
+  <parameter key="userid" value="Customer"/>
+  <parameter key="password" value="MySecretPassword"/>
+</service>
+
+<monitor service="FTP" class-name="org.opennms.netmgt.poller.monitors.FtpMonitor"/>
+<monitor service="FTP-With-Auth-From-Asset" class-name="org.opennms.netmgt.poller.monitors.FtpMonitor"/>
+<monitor service="FTP-Customer" class-name="org.opennms.netmgt.poller.monitors.FtpMonitor"/>
+----

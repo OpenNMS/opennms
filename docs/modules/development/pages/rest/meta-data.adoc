@@ -1,0 +1,21 @@
+[[metadata-rest]]
+= Metadata
+
+You can query the actual metadata of nodes, interfaces, and services via REST endpoints.
+
+[[rest-api-meta-data-get]]
+== GETs (Reading Metadata)
+
+[options="header", cols="5,10"]
+|===
+| Resource                                                                                           | Description
+| `api/v2/nodes/\{id}/metadata`                                                                      | Get the list of metadata associated with this node.
+| `api/v2/nodes/\{id}/metadata/\{context}`                                                           | Get the list of metadata associated with this node, filtered by the given context.
+| `api/v2/nodes/\{id}/metadata/\{context}/\{key}`                                                    | Get the entry for the given context and key associated with this node.
+| `api/v2/nodes/\{id}/ipinterfaces/\{ipinterface}/metadata`                                          | Get the list of metadata associated with this interface.
+| `api/v2/nodes/\{id}/ipinterfaces/\{ipinterface}/metadata/\{context}`                               | Get the list of metadata associated with this interface, filtered by the given context.
+| `api/v2/nodes/\{id}/ipinterfaces/\{ipinterface}/metadata/\{context}/\{key}`                        | Get the entry for the given context and key associated with this interface.
+| `api/v2/nodes/\{id}/ipinterfaces/\{ipinterface}/services/\{service}/metadata`                      | Get the list of metadata associated with this service.
+| `api/v2/nodes/\{id}/ipinterfaces/\{ipinterface}/services/\{service}/metadata/\{context}`           | Get the list of metadata associated with this service, filtered by the given context.
+| `api/v2/nodes/\{id}/ipinterfaces/\{ipinterface}/services/\{service}/metadata/\{context}/\{key}`    | Get the entry for the given context and key associated with this service.
+|===

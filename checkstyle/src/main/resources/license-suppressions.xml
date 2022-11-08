@@ -6,6 +6,10 @@
 <!-- NOTE: We use '[\\/]' instead of '/' in the paths in order to match
      the files when compiling with both Linux and Windows. -->
 <suppressions>
+    <!-- ignore generated directories -->
+    <suppress files="[/\\]target[/\\]" checks=".*"/>
+    <suppress files="[/\\]generated-test-sources[/\\]" checks=".*"/>
+
     <!-- BSD and GPL - see headers for details -->
     <suppress files="org[\\/]opennms[\\/]core[\\/]test[\\/]dns[\\/]DNSServer.java" checks=".*"/>
     <!-- APLv2 -->

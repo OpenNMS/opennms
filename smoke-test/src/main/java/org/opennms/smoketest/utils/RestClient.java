@@ -34,8 +34,11 @@ import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -51,11 +54,11 @@ import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.measurements.model.QueryRequest;
 import org.opennms.netmgt.measurements.model.QueryResponse;
 import org.opennms.netmgt.model.OnmsAlarmCollection;
+import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsEventCollection;
 import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsMetaData;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.minion.OnmsMinion;
@@ -165,6 +168,19 @@ public class RestClient {
         return getBuilder(target).get(OnmsNode.class);
     }
 
+    public Map<String, Object> getUsageStatistics() throws Exception {
+        final Response response = getBuilder(getTarget().path("datachoices")).get();
+        final String jsonContent = response.readEntity(String.class);
+        final Map<String, Object> hashMap = new ObjectMapper().readValue(jsonContent, HashMap.class);
+        return hashMap.entrySet().stream().collect(Collectors.toMap(e -> e.getKey(), e-> {
+                    if (e.getValue() instanceof Integer) {
+                        return Long.valueOf( (Integer) e.getValue());
+                    } else {
+                        return e.getValue();
+                    }
+                }));
+    }
+
     public Response getResponseForNode(String nodeCriteria) {
         final WebTarget target = getTarget().path("nodes").path(nodeCriteria);
         return getBuilder(target).get();
@@ -232,13 +248,13 @@ public class RestClient {
         return getBuilder(target).get();
     }
 
-    public Response setNodeLevelMetadata(String nodeCriteria, OnmsMetaData metaData) {
-        final WebTarget target = getTargetV2().path("nodes").path(nodeCriteria).path("metadata");
-        return getBuilder(target).post(Entity.entity(metaData, MediaType.APPLICATION_XML));
-    }
-
     public OnmsEventCollection getEventsForNode(int nodeId) {
         final WebTarget target = getTarget().path("events").queryParam("node.id", nodeId);
+        return getBuilder(target).accept(MediaType.APPLICATION_XML).get(OnmsEventCollection.class);
+    }
+
+    public OnmsEventCollection getEventsForNodeByEventUei(int nodeId, String eventUei) {
+        final WebTarget target = getTarget().path("events").queryParam("node.id", nodeId).queryParam("eventUei", eventUei);
         return getBuilder(target).accept(MediaType.APPLICATION_XML).get(OnmsEventCollection.class);
     }
 
@@ -388,5 +404,32 @@ public class RestClient {
             throw new RuntimeException(String.format("Request failed with: %s:\n%s",
                     response.getStatusInfo().getReasonPhrase(), response.hasEntity() ? response.readEntity(String.class) : ""));
         }
+    }
+
+    public List<OnmsApplication> getApplications() {
+        final GenericType<List<OnmsApplication>> applications = new GenericType<List<OnmsApplication>>() {
+        };
+        final WebTarget target = getTargetV2().path("applications");
+        return getBuilder(target).accept(MediaType.APPLICATION_XML).get(applications);
+    }
+
+    public void triggerBackup(final String requestDTO) {
+        final WebTarget target = getTarget().path("device-config").path("backup");
+        final var response = getBuilder(target)
+                .post(Entity.entity(requestDTO, MediaType.APPLICATION_JSON));
+        System.err.println(response);
+        this.bailOnFailure(response);
+    }
+
+    public JsonNode getBackups() throws IOException {
+        final var result = getBuilder(getTarget().path("device-config"))
+                .accept(MediaType.APPLICATION_JSON)
+                .get(String.class);
+
+        if (result == null) {
+            return null;
+        }
+
+        return new ObjectMapper().readTree(result);
     }
 }

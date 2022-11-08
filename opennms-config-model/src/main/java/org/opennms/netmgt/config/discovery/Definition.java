@@ -101,6 +101,13 @@ public class Definition implements Serializable {
     @XmlElement(name = "include-url")
     private List<IncludeUrl> includeUrls = new ArrayList<>();
 
+    /**
+     * a file URL holding specific addresses to be
+     *  excluded
+     */
+    @XmlElement(name = "exclude-url")
+    private List<ExcludeUrl> excludeUrls = new ArrayList<>();
+
 
     public Optional<String> getLocation() {
         return Optional.ofNullable(location);
@@ -204,6 +211,25 @@ public class Definition implements Serializable {
         return includeUrls.remove(includeUrl);
     }
 
+    public List<ExcludeUrl> getExcludeUrls() {
+        return excludeUrls;
+    }
+
+    public void setExcludeUrls(final List<ExcludeUrl> excludeUrls) {
+        if (excludeUrls.equals(this.excludeUrls)) return;
+        this.excludeUrls.clear();
+        if (excludeUrls != null) this.excludeUrls.addAll(excludeUrls);
+    }
+
+    public void addExcludeUrl(final ExcludeUrl excludeUrl) {
+        excludeUrls.add(excludeUrl);
+    }
+
+    public boolean removeExcludeUrl(final ExcludeUrl excludeUrl) {
+        return excludeUrls.remove(excludeUrl);
+    }
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -213,11 +239,13 @@ public class Definition implements Serializable {
                 Objects.equals(specifics, that.specifics) &&
                 Objects.equals(includeRanges, that.includeRanges) &&
                 Objects.equals(excludeRanges, that.excludeRanges) &&
-                Objects.equals(detectors, that.detectors);
+                Objects.equals(detectors, that.detectors) &&
+                Objects.equals(includeUrls, that.includeUrls) &&
+                Objects.equals(excludeUrls, that.excludeUrls);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(location, specifics, includeRanges, excludeRanges, detectors);
+        return Objects.hash(location, specifics, includeRanges, excludeRanges, detectors, includeUrls, excludeUrls);
     }
 }

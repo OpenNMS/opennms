@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -47,6 +47,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.ValidationException;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepositoryFactory;
 import org.opennms.netmgt.provision.persist.requisition.DeployedRequisitionStats;
 import org.opennms.netmgt.provision.persist.requisition.DeployedStats;
@@ -451,7 +452,7 @@ public class RequisitionRestService extends OnmsRestService {
             LOG.debug("error validating incoming requisition with foreign source '{}'", requisition.getForeignSource(), e);
             throw getException(Status.BAD_REQUEST, e.getMessage());
         }
-        debug("addOrReplaceRequisition: Adding requisition %s (containing %d nodes)", requisition.getForeignSource(), requisition.getNodeCount());
+        LOG.debug("addOrReplaceRequisition: Adding requisition {} (containing {} nodes)", requisition.getForeignSource(), requisition.getNodeCount());
         m_accessService.addOrReplaceRequisition(requisition);
         return Response.accepted().header("Location", getRedirectUri(uriInfo, requisition.getForeignSource())).build();
     }
@@ -474,7 +475,7 @@ public class RequisitionRestService extends OnmsRestService {
             LOG.debug("error validating incoming node '{}'", node, e);
             throw getException(Status.BAD_REQUEST, e.getMessage());
         }
-        debug("addOrReplaceNode: Adding node %s to requisition %s", node.getForeignId(), foreignSource);
+        LOG.debug("addOrReplaceNode: Adding node {} to requisition {}", node.getForeignId(), foreignSource);
         m_accessService.addOrReplaceNode(foreignSource, node);
         return Response.accepted().header("Location", getRedirectUri(uriInfo, node.getForeignId())).build();
     }
@@ -493,14 +494,15 @@ public class RequisitionRestService extends OnmsRestService {
     @Transactional
     public Response addOrReplaceInterface(@Context final UriInfo uriInfo, @PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, RequisitionInterface iface) {
         try {
-            iface.validate();
+            final RequisitionNode node = m_accessService.getNode(foreignSource, foreignId);
+            iface.validate(node);
         } catch (final ValidationException e) {
             LOG.debug("error validating incoming interface '{}'", iface, e);
             throw getException(Status.BAD_REQUEST, e.getMessage());
         }
-        debug("addOrReplaceInterface: Adding interface %s to node %s/%s", iface, foreignSource, foreignId);
+        LOG.debug("addOrReplaceInterface: Adding interface {} to node {}/{}", iface, foreignSource, foreignId);
         m_accessService.addOrReplaceInterface(foreignSource, foreignId, iface);
-        return Response.accepted().header("Location", getRedirectUri(uriInfo, iface.getIpAddr())).build();
+        return Response.accepted().header("Location", getRedirectUri(uriInfo, InetAddressUtils.str(iface.getIpAddr()))).build();
     }
 
     /**
@@ -523,7 +525,7 @@ public class RequisitionRestService extends OnmsRestService {
             LOG.debug("error validating incoming service '{}'", service, e);
             throw getException(Status.BAD_REQUEST, e.getMessage());
         }
-        debug("addOrReplaceService: Adding service %s to node %s/%s, interface %s", service.getServiceName(), foreignSource, foreignId, ipAddress);
+        LOG.debug("addOrReplaceService: Adding service {} to node {}/{}, interface {}", service.getServiceName(), foreignSource, foreignId, ipAddress);
         m_accessService.addOrReplaceService(foreignSource, foreignId, ipAddress, service);
         return Response.accepted().header("Location", getRedirectUri(uriInfo, service.getServiceName())).build();
     }
@@ -547,7 +549,7 @@ public class RequisitionRestService extends OnmsRestService {
             LOG.debug("error validating incoming category '{}'", category, e);
             throw getException(Status.BAD_REQUEST, e.getMessage());
         }
-        debug("addOrReplaceNodeCategory: Adding category %s to node %s/%s", category.getName(), foreignSource, foreignId);
+        LOG.debug("addOrReplaceNodeCategory: Adding category {} to node {}/{}", category.getName(), foreignSource, foreignId);
         m_accessService.addOrReplaceNodeCategory(foreignSource, foreignId, category);
         return Response.accepted().header("Location", getRedirectUri(uriInfo, category.getName())).build();
     }
@@ -571,7 +573,7 @@ public class RequisitionRestService extends OnmsRestService {
             LOG.debug("error validating incoming asset '{}'", asset, e);
             throw getException(Status.BAD_REQUEST, e.getMessage());
         }
-        debug("addOrReplaceNodeCategory: Adding asset %s to node %s/%s", asset.getName(), foreignSource, foreignId);
+        LOG.debug("addOrReplaceNodeCategory: Adding asset {} to node {}/{}", asset.getName(), foreignSource, foreignId);
         m_accessService.addOrReplaceNodeAssetParameter(foreignSource, foreignId, asset);
         return Response.accepted().header("Location", getRedirectUri(uriInfo, asset.getName())).build();
     }
@@ -586,7 +588,7 @@ public class RequisitionRestService extends OnmsRestService {
     @Path("{foreignSource}/import")
     @Transactional
     public Response importRequisition(@Context final UriInfo uriInfo, @PathParam("foreignSource") final String foreignSource, @QueryParam("rescanExisting") final String rescanExisting) {
-        debug("importRequisition: Importing requisition for foreign source %s", foreignSource);
+        LOG.debug("importRequisition: Importing requisition for foreign source {}", foreignSource);
         m_accessService.importRequisition(foreignSource, rescanExisting);
         return Response.accepted().header("Location", uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getRequisition").build(foreignSource)).build();
     }
@@ -748,9 +750,5 @@ public class RequisitionRestService extends OnmsRestService {
     public Response deleteAssetParameter(@PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId, @PathParam("parameter") final String parameter) {
         m_accessService.deleteAssetParameter(foreignSource, foreignId, parameter);
         return Response.accepted().build();
-    }
-
-    void debug(final String format, final Object... values) {
-        LOG.debug(format, values);
     }
 }

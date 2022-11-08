@@ -29,6 +29,7 @@
 package org.opennms.core.ipc.sink.kafka.client;
 
 import static org.opennms.core.ipc.common.kafka.KafkaSinkConstants.DEFAULT_MAX_BUFFER_SIZE;
+import static org.opennms.core.ipc.common.kafka.KafkaSinkConstants.KAFKA_COMMON_CONFIG_PID;
 import static org.opennms.core.ipc.common.kafka.KafkaSinkConstants.MAX_BUFFER_SIZE_PROPERTY;
 import static org.opennms.core.ipc.sink.api.Message.SINK_METRIC_PRODUCER_DOMAIN;
 
@@ -54,7 +55,7 @@ import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.ipc.sink.api.MessageConsumerManager;
 import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.ipc.sink.common.AbstractMessageDispatcherFactory;
-import org.opennms.core.ipc.sink.model.SinkMessageProtos;
+import org.opennms.core.ipc.sink.model.SinkMessage;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.logging.Logging.MDCCloseable;
 import org.opennms.core.tracing.api.TracerConstants;
@@ -190,7 +191,7 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
         // Calculate remaining bufferSize for each chunk.
         int bufferSize = getRemainingBufferSize(sinkMessageContent.length, chunk);
         ByteString byteString = ByteString.copyFrom(sinkMessageContent, chunk * maxBufferSize, bufferSize);
-        SinkMessageProtos.SinkMessage.Builder sinkMessageBuilder = SinkMessageProtos.SinkMessage.newBuilder()
+        SinkMessage.Builder sinkMessageBuilder = SinkMessage.newBuilder()
                 .setMessageId(messageId)
                 .setCurrentChunkNumber(chunk)
                 .setTotalChunks(totalChunks)
@@ -202,12 +203,7 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
             tracer.inject(tracer.activeSpan().context(), Format.Builtin.TEXT_MAP, tracingInfoCarrier);
             tracer.activeSpan().setTag(TracerConstants.TAG_LOCATION, identity.getLocation());
             tracer.activeSpan().setTag(TracerConstants.TAG_THREAD, Thread.currentThread().getName());
-            tracingInfoCarrier.getTracingInfoMap().forEach((key, value) -> {
-                SinkMessageProtos.TracingInfo tracingInfo = SinkMessageProtos.TracingInfo.newBuilder()
-                        .setKey(key).setValue(value).build();
-                sinkMessageBuilder.addTracingInfo(tracingInfo);
-            });
-
+            tracingInfoCarrier.getTracingInfoMap().forEach(sinkMessageBuilder::putTracingInfo);
         }
         return sinkMessageBuilder.build().toByteArray();
     }
@@ -218,8 +214,8 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
             kafkaConfig.clear();
             kafkaConfig.put("key.serializer", StringSerializer.class.getCanonicalName());
             kafkaConfig.put("value.serializer", ByteArraySerializer.class.getCanonicalName());
-            // Retrieve all of the properties from org.opennms.core.ipc.sink.kafka.cfg
-            KafkaConfigProvider configProvider = new OsgiKafkaConfigProvider(KafkaSinkConstants.KAFKA_CONFIG_PID, configAdmin);
+            // Retrieve all of the properties from org.opennms.core.ipc.sink.kafka.cfg, fallback to common pid.
+            KafkaConfigProvider configProvider = new OsgiKafkaConfigProvider(KafkaSinkConstants.KAFKA_CONFIG_PID, configAdmin, KAFKA_COMMON_CONFIG_PID);
             kafkaConfig.putAll(configProvider.getProperties());
             LOG.info("KafkaRemoteMessageDispatcherFactory: initializing the Kafka producer with: {}", kafkaConfig);
             producer = Utils.runWithGivenClassLoader(() -> new KafkaProducer<>(kafkaConfig), KafkaProducer.class.getClassLoader());

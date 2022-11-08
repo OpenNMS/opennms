@@ -42,20 +42,28 @@
 </jsp:include>
 
 <script type="text/javascript">
-  function verifyGoForm() 
+  function verifyGoForm()
   {
-    if (document.goForm.pass1.value == document.goForm.pass2.value) 
+    if (document.goForm.pass1.value == document.goForm.pass2.value)
     {
-      document.goForm.currentPassword.value=document.goForm.oldpass.value;
-      document.goForm.newPassword.value=document.goForm.pass1.value;
-      document.goForm.action="account/selfService/newPasswordAction";
-      return true;
-    } 
+      let newPassword=document.goForm.pass1.value
+      const passwordRegex= /((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%&.*+-]).{12,128})/;
+      const sameCharacterRegex= /(.)\1{5}/;
+
+      if(newPassword.match(passwordRegex) && !newPassword.match(sameCharacterRegex) )
+      {
+        document.goForm.currentPassword.value=document.goForm.oldpass.value;
+        document.goForm.newPassword.value=document.goForm.pass1.value;
+        return true;
+      } else {
+        alert("Password complexity is not correct! Please use at least 12 characters, consisting of 1 special character, 1 upper case letter, 1 lower case letter and 1 number. Identical strings with more than 6 characters in a row are also not allowed.");
+      }
+    }
     else
     {
       alert("The two new password fields do not match!");
     }
-}
+  }
 </script>
 
 
@@ -66,7 +74,7 @@
         <span>Please enter the old and new passwords and confirm.</span>
       </div>
       <div class="card-body">
-        <form role="form" method="post" name="goForm" onSubmit="verifyGoForm()">
+        <form role="form" method="post" name="goForm" onSubmit="return verifyGoForm();" action="account/selfService/newPasswordAction">
           <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
           <input type="hidden" name="currentPassword" value="">
           <input type="hidden" name="newPassword" value="">

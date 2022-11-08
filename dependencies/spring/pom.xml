@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>dependencies</artifactId>
-    <version>26.1.3-SNAPSHOT</version>
+    <version>32.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
@@ -81,12 +81,19 @@
       <groupId>org.apache.servicemix.bundles</groupId>
       <artifactId>org.apache.servicemix.bundles.aspectj</artifactId>
       <version>${aspectjVersion}_1</version>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.annotation</groupId>
+          <artifactId>jsr250-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
-    <!-- Spring Dependencies -->
+    <!-- replaces jsr250-api -->
     <dependency>
       <groupId>javax.annotation</groupId>
-      <artifactId>jsr250-api</artifactId>
+      <artifactId>javax.annotation-api</artifactId>
     </dependency>
+    <!-- Spring Dependencies -->
     <dependency>
       <!-- Needed for spring-context-support -->
       <groupId>commons-collections</groupId>

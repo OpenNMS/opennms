@@ -1,84 +1,89 @@
 ##
-# Use Java base image and setup required RPMS as cacheable image.
+# Use Java base image and setup required DEBS as cacheable image.
 ##
-ARG BASE_IMAGE="opennms/openjdk"
-ARG BASE_IMAGE_VERSION="11.0.14.0.9-b8239"
+ARG BASE_IMAGE="opennms/deploy-base:jre-2.0.6.b165"
 
-FROM ${BASE_IMAGE}:${BASE_IMAGE_VERSION} as sentinel-base
+FROM ${BASE_IMAGE} as sentinel-base
 
-ARG REQUIRED_RPMS="wget gettext openssh-clients"
+ADD --chown=10001:10001 ./tarball-root/ /usr/share/sentinel/
 
-ARG REPO_KEY_URL="https://yum.opennms.org/OPENNMS-GPG-KEY"
-ARG REPO_RPM="https://yum.opennms.org/repofiles/opennms-repo-stable-rhel8.noarch.rpm"
+ARG REQUIRED_DEBS="hostname wget gettext openssh-client uuid-runtime"
+
+ARG REPO_KEY_URL="https://debian.opennms.org/OPENNMS-GPG-KEY"
 
 SHELL ["/bin/bash", "-c"]
 
+# Prevent prompts
+ENV DEBIAN_FRONTEND=noninteractive
+
 # Collect generic steps in a layer for caching
-RUN rpm --import "${REPO_KEY_URL}" && \
-    dnf -y install epel-release && \
-    dnf -y install "${REPO_RPM}" && \
-    dnf -y install ${REQUIRED_RPMS} && \
-    dnf clean all && \
-    rm -rf /var/cache/yum
+# import keys & install required debs
+RUN apt-get update && \
+    apt-get --no-install-recommends install -yq gnupg ca-certificates && \
+    curl -fsSL ${REPO_KEY_URL} | apt-key add && \
+    apt-get --no-install-recommends install -yq ${REQUIRED_DEBS} && \
+    apt-get -y autoclean && \
+    apt-get -y clean && \
+    rm -rf /var/cache/apt
+
+# get any security updates for the base system
+RUN grep security /etc/apt/sources.list > /etc/apt/security.sources.list && \
+    apt update -o Dir::Etc::SourceList=/etc/apt/security.sources.list && \
+    apt -y -u -o Dir::Etc::SourceList=/etc/apt/security.sources.list full-upgrade && \
+    apt clean && \
+    rm -rf /var/cache/apt /etc/apt/security.sources.list
+
+##
+# Install and setup OpenNMS Sentinel
+##
+FROM sentinel-base
+
+SHELL ["/bin/bash", "-c"]
+
+# Create Sentinel user with a specific group ID
+RUN groupadd -g 10001 sentinel && \
+    useradd \
+      --system \
+      --uid 10001 \
+      --gid 10001 \
+      --home-dir /usr/share/sentinel \
+      --no-create-home \
+      --shell /usr/bin/bash \
+      sentinel
+
+# we want these to break the caching so yum will re-install now that
+# we're not copying DEBs into /tmp/debs by default
+ARG BUILD_DATE="1970-01-01T00:00:00+0000"
+ARG REVISION
+ARG ADD_DEB_PACKAGES
+
+RUN id sentinel
+RUN  getent group sentinel
+RUN  getent passwd sentinel
+
+# Install any spare packages and create some compatibility links
+RUN if [[ -n "${ADD_DEB_PACKAGES}" ]]; then \
+        apt-get --no-install-recommends install -yq ${ADD_DEB_PACKAGES}; \
+    fi && \
+    install -d -g 10001 -o 10001 -m 755 \
+        /var/lib/sentinel \
+        /usr/share/sentinel/data/{log,tmp} && \
+    ln -s /usr/share/sentinel/data /var/lib/sentinel/data && \
+    ln -s /usr/share/sentinel/deploy /var/lib/sentinel/deploy && \
+    ln -s /usr/share/sentinel/etc /etc/sentinel && \
+    chown 10001:10001 /var/lib/sentinel/* && \
+    ln -s /usr/share/sentinel /opt/sentinel
+
+COPY ./assets/* /
 
 # Allow to send ICMP messages as non-root user
 RUN setcap cap_net_raw+ep ${JAVA_HOME}/bin/java && \
     echo ${JAVA_HOME}/lib/jli > /etc/ld.so.conf.d/java-latest.conf && \
     ldconfig
 
-# Create Sentinel user with a specific group ID
-RUN groupadd -g 10001 sentinel && \
-    adduser -u 10001 -g 10001 -d /opt/sentinel -s /usr/bin/bash sentinel
+VOLUME [ "/usr/share/sentinel/deploy", "/usr/share/sentinel/etc", "/usr/share/sentinel/data" ]
 
-##
-# Install and setup OpenNMS Sentinel RPMS
-##
-FROM sentinel-base
-
-# A default which installs the minimum required Minion packages
-ARG SENTINEL_PACKAGES="opennms-sentinel"
-
-# Allow to install optional packages via YUM
-ARG ADD_YUM_PACKAGES
-
-COPY ./rpms /tmp/rpms
-
-SHELL ["/bin/bash", "-c"]
-
-# we want these to break the caching so yum will re-install now that
-# we're not copying RPMs into /tmp/rpms by default
-ARG BUILD_DATE="1970-01-01T00:00:00+0000"
-ARG REVISION
-
-# Install repositories, system and OpenNMS packages and do some cleanup
-RUN echo "installing packages for build ${REVISION} (${BUILD_DATE})"; \
-    if [[ "$(ls -1 /tmp/rpms/*.rpm 2>/dev/null | wc -l)" != 0 ]]; then \
-        echo "installing local RPMs from filesystem" && \
-        dnf -y install /tmp/rpms/*.rpm; \
-    elif [[ -e /tmp/rpms/opennms-docker.repo ]]; then \
-        echo "installing local RPMs over HTTP" && \
-        dnf -y install 'dnf-command(config-manager)' && \
-        dnf -y config-manager --add-repo /tmp/rpms/*.repo && \
-        dnf -y config-manager --set-enabled opennms-repo-docker-common && \
-        dnf -y --disablerepo=opennms-repo-stable-common install ${SENTINEL_PACKAGES}; \
-    else \
-        echo "installing remote RPMs from stable" && \
-        dnf -y install ${SENTINEL_PACKAGES}; \
-    fi && \
-    if [[ -n ${ADD_YUM_PACKAGES} ]]; then dnf -y install ${ADD_YUM_PACKAGES}; fi && \
-    rm -rf /tmp/rpms && \
-    dnf clean all && \
-    rm -rf /var/cache/yum && \
-    mkdir -p /opt/sentinel/data/{log,tmp} && \
-    chown 10001:10001 -R /opt/sentinel && \
-    chgrp -R 0 /opt/sentinel && \
-    chmod -R g=u /opt/sentinel
-
-COPY ./assets/* /
-
-VOLUME [ "/opt/sentinel/deploy", "/opt/sentinel/etc", "/opt/sentinel/data" ]
-
-WORKDIR /opt/sentinel
+WORKDIR /usr/share/sentinel
 
 ### Containers should NOT run as root as a good practice
 USER 10001
@@ -105,7 +110,7 @@ LABEL org.opencontainers.image.created="${BUILD_DATE}" \
       org.opencontainers.image.vendor="The OpenNMS Group, Inc." \
       org.opencontainers.image.authors="OpenNMS Community" \
       org.opencontainers.image.licenses="AGPL-3.0" \
-      org.opennms.image.base="${BASE_IMAGE}:${BASE_IMAGE_VERSION}" \
+      org.opennms.image.base="${BASE_IMAGE}" \
       org.opennme.cicd.jobid="${BUILD_JOB_ID}" \
       org.opennms.cicd.buildnumber="${BUILD_NUMBER}" \
       org.opennms.cicd.buildurl="${BUILD_URL}" \
@@ -114,11 +119,10 @@ LABEL org.opencontainers.image.created="${BUILD_DATE}" \
 ### Runtime information and not relevant at build time
 
 # TODO MVR SENTINEL_LOCATION is not used at the moment
-ENV SENTINEL_HOME="/opt/sentinel" \
+ENV SENTINEL_HOME="/usr/share/sentinel" \
     SENTINEL_ID="" \
     SENTINEL_LOCATION="SENTINEL" \
     OPENNMS_BROKER_URL="tcp://127.0.0.1:61616" \
-    OPENNMS_HTTP_URL="http://127.0.0.1:8980/opennms" \
     OPENNMS_HTTP_USER="minion" \
     OPENNMS_HTTP_PASS="minion" \
     OPENNMS_BROKER_USER="minion" \

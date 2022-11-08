@@ -69,7 +69,8 @@ public class MetricFamily {
             throw new IllegalArgumentException("Need to set name");
         }
         if (builder.type == null) {
-            throw new IllegalArgumentException("Need to set type");
+            // default to GAUGE if no type
+            builder.setType(MetricType.GAUGE);
         }
 
         Class<? extends Metric> expectedMetricClassType;
@@ -85,6 +86,10 @@ public class MetricFamily {
                 break;
             case HISTOGRAM:
                 expectedMetricClassType = Histogram.class;
+                break;
+            case UNTYPED:
+	        //treat untyped metrics as gauge
+                expectedMetricClassType = Gauge.class;
                 break;
             default:
                 throw new IllegalArgumentException("Invalid type: " + builder.type);

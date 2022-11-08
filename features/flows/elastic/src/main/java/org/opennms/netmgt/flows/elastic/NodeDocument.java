@@ -31,6 +31,8 @@ package org.opennms.netmgt.flows.elastic;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.opennms.integration.api.v1.flows.Flow.NodeInfo;
+
 import com.google.gson.annotations.SerializedName;
 
 public class NodeDocument {
@@ -42,6 +44,9 @@ public class NodeDocument {
 
     @SerializedName("node_id")
     private Integer nodeId;
+
+    @SerializedName("interface_id")
+    private Integer interfaceId;
 
     @SerializedName("categories")
     private List<String> categories = new LinkedList<>();
@@ -70,11 +75,33 @@ public class NodeDocument {
         this.nodeId = nodeId;
     }
 
+    public Integer getInterfaceId() {
+        return this.interfaceId;
+    }
+
+    public void setInterfaceId(final Integer interfaceId) {
+        this.interfaceId = interfaceId;
+    }
+
     public List<String> getCategories() {
         return categories;
     }
 
     public void setCategories(List<String> categories) {
         this.categories = categories;
+    }
+
+    public static NodeDocument from(final NodeInfo info) {
+        if (info == null) {
+            return null;
+        }
+
+        final NodeDocument doc = new NodeDocument();
+        doc.setForeignSource(info.getForeignSource());
+        doc.setForeignId(info.getForeignId());
+        doc.setNodeId(info.getNodeId());
+        doc.setInterfaceId(info.getInterfaceId());
+        doc.setCategories(info.getCategories());
+        return doc;
     }
 }

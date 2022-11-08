@@ -30,52 +30,27 @@ package org.opennms.netmgt.enlinkd.service.api;
 
 import java.net.InetAddress;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
 
 public class MacPort implements Topology {
-
-    public static MacPort create(IpNetToMedia media) {
-    
-        Set<InetAddress> ips = new HashSet<>();
-        ips.add(media.getNetAddress());
-        
-        MacPort port = new MacPort();
-        port.setNodeId(media.getNodeId());
-        port.setIfIndex(media.getIfIndex());
-        port.setMacPortName(media.getPort());
-        port.getMacPortMap().put(media.getPhysAddress(), ips);
-        return port;
-    }
-
-    public static MacPort merge(IpNetToMedia media, MacPort port) {
-        
-        if (!port.getMacPortMap().containsKey(media.getPhysAddress())) {
-            Set<InetAddress> ips = new HashSet<>();
-            port.getMacPortMap().put(media.getPhysAddress(), ips);            
-        }
-        port.getMacPortMap().get(media.getPhysAddress()).add(media.getNetAddress());
-        return port;
-    }
 
     private Integer m_nodeId;
     private Integer m_macPortIfIndex;
     private String  m_macPortName;
-    private Map<String, Set<InetAddress>> m_macPortMap = new HashMap<>();
+    private final Map<String, Set<InetAddress>> m_macPortMap = new HashMap<>();
     
-    private MacPort() {
+    public MacPort() {
     }
         
     public String getPortMacInfo() {
         
         final StringBuffer strbfr = new StringBuffer();
-        m_macPortMap.keySet().stream().forEach(mac -> {
+        m_macPortMap.keySet().forEach(mac -> {
             strbfr.append("ip:["); 
-            m_macPortMap.get(mac).stream().forEach(ip -> {
+            m_macPortMap.get(mac).forEach(ip -> {
                 strbfr.append(InetAddressUtils.str(ip)); 
                 strbfr.append(" ");
             });
@@ -90,18 +65,15 @@ public class MacPort implements Topology {
     
     public String printTopology() {
 
-        final StringBuffer strbfr = new StringBuffer();
-        strbfr.append("nodeid:["); 
-        strbfr.append(m_nodeId);
-        strbfr.append("], port name:[");
-        strbfr.append(m_macPortName);
-        strbfr.append("], ifindex:[");
-        strbfr.append(m_macPortIfIndex);
-        strbfr.append("], macPortMap:[");
-        strbfr.append(m_macPortMap);
-        strbfr.append("]");
-
-        return strbfr.toString();
+        return "nodeid:[" +
+                m_nodeId +
+                "], port name:[" +
+                m_macPortName +
+                "], ifindex:[" +
+                m_macPortIfIndex +
+                "], macPortMap:[" +
+                m_macPortMap +
+                "]";
     }
 
     public Integer getIfIndex() {
@@ -119,9 +91,6 @@ public class MacPort implements Topology {
     public Map<String, Set<InetAddress>> getMacPortMap() {
         return m_macPortMap;
     }
-    public void setMacPortMap(Map<String, Set<InetAddress>> macPortMap) {
-        m_macPortMap = macPortMap;
-    }
     public Integer getNodeId() {
         return m_nodeId;
     }
@@ -136,7 +105,7 @@ public class MacPort implements Topology {
                 + ((m_macPortIfIndex == null) ? 0
                                               : m_macPortIfIndex.hashCode());
         result = prime * result
-                + ((m_macPortMap == null) ? 0 : m_macPortMap.hashCode());
+                + m_macPortMap.hashCode();
         result = prime * result
                 + ((m_macPortName == null) ? 0 : m_macPortName.hashCode());
         result = prime * result
@@ -158,10 +127,7 @@ public class MacPort implements Topology {
                 return false;
         } else if (!m_macPortIfIndex.equals(other.m_macPortIfIndex))
             return false;
-        if (m_macPortMap == null) {
-            if (other.m_macPortMap != null)
-                return false;
-        } else if (!m_macPortMap.equals(other.m_macPortMap))
+        if (!m_macPortMap.equals(other.m_macPortMap))
             return false;
         if (m_macPortName == null) {
             if (other.m_macPortName != null)
@@ -169,10 +135,7 @@ public class MacPort implements Topology {
         } else if (!m_macPortName.equals(other.m_macPortName))
             return false;
         if (m_nodeId == null) {
-            if (other.m_nodeId != null)
-                return false;
-        } else if (!m_nodeId.equals(other.m_nodeId))
-            return false;
-        return true;
+            return other.m_nodeId == null;
+        } else return m_nodeId.equals(other.m_nodeId);
     }
 }

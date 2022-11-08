@@ -30,6 +30,7 @@ package org.opennms.netmgt.discovery;
 
 import static org.junit.Assert.assertTrue;
 import static org.opennms.core.utils.InetAddressUtils.str;
+import static org.opennms.core.utils.LocationUtils.DEFAULT_LOCATION_NAME;
 
 import java.util.Date;
 import java.util.stream.StreamSupport;
@@ -63,6 +64,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/applicationContext-pinger.xml",
@@ -145,8 +147,13 @@ public class DiscoveryIntegrationIT {
         anticipator.waitForAnticipated(120000);
         anticipator.verifyAnticipated();
         anticipator.getAnticipatedEventsReceived().stream().forEach(eachEvent -> {
+            String location = CUSTOM_LOCATION;
+            if ("127.0.0.1".equals(eachEvent.getInterface().toString())) {
+                // the default foreign source has 127.0.0.1 for JVM monitoring
+                location = DEFAULT_LOCATION_NAME;
+            }
             Assert.assertNotNull(eachEvent.getParm("location"));
-            Assert.assertEquals(CUSTOM_LOCATION, eachEvent.getParm("location").getValue().getContent());
+            Assert.assertEquals(location, eachEvent.getParm("location").getValue().getContent());
         });
 
         m_discovery.stop();

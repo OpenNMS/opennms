@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-4.2.xsd">
+
+    <bean id="snmpMetadataAdapterConfigDao" class="org.opennms.netmgt.config.snmpmetadata.SnmpMetadataConfigDao">
+        <property name="configResource" value="file:${opennms.home}/etc/snmp-metadata-adapter-configuration.xml" />
+    </bean>
+
+    <bean name="snmpMetadataProvisioningAdapter" class="org.opennms.netmgt.provision.SnmpMetadataProvisioningAdapter">
+        <property name="eventForwarder" ref="eventForwarder" />
+        <property name="nodeDao" ref="nodeDao" />
+        <property name="snmpConfigDao" ref="snmpPeerFactory" />
+        <property name="locationAwareSnmpClient" ref="locationAwareSnmpClient" />
+        <property name="template" ref="transactionTemplate" />
+        <property name="snmpMetadataAdapterConfigDao" ref="snmpMetadataAdapterConfigDao"/>
+    </bean>
+
+    <bean id="snmpHardwareInventoryEventListenerAdapter" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
+        <property name="annotatedListener" ref="snmpMetadataProvisioningAdapter" />
+        <property name="eventSubscriptionService" ref="eventSubscriptionService" />
+    </bean>
+
+</beans>

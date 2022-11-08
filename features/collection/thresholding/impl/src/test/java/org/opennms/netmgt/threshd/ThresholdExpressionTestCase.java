@@ -34,8 +34,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.opennms.core.rpc.utils.mate.EntityScopeProvider;
-import org.opennms.core.rpc.utils.mate.Scope;
+import org.opennms.core.mate.api.EntityScopeProvider;
+import org.opennms.core.mate.api.Scope;
 import org.opennms.netmgt.config.threshd.Expression;
 import org.opennms.netmgt.config.threshd.ThresholdType;
 
@@ -62,9 +62,9 @@ public class ThresholdExpressionTestCase extends TestCase {
         expression=new Expression();
         expression.setType(ThresholdType.HIGH);
         expression.setDsType("node");
-        expression.setValue(99.0);
-        expression.setRearm(0.5);
-        expression.setTrigger(1);
+        expression.setValue("99.0");
+        expression.setRearm("0.5");
+        expression.setTrigger("1");
    }
     
     public void testEvaluateEvaluateSingleItemWithDivision() throws Exception {

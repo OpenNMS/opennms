@@ -32,9 +32,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.Fetch.FetchType;
+import org.opennms.core.criteria.restrictions.AllRestriction;
 import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.core.criteria.restrictions.SqlRestriction.Type;
@@ -67,6 +70,8 @@ public class CriteriaBuilder {
 
     private String m_matchType = "all";
 
+    private boolean m_isMultipleAnd = false;
+
     private static final Restriction[] EMPTY_RESTRICTION_ARRAY = new Restriction[0];
 
     public CriteriaBuilder(final Class<?> clazz) {
@@ -86,14 +91,26 @@ public class CriteriaBuilder {
         criteria.setDistinct(m_distinct);
         criteria.setLimit(m_limit);
         criteria.setOffset(m_offset);
-
+        criteria.setMultipleAnd(m_isMultipleAnd);
         if ("any".equals(m_matchType)) {
             criteria.setRestrictions(Collections.singleton(Restrictions.any(m_restrictions.toArray(EMPTY_RESTRICTION_ARRAY))));
         } else {
             criteria.setRestrictions(m_restrictions);
         }
-
+        if(isNestedMultipleAnd(m_restrictions)){
+            throw new IllegalArgumentException("Use of nested 'multiAnd' is not allowed");
+        }
         return criteria;
+    }
+    private boolean isNestedMultipleAnd(Collection<? extends Restriction> allRestrictions){
+        //set of multiand allRestrictions
+        Set<Restriction> multiAndRestrictionSet = allRestrictions.stream().filter(
+                restriction -> restriction.getType().equals(Restriction.RestrictionType.MULTIAND)).collect(Collectors.toSet());
+        //Get all inner restrictions
+        Set<Restriction> allInnerRestrictions = multiAndRestrictionSet.stream().flatMap(restriction ->
+                ((AllRestriction) restriction).getRestrictions().stream()).collect(Collectors.toSet());
+        //check if any "multiAnd" present, then return true
+        return allInnerRestrictions.stream().anyMatch(restriction -> restriction.getType().equals(Restriction.RestrictionType.MULTIAND));
     }
 
     public CriteriaBuilder match(final String type) {
@@ -307,6 +324,12 @@ public class CriteriaBuilder {
 
     public CriteriaBuilder and(final Restriction... restrictions) {
         addRestriction(Restrictions.and(restrictions));
+        return this;
+    }
+
+    public CriteriaBuilder multipleAnd(final Restriction... restrictions) {
+        m_isMultipleAnd = true;
+        addRestriction(Restrictions.multipleAnd(restrictions));
         return this;
     }
 

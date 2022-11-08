@@ -67,6 +67,12 @@ public class LldpElementDaoHibernate extends AbstractDaoHibernate<LldpElement, I
     }
 
     @Override
+    public List<LldpElement> findByChassisOfLldpLinksOfNode(int nodeId) {
+        return find("from LldpElement rec where exists (from LldpLink l where rec.lldpChassisId = l.lldpRemChassisId AND rec.lldpChassisIdSubType = l.lldpRemChassisIdSubType AND l.node.id = ?)",
+                nodeId);
+    }
+
+    @Override
     public LldpElement findBySysname(String sysname) {
         return findUnique("from LldpElement rec where rec.lldpSysname = ?",
                           sysname);
@@ -76,6 +82,11 @@ public class LldpElementDaoHibernate extends AbstractDaoHibernate<LldpElement, I
     public void deleteByNodeId(Integer nodeId) {
         getHibernateTemplate().bulkUpdate("delete from LldpElement rec where rec.node.id = ? ",
                                     new Object[] {nodeId});
+    }
+
+    @Override
+    public void deleteAll() {
+        getHibernateTemplate().bulkUpdate("delete from LldpElement");
     }
 
 }

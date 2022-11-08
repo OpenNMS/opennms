@@ -61,6 +61,7 @@ import org.springframework.transaction.annotation.Transactional;
 @ContextConfiguration(locations= {
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath*:/META-INF/opennms/component-service.xml",
         "classpath:/daoWebRepositoryTestContext.xml",
@@ -127,7 +128,7 @@ public class NetworkElementFactoryIT implements InitializingBean {
         }
         m_nodeDao.flush();
 
-        m_jdbcTemplate.update("INSERT INTO node (location, nodeId, nodeCreateTime, nodeType) VALUES ('" + MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID + "', 12, now(), 'A')");
+        m_jdbcTemplate.update("INSERT INTO node (location, nodeId, nodeCreateTime, nodeType, nodeLabel) VALUES ('" + MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID + "', 12, now(), 'A', 'test')");
         m_jdbcTemplate.update("INSERT INTO ipInterface (nodeId, ipAddr, isManaged) VALUES (12, '1.1.1.1', 'M')");
         
         final List<OnmsNode> nodes = NetworkElementFactory.getInstance(m_appContext).getNodesWithIpLike("*.*.*.*");
@@ -144,7 +145,7 @@ public class NetworkElementFactoryIT implements InitializingBean {
         }
         m_nodeDao.flush();
 
-        m_jdbcTemplate.update("INSERT INTO node (location, nodeId, nodeCreateTime, nodeType) VALUES ('" + MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID + "', 12, now(), 'A')");
+        m_jdbcTemplate.update("INSERT INTO node (location, nodeId, nodeCreateTime, nodeType, nodeLabel) VALUES ('" + MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID + "', 12, now(), 'A', 'test')");
         m_jdbcTemplate.update("INSERT INTO ipInterface (nodeId, ipAddr, isManaged) VALUES (12, '1.1.1.1', 'M')");
         m_jdbcTemplate.update("INSERT INTO ipInterface (nodeId, ipAddr, isManaged) VALUES (12, '1.1.1.2', 'M')");
         

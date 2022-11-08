@@ -64,8 +64,11 @@ public class Context {
 
     public void writeBson(final BsonWriter bsonWriter, final SampleDatagramEnrichment enr) {
         bsonWriter.writeStartDocument();
+        bsonWriter.writeName("application");
         this.application.writeBson(bsonWriter, enr);
+        bsonWriter.writeName("operation");
         this.operation.writeBson(bsonWriter, enr);
+        bsonWriter.writeName("attributes");
         this.attributes.writeBson(bsonWriter, enr);
         bsonWriter.writeEndDocument();
     }

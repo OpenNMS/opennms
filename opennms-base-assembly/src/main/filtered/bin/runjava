@@ -1,4 +1,4 @@
-#!/bin/bash -
+#!/usr/bin/env bash
 #
 # Wrapper script for starting a JRE within OpenNMS.
 # DJ Gregor
@@ -31,6 +31,8 @@
 #
 # put an '@' here so we don't break maven substition
 
+INCOMING_ARGS=("$@")
+
 # shellcheck disable=SC2016
 opennms_home='${install.dir}'
 if [ ! -d "${opennms_home}" ]; then
@@ -38,7 +40,35 @@ if [ ! -d "${opennms_home}" ]; then
     opennms_home="$OPENNMS_HOME"
 fi
 
-minimum_version="1.8.0"
+# The user to run as
+[ -z "$RUNAS" ] && RUNAS=opennms
+
+if [ -e "${opennms_home}/bin/_lib.sh" ]; then
+    # shellcheck disable=SC1090,SC1091
+    . "${opennms_home}/bin/_lib.sh"
+
+    # Load opennms.conf, if it exists, to override $RUNAS
+    if [ -f "${opennms_home}/etc/opennms.conf" ]; then
+        # shellcheck disable=SC1090
+        __onms_read_conf "${opennms_home}/etc/opennms.conf"
+    fi
+
+    RUNUSER="$(command -v runuser 2>/dev/null || which runuser 2>/dev/null || :)"
+    myuser="$(id -u -n)"
+    if [ "$myuser" != "$RUNAS" ]; then
+        if [ "$myuser" = "root" ] && [ -x "$RUNUSER" ]; then
+            _cmd=("$RUNUSER" "-u" "$RUNAS" -- "$0" "${INCOMING_ARGS[@]}");
+            exec "${_cmd[@]}"
+        fi
+        echo "ERROR: you should run this script as ${RUNAS}, not '${myuser}'." >&2
+        echo "       To correct this, try 'sudo -u ${RUNAS} $0 $@'" >&2
+        echo "       If you wish for OpenNMS to run as ${myuser} instead," >&2
+        echo "       create or edit ${OPENNMS_HOME}/etc/opennms.conf and set 'RUNAS=${myuser}'." >&2
+        exit 4 # According to LSB: 4 - user had insufficient privileges
+    fi
+fi
+
+minimum_version="11.0"
 maximum_version="11.9999"
 
 searchdirs=("/usr/lib/jvm" "/usr/java" "/System/Library/Java/JavaVirtualMachines" "/Library/Java/JavaVirtualMachines" "/Library/Java/Home" "/usr" "/opt")
@@ -274,16 +304,6 @@ checkJavaHome() {
     fi
 }
 
-get_real_path_if_possible() {
-    unresolved="$1"
-    readlink="$(command -v readlink 2>/dev/null)"
-    if [ -n "$readlink" ] && [ -n "$unresolved" ] && [ -x "$unresolved" ]; then
-        "$readlink" "$unresolved" || echo "$unresolved"
-    else
-        echo "$unresolved"
-    fi
-}
-
 
 #
 # Function: checkPath()
@@ -298,7 +318,7 @@ checkPath() {
 
     readlink="$(command -v readlink 2>/dev/null)"
     if [ -n "$readlink" ] && [ -n "$JP" ]; then
-        JP="$(readlink "$JP")"
+        JP="$(readlink -f "$JP")"
     fi
 
     if [ -n "$JP" ]; then

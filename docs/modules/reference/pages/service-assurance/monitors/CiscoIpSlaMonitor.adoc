@@ -1,0 +1,113 @@
+
+= CiscoIpSlaMonitor
+
+Use this monitor to monitor IP SLA configurations on your Cisco devices.
+This monitor supports the following SNMP OIDS from http://www.circitor.fr/Mibs/Html/C/CISCO-RTTMON-MIB.php[CISCO-RTT-MON-MIB]:
+
+  RTT_ADMIN_TAG_OID = .1.3.6.1.4.1.9.9.42.1.2.1.1.3
+  RTT_OPER_STATE_OID = .1.3.6.1.4.1.9.9.42.1.2.9.1.10
+  RTT_LATEST_OPERSENSE_OID = .1.3.6.1.4.1.9.9.42.1.2.10.1.2
+  RTT_ADMIN_THRESH_OID = .1.3.6.1.4.1.9.9.42.1.2.1.1.5
+  RTT_ADMIN_TYPE_OID = .1.3.6.1.4.1.9.9.42.1.2.1.1.4
+  RTT_LATEST_OID = .1.3.6.1.4.1.9.9.42.1.2.10.1.1
+
+You can run this monitor in two scenarios.
+The first tests the RTT_LATEST_OPERSENSE, which is a sense code for the completion status of the latest RTT operation.
+If the RTT_LATEST_OPERSENSE returns `ok(1)`, the service is marked as up.
+
+The second scenario monitors the configured threshold in the IP SLA config.
+If the RTT_LATEST_OPERSENSE returns with `overThreshold(3)`, the service is marked down.
+
+== Monitor facts
+
+[cols="1,7"]
+|===
+| Class Name
+| `org.opennms.netmgt.poller.monitors.CiscoIpSlaMonitor`
+|===
+
+== Configuration and use
+
+.Required monitor-specific parameters for the CiscoIpSlaMonitor
+[options="header"]
+[cols="1,3,2"]
+
+|===
+| Parameter
+| Description
+| Default
+
+| admin-tag
+| The tag attribute from the IP SLA configuration you want to monitor.
+| n/a
+
+| ignore-thresh
+| Boolean indicates whether to monitor just the status or the configured threshold.
+| n/a
+|===
+
+This monitor implements the <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+== Example for HTTP and ICMP echo reply
+
+In this example, we configure an IP SLA entry to monitor Google's website with HTTP GET from the Cisco device.
+We use 8.8.8.8 as our DNS resolver.
+In our example, our SLA says we should reach Google's website within 200ms.
+To advise co-workers that this monitor entry is used for monitoring, we set the owner to OpenNMS.
+The tag identifies the entry later in the SNMP table for monitoring.
+
+.Cisco device configuration for IP SLA instance for HTTP GET
+[source, console]
+----
+ip sla monitor 1
+ type http operation get url http://www.google.de name-server 8.8.8.8
+ timeout 3000
+ threshold 200
+ owner OpenNMS
+ tag Google Website
+ip sla monitor schedule 3 life forever start-time now
+----
+
+In the second example, we configure an IP SLA to test if the IP address from www.opennms.org is reachable with ICMP from the perspective of the Cisco device.
+As in the example above, we have a threshold and a timeout.
+
+.Cisco device configuration for IP SLA instance for ICMP monitoring.
+[source, console]
+----
+ip sla 1
+ icmp-echo 64.146.64.212
+ timeout 3000
+ threshold 150
+ owner OpenNMS
+ tag OpenNMS Host
+ip sla schedule 1 life forever start-time now
+----
+
+WARNING: It's not possible to reconfigure an IP SLA entry.
+         To change parameters, you have to delete the whole configuration and reconfigure it with your new parameters.
+         Back up your Cisco configuration manually or take a look at http://www.shrubbery.net/rancid/[RANCID].
+
+To monitor both of the entries, the configuration in `poller-configuration.xml` requires two service definition entries:
+
+[source, xml]
+----
+<service name="IP-SLA-WEB-Google" interval="300000"
+  user-defined="false" status="on">
+    <parameter key="retry" value="2" />
+    <parameter key="timeout" value="3000" />
+    <parameter key="admin-tag" value="Google Website" />
+    <parameter key="ignore-thresh" value="false" /><1>
+</service>
+<service name="IP-SLA-PING-OpenNMS" interval="300000"
+  user-defined="false" status="on">
+    <parameter key="retry" value="2" />
+    <parameter key="timeout" value="3000" />
+    <parameter key="admin-tag" value="OpenNMS Host" />
+    <parameter key="ignore-thresh" value="true" /><2>
+</service>
+
+<monitor service="IP-SLA-WEB-Google" class-name="org.opennms.netmgt.poller.monitors.CiscoIpSlaMonitor" />
+<monitor service="IP-SLA-PING-OpenNMS" class-name="org.opennms.netmgt.poller.monitors.CiscoIpSlaMonitor" />
+----
+<1> Service is up if the IP SLA state is `ok(1)`.
+<2> Service is down if the IP SLA state is `overThreshold(3)`.

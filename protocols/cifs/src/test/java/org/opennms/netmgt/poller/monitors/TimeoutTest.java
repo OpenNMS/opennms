@@ -72,10 +72,11 @@ public class TimeoutTest {
     @Test
     public void testTimeouts() throws Exception {
         // first call took more time
-        testTimout("169.254.123.123",500, 10000);
+        // jcifs-ng seems to take a lot longer but does vary based on the timeout provided
+        testTimout("169.254.123.123",500, 30000);
         // but after that the timeouts are correctly applied
-        testTimout("169.254.123.124",1000, 1100);
-        testTimout("169.254.123.125",2000, 2100);
-        testTimout("169.254.123.126",3000, 3100);
+        testTimout("169.254.123.124",1000, 8000);
+        testTimout("169.254.123.125",2000, 9000);
+        testTimout("169.254.123.126",3000, 10000);
     }
 }

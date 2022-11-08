@@ -1,36 +1,50 @@
 [OpenNMS][]
 ===========
 
-[OpenNMS][] is the world's first enterprise grade network management application platform developed under the open source model.
+[OpenNMS][] is an open-source network monitoring platform that helps you visualize and monitor everything on your local and distributed networks. OpenNMS offers comprehensive fault, performance, and traffic monitoring with alarm generation in one place. Highly customizable and scalable, OpenNMS integrates with your core business applications and workflows.
 
-Well, what does that mean?
 
-*	World's First
+Features
+---------
 
-	The OpenNMS Project was started in July of 1999 and registered on SourceForge in March of 2000. It has years of experience on the alternatives.
+* **Full inventory management**
 
-*	Enterprise Grade
+	Flexible provisioning system provides many ways to interoperate with configuration management systems.
 
-	It was designed from "day one" to monitor tens of thousands to ultimately unlimited devices with a single instance. It brings the power, scalability and flexibility that enterprises and carriers demand.
+* **Extensive data collection**
 
-*	Application Platform
+	Works with many industry-standard data collection protocols with no need to write or maintain third-party plugins: SNMP, JSON, WinRM, XML, SQL, JMX, SFTP, FTP, JDBC, HTTP, HTTPS, VMware, WS-Management, Prometheus.
 
-	While OpenNMS is useful "out of the box," it is designed to be highly customizable to create an unique and integrated management solution.
+* **Robust traffic management**
 
-* Open Source
+	Supports the following flow protocols: (NetFlow v5/v9, IPFIX, sFlow). 300,000+ flows/sec. BGP Monitoring support implementing the OpenBMP standards for BGP messages and metrics. Deep-dive analysis, enterprise reporting.
 
-	OpenNMS is 100% Free and Open Source software, with no license fees, software subscriptions or special "enterprise" versions.
+* **Digital experience monitoring**
 
-Installing OpenNMS
+	 Use the OpenNMS Minion to monitor a service’s latency and availability from different perspectives.
+
+* **Robust configuration**
+
+	Configure most features through the web UI or XML scripting, including thresholding, provisioning, event and flow management, service monitoring, and performance measurement.
+
+* **Scalability**
+
+	Scale through Sentinels for flow persistence, Minions for Flow, BMP, SNMP trap, and Syslog ingest, and embedded ActiveMQ to Kafka message brokers.
+
+* **Enterprise reporting and  visualization**
+
+	Customizable dashboards that you can export as a PDF. Resource graphs, database reports, charts. Define and customize complex layered topologies to integrate topology maps into your service problem management workflow.
+
+Install OpenNMS
 ==================
 
-For details on installing OpenNMS, please see the install guide: [Installing OpenNMS][].
+For details on installing OpenNMS, see [Install OpenNMS][].
 
-Building OpenNMS
+Build OpenNMS
 ================
 
-For details on building OpenNMS, please see the wiki page: [Building OpenNMS][].
+For details on how to build OpenNMS, see [Build OpenNMS from source][].
 
-[OpenNMS]:           http://www.opennms.org/
-[Building OpenNMS]:  https://wiki.opennms.org/wiki/Installation:Source
-[Installing OpenNMS]:  http://docs.opennms.org/opennms/branches/develop/guide-install/guide-install.html
+[OpenNMS]:           http://www.opennms.com/
+[Build OpenNMS from source]:  docs/modules/development/pages/build-from-source.adoc
+[Install OpenNMS]:  docs/modules/deployment/pages/core/getting-started.adoc

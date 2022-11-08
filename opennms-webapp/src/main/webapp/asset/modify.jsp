@@ -33,6 +33,7 @@
 <% pageContext.setAttribute("nodeId", request.getParameter("node")); %>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false">
+  <jsp:param name="ngapp" value="onms-assets" />
   <jsp:param name="title" value="Modify Asset" />
   <jsp:param name="headTitle" value="Modify" />
   <jsp:param name="headTitle" value="Asset" />
@@ -66,7 +67,7 @@
   if (nodeId != null) {
     if (accessChecker.isNodeAccessible(nodeId)) {
 %>
-      <div class="container-fluid" ng-app="onms-assets" ng-controller="NodeAssetsCtrl" ng-init="init(${nodeId})">
+      <div class="container-fluid" ng-controller="NodeAssetsCtrl" ng-init="init(${nodeId})">
 
         <div growl></div>
 

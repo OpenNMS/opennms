@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,11 +28,15 @@
 
 package org.opennms.protocols.nsclient.collector;
 
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import java.io.ByteArrayInputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -45,7 +49,6 @@ import org.opennms.netmgt.collection.api.CollectionStatus;
 import org.opennms.netmgt.collection.core.DefaultCollectionAgent;
 import org.opennms.netmgt.collection.support.AbstractCollectionSetVisitor;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
-import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.PrimaryType;
@@ -65,8 +68,6 @@ public class NsclientCollectorTest extends AbstractNsclientTest {
     private PlatformTransactionManager m_transactionManager;
 
     private IpInterfaceDao m_ipInterfaceDao;
-
-    private EventProxy m_eventProxy;
 
     private CollectionAgent m_collectionAgent;
 
@@ -93,17 +94,15 @@ public class NsclientCollectorTest extends AbstractNsclientTest {
 
         // Initialize Mocks
         m_transactionManager = new MockPlatformTransactionManager();
-        m_ipInterfaceDao = EasyMock.createMock(IpInterfaceDao.class);
-        m_eventProxy = EasyMock.createMock(EventProxy.class);
+        m_ipInterfaceDao = mock(IpInterfaceDao.class);
         NetworkBuilder builder = new NetworkBuilder();
         builder.addNode("winsrv");
-        builder.addInterface(getServer().getInetAddress().getHostAddress()).addSnmpInterface(1).setCollectionEnabled(true);
+        builder.addSnmpInterface(1).setCollectionEnabled(true).addIpInterface(getServer().getInetAddress().getHostAddress());
         builder.getCurrentNode().setId(1);
         OnmsIpInterface iface = builder.getCurrentNode().getIpInterfaces().iterator().next();
         iface.setIsSnmpPrimary(PrimaryType.PRIMARY);
         iface.setId(1);
-        EasyMock.expect(m_ipInterfaceDao.load(1)).andReturn(iface).anyTimes();
-        EasyMock.replay(m_ipInterfaceDao, m_eventProxy);
+        when(m_ipInterfaceDao.load(1)).thenReturn(iface);
 
         // Initialize NSClient Configuration
         String nsclient_config = "<nsclient-config port=\"" + getServer().getLocalPort() + "\" retry=\"1\" timeout=\"3000\" />";
@@ -118,7 +117,7 @@ public class NsclientCollectorTest extends AbstractNsclientTest {
     @Override
     public void tearDown() throws Exception {
         stopServer();
-        EasyMock.verify(m_ipInterfaceDao, m_eventProxy);
+        verify(m_ipInterfaceDao, atLeastOnce()).load(1);
         super.tearDown();
     }
 

@@ -61,13 +61,8 @@
                 "vendor": null, 
                 "vendorAssetNumber": null, 
                 "vendorFax": null, 
-                "vendorPhone": null, 
-                "vmwareManagedEntityType": null, 
-                "vmwareManagedObjectId": null, 
-                "vmwareManagementServer": null, 
-                "vmwareState": null, 
-                "vmwareTopologyInfo": null
-            }, 
+                "vendorPhone": null
+            },
             "categories": [], 
             "createTime": 1316862766421, 
             "foreignId": null, 

@@ -1,0 +1,7 @@
+[template]
+src = "org.opennms.minion.server-certificates.tmpl"
+dest = "/opt/minion/etc/minion-server-certs.env"
+keys = [
+    "/server-certs"
+]
+reload_cmd = "/opt/minion/confd/scripts/remove-if-empty /opt/minion/etc/minion-server-certs.env"

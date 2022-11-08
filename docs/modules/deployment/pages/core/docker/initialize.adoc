@@ -1,0 +1,31 @@
+.Prepare a local configuration directory to run as an unprivileged user
+[source, console]
+----
+mkdir etc
+chown 10001:10001 -R etc
+----
+
+.Initialize the database and schema and a configuration directory
+[source, console]
+----
+docker-compose run horizon -i
+----
+
+.Start service in background
+[source, console]
+----
+docker-compose up -d
+----
+
+TIP: You can also use this command when you run upgrades.
+     You must delete the file `etc/configured` file first.
+     It works as a guard to prevent unnecessary database migration runs on startup.
+     +
+     +
+     Show configuration changes from a pristine system with  +
+     `docker-compose exec -w /opt/opennms/bin horizon ./config-diff.sh -d`.
+     +
+     +
+     If you changed your configuration files manually you can run the configuration tester with +
+     `docker-compose exec horizon bin/config-tester -a`
+

@@ -144,6 +144,7 @@ public class SnmpDetector extends AgentBasedSyncAbstractDetector<SnmpAgentConfig
     private ExecutorService snmpDetectorExecutor;
 
     private String useSnmpProfiles;
+    private String ttl;
 
     /**
      * The system object identifier to retrieve from the remote agent.
@@ -456,7 +457,19 @@ public class SnmpDetector extends AgentBasedSyncAbstractDetector<SnmpAgentConfig
                 useSnmpProfiles.equals(Boolean.toString(true));
     }
 
+    public String getTtl() {
+        return ttl;
+    }
+
+    public void setTtl(String ttl) {
+        this.ttl = ttl;
+    }
+
     public void setUseSnmpProfiles(String useSnmpProfiles) {
         this.useSnmpProfiles = useSnmpProfiles;
+    }
+
+    public String getUseSnmpProfiles() {
+        return this.useSnmpProfiles;
     }
 }

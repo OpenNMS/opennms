@@ -1,0 +1,6 @@
+.Add repository and import GPG key
+[source, console]
+----
+sudo dnf -y install https://yum.opennms.org/repofiles/opennms-repo-stable-rhel8.noarch.rpm
+sudo rpm --import https://yum.opennms.org/OPENNMS-GPG-KEY
+----

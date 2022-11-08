@@ -34,12 +34,10 @@ import javax.ws.rs.core.Context;
 
 import org.opennms.core.config.api.ConfigurationResourceException;
 import org.opennms.web.rest.v1.config.AgentConfigurationResource;
-import org.opennms.web.rest.v1.config.CollectionConfigurationResource;
 import org.opennms.web.rest.v1.config.DataCollectionConfigResource;
 import org.opennms.web.rest.v1.config.EmailNorthbounderConfigurationResource;
 import org.opennms.web.rest.v1.config.JavamailConfigurationResource;
 import org.opennms.web.rest.v1.config.JmxDataCollectionConfigResource;
-import org.opennms.web.rest.v1.config.PollerConfigurationResource;
 import org.opennms.web.rest.v1.config.SnmpConfigurationResource;
 import org.opennms.web.rest.v1.config.SnmpTrapNorthbounderConfigurationResource;
 import org.opennms.web.rest.v1.config.SyslogNorthbounderConfigurationResource;
@@ -53,16 +51,6 @@ import org.springframework.stereotype.Component;
 @Component("configRestService")
 @Path("config")
 public class ConfigRestService extends OnmsRestService {
-
-    @Path("{location}/polling")
-    public PollerConfigurationResource getPollerConfiguration(@Context final ResourceContext context) {
-        return context.getResource(PollerConfigurationResource.class);
-    }
-
-    @Path("{location}/collection")
-    public CollectionConfigurationResource getCollectionConfigurationResource(@Context final ResourceContext context) throws ConfigurationResourceException {
-        return context.getResource(CollectionConfigurationResource.class);
-    }
 
     @Path("datacollection")
     public DataCollectionConfigResource getDatacollectionConfigurationResource(@Context final ResourceContext context) throws ConfigurationResourceException {

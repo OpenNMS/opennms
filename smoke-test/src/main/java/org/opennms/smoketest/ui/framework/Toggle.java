@@ -28,6 +28,7 @@
 
 package org.opennms.smoketest.ui.framework;
 
+import java.time.Duration;
 import java.util.List;
 
 import org.openqa.selenium.By;
@@ -53,7 +54,7 @@ public class Toggle extends UiElement {
     public void toggle() {
         boolean previousState = isOn();
         execute(() -> driver.findElement(By.id(elementId))).click();
-        new WebDriverWait(driver, 5, 500).until((Function<WebDriver, Boolean>) webDriver -> previousState != isOn());
+        new WebDriverWait(driver, Duration.ofSeconds(5), Duration.ofMillis(500)).until((Function<WebDriver, Boolean>) webDriver -> previousState != isOn());
     }
 
     public void setValue(boolean value) {

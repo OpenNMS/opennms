@@ -14,12 +14,10 @@ require('jquery-ui/ui/effect');
 // additional core plugins
 require('jquery-ui/ui/data');
 require('jquery-ui/ui/disable-selection');
-require('jquery-ui/ui/escape-selector');
 require('jquery-ui/ui/focusable');
 require('jquery-ui/ui/form-reset-mixin');
 require('jquery-ui/ui/form');
 require('jquery-ui/ui/ie');
-require('jquery-ui/ui/jquery-1-7');
 require('jquery-ui/ui/keycode');
 require('jquery-ui/ui/labels');
 require('jquery-ui/ui/plugin');

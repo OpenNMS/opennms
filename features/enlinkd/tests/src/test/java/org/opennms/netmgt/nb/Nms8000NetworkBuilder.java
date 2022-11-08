@@ -28,6 +28,10 @@
 
 package org.opennms.netmgt.nb;
 
+import java.net.InetAddress;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsNode;
 
@@ -36,6 +40,72 @@ import org.opennms.netmgt.model.OnmsNode;
  */
 
 public class Nms8000NetworkBuilder extends NmsNetworkBuilder {
+    //NMS8003
+    //NMS8000
+    public static final String NMMR1_IP = "192.168.3.1";
+    public static final String NMMR1_NAME = "NMM-R1";
+    public static final String NMMR1_SYSOID = ".1.3.6.1.4.1.9.1.1045";
+    public static final String NMMR1_SNMP_RESOURCE = "classpath:/linkd/nms8000/"+NMMR1_NAME+".snmpwalk.txt";
+    public static final String NMMR1_SNMP_RESOURCE_2 = "classpath:/linkd/nms8003/"+NMMR1_NAME+".snmpwalk.txt";
+
+    public static final Map<InetAddress,Integer> NMMR1_IP_IF_MAP =  new HashMap<>();
+    public static final Map<Integer,String>      NMMR1_IF_IFNAME_MAP = new HashMap<>();
+    public static final Map<Integer,String>      NMMR1_IF_IFDESCR_MAP = new HashMap<>();
+    public static final Map<Integer,String>      NMMR1_IF_MAC_MAP = new HashMap<>();
+    public static final Map<Integer,String>      NMMR1_IF_IFALIAS_MAP = new HashMap<>();
+    public static final Map<InetAddress,InetAddress> NMMR1_IP_MK_MAP = new HashMap<>();
+
+    public static final String NMMR2_IP = "192.168.2.1";
+    public static final String NMMR2_NAME = "NMM-R2";
+    public static final String NMMR2_SYSOID = ".1.3.6.1.4.1.9.1.1045";
+    public static final String NMMR2_SNMP_RESOURCE = "classpath:/linkd/nms8000/"+NMMR2_NAME+".snmpwalk.txt";
+    public static final String NMMR2_SNMP_RESOURCE_2 = "classpath:/linkd/nms8003/"+NMMR2_NAME+".snmpwalk.txt";
+
+    public static final Map<InetAddress,Integer> NMMR2_IP_IF_MAP =  new HashMap<>();
+    public static final Map<Integer,String>      NMMR2_IF_IFNAME_MAP = new HashMap<>();
+    public static final Map<Integer,String>      NMMR2_IF_IFDESCR_MAP = new HashMap<>();
+    public static final Map<Integer,String>      NMMR2_IF_MAC_MAP = new HashMap<>();
+    public static final Map<Integer,String>      NMMR2_IF_IFALIAS_MAP = new HashMap<>();
+    public static final Map<InetAddress,InetAddress> NMMR2_IP_MK_MAP = new HashMap<>();
+
+    public static final String NMMR3_IP = "192.168.255.1";
+    public static final String NMMR3_NAME = "NMM-R3";
+    public static final String NMMR3_SYSOID = ".1.3.6.1.4.1.9.1.1045";
+    public static final String NMMR3_SNMP_RESOURCE = "classpath:/linkd/nms8000/"+NMMR3_NAME+".snmpwalk.txt";
+    public static final String NMMR3_SNMP_RESOURCE_2 = "classpath:/linkd/nms8003/"+NMMR3_NAME+".snmpwalk.txt";
+
+    public static final Map<InetAddress,Integer> NMMR3_IP_IF_MAP =  new HashMap<>();
+    public static final Map<Integer,String>      NMMR3_IF_IFNAME_MAP = new HashMap<>();
+    public static final Map<Integer,String>      NMMR3_IF_IFDESCR_MAP = new HashMap<>();
+    public static final Map<Integer,String>      NMMR3_IF_MAC_MAP = new HashMap<>();
+    public static final Map<Integer,String>      NMMR3_IF_IFALIAS_MAP = new HashMap<>();
+    public static final Map<InetAddress,InetAddress> NMMR3_IP_MK_MAP = new HashMap<>();
+
+    public static final String NMMSW1_IP = "192.168.23.10";
+    public static final String NMMSW1_NAME = "NMM-SW1";
+    public static final String NMMSW1_SYSOID = ".1.3.6.1.4.1.9.1.716";
+    public static final String NMMSW1_SNMP_RESOURCE = "classpath:/linkd/nms8000/"+NMMSW1_NAME+".snmpwalk.txt";
+    public static final String NMMSW1_SNMP_RESOURCE_2 = "classpath:/linkd/nms8003/"+NMMSW1_NAME+".snmpwalk.txt";
+
+    public static final Map<InetAddress,Integer> NMMSW1_IP_IF_MAP =  new HashMap<>();
+    public static final Map<Integer,String>      NMMSW1_IF_IFNAME_MAP = new HashMap<>();
+    public static final Map<Integer,String>      NMMSW1_IF_IFDESCR_MAP = new HashMap<>();
+    public static final Map<Integer,String>      NMMSW1_IF_MAC_MAP = new HashMap<>();
+    public static final Map<Integer,String>      NMMSW1_IF_IFALIAS_MAP = new HashMap<>();
+    public static final Map<InetAddress,InetAddress> NMMSW1_IP_MK_MAP = new HashMap<>();
+
+    public static final String NMMSW2_IP = "192.168.42.10";
+    public static final String NMMSW2_NAME = "NMM-SW2";
+    public static final String NMMSW2_SYSOID = ".1.3.6.1.4.1.9.1.716";
+    public static final String NMMSW2_SNMP_RESOURCE = "classpath:/linkd/nms8000/"+NMMSW2_NAME+".snmpwalk.txt";
+    public static final String NMMSW2_SNMP_RESOURCE_2 = "classpath:/linkd/nms8003/"+NMMSW2_NAME+".snmpwalk.txt";
+
+    public static final Map<InetAddress,Integer> NMMSW2_IP_IF_MAP =  new HashMap<>();
+    public static final Map<Integer,String>      NMMSW2_IF_IFNAME_MAP = new HashMap<>();
+    public static final Map<Integer,String>      NMMSW2_IF_IFDESCR_MAP = new HashMap<>();
+    public static final Map<Integer,String>      NMMSW2_IF_MAC_MAP = new HashMap<>();
+    public static final Map<Integer,String>      NMMSW2_IF_IFALIAS_MAP = new HashMap<>();
+    public static final Map<InetAddress,InetAddress> NMMSW2_IP_MK_MAP = new HashMap<>();
 
 
     static {
@@ -43,6 +113,9 @@ public class Nms8000NetworkBuilder extends NmsNetworkBuilder {
         NMMR1_IP_IF_MAP.put(InetAddressUtils.addr("192.168.23.9"), 9);
         NMMR1_IP_IF_MAP.put(InetAddressUtils.addr("192.168.42.8"), 10);
         NMMR1_IP_IF_MAP.put(InetAddressUtils.addr("192.168.3.1"), 8);
+        NMMR1_IP_MK_MAP.put(InetAddressUtils.addr("192.168.42.8"), InetAddressUtils.addr("255.255.255.0"));
+        NMMR1_IP_MK_MAP.put(InetAddressUtils.addr("192.168.23.9"), InetAddressUtils.addr("255.255.255.0"));
+        NMMR1_IP_MK_MAP.put(InetAddressUtils.addr("192.168.3.1"), InetAddressUtils.addr("255.255.255.0"));
         NMMR1_IF_IFNAME_MAP.put(7, "Em0/0");
         NMMR1_IF_IFDESCR_MAP.put(7, "Embedded-Service-Engine0/0");
         NMMR1_IF_MAC_MAP.put(7, "000000000000");
@@ -52,7 +125,6 @@ public class Nms8000NetworkBuilder extends NmsNetworkBuilder {
         NMMR1_IF_IFDESCR_MAP.put(9, "GigabitEthernet0/1");
         NMMR1_IF_MAC_MAP.put(9, "2c542d337c11");
         NMMR1_IF_IFALIAS_MAP.put(9, "Link-To-SW1");
-        NMMR1_IF_NETMASK_MAP.put(9, InetAddressUtils.addr("255.255.255.0"));
         NMMR1_IF_IFNAME_MAP.put(26, "BR0/2/1");
         NMMR1_IF_IFDESCR_MAP.put(26, "BRI0/2/1-Physical");
         NMMR1_IF_IFNAME_MAP.put(15, "Se0/1/1");
@@ -71,12 +143,10 @@ public class Nms8000NetworkBuilder extends NmsNetworkBuilder {
         NMMR1_IF_IFDESCR_MAP.put(8, "GigabitEthernet0/0");
         NMMR1_IF_MAC_MAP.put(8, "2c542d337c10");
         NMMR1_IF_IFALIAS_MAP.put(8, "Link-To-R3");
-        NMMR1_IF_NETMASK_MAP.put(8, InetAddressUtils.addr("255.255.255.0"));
         NMMR1_IF_IFNAME_MAP.put(10, "Gi0/2");
         NMMR1_IF_IFDESCR_MAP.put(10, "GigabitEthernet0/2");
         NMMR1_IF_MAC_MAP.put(10, "2c542d337c12");
         NMMR1_IF_IFALIAS_MAP.put(10, "Link-To-SW2");
-        NMMR1_IF_NETMASK_MAP.put(10, InetAddressUtils.addr("255.255.255.0"));
         NMMR1_IF_IFNAME_MAP.put(22, "BR0/2/0");
         NMMR1_IF_IFDESCR_MAP.put(22, "BRI0/2/0-Physical");
         NMMR1_IF_IFNAME_MAP.put(14, "Se0/1/0");
@@ -100,6 +170,9 @@ public class Nms8000NetworkBuilder extends NmsNetworkBuilder {
         NMMR2_IP_IF_MAP.put(InetAddressUtils.addr("192.168.2.1"), 8);
         NMMR2_IP_IF_MAP.put(InetAddressUtils.addr("192.168.23.8"), 10);
         NMMR2_IP_IF_MAP.put(InetAddressUtils.addr("192.168.42.9"), 9);
+        NMMR2_IP_MK_MAP.put(InetAddressUtils.addr("192.168.23.8"), InetAddressUtils.addr("255.255.255.0"));
+        NMMR2_IP_MK_MAP.put(InetAddressUtils.addr("192.168.42.9"), InetAddressUtils.addr("255.255.255.0"));
+        NMMR2_IP_MK_MAP.put(InetAddressUtils.addr("192.168.2.1"), InetAddressUtils.addr("255.255.255.0"));
         NMMR2_IF_IFNAME_MAP.put(11, "Gi0/3");
         NMMR2_IF_IFDESCR_MAP.put(11, "GigabitEthernet0/3");
         NMMR2_IF_MAC_MAP.put(11, "5057a8f5ba63");
@@ -117,12 +190,10 @@ public class Nms8000NetworkBuilder extends NmsNetworkBuilder {
         NMMR2_IF_IFDESCR_MAP.put(9, "GigabitEthernet0/1");
         NMMR2_IF_MAC_MAP.put(9, "5057a8f5ba61");
         NMMR2_IF_IFALIAS_MAP.put(9, "Link-To-SW2");
-        NMMR2_IF_NETMASK_MAP.put(9, InetAddressUtils.addr("255.255.255.0"));
         NMMR2_IF_IFNAME_MAP.put(8, "Gi0/0");
         NMMR2_IF_IFDESCR_MAP.put(8, "GigabitEthernet0/0");
         NMMR2_IF_MAC_MAP.put(8, "5057a8f5ba60");
         NMMR2_IF_IFALIAS_MAP.put(8, "Link-To-R3");
-        NMMR2_IF_NETMASK_MAP.put(8, InetAddressUtils.addr("255.255.255.0"));
         NMMR2_IF_IFNAME_MAP.put(25, "BR0/2/0:2");
         NMMR2_IF_IFDESCR_MAP.put(25, "BRI0/2/0:2-Bearer Channel");
         NMMR2_IF_IFNAME_MAP.put(14, "Se0/1/0");
@@ -133,7 +204,6 @@ public class Nms8000NetworkBuilder extends NmsNetworkBuilder {
         NMMR2_IF_IFDESCR_MAP.put(10, "GigabitEthernet0/2");
         NMMR2_IF_MAC_MAP.put(10, "5057a8f5ba62");
         NMMR2_IF_IFALIAS_MAP.put(10, "Link-To-SW1");
-        NMMR2_IF_NETMASK_MAP.put(10, InetAddressUtils.addr("255.255.255.0"));
         NMMR2_IF_IFNAME_MAP.put(28, "BR0/2/1:1");
         NMMR2_IF_IFDESCR_MAP.put(28, "BRI0/2/1:1-Bearer Channel");
         NMMR2_IF_IFNAME_MAP.put(29, "BR0/2/1:2");
@@ -158,6 +228,11 @@ public class Nms8000NetworkBuilder extends NmsNetworkBuilder {
         NMMR3_IP_IF_MAP.put(InetAddressUtils.addr("192.168.255.1"), 16);
         NMMR3_IP_IF_MAP.put(InetAddressUtils.addr("192.168.3.2"), 3);
         NMMR3_IP_IF_MAP.put(InetAddressUtils.addr("192.168.2.2"), 4);
+        NMMR3_IP_MK_MAP.put(InetAddressUtils.addr("192.168.3.2"), InetAddressUtils.addr("255.255.255.0"));
+        NMMR3_IP_MK_MAP.put(InetAddressUtils.addr("192.168.76.101"), InetAddressUtils.addr("255.255.255.128"));
+        NMMR3_IP_MK_MAP.put(InetAddressUtils.addr("192.168.2.2"), InetAddressUtils.addr("255.255.255.0"));
+        NMMR3_IP_MK_MAP.put(InetAddressUtils.addr("192.168.255.1"), InetAddressUtils.addr("255.255.255.0"));
+
         NMMR3_IF_IFNAME_MAP.put(5, "Gi0/3");
         NMMR3_IF_IFDESCR_MAP.put(5, "GigabitEthernet0/3");
         NMMR3_IF_MAC_MAP.put(5, "2c542d337853");
@@ -169,7 +244,6 @@ public class Nms8000NetworkBuilder extends NmsNetworkBuilder {
         NMMR3_IF_IFDESCR_MAP.put(3, "GigabitEthernet0/1");
         NMMR3_IF_MAC_MAP.put(3, "2c542d337851");
         NMMR3_IF_IFALIAS_MAP.put(3, "Link-To-R1");
-        NMMR3_IF_NETMASK_MAP.put(3, InetAddressUtils.addr("255.255.255.0"));
         NMMR3_IF_IFNAME_MAP.put(7, "Se0/0/1");
         NMMR3_IF_IFDESCR_MAP.put(7, "Serial0/0/1");
         NMMR3_IF_IFNAME_MAP.put(6, "Se0/0/0");
@@ -178,14 +252,12 @@ public class Nms8000NetworkBuilder extends NmsNetworkBuilder {
         NMMR3_IF_IFDESCR_MAP.put(2, "GigabitEthernet0/0");
         NMMR3_IF_MAC_MAP.put(2, "2c542d337850");
         NMMR3_IF_IFALIAS_MAP.put(2, "Link-To-NetLab");
-        NMMR3_IF_NETMASK_MAP.put(2, InetAddressUtils.addr("255.255.255.128"));
         NMMR3_IF_IFNAME_MAP.put(10, "Vo0");
         NMMR3_IF_IFDESCR_MAP.put(10, "VoIP-Null0");
         NMMR3_IF_IFNAME_MAP.put(4, "Gi0/2");
         NMMR3_IF_IFDESCR_MAP.put(4, "GigabitEthernet0/2");
         NMMR3_IF_MAC_MAP.put(4, "2c542d337852");
         NMMR3_IF_IFALIAS_MAP.put(4, "Link-To-R2");
-        NMMR3_IF_NETMASK_MAP.put(4, InetAddressUtils.addr("255.255.255.0"));
         NMMR3_IF_IFNAME_MAP.put(11, "Nu0");
         NMMR3_IF_IFDESCR_MAP.put(11, "Null0");
         NMMR3_IF_IFNAME_MAP.put(1, "Em0/0");
@@ -195,10 +267,10 @@ public class Nms8000NetworkBuilder extends NmsNetworkBuilder {
         NMMR3_IF_IFDESCR_MAP.put(8, "Serial0/1/0");
         NMMR3_IF_IFNAME_MAP.put(16, "Tu1");
         NMMR3_IF_IFDESCR_MAP.put(16, "Tunnel1");
-        NMMR3_IF_NETMASK_MAP.put(16, InetAddressUtils.addr("255.255.255.0"));
-        
+
         
         NMMSW1_IP_IF_MAP.put(InetAddressUtils.addr("192.168.23.10"), 1);
+        NMMSW1_IP_MK_MAP.put(InetAddressUtils.addr("192.168.23.10"), InetAddressUtils.addr("255.255.255.0"));
         NMMSW1_IF_IFNAME_MAP.put(10018, "Fa0/18");
         NMMSW1_IF_IFDESCR_MAP.put(10018, "FastEthernet0/18");
         NMMSW1_IF_MAC_MAP.put(10018, "a418750ace12");
@@ -214,7 +286,6 @@ public class Nms8000NetworkBuilder extends NmsNetworkBuilder {
         NMMSW1_IF_IFNAME_MAP.put(1, "Vl1");
         NMMSW1_IF_IFDESCR_MAP.put(1, "Vlan1");
         NMMSW1_IF_MAC_MAP.put(1, "a418750ace40");
-        NMMSW1_IF_NETMASK_MAP.put(1, InetAddressUtils.addr("255.255.255.0"));
         NMMSW1_IF_IFNAME_MAP.put(10102, "Gi0/2");
         NMMSW1_IF_IFDESCR_MAP.put(10102, "GigabitEthernet0/2");
         NMMSW1_IF_MAC_MAP.put(10102, "a418750ace1a");
@@ -285,6 +356,7 @@ public class Nms8000NetworkBuilder extends NmsNetworkBuilder {
         NMMSW1_IF_MAC_MAP.put(10008, "a418750ace08");
         
         NMMSW2_IP_IF_MAP.put(InetAddressUtils.addr("192.168.42.10"), 1);
+        NMMSW2_IP_MK_MAP.put(InetAddressUtils.addr("192.168.42.10"), InetAddressUtils.addr("255.255.255.0"));
         NMMSW2_IF_IFNAME_MAP.put(10022, "Fa0/22");
         NMMSW2_IF_IFDESCR_MAP.put(10022, "FastEthernet0/22");
         NMMSW2_IF_MAC_MAP.put(10022, "f4ea676a1396");
@@ -365,38 +437,37 @@ public class Nms8000NetworkBuilder extends NmsNetworkBuilder {
         NMMSW2_IF_IFNAME_MAP.put(1, "Vl1");
         NMMSW2_IF_IFDESCR_MAP.put(1, "Vlan1");
         NMMSW2_IF_MAC_MAP.put(1, "f4ea676a13c0");
-        NMMSW2_IF_NETMASK_MAP.put(1, InetAddressUtils.addr("255.255.255.0"));
         NMMSW2_IF_IFNAME_MAP.put(10021, "Fa0/21");
         NMMSW2_IF_IFDESCR_MAP.put(10021, "FastEthernet0/21");
         NMMSW2_IF_MAC_MAP.put(10021, "f4ea676a1395");
-    } catch (Exception e) {
+    } catch (Exception ignored) {
         
     }
     }
     
     public OnmsNode getNMMR1() {
         return getNode(NMMR1_NAME,NMMR1_SYSOID,NMMR1_IP,NMMR1_IP_IF_MAP,NMMR1_IF_IFNAME_MAP,
-                       NMMR1_IF_MAC_MAP,NMMR1_IF_IFDESCR_MAP,NMMR1_IF_IFALIAS_MAP);
+                       NMMR1_IF_MAC_MAP,NMMR1_IF_IFDESCR_MAP,NMMR1_IF_IFALIAS_MAP,NMMR1_IP_MK_MAP);
     }    
     
     public OnmsNode getNMMR2() {
         return getNode(NMMR2_NAME,NMMR2_SYSOID,NMMR2_IP,NMMR2_IP_IF_MAP,NMMR2_IF_IFNAME_MAP,
-                       NMMR2_IF_MAC_MAP,NMMR2_IF_IFDESCR_MAP,NMMR2_IF_IFALIAS_MAP);
+                       NMMR2_IF_MAC_MAP,NMMR2_IF_IFDESCR_MAP,NMMR2_IF_IFALIAS_MAP,NMMR2_IP_MK_MAP);
     }    
 
     public OnmsNode getNMMR3() {
         return getNode(NMMR3_NAME,NMMR3_SYSOID,NMMR3_IP,NMMR3_IP_IF_MAP,NMMR3_IF_IFNAME_MAP,
-                       NMMR3_IF_MAC_MAP,NMMR3_IF_IFDESCR_MAP,NMMR3_IF_IFALIAS_MAP);
+                       NMMR3_IF_MAC_MAP,NMMR3_IF_IFDESCR_MAP,NMMR3_IF_IFALIAS_MAP, NMMR3_IP_MK_MAP);
     }    
 
     public OnmsNode getNMMSW1() {
         return getNode(NMMSW1_NAME,NMMSW1_SYSOID,NMMSW1_IP,NMMSW1_IP_IF_MAP,NMMSW1_IF_IFNAME_MAP,
-                       NMMSW1_IF_MAC_MAP,NMMSW1_IF_IFDESCR_MAP,NMMSW1_IF_IFALIAS_MAP);
+                       NMMSW1_IF_MAC_MAP,NMMSW1_IF_IFDESCR_MAP,NMMSW1_IF_IFALIAS_MAP,NMMSW1_IP_MK_MAP);
     }    
 
     public OnmsNode getNMMSW2() {
         return getNode(NMMSW2_NAME,NMMSW2_SYSOID,NMMSW2_IP,NMMSW2_IP_IF_MAP,NMMSW2_IF_IFNAME_MAP,
-                       NMMSW2_IF_MAC_MAP,NMMSW2_IF_IFDESCR_MAP,NMMSW2_IF_IFALIAS_MAP);
-    }    
+                       NMMSW2_IF_MAC_MAP,NMMSW2_IF_IFDESCR_MAP,NMMSW2_IF_IFALIAS_MAP,NMMSW2_IP_MK_MAP);
+    }
 
 }

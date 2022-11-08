@@ -115,6 +115,7 @@ import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.PrefixTreatAsWithdraw;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.Rejected;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.UpdateTreatAsWithdraw;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.state.ParserState;
 import org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -131,6 +132,9 @@ import io.github.resilience4j.bulkhead.Bulkhead;
 import io.github.resilience4j.bulkhead.BulkheadFullException;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import io.netty.channel.group.ChannelGroup;
+import io.netty.channel.group.DefaultChannelGroup;
+import io.netty.util.concurrent.GlobalEventExecutor;
 
 public class BmpParser implements TcpParser {
     public static final Logger LOG = LoggerFactory.getLogger(BmpParser.class);
@@ -176,9 +180,14 @@ public class BmpParser implements TcpParser {
     }
 
     @Override
+    public String getDescription() {
+        return "BMP";
+    }
+
+    @Override
     public void start(final ScheduledExecutorService executorService) {
-        this.sendHeartbeat(HeartbeatMode.STARTED);
-        this.heartbeatFuture = executorService.scheduleAtFixedRate(() -> this.sendHeartbeat(HeartbeatMode.PERIODIC),
+        this.sendHeartbeat(HeartbeatMode.STARTED, InetSocketAddress.createUnresolved("0.0.0.0", 0));
+        this.heartbeatFuture = executorService.scheduleAtFixedRate(() -> this.sendHeartbeat(HeartbeatMode.PERIODIC, InetSocketAddress.createUnresolved("0.0.0.0", 0)),
                 HEARTBEAT_INTERVAL,
                 HEARTBEAT_INTERVAL,
                 TimeUnit.MILLISECONDS);
@@ -187,7 +196,7 @@ public class BmpParser implements TcpParser {
     @Override
     public void stop() {
         this.heartbeatFuture.cancel(false);
-        this.sendHeartbeat(HeartbeatMode.STOPPED);
+        this.sendHeartbeat(HeartbeatMode.STOPPED, InetSocketAddress.createUnresolved("0.0.0.0", 0));
     }
 
     @Override
@@ -306,15 +315,22 @@ public class BmpParser implements TcpParser {
             @Override
             public void active() {
                 BmpParser.this.connections.add(remoteAddress.getAddress());
-                BmpParser.this.sendHeartbeat(HeartbeatMode.CHANGE);
+                BmpParser.this.sendHeartbeat(HeartbeatMode.CHANGE, remoteAddress);
             }
 
             @Override
             public void inactive() {
                 BmpParser.this.connections.remove(remoteAddress.getAddress());
-                BmpParser.this.sendHeartbeat(HeartbeatMode.CHANGE);
+                BmpParser.this.sendHeartbeat(HeartbeatMode.CHANGE, remoteAddress);
             }
         };
+    }
+
+    @Override
+    public Object dumpInternalState() {
+        return ParserState.builder()
+                .withConnections(this.connections)
+                .build();
     }
 
     private Function<Transport.Message.Builder, CompletableFuture<Transport.Message.Builder>> resolvePeer(final Packet packet) {
@@ -376,7 +392,7 @@ public class BmpParser implements TcpParser {
         }
     }
 
-    private void sendHeartbeat(final HeartbeatMode mode) {
+    private void sendHeartbeat(final HeartbeatMode mode, InetSocketAddress remoteAddress) {
         final Transport.Message.Builder message = Transport.Message.newBuilder();
 
         message.getHeartbeatBuilder()
@@ -396,7 +412,7 @@ public class BmpParser implements TcpParser {
                 }))
                 .addAllRouters(Iterables.transform(this.connections, BmpParser::address));
 
-        this.dispatcher.send(new TelemetryMessage(InetSocketAddress.createUnresolved("0.0.0.0", 0), ByteBuffer.wrap(message.build().toByteArray())));
+        this.dispatcher.send(new TelemetryMessage(remoteAddress, ByteBuffer.wrap(message.build().toByteArray())));
         BmpParser.this.recordsDispatched.mark();
     }
 

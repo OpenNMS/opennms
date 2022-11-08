@@ -28,11 +28,11 @@
 
 package org.opennms.netmgt.model;
 
+import java.io.IOException;
+
 import org.junit.Test;
 import org.opennms.core.test.xml.JsonTest;
 import org.opennms.core.test.xml.XmlTest;
-
-import java.io.IOException;
 
 
 public class OnmsApplicationTest {
@@ -58,6 +58,6 @@ public class OnmsApplicationTest {
         application.setName("Dummy");
 
         String applicationString = JsonTest.marshalToJson(application);
-        JsonTest.assertJsonEquals("{\"name\" : \"Dummy\", \"id\" : 100}", applicationString);
+        JsonTest.assertJsonEquals("{\"name\" : \"Dummy\", \"id\" : 100, \"perspectiveLocations\" : []}}", applicationString);
     }
 }

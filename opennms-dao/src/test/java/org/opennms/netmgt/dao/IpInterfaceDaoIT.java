@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,6 +31,7 @@ package org.opennms.netmgt.dao;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
@@ -49,6 +50,7 @@ import org.hibernate.criterion.Restrictions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
@@ -57,6 +59,7 @@ import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,6 +71,7 @@ import org.springframework.transaction.annotation.Transactional;
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
@@ -90,6 +94,18 @@ public class IpInterfaceDaoIT implements InitializingBean {
     @Before
     public void setUp() {
         m_databasePopulator.populateDatabase();
+    }
+
+    @Test
+    @Transactional
+    public void testPrimaryType() {
+        CriteriaBuilder cb = new CriteriaBuilder(OnmsIpInterface.class).eq("snmpPrimary", PrimaryType.PRIMARY.getCharCode());
+        Collection<OnmsIpInterface> ifaces = m_ipInterfaceDao.findMatching(cb.toCriteria());
+        assertEquals(Integer.valueOf(1), ifaces.iterator().next().getIfIndex());
+
+        cb = new CriteriaBuilder(OnmsIpInterface.class).eq("snmpPrimary", PrimaryType.NOT_ELIGIBLE.getCharCode());
+        ifaces = m_ipInterfaceDao.findMatching(cb.toCriteria());
+        assertEquals(Integer.valueOf(3), ifaces.iterator().next().getIfIndex());
     }
 
     @Test
@@ -171,6 +187,7 @@ public class IpInterfaceDaoIT implements InitializingBean {
 
     @Test
     @Transactional
+    @SuppressWarnings("unlikely-arg-type")
     public void testGetInterfacesForNodes() throws UnknownHostException {
         Map<InetAddress, Integer> interfaceNodes = m_ipInterfaceDao.getInterfacesForNodes();
         assertNotNull("interfaceNodes", interfaceNodes);
@@ -186,4 +203,16 @@ public class IpInterfaceDaoIT implements InitializingBean {
         assertFalse("node ID for *BOGUS*IP* should not have been found", interfaceNodes.containsKey("*BOGUS*IP*"));
     }
 
+    @Test
+    @Transactional
+    public void testFindByIpAddressAndLocation() {
+        var ipAddress = "192.168.1.1";
+        var location = "Default";
+        OnmsIpInterface itf = m_ipInterfaceDao.findByIpAddressAndLocation(ipAddress, location).stream().findFirst().orElse(null);
+        assertNotNull(itf);
+        assertEquals(itf.getIpAddress().getHostAddress(), ipAddress);
+        assertEquals(itf.getNode().getLocation().getLocationName(), location);
+        OnmsIpInterface itf2 = m_ipInterfaceDao.findByIpAddressAndLocation(ipAddress, location + location).stream().findFirst().orElse(null);
+        assertNull(itf2);
+    }
 }

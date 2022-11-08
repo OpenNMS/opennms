@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.telemetry.protocols.registry.impl;
 
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -36,6 +37,7 @@ import java.util.function.Supplier;
 
 import org.opennms.core.soa.lookup.ServiceLookup;
 import org.opennms.core.soa.lookup.ServiceLookupBuilder;
+import org.opennms.core.utils.properties.DurationPropertyEditor;
 import org.opennms.netmgt.telemetry.protocols.registry.api.TelemetryServiceRegistry;
 import org.opennms.netmgt.telemetry.api.TelemetryBeanFactory;
 import org.opennms.netmgt.telemetry.config.api.TelemetryBeanDefinition;
@@ -123,6 +125,7 @@ public class TelemetryServiceRegistryImpl<F extends TelemetryBeanFactory, BD ext
             final T service = (T) registration.getServiceFactory().createBean(beanDefinition);
 
             final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(service);
+            wrapper.registerCustomEditor(Duration.class, new DurationPropertyEditor());
             wrapper.setPropertyValues(beanDefinition.getParameterMap());
 
             if (registration.shouldAutowire()) {

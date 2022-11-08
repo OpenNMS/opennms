@@ -28,20 +28,25 @@
 
 package org.opennms.netmgt.telemetry.protocols.graphite.adapter;
 
+import com.codahale.metrics.MetricRegistry;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
-
 import javax.script.ScriptException;
-
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.collectd.SnmpCollectionAgent;
+import org.opennms.netmgt.collectd.SnmpCollectionSet;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionAgentFactory;
 import org.opennms.netmgt.collection.api.CollectionSet;
+import org.opennms.netmgt.collection.dto.CollectionAgentDTO;
+import org.opennms.netmgt.collection.dto.CollectionSetDTO;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLog;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLogEntry;
 import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
@@ -49,11 +54,10 @@ import org.opennms.netmgt.telemetry.protocols.collection.AbstractScriptedCollect
 import org.opennms.netmgt.telemetry.protocols.collection.CollectionSetWithAgent;
 import org.opennms.netmgt.telemetry.protocols.collection.ScriptedCollectionSetBuilder;
 
-import com.codahale.metrics.MetricRegistry;
-
 public class GraphiteAdapter extends AbstractScriptedCollectionAdapter {
     private CollectionAgentFactory collectionAgentFactory;
     private InterfaceToNodeCache interfaceToNodeCache;
+    private NodeDao nodeDao;
 
     public GraphiteAdapter(final AdapterDefinition adapterConfig, final MetricRegistry metricRegistry) {
         super(adapterConfig, metricRegistry);
@@ -98,8 +102,36 @@ public class GraphiteAdapter extends AbstractScriptedCollectionAdapter {
             } else {
                 try {
                     final GraphiteMetric metric = new GraphiteMetric(entry[0], entry[1], Long.valueOf(entry[2], 10));
-                    final CollectionSet collectionSet = builder.build(agent, metric, metric.getTimestamp());
-                    collectionSets.add(new CollectionSetWithAgent(agent, collectionSet));
+
+                    // Pass in this agentList. If script adds a CollectionAgent to this list, we use it instead of the
+                    // one created above. Can be used to change the node that this CollectionSet is associated with
+                    // Also pass in a CollectionAgentFactory and NodeDao which may be used by the script to
+                    // create a modified CollectionAgent
+                    var agentList = new ArrayList<CollectionAgent>();
+                    var props = new HashMap<String, Object>();
+                    props.put("agentList", agentList);
+                    props.put("collectionAgentFactory", collectionAgentFactory);
+                    props.put("nodeDao", nodeDao);
+
+                    final CollectionSet collectionSet = builder.build(agent, metric, metric.getTimestamp(), props);
+
+                    CollectionAgent agentToUse = agentList.isEmpty() ? agent : agentList.get(0);
+
+                    if (!agentList.isEmpty()) {
+                        LOG.trace("Graphite: node modified by script, nodeId now: {}", agentToUse.getNodeId());
+
+                        // Need to use underlying object type instead of CollectionSet as
+                        // CollectionSet does not allow modification of the CollectionAgent
+                        if (collectionSet instanceof SnmpCollectionSet &&
+                            agentToUse instanceof SnmpCollectionAgent) {
+                            ((SnmpCollectionSet) collectionSet).setCollectionAgent((SnmpCollectionAgent) agentToUse);
+                        } else if (collectionSet instanceof CollectionSetDTO) {
+                            CollectionAgentDTO agentDto = new CollectionAgentDTO(agentToUse);
+                            ((CollectionSetDTO) collectionSet).setCollectionAgent(agentDto);
+                        }
+                    }
+
+                    collectionSets.add(new CollectionSetWithAgent(agentToUse, collectionSet));
                 } catch (final NumberFormatException | ScriptException e) {
                     LOG.warn("Dropping metric, unable to create collection set: {}", Arrays.asList(entry), e);
                 }
@@ -117,4 +149,7 @@ public class GraphiteAdapter extends AbstractScriptedCollectionAdapter {
         this.interfaceToNodeCache = interfaceToNodeCache;
     }
 
+    public void setNodeDao(final NodeDao nodeDao) {
+        this.nodeDao = nodeDao;
+    }
 }

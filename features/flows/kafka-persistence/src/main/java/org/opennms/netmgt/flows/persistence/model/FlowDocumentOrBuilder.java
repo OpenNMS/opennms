@@ -84,7 +84,7 @@ public interface FlowDocumentOrBuilder extends
    *
    * <code>.Direction direction = 3;</code>
    */
-  org.opennms.netmgt.flows.persistence.model.Direction getDirection();
+  Direction getDirection();
 
   /**
    * <pre>
@@ -93,7 +93,7 @@ public interface FlowDocumentOrBuilder extends
    *
    * <code>string dst_address = 4;</code>
    */
-  java.lang.String getDstAddress();
+  String getDstAddress();
   /**
    * <pre>
    *  Destination address.
@@ -111,7 +111,7 @@ public interface FlowDocumentOrBuilder extends
    *
    * <code>string dst_hostname = 5;</code>
    */
-  java.lang.String getDstHostname();
+  String getDstHostname();
   /**
    * <pre>
    * Destination address hostname.
@@ -479,7 +479,7 @@ public interface FlowDocumentOrBuilder extends
    *
    * <code>string next_hop_address = 20;</code>
    */
-  java.lang.String getNextHopAddress();
+  String getNextHopAddress();
   /**
    * <pre>
    * Next hop IpAddress.
@@ -497,7 +497,7 @@ public interface FlowDocumentOrBuilder extends
    *
    * <code>string next_hop_hostname = 21;</code>
    */
-  java.lang.String getNextHopHostname();
+  String getNextHopHostname();
   /**
    * <pre>
    * Next hop hostname.
@@ -548,7 +548,7 @@ public interface FlowDocumentOrBuilder extends
    *
    * <code>.SamplingAlgorithm sampling_algorithm = 23;</code>
    */
-  org.opennms.netmgt.flows.persistence.model.SamplingAlgorithm getSamplingAlgorithm();
+  SamplingAlgorithm getSamplingAlgorithm();
 
   /**
    * <pre>
@@ -582,7 +582,7 @@ public interface FlowDocumentOrBuilder extends
    *
    * <code>string src_address = 26;</code>
    */
-  java.lang.String getSrcAddress();
+  String getSrcAddress();
   /**
    * <pre>
    * Source address.
@@ -600,7 +600,7 @@ public interface FlowDocumentOrBuilder extends
    *
    * <code>string src_hostname = 27;</code>
    */
-  java.lang.String getSrcHostname();
+  String getSrcHostname();
   /**
    * <pre>
    * Source hostname.
@@ -751,7 +751,7 @@ public interface FlowDocumentOrBuilder extends
    *
    * <code>.NetflowVersion netflow_version = 33;</code>
    */
-  org.opennms.netmgt.flows.persistence.model.NetflowVersion getNetflowVersion();
+  NetflowVersion getNetflowVersion();
 
   /**
    * <pre>
@@ -760,7 +760,7 @@ public interface FlowDocumentOrBuilder extends
    *
    * <code>string vlan = 34;</code>
    */
-  java.lang.String getVlan();
+  String getVlan();
   /**
    * <pre>
    * VLAN ID.
@@ -778,11 +778,11 @@ public interface FlowDocumentOrBuilder extends
   /**
    * <code>.NodeInfo src_node = 35;</code>
    */
-  org.opennms.netmgt.flows.persistence.model.NodeInfo getSrcNode();
+  NodeInfo getSrcNode();
   /**
    * <code>.NodeInfo src_node = 35;</code>
    */
-  org.opennms.netmgt.flows.persistence.model.NodeInfoOrBuilder getSrcNodeOrBuilder();
+  NodeInfoOrBuilder getSrcNodeOrBuilder();
 
   /**
    * <code>.NodeInfo exporter_node = 36;</code>
@@ -791,11 +791,11 @@ public interface FlowDocumentOrBuilder extends
   /**
    * <code>.NodeInfo exporter_node = 36;</code>
    */
-  org.opennms.netmgt.flows.persistence.model.NodeInfo getExporterNode();
+  NodeInfo getExporterNode();
   /**
    * <code>.NodeInfo exporter_node = 36;</code>
    */
-  org.opennms.netmgt.flows.persistence.model.NodeInfoOrBuilder getExporterNodeOrBuilder();
+  NodeInfoOrBuilder getExporterNodeOrBuilder();
 
   /**
    * <code>.NodeInfo dest_node = 37;</code>
@@ -804,16 +804,16 @@ public interface FlowDocumentOrBuilder extends
   /**
    * <code>.NodeInfo dest_node = 37;</code>
    */
-  org.opennms.netmgt.flows.persistence.model.NodeInfo getDestNode();
+  NodeInfo getDestNode();
   /**
    * <code>.NodeInfo dest_node = 37;</code>
    */
-  org.opennms.netmgt.flows.persistence.model.NodeInfoOrBuilder getDestNodeOrBuilder();
+  NodeInfoOrBuilder getDestNodeOrBuilder();
 
   /**
    * <code>string application = 38;</code>
    */
-  java.lang.String getApplication();
+  String getApplication();
   /**
    * <code>string application = 38;</code>
    */
@@ -823,7 +823,7 @@ public interface FlowDocumentOrBuilder extends
   /**
    * <code>string host = 39;</code>
    */
-  java.lang.String getHost();
+  String getHost();
   /**
    * <code>string host = 39;</code>
    */
@@ -833,7 +833,7 @@ public interface FlowDocumentOrBuilder extends
   /**
    * <code>string location = 40;</code>
    */
-  java.lang.String getLocation();
+  String getLocation();
   /**
    * <code>string location = 40;</code>
    */
@@ -847,7 +847,7 @@ public interface FlowDocumentOrBuilder extends
   /**
    * <code>.Locality src_locality = 41;</code>
    */
-  org.opennms.netmgt.flows.persistence.model.Locality getSrcLocality();
+  Locality getSrcLocality();
 
   /**
    * <code>.Locality dst_locality = 42;</code>
@@ -856,7 +856,7 @@ public interface FlowDocumentOrBuilder extends
   /**
    * <code>.Locality dst_locality = 42;</code>
    */
-  org.opennms.netmgt.flows.persistence.model.Locality getDstLocality();
+  Locality getDstLocality();
 
   /**
    * <code>.Locality flow_locality = 43;</code>
@@ -865,15 +865,64 @@ public interface FlowDocumentOrBuilder extends
   /**
    * <code>.Locality flow_locality = 43;</code>
    */
-  org.opennms.netmgt.flows.persistence.model.Locality getFlowLocality();
+  Locality getFlowLocality();
 
   /**
-   * <code>string convo_key = 44;</code>
+   * <pre>
+   * Applied clock correction im milliseconds.
+   * </pre>
+   *
+   * <code>uint64 clock_correction = 45;</code>
    */
-  java.lang.String getConvoKey();
+  long getClockCorrection();
+
   /**
-   * <code>string convo_key = 44;</code>
+   * <pre>
+   * DSCP; upper 6 bits of TOS
+   * </pre>
+   *
+   * <code>.google.protobuf.UInt32Value dscp = 46;</code>
    */
-  com.google.protobuf.ByteString
-      getConvoKeyBytes();
+  boolean hasDscp();
+  /**
+   * <pre>
+   * DSCP; upper 6 bits of TOS
+   * </pre>
+   *
+   * <code>.google.protobuf.UInt32Value dscp = 46;</code>
+   */
+  com.google.protobuf.UInt32Value getDscp();
+  /**
+   * <pre>
+   * DSCP; upper 6 bits of TOS
+   * </pre>
+   *
+   * <code>.google.protobuf.UInt32Value dscp = 46;</code>
+   */
+  com.google.protobuf.UInt32ValueOrBuilder getDscpOrBuilder();
+
+  /**
+   * <pre>
+   * ECN; lower 2 bits of TOS
+   * </pre>
+   *
+   * <code>.google.protobuf.UInt32Value ecn = 47;</code>
+   */
+  boolean hasEcn();
+  /**
+   * <pre>
+   * ECN; lower 2 bits of TOS
+   * </pre>
+   *
+   * <code>.google.protobuf.UInt32Value ecn = 47;</code>
+   */
+  com.google.protobuf.UInt32Value getEcn();
+  /**
+   * <pre>
+   * ECN; lower 2 bits of TOS
+   * </pre>
+   *
+   * <code>.google.protobuf.UInt32Value ecn = 47;</code>
+   */
+  com.google.protobuf.UInt32ValueOrBuilder getEcnOrBuilder();
 }

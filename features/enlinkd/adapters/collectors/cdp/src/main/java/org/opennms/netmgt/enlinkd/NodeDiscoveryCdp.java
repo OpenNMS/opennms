@@ -65,12 +65,11 @@ public final class NodeDiscoveryCdp extends NodeCollector {
      * 
 	 */
     public NodeDiscoveryCdp(
-            final CdpTopologyService cdpTopologyService,
-            final LocationAwareSnmpClient locationAwareSnmpClient,
-            final long interval,final long initial,
-            final Node node) {
-        super(locationAwareSnmpClient, interval, initial,node);
-    	m_cdpTopologyService = cdpTopologyService;
+            NodeCollectionGroupCdp group,
+            final Node node,
+            final int priority) {
+        super(group.getLocationAwareSnmpClient(), node, priority);
+    	m_cdpTopologyService = group.getCdpTopologyService();
     }
 
     public void collect() {
@@ -132,8 +131,7 @@ public final class NodeDiscoveryCdp extends NodeCollector {
         }
         final CdpInterfacePortNameGetter cdpInterfacePortNameGetter = new CdpInterfacePortNameGetter(peer, 
                                                                                                      getLocationAwareSnmpClient(),
-                                                                                                     getLocation(),
-                                                                                                     getNodeId());
+                                                                                                     getLocation());
         for (CdpLink link: links)
             m_cdpTopologyService.store(getNodeId(),cdpInterfacePortNameGetter.get(link));
         

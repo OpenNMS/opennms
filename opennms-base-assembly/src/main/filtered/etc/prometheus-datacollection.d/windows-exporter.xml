@@ -1,0 +1,78 @@
+<?xml version="1.0"?>
+<prometheus-datacollection-config>
+   <collection name="windows-exporter">
+     <rrd step="300">
+       <rra>RRA:AVERAGE:0.5:1:2016</rra>
+       <rra>RRA:AVERAGE:0.5:12:1488</rra>
+       <rra>RRA:AVERAGE:0.5:288:366</rra>
+       <rra>RRA:MAX:0.5:288:366</rra>
+       <rra>RRA:MIN:0.5:288:366</rra>
+     </rrd>
+
+     <group-ref>windows_exporter_ts</group-ref>
+     <group-ref>windows_exporter_disk</group-ref>
+     <group-ref>windows_exporter_cpu_time</group-ref>
+     <group-ref>windows_exporter_interface</group-ref>
+   </collection>
+
+   <!--
+      windows_terminal_services_local_session_count{session="active"} 0
+      windows_terminal_services_local_session_count{session="inactive"} 3
+      windows_terminal_services_local_session_count{session="total"} 3
+   -->
+   <group name="windows_exporter_ts"
+     resource-type="node"
+     filter-exp="name matches 'windows_terminal_services_local_session_count'">
+
+      <numeric-attribute alias-exp="'ts_'.concat(labels[session])" type="Gauge"/>
+   </group>
+
+    <!--
+      windows_logical_disk_free_bytes{volume="C:"} 2.265448448e+10
+      windows_logical_disk_free_bytes{volume="D:"} 6.422528e+09
+      windows_logical_disk_idle_seconds_total{volume="C:"} 907164.3186373999
+      windows_logical_disk_idle_seconds_total{volume="D:"} 913569.4176684
+      windows_logical_disk_read_bytes_total{volume="C:"} 5.9688754688e+10
+      windows_logical_disk_read_bytes_total{volume="D:"} 7.7643264e+07
+   -->
+   <group name="windows_exporter_disk"
+     resource-type="winExporterDisk"
+     filter-exp="name matches 'windows_logical_disk_(size|free)_bytes'"
+     group-by-exp="labels[volume]">
+
+     <numeric-attribute alias-exp="name.substring('windows_logical_disk_'.length())" type="Gauge"/>
+     <string-attribute alias="volume" value-exp="labels[volume]"/>
+   </group>
+
+   <!--
+      windows_cpu_time_total{core="0,0",mode="dpc"} 23
+      windows_cpu_time_total{core="0,0",mode="idle"} 146482.796875
+      windows_cpu_time_total{core="0,0",mode="interrupt"} 16.625
+      windows_cpu_time_total{core="0,0",mode="privileged"} 1598.484375
+      windows_cpu_time_total{core="0,0",mode="user"} 2222.546875
+      windows_cpu_time_total{core="0,1",mode="dpc"} 63.171875
+      windows_cpu_time_total{core="0,1",mode="idle"} 146658.421875
+      windows_cpu_time_total{core="0,1",mode="interrupt"} 32.34375
+      windows_cpu_time_total{core="0,1",mode="privileged"} 1412.96875
+      windows_cpu_time_total{core="0,1",mode="user"} 2232.28125
+    -->
+   <group name="windows_exporter_cpu_time"
+     resource-type="winExporterCPU"
+     filter-exp="name matches 'windows_cpu_time_total'"
+     group-by-exp="labels[core]">
+
+     <numeric-attribute alias-exp="name.substring('windows_cpu_time_'.length()) + '_' + labels[mode]" type="Counter"/>
+     <string-attribute alias="cpu" value-exp="labels[core]"/>
+   </group>
+
+   <group name="windows_exporter_interface"
+     resource-type="winExporterIface"
+     filter-exp="name matches 'windows_net_.*'"
+     group-by-exp="labels[nic]">
+
+     <numeric-attribute filter-exp="!(name matches 'windows_net_current_bandwidth')" alias-exp="name.substring('windows_net_'.length())" type="Counter"/>
+     <numeric-attribute filter-exp="name matches 'windows_net_current_bandwidth'" alias-exp="name.substring('windows_net_'.length())" type="Gauge"/>
+     <string-attribute alias="interface" value-exp="labels[nic]"/>
+   </group>
+
+</prometheus-datacollection-config>

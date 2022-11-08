@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,6 +29,8 @@
 package org.opennms.netmgt.collection.commands;
 
 import java.net.InetAddress;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,6 +46,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.google.common.hash.HashFunction;
+import com.google.common.hash.Hashing;
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.Option;
@@ -84,38 +88,50 @@ public class StressCommand implements Action {
     @Reference
     private PersisterFactory persisterFactory;
 
-    @Option(name="-b", aliases="--burst", description="generate the collection sets in bursts instead of continously inserting them, defaults to false", required=false, multiValued=false)
+    @Option(name="-b", aliases="--burst", description="Generate the collection sets in bursts instead of continously inserting them", required=false, multiValued=false)
     boolean burst = false;
 
-    @Option(name="-i", aliases="--interval", description="interval in seconds at which collection sets will be generated, defaults to 300", required=false, multiValued=false)
+    @Option(name="-i", aliases="--interval", description="Interval in seconds at which collection sets will be generated", required=false, multiValued=false)
     int intervalInSeconds = 300;
 
-    @Option(name="-n", aliases="--nodes", description="number of nodes for which metrics will be generated, defaults to 1000", required=false, multiValued=false)
+    @Option(name="-n", aliases="--nodes", description="Number of nodes for which metrics will be generated", required=false, multiValued=false)
     int numberOfNodes = 1000;
 
-    @Option(name="-f", aliases="--interfaces", description="number of interfaces on each node, defaults to 10", required=false, multiValued=false)
+    @Option(name="-f", aliases="--interfaces", description="Number of interfaces on each node", required=false, multiValued=false)
     int numberOfInterfacesPerNode = 10;
 
-    @Option(name="-g", aliases="--groups", description="number of groups on each interface, defaults to 5", required=false, multiValued=false)
+    @Option(name="-g", aliases="--groups", description="Number of groups on each interface", required=false, multiValued=false)
     int numberOfGroupsPerInterface = 5;
 
-    @Option(name="-a", aliases="--attributes", description="number of number attributes in each group, defaults to 10", required=false, multiValued=false)
+    @Option(name="-a", aliases="--attributes", description="Number of number attributes in each group", required=false, multiValued=false)
     int numberOfNumericAttributesPerGroup = 10;
 
-    @Option(name="-s", aliases="--strings", description="number of string attributes in each group, defaults to 2", required=false, multiValued=false)
+    @Option(name="-s", aliases="--strings", description="Number of string attributes in each group", required=false, multiValued=false)
     int numberOfStringAttributesPerGroup = 2;
 
-    @Option(name="-r", aliases="--report", description="number of seconds after which the report should be generated, defaults to 30", required=false, multiValued=false)
+    @Option(name="-r", aliases="--report", description="Number of seconds after which the report should be generated", required=false, multiValued=false)
     int reportIntervalInSeconds = 30;
 
-    @Option(name="-t", aliases="--threads", description="number of threads that will be used to generate and persist collection sets, defaults to 1", required=false, multiValued=false)
+    @Option(name="-t", aliases="--threads", description="Number of threads that will be used to generate and persist collection sets", required=false, multiValued=false)
     int numberOfGeneratorThreads = 1;
 
-    @Option(name="-z", aliases="--string-variation-factor", description="when set, every n-th group will use unique string attribute values in each batch, defaults to 0", required=false, multiValued=false)
+    @Option(name="-z", aliases="--string-variation-factor", description="When set, every n-th group will use unique string attribute values in each batch", required=false, multiValued=false)
     int stringVariationFactor = 0;
 
-    @Option(name="-x", aliases="--rra", description="Round Robin Archives, defaults to the pritine content on datacollection-config.xml", required=false, multiValued=true)
+    @Option(name="-x", aliases="--rra", description="Round Robin Archives, defaults to the same RRA values as a pristine datacollection-config.xml.\nExample: -x 'RRA:AVERAGE:0.5:1:2016' -x 'RRA:AVERAGE:0.5:12:1488'", required=false, multiValued=true)
     List<String> rras = null;
+
+    @Option(name="-ml", aliases="--metric-extra-length", description="It will append specific length of string at the end of metrics.", required=false, multiValued=false)
+    int metricExtraLength = 0;
+
+    @Option(name="-mlv", aliases="--metric-extra-length-variance", description="It will affect the length of metric-extra-length. Must be smaller than metric-extra-length.", required=false, multiValued=false)
+    int metricExtraLengthVariance = 0;
+
+    @Option(name="-rl", aliases="--resource-extra-length", description="It will append specific length of string at the end of resources.", required=false, multiValued=false)
+    int resourceExtraLength = 0;
+
+    @Option(name="-rlv", aliases="--resource-extra-length-variance", description="It will affect the length of resource-extra-length. Must be smaller than resource-extra-length.", required=false, multiValued=false)
+    int resourceExtraLengthVariance = 0;
 
     private RateLimiter rateLimiter;
 
@@ -144,6 +160,15 @@ public class StressCommand implements Action {
 
     @Override
     public Void execute() throws Exception {
+        // check parameter
+        if (metricExtraLength > 0 && metricExtraLengthVariance >= metricExtraLength) {
+            System.out.println("metricExtraLength must larger than metricExtraLengthVariance!");
+            return null;
+        }
+        if (resourceExtraLength > 0 && resourceExtraLengthVariance >= resourceExtraLength) {
+            System.out.println("resourceExtraLength must larger than resourceExtraLengthVariance!");
+            return null;
+        }
         // Apply sane lower bounds to all of the configurable options
         intervalInSeconds = Math.max(1, intervalInSeconds);
         numberOfNodes = Math.max(1, numberOfNodes);
@@ -291,7 +316,7 @@ public class StressCommand implements Action {
         };
     }
 
-    private CollectionSet generateCollectionSet(CollectionAgent agent, int nodeId, int interfaceId, Resource resource) {
+    protected CollectionSet generateCollectionSet(CollectionAgent agent, int nodeId, int interfaceId, Resource resource) {
         CollectionSetBuilder builder = new CollectionSetBuilder(agent);
         for (int groupId = 0; groupId < numberOfGroupsPerInterface; groupId++) {
             String groupName = "group" + groupId;
@@ -299,10 +324,19 @@ public class StressCommand implements Action {
             for (int attributeId = 0; attributeId < numberOfNumericAttributesPerGroup; attributeId++) {
                 // Generate a predictable, non-constant number
                 int value = groupId * attributeId + seed.incrementAndGet() % 100;
-                builder.withNumericAttribute(resource, groupName, "metric_" + groupId + "_" + attributeId, value, AttributeType.GAUGE);
+                StringBuilder collectionName = new StringBuilder("metric_");
+                collectionName.append(groupId);
+                collectionName.append("_");
+                collectionName.append(attributeId);
+                if (metricExtraLength > 0) {
+                    collectionName.append(generateExtraString(collectionName.toString(), nodeId, metricExtraLength, metricExtraLengthVariance));
+                }
+                if (resourceExtraLength > 0) {
+                    groupName += "_" + generateExtraString(groupName, nodeId, resourceExtraLength, resourceExtraLengthVariance);
+                }
+                builder.withNumericAttribute(resource, groupName, collectionName.toString(), value, AttributeType.GAUGE);
                 numericAttributesGenerated.mark();
             }
-
             String stringAttributeValueSuffix = "";
             int groupInstance = (nodeId + 1) * (interfaceId + 1) * (groupId + 1); // Add 1 to each of these to make sure they are > 0
             if (stringVariationFactor > 0 && groupInstance % stringVariationFactor == 0) {
@@ -323,7 +357,31 @@ public class StressCommand implements Action {
         return builder.build();
     }
 
-    private static class MockCollectionAgent implements CollectionAgent {
+    /**
+     * Generate a string is not the same per difference params but keep consistence by the same params.
+     *
+     * @param prefix
+     * @param id
+     * @param length
+     * @param variance
+     * @return
+     */
+    private String generateExtraString(String prefix, int id, int length, int variance) {
+        HashFunction sha1 = Hashing.sha1();
+        String hash = sha1.hashString(prefix, StandardCharsets.UTF_8).toString();
+        int outLength = length;
+        // calculate length with variance by nodeId
+        if (length > 0) {
+            outLength = length - variance + (id % (2 * variance + 1));
+        }
+        if (outLength > hash.length()) {
+            int repeat = (int) Math.ceil((double) outLength / hash.length());
+            hash = hash.repeat(repeat);
+        }
+        return hash.substring(0, outLength);
+    }
+
+    protected static class MockCollectionAgent implements CollectionAgent {
 
         private final int nodeId;
 

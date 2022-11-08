@@ -66,5 +66,5 @@ public class BaseRestrictionVisitor implements RestrictionVisitor {
     @Override public void visitSqlComplete(final SqlRestriction restriction) {}
     @Override public void visitIplike(final IplikeRestriction restriction) {}
     @Override public void visitIplikeComplete(final IplikeRestriction restriction) {}
-
+    @Override public void visitRegExp(final RegExpRestriction restriction) {}
 }

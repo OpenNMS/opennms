@@ -51,6 +51,7 @@ import org.springframework.test.context.ContextConfiguration;
 		"classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
@@ -82,7 +83,7 @@ public class DroolsCorrelationEngineBuilderIT implements InitializingBean {
         assertTrue(m_mockCorrelator.findEngineByName("locationMonitorRules") instanceof DroolsCorrelationEngine);
         DroolsCorrelationEngine engine = (DroolsCorrelationEngine) m_mockCorrelator.findEngineByName("locationMonitorRules");
         assertEquals(2, engine.getInterestingEvents().size());
-        assertTrue(engine.getInterestingEvents().contains(EventConstants.REMOTE_NODE_LOST_SERVICE_UEI));
-        assertTrue(engine.getInterestingEvents().contains(EventConstants.REMOTE_NODE_REGAINED_SERVICE_UEI));
+        assertTrue(engine.getInterestingEvents().contains(EventConstants.PERSPECTIVE_NODE_LOST_SERVICE_UEI));
+        assertTrue(engine.getInterestingEvents().contains(EventConstants.PERSPECTIVE_NODE_REGAINED_SERVICE_UEI));
     }
 }

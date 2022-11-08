@@ -31,22 +31,15 @@ package org.opennms.netmgt.flows.elastic;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import java.io.IOException;
-import java.util.Optional;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.opennms.features.jest.client.index.IndexStrategy;
 import org.opennms.features.jest.client.template.IndexSettings;
-import org.opennms.netmgt.dao.mock.MockNodeDao;
-import org.opennms.netmgt.dao.mock.MockSessionUtils;
-import org.opennms.netmgt.dao.mock.MockSnmpInterfaceDao;
-import org.opennms.netmgt.flows.api.Flow;
-import org.opennms.netmgt.flows.api.FlowException;
-import org.opennms.netmgt.flows.api.FlowSource;
+import org.opennms.integration.api.v1.flows.FlowException;
+import org.opennms.netmgt.flows.processing.enrichment.EnrichedFlow;
 
 import com.codahale.metrics.MetricRegistry;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
@@ -65,7 +58,7 @@ public class ElasticFlowRepositoryIT {
     public WireMockRule wireMockRule = new WireMockRule(WireMockConfiguration.options().dynamicPort());
 
     @Test(expected=PersistenceException.class)
-    public void verifyThrowsPersistenceException() throws IOException, FlowException {
+    public void verifyThrowsPersistenceException() throws IOException, FlowException, InterruptedException {
         // Stub request
         stubFor(post("/_bulk")
                     .willReturn(aResponse()
@@ -73,22 +66,17 @@ public class ElasticFlowRepositoryIT {
                             .withHeader("Content-Type", "application/json")
                             .withBody(ERROR_RESPONSE)));
 
-        final MockDocumentEnricherFactory mockDocumentEnricherFactory = new MockDocumentEnricherFactory();
-        final DocumentEnricher documentEnricher = mockDocumentEnricherFactory.getEnricher();
-
         // Verify exception is thrown
         final JestClientFactory factory = new JestClientFactory();
         factory.setHttpClientConfig(new HttpClientConfig.Builder("http://localhost:" + wireMockRule.port()).build());
         try (JestClient client = factory.getObject()) {
             final ElasticFlowRepository elasticFlowRepository = new ElasticFlowRepository(new MetricRegistry(),
-                    client, IndexStrategy.MONTHLY, documentEnricher,
-                    new MockSessionUtils(), new MockNodeDao(), new MockSnmpInterfaceDao(),
-                    new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings(),
-                    mock(SmartQueryService.class));
+                    client, IndexStrategy.MONTHLY,
+                    new MockIdentity(), new MockTracerRegistry(), new IndexSettings(), 0, 0);
 
             // It does not matter what we persist here, as the response is fixed.
             // We only have to ensure that the list is not empty
-            elasticFlowRepository.persist(Lists.newArrayList(FlowDocumentTest.getMockFlow()), FlowDocumentTest.getMockFlowSource());
+            elasticFlowRepository.persist(Lists.newArrayList(EnrichedFlow.from(FlowDocumentTest.getMockFlow())));
         }
     }
 }

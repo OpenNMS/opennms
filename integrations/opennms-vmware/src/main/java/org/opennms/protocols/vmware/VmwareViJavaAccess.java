@@ -61,7 +61,7 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.AnyServerX509TrustManager;
 import org.opennms.netmgt.collectd.vmware.vijava.VmwarePerformanceValues;
 import org.opennms.netmgt.config.vmware.VmwareServer;
-import org.opennms.netmgt.dao.VmwareConfigDao;
+import org.opennms.netmgt.dao.vmware.VmwareConfigDao;
 import org.sblim.wbem.cim.CIMException;
 import org.sblim.wbem.cim.CIMNameSpace;
 import org.sblim.wbem.cim.CIMObject;
@@ -104,7 +104,7 @@ import com.vmware.vim25.ws.Client;
  *
  * @author Christian Pape <Christian.Pape@informatik.hs-fulda.de>
  */
-public class VmwareViJavaAccess {
+public class VmwareViJavaAccess implements AutoCloseable {
 
     public final static int DEFAULT_TIMEOUT = 3000;
     /**
@@ -241,6 +241,11 @@ public class VmwareViJavaAccess {
             }
         }
         return false;
+    }
+
+    @Override
+    public void close() {
+        disconnect();
     }
 
     /**
@@ -395,8 +400,7 @@ public class VmwareViJavaAccess {
                     if (perfMetricSeries[j] instanceof PerfMetricIntSeries) {
                         long[] longs = ((PerfMetricIntSeries) perfMetricSeries[j]).getValue();
 
-                        if (longs.length == 1) {
-
+                        if (longs.length == 1 && getPerfCounterInfoMap().containsKey(perfMetricSeries[j].getId().getCounterId())) {
                             PerfCounterInfo perfCounterInfo = getPerfCounterInfoMap().get(perfMetricSeries[j].getId().getCounterId());
                             String instance = perfMetricSeries[j].getId().getInstance();
                             String name = getHumanReadableName(perfCounterInfo);
@@ -546,6 +550,11 @@ public class VmwareViJavaAccess {
                 }
             }
         }
+
+        if (ipAddresses.isEmpty()) {
+            logger.warn("Requisition node for host system '{}' will not have any assigned IP addresses!", hostSystem.getName());
+        }
+
         return ipAddresses;
     }
 
@@ -572,6 +581,10 @@ public class VmwareViJavaAccess {
                     }
                 }
             }
+        }
+
+        if (ipAddresses.isEmpty()) {
+            logger.warn("Requisition node for virtual machine '{}' will not have any assigned IP addresses!", virtualMachine.getName());
         }
 
         return ipAddresses;

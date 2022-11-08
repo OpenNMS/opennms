@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 EXECUTEDIR="$(dirname "$0")"
 EXECUTEDIR="$(cd "$EXECUTEDIR" || exit 1; pwd)"

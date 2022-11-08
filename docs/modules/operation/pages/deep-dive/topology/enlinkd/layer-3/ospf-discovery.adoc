@@ -1,0 +1,98 @@
+
+= OSPF Discovery
+
+The OSPF Topology Updater provides OSPF OnmsTopology, consolidating OSPF data the OSPF Collector collects.
+Only full bidirectional connections between two OSPF-supported devices become edges.
+Node A and Node B are connected by an OSPF edge if and only if there is an OSPF link in Node A to Node B and vice versa.
+
+The following MIBSs are supported to discover and build the OSPF network topology and are collected by the OSPF Discovery Collector.
+
+The relevant MIBs for OSPF topology are OSPF-MIB and OSPF-TRAP-MIB.
+These MIBs define the relevant objects used to find OSPF links, specifically the router ID.
+In OSPF, the router ID has the same format as an IP address, but identifies the router independent of its IP address.
+
+All the interfaces are identified by their IP addresses.
+The OSPF links come from the SNMP ospfNbrTable defined in OSPF-MIB.
+This table is persisted in the ospfLink table:
+
+.Supported OIDs from OSPF-MIB
+[options="header"]
+[cols="2,3,1"]
+|===
+| Name
+| Description
+| OID
+
+| ospfRouterId
+| A 32-bit integer uniquely identifying the router in the autonomous system.
+By convention, to ensure uniqueness, this should default to the value of one of the router's IP interface addresses.
+This object is persistent and when written the entity should save the change to non-volatile storage.
+| .1.3.6.1.2.1.14.1.1.0
+
+| ospfAdminStat
+| The administrative status of OSPF in the router.
+The value `enabled` indicates the OSPF process is active on at least one interface; `disabled` disables it on all interfaces.
+This object is persistent and when written the entity should save the change to non-volatile storage.
+| .1.3.6.1.2.1.14.1.2.0
+
+| ospfVersionNumber
+| The current version number of the OSPF protocol is 2.
+| .1.3.6.1.2.1.14.1.3.0
+
+| ospfAreaBdrRtrStatus
+| A flag to note whether this router is an area border router.
+| .1.3.6.1.2.1.14.1.4.0
+
+| ospfAreaASBdrRtrStatus
+| A flag to note whether this router is configured as an autonomous system border router.
+This object is persistent and when written the entity should save the change to non-volatile storage.
+| .1.3.6.1.2.1.14.1.5.0
+
+| ospfIfIpAddress
+| The IP address of this OSPF interface.
+| .1.3.6.1.2.1.14.7.1.1
+
+| ospfAddressLessIf
+| To ease the instancing of addressed and addressless interfaces; this variable takes the value 0 on interfaces with IP addresses and the corresponding value of `ifIndex` for interfaces having no IP address.
+| .1.3.6.1.2.1.14.7.1.2
+
+| ospfNbrIpAddr
+| The IP address this neighbor uses in its IP source address.
+Note that on addressless links, this will not be 0.0.0.0 but the address of another of the neighbor's interfaces.
+| .1.3.6.1.2.1.14.10.1.1
+
+| ospfNbrAddressLessIndex
+| On an interface having an IP address, zero.
+On addressless interfaces, the corresponding value of `ifIndex` in the Internet Standard MIB.
+On row creation, this can be derived from the instance.
+| .1.3.6.1.2.1.14.10.1.2
+
+| ospfNbrRtrId
+| A 32-bit integer (represented as a type IpAddress) uniquely identifying the neighboring router in the autonomous system.
+| .1.3.6.1.2.1.14.10.1.3
+|===
+
+.Supported OIDs from IP-MIB
+[options="header"]
+[cols="1,3,1"]
+|===
+| Name
+| Description
+| OID
+
+| ipAdEntIfIndex
+| The index value that uniquely identifies the interface to which this entry applies.
+The interface identified by a particular value of this index is the same interface as identified by the same value of the `IF-MIB's ifIndex`.
+| .1.3.6.1.2.1.4.20.1.2
+
+| ipAdEntNetMask
+| The subnet mask associated with the IPv4 address of this entry.
+The value of the mask is an IPv4 address with all the network bits set to 1 and all the host bits set to 0.
+| .1.3.6.1.2.1.4.20.1.3
+|===
+
+Find generic information about the OSPF link discovery process in the OSPF information box on the node detail page of the device.
+Information gathered from these OIDs is stored in the following database table:
+
+.Database tables related to OSPF discovery
+image::enlinkd/ospf-database.png[]

@@ -32,11 +32,14 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.opennms.netmgt.flows.filter.api.DscpFilter;
 import org.opennms.netmgt.flows.filter.api.ExporterNodeFilter;
 import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.netmgt.flows.filter.api.FilterVisitor;
@@ -68,6 +71,9 @@ public class SearchQueryProvider implements FilterVisitor<String> {
         cfg.setClassForTemplateLoading(getClass(), "");
         cfg.setDefaultEncoding(StandardCharsets.UTF_8.name());
         cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
+        cfg.setAutoImports(ImmutableMap.builder()
+                                       .put("onms", "common.ftl")
+                                       .build());
     }
 
     public String getFlowCountQuery(List<Filter> filters) {
@@ -101,40 +107,56 @@ public class SearchQueryProvider implements FilterVisitor<String> {
 
     public String getSeriesFromQuery(Collection<String> from, long step, long start, long end,
                                      String groupByTerm, List<Filter> filters) {
-        return render("series_for_terms.ftl", ImmutableMap.builder()
+        final var builder = ImmutableMap.builder()
                 .put("filters", getFilterQueries(filters))
                 .put("from", from)
                 .put("groupByTerm", groupByTerm)
                 .put("step", step)
                 .put("start", start)
-                .put("end", end)
-                .build());
+                .put("end", end);
+        getSnmpInterfaceId(filters).ifPresent(iif -> builder.put("snmpInterfaceId", iif));
+        return render("series_for_terms.ftl", builder.build());
+    }
+
+    public String getSeriesFromQuery(int size, long step, long start, long end,
+                                     String groupByTerm, List<Filter> filters) {
+        final var builder = ImmutableMap.builder()
+                .put("filters", getFilterQueries(filters))
+                .put("size", size)
+                .put("groupByTerm", groupByTerm)
+                .put("step", step)
+                .put("start", start)
+                .put("end", end);
+        getSnmpInterfaceId(filters).ifPresent(iif -> builder.put("snmpInterfaceId", iif));
+        return render("series_for_terms.ftl", builder.build());
     }
 
     public String getSeriesFromMissingQuery(long step, long start, long end, String groupByTerm,
                                             String keyForMissingTerm, List<Filter> filters) {
-        return render("series_for_missing.ftl", ImmutableMap.builder()
+        final var builder = ImmutableMap.builder()
                 .put("filters", getFilterQueries(filters))
                 .put("groupByTerm", groupByTerm)
                 .put("keyForMissingTerm", keyForMissingTerm)
                 .put("step", step)
                 .put("start", start)
-                .put("end", end)
-                .build());
+                .put("end", end);
+        getSnmpInterfaceId(filters).ifPresent(iif -> builder.put("snmpInterfaceId", iif));
+        return render("series_for_missing.ftl", builder.build());
     }
 
     public String getSeriesFromOthersQuery(Collection<String> from, long step, long start, long end,
                                            String groupByTerm, boolean excludeMissing,
                                            List<Filter> filters) {
-        return render("series_for_others.ftl", ImmutableMap.builder()
+        final var builder = ImmutableMap.builder()
                 .put("filters", getFilterQueries(filters))
                 .put("from", from)
                 .put("groupByTerm", groupByTerm)
                 .put("excludeMissing", excludeMissing)
                 .put("step", step)
                 .put("start", start)
-                .put("end", end)
-                .build());
+                .put("end", end);
+        getSnmpInterfaceId(filters).ifPresent(iif -> builder.put("snmpInterfaceId", iif));
+        return render("series_for_others.ftl", builder.build());
     }
 
     public String getApplicationsQuery(String prefix, long limit, List<Filter> filters) {
@@ -181,6 +203,14 @@ public class SearchQueryProvider implements FilterVisitor<String> {
         }
     }
 
+    private Optional<Integer> getSnmpInterfaceId(List<Filter> filters) {
+        return filters.stream()
+                .filter(f -> f instanceof SnmpInterfaceIdFilter)
+                .map(f -> (SnmpInterfaceIdFilter)f)
+                .map(SnmpInterfaceIdFilter::getSnmpInterfaceId)
+                .findFirst();
+    }
+
     private List<String> getFilterQueries(List<Filter> filters) {
         return filters.stream()
                 .map(f -> f.visit(this))
@@ -209,6 +239,14 @@ public class SearchQueryProvider implements FilterVisitor<String> {
                 .build());
     }
 
+    @Override
+    public String visit(final DscpFilter dscpFilter) {
+        return render("filter_term.ftl", ImmutableMap.builder()
+                .put("term", "netflow.dscp")
+                .put("values", dscpFilter.getDscp())
+                .build());
+    }
+
     public String getHostnameByConversationQuery(final String convoKey, final List<Filter> filters) {
         return render("hostname_by_convo.ftl", ImmutableMap.builder()
                 .put("filters", getFilterQueries(filters))
@@ -220,6 +258,14 @@ public class SearchQueryProvider implements FilterVisitor<String> {
         return render("hostname_by_host.ftl", ImmutableMap.builder()
                 .put("filters", getFilterQueries(filters))
                 .put("host", host)
+                .build());
+    }
+
+    public String getAllValues(String field, int fieldSize, List<Filter> filters) {
+        return render("field_values_for_all.ftl", ImmutableMap.builder()
+                .put("filters", getFilterQueries(filters))
+                .put("field", field)
+                .put("fieldSize", fieldSize)
                 .build());
     }
 }

@@ -69,6 +69,7 @@ import org.opennms.netmgt.alarmd.api.Northbounder;
 import org.opennms.netmgt.alarmd.api.NorthbounderException;
 import org.opennms.netmgt.dao.api.AlarmAssociationDao;
 import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
@@ -98,6 +99,7 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
@@ -173,6 +175,9 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
     @Autowired
     private ServiceRegistry m_registry;
 
+    @Autowired
+    private DistPollerDao m_distPollerDao;
+
     private MockDatabase m_database;
 
     private MockNorthbounder m_northbounder;
@@ -191,6 +196,7 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
     public void setUp() {
         m_mockNetwork.createStandardNetwork();
 
+        m_database.setDistPoller(m_distPollerDao.whoami().getId());
         m_eventMgr.setEventWriter(m_database);
 
         // Insert some empty nodes to avoid foreign-key violations on subsequent events/alarms

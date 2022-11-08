@@ -1,0 +1,45 @@
+
+= Monitored Services
+
+Obtain or modify the status of a set of monitored services based on a given search criteria, based on nodes, IP interfaces, categories, or monitored services itself.
+
+Examples:
+
+* /ifservices?node.label=onms-prd-01
+* /ifservices?ipInterface.ipAddress=192.168.32.140
+* /ifservices?category.name=Production
+* /ifservices?status=A
+
+== GETs (Reading Data)
+
+[options="header", cols="5,10"]
+|===
+| Resource        | Description
+| `/ifservices`   | Get all configured monitored services for the given search criteria.
+|===
+
+Example:
+
+Get the forced unmanaged services for the nodes that belong to the requisition named "Servers":
+
+[source, bash]
+----
+curl -u admin:admin "http://localhost:8980/opennms/rest/ifservices?status=F&node.foreignSource=Servers"
+----
+
+== PUTs (Modifying Data)
+
+[options="header", cols="5,10"]
+|===
+| Resource       | Description
+| `/ifservices/` | Update all configured monitored services for the given search criteria.
+|===
+
+Example:
+
+Mark the ICMP and HTTP services to be forced unmanaged for the nodes that belong to the category Production:
+
+[source, bash]
+----
+curl -u admin:admin -X PUT "status=F&services=ICMP,HTTP" "http://localhost:8980/opennms/rest/ifservices?category.name=Production"
+----

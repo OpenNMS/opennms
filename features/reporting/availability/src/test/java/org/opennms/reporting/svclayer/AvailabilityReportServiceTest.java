@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,6 +28,9 @@
 
 package org.opennms.reporting.svclayer;
 
+import static org.mockito.Mockito.*;
+
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
@@ -65,6 +68,14 @@ public class AvailabilityReportServiceTest implements InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        verifyNoMoreInteractions(m_classicCalculator);
+        verifyNoMoreInteractions(m_calendarCalculator);
+        verifyNoMoreInteractions(m_configDao);
+        verifyNoMoreInteractions(m_parameterConversionService);
     }
 
     /**

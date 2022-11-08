@@ -1,0 +1,3 @@
+= Node Categorization Policy
+
+The Node Categorization Policy lets you set categories to assign to provisioned nodes.

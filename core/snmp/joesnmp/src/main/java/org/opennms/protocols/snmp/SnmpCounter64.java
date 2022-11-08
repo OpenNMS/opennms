@@ -158,7 +158,7 @@ public class SnmpCounter64 extends Object implements SnmpSyntax, Cloneable, Seri
      */
     public void setValue(BigInteger value) {
         m_value = new BigInteger(value.toByteArray());
-        m_value.clearBit(65); // ensure 64-bit unsigned comparisions!
+        m_value.clearBit(65); // ensure 64-bit unsigned comparisons!
     }
 
     /**

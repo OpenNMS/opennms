@@ -1,34 +1,52 @@
 ##
 # Pre-stage image to extract and manipulate Minion directory structure
-# Normally we install to /opt/minion and not /opt/minion-26.1.3-SNAPSHOT
+# Normally we install to /opt/minion and not /opt/minion-XX.X.X-SNAPSHOT
 # To avoid issues, we rearrange the directories in pre-stage to avoid injecting these
-# as addtional layers into the final image.
+# as additional layers into the final image.
 ##
-ARG BASE_IMAGE="opennms/deploy-base:jre-1.2.0.b58"
+ARG BASE_IMAGE="opennms/deploy-base:jre-2.0.6.b165"
 
 FROM ${BASE_IMAGE} as minion-base
 
-ADD ./tarball/minion.tar.gz /opt/
-
-# Organize files based on the build home dir /opt/minion
-RUN mv /opt/minion-* /opt/minion
-
-# We set the correct permissions in this stage, so we don't have this as an addtional
-# layer in our deploy image.
-RUN groupadd --gid 10001 minion && \
-    useradd --system --uid 10001 --gid minion minion --home-dir /opt/minion && \
-    chown 10001 /opt/minion -R && \
-    chgrp -R 0 /opt/minion && \
-    chmod -R g=u /opt/minion
+ADD --chown=10001:0 ./tarball-root/ /opt/minion/
+RUN rm /opt/minion/etc/org.opennms.features.telemetry.listeners-single-port-flows.cfg
+RUN chmod -R g-w /opt/minion
 
 ##
 # Prod image with minimal image size
 ##
 FROM ${BASE_IMAGE}
 
-# Create user to be able to run as non root with a known user and group id.
+ARG REQUIRED_DEBS="hostname uuid-runtime"
+
+# Prevent prompts
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Collect generic steps in a layer for caching
+
+# import keys & install required debs
+RUN apt-get update && \
+    apt-get --no-install-recommends install -yq ${REQUIRED_DEBS} && \
+    apt-get -y autoclean && \
+    apt-get -y clean && \
+    rm -rf /var/cache/apt
+
+# get any security updates for the base system
+RUN grep security /etc/apt/sources.list > /etc/apt/security.sources.list && \
+    apt update -o Dir::Etc::SourceList=/etc/apt/security.sources.list && \
+    apt -y -u -o Dir::Etc::SourceList=/etc/apt/security.sources.list full-upgrade && \
+    apt clean && \
+    rm -rf /var/cache/apt /etc/apt/security.sources.list
+
 RUN groupadd --gid 10001 minion && \
-    useradd --system --uid 10001 --gid minion minion --home-dir /opt/minion
+    useradd \
+    --system \
+    --uid 10001 \
+    --gid 10001 \
+    --home-dir /opt/minion \
+    --no-create-home \
+    --shell /usr/bin/bash \
+    minion
 
 # https://issues.opennms.org/browse/NMS-12635
 # It is possible to set sysctls: net.ipv4.ping_group_range=0 10001 which allows the container using sockets. If we run on
@@ -44,9 +62,17 @@ COPY container-fs/health.sh /
 # We would have 755 for minion:root instead of 775 and prevents writing lock files in /opt/minion
 COPY --chown=10001:0 --from=minion-base /opt /opt
 
+# Copy Prometheus JMX Exporter
+# BMR: this is redundant, isn't it? we just copied all of /opt
+# COPY --chown=10001:0 --from=minion-base /opt/prom-jmx-exporter /opt/prom-jmx-exporter
+
 # Install confd.io configuration files and scripts and ensure they are executable
 COPY ./container-fs/confd/ /opt/minion/confd/
 RUN chmod +x /opt/minion/confd/scripts/*
+COPY ./minion-config-schema.yml /opt/minion/confd/
+
+# Create the directory for server certificates
+RUN install -d -m 750 /opt/minion/server-certs
 
 # Arguments for labels should not invalidate caches
 ARG BUILD_DATE="1970-01-01T00:00:00+0000"
@@ -59,18 +85,18 @@ ARG BUILD_URL
 ARG BUILD_BRANCH
 
 LABEL org.opencontainers.image.created="${BUILD_DATE}" \
-      org.opencontainers.image.title="OpenNMS Minion ${VERSION}" \
-      org.opencontainers.image.source="${SOURCE}" \
-      org.opencontainers.image.revision="${REVISION}" \
-      org.opencontainers.image.version="${VERSION}" \
-      org.opencontainers.image.vendor="The OpenNMS Group, Inc." \
-      org.opencontainers.image.authors="OpenNMS Community" \
-      org.opencontainers.image.licenses="AGPL-3.0" \
-      org.opennms.image.base="${BASE_IMAGE}" \
-      org.opennme.cicd.jobid="${BUILD_JOB_ID}" \
-      org.opennms.cicd.buildnumber="${BUILD_NUMBER}" \
-      org.opennms.cicd.buildurl="${BUILD_URL}" \
-      org.opennms.cicd.branch="${BUILD_BRANCH}"
+    org.opencontainers.image.title="OpenNMS Minion ${VERSION}" \
+    org.opencontainers.image.source="${SOURCE}" \
+    org.opencontainers.image.revision="${REVISION}" \
+    org.opencontainers.image.version="${VERSION}" \
+    org.opencontainers.image.vendor="The OpenNMS Group, Inc." \
+    org.opencontainers.image.authors="OpenNMS Community" \
+    org.opencontainers.image.licenses="AGPL-3.0" \
+    org.opennms.image.base="${BASE_IMAGE}" \
+    org.opennme.cicd.jobid="${BUILD_JOB_ID}" \
+    org.opennms.cicd.buildnumber="${BUILD_NUMBER}" \
+    org.opennms.cicd.buildurl="${BUILD_URL}" \
+    org.opennms.cicd.branch="${BUILD_BRANCH}"
 
 WORKDIR /opt/minion
 
@@ -86,7 +112,6 @@ CMD [ "-f" ]
 ENV MINION_ID="00000000-0000-0000-0000-deadbeef0001" \
     MINION_LOCATION="MINION" \
     OPENNMS_BROKER_URL="tcp://127.0.0.1:61616" \
-    OPENNMS_HTTP_URL="http://127.0.0.1:8980/opennms" \
     OPENNMS_HTTP_USER="minion" \
     OPENNMS_HTTP_PASS="minion" \
     OPENNMS_BROKER_USER="minion" \

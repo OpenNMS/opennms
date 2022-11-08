@@ -28,6 +28,8 @@
 package org.opennms.features.jest.client;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 import org.opennms.core.health.api.Context;
@@ -40,6 +42,8 @@ import com.google.common.base.Strings;
 import io.searchbox.client.JestClient;
 import io.searchbox.client.JestResult;
 import io.searchbox.core.Ping;
+
+import static org.opennms.core.health.api.HealthCheckConstants.ELASTIC;
 
 /**
  * Verifies the connection to ElasticSearch.
@@ -64,6 +68,11 @@ public class ElasticHealthCheck implements HealthCheck {
     @Override
     public String getDescription() {
         return "Connecting to ElasticSearch ReST API (" + featureName + ")";
+    }
+
+    @Override
+    public List<String> getTags() {
+        return Arrays.asList(ELASTIC);
     }
 
     @Override

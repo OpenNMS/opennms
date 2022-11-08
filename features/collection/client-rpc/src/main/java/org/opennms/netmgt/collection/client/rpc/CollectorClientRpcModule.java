@@ -69,7 +69,7 @@ public class CollectorClientRpcModule extends AbstractXmlRpcModule<CollectorRequ
     @Override
     public CompletableFuture<CollectorResponseDTO> execute(CollectorRequestDTO request) {
         final String className = request.getClassName();
-        final ServiceCollector collector = serviceCollectorRegistry.getCollectorByClassName(className);
+        final ServiceCollector collector = serviceCollectorRegistry.getCollectorFutureByClassName(className).getNow(null);
         if (collector == null) {
             throw new IllegalArgumentException("No collector found with class name '" + className + "'.");
         }

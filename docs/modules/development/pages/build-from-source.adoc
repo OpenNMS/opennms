@@ -1,0 +1,141 @@
+[[build-from-source]]
+= Build from source
+
+We highly recommend running a *nix system to build OpenNMS from source code.
+You do not need to run it physically; a virtual machine is sufficient.
+Our community uses the following environments to develop our software:
+
+* link:https://en.wikipedia.org/wiki/List_of_Linux_distributions#Debian-based[Debian-based] operating system
+* link:https://en.wikipedia.org/wiki/List_of_Linux_distributions#RPM-based[RPM-based] operating system
+* Mac OS X
+
+This section describes how to build OpenNMS {page-component-title} with an Ubuntu Desktop system.
+Follow these instructions to accomplish the following:
+
+* Download the source code and create a build environment
+* A compiled and assembled version from the latest develop branch
+* An OpenNMS {page-component-title} core server instance running locally from a development directory
+
+You should be familiar with deploying OpenNMS {page-component-title}, especially setting up package repositories and configuring and initializing the PostgreSQL database.
+Basic knowledge of git is highly recommended.
+
+== Before you begin
+
+We publish and maintain the project on GitHub.
+Make sure you have access to GitHub to fetch the source with SSH or HTTPS.
+Once you have built the software, you need to install packages.
+Ensure your user account has administrative permissions with `sudo`.
+
+To build and run {page-component-title} from source, you must install the following components on your system:
+
+* OpenJDK 11 development kit; verify the correct `javac` and `java` executables are in your search path
+* xref:deployment:core/getting-started.adoc#install-core-instance[OpenNMS package repositories]
+* JICMP and JICMP6 packages to allow sending ICMP messages with Java
+* link:https://git-scm.com/[git-scm] to check out the source code from the link:https://github.com/OpenNMS/opennms[OpenNMS GitHub repository]
+* xref:deployment:core/getting-started.adoc#setup-postgresql[PostgreSQL server] (installed and initialized)
+* Perl to run the convenient compile and assemble helper scripts
+* Python (some helper scripts require it)
+* Docker to run smoke tests or start services as container
+
+Optional packages:
+
+* IPLIKE which is a stored procedure in PostgreSQL for complex IP queries.
+  The iplike package is specific to the PostgreSQL major version.
+  For example, for PostgreSQL 13.x you need the package `iplike-pgsql13`.
+* JRRD2 if you want to use RRDtool instead of the default Java-based RRD implementation JRobin
+* RRDtool from the official package repositories
+
+TIP: You can set the environment `JAVA_HOME` in `/etc/environment` if you want additional control about the Java JDK used during builds.
+Changes are applied immediately with `source /etc/environment`.
+
+TIP: Within the source tree we ship a Maven version which is used by default.
+The environment variable `MVN` allows you to use your own installed Maven version.
+
+== Get the source code
+
+First, you need the source code from the GitHub repository.
+The default branch is `develop` which is the release candidate for the major release.
+You can check out a specific version tag if you want or switch to a branch you want to build from.
+The command `git tag -l` or `git branch -r` gives you available branches or version tags.
+
+.Get the source from GitHub in your home directory
+[source, console]
+----
+git clone https://github.com/OpenNMS/opennms.git ~/dev/opennms
+cd ~/dev/opennms
+----
+
+== Compile and assemble from source
+
+The build is divided into two steps.
+The first step compiles the source code and the second step assembles the compiled artefacts so you can run OpenNMS {page-component-title} locally.
+To speed up the build steps, we explicitly disable tests and don't create a source tarball file.
+
+.Compile the source code without executing test tasks and skip the source tarball creation
+[source, console]
+----
+./compile.pl -DskipTests
+----
+
+.Assemble the build artefacts in the target directory
+[source, console]
+----
+./assemble.pl -p dir -DskipTests
+----
+
+The profile argument `-p dir` allows you to run OpenNMS {page-component-title} directly from the target directory.
+
+NOTE: If you build from source the first time, it takes some time.
+During the first build, the Maven dependencies download is about ~4GB.
+The Maven repository is by default located in the `$\{HOME}/.m2` directory.
+
+== Run your build locally
+
+The following instructions require the release version.
+The release version is defined in the root `pom.xml` in the source tree and changes with every major release.
+This release version depends on which version tag or branch you have checked out and try to build.
+It is helpful to extract the release version in an environment variable and allows you to repeat the following instructions more easily.
+
+TIP: Instead of maintaining a local PostgreSQL installation, you can also run an ephemeral PostgreSQL instance as a container.
+     The command `sudo docker run -d -e POSTGRES_HOST_AUTH_METHOD=trust -p 5432:5432 postgres:13` starts an instance which allows connections without authentication for development.
+     If you want to persist the database on your host for later use, you can add `-v $(pwd)/data:/var/lib/postgresql/data`.
+
+.Set the OpenNMS release version in a global environment variable
+[source, console]
+----
+export ONMS_RELEASE=$(./.circleci/scripts/pom2version.sh pom.xml)
+----
+
+.Run the core server instance as your user instead of the opennms system user
+[source, console]
+----
+echo "RUNAS=$(id -u -n)" > "target/opennms-${ONMS_RELEASE}/etc/opennms.conf"
+----
+
+The next step is configuring PostgreSQL to initialise the database.
+Follow xref:deployment:core/getting-started.adoc#set-up-core-instance[Set up the core instance] from the deployment guide; the procedure is the same.
+The configuration file is located in `target/opennms-$\{ONMS_RELEASE}/etc/opennms-datasources.xml`.
+
+.Initialize the Java environment
+[source, console]
+----
+./target/opennms-"${ONMS_RELEASE}"/bin/runjava -s
+----
+
+.Initialize the database schema
+[source, console]
+----
+./target/opennms-"${ONMS_RELEASE}"/bin/install -dis
+----
+
+.Start the core server instance in background, verbose, and enable remote debugging on port 8001/tcp
+[source, console]
+----
+./target/opennms-"${ONMS_RELEASE}"/bin/opennms -vt start
+----
+
+.Stop the core server instance
+[source, console]
+----
+./target/opennms-"${ONMS_RELEASE}"/bin/opennms stop
+----

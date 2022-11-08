@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -234,31 +234,6 @@ public class NettyDnsResolverTest {
                 contains(new InetSocketAddress("::1", 53),
                         new InetSocketAddress("::1", 5353),
                         new InetSocketAddress("1.1.1.1", 54)));
-    }
-
-    @Test
-    @Ignore
-    public void reverseLookupUsingPublicDnsServers() throws UnknownHostException, ExecutionException, InterruptedException {
-        // Use the system's servers
-        dnsResolver.destroy();
-        dnsResolver.setNameservers("4.2.2.2");
-        dnsResolver.init();
-
-        final Optional<String> hostname1 = dnsResolver.reverseLookup(InetAddress.getByAddress(new byte[]{1, 1, 1, 1})).get();
-        assertEquals("one.one.one.one", hostname1.get());
-
-        final Optional<String> hostname2 = dnsResolver.reverseLookup(InetAddressUtils.addr("1.1.1.1")).get();
-        assertEquals("one.one.one.one", hostname2.get());
-
-        final Optional<String> hostname3 = dnsResolver.reverseLookup(InetAddressUtils.addr("2606:4700:4700::1111")).get();
-        assertEquals("one.one.one.one", hostname3.get());
-
-        // 198.51.100.0/24 should be TEST-NET-2 (see RFC #5737). Should fail...
-        final Optional<String> hostname4 = dnsResolver.reverseLookup(InetAddressUtils.addr("198.51.100.1")).get();
-        assertEquals(Optional.empty(), hostname4);
-
-        final Optional<String> hostname5 = dnsResolver.reverseLookup(InetAddressUtils.addr("fe80::")).get();
-        assertEquals(Optional.empty(), hostname5);
     }
 
 }

@@ -56,8 +56,6 @@ abstract public class EnhancedLinkdConfigManager implements EnhancedLinkdConfig 
     /**
      * <p>Constructor for LinkdConfigManager.</p>
      *
-     * @param stream a {@link java.io.InputStream} object.
-     * @throws java.io.IOException if any.
      */
     public EnhancedLinkdConfigManager() {
     }
@@ -74,7 +72,7 @@ abstract public class EnhancedLinkdConfigManager implements EnhancedLinkdConfig 
     /**
      * Return the linkd configuration object.
      *
-     * @return a {@link org.opennms.netmgt.config.linkd.LinkdConfiguration} object.
+     * @return a {@link org.opennms.netmgt.config.enlinkd.EnlinkdConfiguration} object.
      */
     public EnlinkdConfiguration getConfiguration() {
         getReadLock().lock();
@@ -144,8 +142,35 @@ abstract public class EnhancedLinkdConfigManager implements EnhancedLinkdConfig 
         return m_config.getInitialSleepTime();
     }
 
-    public long getRescanInterval() {
-        return m_config.getRescanInterval();
+    public long getCdpRescanInterval() {
+        return m_config.getCdpRescanInterval();
+    }
+    public long getLldpRescanInterval() {
+        return m_config.getLldpRescanInterval();
+    }
+    public long getBridgeRescanInterval() {
+        return m_config.getBridgeRescanInterval();
+    }
+    public long getOspfRescanInterval() {
+        return m_config.getOspfRescanInterval();
+    }
+    public long getIsisRescanInterval() {
+        return m_config.getIsisRescanInterval();
+    }
+    public int getCdpPriority() {
+        return m_config.getCdpPriority();
+    }
+    public int getLldpPriority() {
+        return m_config.getLldpPriority();
+    }
+    public int getBridgePriority() {
+        return m_config.getBridgePriority();
+    }
+    public int getOspfPriority() {
+        return m_config.getOspfPriority();
+    }
+    public int getIsisPriority() {
+        return m_config.getIsisPriority();
     }
 
     public long getBridgeTopologyInterval() {
@@ -158,15 +183,35 @@ abstract public class EnhancedLinkdConfigManager implements EnhancedLinkdConfig 
 
 
     /**
+     * <p>getExecutorThreads</p>
+     *
+     * @return a int.
+     */
+    public int getExecutorThreads() {
+        if (m_config.getExecutorThreads() != null) return m_config.getExecutorThreads();
+        return 5;
+    }
+
+    /**
+     * <p>getExecutorQueueSize</p>
+     *
+     * @return a int.
+     */
+    public int getExecutorQueueSize() {
+        if (m_config.getExecutorQueueSize() != null) return m_config.getExecutorQueueSize();
+        return 100;
+    }
+
+    /**
      * <p>getThreads</p>
      *
      * @return a int.
      */
     public int getThreads() {
         if (m_config.getThreads() != null) return m_config.getThreads();
-        return 5;
+        return 3;
     }
-    
+
     public int getMaxBft() {
         if (m_config.getMaxBft() != null) return m_config.getMaxBft();
         return 100;

@@ -18,7 +18,7 @@
 %{!?_descr:%define _descr OpenNMS}
 %{!?packagedir:%define packagedir %{_name}-%version-%{releasenumber}}
 
-%{!?_java:%define _java java-1.8.0-openjdk-devel}
+%{!?_java:%define _java java-11-openjdk-devel}
 
 %{!?extrainfo:%define extrainfo %{nil}}
 %{!?extrainfo2:%define extrainfo2 %{nil}}
@@ -51,11 +51,12 @@ Group:         Applications/System
 BuildArch:     noarch
 
 Source:        %{_name}-source-%{version}-%{releasenumber}.tar.gz
-URL:           http://www.opennms.org/wiki/Minion
+URL:           https://docs.opennms.com/horizon/latest/deployment/minion/introduction.html
 BuildRoot:     %{_tmppath}/%{name}-%{version}-root
 
-BuildRequires:	%{_java}
-BuildRequires:	libxslt
+# don't worry about buildrequires, the shell script will bomb quick  =)
+#BuildRequires:	%{_java}
+#BuildRequires:	libxslt
 
 Requires:       openssh
 Requires(pre):  /usr/bin/getent
@@ -71,6 +72,7 @@ Requires:       jicmp >= 2.0.0
 Requires(pre):  jicmp >= 2.0.0
 Requires:       jicmp6 >= 2.0.0
 Requires(pre):  jicmp6 >= 2.0.0
+Provides:	opennms-plugin-api = %{opa_version}
 Recommends:	haveged
 
 Conflicts:      %{name}-container        < %{version}-%{release}
@@ -83,7 +85,7 @@ Prefix:         %{minioninstprefix}
 OpenNMS Minion is a container infrastructure for distributed, scalable network
 management and monitoring.
 
-http://www.opennms.org/wiki/Minion
+https://docs.opennms.com/horizon/latest/deployment/minion/introduction.html
 
 %{extrainfo}
 %{extrainfo2}
@@ -175,6 +177,13 @@ mv "%{buildroot}%{minioninstprefix}/etc/minion.conf" "%{buildroot}%{_sysconfdir}
 
 # delete the debian files
 rm -rf "%{buildroot}%{minioninstprefix}/debian"
+
+# fix the permissions-fixing scripts
+sed -i \
+    -e 's,OPENNMS_HOME,MINION_HOME,g' \
+    -e 's,opennms,minion,g' \
+    '%{buildroot}%{minioninstprefix}/bin/fix-permissions' \
+    '%{buildroot}%{minioninstprefix}/bin/update-package-permissions'
 
 ### FILE LISTS FOR %files ###
 
@@ -271,10 +280,12 @@ fi
 # Generate a new UUID to replace the default UUID if it is still present
 UUID=$(/usr/bin/uuidgen -t)
 sed -i "s|id = 00000000-0000-0000-0000-000000ddba11|id = $UUID|g" "${ROOT_INST}/etc/org.opennms.minion.controller.cfg"
+"${ROOT_INST}/bin/fix-permissions" "${ROOT_INST}/etc/org.opennms.minion.controller.cfg"
 
 # Remove the directory used as the local Maven repo cache
 rm -rf "${ROOT_INST}/repositories/.local"
 
+"${ROOT_INST}/bin/update-package-permissions" "%{name}"
 
 ### PRE-UN-INSTALLATION ###
 

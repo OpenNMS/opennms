@@ -91,8 +91,8 @@ public class OnmsMonitoringSystem implements Serializable {
     private static final long serialVersionUID = -5095710111103727832L;
 
     public static final String TYPE_OPENNMS = "OpenNMS";
-    public static final String TYPE_REMOTE_POLLER = "Remote Poller";
     public static final String TYPE_MINION = "Minion";
+    public static final String TYPE_SENTINEL = "Sentinel";
 
     @XmlID
     @XmlAttribute(name="id")

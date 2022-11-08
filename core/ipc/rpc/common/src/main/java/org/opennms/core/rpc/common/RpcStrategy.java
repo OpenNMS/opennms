@@ -38,8 +38,6 @@ public class RpcStrategy {
 
     private static final String JMS_RPC_STRATEGY_NAME = "jms";
 
-    private static final String SQS_RPC_STRATEGY_NAME = "sqs";
-
     private static final String KAFKA_RPC_STRATEGY_NAME = "kafka";
 
     private static final String GRPC_RPC_STRATEGY_NAME = "grpc";
@@ -48,7 +46,6 @@ public class RpcStrategy {
 
     public static enum Strategy {
         JMS(JMS_RPC_STRATEGY_NAME, "JMS implementation using Camel"),
-        SQS(SQS_RPC_STRATEGY_NAME, "Amazon SQS implementation"),
         KAFKA(KAFKA_RPC_STRATEGY_NAME, "Kafka implementation"),
         GRPC(GRPC_RPC_STRATEGY_NAME, "GRPC implementation"),
         OSGI(OSGI_RPC_STRATEGY_NAME, "OSGI Delegate implementation");

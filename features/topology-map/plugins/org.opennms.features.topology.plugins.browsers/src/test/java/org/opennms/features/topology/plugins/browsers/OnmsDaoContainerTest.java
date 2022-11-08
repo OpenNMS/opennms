@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,11 +28,13 @@
 
 package org.opennms.features.topology.plugins.browsers;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.easymock.EasyMock;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.core.criteria.Criteria;
@@ -52,10 +54,9 @@ public class OnmsDaoContainerTest {
         alarm.setId(102);
         alarmList.add(alarm);
 
-        final AlarmDao alarmDaoMock = EasyMock.createNiceMock(AlarmDao.class);
-        EasyMock.expect(alarmDaoMock.countMatching((Criteria)EasyMock.anyObject())).andReturn(1);
-        EasyMock.expect(alarmDaoMock.findMatching((Criteria)EasyMock.anyObject())).andReturn(alarmList);
-        EasyMock.replay(alarmDaoMock);
+        final AlarmDao alarmDaoMock = mock(AlarmDao.class);
+        when(alarmDaoMock.countMatching(any(Criteria.class))).thenReturn(1);
+        when(alarmDaoMock.findMatching(any(Criteria.class))).thenReturn(alarmList);
 
         AlarmDaoContainer container = new AlarmDaoContainer(alarmDaoMock, transactionTemplate);
 

@@ -41,7 +41,6 @@ import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
-import org.opennms.netmgt.dao.api.LocationMonitorDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.NotificationDao;
@@ -104,7 +103,6 @@ public class AvailabilityDatabasePopulator {
     private AlarmDao m_alarmDao;
     private NotificationDao m_notificationDao;
     private UserNotificationDao m_userNotificationDao;
-    private LocationMonitorDao m_locationMonitorDao;
     private AcknowledgmentDao m_acknowledgmentDao;
     
     private OnmsNode m_node1;
@@ -155,7 +153,7 @@ public class AvailabilityDatabasePopulator {
 //      m_db.update("insert into ifservices (nodeid, ipaddr, serviceid, status, ipInterfaceId) values "
 //              + "(2,'192.168.100.3',1,'A', 3);");
         
-        NetworkBuilder builder = new NetworkBuilder();
+        NetworkBuilder builder = new NetworkBuilder(m_distPollerDao.whoami());
         
         setNode1(builder.addNode("test1.availability.opennms.org").
                  setId(1).
@@ -419,14 +417,6 @@ public class AvailabilityDatabasePopulator {
     
     private void setNode1(OnmsNode node1) {
         m_node1 = node1;
-    }
-
-    public LocationMonitorDao getLocationMonitorDao() {
-        return m_locationMonitorDao;
-    }
-
-    public void setLocationMonitorDao(LocationMonitorDao locationMonitorDao) {
-        m_locationMonitorDao = locationMonitorDao;
     }
 
     public AcknowledgmentDao getAcknowledgmentDao() {

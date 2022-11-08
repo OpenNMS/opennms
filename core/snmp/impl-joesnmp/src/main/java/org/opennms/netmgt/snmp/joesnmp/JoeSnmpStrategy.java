@@ -343,13 +343,7 @@ public class JoeSnmpStrategy implements SnmpStrategy {
     }
     
         @Override
-    public void unregisterForTraps(final TrapNotificationListener listener, InetAddress address, int snmpTrapPort) {
-    	RegistrationInfo info = s_registrations.remove(listener);
-    	info.getSession().close();
-    }
-
-        @Override
-    public void unregisterForTraps(final TrapNotificationListener listener, final int snmpTrapPort) {
+    public void unregisterForTraps(final TrapNotificationListener listener) {
         RegistrationInfo info = s_registrations.remove(listener);
         info.getSession().close();
     }

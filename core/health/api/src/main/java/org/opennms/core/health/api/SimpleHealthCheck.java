@@ -28,6 +28,8 @@
 
 package org.opennms.core.health.api;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 
@@ -54,6 +56,11 @@ public class SimpleHealthCheck implements HealthCheck {
     @Override
     public Response perform(Context context) throws Exception {
         return response;
+    }
+
+    @Override
+    public List<String> getTags() {
+        return new ArrayList<>();
     }
 
     public void markSucess() {

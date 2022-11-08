@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,37 +32,44 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.opennms.netmgt.timeseries.util.TimeseriesUtils.toResourceId;
+import static org.opennms.netmgt.timeseries.util.TimeseriesUtils.toSearchRegex;
 
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.easymock.EasyMock;
-import org.easymock.IAnswer;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.opennms.integration.api.v1.timeseries.IntrinsicTagNames;
 import org.opennms.integration.api.v1.timeseries.Metric;
 import org.opennms.integration.api.v1.timeseries.StorageException;
+import org.opennms.integration.api.v1.timeseries.Tag;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableMetric;
-import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTag;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.model.RrdGraphAttribute;
-import org.opennms.netmgt.timeseries.util.TimeseriesUtils;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.google.re2j.Pattern;
 
 /**
  * Used to verify the {@link TimeseriesResourceStorageDao} interface implemented
  * by the {@link TimeseriesResourceStorageDao}.
  *
- * Resources are indexed using {@link TimeseriesUtils#addIndicesToAttributes} and primitive searching is
- * performed using a mock {@link org.opennms.newts.cassandra.search.CassandraSearcher}.
  *
  * @author jwhite
  */
@@ -74,9 +81,15 @@ public class TimeseriesResourceStorageDaoTest {
 
     @Before
     public void setUp() {
-        searcher = EasyMock.createNiceMock(TimeseriesSearcher.class);
+        searcher = mock(TimeseriesSearcher.class);
         resourceStorageDao = new TimeseriesResourceStorageDao();
         resourceStorageDao.setSearcher(searcher);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        verifyNoMoreInteractions(searcher);
+        indexedPaths.clear();
     }
 
     @Test
@@ -84,25 +97,26 @@ public class TimeseriesResourceStorageDaoTest {
         // Path is missing when the resource does not exist
         replay();
         assertFalse(resourceStorageDao.exists(ResourcePath.get("should", "not", "exist"), 1));
-        verify();
+        
 
         // Path is missing when the resource exists, but does not have a bucket
         index(ResourcePath.get("a"));
         replay();
         assertFalse(resourceStorageDao.exists(ResourcePath.get("a"), 1));
-        verify();
+        
 
         // Path exists when a child resource with a bucket exists
         index(ResourcePath.get("a", "b", "bucket"));
         replay();
         assertTrue(resourceStorageDao.exists(ResourcePath.get("a"), 1));
-        verify();
+        
 
         // Path exists when the resource with a bucket exists
         index(ResourcePath.get("a", "bucket"));
         replay();
         assertTrue(resourceStorageDao.exists(ResourcePath.get("a"), 0));
-        verify();
+
+        verify(searcher, atLeastOnce()).search(any(ResourcePath.class), anyInt());
     }
 
     @Test
@@ -114,7 +128,8 @@ public class TimeseriesResourceStorageDaoTest {
         assertTrue(resourceStorageDao.existsWithin(ResourcePath.get("a", "b", "c"), 1));
         assertTrue(resourceStorageDao.existsWithin(ResourcePath.get("a", "b"), 1));
         assertFalse(resourceStorageDao.existsWithin(ResourcePath.get("a", "b"), 0));
-        verify();
+
+        verify(searcher, atLeastOnce()).search(any(ResourcePath.class), anyInt());
     }
 
     @Test
@@ -122,13 +137,13 @@ public class TimeseriesResourceStorageDaoTest {
         // Children are empty when the resource id does not exist
         replay();
         assertEquals(0, resourceStorageDao.children(ResourcePath.get("should", "not", "exist"), 1).size());
-        verify();
+        
 
         // Children are empty when there are no child resources
         index(ResourcePath.get("a"));
         replay();
         assertEquals(0, resourceStorageDao.children(ResourcePath.get("a"), 1).size());
-        verify();
+        
 
         // Child exists when the is a child resource
         index(ResourcePath.get("a", "b", "bucket"));
@@ -136,7 +151,7 @@ public class TimeseriesResourceStorageDaoTest {
         Set<ResourcePath> children = resourceStorageDao.children(ResourcePath.get("a"), 1);
         assertEquals(1, children.size());
         assertEquals(ResourcePath.get("a", "b"), children.iterator().next());
-        verify();
+        
 
         // Same call but specifying the depth
         index(ResourcePath.get("a", "b", "bucket"));
@@ -144,7 +159,7 @@ public class TimeseriesResourceStorageDaoTest {
         children = resourceStorageDao.children(ResourcePath.get("a"), 1);
         assertEquals(1, children.size());
         assertEquals(ResourcePath.get("a", "b"), children.iterator().next());
-        verify();
+        
 
         // Only returns the next level
         index(ResourcePath.get("a", "b", "c", "bucket"));
@@ -152,14 +167,15 @@ public class TimeseriesResourceStorageDaoTest {
         children = resourceStorageDao.children(ResourcePath.get("a"), 2);
         assertEquals(1, children.size());
         assertEquals(ResourcePath.get("a", "b"), children.iterator().next());
-        verify();
+        
 
         // No children when depth is 0
         index(ResourcePath.get("a", "b", "bucket"));
         replay();
         children = resourceStorageDao.children(ResourcePath.get("a"), 0);
         assertEquals(0, children.size());
-        verify();
+
+        verify(searcher, atLeastOnce()).search(any(ResourcePath.class), anyInt());
     }
 
     @Test
@@ -167,7 +183,7 @@ public class TimeseriesResourceStorageDaoTest {
         // Attributes are empty when the resource does not exist
         replay();
         assertEquals(0, resourceStorageDao.getAttributes(ResourcePath.get("should", "not", "exist")).size());
-        verify();
+        
 
         // Metrics from all buckets should be present
         index(ResourcePath.get("a", "bucket1"), Sets.newHashSet("metric11", "metric12"));
@@ -188,7 +204,7 @@ public class TimeseriesResourceStorageDaoTest {
         }
         assertNotNull(metric11);
 
-        verify();
+        verify(searcher, atLeastOnce()).search(any(ResourcePath.class), anyInt());
     }
 
     @Test
@@ -201,7 +217,7 @@ public class TimeseriesResourceStorageDaoTest {
         assertEquals(1, attributes.size());
         assertEquals("strafeping", attributes.iterator().next().getName());
 
-        verify();
+        verify(searcher, atLeastOnce()).search(any(ResourcePath.class), anyInt());
     }
 
     private void index(ResourcePath path) {
@@ -216,32 +232,23 @@ public class TimeseriesResourceStorageDaoTest {
     }
 
     private void replay() throws StorageException {
-        EasyMock.expect(searcher.search(EasyMock.anyObject(), EasyMock.anyInt())).andAnswer(new IAnswer<Set<Metric>>() {
-            public Set<Metric>
-            answer() {
-                ResourcePath resourcePath = (ResourcePath)EasyMock.getCurrentArguments()[0];
-                int depth = (Integer)EasyMock.getCurrentArguments()[1];
+        doAnswer(new Answer<Object>() {
+            @Override
+            public Object answer(final InvocationOnMock invocation) throws Throwable {
+                ResourcePath resourcePath = invocation.getArgument(0);
+                int depth = invocation.getArgument(1);
 
-                int idxSuffix = resourcePath.elements().length - 1;
-                int targetLen = idxSuffix + depth + 2;
-                String field = "_idx"+idxSuffix; // key
-                String value = String.format("(%s,%d)", toResourceId(resourcePath), targetLen); // value
-
+                String regex = toSearchRegex(resourcePath, depth + 1);
                 Set<Metric> metrics = new HashSet<>();
                 for (Entry<ResourcePath, Set<String>> entry : indexedPaths.entrySet()) {
-                    Map<String, String> attributes = Maps.newHashMap();
-                    // Build the indexed attributes and attempt to match them against the given query
-                    TimeseriesUtils.addIndicesToAttributes(entry.getKey(), attributes);
-                    if (value.equals(attributes.get(field))) {
-
-                        for(String name : entry.getValue()) {
+                    Set<Tag> attributes = new HashSet<>();
+                    if (Pattern.matches(regex, toResourceId(entry.getKey()))) { // find all paths that match our regex
+                        for(String name : entry.getValue()) { // build the metric
                             ImmutableMetric.MetricBuilder metric =
                                     ImmutableMetric.builder()
                                     .intrinsicTag(IntrinsicTagNames.resourceId, toResourceId(entry.getKey()))
                                     .intrinsicTag(IntrinsicTagNames.name, name);
-                            attributes.entrySet().stream()
-                                    .map((e) -> new ImmutableTag(e.getKey(), e.getValue()))
-                                    .forEach(metric::metaTag);
+                            attributes.forEach(metric::metaTag);
                             metrics.add(metric.build());
                         }
                     }
@@ -249,14 +256,7 @@ public class TimeseriesResourceStorageDaoTest {
 
                 return new HashSet<>(metrics);
             }
-        }).atLeastOnce();
-        EasyMock.expect(searcher.getResourceAttributes(EasyMock.anyObject())).andReturn(Maps.newHashMap()).anyTimes();
-        EasyMock.replay(searcher);
-    }
-
-    private void verify() {
-        EasyMock.verify(searcher);
-        EasyMock.reset(searcher);
-        indexedPaths.clear();
+            
+        }).when(searcher).search(any(ResourcePath.class), anyInt());
     }
 }

@@ -204,7 +204,7 @@
       };
 
       // Get all available locations
-      $.get('api/v2/monitoringLocations', function(locationList) {
+      $.get('api/v2/monitoringLocations?limit=0', function(locationList) {
           if (locationList && locationList.location && locationList.location.length > 0) {
               updateLocations(locationList.location);
           }
@@ -436,7 +436,7 @@ if (request.getAttribute("success") != null) {
             Proxy Host
             </label>
             <div class="col-sm-9">
-              <input id="proxyHost" name="proxyHost=" class="form-control" value="<%=proxyHost%>">
+              <input id="proxyHost" name="proxyHost" class="form-control" value="<%=proxyHost%>">
             </div>
           </div>
 

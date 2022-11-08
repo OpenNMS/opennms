@@ -57,6 +57,11 @@ public abstract class ResourceTypeUtils {
     public static final String RESPONSE_DIRECTORY = "response";
 
     /**
+     * Directory name of where status data is stored.
+     */
+    public static final String STATUS_DIRECTORY = "status";
+
+    /**
      * Directory name of where all other collected data is stored.
      */
     public static final String SNMP_DIRECTORY = "snmp";
@@ -67,6 +72,7 @@ public abstract class ResourceTypeUtils {
     public static final String FOREIGN_SOURCE_DIRECTORY = "fs";
 
     private static final Pattern s_responseDirectoryPattern =  Pattern.compile("^" + RESPONSE_DIRECTORY + ".+$");
+    private static final Pattern s_statusDirectoryPattern =  Pattern.compile("^" + STATUS_DIRECTORY + ".+$");
 
     /**
      * <p>isStoreByGroup</p>
@@ -94,6 +100,10 @@ public abstract class ResourceTypeUtils {
      */
     public static boolean isResponseTime(String relativePath) {
         return s_responseDirectoryPattern.matcher(relativePath).matches();
+    }
+
+    public static boolean isStatus(String relativePath) {
+        return s_statusDirectoryPattern.matcher(relativePath).matches();
     }
 
     /**
@@ -179,5 +189,24 @@ public abstract class ResourceTypeUtils {
         // Here we just assume that the repository dir is of the form ${rrd.base.dir}/snmp or ${rrd.base.dir}/response
         // since all of operations in the ResourceDao assume that the resources are stored in these paths
         return ResourcePath.get(ResourcePath.get(repository.getRrdBaseDir().getName()), resource);
+    }
+
+    /**
+     * Returns the number of elements that correspond to the "node resource" for the given path.
+     * @param path resource path
+     * @return number of elements or -1 if the given path does not map to a node
+     */
+    public static int getNumPathElementsToNodeLevel(ResourcePath path) {
+        final String[] elements = path.elements();
+        if (elements.length >= 2
+                && ResourceTypeUtils.SNMP_DIRECTORY.equals(elements[0])
+                && !ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY.equals(elements[1])) {
+            return 2;
+        } else if (elements.length >= 4
+                && ResourceTypeUtils.SNMP_DIRECTORY.equals(elements[0])
+                && ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY.equals(elements[1])) {
+            return 4;
+        }
+        return -1;
     }
 }

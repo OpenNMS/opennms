@@ -151,6 +151,23 @@
                 <attrib name="Count" alias="DroppedCounter" type="counter"/>
             </mbean>
 
+            <!-- Twin Subscriber Metrics -->
+
+            <mbean name="org.opennms.core.ipc.twin.subscriber.requestSent" resource-type="twinMetrics"
+                   objectname="org.opennms.core.ipc.twin.subscriber:name=*.requestSent">
+                <attrib name="Count" alias="RequestSent" type="counter"/>
+            </mbean>
+
+            <mbean name="org.opennms.core.ipc.twin.subscriber.updateReceived" resource-type="twinMetrics"
+                   objectname="org.opennms.core.ipc.twin.subscriber:name=*.updateReceived">
+                <attrib name="Count" alias="UpdateReceived" type="counter"/>
+            </mbean>
+
+            <mbean name="org.opennms.core.ipc.twin.subscriber.updateDropped" resource-type="twinMetrics"
+                   objectname="org.opennms.core.ipc.twin.subscriber:name=*.updateDropped">
+                <attrib name="Count" alias="UpdateDropped" type="counter"/>
+            </mbean>
+
             <!--
             Example of SEDA endpoint collection that won't work well because the objectname is based on the URI which might change
 

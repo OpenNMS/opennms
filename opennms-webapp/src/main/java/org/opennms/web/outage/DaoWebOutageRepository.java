@@ -37,6 +37,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -47,6 +48,7 @@ import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsOutage;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.model.outage.OutageSummary;
 import org.opennms.web.filter.Filter;
 import org.opennms.web.outage.filter.OutageCriteria;
@@ -147,6 +149,9 @@ public class DaoWebOutageRepository implements WebOutageRepository, Initializing
                 case LOCATION:
                     criteria.addOrder(Order.desc("node.location"));
                     break;
+                case PERSPECTIVE:
+                    criteria.addOrder(Order.desc("perspective"));
+                    break;
                 case REVERSE_FOREIGNSOURCE:
                     criteria.addOrder(Order.asc("node.foreignSource"));
                     break;
@@ -170,6 +175,9 @@ public class DaoWebOutageRepository implements WebOutageRepository, Initializing
                     break;
                 case REVERSE_LOCATION:
                     criteria.addOrder(Order.asc("node.location"));
+                    break;
+                case REVERSE_PERSPECTIVE:
+                    criteria.addOrder(Order.asc("perspective"));
                     break;
                 default:
                     throw new IllegalArgumentException("Unknown SortStyle: " + sortStyle);
@@ -195,6 +203,7 @@ public class DaoWebOutageRepository implements WebOutageRepository, Initializing
             outage.serviceName = onmsOutage.getMonitoredService() != null ? onmsOutage.getMonitoredService().getServiceName() : "";
             outage.suppressedBy = onmsOutage.getSuppressedBy();
             outage.suppressTime = onmsOutage.getSuppressTime();
+            outage.perspectiveLocation = Optional.ofNullable(onmsOutage.getPerspective()).map(OnmsMonitoringLocation::getLocationName).orElse(null);
 
             // Node-related fields
             outage.nodeId = onmsOutage.getNodeId();

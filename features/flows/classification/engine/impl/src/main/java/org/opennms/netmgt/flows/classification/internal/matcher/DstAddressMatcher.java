@@ -28,8 +28,13 @@
 
 package org.opennms.netmgt.flows.classification.internal.matcher;
 
+import org.opennms.netmgt.flows.classification.internal.value.IpValue;
+
 public class DstAddressMatcher extends IpMatcher {
-    public DstAddressMatcher(String input) {
+    public DstAddressMatcher(IpValue input) {
         super(input, (request) -> request.getDstAddress());
+    }
+    public DstAddressMatcher(String input) {
+        this(IpValue.of(input));
     }
 }

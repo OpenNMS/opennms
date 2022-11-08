@@ -272,6 +272,7 @@
 
 <%@page import="org.opennms.core.resource.Vault"%>
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
+  <jsp:param name="ngapp" value="onms-interfaces" />
   <jsp:param name="title" value="Node" />
   <jsp:param name="headTitle" value="${model.label}" />
   <jsp:param name="headTitle" value="ID ${model.id}" />
@@ -430,8 +431,13 @@ function confirmAssetEdit() {
 
     <c:if test="${model.existsInRequisition && (model.admin || model.provision)}">
         <li class="list-inline-item">
+          <c:if test="${cookie.containsKey('use_requisitions_node_vertical_layout') && cookie['use_requisitions_node_vertical_layout'].getValue().equals('true')}">
+            <a href="<c:out value="admin/ng-requisitions/index.jsp#/requisitions/${model.foreignSource}/nodes/${model.foreignId}/vertical"/>">Edit in Requisition</a>
+          </c:if>
+          <c:if test="${!cookie.containsKey('use_requisitions_node_vertical_layout') || cookie['use_requisitions_node_vertical_layout'].getValue().equals('false')}">
             <a href="<c:out value="admin/ng-requisitions/index.jsp#/requisitions/${model.foreignSource}/nodes/${model.foreignId}"/>">Edit in Requisition</a>
-        </li>
+          </c:if>
+          </li>
     </c:if>
 
     <c:forEach items="${navEntries}" var="entry">

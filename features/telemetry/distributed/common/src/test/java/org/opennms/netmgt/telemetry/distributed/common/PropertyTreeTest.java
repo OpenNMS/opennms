@@ -84,4 +84,28 @@ public class PropertyTreeTest {
         assertEquals(3, props.getSubTrees("b").size());
     }
 
+    /**
+     * see NMS-13477
+     */
+    @Test
+    public void testWhitespaces() {
+        final PropertyTree props = PropertyTree.from(ImmutableMap.<String, String>builder()
+                .put("a", "1 ")
+                .put("b", " 2")
+                .put("x.y.z.a.b", "1 ")
+                .put("x.y.z.a.c", " 2")
+                .build());
+
+        assertEquals(Optional.empty(), props.find("c").flatMap(PropertyTree.Node::getValue));
+        assertEquals(Optional.of("1"), props.find("a").flatMap(PropertyTree.Node::getValue));
+        assertEquals(Optional.of("2"), props.find("b").flatMap(PropertyTree.Node::getValue));
+
+        assertEquals("1", props.getRequiredString("a"));
+        assertEquals("2", props.getRequiredString("b"));
+
+        assertEquals(Optional.of(1), props.getOptionalInteger("a"));
+        assertEquals(Optional.of(2), props.getOptionalInteger("b"));
+
+        assertEquals(ImmutableMap.of("a.b", "1", "a.c", "2"), props.getFlatMap("x", "y", "z"));
+    }
 }

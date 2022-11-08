@@ -32,6 +32,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.model.OnmsNode;
@@ -95,6 +96,21 @@ public class MockSnmpInterfaceDao extends AbstractMockDao<OnmsSnmpInterface, Int
     }
 
     @Override
+    public List<OnmsSnmpInterface> findByNodeId(final Integer nodeId) {
+        return findAll().stream().filter(itf -> itf.getNode().getId().equals(nodeId)).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<OnmsSnmpInterface> findByMacLinksOfNode(Integer nodeId) {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<OnmsSnmpInterface> findBySnpaAddressOfRelatedIsIsLink(int nodeId) {
+        return Collections.emptyList();
+    }
+
+    @Override
     public OnmsSnmpInterface findByForeignKeyAndIfIndex(final String foreignSource, final String foreignId, final Integer ifIndex) {
         for (final OnmsSnmpInterface iface : findAll()) {
             final OnmsNode node = iface.getNode();
@@ -136,5 +152,10 @@ public class MockSnmpInterfaceDao extends AbstractMockDao<OnmsSnmpInterface, Int
 
     public List<OnmsSnmpInterface> findAllHavingEgressFlows(final Integer nodeId) {
         return Collections.emptyList();
+    }
+
+    @Override
+    public long getNumInterfacesWithFlows() {
+        return 0;
     }
 }

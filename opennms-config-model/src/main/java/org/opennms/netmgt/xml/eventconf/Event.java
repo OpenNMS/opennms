@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -96,6 +96,9 @@ public class Event implements Serializable, Comparable<Event> {
      */
     @XmlElement(name="logmsg", required=true)
     private Logmsg m_logmsg;
+
+    @XmlElement(name="collectionGroup", required=false)
+    private List<CollectionGroup> collectionGroup = new ArrayList<>();
 
     /**
      * The event severity
@@ -250,6 +253,14 @@ public class Event implements Serializable, Comparable<Event> {
 
     public void setLogmsg(final Logmsg logmsg) {
         m_logmsg = ConfigUtils.assertNotNull(logmsg, "logmsg");
+    }
+
+    public List<CollectionGroup> getCollectionGroup() {
+        return collectionGroup;
+    }
+
+    public void setCollectionGroup(List<CollectionGroup> collectionGroup) {
+        this.collectionGroup = collectionGroup;
     }
 
     public String getSeverity() {

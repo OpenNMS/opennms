@@ -23,6 +23,22 @@ if [ "$(id -u)" -gt 0 ]; then
 	fail 'You must run this script as root!\n'
 fi
 
+
+if [ -z "${OPENNMS_HOME}" ]; then
+  # shellcheck disable=SC2154
+  OPENNMS_HOME="${install.dir}"
+fi
+
+if [ -e "${OPENNMS_HOME}/etc/opennms.conf" ]; then
+  # shellcheck disable=SC1090,SC1091
+  . "${OPENNMS_HOME}/etc/opennms.conf"
+fi
+[ -z "$RUNAS" ] && RUNAS=opennms
+
+if [ -z "$PING_USER" ]; then
+	PING_USER="$RUNAS"
+fi
+
 if [ -z "$PING_USER" ]; then
 	fail 'usage: %s <user>\n' "$0"
 fi

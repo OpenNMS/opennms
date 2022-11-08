@@ -34,6 +34,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -165,7 +166,7 @@ public class GrafanaEndpointPageIT extends UiPageTest  {
 
         public Page open() {
             driver.get(url);
-            new WebDriverWait(driver, 5).until(pageContainsText("Grafana Endpoints"));
+            new WebDriverWait(driver, Duration.ofSeconds(5)).until(pageContainsText("Grafana Endpoints"));
             return this;
         }
 
@@ -183,7 +184,7 @@ public class GrafanaEndpointPageIT extends UiPageTest  {
 
                         // Click reveal to get the API KEY and afterwards click again to hide
                         new Button(getDriver(), "action.revealApiKey." + id).click();
-                        new WebDriverWait(driver, 5).until(webDriver -> !row.findElements(By.xpath("./td")).get(2).getText().contains("****"));
+                        new WebDriverWait(driver, Duration.ofSeconds(5)).until(webDriver -> !row.findElements(By.xpath("./td")).get(2).getText().contains("****"));
                         final String apiKey = columns.get(2).getText();
                         new Button(getDriver(), "action.revealApiKey." + id).click();
 
@@ -207,14 +208,14 @@ public class GrafanaEndpointPageIT extends UiPageTest  {
             return new EndpointModal()
                     .open(() -> {
                         findElementById("action.addGrafanaEndpoint").click(); // Click add button
-                        new WebDriverWait(driver, 5).until(pageContainsText("Add Grafana Endpoint"));
+                        new WebDriverWait(driver, Duration.ofSeconds(5)).until(pageContainsText("Add Grafana Endpoint"));
                     });
         }
 
         public EndpointModal editModal(Long endpointId) {
             return new EndpointModal().open(() -> {
                 findElementById("action.edit." + endpointId).click();
-                new WebDriverWait(driver, 5).until(pageContainsText("Edit Grafana Endpoint"));
+                new WebDriverWait(driver, Duration.ofSeconds(5)).until(pageContainsText("Edit Grafana Endpoint"));
             });
         }
 
@@ -223,7 +224,7 @@ public class GrafanaEndpointPageIT extends UiPageTest  {
                 // Click Delete
                 findElementById("action.delete." + endpoint.getId()).click();
                 // Wait for confirm popover
-                new WebDriverWait(driver, 5).until(pageContainsText("Delete Endpoint"));
+                new WebDriverWait(driver, Duration.ofSeconds(5)).until(pageContainsText("Delete Endpoint"));
                 // Click Yes in popover
                 final String confirmButtonXpath = String.format("//div[@class='popover-content']//p[contains(text(), \"UID '%s'\")]/..//button[text() = 'Yes']", endpoint.getUid());
                 final WebElement confirmElement = findElementByXpath(confirmButtonXpath);
@@ -281,7 +282,7 @@ public class GrafanaEndpointPageIT extends UiPageTest  {
 
         // Ensure dialog closes
         private void ensureClosed() {
-            execute(() -> new WebDriverWait(driver, 5).until(ExpectedConditions.numberOfElementsToBe(By.id("endpointModal"), 0)));
+            execute(() -> new WebDriverWait(driver, Duration.ofSeconds(5)).until(ExpectedConditions.numberOfElementsToBe(By.id("endpointModal"), 0)));
         }
     }
 

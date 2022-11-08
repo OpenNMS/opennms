@@ -99,6 +99,8 @@ public class Maskelement implements Serializable {
      */
     public static final String TAG_SNMP_EID = "id";
 
+    public static final String TAG_SNMP_TRAPOID = "trapoid";
+
     /**
      * The SNMP specific xml tag
      */

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,8 +28,15 @@
 
 package org.opennms.netmgt.vmmgr;
 
+import static java.nio.file.StandardOpenOption.CREATE;
+import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
+
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -47,6 +54,9 @@ import org.opennms.netmgt.config.service.InvokeAtType;
 import org.opennms.netmgt.config.service.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import sun.misc.Signal;
+import sun.misc.SignalHandler;
 
 /**
  * <p>
@@ -85,17 +95,18 @@ public class Invoker {
     private boolean m_reverse = false;
     private boolean m_failFast = true;
     private List<InvokerService> m_services;
+
+    private Path m_statusPath;
+    private static SignalHandler s_handler;
     
     /**
      * <p>Constructor for Invoker.</p>
      */
     public Invoker() {
-        
+        m_statusPath = Path.of(System.getProperty("opennms.home"), "logs", "status-check.txt");
+        this.registerSignalHandlerOnce();
     }
     
-    /**
-     * <p>instantiateClasses</p>
-     */
     public void instantiateClasses() {
 
         /*
@@ -117,7 +128,7 @@ public class Invoker {
                 Map<String,String> mdc = Logging.getCopyOfContextMap();
                 Object bean;
                 try {
-                    bean = clazz.newInstance();
+                    bean = clazz.getDeclaredConstructor().newInstance();
                 } finally {
                     Logging.setContextMap(mdc);
                 }
@@ -137,15 +148,56 @@ public class Invoker {
                     }
                 }
             } catch (Throwable t) {
-		LOG.error("An error occurred loading the mbean {} of type {}", service.getName(), service.getClassName(), t);
+                LOG.error("An error occurred loading the mbean {} of type {}", service.getName(), service.getClassName(), t);
                 invokerService.setBadThrowable(t);
             }
         }
     }
 
-    /**
-     * <p>getObjectInstances</p>
-     */
+    private void registerSignalHandlerOnce() {
+        if (s_handler != null) return;
+
+        try {
+            s_handler = Signal.handle(new Signal("USR1"), signal -> writeStatusUpdate());
+        } catch (final Throwable t) {
+            System.err.println("WARNING: failed to register service status signal handler");
+            t.printStackTrace();
+        }
+    }
+
+    private void writeStatusUpdate() {
+        if (m_statusPath == null) {
+            System.err.println("WARNING: status signal triggered, but no status path is configured!");
+            return;
+        }
+
+        final var output = new StringBuilder();
+
+        for (final var invokerService : getServices()) {
+            final var serviceName = invokerService.getService().getName();
+            for (final var invoke : invokerService.getService().getInvokes()) {
+                if ("status".equals(invoke.getMethod())) {
+                    try {
+                        Object result = invoke(invoke, invokerService.getMbean());
+                        output.append(StatusGetter.formatStatusEntry(serviceName, result.toString())).append("\n");
+                    } catch (final Throwable e) {
+                        System.err.println("ERROR: an error occurred while calling 'status' on " + serviceName);
+                        e.printStackTrace();
+                        output.append(StatusGetter.formatStatusEntry(serviceName, "STATUS_CHECK_ERROR")).append("\n");
+                        output.append(serviceName).append("=").append("STATUS_CHECK_ERROR").append("\n");
+                    }
+                }
+            }
+        }
+
+        try {
+            Files.writeString(m_statusPath, output.toString(), Charset.defaultCharset(), CREATE, TRUNCATE_EXISTING);
+        } catch (final IOException e) {
+            System.err.println("ERROR: failed to write current status to " + m_statusPath.toString());
+            e.printStackTrace();
+        }
+    }
+
     public void getObjectInstances() {
         for (InvokerService invokerService : getServices()) {
             Service service = invokerService.getService();
@@ -267,7 +319,11 @@ public class Invoker {
             }
         }
 
-        LOG.debug("Invoking {} on object {}", invoke.getMethod(), mbean.getObjectName());
+        if ("status".equals(invoke.getMethod())) {
+            LOG.debug("Invoking {} on object {}", invoke.getMethod(), mbean.getObjectName());
+        } else {
+            LOG.info("Invoking {} on object {}", invoke.getMethod(), mbean.getObjectName());
+        }
         
 
         Object object;
@@ -283,7 +339,11 @@ public class Invoker {
             throw t;
         }
 
-	LOG.debug("Invocation {} successful for MBean {}", invoke.getMethod(), mbean.getObjectName());
+        if ("status".equals(invoke.getMethod())) {
+            LOG.debug("Invocation {} successful for MBean {}", invoke.getMethod(), mbean.getObjectName());
+        } else {
+            LOG.info("Invocation {} successful for MBean {}", invoke.getMethod(), mbean.getObjectName());
+        }
 
         return object;
     }
@@ -313,6 +373,14 @@ public class Invoker {
         } finally {
             Logging.setContextMap(mdc);
         }
+    }
+
+    public Path getStatusPath() {
+        return m_statusPath;
+    }
+
+    public void setStatusPath(final Path statusPath) {
+        m_statusPath = statusPath;
     }
 
     /**

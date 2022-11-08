@@ -69,7 +69,6 @@ public class GenericTypeResourceTest {
         assertEquals("instance_", getInstanceInResourcePath("instance]"));
         assertEquals("instance__", getInstanceInResourcePath("instance]]"));
         // Other characters that may be illegal in Windows paths are NOT currently filtered
-        assertEquals("instance/", getInstanceInResourcePath("instance/"));
         assertEquals("instance*", getInstanceInResourcePath("instance*"));
         assertEquals("instance|", getInstanceInResourcePath("instance|"));
         assertEquals("instance<", getInstanceInResourcePath("instance<"));

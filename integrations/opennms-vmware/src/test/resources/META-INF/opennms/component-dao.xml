@@ -23,15 +23,15 @@
     </bean>
 
     <bean id="vmwareCimDatacollectionConfigDao"
-          class="org.opennms.netmgt.dao.jaxb.VmwareCimDatacollectionConfigDaoJaxb">
+          class="org.opennms.netmgt.dao.vmware.jaxb.VmwareCimDatacollectionConfigDaoJaxb">
         <property name="configResource" ref="vmwareCimDatacollectionConfigResourceLocation"/>
     </bean>
 
-    <bean id="vmwareDatacollectionConfigDao" class="org.opennms.netmgt.dao.jaxb.VmwareDatacollectionConfigDaoJaxb">
+    <bean id="vmwareDatacollectionConfigDao" class="org.opennms.netmgt.dao.vmware.jaxb.VmwareDatacollectionConfigDaoJaxb">
         <property name="configResource" ref="vmwareDatacollectionConfigResourceLocation"/>
     </bean>
 
-    <bean id="vmwareConfigDao" class="org.opennms.netmgt.dao.jaxb.VmwareConfigDaoJaxb">
+    <bean id="vmwareConfigDao" class="org.opennms.netmgt.dao.vmware.jaxb.VmwareConfigDaoJaxb">
         <property name="configResource" ref="vmwareConfigResourceLocation"/>
     </bean>
 

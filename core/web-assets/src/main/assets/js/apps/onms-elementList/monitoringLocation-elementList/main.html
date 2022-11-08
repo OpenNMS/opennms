@@ -233,12 +233,6 @@
 						<i ng-show="query.orderBy === 'priority' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"></i>
 						<i ng-show="query.orderBy === 'priority' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"></i>
 					</th>
-					<th>
-						Polling Packages
-					</th>
-					<th>
-						Collection Packages
-					</th>
 				</tr>
 
 				<tr ng-repeat="item in items">
@@ -283,12 +277,6 @@
 								<a href style="text-decoration: none;" ng-click="addSearchClause({property:'priority',operator:'NE',value:item['priority']})"><i class="fa fa-minus-square-o fa-lg"></i></a>
 							</span>
 						</onms-list-edit-in-place>
-					</td>
-					<td>
-						<onms-list-edit-list-in-place values="item['polling-package-names']" value-type="'text'" on-edit="update(item)"></onms-list-edit-list-in-place>
-					</td>
-					<td>
-						<onms-list-edit-list-in-place values="item['collection-package-names']" value-type="'text'" on-edit="update(item)"></onms-list-edit-list-in-place>
 					</td>
 				</tr>
 			</tbody>

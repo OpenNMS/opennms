@@ -10,7 +10,6 @@
 target
 .classpath
 .externalToolBuilders
-.factorypath
 .project
 .settings
 .springBeans
@@ -24,6 +23,7 @@ build.properties
 .*launch
 nb-configuration.xml
 .idea
+.jqwik-database
 dependency-reduced-pom.xml
 npm-debug.log
 yarn-error.log
@@ -31,13 +31,17 @@ yarn-error.log
 /features/discovery/activemq-data
 /features/topology-map/org.opennms.features.topology.app/www-test/
 /opennms-alarms/jms-northbounder/activemq-data/
+ui/dist/
+ui/node_modules/
+ui/package-lock.json
+ui/devConfig.ts
+.circleci/main.yml
 
 # jansi downloads a native lib on osx sometimes
 /maven/**/*.jnilib
 
 # Ignore Visual Studio Code
 .factorypath
-
 # Ignore Docker/OCI temporary files
 .docker_temp*
 *.oci
@@ -48,3 +52,13 @@ opennms-container/*/tarball/*.tar.gz
 # Python
 *.pyc
 __pycache__
+
+# Antora artifacts
+/build/
+/public/
+
+# Ignore jenv local version files
+.java-version
+
+# Ignore secure vault
+opennms-base-assembly/src/main/filtered/etc/scv.jce

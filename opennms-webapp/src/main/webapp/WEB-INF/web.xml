@@ -189,12 +189,13 @@
   </filter>
 
   <filter>
-    <filter-name>UrlRewriteFilter</filter-name>
-    <filter-class>org.tuckey.web.filters.urlrewrite.UrlRewriteFilter</filter-class>
-    <init-param>
-      <param-name>statusEnabled</param-name>
-      <param-value>false</param-value>
-    </init-param>
+    <filter-name>SpaRouting</filter-name>
+    <filter-class>org.opennms.web.servlet.SpaRoutingFilter</filter-class>
+  </filter>
+
+  <filter>
+    <filter-name>httpsRewriteFilter</filter-name>
+    <filter-class>org.opennms.web.filter.HttpsRewriteFilter</filter-class>
   </filter>
 
   <!-- WARMERGE: insert filter -->
@@ -320,12 +321,16 @@
     <filter-name>eXtremeExport</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
-
   <filter-mapping>
-    <filter-name>UrlRewriteFilter</filter-name>
-    <url-pattern>*.jnlp</url-pattern>
-    <dispatcher>REQUEST</dispatcher>
-    <dispatcher>FORWARD</dispatcher>
+    <filter-name>SpaRouting</filter-name>
+    <url-pattern>/ui</url-pattern>
+    <url-pattern>/ui/*</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>httpsRewriteFilter</filter-name>
+    <url-pattern>""</url-pattern>
+    <url-pattern>/</url-pattern>
+    <url-pattern>/frontPage.jsp</url-pattern>
   </filter-mapping>
 
   <!-- WARMERGE: insert filter-mapping -->

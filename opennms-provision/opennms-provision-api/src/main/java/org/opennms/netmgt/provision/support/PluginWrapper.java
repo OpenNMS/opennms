@@ -70,8 +70,8 @@ public class PluginWrapper {
      * @throws java.lang.ClassNotFoundException if any.
      */
     public PluginWrapper(Class<?> clazz) throws ClassNotFoundException {
-        m_className = clazz.getName();
-        BeanWrapper wrapper = new BeanWrapperImpl(Class.forName(m_className));
+        m_className = clazz.getCanonicalName();
+        BeanWrapper wrapper = new BeanWrapperImpl(clazz);
 
         for (PropertyDescriptor pd : wrapper.getPropertyDescriptors()) {
             if (pd.getName().equals("class")) {

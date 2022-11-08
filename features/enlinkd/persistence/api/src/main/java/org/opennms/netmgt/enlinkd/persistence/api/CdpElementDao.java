@@ -28,17 +28,21 @@
 
 package org.opennms.netmgt.enlinkd.persistence.api;
 
-import org.opennms.netmgt.dao.api.OnmsDao;
+import java.util.List;
+
 import org.opennms.netmgt.enlinkd.model.CdpElement;
 
 /**
  * <p>CdpElementDao interface.</p>
  */
-public interface CdpElementDao extends OnmsDao<CdpElement, Integer> {
+public interface CdpElementDao extends ElementDao<CdpElement, Integer> {
     
-    public CdpElement findByNodeId(Integer id);
+    CdpElement findByGlobalDeviceId(String deviceId);
 
-    public CdpElement findByGlobalDeviceId(String deviceId);
+    /**
+     * Returns all CdpElements that have a globalDeviceId that matches a cacheDeviceId of a CdpLink related to the given
+     * node. Used to retrieve all CdpElements that need to be accessed when finding cdp links of a node.
+     */
+    List<CdpElement> findByCacheDeviceIdOfCdpLinksOfNode(int nodeId);
 
-    public void deleteByNodeId(Integer nodeId);
 }

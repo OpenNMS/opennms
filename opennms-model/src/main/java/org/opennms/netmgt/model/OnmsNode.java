@@ -199,6 +199,8 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
 
     private List<OnmsMetaData> m_metaData = new ArrayList<>();
 
+    private List<OnmsMetaData> m_requisitionedMetaData = new ArrayList<>();
+
     /**
      * <p>
      * Constructor for OnmsNode. This constructor should only be used
@@ -1014,6 +1016,13 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
         return m_metaData;
     }
 
+    public Optional<OnmsMetaData> findMetaDataForContextAndKey(final String context, final String key) {
+        return getMetaData().stream()
+                .filter(m -> m.getContext().equals(context))
+                .filter(m -> m.getKey().equals(key))
+                .findFirst();
+    }
+
     public void setMetaData(final List<OnmsMetaData> metaData) {
         m_metaData = metaData;
     }
@@ -1061,6 +1070,20 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
                 iterator.remove();
             }
         }
+    }
+
+    @Transient
+    @XmlTransient
+    public List<OnmsMetaData> getRequisitionedMetaData() {
+        return m_requisitionedMetaData;
+    }
+
+    public void setRequisionedMetaData(final List<OnmsMetaData> requisitionedMetaData) {
+        m_requisitionedMetaData = requisitionedMetaData;
+    }
+
+    public void addRequisionedMetaData(final OnmsMetaData onmsMetaData) {
+        m_requisitionedMetaData.add(onmsMetaData);
     }
 
     /**

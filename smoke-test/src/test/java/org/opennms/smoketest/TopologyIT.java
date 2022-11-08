@@ -36,6 +36,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -210,7 +211,7 @@ public class TopologyIT extends OpenNMSSeleniumIT {
                 getElement().findElement(By.xpath(iconOverlayXpath)).click();
 
                 // Wait until vertex is actually selected before continuing
-                new WebDriverWait(testCase.getDriver(), 30).until(input -> {
+                new WebDriverWait(testCase.getDriver(), Duration.ofSeconds(30)).until(input -> {
                     final WebElement element = getElement().findElement(By.xpath(iconOverlayXpath + "/.."));
                     return element.getAttribute("class").contains("selected");
                 });
@@ -251,7 +252,7 @@ public class TopologyIT extends OpenNMSSeleniumIT {
                     testCase.setImplicitWait(IMPLICIT_WAIT_SECONDS, TimeUnit.SECONDS);
                     testCase.findElementByXpath("//*[contains(text(), 'Change Icon')]");
                     testCase.findElementByXpath(iconXpath).click();
-                    new WebDriverWait(testCase.getDriver(), 10).until(input -> {
+                    new WebDriverWait(testCase.getDriver(), Duration.ofSeconds(10)).until(input -> {
                         final WebElement elementByXpath = testCase.findElementByXpath(iconXpath);
                         return elementByXpath.getAttribute("class").contains("selected");
                     });
@@ -603,6 +604,7 @@ public class TopologyIT extends OpenNMSSeleniumIT {
                 openLayerSelectionComponent();
                 WebElement layerElement = testCase.findElementById("layerComponent").findElement(By.xpath("//div[text() = '" + layerName + "']"));
                 layerElement.click();
+                LOG.debug("selectLayer: clicked {}", layerName);
                 waitForTransition(testCase);
             } finally {
                 testCase.setImplicitWait();
@@ -631,8 +633,14 @@ public class TopologyIT extends OpenNMSSeleniumIT {
             return new Breadcrumbs(testCase);
         }
 
-        private void openLayerSelectionComponent() {
+        public void openLayerSelectionComponent() {
             if (!isLayoutComponentVisible()) {
+                testCase.findElementById("layerToggleButton").click();
+            }
+        }
+
+        public void closeLayerSelectionComponent() {
+            if (isLayoutComponentVisible()) {
                 testCase.findElementById("layerToggleButton").click();
             }
         }
@@ -642,9 +650,10 @@ public class TopologyIT extends OpenNMSSeleniumIT {
          *
          * @return true if the layerToggleButton has been pressed already and the layers are visible, otherwise false
          */
-        private boolean isLayoutComponentVisible() {
+        public boolean isLayoutComponentVisible() {
             WebElement layerToggleButton = testCase.findElementById("layerToggleButton");
-            return layerToggleButton.getCssValue("class").contains("expanded");
+            LOG.debug("isLayoutComponentVisible: class: {}", layerToggleButton.getAttribute("class"));
+            return layerToggleButton.getAttribute("class").contains("expanded");
         }
 
         private WebElement getMenubarElement(String itemName) {

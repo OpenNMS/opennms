@@ -37,12 +37,12 @@ public class ClassificationRequest {
     private String location;
     private Protocol protocol;
     private Integer dstPort;
-    private String dstAddress;
+    private IpAddr dstAddress;
     private Integer srcPort;
-    private String srcAddress;
+    private IpAddr srcAddress;
     private String exporterAddress;
 
-    public ClassificationRequest(String location, int srcPort, String srcAddress, int dstPort, String dstAddress, Protocol protocol) {
+    public ClassificationRequest(String location, int srcPort, IpAddr srcAddress, int dstPort, IpAddr dstAddress, Protocol protocol) {
         this.location = location;
         this.srcPort = srcPort;
         this.srcAddress = srcAddress;
@@ -80,10 +80,14 @@ public class ClassificationRequest {
     }
 
     public void setDstAddress(String dstAddress) {
+        this.dstAddress = IpAddr.of(dstAddress);
+    }
+
+    public void setDstAddress(IpAddr dstAddress) {
         this.dstAddress = dstAddress;
     }
 
-    public String getDstAddress() {
+    public IpAddr getDstAddress() {
         return dstAddress;
     }
 
@@ -95,11 +99,15 @@ public class ClassificationRequest {
         this.srcPort = srcPort;
     }
 
-    public String getSrcAddress() {
+    public IpAddr getSrcAddress() {
         return srcAddress;
     }
 
     public void setSrcAddress(String srcAddress) {
+        this.srcAddress = IpAddr.of(srcAddress);
+    }
+
+    public void setSrcAddress(IpAddr srcAddress) {
         this.srcAddress = srcAddress;
     }
 
@@ -133,5 +141,18 @@ public class ClassificationRequest {
     @Override
     public int hashCode() {
         return Objects.hash(location, protocol, dstPort, dstAddress, srcPort, srcAddress, exporterAddress);
+    }
+
+    @Override
+    public String toString() {
+        return "ClassificationRequest{" +
+               "location='" + location + '\'' +
+               ", protocol=" + protocol +
+               ", dstPort=" + dstPort +
+               ", dstAddress='" + dstAddress + '\'' +
+               ", srcPort=" + srcPort +
+               ", srcAddress='" + srcAddress + '\'' +
+               ", exporterAddress='" + exporterAddress + '\'' +
+               '}';
     }
 }

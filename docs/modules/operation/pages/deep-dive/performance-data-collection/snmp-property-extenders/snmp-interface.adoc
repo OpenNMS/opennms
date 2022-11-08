@@ -1,0 +1,119 @@
+= SNMP Interface Property Extender
+
+The SNMP Interface property extender does much the same job as the Pointer-Like Index property extender, but it is specialized for importing properties from the `ifTable`.
+Resources representing rows in the `ifTable` are modeled differently in {page-component-title} compared to other tabular resource types, and this extender accounts for those differences.
+
+== When to Use the SNMP Interface Property Extender
+
+Use the SNMP Interface property extender when the string property you want to import is associated with a network interface which is represented by a row in the `ifTable`.
+For example, the `dot1dBasePortTable` has its own index which does not share any components with any other table, but its `dot1dBasePortIfIndex` column contains a value that is a valid `ifIndex`.
+
+[source, snmp-mib]
+----
+   dot1dBasePortEntry OBJECT-TYPE
+       -- ...
+       DESCRIPTION
+           "A list of information for each port of the bridge."
+       -- ...
+       INDEX  { dot1dBasePort } <1>
+  -- ...
+
+   dot1dBasePortIfIndex OBJECT-TYPE <2>
+       -- ...
+       DESCRIPTION
+           "The value of the instance of the ifIndex object,
+           defined in IF-MIB, for the interface corresponding
+           to this port."
+       ::= { dot1dBasePortEntry 2 }
+  -- ...
+
+ifEntry OBJECT-TYPE
+    -- ...
+    DESCRIPTION
+            "An entry containing management information applicable to a
+            particular interface."
+    INDEX   { ifIndex } <3>
+    ::= { ifTable 1 }
+----
+<1> The entry type for `dot1dBasePortTable` is indexed on `dot1dBasePort`, which has no significance outside this table.
+<2> But `dot1dBasePortTable` contains column `dot1dBasePortIfIndex`, which tells us the `ifIndex` corresponding to the physical port underlying the associated bridge base port.
+<3> `ifIndex` is the index of the `ifTable` entry type (and also of the `ifXTable` entry type).
+
+By using this extender, it's possible to import string attributes from the `ifTable`, `ifXTable`, or another table that augments the `ifTable`.
+
+== Configure the SNMP Interface Property Extender
+
+The SNMP Interface property extender expects two or three parameters:
+
+.SNMP Interface Property Extender Parameters
+[options="header", cols="1,3,2"]
+|===
+| Name
+| Description
+| Default value
+
+3+| *Required*
+
+| source-attribute
+| The alias name of the string property to import from the source MIB table.
+| n/a
+
+| target-ifindex-pointer-column
+| The name of the column in the target MIB table that contains a value of `ifIndex`.
+| n/a
+
+3+| *Optional*
+
+| source-ifindex-attribute
+| The name of the column in the source MIB table that contains a value of `ifIndex`.
+| ifIndex
+|===
+
+This example shows how to use `dot1dBasePortIfIndex` as a pointer-like index to import `ifDescr` from the `ifTable`, and `ifName` and `ifAlias` from the `ifXTable`, into a trio of new string properties in the target resource.
+
+[source, xml]
+----
+<resourceType name="dot1dBasePortEntry" label="dot1d Base Port" resourceLabel="${index}">
+  <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy" />
+  <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy" />
+</resourceType>
+
+<groups>
+  <group name="ifTable" ifType="all">
+    <mibObj oid=".1.3.6.1.2.1.2.2.1.1"     instance="ifIndex" alias="interfaceIndex" type="string" /> <1>
+    <mibObj oid=".1.3.6.1.2.1.2.2.1.2"     instance="ifIndex" alias="interfaceDescr" type="string" />
+    <mibObj oid=".1.3.6.1.2.1.31.1.1.1.1"  instance="ifIndex" alias="interfaceName"  type="string" />
+    <mibObj oid=".1.3.6.1.2.1.31.1.1.1.18" instance="ifIndex" alias="interfaceAlias" type="string" />
+  </group>
+
+  <group name="dot1dBasePortTable" ifType="all">
+    <mibObj oid=" .1.3.6.1.2.1.17.1.4.1.1" instance="dot1dBasePortEntry" alias="dot1dBasePort"        type="string" />
+    <mibObj oid=" .1.3.6.1.2.1.17.1.4.1.2" instance="dot1dBasePortEntry" alias="dot1dBasePortIfIndex" type="string" /> <2>
+    <mibObj oid=" .1.3.6.1.2.1.17.1.4.1.4" instance="dot1dBasePortEntry" alias="d1dBPDelayExDiscard"  type="counter" />
+    <mibObj oid=" .1.3.6.1.2.1.17.1.4.1.5" instance="dot1dBasePortEntry" alias="d1dBPMtuExDiscard"    type="counter" />
+    <property instance="dot1dBasePortEntry" alias="dot1dBasePortIfDescr" class-name="org.opennms.netmgt.collectd.InterfaceSnmpPropertyExtender"> <3>
+      <parameter key="source-ifindex-attribute" value="interfaceIndex"/>
+      <parameter key="source-attribute" value="interfaceDescr"/> <4>
+      <parameter key="target-ifindex-pointer-column" value="dot1dBasePortIfIndex"/>
+    </property>
+    <property instance="dot1dBasePortEntry" alias="dot1dBasePortIfName" class-name="org.opennms.netmgt.collectd.InterfaceSnmpPropertyExtender"> <5>
+      <parameter key="source-ifindex-attribute" value="interfaceIndex"/>
+      <parameter key="source-attribute" value="interfaceName"/> <6>
+      <parameter key="target-ifindex-pointer-column" value="dot1dBasePortIfIndex"/>
+    </property>
+    <property instance="dot1dBasePortEntry" alias="dot1dBasePortIfAlias" class-name="org.opennms.netmgt.collectd.InterfaceSnmpPropertyExtender"> <7>
+      <parameter key="source-ifindex-attribute" value="interfaceIndex"/>
+      <parameter key="source-attribute" value="interfaceAlias"/> <8>
+      <parameter key="target-ifindex-pointer-column" value="dot1dBasePortIfIndex"/>
+    </property>
+  </group>
+</groups>
+----
+<1> First we collect all of `ifIndex`, `ifDescr`, `ifName`, and `ifAlias` in a group associated with the `ifIndex` source resource-type, using modified names to avoid collisions with internal workings (the `ifIndex` type is built in, so we do not need a custom resource-type definition for it).
+<2> Then we collect the pointer-like column `dot1dBasePortIfIndex` in the target group.
+<3> To derive the `dot1dBasePortIfDescr` string property, we tell the extender which target attribute contains the pointer-like value, which source column needs to have a matching value, and that we want to use the `interfaceDescr` property.
+<4> From the source group
+<5> Deriving `dot1dBasePortIfName` is almost identical, except that we want the property `interfaceName`.
+<6> From the source group instead
+<7> Again with `dot1dBasePortIfAlias`, we repeat ourselves except that our desired property from the source group is `interfaceAlias`
+<8> From the source group

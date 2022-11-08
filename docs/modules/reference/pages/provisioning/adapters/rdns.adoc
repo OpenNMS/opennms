@@ -1,0 +1,27 @@
+[[adapter-rdns]]
+= Reverse DNS
+
+The DDNS adapter uses the dynamic DNS protocol to send updated PTR DNS records to your DNS system as nodes are provisioned into {page-component-title}.
+
+For every IP address found, a corresponding reverse DNS zone must exist on your DNS server.
+
+== Installation
+
+To use this feature you have to install the reverse DNS provisioning plugin from the repository.
+
+* For RPM-based distributions:
+** `yum install opennms-plugin-provisioning-reverse-dns`
+* For Debian-based distributions:
+** `apt-get install opennms-plugin-provisioning-reverse-dns`
+
+== Configuration
+
+To configure this adapter, create a .properties file in  the `$\{OPENNMS_HOME}/etc/opennms.properties.d/` folder and set the `importer.adapter.dns.server property`:
+
+[source, properties]
+----
+importer.adapter.dns.server=192.168.1.1 <1>
+----
+<1> Replace with the IP address of your DNS server to receive reverse DNS updates.
+
+NOTE: This DNS server setting may be shared with the xref:provisioning/adapters/ddns.adoc[dynamic DNS adapter] if you have them both installed.

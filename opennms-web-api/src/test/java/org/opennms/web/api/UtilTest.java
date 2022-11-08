@@ -51,7 +51,7 @@ public class UtilTest {
     public void testFormatDateToUIStringOK() throws ParseException {
         final Date inputDate = new SimpleDateFormat("yyyy-MM-dd").parse("2014-10-30");
         final String formattedDate = Util.formatDateToUIString(inputDate);
-        Assert.assertEquals("10/30/14 12:00:00 AM", formattedDate);
+        Assert.assertEquals("10/30/14, 12:00:00 AM", formattedDate);
     }
 
     @Test

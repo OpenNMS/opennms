@@ -1,0 +1,97 @@
+.Create a file to prevent installing ActiveMQ features on Minion start-up
+[source, console]
+----
+sudo vi etc/featuresBoot.d/disable-activemq.boot
+----
+
+.Add the following lines to disable ActiveMQ features and save the file
+[source, disable-activemq.boot]
+----
+!minion-jms
+!opennms-core-ipc-jms
+----
+
+.Create a file to install Kafka features on Minion startup
+[source, console]
+----
+sudo vi etc/featuresBoot.d/kafka.boot
+----
+
+.Add the following lines to install the remote producer call (RPC), sink, and twin feature for Kafka on Minion startup and save the file
+[source, kafka.boot]
+----
+opennms-core-ipc-kafka
+----
+
+.Configure the Kafka features and the Minion location via the Karaf shell
+[source, console]
+----
+ssh -p 8201 admin@localhost
+----
+
+.Configure the Minion location
+[source, karaf]
+----
+config:edit org.opennms.minion.controller<1>
+config:property-set location my-location<2>
+config:update<3>
+----
+
+<1> Edit the Minion configuration.
+<2> Replace my-location with a location name that represents the remote location where the Minion is running.
+<3> Save the configuration.
+
+By default, the Minion generates a unique ID.
+Provide a human-readable Minion identifier yourself with `config:property-set id my-minion-name`.
+
+.Configure the Kafka endpoints for IPC feature
+[source, karaf]
+----
+config:edit org.opennms.core.ipc.kafka
+config:property-set bootstrap.servers my-kafka-ip-1:9092,my-kafka-ip-2:9092<1>
+config:update
+----
+
+<1> Connect to the specified Kafka nodes and adjust the IPs or FQDNs with the Kafka port (9092) accordingly.
+
+If you set more than one Kafka node as `bootstrap.servers`. the driver attempts to connect to the first entry.
+If that is successful, the whole broker topology will be discovered and will be known by the client.
+The other entries are used only if the connection to the first entry fails.
+
+IMPORTANT: Ensure you use the FQDN or IP for your Kafka nodes as configured as advertised listener.
+
+NOTE: You can still configure module-specific config for sink IPC at `org.opennms.core.ipc.sink.kafka.cfg`; similarly for RPC and twin.
+      Module-specific config takes precedence over common config specified on `org.opennms.core.ipc.kafka.cfg`.
+
+Exit the Karaf shell with kbd:[Ctrl+d]
+
+.Restart the Minion to apply the configuration
+[source,console]
+----
+sudo systemctl restart minion
+----
+
+.Verify the configuration using the health check in the Karaf shell
+[source, console]
+----
+ssh -p 8201 admin@localhost
+----
+
+.Run the health check command
+[source, karaf]
+----
+opennms:health-check
+----
+
+.Verify all components are configured properly
+[source, output]
+----
+Verifying the health of the container
+
+Verifying installed bundles              [ Success  ]
+Connecting to Kafka from RPC             [ Success  ]
+Connecting to Kafka from Sink Producer   [ Success  ]
+Connecting to Kafka from Twin            [ Success  ]
+
+=> Everything is awesome
+----

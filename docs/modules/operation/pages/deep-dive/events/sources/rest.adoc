@@ -1,0 +1,5 @@
+
+[[ga-events-sources-rest]]
+= REST
+
+Posting an event in XML format to the xref:development:rest/events.adoc#posts-adding-data[Events endpoint] in the {page-component-title} REST API will create a corresponding event, just as with the XML-TCP interface.

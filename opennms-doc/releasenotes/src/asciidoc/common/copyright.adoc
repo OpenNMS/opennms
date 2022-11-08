@@ -1,1 +1,0 @@
-Copyright (C) 2004-2020 The OpenNMS Group, Inc.

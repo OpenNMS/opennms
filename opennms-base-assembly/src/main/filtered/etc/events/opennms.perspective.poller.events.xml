@@ -1,0 +1,23 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+    <event>
+	    <uei>uei.opennms.org/perspective/nodes/nodeLostService</uei>
+        <event-label>OpenNMS-defined perspective poller event: A perspective poller detected a node lost service</event-label>
+        <descr>&lt;p>A %service% outage was identified on interface %interface% from location: %parm[perspective]%.&lt;/p></descr>
+        <logmsg dest="logndisplay">
+            %service% outage identified on interface %interface% from location %parm[perspective]% with reason code: %parm[eventReason]%.
+        </logmsg>
+        <severity>Minor</severity>
+        <alarm-data reduction-key="%uei%:%parm[perspective]%:%nodeid%:%interface%:%service%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <uei>uei.opennms.org/perspective/nodes/nodeRegainedService</uei>
+        <event-label>OpenNMS-defined perspective poller event: A perspective poller detected a node regained service</event-label>
+        <descr>&lt;p>The %service% service on interface %interface% was previously down from %parm[perspective]%.&lt;/p>
+               &lt;p>This event is generated when a service which had previously failed polling attempts is again responding to polls by OpenNMS. &lt;/p></descr>
+        <logmsg dest="logndisplay">
+            %service% outage identified on interface %interface% from location %parm[perspective]% has cleared.
+        </logmsg>
+        <severity>Normal</severity>
+        <alarm-data reduction-key="%uei%:%parm[perspective]%:%nodeid%:%interface%:%service%" alarm-type="2" clear-key="uei.opennms.org/perspective/nodes/nodeLostService:%parm[perspective]%:%nodeid%:%interface%:%service%" auto-clean="false"/>
+    </event>
+</events>

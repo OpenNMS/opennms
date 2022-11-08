@@ -30,6 +30,7 @@ package org.opennms.netmgt.actiond.jmx;
 
 import java.lang.reflect.UndeclaredThrowableException;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.opennms.netmgt.config.ActiondConfigFactory;
 
 /**
@@ -104,5 +105,10 @@ public class Actiond implements ActiondMBean {
     @Override
     public String getStatusText() {
         return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
+    }
+
+    @Override
+    public long getStartTimeMilliseconds() {
+        throw new NotImplementedException();
     }
 }

@@ -23,7 +23,7 @@
 	  <property name="durability" value="true" />
   </bean>
   
-  <bean id="reportWrapperService" class="org.easymock.EasyMock" factory-method="createStrictMock">
+  <bean id="reportWrapperService" class="org.mockito.Mockito" factory-method="mock">
 	<constructor-arg value="org.opennms.reporting.core.svclayer.ReportWrapperService"/>
   </bean>
 

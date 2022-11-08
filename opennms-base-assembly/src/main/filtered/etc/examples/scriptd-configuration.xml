@@ -8,7 +8,7 @@
 		import org.opennms.netmgt.snmp.SnmpTrapBuilder;
 		import org.opennms.netmgt.config.DataSourceFactory;
 		import org.opennms.netmgt.utils.SingleResultQuerier;
-        import org.opennms.netmgt.xml.event.Event;
+        import org.opennms.netmgt.events.api.model.IEvent;
 
 		log = bsf.lookupBean("log");
 		snmpTrapHelper = new org.opennms.netmgt.scriptd.helper.SnmpTrapHelper();
@@ -29,16 +29,6 @@
 
 	    event = bsf.lookupBean("event");
         forwardEvent(event);
-
-	</event-script>
-
-	<event-script language="beanshell">
-
-		event = bsf.lookupBean("event");
-		if (event.snmp != null) {
-			log.debug("Forwarding a trap");
-			snmpTrapHelper.forwardTrap(event, "172.20.1.15", 162);
-		}
 
 	</event-script>
 

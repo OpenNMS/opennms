@@ -134,7 +134,9 @@ public class IpInterfaceRestService extends AbstractDaoRestService<OnmsIpInterfa
         if (addresses.isEmpty()) {
             return null;
         } else if (addresses.size() == 1) {
-            return addresses.get(0);
+            final OnmsIpInterface iface = addresses.get(0);
+            getDao().initialize(iface.getSnmpInterface());
+			return iface;
         }
         throw new WebApplicationException("More than one IP address matches " + ipAddress, Status.BAD_REQUEST);
     }

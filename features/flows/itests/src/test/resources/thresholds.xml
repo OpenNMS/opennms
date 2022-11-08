@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<thresholding-config>
+    <group name="test" rrdRepository = "${install.share.dir}/rrd/snmp/">
+        <threshold type="high" description="Test Threshold" ds-type="flowApp" ds-name="bytesIn" value="4096" rearm="2048" trigger="1" />
+        <threshold type="high" description="Test Threshold" ds-type="flowApp" ds-name="bytesOut" value="4096" rearm="2048" trigger="1" />
+    </group>
+</thresholding-config>

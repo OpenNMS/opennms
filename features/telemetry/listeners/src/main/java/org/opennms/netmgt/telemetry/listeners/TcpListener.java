@@ -29,6 +29,8 @@
 package org.opennms.netmgt.telemetry.listeners;
 
 import java.net.InetSocketAddress;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -39,6 +41,7 @@ import java.util.concurrent.TimeoutException;
 
 import org.opennms.netmgt.telemetry.api.receiver.GracefulShutdownListener;
 import org.opennms.netmgt.telemetry.api.receiver.Listener;
+import org.opennms.netmgt.telemetry.api.receiver.Parser;
 import org.opennms.netmgt.telemetry.listeners.utils.NettyEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,10 +58,13 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.channel.group.ChannelGroup;
+import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.ByteToMessageDecoder;
+import io.netty.util.concurrent.GlobalEventExecutor;
 import io.netty.util.internal.SocketUtils;
 
 public class TcpListener implements GracefulShutdownListener {
@@ -76,6 +82,8 @@ public class TcpListener implements GracefulShutdownListener {
     private EventLoopGroup workerGroup;
 
     private ChannelFuture socketFuture;
+
+    private ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
     private Future<String> stopFuture;
 
@@ -160,6 +168,18 @@ public class TcpListener implements GracefulShutdownListener {
                                     }
                                 });
                     }
+
+                    @Override
+                    public void channelActive(final ChannelHandlerContext ctx) throws Exception {
+                        TcpListener.this.channels.add(ctx.channel());
+                        super.channelActive(ctx);
+                    }
+
+                    @Override
+                    public void channelInactive(final ChannelHandlerContext ctx) throws Exception {
+                        TcpListener.this.channels.remove(ctx.channel());
+                        super.channelInactive(ctx);
+                    }
                 })
                 .bind(address)
                 .sync();
@@ -168,6 +188,9 @@ public class TcpListener implements GracefulShutdownListener {
     public void stop() throws InterruptedException {
         NettyEventListener workerListener = new NettyEventListener("worker");
         NettyEventListener bossListener = new NettyEventListener("boss");
+
+        LOG.info("Disconnecting clients...");
+        this.channels.close().awaitUninterruptibly();
 
         LOG.info("Closing worker group...");
         // switch to use even listener rather than sync to prevent shutdown deadlock hang
@@ -221,6 +244,16 @@ public class TcpListener implements GracefulShutdownListener {
     @Override
     public String getName() {
         return this.name;
+    }
+
+    @Override
+    public String getDescription() {
+        return String.format("TCP %s:%s",  this.host != null ? this.host : "*", this.port);
+    }
+
+    @Override
+    public Collection<? extends Parser> getParsers() {
+        return Collections.singleton(this.parser);
     }
 
     public String getHost() {

@@ -1,2 +1,0 @@
-opennms-webapp-remoting: file-in-usr-marked-as-conffile
-opennms-webapp-remoting: package-contains-empty-directory usr/share/opennms/jetty-webapps/opennms-remoting/WEB-INF/classes/

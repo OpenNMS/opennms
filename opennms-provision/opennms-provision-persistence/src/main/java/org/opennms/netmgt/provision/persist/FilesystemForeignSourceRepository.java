@@ -52,6 +52,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
+import javax.xml.bind.ValidationException;
+
 /**
  * <p>FilesystemForeignSourceRepository class.</p>
  */
@@ -241,11 +243,16 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
                 for (final File file : directory.listFiles()) {
                     if (file.getName().endsWith(".xml")) {
                         try {  
-                            requisitions.add(RequisitionFileUtils.getRequisitionFromFile(file));
+                            Requisition req = RequisitionFileUtils.getRequisitionFromFile(file);
+                            req.validate();
+                            requisitions.add(req);
                         } catch (ForeignSourceRepositoryException e) {
                             // race condition, probably got deleted by the importer as part of moving things
                             // need a better way to handle this; move "pending" to the database?
+                        } catch (ValidationException e) {
+                            LOG.warn("Invalid requisition file {}", file.getName(), e);
                         }
+
                     }
                 }
             }
@@ -264,9 +271,14 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
         m_readLock.lock();
         try {
             final File inputFile = RequisitionFileUtils.encodeFileName(m_requisitionPath, foreignSourceName);
+            Requisition req = null;
             if (inputFile != null && inputFile.exists()) {
-                return RequisitionFileUtils.getRequisitionFromFile(inputFile);
+                req = RequisitionFileUtils.getRequisitionFromFile(inputFile);
+                req.validate();
             }
+            return req;
+        } catch (ValidationException e) {
+            LOG.warn("Invalid requisition file {}/{}", m_requisitionPath, foreignSourceName, e);
             return null;
         } finally {
             m_readLock.unlock();

@@ -8,7 +8,5 @@
         <bundle>wrap:mvn:org.jvnet.opendmk/jmxremote_optional/${jmxremote.optional.version}</bundle>
         <bundle>mvn:org.apache.velocity/velocity/${velocity.version}</bundle>
         <bundle>mvn:org.opennms.features/org.opennms.features.name-cutter/${project.version}</bundle>
-        <!-- I know we're not supposed to be using JAXB *anywhere* but without this, we get strange parameter issues in the database report servlet. -->
-        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jaxb-impl/2.2.6_1</bundle>
     </feature>
 </features>

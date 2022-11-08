@@ -62,7 +62,7 @@ import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
-import org.opennms.netmgt.model.ScanReport;
+import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.minion.OnmsMinion;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
@@ -80,7 +80,13 @@ public abstract class SearchProperties {
 
 	static final SortedSet<SearchProperty> ALARM_PROPERTIES = new TreeSet<>(Arrays.asList(
 		new SearchProperty(OnmsAlarm.class, "id", "ID", INTEGER),
-		new SearchProperty(OnmsAlarm.class, null, "affectedNodeCount", null, "affectedNodeCount", INTEGER, false, false, null),
+		new SearchProperty(OnmsAlarm.class, null, "affectedNodeCount", null, "Affected Node Count", INTEGER,
+			false, false,
+			ImmutableMap.<String, String> builder()
+				.put("0", "0")
+				.put("1", "1")
+				.build()
+			),
 		new SearchProperty(OnmsAlarm.class, "alarmAckTime", "Acknowledged Time", TIMESTAMP),
 		new SearchProperty(OnmsAlarm.class, "alarmAckUser", "Acknowledging User", STRING),
 		new SearchProperty(OnmsAlarm.class, "alarmType", "Alarm Type", INTEGER, ImmutableMap.<String,String>builder()
@@ -111,7 +117,12 @@ public abstract class SearchProperties {
 		new SearchProperty(OnmsAlarm.class, "qosAlarmState", "QoS Alarm State", STRING),
 		new SearchProperty(OnmsAlarm.class, "reductionKey", "Reduction Key", STRING),
 		new SearchProperty(OnmsAlarm.class, "severity", "Severity", INTEGER, ONMS_SEVERITIES),
-		new SearchProperty(OnmsAlarm.class, null, "situationAlarmCount", null, "situationAlarmCount", INTEGER, false, false, null),
+		new SearchProperty(OnmsAlarm.class, null, "situationAlarmCount", null, "Situation Alarm Count", INTEGER, false, false,
+			ImmutableMap.<String, String> builder()
+				.put("0", "0")
+				.put("1", "1")
+				.build()
+		),
 		new SearchProperty(OnmsAlarm.class, "suppressedTime", "Suppressed Time", TIMESTAMP),
 		new SearchProperty(OnmsAlarm.class, "suppressedUntil", "Suppressed Until", TIMESTAMP),
 		new SearchProperty(OnmsAlarm.class, "suppressedUser", "Suppressed User", STRING),
@@ -192,12 +203,7 @@ public abstract class SearchProperties {
 		new SearchProperty(OnmsAssetRecord.class, "vendor", "Vendor", STRING),
 		new SearchProperty(OnmsAssetRecord.class, "vendorAssetNumber", "Vendor Asset Number", STRING),
 		new SearchProperty(OnmsAssetRecord.class, "vendorFax", "Vendor Fax", STRING),
-		new SearchProperty(OnmsAssetRecord.class, "vendorPhone", "Vendor Phone", STRING),
-		new SearchProperty(OnmsAssetRecord.class, "vmwareManagedEntityType", "VMware Managed Entity Type", STRING),
-		new SearchProperty(OnmsAssetRecord.class, "vmwareManagedObjectId", "VMware Managed Object ID", STRING),
-		new SearchProperty(OnmsAssetRecord.class, "vmwareManagementServer", "VMware Management Server", STRING),
-		new SearchProperty(OnmsAssetRecord.class, "vmwareState", "VMware State", STRING),
-		new SearchProperty(OnmsAssetRecord.class, "vmwareTopologyInfo", "VMware Topology Information", STRING)
+		new SearchProperty(OnmsAssetRecord.class, "vendorPhone", "Vendor Phone", STRING)
 		//new SearchProperty(OnmsAssetRecord.class, "zip", "ZIP or Postal Code", STRING)
 	));
 
@@ -294,7 +300,12 @@ public abstract class SearchProperties {
 		new SearchProperty(OnmsIpInterface.class, "netMask", "Network Mask", IP_ADDRESS),
 		new SearchProperty(OnmsIpInterface.class, "ipHostName", "Hostname", STRING),
 		new SearchProperty(OnmsIpInterface.class, "ipLastCapsdPoll", "Last Provisioning Scan", TIMESTAMP),
-		new SearchProperty(OnmsIpInterface.class, "isManaged", "Management Status", STRING)
+		new SearchProperty(OnmsIpInterface.class, "isManaged", "Management Status", STRING),
+		new SearchProperty(OnmsIpInterface.class, "snmpPrimary", "Primary SNMP Interface Status", STRING, ImmutableMap.<String,String>builder()
+				.put(PrimaryType.PRIMARY.getCode(), PrimaryType.PRIMARY.getCode())
+				.put(PrimaryType.SECONDARY.getCode(), PrimaryType.SECONDARY.getCode())
+				.put(PrimaryType.NOT_ELIGIBLE.getCode(), PrimaryType.NOT_ELIGIBLE.getCode())
+				.build())
 	));
 
 	static final SortedSet<SearchProperty> LOCATION_PROPERTIES = new TreeSet<>(Arrays.asList(
@@ -332,7 +343,6 @@ public abstract class SearchProperties {
 		new SearchProperty(OnmsNode.class, "lastCapsdPoll", "Last Provisioning Scan", TIMESTAMP),
 		new SearchProperty(OnmsNode.class, "lastEgressFlow", "Last Egress Flow", TIMESTAMP),
 		new SearchProperty(OnmsNode.class, "lastIngressFlow", "Last Ingress Flow", TIMESTAMP),
-		new SearchProperty(OnmsNode.class, "lastCapsdPoll", "Last Provisioning Scan", TIMESTAMP),
 		new SearchProperty(OnmsNode.class, "netBiosDomain", "Windows NetBIOS Domain", STRING),
 		new SearchProperty(OnmsNode.class, "netBiosName", "Windows NetBIOS Name", STRING),
 		new SearchProperty(OnmsNode.class, "operatingSystem", "Operating System", STRING),
@@ -371,13 +381,6 @@ public abstract class SearchProperties {
 		new SearchProperty(OnmsOutage.class, "suppressTime", "Suppressed Time", TIMESTAMP)
 	));
 
-	static final SortedSet<SearchProperty> SCAN_REPORT_PROPERTIES = new TreeSet<>(Arrays.asList(
-		new SearchProperty(ScanReport.class, "id", "ID", STRING),
-		new SearchProperty(ScanReport.class, "locale", "Locale", STRING),
-		new SearchProperty(ScanReport.class, "location", "Monitoring Location", STRING),
-		new SearchProperty(ScanReport.class, "timestamp", "Timestamp", TIMESTAMP)
-	));
-
 	static final SortedSet<SearchProperty> SERVICE_TYPE_PROPERTIES = new TreeSet<>(Arrays.asList(
 		new SearchProperty(OnmsServiceType.class, "id", "ID", INTEGER),
 		new SearchProperty(OnmsServiceType.class, "name", "Service Name", STRING)
@@ -410,7 +413,6 @@ public abstract class SearchProperties {
 	public static final Set<SearchProperty> NODE_SERVICE_PROPERTIES = new LinkedHashSet<>();
 	public static final Set<SearchProperty> NOTIFICATION_SERVICE_PROPERTIES = new LinkedHashSet<>();
 	public static final Set<SearchProperty> OUTAGE_SERVICE_PROPERTIES = new LinkedHashSet<>();
-	public static final Set<SearchProperty> SCAN_REPORT_SERVICE_PROPERTIES = new LinkedHashSet<>();
 
 	/**
 	 * Prepend a join alias to the property ID for each {@link SearchProperty}.
@@ -579,8 +581,6 @@ public abstract class SearchProperties {
 		OUTAGE_SERVICE_PROPERTIES.addAll(withAliasPrefix("serviceRegainedEvent", "Service Regained Event", EVENT_PROPERTIES));
 		OUTAGE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.serviceType, "Service", SERVICE_TYPE_PROPERTIES));
 		OUTAGE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.snmpInterface, "SNMP Interface", SNMP_INTERFACE_PROPERTIES));
-
-		// Root prefix
-		SCAN_REPORT_SERVICE_PROPERTIES.addAll(SCAN_REPORT_PROPERTIES);
+		OUTAGE_SERVICE_PROPERTIES.addAll(withAliasPrefix("perspective", "Perspective", LOCATION_PROPERTIES));
 	}
 }

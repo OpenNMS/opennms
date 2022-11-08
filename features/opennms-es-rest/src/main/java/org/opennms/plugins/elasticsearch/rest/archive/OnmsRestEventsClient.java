@@ -96,7 +96,7 @@ public class OnmsRestEventsClient {
 				return Integer.parseInt(responseStr);
 			}
 		} catch (Exception e){
-			throw new RuntimeException("An Exception occurred while getting event count",e);
+			throw new RuntimeException("An Exception occurred while getting event count: " + e.getMessage(), e);
 		}
 	}
 	
@@ -140,7 +140,7 @@ public class OnmsRestEventsClient {
 			}
 			return retrievedEvents;
 		} catch (Exception e) {
-			throw new RuntimeException("exception when getting event list", e);
+			throw new RuntimeException("exception when getting event list: " + e.getMessage(), e);
 		}
 	}
 	

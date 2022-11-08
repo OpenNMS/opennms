@@ -31,18 +31,24 @@ package org.opennms.netmgt.dao.hibernate;
 import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.net.InetAddress;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.TreeSet;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.utils.LocationUtils;
@@ -52,7 +58,6 @@ import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.PrimaryType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,10 +67,10 @@ import org.springframework.transaction.support.TransactionOperations;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import com.google.common.collect.ComparisonChain;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimaps;
 import com.google.common.collect.SortedSetMultimap;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 /**
  * This class represents a singular instance that is used to map IP
@@ -79,6 +84,12 @@ import com.google.common.collect.SortedSetMultimap;
  */
 public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache implements InterfaceToNodeCache {
     private static final Logger LOG = LoggerFactory.getLogger(InterfaceToNodeCacheDaoImpl.class);
+
+    private final ThreadFactory threadFactory = new ThreadFactoryBuilder()
+            .setNameFormat("sync-interface-to-node-cache")
+            .build();
+    private final ExecutorService executorService = Executors.newSingleThreadExecutor(threadFactory);
+    private final CountDownLatch initialNodeSyncDone = new CountDownLatch(1);
 
     private static class Key {
         private final String location;
@@ -127,17 +138,24 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
 
     private static class Value implements Comparable<Value> {
         private final int nodeId;
+        private final int interfaceId;
         private final PrimaryType type;
 
 
         private Value(final int nodeId,
+                      final int interfaceId,
                       final PrimaryType type) {
             this.nodeId = nodeId;
+            this.interfaceId = interfaceId;
             this.type = type;
         }
 
         public int getNodeId() {
             return this.nodeId;
+        }
+
+        public int getInterfaceId() {
+            return this.interfaceId;
         }
 
         public PrimaryType getType() {
@@ -157,6 +175,7 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
             }
             final Value that = (Value) obj;
             return Objects.equals(this.nodeId, that.nodeId)
+                    && Objects.equals(this.interfaceId, that.interfaceId)
                     && Objects.equals(this.type, that.type);
         }
 
@@ -167,7 +186,7 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
 
         @Override
         public String toString() {
-            return String.format("Value[nodeId='%s', type='%s']", this.nodeId, this.type);
+            return String.format("Value[nodeId='%s', interfaceId='%s', type='%s']", this.nodeId, this.interfaceId, this.type);
         }
 
         @Override
@@ -175,6 +194,7 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
             return ComparisonChain.start()
                     .compare(this.type, that.type)
                     .compare(this.nodeId, that.nodeId)
+                    .compare(this.interfaceId, that.interfaceId)
                     .result();
         }
     }
@@ -189,7 +209,7 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
     private TransactionOperations transactionOperations;
 
     private final ReadWriteLock m_lock = new ReentrantReadWriteLock();
-    private final SortedSetMultimap<Key, Value> m_managedAddresses = Multimaps.newSortedSetMultimap(Maps.newHashMap(), TreeSet::new);
+    private SortedSetMultimap<Key, Value> m_managedAddresses = Multimaps.newSortedSetMultimap(Maps.newHashMap(), TreeSet::new);
 
     private final Timer refreshTimer = new Timer(getClass().getSimpleName());
 
@@ -206,21 +226,28 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
 
     @PostConstruct
     public void init() {
-        // we call this, to ensure the bean-initialization is blocked, until it is initialized
-        dataSourceSync();
-
-        if (refreshRate > 0) {
-            refreshTimer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    try {
-                        dataSourceSync();
-                    } catch (Exception ex) {
-                        LOG.error("An error occurred while synchronizing the datasource: {}", ex.getMessage(), ex);
+        // sync datasource asynchronously in order to not block bean initialization.
+        syncDataSourceAsynchronously().whenComplete((result, ex) -> {
+            initialNodeSyncDone.countDown();
+            if (refreshRate > 0) {
+                refreshTimer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        try {
+                            dataSourceSync();
+                        } catch (Exception ex) {
+                            LOG.error("An error occurred while synchronizing the datasource: {}", ex.getMessage(), ex);
+                        }
                     }
-                }
-            }, refreshRate, refreshRate);
-        }
+                }, refreshRate, refreshRate);
+            }
+        });
+    }
+
+    @PreDestroy
+    public void destroy() {
+        initialNodeSyncDone.countDown();
+        executorService.shutdownNow();
     }
 
     public NodeDao getNodeDao() {
@@ -263,60 +290,64 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
         }
     }
 
+    private CompletableFuture<Void> syncDataSourceAsynchronously() {
+        return CompletableFuture.runAsync(this::dataSourceSync, executorService);
+    }
+
     private void dataSourceSyncWithinTransaction() {
-        m_lock.writeLock().lock();
-        try {
-            /*
-             * Make a new list with which we'll replace the existing one, that way
-             * if something goes wrong with the DB we won't lose whatever was already
-             * in there
-             */
-            final SortedSetMultimap<Key, Value> newAlreadyDiscovered = Multimaps.newSortedSetMultimap(Maps.newHashMap(), TreeSet::new);
+        /*
+         * Make a new list with which we'll replace the existing one, that way
+         * if something goes wrong with the DB we won't lose whatever was already
+         * in there
+         */
+        final SortedSetMultimap<Key, Value> newAlreadyDiscovered = Multimaps.newSortedSetMultimap(Maps.newHashMap(), TreeSet::new);
 
-            // Fetch all non-deleted nodes
-            final CriteriaBuilder builder = new CriteriaBuilder(OnmsNode.class);
-            builder.ne("type", String.valueOf(NodeType.DELETED.value()));
+        // Fetch all non-deleted nodes
+        final CriteriaBuilder builder = new CriteriaBuilder(OnmsNode.class);
+        builder.ne("type", String.valueOf(OnmsNode.NodeType.DELETED.value()));
 
-            for (OnmsNode node : m_nodeDao.findMatching(builder.toCriteria())) {
-                for (final OnmsIpInterface iface : node.getIpInterfaces()) {
-                    // Skip deleted interfaces
-                    // TODO: Refactor the 'D' value with an enumeration
-                    if ("D".equals(iface.getIsManaged())) {
-                        continue;
-                    }
-                    LOG.debug("Adding entry: {}:{} -> {}", node.getLocation().getLocationName(), iface.getIpAddress(), node.getId());
-                    newAlreadyDiscovered.put(new Key(node.getLocation().getLocationName(), iface.getIpAddress()), new Value(node.getId(), iface.getIsSnmpPrimary()));
+        for (OnmsNode node : m_nodeDao.findMatching(builder.toCriteria())) {
+            for (final OnmsIpInterface iface : node.getIpInterfaces()) {
+                // Skip deleted interfaces
+                // TODO: Refactor the 'D' value with an enumeration
+                if ("D".equals(iface.getIsManaged())) {
+                    continue;
                 }
+                LOG.debug("Adding entry: {}:{} -> {}", node.getLocation().getLocationName(), iface.getIpAddress(), node.getId());
+                newAlreadyDiscovered.put(new Key(node.getLocation().getLocationName(), iface.getIpAddress()), new Value(node.getId(), iface.getId(), iface.getIsSnmpPrimary()));
             }
-            m_managedAddresses.clear();
-            m_managedAddresses.putAll(newAlreadyDiscovered);
-            LOG.info("dataSourceSync: initialized list of managed IP addresses with {} members", m_managedAddresses.size());
+        }
+
+        try {
+            m_lock.writeLock().lock();
+            m_managedAddresses = newAlreadyDiscovered;
         } finally {
             m_lock.writeLock().unlock();
         }
+
+        LOG.info("dataSourceSync: initialized list of managed IP addresses with {} members", m_managedAddresses.size());
     }
 
-    /**
-     * Returns the nodeid for the IP Address
-     * <p>
-     * If multiple nodes hav assigned interfaces with the same IP, this returns all known nodes sorted by the interface
-     * management priority.
-     *
-     * @param address The IP Address to query.
-     * @return The node ID of the IP Address if known.
-     */
     @Override
-    public synchronized Iterable<Integer> getNodeId(final String location, final InetAddress address) {
-        if (address == null) {
-            return Collections.emptySet();
+    public Optional<Entry> getFirst(String location, InetAddress ipAddr) {
+        if (ipAddr == null) {
+            return Optional.empty();
         }
-
+        waitForInitialNodeSync();
         m_lock.readLock().lock();
         try {
-            return Iterables.transform(m_managedAddresses.get(new Key(location, address)),
-                    Value::getNodeId);
+            var values = m_managedAddresses.get(new Key(location, ipAddr));
+            return values.isEmpty() ? Optional.empty() : Optional.of(new Entry(values.first().nodeId, values.first().interfaceId));
         } finally {
             m_lock.readLock().unlock();
+        }
+    }
+
+    private void waitForInitialNodeSync() {
+        try {
+            initialNodeSyncDone.await();
+        } catch (InterruptedException e) {
+            LOG.warn("Wait for node cache sync interrupted", e);
         }
     }
 
@@ -343,7 +374,7 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
 
         m_lock.writeLock().lock();
         try {
-            return m_managedAddresses.put(new Key(location, addr), new Value(nodeid, iface.getIsSnmpPrimary()));
+            return m_managedAddresses.put(new Key(location, addr), new Value(nodeid, iface.getId(), iface.getIsSnmpPrimary()));
         } finally {
             m_lock.writeLock().unlock();
         }
@@ -367,9 +398,7 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
         m_lock.writeLock().lock();
         try {
             final Key key = new Key(location, address);
-            return m_managedAddresses.remove(key, new Value(nodeId, PrimaryType.PRIMARY)) ||
-                    m_managedAddresses.remove(key, new Value(nodeId, PrimaryType.SECONDARY)) ||
-                    m_managedAddresses.remove(key, new Value(nodeId, PrimaryType.NOT_ELIGIBLE));
+            return m_managedAddresses.get(key).removeIf(e -> e.nodeId == nodeId);
         } finally {
             m_lock.writeLock().unlock();
         }
@@ -377,6 +406,7 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
 
     @Override
     public int size() {
+        waitForInitialNodeSync();
         m_lock.readLock().lock();
         try {
             return m_managedAddresses.size();

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,11 +28,17 @@
 
 package org.opennms.netmgt.dao.support;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+
 import java.util.Collections;
 import java.util.HashSet;
 
-import junit.framework.TestCase;
-
+import org.junit.Test;
 import org.opennms.netmgt.mock.MockResourceType;
 import org.opennms.netmgt.model.AttributeVisitor;
 import org.opennms.netmgt.model.OnmsAttribute;
@@ -40,15 +46,14 @@ import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.test.ThrowableAnticipator;
-import org.opennms.test.mock.EasyMockUtils;
 
 /**
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
-public class AttributeMatchingResourceVisitorTest extends TestCase {
-    private EasyMockUtils m_mocks = new EasyMockUtils();
-    private AttributeVisitor m_attributeVisitor = m_mocks.createMock(AttributeVisitor.class);
-    
+public class AttributeMatchingResourceVisitorTest {
+    private AttributeVisitor m_attributeVisitor = mock(AttributeVisitor.class);
+
+    @Test
     public void testAfterPropertiesSet() throws Exception {
         AttributeMatchingResourceVisitor resourceVisitor = new AttributeMatchingResourceVisitor();
         resourceVisitor.setAttributeVisitor(m_attributeVisitor);
@@ -56,7 +61,7 @@ public class AttributeMatchingResourceVisitorTest extends TestCase {
         resourceVisitor.afterPropertiesSet();
     }
 
-
+    @Test
     public void testAfterPropertiesSetNoAttributeVisitor() throws Exception {
         AttributeMatchingResourceVisitor resourceVisitor = new AttributeMatchingResourceVisitor();
         
@@ -73,7 +78,8 @@ public class AttributeMatchingResourceVisitorTest extends TestCase {
         }
         ta.verifyAnticipated();
     }
-    
+
+    @Test
     public void testAfterPropertiesSetNoResourceTypeMatch() throws Exception {
         AttributeMatchingResourceVisitor resourceVisitor = new AttributeMatchingResourceVisitor();
         
@@ -91,6 +97,7 @@ public class AttributeMatchingResourceVisitorTest extends TestCase {
         ta.verifyAnticipated();
     }
 
+    @Test
     public void testVisitWithMatch() throws Exception {
         AttributeMatchingResourceVisitor resourceVisitor = new AttributeMatchingResourceVisitor();
         resourceVisitor.setAttributeVisitor(m_attributeVisitor);
@@ -103,11 +110,12 @@ public class AttributeMatchingResourceVisitorTest extends TestCase {
         OnmsResource resource = new OnmsResource("1", "Node One", resourceType, Collections.singleton(attribute), ResourcePath.get("foo"));
         m_attributeVisitor.visit(attribute);
 
-        m_mocks.replayAll();
+        doNothing().when(m_attributeVisitor).visit(any(OnmsAttribute.class));
         resourceVisitor.visit(resource);
-        m_mocks.verifyAll();
+        verify(m_attributeVisitor, atLeastOnce()).visit(any(OnmsAttribute.class));
     }
-    
+
+    @Test
     public void testVisitWithoutMatch() throws Exception {
         AttributeMatchingResourceVisitor resourceVisitor = new AttributeMatchingResourceVisitor();
         resourceVisitor.setAttributeVisitor(m_attributeVisitor);
@@ -118,8 +126,8 @@ public class AttributeMatchingResourceVisitorTest extends TestCase {
         resourceType.setName("something other than interfaceSnmp");
         OnmsResource resource = new OnmsResource("1", "Node One", resourceType, new HashSet<OnmsAttribute>(0), ResourcePath.get("foo"));
 
-        m_mocks.replayAll();
+        doNothing().when(m_attributeVisitor).visit(any(OnmsAttribute.class));
         resourceVisitor.visit(resource);
-        m_mocks.verifyAll();
+        verify(m_attributeVisitor, never()).visit(any(OnmsAttribute.class));
     }
 }

@@ -68,17 +68,7 @@
       <outputDirectory>lib</outputDirectory>
     </fileSet>
     <fileSet>
-      <directory>${project.build.directory}/remote-poller/etc</directory>
-      <outputDirectory>contrib/remote-poller</outputDirectory>
-    </fileSet>
-    <fileSet>
-      <directory>${project.build.directory}/remote-poller/bin</directory>
-      <outputDirectory>bin</outputDirectory>
-      <!-- Mark files in bin as executable -->
-      <fileMode>0755</fileMode>
-    </fileSet>
-    <fileSet>
-      <directory>${project.build.directory}/remote-poller/lib</directory>
+      <directory>${project.build.directory}/scvcli</directory>
       <outputDirectory>bin</outputDirectory>
     </fileSet>
   </fileSets>
@@ -112,25 +102,17 @@
     </dependencySet>
     <dependencySet>
       <useProjectArtifact>false</useProjectArtifact>
-      <outputDirectory>lib/endorsed</outputDirectory>
-      <useStrictFiltering>true</useStrictFiltering>
-      <includes>
-        <!-- <include>org.apache.servicemix.specs:org.apache.servicemix.specs.jaxb-api-2.2</include> -->
-        <include>org.apache.servicemix.bundles:org.apache.servicemix.bundles.jaxb-impl</include>
-      </includes>
-    </dependencySet>
-    <dependencySet>
-      <useProjectArtifact>false</useProjectArtifact>
       <outputDirectory>lib</outputDirectory>
       <useStrictFiltering>true</useStrictFiltering>
       <excludes>
-        <exclude>org.apache.servicemix.bundles:org.apache.servicemix.bundles.jaxb-impl</exclude>
         <exclude>org.opennms:opennms-bootstrap</exclude>
         <exclude>org.opennms:opennms-install</exclude>
         <exclude>org.opennms.features:org.opennms.features.system-report</exclude>
         <exclude>org.opennms:opennms-jasperstudio-extension</exclude>
         <exclude>org.springframework:*</exclude>
         <exclude>org.slf4j:slf4j-jdk14</exclude>
+        <exclude>io.pyroscope:agent</exclude>
+        <exclude>org.jacoco:org.jacoco.agent:jar:runtime</exclude>
         <!-- Exclude the dependency POMs -->
         <exclude>*:pom</exclude>
       </excludes>
@@ -141,6 +123,24 @@
       <includes>
         <!-- adds httpasyncclient-osgi to /lib class path - only used by Elasticsearch OSGi plugin -->
         <include>org.apache.httpcomponents:httpasyncclient-osgi:jar:${httpasyncclientVersion}</include>
+      </includes>
+    </dependencySet>
+    <dependencySet>
+      <useProjectArtifact>false</useProjectArtifact>
+      <outputFileNameMapping>pyroscope-agent.jar</outputFileNameMapping>
+      <outputDirectory>agent</outputDirectory>
+      <useStrictFiltering>true</useStrictFiltering>
+      <includes>
+        <include>io.pyroscope:agent:jar</include>
+      </includes>
+    </dependencySet>
+    <dependencySet>
+      <useProjectArtifact>false</useProjectArtifact>
+      <outputFileNameMapping>jacoco-agent.jar</outputFileNameMapping>
+      <outputDirectory>agent</outputDirectory>
+      <useStrictFiltering>true</useStrictFiltering>
+      <includes>
+        <include>org.jacoco:org.jacoco.agent:jar:runtime</include>
       </includes>
     </dependencySet>
   </dependencySets>

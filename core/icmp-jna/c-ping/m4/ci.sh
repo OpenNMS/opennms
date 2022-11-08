@@ -1,4 +1,4 @@
-#!/bin/bash -v
+#!/usr/bin/env bash
 #*******************************************************************************
 # This file is part of the OpenNMS(R) Application.
 #

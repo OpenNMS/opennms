@@ -35,19 +35,19 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import javax.persistence.MapsId;
-
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
-import org.opennms.netmgt.telemetry.config.api.PackageDefinition;
-import org.opennms.netmgt.telemetry.protocols.registry.api.TelemetryServiceRegistry;
 import org.opennms.netmgt.telemetry.api.adapter.Adapter;
+import org.opennms.netmgt.telemetry.api.receiver.Connector;
 import org.opennms.netmgt.telemetry.api.receiver.Listener;
 import org.opennms.netmgt.telemetry.api.receiver.Parser;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
 import org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry;
 import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
+import org.opennms.netmgt.telemetry.config.api.ConnectorDefinition;
 import org.opennms.netmgt.telemetry.config.api.ListenerDefinition;
+import org.opennms.netmgt.telemetry.config.api.PackageDefinition;
 import org.opennms.netmgt.telemetry.config.api.ParserDefinition;
+import org.opennms.netmgt.telemetry.protocols.registry.api.TelemetryServiceRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
@@ -62,6 +62,10 @@ public class TelemetryRegistryImpl implements TelemetryRegistry {
     @Autowired
     @Qualifier("listenerRegistry")
     private TelemetryServiceRegistry<ListenerDefinition, Listener> listenerRegistryDelegate;
+
+    @Autowired
+    @Qualifier("connectorRegistry")
+    private TelemetryServiceRegistry<ConnectorDefinition, Connector> connectorRegistryDelegate;
 
     @Autowired
     @Qualifier("parserRegistry")
@@ -79,6 +83,11 @@ public class TelemetryRegistryImpl implements TelemetryRegistry {
     @Override
     public Listener getListener(ListenerDefinition listenerDefinition) {
         return listenerRegistryDelegate.getService(MutableListenerDefinition.wrap(listenerDefinition));
+    }
+
+    @Override
+    public Connector getConnector(ConnectorDefinition connectorDefinition) {
+        return connectorRegistryDelegate.getService(MutableConnectorDefinition.wrap(connectorDefinition));
     }
 
     @Override
@@ -150,6 +159,11 @@ public class TelemetryRegistryImpl implements TelemetryRegistry {
         }
 
         @Override
+        public String getFullName() {
+            return this.definition.getFullName();
+        }
+
+        @Override
         public String getClassName() {
             return this.definition.getClassName();
         }
@@ -185,6 +199,11 @@ public class TelemetryRegistryImpl implements TelemetryRegistry {
         @Override
         public String getName() {
             return this.definition.getName();
+        }
+
+        @Override
+        public String getFullName() {
+            return this.definition.getFullName();
         }
 
         @Override
@@ -250,6 +269,54 @@ public class TelemetryRegistryImpl implements TelemetryRegistry {
             }
 
             return new MutableListenerDefinition(definition);
+        }
+    }
+
+    private static class MutableConnectorDefinition implements ConnectorDefinition {
+        private final ConnectorDefinition definition;
+        private final Map<String, String> parameters;
+
+        private MutableConnectorDefinition(final ConnectorDefinition definition) {
+            this.definition = Objects.requireNonNull(definition);
+            this.parameters = new HashMap<>(definition.getParameterMap());
+        }
+
+        @Override
+        public String getName() {
+            return this.definition.getName();
+        }
+
+        @Override
+        public String getQueueName() {
+            return this.definition.getQueueName();
+        }
+
+        @Override
+        public String getServiceName() {
+            return this.definition.getServiceName();
+        }
+
+        @Override
+        public List<? extends PackageDefinition> getPackages() {
+            return this.definition.getPackages();
+        }
+
+        @Override
+        public String getClassName() {
+            return this.definition.getClassName();
+        }
+
+        @Override
+        public Map<String, String> getParameterMap() {
+            return this.parameters;
+        }
+
+        public static MutableConnectorDefinition wrap(final ConnectorDefinition definition) {
+            if (definition instanceof MutableConnectorDefinition) {
+                return (MutableConnectorDefinition) definition;
+            }
+
+            return new MutableConnectorDefinition(definition);
         }
     }
 }

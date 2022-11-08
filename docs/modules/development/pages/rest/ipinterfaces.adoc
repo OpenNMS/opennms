@@ -1,0 +1,33 @@
+
+= IP Interfaces
+
+Obtain a list of IP interfaces based on a set of criteria.
+
+NOTE: This API is v2-only, and uses link:https://github.com/jirutka/rsql-parser#rsql--fiql-parser[FIQL] for querying.
+
+Examples:
+
+* `/api/v2/ipinterfaces?_s=node.label==onms-prd-01`
+* `/api/v2/ipinterfaces?_s=ipAddress==192.168.32.140`
+
+== GETs (Reading Data)
+
+[options="header", cols="5,10"]
+|===
+| Resource         | Description
+| `/ipinterfaces`  | Get all IP interfaces for the given search criteria.
+|===
+
+Example:
+
+Get IP interfaces whose nodes are in the foreign source `Servers`:
+
+[source, bash]
+----
+curl -u admin:admin "http://localhost:8980/opennms/api/v2/ipinterfaces?_s=node.foreignSource==Servers"
+----
+
+== PUTs/POSTs (Modifying Data)
+
+The `/ipinterfaces` REST API is read-only.
+To create new IP interfaces, use the `ipinterfaces` resources under the xref:rest/nodes.adoc#nodes-rest[nodes endpoint].

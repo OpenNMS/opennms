@@ -411,7 +411,6 @@ public class BusinessServiceEdgeEditWindow extends Window {
                         }
                     }
                     m_friendlyNameField.setValue(edge.getFriendlyName());
-                    m_ipServiceComponent.setEnabled(false);
                     return null;
                 }
 
@@ -420,7 +419,6 @@ public class BusinessServiceEdgeEditWindow extends Window {
                     m_typeSelect.setValue(EdgeType.REDUCTION_KEY);
                     m_reductionKeyComponent.setValue(edge.getReductionKey());
                     m_friendlyNameField.setValue(edge.getFriendlyName());
-                    m_reductionKeyComponent.setEnabled(false);
                     return null;
                 }
 
@@ -428,7 +426,6 @@ public class BusinessServiceEdgeEditWindow extends Window {
                 public Void visit(ChildEdge edge) {
                     m_typeSelect.setValue(EdgeType.CHILD_SERVICE);
                     m_childServiceComponent.setValue(edge.getChild());
-                    m_childServiceComponent.setEnabled(false);
                     return null;
                 }
 
@@ -436,12 +433,10 @@ public class BusinessServiceEdgeEditWindow extends Window {
                 public Void visit(ApplicationEdge edge) {
                     m_typeSelect.setValue(EdgeType.APPLICATION);
                     m_friendlyNameField.setValue(edge.getFriendlyName());
-                    m_ipServiceComponent.setEnabled(false);
                     return null;
                 }
             });
 
-            m_typeSelect.setEnabled(false);
             m_mapFunctionSelect.setValue(edge.getMapFunction().getClass());
 
             edge.getMapFunction().accept(new MapFunctionVisitor<Void>() {

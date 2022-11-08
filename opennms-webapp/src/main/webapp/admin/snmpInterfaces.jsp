@@ -42,6 +42,7 @@
   }
 %>
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
+	<jsp:param name="ngapp" value="onms-interfaces-config" />
 	<jsp:param name="title" value="Select SNMP Interfaces" />
 	<jsp:param name="headTitle" value="Select SNMP Interfaces" />
 	<jsp:param name="headTitle" value="Admin"/>

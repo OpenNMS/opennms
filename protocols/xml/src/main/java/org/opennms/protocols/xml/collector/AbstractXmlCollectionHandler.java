@@ -67,6 +67,7 @@ import org.joda.time.format.DateTimeFormatter;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Entities.EscapeMode;
 import org.opennms.core.spring.BeanUtils;
+import org.opennms.features.distributed.kvstore.api.BlobStore;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.collection.api.CollectionResource;
@@ -116,6 +117,8 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
 
     private ResourceStorageDao m_resourceStorageDao;
 
+    private BlobStore m_blobStore;
+
     public ResourceStorageDao getResourceStorageDao() {
         if (m_resourceStorageDao == null) {
             m_resourceStorageDao = BeanUtils.getBean("daoContext", "resourceStorageDao", ResourceStorageDao.class);
@@ -125,6 +128,17 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
 
     public void setResourceStorageDao(ResourceStorageDao resourceStorageDao) {
         m_resourceStorageDao = resourceStorageDao;
+    }
+
+    public BlobStore getBlobStore() {
+        if (m_blobStore == null) {
+            m_blobStore = BeanUtils.getBean("daoContext", "blobStore", BlobStore.class);
+        }
+        return m_blobStore;
+    }
+
+    public void setBlobStore(BlobStore blobStore) {
+        m_blobStore = blobStore;
     }
 
     /* (non-Javadoc)
@@ -212,7 +226,8 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
                 final Resource collectionResource = getCollectionResource(agent, resourceName, group.getResourceType(), timestamp);
                 LOG.debug("fillCollectionSet: processing resource {}", collectionResource);
                 for (XmlObject object : group.getXmlObjects()) {
-                    String value = (String) xpath.evaluate(object.getXpath(), resource, XPathConstants.STRING);
+                    final String value = object.map((String) xpath.evaluate(object.getXpath(), resource, XPathConstants.STRING));
+
                     builder.withAttribute(collectionResource, group.getName(), object.getName(), value, object.getDataType());
                 }
                 processXmlResource(builder, collectionResource, resourceName, group.getName());

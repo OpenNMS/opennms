@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,6 +32,14 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -39,7 +47,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import org.easymock.EasyMock;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.After;
@@ -47,8 +54,6 @@ import org.junit.Test;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.eventd.EventExpander;
 import org.opennms.netmgt.eventd.EventUtil;
-import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
@@ -57,7 +62,6 @@ import org.opennms.netmgt.xml.eventconf.Mask;
 import org.opennms.netmgt.xml.eventconf.Maskelement;
 import org.opennms.netmgt.xml.eventconf.Varbind;
 import org.opennms.test.ThrowableAnticipator;
-import org.opennms.test.mock.EasyMockUtils;
 
 import com.codahale.metrics.MetricRegistry;
 
@@ -66,20 +70,17 @@ import com.codahale.metrics.MetricRegistry;
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
 public class EventExpanderTest {
-    private EasyMockUtils m_mocks = new EasyMockUtils();
-    
-    private EventConfDao m_eventConfDao = m_mocks.createMock(EventConfDao.class);
-    private EventUtil m_eventUtil = m_mocks.createMock(EventUtil.class);
+    private EventConfDao m_eventConfDao = mock(EventConfDao.class);
+    private EventUtil m_eventUtil = mock(EventUtil.class);
 
     @After
     public void tearDown() {
-        m_mocks.verifyAll();
+        verifyNoMoreInteractions(m_eventConfDao);
+        verifyNoMoreInteractions(m_eventUtil);
     }
 
     @Test
     public void testAfterPropertiesSetWithNoEventConfDao() {
-        m_mocks.replayAll();
-        
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new IllegalStateException("property eventConfDao must be set"));
 
@@ -96,8 +97,6 @@ public class EventExpanderTest {
 
     @Test
     public void testAfterPropertiesSet() {
-        m_mocks.replayAll();
-
         EventExpander expander = new EventExpander(new MetricRegistry());
         expander.setEventConfDao(m_eventConfDao);
         expander.setEventUtil(m_eventUtil);
@@ -119,20 +118,19 @@ public class EventExpanderTest {
         Event event = builder.getEvent();
         assertNull("event description should be null before expandEvent is called", event.getDescr());
 
-        EasyMock.expect(m_eventConfDao.findByEvent(event)).andReturn(null);
-        EasyMock.expect(m_eventConfDao.findByUei("uei.opennms.org/default/event")).andReturn(null);
-        m_mocks.replayAll();
+        when(m_eventConfDao.findByEvent(event)).thenReturn(null);
+        when(m_eventConfDao.findByUei("uei.opennms.org/default/event")).thenReturn(null);
 
         expander.expandEvent(event);
         
         assertEquals("event UEI", uei, event.getUei());
-        //assertNotNull("event description should not be null after expandEvent is called", event.getDescr());
-        //
-        //String matchText = "During a rescan";
-        //assertTrue("event description should contain '" + matchText + "'", event.getDescr().contains(matchText));
+
+        verify(m_eventConfDao, times(1)).findByEvent(any(Event.class));
+        verify(m_eventConfDao, times(1)).findByUei(anyString());
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testOptionalParameters() {
         String uei = "uei.opennms.org/testEventWithOptionalParameters";
         EventBuilder builder = new EventBuilder(uei, "something");
@@ -156,10 +154,9 @@ public class EventExpanderTest {
         p2.setExpand(true);
         eventConfig.addParameter(p2);
 
-        EasyMock.expect(m_eventConfDao.findByEvent(event)).andReturn(eventConfig);
-        EasyMock.expect(m_eventConfDao.isSecureTag(EasyMock.anyObject())).andReturn(true).anyTimes();
-        EasyMock.expect(m_eventUtil.expandParms("%parm[#1]%", event, new HashMap<String,Map<String,String>>())).andReturn("Vaadin");
-        m_mocks.replayAll();
+        when(m_eventConfDao.findByEvent(event)).thenReturn(eventConfig);
+        when(m_eventConfDao.isSecureTag(anyString())).thenReturn(true);
+        when(m_eventUtil.expandParms("%parm[#1]%", event, new HashMap<String,Map<String,String>>())).thenReturn("Vaadin");
 
         expander.expandEvent(event);
 
@@ -169,6 +166,10 @@ public class EventExpanderTest {
 
         assertThat(event, hasParameter("username", "agalue"));
         assertThat(event, hasParameter("i-hate", "Vaadin"));
+
+        verify(m_eventConfDao, times(1)).findByEvent(any(Event.class));
+        verify(m_eventConfDao, times(14)).isSecureTag(anyString());
+        verify(m_eventUtil, times(1)).expandParms(anyString(), any(Event.class), any(Map.class));
     }
 
     @Test
@@ -204,6 +205,9 @@ public class EventExpanderTest {
         assertThat(event, hasParameter("poolMember", "10.129.1.30"));
         assertThat(event, hasParameter("poolAddr", "10.129.1.31"));
         assertThat(event, hasParameter("slotNum", "1"));
+
+        verify(m_eventConfDao, times(1)).findByEvent(any(Event.class));
+        verify(m_eventConfDao, times(14)).isSecureTag(anyString());
     }
 
     private void expand(Event event, org.opennms.netmgt.xml.eventconf.Event eventConfig) {
@@ -212,11 +216,12 @@ public class EventExpanderTest {
         expander.setEventUtil(m_eventUtil);
         expander.afterPropertiesSet();
 
-        EasyMock.expect(m_eventConfDao.findByEvent(event)).andReturn(eventConfig);
-        EasyMock.expect(m_eventConfDao.isSecureTag(EasyMock.anyObject())).andReturn(true).anyTimes();
-        m_mocks.replayAll();
+        when(m_eventConfDao.findByEvent(event)).thenReturn(eventConfig);
+        when(m_eventConfDao.isSecureTag(anyString())).thenReturn(true);
 
         expander.expandEvent(event);
+
+        verify(m_eventConfDao, atLeastOnce()).isSecureTag(anyString());
     }
 
     public static HasParameter hasParameter(String name, String value) {

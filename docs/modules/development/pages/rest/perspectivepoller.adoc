@@ -1,0 +1,59 @@
+
+= Perspective Poller
+
+== GETs (Reading Data)
+
+Lets you query the aggregated percentage availability for a given specific application and its services.
+
+NOTE: This API is v2-only.
+
+[options="header", cols="5,10"]
+|===
+| Resource                                                     | Description
+| `perspectivepoller/\{applicationid}`                         | Get the list of aggregated percentage availability per location for the application specified by applicationId.
+| `perspectivepoller/\{applicationid}/\{monitoredserviceid}`   | Get the list of aggregated percentage availability per location for an application service specified by applicationId and monitoredServiceId.
+|===
+
+== Use examples with cURL
+
+.Retrieve application status per location by a given _applicationId_.
+[source,bash]
+----
+curl -u admin:admin "http://127.0.0.1:8980/opennms/api/v2/perspectivepoller/62?start=1593158779597&end=1593245179597"
+----
+
+.Response
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<application-status applicationId="62" end="1593245179597" start="1593158779597">
+    <location name="RDU">
+        <aggregated-status>50.0</aggregated-status>
+    </location>
+    <location name="Fulda">
+        <aggregated-status>25.0</aggregated-status>
+    </location>
+</application-status>
+----
+
+.Retrieve service status per location by a given _applicationId_ and _monitoredServiceId_.
+[source,bash]
+----
+curl -u admin:admin "http://127.0.0.1:8980/opennms/api/v2/perspectivepoller/62/2?start=1593158779597&end=1593245179597"
+----
+
+.Response
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<application-service-status applicationId="62" end="1593245179597" monitoredServiceId="2" start="1593158779597">
+    <location name="RDU">
+        <aggregated-status>50.0</aggregated-status>
+        <response-resource-id>192.168.1.1[ICMP]@RDU</response-resource-id>
+    </location>
+    <location name="Fulda">
+        <aggregated-status>50.0</aggregated-status>
+        <response-resource-id>192.168.1.1[ICMP]@Fulda</response-resource-id>
+    </location>
+</application-service-status>
+----

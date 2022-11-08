@@ -55,23 +55,43 @@
         </p>
 
         <p>
-        <a href="admin/applications.htm?edit=edit&applicationid=${model.application.id}">Edit application</a>
+        <a href="admin/applications.htm?edit=services&applicationid=${model.application.id}">Edit application</a>
         </p>
 
-        <table class="table table-sm">
-          <tr>
-            <th>Node</th>
-            <th>Interface</th>
-            <th>Service</th>
-          </tr>
-          <c:forEach items="${model.memberServices}" var="service">
+        <p>
+          <h5>Defined service(s):</h5>
+
+          <table class="table table-sm">
             <tr>
-              <td><a href="element/node.jsp?node=${service.ipInterface.node.id}">${fn:escapeXml(service.ipInterface.node.label)}</a></td>
-              <td><a href="element/interface.jsp?ipinterfaceid=${service.ipInterface.id}">${service.ipInterface.ipAddress.hostAddress}</a></td>
-              <td><a href="element/service.jsp?ifserviceid=${service.id}">${fn:escapeXml(service.serviceName)}</a></td>
+              <th>Node</th>
+              <th>Interface</th>
+              <th>Service</th>
             </tr>
-          </c:forEach>
-        </table>
+            <c:forEach items="${model.memberServices}" var="service">
+              <tr>
+                <td><a href="element/node.jsp?node=${service.ipInterface.node.id}">${fn:escapeXml(service.ipInterface.node.label)}</a></td>
+                <td><a href="element/interface.jsp?ipinterfaceid=${service.ipInterface.id}">${service.ipInterface.ipAddress.hostAddress}</a></td>
+                <td><a href="element/service.jsp?ifserviceid=${service.id}">${fn:escapeXml(service.serviceName)}</a></td>
+              </tr>
+            </c:forEach>
+          </table>
+        </p>
+
+        <p>
+          <h5>Associated location(s):</h5>
+
+          <table class="table table-sm">
+            <tr>
+              <th>Location</th>
+            </tr>
+            <c:forEach items="${model.memberLocations}" var="location">
+              <tr>
+                <td>${location.locationName}</td>
+              </tr>
+            </c:forEach>
+          </table>
+        </p>
+
       </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->

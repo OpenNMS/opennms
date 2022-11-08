@@ -1,0 +1,27 @@
+= Node Links
+
+== GETs (Reading Data)
+NOTE: This API is v2-only
+
+[options="header", cols="5,10"]
+|===
+| Resource                                 | Description
+| `/enlinkd/\{node_criteria}`              | Retrieve all types of links for a given node.
+| `/enlinkd/lldp_links/\{node_criteria}`   | Retrieve LLDP link for a given node.
+| `/enlinkd/bridge_links/\{node_criteria}` | Retrieve bridge link for a given node.
+| `/enlinkd/cdp_links/\{node_criteria}`    | Retrieve CDP link for a given node.
+| `/enlinkd/ospf_links/\{node_criteria}`   | Retrieve OSPF link for a given node.
+| `/enlinkd/isis_links/\{node_criteria}`   | Retrieve IS-IS link for a given node.
+| `/enlinkd/lldp_elems/\{node_criteria}`   | Retrieve LLDP element for a given node.
+| `/enlinkd/bridge_elems/\{node_criteria}` | Retrieve bridge element for a given node.
+| `/enlinkd/cdp_elems/\{node_criteria}`    | Retrieve CDP element for a given node.
+| `/enlinkd/ospf_elems/\{node_criteria}`   | Retrieve OSPF element for a given node.
+| `/enlinkd/isis_elems/\{node_criteria}`   | Retrieve IS-IS element for a given node.
+|===
+
+== Usage example with curl
+.Retrieve all types of links for a given _nodeCriteria_.
+[source,bash]
+----
+curl -u admin:admin "http://127.0.0.1:8980/opennms/api/v2/enlinkd/1"
+----

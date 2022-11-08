@@ -1,0 +1,36 @@
+
+= VmwareCollector
+
+The VmwareCollector collects performance metrics for managed entities from vCenter.
+
+== Collector facts
+[options="autowidth"]
+|===
+| Class Name          | `org.opennms.netmgt.collectd.VmwareCollector`
+| Package             | core
+| Supported on Minion | Yes
+| Configuration Files | vmware-datacollection-config.xml
+|===
+
+== Configuration and use
+
+.Collector-specific parameters for the VmwareCollector
+[options="header"]
+[cols="1,3,2"]
+|===
+| Parameter
+| Description
+| Default
+
+3+| *Required*
+
+| collection
+| The name of the VMWare Collection to use.
+| n/a
+
+3+| *Optional*
+
+| timeout
+| Connection timeout in milliseconds
+| 3000
+|===

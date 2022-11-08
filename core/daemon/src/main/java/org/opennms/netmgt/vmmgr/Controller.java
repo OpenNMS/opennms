@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -76,7 +76,7 @@ public class Controller {
     /**
      * The log4j category used to log debug messages and statements.
      */
-    private static final String LOG4J_CATEGORY = "manager";
+    static final String LOG4J_CATEGORY = "manager";
 
     /**
      * This is the name of the JVM that we try to connect to when we are invoking

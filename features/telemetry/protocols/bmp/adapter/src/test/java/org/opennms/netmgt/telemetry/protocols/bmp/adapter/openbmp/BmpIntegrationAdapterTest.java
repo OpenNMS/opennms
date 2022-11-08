@@ -143,7 +143,7 @@ public class BmpIntegrationAdapterTest implements BmpMessageHandler {
         final Router router2 = routerMsgs.get(1);
         assertThat(router2.sequence, equalTo(1L));
         assertThat(router2.termCode, equalTo(2));
-        assertThat(router2.termReason, equalTo("Out of resources.  The router has exhausted resources available for the BMP session"));
+        assertThat(router2.termReason, equalTo("Out of resources. The router has exhausted resources available for the BMP session"));
     }
 
     @Test
@@ -366,7 +366,7 @@ public class BmpIntegrationAdapterTest implements BmpMessageHandler {
     }
 
     @Override
-    public void handle(Message message) {
+    public void handle(Message message, Context context) {
         messagesHandled.add(message);
     }
 

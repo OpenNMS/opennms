@@ -326,7 +326,7 @@ const RequisitionMetaDataEntry = require('../model/RequisitionMetaDataEntry');
               $scope.goBack();
               // If node was just created, it has no label yet
               if (node.nodeLabel) {
-                growl.success('The node ' + node.nodeLabel + ' has been deleted.');
+                growl.success('The node ' + _.escape(node.nodeLabel) + ' has been deleted.');
               } else {
                 growl.success('The node has been deleted.');
               }

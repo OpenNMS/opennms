@@ -40,7 +40,6 @@ import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.SocketWrapper;
 import org.opennms.core.utils.TimeoutSocketFactory;
 import org.opennms.core.utils.TimeoutTracker;
-import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.monitors.support.ParameterSubstitutingMonitor;
@@ -63,7 +62,6 @@ import com.novell.ldap.LDAPSocketFactory;
  * @author <A HREF="jason@opennms.org">Jason </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
-@Distributable
 public class LdapMonitor extends ParameterSubstitutingMonitor {
 
     public static final Logger LOG = LoggerFactory.getLogger(LdapMonitor.class);

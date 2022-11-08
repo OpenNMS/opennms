@@ -175,14 +175,14 @@ public class VmwareConfigBuilder {
         group = normalizeGroupName(group);
 
         String[] rollupChunks = {"summation", "average", "latest", "none", "minimum", "maximum", "total"};
-        String[] rollupReplacements = {"Sum", "Avg", "Lat", "Non", "Min", "Max", "Tot"};
+        String[] rollupReplacements = {"Sum", "Avg", "Lt", "Non", "Min", "Max", "Tot"};
 
         for (int i = 0; i < rollupChunks.length; i++) {
             rollup = rollup.replace(rollupChunks[i], rollupReplacements[i]);
         }
 
         String[] nameChunks = {"unkown", "protos", "threshold", "datastore", "alloc", "utilization", "normalized", "normal", "shares", "depth", "resource", "overhead", "swap", "rate", "metric", "number", "averaged", "load", "decompression", "compression", "device", "latency",
-                "capacity", "commands", "target", "aborted", "kernel", "unreserved", "reserved", "total", "read", "write", "queue", "limited", "sample", "count", "touched", "percentage", "seeks", "consumed", "medium", "small", "large", "active", "observed", "time"};
+                "capacity", "commands", "target", "aborted", "kernel", "unreserved", "reserved", "total", "read", "write", "queue", "limited", "sample", "count", "touched", "percentage", "seeks", "consumed", "medium", "small", "large", "active", "observed", "time", "entitlement", "demand", "stall", "working", "vmfs", "pbc", "ratio", "size", "miss", "set"};
 
         for (String chunk : nameChunks) {
             name = condenseName(name, chunk);
@@ -232,8 +232,7 @@ public class VmwareConfigBuilder {
 
                         long[] longs = ((PerfMetricIntSeries) perfMetricSeries[j]).getValue();
 
-                        if (longs.length == 1) {
-
+                        if (longs.length == 1 && perfCounterInfoMap.containsKey(perfMetricSeries[j].getId().getCounterId())) {
                             PerfCounterInfo perfCounterInfo = perfCounterInfoMap.get(perfMetricSeries[j].getId().getCounterId());
 
                             String instanceName = perfMetricSeries[j].getId().getInstance();

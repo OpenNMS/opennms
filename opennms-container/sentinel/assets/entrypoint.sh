@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/usr/bin/env bash
 # =====================================================================
 # Build script running OpenNMS Sentinel in Docker environment
 #
@@ -10,7 +10,10 @@
 # Cause false/positives
 # shellcheck disable=SC2086
 
+set -e
+
 umask 002
+SENTINEL_HOME="/opt/sentinel"
 SENTINEL_OVERLAY_ETC="/opt/sentinel-etc-overlay"
 SENTINEL_OVERLAY="/opt/sentinel-overlay"
 
@@ -87,7 +90,6 @@ initConfig() {
         echo "location = ${SENTINEL_LOCATION}" > ${SENTINEL_CONFIG}
         echo "id = ${SENTINEL_ID:=$(uuidgen)}" >> ${SENTINEL_CONFIG}
         echo "broker-url = ${OPENNMS_BROKER_URL}" >> ${SENTINEL_CONFIG}
-        echo "http-url = ${OPENNMS_HTTP_URL}" >> ${SENTINEL_CONFIG}
 
         # Configure datasource
         DB_CONFIG=${SENTINEL_HOME}/etc/org.opennms.netmgt.distributed.datasource.cfg
@@ -128,6 +130,9 @@ applyKarafDebugLogging() {
       echo "log4j2.logger.${logUnderscored}.level = DEBUG" >> "$SENTINEL_HOME"/etc/org.ops4j.pax.logging.cfg
       echo "log4j2.logger.${logUnderscored}.name = $log" >> "$SENTINEL_HOME"/etc/org.ops4j.pax.logging.cfg
     done
+  fi
+  if [[ "$JACOCO_AGENT_ENABLED" -gt 0 ]]; then
+    export JAVA_OPTS="$JAVA_OPTS -javaagent:${SENTINEL_HOME}/agent/jacoco-agent.jar=output=none,jmx=true,excludes=org.drools.*"
   fi
 }
 

@@ -160,7 +160,8 @@ public class DefaultRtcService implements RtcService, InitializingBean {
         // to work properly.
         outageCriteria.createAlias("monitoredService.ipInterface.node", "node", OnmsCriteria.INNER_JOIN);
         outageCriteria.add(Restrictions.ne("node.type", "D"));
-        
+        outageCriteria.add(Restrictions.isNull("perspective"));
+
         return outageCriteria;
     }
 

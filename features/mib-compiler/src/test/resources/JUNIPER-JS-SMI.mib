@@ -21,7 +21,7 @@ IMPORTS
 -- and to designate them.    
 -- 
 -- The jnxJsSecurity node is designed to provide a branch for the security
--- related MIB defintions specific to the JS products.  
+-- related MIB definitions specific to the JS products.  
 -- 
 
 --

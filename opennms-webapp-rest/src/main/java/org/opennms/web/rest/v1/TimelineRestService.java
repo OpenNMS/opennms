@@ -53,7 +53,9 @@ import javax.ws.rs.core.UriInfo;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.OutageDao;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsOutageCollection;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -209,40 +211,50 @@ public class TimelineRestService extends OnmsRestService {
         }
 
         /**
-         * Draws an event on a given graphics context.
+         * Draws an outage on a given graphics context.
          *
          * @param graphics2D the graphics context
-         * @param delta      the delta
-         * @param start      the start value
+         * @param timeDelta  the amount of time between the start and end of the graphic
+         * @param startTime  the time at the start of the graphic
          * @param width      the width of the graphic
          * @param onmsOutage the outage to be drawn
          * @return true, if no resolved yet
          */
-        public boolean drawEvent(Graphics2D graphics2D, long delta, long start, int width, OnmsOutage onmsOutage) throws IOException {
-            long p1 = onmsOutage.getIfLostService().getTime() / 1000;
-            long p2 = start + delta;
+        public boolean drawOutage(Graphics2D graphics2D, long timeDelta, long startTime, int width, OnmsOutage onmsOutage) {
+            long outageStartTime = onmsOutage.getIfLostService().getTime() / 1000;
+            long outageEndTime = startTime + timeDelta;
 
             if (onmsOutage.getIfRegainedService() != null) {
-                p2 = onmsOutage.getIfRegainedService().getTime() / 1000;
+                outageEndTime = onmsOutage.getIfRegainedService().getTime() / 1000;
             }
 
             graphics2D.setColor(ONMS_RED);
-            int n1 = (int) ((p1 - start) / (delta / width));
-            int n2 = (int) ((p2 - start) / (delta / width));
-            graphics2D.fillRect(n1, 2, (n2 - n1 > 0 ? n2 - n1 : 1), 16);
+            int graphicStart = (int) ((outageStartTime - startTime) / (timeDelta / width));
+            int graphicEnd = (int) ((outageEndTime - startTime) / (timeDelta / width));
+            graphics2D.fillRect(graphicStart, 2, (graphicEnd - graphicStart > 0 ? graphicEnd - graphicStart : 1), 16);
 
             return onmsOutage.getIfRegainedService() == null;
         }
 
         /**
-         * Draws a solid green bar of a given length.
+         * Draws a solid green bar for a node on a given graphics context, beginning at the createTime of the node.
          *
          * @param graphics2D the graphics context
+         * @param timeDelta  the amount of time between the start and end of the graphic
+         * @param startTime  the time at the start of the graphic
          * @param width      the width of the graphic
+         * @param node       the node to be drawn
          */
-        public void drawGreen(Graphics2D graphics2D, int width) {
+        public void drawNode(Graphics2D graphics2D, long timeDelta, long startTime, int width, OnmsNode node) {
+            long nodeCreateTime = node.getCreateTime().getTime() / 1000;
+
+            if (nodeCreateTime < startTime) {
+                nodeCreateTime = startTime;
+            }
+
             graphics2D.setColor(ONMS_GREEN);
-            graphics2D.fillRect(0, 2, width, 16);
+            int graphicStart = (int) ((nodeCreateTime - startTime) / (timeDelta / width));
+            graphics2D.fillRect(graphicStart, 2, width - graphicStart, 16);
         }
 
         /**
@@ -265,28 +277,28 @@ public class TimelineRestService extends OnmsRestService {
          * Returns the HTML map entry for a given outage instance.
          *
          * @param graphics2D the graphics context
-         * @param delta      the delta
-         * @param start      the start value
+         * @param timeDelta  the amount of time between the start and end of the graphic
+         * @param startTime  the time at the start of the graphic
          * @param width      the width of the graphic
          * @param onmsOutage the outage to be used
          * @return the HTML map entry
          */
-        public String getMapEntry(Graphics2D graphics2D, long delta, long start, int width, OnmsOutage onmsOutage) {
-            long p1 = onmsOutage.getIfLostService().getTime() / 1000;
-            long p2 = start + delta;
+        public String getMapEntry(Graphics2D graphics2D, long timeDelta, long startTime, int width, OnmsOutage onmsOutage) {
+            long outageStartTime = onmsOutage.getIfLostService().getTime() / 1000;
+            long outageEndTime = startTime + timeDelta;
 
             if (onmsOutage.getIfRegainedService() != null) {
-                p2 = onmsOutage.getIfRegainedService().getTime() / 1000;
+                outageEndTime = onmsOutage.getIfRegainedService().getTime() / 1000;
             }
 
             graphics2D.setColor(ONMS_RED);
-            int n1 = (int) ((p1 - start) / (delta / width));
-            int n2 = (int) ((p2 - start) / (delta / width));
+            int graphicStart = (int) ((outageStartTime - startTime) / (timeDelta / width));
+            int graphicEnd = (int) ((outageEndTime - startTime) / (timeDelta / width));
             final StringBuilder stringBuffer = new StringBuilder();
             stringBuffer.append("<area shape=\"rect\" coords=\"");
-            stringBuffer.append(n1);
+            stringBuffer.append(graphicStart);
             stringBuffer.append(",2,");
-            stringBuffer.append(n2);
+            stringBuffer.append(graphicEnd);
             stringBuffer.append(",18\" ");
             stringBuffer.append("href=\"/opennms/outage/detail.htm?id=");
             stringBuffer.append(onmsOutage.getId());
@@ -332,6 +344,9 @@ public class TimelineRestService extends OnmsRestService {
     @Autowired
     private OutageDao m_outageDao;
 
+    @Autowired
+    private NodeDao m_nodeDao;
+
     private OnmsOutageCollection queryOutages(final UriInfo uriInfo, final int nodeId, final String ipAddress, final String serviceName, final long start, final long end) {
         OnmsOutageCollection onmsOutageCollection;
 
@@ -350,6 +365,7 @@ public class TimelineRestService extends OnmsRestService {
 
         builder.eq("serviceType.name", serviceName);
         builder.eq("ipInterface.ipAddress", InetAddressUtils.addr(ipAddress));
+        builder.isNull("perspective");
 
         builder.alias("monitoredService", "monitoredService");
         builder.alias("monitoredService.ipInterface", "ipInterface");
@@ -466,6 +482,7 @@ public class TimelineRestService extends OnmsRestService {
         long delta = end - start;
 
         OnmsOutageCollection onmsOutageCollection = queryOutages(uriInfo, nodeId, ipAddress, serviceName, start, end);
+        OnmsNode node = m_nodeDao.get(nodeId);
 
         BufferedImage bufferedImage = new BufferedImage(width, 20, BufferedImage.TYPE_INT_ARGB);
 
@@ -478,10 +495,10 @@ public class TimelineRestService extends OnmsRestService {
 
         for (TimescaleDescriptor desc : TIMESCALE_DESCRIPTORS) {
             if (desc.match(delta, numLabels)) {
-                desc.drawGreen(graphics2D, width);
+                desc.drawNode(graphics2D, delta, start, width, node);
 
                 for (OnmsOutage onmsOutage : onmsOutageCollection) {
-                    desc.drawEvent(graphics2D, delta, start, width, onmsOutage);
+                    desc.drawOutage(graphics2D, delta, start, width, onmsOutage);
                 }
 
                 desc.drawLine(graphics2D, delta, start, width);

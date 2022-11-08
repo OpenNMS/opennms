@@ -1,0 +1,35 @@
+[[system-requirements-minion]]
+= Minimum system requirements
+
+[[system-resource-requirement-minion]]
+== System resource requirements
+
+[options="header, autowidth"]
+|===
+|                        | Just testing*           | Minimum server specification**
+| *CPU*                  | 2 GHz dual core x86_64  | 3 GHz quad core x86_64 and above
+| *RAM*                  | 4 GB (physical)         | 8 GB (physical) and above
+| *Storage (disk space)* | 20 GB HDD, SSD          | 100 GB with SSD and above
+|===
+
+*_You can install the packages and the services will start up_. +
+**_Does not consider your intended workload, for example, network size, number of monitored metrics, flows, events, and data retention requirements._
+
+[[operating-systems-minion]]
+== Operating systems
+
+OpenNMS {page-component-title} runs on the following operating systems.
+See the release notes for information about platform support changes, including deprecated platforms.
+
+[options="header, autowidth"]
+|===
+| Operating System        | Supported Versions (64-bit)
+| RHEL                    | {compatible-rhel7} +
+                            {compatible-rhel8}
+| CentOS                  | {compatible-centos7} +
+                            {compatible-centos-stream}
+ifeval::["{page-component-title}" == "Horizon"]
+| Debian                  | {compatible-debian}
+| Ubuntu                  | {compatible-ubuntu}
+endif::[]
+|===

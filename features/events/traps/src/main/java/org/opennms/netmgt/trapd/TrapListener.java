@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,14 +28,19 @@
 
 package org.opennms.netmgt.trapd;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
+import org.opennms.core.ipc.twin.api.TwinSubscriber;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.TrapdConfig;
@@ -45,6 +50,7 @@ import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.snmp.SnmpException;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.TrapInformation;
+import org.opennms.netmgt.snmp.TrapListenerConfig;
 import org.opennms.netmgt.snmp.TrapNotificationListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,6 +58,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class TrapListener implements TrapNotificationListener {
     private static final Logger LOG = LoggerFactory.getLogger(TrapListener.class);
+
+    // True if trap configuration has been received from the core instance
+    private boolean m_configured = false;
+    private Object configuredLock = new Object();
+
+    private long subscriberTimeoutMs = 60 * 1000;
 
     @Autowired
     private MessageDispatcherFactory m_messageDispatcherFactory;
@@ -64,6 +76,11 @@ public class TrapListener implements TrapNotificationListener {
     private TrapdConfig m_config;
 
     private AsyncDispatcher<TrapInformationWrapper> m_dispatcher;
+
+    @Autowired
+    private TwinSubscriber m_twinSubscriber;
+
+    private Closeable m_twinSubscription;
 
     public TrapListener(final TrapdConfig config) throws SocketException {
         Objects.requireNonNull(config, "Config cannot be null");
@@ -94,11 +111,55 @@ public class TrapListener implements TrapNotificationListener {
     }
 
     public void start() {
+        if (m_twinSubscriber != null) {
+            subscribe();
+        } else {
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    delayedConfigurationCheck();
+                }
+            }, subscriberTimeoutMs); // wait 60 seconds for connection from core
+        }
+    }
+
+    private void delayedConfigurationCheck() {
+        synchronized (configuredLock) {
+            if (!m_configured) {
+                LOG.warn("No trap configuration received from core, using default settings");
+                this.open(new TrapListenerConfig());
+            }
+        }
+    }
+
+    public void subscribe() {
+        m_twinSubscription = m_twinSubscriber.subscribe(TrapListenerConfig.TWIN_KEY, TrapListenerConfig.class, (config) -> {
+            try (Logging.MDCCloseable mdc = Logging.withPrefixCloseable(Trapd.LOG4J_CATEGORY)) {
+                LOG.info("Got listener config update - reloading");
+                synchronized(configuredLock) {
+                    m_configured = true;
+                    this.close();
+                    this.open(config);
+                }
+            }
+        });
+    }
+
+    public void bind(TwinSubscriber twinSubscriber) {
+        m_twinSubscriber = twinSubscriber;
+        subscribe();
+    }
+
+    public void unbind(TwinSubscriber twinSubscriber) {
+        m_twinSubscriber = null;
+    }
+
+    private void open(final TrapListenerConfig config) {
         final int m_snmpTrapPort = m_config.getSnmpTrapPort();
         final InetAddress address = getInetAddress();
         try {
             LOG.info("Listening on {}:{}", address == null ? "[all interfaces]" : InetAddressUtils.str(address), m_snmpTrapPort);
-            SnmpUtils.registerForTraps(this, address, m_snmpTrapPort, m_config.getSnmpV3Users());
+            SnmpUtils.registerForTraps(this, address, m_snmpTrapPort, config.getSnmpV3Users());
             m_registeredForTraps = true;
             
             LOG.debug("init: Creating the trap session");
@@ -121,24 +182,37 @@ public class TrapListener implements TrapNotificationListener {
 
     public void stop() {
         try {
+            m_twinSubscription.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        this.close();
+
+        try {
+            if (m_dispatcher != null) {
+                m_dispatcher.close();
+                m_dispatcher = null;
+            }
+        } catch (final Exception e) {
+            LOG.warn("stop: exception occurred closing m_dispatcher", e);
+        }
+    }
+
+    private void close() {
+        try {
             if (m_registeredForTraps) {
                 LOG.debug("stop: Closing SNMP trap session.");
-                SnmpUtils.unregisterForTraps(this, getInetAddress(), m_config.getSnmpTrapPort());
+                SnmpUtils.unregisterForTraps(this);
                 m_registeredForTraps = false;
                 LOG.debug("stop: SNMP trap session closed.");
             } else {
                 LOG.debug("stop: not attemping to closing SNMP trap session--it was never opened or already closed.");
             }
-            if (m_dispatcher != null) {
-                m_dispatcher.close();
-                m_dispatcher = null;
-            }
         } catch (final IOException e) {
             LOG.warn("stop: exception occurred closing session", e);
         } catch (final IllegalStateException e) {
             LOG.debug("stop: The SNMP session was already closed", e);
-        } catch (final Exception e) {
-            LOG.warn("stop: exception occured closing m_dispatcher", e);
         }
     }
 
@@ -149,13 +223,8 @@ public class TrapListener implements TrapNotificationListener {
         }
     }
 
-    public void setSnmpV3Users(final TrapdConfiguration newTrapdConfig) {
-        TrapdConfigBean newTrapdConfigBean = new TrapdConfigBean(newTrapdConfig);
-        if (hasSnmpV3UsersChanged(newTrapdConfigBean)) {
-            TrapdConfigBean clone = new TrapdConfigBean(m_config);
-            clone.setSnmpV3Users(newTrapdConfigBean.getSnmpV3Users());
-            restartWithNewConfig(clone);
-        }
+    public boolean isRegisteredForTraps() {
+        return m_registeredForTraps;
     }
 
     public void setMessageDispatcherFactory(MessageDispatcherFactory messageDispatcherFactory) {
@@ -172,7 +241,7 @@ public class TrapListener implements TrapNotificationListener {
         stop();
         LOG.info("TrapListener service has been stopped.");
 
-        // Update config, instead of set it, to apply the chnages to ALL config references
+        // Update config, instead of set it, to apply the changes to ALL config references
         m_config.update(newConfig);
 
         // We start with new config
@@ -223,5 +292,13 @@ public class TrapListener implements TrapNotificationListener {
             return false;
         }
         return !newConfig.getSnmpV3Users().equals(m_config.getSnmpV3Users());
+    }
+
+    void setSubscriberTimeoutMs(long ms) {
+        subscriberTimeoutMs = ms;
+    }
+
+    long getSubscriberTimeoutMs() {
+        return subscriberTimeoutMs;
     }
 }

@@ -1,0 +1,105 @@
+
+= LLDP Discovery
+
+The Link Layer Discovery Protocol (LLDP) is a vendor-neutral link layer protocol.
+Network devices use it to advertise their identity, capabilities, and neighbors.
+LLDP performs functions similar to several proprietary protocols, such as the Cisco Discovery Protocol (CDP), Extreme Discovery Protocol, Foundry Discovery Protocol (FDP), Nortel Discovery Protocol (also known as SONMP), and Microsoft's https://en.wikipedia.org/wiki/Link_Layer_Discovery_Protocol[Link Layer Discovery Protocol] (LLDP).
+
+NOTE: Only nodes with a running LLDP process can be part of the link discovery.
+      The data is similar to running a `show lldp neighbor` command on the device.
+      Linux and Windows servers don't have an LLDP process running by default and will not be part of the link discovery unless an LLDP agent is manually installed and configured.
+
+The LLDP Topology Updater provides LLDP OnmsTopology consolidating LLDP data collected by LLDP Collector.
+Only full bidirectional connections between two LLDP-supported devices become edges.
+Node A and Node B are connected by an LLDP edge if and only if there is an LLDP MIB port connection in Node A to Node B and vice versa.
+
+The following OIDs are supported to discover and build the LLDP network topology and are collected by the LLDP Discovery Collector.
+
+.Supported OIDs from LLDP-MIB
+[options="header"]
+[cols="1,3,1"]
+|===
+| Name
+| Description
+| OID
+
+| lldpLocChassisIdSubtype
+| The type of encoding used to identify the chassis associated with the local system. Possible values can be: +
+chassisComponent(1) +
+interfaceAlias(2) +
+portComponent(3) +
+macAddress(4) +
+networkAddress(5) +
+interfaceName(6) +
+local(7)
+| .1.0.8802.1.1.2.1.3.1.0
+
+
+| lldpLocChassisId
+| The string value used to identify the chassis component associated with the local system.
+| .1.0.8802.1.1.2.1.3.2.0
+
+| lldpLocSysName
+| The string value used to identify the system name of the local system.
+If the local agent supports link:http://tools.ietf.org/html/rfc3418[IETF RFC 3418], lldpLocSysName object should have the same value as sysName object.
+| .1.0.8802.1.1.2.1.3.3.0
+
+| lldpLocPortIdSubtype
+| The type of port identifier encoding used in the associated lldpLocPortId object.
+| .1.0.8802.1.1.2.1.3.7.1.2
+
+| lldpLocPortId
+| The string value used to identify the port component associated with a given port in the local system.
+| .1.0.8802.1.1.2.1.3.7.1.3
+
+| lldpLocPortDesc
+| The string value used to identify the 802 LAN station's port description associated with the local system.
+If the local agent supports IETF RFC 2863, lldpLocPortDesc object should have the same value of ifDescr object.
+| .1.0.8802.1.1.2.1.3.7.1.4
+
+| lldpRemChassisIdSubtype
+| The type of encoding used to identify the chassis associated with the local system. Possible values can be: +
+chassisComponent(1) +
+interfaceAlias(2) +
+portComponent(3) +
+macAddress(4) +
+networkAddress(5) +
+interfaceName(6) +
+local(7)
+| .1.0.8802.1.1.2.1.4.1.1.4
+
+| lldpRemChassisId
+| The string value used to identify the chassis component associated with the remote system.
+| .1.0.8802.1.1.2.1.4.1.1.5
+
+| lldpRemPortIdSubtype
+| The type of port identifier encoding used in the associated lldpRemPortId object. +
+*interfaceAlias(1)*: the octet string identifies a particular instance of the ifAlias object (defined in IETF RFC 2863). If the particular ifAlias object does not contain any values, use another port identifier type. +
+*portComponent(2)*: the octet string identifies a particular instance of the entPhysicalAlias object (defined in IETF RFC 2737) for a port or backplane component. +
+*macAddress(3)*: this string identifies a particular unicast source address (encoded in network byte order and IEEE 802.3 canonical bit order) associated with the port (IEEE Std 802-2001). +
+*networkAddress(4)*: this string identifies a network address associated with the port.
+The first octet contains the IANA AddressFamilyNumbers enumeration value for the specific address type, and octets 2 through N contain the networkAddress address value in network byte order. +
+*interfaceName(5)*: the octet string identifies a particular instance of the ifName object (defined in IETF RFC 2863).
+If the particular ifName object does not contain any values, use another port identifier type. +
+*agentCircuitId(6)*: this string identifies an agent-local identifier of the circuit  (defined in RFC 3046). +
+*local(7)*: this string identifies a locally assigned port ID.
+| .1.0.8802.1.1.2.1.4.1.1.6
+
+| lldpRemPortId
+| The string value used to identify the port component associated with the remote system.
+| .1.0.8802.1.1.2.1.4.1.1.7
+
+| lldpRemPortDesc
+| The string value used to identify the description of the given port associated with the remote system.
+| .1.0.8802.1.1.2.1.4.1.1.8
+
+| lldpRemSysName
+| The string value used to identify the system name of the remote system.
+| .1.0.8802.1.1.2.1.4.1.1.9
+|===
+
+Find generic information about the LLDP process in the LLDP information box on the node detail page of the device.
+Information gathered from these OIDs is stored in the following database table:
+
+.Database tables related to LLDP discovery
+image::enlinkd/lldp-database.png[]

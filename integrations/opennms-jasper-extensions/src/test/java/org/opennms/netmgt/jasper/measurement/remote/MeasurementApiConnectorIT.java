@@ -65,12 +65,10 @@ public class MeasurementApiConnectorIT {
     private static final Logger LOG = LoggerFactory.getLogger(MeasurementApiClientTest.class);
 
     @Rule
-    public WireMockRule wireMockRule = new WireMockRule(
-            new WireMockConfiguration()
-                    .dynamicPort()
-                    .dynamicHttpsPort()
-                    .keystorePath(System.getProperty("javax.net.ssl.keyStore"))
-                    .keystorePassword(System.getProperty("javax.net.ssl.keyStorePassword")));
+    public WireMockRule wireMockRule = new WireMockRule(WireMockConfiguration.wireMockConfig()
+            .keystorePath(System.getProperty("javax.net.ssl.keyStore"))
+            .keystorePassword(System.getProperty("javax.net.ssl.keyStorePassword"))
+            .dynamicPort().dynamicHttpsPort());
 
     @BeforeClass
     public static void beforeClass() {
@@ -83,7 +81,7 @@ public class MeasurementApiConnectorIT {
                 "javax.net.ssl.trustStorePassword"};
         for (String eachKey : keys) {
             String value = eachKey.toLowerCase().contains("password") ? "*****" : System.getProperty(eachKey);
-            LOG.debug("{} = {}", eachKey, value);
+            LOG.error("{} = {}", eachKey, value);
         }
     }
 
@@ -222,7 +220,7 @@ public class MeasurementApiConnectorIT {
 
     // Verifies that a https call can be made
     @Test
-    public void testHttpsOk() throws IOException {
+    public void testHttpsOk() throws IOException, InterruptedException {
         Result result = new MeasurementApiClient().execute(true, "https://localhost:" + wireMockRule.httpsPort() + "/opennms/rest/measurements", null, null, "<dummy request>");
         Assert.assertTrue(result.wasSuccessful());
         Assert.assertTrue(result.wasSecureConnection());

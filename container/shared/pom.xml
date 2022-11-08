@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms</groupId>
         <artifactId>org.opennms.container</artifactId>
-        <version>26.1.3-SNAPSHOT</version>
+        <version>32.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.container</groupId>
@@ -48,15 +48,9 @@
                     <bootRepositories>
                         <!-- OPENNMS: Add the OpenNMS Karaf extensions feature repository -->
                         <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/karaf-extensions</repository>
+                        <!-- OPENNMS: Additional tools -->
                         <repository>mvn:io.hawt/hawtio-karaf/${hawtio.version}/xml/features</repository>
                     </bootRepositories>
-                    <!-- use this instead of bootRepositories when we move to karaf-maven-plugin 4.2.x or higher -->
-                    <!-- <descriptors>
-                        <!-/- OPENNMS: Add the OpenNMS Karaf extensions feature repository -/->
-                        <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/karaf-extensions</descriptor>
-                        <!-/- OPENNMS: Additional tools -/->
-                        <descriptor>mvn:io.hawt/hawtio-karaf/${hawtio.version}/xml/features</descriptor>
-                    </descriptors> -->
                     <installedFeatures>
                         <feature>wrapper</feature>
 
@@ -85,10 +79,12 @@
 
                         <!-- OPENNMS: Add our enhancements to the container -->
                         <feature>karaf-extender</feature>
-                        <feature>scv</feature>
+                        <feature>scv-api</feature>
+                        <feature>scv-jceks-impl</feature>
+                        <feature>scv-shell</feature>
 
                         <!-- OPENNMS: Additional tools -->
-                        <feature>hawtio-offline</feature>
+                        <feature>hawtio</feature>
                         <feature>jolokia</feature>
                     </bootFeatures>
                     <blacklistedFeatures>
@@ -114,32 +110,6 @@
                     </libraries>
                     <javase>1.8</javase>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <version>3.0.0</version>
-                <executions>
-                    <execution>
-                        <phase>prepare-package</phase>
-                        <goals><goal>run</goal></goals>
-                        <configuration>
-                            <target>
-                                <replace token="1.10.2" value="${paxLoggingVersion}" file="${project.build.directory}/assembly/bin/instance" />
-                                <replace token="1.10.2" value="${paxLoggingVersion}" file="${project.build.directory}/assembly/bin/instance.bat" />
-                                <replace token="1.10.2" value="${paxLoggingVersion}" file="${project.build.directory}/assembly/bin/shell" />
-                                <replace token="1.10.2" value="${paxLoggingVersion}" file="${project.build.directory}/assembly/bin/shell.bat" />
-                                <replace token="1.10.2" value="${paxLoggingVersion}" file="${project.build.directory}/assembly/etc/startup.properties" />
-                                <replace token="1.10.2" value="${paxLoggingVersion}" file="${project.build.directory}/assembly/system/org/apache/karaf/features/framework/${karafVersion}/framework-${karafVersion}-features.xml" />
-                                <delete>
-                                  <fileset dir="target/assembly/system/org/ops4j/pax/logging/pax-logging-api/1.10.2" />
-                                  <fileset dir="target/assembly/system/org/ops4j/pax/logging/pax-logging-log4j2/1.10.2" />
-                                  <fileset dir="target/assembly/system/org/ops4j/pax/logging/pax-logging-logback/1.10.2" />
-                                </delete>
-                            </target>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
                 <artifactId>maven-clean-plugin</artifactId>
@@ -178,6 +148,10 @@
                     <groupId>javax.xml.bind</groupId>
                     <artifactId>jaxb-api</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>xml-apis</groupId>
+                    <artifactId>xml-apis</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -186,12 +160,6 @@
             <version>${karafVersion}</version>
             <classifier>features</classifier>
             <type>xml</type>
-            <exclusions>
-                <exclusion>
-                    <groupId>javax.xml.bind</groupId>
-                    <artifactId>jaxb-api</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.opennms.karaf</groupId>
@@ -214,6 +182,7 @@
             <artifactId>spring-dependencies</artifactId>
             <version>${project.version}</version>
             <type>pom</type>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.opennms.container</groupId>

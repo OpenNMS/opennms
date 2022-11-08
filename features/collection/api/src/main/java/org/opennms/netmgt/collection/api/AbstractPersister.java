@@ -30,12 +30,6 @@ package org.opennms.netmgt.collection.api;
 
 import java.util.LinkedList;
 
-import org.opennms.netmgt.collection.api.AttributeGroup;
-import org.opennms.netmgt.collection.api.AttributeType;
-import org.opennms.netmgt.collection.api.CollectionAttribute;
-import org.opennms.netmgt.collection.api.CollectionResource;
-import org.opennms.netmgt.collection.api.Persister;
-import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.support.AbstractCollectionSetVisitor;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.ResourceTypeUtils;
@@ -55,7 +49,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractPersister extends AbstractCollectionSetVisitor implements Persister {
 
-    protected static final Logger LOG = LoggerFactory.getLogger(AbstractPersister.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractPersister.class);
 
     private boolean m_ignorePersist = false;
     private ServiceParameters m_params;
@@ -93,7 +87,7 @@ public abstract class AbstractPersister extends AbstractCollectionSetVisitor imp
         m_builder = null;
     }
 
-    private boolean isPersistDisabled() {
+    protected boolean isPersistDisabled() {
         return m_params != null &&
                m_params.getParameters().containsKey("storing-enabled") &&
                "false".equals(m_params.getParameters().get("storing-enabled"));

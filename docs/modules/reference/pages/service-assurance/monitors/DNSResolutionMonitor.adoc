@@ -1,0 +1,159 @@
+
+[[poller-dns-resolution-monitor]]
+= DNSResolutionMonitor
+
+The DNS resolution monitor tests if the node label of a node can be resolved via a DNS lookup.
+This monitor uses the name resolver configuration from the poller configuration or from the operating system where {page-component-title} is running.
+Use it to test client behavior for a given host name.
+
+For example, create a node with the node label www.google.com and an IP interface.
+Assigning the DNS resolution monitor on the IP interface tests if `www.google.com` can be resolved using the DNS configuration defined by the poller.
+If the DNS server responds with either an A or AAAA record, the service is determined to be up.
+The poller does not check if the IP address on the record matches the IP address of the service where the monitor is assigned.
+
+== DNSResolutionMonitor vs. DnsMonitor
+
+The DNSResolutionMonitor measures the availability and record outages of a name resolution from a client perspective.
+Use this service to determine if the monitored node can be resolved by DNS hosted somewhere else in your network.
+You can use it in combination with the <<service-assurance/monitors/PageSequenceMonitor.adoc#pagesequencemonitor, PageSequenceMonitor>> to provide a hint if a website is not available for DNS reasons.
+
+The <<service-assurance/monitors/DnsMonitor.adoc#poller-dns-monitor, DnsMonitor>> is a test against a specific DNS server.
+Use this service to determine if the monitored node provides DNS resolution of requests sent to it.
+
+== Monitor facts
+
+[cols="1,7"]
+|===
+| Class Name
+| `org.opennms.netmgt.poller.monitors.DNSResolutionMonitor`
+|===
+
+== Configuration and use
+
+.Monitor specific parameters for the DNSResolutionMonitor
+[options="header"]
+[cols="1,3a,2"]
+|===
+| Parameter
+| Description
+| Default
+
+| resolution-type
+| Type of record for the node label test. Allowed values:
+
+* **v4** for A records.
+* **v6** for AAAA records.
+* **both** A and AAAA records must be available.
+* **either** A or AAAA records must be available.
+
+| either
+
+| record-types
+| Alternate DNS record types to search for. +
+The comma-separated list can contain A, AAAA, CNAME, NS, MX, PTR, SOA, SRV, or TXT.
+| n/a
+
+| lookup kbd:[{}]
+| Alternate DNS record to lookup.
+| The node label.
+
+| nameserver kbd:[{}]
+| The DNS server to query for the records. +
+The string can be in the form of hostname, hostname:port, or [ipv6address]:port.
+| Name server from host system running {page-component-title}.
+|===
+
+kbd:[{}] _indicates the parameter supports <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution>>._
+
+This monitor implements the <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+== Examples
+
+The following example shows the possibilities for monitoring IPv4 and/or IPv6 for the service configuration.
+
+Example uses CentOS/RHEL path name. For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
+
+[source, xml]
+----
+<!-- Assigned service test if the node label is resolved for an A record -->
+<service name="DNS-Resolution-v4" interval="300000" user-defined="false" status="on">
+    <parameter key="retry" value="2"/>
+    <parameter key="timeout" value="2000"/>
+    <parameter key="resolution-type" value="v4"/>
+    <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/>
+    <parameter key="rrd-base-name" value="dns-res-v4"/>
+    <parameter key="ds-name" value="dns-res-v4"/>
+</service>
+
+<!-- Assigned service test if www.google.com is resolved for an A record -->
+<service name="DNS-Resolution-v4-lookup" interval="300000" user-defined="false" status="on">
+    <parameter key="retry" value="2"/>
+    <parameter key="timeout" value="2000"/>
+    <parameter key="resolution-type" value="v4"/>
+    <parameter key="lookup" value="www.google.com"/>
+</service>
+
+<!-- Assigned service test if the node label is resolved for an AAAA record using a specific DNS server -->
+<service name="DNS-Resolution-v6" interval="300000" user-defined="false" status="on">
+    <parameter key="retry" value="2"/>
+    <parameter key="timeout" value="2000"/>
+    <parameter key="resolution-type" value="v6"/>
+    <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/>
+    <parameter key="rrd-base-name" value="dns-res-v6"/>
+    <parameter key="ds-name" value="dns-res-v6"/>
+    <parameter key="nameserver" value="8.8.8.8"/>
+</service>
+
+<!-- Use parameter substitution for nameserver and lookup parameter values -->
+<service name="DNS-Resolution-Sub" interval="300000" user-defined="false" status="on">
+    <parameter key="retry" value="2"/>
+    <parameter key="timeout" value="2000"/>
+    <parameter key="resolution-type" value="v6"/>
+    <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/>
+    <parameter key="rrd-base-name" value="dns-res-v6"/>
+    <parameter key="ds-name" value="dns-res-v6"/>
+    <parameter key="nameserver" value="{ipAddr}"/>
+    <parameter key="lookup" value="\{nodelabel}"/>
+</service>
+
+<!-- Assigned service test if the node label is resolved for an AAAA record AND A record -->
+<service name="DNS-Resolution-v4-and-v6" interval="300000" user-defined="false" status="on">
+    <parameter key="retry" value="2"/>
+    <parameter key="timeout" value="2000"/>
+    <parameter key="resolution-type" value="both"/>
+    <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/>
+    <parameter key="rrd-base-name" value="dns-res-both"/>
+    <parameter key="ds-name" value="dns-res-both"/>
+</service>
+
+<!-- Assigned service test if the node label is resolved for an AAAA record OR A record -->
+<service name="DNS-Resolution-v4-or-v6" interval="300000" user-defined="false" status="on">
+    <parameter key="retry" value="2"/>
+    <parameter key="timeout" value="2000"/>
+    <parameter key="resolution-type" value="either"/>
+    <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/>
+    <parameter key="rrd-base-name" value="dns-res-either"/>
+    <parameter key="ds-name" value="dns-res-either"/>
+</service>
+
+<!-- Assigned service test if the node label is resolved for an CNAME record AND MX record -->
+<service name="DNS-Resolution-CNAME-and-MX" interval="300000" user-defined="false" status="on">
+    <parameter key="retry" value="2"/>
+    <parameter key="timeout" value="2000"/>
+    <parameter key="record-types" value="CNAME,MX"/>
+    <parameter key="lookup" value="www.google.comm"/>
+    <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/>
+    <parameter key="rrd-base-name" value="dns-res-cname-mx"/>
+    <parameter key="ds-name" value="dns-res-cname-mx"/>
+</service>
+
+<monitor service="DNS-Resolution-v4" class-name="org.opennms.netmgt.poller.monitors.DNSResolutionMonitor" />
+<monitor service="DNS-Resolution-v4-lookup" class-name="org.opennms.netmgt.poller.monitors.DNSResolutionMonitor" />
+<monitor service="DNS-Resolution-v6" class-name="org.opennms.netmgt.poller.monitors.DNSResolutionMonitor" />
+<monitor service="DNS-Resolution-Sub" class-name="org.opennms.netmgt.poller.monitors.DNSResolutionMonitor" />
+<monitor service="DNS-Resolution-v4-and-v6" class-name="org.opennms.netmgt.poller.monitors.DNSResolutionMonitor" />
+<monitor service="DNS-Resolution-v4-or-v6" class-name="org.opennms.netmgt.poller.monitors.DNSResolutionMonitor" />
+<monitor service="DNS-Resolution-CNAME-and-MX" class-name="org.opennms.netmgt.poller.monitors.DNSResolutionMonitor" />
+----
+
+To have response time graphs for the name resolution you have to configure RRD graphs for the given ds-names (dns-res-v4, dns-res-v6, dns-res-both, dns-res-either, dns-res-cname-mx) in $OPENNMS_HOME/etc/response-graph.properties.

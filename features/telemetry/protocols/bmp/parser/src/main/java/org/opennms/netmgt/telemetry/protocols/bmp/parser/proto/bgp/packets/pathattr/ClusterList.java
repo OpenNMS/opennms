@@ -31,7 +31,6 @@ package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.path
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.bytes;
 
 import java.net.InetAddress;
-import java.util.Collections;
 import java.util.List;
 
 import org.opennms.core.utils.InetAddressUtils;

@@ -36,7 +36,7 @@ import org.opennms.netmgt.enlinkd.service.api.TopologyService;
 public class TopologyServiceImpl implements TopologyService {
 
     private TopologyEntityCache m_topologyEntityCache;
-    private AtomicBoolean m_updates = new AtomicBoolean(false);
+    private final AtomicBoolean m_updates = new AtomicBoolean(false);
 
     @Override
     public  boolean parseUpdates() {

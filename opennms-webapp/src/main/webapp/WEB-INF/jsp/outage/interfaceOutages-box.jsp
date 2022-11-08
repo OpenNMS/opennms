@@ -64,7 +64,7 @@
   <span><a href="<c:out value="${outageLink}"/>">Recent&nbsp;Outages</a></span>
 </div>
 
-<table class="table table-sm">
+<table class="table table-sm severity">
 
 <% if(outages.length == 0) { %>
   <tr>
@@ -83,9 +83,9 @@
      pageContext.setAttribute("outage", outage);
   %>
      <% if( outages[i].getRegainedServiceTime() == null ) { %>
-       <tr class="Critical">
+       <tr class="severity-Critical">
      <% } else { %>
-       <tr class="Cleared">
+       <tr class="severity-Cleared">
      <% } %>
       <c:url var="serviceLink" value="element/service.jsp">
         <c:param name="node" value="<%=String.valueOf(nodeId)%>"/>

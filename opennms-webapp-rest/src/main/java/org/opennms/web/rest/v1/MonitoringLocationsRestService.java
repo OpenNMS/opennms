@@ -29,6 +29,10 @@
 package org.opennms.web.rest.v1;
 
 import java.text.ParseException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -41,11 +45,12 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriInfo;
 
 import org.joda.time.Duration;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
+import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.provision.persist.StringIntervalPropertyEditor;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
@@ -55,6 +60,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -63,6 +69,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class MonitoringLocationsRestService extends OnmsRestService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(MonitoringLocationsRestService.class);
+	private static final String POLLING_PACKAGE_NAMES = "pollingPackageNames";
+
+	@Autowired
+	@Qualifier("eventProxy")
+	private EventProxy m_eventProxy;
 
 	@Autowired
 	private MonitoringLocationDao m_monitoringLocationDao;
@@ -77,7 +88,9 @@ public class MonitoringLocationsRestService extends OnmsRestService {
 	@GET
 	@Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
 	public OnmsMonitoringLocationDefinitionList getForeignSources() throws ParseException {
-		return new OnmsMonitoringLocationDefinitionList(m_monitoringLocationDao.findAll());
+		final List<OnmsMonitoringLocation> onmsMonitoringLocationList = m_monitoringLocationDao.findAll();
+		Collections.sort(onmsMonitoringLocationList, Comparator.comparing(OnmsMonitoringLocation::getLocationName));
+		return new OnmsMonitoringLocationDefinitionList(onmsMonitoringLocationList);
 	}
 
 	@GET
@@ -119,6 +132,8 @@ public class MonitoringLocationsRestService extends OnmsRestService {
 	public Response updateMonitoringLocation(@PathParam("monitoringLocation") String monitoringLocation, MultivaluedMapImpl params) {
 		writeLock();
 		try {
+			boolean sendEvent = false;
+
 			OnmsMonitoringLocation def = m_monitoringLocationDao.get(monitoringLocation);
 			LOG.debug("updateMonitoringLocation: updating monitoring location {}", monitoringLocation);
 
@@ -129,9 +144,8 @@ public class MonitoringLocationsRestService extends OnmsRestService {
 			wrapper.registerCustomEditor(Duration.class, new StringIntervalPropertyEditor());
 			for(final String key : params.keySet()) {
 				if (wrapper.isWritableProperty(key)) {
-					Object value = null;
 					String stringValue = params.getFirst(key);
-					value = wrapper.convertIfNecessary(stringValue, (Class<?>)wrapper.getPropertyType(key));
+					Object value = wrapper.convertIfNecessary(stringValue, (Class<?>)wrapper.getPropertyType(key));
 					wrapper.setPropertyValue(key, value);
 					modified = true;
 				}
@@ -139,7 +153,7 @@ public class MonitoringLocationsRestService extends OnmsRestService {
 			if (modified) {
 			    LOG.debug("updateMonitoringLocation: monitoring location {} updated", monitoringLocation);
 			    m_monitoringLocationDao.save(def);
-			    return Response.noContent().build();
+				return Response.noContent().build();
 			}
 			return Response.notModified().build();
 		} finally {
@@ -154,7 +168,9 @@ public class MonitoringLocationsRestService extends OnmsRestService {
 		writeLock();
 		try {
 			LOG.debug("deleteMonitoringLocation: deleting monitoring location {}", monitoringLocation);
+
 			m_monitoringLocationDao.delete(monitoringLocation);
+
 			return Response.noContent().build();
 		} finally {
 			writeUnlock();

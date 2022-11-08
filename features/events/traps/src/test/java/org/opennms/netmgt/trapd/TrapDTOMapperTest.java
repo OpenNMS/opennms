@@ -58,7 +58,7 @@ public class TrapDTOMapperTest {
 
 		PDU snmp4JV2cTrapPdu = new PDU();
 		snmp4JV2cTrapPdu.setType(PDU.TRAP);
-		OID oid = new OID(".1.3.6.1.2.1.1.3.0");
+		OID oid = new OID(".1.3.6.1.2.1.1.3.0.4");
 		snmp4JV2cTrapPdu.add(new VariableBinding(SnmpConstants.sysUpTime, new TimeTicks(5000)));
 		snmp4JV2cTrapPdu.add(new VariableBinding(SnmpConstants.snmpTrapOID, oid));
 		snmp4JV2cTrapPdu.add(new VariableBinding(SnmpConstants.snmpTrapAddress,new IpAddress("127.0.0.1")));
@@ -83,7 +83,7 @@ public class TrapDTOMapperTest {
 		snmp4JV2cTrapPdu.add(new VariableBinding(new OID("1.3.6.1.2.1.1.5.3"),
 				new Null(130)));
 
-		TrapInformation snmp4JV2cTrap = new Snmp4JTrapNotifier.Snmp4JV2TrapInformation(
+		TrapInformation snmp4JV2cTrap = new Snmp4JTrapNotifier.Snmp4JV2V3TrapInformation(
 			InetAddressUtils.ONE_TWENTY_SEVEN,
 			"public",
 			snmp4JV2cTrapPdu
@@ -95,8 +95,9 @@ public class TrapDTOMapperTest {
 		System.out.println("trapDto.getCommunity() is : " + trapDto.getCommunity());
 
 		assertEquals(".1.3.6.1.2.1.1.3", trapDto.getTrapIdentity().getEnterpriseId());
+		assertEquals(".1.3.6.1.2.1.1.3.0.4", trapDto.getTrapIdentity().getTrapOID());
 		assertEquals(6, trapDto.getTrapIdentity().getGeneric());
-		assertEquals(0, trapDto.getTrapIdentity().getSpecific());
+		assertEquals(4, trapDto.getTrapIdentity().getSpecific());
 		assertEquals(InetAddressUtils.ONE_TWENTY_SEVEN, trapDto.getAgentAddress());
 		assertEquals("public", trapDto.getCommunity());
 		assertEquals(5000, trapDto.getTimestamp());

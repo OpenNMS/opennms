@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 FINDJAVADIR="$(dirname "$0")"
 FINDJAVADIR="$(cd "$FINDJAVADIR" || exit 1; pwd)"

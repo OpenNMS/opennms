@@ -39,8 +39,8 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.core.rpc.utils.mate.ContextKey;
-import org.opennms.core.rpc.utils.mate.Scope;
+import org.opennms.core.mate.api.ContextKey;
+import org.opennms.core.mate.api.Scope;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.config.threshd.Expression;
 
@@ -61,7 +61,7 @@ public class ExpressionConfigWrapperTest {
         MockLogAppender.setupLogging(true, "TRACE"); 
         Expression exp = new Expression();
         exp.setExpression(FORMULA);
-        when(scope.get(new ContextKey("requisition", "testMultiplier"))).thenReturn(Optional.of("100"));
+        when(scope.get(new ContextKey("requisition", "testMultiplier"))).thenReturn(Optional.of(new Scope.ScopeValue(Scope.ScopeName.DEFAULT, "100")));
         wrapper = new ExpressionConfigWrapper(exp);
         Assert.assertEquals(4, wrapper.getRequiredDatasources().size());
     }

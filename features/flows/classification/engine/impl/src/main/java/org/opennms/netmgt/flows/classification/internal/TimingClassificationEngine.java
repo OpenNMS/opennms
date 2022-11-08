@@ -60,7 +60,7 @@ public class TimingClassificationEngine implements ClassificationEngine {
     }
 
     @Override
-    public void reload() {
+    public void reload() throws InterruptedException {
         try (final Timer.Context ctx = reloadTimer.time()) {
             delegate.reload();
         }
@@ -71,5 +71,13 @@ public class TimingClassificationEngine implements ClassificationEngine {
         try (final Timer.Context ctx = getInvalidRulesTimer.time()) {
             return delegate.getInvalidRules();
         }
+    }
+
+    public void addClassificationRulesReloadedListener(final ClassificationRulesReloadedListener classificationRulesReloadedListener) {
+        this.delegate.addClassificationRulesReloadedListener(classificationRulesReloadedListener);
+    }
+
+    public void removeClassificationRulesReloadedListener(final ClassificationRulesReloadedListener classificationRulesReloadedListener) {
+        this.delegate.removeClassificationRulesReloadedListener(classificationRulesReloadedListener);
     }
 }

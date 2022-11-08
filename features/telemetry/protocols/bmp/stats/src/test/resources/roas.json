@@ -1,0 +1,28 @@
+{
+  "roas": [
+    {
+      "asn": "2312",
+      "prefix": "27.111.228.0/22",
+      "maxLength": 24,
+      "ta": "APNIC RPKI Root"
+    },
+    {
+      "asn": "4323",
+      "prefix": "36.255.56.0/22",
+      "maxLength": 24,
+      "ta": "APNIC RPKI Root"
+    },
+    {
+      "asn": "9210",
+      "prefix": "45.127.172.0/22",
+      "maxLength": 24,
+      "ta": "APNIC RPKI Root"
+    },
+    {
+      "asn": "3456",
+      "prefix": "58.181.75.0/24",
+      "maxLength": 24,
+      "ta": "APNIC RPKI Root"
+    }
+  ]
+}

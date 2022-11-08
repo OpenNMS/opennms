@@ -42,6 +42,7 @@ import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Junction;
 import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.SimpleExpression;
 import org.hibernate.criterion.Subqueries;
 import org.hibernate.type.FloatType;
 import org.hibernate.type.IntegerType;
@@ -73,6 +74,7 @@ import org.opennms.core.criteria.restrictions.NeRestriction;
 import org.opennms.core.criteria.restrictions.NotNullRestriction;
 import org.opennms.core.criteria.restrictions.NotRestriction;
 import org.opennms.core.criteria.restrictions.NullRestriction;
+import org.opennms.core.criteria.restrictions.RegExpRestriction;
 import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.core.criteria.restrictions.RestrictionVisitor;
 import org.opennms.core.criteria.restrictions.SqlRestriction;
@@ -334,6 +336,13 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
     }
 
     public static final class HibernateRestrictionVisitor extends BaseRestrictionVisitor implements RestrictionVisitor {
+
+        static class RegExp extends SimpleExpression {
+            public RegExp(final String propertyName, final Object value) {
+                super(propertyName, value, "~");
+            }
+        }
+
         private static final StringType STRING_TYPE = new StringType();
 
         private List<Criterion> m_criterions = new ArrayList<>();
@@ -450,6 +459,11 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
         @Override
         public void visitBetween(final BetweenRestriction restriction) {
             m_criterions.add(org.hibernate.criterion.Restrictions.between(restriction.getAttribute(), restriction.getBegin(), restriction.getEnd()));
+        }
+
+        @Override
+        public void visitRegExp(final RegExpRestriction restriction) {
+            m_criterions.add(new RegExp(restriction.getAttribute(), restriction.getValue()));
         }
 
         @Override

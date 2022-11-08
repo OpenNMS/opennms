@@ -34,6 +34,7 @@
 <jsp:include page="/includes/bootstrap.jsp" flush="false">
 	<jsp:param name="title" value="Manage Minions" />
 	<jsp:param name="headTitle" value="Manage Minions" />
+	<jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
 	<jsp:param name="breadcrumb" value="Manage Minions" />
 </jsp:include>
 

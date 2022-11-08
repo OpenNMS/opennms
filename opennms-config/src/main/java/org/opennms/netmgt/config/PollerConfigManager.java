@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.config;
 
+import static java.util.Objects.requireNonNull;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 import static org.opennms.core.utils.InetAddressUtils.toIpAddrBytes;
 
@@ -36,15 +37,16 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Lock;
@@ -52,23 +54,22 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Pattern;
 
+import org.apache.commons.collections.ListUtils;
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.network.IpListFromUrl;
 import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.xml.JaxbUtils;
-import org.opennms.core.xml.MarshallingResourceFailureException;
 import org.opennms.netmgt.config.poller.CriticalService;
 import org.opennms.netmgt.config.poller.ExcludeRange;
 import org.opennms.netmgt.config.poller.IncludeRange;
 import org.opennms.netmgt.config.poller.Monitor;
+import org.opennms.netmgt.config.poller.NodeOutage;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.model.ServiceSelector;
-import org.opennms.netmgt.poller.Distributable;
-import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
 import org.opennms.netmgt.poller.ServiceMonitorRegistry;
@@ -85,11 +86,184 @@ import com.google.common.base.Throwables;
  * @author <a href="mailto:brozow@openms.org">Mathew Brozowski</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
-abstract public class PollerConfigManager implements PollerConfig {
+abstract public class PollerConfigManager implements PollerConfig  {
+
+    /**
+     * This class is used to redirect getters for packages and monitors to their "merged" versions in
+     * PollerConfigManager. Other methods are redirected to "local" configuration
+     */
+    public static class ReadOnlyProxyPollerConfiguration extends PollerConfiguration {
+
+        private static final String MESSAGE = "Modifying is not allowed in ReadOnlyProxyPollerConfiguration";
+        private final PollerConfigManager pollerConfigManager;
+
+        ReadOnlyProxyPollerConfiguration(PollerConfigManager pollerConfigManager) {
+            this.pollerConfigManager = requireNonNull(pollerConfigManager);
+        }
+
+        @Override
+        public List<Package> getPackages() {
+            return pollerConfigManager.mergedPackages;
+        }
+
+        @Override
+        public void setPackages(List<Package> packages) {
+            throw new UnsupportedOperationException(MESSAGE);
+        }
+
+        @Override
+        public void addPackage(Package pack) throws IndexOutOfBoundsException {
+            throw new UnsupportedOperationException(MESSAGE);
+        }
+
+        @Override
+        public boolean removePackage(Package pack) {
+            throw new UnsupportedOperationException(MESSAGE);
+        }
+
+        @Override
+        public Package getPackage(String packageName) {
+            return super.getPackage(packageName);
+        }
+
+        @Override
+        public List<Monitor> getMonitors() {
+            return pollerConfigManager.mergedMonitors;
+        }
+
+        @Override
+        public void setMonitors(List<Monitor> monitors) {
+            throw new UnsupportedOperationException(MESSAGE);
+        }
+
+        @Override
+        public void addMonitor(Monitor monitor) throws IndexOutOfBoundsException {
+            throw new UnsupportedOperationException(MESSAGE);
+        }
+
+        @Override
+        public void addMonitor(String service, String className) {
+            throw new UnsupportedOperationException(MESSAGE);
+        }
+
+        @Override
+        public boolean removeMonitor(Monitor monitor) {
+            throw new UnsupportedOperationException(MESSAGE);
+        }
+
+        @Override
+        public Integer getThreads() {
+            return pollerConfigManager.m_config.getThreads();
+        }
+
+        @Override
+        public void setThreads(Integer threads) {
+            throw new UnsupportedOperationException(MESSAGE);
+        }
+
+        @Override
+        public String getNextOutageId() {
+            return pollerConfigManager.m_config.getNextOutageId();
+        }
+
+        @Override
+        public void setNextOutageId(String nextOutageId) {
+            throw new UnsupportedOperationException(MESSAGE);
+        }
+
+        @Override
+        public String getServiceUnresponsiveEnabled() {
+            return pollerConfigManager.m_config.getServiceUnresponsiveEnabled();
+        }
+
+        @Override
+        public void setServiceUnresponsiveEnabled(String serviceUnresponsiveEnabled) {
+            throw new UnsupportedOperationException(MESSAGE);
+        }
+
+        @Override
+        public String getPathOutageEnabled() {
+            return pollerConfigManager.m_config.getPathOutageEnabled();
+        }
+
+        @Override
+        public void setPathOutageEnabled(String pathOutageEnabled) {
+            throw new UnsupportedOperationException(MESSAGE);
+        }
+
+        @Override
+        public NodeOutage getNodeOutage() {
+            return pollerConfigManager.m_config.getNodeOutage();
+        }
+
+        @Override
+        public void setNodeOutage(NodeOutage nodeOutage) {
+            throw new UnsupportedOperationException(MESSAGE);
+        }
+
+        @Override
+        public PollerConfiguration getPollerConfigurationForPackages(List<String> pollingPackageNames) {
+            return pollerConfigManager.m_config.getPollerConfigurationForPackages(pollingPackageNames);
+        }
+
+        @Override
+        public InetAddress getDefaultCriticalPathIp() {
+            return pollerConfigManager.m_config.getDefaultCriticalPathIp();
+        }
+
+        @Override
+        public void setDefaultCriticalPathIp(InetAddress ip) {
+            throw new UnsupportedOperationException(MESSAGE);
+        }
+
+        @Override
+        public Integer getDefaultCriticalPathTimeout() {
+            return pollerConfigManager.m_config.getDefaultCriticalPathTimeout();
+        }
+
+        @Override
+        public void setDefaultCriticalPathTimeout(Integer timeout) {
+            throw new UnsupportedOperationException(MESSAGE);
+        }
+
+        @Override
+        public int getDefaultCriticalPathRetries() {
+            return pollerConfigManager.m_config.getDefaultCriticalPathRetries();
+        }
+
+        @Override
+        public void setDefaultCriticalPathRetries(Integer retries) {
+            throw new UnsupportedOperationException(MESSAGE);
+        }
+    }
+
+
     private static final Logger LOG = LoggerFactory.getLogger(PollerConfigManager.class);
     private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
     private final Lock m_readLock = m_globalLock.readLock();
     private final Lock m_writeLock = m_globalLock.writeLock();
+
+    private List<Package> localPackages = new ArrayList<>();
+    private List<Package> externalPackages = new ArrayList<>();
+    private List<Package> mergedPackages = new ArrayList<>();
+    //private boolean packagesUpdated = false;
+
+    private List<Monitor> localMonitors = new ArrayList<>();
+    private List<Monitor> externalMonitors = new ArrayList<>();
+    private List<Monitor> mergedMonitors = new ArrayList<>();
+    //private boolean monitorsUpdated = false;
+
+    @Override
+    public void setExternalData(List<Package> externalPackages,  List<Monitor> externalMonitors) {
+        try {
+            getWriteLock().lock();
+            this.externalPackages = externalPackages;
+            this.externalMonitors = externalMonitors;
+            this.setUpInternalData();
+        } finally {
+            getWriteLock().unlock();
+        }
+    }
 
     private static final ServiceMonitorRegistry s_serviceMonitorRegistry = new DefaultServiceMonitorRegistry();
 
@@ -125,6 +299,8 @@ abstract public class PollerConfigManager implements PollerConfig {
     protected void setUpInternalData() {
         getReadLock().lock();
         try {
+            mergedMonitors = ListUtils.union(m_config.getMonitors(), externalMonitors);
+            mergedPackages = ListUtils.union(m_config.getPackages(), externalPackages);
             createUrlIpMap();
             createPackageIpListMap();
             initializeServiceMonitors();
@@ -155,6 +331,7 @@ abstract public class PollerConfigManager implements PollerConfig {
      * The config class loaded from the config file
      */
     protected PollerConfiguration m_config;
+
     /**
      * A mapping of the configured URLs to a list of the specific IPs configured
      * in each - so as to avoid file reads
@@ -164,12 +341,12 @@ abstract public class PollerConfigManager implements PollerConfig {
      * A mapping of the configured package to a list of IPs selected via filter
      * rules, so as to avoid repetitive database access.
      */
-    private AtomicReference<Map<Package, List<InetAddress>>> m_pkgIpMap = new AtomicReference<Map<Package, List<InetAddress>>>();;
+    private AtomicReference<Map<Package, Set<InetAddress>>> m_pkgIpMap = new AtomicReference<>();
     /**
      * A mapp of service names to service monitors. Constructed based on data in
      * the configuration file.
      */
-    private Map<String, ServiceMonitor> m_svcMonitors = new ConcurrentSkipListMap<String, ServiceMonitor>();
+    private Map<String, ServiceMonitor> m_svcMonitors = new ConcurrentSkipListMap<>();
 
     /**
      * Go through the poller configuration and build a mapping of each
@@ -177,7 +354,7 @@ abstract public class PollerConfigManager implements PollerConfig {
      * time so that repeated file reads can be avoided
      */
     private void createUrlIpMap() {
-        m_urlIPMap = new HashMap<String, List<String>>();
+        m_urlIPMap = new HashMap<>();
     
         for(final Package pkg : packages()) {
             for(final String url : includeURLs(pkg)) {
@@ -210,18 +387,28 @@ abstract public class PollerConfigManager implements PollerConfig {
     }
 
     /**
-     * Return the poller configuration object.
+     * Return the local poller configuration object.
      *
      * @return a {@link org.opennms.netmgt.config.poller.PollerConfiguration} object.
      */
     @Override
-    public PollerConfiguration getConfiguration() {
+    public PollerConfiguration getLocalConfiguration() {
         try {
             getReadLock().lock();
             return m_config;
         } finally {
             getReadLock().unlock();
         }
+    }
+
+    /**
+     * Return the local poller configuration object.
+     *
+     * @return a {@link org.opennms.netmgt.config.poller.PollerConfiguration} object.
+     */
+    @Override
+    public PollerConfiguration getExtendedConfiguration() {
+        return new ReadOnlyProxyPollerConfiguration(this);
     }
 
     /** {@inheritDoc} */
@@ -245,7 +432,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     public ServiceSelector getServiceSelectorForPackage(final Package pkg) {
         try {
             getReadLock().lock();
-            final List<String> svcNames = new LinkedList<String>();
+            final List<String> svcNames = new LinkedList<>();
             for(Service svc : services(pkg)) {
                 svcNames.add(svc.getName());
             }
@@ -452,7 +639,7 @@ abstract public class PollerConfigManager implements PollerConfig {
         getReadLock().lock();
         
         try {
-            Map<Package, List<InetAddress>> pkgIpMap = new HashMap<Package, List<InetAddress>>();
+            Map<Package, Set<InetAddress>> pkgIpMap = new HashMap<>();
             
             for(final Package pkg : packages()) {
         
@@ -460,7 +647,7 @@ abstract public class PollerConfigManager implements PollerConfig {
                 // database and populate the package, IP list map.
                 //
                 try {
-                    List<InetAddress> ipList = getIpList(pkg);
+                    Set<InetAddress> ipList = new HashSet<>(getIpList(pkg));
                     LOG.debug("createPackageIpMap: package {}: ipList size = {}", pkg.getName(), ipList.size());
         
                     if (ipList.size() > 0) {
@@ -488,7 +675,6 @@ abstract public class PollerConfigManager implements PollerConfig {
             getReadLock().lock();
             final String filterRules = pkg.getFilter().getContent();
             LOG.debug("createPackageIpMap: package is {}. filter rules are {}", pkg.getName(), filterRules);
-            FilterDaoFactory.getInstance().flushActiveIpAddressListCache();
             return FilterDaoFactory.getInstance().getActiveIPAddressList(filterRules);
         } finally {
             getReadLock().unlock();
@@ -504,6 +690,7 @@ abstract public class PollerConfigManager implements PollerConfig {
      */
     @Override
     public void rebuildPackageIpListMap() {
+        FilterDaoFactory.getInstance().flushActiveIpAddressListCache();
         createPackageIpListMap();
     }
 
@@ -524,7 +711,7 @@ abstract public class PollerConfigManager implements PollerConfig {
         final InetAddress ifaceAddr = addr(iface);
     
         // get list of IPs in this package
-        final List<InetAddress> ipList = m_pkgIpMap.get().get(pkg);
+        final Set<InetAddress> ipList = m_pkgIpMap.get().get(pkg);
         if (ipList != null && ipList.size() > 0) {
 			filterPassed = ipList.contains(ifaceAddr);
         }
@@ -681,36 +868,13 @@ abstract public class PollerConfigManager implements PollerConfig {
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * Returns the first package that the ip belongs to, null if none.
-     *
-     * <strong>Note: </strong>Evaluation of the interface against a package
-     * filter will only work if the IP is alrady in the database.
-     */
-    @Override
-    public Package getFirstPackageMatch(final String ipaddr) {
-        try {
-            getReadLock().lock();
-            for(final Package pkg : packages()) {
-                if (isInterfaceInPackage(ipaddr, pkg)) {
-                    return pkg;
-                }
-            }
-        } finally {
-            getReadLock().unlock();
-        }
-        return null;
-    }
-
     /** {@inheritDoc} */
     @Override
     public Package getFirstLocalPackageMatch(final String ipaddr) {
         try {
             getReadLock().lock();
             for(final Package pkg : packages()) {
-                if (!pkg.getRemote() && isInterfaceInPackage(ipaddr, pkg)) {
+                if (!pkg.getPerspectiveOnly() && isInterfaceInPackage(ipaddr, pkg)) {
                     return pkg;
                 }
             }
@@ -730,7 +894,7 @@ abstract public class PollerConfigManager implements PollerConfig {
      */
     @Override
     public List<String> getAllPackageMatches(final String ipaddr) {
-        List<String> matchingPkgs = new ArrayList<String>();
+        List<String> matchingPkgs = new ArrayList<>();
 
         try {
             getReadLock().lock();
@@ -773,7 +937,7 @@ abstract public class PollerConfigManager implements PollerConfig {
         try {
             getReadLock().lock();
             for(final Package pkg : packages()) {
-                if (!pkg.getRemote() && isInterfaceInPackage(ipaddr, pkg)) {
+                if (!pkg.getPerspectiveOnly() && isInterfaceInPackage(ipaddr, pkg)) {
                     return true;
                 }
             }
@@ -891,12 +1055,22 @@ abstract public class PollerConfigManager implements PollerConfig {
     public Enumeration<Package> enumeratePackage() {
         try {
             getReadLock().lock();
-            return Collections.enumeration(getConfiguration().getPackages());
+            return Collections.enumeration(mergedPackages);
         } finally {
             getReadLock().unlock();
         }
     }
-    
+
+    @Override
+    public List<Package> getPackages() {
+        try {
+            getReadLock().lock();
+            return mergedPackages;
+        } finally {
+            getReadLock().unlock();
+        }
+    }
+
     /**
      * <p>services</p>
      *
@@ -951,7 +1125,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     private Iterable<Package> packages() {
         try {
             getReadLock().lock();
-            return getConfiguration().getPackages();
+            return mergedPackages;
         } finally {
             getReadLock().unlock();
         }
@@ -965,7 +1139,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     private Iterable<Monitor> monitors() {
         try {
             getReadLock().lock();
-            return getConfiguration().getMonitors();
+            return mergedMonitors;
         } finally {
             getReadLock().unlock();
         }
@@ -980,7 +1154,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     public int getThreads() {
         try {
             getReadLock().lock();
-            return getConfiguration().getThreads();
+            return m_config.getThreads();
         } finally {
             getReadLock().unlock();
         }
@@ -994,13 +1168,15 @@ abstract public class PollerConfigManager implements PollerConfig {
         //
         LOG.debug("start: Loading monitors");
 
-        final Collection<ServiceMonitorLocator> locators = getServiceMonitorLocators(DistributionContext.DAEMON);
+        final Collection<ServiceMonitorLocator> locators = getServiceMonitorLocators();
         
         for (final ServiceMonitorLocator locator : locators) {
-            try {
-                m_svcMonitors.put(locator.getServiceName(), locator.getServiceMonitor(s_serviceMonitorRegistry));
-            } catch (Throwable t) {
-                LOG.warn("start: Failed to create monitor {} for service {}", locator.getServiceLocatorKey(), locator.getServiceName(), t);
+            CompletableFuture<ServiceMonitor> monitorFuture = locator.getServiceMonitor(s_serviceMonitorRegistry);
+            monitorFuture.whenComplete((monitor, ex) -> {
+                m_svcMonitors.put(locator.getServiceName(), monitor);
+            });
+            if(!monitorFuture.isDone()) {
+                LOG.warn("The monitor with class {} not available yet, if the feature is installed correctly it will be available later.", locator.getServiceName());
             }
         }
     }
@@ -1042,21 +1218,16 @@ abstract public class PollerConfigManager implements PollerConfig {
     
     /** {@inheritDoc} */
     @Override
-    public Collection<ServiceMonitorLocator> getServiceMonitorLocators(final DistributionContext context) {
-        List<ServiceMonitorLocator> locators = new ArrayList<ServiceMonitorLocator>();
+    public Collection<ServiceMonitorLocator> getServiceMonitorLocators() {
+        List<ServiceMonitorLocator> locators = new ArrayList<>();
 
         try {
             getReadLock().lock();
             for(final Monitor monitor : monitors()) {
                 try {
-                    final Class<? extends ServiceMonitor> mc = findServiceMonitorClass(monitor);
-                    if (isDistributableToContext(mc, context)) {
-                        final ServiceMonitorLocator locator = new DefaultServiceMonitorLocator(monitor.getService(), mc);
-                        locators.add(locator);
-                    }
+                    final ServiceMonitorLocator locator = new DefaultServiceMonitorLocator(monitor.getService(), monitor.getClassName());
+                    locators.add(locator);
                     LOG.debug("Loaded monitor for service: {}, class-name: {}", monitor.getService(), monitor.getClassName());
-                } catch (final ClassNotFoundException e) {
-                    LOG.warn("Unable to load monitor for service: {}, class-name: {}: {}", monitor.getService(), monitor.getClassName(), e.getMessage());
                 } catch (ConfigObjectRetrievalFailureException e) {
                     LOG.warn("{} {}", e.getMessage(), e.getRootCause(), e);
                 }
@@ -1067,31 +1238,6 @@ abstract public class PollerConfigManager implements PollerConfig {
 
         return locators;
         
-    }
-
-    private boolean isDistributableToContext(final Class<? extends ServiceMonitor> mc, final DistributionContext context) {
-        final List<DistributionContext> supportedContexts = getSupportedDistributionContexts(mc);
-        if (supportedContexts.contains(context) || supportedContexts.contains(DistributionContext.ALL)) {
-            return true;
-        }
-        return false;
-    }
-
-    private List<DistributionContext> getSupportedDistributionContexts(final Class<? extends ServiceMonitor> mc) {
-        final Distributable distributable = mc.getAnnotation(Distributable.class);
-        final List<DistributionContext> declaredContexts = 
-            distributable == null 
-                ? Collections.singletonList(DistributionContext.DAEMON) 
-                : Arrays.asList(distributable.value());
-       return declaredContexts;
-    }
-
-    private Class<? extends ServiceMonitor> findServiceMonitorClass(final Monitor monitor) throws ClassNotFoundException {
-        final Class<? extends ServiceMonitor> mc = Class.forName(monitor.getClassName()).asSubclass(ServiceMonitor.class);
-        if (!ServiceMonitor.class.isAssignableFrom(mc)) {
-            throw new MarshallingResourceFailureException("The monitor for service: "+monitor.getService()+" class-name: "+monitor.getClassName()+" must implement ServiceMonitor");
-        }
-        return mc;
     }
 
     @Override
@@ -1114,4 +1260,8 @@ abstract public class PollerConfigManager implements PollerConfig {
         }
     }
 
+    @Override
+    public List<Monitor> getConfiguredMonitors() {
+        return mergedMonitors;
+    }
 }

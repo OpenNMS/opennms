@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -51,11 +51,15 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
+import org.junit.runners.MethodSorters;
 import org.opennms.core.collection.test.MockCollectionAgent;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
@@ -86,14 +90,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:/META-INF/opennms/applicationContext-soa.xml",
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+@ContextConfiguration(locations = {"classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
-        "classpath:/applicationContext-test-kafka-collection.xml" })
+        "classpath:/applicationContext-test-kafka-collection.xml"})
 @JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase(dirtiesContext = false, tempDbClass = MockDatabase.class, reuseDatabase = false)
+@JUnitTemporaryDatabase(dirtiesContext = true, tempDbClass = MockDatabase.class, reuseDatabase = false)
 public class KafkaPersisterIT {
 
     static final String IP_ADDRESS = "172.0.0.1";
@@ -161,7 +166,7 @@ public class KafkaPersisterIT {
         CollectionSet responseTimeCollectionSet = new SingleResourceCollectionSet(latencyCollectionResource, new Date());
         persister.visitCollectionSet(collectionSet);
         persister.visitCollectionSet(responseTimeCollectionSet);
-        
+
         await().atMost(1, TimeUnit.MINUTES).pollInterval(15, TimeUnit.SECONDS).until(() -> kafkaConsumer.getCollectionSetValues().size(), equalTo(2));
         List<CollectionSetProtos.CollectionSetResource> resources = kafkaConsumer.getCollectionSetValues().stream().map(CollectionSetProtos.CollectionSet::getResourceList).flatMap(Collection::stream).collect(Collectors.toList());
         Optional<CollectionSetProtos.CollectionSetResource> responseTimeResource = resources.stream().filter(CollectionSetProtos.CollectionSetResource::hasResponse).findFirst();
@@ -169,6 +174,10 @@ public class KafkaPersisterIT {
                     assertThat(resource.getResponse().getInstance(), equalTo(IP_ADDRESS));
                     assertThat(resource.getResponse().getLocation(), equalTo(LOCATION));
                     assertThat(resource.getNumeric(0).getValue(), equalTo(204.0));
+                    // Confirm that value is set (here to contrast testDefaultValues())
+                    assertThat(resource.getNumeric(0).getAllFields().keySet().stream().anyMatch(
+                            descriptor -> descriptor.getName().equals("value")), equalTo(Boolean.TRUE));
+                    assertThat(resource.getNumeric(0).getMetricValue().getValue(), equalTo(204.0));
                 }
         );
         Optional<CollectionSetProtos.CollectionSetResource> nodeLevelResource = resources.stream().filter(CollectionSetProtos.CollectionSetResource::hasNode).findFirst();
@@ -176,12 +185,71 @@ public class KafkaPersisterIT {
                     assertThat(resource.getNode().getNodeId(), equalTo(node.getId().longValue()));
                     assertThat(resource.getNumericList().size(), equalTo(2));
                     assertThat(resource.getNumeric(0).getValue(), isOneOf(105.0, 1050.0));
+                    assertThat(resource.getNumeric(0).getMetricValue().getValue(), isOneOf(105.0, 1050.0));
+                    assertThat(resource.getResourceId(), Matchers.containsString(String.valueOf(node.getId())));
                 }
         );
 
     }
 
     @Test
+    public void testDefaultValues() {
+
+        LatencyCollectionResource latencyCollectionResource = new LatencyCollectionResource("ICMP", IP_ADDRESS, LOCATION);
+        LatencyCollectionAttributeType attributeType = new LatencyCollectionAttributeType("ICMP", "ICMP");
+        latencyCollectionResource.addAttribute(new LatencyCollectionAttribute(latencyCollectionResource, attributeType, "ICMP", 0.0));
+        CollectionSet responseTimeCollectionSet = new SingleResourceCollectionSet(latencyCollectionResource, new Date());
+        persister.visitCollectionSet(responseTimeCollectionSet);
+
+        await().atMost(1, TimeUnit.MINUTES).pollInterval(15, TimeUnit.SECONDS).until(() -> kafkaConsumer.getCollectionSetValues().size(), equalTo(1));
+        List<CollectionSetProtos.CollectionSetResource> resources = kafkaConsumer.getCollectionSetValues().stream().map(CollectionSetProtos.CollectionSet::getResourceList).flatMap(Collection::stream).collect(Collectors.toList());
+        Optional<CollectionSetProtos.CollectionSetResource> responseTimeResource = resources.stream().filter(CollectionSetProtos.CollectionSetResource::hasResponse).findFirst();
+        assertThat(responseTimeResource.isPresent(), equalTo(Boolean.TRUE));
+        responseTimeResource.ifPresent(resource -> {
+                    assertThat(resource.getResponse().getInstance(), equalTo(IP_ADDRESS));
+                    assertThat(resource.getResponse().getLocation(), equalTo(LOCATION));
+                    assertThat(resource.getNumeric(0).getValue(), equalTo(0.0));
+                    // Confirm that the value does not exist in the message, and we are getting a default value
+                    assertThat(resource.getNumeric(0).getAllFields().keySet().stream().anyMatch(
+                            descriptor -> descriptor.getName().equals("value")), equalTo(Boolean.FALSE));
+                    assertThat(resource.getNumeric(0).getMetricValue().getValue(), equalTo(0.0));
+                    assertThat(resource.getNumeric(0).hasMetricValue(), equalTo(Boolean.TRUE));
+                }
+        );
+    }
+
+    @Test
+    public void testPersistenceOfResources() throws Exception {
+
+        // Normal CollectionSet with a persistable resource
+        OnmsNode node = databasePopulator.getNode5();
+        CollectionAgent agent = new MockCollectionAgent(node.getId(), "test", InetAddress.getLocalHost());
+        NodeLevelResource nodeResource = new NodeLevelResource(node.getId());
+
+        CollectionSet collectionSet = new CollectionSetBuilder(agent).withTimestamp(new Date(2))
+                .withNumericAttribute(nodeResource, "group2", "node5", 1050, AttributeType.GAUGE).build();
+
+
+        // CollectionSet that contains no persisting resources
+        LatencyCollectionResource mockEmptySet = new LatencyCollectionResourceMock("SMTP", IP_ADDRESS, LOCATION);
+        LatencyCollectionAttributeType attributeType = new LatencyCollectionAttributeType("SMTP", "SMTP");
+        mockEmptySet.addAttribute(new LatencyCollectionAttribute(mockEmptySet, attributeType, "SMTP", 9.9));
+
+        CollectionSet responseTimeCollectionSet = new SingleResourceCollectionSet(mockEmptySet, new Date());
+        persister.visitCollectionSet(collectionSet);
+        persister.visitCollectionSet(responseTimeCollectionSet);
+
+        // Make sure only one resource was persisted
+        await().atMost(1, TimeUnit.MINUTES).pollInterval(15, TimeUnit.SECONDS).until(() -> kafkaConsumer.getCollectionSetValues().size(), equalTo(1));
+        List<CollectionSetProtos.CollectionSetResource> resources = kafkaConsumer.getCollectionSetValues().stream().map(CollectionSetProtos.CollectionSet::getResourceList).flatMap(Collection::stream).collect(Collectors.toList());
+        Optional<CollectionSetProtos.CollectionSetResource> responseResource = resources.stream().findFirst();
+        assertThat(responseResource.isPresent(), equalTo(Boolean.TRUE));
+        responseResource.ifPresent(resource -> {
+                    assertThat(resource.getNumeric(0).getValue(), equalTo(1050.0)); // persisted resource
+                }
+        );
+    }
+
     public void testNMS14740() throws IOException {
         final OnmsNode node = databasePopulator.getNode6();
         final CollectionAgent agent = new MockCollectionAgent(node.getId(), "test", InetAddress.getLocalHost());
@@ -213,5 +281,23 @@ public class KafkaPersisterIT {
                     assertThat(resource.getNumeric(1).getValue(), is(Double.NaN));
                 }
         );
+    }
+
+    @After
+    public void destroy() {
+        kafkaConsumer.shutdown();
+        executor.shutdown();
+    }
+
+    // Resource that should not be persisted
+    class LatencyCollectionResourceMock extends LatencyCollectionResource {
+        LatencyCollectionResourceMock(String serviceName, String ipAddress, String location) {
+            super(serviceName, ipAddress, location);
+        }
+
+        @Override
+        public boolean shouldPersist(ServiceParameters parameters) {
+            return false;
+        }
     }
 }

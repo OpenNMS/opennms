@@ -32,7 +32,10 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.time.Duration;
 import java.util.Objects;
+import java.util.Optional;
 
+import com.google.protobuf.DoubleValue;
+import org.opennms.core.utils.StringUtils;
 import org.opennms.features.kafka.producer.model.CollectionSetProtos;
 import org.opennms.features.kafka.producer.model.CollectionSetProtos.NumericAttribute.Type;
 import org.opennms.netmgt.collection.api.AttributeGroup;
@@ -41,9 +44,12 @@ import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
+import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.ResourceId;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,16 +68,20 @@ public class CollectionSetMapper {
             .build();
 
     @Autowired
-    private NodeDao nodeDao;
+    private final NodeDao nodeDao;
+
+    @Autowired
+    private final ResourceDao resourceDao;
 
     private final SessionUtils sessionUtils;
 
-    public CollectionSetMapper(NodeDao nodeDao, SessionUtils sessionUtils) {
+    public CollectionSetMapper(NodeDao nodeDao, SessionUtils sessionUtils, ResourceDao resourceDao) {
         this.nodeDao = Objects.requireNonNull(nodeDao);
         this.sessionUtils = Objects.requireNonNull(sessionUtils);
+        this.resourceDao = Objects.requireNonNull(resourceDao);
     }
 
-    public CollectionSetProtos.CollectionSet buildCollectionSetProtos(CollectionSet collectionSet) {
+    public CollectionSetProtos.CollectionSet buildCollectionSetProtos(CollectionSet collectionSet, ServiceParameters params) {
         CollectionSetProtos.CollectionSet.Builder builder = CollectionSetProtos.CollectionSet.newBuilder();
 
         collectionSet.visit(new CollectionSetVisitor() {
@@ -86,10 +96,15 @@ public class CollectionSetMapper {
             @Override
             public void visitResource(CollectionResource resource) {
                 collectionSetResourceBuilder = CollectionSetProtos.CollectionSetResource.newBuilder();
-                if (resource.getResourceTypeName().equals(CollectionResource.RESOURCE_TYPE_NODE)) {
+                long nodeId = 0;
+                if (!resource.shouldPersist(params)) {
+                    // DO NOTHING, do not persist this resource
+                }
+                else if (resource.getResourceTypeName().equals(CollectionResource.RESOURCE_TYPE_NODE)) {
                     String nodeCriteria = getNodeCriteriaFromResource(resource);
                     CollectionSetProtos.NodeLevelResource.Builder nodeResourceBuilder = buildNodeLevelResourceForProto(
                             nodeCriteria);
+                    nodeId = nodeResourceBuilder.getNodeId();
                     collectionSetResourceBuilder.setNode(nodeResourceBuilder);
                 } else if (resource.getResourceTypeName().equals(CollectionResource.RESOURCE_TYPE_IF)) {
                     CollectionSetProtos.InterfaceLevelResource.Builder interfaceResourceBuilder = CollectionSetProtos.InterfaceLevelResource
@@ -98,17 +113,15 @@ public class CollectionSetMapper {
                     if (!Strings.isNullOrEmpty(nodeCriteria)) {
                         CollectionSetProtos.NodeLevelResource.Builder nodeResourceBuilder = buildNodeLevelResourceForProto(
                                 nodeCriteria);
+                        nodeId = nodeResourceBuilder.getNodeId();
                         interfaceResourceBuilder.setNode(nodeResourceBuilder);
-                        interfaceResourceBuilder.setInstance(resource.getInterfaceLabel());
-                        // See NMS-13185
+                        Optional.ofNullable(resource.getInterfaceLabel()).ifPresent(interfaceResourceBuilder::setInstance);
+                        // Skip Aliased Resources which doesn't have instance.
                         if (!Strings.isNullOrEmpty(resource.getInstance())) {
-                            CollectionSetProtos.StringAttribute.Builder attributeBuilder = CollectionSetProtos.StringAttribute
-                                    .newBuilder();
-                            attributeBuilder.setValue(resource.getInstance());
-                            attributeBuilder.setName("__ifIndex");
-                            collectionSetResourceBuilder.addString(attributeBuilder);
+                            Integer ifIndex = StringUtils.parseInt(resource.getInstance(), null);
+                            Optional.ofNullable(ifIndex).ifPresent(interfaceResourceBuilder::setIfIndex);
+                            collectionSetResourceBuilder.setInterface(interfaceResourceBuilder);
                         }
-                        collectionSetResourceBuilder.setInterface(interfaceResourceBuilder);
                     }
                 } else if (resource.getResourceTypeName().equals(CollectionResource.RESOURCE_TYPE_LATENCY)) {
                     CollectionSetProtos.ResponseTimeResource.Builder responseTimeResource = buildResponseTimeResource(
@@ -123,11 +136,31 @@ public class CollectionSetMapper {
                     if (!Strings.isNullOrEmpty(nodeCriteria)) {
                         CollectionSetProtos.NodeLevelResource.Builder nodeResourceBuilder = buildNodeLevelResourceForProto(
                                 nodeCriteria);
+                        nodeId = nodeResourceBuilder.getNodeId();
                         genericResourceBuilder.setNode(nodeResourceBuilder);
                     }
                     genericResourceBuilder.setType(resource.getResourceTypeName());
                     genericResourceBuilder.setInstance(resource.getInstance());
                     collectionSetResourceBuilder.setGeneric(genericResourceBuilder);
+                }
+                // Response time resources doesn't embed any node info, they will not have any resource-id info.
+                if (nodeId > 0) {
+                    populateResourceIdFields(resource, nodeId);
+                }
+            }
+
+            private void populateResourceIdFields(CollectionResource collectionResource, long nodeId) {
+                try {
+                    ResourceId resourceId = resourceDao.getResourceId(collectionResource, nodeId);
+                    if (resourceId != null) {
+                            getString(resourceId.toString()).ifPresent(collectionSetResourceBuilder::setResourceId);
+                            getString(resourceId.getName()).ifPresent(collectionSetResourceBuilder::setResourceName);
+                            getString(resourceId.getType()).ifPresent(collectionSetResourceBuilder::setResourceTypeName);
+                    } else {
+                        LOG.error("Couldn't fetch resource from ResourceId {} ", resourceId);
+                    }
+                } catch (Exception e) {
+                    LOG.error("Couldn't map ResourceId fields from CollectionResource {}", collectionResource);
                 }
             }
 
@@ -154,6 +187,7 @@ public class CollectionSetMapper {
 
                     if (number != null) {
                         attributeBuilder.setValue(number.doubleValue());
+                        attributeBuilder.setMetricValue(DoubleValue.of(number.doubleValue()));
                     } else {
                         attributeBuilder.setValue(Double.NaN);
                         RATE_LIMITED_LOG.error("Missing double value for non-string attribute (group='{}', name='{}', type='{}')", lastGroupName, attribute.getName(), attribute.getType().toString());
@@ -179,7 +213,9 @@ public class CollectionSetMapper {
 
             @Override
             public void completeResource(CollectionResource resource) {
-                builder.addResource(collectionSetResourceBuilder);
+                if(hasResource(collectionSetResourceBuilder)) {
+                    builder.addResource(collectionSetResourceBuilder);
+                }
             }
 
             @Override
@@ -190,6 +226,12 @@ public class CollectionSetMapper {
         });
 
         return builder.build();
+    }
+
+    private boolean hasResource(CollectionSetProtos.CollectionSetResource.Builder collectionSetResourceBuilder) {
+        return collectionSetResourceBuilder.hasNode() || collectionSetResourceBuilder.hasInterface()
+                || collectionSetResourceBuilder.hasGeneric() || collectionSetResourceBuilder.hasResponse();
+
     }
 
     private String getNodeCriteriaFromResource(CollectionResource resource) {
@@ -261,9 +303,9 @@ public class CollectionSetMapper {
                 OnmsNode node = nodeDao.get(nodeCriteria);
                 if (node != null) {
                     nodeResourceBuilder.setNodeId(node.getId());
-                    nodeResourceBuilder.setNodeLabel(node.getLabel());
-                    nodeResourceBuilder.setForeignId(node.getForeignId());
-                    nodeResourceBuilder.setForeignSource(node.getForeignSource());
+                    getString(node.getLabel()).ifPresent(nodeResourceBuilder::setNodeLabel);
+                    getString(node.getForeignSource()).ifPresent(nodeResourceBuilder::setForeignId);
+                    getString(node.getForeignId()).ifPresent(nodeResourceBuilder::setForeignSource);
                     if (node.getLocation() != null) {
                         nodeResourceBuilder.setLocation(node.getLocation().getLocationName());
                     }
@@ -275,4 +317,13 @@ public class CollectionSetMapper {
         });
         return nodeResourceBuilder;
     }
+
+    private static Optional<String> getString(String value) {
+        if (!Strings.isNullOrEmpty(value)) {
+            return Optional.of(value);
+        }
+        return Optional.empty();
+    }
+
+
 }

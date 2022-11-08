@@ -34,15 +34,14 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import org.opennms.core.rpc.api.RpcRequest;
-import org.opennms.core.rpc.utils.MetadataConstants;
-import org.opennms.core.rpc.utils.mate.FallbackScope;
-import org.opennms.core.rpc.utils.mate.Interpolator;
+import org.opennms.core.mate.api.MetadataConstants;
+import org.opennms.core.mate.api.FallbackScope;
+import org.opennms.core.mate.api.Interpolator;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.provision.DetectRequest;
 import org.opennms.netmgt.provision.DetectorRequestBuilder;
 import org.opennms.netmgt.provision.PreDetectCallback;
-import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.ServiceDetectorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,11 +98,11 @@ public class DetectorRequestBuilderImpl implements DetectorRequestBuilder {
 
     @Override
     public DetectorRequestBuilder withServiceName(String serviceName) {
-        final ServiceDetector detector = client.getRegistry().getDetectorByServiceName(serviceName);
-        if (detector == null) {
+        String className = client.getRegistry().getDetectorClassNameFromServiceName(serviceName);
+        if(className == null) {
             throw new IllegalArgumentException("No detector found with service name '" + serviceName + "'.");
         }
-        this.className = client.getRegistry().getDetectorClassNameFromServiceName(serviceName);
+        this.className = className;
         return this;
     }
 

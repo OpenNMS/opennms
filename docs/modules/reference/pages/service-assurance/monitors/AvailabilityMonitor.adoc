@@ -1,0 +1,36 @@
+
+= AvailabilityMonitor
+
+NOTE: This monitor has been superseded by the <<service-assurance/monitors/IcmpMonitor.adoc#poller-icmp-monitor, IcmpMonitor>>.
+
+This monitor uses the isReachable method of the InetAddress Java class to test the reachability of a node.
+The service is considered available if isReachable returns true.
+See link:https://docs.w3cub.com/openjdk~11/java.base/java/net/inetaddress.html#isReachable(int)[Oracle's documentation] for more details.
+
+Note that under most configurations the <<service-assurance/monitors/IcmpMonitor.adoc#poller-icmp-monitor, IcmpMonitor>> supersedes the AvailabilityMonitor.
+The AvailabilityMonitor was developed when the IcmpMonitor was not remote enabled, to circumvent this limitation.
+Now, with the JNA ICMP implementation, the IcmpMonitor is remote-enabled under most configurations, so you should not need the AvailabilityMonitor.
+
+== Monitor facts
+
+[cols="1,7"]
+|===
+| Class Name
+| `org.opennms.netmgt.poller.monitors.AvailabilityMonitor`
+|===
+
+== Configuration and use
+
+This monitor implements the <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+== Examples
+
+[source, xml]
+----
+<service name="AVAIL" interval="300000" user-defined="false" status="on">
+  <parameter key="retry" value="2"/>
+  <parameter key="timeout" value="5000"/>
+</service>
+
+<monitor service="AVAIL" class-name="org.opennms.netmgt.poller.monitors.AvailabilityMonitor"/>
+----

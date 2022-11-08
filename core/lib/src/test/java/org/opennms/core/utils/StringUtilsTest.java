@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -228,7 +228,7 @@ public class StringUtilsTest {
     }
 
     @Test
-    @Ignore
+    @Ignore("enable to test parsing speed manually")
     public void testParseDecimalIntegerSpeed() {
         final int WARM_UP = 1000000;
         final int TEST_SPEED = 50000000;
@@ -268,7 +268,7 @@ public class StringUtilsTest {
     }
 
     @Test
-    @Ignore
+    @Ignore("enable to test parsing speed manually")
     public void testFailToParseDecimalIntegerSpeed() {
         final int WARM_UP = 10000;
         final int TEST_SPEED = 50000;

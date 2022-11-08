@@ -221,7 +221,7 @@ public class PropertyTree {
                 .forEachOrdered(e -> {
                     final List<String> path = Splitter.on('.').splitToList(e.getKey());
                     final Node node = ensure(root, path.subList(0, path.size() - 1));
-                    node.children.put(path.get(path.size() - 1), new Node(Optional.of(e.getValue())));
+                    node.children.put(path.get(path.size() - 1), new Node(Optional.of(e.getValue() == null ? null : e.getValue().trim())));
                 });
 
         return new PropertyTree(root);

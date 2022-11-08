@@ -81,6 +81,7 @@ import com.google.common.io.Resources;
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
@@ -93,6 +94,7 @@ import com.google.common.io.Resources;
         "classpath:/META-INF/opennms/applicationContext-ipc-sink-camel-client.xml",
         "classpath:/META-INF/opennms/applicationContext-collectionAgentFactory.xml",
         "classpath:/META-INF/opennms/applicationContext-jtiAdapterFactory.xml",
+        "classpath:/META-INF/opennms/applicationContext-daoEvents.xml",
         "classpath:/META-INF/opennms/applicationContext-telemetryDaemon.xml",
         "classpath:/META-INF/opennms/applicationContext-thresholding.xml",
         "classpath:/META-INF/opennms/applicationContext-noOpBlobStore.xml",

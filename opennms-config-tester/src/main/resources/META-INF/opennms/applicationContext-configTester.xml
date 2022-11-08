@@ -45,6 +45,7 @@
         <entry key="eventd-configuration.xml" value="eventdConfigFactory"/>
         <entry key="exclude-ueis.properties" value="excludeUeisProperties"/>
         <entry key="email-northbounder-configuration.xml" value="emailNorthbounderConfigDao"/>
+        <entry key="geoip-adapter-configuration.xml" value="geoIpConfigDao"/>
         <entry key="groups.xml" value="groupFactory"/>
         <entry key="http-datacollection-config.xml" value="httpCollectionConfigFactory"/>
         <entry key="jasper-reports.xml" value="legacyLocalJasperReportsDao"/>
@@ -85,6 +86,7 @@
         <entry key="snmp-config.xml" value="snmpPeerFactory"/>
         <entry key="snmp-graph.properties" value="snmpPrefabGraph"/>
         <!-- <entry key="snmp-interface-poller-configuration.xml" value="snmpInterfacePollerConfigFactory"/> --><!-- database access -->
+        <entry key="snmp-metadata-adapter-configuration.xml" value="snmpMetadataConfigDao"/>
         <entry key="snmptrap-northbounder-configuration.xml" value="snmpTrapNorthbounderConfigDao"/>
         <entry key="statsd-configuration.xml" value="statisticsDaemonConfigDao"/>
         <entry key="surveillance-views.xml" value="surveillanceViewConfigDao"/>
@@ -106,8 +108,6 @@
         <entry key="vmware-cim-datacollection-config.xml" value="VmwareCimDatacollectionConfigDao"/>
         <entry key="vmware-datacollection-config.xml" value="VmwareDatacollectionConfigDao"/>
         <entry key="vmware-config.xml" value="VmwareConfigDao"/>
-        <!-- <entry key="xmp-config.xml" value="xmpConfigFactory"/> --><!-- Not part of standard build -->
-        <!-- <entry key="xmp-datacollection-config.xml" value="xmpCollectionFactory"/> --><!-- Not part of standard build -->
         <!-- <entry key="xmpp-configuration.properties" value="unknown"/> --><!-- config code not in its own class -->
 
         <!-- WS-Man configuration files -->
@@ -204,6 +204,10 @@
   
   <bean id="groupFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.GroupFactory.init</value></property>
+  </bean>
+
+  <bean id="geoIpConfigDao" class="org.opennms.netmgt.config.geoip.GeoIpConfigDao">
+    <property name="configResource" value="file:${opennms.home}/etc/geoip-adapter-configuration.xml" />
   </bean>
 
   <bean id="groupFactory" class="org.opennms.netmgt.config.GroupFactory" depends-on="groupFactory-init" factory-method="getInstance"/>
@@ -350,7 +354,6 @@
   <bean id="prometheusDataCollectionConfigDao" class="org.opennms.netmgt.dao.prometheus.PrometheusDataCollectionConfigDaoJaxb" />
 
   <bean id="provisiondConfigurationDao" class="org.opennms.netmgt.dao.jaxb.DefaultProvisiondConfigurationDao">
-    <property name="configResource" value="file:${opennms.home}/etc/provisiond-configuration.xml"/>
   </bean>
 
   <bean id="rancidAdapterConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
@@ -532,15 +535,15 @@
   <bean id="wmiDataCollectionConfigFactory" class="org.opennms.netmgt.config.WmiDataCollectionConfigFactory" depends-on="wmiDataCollectionConfigFactory-init" factory-method="getInstance"/>
 
   <!-- VMware configuration files -->
-  <bean id="VmwareCimDatacollectionConfigDao" class="org.opennms.netmgt.dao.jaxb.VmwareCimDatacollectionConfigDaoJaxb">
+  <bean id="VmwareCimDatacollectionConfigDao" class="org.opennms.netmgt.dao.vmware.jaxb.VmwareCimDatacollectionConfigDaoJaxb">
     <property name="configResource" value="file:${opennms.home}/etc/vmware-cim-datacollection-config.xml"/>
   </bean>
 
-  <bean id="VmwareDatacollectionConfigDao" class="org.opennms.netmgt.dao.jaxb.VmwareDatacollectionConfigDaoJaxb">
+  <bean id="VmwareDatacollectionConfigDao" class="org.opennms.netmgt.dao.vmware.jaxb.VmwareDatacollectionConfigDaoJaxb">
     <property name="configResource" value="file:${opennms.home}/etc/vmware-datacollection-config.xml"/>
   </bean>
 
-  <bean id="VmwareConfigDao" class="org.opennms.netmgt.dao.jaxb.VmwareConfigDaoJaxb">
+  <bean id="VmwareConfigDao" class="org.opennms.netmgt.dao.vmware.jaxb.VmwareConfigDaoJaxb">
     <property name="configResource" value="file:${opennms.home}/etc/vmware-config.xml"/>
   </bean>
 
@@ -550,18 +553,8 @@
     <property name="configResource" value="file:${opennms.home}/etc/wsman-config.xml" />
   </bean>
 
-  <!--
-  <bean id="xmpConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.protocols.xmp.config.XmpConfigFactory.init</value></property>
+  <bean id="snmpMetadataConfigDao" class="org.opennms.netmgt.config.snmpmetadata.SnmpMetadataConfigDao">
+    <property name="configResource" value="file:${opennms.home}/etc/snmp-metadata-adapter-configuration.xml" />
   </bean>
 
-  <bean id="xmpConfigFactory" class="org.opennms.netmgt.protocols.xmp.config.XmpConfigFactory" depends-on="xmpConfigFactory-init" factory-method="getInstance"/>
- 
-  <bean id="xmpCollectionFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.protocols.xmp.collector.XmpCollectionFactory.init</value></property>
-  </bean>
-
-  <bean id="xmpCollectionFactory" class="org.opennms.netmgt.protocols.xmp.collector.XmpCollectionFactory" depends-on="xmpCollectionFactory-init" factory-method="getInstance"/>
-  -->
- 
 </beans>

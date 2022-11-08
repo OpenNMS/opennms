@@ -3,6 +3,7 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
 
 	<reference id="applicationDao" interface="org.opennms.netmgt.dao.api.ApplicationDao" availability="mandatory" />
+	<reference id="outageDao" interface="org.opennms.netmgt.dao.api.OutageDao" availability="mandatory" />
 	<reference id="graphService" interface="org.opennms.netmgt.graph.api.service.GraphService" availability="mandatory" />
 	<reference id="transactionTemplate" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory" />
 	<reference id="graphSearchService" interface="org.opennms.netmgt.graph.api.search.GraphSearchService" availability="mandatory" />
@@ -84,6 +85,64 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 https://osgi.org/
 		<service-properties>
 			<entry key="location" value="bottom" />
 			<entry key="name" value="applicationView" />
+		</service-properties>
+	</service>
+
+	<!-- Application Outage Table -->
+	<bean id="applicationOutageTableSelectionLinkGenerator" class="org.opennms.features.topology.plugins.topo.application.browsers.ApplicationOutageSelectionLinkGenerator">
+		<argument value="id" />
+		<argument ref="outageDao" />
+	</bean>
+	<bean id="applicationOutageDaoContainer" class="org.opennms.features.topology.plugins.topo.application.browsers.ApplicationOutageDaoContainer" scope="prototype">
+		<argument ref="outageDao"/>
+		<argument ref="applicationDao"/>
+	</bean>
+	<bean id="applicationOutageTable" class="org.opennms.features.topology.plugins.topo.application.browsers.ApplicationOutageTable" scope="prototype">
+		<argument value="Application Outages"/>
+		<argument ref="applicationOutageDaoContainer"/>
+		<property name="columnReorderingAllowed" value="true" />
+		<property name="columnCollapsingAllowed" value="true" />
+		<property name="sortContainerPropertyId" value="id" />
+		<property name="columnGenerators">
+			<map>
+				<entry key="id" value-ref="applicationOutageTableSelectionLinkGenerator" />
+			</map>
+		</property>
+		<property name="visibleColumns">
+			<array>
+				<value>id</value>
+				<value>perspective</value>
+				<value>nodeLabel</value>
+				<value>foreignId</value>
+				<value>foreignSource</value>
+				<value>ipAddress</value>
+				<value>serviceName</value>
+				<value>ifLostService</value>
+			</array>
+		</property>
+		<property name="columnHeaders">
+			<array>
+				<value>ID</value>
+				<value>Perspective</value>
+				<value>Node</value>
+				<value>Foreign ID</value>
+				<value>Foreign Source</value>
+				<value>Interface</value>
+				<value>Service</value>
+				<value>Down</value>
+			</array>
+		</property>
+	</bean>
+	<bean id="applicationOutageViewContribution" class="org.opennms.features.topology.api.support.BlueprintIViewContribution">
+		<argument ref="blueprintContainer" />
+		<argument value="applicationOutageTable" />
+		<property name="title" value="Current Perspective Outages" />
+	</bean>
+	<service interface="org.opennms.features.topology.api.IViewContribution" ref="applicationOutageViewContribution">
+		<description>Application outage table IViewContribution service.</description>
+		<service-properties>
+			<entry key="location" value="bottom" />
+			<entry key="name" value="applicationOutageView" />
 		</service-properties>
 	</service>
 

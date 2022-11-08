@@ -1,0 +1,67 @@
+ifeval::["{page-component-title}" == "Horizon"]
+include::../../repos/rhel-centos/horizon-rhel7.adoc[]
+endif::[]
+
+ifeval::["{page-component-title}" == "Meridian"]
+include::../../repos/rhel-centos/meridian-rhel7.adoc[]
+endif::[]
+
+.Install {page-component-title} with all built-in dependencies
+[source, console]
+----
+ifeval::["{page-component-title}" == "Horizon"]
+sudo yum -y install opennms
+endif::[]
+ifeval::["{page-component-title}" == "Meridian"]
+sudo yum -y install meridian
+endif::[]
+----
+
+If you want time series trending and forecast functions you must install the link:https://www.r-project.org/[R project] packages.
+The additional download size for packages is ~390 MB.
+
+.Install R-core packages for time series trending and forecasting (optional)
+[source, console]
+----
+sudo yum -y install epel-release
+sudo yum -y install R-core
+----
+
+TIP: Disable the OpenNMS {page-component-title} repository after installation to prevent unwanted upgrades when upgrading other packages on the server.
+     After upgrade, {page-component-title} requires manual steps to upgrade configuration files or migrate database schemas to a new version.
+     We recommend that you exclude the {page-component-title} packages from update except when you plan to perform an upgrade.
+
+.Disable auto updates for OpenNMS {page-component-title}
+[source, console]
+----
+sudo yum -y install yum-utils
+ifeval::["{page-component-title}" == "Horizon"]
+sudo yum-config-manager --disable opennms-repo-stable-*
+endif::[]
+ifeval::["{page-component-title}" == "Meridian"]
+sudo yum-config-manager --disable meridian
+endif::[]
+----
+
+.Verify directory structure with the tree command
+[source, console]
+----
+sudo yum -y install tree
+tree /opt/opennms -L 1
+----
+
+.Directory structure after successful installation
+[source, output]
+----
+/opt/opennms
+├── bin
+├── contrib
+├── data
+├── deploy
+├── etc
+├── jetty-webapps
+├── lib
+├── logs -> /var/log/opennms
+├── share -> /var/opennms
+└── system
+----

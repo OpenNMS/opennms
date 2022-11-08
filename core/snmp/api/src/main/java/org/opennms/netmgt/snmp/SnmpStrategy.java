@@ -57,9 +57,7 @@ public interface SnmpStrategy {
     
     void registerForTraps(TrapNotificationListener listener, int snmpTrapPort) throws IOException;
 
-    void unregisterForTraps(TrapNotificationListener listener, InetAddress address, int snmpTrapPort) throws IOException;
-    
-    void unregisterForTraps(TrapNotificationListener listener, int snmpTrapPort) throws IOException;
+    void unregisterForTraps(TrapNotificationListener listener) throws IOException;
 
     SnmpValueFactory getValueFactory();
 

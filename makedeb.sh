@@ -1,4 +1,5 @@
-#!/bin/bash -e
+#!/usr/bin/env bash
+set -e
 
 MYDIR=`dirname $0`
 TOPDIR=`cd $MYDIR; pwd`
@@ -125,6 +126,12 @@ function version()
         head -n 1
 }
 
+function opa_version()
+{
+    grep '<opennmsApiVersion>' pom.xml | \
+    sed -e 's,^[^>]*>,,' -e 's,<.*$,,' -e 's,-[^-]*-SNAPSHOT$,,' -e 's,-SNAPSHOT$,,' -e 's,-testing$,,' -e 's,-,.,g' | \
+    head -n 1
+}
 function skipCompile()
 {
     if $ASSEMBLY_ONLY; then echo 1; else echo 0; fi
@@ -139,7 +146,7 @@ for BIN in $BINARIES; do
     EXECUTABLE=`which $BIN 2>/dev/null || :`
     if [ -z "$EXECUTABLE" ] || [ ! -x "$EXECUTABLE" ]; then
         echo "ERROR: $BIN not found"
-        echo "       try 'sudo apt install debhelper devscripts dh-systemd dpkg-dev dpkg-sig expect nsis po-debconf'"
+        echo "       try 'sudo apt install debhelper devscripts dh-systemd dpkg-dev dpkg-sig expect po-debconf'"
         exit 1
     fi
 done
@@ -198,6 +205,7 @@ fi
 EXTRA_INFO=$(extraInfo)
 EXTRA_INFO2=$(extraInfo2)
 VERSION=$(version)
+OPA_VERSION=$(opa_version)
 
 export PATH="$TOPDIR/maven/bin:$JAVA_HOME/bin:$PATH"
 
@@ -210,16 +218,13 @@ function build_opennms()
     echo
     echo "Version: " $VERSION
     echo "Release: " $RELEASE
+    echo "OPA VERSION: " $OPA_VERSION
     echo
+    sed -i "s/OPA_VERSION/$OPA_VERSION/g" debian/control
 
     if $DO_CHANGELOG; then
         echo "- adding auto-generated changelog entry"
         dch -b -v "$VERSION-$RELEASE" "${EXTRA_INFO}${EXTRA_INFO2}" || die "failed to update debian/changelog"
-    fi
-
-    # prime the local ~/.m2/repository
-    if [ -d core/build ]; then
-        nice ./compile.pl -Dbuild.skip.tarball=true --projects :org.opennms.core.build --also-make install || die "unable to prime build tools"
     fi
 
     if [ -f "${HOME}/.m2/settings.xml" ]; then
@@ -228,7 +233,7 @@ function build_opennms()
 
     ./compile.pl -N install
 
-    dpkg-buildpackage "-p${TRUE_BIN}" -us -uc
+    dpkg-buildpackage "-p${TRUE_BIN}" -us -uc 
 }
 
 function build_minion()
@@ -237,8 +242,9 @@ function build_minion()
     echo
     echo "Version: " $VERSION
     echo "Release: " $RELEASE
+    echo "OPA VERSION: " $OPA_VERSION
     echo
-
+    sed -i "s/OPA_VERSION/$OPA_VERSION/g" $TOPDIR/opennms-assemblies/minion/src/main/filtered/debian/control
     local _extra_args=()
     if [ "$OPENNMS_ENABLE_SNAPSHOTS" = "1" ]; then
         _extra_args+=("-s")
@@ -278,7 +284,9 @@ function build_sentinel() {
     echo
     echo "Version: " $VERSION
     echo "Release: " $RELEASE
+    echo "OPA VERSION: " $OPA_VERSION
     echo
+    sed -i "s/OPA_VERSION/$OPA_VERSION/g" $TOPDIR/opennms-assemblies/sentinel/src/main/filtered/debian/control
 
     local _extra_args=()
     if [ "$OPENNMS_ENABLE_SNAPSHOTS" = "1" ]; then

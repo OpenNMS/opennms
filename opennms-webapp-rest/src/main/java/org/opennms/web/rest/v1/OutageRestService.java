@@ -139,6 +139,7 @@ public class OutageRestService extends OnmsRestService {
         builder.alias("monitoredService.serviceType", "serviceType", JoinType.LEFT_JOIN);
         builder.alias("serviceLostEvent", "serviceLostEvent", JoinType.LEFT_JOIN);
         builder.alias("serviceRegainedEvent", "serviceRegainedEvent", JoinType.LEFT_JOIN);
+        builder.isNull("perspective");
 
         applyQueryFilters(uriInfo.getQueryParameters(), builder);
 
@@ -176,6 +177,7 @@ public class OutageRestService extends OnmsRestService {
         builder.alias("monitoredService.ipInterface", "ipInterface");
         builder.alias("monitoredService.ipInterface.node", "node");
         builder.alias("monitoredService.serviceType", "serviceType");
+        builder.isNull("perspective");
 
         final MultivaluedMap<String, String> params = new MultivaluedMapImpl();
         params.putAll(uriInfo.getQueryParameters());

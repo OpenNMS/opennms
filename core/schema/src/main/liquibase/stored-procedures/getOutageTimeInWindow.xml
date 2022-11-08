@@ -27,7 +27,7 @@ CREATE OR REPLACE FUNCTION getOutageTimeInWindow(integer,timestamp without time 
         downtime = zero;
         FOR orec IN SELECT ifLostService,ifRegainedService
                 FROM outages 
-                WHERE ifServiceId = ifsrvid 
+                WHERE ifServiceId = ifsrvid AND perspective IS NULL
                         AND (
                                 (ifRegainedService IS NULL AND ifLostService &lt;= xtime)
                                 OR (ifRegainedService &gt; ytime)

@@ -124,6 +124,7 @@ public abstract class Bootstrap {
     private static final Set<File> CLASSLOADER_DIRECTORY_EXCLUDES = new HashSet<>();
 
     static {
+
         // Here we determine the canonical files for the excluded sub-folders under
         // $OPENNMS_HOME, and add them to the list of excludes
         try {

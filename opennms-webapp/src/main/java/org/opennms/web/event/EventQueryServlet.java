@@ -60,6 +60,7 @@ import org.opennms.web.event.filter.SeverityFilter;
 import org.opennms.web.event.filter.SystemIdFilter;
 import org.opennms.web.filter.Filter;
 import org.opennms.web.servlet.MissingParameterException;
+import org.owasp.encoder.Encode;
 
 /**
  * This servlet takes a large and specific request parameter set and maps it to
@@ -71,7 +72,7 @@ import org.opennms.web.servlet.MissingParameterException;
  */
 public class EventQueryServlet extends HttpServlet {
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1226547298266948865L;
 
@@ -79,7 +80,7 @@ public class EventQueryServlet extends HttpServlet {
      * The list of parameters that are extracted by this servlet and not passed
      * on to the servlet.
      */
-    protected static String[] IGNORE_LIST = new String[] { "eventid", "eventtext", "msgsub", "msgmatchany", "nodenamelike", "exactuei", "service", "iplike", "severity", "relativetime", "usebeforetime", "beforehour", "beforeminute", "beforeampm", "beforedate", "beforemonth", "beforeyear", "useaftertime", "afterhour", "afterminute", "afterampm", "afterdate", "aftermonth", "afteryear" };
+    protected static String[] IGNORE_LIST = new String[]{"eventid", "eventtext", "msgsub", "msgmatchany", "nodenamelike", "exactuei", "location", "nodelocation", "systemId", "service", "iplike", "severity", "eventId", "relativetime", "usebeforetime", "beforehour", "beforeminute", "beforeampm", "beforedate", "beforemonth", "beforeyear", "useaftertime", "afterhour", "afterminute", "afterampm", "afterdate", "aftermonth", "afteryear", "_csrf"};
 
     /**
      * The URL for the servlet. The
@@ -110,12 +111,11 @@ public class EventQueryServlet extends HttpServlet {
      * the event filter.
      */
     @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         List<Filter> filterArray = new ArrayList<>();
 
-
         // convenient syntax for EventTextFilter
-        String eventTextString = WebSecurityUtils.sanitizeString(request.getParameter("eventtext"));
+        String eventTextString = Encode.forHtmlContent(request.getParameter("eventtext"));
         if (eventTextString != null && eventTextString.length() > 0) {
             filterArray.add(new EventTextFilter(eventTextString));
         }

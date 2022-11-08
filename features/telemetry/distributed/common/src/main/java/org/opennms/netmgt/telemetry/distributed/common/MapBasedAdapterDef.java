@@ -40,15 +40,14 @@ import java.util.Map;
 import java.util.Objects;
 
 public class MapBasedAdapterDef implements AdapterDefinition {
+    private final String queueName;
+
     private final String name;
     private final String className;
     private final Map<String, String> parameters;
 
-    protected MapBasedAdapterDef(Map<String, String> properties) {
-        this(PropertyTree.from(Objects.requireNonNull(properties)));
-    }
-
-    public MapBasedAdapterDef(final PropertyTree definition) {
+    public MapBasedAdapterDef(final String queueName, final PropertyTree definition) {
+        this.queueName = queueName;
         this.name = definition.getRequiredString("name");
         this.className = definition.getRequiredString("class-name");
         this.parameters = definition.getFlatMap("parameters");
@@ -67,6 +66,11 @@ public class MapBasedAdapterDef implements AdapterDefinition {
     @Override
     public String getName() {
         return name;
+    }
+
+    @Override
+    public String getFullName() {
+        return String.format("%s.%s", this.queueName, this.getName());
     }
 
     @Override

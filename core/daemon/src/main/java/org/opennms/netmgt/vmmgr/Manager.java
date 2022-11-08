@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -82,9 +82,9 @@ import org.slf4j.LoggerFactory;
  * @author <a href="http://www.opennms.org">OpenNMS.org</a>
  */
 public class Manager implements ManagerMBean {
-	
+
 	private static final Logger LOG = LoggerFactory.getLogger(Manager.class);
-	
+
     /**
      * The log4j category used to log debug messages and statements.
      */
@@ -109,29 +109,33 @@ public class Manager implements ManagerMBean {
             return;
         }
         stopInitiated.set(true);
-        setLogPrefix();
 
-        for (MBeanServer server : getMBeanServers()) {
-            stop(server);
-        }
+        Logging.withPrefix(LOG4J_CATEGORY, () -> {
+            for (MBeanServer server : getMBeanServers()) {
+                stop(server);
+            }
+        });
     }
-    
+
     private void stop(MBeanServer server) {
-        LOG.debug("Beginning shutdown");
-        Invoker invoker = new Invoker();
-        invoker.setServer(server);
-        invoker.setAtType(InvokeAtType.STOP);
-        invoker.setReverse(true);
-        invoker.setFailFast(false);
-        
-        List<InvokerService> services = InvokerService.createServiceList(new ServiceConfigFactory().getServices());
-        invoker.setServices(services);
-        invoker.getObjectInstances();
-        invoker.invokeMethods();
+        Logging.withPrefix(LOG4J_CATEGORY, () -> {
+            LOG.debug("Beginning shutdown");
 
-        LOG.debug("Shutdown complete");
+            Invoker invoker = new Invoker();
+            invoker.setServer(server);
+            invoker.setAtType(InvokeAtType.STOP);
+            invoker.setReverse(true);
+            invoker.setFailFast(false);
+
+            List<InvokerService> services = InvokerService.createServiceList(new ServiceConfigFactory().getServices());
+            invoker.setServices(services);
+            invoker.getObjectInstances();
+            invoker.invokeMethods();
+
+            LOG.debug("Shutdown complete");
+        });
     }
-    
+
     /**
      * <p>status</p>
      *
@@ -139,37 +143,42 @@ public class Manager implements ManagerMBean {
      */
     @Override
     public List<String> status() {
-        setLogPrefix();
-
         List<String> result = new ArrayList<>();
-        for (MBeanServer server : getMBeanServers()) {
-            result.addAll(status(server));
-        }
+
+        Logging.withPrefix(LOG4J_CATEGORY, () -> {
+            for (MBeanServer server : getMBeanServers()) {
+                result.addAll(status(server));
+            }
+        });
+
         return result;
     }
-    
-    private List<String> status(final MBeanServer server) {
-        LOG.debug("Beginning status check");
-        final Invoker invoker = new Invoker();
-        invoker.setServer(server);
-        invoker.setAtType(InvokeAtType.STATUS);
-        invoker.setFailFast(false);
 
-        final List<InvokerService> services = InvokerService.createServiceList(new ServiceConfigFactory().getServices());
-        invoker.setServices(services);
-        invoker.getObjectInstances();
-        final List<InvokerResult> results = invoker.invokeMethods();
-        
-        final List<String> statusInfo = new ArrayList<String>(results.size());
-        for (final InvokerResult invokerResult : results) {
-            if (invokerResult.getThrowable() == null) {
-                statusInfo.add("Status: " + invokerResult.getMbean().getObjectName() + " = " + invokerResult.getResult().toString());
-            } else {
-                statusInfo.add("Status: " + invokerResult.getMbean().getObjectName() + " = STATUS_CHECK_ERROR");
+    private List<String> status(final MBeanServer server) {
+        final List<String> statusInfo = new ArrayList<>();
+
+        Logging.withPrefix(LOG4J_CATEGORY, () -> {
+            LOG.debug("Beginning status check");
+            final Invoker invoker = new Invoker();
+            invoker.setServer(server);
+            invoker.setAtType(InvokeAtType.STATUS);
+            invoker.setFailFast(false);
+
+            final List<InvokerService> services = InvokerService.createServiceList(new ServiceConfigFactory().getServices());
+            invoker.setServices(services);
+            invoker.getObjectInstances();
+            final List<InvokerResult> results = invoker.invokeMethods();
+
+            for (final InvokerResult invokerResult : results) {
+                if (invokerResult.getThrowable() == null) {
+                    statusInfo.add("Status: " + invokerResult.getMbean().getObjectName() + " = " + invokerResult.getResult().toString());
+                } else {
+                    statusInfo.add("Status: " + invokerResult.getMbean().getObjectName() + " = STATUS_CHECK_ERROR");
+                }
             }
-        }
-        LOG.debug("Status check complete");
-        
+            LOG.debug("Status check complete");
+        });
+
         return statusInfo;
     }
 
@@ -181,26 +190,25 @@ public class Manager implements ManagerMBean {
      */
     @Override
     public void doSystemExit() {
-        setLogPrefix();
+        Logging.withPrefix(LOG4J_CATEGORY, () -> {
+            LOG.debug("doSystemExit called");
 
-        LOG.debug("doSystemExit called");
-        
-        if (LOG.isDebugEnabled()) {
-            dumpThreads();
-            
-            Runtime r = Runtime.getRuntime();
-            LOG.debug("memory usage (free/used/total/max allowed): {}/{}/{}/{}", r.freeMemory(), (r.totalMemory() - r.freeMemory()), r.totalMemory(), (r.maxMemory() == Long.MAX_VALUE ? "infinite" : r.maxMemory()));
-        }
-        
-        LOG.info("calling System.exit(0)");
-        shutdownLogging();
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                System.exit(0);
+            if (LOG.isDebugEnabled()) {
+                dumpThreads();
+
+                Runtime r = Runtime.getRuntime();
+                LOG.debug("memory usage (free/used/total/max allowed): {}/{}/{}/{}", r.freeMemory(), (r.totalMemory() - r.freeMemory()), r.totalMemory(), (r.maxMemory() == Long.MAX_VALUE ? "infinite" : r.maxMemory()));
             }
-        }, 500);
 
+            LOG.info("calling System.exit(0)");
+
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    System.exit(0);
+                }
+            }, 500);
+        });
     }
 
     public void dumpThreads() {
@@ -230,17 +238,15 @@ public class Manager implements ManagerMBean {
         LOG.debug("Thread dump completed.");
     }
 
-    private void shutdownLogging() {
-    }
-    
     /**
      * <p>doTestLoadLibraries</p>
      */
     @Override
     public void doTestLoadLibraries() {
-        setLogPrefix();
-        testPinger();
-        testGetLocalHost();
+        Logging.withPrefix(LOG4J_CATEGORY, () -> {
+            testPinger();
+            testGetLocalHost();
+        });
     }
 
     private void testGetLocalHost() {
@@ -287,14 +293,14 @@ public class Manager implements ManagerMBean {
 
         final String requireV4String = System.getProperty("org.opennms.netmgt.icmp.requireV4");
         final String requireV6String = System.getProperty("org.opennms.netmgt.icmp.requireV6");
-        
+
         if ("true".equalsIgnoreCase(requireV4String) && !hasV4) {
             throwPingError("org.opennms.netmgt.icmp.requireV4 is true, but IPv4 ICMP could not be initialized.");
         }
         if ("true".equalsIgnoreCase(requireV6String) && !hasV6) {
             throwPingError("org.opennms.netmgt.icmp.requireV6 is true, but IPv6 ICMP could not be initialized.");
         }
-        
+
         // at least one is initialized, and we haven't said otherwise, so barrel ahead
         // but first, reset the pinger factory so we can let auto-detection happen
         pingerFactory.reset();
@@ -306,10 +312,6 @@ public class Manager implements ManagerMBean {
             errorMessage += " On Windows, you can see this error if you are not running OpenNMS in an Administrator shell.";
         }
         throw new IllegalStateException(errorMessage);
-    }
-
-    private void setLogPrefix() {
-        Logging.putPrefix(LOG4J_CATEGORY);
     }
 
     private List<MBeanServer> getMBeanServers() {

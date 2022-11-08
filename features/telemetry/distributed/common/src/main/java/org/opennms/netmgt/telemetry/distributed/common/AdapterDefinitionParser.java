@@ -53,15 +53,16 @@ public class AdapterDefinitionParser {
      * Groups properties for the same adapter together and wraps the properties behind a {@link AdapterDefinition}.
      * Each key which is starting with <code>adapters.n.</code> where 1 is any single character.
      *
+     * @param queueName Name of the queue the adapter is attached to.
      * @param propertyTree The properties to parse. May contain queue properties as well.
      * @return The Adapter definitions.
      */
-    public List<AdapterDefinition> parse(PropertyTree propertyTree) {
+    public List<AdapterDefinition> parse(final String queueName, final PropertyTree propertyTree) {
         Objects.requireNonNull(propertyTree);
 
         // Legacy Mode
         if (propertyTree.getMap("adapters").isEmpty()) {
-            return Lists.newArrayList(new MapBasedAdapterDef(propertyTree));
+            return Lists.newArrayList(new MapBasedAdapterDef(queueName, propertyTree));
         }
 
         // New Mode, get all available adapters
@@ -75,14 +76,10 @@ public class AdapterDefinitionParser {
         final List<AdapterDefinition> adapters = new ArrayList<>();
         for (String eachAdapterPrefix : keys) {
             final PropertyTree adapterconfig = adapterConfigurations.get(eachAdapterPrefix);
-            final MapBasedAdapterDef mapBasedAdapterDef = new MapBasedAdapterDef(adapterconfig);
+            final MapBasedAdapterDef mapBasedAdapterDef = new MapBasedAdapterDef(queueName, adapterconfig);
             adapters.add(mapBasedAdapterDef);
         }
 
         return adapters;
-    }
-
-    protected List<AdapterDefinition> parse(Map<String, String> properties) {
-        return parse(PropertyTree.from(properties));
     }
 }

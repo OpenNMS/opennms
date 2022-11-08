@@ -104,6 +104,10 @@ public abstract class Restrictions {
         return new AllRestriction(restrictions);
     }
 
+    public static AllRestriction multipleAnd(final Restriction... restrictions) {
+        return new AllRestriction(true, restrictions);
+    }
+
     public static AnyRestriction or(final Restriction... restrictions) {
         return new AnyRestriction(restrictions);
     }
@@ -112,6 +116,7 @@ public abstract class Restrictions {
         return new AllRestriction(restrictions);
     }
 
+    
     public static AllRestriction all(final Collection<Restriction> restrictions) {
         return new AllRestriction(restrictions.toArray(EMPTY_RESTRICTION_ARRAY));
     }
@@ -134,5 +139,9 @@ public abstract class Restrictions {
 
     public static AttributeRestriction sql(final String sql, Object[] parameters, Type[] types) {
         return new SqlRestriction(sql, parameters, types);
+    }
+
+    public static RegExpRestriction regExp(String attribute, String comparator) {
+        return new RegExpRestriction(attribute, comparator);
     }
 }

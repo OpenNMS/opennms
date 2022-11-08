@@ -66,6 +66,7 @@ const handleGrafanaError = function(response, report, optionalCallbackIfNoContex
             'ui.select',
             'mwl.confirm',
             'onms.http',
+            'onms.default.apps',
             'onms.datetimepicker',
             'onms.schedule.editor',
             'onms.pagination'

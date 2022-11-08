@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -51,8 +51,6 @@ import javax.xml.namespace.QName;
 @XmlRegistry
 public class ObjectFactory {
 
-    private final static QName _IpMatch_QNAME = new QName("http://xmlns.opennms.org/xsd/config/wsman", "ip-match");
-
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: org.opennms.netmgt.config.wsman
      * 
@@ -66,30 +64,6 @@ public class ObjectFactory {
      */
     public Collection createCollection() {
         return new Collection();
-    }
-
-    /**
-     * Create an instance of {@link Range }
-     * 
-     */
-    public Range createRange() {
-        return new Range();
-    }
-
-    /**
-     * Create an instance of {@link WsmanConfig }
-     * 
-     */
-    public WsmanConfig createWsmanConfig() {
-        return new WsmanConfig();
-    }
-
-    /**
-     * Create an instance of {@link Definition }
-     * 
-     */
-    public Definition createDefinition() {
-        return new Definition();
     }
 
     /**
@@ -138,15 +112,6 @@ public class ObjectFactory {
      */
     public SystemDefinition createSystemDefinition() {
         return new SystemDefinition();
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link String }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://xmlns.opennms.org/xsd/config/wsman", name = "ip-match")
-    public JAXBElement<String> createIpMatch(String value) {
-        return new JAXBElement<String>(_IpMatch_QNAME, String.class, null, value);
     }
 
 }

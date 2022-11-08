@@ -39,10 +39,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.MissingTemplateException;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.state.ExporterState;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.state.OptionState;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.state.TemplateState;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
@@ -57,7 +63,7 @@ public class TcpSession implements Session {
 
         @Override
         public Template lookupTemplate(final int templateId) throws MissingTemplateException {
-            final Key key = new Key(this.observationDomainId, templateId);
+            final TemplateKey key = new TemplateKey(this.observationDomainId, templateId);
 
             final Template template = TcpSession.this.templates.get(key);
             if (template != null) {
@@ -73,7 +79,7 @@ public class TcpSession implements Session {
 
             final Set<String> scoped = values.stream().map(Value::getName).collect(Collectors.toSet());
 
-            for (final Map.Entry<Key, Map<Set<Value<?>>, List<Value<?>>>> e : Iterables.filter(TcpSession.this.options.entrySet(),
+            for (final Map.Entry<TemplateKey, Map<Set<Value<?>>, List<Value<?>>>> e : Iterables.filter(TcpSession.this.options.entrySet(),
                                                                                                e -> e.getKey().observationDomainId == this.observationDomainId)) {
                 final Template template = TcpSession.this.templates.get(e.getKey());
 
@@ -96,12 +102,12 @@ public class TcpSession implements Session {
         }
     }
 
-    private final static class Key {
+    private final static class TemplateKey {
         public final long observationDomainId;
         public final int templateId;
 
-        Key(final long observationDomainId,
-            final int templateId) {
+        TemplateKey(final long observationDomainId,
+                    final int templateId) {
             this.observationDomainId = observationDomainId;
             this.templateId = templateId;
         }
@@ -109,9 +115,9 @@ public class TcpSession implements Session {
         @Override
         public boolean equals(final Object o) {
             if (this == o) return true;
-            if (o.getClass() != Key.class) return false;
+            if (o.getClass() != TemplateKey.class) return false;
 
-            final Key that = (Key) o;
+            final TemplateKey that = (TemplateKey) o;
             return this.observationDomainId == that.observationDomainId &&
                     this.templateId == that.templateId;
         }
@@ -123,21 +129,25 @@ public class TcpSession implements Session {
     }
 
     private final InetAddress remoteAddress;
-    private final Map<Key, Template> templates = Maps.newHashMap();
-    private final Map<Key, Map<Set<Value<?>>, List<Value<?>>>> options = Maps.newHashMap();
+    private final Map<TemplateKey, Template> templates = Maps.newHashMap();
+    private final Map<TemplateKey, Map<Set<Value<?>>, List<Value<?>>>> options = Maps.newHashMap();
+    private final Map<Long, SequenceNumberTracker> sequenceNumbers = Maps.newHashMap();
 
-    public TcpSession(final InetAddress remoteAddress) {
+    private final Supplier<SequenceNumberTracker> sequenceNumberTracker;
+
+    public TcpSession(final InetAddress remoteAddress, final Supplier<SequenceNumberTracker> sequenceNumberTracker) {
         this.remoteAddress = Objects.requireNonNull(remoteAddress);
+        this.sequenceNumberTracker = Objects.requireNonNull(sequenceNumberTracker);
     }
 
     @Override
     public void addTemplate(final long observationDomainId, final Template template) {
-        this.templates.put(new Key(observationDomainId, template.id), template);
+        this.templates.put(new TemplateKey(observationDomainId, template.id), template);
     }
 
     @Override
     public void removeTemplate(final long observationDomainId, final int templateId) {
-        this.templates.remove(new Key(observationDomainId, templateId));
+        this.templates.remove(new TemplateKey(observationDomainId, templateId));
     }
 
     @Override
@@ -150,7 +160,7 @@ public class TcpSession implements Session {
                            final int templateId,
                            final Collection<Value<?>> scopes,
                            final List<Value<?>> values) {
-        final Key key = new Key(observationDomainId, templateId);
+        final TemplateKey key = new TemplateKey(observationDomainId, templateId);
         this.options.computeIfAbsent(key, (k) -> new HashMap<>()).put(new HashSet<>(scopes), values);
     }
 
@@ -162,5 +172,35 @@ public class TcpSession implements Session {
     @Override
     public InetAddress getRemoteAddress() {
         return this.remoteAddress;
+    }
+
+    @Override
+    public boolean verifySequenceNumber(long observationDomainId, final long sequenceNumber) {
+        final SequenceNumberTracker tracker = this.sequenceNumbers.computeIfAbsent(observationDomainId, (k) -> this.sequenceNumberTracker.get());
+        return tracker.verify(sequenceNumber);
+    }
+
+    public Stream<ExporterState> dumpInternalState() {
+        return this.templates.keySet().stream()
+                             .mapToLong(key -> key.observationDomainId)
+                             .distinct()
+                             .mapToObj(domain -> {
+                                 final String key = String.format("%s#%s", InetAddressUtils.str(this.remoteAddress), domain);
+
+                                 final ExporterState.Builder exporter = ExporterState.builder(key);
+
+                                 this.templates.entrySet().stream()
+                                               .filter(e -> Objects.equals(e.getKey().observationDomainId, domain))
+                                               .forEach(e -> exporter.withTemplate(TemplateState.builder(e.getKey().templateId)));
+
+                                 this.options.entrySet().stream()
+                                             .filter(e -> Objects.equals(e.getKey().observationDomainId, domain))
+                                             .forEach(e -> e.getValue().forEach((selectors, values) ->
+                                                                                        exporter.withOptions(OptionState.builder(e.getKey().templateId)
+                                                                                                                        .withSelectors(selectors)
+                                                                                                                        .withValues(values))));
+
+                                 return exporter.build();
+                             });
     }
 }

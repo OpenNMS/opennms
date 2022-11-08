@@ -1,0 +1,7 @@
+[template]
+src = "org.opennms.minion.process-env.tmpl"
+dest = "/opt/minion/etc/minion-process.env"
+keys = [
+    "/process-env"
+]
+reload_cmd = "/opt/minion/confd/scripts/remove-if-empty /opt/minion/etc/minion-process.env"

@@ -10,6 +10,6 @@
 
   <context:annotation-config />
 
-  <bean class="org.opennms.core.tracing.registry.TracerRegistryImpl"/>
+  <bean id="tracerRegistry" class="org.opennms.core.tracing.registry.TracerRegistryImpl"/>
 
 </beans>

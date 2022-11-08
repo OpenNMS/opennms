@@ -32,143 +32,146 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
-import org.opennms.core.network.IPAddress;
-import org.opennms.core.network.IPAddressRange;
+import org.opennms.netmgt.flows.classification.IpAddr;
 
 public class IpValueTest {
 
+    private static boolean isInRange(IpValue value, String addr) {
+        return value.isInRange(IpAddr.of(addr));
+    }
+
     @Test
     public void verifyRangedValues() {
-        final IpValue ipValue = new IpValue("10.1.1.1-10.1.1.100");
-        final IPAddressRange range = new IPAddressRange("10.1.1.1", "10.1.1.100");
-        for (IPAddress address : range) {
-            assertThat(ipValue.isInRange(address.toUserString()), is(true));
+        final IpValue ipValue = IpValue.of("10.1.1.1-10.1.1.100");
+        final IpRange range = IpRange.of("10.1.1.1", "10.1.1.100");
+        for (var address : range) {
+            assertThat(ipValue.isInRange(address), is(true));
         }
     }
 
     @Test
     public void verifySingleValue() {
-        final IpValue ipValue = new IpValue("192.168.0.1");
-        assertThat(ipValue.isInRange("192.168.0.0"), is(false));
-        assertThat(ipValue.isInRange("192.168.0.1"), is(true));
-        assertThat(ipValue.isInRange("192.168.0.2"), is(false));
+        final IpValue ipValue = IpValue.of("192.168.0.1");
+        assertThat(isInRange(ipValue, "192.168.0.0"), is(false));
+        assertThat(isInRange(ipValue, "192.168.0.1"), is(true));
+        assertThat(isInRange(ipValue, "192.168.0.2"), is(false));
     }
 
     @Test
     public void verifyMultiValues() {
-        final IpValue ipValue = new IpValue("192.168.0.1, 192.168.0.2, 192.168.0.10");
-        assertThat(ipValue.isInRange("192.168.0.0"), is(false));
-        assertThat(ipValue.isInRange("192.168.0.1"), is(true));
-        assertThat(ipValue.isInRange("192.168.0.2"), is(true));
-        assertThat(ipValue.isInRange("192.168.0.3"), is(false));
-        assertThat(ipValue.isInRange("192.168.0.4"), is(false));
-        assertThat(ipValue.isInRange("192.168.0.5"), is(false));
-        assertThat(ipValue.isInRange("192.168.0.6"), is(false));
-        assertThat(ipValue.isInRange("192.168.0.7"), is(false));
-        assertThat(ipValue.isInRange("192.168.0.8"), is(false));
-        assertThat(ipValue.isInRange("192.168.0.9"), is(false));
-        assertThat(ipValue.isInRange("192.168.0.10"), is(true));
+        final IpValue ipValue = IpValue.of("192.168.0.1, 192.168.0.2, 192.168.0.10");
+        assertThat(isInRange(ipValue, "192.168.0.0"), is(false));
+        assertThat(isInRange(ipValue, "192.168.0.1"), is(true));
+        assertThat(isInRange(ipValue, "192.168.0.2"), is(true));
+        assertThat(isInRange(ipValue, "192.168.0.3"), is(false));
+        assertThat(isInRange(ipValue, "192.168.0.4"), is(false));
+        assertThat(isInRange(ipValue, "192.168.0.5"), is(false));
+        assertThat(isInRange(ipValue, "192.168.0.6"), is(false));
+        assertThat(isInRange(ipValue, "192.168.0.7"), is(false));
+        assertThat(isInRange(ipValue, "192.168.0.8"), is(false));
+        assertThat(isInRange(ipValue, "192.168.0.9"), is(false));
+        assertThat(isInRange(ipValue, "192.168.0.10"), is(true));
     }
 
     @Test
     public void verifyParseCIDR() {
-        assertThat(IpValue.parseCIDR("192.168.23.0/24"), is(new IPAddressRange("192.168.23.0", "192.168.23.255")));
-        assertThat(IpValue.parseCIDR("192.168.42.23/22"), is(new IPAddressRange("192.168.40.0", "192.168.43.255")));
+        assertThat(IpValue.parseCIDR("192.168.23.0/24"), is(IpRange.of("192.168.23.0", "192.168.23.255")));
+        assertThat(IpValue.parseCIDR("192.168.42.23/22"), is(IpRange.of("192.168.40.0", "192.168.43.255")));
 
-        assertThat(IpValue.parseCIDR("192.168.23.42/31"), is(new IPAddressRange("192.168.23.42", "192.168.23.43")));
-        assertThat(IpValue.parseCIDR("192.168.23.42/32"), is(new IPAddressRange("192.168.23.42", "192.168.23.42")));
+        assertThat(IpValue.parseCIDR("192.168.23.42/31"), is(IpRange.of("192.168.23.42", "192.168.23.43")));
+        assertThat(IpValue.parseCIDR("192.168.23.42/32"), is(IpRange.of("192.168.23.42", "192.168.23.42")));
 
-        assertThat(IpValue.parseCIDR("fe80::243d:e3ff:fe31:7660/64"), is(new IPAddressRange("fe80::", "fe80::ffff:ffff:ffff:ffff")));
+        assertThat(IpValue.parseCIDR("fe80::243d:e3ff:fe31:7660/64"), is(IpRange.of("fe80::", "fe80::ffff:ffff:ffff:ffff")));
     }
 
     @Test
     public void verifyCIDRValue() {
-        final IpValue ipValue = new IpValue("10.0.0.5,192.168.0.0/24");
-        for (IPAddress ipAddress : new IPAddressRange("192.168.0.0", "192.168.0.255")) {
-            assertThat(ipValue.isInRange(ipAddress.toUserString()), is(true));
+        final IpValue ipValue = IpValue.of("10.0.0.5,192.168.0.0/24");
+        for (var ipAddress : IpRange.of("192.168.0.0", "192.168.0.255")) {
+            assertThat(ipValue.isInRange(ipAddress), is(true));
         }
 
-        assertThat(ipValue.isInRange("192.168.1.0"), is(false));
-        assertThat(ipValue.isInRange("192.168.2.0"), is(false));
+        assertThat(isInRange(ipValue, "192.168.1.0"), is(false));
+        assertThat(isInRange(ipValue, "192.168.2.0"), is(false));
 
-        assertThat(ipValue.isInRange("10.0.0.0"), is(false));
-        assertThat(ipValue.isInRange("10.0.0.1"), is(false));
-        assertThat(ipValue.isInRange("10.0.0.2"), is(false));
-        assertThat(ipValue.isInRange("10.0.0.3"), is(false));
-        assertThat(ipValue.isInRange("10.0.0.4"), is(false));
-        assertThat(ipValue.isInRange("10.0.0.5"), is(true));
-        assertThat(ipValue.isInRange("10.0.0.7"), is(false));
-        assertThat(ipValue.isInRange("10.0.0.8"), is(false));
-        assertThat(ipValue.isInRange("10.0.0.9"), is(false));
-        assertThat(ipValue.isInRange("10.0.0.10"), is(false));
+        assertThat(isInRange(ipValue, "10.0.0.0"), is(false));
+        assertThat(isInRange(ipValue, "10.0.0.1"), is(false));
+        assertThat(isInRange(ipValue, "10.0.0.2"), is(false));
+        assertThat(isInRange(ipValue, "10.0.0.3"), is(false));
+        assertThat(isInRange(ipValue, "10.0.0.4"), is(false));
+        assertThat(isInRange(ipValue, "10.0.0.5"), is(true));
+        assertThat(isInRange(ipValue, "10.0.0.7"), is(false));
+        assertThat(isInRange(ipValue, "10.0.0.8"), is(false));
+        assertThat(isInRange(ipValue, "10.0.0.9"), is(false));
+        assertThat(isInRange(ipValue, "10.0.0.10"), is(false));
     }
 
     @Test
     public void verifyCIDRValue_2() {
-        final IpValue ipValue = new IpValue("192.168.0.17/16");
-        for (IPAddress ipAddress : new IPAddressRange("192.168.0.0", "192.168.255.255")) {
-            assertThat(ipValue.isInRange(ipAddress.toUserString()), is(true));
+        final IpValue ipValue = IpValue.of("192.168.0.17/16");
+        for (var ipAddress : IpRange.of("192.168.0.0", "192.168.255.255")) {
+            assertThat(ipValue.isInRange(ipAddress), is(true));
         }
-        assertThat(ipValue.isInRange("192.169.0.0"), is(false));
-        assertThat(ipValue.isInRange("192.0.0.0"), is(false));
+        assertThat(isInRange(ipValue, "192.169.0.0"), is(false));
+        assertThat(isInRange(ipValue, "192.0.0.0"), is(false));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void verifyCIDRValueNotAllowedInRange() {
-        new IpValue("192.0.0.0/8-192.168.0.0/24");
+        IpValue.of("192.0.0.0/8-192.168.0.0/24");
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void verifyWildcard() {
-        new IpValue("*");
+        IpValue.of("*");
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void verifyInvalidIpAddress() {
-        new IpValue("300.400.500.600");
+        IpValue.of("300.400.500.600");
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void verifyInvalidIpAddressRanges() {
-        new IpValue("192.168.0.1-a.b.c.d");
+        IpValue.of("192.168.0.1-a.b.c.d");
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void verifyInvalidIpAddressRangeEndIsBefore() {
-        new IpValue("192.168.10.255-192.168.0.1");
+        IpValue.of("192.168.10.255-192.168.0.1");
     }
 
     @Test
     public void verifySingleValueIpV6() {
-        final IpValue value = new IpValue("2001:0DB8:0:CD30::1");
-        assertThat(value.isInRange("2001:0DB8:0:CD30::1"), is(true));
-        assertThat(value.isInRange("2001:0DB8:0:CD30::2"), is(false));
-        assertThat(value.isInRange("192.168.0.1"), is(false)); // incompatible, should be false
+        final IpValue value = IpValue.of("2001:0DB8:0:CD30::1");
+        assertThat(value.isInRange(IpAddr.of("2001:0DB8:0:CD30::1")), is(true));
+        assertThat(value.isInRange(IpAddr.of("2001:0DB8:0:CD30::2")), is(false));
+        assertThat(value.isInRange(IpAddr.of("192.168.0.1")), is(false)); // incompatible, should be false
     }
 
     @Test
     public void verifyRangedValueIpV6() {
-        final IpValue value = new IpValue("2001:0DB8:0:CD30::1-2001:0DB8:0:CD30::FFFF");
-        for (IPAddress address : new IPAddressRange("2001:0DB8:0:CD30::1", "2001:0DB8:0:CD30::FFFF")) {
-            assertThat(value.isInRange(address.toUserString()), is(true));
+        final IpValue value = IpValue.of("2001:0DB8:0:CD30::1-2001:0DB8:0:CD30::FFFF");
+        for (var address : IpRange.of("2001:0DB8:0:CD30::1", "2001:0DB8:0:CD30::FFFF")) {
+            assertThat(value.isInRange(address), is(true));
         }
     }
 
     @Test
     public void verifyCIDRValueIpV6() {
-        final IpValue value = new IpValue("2001:0DB8:0:CD30::1/120");
-        for (IPAddress ipAddress : new IPAddressRange("2001:0DB8:0:CD30::0", "2001:0DB8:0:CD30::FF")) {
-            assertThat(value.isInRange(ipAddress.toUserString()), is(true));
+        final IpValue value = IpValue.of("2001:0DB8:0:CD30::1/120");
+        for (var ipAddress : IpRange.of("2001:0DB8:0:CD30::0", "2001:0DB8:0:CD30::FF")) {
+            assertThat(value.isInRange(ipAddress), is(true));
         }
-        assertThat(value.isInRange("192.168.0.1"), is(false)); // incompatible, should be false
+        assertThat(value.isInRange(IpAddr.of("192.168.0.1")), is(false)); // incompatible, should be false
     }
 
     @Test
     public void verifyCIDRValueIpV6_2() {
-        final IpValue value = new IpValue("2001:0DB8:0:CD30::1/127");
-        for (IPAddress ipAddress : new IPAddressRange("2001:0DB8:0:CD30::0", "2001:0DB8:0:CD30::1")) {
-            assertThat(value.isInRange(ipAddress.toUserString()), is(true));
+        final IpValue value = IpValue.of("2001:0DB8:0:CD30::1/127");
+        for (var ipAddress : IpRange.of("2001:0DB8:0:CD30::0", "2001:0DB8:0:CD30::1")) {
+            assertThat(value.isInRange(ipAddress), is(true));
         }
-        assertThat(value.isInRange("2001:0DB8:0:CD30::2"), is(false));
+        assertThat(value.isInRange(IpAddr.of("2001:0DB8:0:CD30::2")), is(false));
     }
 }

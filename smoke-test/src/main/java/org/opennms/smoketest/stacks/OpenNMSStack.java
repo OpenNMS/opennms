@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,6 +31,7 @@ package org.opennms.smoketest.stacks;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.rules.RuleChain;
 import org.junit.rules.TestRule;
@@ -38,12 +39,14 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 import org.opennms.smoketest.containers.CassandraContainer;
 import org.opennms.smoketest.containers.ElasticsearchContainer;
+import org.opennms.smoketest.containers.LocalOpenNMS;
 import org.opennms.smoketest.containers.MinionContainer;
 import org.opennms.smoketest.containers.OpenNMSContainer;
 import org.opennms.smoketest.containers.PostgreSQLContainer;
 import org.opennms.smoketest.containers.SentinelContainer;
 import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.containers.Network;
+import org.testcontainers.utility.DockerImageName;
 
 /**
  * This is the highest level interface to a stack. A stack is composed of
@@ -60,10 +63,25 @@ import org.testcontainers.containers.Network;
  */
 public final class OpenNMSStack implements TestRule {
 
-    public static final OpenNMSStack MINIMAL = OpenNMSStack.withModel(StackModel.newBuilder().build());
+    /**
+     * This creates an empty OpenNMS stack for testing with locally-installed components outside of Docker.
+     */
+    public static final OpenNMSStack NONE = new OpenNMSStack();
+
+	public static final OpenNMSStack MINIMAL = OpenNMSStack.withModel(StackModel.newBuilder()
+			.withOpenNMS(OpenNMSProfile.newBuilder()
+					.withFile("empty-discovery-configuration.xml", "etc/discovery-configuration.xml")
+					.build())
+			.build());
+
+	public static final OpenNMSStack MINIMAL_WITH_DEFAULT_LOCALHOST = OpenNMSStack.withModel(StackModel.newBuilder().build());
 
     public static final OpenNMSStack MINION = OpenNMSStack.withModel(StackModel.newBuilder()
             .withMinion()
+            .build());
+
+    public static final OpenNMSStack SENTINEL = OpenNMSStack.withModel(StackModel.newBuilder()
+            .withSentinel()
             .build());
 
     public static final OpenNMSStack ALEC = OpenNMSStack.withModel(StackModel.newBuilder()
@@ -81,7 +99,7 @@ public final class OpenNMSStack implements TestRule {
 
     private final TestRule delegateTestRule;
 
-    private final PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer();
+    private final PostgreSQLContainer postgreSQLContainer;
 
     private final OpenNMSContainer opennmsContainer;
 
@@ -95,9 +113,25 @@ public final class OpenNMSStack implements TestRule {
 
     private final List<SentinelContainer> sentinelContainers;
 
+    /**
+     * Create an empty OpenNMS stack for testing with locally-installed components outside of Docker.
+     */
+    private OpenNMSStack() {
+        postgreSQLContainer = null;
+        elasticsearchContainer = null;
+        kafkaContainer = null;
+        cassandraContainer = null;
+        opennmsContainer = new LocalOpenNMS();
+        minionContainers = Collections.EMPTY_LIST;
+        sentinelContainers = Collections.EMPTY_LIST;
+
+        delegateTestRule = RuleChain.emptyRuleChain();
+        return;
+    }
+
     private OpenNMSStack(StackModel model) {
-        RuleChain chain = RuleChain
-                .outerRule(postgreSQLContainer);
+        postgreSQLContainer = new PostgreSQLContainer();
+        RuleChain chain = RuleChain.outerRule(postgreSQLContainer);
 
         if (model.isElasticsearchEnabled()) {
             elasticsearchContainer = new ElasticsearchContainer();
@@ -109,7 +143,7 @@ public final class OpenNMSStack implements TestRule {
         final boolean shouldEnableKafka = IpcStrategy.KAFKA.equals(model.getIpcStrategy())
                 || model.getOpenNMS().isKafkaProducerEnabled();
         if (shouldEnableKafka) {
-            kafkaContainer = new KafkaContainer("5.4.1")
+            kafkaContainer = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.2.0"))
                     // Reduce from the default of 1GB
                     .withEnv("KAFKA_HEAP_OPTS", "-Xms256m -Xmx256m")
                     .withNetwork(Network.SHARED)
@@ -131,12 +165,19 @@ public final class OpenNMSStack implements TestRule {
         opennmsContainer = new OpenNMSContainer(model, model.getOpenNMS());
         chain = chain.around(opennmsContainer);
 
-        final List<MinionContainer> minions = new ArrayList<>(model.getMinions().size());
-        for (MinionProfile profile : model.getMinions()) {
+        final List<MinionContainer> minions = new ArrayList<>(model.getMinions().size() + model.getLegacyMinions().size());
+        for (final MinionProfile profile : model.getMinions()) {
             final MinionContainer minion = new MinionContainer(model, profile);
             minions.add(minion);
             chain = chain.around(minion);
         }
+
+        for (final Map<String, String> configuration : model.getLegacyMinions()) {
+            final MinionContainer minion = new MinionContainer(model, configuration);
+            minions.add(minion);
+            chain = chain.around(minion);
+        }
+
         minionContainers = Collections.unmodifiableList(minions);
 
         final List<SentinelContainer> sentinels = new ArrayList<>(model.getSentinels().size());

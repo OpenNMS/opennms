@@ -51,6 +51,7 @@ import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.CriticalPath;
+import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.PathOutageDao;
 import org.opennms.netmgt.dao.api.PathOutageManager;
@@ -81,6 +82,7 @@ import org.springframework.test.context.ContextConfiguration;
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
@@ -90,7 +92,8 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
 
         // Override the default QueryManager with the DAO version
-        "classpath:/META-INF/opennms/applicationContext-pollerdTest.xml"
+        "classpath:/META-INF/opennms/applicationContext-pollerdTest.xml",
+        "classpath:/META-INF/opennms/applicationContext-test-deviceConfig.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class,reuseDatabase=false)
@@ -119,6 +122,9 @@ public class PollContextIT implements TemporaryDatabaseAware<MockDatabase> {
     PathOutageManager m_pathOutageManager;
 
     LocationAwarePingClient m_locationAwarePingClient;
+
+    @Autowired
+    DistPollerDao m_distPollerDao;
 
 	@Override
 	public void setTemporaryDatabase(MockDatabase database) {
@@ -151,7 +157,7 @@ public class PollContextIT implements TemporaryDatabaseAware<MockDatabase> {
         m_mNetwork.addService("HTTP");
         
         m_mSvc = m_mNetwork.getService(1, "192.168.1.1", "ICMP");
-
+        m_db.setDistPoller(m_distPollerDao.whoami().getId());
         m_db.populate(m_mNetwork);
         
         m_pollerConfig = new MockPollerConfig(m_mNetwork);

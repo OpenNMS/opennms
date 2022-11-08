@@ -79,15 +79,6 @@ public class LocationDef implements Serializable {
     private String m_monitoringArea;
 
     /**
-     * The polling package associated with this monitoring location.
-     */
-    @XmlAttribute(name="polling-package-name")
-    private String m_pollingPackageName;
-
-    @XmlAttribute(name="collection-package-name")
-    private String m_collectionPackageName;
-
-    /**
      * The geolocation (address) of this monitoring location.
      */
     @XmlAttribute(name="geolocation")
@@ -117,8 +108,6 @@ public class LocationDef implements Serializable {
         this();
         m_locationName = locationName;
         m_monitoringArea = monitoringArea;
-        m_pollingPackageName = pollingPackageName;
-        m_collectionPackageName = collectionPackageName;
         m_geolocation = geolocation;
         m_coordinates = coordinates;
         m_priority = priority;
@@ -144,22 +133,6 @@ public class LocationDef implements Serializable {
 
     public void setMonitoringArea(final String monitoringArea) {
         m_monitoringArea = monitoringArea;
-    }
-
-    public String getPollingPackageName() {
-        return m_pollingPackageName;
-    }
-
-    public void setPollingPackageName(final String pollingPackageName) {
-        m_pollingPackageName = pollingPackageName;
-    }
-
-    public String getCollectionPackageName() {
-        return m_collectionPackageName;
-    }
-
-    public void setCollectionPackageName(final String collectionPackageName) {
-        m_collectionPackageName = collectionPackageName;
     }
 
     public String getGeolocation() {
@@ -210,8 +183,6 @@ public class LocationDef implements Serializable {
         result = prime * result + ((m_geolocation == null) ? 0 : m_geolocation.hashCode());
         result = prime * result + ((m_locationName == null) ? 0 : m_locationName.hashCode());
         result = prime * result + ((m_monitoringArea == null) ? 0 : m_monitoringArea.hashCode());
-        result = prime * result + ((m_pollingPackageName == null) ? 0 : m_pollingPackageName.hashCode());
-        result = prime * result + ((m_collectionPackageName == null) ? 0 : m_collectionPackageName.hashCode());
         result = prime * result + ((m_priority == null) ? 0 : m_priority.hashCode());
         result = prime * result + ((m_tags == null || m_tags.size() == 0) ? 0 : m_tags.hashCode());
         return result;
@@ -257,20 +228,6 @@ public class LocationDef implements Serializable {
         } else if (!m_monitoringArea.equals(other.m_monitoringArea)) {
             return false;
         }
-        if (m_pollingPackageName == null) {
-            if (other.m_pollingPackageName != null) {
-                return false;
-            }
-        } else if (!m_pollingPackageName.equals(other.m_pollingPackageName)) {
-            return false;
-        }
-        if (m_collectionPackageName == null) {
-            if (other.m_collectionPackageName != null) {
-                return false;
-            }
-        } else if (!m_collectionPackageName.equals(other.m_collectionPackageName)) {
-            return false;
-        }
         if (m_priority == null) {
             if (other.m_priority != null) {
                 return false;
@@ -296,8 +253,6 @@ public class LocationDef implements Serializable {
     public String toString() {
         return "OnmsMonitoringLocation [location-name=" + m_locationName +
                 ", monitoring-area=" + m_monitoringArea +
-                ", polling-package-name=" + m_pollingPackageName +
-                ", collection-package-name=" + m_collectionPackageName +
                 ", geolocation=" + m_geolocation +
                 ", coordinates=" + m_coordinates +
                 ", priority=" + m_priority +

@@ -1,0 +1,23 @@
+
+// Allow image rendering
+:imagesdir: ../../images
+
+= Jasper Report Guideline Design and Style Guidelines
+
+Building and contributing JasperReports is a way to contribute to the project.
+To make it easier to maintain and style reports, use the following layout guideline to have similar and more consistent report layout.
+
+.Layout for creating JasperReports
+image::reporting/01_JasperReportStyleGuide.png[]
+
+The following formatting can be applied:
+
+[,options="header", cols="5,10"]
+|===
+| Type           | Convention
+| _Date_         | yyyy/MM/dd HH:mm:ss
+| _Report Range_ | Report Begin: $\{startdate} Report End: $\{enddate}
+| _Paging_       | Page $\{current} of $\{total}
+|===
+
+TIP: A link:https://github.com/opennms-forge/jasper-template[GitHub repository] based on this template definition  contains a JasperReport template.

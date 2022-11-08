@@ -1,0 +1,58 @@
+[[adapter-wsman-asset]]
+= WS-Man Asset
+
+The WS-Man asset provisioning adapter performs WS-Man queries to populate asset records for the node.
+This can be very useful for automatically populating asset fields in a large number of managed systems.
+You can either fill in some of the existing asset fields (for example, manufacturer, vendor, modelnumber, and/or serialnumber) or construct a custom-formatted message for the comment field.
+
+The WS-Man asset provisioning adapter is invoked every time provisiond adds or updates a node.
+With the default provisiond configuration, the update takes place once every 24 hours.
+
+You can reload the provisiond WsmanAssetProvisioningAdapter with this command (or just restart OpenNMS):
+
+[source, console]
+----
+${OPENNMS_HOME}/bin# ./send-event.pl uei.opennms.org/internal/reloadDaemonConfig --parm 'daemonName Provisiond.WsmanAssetProvisioningAdapter'
+----
+
+NOTE: By default, this adapter runs 5 minutes after a provisiond `nodeScanCompleted` event is sent to indicate that provisiond completed the import.
+
+== Installation
+
+To use this feature you have to install the WS-Man asset provisioning plugin from the repository.
+
+* For RPM-based distributions:
+** `yum install opennms-plugin-provisioning-wsman-asset`
+* For Debian-based distributions:
+** `apt-get install opennms-plugin-provisioning-wsman-asset`
+
+== Configuration
+
+Mapping WQL queries to node asset fields is defined in the `$\{OPENNMS_HOME}/etc/wsman-asset-adapter-configuration.xml` file.
+
+[source, xml]
+----
+<wsman-asset-adapter-configuration xmlns="http://xmlns.opennms.org/xsd/config/wsmanasset/adapter">
+    <package name="some_package">
+        <vendor>Microsoft Corporation</vendor>
+        <assetField name="ram" formatString="${TotalPhysicalMemory}">
+            <wqlQueries>
+                <wql resourceUri="http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/*" query="SELECT TotalPhysicalMemory FROM Win32_ComputerSystem" alias="TotalPhysicalMemory"/>
+            </wqlQueries>
+        </assetField>
+        <assetField name="serialNumber" formatString="${modelo}">
+            <wqlQueries>
+                <wql resourceUri="http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/*" query="SELECT Model FROM Win32_ComputerSystem" alias="modelo"/>
+            </wqlQueries>
+        </assetField>
+        <assetField name="cpu" formatString="Socket(s): ${numCPUs} Core(s): ${numCores}">
+            <wqlQueries>
+                <wql resourceUri="http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/*" query="SELECT NumberOfProcessors FROM Win32_ComputerSystem" alias="numCPUs"/>
+                <wql resourceUri="http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/*" query="SELECT NumberOfLogicalProcessors FROM Win32_ComputerSystem" alias="numCores"/>
+            </wqlQueries>
+        </assetField>
+    </package>
+</wsman-asset-adapter-configuration>
+----
+
+Variables in the formatString using the `$\{token}` syntax will be replaced by values that are defined by the list of WQL aliases.

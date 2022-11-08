@@ -1,0 +1,38 @@
+#
+# DON'T EDIT THIS FILE :: GENERATED WITH CONFD
+#
+{{$promJmxPath := "/java/agent/prom-jmx-exporter" -}}
+startDelaySeconds: {{getv (print $promJmxPath "/startDelaySeconds") "0"}}
+jmxUrl: {{getv (print $promJmxPath "/jmxUrl") "service:jmx:rmi:///jndi/rmi://127.0.0.1:1299/karaf-minion"}}
+username: {{getv (print $promJmxPath "/username") "admin"}}
+password: {{getv (print $promJmxPath "/password") "admin"}}
+lowercaseOutputName: {{getv (print $promJmxPath "/lowerCaseOutputName") "true"}}
+lowercaseOutputLabelNames: {{getv (print $promJmxPath "/lowercaseOutputLabelNames") "true"}}
+{{$woSize := len (getvs (print $promJmxPath "/whitelistObjectNames/*")) -}}
+{{if gt $woSize 0 -}}
+whitelistObjectNames:
+{{range getvs (print $promJmxPath "/whitelistObjectNames/*") -}}
+- "{{.}}"
+{{end -}}
+{{end -}}
+{{$boSize := len (getvs (print $promJmxPath "/blacklistObjectNames/*")) -}}
+{{if gt $boSize 0 -}}
+blacklistObjectNames:
+{{range getvs (print $promJmxPath "/blacklistObjectNames/*") -}}
+- "{{.}}"
+{{end -}}
+{{end}}
+rules:
+- pattern: org\.opennms\..+\.(.+)<name=(.+)><>Value
+  name: minion_$1_$2
+  type: GAUGE
+
+- pattern: org\.opennms\..+\.(.+)<name=(.+)><>Count
+  name: minion_$1_$2_count
+  type: COUNTER
+
+- pattern: org\.opennms\..+\.(.+)<name=(.+)><>(\d+)thPercentile
+  name: minion_$1_$2
+  type: GAUGE
+  labels:
+    quantile: "0.$3"

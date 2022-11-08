@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -84,6 +84,7 @@ import org.springframework.transaction.support.TransactionTemplate;
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml"
 })
@@ -571,24 +572,6 @@ public class NodeDaoIT implements InitializingBean {
         nodes = m_nodeDao.findMatching(cb.toCriteria());
         System.err.println("Nodes found: "+nodes.size());
         assertEquals(2, nodes.size());
-    }
-
-    /**
-     * This test exposes a bug in Hibernate: it is not applying join conditions
-     * correctly to the many-to-many node-to-category relationship.
-     * 
-     * This issue is documented in NMS-9470. If we upgrade Hibernate, we should
-     * recheck this issue to see if it is fixed.
-     * 
-     * @see https://issues.opennms.org/browse/NMS-9470
-     */
-    @Test
-    @Transactional
-    @Ignore("Ignore until Hibernate can be upgraded and this can be rechecked")
-    public void testCriteriaBuilderWithCategoryAlias() {
-        CriteriaBuilder cb = new CriteriaBuilder(OnmsNode.class);
-        cb.alias("categories", "category", JoinType.LEFT_JOIN, Restrictions.eq("category.name", "Routers"));
-        m_nodeDao.findMatching(cb.toCriteria());
     }
 
     @Test

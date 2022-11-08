@@ -96,13 +96,13 @@ public class ImportOperationsManager {
      * @param city a {@link java.lang.String} object.
      * @return a {@link org.opennms.netmgt.provision.service.operations.SaveOrUpdateOperation} object.
      */
-    public SaveOrUpdateOperation foundNode(String foreignId, String nodeLabel, String location, String building, String city) {
+    public SaveOrUpdateOperation foundNode(String foreignId, String nodeLabel, String location, String building, String city, String monitorKey) {
         
         SaveOrUpdateOperation ret;
         if (nodeExists(foreignId)) {
-            ret = updateNode(foreignId, nodeLabel, location, building, city);
+            ret = updateNode(foreignId, nodeLabel, location, building, city, monitorKey);
         } else {
-            ret = insertNode(foreignId, nodeLabel, location, building, city);
+            ret = insertNode(foreignId, nodeLabel, location, building, city, monitorKey);
         }        
         return ret;
     }
@@ -111,19 +111,19 @@ public class ImportOperationsManager {
         return m_foreignIdToNodeMap.containsKey(foreignId);
     }
     
-    private SaveOrUpdateOperation insertNode(final String foreignId, final String nodeLabel, final String location, final String building, final String city) {
-        SaveOrUpdateOperation insertOperation = new InsertOperation(getForeignSource(), foreignId, nodeLabel, location, building, city, m_provisionService);
+    private SaveOrUpdateOperation insertNode(final String foreignId, final String nodeLabel, final String location, final String building, final String city, final String monitorKey) {
+        SaveOrUpdateOperation insertOperation = new InsertOperation(getForeignSource(), foreignId, nodeLabel, location, building, city, m_provisionService, monitorKey);
         m_inserts.add(insertOperation);
         return insertOperation;
     }
 
-    private SaveOrUpdateOperation updateNode(final String foreignId, final String nodeLabel, final String location, final String building, final String city) {
+    private SaveOrUpdateOperation updateNode(final String foreignId, final String nodeLabel, final String location, final String building, final String city, final String monitorKey) {
         final Integer nodeId = processForeignId(foreignId);
         final UpdateOperation updateOperation;
         if (Boolean.valueOf(m_rescanExisting) || m_rescanExisting.equalsIgnoreCase("dbonly")) {
-            updateOperation = new UpdateOperation(nodeId, getForeignSource(), foreignId, nodeLabel, location, building, city, m_provisionService, m_rescanExisting);
+            updateOperation = new UpdateOperation(nodeId, getForeignSource(), foreignId, nodeLabel, location, building, city, m_provisionService, m_rescanExisting, monitorKey);
         } else {
-            updateOperation = new NullUpdateOperation(nodeId, getForeignSource(), foreignId, nodeLabel, location, building, city, m_provisionService, m_rescanExisting);
+            updateOperation = new NullUpdateOperation(nodeId, getForeignSource(), foreignId, nodeLabel, location, building, city, m_provisionService, m_rescanExisting, monitorKey);
         }
         m_updates.add(updateOperation);
         return updateOperation;
@@ -309,8 +309,8 @@ public class ImportOperationsManager {
      *
      * @param requisition a {@link org.opennms.netmgt.provision.persist.requisition.Requisition} object.
      */
-    public void auditNodes(Requisition requisition) {
-        requisition.visit(new RequisitionAccountant(this));
+    public void auditNodes(Requisition requisition, String monitorKey) {
+        requisition.visit(new RequisitionAccountant(this, monitorKey));
     }
 
     @SuppressWarnings("unused")

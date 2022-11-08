@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>26.1.3-SNAPSHOT</version>
+    <version>32.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>dependencies</artifactId>
@@ -14,9 +14,9 @@
     <module>activemq-web</module>
     <module>asterisk</module>
     <module>atomikos</module>
-    <module>aws</module>
     <module>camel</module>
     <module>camel-test</module>
+    <module>cassandra-test</module>
     <module>cxf</module>
     <module>dnsjava</module>
     <module>drools</module>
@@ -61,5 +61,6 @@
     <module>spring-test</module>
     <module>spring-web</module>
     <module>twitter4j</module>
+    <module>jcifs-shaded</module>
   </modules>
 </project>

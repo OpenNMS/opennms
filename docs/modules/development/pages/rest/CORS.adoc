@@ -1,0 +1,49 @@
+// Allow image rendering
+:imagesdir: ../../images
+
+= CORS Support
+
+This section describes CORS (Cross-Origin Resource Sharing), a standard mechanism to enable cross-origin requests.
+
+== Why do I need CORS support?
+
+By default, many browsers implement a same origin policy, which prevents making requests to a resource on an origin that's different from the source origin.
+
+For example, a request originating from a page served from http://www.opennms.com to a resource on http://www.adventuresinoss.com would be considered a cross-origin request.
+
+For further details, see:
+
+* https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS[Mozilla's HTTP access control (CORS)]
+* http://www.w3.org/TR/cors/[W3C's CORS Specification]
+
+== How can I enable CORS support?
+
+Enable CORS support for the REST interface (or any other part of the Web UI) as follows:
+
+. Open '$\{OPENNMS_HOME}/jetty-webapps/opennms/WEB-INF/web.xml' for editing.
+
+. Apply the CORS filter to the '/rest/' path by removing the comments around the *<filter-mapping>* definition.
+The result should look like:
++
+[source,xml]
+-----------
+  <!-- Uncomment this to enable CORS support -->
+  <filter-mapping>
+    <filter-name>CORS Filter</filter-name>
+    <url-pattern>/rest/*</url-pattern>
+  </filter-mapping>
+-----------
+
+. Restart {page-component-title}.
+
+== How can I configure CORS support?
+
+The *org.ebaysf.web.cors.CORSFilter* servlet filter provides CORS support.
+
+Configure parameters by modifying the filter definition in the 'web.xml' file referenced above.
+
+By default, the allowed origins parameter is set to '*'.
+
+The complete list of parameters supported are available from:
+
+* https://github.com/ebay/cors-filter

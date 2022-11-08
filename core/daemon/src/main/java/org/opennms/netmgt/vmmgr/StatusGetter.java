@@ -40,7 +40,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class StatusGetter {
-
     private static final Logger LOG = LoggerFactory.getLogger(StatusGetter.class);
     public static final Pattern SERVICE_STATUS_PATTERN = Pattern.compile("Status: OpenNMS:Name=(\\S+) = (\\S+)");
 
@@ -64,6 +63,7 @@ public class StatusGetter {
         final LinkedHashMap<String, String> results = new LinkedHashMap<String, String>();
 
         try {
+            @SuppressWarnings("unchecked")
             final List<String> statusResults = (List<String>)m_controller.doInvokeOperation("status");
 
             /*
@@ -105,7 +105,6 @@ public class StatusGetter {
          * We want our output to look like this:
          *     OpenNMS.Eventd         : running
          */
-        String spaces = "                    ";
         int running = 0;
         int services = 0;
         for (final Entry<String, String> entry : results.entrySet()) {
@@ -117,8 +116,7 @@ public class StatusGetter {
                 running++;
             }
             if (m_controller.isVerbose()) {
-                System.out.println("OpenNMS." + daemon
-                        + spaces.substring(Math.min(daemon.length(),spaces.length()-1)) + ": " + status);
+                System.out.println(StatusGetter.formatStatusEntry(daemon, status));
             }
         }
 
@@ -130,4 +128,9 @@ public class StatusGetter {
             m_status = Status.RUNNING;
         }
     }
+
+	static String formatStatusEntry(final String service, final String status) {
+	    return String.format("%-35s : %s", service.replace(":", "."), status.toLowerCase());
+	}
+
 }

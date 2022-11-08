@@ -1,0 +1,132 @@
+.Create a file to prevent installing ActiveMQ features on Minion start-up
+[source, console]
+----
+sudo vi etc/featuresBoot.d/disable-activemq.boot
+----
+
+.Add the following lines to disable ActiveMQ features and save the file
+[source, disable-activemq.boot]
+----
+!minion-jms
+!opennms-core-ipc-jms
+----
+
+.Create a file to install gRPC features on startup
+[source, shell]
+----
+sudo vi etc/featuresBoot.d/grpc.boot
+----
+
+.Add the gRPC client features
+[source, grpc.boot]
+----
+opennms-core-ipc-grpc-client
+----
+
+.Configure the gRPC client and the Minion location via the Karaf shell
+[source, console]
+----
+ssh -p 8201 admin@localhost
+----
+
+.Configure the Minion location
+[source, karaf]
+----
+config:edit org.opennms.minion.controller<1>
+config:property-set location my-location<2>
+config:update<3>
+----
+<1> Edit the Minion configuration.
+<2> Replace my-location with a location name that represents the remote location where the Minion is running.
+<3> Save the configuration.
+
+By default, the Minion generates a unique ID.
+Provide a human-readable Minion identifier yourself with `config:property-set id my-minion-name`
+
+.Configure the gRPC endpoint
+[source, karaf]
+----
+config:edit org.opennms.core.ipc.grpc.client
+config:property-set host core-instance-ip<1>
+config:property-set port 8990<2>
+config:update<3>
+----
+
+<1> Set the host to connect to the gRPC server running on the {page-component-title} Core instance. Replace the `core-instance-ip` accordingly.
+<2> Set the port of the gRPC server, which is `8990` by default.
+<3> Save the configuration.
+
+.Restart the Minion to apply the changes
+[source, console]
+----
+systemctl restart minion
+----
+
+.Verify the configuration using the health check in the Karaf shell
+[source, console]
+----
+ssh -p 8201 admin@localhost
+----
+
+.Run the health check command
+[source, karaf]
+----
+opennms:health-check
+----
+
+.Verify all components are configured properly
+[source, output]
+----
+admin@minion> opennms:health-check
+Verifying the health of the container
+
+Verifying installed bundles      [ Success  ]
+Connecting to gRPC IPC Server    [ Success  ]
+
+=> Everything is awesome
+----
+
+Optional. 
+To enable TLS for gRPC you must provide certificate files and enable it.
+The commands for TLS appear below.
+
+.Connect to the Karaf shell
+[source, console]
+----
+ssh -p 8201 admin@localhost
+----
+
+.Configure TLS and certificate parameters
+[source, karaf]
+----
+config:edit org.opennms.core.ipc.grpc.client
+config:property-set tls.enabled true<1>
+config:property-set trust.cert.filepath /custom-path/ca.crt<2>
+config:property-set client.cert.filepath /custom-path/client.crt<3>
+config:property-set client.private.key.filepath /custom-path/client.pem<4>
+config:update<5>
+----
+
+<1> Enable TLS for the gRPC server. 
+<2> Set the path to your CA certificate file.
+<3> Set the path to your client certificate file.
+<4> Set the path client certificate key file.
+<5> Save and update the configuration.
+
+This is optional, and you can set a maximum message size for gRPC.
+The maximum size must be the same on the {page-component-title} Core instance.
+The default message size is 10 MiB.
+
+.Configure maximum message size for gRPC in the Karaf shell
+[source, karaf]
+----
+config:edit org.opennms.core.ipc.grpc.client
+config:property-set max.message.size 10485760
+config:update
+----
+
+.Restart the {page-component-title} Core instance to apply changes
+[source, console]
+----
+sudo systemctl restart opennms
+----

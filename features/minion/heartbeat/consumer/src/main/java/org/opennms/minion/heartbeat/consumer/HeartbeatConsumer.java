@@ -34,22 +34,33 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.RejectedExecutionHandler;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.opennms.core.ipc.sink.api.MessageConsumer;
 import org.opennms.core.ipc.sink.api.MessageConsumerManager;
 import org.opennms.core.ipc.sink.api.SinkModule;
+import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.minion.heartbeat.common.HeartbeatModule;
 import org.opennms.minion.heartbeat.common.MinionIdentityDTO;
 import org.opennms.netmgt.dao.api.MinionDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.events.api.EventSubscriptionService;
 import org.opennms.netmgt.model.OnmsMonitoringSystem;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.minion.OnmsMinion;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
+import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
+import org.opennms.netmgt.provision.persist.policies.MatchingIpInterfacePolicy;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredService;
@@ -62,7 +73,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Sets;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, MinionIdentityDTO>, InitializingBean {
 
@@ -70,13 +83,22 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
 
     private static final boolean PROVISIONING = Boolean.valueOf(System.getProperty("opennms.minion.provisioning", "true"));
     private static final String PROVISIONING_FOREIGN_SOURCE_PATTERN = System.getProperty("opennms.minion.provisioning.foreignSourcePattern", "Minions");
+    // Default queue size is chosen as tests indicated that provisioning can import 500 nodes in 30 secs.
+    private static final Integer DEFAULT_QUEUE_SIZE = 500;
+    private static final Integer queueSize = SystemProperties.getInteger("opennms.minion.provisioning.queueSize", DEFAULT_QUEUE_SIZE);
 
     /**
      * Services on the Minion nodes must be associated to *some* interface, so we use the following constant:
      */
     private static final String MINION_INTERFACE = "127.0.0.1";
 
+    private static String DEFAULT_SNMP_POLICY = "snmp-policy";
+
+    private static String DEFAULT_SNMP_DETECTOR = "snmp-detector";
+
     private static final HeartbeatModule heartbeatModule = new HeartbeatModule();
+
+    private final AtomicInteger numofRejected = new AtomicInteger(0);
 
     @Autowired
     private MinionDao minionDao;
@@ -95,6 +117,16 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
     @Autowired
     @Qualifier("eventSubscriptionService")
     private EventSubscriptionService eventSubscriptionService;
+
+    @Autowired
+    private NodeDao nodeDao;
+
+    private final ThreadFactory threadFactory = new ThreadFactoryBuilder()
+            .setNameFormat("minion-provision-handler")
+            .build();
+
+    private final ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 1, 0L,
+            TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(queueSize), threadFactory, new RejectedExecutionHandlerImpl());
 
     @Override
     @Transactional
@@ -117,11 +149,6 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
 
         minion.setLocation(minionHandle.getLocation());
 
-        // Provision the minions node before we alter the location
-        this.provision(minion,
-                       prevLocation,
-                       nextLocation);
-
         if (minionHandle.getTimestamp() == null) {
             // The heartbeat does not contain a timestamp - use the current time
             minion.setLastUpdated(new Date());
@@ -142,31 +169,43 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
 
         minionDao.saveOrUpdate(minion);
 
-        if (prevLocation == null) {
-            final EventBuilder eventBuilder = new EventBuilder(EventConstants.MONITORING_SYSTEM_ADDED_UEI,
-                    "OpenNMS.Minion.Heartbeat");
-            eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_TYPE, OnmsMonitoringSystem.TYPE_MINION);
-            eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_ID, minionHandle.getId());
-            eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_LOCATION, nextLocation);
-            try {
-                eventProxy.send(eventBuilder.getEvent());
-            } catch (final EventProxyException e) {
-                throw new DataAccessResourceFailureException("Unable to send event", e);
-            }
-        } else if (!prevLocation.equals(nextLocation)) {
+        // Provision the minions node in a separate thread.
+        final OnmsMinion onmsMinion = minion;
 
-            final EventBuilder eventBuilder = new EventBuilder(EventConstants.MONITORING_SYSTEM_LOCATION_CHANGED_UEI,
-                    "OpenNMS.Minion.Heartbeat");
-            eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_TYPE, OnmsMonitoringSystem.TYPE_MINION);
-            eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_ID, minionHandle.getId());
-            eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_PREV_LOCATION, prevLocation);
-            eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_LOCATION, nextLocation);
-            try {
-                eventProxy.send(eventBuilder.getEvent());
-            } catch (final EventProxyException e) {
-                throw new DataAccessResourceFailureException("Unable to send event", e);
+        executor.execute(() -> {
+
+            this.provision(onmsMinion,
+                    prevLocation,
+                    nextLocation);
+
+            if (prevLocation == null) {
+                final EventBuilder eventBuilder = new EventBuilder(EventConstants.MONITORING_SYSTEM_ADDED_UEI,
+                        "OpenNMS.Minion.Heartbeat");
+                eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_TYPE, OnmsMonitoringSystem.TYPE_MINION);
+                eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_ID, minionHandle.getId());
+                eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_LOCATION, nextLocation);
+                try {
+                    eventProxy.send(eventBuilder.getEvent());
+                } catch (final EventProxyException e) {
+                    throw new DataAccessResourceFailureException("Unable to send event", e);
+                }
+            } else if (!prevLocation.equals(nextLocation)) {
+
+                final EventBuilder eventBuilder = new EventBuilder(EventConstants.MONITORING_SYSTEM_LOCATION_CHANGED_UEI,
+                        "OpenNMS.Minion.Heartbeat");
+                eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_TYPE, OnmsMonitoringSystem.TYPE_MINION);
+                eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_ID, minionHandle.getId());
+                eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_PREV_LOCATION, prevLocation);
+                eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_LOCATION, nextLocation);
+                try {
+                    eventProxy.send(eventBuilder.getEvent());
+                } catch (final EventProxyException e) {
+                    throw new DataAccessResourceFailureException("Unable to send event", e);
+                }
             }
-        }
+        });
+
+
 
     }
 
@@ -186,6 +225,27 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
         final String prevForeignSource = String.format(PROVISIONING_FOREIGN_SOURCE_PATTERN, prevLocation);
         final String nextForeignSource = String.format(PROVISIONING_FOREIGN_SOURCE_PATTERN, nextLocation);
 
+        PluginConfig policy = new PluginConfig(DEFAULT_SNMP_POLICY, "org.opennms.netmgt.provision.persist.policies.MatchingSnmpInterfacePolicy");
+        policy.addParameter("ifDescr", "~^docker.*$");
+        policy.addParameter("action", "DO_NOT_PERSIST");
+        policy.addParameter("matchBehavior", "ALL_PARAMETERS");
+
+        PluginConfig detector = new PluginConfig(DEFAULT_SNMP_DETECTOR, "org.opennms.netmgt.provision.detector.snmp.SnmpDetector");
+
+        // Return if minion with this foreignId and location already exists.
+        String foreignId = minion.getLabel() != null ? minion.getLabel() : minion.getId();
+        List<OnmsNode> nodes = nodeDao.findByForeignIdForLocation(foreignId, nextLocation);
+        if (!nodes.isEmpty()) {
+            //check for existing requisitions the policy and detectors are in place
+            final ForeignSource foreignSource = deployedForeignSourceRepository.getForeignSource(prevForeignSource);
+            if(foreignSource.getPolicy(DEFAULT_SNMP_POLICY) == null || foreignSource.getDetector(DEFAULT_SNMP_DETECTOR) == null) {
+                foreignSource.addPolicy(policy);
+                foreignSource.addDetector(detector);
+                deployedForeignSourceRepository.save(foreignSource);
+            }
+            return;
+        }
+
         final Set<String> alteredForeignSources = Sets.newHashSet();
 
         // Remove the node from the previous requisition, if location has changed
@@ -203,6 +263,17 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
         }
 
         Requisition nextRequisition = deployedForeignSourceRepository.getRequisition(nextForeignSource);
+        // check that existing foreignId requisition have detectors and policies in place
+        if (nextRequisition != null) {
+            final ForeignSource foreignSource = deployedForeignSourceRepository.getForeignSource(nextForeignSource);
+            if(foreignSource.getPolicy(DEFAULT_SNMP_POLICY) == null || foreignSource.getDetector(DEFAULT_SNMP_DETECTOR) == null) {
+                foreignSource.addPolicy(policy);
+                foreignSource.addDetector(detector);
+                deployedForeignSourceRepository.save(foreignSource);
+
+                alteredForeignSources.add(nextForeignSource);
+            }
+        }
         if (nextRequisition == null) {
             nextRequisition = new Requisition(nextForeignSource);
             nextRequisition.updateDateStamp();
@@ -210,10 +281,12 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
             // We have to save the requisition before we can alter the according foreign source definition
             deployedForeignSourceRepository.save(nextRequisition);
 
-            // Remove all policies and detectors from the foreign source
+            // Remove and replace all policies and detectors from the foreign source with defaults
+            // Default Snmp detector and policy for appliances
             final ForeignSource foreignSource = deployedForeignSourceRepository.getForeignSource(nextForeignSource);
-            foreignSource.setDetectors(Collections.emptyList());
-            foreignSource.setPolicies(Collections.emptyList());
+            foreignSource.setDetectors(List.of(detector));
+            foreignSource.setPolicies(List.of(policy));
+
             deployedForeignSourceRepository.save(foreignSource);
 
             alteredForeignSources.add(nextForeignSource);
@@ -227,9 +300,7 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
 
             requisitionNode = new RequisitionNode();
             requisitionNode.setNodeLabel(minion.getId());
-            requisitionNode.setForeignId(minion.getLabel() != null
-                                         ? minion.getLabel()
-                                         : minion.getId());
+            requisitionNode.setForeignId(foreignId);
             requisitionNode.setLocation(minion.getLocation());
             requisitionNode.putInterface(requisitionInterface);
 
@@ -241,7 +312,7 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
             alteredForeignSources.add(nextForeignSource);
         } else {
             // Change location in requisition.
-            if(!prevLocation.equals(nextLocation)) {
+            if (!prevLocation.equals(nextLocation)) {
                 requisitionNode.setLocation(nextLocation);
             }
             // The node already exists in the requisition
@@ -308,8 +379,62 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
         messageConsumerManager.registerConsumer(this);
     }
 
+    public void shutdown() {
+        executor.shutdown();
+    }
+
     @Override
     public SinkModule<MinionIdentityDTO, MinionIdentityDTO> getModule() {
         return heartbeatModule;
+    }
+
+    @VisibleForTesting
+    void setMinionDao(MinionDao minionDao) {
+        this.minionDao = minionDao;
+    }
+
+    @VisibleForTesting
+    void setEventProxy(EventProxy eventProxy) {
+        this.eventProxy = eventProxy;
+    }
+
+    @VisibleForTesting
+    void setDeployedForeignSourceRepository(ForeignSourceRepository deployedForeignSourceRepository) {
+        this.deployedForeignSourceRepository = deployedForeignSourceRepository;
+    }
+
+    @VisibleForTesting
+    ForeignSourceRepository getDeployedForeignSourceRepository() {
+        return deployedForeignSourceRepository;
+    }
+
+    @VisibleForTesting
+    public void setEventSubscriptionService(EventSubscriptionService eventSubscriptionService) {
+        this.eventSubscriptionService = eventSubscriptionService;
+    }
+
+    @VisibleForTesting
+    void setNodeDao(NodeDao nodeDao) {
+        this.nodeDao = nodeDao;
+    }
+
+    public ThreadPoolExecutor getExecutor() {
+        return executor;
+    }
+
+
+    private class RejectedExecutionHandlerImpl implements RejectedExecutionHandler {
+
+        @Override
+        public void rejectedExecution(Runnable runnable, ThreadPoolExecutor threadPoolExecutor) {
+            // Ignore.
+            LOG.debug("Provisioning queue for Minions with size {} is full , dropping heartbeat message ", threadPoolExecutor.getQueue().size());
+            numofRejected.incrementAndGet();
+        }
+    }
+
+    @VisibleForTesting
+    AtomicInteger getNumofRejected() {
+        return numofRejected;
     }
 }

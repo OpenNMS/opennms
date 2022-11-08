@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 REST_USER=admin
 REST_PASSWD=admin

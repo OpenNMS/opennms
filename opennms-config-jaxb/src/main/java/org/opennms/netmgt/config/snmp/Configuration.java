@@ -168,6 +168,10 @@ public class Configuration implements Serializable {
     @XmlAttribute(name="ttl")
     private Long m_ttl;
 
+
+    @XmlAttribute(name = "encrypted")
+    private Boolean m_encrypted;
+
     public Configuration() {
         super();
     }
@@ -763,6 +767,15 @@ public class Configuration implements Serializable {
         m_ttl = ttl;
     }
 
+
+    public Boolean getEncrypted() {
+        return m_encrypted != null ? m_encrypted : false;
+    }
+
+    public void setEncrypted(Boolean encrypted) {
+        m_encrypted = encrypted;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -787,6 +800,7 @@ public class Configuration implements Serializable {
         result = prime * result + ((m_timeout == null) ? 0 : m_timeout.hashCode());
         result = prime * result + ((m_version == null) ? 0 : m_version.hashCode());
         result = prime * result + ((m_writeCommunity == null) ? 0 : m_writeCommunity.hashCode());
+        result = prime * result + ((m_ttl == null) ? 0 : m_ttl.hashCode());
         return result;
     }
 
@@ -942,6 +956,13 @@ public class Configuration implements Serializable {
         } else if (!m_writeCommunity.equals(other.m_writeCommunity)) {
             return false;
         }
+        if (m_ttl == null) {
+            if (other.m_ttl != null) {
+                return false;
+            }
+        } else if (!m_ttl.equals(other.m_ttl)) {
+            return false;
+        }
         return true;
     }
 
@@ -951,7 +972,7 @@ public class Configuration implements Serializable {
                 + m_securityName + ", securityLevel=" + m_securityLevel + ", authPassphrase=" + m_authPassphrase + ", authProtocol=" + m_authProtocol + ", engineId=" + m_engineId
                 + ", contextEngineId=" + m_contextEngineId + ", contextName=" + m_contextName + ", privacyPassphrase=" + m_privacyPassphrase + ", privacyProtocol=" + m_privacyProtocol
                 + ", enterpriseId=" + m_enterpriseId + ", version=" + m_version + ", writeCommunity=" + m_writeCommunity + ", readCommunity=" + m_readCommunity + ", timeout=" + m_timeout
-                + ", retry=" + m_retry + ", port=" + m_port + "]";
+                + ", retry=" + m_retry + ", port=" + m_port + ", ttl=" + m_ttl + ", encrypted=" + m_encrypted + "]";
     }
 
 }

@@ -33,12 +33,6 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.Map;
 
-import com.github.tomakehurst.wiremock.client.WireMock;
-import com.google.common.collect.Table;
-import com.google.common.collect.TreeBasedTable;
-
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRParameter;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -46,6 +40,13 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.netmgt.jasper.helper.MeasurementsHelper;
+
+import com.github.tomakehurst.wiremock.client.WireMock;
+import com.google.common.collect.Table;
+import com.google.common.collect.TreeBasedTable;
+
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRParameter;
 
 /**
  * Verifies that the {@link MeasurementQueryExecutor} works correctly when running not in jvm mode.

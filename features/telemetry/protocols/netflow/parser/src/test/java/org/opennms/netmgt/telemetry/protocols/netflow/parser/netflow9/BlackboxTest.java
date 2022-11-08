@@ -46,6 +46,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow9.proto.Header;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow9.proto.Packet;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.SequenceNumberTracker;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.TcpSession;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
 
@@ -79,7 +80,8 @@ public class BlackboxTest {
                 new Object[]{Arrays.asList("netflow9_test_cisco_1941K9.dat")},
                 new Object[]{Arrays.asList("netflow9_cisco_asr1001x_tpl259.dat")},
                 new Object[]{Arrays.asList("netflow9_test_paloalto_panos_tpl.dat", "netflow9_test_paloalto_panos_data.dat")},
-                new Object[]{Arrays.asList("netflow9_test_juniper_data_b4_tmpl.dat")}
+                new Object[]{Arrays.asList("netflow9_test_juniper_data_b4_tmpl.dat")},
+                new Object[]{Arrays.asList("nms-14130.dat")}
         );
     }
 
@@ -91,7 +93,7 @@ public class BlackboxTest {
 
     @Test
     public void testFiles() throws Exception {
-        final Session session = new TcpSession(InetAddress.getLoopbackAddress());
+        final Session session = new TcpSession(InetAddress.getLoopbackAddress(), () -> new SequenceNumberTracker(32));
 
         for (final String file : this.files) {
             try (final FileChannel channel = FileChannel.open(FOLDER.resolve(file))) {

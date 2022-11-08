@@ -272,49 +272,4 @@ angular.module(MODULE_NAME, [ 'onms.http', 'ngResource' ])
 			}
 		}
 	);
-})
-
-.factory('scanReportLogFactory', /* @ngInject */ function($resource, $log, $http, $location) {
-	return $resource(BASE_REST_URL + '/scanreports/:id/logs', { id: '@id' },
-		{
-			'query': { 
-				method: 'GET',
-				transformResponse: function(data, headers, status) {
-					var ret;
-					switch(status) {
-						case 302: // refresh on redirect
-							$window.location.href = $location.absUrl();
-							ret = {};
-							break;
-						case 204: // no content
-							ret = {};
-							break;
-						default:
-							ret = {text:data};
-					}
-					//$log.debug('$resource(logs) returning: ' + angular.toJson(ret));
-					return ret;
-				}
-			}
-		}
-	);
-})
-
-// ScanReport REST $resource
-.factory('scanReportFactory', /* @ngInject */ function($resource, $log, $http, $location) {
-	return $resource(BASE_REST_URL + '/scanreports/:id', { id: '@id' },
-		{
-			'query': { 
-				method: 'GET',
-				isArray: true,
-				// Append a transformation that will unwrap the item array
-				transformResponse: appendTransform($http.defaults.transformResponse, function(data, headers, status) {
-					return arrayify(data, headers, status, 'scan-report');
-				})
-			},
-			'update': { 
-				method: 'PUT'
-			}
-		}
-	);
 });

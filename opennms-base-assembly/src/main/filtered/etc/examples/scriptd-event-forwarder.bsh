@@ -1,5 +1,5 @@
 
-void forwardEvent(Event event) {
+void forwardEvent(IEvent event) {
     if (event.snmp == null) {
         try {
 
@@ -10,9 +10,8 @@ void forwardEvent(Event event) {
             /*  This sends an enterprise id of ".1.3.6.1.4.1.5813.1" from agent "172.20.1.11" (einstein), 
 	        which should be the IP address of the OpenNMS system, generic value of 6 and specific value of 1 */
 
-            t_dbid = new Integer(event.dbid);
-            if (t_dbid != null)
-                snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.1", "OctetString", "text", t_dbid.toString());
+            if (event.hasDbid())
+                snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.1", "OctetString", "text", event.dbid.toString());
             else
                 snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.1", "OctetString", "text", "null");
             if (event.distPoller != null)
@@ -20,7 +19,7 @@ void forwardEvent(Event event) {
             else
                 snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.2", "OctetString", "text", "null");
             if (event.creationTime != null)
-                snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.3", "OctetString", "text", event.creationTime);
+                snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.3", "OctetString", "text", event.creationTime.toString());
             else
                 snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.3", "OctetString", "text", "null");
             if (event.masterStation != null)
@@ -35,22 +34,20 @@ void forwardEvent(Event event) {
                 snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.7", "OctetString", "text", event.source);
             else
                 snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.7", "OctetString", "text", "null");
-            t_nodeid = new Long(event.nodeid);
-            if (t_nodeid != null)
-                snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.8", "OctetString", "text", t_nodeid.toString());
+            if (event.hasNodeid())
+                snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.8", "OctetString", "text", event.nodeid.toString());
             else
                 snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.8", "OctetString", "text", "null");
             if (event.time != null)
-                snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.9", "OctetString", "text", event.time);
+                snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.9", "OctetString", "text", event.time.toString());
             else
                 snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.9", "OctetString", "text", "null");
             if (event.host != null)
                 snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.10", "OctetString", "text", event.host);
             else
                 snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.10", "OctetString", "text", "null");
-            t_interface = event.getInterface();
-            if (t_interface != null)
-                snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.11", "OctetString", "text", t_interface);
+            if (event.getInterface() != null)
+                snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.11", "OctetString", "text", event.getInterface());
             else
                 snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.11", "OctetString", "text", "null");
             if (event.snmphost != null)
@@ -90,11 +87,9 @@ void forwardEvent(Event event) {
                 snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.20", "OctetString", "text", "null");
 
             String retParmVal = null;
-            if (t_interface != null) {
-                retParmVal = event.getInterface();
+            if (event.getInterface() != null) {
                 try {
-                    java.net.InetAddress inet = InetAddressUtils.addr(retParmVal);
-                    retParmVal = inet.getHostName();
+                    retParmVal = InetAddressUtils.addr(event.getInterface()).getHostName();
                 } catch (java.net.UnknownHostException e) {
                 }
             }
@@ -103,9 +98,10 @@ void forwardEvent(Event event) {
             else
                 snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.21", "OctetString", "text", "null");
 
-            node = bsf.lookupBean("node");
-            if (node != null) 
+            if (event.hasNodeid()) {
+                node = bsf.lookupBean("node");
                 snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.22", "OctetString", "text", node.label);
+            }
             else
                 snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.22", "OctetString", "text", "null");
 

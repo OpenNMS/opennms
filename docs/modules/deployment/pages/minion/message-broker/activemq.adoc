@@ -1,0 +1,57 @@
+.Connect to the Karaf shell with user `admin` and password `admin`
+[source, console]
+----
+ssh -p 8201 admin@localhost
+----
+
+.Configure ActiveMQ and remote location name
+[source, karaf]
+----
+config:edit org.opennms.minion.controller<1>
+config:property-set location my-location<2>
+config:property-set broker-url failover:tcp://core-instance-ip:61616<3>
+config:update<4>
+----
+<1> Edit the Minion configuration.
+<2> Replace `my-location` with a location name that represents the remote location where the Minion is running.
+<3> Replace the broker URL that goes to your {page-component-title} Core instance. If you have ActiveMQ with SSL running, replace `tcp` with `ssl`.
+<4> Save the configuration.
+
+By default, the Minion generates a unique ID.
+Provide a human-readable Minion identifier yourself with `config:property-set id my-minion-name`
+
+.Configure credentials for the ActiveMQ message broker and exit Karaf shell
+[source, karaf]
+----
+opennms:scv-set opennms.broker my-minion-user my-minion-password<2>
+----
+
+NOTE: The credentials are encrypted on disk in `$\{MINION_HOME}/etc/scv.jce`.
+
+Exit the Karaf shell with kbd:[Ctrl+d]
+
+.Restart the Minion to apply the configuration
+[source,console]
+----
+sudo systemctl restart minion
+----
+
+.Verify the configuration using the health check in the Karaf shell
+[source,console]
+----
+ssh -p 8201 admin@localhost
+----
+
+.Run the health check to verify connectivity
+[source,karaf]
+----
+opennms:health-check
+----
+
+.The result should show success for each component
+[source,output]
+----
+Verifying installed bundles      [ Success  ]
+Connecting to JMS Broker         [ Success  ]
+=> Everything is awesome
+----

@@ -64,6 +64,8 @@ import org.slf4j.LoggerFactory;
  */
 public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWriter {
     private static final Logger LOG = LoggerFactory.getLogger(MockDatabase.class);
+
+    private String distPoller = "00000000-0000-0000-0000-000000000000";
 	
     public MockDatabase(String dbName) throws Exception {
         this(dbName, true);
@@ -84,7 +86,7 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
 
         setClassName(MockDatabase.class.getName());
         setMethodName("MockDatabase constructor");
-        setTestDetails("I do not know who called me.... which is sad. Will you be my friend?");
+        setTestDetails("I do not know who called me.... which is sad. Will you be my friend and help me fix this?\n" + new Exception().getStackTrace());
 
         if (createNow) {
             create();
@@ -283,7 +285,7 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
                 (e.hasNodeid() ? new Long(e.getNodeid()) : null),
                 e.getInterface(),
                 getServiceID(e.getService()),
-                e.getDistPoller() == null ? "00000000-0000-0000-0000-000000000000" : e.getDistPoller(),
+                e.getDistPoller() == null ? distPoller : e.getDistPoller(),
                 "Y",
                 "Y",
                 e.getTticket() == null ? "" : e.getTticket().getContent(),
@@ -480,6 +482,17 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
     public String getNextUserNotifIdSql() {
         return getNextSequenceValStatement("userNotifNxtId");
     }
-    
 
+
+    public String getNextSequenceValStatement(String seqName) {
+        return "select nextval('" + seqName + "')";
+    }
+
+    protected Integer getNextId(String nxtIdStmt) {
+        return getJdbcTemplate().queryForObject(nxtIdStmt, Integer.class);
+    }
+
+    public void setDistPoller(String distPoller) {
+        this.distPoller = distPoller;
+    }
 }

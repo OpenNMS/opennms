@@ -3,7 +3,7 @@
   <parent>
     <artifactId>dependencies</artifactId>
     <groupId>org.opennms</groupId>
-    <version>26.1.3-SNAPSHOT</version>
+    <version>32.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
@@ -12,14 +12,25 @@
   <name>OpenNMS :: Dependencies :: JAXB</name>
   <dependencies>
     <dependency>
+      <groupId>org.glassfish.jaxb</groupId>
+      <artifactId>jaxb-runtime</artifactId>
+      <version>${jaxbRuntimeVersion}</version>
+    </dependency>
+    <dependency>
       <groupId>org.eclipse.persistence</groupId>
-      <artifactId>org.eclipse.persistence.moxy</artifactId>
+      <artifactId>eclipselink</artifactId>
       <version>${eclipselinkVersion}</version>
+      <exclusions>
+          <exclusion>
+              <groupId>org.eclipse.persistence</groupId>
+              <artifactId>javax.persistence</artifactId>
+          </exclusion>
+      </exclusions>
     </dependency>
     <!-- MOXy relies on javax.mail classes for Base64 decoding -->
     <dependency>
-      <groupId>javax.mail</groupId>
-      <artifactId>mail</artifactId>
+      <groupId>com.sun.mail</groupId>
+      <artifactId>jakarta.mail</artifactId>
     </dependency>
   </dependencies>
 </project>

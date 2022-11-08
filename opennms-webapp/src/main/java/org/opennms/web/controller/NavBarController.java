@@ -34,10 +34,14 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
-import java.util.HashMap;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -45,10 +49,15 @@ import javax.servlet.http.HttpServletResponse;
 import org.opennms.core.time.CentralizedDateTimeFormat;
 import org.opennms.netmgt.config.NotifdConfigFactory;
 import org.opennms.web.api.Authentication;
+import org.opennms.web.navigate.MenuContext;
+import org.opennms.web.api.MenuProvider;
 import org.opennms.web.api.OnmsHeaderProvider;
+import org.opennms.web.navigate.DefaultMenuEntry;
 import org.opennms.web.navigate.DisplayStatus;
+import org.opennms.web.navigate.MenuEntry;
 import org.opennms.web.navigate.NavBarEntry;
 import org.opennms.web.navigate.NavBarModel;
+import org.opennms.web.navigate.RoleBasedNavBarEntry;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
@@ -68,7 +77,7 @@ import freemarker.template.TemplateModelException;
  *
  * @author jwhite
  */
-public class NavBarController extends AbstractController implements InitializingBean, OnmsHeaderProvider {
+public class NavBarController extends AbstractController implements InitializingBean, OnmsHeaderProvider, MenuProvider {
     private List<NavBarEntry> m_navBarItems;
     private CentralizedDateTimeFormat dateTimeFormat;
     private Configuration cfg;
@@ -94,6 +103,22 @@ public class NavBarController extends AbstractController implements Initializing
     @Override
     protected ModelAndView handleRequestInternal(final HttpServletRequest request, final HttpServletResponse response) throws Exception {
         return new ModelAndView(createView(), createModel(request));
+    }
+
+    @Override
+    public List<MenuEntry> getMenu(final MenuContext context) {
+        final List<MenuEntry> menu = new ArrayList<>();
+        for (final NavBarEntry entry : getNavBarItems()) {
+            final DefaultMenuEntry defaultMenuEntry = new DefaultMenuEntry(entry.getName(), entry.getUrl(), entry.evaluate(context));
+            if (entry.getEntries() != null) {
+                final List<MenuEntry> entries = entry.getEntries().stream()
+                        .map(e -> new DefaultMenuEntry(e.getName(), e.getUrl(), e.evaluate(context)))
+                        .collect(Collectors.toList());
+                defaultMenuEntry.addEntries(entries);
+            }
+            menu.add(defaultMenuEntry);
+        }
+        return menu;
     }
 
     private Map<String, Object> createModel(final HttpServletRequest request) {
@@ -124,6 +149,7 @@ public class NavBarController extends AbstractController implements Initializing
 
         // Helper functions
         model.put("shouldDisplay", new ShouldDisplayEntryMethod(request));
+        model.put("isAdminLink", new IsAdminLinkEntryMethod());
 
         return model;
     }
@@ -162,7 +188,7 @@ public class NavBarController extends AbstractController implements Initializing
 
     @Override
     public String getHeaderHtml(HttpServletRequest request) throws Exception {
-        return createView().renderMergedOutputModel(createModel(request), request);
+        return createView().renderMergedOutputModel(createModel(request));
     }
 
     /**
@@ -178,23 +204,19 @@ public class NavBarController extends AbstractController implements Initializing
             this.template = template;
         }
 
-        public String renderMergedOutputModel(Map<String, Object> model,
-                HttpServletRequest request) throws Exception {
+        public String renderMergedOutputModel(Map<String, Object> model) throws Exception {
             StringWriter writer = new StringWriter();
-            renderMergedOutputModel(model, request, writer);
+            renderMergedOutputModel(model,  writer);
             return writer.toString();
         }
 
-        public void renderMergedOutputModel(Map<String, Object> model,
-                HttpServletRequest request, Writer writer) throws Exception {
+        public void renderMergedOutputModel(Map<String, Object> model, Writer writer) throws Exception {
             template.process(model, writer);
         }
 
         @Override
-        protected void renderMergedOutputModel(Map<String, Object> model,
-                HttpServletRequest request, HttpServletResponse response)
-                throws Exception {
-            renderMergedOutputModel(model, request, response.getWriter());
+        protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) throws Exception {
+            renderMergedOutputModel(model, response.getWriter());
         }
     }
 
@@ -231,6 +253,36 @@ public class NavBarController extends AbstractController implements Initializing
                 throw new TemplateModelException("Wrong arguments");
             }
             return entryDisplayStatus != DisplayStatus.NO_DISPLAY;
+        }
+    }
+
+    public static class IsAdminLinkEntryMethod implements TemplateMethodModelEx {
+        public IsAdminLinkEntryMethod () {
+        }
+
+        @Override
+        @SuppressWarnings("rawtypes")
+        public Boolean exec(List arguments) throws TemplateModelException {
+            if (arguments.size() == 1) {
+                /*
+                 * Evaluate the NavBarEntry's display status based on the
+                 * current request.
+                 */
+                NavBarEntry entry = (NavBarEntry) ((StringModel) arguments
+                    .get(0)).getWrappedObject();
+
+                if (entry instanceof RoleBasedNavBarEntry) {
+                    RoleBasedNavBarEntry roleEntry = (RoleBasedNavBarEntry) entry;
+
+                    return Arrays.stream(roleEntry.getRoles().split(","))
+                        .map(String::trim)
+                        .anyMatch(s -> s.toUpperCase(Locale.ROOT).equals(Authentication.ROLE_ADMIN));
+                }
+            } else {
+                throw new TemplateModelException("Wrong arguments");
+            }
+
+            return false;
         }
     }
 }

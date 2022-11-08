@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 SHUNITDIR="$(dirname "$0")"
 SHUNITDIR="$(cd "$SHUNITDIR" || exit 1; pwd)"

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.provision.persist;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -103,12 +104,7 @@ public class OnmsIpInterfaceRequisition {
         return m_iface.getDescr();
     }
 
-    /**
-     * <p>getIpAddr</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String getIpAddr() {
+    public InetAddress getIpAddr() {
         return m_iface.getIpAddr();
     }
 

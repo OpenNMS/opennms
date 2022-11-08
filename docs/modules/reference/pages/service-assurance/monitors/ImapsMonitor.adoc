@@ -1,0 +1,52 @@
+
+= ImapsMonitor
+
+The IMAPS monitor tests the response of an SSL-enabled IMAP server.
+The IMAPS monitor is an SSL-enabled extension of the IMAP monitor with a default TCP port value of 993.
+All ImapMonitor parameters apply, so refer to <<service-assurance/monitors/ImapMonitor.adoc#poller-imap-monitor, ImapMonitor>> for more information.
+
+== Monitor facts
+
+[cols="1,7"]
+|===
+| Class Name
+| `org.opennms.netmgt.poller.monitors.ImapsMonitor`
+|===
+
+== Configuration and Use
+
+.Optional monitor-specific parameter for the ImapsMonitor
+[options="header"]
+[cols="1,3,2"]
+|===
+| Parameter
+| Description
+| Default
+
+| port
+| The destination port to attempt connections on.
+| 993
+|===
+
+This monitor implements the <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+== Examples
+
+Example uses CentOS/RHEL path name.
+For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
+
+[source, xml]
+----
+<!-- IMAPS service at OpenNMS.org is on port 9993 -->
+<service name="IMAPS" interval="300000" user-defined="false" status="on">
+  <parameter key="port" value="9993"/>
+  <parameter key="version" value="3"/>
+  <parameter key="retry" value="2"/>
+  <parameter key="timeout" value="3000"/>
+  <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/>
+  <parameter key="rrd-base-name" value="imaps"/>
+  <parameter key="ds-name" value="imaps"/>
+</service>
+
+<monitor service="IMAPS" class-name="org.opennms.netmgt.poller.monitors.ImapsMonitor" />
+----

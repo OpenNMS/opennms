@@ -64,6 +64,11 @@ public class SnmpGetNodesServlet extends HttpServlet {
 
     private static final String NODE_QUERY = "SELECT DISTINCT node.nodeid, node.nodelabel FROM node, ipinterface, ifservices WHERE node.nodeid = ipinterface.nodeid AND ipinterface.id = ifservices.ipinterfaceid AND ifservices.serviceid = ? AND ipinterface.ismanaged != 'D' ORDER BY node.nodelabel, node.nodeid";
 
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        doPost(req, resp);
+    }
+
     /** {@inheritDoc} */
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

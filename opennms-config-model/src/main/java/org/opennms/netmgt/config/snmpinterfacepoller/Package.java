@@ -231,7 +231,7 @@ public class Package implements Serializable {
 
         if (obj instanceof Package) {
             final Package that = (Package)obj;
-            return Objects.equals(this.m_name, this.m_name)
+            return Objects.equals(this.m_name, that.m_name)
                     && Objects.equals(this.m_filter, that.m_filter)
                     && Objects.equals(this.m_specifics, that.m_specifics)
                     && Objects.equals(this.m_includeRanges, that.m_includeRanges)

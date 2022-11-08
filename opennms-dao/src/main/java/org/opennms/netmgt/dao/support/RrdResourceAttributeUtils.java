@@ -110,7 +110,7 @@ public abstract class RrdResourceAttributeUtils {
         
         for (final File file : files) {
             String fileName = file.getName();
-            if (ResourceTypeUtils.isStoreByGroup() && !ResourceTypeUtils.isResponseTime(relativePath)) {
+            if (ResourceTypeUtils.isStoreByGroup() && !(ResourceTypeUtils.isResponseTime(relativePath) || ResourceTypeUtils.isStatus(relativePath))) {
                 String groupName = fileName.substring(0, fileName.length() - suffixLength);
                 Properties props = getDsProperties(resourceDir);
                 for (Object o : props.keySet()) {
@@ -179,7 +179,7 @@ public abstract class RrdResourceAttributeUtils {
     }
 
     private static Properties getStringProperties(File resourceDir) {
-        Assert.notNull(resourceDir, "resourceDir argumnet must not be null");
+        Assert.notNull(resourceDir, "resourceDir argument must not be null");
         return getProperties(new File(resourceDir, STRINGS_PROPERTIES_FILE_NAME));
     }
 

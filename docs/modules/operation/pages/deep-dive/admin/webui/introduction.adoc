@@ -1,0 +1,4 @@
+
+= Administrative Web Interface
+
+This section describes the main sections of the {page-component-title} web UI.

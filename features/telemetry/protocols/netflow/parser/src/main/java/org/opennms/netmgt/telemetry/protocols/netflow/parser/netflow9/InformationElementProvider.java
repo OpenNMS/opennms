@@ -150,5 +150,13 @@ public class InformationElementProvider implements InformationElementDatabase.Pr
         adder.add(Protocol.NETFLOW9, 103, UnsignedValue::parserWith32Bit, "layer2packetSectionSize", Semantics.DEFAULT);
         adder.add(Protocol.NETFLOW9, 104, OctetArrayValue::parser, "layer2packetSectionData", Semantics.DEFAULT);
         // 105-127 reserved for future use by cisco
+
+        // Cisco also supports absolute timestamps on some platforms, see NMS-13006
+        adder.add(Protocol.NETFLOW9, 152, UnsignedValue::parserWith64Bit, "flowStartMilliseconds", Semantics.DEFAULT);
+        adder.add(Protocol.NETFLOW9, 153, UnsignedValue::parserWith64Bit, "flowEndMilliseconds", Semantics.DEFAULT);
+
+        // these IEs also appear in some NF9 implementations, see NMS-14130
+        adder.add(Protocol.NETFLOW9, 252, UnsignedValue::parserWith32Bit, "ingressPhysicalInterface", Semantics.DEFAULT);
+        adder.add(Protocol.NETFLOW9, 253, UnsignedValue::parserWith32Bit, "egressPhysicalInterface", Semantics.DEFAULT);
     }
 }

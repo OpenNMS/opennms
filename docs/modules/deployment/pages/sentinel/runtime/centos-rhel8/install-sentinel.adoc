@@ -1,0 +1,64 @@
+.Install OpenJDK 11 JRE runtime
+[source, console]
+----
+sudo dnf -y install java-11-openjdk-headless
+----
+
+ifeval::["{page-component-title}" == "Horizon"]
+include::../../../repos/rhel-centos/horizon-rhel8.adoc[]
+endif::[]
+
+ifeval::["{page-component-title}" == "Meridian"]
+include::../../../repos/rhel-centos/meridian-rhel8.adoc[]
+endif::[]
+
+.Installing the of {page-component-title} Sentinel
+[source, console]
+----
+ifeval::["{page-component-title}" == "Horizon"]
+sudo dnf -y install opennms-sentinel
+endif::[]
+ifeval::["{page-component-title}" == "Meridian"]
+sudo dnf -y install meridian-sentinel
+endif::[]
+----
+
+TIP: Disable the OpenNMS {page-component-title} repository after installation to prevent unwanted upgrades when upgrading other packages on the server.
+     After upgrade, {page-component-title} requires manual steps to upgrade configuration files or migrate database schemas to a new version.
+     For this reason, it is recommended to exclude the {page-component-title} packages from update except when you are planning on performing an upgrade.
+
+.Disable auto updates for {page-component-title} Sentinel
+[source, console]
+----
+ifeval::["{page-component-title}" == "Horizon"]
+sudo dnf config-manager --disable opennms-repo-stable-*
+endif::[]
+ifeval::["{page-component-title}" == "Meridian"]
+sudo dnf config-manager --disable meridian
+endif::[]
+----
+
+.Verify directory structure with the tree command
+[source, console]
+----
+sudo dnf -y install tree
+tree /opt/sentinel -L 1
+----
+
+.Directory structure after successful installation
+[source, output]
+----
+/opt/sentinel
+├── bin
+├── COPYING
+├── deploy
+├── etc
+├── lib
+└── system
+----
+
+.Enable {page-component-title} Sentinel on system boot and start immediately
+[source, console]
+----
+sudo systemctl enable --now sentinel
+----

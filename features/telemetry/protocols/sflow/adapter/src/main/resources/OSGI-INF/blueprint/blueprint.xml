@@ -8,7 +8,7 @@
 		http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
 ">
-	<reference id="flowRepository" interface="org.opennms.netmgt.flows.api.FlowRepository" availability="mandatory" />
+	<reference id="pipeline" interface="org.opennms.netmgt.flows.processing.Pipeline" availability="mandatory" />
 	<reference id="telemetryRegistry" interface="org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry" availability="mandatory" />
 
 	<reference id="collectionAgentFactory" interface="org.opennms.netmgt.collection.api.CollectionAgentFactory" />
@@ -22,7 +22,7 @@
 	<!-- SFlow Factory and Adapter -->
 	<bean id="sflowFactory" class="org.opennms.netmgt.telemetry.protocols.sflow.adapter.SFlowAdapterFactory">
 		<property name="telemetryRegistry" ref="telemetryRegistry"/>
-		<property name="flowRepository" ref="flowRepository" />
+		<property name="pipeline" ref="pipeline" />
 	</bean>
 	<service ref="sflowFactory" interface="org.opennms.netmgt.telemetry.api.adapter.AdapterFactory">
 		<service-properties>

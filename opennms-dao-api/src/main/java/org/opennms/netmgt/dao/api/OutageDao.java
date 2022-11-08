@@ -29,12 +29,16 @@
 package org.opennms.netmgt.dao.api;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.opennms.netmgt.model.HeatMapElement;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.ServiceSelector;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.model.outage.CurrentOutageDetails;
 import org.opennms.netmgt.model.outage.OutageSummary;
 
@@ -59,10 +63,22 @@ public interface OutageDao extends LegacyOnmsDao<OnmsOutage, Integer> {
     Collection<OnmsOutage> currentOutages();
 
     /**
+     * Open outages grouped by {@link OnmsMonitoredService} id.
+     */
+    Map<Integer, Set<OnmsOutage>> currentOutagesByServiceId();
+
+    /**
      * Return the current open outage for the service or if the service
      * is up and has no open outage, return null.
      */
     OnmsOutage currentOutageForService(OnmsMonitoredService service);
+
+    OnmsOutage currentOutageForServiceFromPerspective(final OnmsMonitoredService service, final OnmsMonitoringLocation perspective);
+
+    /**
+     * Return all current open outages for the given service be it detected from Perspective Poller.
+     */
+    Collection<OnmsOutage> currentOutagesForServiceFromPerspectivePoller(OnmsMonitoredService service);
 
     /**
      * Finds the latest (unresolved) outages that match the given services.
@@ -114,4 +130,6 @@ public interface OutageDao extends LegacyOnmsDao<OnmsOutage, Integer> {
      * @return the heatmap elements for this query
      */
     List<HeatMapElement> getHeatMapItemsForEntity(String entityNameColumn, String entityIdColumn, String restrictionColumn, String restrictionValue, String... groupByColumns);
+
+    Collection<OnmsOutage> getStatusChangesForApplicationIdBetween(final Date startDate, final Date endDate, final Integer applicationId);
 }

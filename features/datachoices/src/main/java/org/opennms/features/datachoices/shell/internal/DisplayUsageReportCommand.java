@@ -60,7 +60,7 @@ public class DisplayUsageReportCommand extends OsgiCommandSupport implements Act
         String reportAsJson = m_usageStatisticsReporter.generateReport().toJson(true);
         long delta = System.currentTimeMillis() - then;
 
-        System.out.printf("Generated usage statitics reports in %.2f seconds:\n%s\n", delta / 1000f, reportAsJson);
+        System.out.printf("Generated usage statistics reports in %.2f seconds:\n%s\n", delta / 1000f, reportAsJson);
         return null;
     }
 

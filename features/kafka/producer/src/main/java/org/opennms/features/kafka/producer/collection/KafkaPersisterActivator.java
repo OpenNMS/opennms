@@ -33,17 +33,17 @@ import java.util.Hashtable;
 
 import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.support.TransactionOperations;
 
 public class KafkaPersisterActivator implements BundleActivator {
 
-    private static final Logger LOG = LoggerFactory.getLogger(KafkaPersister.class);
+    private static final Logger LOG = LoggerFactory.getLogger(KafkaPersisterActivator.class);
     public static final String FORWARD_METRICS = "forward.metrics";
     public static final String PRODUCER_CONFIG = "org.opennms.features.kafka.producer";
     private static final String METRIC_TOPIC = "metricTopic";
@@ -75,8 +75,9 @@ public class KafkaPersisterActivator implements BundleActivator {
                 NodeDao nodeDao = context.getService(context.getServiceReference(NodeDao.class));
                 SessionUtils sessionUtils = context
                         .getService(context.getServiceReference(SessionUtils.class));
+                ResourceDao resourceDao = context.getService(context.getServiceReference(ResourceDao.class));
 
-                CollectionSetMapper collectionSetMapper = new CollectionSetMapper(nodeDao, sessionUtils);
+                CollectionSetMapper collectionSetMapper = new CollectionSetMapper(nodeDao, sessionUtils, resourceDao);
                 KafkaPersisterFactory kafkaPersisterFactory = new KafkaPersisterFactory();
                 kafkaPersisterFactory.setCollectionSetMapper(collectionSetMapper);
                 kafkaPersisterFactory.setConfigAdmin(configAdmin);

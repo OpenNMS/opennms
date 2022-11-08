@@ -59,14 +59,14 @@ public class IncludeUrl implements Serializable {
      * inner value
      */
     @XmlValue
-    private String m_url;
+    private String url;
 
     /**
      * The monitoring location where this include URL
      *  will be executed.
      */
     @XmlAttribute(name = "location")
-    private String m_location;
+    private String location;
 
     /**
      * The number of times a ping is retried for
@@ -76,76 +76,76 @@ public class IncludeUrl implements Serializable {
      *  default.
      */
     @XmlAttribute(name = "retries")
-    private Integer m_retries;
+    private Integer retries;
 
     /**
      * The timeout on each poll for addresses listed in
      *  this file. This timeout overrides the default.
      */
     @XmlAttribute(name = "timeout")
-    private Long m_timeout;
+    private Long timeout;
 
     @XmlAttribute(name = "foreign-source")
-    private String m_foreignSource;
+    private String foreignSource;
 
     public IncludeUrl() {
     }
 
     public IncludeUrl(final String url) {
-        m_url = url;
+        this.url = url;
     }
 
     public Optional<String> getUrl() {
-        return Optional.ofNullable(m_url);
+        return Optional.ofNullable(url);
     }
 
     public void setUrl(final String url) {
-        m_url = ConfigUtils.assertNotEmpty(url, "URL");
+        this.url = ConfigUtils.assertNotEmpty(url, "URL");
     }
 
     public Optional<String> getLocation() {
-        return Optional.ofNullable(m_location);
+        return Optional.ofNullable(location);
     }
 
     public void setLocation(final String location) {
-        m_location = ConfigUtils.normalizeString(location);
+        this.location = ConfigUtils.normalizeString(location);
     }
 
     public Optional<Integer> getRetries() {
-        return Optional.ofNullable(m_retries);
+        return Optional.ofNullable(retries);
     }
 
     public void setRetries(final Integer retries) {
-        m_retries = retries;
+        this.retries = retries;
     }
 
     public Optional<Long> getTimeout() {
-        return Optional.ofNullable(m_timeout);
+        return Optional.ofNullable(timeout);
     }
 
     public void setTimeout(final Long timeout) {
         if (timeout != null && timeout == 0) {
             throw new IllegalArgumentException("Can't have a 0 timeout!");
         }
-        m_timeout = timeout;
+        this.timeout = timeout;
     }
 
     public Optional<String> getForeignSource() {
-        return Optional.ofNullable(m_foreignSource);
+        return Optional.ofNullable(foreignSource);
     }
 
     public void setForeignSource(final String foreignSource) {
-        m_foreignSource = ConfigUtils.normalizeString(foreignSource);
+        this.foreignSource = ConfigUtils.normalizeString(foreignSource);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(
-                            m_url, 
-                            m_location, 
-                            m_retries, 
-                            m_timeout, 
-                            m_foreignSource);
+                            url, 
+                            location, 
+                            retries, 
+                            timeout, 
+                            foreignSource);
     }
 
     @Override
@@ -156,20 +156,19 @@ public class IncludeUrl implements Serializable {
 
         if (obj instanceof IncludeUrl) {
             final IncludeUrl temp = (IncludeUrl)obj;
-            return Objects.equals(temp.m_url, m_url)
-                    && Objects.equals(temp.m_location, m_location)
-                    && Objects.equals(temp.m_retries, m_retries)
-                    && Objects.equals(temp.m_timeout, m_timeout)
-                    && Objects.equals(temp.m_foreignSource, m_foreignSource);
+            return Objects.equals(temp.url, url)
+                    && Objects.equals(temp.location, location)
+                    && Objects.equals(temp.retries, retries)
+                    && Objects.equals(temp.timeout, timeout)
+                    && Objects.equals(temp.foreignSource, foreignSource);
         }
         return false;
     }
 
     @Override
     public String toString() {
-        return "IncludeUrl [value=" + m_url + ", location="
-                + m_location + ", retries=" + m_retries + ", timeout="
-                + m_timeout + ", foreignSource=" + m_foreignSource + "]";
+        return "IncludeUrl [value=" + url + ", location="
+                + location + ", retries=" + retries + ", timeout="
+                + timeout + ", foreignSource=" + foreignSource + "]";
     }
-
 }

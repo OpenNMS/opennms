@@ -29,7 +29,9 @@
 package org.opennms.web.rest.v2;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.DELETE;
@@ -53,6 +55,7 @@ import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.dao.support.CreateIfNecessaryTemplate;
+import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMetaData;
 import org.opennms.netmgt.model.OnmsMetaDataList;
@@ -72,6 +75,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.collect.Sets;
 
 /**
  * Basic Web Service using REST for {@link OnmsIpInterface} entity.
@@ -159,6 +164,8 @@ public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestSe
         final Event e = EventUtils.createNodeGainedServiceEvent("ReST", iface.getNode().getId(), iface.getIpAddress(), service.getServiceName(), iface.getNode().getLabel(),
                                                                 iface.getNode().getLabelSource(), iface.getNode().getSysName(), iface.getNode().getSysDescription());
         sendEvent(e);
+        ApplicationEventUtil.getApplicationChangedEvents(service.getApplications()).forEach(this::sendEvent);
+
         return Response.created(RedirectHelper.getRedirectUri(uriInfo, service.getServiceName())).build();
     }
 
@@ -173,8 +180,16 @@ public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestSe
     @Override
     protected Response doUpdateProperties(SecurityContext securityContext, UriInfo uriInfo, OnmsMonitoredService targetObject, MultivaluedMapImpl params) {
         final String previousStatus = targetObject.getStatus();
+        final Set<OnmsApplication> applicationsOriginal = new HashSet<>(); // unfortunately applications set is not immutable, let's make a copy.
+        if(targetObject.getApplications() != null) {
+            applicationsOriginal.addAll(targetObject.getApplications());
+        }
         RestUtils.setBeanProperties(targetObject, params);
         getDao().update(targetObject);
+
+        Set<OnmsApplication> changedApplications = Sets.symmetricDifference(applicationsOriginal, targetObject.getApplications());
+        ApplicationEventUtil.getApplicationChangedEvents(changedApplications).forEach(this::sendEvent);
+
         boolean changed = m_component.hasStatusChanged(previousStatus, targetObject);
         return changed ? Response.noContent().build() : Response.notModified().build();
     }
@@ -185,6 +200,7 @@ public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestSe
         getDao().delete(svc);
         final Event e = EventUtils.createDeleteServiceEvent("ReST", svc.getNodeId(), svc.getIpAddress().getHostAddress(), svc.getServiceName(), -1L);
         sendEvent(e);
+        ApplicationEventUtil.getApplicationChangedEvents(svc.getApplications()).forEach(this::sendEvent);
     }
 
     @Override
@@ -261,81 +277,5 @@ public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestSe
         return new OnmsMetaDataList(service.getMetaData().stream()
                 .filter(e -> context.equals(e.getContext()) && key.equals(e.getKey()))
                 .collect(Collectors.toList()));
-    }
-
-    @DELETE
-    @Path("{serviceName}/metadata/{context}")
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
-    public Response deleteMetaData(@Context final UriInfo uriInfo, @PathParam("serviceName") String serviceName, @PathParam("context") String context) {
-        writeLock();
-        try {
-            final OnmsMonitoredService service = getService(uriInfo, serviceName);
-
-            if (serviceName == null) {
-                throw getException(Status.BAD_REQUEST, "deleteMetaData: Can't find service " + serviceName);
-            }
-            service.removeMetaData(context);
-            getDao().update(service);
-            return Response.noContent().build();
-        } finally {
-            writeUnlock();
-        }
-    }
-
-    @DELETE
-    @Path("{serviceName}/metadata/{context}/{key}")
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
-    public Response deleteMetaData(@Context final UriInfo uriInfo, @PathParam("serviceName") String serviceName, @PathParam("context") String context, @PathParam("key") String key) {
-        writeLock();
-        try {
-            final OnmsMonitoredService service = getService(uriInfo, serviceName);
-
-            if (serviceName == null) {
-                throw getException(Status.BAD_REQUEST, "deleteMetaData: Can't find service " + serviceName);
-            }
-            service.removeMetaData(context, key);
-            getDao().update(service);
-            return Response.noContent().build();
-        } finally {
-            writeUnlock();
-        }
-    }
-
-    @POST
-    @Path("{serviceName}/metadata")
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
-    public Response postMetaData(@Context final UriInfo uriInfo, @PathParam("serviceName") String serviceName, OnmsMetaData entity) {
-        writeLock();
-        try {
-            final OnmsMonitoredService service = getService(uriInfo, serviceName);
-
-            if (serviceName == null) {
-                throw getException(Status.BAD_REQUEST, "postMetaData: Can't find service " + serviceName);
-            }
-            service.addMetaData(entity.getContext(), entity.getKey(), entity.getValue());
-            getDao().update(service);
-            return Response.noContent().build();
-        } finally {
-            writeUnlock();
-        }
-    }
-
-    @PUT
-    @Path("{serviceName}/metadata/{context}/{key}/{value}")
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
-    public Response putMetaData(@Context final UriInfo uriInfo, @PathParam("serviceName") String serviceName, @PathParam("context") String context, @PathParam("key") String key, @PathParam("value") String value) {
-        writeLock();
-        try {
-            final OnmsMonitoredService service = getService(uriInfo, serviceName);
-
-            if (serviceName == null) {
-                throw getException(Status.BAD_REQUEST, "putMetaData: Can't find service " + serviceName);
-            }
-            service.addMetaData(context, key, value);
-            getDao().update(service);
-            return Response.noContent().build();
-        } finally {
-            writeUnlock();
-        }
     }
 }

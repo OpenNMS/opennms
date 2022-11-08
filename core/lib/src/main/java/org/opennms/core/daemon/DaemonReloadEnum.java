@@ -30,6 +30,8 @@ package org.opennms.core.daemon;
 
 public enum DaemonReloadEnum {
 
+    ALARMD("alarmd"),
+    COLLECTD("Collectd"),
     EVENTD("Eventd"),
     NOTIFD("Notifd"),
     POLLERD("Pollerd"),

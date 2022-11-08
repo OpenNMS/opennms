@@ -190,6 +190,11 @@ public class MockNodeDao extends AbstractMockDao<OnmsNode, Integer> implements N
     }
 
     @Override
+    public List<OnmsNode> findBySysNameOfLldpLinksOfNode(int nodeId) {
+        return Collections.emptyList();
+    }
+
+    @Override
     public OnmsNode getHierarchy(final Integer id) {
         return get(id);
     }

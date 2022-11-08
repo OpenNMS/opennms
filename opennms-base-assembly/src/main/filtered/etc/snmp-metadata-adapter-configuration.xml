@@ -1,0 +1,135 @@
+<snmp-metadata-config resultsBehavior="replace">
+
+    <!--
+        This configuration represents the jnxBoxAnatomy definition taken from the Juniper Enterprise Chassis MIB.
+        The special context "snmp" allow this data to be also displayed in the Web UI via the "Hardware Info" link
+        on the node page.
+    -->
+    <config tree=".1.3.6.1.4.1.2636.3.1" name="jnxBoxAnatomy" sysObjectId="~^\.1\.3\.6\.1\.4\.1\.2636\.1\.1\.1\..*">
+        <entry tree=".1" name="jnxBoxClass"/>
+        <entry tree=".2" name="jnxBoxDescr"/>
+        <entry tree=".3" name="jnxBoxSerialNo"/>
+        <entry tree=".4" name="jnxBoxRevision"/>
+        <entry tree=".5" name="jnxBoxInstalled"/>
+        <entry tree=".6.1" name="jnxContainersTable">
+            <entry tree=".1" name="jnxContainersIndex" index="true"/>
+            <entry tree=".2" name="jnxContainersView"/>
+            <entry tree=".3" name="jnxContainersLevel"/>
+            <entry tree=".4" name="jnxContainersWithin"/>
+            <entry tree=".5" name="jnxContainersType"/>
+            <entry tree=".6" name="jnxContainersDescr"/>
+            <entry tree=".7" name="jnxContainersCount"/>
+        </entry>
+        <entry tree=".7" name="jnxContentsLastChange"/>
+        <entry tree=".8.1" name="jnxContentsTable">
+            <entry tree=".1" name="jnxContentsContainerIndex" index="true"/>
+            <entry tree=".2" name="jnxContentsL1Index" index="true"/>
+            <entry tree=".3" name="jnxContentsL2Index" index="true"/>
+            <entry tree=".4" name="jnxContentsL3Index" index="true"/>
+            <entry tree=".5" name="jnxContentsType"/>
+            <entry tree=".6" name="jnxContentsDescr"/>
+            <entry tree=".7" name="jnxContentsSerialNo"/>
+            <entry tree=".8" name="jnxContentsRevision"/>
+            <entry tree=".9" name="jnxContentsInstalled"/>
+            <entry tree=".10" name="jnxContentsPartNo"/>
+            <entry tree=".11" name="jnxContentsChassisId"/>
+            <entry tree=".12" name="jnxContentsChassisDescr"/>
+            <entry tree=".13" name="jnxContentsChassisCleiCode"/>
+            <entry tree=".14" name="jnxContentsModel"/>
+        </entry>
+        <entry tree=".9" name="jnxLEDLastChange"/>
+        <entry tree=".10.1" name="jnxLEDTable">
+            <entry tree=".1" name="jnxLEDAssociateTable" index="true"/>
+            <entry tree=".2" name="jnxLEDAssociateIndex" index="true"/>
+            <entry tree=".3" name="jnxLEDL1Index" index="true"/>
+            <entry tree=".4" name="jnxLEDL2Index" index="true"/>
+            <entry tree=".5" name="jnxLEDL3Index" index="true"/>
+            <entry tree=".6" name="jnxLEDOriginator"/>
+            <entry tree=".7" name="jnxLEDDescr"/>
+            <entry tree=".8" name="jnxLEDState"/>
+            <entry tree=".9" name="jnxLEDStateOrdered"/>
+        </entry>
+        <entry tree=".11" name="jnxFilledLastChange"/>
+        <entry tree=".12.1" name="jnxFilledTable">
+            <entry tree=".1" name="jnxFilledContainerIndex" index="true"/>
+            <entry tree=".2" name="jnxFilledL1Index" index="true"/>
+            <entry tree=".3" name="jnxFilledL2Index" index="true"/>
+            <entry tree=".4" name="jnxFilledL3Index" index="true"/>
+            <entry tree=".5" name="jnxFilledDescr"/>
+            <entry tree=".6" name="jnxFilledState"/>
+            <entry tree=".7" name="jnxFilledChassisId"/>
+            <entry tree=".8" name="jnxFilledChassisDescr"/>
+        </entry>
+        <entry tree=".13.1" name="jnxOperatingTable">
+            <entry tree=".1" name="jnxOperatingContentsIndex" index="true"/>
+            <entry tree=".2" name="jnxOperatingL1Index" index="true"/>
+            <entry tree=".3" name="jnxOperatingL2Index" index="true"/>
+            <entry tree=".4" name="jnxOperatingL3Index" index="true"/>
+            <entry tree=".5" name="jnxOperatingDescr"/>
+            <entry tree=".6" name="jnxOperatingState"/>
+            <entry tree=".7" name="jnxOperatingTemp"/>
+            <entry tree=".8" name="jnxOperatingCPU"/>
+            <entry tree=".9" name="jnxOperatingISR"/>
+            <entry tree=".10" name="jnxOperatingDRAMSize"/>
+            <entry tree=".11" name="jnxOperatingBuffer"/>
+            <entry tree=".12" name="jnxOperatingHeap"/>
+            <entry tree=".13" name="jnxOperatingUpTime"/>
+            <entry tree=".14" name="jnxOperatingLastRestart"/>
+            <entry tree=".15" name="jnxOperatingMemory"/>
+            <entry tree=".16" name="jnxOperatingStateOrdered"/>
+            <entry tree=".17" name="jnxOperatingChassisId"/>
+            <entry tree=".18" name="jnxOperatingChassisDescr"/>
+            <entry tree=".19" name="jnxOperatingRestartTime"/>
+            <entry tree=".20" name="jnxOperating1MinLoadAvg"/>
+            <entry tree=".21" name="jnxOperating5MinLoadAvg"/>
+            <entry tree=".22" name="jnxOperating15MinLoadAvg"/>
+            <entry tree=".23" name="jnxOperating1MinAvgCPU"/>
+            <entry tree=".24" name="jnxOperating5MinAvgCPU"/>
+            <entry tree=".25" name="jnxOperating15MinAvgCPU"/>
+            <entry tree=".26" name="jnxOperatingFRUPower"/>
+            <entry tree=".27" name="jnxOperatingBufferCP"/>
+            <entry tree=".28" name="jnxOperatingMemoryCP"/>
+            <entry tree=".29" name="jnxOperatingBufferExt"/>
+        </entry>
+        <entry tree=".14.1" name="jnxRedundancyTable">
+            <entry tree=".1" name="jnxRedundancyContentsIndex" index="true"/>
+            <entry tree=".2" name="jnxRedundancyL1Index" index="true"/>
+            <entry tree=".3" name="jnxRedundancyL2Index" index="true"/>
+            <entry tree=".4" name="jnxRedundancyL3Index" index="true"/>
+            <entry tree=".5" name="jnxRedundancyDescr"/>
+            <entry tree=".6" name="jnxRedundancyConfig"/>
+            <entry tree=".7" name="jnxRedundancyState"/>
+            <entry tree=".8" name="jnxRedundancySwitchoverCount"/>
+            <entry tree=".9" name="jnxRedundancySwitchoverTime"/>
+            <entry tree=".10" name="jnxRedundancySwitchoverReason"/>
+            <entry tree=".11" name="jnxRedundancyKeepaliveHeartbeat"/>
+            <entry tree=".12" name="jnxRedundancyKeepaliveTimeout"/>
+            <entry tree=".13" name="jnxRedundancyKeepaliveElapsed"/>
+            <entry tree=".14" name="jnxRedundancyKeepaliveLoss"/>
+            <entry tree=".15" name="jnxRedundancyChassisId"/>
+            <entry tree=".16" name="jnxRedundancyChassisDescr"/>
+        </entry>
+        <entry tree=".15.1" name="jnxFruTable">
+            <entry tree=".1" name="jnxFruContentsIndex" index="true"/>
+            <entry tree=".2" name="jnxFruL1Index" index="true"/>
+            <entry tree=".3" name="jnxFruL2Index" index="true"/>
+            <entry tree=".4" name="jnxFruL3Index" index="true"/>
+            <entry tree=".5" name="jnxFruName"/>
+            <entry tree=".6" name="jnxFruType"/>
+            <entry tree=".7" name="jnxFruSlot"/>
+            <entry tree=".8" name="jnxFruState"/>
+            <entry tree=".9" name="jnxFruTemp"/>
+            <entry tree=".10" name="jnxFruOfflineReason"/>
+            <entry tree=".11" name="jnxFruLastPowerOff"/>
+            <entry tree=".12" name="jnxFruLastPowerOn"/>
+            <entry tree=".13" name="jnxFruPowerUpTime"/>
+            <entry tree=".14" name="jnxFruChassisId"/>
+            <entry tree=".15" name="jnxFruChassisDescr"/>
+            <entry tree=".16" name="jnxFruPsdAssignment"/>
+        </entry>
+        <entry tree=".16" name="jnxBoxKernelMemoryUsedPercent"/>
+        <entry tree=".17" name="jnxBoxSystemDomainType"/>
+        <entry tree=".18" name="jnxBoxPersonality"/>
+    </config>
+
+</snmp-metadata-config>

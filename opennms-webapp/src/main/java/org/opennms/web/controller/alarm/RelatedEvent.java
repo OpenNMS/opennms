@@ -37,12 +37,16 @@ public class RelatedEvent {
     final Integer alarmId;
     final Date creationTime;
     final OnmsSeverity severity;
+    final String uei;
+    final String logMessage;
 
-    public RelatedEvent(final Integer eventId, final Integer alarmId, final Date creationTime, final OnmsSeverity severity) {
+    public RelatedEvent(final Integer eventId, final Integer alarmId, final Date creationTime, final OnmsSeverity severity, final String uei, final String logMessage) {
         this.eventId = eventId;
         this.alarmId = alarmId;
         this.creationTime = creationTime;
         this.severity = severity;
+        this.uei = uei;
+        this.logMessage = logMessage;
     }
 
     public Integer getEventId() {
@@ -59,5 +63,13 @@ public class RelatedEvent {
 
     public OnmsSeverity getSeverity() {
         return severity;
+    }
+
+    public String getUei() {
+        return uei;
+    }
+
+    public String getLogMessage() {
+        return logMessage;
     }
 }

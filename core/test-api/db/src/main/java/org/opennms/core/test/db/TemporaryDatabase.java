@@ -43,13 +43,17 @@ public interface TemporaryDatabase extends DataSource, XADataSource {
     public static final String DEFAULT_ADMIN_USER = "postgres";
     public static final String DEFAULT_ADMIN_PASSWORD = "";
 
-    public String getTestDatabase();
     public void setPopulateSchema(boolean populate);
-    public void create() throws TemporaryDatabaseException;
-    public void drop() throws TemporaryDatabaseException;
-    public int countRows(final String sql, Object... values);
-    public JdbcTemplate getJdbcTemplate();
+    public void setPlpgsqlIplike(boolean plpgsqlIplike);
+
     public void setClassName(String string);
     public void setMethodName(String string);
     public void setTestDetails(String string);
+
+    public void create() throws TemporaryDatabaseException;
+    public void drop() throws TemporaryDatabaseException;
+
+    public String getTestDatabase();
+    public JdbcTemplate getJdbcTemplate();
+    public int countRows(final String sql, Object... values);
 }

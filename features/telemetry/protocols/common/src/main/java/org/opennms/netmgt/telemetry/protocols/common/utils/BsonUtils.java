@@ -49,7 +49,7 @@ public class BsonUtils {
     public static Optional<BsonValue> get(final BsonDocument doc, final String... path) {
         BsonValue value = doc;
         for (final String p : path) {
-            value = value.asDocument().get(p);
+            value = value.isDocument() ? value.asDocument().get(p) : null;
             if (value == null) {
                 return Optional.empty();
             }

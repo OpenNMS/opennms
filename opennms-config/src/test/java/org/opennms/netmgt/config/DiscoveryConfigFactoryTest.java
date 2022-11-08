@@ -39,11 +39,7 @@ import java.util.List;
 
 import org.junit.Test;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.config.discovery.Definition;
-import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
-import org.opennms.netmgt.config.discovery.ExcludeRange;
-import org.opennms.netmgt.config.discovery.IncludeRange;
-import org.opennms.netmgt.config.discovery.Specific;
+import org.opennms.netmgt.config.discovery.*;
 import org.opennms.netmgt.model.discovery.IPPollAddress;
 
 public class DiscoveryConfigFactoryTest {
@@ -136,6 +132,33 @@ public class DiscoveryConfigFactoryTest {
 
     }
 
+    @Test
+    public void testMultipleExcludeFromUrl() throws Exception {
+        final DiscoveryConfiguration conf = new DiscoveryConfiguration();
+        ExcludeUrl excludeUrl = new ExcludeUrl();
+        URL url = this.getClass().getResource("validDiscoveryExcludeFile.txt");
+        excludeUrl.setUrl(url.toString());
+
+        conf.addExcludeUrl(excludeUrl);
+
+        excludeUrl = new ExcludeUrl();
+        url = this.getClass().getResource("validDiscoveryExcludeFile1.txt");
+        excludeUrl.setUrl(url.toString());
+        excludeUrl.setLocation("Anywhere");
+        conf.addExcludeUrl(excludeUrl);
+
+        final DiscoveryConfigFactory factory = new DiscoveryConfigFactory(conf);
+        factory.initializeExcludeUrls();
+
+        assertTrue(factory.isExcluded(InetAddressUtils.addr("127.0.0.1"), null));
+        assertTrue(factory.isExcluded(InetAddressUtils.addr("127.0.0.2"), "Anywhere"));
+        assertFalse(factory.isExcluded(InetAddressUtils.addr("127.0.0.3"), null));
+        assertFalse(factory.isExcluded(InetAddressUtils.addr("127.0.0.3"), "Anywhere"));
+        assertTrue(factory.isExcluded(InetAddressUtils.addr("8.8.8.2"), "Anywhere"));
+        assertFalse(factory.isExcluded(InetAddressUtils.addr("8.8.8.2"), null));
+        assertTrue(factory.isExcluded(InetAddressUtils.addr("fe80:0000:0000:0000:ffff:eeee:dddd:dddd"), "Anywhere"));
+        assertTrue(factory.isExcluded(InetAddressUtils.addr("fe80:0000:0000:0000:ffff:eeee:dddd:dddd"), "Anywhere"));
+    }
 
     @Test
     public void testExcludeFromDefinition() {

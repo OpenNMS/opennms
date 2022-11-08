@@ -82865,7 +82865,7 @@
     <uei>uei.opennms.org/vendor/Juniper/logs/vseTrapEventCPM1117</uei>
     <event-label>MME-APL-MIB defined log event: vseTrapEventCPM1117</event-label>
     <descr><![CDATA[
-                <p><b>Routing and datapath componenent failed to enter sync state</b></p>
+                <p><b>Routing and datapath component failed to enter sync state</b></p>
                 <table>
                         <tr>
                                 <td>Location (f-sh-s-ss)</td>
@@ -82878,7 +82878,7 @@
         </table>
         ]]></descr>
     <logmsg dest="logndisplay"><![CDATA[<p>
-                        <b>Log Event:</b> CPM1117 [%parm[#13]%-%parm[#14]%]: Routing and datapath componenent failed to enter sync state</p>
+                        <b>Log Event:</b> CPM1117 [%parm[#13]%-%parm[#14]%]: Routing and datapath component failed to enter sync state</p>
                 ]]></logmsg>
     <severity>Indeterminate</severity>
   </event>
@@ -82905,7 +82905,7 @@
     <uei>uei.opennms.org/vendor/Juniper/logs/vseTrapEventCPM1117</uei>
     <event-label>MME-APL-MIB defined log event: vseTrapEventCPM1117</event-label>
     <descr><![CDATA[
-                <p><b>Routing and datapath componenent failed to enter sync state</b></p>
+                <p><b>Routing and datapath component failed to enter sync state</b></p>
                 <table>
                         <tr>
                                 <td>Location (f-sh-s-ss)</td>
@@ -82918,7 +82918,7 @@
         </table>
         ]]></descr>
     <logmsg dest="logndisplay"><![CDATA[<p>
-                        <b>Log Event:</b> CPM1117 [%parm[#13]%-%parm[#14]%]: Routing and datapath componenent failed to enter sync state</p>
+                        <b>Log Event:</b> CPM1117 [%parm[#13]%-%parm[#14]%]: Routing and datapath component failed to enter sync state</p>
                 ]]></logmsg>
     <severity>Critical</severity>
   </event>
@@ -82945,7 +82945,7 @@
     <uei>uei.opennms.org/vendor/Juniper/logs/vseTrapEventCPM1117</uei>
     <event-label>MME-APL-MIB defined log event: vseTrapEventCPM1117</event-label>
     <descr><![CDATA[
-                <p><b>Routing and datapath componenent failed to enter sync state</b></p>
+                <p><b>Routing and datapath component failed to enter sync state</b></p>
                 <table>
                         <tr>
                                 <td>Location (f-sh-s-ss)</td>
@@ -82958,7 +82958,7 @@
         </table>
         ]]></descr>
     <logmsg dest="logndisplay"><![CDATA[<p>
-                        <b>Log Event:</b> CPM1117 [%parm[#13]%-%parm[#14]%]: Routing and datapath componenent failed to enter sync state</p>
+                        <b>Log Event:</b> CPM1117 [%parm[#13]%-%parm[#14]%]: Routing and datapath component failed to enter sync state</p>
                 ]]></logmsg>
     <severity>Major</severity>
   </event>
@@ -82985,7 +82985,7 @@
     <uei>uei.opennms.org/vendor/Juniper/logs/vseTrapEventCPM1117</uei>
     <event-label>MME-APL-MIB defined log event: vseTrapEventCPM1117</event-label>
     <descr><![CDATA[
-                <p><b>Routing and datapath componenent failed to enter sync state</b></p>
+                <p><b>Routing and datapath component failed to enter sync state</b></p>
                 <table>
                         <tr>
                                 <td>Location (f-sh-s-ss)</td>
@@ -82998,7 +82998,7 @@
         </table>
         ]]></descr>
     <logmsg dest="logndisplay"><![CDATA[<p>
-                        <b>Log Event:</b> CPM1117 [%parm[#13]%-%parm[#14]%]: Routing and datapath componenent failed to enter sync state</p>
+                        <b>Log Event:</b> CPM1117 [%parm[#13]%-%parm[#14]%]: Routing and datapath component failed to enter sync state</p>
                 ]]></logmsg>
     <severity>Minor</severity>
   </event>
@@ -83025,7 +83025,7 @@
     <uei>uei.opennms.org/vendor/Juniper/logs/vseTrapEventCPM1117</uei>
     <event-label>MME-APL-MIB defined log event: vseTrapEventCPM1117</event-label>
     <descr><![CDATA[
-                <p><b>Routing and datapath componenent failed to enter sync state</b></p>
+                <p><b>Routing and datapath component failed to enter sync state</b></p>
                 <table>
                         <tr>
                                 <td>Location (f-sh-s-ss)</td>
@@ -83038,7 +83038,7 @@
         </table>
         ]]></descr>
     <logmsg dest="logndisplay"><![CDATA[<p>
-                        <b>Log Event:</b> CPM1117 [%parm[#13]%-%parm[#14]%]: Routing and datapath componenent failed to enter sync state</p>
+                        <b>Log Event:</b> CPM1117 [%parm[#13]%-%parm[#14]%]: Routing and datapath component failed to enter sync state</p>
                 ]]></logmsg>
     <severity>Warning</severity>
   </event>

@@ -30,6 +30,7 @@ package org.opennms.netmgt.enlinkd;
 
 import java.util.Map;
 
+import org.opennms.core.utils.LldpUtils;
 import org.opennms.netmgt.enlinkd.common.TopologyUpdater;
 import org.opennms.netmgt.enlinkd.model.IpInterfaceTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.LldpElementTopologyEntity;
@@ -63,10 +64,20 @@ public class LldpOnmsTopologyUpdater extends TopologyUpdater {
     public static OnmsTopologyPort create(OnmsTopologyVertex source,LldpLinkTopologyEntity sourceLink, 
                                                                     LldpLinkTopologyEntity targetlink,
                                                                     SnmpInterfaceTopologyEntity snmpiface) {
-        OnmsTopologyPort port = OnmsTopologyPort.create(sourceLink.getId().toString(),source, sourceLink.getLldpPortIfindex());
+        OnmsTopologyPort port = OnmsTopologyPort.create(sourceLink.getId().toString(), source, sourceLink.getLldpPortIfindex());
         port.setIfindex(sourceLink.getLldpPortIfindex());
         if (snmpiface != null) {
-            port.setIfname(snmpiface.getIfName());            
+            port.setIfname(snmpiface.getIfName());
+        } else if (sourceLink.getLldpPortIdSubType() == LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME) {
+            port.setIfname(sourceLink.getLldpPortId());
+        } else if (targetlink.getLldpRemPortIdSubType() == LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME) {
+            port.setIfname(targetlink.getLldpRemPortId());
+        } else if (!"".equals(sourceLink.getLldpPortDescr())) {
+            port.setIfname(sourceLink.getLldpPortDescr());
+        }  else if (!"".equals(targetlink.getLldpRemPortDescr())) {
+            port.setIfname(targetlink.getLldpRemPortDescr());
+        } else {
+            port.setIfname(sourceLink.getLldpPortId());
         }
         port.setAddr(Topology.getRemoteAddress(targetlink));
         port.setToolTipText(Topology.getPortTextString(source.getLabel(),port.getIfindex(), port.getAddr(), snmpiface));

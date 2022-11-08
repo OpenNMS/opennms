@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,16 +29,15 @@
 
 package org.opennms.netmgt.endpoints.grafana.service;
 
-import static org.easymock.EasyMock.createNiceMock;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
 
 import java.util.UUID;
 
-import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.netmgt.dao.api.SessionUtils;
@@ -56,12 +55,9 @@ public class GrafanaEndpointServiceImplTest {
 
     @Before
     public void setUp() {
-        final GrafanaEndpointDao grafanaEndpointDao = createNiceMock(GrafanaEndpointDao.class);
-        final GrafanaClientFactory grafanaClientFactory = createNiceMock(GrafanaClientFactory.class);
-        final SessionUtils sessionUtils = createNiceMock(SessionUtils.class);
-        EasyMock.replay(grafanaEndpointDao);
-        EasyMock.replay(grafanaClientFactory);
-        EasyMock.replay(sessionUtils);
+        final GrafanaEndpointDao grafanaEndpointDao = mock(GrafanaEndpointDao.class);
+        final GrafanaClientFactory grafanaClientFactory = mock(GrafanaClientFactory.class);
+        final SessionUtils sessionUtils = mock(SessionUtils.class);
 
         endpointService = new GrafanaEndpointServiceImpl(
                 grafanaEndpointDao,

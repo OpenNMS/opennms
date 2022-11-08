@@ -1,4 +1,4 @@
-#!${install.perl.bin}
+#!/usr/bin/env perl
 
 use strict;
 use XML::Simple;

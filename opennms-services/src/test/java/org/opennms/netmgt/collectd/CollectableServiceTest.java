@@ -115,6 +115,8 @@ public class CollectableServiceTest {
      */
     @Test
     public void collectUsingSpecifiedInterval() throws CollectionInitializationException, CollectionException, IOException {
+
+        System.setProperty(CollectableService.STRICT_INTERVAL_SYS_PROP, Boolean.FALSE.toString());
         createCollectableService();
 
         Long serviceIntervalInMs = 300 * 1000L;
@@ -140,7 +142,7 @@ public class CollectableServiceTest {
      */
     @Test
     public void collectUsingStrictInterval() throws CollectionInitializationException, CollectionException, IOException {
-        System.setProperty(CollectableService.STRICT_INTERVAL_SYS_PROP, Boolean.TRUE.toString());
+
         createCollectableService();
 
         Long serviceIntervalInMs = 2000L;

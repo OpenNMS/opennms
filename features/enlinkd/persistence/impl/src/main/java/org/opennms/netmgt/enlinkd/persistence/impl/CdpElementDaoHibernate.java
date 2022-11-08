@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.enlinkd.persistence.impl;
 
+import java.util.Date;
 import java.util.List;
 
 import org.opennms.netmgt.enlinkd.persistence.api.CdpElementDao;
@@ -73,9 +74,19 @@ public class CdpElementDaoHibernate extends AbstractDaoHibernate<CdpElement, Int
     }
 
     @Override
+    public List<CdpElement> findByCacheDeviceIdOfCdpLinksOfNode(int nodeId) {
+        return find("from CdpElement rec where rec.cdpGlobalDeviceId in (select l.cdpCacheDeviceId from CdpLink l where l.node.id = ?)", nodeId);
+    }
+
+    @Override
     public void deleteByNodeId(Integer nodeId) {
         getHibernateTemplate().bulkUpdate("delete from CdpElement rec where rec.node.id = ? ",
                                     new Object[] {nodeId});
+    }
+
+    @Override
+    public void deleteAll() {
+        getHibernateTemplate().bulkUpdate("delete from CdpElement");
     }
 
 

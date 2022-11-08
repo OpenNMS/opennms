@@ -298,4 +298,10 @@ public interface NodeDao extends LegacyOnmsDao<OnmsNode, Integer> {
     OnmsNode getDefaultFocusPoint();
 
     List<OnmsNode> findNodeWithMetaData(final String context, final String key, final String value);
+
+    /**
+     * Returns all OnmsNodes that have a sysname that matches remSysName of an lldp link that is related to the given
+     * node. Used to retrieve all OnmsNodes that need to be accessed when finding the lldp links of a node.
+     */
+    List<OnmsNode> findBySysNameOfLldpLinksOfNode(int nodeId);
 }

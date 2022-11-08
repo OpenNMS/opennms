@@ -37,7 +37,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import org.opennms.core.rpc.utils.mate.ContextKey;
+import org.opennms.core.mate.api.ContextKey;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -137,7 +137,7 @@ public class BmpPeerStatusAdapter extends AbstractAdapter {
 
         final Instant timestamp = Instant.ofEpochSecond(peer.getTimestamp().getSeconds(), peer.getTimestamp().getNanos());
 
-        final EventBuilder event = new EventBuilder(uei, "telemetryd:" + this.adapterConfig.getName(), Date.from(timestamp));
+        final EventBuilder event = new EventBuilder(uei, "telemetryd:" + this.adapterConfig.getFullName(), Date.from(timestamp));
         event.setNodeid(exporterNodeId.get());
         event.setInterface(exporterAddress);
 

@@ -39,6 +39,7 @@ import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.opennms.netmgt.snmpinterfacepoller.pollable.PollableSnmpInterface.SnmpMinimalPollInterface;
+import org.opennms.netmgt.snmpinterfacepoller.pollable.SnmpInterfaceStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -144,8 +145,8 @@ public class SnmpPollInterfaceMonitor {
 
             if (adminSnmpValue != null && operationalSnmpValue != null) {
                 try {
-                    miface.setAdminstatus(adminSnmpValue.toInt());
-                    miface.setOperstatus(operationalSnmpValue.toInt());
+                    miface.setAdminstatus(SnmpInterfaceStatus.statusFromMibValue(adminSnmpValue.toInt()));
+                    miface.setOperstatus(SnmpInterfaceStatus.statusFromMibValue(operationalSnmpValue.toInt()));
                     miface.setStatus(PollStatus.up());
                     LOG.debug("SNMP Value is {} for oid: {}", adminSnmpValue.toInt(), adminoids[i]);
                     LOG.debug("SNMP Value is {} for oid: {}", operationalSnmpValue.toInt(), operooids[i]);

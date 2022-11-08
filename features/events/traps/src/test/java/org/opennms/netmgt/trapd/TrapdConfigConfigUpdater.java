@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.trapd;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -54,9 +55,12 @@ public class TrapdConfigConfigUpdater {
     @Autowired
     private TrapdConfig m_config;
 
+    @Autowired
+    private Trapd trapd;
+
     // Hacky way of overwriting configuration settings for test execution.
     @PostConstruct
-    public void init() {
+    public void init() throws IOException {
         TrapdConfigBean config = new TrapdConfigBean(m_config);
         config.setSnmpTrapPort(10000); // default 162 is only available as root
         config.setNewSuspectOnTrap(true); // default is false
@@ -80,5 +84,7 @@ public class TrapdConfigConfigUpdater {
         config.setSnmpV3Users(v3users);
 
         m_config.update(config);
+        
     }
+
 }

@@ -1,0 +1,119 @@
+= Pointer-Like Index Property Extender
+
+The Pointer-Like Index property extender makes it possible to use the value of an attribute from the target MIB table as the index into the source MIB table.
+Unlike the Index Split and Regex extenders, this extender class does not require the target and source MIB tables to share any index components.
+
+== When to Use the Pointer-Like Index Property Extender
+
+The Pointer-Like Index property extender is useful when the target MIB table contains a column whose value can be used as an index into the source MIB table.
+For example, the Cisco Process MIB's `cpmCPUTotalTable` has its own index that is not shared with any other tables, but its `cpmCPUTotalPhysicalIndex` column contains an integer which can be used as an index into the `entPhysicalTable`.
+
+[source, snmp-mib]
+----
+cpmCPUTotalEntry OBJECT-TYPE
+    -- ...
+    DESCRIPTION
+        "Overall information about the CPU load. Entries in this
+        table come and go as CPUs are added and removed from the
+        system."
+    INDEX           { cpmCPUTotalIndex } <1>
+    -- ...
+
+cpmCPUTotalPhysicalIndex OBJECT-TYPE <2>
+    -- ...
+    DESCRIPTION
+        "The entPhysicalIndex of the physical entity for which
+        the CPU statistics in this entry are maintained.
+        The physical entity can be a CPU chip, a group of CPUs,
+        a CPU card etc. The exact type of this entity is described by
+        its entPhysicalVendorType value. If the CPU statistics
+        in this entry correspond to more than one physical entity
+        (or to no physical entity), or if the entPhysicalTable is
+        not supported on the SNMP agent, the value of this object
+        must be zero."
+    -- ...
+
+entPhysicalEntry       OBJECT-TYPE
+    -- ...
+    DESCRIPTION
+            "Information about a particular physical entity.
+
+            Each entry provides objects (entPhysicalDescr,
+            entPhysicalVendorType, and entPhysicalClass) to help an NMS
+            identify and characterize the entry, and objects
+            (entPhysicalContainedIn and entPhysicalParentRelPos) to help
+            an NMS relate the particular entry to other entries in this
+            table."
+    INDEX   { entPhysicalIndex } <3>
+    -- ...
+----
+<1> The `cpmCPUTotalTable` entry type is indexed on `cpmCPUTotalIndex`, which has no meaning outside this table.
+<2> The `cpmCPUTotalPhysicalIndex` column contains a value of `entPhysicalIndex` that corresponds to the CPU referenced in a given row.
+<3> The `entPhysicalTable` entry type is indexed on `entPhysicalIndex` and provides many useful textual columns.
+
+By treating `cpmCPUTotalPhysicalIndex` somewhat like a link:https://en.wikipedia.org/wiki/Pointer_(computer_programming)[pointer], it's possible to import string properties from the `entPhysicalTable` for use in the resource label.
+
+NOTE: Some combinations of Cisco hardware and software appear to use values of `cpmCPUTotalIndex` that are directly interchangeable with `entPhysicalIndex`.
+This relationship does not hold across all product lines or software revisions.
+
+== Configure the Pointer-Like Index Property Extender
+
+The Pointer-Like Index property extender expects three parameters, all of which are required:
+
+.Pointer-Like Index Property Extender Parameters
+[options="header", cols="1,3"]
+|===
+| Name
+| Description
+
+| source-type
+| The name of the `resourceType` associated with the source MIB table.
+
+| source-attribute
+| The alias name of the string property to import from the source MIB table.
+
+| target-index-pointer-column
+| The alias name of the column in the target MIB table whose value may be used as an index into the source MIB table.
+|===
+
+This example shows how to use `cpmCPUTotalPhysicalIndex` as a pointer-like index into the `entPhysicalTable`.
+The target resource gains a pair of string properties, which we will call `cpmCPUTotalName` and `cpmCPUTotalDescr`.
+
+[source, xml]
+----
+<resourceType name="entPhysicalEntry" label="Physical Entity" resourceLabel="${entPhysicalName} (${entPhysicalDescr}))">
+   <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+   <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+</resourceType>
+
+<resourceType name="cpmCPUTotalEntry" label="Cisco CPU Total" resourceLabel="${cpmCPUTotalName} (${cpmCPUTotalDescr})">
+   <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy" />
+   <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy" />
+</resourceType>
+
+<groups>
+  <group name="entity-physical-table" ifType="all">
+    <mibObj oid=".1.3.6.1.2.1.47.1.1.1.1.2" instance="entPhysicalEntry" alias="entPhysicalDescr" type="string"/> <1>
+    <mibObj oid=".1.3.6.1.2.1.47.1.1.1.1.7" instance="entPhysicalEntry" alias="entPhysicalName" type="string"/>
+  </group>
+
+  <group name="cpm-cpu-total" ifType="all">
+    <mibObj oid=".1.3.6.1.4.1.9.9.109.1.1.1.1.2"  instance="cpmCPUTotalEntry" alias="cpmCPUTotalPhysicalIndex" type="string" /> <2>
+    <mibObj oid=".1.3.6.1.4.1.9.9.109.1.1.1.1.8"  instance="cpmCPUTotalEntry" alias="cpmCPUTotal5minRev" type="gauge" />
+    <property instance="cpmCPUTotalEntry" alias="cpmCPUTotalName" class-name="org.opennms.netmgt.collectd.PointerLikeIndexPropertyExtender"> <3>
+      <parameter key="source-type" value="entPhysicalEntry"/>
+      <parameter key="source-attribute" value="entPhysicalName"/>
+      <parameter key="target-index-pointer-column" value="cpmCPUTotalPhysicalIndex"/>
+    </property>
+    <property instance="cpmCPUTotalEntry" alias="cpmCPUTotalDescr" class-name="org.opennms.netmgt.collectd.PointerLikeIndexPropertyExtender"> <4>
+      <parameter key="source-type" value="entPhysicalEntry"/>
+      <parameter key="source-attribute" value="entPhysicalDescr"/>
+      <parameter key="target-index-pointer-column" value="cpmCPUTotalPhysicalIndex"/>
+    </property>
+  </group>
+</groups>
+----
+<1> First we collect `entPhysicalDescr` and `entPhysicalName` in the source group, which uses a resource type associated with the `entPhysicalTable`.
+<2> Then we collect the pointer-like `cpmCPUTotalPhysicalIndex` in the target group, whose resource type is associated with the `cpmCPUTotalTable`.
+<3> We derive `cpmCPUTotalName` in the target group, telling the extender to use the pointer-like property's value as an index into the source table, and specifying that we want to use the source attribute `entPhysicalName`.
+<4> Deriving `cpmCPUTotalDescr` is almost identical, except that this time we use the value of `entPhysicalDescr`.

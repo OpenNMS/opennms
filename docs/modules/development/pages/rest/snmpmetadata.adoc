@@ -1,0 +1,73 @@
+
+= SNMP Metadata
+
+== GETs (Reading Data)
+
+Lets you query the gathered SNMP data stored in a node's metadata.
+
+NOTE: This API is v2-only.
+
+[options="header", cols="5,10"]
+|===
+| Resource                              | Description
+| `snmpmetadata/\{nodeid}`              | Get the node's data for the context `snmp`.
+|===
+
+== Use examples with cURL
+
+.Retrieve snmp metadata status per location by a given _applicationId_.
+[source,bash]
+----
+curl -u admin:admin "http://127.0.0.1:8980/opennms/api/v2/snmpmetadata/4"
+----
+
+.Response
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<snmp-metadata-object name="snmp">
+  <snmp-metadata-object name="jnxBoxAnatomy">
+    <snmp-metadata-object name="jnxBoxClass">
+      <snmp-metadata-value name="jnxBoxClass" value=".1.3.6.1.4.1.2636.1.1.1.1.137.0"/>
+    </snmp-metadata-object>
+    <snmp-metadata-object name="jnxBoxDescr">
+      <snmp-metadata-value name="jnxBoxDescr" value="Juniper SRX1500 Internet Router"/>
+    </snmp-metadata-object>
+    <snmp-metadata-object name="jnxBoxInstalled">
+      <snmp-metadata-value name="jnxBoxInstalled" value="30382300"/>
+    </snmp-metadata-object>
+    <snmp-metadata-object name="jnxBoxKernelMemoryUsedPercent">
+      <snmp-metadata-value name="jnxBoxKernelMemoryUsedPercent" value="0"/>
+    </snmp-metadata-object>
+    <snmp-metadata-object name="jnxBoxPersonality">
+      <snmp-metadata-value name="jnxBoxPersonality" value=".0.0"/>
+    </snmp-metadata-object>
+    <snmp-metadata-object name="jnxBoxRevision">
+      <snmp-metadata-value name="jnxBoxRevision" value=""/>
+    </snmp-metadata-object>
+    <snmp-metadata-object name="jnxBoxSerialNo">
+      <snmp-metadata-value name="jnxBoxSerialNo" value="DB1119AK0091"/>
+    </snmp-metadata-object>
+    <snmp-metadata-object name="jnxBoxSystemDomainType">
+      <snmp-metadata-value name="jnxBoxSystemDomainType" value="1"/>
+    </snmp-metadata-object>
+    <snmp-metadata-object name="jnxLEDLastChange">
+      <snmp-metadata-value name="jnxLEDLastChange" value="0"/>
+    </snmp-metadata-object>
+    <snmp-metadata-table name="jnxContainersTableEntry">
+      <snmp-metadata-entry index=".8">
+        <snmp-metadata-value name="jnxContainersCount" value="1"/>
+        <snmp-metadata-value name="jnxContainersDescr" value="PIC slot"/>
+        <snmp-metadata-value name="jnxContainersIndex" value="8"/>
+        <snmp-metadata-value name="jnxContainersLevel" value="2"/>
+        <snmp-metadata-value name="jnxContainersType" value=".1.3.6.1.4.1.2636.1.1.2.3.137.1.0"/>
+        <snmp-metadata-value name="jnxContainersView" value="1"/>
+        <snmp-metadata-value name="jnxContainersWithin" value="7"/>
+      </snmp-metadata-entry>
+
+<!-- output omitted -->
+
+    </snmp-metadata-table>
+  </snmp-metadata-object>
+</snmp-metadata-object>
+----

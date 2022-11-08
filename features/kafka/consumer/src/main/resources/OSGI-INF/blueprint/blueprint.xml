@@ -1,0 +1,29 @@
+<blueprint
+        xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+        xsi:schemaLocation="
+		http://www.osgi.org/xmlns/blueprint/v1.0.0
+		http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+
+		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0
+		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd
+">
+  <cm:property-placeholder id="kafkaConsumerProperties" persistent-id="org.opennms.features.kafka.consumer" update-strategy="reload">
+    <cm:default-properties>
+      <cm:property name="eventsTopic" value="opennms-kafka-events"/>
+    </cm:default-properties>
+  </cm:property-placeholder>
+
+  <reference id="eventForwarder" interface="org.opennms.netmgt.events.api.EventForwarder" availability="mandatory"/>
+  <reference id="configAdmin" interface="org.osgi.service.cm.ConfigurationAdmin" />
+
+  <bean id="kafkaConsumer" class="org.opennms.features.kafka.consumer.OpenNMSKafkaConsumer"
+      init-method="init" destroy-method="shutdown">
+
+    <argument ref="configAdmin"/>
+    <argument ref="eventForwarder"/>
+    <property name="eventsTopic" value="${eventsTopic}"/>
+  </bean>
+
+</blueprint>

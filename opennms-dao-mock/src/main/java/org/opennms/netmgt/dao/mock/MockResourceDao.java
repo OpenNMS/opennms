@@ -31,9 +31,8 @@ package org.opennms.netmgt.dao.mock;
 import java.util.Collection;
 import java.util.List;
 
+import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.dao.api.ResourceDao;
-import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
@@ -62,12 +61,15 @@ public class MockResourceDao implements ResourceDao {
     }
 
     @Override
-    public OnmsResource getResourceForIpInterface(OnmsIpInterface ipInterface, OnmsLocationMonitor locationMonitor) {
+    public boolean deleteResourceById(final ResourceId resourceId) {
         throw new UnsupportedOperationException("Not yet implemented!");
     }
 
     @Override
-    public boolean deleteResourceById(final ResourceId resourceId) {
-        throw new UnsupportedOperationException("Not yet implemented!");
+    public ResourceId getResourceId(CollectionResource resource, long nodeId) {
+        if (nodeId > 0 && resource.getResourceTypeName().equals("node")) {
+            return ResourceId.get(resource.getResourceTypeName(), String.valueOf(nodeId));
+        }
+        return ResourceId.get(resource.getResourceTypeName(), resource.getInstance());
     }
 }

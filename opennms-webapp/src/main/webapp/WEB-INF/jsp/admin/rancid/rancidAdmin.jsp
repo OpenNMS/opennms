@@ -335,7 +335,6 @@
             Set to <em>true</em> the opennms.rancidIntegrationUseOnlyRancidAdapter property in <em>opennms.properties</em> 
             if you want use only the RancidAdapter to provision nodes to Rancid.
         </p>
-        <p>Detailed Documentation on all options can be found on <a title="The OpenNMS Project wiki" href="http://www.opennms.org" target="new">the OpenNMS wiki</a>.
         </p>
           <p><b>Select Group </b>: select the <em>Rancid group</em> to work on</p>
         
@@ -383,6 +382,7 @@ function validateFormInput()
 	  return false;
   }
   document.newUserForm.action="admin/rancid/rancidClogin.htm?node=${model.db_id}";
+  document.newUserForm.submit();
   return true;
 }    
 function cancelUser()
@@ -392,6 +392,7 @@ function cancelUser()
 }
 function validateFormInputStatus() {
 	  document.newUserForm2.action="admin/rancid/rancidStatus.htm?node=${model.db_id}";
+	  document.newUserForm2.submit();
 	  return true;
 }
 
@@ -412,6 +413,7 @@ function validateFormCreate() {
 	  }
 	  
 	  document.createForm.action="admin/rancid/rancidCreate.htm?node=${model.db_id}";
+	  document.createForm.submit();
 	  return true;
 }
 
@@ -424,6 +426,7 @@ function validateFormDelete() {
 function validateFormUpdate() {
 
 	  document.updateForm.action="admin/rancid/rancidUpdate.htm?node=${model.db_id}";
+	  document.updateForm.submit();
 	  return true;
 }
 

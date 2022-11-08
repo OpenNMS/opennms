@@ -1,3 +1,5 @@
+{{- /* Upon updating this file please ensure that the schema minion-config-schema.yml accurately reflects the keys that
+are used by this template. */ -}}
 <?xml version="1.0" encoding="UTF-8"?>
 <features name="my-features" xmlns="http://karaf.apache.org/xmlns/features/v1.3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.3.0 http://karaf.apache.org/xmlns/features/v1.3.0">
@@ -18,14 +20,26 @@
             parsers.1.name=Netflow-5
             parsers.1.class-name=org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow5UdpParser
             parsers.1.parameters.maxClockSkew=300
+{{range gets (print $singlePortPath "/parser-parameters/*") -}}
+            parsers.1.parameters.{{base .Key}}={{.Value}}
+{{end -}}
             parsers.2.name=Netflow-9
             parsers.2.class-name=org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow9UdpParser
             parsers.2.parameters.maxClockSkew=300
+{{range gets (print $singlePortPath "/parser-parameters/*") -}}
+            parsers.2.parameters.{{base .Key}}={{.Value}}
+{{end -}}
             parsers.3.name=IPFIX
             parsers.3.class-name=org.opennms.netmgt.telemetry.protocols.netflow.parser.IpfixUdpParser
             parsers.3.parameters.maxClockSkew=300
+{{range gets (print $singlePortPath "/parser-parameters/*") -}}
+            parsers.3.parameters.{{base .Key}}={{.Value}}
+{{end -}}
             parsers.4.name=SFlow
             parsers.4.class-name=org.opennms.netmgt.telemetry.protocols.sflow.parser.SFlowUdpParser
+{{range gets (print $singlePortPath "/parser-parameters/*") -}}
+            parsers.4.parameters.{{base .Key}}={{.Value}}
+{{end -}}
         </config>
 {{end -}}
 {{range lsdir (print $flowsPath "/listeners") -}}

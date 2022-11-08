@@ -4,7 +4,7 @@
         {
             "collection-package-names": [],
             "geolocation": null,
-            "monitoring-area": "Default",
+            "monitoring-area": "localhost",
             "latitude": null,
             "location-name": "Default",
             "longitude": null,

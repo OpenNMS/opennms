@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -48,7 +48,7 @@
   <jsp:param name="breadcrumb" value="Error" />
 </jsp:include>
 
-<h1>Alarm ID Not Found</h1>
+<h1>Alarm Cleared or Not Found</h1>
 
 <h1>Alarm Cleared or Not Found</h1>
 

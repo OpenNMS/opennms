@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="snmp-metadata-config">
+      <xs:complexType>
+        <xs:sequence>
+          <xs:element name="config" maxOccurs="unbounded" minOccurs="1">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="entry" maxOccurs="unbounded" minOccurs="0">
+                  <xs:complexType mixed="true">
+                    <xs:sequence>
+                      <xs:element name="entry" maxOccurs="unbounded" minOccurs="0">
+                        <xs:complexType>
+                          <xs:simpleContent>
+                            <xs:extension base="xs:string">
+                              <xs:attribute type="xs:string" name="tree" use="required"/>
+                              <xs:attribute type="xs:string" name="name" use="required"/>
+                              <xs:attribute type="xs:string" name="index" use="optional"/>
+                              <xs:attribute type="xs:string" name="exact" use="optional"/>
+                            </xs:extension>
+                          </xs:simpleContent>
+                        </xs:complexType>
+                      </xs:element>
+                    </xs:sequence>
+                    <xs:attribute type="xs:string" name="tree" use="required"/>
+                    <xs:attribute type="xs:string" name="name" use="required"/>
+                    <xs:attribute type="xs:string" name="index" use="optional"/>
+                    <xs:attribute type="xs:string" name="exact" use="optional"/>
+                  </xs:complexType>
+                </xs:element>
+              </xs:sequence>
+              <xs:attribute type="xs:string" name="tree" use="required"/>
+              <xs:attribute type="xs:string" name="name" use="required"/>
+              <xs:attribute type="xs:string" name="sysObjectId" use="required"/>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+        <xs:attribute type="xs:string" name="resultsBehavior" use="optional" default="replace"/>
+      </xs:complexType>
+    </xs:element>
+  </xs:schema>

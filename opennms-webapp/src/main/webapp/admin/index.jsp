@@ -84,8 +84,8 @@
     {
         document.snmpConfig.action = "admin/snmpConfig?action=default";
         document.snmpConfig.submit();
-    }
-
+    } 
+     
     function networkConnection()
     {
         document.networkConnection.submit();
@@ -152,7 +152,9 @@
             <li><a href="javascript:snmpConfigPost()">Configure SNMP Community Names by IP Address</a></li>
             <li><a href="javascript:addInterfacePost()">Manually Add an Interface</a></li>
             <li><a href="javascript:deletePost()">Delete Nodes</a></li>
+            <li><a href="ui/index.html/#/configuration">Configure External Requisitions</a></li>
             <li><a href="admin/geoservice/index.jsp">Configure Geocoder Service</a></li>
+            <li><a href="/opennms/ui/index.html#/scv">Secure Credentials Vault</a></li>
         </ul>
       </div> <!-- card-body -->
     </div> <!-- panel -->
@@ -239,7 +241,6 @@
         <ul class="list-unstyled mb-0">
             <li><a href="locations/index.jsp">Manage Monitoring Locations</a></li>
             <li><a href="admin/applications.htm">Manage Applications</a></li>
-            <li><a href="distributed/locationMonitorList.htm">Manage Remote Pollers</a></li>
             <li><a href="minion/index.jsp">Manage Minions</a></li>
         </ul>
       </div> <!-- card-body -->
@@ -266,7 +267,6 @@
         <span>Descriptions</span>
       </div>
       <div class="card-body">
-        <p>Detailed Documentation on all options can be found on <a title="The OpenNMS Project wiki" href="http://wiki.opennms.org" target="new">the OpenNMS wiki</a>.
         </p>
 
         <p><b>Configure Users, Groups and On-Call Roles</b>: Add, modify or delete
@@ -302,6 +302,8 @@
         <p><b>Delete Nodes</b>: Permanently delete nodes from the database.
         </p>
 
+          <p><b>Secure Credentials Vault</b>: Encrypt credentials the OpenNMS system uses.
+          </p>
 
         <p><b>Manually Send an Event</b>: Allows you to build a specific event and send it to the system.</p>
 
@@ -356,8 +358,8 @@
         <p><b>Configure thresholds</b>: Allows you to add, remove, or modify thresholds.</p>
 
 
-        <p><b>Manage Applications</b> and <b>Manage Remote Pollers</b>: Configure and administer 
-        the operation of remote pollers that report back to this OpenNMS server to provide distributed
+        <p><b>Manage Applications</b>: Configure and administer 
+        the operation of perspective pollers that report back to this OpenNMS server to provide distributed
         status information.
         </p>
 

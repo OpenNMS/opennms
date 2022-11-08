@@ -88,6 +88,21 @@
          <parameter key="thresholding-enabled" value="true"/>
       </service>
    </package>
+   <package name="vmware7" remote="false">
+      <filter>(IPADDR != '0.0.0.0') &amp; (categoryName == 'VMware7')</filter>
+      <service name="VMware-VirtualMachine" interval="300000" user-defined="false" status="on">
+         <parameter key="collection" value="default-VirtualMachine7"/>
+         <parameter key="thresholding-enabled" value="true"/>
+      </service>
+      <service name="VMware-HostSystem" interval="300000" user-defined="false" status="on">
+         <parameter key="collection" value="default-HostSystem7"/>
+         <parameter key="thresholding-enabled" value="true"/>
+      </service>
+      <service name="VMwareCim-HostSystem" interval="300000" user-defined="false" status="on">
+         <parameter key="collection" value="default-ESX-HostSystem"/>
+         <parameter key="thresholding-enabled" value="true"/>
+      </service>
+   </package>
    <package name="example1" remote="false">
       <filter>IPADDR != '0.0.0.0'</filter>
       <include-range begin="1.1.1.1" end="254.254.254.254"/>
@@ -147,7 +162,23 @@
          <parameter key="collection" value="xml-elasticsearch-cluster-stats"/>
          <parameter key="handler-class" value="org.opennms.protocols.json.collector.DefaultJsonCollectionHandler"/>
       </service>
+      <service name="Windows-Exporter" interval="300000" user-defined="false" status="on">
+         <parameter key="collection" value="windows-exporter"/>
+         <parameter key="thresholding-enabled" value="true"/>
+         <parameter key="url" value="http://INTERFACE_ADDRESS:9182/metrics"/>
+         <parameter key="timeout" value="3000"/>
+         <parameter key="retry" value="2"/>
+      </service>
+      <service name="Node-Exporter" interval="300000" user-defined="false" status="on">
+         <parameter key="collection" value="node-exporter"/>
+         <parameter key="thresholding-enabled" value="true"/>
+         <parameter key="url" value="http://INTERFACE_ADDRESS:9100/metrics"/>
+         <parameter key="timeout" value="3000"/>
+         <parameter key="retry" value="2"/>
+      </service>
    </package>
+   <collector service="Windows-Exporter" class-name="org.opennms.netmgt.collectd.prometheus.PrometheusCollector"/>
+   <collector service="Node-Exporter" class-name="org.opennms.netmgt.collectd.prometheus.PrometheusCollector"/>
    <collector service="Elasticsearch" class-name="org.opennms.protocols.xml.collector.XmlCollector"/>
    <collector service="PostgreSQL" class-name="org.opennms.netmgt.collectd.JdbcCollector"/>
    <collector service="SNMP" class-name="org.opennms.netmgt.collectd.SnmpCollector"/>

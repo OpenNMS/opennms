@@ -104,4 +104,6 @@
       <property name="pendingForeignSourceRepository" ref="selectedPendingForeignSourceRepository"/>
       <property name="deployedForeignSourceRepository" ref="selectedDeployedForeignSourceRepository"/>
   </bean>
+  <bean id="enLinkdElementFactory" class="org.opennms.web.enlinkd.EnLinkdElementFactory"/>
+
 </beans>

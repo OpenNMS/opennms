@@ -45,18 +45,12 @@ import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.CollectionStatus;
-import org.opennms.netmgt.collection.support.IndexStorageStrategy;
-import org.opennms.netmgt.collection.support.PersistAllSelectorStrategy;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
-import org.opennms.netmgt.collection.support.builder.GenericTypeResource;
+import org.opennms.netmgt.collection.support.builder.DeferredGenericTypeResource;
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
 import org.opennms.netmgt.collection.support.builder.Resource;
-import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.WmiDataCollectionConfigFactory;
 import org.opennms.netmgt.config.WmiPeerFactory;
-import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
-import org.opennms.netmgt.config.datacollection.ResourceType;
-import org.opennms.netmgt.config.datacollection.StorageStrategy;
 import org.opennms.netmgt.config.wmi.Attrib;
 import org.opennms.netmgt.config.wmi.WmiAgentConfig;
 import org.opennms.netmgt.config.wmi.WmiCollection;
@@ -90,7 +84,11 @@ public class WmiCollector extends AbstractRemoteServiceCollector {
 
 	private static final String WMI_AGENT_CONFIG_KEY = "wmiAgentConfig";
 
-	private static final Map<String, Class<?>> TYPE_MAP = Collections.unmodifiableMap(Stream.of(
+    private static final String WMI_RESOURCE_TYPES_KEY = "wmiResourceTypes";
+
+    private static final String FALLBACK_RESOURCE_TYPE_NAME = "wmiCollector";
+
+    private static final Map<String, Class<?>> TYPE_MAP = Collections.unmodifiableMap(Stream.of(
             new SimpleEntry<>(WMI_COLLECTION_KEY, WmiCollection.class),
             new SimpleEntry<>(WMI_AGENT_CONFIG_KEY, WmiAgentConfig.class))
             .collect(Collectors.toMap((e) -> e.getKey(), (e) -> e.getValue())));
@@ -124,6 +122,7 @@ public class WmiCollector extends AbstractRemoteServiceCollector {
         // check scheduled nodes to see if that group should be collected
         final WmiCollection collection = (WmiCollection)parameters.get(WMI_COLLECTION_KEY);
         final WmiAgentConfig agentConfig = (WmiAgentConfig)parameters.get(WMI_AGENT_CONFIG_KEY);
+
         final WmiAgentState agentState = new WmiAgentState(agent.getAddress(), agentConfig, parameters);
 
         // Create a new collection set.
@@ -180,7 +179,7 @@ public class WmiCollector extends AbstractRemoteServiceCollector {
                                 } else {
                                     instance = propVal.toString();
                                 }
-                                resource = getWmiResource(agent, wpm.getResourceType(), nodeResource, instance);
+                                resource = new DeferredGenericTypeResource(nodeResource, wpm.getResourceType(), FALLBACK_RESOURCE_TYPE_NAME, instance);
                             } else {
                                 resource = nodeResource;
                             }
@@ -263,20 +262,6 @@ public class WmiCollector extends AbstractRemoteServiceCollector {
             }
         }
         return true;
-    }
-
-    private Resource getWmiResource(CollectionAgent agent, String resourceType, NodeLevelResource nodeResource, String instance) {
-        ResourceType rt = DataCollectionConfigFactory.getInstance().getConfiguredResourceTypes().get(resourceType);
-        if (rt == null) {
-            LOG.debug("getWmiResourceType: using default WMI resource type strategy - index / all");
-            rt = new ResourceType();
-            rt.setName(resourceType);
-            rt.setStorageStrategy(new StorageStrategy());
-            rt.getStorageStrategy().setClazz(IndexStorageStrategy.class.getName());
-            rt.setPersistenceSelectorStrategy(new PersistenceSelectorStrategy());
-            rt.getPersistenceSelectorStrategy().setClazz(PersistAllSelectorStrategy.class.getName());
-        }
-        return new GenericTypeResource(nodeResource, rt, instance);
     }
 
     private void initWMIPeerFactory() {

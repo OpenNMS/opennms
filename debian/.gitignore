@@ -24,7 +24,6 @@ opennms-plugin-protocol-cifs
 opennms-plugin-protocol-nsclient
 opennms-plugin-protocol-radius
 opennms-plugin-protocol-xml
-opennms-plugin-protocol-xmp
 opennms-plugin-ticketer-jira
 opennms-plugin-ticketer-otrs
 opennms-plugin-ticketer-rt
@@ -36,4 +35,3 @@ opennms-server
 opennms-source
 opennms-webapp-hawtio
 opennms-webapp-jetty
-opennms-webapp-remoting

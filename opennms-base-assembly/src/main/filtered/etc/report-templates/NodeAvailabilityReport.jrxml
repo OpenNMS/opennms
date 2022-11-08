@@ -132,7 +132,8 @@ FROM
       WHERE
          events.eventuei = 'uei.opennms.org/nodes/nodeDown'
          AND greatest('$P!{DS_START_TIME_STRING}'::TIMESTAMP WITH TIME ZONE,outages.iflostservice) < least(('$P!{DS_START_TIME_STRING}'::TIMESTAMP WITH TIME ZONE + '$P!{DS_TIME_RANGE}'::INTERVAL), outages.ifregainedservice)
-         AND (iflostservice, COALESCE(ifregainedservice,'$P!{DS_END_TIME_STRING}'::TIMESTAMP WITH TIME ZONE)) OVERLAPS ('$P!{DS_START_TIME_STRING}'::TIMESTAMP WITH TIME ZONE, '$P!{DS_START_TIME_STRING}'::TIMESTAMP WITH TIME ZONE + '$P!{DS_TIME_RANGE}'::INTERVAL))
+         AND (iflostservice, COALESCE(ifregainedservice,'$P!{DS_END_TIME_STRING}'::TIMESTAMP WITH TIME ZONE)) OVERLAPS ('$P!{DS_START_TIME_STRING}'::TIMESTAMP WITH TIME ZONE, '$P!{DS_START_TIME_STRING}'::TIMESTAMP WITH TIME ZONE + '$P!{DS_TIME_RANGE}'::INTERVAL) AND
+         outages.perspective IS NULL)
       AS
         raw_outages
     GROUP BY

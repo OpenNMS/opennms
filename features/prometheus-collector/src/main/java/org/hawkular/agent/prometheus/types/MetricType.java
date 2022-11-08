@@ -18,5 +18,5 @@
 package org.hawkular.agent.prometheus.types;
 
 public enum MetricType {
-    COUNTER, GAUGE, SUMMARY, HISTOGRAM
+    COUNTER, GAUGE, SUMMARY, HISTOGRAM, UNTYPED
 }

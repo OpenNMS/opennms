@@ -29,7 +29,10 @@
 package org.opennms.netmgt.dao.mock;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.opennms.netmgt.dao.api.OutageDao;
@@ -37,6 +40,7 @@ import org.opennms.netmgt.model.HeatMapElement;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.ServiceSelector;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.model.outage.CurrentOutageDetails;
 import org.opennms.netmgt.model.outage.OutageSummary;
 
@@ -77,7 +81,22 @@ public class MockOutageDao extends AbstractMockDao<OnmsOutage, Integer> implemen
     }
 
     @Override
+    public Map<Integer, Set<OnmsOutage>> currentOutagesByServiceId() {
+        throw new UnsupportedOperationException("Not yet implemented!");
+    }
+
+    @Override
     public OnmsOutage currentOutageForService(OnmsMonitoredService service) {
+        throw new UnsupportedOperationException("Not yet implemented!");
+    }
+
+    @Override
+    public OnmsOutage currentOutageForServiceFromPerspective(final OnmsMonitoredService service, final OnmsMonitoringLocation perspective) {
+        throw new UnsupportedOperationException("Not yet implemented!");
+    }
+
+    @Override
+    public Collection<OnmsOutage> currentOutagesForServiceFromPerspectivePoller(OnmsMonitoredService service) {
         throw new UnsupportedOperationException("Not yet implemented!");
     }
 
@@ -108,6 +127,11 @@ public class MockOutageDao extends AbstractMockDao<OnmsOutage, Integer> implemen
 
     @Override
     public List<HeatMapElement> getHeatMapItemsForEntity(String entityNameColumn, String entityIdColumn, String restrictionColumn, String restrictionValue, String... groupByColumns) {
+        throw new UnsupportedOperationException("Not yet implemented!");
+    }
+
+    @Override
+    public Collection<OnmsOutage> getStatusChangesForApplicationIdBetween(Date startDate, Date endDate, Integer applicationId) {
         throw new UnsupportedOperationException("Not yet implemented!");
     }
 }

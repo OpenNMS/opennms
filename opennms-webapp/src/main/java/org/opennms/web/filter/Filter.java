@@ -32,6 +32,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import org.hibernate.criterion.Criterion;
+import org.opennms.core.utils.WebSecurityUtils;
 
 /**
  * <p>Filter interface.</p>
@@ -106,7 +107,13 @@ public interface Filter {
      * @return a {@link java.lang.String} object.
      */
     public String getTextDescription();
-    
+
+    /** Returns a similar text as getTextDescription() but can contain html elements.
+     *  The implementor is responsible to make sure no cross side scripting can occur. */
+    default String getTextDescriptionAsSanitizedHtml() {
+        return WebSecurityUtils.sanitizeString(getTextDescription());
+    };
+
     /**
      * Criterion used to construction an OnmsCritieria
      *

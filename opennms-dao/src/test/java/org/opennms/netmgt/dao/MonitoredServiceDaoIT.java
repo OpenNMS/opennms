@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -58,6 +58,7 @@ import org.springframework.transaction.annotation.Transactional;
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
@@ -120,24 +121,6 @@ public class MonitoredServiceDaoIT implements InitializingBean {
         final OnmsMonitoredService monSvc2 = m_monitoredServiceDao.get(m_databasePopulator.getNode1().getId(), addr("192.168.1.1"), monSvc.getIfIndex(), monSvc.getServiceId());
         assertNotNull(monSvc2);
 
-    }
-
-    /**
-     * This test exposes a bug in Hibernate: it is not applying join conditions
-     * correctly to the many-to-many service-to-application relationship.
-     * 
-     * This issue is documented in NMS-9470. If we upgrade Hibernate, we should
-     * recheck this issue to see if it is fixed.
-     * 
-     * @see https://issues.opennms.org/browse/NMS-9470
-     */
-    @Test
-    @Transactional
-    @Ignore("Ignore until Hibernate can be upgraded and this can be rechecked")
-    public void testCriteriaBuilderWithApplicationAlias() {
-        CriteriaBuilder cb = new CriteriaBuilder(OnmsMonitoredService.class);
-        cb.alias("applications", "application", JoinType.LEFT_JOIN, Restrictions.eq("application.name", "HelloWorld"));
-        m_monitoredServiceDao.findMatching(cb.toCriteria());
     }
 
 }

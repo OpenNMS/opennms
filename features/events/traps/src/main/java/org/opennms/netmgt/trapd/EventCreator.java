@@ -81,6 +81,7 @@ class EventCreator {
             eventBuilder.setGeneric(trapIdentity.getGeneric());
             eventBuilder.setSpecific(trapIdentity.getSpecific());
             eventBuilder.setEnterpriseId(trapIdentity.getEnterpriseId());
+            eventBuilder.setTrapOID(trapIdentity.getTrapOID());
         }
 
         // Handle var bindings

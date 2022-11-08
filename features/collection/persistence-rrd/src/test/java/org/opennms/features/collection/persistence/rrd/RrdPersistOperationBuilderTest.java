@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2020 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -34,6 +34,7 @@ import java.text.NumberFormat;
 import java.util.Locale;
 
 import org.junit.Test;
+import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.persistence.rrd.RrdPersistOperationBuilder;
 
 public class RrdPersistOperationBuilderTest {
@@ -49,6 +50,11 @@ public class RrdPersistOperationBuilderTest {
         assertEquals("U", RrdPersistOperationBuilder.mapValue(null));
         assertEquals("U", RrdPersistOperationBuilder.mapValue(Double.NaN));
         assertEquals("U", RrdPersistOperationBuilder.mapValue(Double.POSITIVE_INFINITY));
+
+        assertEquals("2", RrdPersistOperationBuilder.mapValue(2.0000d, AttributeType.COUNTER));
+        assertEquals("2", RrdPersistOperationBuilder.mapValue(2.0000d, AttributeType.GAUGE));
+        assertEquals("2", RrdPersistOperationBuilder.mapValue(2.0001d, AttributeType.COUNTER));
+        assertEquals("2.0001", RrdPersistOperationBuilder.mapValue(2.0001d, AttributeType.GAUGE));
     }
 
     @Test

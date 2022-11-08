@@ -64,6 +64,7 @@ public class SshClient implements AutoCloseable {
     private final JSch jsch = new JSch();
     private Session session;
     private Channel channel;
+    private PrintStream stdin;
     private InputStream stdout;
     private InputStream stderr;
 
@@ -100,8 +101,8 @@ public class SshClient implements AutoCloseable {
         channel.connect(timeout);
 
         OutputStream ops = channel.getOutputStream();
-        PrintStream ps = new PrintStream(ops, true);
-        return ps;
+        stdin = new PrintStream(ops, true);
+        return stdin;
     }
 
     public String getStdout() throws IOException {
@@ -109,6 +110,14 @@ public class SshClient implements AutoCloseable {
         final String stdoutContents = stdoutBuff.toString() + readAvailableBytes(stdout);
         stdoutBuff.setLength(0);
         return stdoutContents;
+    }
+
+    public String getStdoutOrNull() {
+        try {
+            return getStdout();
+        } catch (IOException e) {
+            return null;
+        }
     }
 
     public String getStderr() throws IOException {
@@ -167,6 +176,14 @@ public class SshClient implements AutoCloseable {
         return channel.isClosed();
     }
 
+    public Streams getStreams() {
+        return new Streams(
+                stdin,
+                new StreamGobbler(stdout, "stdout"),
+                new StreamGobbler(stderr, "stderr")
+        );
+    }
+
     /**
      * Read all of the available bytes on the given stream and converts them
      * to a string.
@@ -216,5 +233,15 @@ public class SshClient implements AutoCloseable {
                 }
             }
         };
+    }
+
+    public static class Streams {
+        public final PrintStream stdin;
+        public final StreamGobbler stdout, stderr;
+        public Streams(PrintStream stdin, StreamGobbler stdout, StreamGobbler stderr) {
+            this.stdin = stdin;
+            this.stdout = stdout;
+            this.stderr = stderr;
+        }
     }
 }

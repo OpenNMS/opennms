@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/usr/bin/env bash
 # =====================================================================
 # Entrypoint for the Minion container image
 # =====================================================================
@@ -6,14 +6,19 @@
 # Cause false/positives
 # shellcheck disable=SC2086
 
+set -e
+
 umask 002
 MINION_HOME="/opt/minion"
-MINION_CONFIG="/opt/minion/etc/org.opennms.minion.controller.cfg"
+MINION_CONFIG="${MINION_HOME}/etc/org.opennms.minion.controller.cfg"
+MINION_PROCESS_ENV_CFG="${MINION_HOME}/etc/minion-process.env"
+MINION_SERVER_CERTS_CFG="${MINION_HOME}/etc/minion-server-certs.env"
 MINION_OVERLAY_ETC="/opt/minion-etc-overlay"
-CONFD_KEY_STORE="/opt/minion/minion-config.yaml"
-CONFD_CONFIG_DIR="/opt/minion/confd"
-CONFD_BIN="/usr/local/bin/confd"
+CONFD_KEY_STORE="${MINION_HOME}/minion-config.yaml"
+CONFD_CONFIG_DIR="${MINION_HOME}/confd"
+CONFD_BIN="/usr/bin/confd"
 CONFD_CONFIG_FILE="${CONFD_CONFIG_DIR}/confd.toml"
+CACERTS="${MINION_HOME}/cacerts"
 
 export KARAF_OPTS="-Djava.locale.providers=CLDR,COMPAT"
 
@@ -134,7 +139,6 @@ initConfig() {
         echo "location = ${MINION_LOCATION}" > ${MINION_CONFIG}
         echo "id = ${MINION_ID}" >> ${MINION_CONFIG}
         echo "broker-url = ${OPENNMS_BROKER_URL}" >> ${MINION_CONFIG}
-        echo "http-url = ${OPENNMS_HTTP_URL}" >> ${MINION_CONFIG}
 
         parseEnvironment
 
@@ -163,6 +167,14 @@ applyConfd() {
   fi
 }
 
+applyOpennmsPropertiesD() {
+  find "${MINION_HOME}/etc/opennms.properties.d" -name '*.properties' | while IFS= read -r filename; do
+    echo "appending to custom.system.properties: $filename"
+    echo "" >> ${MINION_HOME}/etc/custom.system.properties
+    cat "$filename" >> ${MINION_HOME}/etc/custom.system.properties
+  done
+}
+
 start() {
     export KARAF_EXEC="exec"
     cd ${MINION_HOME}/bin
@@ -187,7 +199,25 @@ runConfd() {
 configure() {
   initConfig
   applyConfd
+  applyOpennmsPropertiesD
   applyOverlayConfig
+  if [[ "$JACOCO_AGENT_ENABLED" -gt 0 ]]; then
+    export JAVA_OPTS="$JAVA_OPTS -javaagent:${MINION_HOME}/agent/jacoco-agent.jar=output=none,jmx=true,excludes=org.drools.*"
+  fi
+  if [[ -f "$MINION_PROCESS_ENV_CFG" ]]; then
+    while read assignment; do
+      [[ $assignment =~ ^#.* ]] && continue
+      export "$assignment"
+    done < "$MINION_PROCESS_ENV_CFG"
+  fi
+  if [[ -f "$MINION_SERVER_CERTS_CFG" ]]; then
+    cp "$JAVA_HOME/lib/security/cacerts" "$CACERTS"
+    export JAVA_OPTS="$JAVA_OPTS -Djavax.net.ssl.trustStore=$CACERTS -Djavax.net.ssl.trustStorePassword=changeit"
+    while read certid; do
+      [[ $certid =~ ^#.* ]] && continue
+      keytool -importcert -file "/opt/minion/server-certs/$certid" -alias "$certid" -keystore "$CACERTS" -storepass changeit -noprompt
+    done < "$MINION_SERVER_CERTS_CFG"
+  fi
 }
 
 # Evaluate arguments for build script.

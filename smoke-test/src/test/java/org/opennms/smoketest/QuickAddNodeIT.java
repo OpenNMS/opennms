@@ -100,7 +100,7 @@ public class QuickAddNodeIT extends OpenNMSSeleniumIT {
         enterTextAutocomplete(By.cssSelector("input[name='categoryName']"), NODE_CATEGORY);
 
         wait.until(ExpectedConditions.elementToBeClickable(By.id("provision"))).click();
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".modal-dialog button[data-bb-handler='main']"))).click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[text()='Ok']"))).click();
 
         wait.until(new WaitForNodesInDatabase(1));
     }

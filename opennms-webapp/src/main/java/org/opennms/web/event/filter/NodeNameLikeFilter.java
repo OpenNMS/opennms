@@ -63,7 +63,7 @@ public class NodeNameLikeFilter extends SubstringFilter {
      */
     @Override
     public String getTextDescription() {
-        return ("node name containing \"" + getSubstring() + "\"");
+        return ("Node name containing \"" + getSubstring() + "\"");
     }
 
     /**

@@ -38,6 +38,7 @@ public interface ISnmp {
     String getCommunity();
     Integer getGeneric();
     String getId();
+    String getTrapOID();
     String getIdtext();
     Integer getSpecific();
     Long getTimeStamp();

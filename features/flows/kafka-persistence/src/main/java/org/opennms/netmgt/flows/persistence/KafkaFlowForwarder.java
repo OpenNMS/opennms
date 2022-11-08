@@ -30,6 +30,7 @@ package org.opennms.netmgt.flows.persistence;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.util.Collection;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Objects;
@@ -41,16 +42,19 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.opennms.netmgt.flows.api.EnrichedFlow;
-import org.opennms.netmgt.flows.api.EnrichedFlowForwarder;
+import org.opennms.integration.api.v1.flows.Flow;
 import org.opennms.netmgt.flows.persistence.model.FlowDocument;
+import org.opennms.integration.api.v1.flows.FlowRepository;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.MetricRegistry;
 import com.swrve.ratelimitedlogger.RateLimitedLog;
 
-public class KafkaFlowForwarder implements EnrichedFlowForwarder {
+public class KafkaFlowForwarder implements FlowRepository {
 
     private static final Logger LOG = LoggerFactory.getLogger(KafkaFlowForwarder.class);
     public static final String KAFKA_CLIENT_PID = "org.opennms.features.flows.persistence.kafka";
@@ -63,30 +67,47 @@ public class KafkaFlowForwarder implements EnrichedFlowForwarder {
             .build();
     private Properties producerConfig;
 
-    public KafkaFlowForwarder(ConfigurationAdmin configAdmin) {
+    private final Meter forwarded;
+    private final Meter persisted;
+    private final Counter skipped;
+    private final Counter failed;
+
+    public KafkaFlowForwarder(final ConfigurationAdmin configAdmin,
+                              final MetricRegistry metricRegistry) {
         this.configAdmin = configAdmin;
+
+        this.forwarded = metricRegistry.meter("forwarded");
+        this.persisted = metricRegistry.meter("persisted");
+        this.skipped = metricRegistry.counter("skipped");
+        this.failed = metricRegistry.counter("failed");
     }
 
     @Override
-    public void forward(EnrichedFlow enrichedFlow) {
+    public void persist(Collection<? extends Flow> flows) {
+        for (final var enrichedFlow: flows) {
+            this.forwarded.mark();
 
-        if (producer == null) {
-            RATE_LIMITED_LOG.warn("Kafka Producer is not configured for flow forwarding.");
-            return;
-        }
+            if (this.producer == null) {
+                this.skipped.inc();
+                RATE_LIMITED_LOG.warn("Kafka Producer is not configured for flow forwarding.");
+                return;
+            }
 
-        try {
-            FlowDocument flowDocument = FlowDocumentBuilder.buildFlowDocument(enrichedFlow);
-            final ProducerRecord<String, byte[]> record = new ProducerRecord<>(topicName, flowDocument.toByteArray());
-            producer.send(record, (recordMetadata, e) -> {
-                if (e != null) {
-                    RATE_LIMITED_LOG.warn("Failed to send flow document to kafka: {}.", record, e);
-                } else if (LOG.isTraceEnabled()) {
-                    LOG.trace("Persisted flow document {} to kafka.", flowDocument);
-                }
-            });
-        } catch (Exception e) {
-            LOG.error("Exception while sending flow to kafka.", e);
+            try {
+                FlowDocument flowDocument = FlowDocumentBuilder.buildFlowDocument(enrichedFlow);
+                final ProducerRecord<String, byte[]> record = new ProducerRecord<>(this.topicName, flowDocument.toByteArray());
+                this.producer.send(record, (recordMetadata, e) -> {
+                    if (e != null) {
+                        this.failed.inc();
+                        RATE_LIMITED_LOG.warn("Failed to send flow document to kafka: {}.", record, e);
+                    } else if (LOG.isTraceEnabled()) {
+                        this.persisted.mark();
+                        LOG.trace("Persisted flow document {} to kafka.", flowDocument);
+                    }
+                });
+            } catch (Exception e) {
+                LOG.error("Exception while sending flow to kafka.", e);
+            }
         }
     }
 

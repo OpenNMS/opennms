@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -41,26 +41,35 @@ import org.opennms.netmgt.model.ReadOnlyEntity;
 public class IpInterfaceTopologyEntity {
     private final Integer id;
     private final InetAddress ipAddress;
+    private final InetAddress netMask;
     private final String isManaged;
     private final PrimaryType isSnmpPrimary;
     private final Integer nodeId;
     private final Integer snmpInterfaceId;
 
     public IpInterfaceTopologyEntity(Integer id,
-            InetAddress ipAddress, String isManaged, PrimaryType isSnmpPrimary, Integer nodeId,
+            InetAddress ipAddress, InetAddress netMask, String isManaged, PrimaryType isSnmpPrimary, Integer nodeId,
             Integer snmpInterfaceId){
         this.id = id;
         this.ipAddress = ipAddress;
+        this.netMask = netMask;
         this.isManaged = isManaged;
         this.isSnmpPrimary = isSnmpPrimary;
         this.nodeId = nodeId;
         this.snmpInterfaceId = snmpInterfaceId;
     }
 
+    public IpInterfaceTopologyEntity(Integer id,
+            InetAddress ipAddress, InetAddress netMask, String isManaged, String snmpPrimary, Integer nodeId,
+            Integer snmpInterfaceId){
+        this(id, ipAddress, netMask, isManaged, PrimaryType.get(snmpPrimary), nodeId, snmpInterfaceId);
+    }
+
     public static IpInterfaceTopologyEntity create(OnmsIpInterface ipInterface) {
         return new IpInterfaceTopologyEntity(
                 ipInterface.getId(),
                 ipInterface.getIpAddress(),
+                ipInterface.getNetMask(),
                 ipInterface.getIsManaged(),
                 ipInterface.getIsSnmpPrimary(),
                 Optional.ofNullable(ipInterface.getNode()).map(OnmsNode::getId).orElse(null),
@@ -82,12 +91,20 @@ public class IpInterfaceTopologyEntity {
         return ipAddress;
     }
 
+    public InetAddress getNetMask() {
+        return netMask;
+    }
+
     public String getIsManaged() {
         return isManaged;
     }
 
     public boolean isManaged() {
         return "M".equals(getIsManaged());
+    }
+
+    public char snmpPrimary() {
+        return isSnmpPrimary.getCharCode();
     }
 
     public PrimaryType getIsSnmpPrimary() {
@@ -107,6 +124,7 @@ public class IpInterfaceTopologyEntity {
         return "IpInterfaceTopologyEntity{" +
                 "id=" + id +
                 ", ipAddress=" + ipAddress +
+                ", netMask=" + netMask +
                 ", isManaged='" + isManaged + '\'' +
                 ", isSnmpPrimary=" + isSnmpPrimary +
                 ", nodeId=" + nodeId +

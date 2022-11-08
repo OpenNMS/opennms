@@ -50,6 +50,10 @@
                   <authorizationEntry queue="OpenNMS.*.*" write="minion" admin="minion" />
                   <!-- Users in the minion role can read/create from queues that are keyed by location -->
                   <authorizationEntry queue="OpenNMS.*.*.*" read="minion" admin="minion" />
+                  <!-- Users in the minion role can read from topic OpenNMS.Twin.Sink -->
+                  <authorizationEntry topic="OpenNMS.Twin.Sink" read="minion" admin="minion" />
+                  <!-- Users in the minion role can write queue OpenNMS.Twin.RPC -->
+                  <authorizationEntry queue="OpenNMS.Twin.RPC" write="minion" admin="minion" />
                   <!-- Users in the minion role can read/write/create advisory topics -->
                   <authorizationEntry topic="ActiveMQ.Advisory.>" read="minion" write="minion" admin="minion"/>
                 </authorizationEntries>

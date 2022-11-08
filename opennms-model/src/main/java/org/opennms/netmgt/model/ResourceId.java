@@ -54,7 +54,7 @@ public class ResourceId implements Comparable<ResourceId> {
             throw new IllegalArgumentException("Type must be non-null");
         }
         if (!type.matches("\\w+")) {
-            throw new IllegalArgumentException("Type must be a valid identifier");
+            throw new IllegalArgumentException("Type must be a valid identifier: "+ type);
         }
 
         this.parent = parent;
@@ -159,5 +159,13 @@ public class ResourceId implements Comparable<ResourceId> {
 
     private static String unescape(final String escaped) {
         return escaped.replaceAll("\\\\(.)", "$1");
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public String getName() {
+        return name;
     }
 }

@@ -1,0 +1,78 @@
+
+= IS-IS Discovery
+
+The ISIS Topology Updater provides ISIS OnmsTopology, consolidating IS-IS data ISIS Collector collects.
+Only full bidirectional connections between two ISIS-supported devices become edges.
+Node A and Node B are connected by an ISIS edge if and only if there is an ISIS link in Node A to Node B and vice versa.
+
+IS-IS links are found in the isisISAdjTable defined in https://datatracker.ietf.org/doc/html/rfc4444[ISIS-MIB].
+This table has the information needed to find the Adjacency Intermediate System.
+The information about IS-IS is stored into two tables: isisElement and isisLink.
+isisElement contains the ISISSysID, a unique identifier of the Intermediate-System (the name for the router in ISO protocols).
+Each entry in this SNMP MIB table represents a unidirectional link from the Intermediate-System that is queried to the Adjacent Intermediate Systems running IS-IS and "peering" with the source router.
+If two routers IS-A and IS-B support ISIS-MIB, then Enlinkd creates two link entries in {page-component-title}: one from IS-A to IS-B (from the adjtable of IS-A) and the complementary link back from IS-B to IS-A (from the adjTable of IS-B).
+IS-IS links are represented in the ISIS-MIB as in the table below.
+
+The following OIDs are supported to discover and build the ISIS network topology and are collected by the ISIS Discovery Collector.
+
+.Supported OIDs from ISIS-MIB
+[options="header"]
+[cols="1,3,1"]
+|===
+| Name
+| Description
+| OID
+
+| isisSysID
+| The ID for this Intermediate-System.
+This value is appended to each of the area addresses to form the Network Entity Titles.
+The derivation of a value for this object is implementation specific.
+Some implementations may automatically assign values and not permit an SNMP write, while others may require the value to be set manually.
+Configured values must survive an agent reboot.
+| .1.3.6.1.2.1.138.1.1.1.3.0
+
+| isisSysAdminState
+| The administrative state of this Intermediate-System.
+Setting this object to the value to "on" from "off" enables the Intermediate-System.
+Configured values must survive an agent reboot.
+| .1.3.6.1.2.1.138.1.1.1.8.0
+
+| isisSysObject
+| isisSysObject
+| .1.3.6.1.2.1.138.1.1.1
+
+| isisCircIfIndex
+| The value of ifIndex for the interface to which this circuit corresponds.
+You cannot modify this object after creation.
+| .1.3.6.1.2.1.138.1.3.2.1.2
+
+| isisCircAdminState
+| The administrative state of the circuit.
+| .1.3.6.1.2.1.138.1.3.2.1.3
+
+| isisISAdjState
+| The state of the adjacency.
+| .1.3.6.1.2.1.138.1.6.1.1.2
+
+| isisISAdjNeighSNPAAddress
+| The SNPA address of the neighboring system.
+| .1.3.6.1.2.1.138.1.6.1.1.4
+
+| isisISAdjNeighSysType
+| The type of the neighboring system.
+| .1.3.6.1.2.1.138.1.6.1.1.5
+
+| isisISAdjNeighSysID
+| The system ID of the neighboring Intermediate-System.
+| .1.3.6.1.2.1.138.1.6.1.1.6
+
+| isisISAdjNbrExtendedCircID
+| The 4-byte extended circuit ID learned from the neighbor during three-way handshake, or 0.
+| .1.3.6.1.2.1.138.1.6.1.1.7
+|===
+
+Find generic information about the IS-IS link discovery process in the IS-IS information box on the node detail page of the device.
+Information gathered from these OIDs is stored in the following database table:
+
+.Database tables related to IS-IS discovery
+image::enlinkd/is-is-database.png[]

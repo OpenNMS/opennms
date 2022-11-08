@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>26.1.3-SNAPSHOT</version>
+    <version>32.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.features</artifactId>
@@ -68,10 +68,6 @@
     <!-- OpenNMS Reporting API and implementations -->
     <module>reporting</module>
 
-    <!-- OpenNMS Remote Poller daemon and UI -->
-    <module>remote-poller</module>
-    <module>remote-poller-jnlp</module> 
-
     <!-- OpenNMS Ticketing API and implementations -->
     <module>ticketing</module>
     <module>request-tracker</module>
@@ -102,7 +98,6 @@
 
     <!-- Topology Map -->
     <module>topology-map</module>
-    <module>vaadin-node-maps</module>
 
     <!-- webapps -->
     <module>root-webapp</module>
@@ -116,6 +111,7 @@
 
     <!-- timeseries -->
     <module>timeseries</module>
+    <module>timeseries-shell</module>
 
     <!-- OpenNMS Notifications -->
     <module>notifications</module>
@@ -146,6 +142,7 @@
     <module>geolocation</module>
     <module>instrumentationLogReader</module>
     <module>name-cutter</module>
+    <module>search</module>
     <module>springframework-security</module>
     <module>status</module>
     <module>system-report</module>
@@ -180,5 +177,14 @@
     <module>jest</module>
     <module>dnsresolver</module>
     <module>karaf-health</module>
+    <module>perspectivepoller</module>
+    <module>openconfig</module>
+    <module>device-config</module>
+    <module>ui-extension</module>
+    <!-- Configuration Manager -->
+    <module>config</module>
+
+    <!-- Usage Analytics -->
+    <module>usageanalytics</module>
   </modules>
 </project>

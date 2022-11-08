@@ -66,7 +66,8 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-rpc-client-jms.xml",
         "classpath:/META-INF/opennms/applicationContext-rpc-detect.xml",
         "classpath:/META-INF/opennms/applicationContext-tracer-registry.xml",
-        "classpath:/META-INF/opennms/applicationContext-rpc-utils.xml"
+        "classpath:/META-INF/opennms/applicationContext-rpc-utils.xml",
+        "classpath:/META-INF/opennms/applicationContext-jceks-scv.xml"
 })
 @JUnitConfigurationEnvironment  
 @org.springframework.test.annotation.IfProfileValue(name="runFlappers", value="true")

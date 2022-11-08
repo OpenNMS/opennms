@@ -44,9 +44,10 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.integration.api.v1.timeseries.Aggregation;
+import org.opennms.integration.api.v1.timeseries.DataPoint;
 import org.opennms.integration.api.v1.timeseries.IntrinsicTagNames;
-import org.opennms.integration.api.v1.timeseries.Sample;
 import org.opennms.integration.api.v1.timeseries.StorageException;
+import org.opennms.integration.api.v1.timeseries.TimeSeriesData;
 import org.opennms.integration.api.v1.timeseries.TimeSeriesFetchRequest;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableMetric;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTimeSeriesFetchRequest;
@@ -60,7 +61,6 @@ import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.timeseries.TimeseriesStorageManager;
-import org.opennms.newts.api.Resource;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -77,7 +77,9 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
         "classpath:/META-INF/opennms/applicationContext-timeseries-test.xml",
+        "classpath:/META-INF/opennms/applicationContext-jceks-scv.xml"
 
 })
 @JUnitConfigurationEnvironment(systemProperties={
@@ -119,11 +121,11 @@ public class TimeseriesPersisterIT {
         Thread.sleep(5 * 1000);
 
         // Fetch the (persisted) sample
-        Resource resource = new Resource("snmp:1:metrics");
+        String resourceId = "snmp/1/metrics";
         Instant end = Instant.now();
 
         ImmutableMetric metric = ImmutableMetric.builder()
-                .intrinsicTag(IntrinsicTagNames.resourceId, resource.getId())
+                .intrinsicTag(IntrinsicTagNames.resourceId, resourceId)
                 .intrinsicTag(IntrinsicTagNames.name, "metric")
                 .build();
         TimeSeriesFetchRequest request = ImmutableTimeSeriesFetchRequest.builder()
@@ -133,10 +135,10 @@ public class TimeseriesPersisterIT {
                 .aggregation(Aggregation.NONE)
                 .step(Duration.ofMillis(1))
                 .build();
-        List<Sample> samples = this.storage.get().getTimeseries(request);
+        TimeSeriesData data = this.storage.get().getTimeSeriesData(request);
 
-        assertEquals(1, samples.size());
-        Sample row = samples.get(0);
+        assertEquals(1, data.getDataPoints().size());
+        DataPoint row = data.getDataPoints().get(0);
         assertEquals(900, row.getValue(), 0.00001);
     }
 }

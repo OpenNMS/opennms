@@ -29,6 +29,8 @@
 package org.opennms.netmgt.telemetry.listeners;
 
 import java.net.InetSocketAddress;
+import java.time.Duration;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
@@ -47,6 +49,7 @@ import org.slf4j.LoggerFactory;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.swrve.ratelimitedlogger.RateLimitedLog;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
@@ -66,6 +69,11 @@ import io.netty.util.internal.SocketUtils;
 
 public class UdpListener implements GracefulShutdownListener {
     private static final Logger LOG = LoggerFactory.getLogger(UdpListener.class);
+
+    public static final RateLimitedLog RATE_LIMITED_LOG = RateLimitedLog
+            .withRateLimit(LOG)
+            .maxRate(5).every(Duration.ofSeconds(30))
+            .build();
 
     private final String name;
     private final List<UdpParser> parsers;
@@ -198,6 +206,16 @@ public class UdpListener implements GracefulShutdownListener {
     }
 
     @Override
+    public String getDescription() {
+        return String.format("UDP %s:%s",  this.host != null ? this.host : "*", this.port);
+    }
+
+    @Override
+    public Collection<? extends Parser> getParsers() {
+        return this.parsers;
+    }
+
+    @Override
     public Future getShutdownFuture() {
         return stopFuture;
     }
@@ -207,6 +225,8 @@ public class UdpListener implements GracefulShutdownListener {
 
         @Override
         protected void initChannel(DatagramChannel ch) {
+            // Accounting
+            ch.pipeline().addFirst(new AccountingHandler());
 
             if (parsers.size() == 1) {
                 final UdpParser parser = parsers.get(0);
@@ -228,15 +248,12 @@ public class UdpListener implements GracefulShutdownListener {
                 });
             }
 
-            // Accounting
-            ch.pipeline().addFirst(new AccountingHandler());
-
             // Add error handling
             ch.pipeline().addLast(new ChannelInboundHandlerAdapter() {
                 @Override
                 public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) throws Exception {
                     LOG.warn("Invalid packet: {}", cause.getMessage());
-                    LOG.debug("", cause);
+                    RATE_LIMITED_LOG.debug("", cause);
                 }
             });
         }

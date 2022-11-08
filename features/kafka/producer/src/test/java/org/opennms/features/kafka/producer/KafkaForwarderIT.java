@@ -48,6 +48,7 @@ import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -599,7 +600,7 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
                     }
                 }
             }
-            consumer.close(1, TimeUnit.MINUTES);
+            consumer.close(Duration.ofMinutes(1));
         }
 
         public AtomicInteger getNumRecordsConsumed() {
@@ -636,6 +637,9 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
 
         public List<CollectionSetProtos.CollectionSet> getCollectionSetValues() {
             return collectionSetValues;
+        }
+        public void clearCollectionSetValues() {
+            collectionSetValues.clear();
         }
 
     }

@@ -119,7 +119,7 @@ public class IfIndexNullIT extends ProvisioningITCase implements InitializingBea
         
         eventRecieved.await();
         
-        final NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId(), node.getLocation());
+        final NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId(), node.getLocation(), null);
         runScan(scan);
         
         //Verify ipinterface count

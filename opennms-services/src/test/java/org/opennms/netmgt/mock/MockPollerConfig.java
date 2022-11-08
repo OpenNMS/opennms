@@ -47,6 +47,7 @@ import org.opennms.netmgt.config.BasicScheduleUtils;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.dao.outages.impl.OverrideablePollOutagesDaoImpl;
 import org.opennms.netmgt.config.poller.Downtime;
+import org.opennms.netmgt.config.poller.Monitor;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
@@ -57,7 +58,6 @@ import org.opennms.netmgt.config.poller.outages.Outage;
 import org.opennms.netmgt.config.poller.outages.Time;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.ServiceSelector;
-import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
 import org.opennms.netmgt.poller.ServiceMonitorRegistry;
@@ -282,6 +282,16 @@ public class MockPollerConfig extends OverrideablePollOutagesDaoImpl implements 
         return m_pkgs.elements();
     }
 
+    @Override
+    public List<Package> getPackages() {
+        return m_pkgs;
+    }
+
+    @Override
+    public List<Monitor> getConfiguredMonitors() {
+        return Collections.emptyList();
+    }
+
     private Service findService(Package pkg, String svcName) {
         for (Service svc : pkg.getServices()) {
             if (svcName.equals(svc.getName())) {
@@ -294,11 +304,6 @@ public class MockPollerConfig extends OverrideablePollOutagesDaoImpl implements 
     @Override
     public String getCriticalService() {
         return m_criticalSvcName;
-    }
-
-    @Override
-    public Package getFirstPackageMatch(String ipaddr) {
-        return null;
     }
 
     @Override
@@ -506,7 +511,7 @@ public class MockPollerConfig extends OverrideablePollOutagesDaoImpl implements 
     }
 
     @Override
-    public PollerConfiguration getConfiguration() {
+    public PollerConfiguration getLocalConfiguration() {
         // FIXME: need to actually implement this
         return null;
     }
@@ -556,7 +561,7 @@ public class MockPollerConfig extends OverrideablePollOutagesDaoImpl implements 
     }
 
     @Override
-    public Collection<ServiceMonitorLocator> getServiceMonitorLocators(final DistributionContext context) {
+    public Collection<ServiceMonitorLocator> getServiceMonitorLocators() {
         throw new UnsupportedOperationException("not yet implemented");
     }
 

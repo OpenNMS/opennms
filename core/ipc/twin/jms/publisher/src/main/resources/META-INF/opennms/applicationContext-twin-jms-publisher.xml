@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+       xsi:schemaLocation="
+  http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+  http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+  http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
+  http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd
+  http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+  http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring-2.19.1.xsd
+">
+
+    <context:annotation-config />
+
+
+    <bean id="jmsTwinPublisher" class="org.opennms.core.ipc.twin.jms.publisher.JmsTwinPublisher" primary="true"
+          init-method="init" destroy-method="close" >
+        <constructor-arg ref="twinRpcServer"/>
+        <constructor-arg ref="localTwinSubscriber"/>
+        <constructor-arg ref="tracerRegistry"/>
+        <constructor-arg ref="jmsTwinMetricRegistry"/>
+    </bean>
+
+    <bean id="identity" class="org.opennms.features.distributed.identity.impl.OpenNMSIdentityImpl"/>
+    <bean id="localTwinSubscriber" class="org.opennms.core.ipc.twin.common.LocalTwinSubscriberImpl">
+        <constructor-arg ref="identity"/>
+        <constructor-arg ref="tracerRegistry"/>
+        <constructor-arg ref="localTwinMetricRegistry"/>
+    </bean>
+
+    <onmsgi:service ref="localTwinSubscriber" interface="org.opennms.core.ipc.twin.api.TwinSubscriber"/>
+
+    <!-- Reduces the graceful shutdown time from 300 to 15 seconds. -->
+    <bean id="shutdownStrategy" class="org.apache.camel.impl.DefaultShutdownStrategy">
+        <property name="timeout" value="15"/>
+    </bean>
+
+    <camelContext id="twinRpcServer" xmlns="http://camel.apache.org/schema/spring">
+        <!-- Exchanges may contain credentials, so avoid logging them -->
+        <properties>
+            <property key="CamelLogDebugBodyMaxChars" value="{{sys:org.opennms.ipc.twin.jms.publisher.body.debug:-1}}"/>
+        </properties>
+
+    </camelContext>
+
+    <camelContext id="twinSinkClient" xmlns="http://camel.apache.org/schema/spring">
+        <!-- Exchanges may contain credentials, so avoid logging them -->
+        <properties>
+            <property key="CamelLogDebugBodyMaxChars" value="{{sys:org.opennms.ipc.twin.jms.publisher.body.debug:-1}}"/>
+        </properties>
+
+        <route id="twinSinkClient">
+            <from uri="direct:sendTwinUpdate" />
+            <setExchangePattern pattern="InOnly"/>
+            <recipientList>
+                <simple>queuingservice:topic:${header.JmsQueueName}</simple>
+            </recipientList>
+        </route>
+    </camelContext>
+
+    <!-- JMS Twin Publisher Metrics -->
+
+    <bean id="jmsTwinMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
+
+    <onmsgi:service ref="jmsTwinMetricRegistry" interface="com.codahale.metrics.MetricSet" >
+        <onmsgi:service-properties>
+            <entry>
+                <key><value>name</value></key>
+                <value>JMS Twin Publisher</value>
+            </entry>
+            <entry>
+                <key><value>description</value></key>
+                <value>Metrics related to Twin messages between OpenNMS and Minion</value>
+            </entry>
+        </onmsgi:service-properties>
+    </onmsgi:service>
+
+    <bean id="metricRegistryJmxReporterBuilder" class="com.codahale.metrics.JmxReporter" factory-method="forRegistry">
+        <constructor-arg ref="jmsTwinMetricRegistry"/>
+    </bean>
+
+    <bean id="metricRegistryDomainedJmxReporterBuilder" factory-bean="metricRegistryJmxReporterBuilder" factory-method="inDomain">
+        <constructor-arg value="org.opennms.core.ipc.twin.publisher"/>
+    </bean>
+
+    <bean id="metricRegistryJmxReporter"
+          factory-bean="metricRegistryJmxReporterBuilder"
+          factory-method="build"
+          init-method="start"
+          destroy-method="stop" />
+
+    <!-- Local subscriber Metrics -->
+
+    <bean id="localTwinMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
+
+    <onmsgi:service ref="localTwinMetricRegistry" interface="com.codahale.metrics.MetricSet" >
+        <onmsgi:service-properties>
+            <entry>
+                <key><value>name</value></key>
+                <value>Local Twin Subscriber</value>
+            </entry>
+            <entry>
+                <key><value>description</value></key>
+                <value>Local subscriber metrics on OpenNMS</value>
+            </entry>
+        </onmsgi:service-properties>
+    </onmsgi:service>
+
+    <bean id="localMetricRegistryJmxReporterBuilder" class="com.codahale.metrics.JmxReporter" factory-method="forRegistry">
+        <constructor-arg ref="localTwinMetricRegistry"/>
+    </bean>
+
+    <bean id="localMetricRegistryDomainedJmxReporterBuilder" factory-bean="localMetricRegistryJmxReporterBuilder" factory-method="inDomain">
+        <constructor-arg value="org.opennms.core.ipc.twin.subscriber"/>
+    </bean>
+
+    <bean id="localMetricRegistryJmxReporter"
+          factory-bean="localMetricRegistryJmxReporterBuilder"
+          factory-method="build"
+          init-method="start"
+          destroy-method="stop" />
+</beans>

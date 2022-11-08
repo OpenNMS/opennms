@@ -1,0 +1,219 @@
+
+= OpenConfig Telemetry
+
+https://www.openconfig.net/[OpenConfig] is an open-source initiative by network operators to develop vendor-neutral data models, programmatic interfaces, and tools for managing networks.
+
+The OpenConfig client lets you stream OpenConfig telemetry data over gRPC to {page-component-title}.
+Some vendors currently using OpenConfig telemetry include Juniper, Arista, and Cisco.
+
+To enable support for OpenConfig, edit `$OPENNMS_HOME/etc/telemetryd-configuration.xml` to set `enabled=true` for the OpenConfig protocol.
+
+IMPORTANT: The OpenConfig protocol is not supported on Minion.
+
+.Enable OpenConfig protocol in telemetryd-configuration.xml
+[source, xml]
+----
+<!-- OpenConfig -->
+<connector name="OpenConfig-Connector"
+            class-name="org.opennms.netmgt.telemetry.protocols.openconfig.connector.OpenConfigConnector"
+            service-name="OpenConfig"
+            queue="OpenConfig"
+            enabled="true">
+    <package name="OpenConfig-Default">
+        <filter>IPADDR != '0.0.0.0'</filter>
+        <parameter key="port" value="${requisition:oc.port|9000}"/>
+        <parameter key="paths" value="/network-instances/network-instance[instance-name=master]"/>
+    </package>
+</connector>
+
+<queue name="OpenConfig">
+    <adapter name="OpenConfig-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.openconfig.adapter.OpenConfigAdapter" enabled="true">
+        <parameter key="script" value="$OPENNMS_HOME/etc/telemetryd-adapters/openconfig-telemetry-resources.groovy"/>
+        <package name="OpenConfig-Default">
+            <rrd step="300">
+                <rra>RRA:AVERAGE:0.5:1:2016</rra>
+                <rra>RRA:AVERAGE:0.5:12:1488</rra>
+                <rra>RRA:AVERAGE:0.5:288:366</rra>
+                <rra>RRA:MAX:0.5:288:366</rra>
+                <rra>RRA:MIN:0.5:288:366</rra>
+            </rrd>
+        </package>
+    </adapter>
+</queue>
+----
+
+Apply the changes without restarting by sending a `reloadDaemonConfig` event in the CLI or the Web UI:
+
+.Send a reloadDaemonConfig event through CLI
+[source, console]
+----
+$OPENNMS_HOME/bin/send-event.pl -p 'daemonName Telemetryd' uei.opennms.org/internal/reloadDaemonConfig
+----
+
+== OpenConfig connector
+
+OpenConfig Connector initiates a connection with an agent via gRPC and subscribes to one or more OpenConfig data paths (strings), then collects and forwards the data to a queue.
+The data contains metadata and is structured as a list of `key:value` pairs.
+
+{page-component-title} creates a new connector for each agent it is responsible for connecting to.
+
+=== Connector configuration
+
+[source, xml]
+----
+<connector name="OpenConfig-Connector"
+            class-name="org.opennms.netmgt.telemetry.protocols.openconfig.connector.OpenConfigConnector"
+            service-name="OpenConfig"
+            queue="OpenConfig"
+            enabled="true">
+    <package name="OpenConfig-Default">
+        <filter>IPADDR != '0.0.0.0'</filter>
+        <parameter key="port" value="${requisition:oc.port|9000}"/>
+        <parameter key="retries" value="12"/>
+        <parameter key="interval" value="300"/>
+        <parameter key="tls.enabled" value="${requisition:oc.tls.enabled}"/>
+        <parameter key="tls.trust.cert.path" value="${requisition:trust.cert.path}"/>
+        <!-- Use groups to separate paths that need to be streamed at different frequencies -->
+        <parameter group="group1" key="paths" value="/network-instances/network-instance[instance-name=master]"/>
+        <parameter group="group1" key="frequency" value="5000"/>
+        <parameter group="group2" key="paths" value="/protocols/protocol/bgp"/>
+        <parameter group="group2" key="frequency" value="30000"/>
+        <parameter group="group3" key="paths" value="/interfaces/interface[name=Ethernet1][ifIndex=25]/state/counters"/>
+        <parameter group="group3" key="frequency" value="60000"/>
+    </package>
+</connector>
+----
+
+=== Packages
+At least one package must be present for the connector to function.
+Use multiple packages to customize the parameter's subsets of nodes.
+
+The `filter` element is optional.
+If missing, all services with the given name will be considered.
+
+Use the `group` element to group parameters into multiple groups when you need to stream different paths at different frequencies.
+Global parameters like port, and connection-specific parameters, do not need any group.
+
+Parameters are passed to the connector and are interpolated for node/interface and service-level metadata.
+
+.Connector-specific parameters for the OpenConfigConnector
+[options="header" cols="1,3,3"]
+|===
+| Parameter
+| Description
+| Default
+
+3+| *Required*
+
+| port
+| Port that OpenConfig client can connect to.
+| none
+
+| paths
+| Paths that need to be subscribed to.
+| none
+
+| frequency
+| Frequency at which OpenConfig data can be streamed.
+| 300000
+
+3+| *Optional*
+
+| retries
+| Number of retries to attempt to make a connection when failed.
+| 0
+
+| interval
+| Interval at which client tries to make a connection when failed.
+| 300
+
+| tls.enabled
+| Enable TLS authentication.
+| false
+
+| tls.trust.cert.path
+| Server trust certificate path.
+| none
+|===
+
+== OpenConfig adapter
+
+The OpenConfig adapter handles OpenConfig payloads.
+Messages are decoded and forwarded to a JSR-223-compatible script (for example, BeanShell or Groovy) for further processing.
+Use the script extension to extract the desired metrics from the OpenConfig stream data and persist the results as time series data.
+
+=== Facts
+
+[options="autowidth"]
+|===
+| Class Name          | `org.opennms.netmgt.telemetry.protocols.openconfig.adapter.OpenConfigAdapter`
+|===
+
+=== Configuration and use
+
+.Adapter-specific parameters for the OpenConfigAdapter
+[options="header", cols="1,3,1"]
+|===
+| Parameter
+| Description
+| Default
+
+3+| *Required*
+
+| script
+| Full path to the script that handles the OpenConfig data.
+| none
+
+3+| *Optional*
+
+| mode
+| Specify mode for stream format.
+Options are `gnmi` or `jti`.
+| gnmi
+|===
+
+=== Scripting
+
+The script will be invoked for every OpenConfig stream data that is received and successfully decoded.
+
+The following globals will be passed to the script:
+
+.Globals passed to the script for gNMI (default) mode.
+[options="header", cols="1,3,3"]
+|===
+| Parameter
+| Description
+| Type
+
+| agent
+| The agent (node) against which the metrics will be associated.
+| org.opennms.netmgt.collection.api.CollectionAgent
+
+| builder
+| Builder in which the resources and metrics should be added.
+| org.opennms.netmgt.collection.support.builder.CollectionSetBuilder
+
+| msg
+| Decoded message from which the metrics should be extracted.
+| org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscribeResponse
+|===
+
+.Globals passed to the script for JTI mode.
+[options="header", cols="1,3,3"]
+|===
+| Parameter
+| Description
+| Type
+
+| agent
+| The agent (node) against which the metrics will be associated.
+| org.opennms.netmgt.collection.api.CollectionAgent
+
+| builder
+| Builder in which the resources and metrics should be added.
+| org.opennms.netmgt.collection.support.builder.CollectionSetBuilder
+
+| msg
+| Decoded message from which the metrics should be extracted.
+| org.opennms.features.openconfig.proto.jti.Telemetry.OpenConfigData
+|===

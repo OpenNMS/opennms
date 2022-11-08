@@ -18,7 +18,7 @@
       <event-label>EMC-CELERRA defined trap event: celReboot</event-label>
       <descr>&lt;p>Trap message will be sent in the event of a Data Mover
 Reboots. The trap message includes the facility, event id,
-serverity and a text description of the event.&lt;/p>&lt;table>
+severity and a text description of the event.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	celEvent&lt;/b>&lt;/td>&lt;td>

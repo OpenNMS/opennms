@@ -66,12 +66,17 @@ public class Package implements Serializable {
     private String m_name;
 
     /**
-     * Boolean representing whether this is a package for a remote location
-     * monitor. If true, this package will be ignored by the OpenNMS daemon
-     * poller.
+     * @deprecated Use {@link #m_PerspectiveOnly} instead
      */
+    @Deprecated
     @XmlAttribute(name="remote")
     private Boolean m_remote;
+
+    /**
+     * Flag representing whether this package is considered only for perspective polling or should be used for native polling, too,
+     */
+    @XmlAttribute(name="perspective-only")
+    private Boolean m_PerspectiveOnly;
 
     /**
      * A rule which addresses belonging to this package must pass. This
@@ -153,17 +158,23 @@ public class Package implements Serializable {
         m_name = name;
     }
 
-    /**
-     * Boolean representing whether this is a package for a remote location
-     * monitor. If true, this package will be ignored by the OpenNMS daemon
-     * poller.
-     */
+    @Deprecated
     public Boolean getRemote() {
         return m_remote == null? false : m_remote;
     }
 
+    @Deprecated
     public void setRemote(final Boolean remote) {
         m_remote = remote;
+    }
+
+    public boolean getPerspectiveOnly() {
+        // Fallback to 'remote' attribute for backwards compatibility
+        return this.getRemote() || (this.m_PerspectiveOnly != null && this.m_PerspectiveOnly);
+    }
+
+    public void setPerspectiveOnly(Boolean perspectiveOnly) {
+        this.m_PerspectiveOnly = perspectiveOnly;
     }
 
     /**
@@ -473,24 +484,31 @@ public class Package implements Serializable {
     }
 
     public static class ServiceMatch {
+        public final Package pakkage;
         public final Service service;
+        public final String serviceName;
         public final Map<String, String> patternVariables;
 
-        public ServiceMatch(final Service service,
+        public ServiceMatch(final Package pakkage,
+                            final Service service,
+                            final String serviceName,
                             final Map<String, String> patternVariables) {
+            this.pakkage = Objects.requireNonNull(pakkage);
             this.service = Objects.requireNonNull(service);
+            this.serviceName = Objects.requireNonNull(serviceName);
             this.patternVariables = Objects.requireNonNull(patternVariables);
         }
 
-        public ServiceMatch(final Service service) {
-            this(service, Collections.emptyMap());
+        public ServiceMatch(final Package pakkage,
+                            final Service service) {
+            this(pakkage, service, service.getName(), Collections.emptyMap());
         }
     }
 
     public Optional<ServiceMatch> findService(final String svcName) {
         for (final Service service : this.getServices()) {
             if (service.getName().equalsIgnoreCase(svcName)) {
-                return Optional.of(new ServiceMatch(service));
+                return Optional.of(new ServiceMatch(this, service));
             }
         }
 
@@ -508,7 +526,7 @@ public class Package implements Serializable {
                         Maps.asMap(RegexUtils.getNamedCaptureGroupsFromPattern(service.getPattern()), matcher::group),
                         Objects::nonNull
                 );
-                return Optional.of(new ServiceMatch(service, patternVariables));
+                return Optional.of(new ServiceMatch(this, service, svcName, patternVariables));
             }
         }
 

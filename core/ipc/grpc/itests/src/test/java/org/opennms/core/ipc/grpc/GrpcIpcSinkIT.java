@@ -44,6 +44,8 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.grpc.common.GrpcIpcServer;
+import org.opennms.core.grpc.common.GrpcIpcServerBuilder;
 import org.opennms.core.ipc.grpc.client.GrpcClientConstants;
 import org.opennms.core.ipc.grpc.client.MinionGrpcClient;
 import org.opennms.core.ipc.grpc.server.GrpcServerConstants;
@@ -82,8 +84,8 @@ public class GrpcIpcSinkIT {
         MinionIdentity minionIdentity = new MockMinionIdentity(REMOTE_LOCATION_NAME);
 
         grpcClient = new MinionGrpcClient(minionIdentity, configAdmin);
-        server = new OpennmsGrpcServer();
-        server.setConfigAdmin(configAdmin);
+        GrpcIpcServer grpcIpcServer = new GrpcIpcServerBuilder(configAdmin, port, "PT0S");
+        server = new OpennmsGrpcServer(grpcIpcServer);
         grpcClient.start();
     }
 

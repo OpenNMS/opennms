@@ -1,0 +1,131 @@
+// Allow image rendering
+:imagesdir: ../../images
+
+= Topologies Updates
+
+In {page-component-title} the Kafka Producer uses topologies updates to send topology messages to Kafka.
+
+Enhanced Linkd has six `OnmsTopologyUpdaters` each sending its own NODES, BRIDGE, CDP, ISIS, LLDP, and OSPF protocol `OnmsTopologyMessage`.
+
+Kafka Producer implements an `OnmsTopologyConsumer` that reads the `OnmsTopologyMessage` to be shared over Kafka.
+
+The Topologies updates APIs are available under `opennms/features/topologies`
+
+== OnmsTopologyUpdater
+
+Three methods are required to set up an implementation class of `OnmsTopologyUpdater` interface:
+
+`OnmsTopology getTopology();`
+
+`OnmsTopologyProtocol getProtocol() throws OnmsTopologyException;`
+
+`String getName();`
+
+An `OnmsTopologyUpdater` holds the `OnmsTopology` of the specified `OnmsTopologyProtocol`.
+
+To send `OnmsTopologyMessage` to subscribers, the updater should register and send messages using the provided methods into `OnmsTopologyDao`
+
+To register, use:
+
+`register(OnmsTopologyUpdater updater)`
+Only one updater per protocol is allowed to register over `OnmsTopologyDao`.
+
+To send messages to subscriber, use:
+
+`void update(OnmsTopologyUpdater updater,OnmsTopologyMessage message) throws OnmsTopologyException;`
+
+To unregister, use:
+
+`unregister(OnmsTopologyUpdater updater)`
+
+Registering updaters with OnmsTopologyDao will also provide topology using `OnmsTopologyDao`.
+
+To get a topology for a specific protocol, use:
+
+`OnmsTopology getTopology(String protocol)`
+
+== OnmsTopologyRef
+
+`OnmsTopologyRef` is the topology basic interface.
+All topology defined objects implement it.
+
+The methods defining OnmsTopolgyRef are:
+
+The ID: a unique string identifier of the topology object.
+
+`String getId();`
+
+The tool tip text: some additional information to describe the topology object.
+
+`String getToolTipText();`
+
+== OnmsTopologyMessage
+
+`OnmsTopologyMessage` is defined by `OnmsTopologyProtocol`, a `TopologyMessageStatus`, and an `OnmsTopologyRef`.
+It is sent to all subscribers for the specified protocol by the registered updater via the `OnmsTopologyDao'.
+
+== OnmsTopologyProtocol
+
+`OnmsTopologyProtocol` represents a protocol.
+It is defined by a string but is not case sensitive: CDP, cdp, and Cdp will define the same protocol.
+
+An `OnmsTopologyUpdater` can be an updater for only one protocol.
+
+An `OnmsTopologyConsumer` can be a consumer for several protocols.
+
+== TopologyMessageStatus
+
+`TopologyMessageStatus` is an enum whose allowed values are UPDATE or DELETE.
+
+UPDATE message means that the topology message holds information about an `OnmsTopologyRef`
+still available in topology.
+
+DELETE message means that the object `OnmsTopologyRef` has been deleted from topology.
+
+== OnmsTopology
+
+A topology is made by vertices and edges, each uniquely identified by an `OnmsTopologyRef`.
+
+`OnmsTopology` is a SET of `OnmsTopologyVertex` and a SET of `OnmsTopologyEdge`.
+
+It is also possible to set and get a default vertex.
+
+== OnmsTopologyVertex
+
+`OnmsTopologyVertex` implements `OnmsTopologyRef` and represents a vertex.
+
+== OnmsTopologyEdge
+
+`OnmsTopologyEdge` implements `OnmsTopologyRef` and represents an edge.
+It is made by two `OnmsTopologyPort`: the source and the target of the edge.
+
+== OnmsTopologyPort
+
+`OnmsTopologyPort` implements `OnmsTopologyRef` and represents a port belonging to a vertex, so has a property to set and get the `OnmsTopologyVertex`.
+
+The port is an element of the topology because it belongs to an edge and is the connection element.
+
+Two vertices are connected by an edge by the corresponding port.
+
+== OnmsTopologyConsumer
+
+Three methods are required to set up an implementation class of `OnmsTopologyConsumer` interface:
+
+`String getName();`
+
+`Set<OnmsTopologyProtocol> getProtocols();`
+
+`void consume(OnmsTopologyMessage message);`
+
+An `OnmsTopologyconsumer` consumes the `OnmsTopologyMessage` of the specified list `OnmsTopologyProtocol` provided by the `getProtocols()` method implementing the method `void consume(OnmsTopologyMessage message)`.
+
+To receive `OnmsTopologyMessage` from the registered "Updaters", the "Consumer" should subscribe `OnmsTopologyDao`.
+
+To subscribe, use:
+
+`void subscribe(OnmsTopologyConsumer consumer)`
+
+To unsubscribe, use:
+
+`void unsubscribe(OnmsTopologyConsumer consumer)`
+ 

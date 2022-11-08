@@ -1,0 +1,59 @@
+
+= WsManMonitor
+
+Use this monitor to issue a WS-Man GET command and validate the results using a link:http://docs.spring.io/spring/docs/current/spring-framework-reference/html/expressions.html[SPEL] expression.
+
+== Monitor facts
+
+[cols="1,7"]
+|===
+| Class Name
+| `org.opennms.netmgt.poller.monitors.WsManMonitor`
+|===
+
+== Configuration and use
+
+.Monitor-specific parameters for the WsManMonitor
+[options="header"]
+[cols="1,3,2"]
+|===
+| Parameter
+| Description
+| Default
+
+3+|*Required*
+
+| resource-uri
+| Resource URI
+| n/a
+
+| rule kbd:[{}]
+| SPEL expression applied against the result of the GET.
+| n/a
+
+3+|*Optional*
+
+| selector.
+| Used to filter the result set. All selectors must prefixed with `selector.`
+| `(None)`
+|===
+
+kbd:[{}] _indicates the parameter supports <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution>>._
+
+This monitor implements the <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+== Examples
+
+The following monitor will issue a GET against the configured resource and verify that the correct service tag is returned:
+
+[source, xml]
+----
+<service name="WsMan-ServiceTag-Check" interval="300000" user-defined="false" status="on">
+  <parameter key="resource-uri" value="http://schemas.dell.com/wbem/wscim/1/cim-schema/2/root/dcim/DCIM_ComputerSystem"/>
+  <parameter key="selector.CreationClassName" value="DCIM_ComputerSystem"/>
+  <parameter key="selector.Name" value="srv:system"/>
+  <parameter key="rule" value="#IdentifyingDescriptions matches '.*ServiceTag' and #OtherIdentifyingInfo matches 'C7BBBP1'"/>
+</service>
+
+<monitor service="WsMan-ServiceTag-Check" class-name="org.opennms.netmgt.poller.monitors.WsManMonitor/>
+----

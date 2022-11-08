@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,12 +28,18 @@
 
 package org.opennms.netmgt.collection.persistence.rrd;
 
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 
-import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -69,7 +75,6 @@ import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.opennms.netmgt.snmp.proxy.common.LocationAwareSnmpClientRpcImpl;
 import org.opennms.test.FileAnticipator;
-import org.opennms.test.mock.EasyMockUtils;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -87,7 +92,6 @@ public class BasePersisterTest {
     private OnmsIpInterface m_intf;
     private OnmsNode m_node;
     private PlatformTransactionManager m_transMgr = new MockPlatformTransactionManager();
-    private EasyMockUtils m_easyMockUtils = new EasyMockUtils();
     private IpInterfaceDao m_ifDao;
     private ServiceParameters m_serviceParams;
     private RrdStrategy<?, ?> m_rrdStrategy;
@@ -115,7 +119,7 @@ public class BasePersisterTest {
         m_intf.setNode(m_node);
         m_intf.setIpAddress(InetAddressUtils.addr("1.1.1.1"));
         
-        m_ifDao = m_easyMockUtils.createMock(IpInterfaceDao.class);
+        m_ifDao = mock(IpInterfaceDao.class);
         m_serviceParams = new ServiceParameters(new HashMap<String,Object>());
         
     }
@@ -124,6 +128,7 @@ public class BasePersisterTest {
     public void checkWarnings() throws Throwable {
         MockLogAppender.assertNoWarningsOrGreater();
         m_fileAnticipator.deleteExpected();
+        verifyNoMoreInteractions(m_ifDao);
     }
     
     @After
@@ -142,6 +147,8 @@ public class BasePersisterTest {
         
         CollectionAttribute attribute = buildStringAttribute();
         m_persister.persistStringAttribute(attribute);
+
+        verify(m_ifDao, atLeastOnce()).load(anyInt());
     }
 
     @Test
@@ -153,6 +160,8 @@ public class BasePersisterTest {
         
         CollectionAttribute attribute = buildStringAttribute();
         m_persister.persistStringAttribute(attribute);
+
+        verify(m_ifDao, atLeastOnce()).load(anyInt());
     }
 
     @Test
@@ -164,6 +173,8 @@ public class BasePersisterTest {
         
         CollectionAttribute attribute = buildStringAttribute();
         m_persister.persistStringAttribute(attribute);
+
+        verify(m_ifDao, atLeastOnce()).load(anyInt());
     }
 
     /**
@@ -191,19 +202,21 @@ public class BasePersisterTest {
         m_persister.commitBuilder();
         
         m_persister.popShouldPersist();
+
+        verify(m_ifDao, atLeastOnce()).load(anyInt());
     }
 
     @Test
     public void testBug2733() throws Exception {
         m_serviceParams.getParameters().put("storing-enabled", "false");
         testPersistStringAttributeUsingBuilder();
+
+        verify(m_ifDao, atLeastOnce()).load(anyInt());
     }
 
     private SnmpAttribute buildStringAttribute() {
         
-        EasyMock.expect(m_ifDao.load(m_intf.getId())).andReturn(m_intf).anyTimes();
-        
-        m_easyMockUtils.replayAll();
+        when(m_ifDao.load(m_intf.getId())).thenReturn(m_intf);
         
         SnmpCollectionAgent agent = DefaultSnmpCollectionAgent.create(m_intf.getId(), m_ifDao, m_transMgr);
         

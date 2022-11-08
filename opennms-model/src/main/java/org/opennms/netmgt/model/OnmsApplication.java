@@ -28,13 +28,16 @@
 
 package org.opennms.netmgt.model;
 
-import org.codehaus.jackson.annotate.JsonBackReference;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -43,70 +46,55 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.LinkedHashSet;
-import java.util.Set;
+
+import org.codehaus.jackson.annotate.JsonBackReference;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
 import com.google.common.base.MoreObjects;
 
 @Entity
 @Table(name = "applications")
 @XmlRootElement(name="application")
+/**
+ * An Application is a grouping of services that belong together.
+ * They can run in different locations.
+ * An example would be "website", or "database".
+ */
 public class OnmsApplication implements Comparable<OnmsApplication> {
 
-    private Integer m_id;
+    private Integer id;
 
-    private String m_name;
+    private String name;
 
-    private Set<OnmsMonitoredService> m_monitoredServices = new LinkedHashSet<>();
+    private Set<OnmsMonitoredService> monitoredServices = new LinkedHashSet<>();
 
     /**
-     * <p>getId</p>
-     *
-     * @return a {@link java.lang.Integer} object.
+     * These are locations from where the application is monitored.
      */
+    private Set<OnmsMonitoringLocation> perspectiveLocations = new LinkedHashSet<>();
+
     @Id
     @Column(nullable=false)
     @SequenceGenerator(name = "opennmsSequence", sequenceName = "opennmsNxtId")
     @GeneratedValue(generator = "opennmsSequence")
     @XmlAttribute
     public Integer getId() {
-        return m_id;
+        return id;
     }
 
-    /**
-     * <p>setId</p>
-     *
-     * @param id a {@link java.lang.Integer} object.
-     */
     public void setId(Integer id) {
-        m_id = id;
+        this.id = id;
     }
 
-    /**
-     * <p>getName</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
     @Column(name = "name", length=32, nullable=false, unique=true)
     public String getName() {
-        return m_name;
+        return name;
     }
 
-    /**
-     * <p>setName</p>
-     *
-     * @param name a {@link java.lang.String} object.
-     */
     public void setName(String name) {
-        m_name = name;
+        this.name = name;
     }
 
-    /**
-     * <p>getMonitoredServices</p>
-     *
-     * @return a {@link java.util.Set} object.
-     * @since 1.8.1
-     */
     @ManyToMany(
                 mappedBy="applications",
                 cascade={CascadeType.PERSIST, CascadeType.MERGE}
@@ -116,38 +104,44 @@ public class OnmsApplication implements Comparable<OnmsApplication> {
     @XmlElementWrapper(name="monitoredServices")
     @JsonBackReference
     public Set<OnmsMonitoredService> getMonitoredServices() {
-        return m_monitoredServices;
+        return monitoredServices;
     }
 
-    /**
-     * <p>setMonitoredServices</p>
-     *
-     * @param services a {@link java.util.Set} object.
-     * @since 1.8.1
-     */
     public void setMonitoredServices(Set<OnmsMonitoredService> services) {
-        m_monitoredServices = services;
+        monitoredServices = services;
     }
 
-    /**
-     * <p>addMonitoredService</p>
-     *
-     * @param service a {@link org.opennms.netmgt.model.OnmsMonitoredService} object.
-     * @since 1.8.1
-     */
     public void addMonitoredService(OnmsMonitoredService service) {
         getMonitoredServices().add(service);
     }
 
-    /**
-     * <p>compareTo</p>
-     *
-     * @param o a {@link org.opennms.netmgt.model.OnmsApplication} object.
-     * @return a int.
-     */
+    public void removeMonitoredService(OnmsMonitoredService service) {
+        getMonitoredServices().remove(service);
+    }
+
+
+    @ManyToMany( cascade={CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name="application_perspective_location_map",
+            joinColumns=@JoinColumn(name="appid", referencedColumnName = "id"),
+            inverseJoinColumns=@JoinColumn(name="monitoringlocationid", referencedColumnName = "id"))
+    @XmlIDREF
+    @XmlElement(name="perspectiveLocationId")
+    @XmlElementWrapper(name="perspectiveLocations")
+    public Set<OnmsMonitoringLocation> getPerspectiveLocations() {
+        return this.perspectiveLocations;
+    }
+
+    public void setPerspectiveLocations(Set<OnmsMonitoringLocation> perspectiveLocations) {
+        this.perspectiveLocations = perspectiveLocations;
+    }
+
+    public void addPerspectiveLocation(OnmsMonitoringLocation perspectiveLocation) {
+        getPerspectiveLocations().add(perspectiveLocation);
+    }
+
     @Override
     public int compareTo(OnmsApplication o) {
-        return getName().compareToIgnoreCase(o.getName());
+        return getName().compareTo(o.getName());
     }
     
     /** {@inheritDoc} */
@@ -174,7 +168,5 @@ public class OnmsApplication implements Comparable<OnmsApplication> {
     public int hashCode() {
         return getName().hashCode();
     }
-    
-
 
 }

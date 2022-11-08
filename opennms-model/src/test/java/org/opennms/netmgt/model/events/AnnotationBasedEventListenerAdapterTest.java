@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,11 +29,17 @@
 package org.opennms.netmgt.model.events;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter;
@@ -47,7 +53,6 @@ import org.opennms.netmgt.events.api.annotations.EventPreProcessor;
 import org.opennms.netmgt.events.api.model.IEvent;
 import org.opennms.netmgt.events.api.model.ImmutableMapper;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.test.mock.EasyMockUtils;
 
 /**
  * AnnotationBasedEventListenerAdapterTest
@@ -61,7 +66,6 @@ public class AnnotationBasedEventListenerAdapterTest {
     
     private AnnotatedListener m_annotatedListener;
     private AnnotationBasedEventListenerAdapter m_adapter;
-    private EasyMockUtils m_mockUtils;
     private EventSubscriptionService m_eventIpcMgr;
     private Set<String> m_subscriptions;
     
@@ -120,10 +124,7 @@ public class AnnotationBasedEventListenerAdapterTest {
      */
     @Before
     public void setUp() throws Exception {
-        
-        m_mockUtils = new EasyMockUtils();
-        
-        m_eventIpcMgr = m_mockUtils.createMock(EventSubscriptionService.class);
+        m_eventIpcMgr = mock(EventSubscriptionService.class);
 
         m_annotatedListener = new AnnotatedListener();
         m_adapter = new AnnotationBasedEventListenerAdapter();
@@ -141,6 +142,12 @@ public class AnnotationBasedEventListenerAdapterTest {
         m_eventIpcMgr.addEventListener(m_adapter, m_subscriptions);
     }
 
+    @After
+    public void tearDown() throws Exception {
+        verify(m_eventIpcMgr, atLeastOnce()).addEventListener(m_adapter, m_subscriptions);
+        verifyNoMoreInteractions(m_eventIpcMgr);
+    }
+
     @Test
     public void testDerivedClass() throws Exception {
         
@@ -149,8 +156,6 @@ public class AnnotationBasedEventListenerAdapterTest {
         // expect a subscription for the new adapter
         m_eventIpcMgr.addEventListener(adapter, m_subscriptions);
         
-        m_mockUtils.replayAll();
-
         // finish expectations for the old adapter
         m_adapter.afterPropertiesSet();
 
@@ -173,36 +178,25 @@ public class AnnotationBasedEventListenerAdapterTest {
         assertEquals(1, derivedListener.receivedEventCount);
         assertEquals(1, derivedListener.postProcessedEvents);
         
-        m_mockUtils.verifyAll();
+        verify(m_eventIpcMgr, atLeastOnce()).addEventListener(eq(adapter), eq(m_subscriptions));
     }
     
     @Test
     public void testGetNameFromAnnotation() throws Exception {
-        m_mockUtils.replayAll();
-        
         m_adapter.afterPropertiesSet();
         assertEquals(ANNOTATED_NAME, m_adapter.getName());
-        
-        m_mockUtils.verifyAll();
     }
     
     @Test
     public void testOverriddenName() throws Exception {
-        m_mockUtils.replayAll();
-
         m_adapter.setName(OVERRIDEN_NAME);
         m_adapter.afterPropertiesSet();
         
         assertEquals(OVERRIDEN_NAME, m_adapter.getName());
-        
-        m_mockUtils.verifyAll();
     }
     
     @Test
     public void testSendMatchingEvent() {
-        
-        m_mockUtils.replayAll();
-
         m_adapter.afterPropertiesSet();
         
         assertEquals(0, m_annotatedListener.preProcessedEvents);
@@ -215,15 +209,10 @@ public class AnnotationBasedEventListenerAdapterTest {
         assertEquals(1, m_annotatedListener.receivedEventCount);
         assertEquals(1, m_annotatedListener.postProcessedEvents);
         
-        m_mockUtils.verifyAll();
-        
     }
     
     @Test
     public void testProcessingException() {
-        
-        m_mockUtils.replayAll();
-
         m_adapter.afterPropertiesSet();
         
         assertEquals(0, m_annotatedListener.illegalArgsHandled);
@@ -238,9 +227,6 @@ public class AnnotationBasedEventListenerAdapterTest {
         
         assertEquals(1, m_annotatedListener.illegalArgsHandled);
         assertEquals(1, m_annotatedListener.genExceptionsHandled);
-
-        m_mockUtils.verifyAll();
-        
     }
 
     private Event createEvent(String uei) {

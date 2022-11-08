@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8" standalone="no"?>
-<nmsdesk>
-	<hostname>demo.opennms.org</hostname>
-	<port>80</port>
-	<protocol>http</protocol>
-	<username>demo</username>
-	<password>demo</password>
-	<path>/opennms/rest</path>
-</nmsdesk>

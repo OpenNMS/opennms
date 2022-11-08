@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -386,16 +386,6 @@ public abstract class ConfigFileConstants {
     public static final int WMI_CONFIG_FILE_NAME;
 
     /**
-     * The XMP data collection configuration file
-     */
-    public static final int XMP_COLLECTION_CONFIG_FILE_NAME;
-
-    /**
-     * The XMP agent configuration file
-     */
-    public static final int XMP_CONFIG_FILE_NAME;
-    
-    /**
      * The RWS (RestFul Web Service) configuration file
      * used to access Rancid
      */
@@ -540,9 +530,9 @@ public abstract class ConfigFileConstants {
         
         RWS_CONFIG_FILE_NAME = 70;
 
-        XMP_COLLECTION_CONFIG_FILE_NAME = 71;
+        // XMP_COLLECTION_CONFIG_FILE_NAME = 71;
         
-        XMP_CONFIG_FILE_NAME = 72;
+        // XMP_CONFIG_FILE_NAME = 72;
 
         SNMP_INTERFACE_POLLER_CONFIG_FILE_NAME = 73;
         
@@ -645,8 +635,6 @@ public abstract class ConfigFileConstants {
         FILE_ID_TO_NAME[OPENNMS_DATASOURCE_CONFIG_FILE_NAME] = "opennms-datasources.xml";
         FILE_ID_TO_NAME[RWS_CONFIG_FILE_NAME] = "rws-configuration.xml";
         FILE_ID_TO_NAME[RANCID_CONFIG_FILE_NAME] = "rancid-configuration.xml";
-        FILE_ID_TO_NAME[XMP_COLLECTION_CONFIG_FILE_NAME] = "xmp-datacollection-config.xml";
-        FILE_ID_TO_NAME[XMP_CONFIG_FILE_NAME] = "xmp-config.xml";
         FILE_ID_TO_NAME[SNMP_INTERFACE_POLLER_CONFIG_FILE_NAME] = "snmp-interface-poller-configuration.xml";
         FILE_ID_TO_NAME[ASTERISK_CONFIG_FILE_NAME] = "asterisk-configuration.properties";
         FILE_ID_TO_NAME[AMI_CONFIG_FILE_NAME] = "ami-config.xml";

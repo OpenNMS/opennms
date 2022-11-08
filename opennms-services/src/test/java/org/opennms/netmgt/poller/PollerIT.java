@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2004-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2004-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -48,6 +48,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
@@ -68,6 +69,7 @@ import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.Querier;
 import org.opennms.netmgt.config.poller.Package;
+import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
@@ -80,6 +82,7 @@ import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockInterface;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockNode;
+import org.opennms.netmgt.mock.MockPersisterFactory;
 import org.opennms.netmgt.mock.MockPollerConfig;
 import org.opennms.netmgt.mock.MockService;
 import org.opennms.netmgt.mock.MockService.SvcMgmtStatus;
@@ -105,6 +108,7 @@ import com.google.common.collect.Sets;
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
@@ -117,7 +121,8 @@ import com.google.common.collect.Sets;
         "classpath:/META-INF/opennms/applicationContext-rpc-poller.xml",
 
         // Override the default QueryManager with the DAO version
-        "classpath:/META-INF/opennms/applicationContext-pollerdTest.xml"
+        "classpath:/META-INF/opennms/applicationContext-pollerdTest.xml",
+        "classpath:/META-INF/opennms/applicationContext-test-deviceConfig.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties={
         // We don't need a real pinger here
@@ -157,6 +162,9 @@ public class PollerIT implements TemporaryDatabaseAware<MockDatabase> {
     private LocationAwarePollerClient m_locationAwarePollerClient;
 
     private LocationAwarePingClient m_locationAwarePingClient;
+
+    @Autowired
+    DistPollerDao m_distPollerDao;
 
     //
     // SetUp and TearDown
@@ -200,6 +208,7 @@ public class PollerIT implements TemporaryDatabaseAware<MockDatabase> {
         m_network.addService("SNMP");
         MockService unmonitoredService = m_network.addService("NotMonitored");
 
+        m_db.setDistPoller(m_distPollerDao.whoami().getId());
         m_db.populate(m_network);
         DataSourceFactory.setInstance(m_db);
 
@@ -247,6 +256,8 @@ public class PollerIT implements TemporaryDatabaseAware<MockDatabase> {
         m_poller.setPollerConfig(m_pollerConfig);
         m_poller.setPollOutagesDao(m_pollerConfig);
         m_poller.setLocationAwarePollerClient(m_locationAwarePollerClient);
+        m_poller.setServiceMonitorAdaptor((svc, parameters, status) -> status);
+        m_poller.setPersisterFactory(new MockPersisterFactory());
     }
 
     @After
@@ -256,22 +267,6 @@ public class PollerIT implements TemporaryDatabaseAware<MockDatabase> {
         sleep(200);
         m_db.drop();
         MockUtil.println("------------ End Test  --------------------------");
-    }
-
-    //
-    // Tests
-    //
-    @Test
-    public void testIsRemotePackage() {
-        Properties p = new Properties();
-        p.setProperty("org.opennms.netmgt.ConfigFileConstants", "ERROR");
-        MockLogAppender.setupLogging(p);
-        Package pkg = new Package();
-        pkg.setName("SFO");
-        pkg.setRemote(true);
-        Poller poller = new Poller();
-        poller.setPollerConfig(new MockPollerConfig(m_network));
-        assertFalse(poller.pollableServiceInPackage(null, null, pkg));
     }
 
     @Test
@@ -303,84 +298,6 @@ public class PollerIT implements TemporaryDatabaseAware<MockDatabase> {
             }
         }
         assertTrue(foundNodeDown);
-    }
-
-    @Test
-    @Ignore
-    public void testBug1564() {
-        // NODE processing = true;
-        m_pollerConfig.setNodeOutageProcessingEnabled(true);
-        MockNode node = m_network.getNode(2);
-        MockService icmpService = m_network.getService(2, "192.168.1.3", "ICMP");
-        MockService smtpService = m_network.getService(2, "192.168.1.3", "SMTP");
-        MockService snmpService = m_network.getService(2, "192.168.1.3", "SNMP");
-
-        // start the poller
-        startDaemons();
-
-        //
-        // Bring Down the HTTP service and expect nodeLostService Event
-        //
-
-        resetAnticipated();
-        anticipateDown(snmpService);
-        // One service works fine
-        snmpService.bringDown();
-
-        verifyAnticipated(10000);
-
-        // Now we simulate the restart, the node
-        // looses all three at the same time
-
-        resetAnticipated();
-        anticipateDown(node);
-
-        icmpService.bringDown();
-        smtpService.bringDown();
-        snmpService.bringDown();
-
-        verifyAnticipated(10000);
-
-        anticipateDown(smtpService);
-        verifyAnticipated(10000);
-        anticipateDown(snmpService);
-        verifyAnticipated(10000);
-
-        // This is to simulate a restart,
-        // where I turn off the node behaviour
-
-        m_pollerConfig.setNodeOutageProcessingEnabled(false);
-
-        anticipateUp(snmpService);
-        snmpService.bringUp();
-
-        verifyAnticipated(10000);
-
-        anticipateUp(smtpService);
-        smtpService.bringUp();
-
-        verifyAnticipated(10000);
-
-        // Another restart - let's see if this will work?
-
-        m_pollerConfig.setNodeOutageProcessingEnabled(true);
-        // So everything is down, now
-        // SNMP will regain and SMTP will regain
-        // will the node come up?
-
-
-        smtpService.bringDown();
-
-        anticipateUp(smtpService);
-        smtpService.bringUp();
-
-        verifyAnticipated(10000,true);
-
-        anticipateUp(snmpService);
-        snmpService.bringUp();
-
-        verifyAnticipated(10000);
-
     }
 
     @Test
@@ -1816,6 +1733,7 @@ public class PollerIT implements TemporaryDatabaseAware<MockDatabase> {
                 svc.getNodeId(), svc.getAddress(), svc.getSvcName());
 
         Criteria criteria = new CriteriaBuilder(OnmsOutage.class)
+            .isNull("perspective")
             .eq("monitoredService", monitoredSvc)
             .orderBy("ifLostService")
             .toCriteria();
@@ -1840,7 +1758,7 @@ public class PollerIT implements TemporaryDatabaseAware<MockDatabase> {
 
         OutageChecker(MockService svc, Event lostSvcEvent,
                       Event regainedSvcEvent) {
-            super(m_db, "select * from outages where nodeid = ? and ipAddr = ? and serviceId = ?");
+            super(m_db, "select * from outages where perspective is null and nodeid = ? and ipAddr = ? and serviceId = ?");
 
             m_svc = svc;
             m_lostSvcEvent = lostSvcEvent;

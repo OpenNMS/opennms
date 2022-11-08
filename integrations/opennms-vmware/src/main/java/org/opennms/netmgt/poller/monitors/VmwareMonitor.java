@@ -31,28 +31,23 @@ package org.opennms.netmgt.poller.monitors;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.core.utils.TimeoutTracker;
-import org.opennms.netmgt.poller.Distributable;
-import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.provision.service.vmware.VmwareImporter;
 import org.opennms.protocols.vmware.VmwareViJavaAccess;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Sets;
-import com.vmware.vim25.AlarmState;
 import com.vmware.vim25.HostRuntimeInfo;
 import com.vmware.vim25.HostSystemPowerState;
-import com.vmware.vim25.ManagedEntityStatus;
 import com.vmware.vim25.VirtualMachinePowerState;
 import com.vmware.vim25.VirtualMachineRuntimeInfo;
 import com.vmware.vim25.mo.HostSystem;
@@ -66,7 +61,6 @@ import com.vmware.vim25.mo.VirtualMachine;
  *
  * @author Christian Pape <Christian.Pape@informatik.hs-fulda.de>
  */
-@Distributable(DistributionContext.DAEMON)
 public class VmwareMonitor extends AbstractVmwareMonitor {
     /**
      * valid states for vSphere alarms
@@ -98,101 +92,86 @@ public class VmwareMonitor extends AbstractVmwareMonitor {
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         final boolean ignoreStandBy = getKeyedBoolean(parameters, "ignoreStandBy", false);
-
         final List<String> severitiesToReport =
                 Splitter.on(",")
-                    .trimResults()
-                    .omitEmptyStrings()
-                    .splitToList(getKeyedString(parameters, "reportAlarms", ""))
-                    .stream()
-                    .filter(e -> VALID_VSPHERE_ALARM_STATES.contains(e))
-                    .collect(Collectors.toList());
-
-        final String vmwareManagementServer = getKeyedString(parameters, VMWARE_MANAGEMENT_SERVER_KEY, null);
-        final String vmwareManagedEntityType = getKeyedString(parameters, VMWARE_MANAGED_ENTITY_TYPE_KEY, null);
-        final String vmwareManagedObjectId = getKeyedString(parameters, VMWARE_MANAGED_OBJECT_ID_KEY, null);
-        final String vmwareMangementServerUsername = getKeyedString(parameters, VMWARE_MANAGEMENT_SERVER_USERNAME_KEY, null);
-        final String vmwareMangementServerPassword = getKeyedString(parameters, VMWARE_MANAGEMENT_SERVER_PASSWORD_KEY, null);
-
+                        .trimResults()
+                        .omitEmptyStrings()
+                        .splitToList(getKeyedString(parameters, "reportAlarms", ""))
+                        .stream()
+                        .filter(e -> VALID_VSPHERE_ALARM_STATES.contains(e))
+                        .collect(Collectors.toList());
+        final String vmwareManagementServer = getKeyedString(parameters, VmwareImporter.METADATA_MANAGEMENT_SERVER, null);
+        final String vmwareManagedEntityType = getKeyedString(parameters, VmwareImporter.METADATA_MANAGED_ENTITY_TYPE, null);
+        final String vmwareManagedObjectId = getKeyedString(parameters, VmwareImporter.METADATA_MANAGED_OBJECT_ID, null);
+        final String vmwareMangementServerUsername = getKeyedString(parameters, VmwareImporter.VMWARE_MANAGEMENT_SERVER_USERNAME_KEY, null);
+        final String vmwareMangementServerPassword = getKeyedString(parameters, VmwareImporter.VMWARE_MANAGEMENT_SERVER_PASSWORD_KEY, null);
         final TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
 
         PollStatus serviceStatus = PollStatus.unknown();
 
         for (tracker.reset(); tracker.shouldRetry() && !serviceStatus.isAvailable(); tracker.nextAttempt()) {
-
-            final VmwareViJavaAccess vmwareViJavaAccess = new VmwareViJavaAccess(vmwareManagementServer, vmwareMangementServerUsername, vmwareMangementServerPassword);
-            try {
+            try (final VmwareViJavaAccess vmwareViJavaAccess = new VmwareViJavaAccess(vmwareManagementServer, vmwareMangementServerUsername, vmwareMangementServerPassword)) {
                 vmwareViJavaAccess.connect(tracker.getConnectionTimeout());
-            } catch (MalformedURLException | RemoteException e) {
-                logger.warn("Error connecting VMware management server '{}': '{}' exception: {} cause: '{}'", vmwareManagementServer, e.getMessage(), e.getClass().getName(), e.getCause());
-                return PollStatus.unavailable("Error connecting VMware management server '" + vmwareManagementServer + "'");
-            }
-
-            String powerState = "unknown";
-            Map<String, Long> alarmCountMap;
-
-            if ("HostSystem".equals(vmwareManagedEntityType)) {
-                HostSystem hostSystem = vmwareViJavaAccess.getHostSystemByManagedObjectId(vmwareManagedObjectId);
-                if (hostSystem == null) {
-                    return PollStatus.unknown("hostSystem=null");
-                } else {
-                    HostRuntimeInfo hostRuntimeInfo = hostSystem.getRuntime();
-                    if (hostRuntimeInfo == null) {
-                        return PollStatus.unknown("hostRuntimeInfo=null");
+                String powerState = "unknown";
+                final Map<String, Long> alarmCountMap;
+                if ("HostSystem".equals(vmwareManagedEntityType)) {
+                    final HostSystem hostSystem = vmwareViJavaAccess.getHostSystemByManagedObjectId(vmwareManagedObjectId);
+                    if (hostSystem == null) {
+                        return PollStatus.unknown("hostSystem=null");
                     } else {
-                        HostSystemPowerState hostSystemPowerState = hostRuntimeInfo.getPowerState();
-                        if (hostSystemPowerState == null) {
-                            return PollStatus.unknown("hostSystemPowerState=null");
+                        final HostRuntimeInfo hostRuntimeInfo = hostSystem.getRuntime();
+                        if (hostRuntimeInfo == null) {
+                            return PollStatus.unknown("hostRuntimeInfo=null");
                         } else {
-                            powerState = hostSystemPowerState.toString();
-                            alarmCountMap = getUnacknowledgedAlarmCountForEntity(hostSystem, severitiesToReport);
-                        }
-                    }
-                }
-            } else {
-                if ("VirtualMachine".equals(vmwareManagedEntityType)) {
-                    VirtualMachine virtualMachine = vmwareViJavaAccess.getVirtualMachineByManagedObjectId(vmwareManagedObjectId);
-                    if (virtualMachine == null) {
-                        return PollStatus.unknown("virtualMachine=null");
-                    } else {
-                        VirtualMachineRuntimeInfo virtualMachineRuntimeInfo = virtualMachine.getRuntime();
-                        if (virtualMachineRuntimeInfo == null) {
-                            return PollStatus.unknown("virtualMachineRuntimeInfo=null");
-                        } else {
-                            VirtualMachinePowerState virtualMachinePowerState = virtualMachineRuntimeInfo.getPowerState();
-                            if (virtualMachinePowerState == null) {
-                                return PollStatus.unknown("virtualMachinePowerState=null");
+                            final HostSystemPowerState hostSystemPowerState = hostRuntimeInfo.getPowerState();
+                            if (hostSystemPowerState == null) {
+                                return PollStatus.unknown("hostSystemPowerState=null");
                             } else {
-                                powerState = virtualMachinePowerState.toString();
-                                alarmCountMap = getUnacknowledgedAlarmCountForEntity(virtualMachine, severitiesToReport);
+                                powerState = hostSystemPowerState.toString();
+                                alarmCountMap = getUnacknowledgedAlarmCountForEntity(hostSystem, severitiesToReport);
                             }
                         }
                     }
                 } else {
-                    logger.warn("Error getting '{}' for '{}'", vmwareManagedEntityType, vmwareManagedObjectId);
-
-                    vmwareViJavaAccess.disconnect();
-
-                    return serviceStatus;
+                    if ("VirtualMachine".equals(vmwareManagedEntityType)) {
+                        final VirtualMachine virtualMachine = vmwareViJavaAccess.getVirtualMachineByManagedObjectId(vmwareManagedObjectId);
+                        if (virtualMachine == null) {
+                            return PollStatus.unknown("virtualMachine=null");
+                        } else {
+                            final VirtualMachineRuntimeInfo virtualMachineRuntimeInfo = virtualMachine.getRuntime();
+                            if (virtualMachineRuntimeInfo == null) {
+                                return PollStatus.unknown("virtualMachineRuntimeInfo=null");
+                            } else {
+                                final VirtualMachinePowerState virtualMachinePowerState = virtualMachineRuntimeInfo.getPowerState();
+                                if (virtualMachinePowerState == null) {
+                                    return PollStatus.unknown("virtualMachinePowerState=null");
+                                } else {
+                                    powerState = virtualMachinePowerState.toString();
+                                    alarmCountMap = getUnacknowledgedAlarmCountForEntity(virtualMachine, severitiesToReport);
+                                }
+                            }
+                        }
+                    } else {
+                        logger.warn("Error getting '{}' for '{}'", vmwareManagedEntityType, vmwareManagedObjectId);
+                        return serviceStatus;
+                    }
                 }
-            }
-
-            final boolean anyUnacknowledgedAlarms = severitiesToReport.size() > 0 && alarmCountMap != null && alarmCountMap.size() > 0;
-            final String alarmCountString = getMessageForAlarmCountMap(alarmCountMap);
-
-            if ("poweredOn".equals(powerState)) {
-                serviceStatus = anyUnacknowledgedAlarms ? PollStatus.unavailable(alarmCountString) : PollStatus.available();
-            } else {
-                if (ignoreStandBy && "standBy".equals(powerState)) {
+                final boolean anyUnacknowledgedAlarms = severitiesToReport.size() > 0 && alarmCountMap != null && alarmCountMap.size() > 0;
+                final String alarmCountString = getMessageForAlarmCountMap(alarmCountMap);
+                if ("poweredOn".equals(powerState)) {
                     serviceStatus = anyUnacknowledgedAlarms ? PollStatus.unavailable(alarmCountString) : PollStatus.available();
                 } else {
-                    serviceStatus = PollStatus.unavailable("The system's state is '" + powerState + "'" + (anyUnacknowledgedAlarms ? ", " + alarmCountString : ""));
+                    if (ignoreStandBy && "standBy".equals(powerState)) {
+                        serviceStatus = anyUnacknowledgedAlarms ? PollStatus.unavailable(alarmCountString) : PollStatus.available();
+                    } else {
+                        serviceStatus = PollStatus.unavailable("The system's state is '" + powerState + "'" + (anyUnacknowledgedAlarms ? ", " + alarmCountString : ""));
+                    }
                 }
+            } catch (MalformedURLException | RemoteException e) {
+                logger.warn("Error connecting VMware management server '{}': '{}' exception: {} cause: '{}'", vmwareManagementServer, e.getMessage(), e.getClass().getName(), e.getCause());
+                return PollStatus.unavailable("Error connecting VMware management server '" + vmwareManagementServer + "'");
             }
-
-            vmwareViJavaAccess.disconnect();
         }
-
         return serviceStatus;
     }
 

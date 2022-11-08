@@ -562,6 +562,12 @@ public class EventBuilder {
 		return this;
 	}
 
+	public EventBuilder setTrapOID(final String trapOID) {
+	    ensureSnmp();;
+	    m_event.getSnmp().setTrapOID(trapOID);
+	    return this;
+    }
+
 	/**
 	 * <p>setGeneric</p>
 	 *

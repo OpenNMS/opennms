@@ -28,7 +28,8 @@
             "netflow.dst_addr": "${host?json_string}"
           }
         }
-      ]
+      ],
+      "minimum_should_match": 1
     }
   }
 }

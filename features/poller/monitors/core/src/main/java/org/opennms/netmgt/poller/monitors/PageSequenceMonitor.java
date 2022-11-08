@@ -81,7 +81,6 @@ import org.opennms.netmgt.config.pagesequence.Page;
 import org.opennms.netmgt.config.pagesequence.PageSequence;
 import org.opennms.netmgt.config.pagesequence.Parameter;
 import org.opennms.netmgt.config.pagesequence.SessionVariable;
-import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
@@ -98,7 +97,6 @@ import com.google.common.base.Strings;
  *
  * @author <a mailto:brozow@opennms.org>Mathew Brozowski</a>
  */
-@Distributable
 public class PageSequenceMonitor extends AbstractServiceMonitor {
 
     private static final Logger LOG = LoggerFactory.getLogger(PageSequenceMonitor.class);

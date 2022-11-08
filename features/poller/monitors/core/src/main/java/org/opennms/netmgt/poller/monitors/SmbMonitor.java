@@ -34,14 +34,17 @@ import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.netmgt.poller.Distributable;
-import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import jcifs.CIFSContext;
+import jcifs.NameServiceClient;
+import jcifs.context.BaseContext;
+import jcifs.context.SingletonContext;
+import jcifs.netbios.NameServiceClientImpl;
 import jcifs.netbios.NbtAddress;
 
 /**
@@ -57,8 +60,6 @@ import jcifs.netbios.NbtAddress;
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
  * @author <A HREF="mailto:mike@opennms.org">Mike </A>
  */
-// I this thise needs a jcifs.properties file so we can't distribute it now
-@Distributable(DistributionContext.DAEMON)
 final public class SmbMonitor extends AbstractServiceMonitor {
     
     public static final Logger LOG = LoggerFactory.getLogger(SmbMonitor.class);
@@ -84,6 +85,8 @@ final public class SmbMonitor extends AbstractServiceMonitor {
         // to determine if SMB is supported.
         //
         NbtAddress nbtAddr = null;
+        CIFSContext base = SingletonContext.getInstance();
+        NameServiceClient nsc = new NameServiceClientImpl(base);
         
         /*
          * This try block was updated to reflect the behavior of the plugin.
@@ -93,10 +96,10 @@ final public class SmbMonitor extends AbstractServiceMonitor {
         final boolean doNodeStatus = ParameterMap.getKeyedBoolean(parameters, DO_NODE_STATUS, DO_NODE_STATUS_DEFAULT);
 
         try {
-            nbtAddr = NbtAddress.getByName(hostAddress);
+            nbtAddr = (NbtAddress) nsc.getNbtByName(hostAddress);
             
             if (doNodeStatus) {
-                nbtAddr.getNodeType();
+                nbtAddr.getNodeType(base);
             }
             
             if (!nbtAddr.getHostName().equals(hostAddress))

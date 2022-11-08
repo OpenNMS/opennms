@@ -28,8 +28,11 @@
 
 package org.opennms.netmgt.enlinkd.common;
 
+import java.net.InetAddress;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.enlinkd.model.IpInterfaceTopologyEntity;
@@ -39,7 +42,9 @@ import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.enlinkd.service.api.Topology;
 import org.opennms.netmgt.enlinkd.service.api.TopologyService;
+import org.opennms.netmgt.model.InetAddressTypeEditor;
 import org.opennms.netmgt.model.PrimaryType;
+import org.opennms.netmgt.scheduler.Schedulable;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyMessage;
@@ -53,12 +58,12 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 
-public abstract class TopologyUpdater extends Discovery implements OnmsTopologyUpdater {
+public abstract class TopologyUpdater extends Schedulable implements OnmsTopologyUpdater {
 
     public static OnmsTopologyProtocol create(ProtocolSupported protocol) {
             return OnmsTopologyProtocol.create(protocol.name());
     }
-    
+
     public static OnmsTopologyVertex create(NodeTopologyEntity node, IpInterfaceTopologyEntity primary) {
         Objects.requireNonNull(node);
         Objects.requireNonNull(node.getId());
@@ -75,10 +80,11 @@ public abstract class TopologyUpdater extends Discovery implements OnmsTopologyU
 
     private static final Logger LOG = LoggerFactory.getLogger(TopologyUpdater.class);
 
-    private OnmsTopologyDao m_topologyDao;
-    private NodeTopologyService m_nodeTopologyService;
-    private TopologyService m_topologyService;
+    private final OnmsTopologyDao m_topologyDao;
+    private final NodeTopologyService m_nodeTopologyService;
+    private final TopologyService m_topologyService;
 
+    private final Object m_lock = new Object();
     private OnmsTopology m_topology;
     private boolean m_runned = false;
     private boolean m_registered = false;
@@ -137,16 +143,31 @@ public abstract class TopologyUpdater extends Discovery implements OnmsTopologyU
     }
 
     @Override
-    public synchronized void runDiscovery() {
-        LOG.debug("run: start {}", getName());
+    public synchronized void runSchedulable() {
+        LOG.info("run: start {}", getName());
         final OnmsTopology oldTopology = m_topology.clone();
         final OnmsTopology newTopology = runDiscoveryInternally(oldTopology);
         if (oldTopology != newTopology) {
-            synchronized (m_topology) {
+            synchronized (m_lock) {
                 m_topology = newTopology;
+                setDefaultVertex();
             }
         }
-        LOG.debug("run: end {}", getName());
+        LOG.info("run: end {}", getName());
+    }
+
+    public void setDefaultVertex() {
+        NodeTopologyEntity defaultFocusPoint = getDefaultFocusPoint();
+        if (defaultFocusPoint != null) {
+            OnmsTopologyVertex dv = create(defaultFocusPoint,getIpPrimaryMap().get(defaultFocusPoint.getId()));
+            if (m_topology.hasVertex(dv.getId())) {
+                m_topology.setDefaultVertex(dv);
+                LOG.info("setDefaultVertex: set default: {}", dv.getLabel());
+            } else  if (!m_topology.getVertices().isEmpty()) {
+                m_topology.setDefaultVertex(m_topology.getVertices().iterator().next());
+                LOG.info("setDefaultVertex: set first item: {}", m_topology.getDefaultVertex().getLabel());
+            }
+        }
     }
 
     protected OnmsTopology runDiscoveryInternally(OnmsTopology oldTopology) {
@@ -155,9 +176,9 @@ public abstract class TopologyUpdater extends Discovery implements OnmsTopologyU
                 OnmsTopology newTopology = buildTopology();
                 m_runned = true;
                 m_topologyService.parseUpdates();
-                newTopology.getVertices().stream().forEach(v -> update(v));
-                newTopology.getEdges().stream().forEach(g -> update(g));
-                LOG.debug("run: {} first run topology calculated", getName());
+                newTopology.getVertices().forEach(this::update);
+                newTopology.getEdges().forEach(this::update);
+                LOG.info("run: {} first run topology calculated", getName());
                 return newTopology;
             } catch (Exception e) {
                 LOG.error("run: {} first run: cannot build topology", getName(), e);
@@ -166,7 +187,7 @@ public abstract class TopologyUpdater extends Discovery implements OnmsTopologyU
         } else if (m_topologyService.parseUpdates() || m_forceRun) {
             m_forceRun = false;
             m_topologyService.refresh();
-            LOG.debug("run: updates {}, recalculating topology ", getName());
+            LOG.info("run: updates {}, recalculating topology ", getName());
             OnmsTopology newTopology;
             try {
                 newTopology = buildTopology();
@@ -174,11 +195,11 @@ public abstract class TopologyUpdater extends Discovery implements OnmsTopologyU
                 LOG.error("cannot build topology", e);
                 return oldTopology;
             }
-            oldTopology.getVertices().stream().filter(v -> !newTopology.hasVertex(v.getId())).forEach(v -> delete(v));
-            oldTopology.getEdges().stream().filter(g -> !newTopology.hasEdge(g.getId())).forEach(g -> delete(g));
+            oldTopology.getVertices().stream().filter(v -> !newTopology.hasVertex(v.getId())).forEach(this::delete);
+            oldTopology.getEdges().stream().filter(g -> !newTopology.hasEdge(g.getId())).forEach(this::delete);
 
-            newTopology.getVertices().stream().filter(v -> !m_topology.hasVertex(v.getId())).forEach(v -> update(v));
-            newTopology.getEdges().stream().filter(g -> !m_topology.hasEdge(g.getId())).forEach(g -> update(g));
+            newTopology.getVertices().stream().filter(v -> !m_topology.hasVertex(v.getId())).forEach(this::update);
+            newTopology.getEdges().stream().filter(g -> !m_topology.hasEdge(g.getId())).forEach(this::update);
             return newTopology;
         }
         return oldTopology;
@@ -193,9 +214,9 @@ public abstract class TopologyUpdater extends Discovery implements OnmsTopologyU
     }
 
     public Map<Integer, NodeTopologyEntity> getNodeMap() {
-        return m_nodeTopologyService.findAllNode().stream().collect(Collectors.toMap(node -> node.getId(), node -> node, (n1,n2) ->n1));
+        return m_nodeTopologyService.findAllNode().stream().collect(Collectors.toMap(NodeTopologyEntity::getId, node -> node, (n1, n2) ->n1));
     }
-    
+
     public Map<Integer, IpInterfaceTopologyEntity> getIpPrimaryMap() {
         return m_nodeTopologyService.findAllIp().
                 stream().
@@ -203,9 +224,9 @@ public abstract class TopologyUpdater extends Discovery implements OnmsTopologyU
                 (
                       Collectors.toMap
                       (
-                           ip -> ip.getNodeId(), 
-                           ip -> ip, 
-                           (ip1,ip2) -> getPrimary(ip1, ip2)
+                              IpInterfaceTopologyEntity::getNodeId,
+                           ip -> ip,
+                              TopologyUpdater::getPrimary
                       )
                 );
     }
@@ -219,7 +240,25 @@ public abstract class TopologyUpdater extends Discovery implements OnmsTopologyU
         }
         return nodeToOnmsSnmpTable;
     }
-    
+
+    public Map<Integer, SnmpInterfaceTopologyEntity> getSnmpInterfaceMap() {
+        return
+                m_nodeTopologyService.
+                        findAllSnmp().
+                        stream().
+                        collect(Collectors.toMap(SnmpInterfaceTopologyEntity::getId, Function.identity()));
+    }
+
+    public Table<Integer, InetAddress, IpInterfaceTopologyEntity> getIpInterfaceTable() {
+        Table<Integer, InetAddress,IpInterfaceTopologyEntity> nodeToOnmsIpTable = HashBasedTable.create();
+        for (IpInterfaceTopologyEntity ip: m_nodeTopologyService.findAllIp()) {
+            if (!nodeToOnmsIpTable.contains(ip.getNodeId(),ip.getIpAddress())) {
+                nodeToOnmsIpTable.put(ip.getNodeId(),ip.getIpAddress(),ip);
+            }
+        }
+        return nodeToOnmsIpTable;
+    }
+
     private static IpInterfaceTopologyEntity getPrimary(IpInterfaceTopologyEntity n1, IpInterfaceTopologyEntity n2) {
         if (PrimaryType.PRIMARY.equals(n2.getIsSnmpPrimary()) ) {
             return n2;
@@ -230,7 +269,7 @@ public abstract class TopologyUpdater extends Discovery implements OnmsTopologyU
 
     @Override
     public OnmsTopology getTopology() {
-        synchronized(m_topology) {
+        synchronized (m_lock) {
             return m_topology.clone();
         }
     }
@@ -248,7 +287,7 @@ public abstract class TopologyUpdater extends Discovery implements OnmsTopologyU
     }
 
     public void setTopology(OnmsTopology topology) {
-        synchronized (m_topology) {
+        synchronized (m_lock) {
             m_topology = topology;
         }
     }
@@ -259,10 +298,6 @@ public abstract class TopologyUpdater extends Discovery implements OnmsTopologyU
 
     public void setRunned(boolean runned) {
         m_runned = runned;
-    }
-
-    public boolean isForceRun() {
-        return m_forceRun;
     }
 
     public void forceRun() {

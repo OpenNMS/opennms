@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<datacollection-group name="Netscaler vServer">
+   <resourceType name="vserverEntry" label="vserverEntry" resourceLabel="${vsvrName} (${vsvrIpAddress}:${vsvrPort})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+
+   <!-- Netscaler MIBs -->
+   <group name="NetScaler-vserverTable" ifType="all">
+      <mibObj oid=".1.3.6.1.4.1.5951.4.1.3.1.1.1" instance="vserverEntry" alias="vsvrName" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.5951.4.1.3.1.1.2" instance="vserverEntry" alias="vsvrIpAddress" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.5951.4.1.3.1.1.3" instance="vserverEntry" alias="vsvrPort" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.5951.4.1.3.1.1.5" instance="vserverEntry" alias="vsvrState" type="gauge"/>
+      <mibObj oid=".1.3.6.1.4.1.5951.4.1.3.1.1.7" instance="vserverEntry" alias="vsvrCurClntConnecti" type="gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.5951.4.1.3.1.1.8" instance="vserverEntry" alias="vsvrCurSrvrConnecti" type="gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.5951.4.1.3.1.1.10" instance="vserverEntry" alias="vsvrSurgeCount" type="gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.5951.4.1.3.1.1.30" instance="vserverEntry" alias="vsvrTotalRequests" type="counter64"/>
+      <mibObj oid=".1.3.6.1.4.1.5951.4.1.3.1.1.31" instance="vserverEntry" alias="vsvrTotalRequeBytes" type="counter64"/>
+      <mibObj oid=".1.3.6.1.4.1.5951.4.1.3.1.1.32" instance="vserverEntry" alias="vsvrTotalResponses" type="counter64"/>
+      <mibObj oid=".1.3.6.1.4.1.5951.4.1.3.1.1.33" instance="vserverEntry" alias="vsvrTotalRespoBytes" type="counter64"/>
+      <mibObj oid=".1.3.6.1.4.1.5951.4.1.3.1.1.34" instance="vserverEntry" alias="vsvrTotalPktsRecvd" type="counter64"/>
+      <mibObj oid=".1.3.6.1.4.1.5951.4.1.3.1.1.35" instance="vserverEntry" alias="vsvrTotalPktsSent" type="counter64"/>
+      <mibObj oid=".1.3.6.1.4.1.5951.4.1.3.1.1.36" instance="vserverEntry" alias="vsvrTotalSynsRecvd" type="counter64"/>
+      <mibObj oid=".1.3.6.1.4.1.5951.4.1.3.1.1.37" instance="vserverEntry" alias="vsvrCurServicesDown" type="gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.5951.4.1.3.1.1.38" instance="vserverEntry" alias="vsvrCurServiUnKnown" type="gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.5951.4.1.3.1.1.39" instance="vserverEntry" alias="vsvrCurServOutOfSvc" type="gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.5951.4.1.3.1.1.40" instance="vserverEntry" alias="vsCuSeTraToOutOfSvc" type="gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.5951.4.1.3.1.1.41" instance="vserverEntry" alias="vsvrCurServicesUp" type="gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.5951.4.1.3.1.1.42" instance="vserverEntry" alias="vsvrTotMiss" type="counter64"/>
+      <mibObj oid=".1.3.6.1.4.1.5951.4.1.3.1.1.43" instance="vserverEntry" alias="vsvrRequestRate" type="gauge"/>
+      <mibObj oid=".1.3.6.1.4.1.5951.4.1.3.1.1.44" instance="vserverEntry" alias="vsvrRxBytesRate" type="gauge"/>
+      <mibObj oid=".1.3.6.1.4.1.5951.4.1.3.1.1.45" instance="vserverEntry" alias="vsvrTxBytesRate" type="gauge"/>
+      <mibObj oid=".1.3.6.1.4.1.5951.4.1.3.1.1.46" instance="vserverEntry" alias="vsvrSynfloodRate" type="gauge"/>
+      <mibObj oid=".1.3.6.1.4.1.5951.4.1.3.1.1.47" instance="vserverEntry" alias="vsvrIp6Address" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.5951.4.1.3.1.1.48" instance="vserverEntry" alias="vsvrTotHits" type="counter64"/>
+      <mibObj oid=".1.3.6.1.4.1.5951.4.1.3.1.1.54" instance="vserverEntry" alias="vsvrTotSpillOvers" type="counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.5951.4.1.3.1.1.56" instance="vserverEntry" alias="vsvrTotalClients" type="counter64"/>
+      <mibObj oid=".1.3.6.1.4.1.5951.4.1.3.1.1.58" instance="vserverEntry" alias="vsvClieConnOpenRate" type="gauge"/>
+      <mibObj oid=".1.3.6.1.4.1.5951.4.1.3.1.1.59" instance="vserverEntry" alias="vsvrFullName" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.5951.4.1.3.1.1.60" instance="vserverEntry" alias="vsvrCurSslVpnUsers" type="gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.5951.4.1.3.1.1.61" instance="vserverEntry" alias="vsvrTotalServiBound" type="gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.5951.4.1.3.1.1.62" instance="vserverEntry" alias="vsvrHealth" type="gauge"/>
+      <mibObj oid=".1.3.6.1.4.1.5951.4.1.3.1.1.65" instance="vserverEntry" alias="vsvrTotalServers" type="counter64"/>
+      <mibObj oid=".1.3.6.1.4.1.5951.4.1.3.1.1.67" instance="vserverEntry" alias="vsvrInvalRequeRespo" type="counter64"/>
+      <mibObj oid=".1.3.6.1.4.1.5951.4.1.3.1.1.68" instance="vserverEntry" alias="vsvInvaRequRespDrop" type="counter64"/>
+      <mibObj oid=".1.3.6.1.4.1.5951.4.1.3.1.1.69" instance="vserverEntry" alias="vsvrTdId" type="gauge"/>
+      <mibObj oid=".1.3.6.1.4.1.5951.4.1.3.1.1.70" instance="vserverEntry" alias="vsvrSoThreshold" type="gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.5951.4.1.3.1.1.71" instance="vserverEntry" alias="vsvrEstablishedConn" type="gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.5951.4.1.3.1.1.72" instance="vserverEntry" alias="vsvrCurTotaVpnUsers" type="gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.5951.4.1.3.1.1.73" instance="vserverEntry" alias="vsvrCurMptcpSession" type="gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.5951.4.1.3.1.1.74" instance="vserverEntry" alias="vsvrCursubflowConn" type="gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.5951.4.1.3.1.1.75" instance="vserverEntry" alias="vsvrCurEffState" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.5951.4.1.3.1.1.76" instance="vserverEntry" alias="vsvrCurPersisSessio" type="gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.5951.4.1.3.1.1.77" instance="vserverEntry" alias="vsvrCurBackPersSess" type="gauge32"/>
+   </group>
+
+   <systemDef name="Netscaler (vServer)">
+      <sysoid>.1.3.6.1.4.1.5951.1</sysoid>
+      <collect>
+         <includeGroup>NetScaler-vserverTable</includeGroup>
+      </collect>
+   </systemDef>
+</datacollection-group>

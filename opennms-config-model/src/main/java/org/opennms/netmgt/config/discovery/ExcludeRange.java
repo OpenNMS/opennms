@@ -54,20 +54,20 @@ public class ExcludeRange implements Serializable {
      * Starting address of the range.
      */
     @XmlElement(name = "begin", required = true)
-    private String m_begin;
+    private String begin;
 
     /**
      * Ending address of the range.
      */
     @XmlElement(name = "end", required = true)
-    private String m_end;
+    private String end;
 
     /**
      * The monitoring location where this exclude range
      *  will be excluded
      */
     @XmlAttribute(name = "location")
-    private String m_location;
+    private String location;
 
 
     public ExcludeRange() {
@@ -79,35 +79,35 @@ public class ExcludeRange implements Serializable {
     }
 
     public String getBegin() {
-        return m_begin;
+        return begin;
     }
 
     public void setBegin(final String begin) {
-        m_begin = ConfigUtils.assertNotEmpty(begin, "begin");
+        this.begin = ConfigUtils.assertNotEmpty(begin, "begin");
     }
 
     public String getEnd() {
-        return m_end;
+        return end;
     }
 
     public void setEnd(final String end) {
-        m_end = ConfigUtils.assertNotEmpty(end, "end");
+        this.end = ConfigUtils.assertNotEmpty(end, "end");
     }
 
     public Optional<String> getLocation() {
-        return Optional.ofNullable(m_location);
+        return Optional.ofNullable(location);
     }
 
     public void setLocation(String location) {
-        m_location = location;
+        this.location = location;
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(
-                            m_begin, 
-                            m_end,
-                            m_location);
+                            begin, 
+                            end,
+                            location);
     }
 
     @Override
@@ -118,9 +118,9 @@ public class ExcludeRange implements Serializable {
 
         if (obj instanceof ExcludeRange) {
             final ExcludeRange temp = (ExcludeRange)obj;
-            return Objects.equals(temp.m_begin, m_begin)
-                    && Objects.equals(temp.m_end, m_end)
-                    && Objects.equals(temp.m_location, m_location);
+            return Objects.equals(temp.begin, begin)
+                    && Objects.equals(temp.end, end)
+                    && Objects.equals(temp.location, location);
         }
         return false;
     }
@@ -128,11 +128,9 @@ public class ExcludeRange implements Serializable {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("begin", m_begin)
-                .add("end", m_end)
-                .add("location", m_location)
+                .add("begin", begin)
+                .add("end", end)
+                .add("location", location)
                 .toString();
     }
-
-
 }

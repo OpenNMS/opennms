@@ -28,18 +28,6 @@
 
 package org.opennms.netmgt.xml.eventconf;
 
-import static org.opennms.netmgt.xml.eventconf.Maskelement.TAG_HOST;
-import static org.opennms.netmgt.xml.eventconf.Maskelement.TAG_INTERFACE;
-import static org.opennms.netmgt.xml.eventconf.Maskelement.TAG_NODEID;
-import static org.opennms.netmgt.xml.eventconf.Maskelement.TAG_SERVICE;
-import static org.opennms.netmgt.xml.eventconf.Maskelement.TAG_SNMPHOST;
-import static org.opennms.netmgt.xml.eventconf.Maskelement.TAG_SNMP_COMMUNITY;
-import static org.opennms.netmgt.xml.eventconf.Maskelement.TAG_SNMP_EID;
-import static org.opennms.netmgt.xml.eventconf.Maskelement.TAG_SNMP_GENERIC;
-import static org.opennms.netmgt.xml.eventconf.Maskelement.TAG_SNMP_SPECIFIC;
-import static org.opennms.netmgt.xml.eventconf.Maskelement.TAG_SOURCE;
-import static org.opennms.netmgt.xml.eventconf.Maskelement.TAG_UEI;
-
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +39,8 @@ import org.opennms.core.utils.RegexUtils;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
+
+import static org.opennms.netmgt.xml.eventconf.Maskelement.*;
 
 public abstract class EventMatchers  {
 	public static EventMatcher falseMatcher() {
@@ -243,6 +233,14 @@ public abstract class EventMatchers  {
 					return event.getSnmp() == null || !event.getSnmp().hasGeneric()
 							? null
 							: Integer.toString(event.getSnmp().getGeneric());
+				}
+			};
+		} else if (name.equals(TAG_SNMP_TRAPOID)) {
+			return new EventField(name) {
+				@Override
+				public String get(Event event) {
+					return (event.getSnmp() == null || !event.getSnmp().hasTrapOID()) ?
+							null : event.getSnmp().getTrapOID();
 				}
 			};
 		}

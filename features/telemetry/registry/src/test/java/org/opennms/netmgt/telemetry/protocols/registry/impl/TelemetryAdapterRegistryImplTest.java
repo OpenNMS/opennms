@@ -101,6 +101,11 @@ public class TelemetryAdapterRegistryImplTest {
                 }
 
                 @Override
+                public String getFullName() {
+                    return DummyAdapter.class.getName();
+                }
+
+                @Override
                 public String getClassName() {
                     return DummyAdapter.class.getName();
                 }

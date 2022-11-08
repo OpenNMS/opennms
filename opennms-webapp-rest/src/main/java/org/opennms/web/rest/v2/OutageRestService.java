@@ -86,7 +86,8 @@ public class OutageRestService extends AbstractDaoRestService<OnmsOutage,SearchB
         // 1st level JOINs
         builder.alias("monitoredService", "monitoredService", JoinType.LEFT_JOIN);
         builder.alias("serviceLostEvent", "serviceLostEvent", JoinType.LEFT_JOIN);
-        builder.alias("serviceRegainedEvent", "serviceRegainedEvent", JoinType.LEFT_JOIN); 
+        builder.alias("serviceRegainedEvent", "serviceRegainedEvent", JoinType.LEFT_JOIN);
+        builder.alias("perspective", "perspective", JoinType.LEFT_JOIN);
 
         // 2nd level JOINs
         builder.alias("monitoredService.ipInterface", Aliases.ipInterface.toString(), JoinType.LEFT_JOIN);
@@ -133,6 +134,7 @@ public class OutageRestService extends AbstractDaoRestService<OnmsOutage,SearchB
         map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.monitoredService, CriteriaBehaviors.MONITORED_SERVICE_BEHAVIORS));
         map.putAll(CriteriaBehaviors.withAliasPrefix("serviceLostEvent", CriteriaBehaviors.EVENT_BEHAVIORS));
         map.putAll(CriteriaBehaviors.withAliasPrefix("serviceRegainedEvent", CriteriaBehaviors.EVENT_BEHAVIORS));
+        map.putAll(CriteriaBehaviors.withAliasPrefix("perspective", CriteriaBehaviors.MONITORING_LOCATION_BEHAVIORS));
 
         // 2nd level JOINs
         map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.distPoller, CriteriaBehaviors.DIST_POLLER_BEHAVIORS));

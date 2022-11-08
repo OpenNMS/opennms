@@ -34,6 +34,4 @@ public interface ThresholdingSessionKey {
     int getNodeId();
 
     String getServiceName();
-
-    String getResource();
 }

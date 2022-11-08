@@ -36,6 +36,8 @@
 
 <%@page import="java.util.HashMap"%>
 <%@page import="java.util.Map"%>
+<%@page import="java.util.Set"%>
+<%@page import="java.util.HashSet"%>
 <%@page import="org.opennms.core.utils.WebSecurityUtils"%>
 <%@page import="org.opennms.netmgt.events.api.EventConstants"%>
 
@@ -79,9 +81,28 @@
 <% boolean provisioned = parms.containsKey(EventConstants.PARM_LOCATION_MONITOR_ID); %>
 <% boolean acknowledgeEvent = "true".equals(System.getProperty("opennms.eventlist.acknowledge")); %>
 <% boolean canAck = (request.isUserInRole(org.opennms.web.api.Authentication.ROLE_ADMIN) || !request.isUserInRole(org.opennms.web.api.Authentication.ROLE_READONLY)); %>
+<% 
+    boolean showParms = "true".equals(System.getProperty("opennms.eventdetail.showParms")); 
+    if (showParms) {
+        Set<String> parmRoles = new HashSet<>();
+        for (String role : System.getProperty("opennms.eventdetail.parmsRoles", org.opennms.web.api.Authentication.ROLE_USER).split("\\s*,\\s*")) {
+            if (org.opennms.web.api.Authentication.isValidRole(role)) {
+                parmRoles.add(role);
+            }
+        }
+        showParms = false;
+        for (String r : parmRoles) {
+            if (request.isUserInRole(r)) {
+               showParms = true;
+               break;
+            }
+        }
+    }
+%>
 
 <c:set var="provisioned" value="<%=provisioned%>"/>
 <c:set var="acknowledgeEvent" value="<%=acknowledgeEvent%>"/>
+<c:set var="showParms" value="<%=showParms%>"/>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Event Detail" />
@@ -203,6 +224,28 @@
 
       </table>
     </div>
+
+    <c:if test="${showParms}">
+    <div class="card severity">
+      <div class="card-header">
+        <span>Parameters</span>
+      </div>
+      <% if (event.getParms() != null && event.getParms().size() > 0) { %>
+      <table class="table table-sm severity">
+        <% for (Map.Entry<String, String> parm : event.getParms().entrySet()) { %>
+        <tr class="severity-<%= event.getSeverity().getLabel().toLowerCase() %> d-flex">
+          <th class="col-4"><%=WebSecurityUtils.sanitizeString(parm.getKey(), true)%></th>
+          <td class="col"><%=WebSecurityUtils.sanitizeString(parm.getValue(), true)%></td>
+        </tr>
+        <% } %>
+      </table>
+      <% } else { %>
+      <div class="card-body severity-<%= event.getSeverity().getLabel().toLowerCase() %>">
+        No event parameters available.
+      </div>
+      <% }%>
+    </div>
+    </c:if>
 
     <div class="card severity">
       <div class="card-header">

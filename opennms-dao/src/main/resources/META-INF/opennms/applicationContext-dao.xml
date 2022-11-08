@@ -62,6 +62,10 @@
   <bean id="dataSource" class="org.opennms.core.db.DataSourceFactoryBean" />
   <onmsgi:service interface="javax.sql.DataSource" ref="dataSource"/>
 
+  <!-- Configuration Service & upgrades -->
+  <bean id="upgradeConfigService" class = "org.opennms.config.upgrade.UpgradeConfigService"/>
+  <import resource="classpath*:/META-INF/opennms/applicationContext-config-service.xml"/>
+
   <!-- Configuration File DAOs -->
   <bean id="surveillanceViewConfigResourceLocation" class="java.lang.String">
     <constructor-arg value="file:${opennms.home}/etc/surveillance-views.xml" />
@@ -107,7 +111,6 @@
   <import resource="classpath*:/META-INF/opennms/applicationContext-timeseries-${org.opennms.timeseries.strategy:rrd}.xml"/>
   <bean id="resourceDao" class="org.opennms.netmgt.dao.support.DefaultResourceDao">
     <property name="nodeDao" ref="nodeDao" />
-    <property name="locationMonitorDao" ref="locationMonitorDao" />
     <property name="ipInterfaceDao" ref="ipInterfaceDao" />
     <property name="collectdConfig" ref="collectdConfig" />
     <property name="resourceTypesDao" ref="resourceTypesDao" />

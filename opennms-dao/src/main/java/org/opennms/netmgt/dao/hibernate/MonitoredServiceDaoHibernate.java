@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -35,6 +35,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.opennms.core.criteria.Alias;
+import org.opennms.core.criteria.Criteria;
+import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.model.OnmsApplication;
@@ -42,12 +45,13 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.ServiceSelector;
 import org.springframework.beans.factory.annotation.Autowired;
+
 /**
  * <p>MonitoredServiceDaoHibernate class.</p>
  *
  * @author david
  */
-public class MonitoredServiceDaoHibernate extends AbstractDaoHibernate<OnmsMonitoredService, Integer>  implements MonitoredServiceDao {
+public class MonitoredServiceDaoHibernate extends AbstractDaoHibernate<OnmsMonitoredService, Integer> implements MonitoredServiceDao {
 
     @Autowired
     private FilterDao m_filterDao;
@@ -85,8 +89,8 @@ public class MonitoredServiceDaoHibernate extends AbstractDaoHibernate<OnmsMonit
     @Override
 	public OnmsMonitoredService getPrimaryService(Integer nodeId, String svcName) {
 	    return findUnique("from OnmsMonitoredService as svc " +
-	                      "where svc.ipInterface.node.id = ? and svc.ipInterface.isSnmpPrimary= ? and svc.serviceType.name = ?",
-	                     nodeId, PrimaryType.PRIMARY, svcName);
+	                      "where svc.ipInterface.node.id = ? and svc.ipInterface.snmpPrimary= ? and svc.serviceType.name = ?",
+	                     nodeId, PrimaryType.PRIMARY.getCharCode(), svcName);
 	}
 
     /** {@inheritDoc} */
@@ -112,10 +116,8 @@ public class MonitoredServiceDaoHibernate extends AbstractDaoHibernate<OnmsMonit
                 
                 matchingServices.add(svc);
             }
-            
         }
-        
-        
+
         return matchingServices;
     }
 
@@ -143,4 +145,12 @@ public class MonitoredServiceDaoHibernate extends AbstractDaoHibernate<OnmsMonit
                 "left join fetch ip.node as node");
     }
 
+    @Override
+    public List<OnmsMonitoredService> findByNode(int nodeId) {
+        return find("select distinct svc from OnmsMonitoredService as svc " +
+                    "left join fetch svc.ipInterface as iface " +
+                    "left join fetch iface.node as node " +
+                    "where node.id = ?",
+                    nodeId);
+    }
 }

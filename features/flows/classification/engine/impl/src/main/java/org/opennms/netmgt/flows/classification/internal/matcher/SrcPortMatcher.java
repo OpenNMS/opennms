@@ -28,8 +28,13 @@
 
 package org.opennms.netmgt.flows.classification.internal.matcher;
 
+import org.opennms.netmgt.flows.classification.internal.value.PortValue;
+
 public class SrcPortMatcher extends PortMatcher {
-    public SrcPortMatcher(String ports) {
+    public SrcPortMatcher(PortValue ports) {
         super(ports, (request) -> request.getSrcPort());
+    }
+    public SrcPortMatcher(String ports) {
+        this(PortValue.of(ports));
     }
 }

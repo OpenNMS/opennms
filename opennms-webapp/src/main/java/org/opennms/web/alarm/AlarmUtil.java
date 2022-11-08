@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,11 +31,9 @@ package org.opennms.web.alarm;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import javax.servlet.ServletContext;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.core.utils.InetAddressUtils;
@@ -59,12 +57,16 @@ import org.opennms.web.alarm.filter.InterfaceFilter;
 import org.opennms.web.alarm.filter.LocationFilter;
 import org.opennms.web.alarm.filter.LogMessageMatchesAnyFilter;
 import org.opennms.web.alarm.filter.NegativeAcknowledgedByFilter;
+import org.opennms.web.alarm.filter.NegativeAlarmTextFilter;
+import org.opennms.web.alarm.filter.NegativeCategoryFilter;
 import org.opennms.web.alarm.filter.NegativeEventParmLikeFilter;
 import org.opennms.web.alarm.filter.NegativeExactUEIFilter;
+import org.opennms.web.alarm.filter.NegativeIPAddrLikeFilter;
 import org.opennms.web.alarm.filter.NegativeInterfaceFilter;
 import org.opennms.web.alarm.filter.NegativeLocationFilter;
 import org.opennms.web.alarm.filter.NegativeNodeFilter;
 import org.opennms.web.alarm.filter.NegativeNodeLocationFilter;
+import org.opennms.web.alarm.filter.NegativeNodeNameLikeFilter;
 import org.opennms.web.alarm.filter.NegativePartialUEIFilter;
 import org.opennms.web.alarm.filter.NegativeServiceFilter;
 import org.opennms.web.alarm.filter.NegativeSeverityFilter;
@@ -73,9 +75,15 @@ import org.opennms.web.alarm.filter.NodeLocationFilter;
 import org.opennms.web.alarm.filter.NodeNameLikeFilter;
 import org.opennms.web.alarm.filter.PartialUEIFilter;
 import org.opennms.web.alarm.filter.ServiceFilter;
+import org.opennms.web.alarm.filter.ServiceOrFilter;
 import org.opennms.web.alarm.filter.SeverityFilter;
+import org.opennms.web.alarm.filter.SeverityOrFilter;
 import org.opennms.web.alarm.filter.SituationFilter;
 import org.opennms.web.filter.Filter;
+import org.opennms.web.utils.filter.CheckboxFilterUtils;
+import org.opennms.web.utils.filter.FilterTokenizeUtils;
+
+import static org.opennms.web.utils.filter.CheckboxFilterUtils.ARRAY_DELIMITER;
 
 /**
  * <p>Abstract AlarmUtil class.</p>
@@ -93,6 +101,9 @@ public abstract class AlarmUtil extends Object {
 
     /** Constant <code>ANY_RELATIVE_TIMES_OPTION="Any"</code> */
     public static final String ANY_RELATIVE_TIMES_OPTION = "Any";
+
+    /** Constant <code>NEGATION_PREFIX_SYMBOL="!"</code> */
+    public static final String NEGATION_PREFIX_SYMBOL = "!";
 
     public static OnmsCriteria getOnmsCriteria(final AlarmCriteria alarmCriteria) {
         final OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class);
@@ -204,37 +215,45 @@ public abstract class AlarmUtil extends Object {
     /**
      * <p>getFilter</p>
      *
+     * @param allFilters a {@link java.lang.String}[] object holding all filter Strings
      * @param filterString a {@link java.lang.String} object.
      * @return a {@link org.opennms.web.filter.Filter} object.
      */
-    public static Filter getFilter(String filterString, ServletContext servletContext) {
+    public static Filter getFilter(String[] allFilters, String filterString, ServletContext servletContext) {
         if (filterString == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
         Filter filter = null;
 
-        String[] tempTokens = filterString.split("=");
-        String type;
-        String value;
-        try {
-            type = tempTokens[0];
-            String[] values = (String[]) ArrayUtils.remove(tempTokens, 0);
-            value = org.apache.commons.lang.StringUtils.join(values, "=");
-        } catch (NoSuchElementException e) {
-            throw new IllegalArgumentException("Could not tokenize filter string: " + filterString);
-        }
+        String[] tokenizedFilterString = FilterTokenizeUtils.tokenizeFilterString(filterString);
+        String type = tokenizedFilterString[0];
+        String value = tokenizedFilterString[1];
 
         if (type.equals(SeverityFilter.TYPE)) {
-            filter = new SeverityFilter(OnmsSeverity.get(WebSecurityUtils.safeParseInt(value)));
+            String[] ids = value.split(ARRAY_DELIMITER);
+            OnmsSeverity[] severities = new OnmsSeverity[ids.length];
+            for (int index = 0; index < ids.length; index++) {
+                severities[index] = OnmsSeverity.get(WebSecurityUtils.safeParseInt(ids[index]));
+            }
+            filter = new SeverityOrFilter(severities);
         } else if (type.equals(NodeFilter.TYPE)) {
             filter = new NodeFilter(WebSecurityUtils.safeParseInt(value), servletContext);
         } else if (type.equals(NodeNameLikeFilter.TYPE)) {
-            filter = new NodeNameLikeFilter(value);
+            if (value.startsWith(NEGATION_PREFIX_SYMBOL)) {
+                filter = new NegativeNodeNameLikeFilter(value.substring(1));
+            } else {
+                filter = new NodeNameLikeFilter(value);
+            }
         } else if (type.equals(InterfaceFilter.TYPE)) {
             filter = new InterfaceFilter(InetAddressUtils.addr(value));
         } else if (type.equals(ServiceFilter.TYPE)) {
-            filter = new ServiceFilter(WebSecurityUtils.safeParseInt(value), servletContext);
+            String[] ids = value.split(ARRAY_DELIMITER);
+            Integer[] serviceIds = new Integer[ids.length];
+            for (int index = 0; index < ids.length; index++) {
+                serviceIds[index] = WebSecurityUtils.safeParseInt(ids[index]);
+            }
+            filter = new ServiceOrFilter(serviceIds, servletContext);
         } else if (type.equals(PartialUEIFilter.TYPE)) {
             filter = new PartialUEIFilter(value);
         } else if (type.equals(ExactUEIFilter.TYPE)) {
@@ -256,9 +275,17 @@ public abstract class AlarmUtil extends Object {
         } else if (type.equals(NegativeAcknowledgedByFilter.TYPE)) {
             filter = new NegativeAcknowledgedByFilter(value);
         } else if (type.equals(IPAddrLikeFilter.TYPE)) {
-            filter = new IPAddrLikeFilter(value);
+            if (value.startsWith(NEGATION_PREFIX_SYMBOL)) {
+                filter = new NegativeIPAddrLikeFilter(value.substring(1));
+            } else {
+                filter = new IPAddrLikeFilter(value);
+            }
         } else if (type.equals(AlarmTextFilter.TYPE)) {
-            filter = new AlarmTextFilter(value);
+            if (value.startsWith(NEGATION_PREFIX_SYMBOL)) {
+                filter = new NegativeAlarmTextFilter(value.substring(1));
+            } else {
+                filter = new AlarmTextFilter(value);
+            }
         } else if (type.equals(LogMessageMatchesAnyFilter.TYPE)) {
             filter = new LogMessageMatchesAnyFilter(value);
         } else if (type.equals(BeforeLastEventTimeFilter.TYPE)) {
@@ -284,10 +311,34 @@ public abstract class AlarmUtil extends Object {
         } else if (type.equals(SituationFilter.TYPE)) {
             filter = new SituationFilter(Boolean.valueOf(value));
         } else if (type.equals(CategoryFilter.TYPE)) {
-            filter = new CategoryFilter(value);
+            String[] nestedFilterString = findFilterString(allFilters, NegativeCategoryFilter.NESTED_TYPE);
+            if (CheckboxFilterUtils.isCheckboxToggled(nestedFilterString)) {
+                filter = new NegativeCategoryFilter(value);
+            } else {
+                filter = new CategoryFilter(value);
+            }
         }
 
         return filter;
+    }
+
+    /**
+     * <p>findFilterString</p>
+     *
+     * @param allFilters a {@link java.lang.String}[] object representing all filters.
+     * @param filterString a {@link java.lang.String} object.
+     * @return a {@link java.lang.String}[] object representing the type and value tokenized.
+     */
+    private static String[] findFilterString(String[] allFilters, String filterString) {
+        if (allFilters == null) {
+            return null;
+        }
+        for (String thisFilter : allFilters) {
+            if (thisFilter.startsWith(filterString)) {
+                return FilterTokenizeUtils.tokenizeFilterString(thisFilter);
+            }
+        }
+        return null;
     }
 
     /**
@@ -374,10 +425,12 @@ public abstract class AlarmUtil extends Object {
     }
 
     public static List<Filter> getFilterList(String[] filterStrings, ServletContext servletContext) {
+        filterStrings = CheckboxFilterUtils.handleCheckboxDuplication(filterStrings);
+
         List<Filter> filterList = new ArrayList<>();
         if (filterStrings != null) {
             for (String filterString : filterStrings) {
-                Filter filter = AlarmUtil.getFilter(filterString, servletContext);
+                Filter filter = AlarmUtil.getFilter(filterStrings, filterString, servletContext);
                 if (filter != null) {
                     filterList.add(filter);
                 }

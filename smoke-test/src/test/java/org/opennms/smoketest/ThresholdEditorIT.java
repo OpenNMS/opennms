@@ -50,7 +50,7 @@ public class ThresholdEditorIT extends OpenNMSSeleniumIT {
         // main threshold page
         assertEquals(1, countElementsMatchingCss("span.card-header"));
         findElementByXpath("//span[text()='Threshold Configuration']");
-        findElementByXpath("//button[@type='button' and text()='Request a reload threshold packages configuration']");
+        findElementByXpath("//button[@type='button' and text()='Reload Threshold Configuration']");
         // threshold group page
         clickElement(By.xpath("//a[contains(@href, 'groupName=cisco&editGroup')]"));
         assertEquals(3, countElementsMatchingCss("span.card-header"));

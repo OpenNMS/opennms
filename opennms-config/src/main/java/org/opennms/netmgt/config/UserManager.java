@@ -1161,7 +1161,8 @@ public abstract class UserManager implements UserConfig {
     }
 
     public boolean checkSaltedPassword(final String raw, final String encrypted) {
-        return s_passwordEncryptor.checkPassword(raw, encrypted);
+        PasswordEncryptor passwordEncryptor = new StrongPasswordEncryptor();
+        return passwordEncryptor.checkPassword(raw, encrypted);
     }
     
     /**
@@ -1172,13 +1173,8 @@ public abstract class UserManager implements UserConfig {
      */
     protected abstract void doUpdate() throws IOException, FileNotFoundException;
 
-    public final void update() throws IOException, FileNotFoundException {
-        m_writeLock.lock();
-        try {
-            doUpdate();
-        } finally {
-            m_writeLock.unlock();
-        }
+    public final void update() throws IOException {
+        doUpdate();
     }
     
     /**

@@ -31,6 +31,7 @@ package org.opennms.netmgt.enlinkd.snmp;
 
 import org.opennms.netmgt.enlinkd.model.CdpLink;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.netmgt.snmp.SnmpGetter;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
@@ -42,8 +43,8 @@ public class CdpInterfacePortNameGetter extends SnmpGetter {
 	/**
 	 * The SnmpPeer object used to communicate via SNMP with the remote host.
 	 */
-    public CdpInterfacePortNameGetter(SnmpAgentConfig peer, LocationAwareSnmpClient client, String location, Integer nodeid) {
-        super(peer, client,location,nodeid);
+    public CdpInterfacePortNameGetter(SnmpAgentConfig peer, LocationAwareSnmpClient client, String location) {
+        super(peer, client,location);
     }
 
     public CdpLink get(CdpLink link) {

@@ -133,4 +133,8 @@ public class TelemetryMessageConsumer implements MessageConsumer<TelemetryMessag
     public void setRegistry(TelemetryRegistry telemetryRegistry) {
         this.telemetryRegistry = telemetryRegistry;
     }
+
+    public Set<Adapter> getAdapters() {
+        return this.adapters;
+    }
 }

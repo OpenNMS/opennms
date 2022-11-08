@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,11 +28,12 @@
 
 package org.opennms.netmgt.collectd;
 
-import static org.easymock.EasyMock.anyInt;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.isA;
-import static org.easymock.EasyMock.matches;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.ArgumentMatchers.matches;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
@@ -71,11 +72,9 @@ import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.opennms.netmgt.snmp.proxy.common.LocationAwareSnmpClientRpcImpl;
 import org.opennms.netmgt.snmp.snmp4j.Snmp4JValueFactory;
 import org.opennms.test.FileAnticipator;
-import org.opennms.test.mock.EasyMockUtils;
 
 public class SnmpAttributeTest {
-    private EasyMockUtils m_mocks = new EasyMockUtils();
-    private IpInterfaceDao m_ipInterfaceDao = m_mocks.createMock(IpInterfaceDao.class);
+    private IpInterfaceDao m_ipInterfaceDao = mock(IpInterfaceDao.class);
 
     private FileAnticipator m_fileAnticipator = null;
     private File m_snmpDirectory = null;
@@ -83,9 +82,9 @@ public class SnmpAttributeTest {
     // Cannot avoid this warning since there is no way to fetch the class object for an interface
     // that uses generics
     @SuppressWarnings("unchecked")
-    private RrdStrategy<Object, Object> m_rrdStrategy = m_mocks.createMock(RrdStrategy.class);
+    private RrdStrategy<Object, Object> m_rrdStrategy = mock(RrdStrategy.class);
 
-    private FilesystemResourceStorageDao m_resourceStorageDao = m_mocks.createMock(FilesystemResourceStorageDao.class);
+    private FilesystemResourceStorageDao m_resourceStorageDao = mock(FilesystemResourceStorageDao.class);
 
     private LocationAwareSnmpClient m_locationAwareSnmpClient = new LocationAwareSnmpClientRpcImpl(new MockRpcClientFactory());
 
@@ -96,7 +95,6 @@ public class SnmpAttributeTest {
 
     @After
     public void tearDown() {
-        m_mocks.verifyAll();
         m_fileAnticipator.deleteExpected();
         m_fileAnticipator.tearDown();
     }
@@ -150,18 +148,16 @@ public class SnmpAttributeTest {
         ipInterface.setNode(node);
         ipInterface.setIpAddress(InetAddressUtils.addr("192.168.1.1"));
 
-        expect(m_ipInterfaceDao.load(1)).andReturn(ipInterface).times(5); // It used to be 3, but I think it is more correct to use getStoreDir from DefaultCollectionAgentService on DefaultCollectionAgent (NMS-7516)
+        when(m_ipInterfaceDao.load(1)).thenReturn(ipInterface); // It used to be 3, but I think it is more correct to use getStoreDir from DefaultCollectionAgentService on DefaultCollectionAgent (NMS-7516)
 
-        expect(m_rrdStrategy.getDefaultFileExtension()).andReturn(".myLittleEasyMockedStrategyAndMe").anyTimes();
-        expect(m_rrdStrategy.createDefinition(isA(String.class), isA(String.class), isA(String.class), anyInt(), isAList(RrdDataSource.class), isAList(String.class))).andReturn(new Object());
+        when(m_rrdStrategy.getDefaultFileExtension()).thenReturn(".myLittleMockedStrategyAndMe");
+        when(m_rrdStrategy.createDefinition(isA(String.class), isA(String.class), isA(String.class), anyInt(), isAList(RrdDataSource.class), isAList(String.class))).thenReturn(new Object());
 
         m_rrdStrategy.createFile(isA(Object.class));
 
-        expect(m_rrdStrategy.openFile(isA(String.class))).andReturn(new Object());
+        when(m_rrdStrategy.openFile(isA(String.class))).thenReturn(new Object());
         m_rrdStrategy.updateFile(isA(Object.class), isA(String.class), matches(".*:" + matchValue));
         m_rrdStrategy.closeFile(isA(Object.class));
-
-        m_mocks.replayAll();
 
         SnmpCollectionAgent agent = DefaultSnmpCollectionAgent.create(ipInterface.getId(), m_ipInterfaceDao, new MockPlatformTransactionManager());
         OnmsSnmpCollection snmpCollection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, Object>()), new MockDataCollectionConfig(), m_locationAwareSnmpClient);

@@ -1,0 +1,9 @@
+jobs:
+  smoke-test-minimal:
+    executor: smoke-test-executor
+    steps:
+      - cached-checkout
+      - attach_workspace:
+          at: ~/
+      - run-smoke-tests:
+          suite: minimal

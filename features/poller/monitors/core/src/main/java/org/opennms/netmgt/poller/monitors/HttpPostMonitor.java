@@ -52,8 +52,6 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.core.web.HttpClientWrapper;
-import org.opennms.netmgt.poller.Distributable;
-import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.monitors.support.ParameterSubstitutingMonitor;
@@ -73,7 +71,6 @@ import com.google.common.base.Strings;
  * @author <A HREF="http://www.opennms.org/">OpenNMS</a>
  */
 
-@Distributable(DistributionContext.DAEMON)
 final public class HttpPostMonitor extends ParameterSubstitutingMonitor {
 
     /**
@@ -105,7 +102,8 @@ final public class HttpPostMonitor extends ParameterSubstitutingMonitor {
     public static final String PARAMETER_MIMETYPE = "mimetype";
     public static final String PARAMETER_CHARSET = "charset";
     public static final String PARAMETER_BANNER = "banner";
-    public static final String PARAMETER_SSLFILTER = "usesslfiler";
+    public static final String PARAMETER_SSLFILTER = "usesslfilter";
+    public static final String PARAMETER_SSLFILER = "usesslfiler";
 
     public static final String PARAMETER_USERNAME = "auth-username";
     public static final String PARAMETER_PASSWORD = "auth-password";
@@ -158,6 +156,9 @@ final public class HttpPostMonitor extends ParameterSubstitutingMonitor {
         //SSLFilter
         boolean boolSSLFilter = ParameterMap.getKeyedBoolean(parameters, PARAMETER_SSLFILTER, DEFAULT_SSLFILTER);
 
+        //SSLFiler legacy parameter misspelled in older versions
+        boolean boolSSLFiler = ParameterMap.getKeyedBoolean(parameters, PARAMETER_SSLFILER, DEFAULT_SSLFILTER);
+
         // Get the address instance.
         InetAddress ipAddr = svc.getAddress();
 
@@ -178,7 +179,7 @@ final public class HttpPostMonitor extends ParameterSubstitutingMonitor {
                         .setSocketTimeout(tracker.getSoTimeout())
                         .setRetries(DEFAULT_RETRY);
 
-                if (boolSSLFilter)  {
+                if (boolSSLFilter || boolSSLFiler)  {
                     clientWrapper.trustSelfSigned(strScheme);
                 }
                 HttpEntity postReq;

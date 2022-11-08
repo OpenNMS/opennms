@@ -20,7 +20,7 @@
 	<descr>
 &lt;p&gt;Trap message will be sent in the event of a Data Mover
 Reboots. The trap message includes the facility, event id,
-serverity and a text description of the event.&lt;/p&gt;&lt;table&gt;
+severity and a text description of the event.&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	celEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
