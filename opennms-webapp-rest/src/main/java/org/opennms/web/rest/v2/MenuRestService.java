@@ -36,6 +36,8 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import io.swagger.v3.oas.annotations.Operation;
 import org.opennms.core.time.CentralizedDateTimeFormat;
 import org.opennms.web.rest.support.menu.HttpMenuRequestContext;
 import org.opennms.web.rest.support.menu.MainMenu;
@@ -61,6 +63,7 @@ public class MenuRestService {
     @GET
     @Path("/")
     @Produces({MediaType.APPLICATION_JSON})
+    @Operation(summary = "Get main menu", description = "Get main menu", operationId = "MenuRestServiceGetMainMenu")
     public Response getMainMenu(final @Context HttpServletRequest request) {
         try {
             MainMenu mainMenu = buildMenu(request);
