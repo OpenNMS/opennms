@@ -60,8 +60,10 @@ Larger systems may require larger values.
 To adjust them, follow these steps:
 
 . Log in to {page-component-title} as an admin user.
-. Click the gear icon and click *Configure External Requisitions and Thread Pools*.
-. In the left menu, click *External Requisitions*.
+. Click the gear icon and click *Configure External Requisitions*.
++
+You can also select menu:Info[External Requisitions] to access this screen.
+
 . In the *Thread Pools* area, select a value from the drop-down list for each item you want to update.
 . Click *Update Thread Pools*.
 
@@ -79,8 +81,7 @@ The following example shows how to create an external requisition to schedule an
 NOTE: You can also create an external requisition via the xref:development:rest/config_management.adoc#config-rest-api[config management REST API].
 
 . Log in to {page-component-title} as an admin user.
-. Click the gear icon and click *Configure External Requisitions and Thread Pools*.
-. In the left menu, click *External Requisitions*.
+. Click the gear icon and click *Configure External Requisitions*.
 . Click *Add External Requisition*.
 . Specify a name for the external requisition.
 . From the *Type* drop-down, choose *DNS*.

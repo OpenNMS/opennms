@@ -31,6 +31,7 @@ package org.opennms.smoketest;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -157,7 +158,7 @@ public class AngularLoginRedirectIT extends OpenNMSSeleniumIT {
             sleep(SLEEP_TIME);
 
             // Verify we have been forwarded to the login page
-            new WebDriverWait(driver, 5).until(input -> {
+            new WebDriverWait(driver, Duration.ofSeconds(5)).until(input -> {
                     LOG.info("{}: Verify redirect to login.jsp occurred", eachCheck.url);
                     return driver.getCurrentUrl().matches("http://opennms:8980/opennms/login\\.jsp[?;].*");
                 }

@@ -41,7 +41,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
 @Mapper(uses = {GeolocationMapper.class, NodeAssetRecordMapper.class, IpInterfaceMapper.class,
-        SnmpInterfaceMapper.class, MetaDataMapper.class})
+        SnmpInterfaceMapper.class, MetaDataMapper.class, MonitoredServiceMapper.class})
 public interface NodeMapper {
     ImmutableNode map(OnmsNode onmsNode);
 

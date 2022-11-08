@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,13 +26,39 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.apilayer.model.mappers;
+package org.opennms.smoketest.containers;
 
-import org.mapstruct.Mapper;
-import org.opennms.integration.api.v1.model.immutables.ImmutableIpInterface;
-import org.opennms.netmgt.model.OnmsIpInterface;
+import java.net.MalformedURLException;
+import java.net.URL;
 
-@Mapper(uses = {MetaDataMapper.class, SnmpInterfaceMapper.class, MonitoredServiceMapper.class})
-public interface IpInterfaceMapper {
-    ImmutableIpInterface map(OnmsIpInterface onmsIpInterface);
+import org.opennms.smoketest.stacks.OpenNMSProfile;
+import org.opennms.smoketest.stacks.StackModel;
+
+public class LocalOpenNMS extends OpenNMSContainer {
+    public LocalOpenNMS() {
+        super(StackModel.newBuilder().build(), OpenNMSProfile.DEFAULT);
+    }
+
+    @Override
+    public URL getBaseUrlInternal() {
+        try {
+            return new URL(String.format("http://%s:%d/", "host.docker.internal", 8980));
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public URL getBaseUrlExternal() {
+        try {
+            return new URL(String.format("http://%s:%d/", "localhost", 8980));
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "I'm an empty opennms container, y'all!";
+    }
 }

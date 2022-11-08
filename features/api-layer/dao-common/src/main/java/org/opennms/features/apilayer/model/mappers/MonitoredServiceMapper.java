@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,10 +29,13 @@
 package org.opennms.features.apilayer.model.mappers;
 
 import org.mapstruct.Mapper;
-import org.opennms.integration.api.v1.model.immutables.ImmutableIpInterface;
-import org.opennms.netmgt.model.OnmsIpInterface;
+import org.mapstruct.Mapping;
+import org.opennms.integration.api.v1.model.immutables.ImmutableMonitoredService;
+import org.opennms.netmgt.model.OnmsMonitoredService;
 
-@Mapper(uses = {MetaDataMapper.class, SnmpInterfaceMapper.class, MonitoredServiceMapper.class})
-public interface IpInterfaceMapper {
-    ImmutableIpInterface map(OnmsIpInterface onmsIpInterface);
+@Mapper(uses = {MetaDataMapper.class})
+public interface MonitoredServiceMapper {
+
+    @Mapping(target = "name", source = "serviceType.name")
+    ImmutableMonitoredService map(OnmsMonitoredService onmsMonitoredService);
 }

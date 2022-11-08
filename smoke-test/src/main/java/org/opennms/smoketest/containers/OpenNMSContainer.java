@@ -135,6 +135,7 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
     private final OpenNMSProfile profile;
     private final Path overlay;
     private int generatedUserId = -1;
+    private boolean afterTestCalled = false;
 
     public OpenNMSContainer(StackModel model, OpenNMSProfile profile) {
         super("horizon");
@@ -154,8 +155,10 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
             this.withEnv("OPENNMS_TIMESERIES_STRATEGY", model.getTimeSeriesStrategy().name().toLowerCase());
         }
 
-        final Integer[] exposedPorts = new ArrayList<>(networkProtocolMap.values())
-                .toArray(new Integer[0]);
+        final Integer[] exposedPorts = networkProtocolMap.entrySet().stream()
+                .filter(e -> InternetProtocol.TCP.equals(e.getKey().getIpProtocol()))
+                .map(Map.Entry::getValue)
+                .toArray(Integer[]::new);
         final int[] exposedUdpPorts = networkProtocolMap.entrySet().stream()
                 .filter(e -> InternetProtocol.UDP.equals(e.getKey().getIpProtocol()))
                 .mapToInt(Map.Entry::getValue)
@@ -300,7 +303,7 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
     /**
      * @return the URL in a form consumable by containers networked with this one using the alias and internal port
      */
-    public static URL getBaseUrlInternal() {
+    public URL getBaseUrlInternal() {
         try {
             return new URL(String.format("http://%s:%d/", ALIAS, OPENNMS_WEB_PORT));
         } catch (MalformedURLException e) {
@@ -467,6 +470,11 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
 
     @Override
     public void afterTest(final TestDescription description, final Optional<Throwable> throwable) {
+        if (afterTestCalled) {
+            LOG.warn("afterTest has already been called, not running on subsequent calls");
+            return;
+        }
+        afterTestCalled = true;
         KarafShellUtils.saveCoverage(this, description.getFilesystemFriendlyName(), ALIAS);
         retainLogsfNeeded(description.getFilesystemFriendlyName(), !throwable.isPresent());
     }
@@ -475,10 +483,12 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
         LOG.info("Triggering thread dump...");
         DevDebugUtils.triggerThreadDump(this);
         LOG.info("Gathering logs...");
-        copyLogs(this, prefix);
+        var logs = copyLogs(this, prefix);
+        LOG.info("Logs: {}", logs.toUri());
+        LOG.info("Console log: {}", logs.resolve(DevDebugUtils.CONTAINER_STDOUT_STDERR).toUri());
     }
 
-    private static void copyLogs(OpenNMSContainer container, String prefix) {
+    private static Path copyLogs(OpenNMSContainer container, String prefix) {
         // List of known log files we expect to find in the container
         final List<String> logFiles = Arrays.asList("alarmd.log",
                 "collectd.log",
@@ -490,13 +500,15 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
                 "provisiond.log",
                 "trapd.log",
                 "web.log");
+        Path targetLogFolder = Paths.get("target", "logs", prefix, ALIAS);
         DevDebugUtils.copyLogs(container,
                 // dest
-                Paths.get("target", "logs", prefix, ALIAS),
+                targetLogFolder,
                 // source folder
                 Paths.get("/opt", ALIAS, "logs"),
                 // log files
                 logFiles);
+        return targetLogFolder;
     }
 
 }

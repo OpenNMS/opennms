@@ -302,7 +302,7 @@ Could not find an outage to edit because no outage name parameter was specified 
 	// ******* Polling outages config *********
 	PollerConfigFactory.init();
 	Map<org.opennms.netmgt.config.poller.Package, List<String>> pollingOutages = new HashMap<org.opennms.netmgt.config.poller.Package, List<String>>();
-	for (org.opennms.netmgt.config.poller.Package thisPackage : PollerConfigFactory.getInstance().getConfiguration().getPackages()) {
+	for (org.opennms.netmgt.config.poller.Package thisPackage : PollerConfigFactory.getInstance().getExtendedConfiguration().getPackages()) {
 		pollingOutages.put(thisPackage, thisPackage.getOutageCalendars());
 		if (thisPackage.getOutageCalendars().contains(theOutage.getName())) {
 			enabledOutages.add("polling-" + thisPackage.getName());
